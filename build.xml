@@ -1,0 +1,826 @@
+<project name="nucleus" default="main" basedir=".">
+
+	<!-- Properties may be specified in the build.properties file. This is the preferred way. -->
+	<!-- As an alternative, properties may be defined in the environment. -->
+
+	<!-- First read all properties from the properties file: -->
+	<property file="build.properties"/>
+	<!-- copy build.properties for the "common" build... -->
+
+	<!-- Read properties that are not defined in the properties file from the environment: -->
+	<property environment="env"/>
+
+	<property name="system.name" value="nucleus"/>
+
+	<!-- Set the path to the runtime JBoss directory containing the JBoss application server: -->
+	<property name="jboss.home" value="${env.JBOSS_HOME}"/>
+
+	<!-- Set the path to the root directory of the XDoclet distribution (see http://www.sf.net/projects/xdoclet): -->
+	<property name="xdoclet.home" value="${env.XDOCLET_HOME}"/>
+
+	<!-- Set the path to the root directory of the XDoclet distribution (see http://www.sf.net/projects/xdoclet): -->
+	<property name="docbook-xsl.home" value="${env.DOCBOOK_HOME}"/>
+
+	<!-- Project root directory (should always be the directory where this build.xml resides): -->
+	<property name="project.home.dir" value="${env.ELISA_HOME}"/>
+
+	<!-- VM args for running the Nucleus client: -->
+	<condition property="run.client.vmargs" value="-ea -ms64m -mx192m">
+		<not><isset property="run.client.vmargs"/></not>
+	</condition>
+
+	<!-- the directory for code generator source files -->
+	<property name="elisa.codegenerator.source" value="${elisa.codegenerator.source}"/>
+
+	<property name="jboss.lib" value="${jboss.home}/lib"/>
+	<property name="jboss.client" value="${jboss.home}/client"/>
+
+	<!-- Set the JBoss version you want to use (see XDoclet's <jboss> attribute "version"): -->
+	<property name="jboss.version" value="4.0"/>
+
+	<!-- Configuration used on JBoss to run your server. There must be a directory with the same name under "${jboss.home}/server": -->
+	<property name="jboss.server.name" value="${system.name}"/>
+	<property name="jboss.server.dir" value="${jboss.home}/server/${jboss.server.name}"/>
+	<property name="jboss.server.deploy.dir" value="${jboss.server.dir}/deploy"/>
+	<property name="jboss.server.lib.dir" value="${jboss.server.dir}/lib"/>
+
+	<!-- Set the DB type mapping (see XDoclet's <jboss> attribute "typemapping"): -->
+	<property name="type.mapping" value="Oracle9i"/>
+
+	<!-- Set the DataSource name your are going to use (see XDoclet's <jboss> attribute "datasource"): -->
+	<property name="datasource.name" value="java:/ds/Zentis"/>
+
+	<property name="xdoclet.lib.dir" value="${xdoclet.home}/lib"/>
+
+	<!-- Set this to "true" when you want to force the rebuild of the XDoclet generated files (see XDoclet's <ejbdoclet> attribute "force"): -->
+	<property name="xdoclet.force" value="false"/>
+
+	<!-- Set the EJB version you want to use (see XDoclet's <ejbdoclet> attribute "ejbspec"): -->
+	<property name="ejb.version" value="2.1"/>
+
+	<property name="java.src.version" value="1.5"/>
+
+	<!-- novabit-common directory: -->
+	<property name="novabit.common.dir" value="${project.home.dir}/../common"/>
+	<property name="novabit.common.src.dir" value="${novabit.common.dir}/src"/>
+	<property name="novabit.common.build.deploy.dir" value="${novabit.common.dir}/build/deploy"/>
+
+	<!-- Project subdirectories: -->
+	<property name="build.dir" value="${project.home.dir}/build"/>
+	<property name="build.tmp.dir" value="${build.dir}/tmp"/>
+	<property name="build.deploy.dir" value="${build.dir}/deploy"/>
+	<property name="build.generate.dir" value="${build.dir}/generate"/>
+	<property name="build.classes.dir" value="${build.dir}/classes"/>
+	<property name="conf.dir" value="${project.home.dir}/conf"/>
+	<property name="doc.dir" value="${project.home.dir}/doc"/>
+	<property name="db.dir" value="${project.home.dir}/db"/>
+	<property name="lib.dir" value="${project.home.dir}/lib"/>
+	<property name="src.dir" value="${project.home.dir}/src"/>
+	<property name="dist.dir" value="${project.home.dir}/dist"/>
+
+	<!-- Source directories: -->
+	<property name="src.novabit.dir" value="${src.dir}/de/novabit"/>
+	<property name="src.elisa.dir" value="${src.novabit.dir}/nucleus"/>
+	<property name="src.elisa.common.dir" value="${src.elisa.dir}/common"/>
+	<property name="src.elisa.client.dir" value="${src.elisa.dir}/client"/>
+	<property name="src.elisa.server.dir" value="${src.elisa.dir}/server"/>
+
+	<path id="elisa.server.path">
+		<pathelement location="${novabit.common.build.deploy.dir}/novabit-common.jar"/>
+		<pathelement location="${novabit.common.build.deploy.dir}/novabit-common-ejb.jar"/>
+		<pathelement location="${lib.dir}/log4j-1.2.8.jar"/>
+		<pathelement location="${lib.dir}/commons-lang-2.0.jar"/>
+		<pathelement location="${lib.dir}/commons-beanutils-1.5.jar"/>
+		<pathelement location="${lib.dir}/commons-collections-3.0.jar"/>
+		<pathelement location="${jboss.server.lib.dir}/jboss-j2ee.jar"/>
+		<pathelement location="${jboss.client}/jbosssx-client.jar"/>
+		<pathelement location="${jboss.server.lib.dir}/jbosssx.jar"/>
+		<pathelement location="${jboss.lib}/jboss-system.jar"/>
+		<pathelement location="${jboss.lib}/jboss-common.jar"/>
+		<pathelement location="${jboss.lib}/jboss-jmx.jar"/>
+		<pathelement location="${lib.dir}/dom4j-full.jar"/>
+		<pathelement location="${lib.dir}/jasperreports-0.6.6.jar"/>
+		<pathelement location="${lib.dir}/quartz-1.4.2.jar"/>
+		<pathelement location="${lib.dir}/ojdbc14.jar"/>
+		<pathelement location="${lib.dir}/poi-2.5-final-20040302.jar"/>
+
+		<pathelement location="${jboss.client}/jnp-client.jar"/>
+		<pathelement location="${jboss.client}/jbossmq-client.jar"/>
+		<pathelement location="${jboss.client}/concurrent.jar"/>
+		<pathelement location="${jboss.server.lib.dir}/jboss.jar"/>
+		<pathelement location="${jboss.server.lib.dir}/mail.jar"/>
+		<pathelement location="${lib.dir}/junit-3.8.1.jar"/>
+		<pathelement location="${jboss.lib}/endorsed/xercesImpl.jar"/>
+
+		<!--EJB3: -->
+		<!--<pathelement location="${jboss.server.deploy.dir}/ejb3.deployer/jboss-annotations-ejb3.jar"/>-->
+		<!--<pathelement location="${jboss.server.deploy.dir}/ejb3.deployer/jboss-ejb3.jar"/>-->
+		<!--<pathelement location="${jboss.server.deploy.dir}/ejb3.deployer/jboss-ejb3x.jar"/>-->
+	</path>
+
+	<path id="elisa.client.path">
+		<pathelement location="${build.deploy.dir}/novabit-common.jar"/>
+		<pathelement location="${novabit.common.dir}/lib/client/jlfgr-1_0.jar"/>
+		<pathelement location="${lib.dir}/commons-lang-2.0.jar"/>
+		<pathelement location="${lib.dir}/commons-beanutils-1.5.jar"/>
+		<pathelement location="${lib.dir}/commons-collections-3.0.jar"/>
+		<pathelement location="${lib.dir}/commons-digester-1.3.jar"/>
+		<pathelement location="${lib.dir}/commons-logging-1.0.4.jar"/>
+		<pathelement location="${jboss.client}/jboss-j2ee.jar"/>
+		<pathelement location="${jboss.client}/jboss-client.jar"/>
+		<pathelement location="${jboss.client}/jboss-common-client.jar"/>
+		<pathelement location="${jboss.client}/jboss-system-client.jar"/>
+		<pathelement location="${jboss.client}/jbosssx-client.jar"/>
+		<pathelement location="${jboss.client}/jboss-transaction-client.jar"/>
+		<pathelement location="${jboss.client}/jbossmq-client.jar"/>
+		<pathelement location="${jboss.client}/concurrent.jar"/>
+
+		<pathelement location="${lib.dir}/InsaPerformanceLogger.jar"/>
+		<pathelement location="${lib.dir}/jdbc2_0-stdext.jar"/>
+		<pathelement location="${lib.dir}/jfreechart-0.9.8.jar"/>
+		<pathelement location="${lib.dir}/jh.jar"/>
+		<pathelement location="${jboss.client}/jnp-client.jar"/>
+		<pathelement location="${lib.dir}/log4j-1.2.8.jar"/>
+		<pathelement location="${lib.dir}/StrutLayout1.2.1.jar"/>
+		<pathelement location="${lib.dir}/thirdparty.jar"/>
+		<pathelement location="${lib.dir}/webdavlib.jar"/>
+		<pathelement location="${lib.dir}/dom4j-full.jar"/>
+		<pathelement location="${lib.dir}/xercesImpl.jar"/>
+		<pathelement location="${lib.dir}/xmlParserAPIs.jar"/>
+		<pathelement location="${lib.dir}/davfilechooser.jar"/>
+		<pathelement location="${lib.dir}/itext-1.3.jar"/>
+		<pathelement location="${lib.dir}/poi-2.5-final-20040302.jar"/>
+		<pathelement location="${lib.dir}/jasperreports-0.6.6.jar"/>
+		<pathelement location="${lib.dir}/jawin.jar"/>
+		<pathelement location="${lib.dir}/jxl.jar"/>
+		<pathelement location="${build.deploy.dir}/${system.name}-xerlin.jar"/>
+	</path>
+
+	<path id="xdoclet.path">
+		<path refid="elisa.server.path"/>
+		<fileset dir="${xdoclet.lib.dir}" includes="*.jar"/>
+	</path>
+
+	<path id="elisa.path">
+		<path refid="elisa.server.path"/>
+		<path refid="elisa.client.path"/>
+	</path>
+
+	<path id="elisa.client.run.path">
+		<pathelement location="${build.deploy.dir}/${system.name}-client.jar"/>
+		<!-- include conf.dir in classpath so the ClassLoader finds elisa-client-serverconfig.properties: -->
+		<pathelement location="${conf.dir}"/>
+		<pathelement location="${build.deploy.dir}/${system.name}-gef.jar"/>
+		<pathelement location="${build.deploy.dir}/${system.name}-help.jar"/>
+
+		<!--EJB3:-->
+		<!--<pathelement location="${jboss.client}/jboss-ejb3-client.jar"/>-->
+		<!--<pathelement location="${jboss.client}/jboss-aop-jdk50-client.jar"/>-->
+		<!--<pathelement location="${jboss.client}/jboss-aspect-jdk50-client.jar"/>-->
+		<!--<pathelement location="${jboss.client}/jboss-remoting.jar"/>-->
+
+		<path refid="elisa.client.path"/>
+	</path>
+
+	<path id="cactus.path">
+		<pathelement location="${lib.dir}/cactus-1.7.1.jar"/>
+		<pathelement location="${lib.dir}/cactus-ant-1.7.1.jar"/>
+		<pathelement location="${lib.dir}/commons-httpclient-2.0.2.jar"/>
+		<pathelement location="${lib.dir}/commons-logging-1.0.4.jar"/>
+		<pathelement location="${lib.dir}/aspectjrt-1.2.1.jar"/>
+		<pathelement location="${lib.dir}/cargo-0.5.jar"/>
+		<!-- junit is needed for cactus, but as it seems it must be available for the parent classloader - why? -->
+		<pathelement location="${lib.dir}/junit-3.8.1.jar"/>
+	</path>
+
+	<taskdef name="ejbdoclet" classname="xdoclet.modules.ejb.EjbDocletTask">
+		<classpath refid="xdoclet.path"/>
+	</taskdef>
+
+	<taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
+		<classpath>
+			<pathelement location="${lib.dir}\fop.jar"/>
+			<pathelement location="${lib.dir}\avalon-framework.jar"/>
+			<pathelement location="${lib.dir}\batik.jar"/>
+		</classpath>
+	</taskdef>
+
+	<target name="main" depends="main.nojavahelp, jar.javahelp"
+					description="Performs a clean, builds and deploys the server, then builds the client and javahelp."/>
+
+	<target name="main.nojavahelp" depends="init, clean, main.noclean"
+					description="Performs a clean, builds and deploys the server, then builds the client."/>
+
+	<target name="main.noclean" depends="build.novabit.common.noclean, deploy.server, jar.client"
+					description="Builds and deploys the server, then builds the client."/>
+
+	<target name="build.novabit.common.noclean">
+		<ant dir="${novabit.common.dir}" target="main.noclean" inheritall="false"/>
+	</target>
+
+	<target name="init" depends="check.environment"/>
+
+	<target name="check.environment">
+		<copy todir=".." file="build.properties" overwrite="true"/>
+		<copy file="${conf.dir}/novabit/log4j-client-template.xml" tofile="${conf.dir}/log4j.xml" overwrite="false"/>
+		<copy file="${conf.dir}/novabit/elisa-client-serverconfig-template.properties"
+					tofile="${conf.dir}/elisa-client-serverconfig.properties" overwrite="false"/>
+		<antcall target="check.jboss"/>
+		<available property="jboss.present" file="${jboss.home}/bin/run.jar"/>
+		<antcall target="wrong.jboss"/>
+		<antcall target="check.xdoclet"/>
+		<available property="xdoclet.present" file="${xdoclet.home}/lib/xdoclet-1.3-08012006-lunatech.jar"/>
+		<antcall target="wrong.xdoclet"/>
+	</target>
+
+	<target name="check.jboss" unless="jboss.home">
+		<fail>
+			Property "jboss.home" is not set. Please use the file "build.properties" in this directory ${basedir} to set this
+			property. It must point to the directory which contains the following directory: "deploy", "conf", "tmp" etc.
+		</fail>
+	</target>
+
+	<target name="wrong.jboss" unless="jboss.present">
+		<fail>
+			Property "jboss.home" is set but it does not seem to point to the right directory. The file "run.jar" must be
+			available at ${jboss.home}/bin.
+		</fail>
+	</target>
+
+	<target name="check.xdoclet" unless="xdoclet.home">
+		<fail>
+			Property "xdoclet.home" is not set. Please use the file "build.properties" in this directory ${basedir} to set
+			this property. It must point to the root directory of XDoclet distribution.
+		</fail>
+	</target>
+
+	<target name="wrong.xdoclet" unless="xdoclet.present">
+		<fail>
+			Property "xdoclet.home" is set, but it does not seem to point to the right directory. The file "xdoclet-1.2.3.jar"
+			must be available at ${xdoclet.home}/lib.
+		</fail>
+	</target>
+
+	<target name="xdoclet.generate.all">
+		<ejbdoclet destdir="${src.dir}" ejbspec="${ejb.version}" verbose="false">
+			<fileset dir="${src.dir}">
+				<include name="de/novabit/nucleus/server/**/ejb/*Bean.java"/>
+				<include name="de/novabit/nucleus/statemachine/ejb/*Bean.java"/>
+			</fileset>
+			<packageSubstitution packages="ejb" substituteWith="interfaces"/>
+			<remoteinterface pattern="{0}Remote"/>
+			<homeinterface pattern="{0}RemoteHome"/>
+			<localinterface/>
+			<localhomeinterface/>
+			<deploymentdescriptor destdir="${build.classes.dir}/META-INF"/>
+
+			<jboss version="${jboss.version}" createTable="false" removeTable="false" xmlencoding="UTF-8"
+						 typemapping="${type.mapping}" datasource="${datasource.name}" destdir="${build.classes.dir}/META-INF"
+						 validateXml="false" mergedir="./merge"/>
+		</ejbdoclet>
+	</target>
+
+	<target name="compile" depends="init, compile.client"/>
+
+	<target name="compile.server" depends="init, xdoclet.generate.all, compile.server.nodepend"/>
+
+	<target name="compile.server.nodepend">
+		<mkdir dir="${build.classes.dir}"/>
+
+		<copy todir="${build.classes.dir}">
+			<fileset dir="${src.dir}" includes="de/novabit/nucleus/common/security/auth.conf"/>
+			<fileset dir="${src.dir}" includes="de/novabit/nucleus/server/report/templates/*"/>
+			<fileset dir="${src.dir}" includes="de/novabit/nucleus/common/querybuilder/querybuildermodel.dtd"/>
+			<!--			<fileset dir="${src.dir}" includes="de/novabit/common/layoutml/layoutml.dtd"/>-->
+		</copy>
+
+		<javac destdir="${build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+					 includes="de/novabit/nucleus/common/,
+			   	de/novabit/nucleus/server/,
+					de/novabit/nucleus/statemachine/"
+					 excludes="**/test/"
+					 classpathref="elisa.server.path">
+			<src path="${src.dir}"/>
+		</javac>
+	</target>
+
+	<target name="compile.client" depends="compile.server, patch.xerlin.jar, compile.client.nodepend"/>
+
+	<target name="patch.xerlin.jar"
+					description="Patches the xerlin library (Elisa uses a custom merlot.properties file).">
+		<copy file="${lib.dir}/xerlin-1.3.jar" tofile="${build.deploy.dir}/${system.name}-xerlin.jar"/>
+		<jar jarfile="${build.deploy.dir}/${system.name}-xerlin.jar" update="true" basedir="${conf.dir}/xerlin"
+				 includes="org/merlotxml/merlot/merlot.properties"/>
+	</target>
+
+	<target name="compile.client.nodepend">
+		<mkdir dir="${build.classes.dir}"/>
+		<mkdir dir="${build.deploy.dir}"/>
+
+		<copy todir="${build.deploy.dir}">
+			<fileset dir="${novabit.common.build.deploy.dir}" includes="novabit-common.jar"/>
+		</copy>
+
+		<copy todir="${build.classes.dir}">
+			<fileset dir="${src.dir}"
+							 includes="de/novabit/nucleus/common/security/auth.conf,
+							 de/novabit/nucleus/common/querybuilder/querybuildermodel.dtd"/>
+		</copy>
+
+		<copy todir="${build.classes.dir}/de/novabit/nucleus/client">
+			<fileset dir="${src.elisa.client.dir}"
+							 includes="**/images/,
+							 **/layoutml/*.layoutml,
+							 help/releasenotes/releasenotes.html,
+							 help/glossary/html/,
+							 help/glossary/package.html"/>
+		</copy>
+
+		<copy todir="${build.classes.dir}/de/novabit/gef">
+			<fileset dir="${src.dir}/de/novabit/gef" includes="**/images/*"/>
+		</copy>
+
+		<copy todir="${build.classes.dir}/de/novabit/nucleus/client/report">
+			<fileset dir="${src.dir}/de/novabit/nucleus/client/report" includes="*.dtd"/>
+		</copy>
+
+		<copy file="${novabit.common.src.dir}/de/novabit/common/layoutml/layoutml.dtd" tofile="${conf.dir}/layoutml.dtd"
+					overwrite="true"/>
+
+		<copy todir="${build.classes.dir}/de/novabit/nucleus/server/report/templates">
+			<fileset dir="${src.dir}/de/novabit/nucleus/server/report/templates" includes="*.jpg, *.gif"/>
+		</copy>
+
+		<javac destdir="${build.classes.dir}" debug="on" deprecation="off" optimize="on"
+					 source="${java.src.version}" srcdir="${src.dir}"
+					 includes="de/novabit/nucleus/client/, de/novabit/gef/"
+					 excludes="**/test/">
+			<classpath>
+				<!-- @todo the ref to elisa-server.jar slows the build down.
+				  When we have elisa-common.jar and nucleus-server-interface.jar, we should try this again. -->
+				<!--<pathelement location="${build.deploy.dir}/elisa-server.jar"/>-->
+				<path refid="elisa.client.path"/>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="jar.server" depends="compile.server, jar.jboss" description="Builds the server.">
+		<mkdir dir="${build.deploy.dir}"/>
+
+		<jar jarfile="${build.deploy.dir}/${system.name}-server.jar" basedir="${build.classes.dir}"
+				 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, de/novabit/nucleus/statemachine/, META-INF/"
+				 excludes="**/test/">
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0"/>
+				<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-1.4.2.jar"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="jar.client" depends="compile.client" description="Builds the client.">
+		<mkdir dir="${build.deploy.dir}"/>
+
+		<!--		<manifest file="${build.deploy.dir}/MANIFEST.MF">-->
+		<!--			<attribute name="Main-Class" value="de.novabit.nucleus.client.main.Main"/>-->
+		<!--			<attribute name="Class-Path" value="nucleus-gef.jar, nucleus-merlotxml.jar, elisa-ireport.jar"/>-->
+		<!--		</manifest>-->
+
+		<jar jarfile="${build.deploy.dir}/${system.name}-client.jar">
+			<!--			manifest="${build.deploy.dir}/MANIFEST.MF">-->
+			<fileset dir="${build.classes.dir}"
+							 includes="de/novabit/nucleus/client/,
+					de/novabit/nucleus/common/,
+					de/novabit/nucleus/server/*.class,
+					de/novabit/nucleus/server/*/*.class,
+					de/novabit/nucleus/server/**/valueobject/*,
+					de/novabit/nucleus/server/**/interfaces/*,
+					de/novabit/nucleus/server/**/*Exception.class,
+					de/novabit/nucleus/server/**/*VO*.class,
+					de/novabit/nucleus/server/leasedobject/searchcondition/Collectable*SearchExpression.class,
+					de/novabit/nucleus/server/navigation/treenode/*.class,
+					de/novabit/nucleus/server/person/treenode/*.class,
+					de/novabit/nucleus/server/report/templates/*.jpg,
+					de/novabit/nucleus/server/report/templates/*.gif,
+					de/novabit/nucleus/common/security/auth.conf,
+					de/novabit/nucleus/statemachine/**"
+							 excludes="**/test/,
+					de/novabit/**/ejb/**/*Bean.class,
+					de/novabit/nucleus/client/help/javahelp/,
+					de/novabit/nucleus/client/main/animatedmenubar/,
+					de/novabit/**/build.xml"/>
+		</jar>
+
+		<jar jarfile="${build.deploy.dir}/${system.name}-gef.jar">
+			<fileset dir="${build.classes.dir}" includes="de/novabit/gef/**"/>
+		</jar>
+	</target>
+
+	<target name="jar.jboss" description="Creates jboss specific libraries.">
+		<mkdir dir="${build.deploy.dir}"/>
+
+		<javac destdir="${build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+					 excludes="de/novabit/common/logging/test/"
+					 classpathref="elisa.path">
+			<src path="${novabit.common.src.dir}/de/novabit/common/logging/"/>
+		</javac>
+
+		<jar jarfile="${build.deploy.dir}/novabit-jboss.jar" basedir="${build.classes.dir}"
+				 includes="de/novabit/common/logging/"
+				 excludes="de/novabit/common/logging/test/">
+		</jar>
+	</target>
+
+	<target name="deploy.server" depends="jar.server" description="Builds and deploys the server.">
+		<ear destfile="${build.deploy.dir}/${system.name}.ear" appxml="${conf.dir}/jboss/ear/META-INF/application.xml">
+			<!--			<fileset dir="${conf.dir}/jboss/ear" includes="META-INF/jboss-app.xml, scheduler-service.xml"/>-->
+			<fileset dir="${build.deploy.dir}" includes="${system.name}-server.jar"/>
+			<fileset dir="${novabit.common.build.deploy.dir}" includes="novabit-common.jar, novabit-common-ejb.jar"/>
+			<fileset dir="${lib.dir}" includes="quartz-1.4.2.jar"/>
+		</ear>
+
+		<!-- deploy: -->
+		<copy todir="${jboss.server.deploy.dir}">
+			<fileset dir="${build.deploy.dir}" includes="${system.name}.ear"/>
+			<fileset dir="${conf.dir}/jboss/deploy"
+							 includes="deploy.last/quartz-service.xml, jms/elisa-destinations-service.xml"/>
+		</copy>
+
+		<!-- quartz-service.xml must be renewed, otherwise it won't be redeployed on hot deployment: -->
+		<touch>
+			<fileset dir="${jboss.server.deploy.dir}/deploy.last"/>
+		</touch>
+	</target>
+
+	<!-- Target to start the JBoss server for ELISA: -->
+	<target name="run.server">
+		<exec executable="run.bat" dir="${jboss.home}/bin" vmlauncher="false">
+			<arg line="-c nucleus"/>
+		</exec>
+	</target>
+
+	<!-- Target to start the JBoss server for ELISA in debugging mode: -->
+	<target name="debug.server">
+		<exec executable="run.bat" dir="${jboss.home}/bin" vmlauncher="false">
+			<arg line="-c ${jboss.server.name}"/>
+			<env key="JAVA_OPTS"
+					 value="${env.JAVA_OPTS} -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"/>
+		</exec>
+	</target>
+
+	<!-- Target to run client -->
+	<target name="run.client" depends="jar.client, run.client.nodepend"
+					description="Compiles the server and client, then runs the client."/>
+
+	<!-- Target to run client (contains no dependencies, just run the client) -->
+	<target name="run.client.nodepend" description="Runs the Elisa client.">
+		<java classname="de.novabit.nucleus.client.main.Main" fork="true">
+			<classpath>
+				<path refid="elisa.client.run.path"/>
+			</classpath>
+			<jvmarg line="${run.client.vmargs}"/>
+			<sysproperty key="elisa.client.conf.dir" value="${conf.dir}"/>
+			<sysproperty key="com.sun.management.jmxremote" value="true"/>
+		</java>
+	</target>
+
+	<target name="run.console" description="Runs the Elisa console.">
+		<java classname="de.novabit.nucleus.client.console.ElisaConsole" fork="true">
+			<arg line="${console-args}"/>
+			<classpath>
+				<path refid="elisa.client.run.path"/>
+			</classpath>
+			<sysproperty key="elisa.client.conf.dir" value="${conf.dir}"/>
+		</java>
+	</target>
+
+	<target name="echo.classpath.windows" description="Prints the current classpath to System.out.">
+		<pathconvert refid="elisa.client.run.path" targetos="windows" property="elisa.client.run.path.windows"/>
+		<echo message="${elisa.client.run.path.windows}" level="debug"/>
+	</target>
+
+	<target name="show.serialver" description="Runs the UI version of the serialver tool with the current classpath.">
+		<pathconvert refid="elisa.client.run.path" property="elisa.client.run.path.os"/>
+		<exec executable="serialver">
+			<arg line="-classpath ${elisa.client.run.path.os} -show"/>
+		</exec>
+	</target>
+
+	<target name="clean" depends="clean.javadoc, clean.ruledoc, dist.clean" description="Removes all generated files.">
+		<ant dir="${novabit.common.dir}" target="clean" inheritall="false"/>
+
+		<delete quiet="true" includeEmptyDirs="true">
+			<fileset dir="${src.dir}"
+							 includes="**/interfaces/"
+							 excludes="pending/,
+					de/novabit/nucleus/server/masterdata/interfaces/MDLocalHome.java,
+					de/novabit/nucleus/server/masterdata/interfaces/MDLocalObject.java"/>
+			<fileset dir="${build.dir}" includes="*/"/>
+			<fileset dir="${conf.dir}" includes="layoutml.dtd"/>
+		</delete>
+	</target>
+
+	<target name="clean.javadoc">
+		<delete quiet="true" dir="${doc.dir}/api"/>
+	</target>
+
+	<target name="clean.ruledoc">
+		<delete quiet="true" dir="${doc.dir}/ruledoc"/>
+	</target>
+
+	<target name="compile.ruledoc.taglets">
+		<javac destdir="${build.classes.dir}" debug="on" deprecation="off" optimize="on"
+					 source="${java.src.version}" srcdir="${src.dir}"
+					 includes="de/novabit/nucleus/tools/ruledoc/"/>
+	</target>
+
+	<target name="build.ruledoc" depends="init, compile.ruledoc.taglets" description="@todo compile rule sources">
+		<javadoc access="private" additionalparam="-quiet
+		-d ${doc.dir}/ruledoc
+		-taglet de.novabit.nucleus.tools.ruledoc.taglet.NameTaglet  -tagletpath ${build.classes.dir}
+		-taglet de.novabit.nucleus.tools.ruledoc.taglet.BeschreibungTaglet -tagletpath ${build.classes.dir}
+		-taglet de.novabit.nucleus.tools.ruledoc.taglet.VerwendungTaglet -tagletpath ${build.classes.dir}
+		-taglet de.novabit.nucleus.tools.ruledoc.taglet.AnderungTaglet -tagletpath ${build.classes.dir}
+		-linksource"
+
+						 classpath="${build.classes.dir}; ${novabit.common.dir}/build/classes"
+						 windowtitle="Elisa Regeln"
+						 sourcefiles="${elisa.codegenerator.source}/*.java"
+						 sourcepath="${elisa.codegenerator.source};${src.novabit.dir}">
+
+			<doclet name="de.novabit.nucleus.tools.ruledoc.doclet.NovabitDoclet"
+							path="${build.classes.dir}"/>
+		</javadoc>
+	</target>
+
+	<target name="javadoc" description="Builds the javadoc.">
+		<copy todir="${doc.dir}/api">
+			<fileset dir="${src.elisa.client.dir}/images" includes="elisa-32x32-whitebackground.png"/>
+			<fileset dir="${novabit.common.src.dir}/de/novabit/common/ui/images" includes="novabit-150x45.gif"/>
+		</copy>
+		<javadoc destdir="${doc.dir}/api" source="${java.src.version}" maxmemory="128m" access="protected" splitindex="true"
+						 version="true" author="true" use="true" windowtitle="Nucleus API Documentation">
+			<doctitle>
+				<![CDATA[<img src="elisa-32x32-whitebackground.png" align="absmiddle"> Nucleus API Documentation]]></doctitle>
+			<header>
+				<![CDATA[<img src="{@docRoot}/novabit-150x45.gif">]]></header>
+			<tag name="invariant" description="Invariants:"/>
+			<tag name="precondition" description="Preconditions:" scope="constructors,methods"/>
+			<tag name="postcondition" description="Postconditions:" scope="constructors,methods"/>
+			<tag name="todo" description="To do:"/>
+			<tag name="beaninfo" description="@beaninfo"/>
+			<tag name="ejb.bean" description="@ejb.bean" scope="types"/>
+			<tag name="ejb.home" description="@ejb.home"/>
+			<tag name="ejb.interface" description="@ejb.interface"/>
+			<tag name="ejb.finder" description="@ejb.finder"/>
+			<tag name="ejb.persistence" description="@ejb.persistence" scope="types, methods"/>
+			<tag name="ejb.transaction" description="@ejb.transaction" scope="types, methods"/>
+			<tag name="ejb.create-method" description="@ejb.create-method" scope="methods"/>
+			<tag name="ejb.interface-method" description="@ejb.interface-method" scope="methods"/>
+			<tag name="ejb.permission" description="@ejb.permission"/>
+			<tag name="ejb.pk" description="Primary key"/>
+			<tag name="ejb.security-identity" description="@ejb.security-identity"/>
+			<tag name="event-dispatch-thread" description="@event-dispatch-thread"/>
+			<tag name="xdoclet-generated" description="@xdoclet-generated"/>
+			<tag name="jboss.persistence" description="@jboss.persistence"/>
+			<tag name="jboss.read-ahead" description="@jboss.read-ahead"/>
+			<tag name="jboss.entity-command" description="@jboss.entity-command"/>
+			<tag name="jboss.entity-command-attribute" description="@jboss.entity-command-attribute"/>
+			<tag name="jboss.security-proxy" description="@jboss.security-proxy"/>
+			<tag name="jboss.query" description="@jboss.query"/>
+
+			<sourcepath>
+				<pathelement location="${novabit.common.src.dir}"/>
+				<pathelement location="${src.dir}"/>
+			</sourcepath>
+			<packageset dir="${novabit.common.src.dir}" excludes="de/novabit/**/test/**, de/novabit/**/interfaces/**"/>
+			<packageset dir="${src.dir}"
+									excludes="de/novabit/**/test/**, de/novabit/nucleus/tools/**, de/novabit/**/interfaces/**"/>
+			<classpath>
+				<path refid="elisa.path"/>
+			</classpath>
+		</javadoc>
+	</target>
+
+	<target name="jar.javahelp"
+					description="Builds javahelp online documentation from docbook sources and puts them in a jar.">
+		<antcall target="compile.javahelp"/>
+
+		<!-- copy images: -->
+		<copy todir="${build.classes.dir}/de/novabit/nucleus/client/help/javahelp">
+			<fileset dir="${doc.dir}/usermanual/src" includes="img/"/>
+		</copy>
+
+		<antcall target="jar.javahelp.nodepend"/>
+	</target>
+
+	<target name="compile.javahelp" description="Compiles javahelp online documentation from docbook sources.">
+		<xslt basedir="${doc.dir}/usermanual/src"
+					destdir="${build.classes.dir}/de/novabit/nucleus/client/help/javahelp"
+					style="${docbook-xsl.home}/javahelp/javahelp.xsl"
+					includes="elisa.xml">
+			<!--factory name="org.apache.xalan.processor.TransformerFactoryImpl"/-->
+			<classpath>
+				<pathelement location="${lib.dir}/xalan.jar"/>
+				<pathelement location="${lib.dir}/serializer.jar"/>
+			</classpath>
+		</xslt>
+
+		<!-- elisa.html is 0 bytes and disturbs the jhindexer, so remove it: -->
+		<delete quiet="true" file="${build.classes.dir}/de/novabit/nucleus/client/help/javahelp/elisa.html"/>
+
+		<antcall target="compile.javahelp.index"/>
+	</target>
+
+	<target name="compile.javahelp.index" depends="clean.javahelp.index">
+		<java classname="com.sun.java.help.search.Indexer" fork="true"
+					dir="${build.classes.dir}/de/novabit/nucleus/client/help/javahelp">
+			<arg line="-locale de_DE"/>
+			<arg value="."/>
+			<classpath>
+				<pathelement location="${lib.dir}/jsearch.jar"/>
+			</classpath>
+		</java>
+	</target>
+
+	<target name="clean.javahelp.index">
+		<delete quiet="true" dir="${build.classes.dir}/de/novabit/nucleus/client/help/javahelp/JavaHelpSearch"/>
+	</target>
+
+	<target name="jar.javahelp.nodepend">
+		<jar jarfile="${build.deploy.dir}/elisa-help.jar">
+			<fileset dir="${build.classes.dir}" includes="de/novabit/nucleus/client/help/javahelp/"/>
+		</jar>
+	</target>
+
+	<target name="compile.datasourcedoc" description="Compiles datasource documentation from docbook sources.">
+		<!-- @todo doesn't compile - eliminate if no longer needed -->
+		<copy todir="${docbook-xsl.home}/fo/">
+			<fileset dir="${doc.dir}/usermanual/src/" includes="Datenquellen.xsl"/>
+		</copy>
+
+		<xslt basedir="${doc.dir}/usermanual/src"
+					destdir="${doc.dir}/usermanual"
+					extension=".fo"
+					style="${docbook-xsl.home}/fo/Datenquellen.xsl"
+					includes="Datenquellen.xml">
+			<param name="page.orientation" expression="'landscape'"/>
+		</xslt>
+
+		<delete file="${docbook-xsl.home}/fo/Datenquellen.xsl"/>
+
+		<fop fofile="${doc.dir}/usermanual/Datenquellen.fo"
+				 outfile="${doc.dir}/usermanual/Datenquellen.pdf"
+				 format="application/pdf"/>
+	</target>
+
+	<target name="build.cactus">
+		<taskdef resource="cactus.tasks">
+			<classpath refid="cactus.path"/>
+		</taskdef>
+
+		<mkdir dir="${build.classes.dir}"/>
+		<javac destdir="${build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+					 srcdir="${src.dir}"
+					 includes="de/novabit/**/test/" excludes="de/novabit/nucleus/client/">
+			<classpath>
+				<path refid="elisa.server.path"/>
+				<path location="${novabit.common.dir}/build/classes"/>
+				<path location="${lib.dir}/jfcunit.jar"/>
+				<path location="${lib.dir}/cactus-1.7.1.jar"/>
+				<path location="${lib.dir}/servlet.jar"/>
+			</classpath>
+		</javac>
+
+		<touch file="${conf.dir}/cactus/web.xml"/>
+
+		<war destfile="${build.deploy.dir}/elisa-test-temp.war" webxml="${conf.dir}/cactus/web.xml">
+			<!--			manifest="${conf.dir}/cactus/MANIFEST.MF">-->
+			<!--			<classes dir="${build.classes.dir}" includes="de/novabit/**/test/*"/>-->
+			<classes dir="${build.classes.dir}" includes="de/novabit/**/test/,
+ 					de/novabit/common/security/,
+					de/novabit/nucleus/common/security/,
+					de/novabit/nucleus/client/login/ElisaClientLoginModule.class,
+					de/novabit/nucleus/server/common/security/auth.conf"/>
+		</war>
+
+		<cactifywar destfile="${build.deploy.dir}/elisa-test.war" srcfile="${build.deploy.dir}/elisa-test-temp.war"/>
+
+		<ear destfile="${build.deploy.dir}/elisa-test.ear" appxml="${conf.dir}/cactus/application.xml"
+				 basedir="${build.deploy.dir}" includes="elisa-test.war"/>
+	</target>
+
+	<target name="deploy.cactus" depends="build.cactus">
+		<copy todir="${jboss.server.deploy.dir}">
+			<fileset dir="${build.deploy.dir}" includes="elisa-test.war"/>
+		</copy>
+	</target>
+
+	<target name="run.cactus" depends="deploy.cactus">
+		<!-- wait for the server to deploy -->
+		<sleep seconds="5"/>
+
+		<junit printsummary="withOutAndErr" showoutput="on" filtertrace="off">
+			<classpath>
+				<path location="${build.classes.dir}"/>
+				<path refid="elisa.path"/>
+				<path refid="cactus.path"/>
+			</classpath>
+			<sysproperty key="cactus.contextURL" value="http://localhost:8080/elisa-test"/>
+			<sysproperty key="cactus.servletRedirectorName" value="ServletRedirectorSecure"/>
+			<formatter type="plain" usefile="false"/>
+			<!--			<test name="de.novabit.common.collect.collectable.test.CollectableFieldFormatTest"/>-->
+			<test name="de.novabit.nucleus.server.leasedobject.searchcondition.test.SearchExpressionUnparserTest"/>
+			<test name="de.novabit.nucleus.server.leasedobject.searchcondition.test.DummyTest"/>
+		</junit>
+	</target>
+
+	<!--	The <cactus> task sucks with JBoss 3.x. -->
+	<!--	<target name="run.cactus" depends="build.cactus">-->
+	<!--		<cactus warfile="${build.deploy.dir}/elisa-test.war">-->
+	<!--			<containerset>-->
+	<!--				<jboss3x dir="${jboss.home}" config="elisa"/>-->
+	<!--			</containerset>-->
+	<!--		</cactus>-->
+	<!--	</target>-->
+
+	<!--  -->
+	<target name="dist" depends="main, javadoc, build.ruledoc" description="copy files to distribution directory.">
+		<mkdir dir="${dist.dir}"/>
+
+		<!-- copy release notes: -->
+		<copy todir="${dist.dir}">
+			<fileset dir="${build.classes.dir}/de/novabit/nucleus/client/help/releasenotes" includes="releasenotes.html"/>
+		</copy>
+
+		<!-- copy elisa.ear to server directory: -->
+		<mkdir dir="${dist.dir}/server"/>
+		<copy todir="${dist.dir}/server">
+			<fileset dir="${build.deploy.dir}" includes="${system.name}.ear"/>
+		</copy>
+
+		<!-- copy server config -->
+		<mkdir dir="${dist.dir}/server/conf"/>
+		<copy todir="${dist.dir}/server/conf">
+			<fileset dir="${conf.dir}/jboss/conf" includes="log4j.xml"/>
+		</copy>
+
+		<!-- copy client config: -->
+		<mkdir dir="${dist.dir}/client"/>
+		<copy todir="${dist.dir}/client">
+			<fileset dir="${conf.dir}/eplus" includes="*.bat"/>
+		</copy>
+		<mkdir dir="${dist.dir}/client/conf"/>
+		<copy todir="${dist.dir}/client/conf">
+			<fileset dir="${conf.dir}/eplus" includes="log4j.xml"/>
+			<fileset dir="${conf.dir}" includes="layoutml.dtd"/>
+		</copy>
+
+		<!-- copy client libs: -->
+		<mkdir dir="${dist.dir}/client/lib"/>
+		<copy todir="${dist.dir}/client/lib">
+			<fileset dir="${build.deploy.dir}" includes="*.jar" excludes="${system.name}-server.jar, novabit-jboss.jar"/>
+		</copy>
+
+		<!-- copy server libs: -->
+		<mkdir dir="${dist.dir}/server/lib"/>
+		<copy todir="${dist.dir}/server/lib">
+			<fileset dir="${build.deploy.dir}" includes="novabit-jboss.jar"/>
+		</copy>
+
+		<!-- copy db script(s): -->
+		<mkdir dir="${dist.dir}/scripts"/>
+		<copy todir="${dist.dir}/scripts">
+			<fileset dir="${db.dir}" includes="update-${system.name}-*.sql, ${system.name}-comments-ddl.sql, rule-usages.sql"
+							 excludes="update-${system.name}-*-von-eplus.sql"/>
+		</copy>
+
+		<!-- zip sources: -->
+		<zip destfile="${dist.dir}/source.zip">
+			<fileset dir="${project.home.dir}" includes="build.*, src/" excludes="CVS"/>
+			<fileset dir="${novabit.common.dir}" includes="src/" excludes="CVS"/>
+		</zip>
+
+		<!-- zip documentation: -->
+		<zip destfile="${dist.dir}/doc.zip">
+			<fileset dir="${doc.dir}/usermanual" includes="Datenquellen.pdf"/>
+			<fileset dir="${doc.dir}/systemdokumentation" includes="*.pdf, index.htm, DB-Schema*/, UML/, include/"
+							 excludes="DB-Schema.vsd, CSV"/>
+			<zipfileset dir="${doc.dir}/api" prefix="javadoc"/>
+			<zipfileset dir="${doc.dir}/ruledoc" prefix="ruledoc"/>
+		</zip>
+
+		<!-- copy ElisaTestsuite: -->
+		<mkdir dir="${dist.dir}/ElisaTestsuite"/>
+		<copy todir="${dist.dir}/ElisaTestsuite">
+			<fileset dir="${project.home.dir}/test/ElisaTestSuite"
+							 includes="conf/, resource/, test/, readme.txt, ElisaTestSuite.bat, documentation.bat"
+							 excludes="test/NovabitIntern.qft"/>
+		</copy>
+
+	</target>
+
+	<target name="dist.clean" description="remove distribution directory.">
+		<delete quiet="true" dir="${dist.dir}"/>
+	</target>
+
+</project>
