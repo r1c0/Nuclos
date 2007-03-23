@@ -729,8 +729,8 @@
 			<sysproperty key="cactus.servletRedirectorName" value="ServletRedirectorSecure"/>
 			<formatter type="plain" usefile="false"/>
 			<!--			<test name="de.novabit.common.collect.collectable.test.CollectableFieldFormatTest"/>-->
-			<test name="de.novabit.nucleus.server.leasedobject.searchcondition.test.SearchExpressionUnparserTest"/>
-			<test name="de.novabit.nucleus.server.leasedobject.searchcondition.test.DummyTest"/>
+			<test name="de.novabit.nucleus.server.genericobject.searchcondition.test.SearchExpressionUnparserTest"/>
+			<test name="de.novabit.nucleus.server.genericobject.searchcondition.test.DummyTest"/>
 		</junit>
 	</target>
 
