@@ -396,7 +396,7 @@
 					de/novabit/nucleus/server/**/interfaces/*,
 					de/novabit/nucleus/server/**/*Exception.class,
 					de/novabit/nucleus/server/**/*VO*.class,
-					de/novabit/nucleus/server/leasedobject/searchcondition/Collectable*SearchExpression.class,
+					de/novabit/nucleus/server/genericobject/searchcondition/Collectable*SearchExpression.class,
 					de/novabit/nucleus/server/navigation/treenode/*.class,
 					de/novabit/nucleus/server/person/treenode/*.class,
 					de/novabit/nucleus/server/report/templates/*.jpg,
