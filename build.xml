@@ -484,7 +484,7 @@
 	</target>
 
 	<target name="run.console" description="Runs the Elisa console.">
-		<java classname="de.novabit.nucleus.client.console.ElisaConsole" fork="true">
+		<java classname="de.novabit.nucleus.client.console.NucleusConsole" fork="true">
 			<arg line="${console-args}"/>
 			<classpath>
 				<path refid="elisa.client.run.path"/>
