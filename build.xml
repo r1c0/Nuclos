@@ -170,7 +170,6 @@
 		<pathelement location="${build.deploy.dir}/${system.name}-client.jar"/>
 		<!-- include conf.dir in classpath so the ClassLoader finds elisa-client-serverconfig.properties: -->
 		<pathelement location="${conf.dir}"/>
-		<pathelement location="${build.deploy.dir}/${system.name}-gef.jar"/>
 		<pathelement location="${build.deploy.dir}/${system.name}-help.jar"/>
 
 		<!--EJB3:-->
@@ -336,8 +335,8 @@
 							 help/glossary/package.html"/>
 		</copy>
 
-		<copy todir="${build.classes.dir}/de/novabit/gef">
-			<fileset dir="${src.dir}/de/novabit/gef" includes="**/images/*"/>
+		<copy todir="${build.classes.dir}/de/novabit/nucleus/client/gef">
+			<fileset dir="${src.dir}/de/novabit/nucleus/client/gef" includes="**/images/*"/>
 		</copy>
 
 		<copy todir="${build.classes.dir}/de/novabit/nucleus/client/report">
@@ -353,7 +352,7 @@
 
 		<javac destdir="${build.classes.dir}" debug="on" deprecation="off" optimize="on"
 					 source="${java.src.version}" srcdir="${src.dir}"
-					 includes="de/novabit/nucleus/client/, de/novabit/gef/"
+					 includes="de/novabit/nucleus/client/"
 					 excludes="**/test/">
 			<classpath>
 				<!-- @todo the ref to elisa-server.jar slows the build down.
@@ -408,10 +407,6 @@
 					de/novabit/nucleus/client/help/javahelp/,
 					de/novabit/nucleus/client/main/animatedmenubar/,
 					de/novabit/**/build.xml"/>
-		</jar>
-
-		<jar jarfile="${build.deploy.dir}/${system.name}-gef.jar">
-			<fileset dir="${build.classes.dir}" includes="de/novabit/gef/**"/>
 		</jar>
 	</target>
 
