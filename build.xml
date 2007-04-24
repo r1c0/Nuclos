@@ -290,7 +290,7 @@
 			<fileset dir="${src.dir}" includes="de/novabit/nucleus/common/security/auth.conf"/>
 			<fileset dir="${src.dir}" includes="de/novabit/nucleus/server/report/templates/*"/>
 			<fileset dir="${src.dir}" includes="de/novabit/nucleus/common/querybuilder/querybuildermodel.dtd"/>
-			<!--			<fileset dir="${src.dir}" includes="de/novabit/common/layoutml/layoutml.dtd"/>-->
+			<fileset dir="${conf.dir}" includes="nucleus-app*.properties"/>
 		</copy>
 
 		<javac destdir="${build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
@@ -365,7 +365,8 @@
 		<mkdir dir="${build.deploy.dir}"/>
 
 		<jar jarfile="${build.deploy.dir}/${system.name}-server.jar" basedir="${build.classes.dir}"
-				 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, de/novabit/nucleus/statemachine/, META-INF/"
+				 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, de/novabit/nucleus/statemachine/, META-INF/,
+				 nucleus-app*.properties"
 				 excludes="**/test/">
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
