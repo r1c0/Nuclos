@@ -80,12 +80,12 @@
 
 	<!-- Source directories: -->
 	<property name="src.novabit.dir" value="${src.dir}/de/novabit"/>
-	<property name="src.elisa.dir" value="${src.novabit.dir}/nucleus"/>
-	<property name="src.elisa.common.dir" value="${src.elisa.dir}/common"/>
-	<property name="src.elisa.client.dir" value="${src.elisa.dir}/client"/>
-	<property name="src.elisa.server.dir" value="${src.elisa.dir}/server"/>
+	<property name="src.nucleus.dir" value="${src.novabit.dir}/nucleus"/>
+	<property name="src.nucleus.common.dir" value="${src.nucleus.dir}/common"/>
+	<property name="src.nucleus.client.dir" value="${src.nucleus.dir}/client"/>
+	<property name="src.nucleus.server.dir" value="${src.nucleus.dir}/server"/>
 
-	<path id="elisa.server.path">
+	<path id="nucleus.server.path">
 		<pathelement location="${novabit.common.build.deploy.dir}/novabit-common.jar"/>
 		<pathelement location="${novabit.common.build.deploy.dir}/novabit-common-ejb.jar"/>
 		<pathelement location="${lib.dir}/log4j-1.2.8.jar"/>
@@ -118,7 +118,7 @@
 		<!--<pathelement location="${jboss.server.deploy.dir}/ejb3.deployer/jboss-ejb3x.jar"/>-->
 	</path>
 
-	<path id="elisa.client.path">
+	<path id="nucleus.client.path">
 		<pathelement location="${build.deploy.dir}/novabit-common.jar"/>
 		<pathelement location="${novabit.common.dir}/lib/client/jlfgr-1_0.jar"/>
 		<pathelement location="${lib.dir}/commons-lang-2.0.jar"/>
@@ -157,16 +157,16 @@
 	</path>
 
 	<path id="xdoclet.path">
-		<path refid="elisa.server.path"/>
+		<path refid="nucleus.server.path"/>
 		<fileset dir="${xdoclet.lib.dir}" includes="*.jar"/>
 	</path>
 
-	<path id="elisa.path">
-		<path refid="elisa.server.path"/>
-		<path refid="elisa.client.path"/>
+	<path id="nucleus.path">
+		<path refid="nucleus.server.path"/>
+		<path refid="nucleus.client.path"/>
 	</path>
 
-	<path id="elisa.client.run.path">
+	<path id="nucleus.client.run.path">
 		<pathelement location="${build.deploy.dir}/${system.name}-client.jar"/>
 		<!-- include conf.dir in classpath so the ClassLoader finds nucleus-client-serverconfig.properties: -->
 		<pathelement location="${conf.dir}"/>
@@ -178,7 +178,7 @@
 		<!--<pathelement location="${jboss.client}/jboss-aspect-jdk50-client.jar"/>-->
 		<!--<pathelement location="${jboss.client}/jboss-remoting.jar"/>-->
 
-		<path refid="elisa.client.path"/>
+		<path refid="nucleus.client.path"/>
 	</path>
 
 	<path id="cactus.path">
@@ -298,7 +298,7 @@
 			   	de/novabit/nucleus/server/,
 					de/novabit/nucleus/statemachine/"
 					 excludes="**/test/"
-					 classpathref="elisa.server.path">
+					 classpathref="nucleus.server.path">
 			<src path="${src.dir}"/>
 		</javac>
 	</target>
@@ -306,7 +306,7 @@
 	<target name="compile.client" depends="compile.server, patch.xerlin.jar, compile.client.nodepend"/>
 
 	<target name="patch.xerlin.jar"
-					description="Patches the xerlin library (Elisa uses a custom merlot.properties file).">
+					description="Patches the xerlin library (Nucleus uses a custom merlot.properties file).">
 		<copy file="${lib.dir}/xerlin-1.3.jar" tofile="${build.deploy.dir}/${system.name}-xerlin.jar"/>
 		<jar jarfile="${build.deploy.dir}/${system.name}-xerlin.jar" update="true" basedir="${conf.dir}/xerlin"
 				 includes="org/merlotxml/merlot/merlot.properties"/>
@@ -327,7 +327,7 @@
 		</copy>
 
 		<copy todir="${build.classes.dir}/de/novabit/nucleus/client">
-			<fileset dir="${src.elisa.client.dir}"
+			<fileset dir="${src.nucleus.client.dir}"
 							 includes="**/images/,
 							 **/layoutml/*.layoutml,
 							 help/releasenotes/releasenotes.html"/>
@@ -353,10 +353,10 @@
 					 includes="de/novabit/nucleus/client/"
 					 excludes="**/test/">
 			<classpath>
-				<!-- @todo the ref to elisa-server.jar slows the build down.
-				  When we have elisa-common.jar and nucleus-server-interface.jar, we should try this again. -->
-				<!--<pathelement location="${build.deploy.dir}/elisa-server.jar"/>-->
-				<path refid="elisa.client.path"/>
+				<!-- @todo the ref to nucleus-server.jar slows the build down.
+				  When we have nucleus-common.jar and nucleus-server-interface.jar, we should try this again. -->
+				<!--<pathelement location="${build.deploy.dir}/nucleus-server.jar"/>-->
+				<path refid="nucleus.client.path"/>
 			</classpath>
 		</javac>
 	</target>
@@ -377,13 +377,7 @@
 	<target name="jar.client" depends="compile.client" description="Builds the client.">
 		<mkdir dir="${build.deploy.dir}"/>
 
-		<!--		<manifest file="${build.deploy.dir}/MANIFEST.MF">-->
-		<!--			<attribute name="Main-Class" value="de.novabit.nucleus.client.main.Main"/>-->
-		<!--			<attribute name="Class-Path" value="nucleus-gef.jar, nucleus-merlotxml.jar, elisa-ireport.jar"/>-->
-		<!--		</manifest>-->
-
 		<jar jarfile="${build.deploy.dir}/${system.name}-client.jar">
-			<!--			manifest="${build.deploy.dir}/MANIFEST.MF">-->
 			<fileset dir="${build.classes.dir}"
 							 includes="de/novabit/nucleus/client/,
 					de/novabit/nucleus/common/,
@@ -413,7 +407,7 @@
 
 		<javac destdir="${build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
 					 excludes="de/novabit/common/logging/test/"
-					 classpathref="elisa.path">
+					 classpathref="nucleus.path">
 			<src path="${novabit.common.src.dir}/de/novabit/common/logging/"/>
 		</javac>
 
@@ -444,14 +438,14 @@
 		</touch>
 	</target>
 
-	<!-- Target to start the JBoss server for ELISA: -->
+	<!-- Target to start the JBoss server: -->
 	<target name="run.server">
 		<exec executable="run.bat" dir="${jboss.home}/bin" vmlauncher="false">
 			<arg line="-c nucleus"/>
 		</exec>
 	</target>
 
-	<!-- Target to start the JBoss server for ELISA in debugging mode: -->
+	<!-- Target to start the JBoss server in debugging mode: -->
 	<target name="debug.server">
 		<exec executable="run.bat" dir="${jboss.home}/bin" vmlauncher="false">
 			<arg line="-c ${jboss.server.name}"/>
@@ -465,36 +459,36 @@
 					description="Compiles the server and client, then runs the client."/>
 
 	<!-- Target to run client (contains no dependencies, just run the client) -->
-	<target name="run.client.nodepend" description="Runs the Elisa client.">
+	<target name="run.client.nodepend" description="Runs the Nucleus client.">
 		<java classname="de.novabit.nucleus.client.main.Main" fork="true">
 			<classpath>
-				<path refid="elisa.client.run.path"/>
+				<path refid="nucleus.client.run.path"/>
 			</classpath>
 			<jvmarg line="${run.client.vmargs}"/>
-			<sysproperty key="elisa.client.conf.dir" value="${conf.dir}"/>
+			<sysproperty key="nucleus.client.conf.dir" value="${conf.dir}"/>
 			<sysproperty key="com.sun.management.jmxremote" value="true"/>
 		</java>
 	</target>
 
-	<target name="run.console" description="Runs the Elisa console.">
+	<target name="run.console" description="Runs the Nucleus console.">
 		<java classname="de.novabit.nucleus.client.console.NucleusConsole" fork="true">
 			<arg line="${console-args}"/>
 			<classpath>
-				<path refid="elisa.client.run.path"/>
+				<path refid="nucleus.client.run.path"/>
 			</classpath>
-			<sysproperty key="elisa.client.conf.dir" value="${conf.dir}"/>
+			<sysproperty key="nucleus.client.conf.dir" value="${conf.dir}"/>
 		</java>
 	</target>
 
 	<target name="echo.classpath.windows" description="Prints the current classpath to System.out.">
-		<pathconvert refid="elisa.client.run.path" targetos="windows" property="elisa.client.run.path.windows"/>
-		<echo message="${elisa.client.run.path.windows}" level="debug"/>
+		<pathconvert refid="nucleus.client.run.path" targetos="windows" property="nucleus.client.run.path.windows"/>
+		<echo message="${nucleus.client.run.path.windows}" level="debug"/>
 	</target>
 
 	<target name="show.serialver" description="Runs the UI version of the serialver tool with the current classpath.">
-		<pathconvert refid="elisa.client.run.path" property="elisa.client.run.path.os"/>
+		<pathconvert refid="nucleus.client.run.path" property="nucleus.client.run.path.os"/>
 		<exec executable="serialver">
-			<arg line="-classpath ${elisa.client.run.path.os} -show"/>
+			<arg line="-classpath ${nucleus.client.run.path.os} -show"/>
 		</exec>
 	</target>
 
@@ -536,7 +530,7 @@
 		-linksource"
 
 						 classpath="${build.classes.dir}; ${novabit.common.dir}/build/classes"
-						 windowtitle="Elisa Regeln"
+						 windowtitle="Nucleus Regeln"
 						 sourcefiles="${elisa.codegenerator.source}/*.java"
 						 sourcepath="${elisa.codegenerator.source};${src.novabit.dir}">
 
@@ -547,7 +541,7 @@
 
 	<target name="javadoc" description="Builds the javadoc.">
 		<copy todir="${doc.dir}/api">
-			<fileset dir="${src.elisa.client.dir}/images" includes="elisa-32x32-whitebackground.png"/>
+			<fileset dir="${src.nucleus.client.dir}/images" includes="elisa-32x32-whitebackground.png"/>
 			<fileset dir="${novabit.common.src.dir}/de/novabit/common/ui/images" includes="novabit-150x45.gif"/>
 		</copy>
 		<javadoc destdir="${doc.dir}/api" source="${java.src.version}" maxmemory="128m" access="protected" splitindex="true"
@@ -589,7 +583,7 @@
 			<packageset dir="${src.dir}"
 									excludes="de/novabit/**/test/**, de/novabit/nucleus/tools/**, de/novabit/**/interfaces/**"/>
 			<classpath>
-				<path refid="elisa.path"/>
+				<path refid="nucleus.path"/>
 			</classpath>
 		</javadoc>
 	</target>
@@ -676,7 +670,7 @@
 					 srcdir="${src.dir}"
 					 includes="de/novabit/**/test/" excludes="de/novabit/nucleus/client/">
 			<classpath>
-				<path refid="elisa.server.path"/>
+				<path refid="nucleus.server.path"/>
 				<path location="${novabit.common.dir}/build/classes"/>
 				<path location="${lib.dir}/jfcunit.jar"/>
 				<path location="${lib.dir}/cactus-1.7.1.jar"/>
@@ -689,10 +683,10 @@
 		<war destfile="${build.deploy.dir}/elisa-test-temp.war" webxml="${conf.dir}/cactus/web.xml">
 			<!--			manifest="${conf.dir}/cactus/MANIFEST.MF">-->
 			<!--			<classes dir="${build.classes.dir}" includes="de/novabit/**/test/*"/>-->
-			<classes dir="${build.classes.dir}" includes="de/novabit/**/test/,
+			<classes dir="${build.classes.dir}"
+							 includes="de/novabit/**/test/,
  					de/novabit/common/security/,
 					de/novabit/nucleus/common/security/,
-					de/novabit/nucleus/client/login/ElisaClientLoginModule.class,
 					de/novabit/nucleus/server/common/security/auth.conf"/>
 		</war>
 
@@ -715,10 +709,10 @@
 		<junit printsummary="withOutAndErr" showoutput="on" filtertrace="off">
 			<classpath>
 				<path location="${build.classes.dir}"/>
-				<path refid="elisa.path"/>
+				<path refid="nucleus.path"/>
 				<path refid="cactus.path"/>
 			</classpath>
-			<sysproperty key="cactus.contextURL" value="http://localhost:8080/elisa-test"/>
+			<sysproperty key="cactus.contextURL" value="http://localhost:8080/nucleus-test"/>
 			<sysproperty key="cactus.servletRedirectorName" value="ServletRedirectorSecure"/>
 			<formatter type="plain" usefile="false"/>
 			<!--			<test name="de.novabit.common.collect.collectable.test.CollectableFieldFormatTest"/>-->
@@ -745,7 +739,7 @@
 			<fileset dir="${build.classes.dir}/de/novabit/nucleus/client/help/releasenotes" includes="releasenotes.html"/>
 		</copy>
 
-		<!-- copy elisa.ear to server directory: -->
+		<!-- copy .ear to server directory: -->
 		<mkdir dir="${dist.dir}/server"/>
 		<copy todir="${dist.dir}/server">
 			<fileset dir="${build.deploy.dir}" includes="${system.name}.ear"/>
