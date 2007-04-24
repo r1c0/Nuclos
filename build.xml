@@ -168,7 +168,7 @@
 
 	<path id="elisa.client.run.path">
 		<pathelement location="${build.deploy.dir}/${system.name}-client.jar"/>
-		<!-- include conf.dir in classpath so the ClassLoader finds elisa-client-serverconfig.properties: -->
+		<!-- include conf.dir in classpath so the ClassLoader finds nucleus-client-serverconfig.properties: -->
 		<pathelement location="${conf.dir}"/>
 		<pathelement location="${build.deploy.dir}/${system.name}-help.jar"/>
 
@@ -222,8 +222,8 @@
 	<target name="check.environment">
 		<copy todir=".." file="build.properties" overwrite="true"/>
 		<copy file="${conf.dir}/novabit/log4j-client-template.xml" tofile="${conf.dir}/log4j.xml" overwrite="false"/>
-		<copy file="${conf.dir}/novabit/elisa-client-serverconfig-template.properties"
-					tofile="${conf.dir}/elisa-client-serverconfig.properties" overwrite="false"/>
+		<copy file="${conf.dir}/novabit/nucleus-client-serverconfig-template.properties"
+					tofile="${conf.dir}/nucleus-client-serverconfig.properties" overwrite="false"/>
 		<antcall target="check.jboss"/>
 		<available property="jboss.present" file="${jboss.home}/bin/run.jar"/>
 		<antcall target="wrong.jboss"/>
