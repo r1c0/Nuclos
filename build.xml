@@ -330,9 +330,7 @@
 			<fileset dir="${src.elisa.client.dir}"
 							 includes="**/images/,
 							 **/layoutml/*.layoutml,
-							 help/releasenotes/releasenotes.html,
-							 help/glossary/html/,
-							 help/glossary/package.html"/>
+							 help/releasenotes/releasenotes.html"/>
 		</copy>
 
 		<copy todir="${build.classes.dir}/de/novabit/nucleus/client/gef">
