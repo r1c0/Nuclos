@@ -760,7 +760,7 @@
 		<mkdir dir="${dist.dir}/client/conf"/>
 		<copy todir="${dist.dir}/client/conf">
 			<fileset dir="${conf.dir}/eplus" includes="log4j.xml"/>
-			<fileset dir="${conf.dir}" includes="layoutml.dtd"/>
+			<fileset dir="${conf.dir}" includes="layoutml.dtd, nucleus-*.properties"/>
 		</copy>
 
 		<!-- copy client libs: -->
