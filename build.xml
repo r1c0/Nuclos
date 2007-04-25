@@ -778,7 +778,7 @@
 		<!-- copy db script(s): -->
 		<mkdir dir="${dist.dir}/scripts"/>
 		<copy todir="${dist.dir}/scripts">
-			<fileset dir="${db.dir}" includes="update-${system.name}-*.sql, ${system.name}-comments-ddl.sql, rule-usages.sql"
+			<fileset dir="${db.dir}" includes="*.sql"
 							 excludes="update-${system.name}-*-von-eplus.sql"/>
 		</copy>
 
@@ -796,15 +796,6 @@
 			<zipfileset dir="${doc.dir}/api" prefix="javadoc"/>
 			<zipfileset dir="${doc.dir}/ruledoc" prefix="ruledoc"/>
 		</zip>
-
-		<!-- copy ElisaTestsuite: -->
-		<mkdir dir="${dist.dir}/ElisaTestsuite"/>
-		<copy todir="${dist.dir}/ElisaTestsuite">
-			<fileset dir="${project.home.dir}/test/ElisaTestSuite"
-							 includes="conf/, resource/, test/, readme.txt, ElisaTestSuite.bat, documentation.bat"
-							 excludes="test/NovabitIntern.qft"/>
-		</copy>
-
 	</target>
 
 	<target name="dist.clean" description="remove distribution directory.">
