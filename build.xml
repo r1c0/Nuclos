@@ -39,7 +39,8 @@
 	<property name="jboss.version" value="4.0"/>
 
 	<!-- Configuration used on JBoss to run your server. There must be a directory with the same name under "${jboss.home}/server": -->
-	<property name="jboss.server.name" value="${system.name}"/>
+	<property name="jboss.server.name" value="ipac"/>
+	<!--<property name="jboss.server.name" value="${system.name}"/>-->
 	<property name="jboss.server.dir" value="${jboss.home}/server/${jboss.server.name}"/>
 	<property name="jboss.server.deploy.dir" value="${jboss.server.dir}/deploy"/>
 	<property name="jboss.server.lib.dir" value="${jboss.server.dir}/lib"/>
@@ -778,8 +779,7 @@
 		<!-- copy db script(s): -->
 		<mkdir dir="${dist.dir}/scripts"/>
 		<copy todir="${dist.dir}/scripts">
-			<fileset dir="${db.dir}" includes="*.sql"
-							 excludes="update-${system.name}-*-von-eplus.sql"/>
+			<fileset dir="${db.dir}" excludes="von_eplus/"/>
 		</copy>
 
 		<!-- zip sources: -->
