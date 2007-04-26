@@ -6,7 +6,7 @@ set basedir=%~dp0..
 
 rem call %basedir%\bin\drop-nucleus-schema.cmd %login%
 
-sqlplus %login% @%basedir%\db\nucleus-ddl.sql <%basedir%\db\utils\quit
+sqlplus %login% @%basedir%\db\nucleus-ddl.sql
 
 sqlplus %login% @%basedir%\db\nucleus-dml.sql <%basedir%\db\utils\quit
 
