@@ -4,7 +4,7 @@
 	<!-- As an alternative, properties may be defined in the environment. -->
 
 	<!-- First read all properties from the properties file: -->
-	<property file="build.properties"/>
+	<property file="../build.properties"/>
 	<!-- copy build.properties for the "common" build... -->
 
 	<!-- Read properties that are not defined in the properties file from the environment: -->
@@ -265,7 +265,6 @@
 		<ejbdoclet destdir="${src.dir}" ejbspec="${ejb.version}" verbose="false">
 			<fileset dir="${src.dir}">
 				<include name="de/novabit/nucleus/server/**/ejb/*Bean.java"/>
-				<include name="de/novabit/nucleus/statemachine/ejb/*Bean.java"/>
 			</fileset>
 			<packageSubstitution packages="ejb" substituteWith="interfaces"/>
 			<remoteinterface pattern="{0}Remote"/>
@@ -295,9 +294,7 @@
 		</copy>
 
 		<javac destdir="${build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
-					 includes="de/novabit/nucleus/common/,
-			   	de/novabit/nucleus/server/,
-					de/novabit/nucleus/statemachine/"
+					 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/"
 					 excludes="**/test/"
 					 classpathref="nucleus.server.path">
 			<src path="${src.dir}"/>
@@ -366,7 +363,7 @@
 		<mkdir dir="${build.deploy.dir}"/>
 
 		<jar jarfile="${build.deploy.dir}/${system.name}-server.jar" basedir="${build.classes.dir}"
-				 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, de/novabit/nucleus/statemachine/, META-INF/,
+				 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, META-INF/,
 				 nucleus-app*.properties"
 				 excludes="**/test/">
 			<manifest>
@@ -394,8 +391,7 @@
 					de/novabit/nucleus/server/person/treenode/*.class,
 					de/novabit/nucleus/server/report/templates/*.jpg,
 					de/novabit/nucleus/server/report/templates/*.gif,
-					de/novabit/nucleus/common/security/auth.conf,
-					de/novabit/nucleus/statemachine/**"
+					de/novabit/nucleus/common/security/auth.conf"
 							 excludes="**/test/,
 					de/novabit/**/ejb/**/*Bean.class,
 					de/novabit/nucleus/client/help/javahelp/,
