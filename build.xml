@@ -10,7 +10,7 @@
 	<!-- Read properties that are not defined in the properties file from the environment: -->
 	<property environment="env"/>
 
-	<property name="system.name" value="nucleus"/>
+	<property name="app.name" value="nucleus"/>
 
 	<!-- Set the path to the runtime JBoss directory containing the JBoss application server: -->
 	<property name="jboss.home" value="${env.JBOSS_HOME}"/>
@@ -22,15 +22,12 @@
 	<property name="docbook-xsl.home" value="${env.DOCBOOK_HOME}"/>
 
 	<!-- Project root directory (should always be the directory where this build.xml resides): -->
-	<property name="project.home.dir" value="${env.ELISA_HOME}"/>
+	<property name="project.home.dir" value="."/>
 
 	<!-- VM args for running the Nucleus client: -->
 	<condition property="run.client.vmargs" value="-ea -ms64m -mx192m">
 		<not><isset property="run.client.vmargs"/></not>
 	</condition>
-
-	<!-- the directory for code generator source files -->
-	<property name="elisa.codegenerator.source" value="${elisa.codegenerator.source}"/>
 
 	<property name="jboss.lib" value="${jboss.home}/lib"/>
 	<property name="jboss.client" value="${jboss.home}/client"/>
@@ -154,7 +151,7 @@
 		<pathelement location="${lib.dir}/jasperreports-0.6.6.jar"/>
 		<pathelement location="${lib.dir}/jawin.jar"/>
 		<pathelement location="${lib.dir}/jxl.jar"/>
-		<pathelement location="${build.deploy.dir}/${system.name}-xerlin.jar"/>
+		<pathelement location="${build.deploy.dir}/${app.name}-xerlin.jar"/>
 	</path>
 
 	<path id="xdoclet.path">
@@ -168,10 +165,10 @@
 	</path>
 
 	<path id="nucleus.client.run.path">
-		<pathelement location="${build.deploy.dir}/${system.name}-client.jar"/>
+		<pathelement location="${build.deploy.dir}/${app.name}-client.jar"/>
 		<!-- include conf.dir in classpath so the ClassLoader finds nucleus-client-serverconfig.properties: -->
 		<pathelement location="${conf.dir}"/>
-		<pathelement location="${build.deploy.dir}/${system.name}-help.jar"/>
+		<pathelement location="${build.deploy.dir}/${app.name}-help.jar"/>
 
 		<!--EJB3:-->
 		<!--<pathelement location="${jboss.client}/jboss-ejb3-client.jar"/>-->
@@ -305,8 +302,8 @@
 
 	<target name="patch.xerlin.jar"
 					description="Patches the xerlin library (Nucleus uses a custom merlot.properties file).">
-		<copy file="${lib.dir}/xerlin-1.3.jar" tofile="${build.deploy.dir}/${system.name}-xerlin.jar"/>
-		<jar jarfile="${build.deploy.dir}/${system.name}-xerlin.jar" update="true" basedir="${conf.dir}/xerlin"
+		<copy file="${lib.dir}/xerlin-1.3.jar" tofile="${build.deploy.dir}/${app.name}-xerlin.jar"/>
+		<jar jarfile="${build.deploy.dir}/${app.name}-xerlin.jar" update="true" basedir="${conf.dir}/xerlin"
 				 includes="org/merlotxml/merlot/merlot.properties"/>
 	</target>
 
@@ -362,7 +359,7 @@
 	<target name="jar.server" depends="compile.server, jar.jboss" description="Builds the server.">
 		<mkdir dir="${build.deploy.dir}"/>
 
-		<jar jarfile="${build.deploy.dir}/${system.name}-server.jar" basedir="${build.classes.dir}"
+		<jar jarfile="${build.deploy.dir}/${app.name}-server.jar" basedir="${build.classes.dir}"
 				 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, META-INF/,
 				 nucleus-app*.properties"
 				 excludes="**/test/">
@@ -376,7 +373,7 @@
 	<target name="jar.client" depends="compile.client" description="Builds the client.">
 		<mkdir dir="${build.deploy.dir}"/>
 
-		<jar jarfile="${build.deploy.dir}/${system.name}-client.jar">
+		<jar jarfile="${build.deploy.dir}/${app.name}-client.jar">
 			<fileset dir="${build.classes.dir}"
 							 includes="de/novabit/nucleus/client/,
 					de/novabit/nucleus/common/,
@@ -416,18 +413,18 @@
 	</target>
 
 	<target name="deploy.server" depends="jar.server" description="Builds and deploys the server.">
-		<ear destfile="${build.deploy.dir}/${system.name}.ear" appxml="${conf.dir}/jboss/ear/META-INF/application.xml">
+		<ear destfile="${build.deploy.dir}/${app.name}.ear" appxml="${conf.dir}/jboss/ear/META-INF/application.xml">
 			<!--			<fileset dir="${conf.dir}/jboss/ear" includes="META-INF/jboss-app.xml, scheduler-service.xml"/>-->
-			<fileset dir="${build.deploy.dir}" includes="${system.name}-server.jar"/>
+			<fileset dir="${build.deploy.dir}" includes="${app.name}-server.jar"/>
 			<fileset dir="${novabit.common.build.deploy.dir}" includes="novabit-common.jar, novabit-common-ejb.jar"/>
 			<fileset dir="${lib.dir}" includes="quartz-1.4.2.jar"/>
 		</ear>
 
 		<!-- deploy: -->
 		<copy todir="${jboss.server.deploy.dir}">
-			<fileset dir="${build.deploy.dir}" includes="${system.name}.ear"/>
+			<fileset dir="${build.deploy.dir}" includes="${app.name}.ear"/>
 			<fileset dir="${conf.dir}/jboss/deploy"
-							 includes="deploy.last/quartz-service.xml, jms/elisa-destinations-service.xml"/>
+							 includes="deploy.last/quartz-service.xml, jms/nucleus-destinations-service.xml"/>
 		</copy>
 
 		<!-- quartz-service.xml must be renewed, otherwise it won't be redeployed on hot deployment: -->
@@ -529,8 +526,8 @@
 
 						 classpath="${build.classes.dir}; ${novabit.common.dir}/build/classes"
 						 windowtitle="Nucleus Regeln"
-						 sourcefiles="${elisa.codegenerator.source}/*.java"
-						 sourcepath="${elisa.codegenerator.source};${src.novabit.dir}">
+						 sourcefiles="${codegenerator.source}/*.java"
+						 sourcepath="${codegenerator.source};${src.novabit.dir}">
 
 			<doclet name="de.novabit.nucleus.tools.ruledoc.doclet.NovabitDoclet"
 							path="${build.classes.dir}"/>
@@ -740,7 +737,7 @@
 		<!-- copy .ear to server directory: -->
 		<mkdir dir="${dist.dir}/server"/>
 		<copy todir="${dist.dir}/server">
-			<fileset dir="${build.deploy.dir}" includes="${system.name}.ear"/>
+			<fileset dir="${build.deploy.dir}" includes="${app.name}.ear"/>
 		</copy>
 
 		<!-- copy server config -->
@@ -763,7 +760,7 @@
 		<!-- copy client libs: -->
 		<mkdir dir="${dist.dir}/client/lib"/>
 		<copy todir="${dist.dir}/client/lib">
-			<fileset dir="${build.deploy.dir}" includes="*.jar" excludes="${system.name}-server.jar, novabit-jboss.jar"/>
+			<fileset dir="${build.deploy.dir}" includes="*.jar" excludes="${app.name}-server.jar, novabit-jboss.jar"/>
 		</copy>
 
 		<!-- copy server libs: -->
