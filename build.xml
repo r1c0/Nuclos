@@ -677,7 +677,7 @@
 
 		<touch file="${conf.dir}/cactus/web.xml"/>
 
-		<war destfile="${build.deploy.dir}/elisa-test-temp.war" webxml="${conf.dir}/cactus/web.xml">
+		<war destfile="${build.deploy.dir}/nucleus-test-temp.war" webxml="${conf.dir}/cactus/web.xml">
 			<!--			manifest="${conf.dir}/cactus/MANIFEST.MF">-->
 			<!--			<classes dir="${build.classes.dir}" includes="de/novabit/**/test/*"/>-->
 			<classes dir="${build.classes.dir}"
@@ -687,15 +687,15 @@
 					de/novabit/nucleus/server/common/security/auth.conf"/>
 		</war>
 
-		<cactifywar destfile="${build.deploy.dir}/elisa-test.war" srcfile="${build.deploy.dir}/elisa-test-temp.war"/>
+		<cactifywar destfile="${build.deploy.dir}/nucleus-test.war" srcfile="${build.deploy.dir}/nucleus-test-temp.war"/>
 
-		<ear destfile="${build.deploy.dir}/elisa-test.ear" appxml="${conf.dir}/cactus/application.xml"
-				 basedir="${build.deploy.dir}" includes="elisa-test.war"/>
+		<ear destfile="${build.deploy.dir}/nucleus-test.ear" appxml="${conf.dir}/cactus/application.xml"
+				 basedir="${build.deploy.dir}" includes="nucleus-test.war"/>
 	</target>
 
 	<target name="deploy.cactus" depends="build.cactus">
 		<copy todir="${jboss.server.deploy.dir}">
-			<fileset dir="${build.deploy.dir}" includes="elisa-test.war"/>
+			<fileset dir="${build.deploy.dir}" includes="nucleus-test.war"/>
 		</copy>
 	</target>
 
@@ -717,15 +717,6 @@
 			<test name="de.novabit.nucleus.server.genericobject.searchcondition.test.DummyTest"/>
 		</junit>
 	</target>
-
-	<!--	The <cactus> task sucks with JBoss 3.x. -->
-	<!--	<target name="run.cactus" depends="build.cactus">-->
-	<!--		<cactus warfile="${build.deploy.dir}/elisa-test.war">-->
-	<!--			<containerset>-->
-	<!--				<jboss3x dir="${jboss.home}" config="elisa"/>-->
-	<!--			</containerset>-->
-	<!--		</cactus>-->
-	<!--	</target>-->
 
 	<!--  -->
 	<target name="dist" depends="main, javadoc, build.ruledoc" description="copy files to distribution directory.">
