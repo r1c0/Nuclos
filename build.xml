@@ -26,7 +26,9 @@
 
 	<!-- VM args for running the Nucleus client: -->
 	<condition property="run.client.vmargs" value="-ea -ms64m -mx192m">
-		<not><isset property="run.client.vmargs"/></not>
+		<not>
+			<isset property="run.client.vmargs"/>
+		</not>
 	</condition>
 
 	<property name="jboss.lib" value="${jboss.home}/lib"/>
@@ -166,7 +168,7 @@
 
 	<path id="nucleus.client.run.path">
 		<pathelement location="${build.deploy.dir}/${app.name}-client.jar"/>
-		<!-- include conf.dir in classpath so the ClassLoader finds nucleus-client-serverconfig.properties: -->
+		<!-- include conf.dir in classpath so the ClassLoader finds nucleus-client.properties: -->
 		<pathelement location="${conf.dir}"/>
 		<pathelement location="${build.deploy.dir}/${app.name}-help.jar"/>
 
@@ -220,8 +222,8 @@
 	<target name="check.environment">
 		<copy todir=".." file="build.properties" overwrite="true"/>
 		<copy file="${conf.dir}/novabit/log4j-client-template.xml" tofile="${conf.dir}/log4j.xml" overwrite="false"/>
-		<copy file="${conf.dir}/novabit/nucleus-client-serverconfig-template.properties"
-					tofile="${conf.dir}/nucleus-client-serverconfig.properties" overwrite="false"/>
+		<copy file="${conf.dir}/novabit/nucleus-client-template.properties"
+					tofile="${conf.dir}/nucleus-client-properties" overwrite="false"/>
 		<antcall target="check.jboss"/>
 		<available property="jboss.present" file="${jboss.home}/bin/run.jar"/>
 		<antcall target="wrong.jboss"/>
