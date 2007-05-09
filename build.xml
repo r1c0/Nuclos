@@ -538,13 +538,11 @@
 
 	<target name="javadoc" description="Builds the javadoc.">
 		<copy todir="${doc.dir}/api">
-			<fileset dir="${src.nucleus.client.dir}/images" includes="elisa-32x32-whitebackground.png"/>
 			<fileset dir="${novabit.common.src.dir}/de/novabit/common/ui/images" includes="novabit-150x45.gif"/>
 		</copy>
 		<javadoc destdir="${doc.dir}/api" source="${java.src.version}" maxmemory="128m" access="protected" splitindex="true"
 						 version="true" author="true" use="true" windowtitle="Nucleus API Documentation">
-			<doctitle>
-				<![CDATA[<img src="elisa-32x32-whitebackground.png" align="absmiddle"> Nucleus API Documentation]]></doctitle>
+			<doctitle>Nucleus API Documentation</doctitle>
 			<header>
 				<![CDATA[<img src="{@docRoot}/novabit-150x45.gif">]]></header>
 			<tag name="invariant" description="Invariants:"/>
