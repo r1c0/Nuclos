@@ -75,7 +75,7 @@
 	<property name="doc.dir" value="${project.home.dir}/doc"/>
 	<property name="db.dir" value="${project.home.dir}/db"/>
 	<property name="lib.dir" value="${project.home.dir}/lib"/>
-	<property name="src.dir" value="${project.home.dir}/src"/>
+	<property name="src.dir" value="${project.home.dir}/src/java"/>
 	<property name="dist.dir" value="${project.home.dir}/dist"/>
 
 	<!-- Source directories: -->
