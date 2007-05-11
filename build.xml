@@ -287,7 +287,6 @@
 
 		<copy todir="${build.classes.dir}">
 			<fileset dir="${src.dir}" includes="de/novabit/nucleus/common/security/auth.conf"/>
-			<fileset dir="${src.dir}" includes="de/novabit/nucleus/server/report/templates/*"/>
 			<fileset dir="${src.dir}" includes="de/novabit/nucleus/common/querybuilder/querybuildermodel.dtd"/>
 			<fileset dir="${conf.dir}" includes="nucleus-app*.properties"/>
 		</copy>
@@ -341,10 +340,6 @@
 		<copy file="${novabit.common.src.dir}/de/novabit/common/layoutml/layoutml.dtd" tofile="${conf.dir}/layoutml.dtd"
 					overwrite="true"/>
 
-		<copy todir="${build.classes.dir}/de/novabit/nucleus/server/report/templates">
-			<fileset dir="${src.dir}/de/novabit/nucleus/server/report/templates" includes="*.jpg, *.gif"/>
-		</copy>
-
 		<javac destdir="${build.classes.dir}" debug="on" deprecation="off" optimize="on"
 					 source="${java.src.version}" srcdir="${src.dir}"
 					 includes="de/novabit/nucleus/client/"
@@ -388,8 +383,6 @@
 					de/novabit/nucleus/server/genericobject/searchcondition/Collectable*SearchExpression.class,
 					de/novabit/nucleus/server/navigation/treenode/*.class,
 					de/novabit/nucleus/server/person/treenode/*.class,
-					de/novabit/nucleus/server/report/templates/*.jpg,
-					de/novabit/nucleus/server/report/templates/*.gif,
 					de/novabit/nucleus/common/security/auth.conf"
 							 excludes="**/test/,
 					de/novabit/**/ejb/**/*Bean.class,
