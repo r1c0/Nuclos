@@ -95,11 +95,6 @@
 		<pathelement location="${jboss.server.lib.dir}/mail.jar"/>
 		<pathelement location="${lib.dir}/junit-3.8.1.jar"/>
 		<pathelement location="${jboss.lib}/endorsed/xercesImpl.jar"/>
-
-		<!--EJB3: -->
-		<!--<pathelement location="${jboss.server.deploy.dir}/ejb3.deployer/jboss-annotations-ejb3.jar"/>-->
-		<!--<pathelement location="${jboss.server.deploy.dir}/ejb3.deployer/jboss-ejb3.jar"/>-->
-		<!--<pathelement location="${jboss.server.deploy.dir}/ejb3.deployer/jboss-ejb3x.jar"/>-->
 	</path>
 
 	<path id="nucleus.client.path">
@@ -155,12 +150,6 @@
 		<!-- include conf.dir in classpath so the ClassLoader finds nucleus-client.properties: -->
 		<pathelement location="${conf.dir}"/>
 		<pathelement location="${build.deploy.dir}/${app.name}-help.jar"/>
-
-		<!--EJB3:-->
-		<!--<pathelement location="${jboss.client}/jboss-ejb3-client.jar"/>-->
-		<!--<pathelement location="${jboss.client}/jboss-aop-jdk50-client.jar"/>-->
-		<!--<pathelement location="${jboss.client}/jboss-aspect-jdk50-client.jar"/>-->
-		<!--<pathelement location="${jboss.client}/jboss-remoting.jar"/>-->
 
 		<path refid="nucleus.client.path"/>
 	</path>
