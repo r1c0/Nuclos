@@ -51,19 +51,21 @@
 	<property name="novabit.common.build.deploy.dir" value="${novabit.common.dir}/build/deploy"/>
 
 	<!-- Project subdirectories: -->
+	<property name="src.dir" value="${project.home.dir}/src"/>
+	<property name="src.java.dir" value="${src.dir}/java"/>
 	<property name="build.dir" value="${project.home.dir}/build"/>
 	<property name="build.tmp.dir" value="${build.dir}/tmp"/>
-	<property name="build.deploy.dir" value="${build.dir}/deploy"/>
 	<property name="build.classes.dir" value="${build.dir}/classes"/>
+	<property name="build.deploy.dir" value="${build.dir}/deploy"/>
+	<property name="build.java.dir" value="${project.home.dir}/gen"/>
 	<property name="conf.dir" value="${project.home.dir}/conf"/>
 	<property name="doc.dir" value="${project.home.dir}/doc"/>
 	<property name="db.dir" value="${project.home.dir}/db"/>
 	<property name="lib.dir" value="${project.home.dir}/lib"/>
-	<property name="src.dir" value="${project.home.dir}/src/java"/>
 	<property name="dist.dir" value="${project.home.dir}/dist"/>
 
 	<!-- Source directories: -->
-	<property name="src.novabit.dir" value="${src.dir}/de/novabit"/>
+	<property name="src.novabit.dir" value="${src.java.dir}/de/novabit"/>
 	<property name="src.nucleus.dir" value="${src.novabit.dir}/nucleus"/>
 	<property name="src.nucleus.common.dir" value="${src.nucleus.dir}/common"/>
 	<property name="src.nucleus.client.dir" value="${src.nucleus.dir}/client"/>
@@ -234,8 +236,8 @@
 	</target>
 
 	<target name="xdoclet.generate.all">
-		<ejbdoclet destdir="${src.dir}" ejbspec="${ejb.version}" verbose="false">
-			<fileset dir="${src.dir}">
+		<ejbdoclet destdir="${src.java.dir}" ejbspec="${ejb.version}" verbose="false">
+			<fileset dir="${src.java.dir}">
 				<include name="de/novabit/nucleus/server/**/ejb/*Bean.java"/>
 			</fileset>
 			<packageSubstitution packages="ejb" substituteWith="interfaces"/>
@@ -259,8 +261,8 @@
 		<mkdir dir="${build.classes.dir}"/>
 
 		<copy todir="${build.classes.dir}">
-			<fileset dir="${src.dir}" includes="de/novabit/nucleus/common/security/auth.conf"/>
-			<fileset dir="${src.dir}" includes="de/novabit/nucleus/common/querybuilder/querybuildermodel.dtd"/>
+			<fileset dir="${src.java.dir}" includes="de/novabit/nucleus/common/security/auth.conf"/>
+			<fileset dir="${src.java.dir}" includes="de/novabit/nucleus/common/querybuilder/querybuildermodel.dtd"/>
 			<fileset dir="${conf.dir}" includes="nucleus-app*.properties"/>
 		</copy>
 
@@ -268,7 +270,7 @@
 					 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/"
 					 excludes="**/test/"
 					 classpathref="nucleus.server.path">
-			<src path="${src.dir}"/>
+			<src path="${src.java.dir}"/>
 		</javac>
 	</target>
 
@@ -290,7 +292,7 @@
 		</copy>
 
 		<copy todir="${build.classes.dir}">
-			<fileset dir="${src.dir}"
+			<fileset dir="${src.java.dir}"
 							 includes="de/novabit/nucleus/common/security/auth.conf,
 							 de/novabit/nucleus/common/querybuilder/querybuildermodel.dtd"/>
 		</copy>
@@ -303,18 +305,18 @@
 		</copy>
 
 		<copy todir="${build.classes.dir}/de/novabit/nucleus/client/gef">
-			<fileset dir="${src.dir}/de/novabit/nucleus/client/gef" includes="**/images/*"/>
+			<fileset dir="${src.java.dir}/de/novabit/nucleus/client/gef" includes="**/images/*"/>
 		</copy>
 
 		<copy todir="${build.classes.dir}/de/novabit/nucleus/client/report">
-			<fileset dir="${src.dir}/de/novabit/nucleus/client/report" includes="*.dtd"/>
+			<fileset dir="${src.java.dir}/de/novabit/nucleus/client/report" includes="*.dtd"/>
 		</copy>
 
 		<copy file="${novabit.common.src.dir}/de/novabit/common/layoutml/layoutml.dtd" tofile="${conf.dir}/layoutml.dtd"
 					overwrite="true"/>
 
 		<javac destdir="${build.classes.dir}" debug="on" deprecation="off" optimize="on"
-					 source="${java.src.version}" srcdir="${src.dir}"
+					 source="${java.src.version}" srcdir="${src.java.dir}"
 					 includes="de/novabit/nucleus/client/"
 					 excludes="**/test/">
 			<classpath>
@@ -459,7 +461,7 @@
 		<ant dir="${novabit.common.dir}" target="clean" inheritall="false"/>
 
 		<delete quiet="true" includeEmptyDirs="true">
-			<fileset dir="${src.dir}"
+			<fileset dir="${src.java.dir}"
 							 includes="**/interfaces/"
 							 excludes="pending/,
 					de/novabit/nucleus/server/masterdata/interfaces/MDLocalHome.java,
@@ -479,7 +481,7 @@
 
 	<target name="compile.ruledoc.taglets">
 		<javac destdir="${build.classes.dir}" debug="on" deprecation="off" optimize="on"
-					 source="${java.src.version}" srcdir="${src.dir}"
+					 source="${java.src.version}" srcdir="${src.java.dir}"
 					 includes="de/novabit/nucleus/tools/ruledoc/"/>
 	</target>
 
@@ -538,10 +540,10 @@
 
 			<sourcepath>
 				<pathelement location="${novabit.common.src.dir}"/>
-				<pathelement location="${src.dir}"/>
+				<pathelement location="${src.java.dir}"/>
 			</sourcepath>
 			<packageset dir="${novabit.common.src.dir}" excludes="de/novabit/**/test/**, de/novabit/**/interfaces/**"/>
-			<packageset dir="${src.dir}"
+			<packageset dir="${src.java.dir}"
 									excludes="de/novabit/**/test/**, de/novabit/nucleus/tools/**, de/novabit/**/interfaces/**"/>
 			<classpath>
 				<path refid="nucleus.path"/>
@@ -628,7 +630,7 @@
 
 		<mkdir dir="${build.classes.dir}"/>
 		<javac destdir="${build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
-					 srcdir="${src.dir}"
+					 srcdir="${src.java.dir}"
 					 includes="de/novabit/**/test/" excludes="de/novabit/nucleus/client/">
 			<classpath>
 				<path refid="nucleus.server.path"/>
