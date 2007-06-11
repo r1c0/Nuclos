@@ -20,7 +20,7 @@
 	<!-- Set the JBoss version you want to use (see XDoclet's <jboss> attribute "version"): -->
 	<property name="jboss.version" value="4.0"/>
 
-	<property name="jboss.lib" value="${jboss.home}/lib"/>
+	<property name="jboss.lib.dir" value="${jboss.home}/lib"/>
 	<property name="jboss.client.dir" value="${jboss.home}/client"/>
 
 	<!-- Configuration used on JBoss to run your server. There must be a directory with the same name under "${jboss.home}/server": -->
@@ -81,9 +81,9 @@
 		<pathelement location="${jboss.server.lib.dir}/jboss-j2ee.jar"/>
 		<pathelement location="${jboss.client.dir}/jbosssx-client.jar"/>
 		<pathelement location="${jboss.server.lib.dir}/jbosssx.jar"/>
-		<pathelement location="${jboss.lib}/jboss-system.jar"/>
-		<pathelement location="${jboss.lib}/jboss-common.jar"/>
-		<pathelement location="${jboss.lib}/jboss-jmx.jar"/>
+		<pathelement location="${jboss.lib.dir}/jboss-system.jar"/>
+		<pathelement location="${jboss.lib.dir}/jboss-common.jar"/>
+		<pathelement location="${jboss.lib.dir}/jboss-jmx.jar"/>
 		<pathelement location="${lib.dir}/dom4j-full.jar"/>
 		<pathelement location="${lib.dir}/jasperreports-0.6.6.jar"/>
 		<pathelement location="${lib.dir}/quartz-1.4.2.jar"/>
@@ -96,7 +96,7 @@
 		<pathelement location="${jboss.server.lib.dir}/jboss.jar"/>
 		<pathelement location="${jboss.server.lib.dir}/mail.jar"/>
 		<pathelement location="${lib.dir}/junit-3.8.1.jar"/>
-		<pathelement location="${jboss.lib}/endorsed/xercesImpl.jar"/>
+		<pathelement location="${jboss.lib.dir}/endorsed/xercesImpl.jar"/>
 	</path>
 
 	<path id="nucleus.client.path">
@@ -137,11 +137,6 @@
 		<pathelement location="${build.deploy.dir}/${app.name}-xerlin.jar"/>
 	</path>
 
-	<path id="xdoclet.path">
-		<path refid="nucleus.server.path"/>
-		<fileset dir="${xdoclet.lib.dir}" includes="*.jar"/>
-	</path>
-
 	<path id="nucleus.path">
 		<path refid="nucleus.server.path"/>
 		<path refid="nucleus.client.path"/>
@@ -168,7 +163,10 @@
 	</path>
 
 	<taskdef name="ejbdoclet" classname="xdoclet.modules.ejb.EjbDocletTask">
-		<classpath refid="xdoclet.path"/>
+		<classpath>
+			<path refid="nucleus.server.path"/>
+			<fileset dir="${xdoclet.lib.dir}" includes="*.jar"/>
+		</classpath>
 	</taskdef>
 
 	<taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
@@ -179,52 +177,40 @@
 		</classpath>
 	</taskdef>
 
-	<target name="main" depends="main.nojavahelp, jar.javahelp"
-					description="Performs a clean, builds and deploys the server, then builds the client and javahelp."/>
-
-	<target name="main.nojavahelp" depends="init, clean, main.noclean"
-					description="Performs a clean, builds and deploys the server, then builds the client."/>
-
-	<target name="main.noclean" depends="build.novabit.common.noclean, deploy.server, jar.client"
-					description="Builds and deploys the server, then builds the client."/>
-
-	<target name="build.novabit.common.noclean">
-		<ant dir="${novabit.common.dir}" target="main.noclean" inheritall="false"/>
-	</target>
-
-	<target name="init" depends="check.environment"/>
-
-	<target name="check.environment">
-		<copy todir=".." file="build.properties" overwrite="true"/>
+	<target name="init" depends="check.build.properties">
 		<copy file="${conf.dir}/novabit/log4j-client-template.xml" tofile="${conf.dir}/log4j.xml" overwrite="false"/>
 		<copy file="${conf.dir}/novabit/nucleus-client-template.properties"
 					tofile="${conf.dir}/nucleus-client-properties" overwrite="false"/>
-		<antcall target="check.jboss"/>
 		<available property="jboss.present" file="${jboss.home}/bin/run.jar"/>
 		<antcall target="wrong.jboss"/>
-		<antcall target="check.xdoclet"/>
 		<available property="xdoclet.present" file="${xdoclet.home}/lib/xdoclet-1.3-08012006-lunatech.jar"/>
 		<antcall target="wrong.xdoclet"/>
 	</target>
 
-	<target name="check.jboss" unless="jboss.home">
+	<target name="check.build.properties" depends="check.jboss.home, check.xdoclet.home, check.docbook-xsl.home"/>
+
+	<!-- path to the runtime JBoss directory containing the JBoss application server: -->
+	<target name="check.jboss.home" unless="jboss.home">
 		<fail>
-			Property "jboss.home" is not set. Please use the file "build.properties" in this directory ${basedir} to set this
-			property. It must point to the directory which contains the following directory: "deploy", "conf", "tmp" etc.
+			Property "jboss.home" is not set. Please use the file "build.properties" to set this property.
+			It must point to the directory which contains the following directory: "deploy", "conf", "tmp" etc.
 		</fail>
+	</target>
+
+	<!-- path to the root directory of the XDoclet distribution (see http://www.sf.net/projects/xdoclet): -->
+	<target name="check.xdoclet.home" unless="xdoclet.home">
+		<fail>Property "xdoclet.home" is not set. Please check your build.properties file.</fail>
+	</target>
+
+	<!-- path to the root directory of the docbook-xsl distribution: -->
+	<target name="check.docbook-xsl.home" unless="docbook-xsl.home">
+		<fail>Property "docbook-xsl.home" is not set. Please check your build.properties file.</fail>
 	</target>
 
 	<target name="wrong.jboss" unless="jboss.present">
 		<fail>
 			Property "jboss.home" is set but it does not seem to point to the right directory. The file "run.jar" must be
 			available at ${jboss.home}/bin.
-		</fail>
-	</target>
-
-	<target name="check.xdoclet" unless="xdoclet.home">
-		<fail>
-			Property "xdoclet.home" is not set. Please use the file "build.properties" in this directory ${basedir} to set
-			this property. It must point to the root directory of XDoclet distribution.
 		</fail>
 	</target>
 
@@ -235,8 +221,24 @@
 		</fail>
 	</target>
 
+	<target name="main" depends="main.nojavahelp, jar.javahelp"
+					description="Performs a clean, builds and deploys the server, then builds the client and javahelp."/>
+
+	<target name="main.nojavahelp" depends="init, clean, main.noclean"
+					description="Performs a clean, builds and deploys the server, then builds the client."/>
+
+	<target name="main.noclean" depends="build.noclean, deploy.server"
+					description="Builds and deploys the server, then builds the client."/>
+
+	<target name="build.noclean" depends="build.novabit.common.noclean, jar.server, compile.client"
+					description="Builds the server, then builds the client."/>
+
+	<target name="build.novabit.common.noclean">
+		<ant dir="${novabit.common.dir}" target="main.noclean" inheritall="false"/>
+	</target>
+
 	<target name="xdoclet.generate.all">
-		<ejbdoclet destdir="${src.java.dir}" ejbspec="${ejb.version}" verbose="false">
+		<ejbdoclet destdir="${build.java.dir}" ejbspec="${ejb.version}" verbose="false">
 			<fileset dir="${src.java.dir}">
 				<include name="de/novabit/nucleus/server/**/ejb/*Bean.java"/>
 			</fileset>
@@ -267,10 +269,10 @@
 		</copy>
 
 		<javac destdir="${build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+					 srcdir="${src.java.dir}:${build.java.dir}"
 					 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/"
 					 excludes="**/test/"
 					 classpathref="nucleus.server.path">
-			<src path="${src.java.dir}"/>
 		</javac>
 	</target>
 
