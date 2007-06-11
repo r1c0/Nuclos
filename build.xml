@@ -69,7 +69,6 @@
 	<property name="build.dir" value="${project.home.dir}/build"/>
 	<property name="build.tmp.dir" value="${build.dir}/tmp"/>
 	<property name="build.deploy.dir" value="${build.dir}/deploy"/>
-	<property name="build.generate.dir" value="${build.dir}/generate"/>
 	<property name="build.classes.dir" value="${build.dir}/classes"/>
 	<property name="conf.dir" value="${project.home.dir}/conf"/>
 	<property name="doc.dir" value="${project.home.dir}/doc"/>
