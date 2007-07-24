@@ -382,6 +382,10 @@
 				 includes="de/novabit/common/logging/"
 				 excludes="de/novabit/common/logging/test/">
 		</jar>
+		
+		<copy todir="${jboss.server.lib.dir}">
+			<fileset dir="${build.deploy.dir}" includes="novabit-jboss.jar"/>
+		</copy>
 	</target>
 
 	<target name="deploy.server" depends="jar.server" description="Builds and deploys the server.">
