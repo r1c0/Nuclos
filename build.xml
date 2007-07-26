@@ -573,7 +573,7 @@
 		<xslt basedir="${doc.dir}/usermanual/src"
 					destdir="${build.classes.dir}/de/novabit/nucleus/client/help/javahelp"
 					style="${docbook-xsl.home}/javahelp/javahelp.xsl"
-					includes="elisa.xml">
+					includes="nucleus.xml">
 			<!--factory name="org.apache.xalan.processor.TransformerFactoryImpl"/-->
 			<classpath>
 				<pathelement location="${lib.dir}/xalan.jar"/>
@@ -581,8 +581,8 @@
 			</classpath>
 		</xslt>
 
-		<!-- elisa.html is 0 bytes and disturbs the jhindexer, so remove it: -->
-		<delete quiet="true" file="${build.classes.dir}/de/novabit/nucleus/client/help/javahelp/elisa.html"/>
+		<!-- nucleus.html is 0 bytes and disturbs the jhindexer, so remove it: -->
+		<delete quiet="true" file="${build.classes.dir}/de/novabit/nucleus/client/help/javahelp/nucleus.html"/>
 
 		<antcall target="compile.javahelp.index"/>
 	</target>
@@ -603,7 +603,7 @@
 	</target>
 
 	<target name="jar.javahelp.nodepend">
-		<jar jarfile="${build.deploy.dir}/elisa-help.jar">
+		<jar jarfile="${build.deploy.dir}/nucleus-help.jar">
 			<fileset dir="${build.classes.dir}" includes="de/novabit/nucleus/client/help/javahelp/"/>
 		</jar>
 	</target>
