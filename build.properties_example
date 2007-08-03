@@ -1,0 +1,8 @@
+# Properties for build.xml:
+# copy this file to build.properties in the project root directory
+jboss.home=C:/JavaTools/jboss-4.0.3
+xdoclet.home=C:/JavaTools/xdoclet-1.2.3-lunatech
+docbook-xsl.home=C:/JavaTools/docbook-xsl-1.69.1
+project.home.dir=.
+#codegenerator.source is used for ant target build.ruledoc
+codegenerator.source=D:/xfer/nucleus/codegenerator
