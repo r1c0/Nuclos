@@ -227,7 +227,7 @@
 	<target name="main.nojavahelp" depends="init, clean, main.noclean"
 					description="Performs a clean, builds and deploys the server, then builds the client."/>
 
-	<target name="main.noclean" depends="build.noclean, deploy.server"
+	<target name="main.noclean" depends="build.noclean, deploy.server, deploy.client"
 					description="Builds and deploys the server, then builds the client."/>
 
 	<target name="build.noclean" depends="build.novabit.common.noclean, jar.server, compile.client"
@@ -344,7 +344,7 @@
 		</jar>
 	</target>
 
-	<target name="jar.client" depends="compile.client" description="Builds the client.">
+	<target name="deploy.client" depends="compile.client" description="Builds the client.">
 		<mkdir dir="${build.deploy.dir}"/>
 
 		<jar jarfile="${build.deploy.dir}/${app.name}-client.jar">
@@ -426,7 +426,7 @@
 	</target>
 
 	<!-- Target to run client -->
-	<target name="run.client" depends="jar.client, run.client.nodepend"
+	<target name="run.client" depends="deploy.client, run.client.nodepend"
 					description="Compiles the server and client, then runs the client."/>
 
 	<!-- Target to run client (contains no dependencies, just run the client) -->
@@ -694,14 +694,9 @@
 	<target name="dist" depends="main, javadoc, build.ruledoc" description="copy files to distribution directory.">
 		<mkdir dir="${dist.dir}"/>
 
-		<!-- copy release notes: -->
-		<copy todir="${dist.dir}">
-			<fileset dir="${build.classes.dir}/de/novabit/nucleus/client/help/releasenotes" includes="releasenotes.html"/>
-		</copy>
-
 		<!-- copy .ear to server directory: -->
-		<mkdir dir="${dist.dir}/server"/>
-		<copy todir="${dist.dir}/server">
+		<mkdir dir="${dist.dir}/server/deploy"/>
+		<copy todir="${dist.dir}/server/deploy">
 			<fileset dir="${build.deploy.dir}" includes="${app.name}.ear"/>
 		</copy>
 
@@ -719,7 +714,15 @@
 		<mkdir dir="${dist.dir}/client/conf"/>
 		<copy todir="${dist.dir}/client/conf">
 			<fileset dir="${conf.dir}/eplus" includes="log4j.xml"/>
-			<fileset dir="${conf.dir}" includes="layoutml.dtd, nucleus-*.properties"/>
+			<fileset dir="${conf.dir}" includes="jndi.properties, layoutml.dtd, nucleus-app.properties"/>
+		</copy>
+		<mkdir dir="${dist.dir}/client/conf/doc"/>
+		<copy todir="${dist.dir}/client/conf/doc">
+			<fileset dir="${build.classes.dir}/de/novabit/nucleus/client/help/releasenotes" includes="releasenotes.html"/>
+		</copy>
+		<mkdir dir="${dist.dir}/client/conf/icons"/>
+		<copy todir="${dist.dir}/client/conf/icons">
+			<fileset dir="${conf.dir}/icons" includes="*.png"/>
 		</copy>
 
 		<!-- copy client libs: -->
@@ -728,6 +731,28 @@
 			<fileset dir="${build.deploy.dir}" includes="*.jar" excludes="${app.name}-server.jar, novabit-jboss.jar"/>
 		</copy>
 
+		<!-- copy layouts: -->
+		<mkdir dir="${dist.dir}/client/layoutml"/>
+		<copy todir="${dist.dir}/client/layoutml">
+			<fileset dir="${src.dir}/layoutml" excludes="Test-Modul.layoutml"/>
+			<fileset dir="${src.dir}/layoutml"/>
+		</copy>
+
+		<!-- copy rules: -->
+		<!--
+		<mkdir dir="${dist.dir}/client/rules"/>
+		<copy todir="${dist.dir}/client/rules">
+			<fileset dir="${src.dir}/rules"/>
+		</copy>
+		-->
+		<!-- copy reports/datasources: -->
+		<!--
+		<mkdir dir="${dist.dir}/client/reports"/>
+		<copy todir="${dist.dir}/client/reports">
+			<fileset dir="${src.dir}/reports"/>
+		</copy>
+		-->
+		
 		<!-- copy server libs: -->
 		<mkdir dir="${dist.dir}/server/lib"/>
 		<copy todir="${dist.dir}/server/lib">
@@ -737,7 +762,7 @@
 		<!-- copy db script(s): -->
 		<mkdir dir="${dist.dir}/scripts"/>
 		<copy todir="${dist.dir}/scripts">
-			<fileset dir="${db.dir}" excludes="von_eplus/"/>
+			<fileset dir="${db.dir}" excludes="von_eplus/, utils/"/>
 		</copy>
 
 		<!-- zip sources: -->
@@ -748,16 +773,14 @@
 
 		<!-- zip documentation: -->
 		<zip destfile="${dist.dir}/doc.zip">
-			<fileset dir="${doc.dir}/usermanual" includes="Datenquellen.pdf"/>
-			<fileset dir="${doc.dir}/systemdokumentation" includes="*.pdf, index.htm, DB-Schema*/, UML/, include/"
+			<fileset dir="${doc.dir}/systemdokumentation" includes="*.pdf, index.htm, DB-Schema*/, include/"
 							 excludes="DB-Schema.vsd, CSV"/>
 			<zipfileset dir="${doc.dir}/api" prefix="javadoc"/>
-			<zipfileset dir="${doc.dir}/ruledoc" prefix="ruledoc"/>
 		</zip>
 	</target>
 
 	<target name="dist.clean" description="remove distribution directory.">
 		<delete quiet="true" dir="${dist.dir}"/>
 	</target>
-
+	
 </project>
