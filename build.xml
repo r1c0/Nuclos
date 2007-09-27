@@ -280,7 +280,7 @@
 
 	<target name="patch.xerlin.jar"
 					description="Patches the xerlin library (Nucleus uses a custom merlot.properties file).">
-		<copy file="${lib.dir}/xerlin-1.3.jar" tofile="${build.deploy.dir}/${app.name}-xerlin.jar"/>
+		<copy file="${lib.dir}/Xerlin-1.3-patched.jar" tofile="${build.deploy.dir}/${app.name}-xerlin.jar"/>
 		<jar jarfile="${build.deploy.dir}/${app.name}-xerlin.jar" update="true" basedir="${conf.dir}/xerlin"
 				 includes="org/merlotxml/merlot/merlot.properties"/>
 	</target>
