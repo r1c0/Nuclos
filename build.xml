@@ -773,7 +773,7 @@
 
 		<!-- zip documentation: -->
 		<zip destfile="${dist.dir}/doc.zip">
-			<fileset dir="${doc.dir}/systemdokumentation" includes="*.pdf, index.htm, DB-Schema*/, include/"
+			<fileset dir="${doc.dir}/systemdokumentation" includes="*.pdf, index.htm, DB-Schema*/, include/, Licenses/"
 							 excludes="DB-Schema.vsd, CSV"/>
 			<zipfileset dir="${doc.dir}/api" prefix="javadoc"/>
 		</zip>
