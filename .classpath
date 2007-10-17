@@ -42,6 +42,9 @@
 	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/xml-apis.jar"/>
 	<classpathentry kind="lib" path="lib/xmlParserAPIs.jar"/>
+  <classpathentry kind="lib" path="lib/davfilechooser.jar"/>
+	<classpathentry kind="lib" path="lib/thirdparty.jar"/>
+	<classpathentry kind="lib" path="lib/StrutLayout1.2.1.jar"/>	
 	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/client/jnp-client.jar"/>
 	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/client/jbossmq-client.jar"/>
 	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/client/concurrent.jar"/>
