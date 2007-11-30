@@ -1,6 +1,6 @@
 <project name="nucleus" default="main" basedir=".">
 
-	<property name="app.name" value="nucleus"/>
+	<property name="app.name" value="nucleustest"/>
 
 	<!-- Project root directory (should always be the directory where this build.xml resides): -->
 	<property name="project.home.dir" value="."/>
@@ -779,4 +779,206 @@
 		<delete quiet="true" dir="${dist.dir}"/>
 	</target>
 	
+	<target name="war.webstart" description="Builds the webstart-client." depends="jar.server,deploy.client">	
+		<!-- unjar libraries to sign them later -->
+		<unjar overwrite="false" src="${lib.dir}/xalan.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/commons-beanutils-1.5.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/commons-lang-2.0.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/commons-beanutils-1.5.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/commons-collections-3.0.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/commons-logging-1.0.4.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/jdbc2_0-stdext.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/jh.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/log4j-1.2.8.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/StrutLayout1.2.1.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/thirdparty.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/dom4j-full.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/xercesImpl.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/xmlParserAPIs.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/davfilechooser.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/itext-1.3.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/poi-2.5-final-20040302.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/jasperreports-0.6.6.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/jawin.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${lib.dir}/jxl.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${jboss.client.dir}/jboss-j2ee.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${jboss.client.dir}/jboss-client.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${jboss.client.dir}/jboss-common-client.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${jboss.client.dir}/jboss-system-client.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${jboss.client.dir}/jbosssx-client.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${jboss.client.dir}/jboss-transaction-client.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${jboss.client.dir}/jbossmq-client.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${jboss.client.dir}/concurrent.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${jboss.client.dir}/jnp-client.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${novabit.common.dir}/lib/client/jlfgr-1_0.jar" dest="${build.classes.dir}"/>
+				
+		<delete dir="${build.classes.dir}/META-INF"/>
+		<jar jarfile="${build.deploy.dir}/${app.name}-libs.jar">
+			<fileset dir="${build.classes.dir}" excludes="de/novabit/**"/>
+		</jar>
+		
+		<!-- jar native libs -->
+		<jar destfile="${build.deploy.dir}/${app.name}-native.jar">
+			<fileset dir="${lib.dir}">
+				<include name="jawin.dll"/>
+			</fileset>
+		</jar>
+		
+		<!-- create folder structure for war -->
+		<mkdir dir="${build.deploy.dir}/plugins"/>
+		<jar jarfile="${build.deploy.dir}/plugins/layoutml-plugin.jar" basedir="${conf.dir}/xerlin/plugins/"/>
+			
+		<copy overwrite="true" todir="${build.deploy.dir}/webstart/app">
+			<fileset dir="${build.deploy.dir}">
+				<include name="${app.name}-client.jar"/>
+				<include name="novabit-common.jar"/>
+				<include name="${app.name}-xerlin.jar"/>
+				<include name="${app.name}-libs.jar"/>
+				<include name="${app.name}-native.jar"/>
+				<include name="plugins/layoutml-plugin.jar"/>
+			</fileset>
+		</copy>
+		
+		<copy overwrite="true" todir="${build.deploy.dir}/webstart">
+			<fileset dir="${conf.dir}/webstart">
+				<exclude name="WEB-INF/web.xml"/>
+			</fileset>
+		</copy>
+		<copy overwrite="true" todir="${build.deploy.dir}/conf">
+			<fileset dir="${conf.dir}">
+				<include name="jndi.properties"/>
+				<include name="nucleus-app.properties"/>
+				<include name="nucleus-client.properties"/>
+				<include name="log4j.xml"/>
+				<include name="layoutml.dtd"/>
+				<include name="icons/"/>
+				<include name="doc/"/>
+			</fileset>
+		</copy>
+		
+		<replace file="${build.deploy.dir}/webstart/app/webstart.jnlp" token="localhost:8080" value="${webstart.url}"/>
+		<replace file="${build.deploy.dir}/webstart/app/webstart.jnlp" token="nucleus" value="${app.name}"/>
+		<replace file="${build.deploy.dir}/webstart/app/version.xml" token="nucleus" value="${app.name}"/>
+		<replace file="${build.deploy.dir}/webstart/META-INF/application.xml" token="nucleus-webstart.war" value="${app.name}-webstart.war"/>
+		<replace file="${build.deploy.dir}/conf/nucleus-app.properties" token="localhost:8080" value="${webstart.url}"/>
+		
+		<!-- jar conf folder -->
+		<jar destfile="${build.deploy.dir}/webstart/app/${app.name}-config.jar">
+			<fileset dir="${build.deploy.dir}/conf"/>
+		</jar>
+		
+		<!-- sign jars (in order to enable security <all-permissions/>) -->
+		<signjar verbose="false" alias="noa" storepass="novabit" keystore="./.keystore">
+			<fileset dir="${build.deploy.dir}/webstart/app">
+				<include name="${app.name}-client.jar"/>
+				<include name="novabit-common.jar"/>
+				<include name="${app.name}-xerlin.jar"/>
+				<include name="${app.name}-config.jar"/>
+				<include name="${app.name}-libs.jar"/>
+				<include name="${app.name}-native.jar"/>
+			</fileset>
+		</signjar>
+		
+		<!-- war webstart application -->
+		<war destfile="${build.deploy.dir}/${app.name}-webstart.war" webxml="${conf.dir}/webstart/WEB-INF/web.xml">
+			<lib dir="${lib.dir}">
+				<include name="jnlp-servlet.jar"/>
+			</lib>
+			<fileset dir="${build.deploy.dir}/webstart" excludes="META-INF/"/>
+		</war>
+	</target>
+	
+	<target name="dist.webstart" depends="war.webstart, javadoc, build.ruledoc" description="copy files to distribution directory.">
+		<mkdir dir="${dist.dir}"/>
+
+		<!-- make .ear -->
+		<ear destfile="${build.deploy.dir}/${app.name}.ear" appxml="${build.deploy.dir}/webstart/META-INF/application.xml">
+			<fileset dir="${build.deploy.dir}" includes="${app.name}-server.jar"/>
+			<fileset dir="${novabit.common.build.deploy.dir}" includes="novabit-common.jar, novabit-common-ejb.jar"/>
+			<fileset dir="${lib.dir}" includes="quartz-1.4.2.jar"/>
+			<fileset dir="${build.deploy.dir}" includes="${app.name}-webstart.war"></fileset>
+		</ear>
+		<mkdir dir="${dist.dir}/server/deploy"/>
+		<copy todir="${dist.dir}/server/deploy">
+			<fileset dir="${build.deploy.dir}" includes="${app.name}.ear"/>
+		</copy>
+
+		<!-- copy server config -->
+		<mkdir dir="${dist.dir}/server/conf"/>
+		<copy todir="${dist.dir}/server/conf">
+			<fileset dir="${conf.dir}/jboss/conf" includes="log4j.xml"/>
+		</copy>
+
+		<!-- copy client config: -->
+		<mkdir dir="${dist.dir}/client"/>
+		<copy todir="${dist.dir}/client">
+			<fileset dir="${conf.dir}/eplus" includes="*.bat"/>
+		</copy>
+		<mkdir dir="${dist.dir}/client/conf"/>
+		<copy todir="${dist.dir}/client/conf">
+			<fileset dir="${conf.dir}/eplus" includes="log4j.xml"/>
+			<fileset dir="${conf.dir}" includes="jndi.properties, layoutml.dtd, nucleus-app.properties"/>
+		</copy>
+		<mkdir dir="${dist.dir}/client/conf/doc"/>
+		<copy todir="${dist.dir}/client/conf/doc">
+			<fileset dir="${build.classes.dir}/de/novabit/nucleus/client/help/releasenotes" includes="releasenotes.html"/>
+		</copy>
+		<mkdir dir="${dist.dir}/client/conf/icons"/>
+		<copy todir="${dist.dir}/client/conf/icons">
+			<fileset dir="${conf.dir}/icons" includes="*.png"/>
+		</copy>
+
+		<!-- copy client libs: -->
+		<mkdir dir="${dist.dir}/client/lib"/>
+		<copy todir="${dist.dir}/client/lib">
+			<fileset dir="${build.deploy.dir}" includes="*.jar" excludes="${app.name}-server.jar, novabit-jboss.jar"/>
+		</copy>
+
+		<!-- copy layouts: -->
+		<mkdir dir="${dist.dir}/client/layoutml"/>
+		<copy todir="${dist.dir}/client/layoutml">
+			<fileset dir="${src.dir}/layoutml" excludes="Test-Modul.layoutml"/>
+			<fileset dir="${src.dir}/layoutml"/>
+		</copy>
+
+		<!-- copy rules: -->
+		<!--
+		<mkdir dir="${dist.dir}/client/rules"/>
+		<copy todir="${dist.dir}/client/rules">
+			<fileset dir="${src.dir}/rules"/>
+		</copy>
+		-->
+		<!-- copy reports/datasources: -->
+		<!--
+		<mkdir dir="${dist.dir}/client/reports"/>
+		<copy todir="${dist.dir}/client/reports">
+			<fileset dir="${src.dir}/reports"/>
+		</copy>
+		-->
+		
+		<!-- copy server libs: -->
+		<mkdir dir="${dist.dir}/server/lib"/>
+		<copy todir="${dist.dir}/server/lib">
+			<fileset dir="${build.deploy.dir}" includes="novabit-jboss.jar"/>
+		</copy>
+
+		<!-- copy db script(s): -->
+		<mkdir dir="${dist.dir}/scripts"/>
+		<copy todir="${dist.dir}/scripts">
+			<fileset dir="${db.dir}" excludes="von_eplus/, utils/"/>
+		</copy>
+
+		<!-- zip sources: -->
+		<zip destfile="${dist.dir}/source.zip">
+			<fileset dir="${project.home.dir}" includes="build.*, src/" excludes="CVS"/>
+			<fileset dir="${novabit.common.dir}" includes="src/" excludes="CVS"/>
+		</zip>
+
+		<!-- zip documentation: -->
+		<zip destfile="${dist.dir}/doc.zip">
+			<fileset dir="${doc.dir}/systemdokumentation" includes="*.pdf, index.htm, DB-Schema*/, include/, Licenses/"
+							 excludes="DB-Schema.vsd, CSV"/>
+			<zipfileset dir="${doc.dir}/api" prefix="javadoc"/>
+		</zip>
+	</target>
 </project>
