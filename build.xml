@@ -857,9 +857,6 @@
 		</copy>
 		
 		<replace file="${build.deploy.dir}/webstart/app/webstart.jnlp" token="localhost:8080" value="${webstart.url}"/>
-		<replace file="${build.deploy.dir}/webstart/app/webstart.jnlp" token="nucleus" value="${app.name}"/>
-		<replace file="${build.deploy.dir}/webstart/app/version.xml" token="nucleus" value="${app.name}"/>
-		<replace file="${build.deploy.dir}/webstart/META-INF/application.xml" token="nucleus-webstart.war" value="${app.name}-webstart.war"/>
 		<replace file="${build.deploy.dir}/conf/nucleus-app.properties" token="localhost:8080" value="${webstart.url}"/>
 		
 		<!-- jar conf folder -->
