@@ -1,6 +1,6 @@
 <project name="nucleus" default="main" basedir=".">
 
-	<property name="app.name" value="nucleustest"/>
+	<property name="app.name" value="nucleus"/>
 
 	<!-- Project root directory (should always be the directory where this build.xml resides): -->
 	<property name="project.home.dir" value="."/>
