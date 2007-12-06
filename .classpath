@@ -17,7 +17,6 @@
 	<classpathentry kind="lib" path="lib/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j-full.jar"/>
 	<classpathentry kind="lib" path="lib/fop.jar"/>
-	<classpathentry kind="lib" path="lib/InsaPerformanceLogger.jar"/>
 	<classpathentry kind="lib" path="lib/jasperreports-0.6.6.jar"/>
 	<classpathentry kind="lib" path="lib/jawin.jar"/>
 	<classpathentry kind="lib" path="lib/jcommon-0.9.7.jar"/>
@@ -42,9 +41,9 @@
 	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/xml-apis.jar"/>
 	<classpathentry kind="lib" path="lib/xmlParserAPIs.jar"/>
-  <classpathentry kind="lib" path="lib/davfilechooser.jar"/>
+	<classpathentry kind="lib" path="lib/davfilechooser.jar"/>
 	<classpathentry kind="lib" path="lib/thirdparty.jar"/>
-	<classpathentry kind="lib" path="lib/StrutLayout1.2.1.jar"/>	
+	<classpathentry kind="lib" path="lib/StrutLayout1.2.1.jar"/>
 	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/client/jnp-client.jar"/>
 	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/client/jbossmq-client.jar"/>
 	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/client/concurrent.jar"/>
@@ -57,9 +56,10 @@
 	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/server/nucleus/lib/jboss.jar"/>
 	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/server/nucleus/lib/mail.jar"/>
 	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/lib/endorsed/xercesImpl.jar"/>
-  <classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/lib/jboss-system.jar"/>
-  <classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/lib/jboss-common.jar"/>
+	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/lib/jboss-system.jar"/>
+	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/lib/jboss-common.jar"/>
 	<classpathentry kind="lib" path="C:/Programme/Java/jdk1.5.0_11/lib/tools.jar"/>
 	<classpathentry kind="lib" path="lib/Xerlin-1.3-patched.jar"/>
+	<classpathentry kind="lib" path="lib/itext-1.3.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
