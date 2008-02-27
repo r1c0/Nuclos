@@ -29,11 +29,8 @@
 	<property name="jboss.server.deploy.dir" value="${jboss.server.dir}/deploy"/>
 	<property name="jboss.server.lib.dir" value="${jboss.server.dir}/lib"/>
 
-	<!-- Set the DB type mapping (see XDoclet's <jboss> attribute "typemapping"): -->
-	<property name="type.mapping" value="Oracle9i"/>
-
 	<!-- Set the DataSource name your are going to use (see XDoclet's <jboss> attribute "datasource"): -->
-	<property name="datasource.name" value="java:/ds/Zentis"/>
+	<property name="datasource.name" value="java:/ds/nucleus"/>
 
 	<property name="xdoclet.lib.dir" value="${xdoclet.home}/lib"/>
 
@@ -247,7 +244,7 @@
 			<deploymentdescriptor destdir="${build.classes.dir}/META-INF"/>
 
 			<jboss version="${jboss.version}" createTable="false" removeTable="false" xmlencoding="UTF-8"
-						 typemapping="${type.mapping}" datasource="${datasource.name}" destdir="${build.classes.dir}/META-INF"
+				datasource="${datasource.name}" destdir="${build.classes.dir}/META-INF"
 						 validateXml="false" mergedir="./merge"/>
 		</ejbdoclet>
 	</target>
