@@ -84,6 +84,7 @@
 		<pathelement location="${jboss.lib.dir}/jboss-system.jar"/>
 		<pathelement location="${jboss.lib.dir}/jboss-common.jar"/>
 		<pathelement location="${jboss.lib.dir}/jboss-jmx.jar"/>
+		<pathelement location="${jboss.server.lib.dir}/jboss-common-jdbc-wrapper.jar"/>
 		<pathelement location="${lib.dir}/dom4j-full.jar"/>
 		<pathelement location="${lib.dir}/jasperreports-0.6.6.jar"/>
 		<pathelement location="${lib.dir}/quartz-1.4.2.jar"/>
