@@ -123,6 +123,7 @@
 		<pathelement location="${lib.dir}/jasperreports-0.6.6.jar"/>
 		<pathelement location="${lib.dir}/jawin.jar"/>
 		<pathelement location="${lib.dir}/jxl.jar"/>
+		<pathelement location="${lib.dir}/sqljdbc.jar"/>
 		
 		<pathelement location="${lib.dir}/davfilechooser.jar"/>
 		<pathelement location="${lib.dir}/thirdparty.jar"/>
