@@ -86,6 +86,7 @@
 		<pathelement location="${lib.dir}/jasperreports-0.6.6.jar"/>
 		<pathelement location="${lib.dir}/quartz-1.4.2.jar"/>
 		<pathelement location="${lib.dir}/ojdbc14.jar"/>
+		<pathelement location="${lib.dir}/sqljdbc.jar"/>
 		<pathelement location="${lib.dir}/poi-2.5-final-20040302.jar"/>		
 		<pathelement location="${jboss.client.dir}/jnp-client.jar"/>
 		<pathelement location="${jboss.client.dir}/jbossmq-client.jar"/>
