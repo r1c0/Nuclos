@@ -216,7 +216,7 @@
 			must be available at ${xdoclet.home}/lib.
 		</fail>
 	</target>
-
+	
 	<target name="main" depends="main.nojavahelp, jar.javahelp"
 					description="Performs a clean, builds and deploys the server, then builds the client and javahelp."/>
 
@@ -349,6 +349,7 @@
 					de/novabit/nucleus/common/,
 					de/novabit/nucleus/server/*.class,
 					de/novabit/nucleus/server/*/*.class,
+					de/novabit/nucleus/server/database/**/*.class,
 					de/novabit/nucleus/server/**/valueobject/*,
 					de/novabit/nucleus/server/**/interfaces/*,
 					de/novabit/nucleus/server/**/*Exception.class,
@@ -384,14 +385,18 @@
 		</copy>
 	</target>
 
-	<target name="deploy.server" depends="jar.server" description="Builds and deploys the server.">
+	<target name="deploy.server" depends="jar.server,package.server,deploy.to.server" description="Builds and deploys the server."/>
+	
+	<target name="package.server" description="Builds the server.">
 		<ear destfile="${build.deploy.dir}/${app.name}.ear" appxml="${conf.dir}/jboss/ear/META-INF/application.xml">
 			<!--			<fileset dir="${conf.dir}/jboss/ear" includes="META-INF/jboss-app.xml, scheduler-service.xml"/>-->
 			<fileset dir="${build.deploy.dir}" includes="${app.name}-server.jar"/>
 			<fileset dir="${novabit.common.build.deploy.dir}" includes="novabit-common.jar, novabit-common-ejb.jar"/>
 			<fileset dir="${lib.dir}" includes="quartz-1.4.2.jar"/>
 		</ear>
-
+	</target>
+	
+	<target name="deploy.to.server" description="copys the build result to server deploy directory">
 		<!-- deploy: -->
 		<copy todir="${jboss.server.deploy.dir}">
 			<fileset dir="${build.deploy.dir}" includes="${app.name}.ear"/>
@@ -404,7 +409,7 @@
 			<fileset dir="${jboss.server.deploy.dir}/deploy.last"/>
 		</touch>
 	</target>
-
+	
 	<!-- Target to start the JBoss server: -->
 	<target name="run.server">
 		<exec executable="run.bat" dir="${jboss.home}/bin" vmlauncher="false">
