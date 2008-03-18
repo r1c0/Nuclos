@@ -5,7 +5,6 @@
 	<!-- Project root directory (should always be the directory where this build.xml resides): -->
 	<property name="project.home.dir" value="."/>
 
-	<!-- Read all properties from the properties file: -->
 	<property file="../build.properties"/>
 
 	<property environment="env"/>
@@ -262,6 +261,7 @@
 			<fileset dir="${src.java.dir}" includes="de/novabit/nucleus/common/security/auth.conf"/>
 			<fileset dir="${src.java.dir}" includes="de/novabit/nucleus/common/querybuilder/querybuildermodel.dtd"/>
 			<fileset dir="${conf.dir}" includes="nucleus-app*.properties"/>
+			<fileset dir="${conf.dir}" includes="errorcodes_*.properties"/>
 		</copy>
 
 		<javac destdir="${build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
@@ -331,7 +331,7 @@
 
 		<jar jarfile="${build.deploy.dir}/${app.name}-server.jar" basedir="${build.classes.dir}"
 				 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, META-INF/,
-				 nucleus-app*.properties"
+				 nucleus-app*.properties, errorcodes_*.properties"
 				 excludes="**/test/">
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
