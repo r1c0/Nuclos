@@ -130,6 +130,8 @@
 		<pathelement location="${lib.dir}/StrutLayout1.2.1.jar"/>
 		
 		<pathelement location="${build.deploy.dir}/${app.name}-xerlin.jar"/>
+
+		<pathelement location="${jboss.client.dir}/layer.jar"/>
 	</path>
 
 	<path id="nucleus.path">
