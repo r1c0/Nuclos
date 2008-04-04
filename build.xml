@@ -131,7 +131,7 @@
 		
 		<pathelement location="${build.deploy.dir}/${app.name}-xerlin.jar"/>
 
-		<pathelement location="${jboss.client.dir}/layer.jar"/>
+		<pathelement location="${novabit.common.dir}/lib/client/layer.jar"/>
 	</path>
 
 	<path id="nucleus.path">
@@ -817,7 +817,7 @@
 		<unjar overwrite="false" src="${jboss.client.dir}/jbossmq-client.jar" dest="${build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/concurrent.jar" dest="${build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/jnp-client.jar" dest="${build.classes.dir}"/>
-		<unjar overwrite="false" src="${jboss.client.dir}/layer.jar" dest="${build.classes.dir}"/>
+		<unjar overwrite="false" src="${novabit.common.dir}/lib/client/layer.jar" dest="${build.classes.dir}"/>
 		<unjar overwrite="false" src="${novabit.common.dir}/lib/client/jlfgr-1_0.jar" dest="${build.classes.dir}"/>
 				
 		<delete dir="${build.classes.dir}/META-INF"/>
