@@ -6,3 +6,6 @@ docbook-xsl.home=C:/JavaTools/docbook-xsl-1.69.1
 project.home.dir=.
 #codegenerator.source is used for ant target build.ruledoc
 codegenerator.source=D:/xfer/nucleus/codegenerator
+
+# URL für die Verwendung von WebStart
+webstart.url=localhost:8080
