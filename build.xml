@@ -893,7 +893,7 @@
 		</war>
 	</target>
 	
-	<target name="dist.webstart" depends="war.webstart, javadoc, build.ruledoc" description="copy files to distribution directory.">
+	<target name="dist.webstart" depends="war.webstart" description="copy files to distribution directory.">
 		<mkdir dir="${dist.dir}"/>
 
 		<!-- make .ear -->
