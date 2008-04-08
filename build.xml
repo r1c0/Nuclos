@@ -387,7 +387,7 @@
 		</copy>
 	</target>
 
-	<target name="deploy.server" depends="jar.server,package.server,deploy.to.server" description="Builds and deploys the server."/>
+	<target name="deploy.server" depends="jar.server,package.server" description="Builds and deploys the server."/>
 	
 	<target name="package.server" description="Builds the server.">
 		<ear destfile="${build.deploy.dir}/${app.name}.ear" appxml="${conf.dir}/jboss/ear/META-INF/application.xml">
@@ -396,9 +396,7 @@
 			<fileset dir="${novabit.common.build.deploy.dir}" includes="novabit-common.jar, novabit-common-ejb.jar"/>
 			<fileset dir="${lib.dir}" includes="quartz-1.4.2.jar"/>
 		</ear>
-	</target>
-	
-	<target name="deploy.to.server" description="copys the build result to server deploy directory">
+
 		<!-- deploy: -->
 		<copy todir="${jboss.server.deploy.dir}">
 			<fileset dir="${build.deploy.dir}" includes="${app.name}.ear"/>
@@ -893,7 +891,7 @@
 		</war>
 	</target>
 	
-	<target name="dist.webstart" depends="war.webstart" description="copy files to distribution directory.">
+	<target name="dist.webstart" depends="war.webstart, javadoc, build.ruledoc" description="copy files to distribution directory.">
 		<mkdir dir="${dist.dir}"/>
 
 		<!-- make .ear -->
