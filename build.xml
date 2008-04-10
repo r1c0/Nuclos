@@ -59,6 +59,7 @@
 	<property name="nucleus.build.classes.dir" value="${nucleus.build.dir}/classes"/>
 	<property name="nucleus.build.deploy.dir" value="${nucleus.build.dir}/deploy"/>
 	<property name="nucleus.build.java.dir" value="${nucleus.dir}/gen"/>
+	<property name="nucleus.bin.dir" value="${nucleus.dir}/bin"/>
 	
 	<!-- project subdirectories: -->
 	<property name="project.src.dir" value="${project.home.dir}/src"/>
@@ -1109,5 +1110,75 @@
 			<zipfileset dir="${project.doc.dir}/Systemdokumentation" includes="*.pdf, index.htm, DB-Schema*/, include/, Licenses/, UML/"
 							 excludes="DB-Schema.vsd, CSV, *.doc"/>
 		</zip>
+	</target>
+
+	<target name="setup.new.project" description="create a new project based on nucleus">
+		<!-- bin directory -->
+		<copy todir="${project.home.dir}/bin" overwrite="false">
+			<fileset dir="${nucleus.bin.dir}" includes="run-client.bat, run-console.bat"/>
+		</copy>
+				
+		<!-- conf directory -->
+		<copy todir="${project.conf.dir}/icons" overwrite="false">
+			<fileset dir="${nucleus.conf.dir}/icons"/>
+		</copy>
+		<copy todir="${project.conf.dir}/jboss/classes" overwrite="false">
+			<fileset dir="${nucleus.conf.dir}/jboss/classes"/>
+		</copy>
+		<copy todir="${project.conf.dir}/jboss/classes" overwrite="false">
+			<fileset dir="${nucleus.conf.dir}/jboss/classes"/>
+		</copy>
+		<copy todir="${project.conf.dir}/jboss/conf" overwrite="false">
+			<fileset dir="${nucleus.conf.dir}/jboss/conf"/>
+		</copy>
+		<copy todir="${project.conf.dir}/jboss/deploy/deploy.last" overwrite="false">
+			<fileset dir="${nucleus.conf.dir}/jboss/deploy/deploy.last"/>
+		</copy>
+		<copy todir="${project.conf.dir}/jboss/deploy" overwrite="false">
+			<fileset dir="${nucleus.conf.dir}/jboss/deploy" includes="*.xml"/>
+		</copy>
+		<copy todir="${project.conf.dir}/jboss/ear/META-INF" overwrite="false">
+			<fileset dir="${nucleus.conf.dir}/jboss/ear/META-INF" includes="application.xml"/>
+		</copy>
+		<copy todir="${project.conf.dir}" overwrite="false">
+			<fileset dir="${nucleus.conf.dir}"
+				includes="jndi.properties, layoutml.dtd, log4j.xml, nucleus-app.properties, nucleus-client.properties"/>
+		</copy>
+		<copy todir="${project.conf.dir}/jboss/wrapper" overwrite="false">
+			<fileset dir="${nucleus.conf.dir}/jboss/wrapper"/>
+		</copy>
+
+		<!-- webstart directory -->
+		<copy todir="${project.conf.dir}/webstart" overwrite="false">
+			<fileset dir="${nucleus.conf.dir}/webstart"/>
+		</copy>
+
+		<!-- db directory -->
+		<mkdir dir="${project.home.dir}/db"/>
+		<mkdir dir="${project.home.dir}/db/versions"/>
+
+		<!-- doc directory -->
+		<copy todir="${project.doc.dir}/Systemdokumentation" overwrite="false">
+			<fileset dir="${nucleus.doc.dir}/Systemdokumentation" includes="*_template.doc, index.htm"/>
+		</copy>
+		<move file="${project.doc.dir}/Systemdokumentation/Projekt White Paper_template.doc"
+			tofile="${project.doc.dir}/Systemdokumentation/${app.name} White Paper.doc"/>
+
+		<!-- src directory -->
+		<mkdir dir="${project.home.dir}/src"/>
+		
+		<copy todir="${project.src.java.client.dir}/help/releasenotes" overwrite="false">
+			<fileset dir="${nucleus.src.java.dir}/de/novabit/nucleus/client/help/releasenotes"
+				includes="releasenotes.html"/>
+		</copy>
+		
+		<mkdir dir="${project.src.dir}/layout/genericobject"/>
+		<mkdir dir="${project.src.dir}/layout/masterdata"/>
+		<mkdir dir="${project.src.dir}/reports"/>
+		<mkdir dir="${project.src.dir}/rules"/>
+		
+		<loadfile property="message" srcFile="${nucleus.doc.dir}/SETUP_PROJECT.txt"/>
+		<echo>${message}</echo>
+
 	</target>
 </project>
