@@ -2,7 +2,7 @@
 setlocal
 
 rem set JAVA=P:\Javasoft\JRE\1.5.0.04\bin\javaw
-set JAVA=c:\java\jdk\1.5.0\bin\javaw.exe
+set JAVA=%JAVA_HOME%\bin\javaw.exe
 
 set NUCLEUS_DIR=%~dp0
 set NUCLEUS_LIBDIR=%NUCLEUS_DIR%\lib
