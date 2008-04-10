@@ -1113,6 +1113,11 @@
 	</target>
 
 	<target name="setup.new.project" description="create a new project based on nucleus">
+		<!-- root directory -->
+		<copy todir="${project.home.dir}" overwrite="false">
+			<fileset dir="${nucleus.dir}" includes=".keystore"/>
+		</copy>
+	
 		<!-- bin directory -->
 		<copy todir="${project.home.dir}/bin" overwrite="false">
 			<fileset dir="${nucleus.bin.dir}" includes="run-client.bat, run-console.bat"/>
@@ -1179,6 +1184,5 @@
 		
 		<loadfile property="message" srcFile="${nucleus.doc.dir}/SETUP_PROJECT.txt"/>
 		<echo>${message}</echo>
-
 	</target>
 </project>
