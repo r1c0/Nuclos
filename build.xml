@@ -6,7 +6,7 @@
 	<property name="project.home.dir" value="."/>
 
 	<property file="../build.properties"/>
-	
+
 	<property environment="env"/>
 
 	<!-- default VM args for running the Nucleus client: -->
@@ -60,7 +60,7 @@
 	<property name="nucleus.build.deploy.dir" value="${nucleus.build.dir}/deploy"/>
 	<property name="nucleus.build.java.dir" value="${nucleus.dir}/gen"/>
 	<property name="nucleus.bin.dir" value="${nucleus.dir}/bin"/>
-	
+
 	<!-- project subdirectories: -->
 	<property name="project.src.dir" value="${project.home.dir}/src"/>
 	<property name="project.src.java.dir" value="${project.src.dir}/java"/>
@@ -76,7 +76,7 @@
 	<property name="project.build.java.dir" value="${project.home.dir}/gen"/>
 	<property name="project.dist.dir" value="${project.home.dir}/dist"/>
 	<property name="project.bin.dir" value="${project.home.dir}/bin"/>
-	
+
 	<!-- Source directories: -->
 	<property name="src.novabit.dir" value="${nucleus.src.java.dir}/de/novabit"/>
 	<property name="src.nucleus.dir" value="${src.novabit.dir}/nucleus"/>
@@ -103,7 +103,7 @@
 		<pathelement location="${nucleus.lib.dir}/quartz-1.4.2.jar"/>
 		<pathelement location="${nucleus.lib.dir}/ojdbc14.jar"/>
 		<pathelement location="${nucleus.lib.dir}/sqljdbc.jar"/>
-		<pathelement location="${nucleus.lib.dir}/poi-2.5-final-20040302.jar"/>		
+		<pathelement location="${nucleus.lib.dir}/poi-2.5-final-20040302.jar"/>
 		<pathelement location="${jboss.client.dir}/jnp-client.jar"/>
 		<pathelement location="${jboss.client.dir}/jbossmq-client.jar"/>
 		<pathelement location="${jboss.client.dir}/concurrent.jar"/>
@@ -141,14 +141,14 @@
 		<pathelement location="${nucleus.lib.dir}/jawin.jar"/>
 		<pathelement location="${nucleus.lib.dir}/jxl.jar"/>
 		<pathelement location="${nucleus.lib.dir}/sqljdbc.jar"/>
-		
+
 		<pathelement location="${nucleus.lib.dir}/davfilechooser.jar"/>
 		<pathelement location="${nucleus.lib.dir}/thirdparty.jar"/>
 		<pathelement location="${nucleus.lib.dir}/StrutLayout1.2.1.jar"/>
-		
+
 		<pathelement location="${project.build.deploy.dir}/${app.name}-xerlin.jar"/>
 
-		<pathelement location="${jboss.client.dir}/layer.jar"/>
+		<pathelement location="${common.dir}/lib/client/layer.jar"/>
 	</path>
 
 	<path id="project.path">
@@ -176,7 +176,7 @@
 		<!-- junit is needed for cactus, but as it seems it must be available for the parent classloader - why? -->
 		<pathelement location="${nucleus.lib.dir}/junit-3.8.1.jar"/>
 	</path>
-	
+
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 	  <classpath>
 	    <pathelement location="${nucleus.lib.dir}/ant-contrib-1.0b3.jar"/>
@@ -241,7 +241,7 @@
 			must be available at ${xdoclet.home}/lib.
 		</fail>
 	</target>
-	
+
 	<target name="main" depends="main.nojavahelp, jar.javahelp"
 					description="Performs a clean, builds and deploys the server, then builds the client and javahelp."/>
 
@@ -257,7 +257,7 @@
 	<target name="build.novabit.common.noclean">
 		<ant dir="${common.dir}" target="main.noclean" inheritall="false"/>
 	</target>
-	
+
 	<target name="xdoclet.generate.all">
 		<ejbdoclet destdir="${nucleus.build.java.dir}" ejbspec="${ejb.version}" verbose="false">
 			<fileset dir="${nucleus.src.java.dir}">
@@ -266,7 +266,7 @@
 			<fileset dir="${project.src.java.dir}">
 				<include name="de/novabit/{${app.name}/server/**/ejb/*Bean.java"/>
 			</fileset>
-			
+
 			<packageSubstitution packages="ejb" substituteWith="interfaces"/>
 			<remoteinterface pattern="{0}Remote"/>
 			<homeinterface pattern="{0}RemoteHome"/>
@@ -293,7 +293,7 @@
 			<fileset dir="${nucleus.src.java.dir}" includes="de/novabit/nucleus/common/querybuilder/querybuildermodel.dtd"/>
 			<fileset dir="${nucleus.conf.dir}" includes="errorcodes_*.properties"/>
 		</copy>
-		
+
 		<copy todir="${project.build.classes.dir}">
 			<fileset dir="${project.conf.dir}" includes="nucleus-app*.properties"/>
 		</copy>
@@ -304,13 +304,13 @@
 					 excludes="**/test/"
 					 classpathref="project.server.path">
 		</javac>
-		
+
 		<javac destdir="${project.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
 				 srcdir="${project.src.java.dir}:${project.build.java.dir}"
 				 includes="de/novabit/${app.name}/common/, de/novabit/${app.name}/server/"
 				 excludes="**/test/"
 				 classpathref="project.server.path">
-		</javac>		 		
+		</javac>
 	</target>
 
 	<target name="compile.client" depends="compile.server, patch.xerlin.jar, compile.client.nodepend"/>
@@ -327,7 +327,7 @@
 		<mkdir dir="${nucleus.build.deploy.dir}"/>
 		<mkdir dir="${project.build.classes.dir}"/>
 		<mkdir dir="${project.build.deploy.dir}"/>
-			
+
 		<copy todir="${project.build.deploy.dir}">
 			<fileset dir="${common.build.deploy.dir}" includes="novabit-common.jar"/>
 		</copy>
@@ -344,7 +344,7 @@
 							 **/layoutml/*.layoutml,
 							 help/releasenotes/releasenotes.html"/>
 		</copy>
-		
+
 		<copy todir="${project.build.classes.dir}/de/novabit/nucleus/client">
 				<fileset dir="${project.src.java.client.dir}"
 							 includes="**/images/,
@@ -379,7 +379,7 @@
 				<path refid="project.client.path"/>
 			</classpath>
 		</javac>
-		
+
  		<javac destdir="${project.build.classes.dir}" debug="on" deprecation="off" optimize="on"
  					 source="${java.src.version}" srcdir="${project.src.java.dir}"
  					 includes="de/novabit/${app.name}/client/"
@@ -415,7 +415,7 @@
 				<attribute name="Manifest-Version" value="1.0"/>
 				<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-1.4.2.jar"/>
 			</manifest>
-		</jar>	
+		</jar>
 	</target>
 
 	<target name="deploy.client" depends="compile.client" description="Builds the client.">
@@ -460,10 +460,10 @@
 						excludes=	"**/test/,
 									de/novabit/**/ejb/**/*Bean.class,
 									de/novabit/**/build.xml"/>
-				</jar>						
+				</jar>
 			</else>
 		</if>
-		
+
 	</target>
 
 	<target name="jar.jboss" description="Creates jboss specific libraries.">
@@ -479,14 +479,14 @@
 				 includes="de/novabit/common/logging/"
 				 excludes="de/novabit/common/logging/test/">
 		</jar>
-		
+
 		<copy todir="${jboss.server.lib.dir}">
 			<fileset dir="${nucleus.build.deploy.dir}" includes="novabit-jboss.jar"/>
 		</copy>
 	</target>
 
 	<target name="deploy.server" depends="jar.server,package.server,deploy.to.server" description="Builds and deploys the server."/>
-	
+
 	<target name="package.server" description="Builds the server.">
 		<ear destfile="${project.build.deploy.dir}/${app.name}.ear" appxml="${project.conf.dir}/jboss/ear/META-INF/application.xml">
 			<!--			<fileset dir="${nucleus.conf.dir}/jboss/ear" includes="META-INF/jboss-app.xml, scheduler-service.xml"/>-->
@@ -496,7 +496,7 @@
 			<fileset dir="${nucleus.lib.dir}" includes="quartz-1.4.2.jar"/>
 		</ear>
 	</target>
-	
+
 	<target name="deploy.to.server" description="copys the build result to server deploy directory">
 		<!-- deploy: -->
 		<copy todir="${jboss.server.deploy.dir}">
@@ -510,7 +510,7 @@
 			<fileset dir="${jboss.server.deploy.dir}/deploy.last"/>
 		</touch>
 	</target>
-	
+
 	<!-- Target to start the JBoss server: -->
 	<target name="run.server">
 		<exec executable="run.bat" dir="${jboss.home}/bin" vmlauncher="false">
@@ -654,7 +654,7 @@
 				<pathelement location="${nucleus.src.java.dir}"/>
 				<pathelement location="${project.src.java.dir}"/>
 			</sourcepath>
-			
+
 			<packageset dir="${common.src.dir}" excludes="de/novabit/**/test/**, de/novabit/**/interfaces/**"/>
 			<packageset dir="${nucleus.src.java.dir}" excludes="de/novabit/**/test/**, de/novabit/nucleus/tools/**, de/novabit/**/interfaces/**"/>
 			<packageset dir="${project.src.java.dir}" excludes="de/novabit/**/test/**, de/novabit/**/interfaces/**"/>
@@ -854,7 +854,7 @@
  		<copy todir="${project.dist.dir}/client/rules" failonerror="false">
  			<fileset dir="${project.src.dir}/rules"/>
  		</copy>
-		
+
 		<!-- copy reports/datasources: -->
  		<mkdir dir="${project.dist.dir}/client/reports"/>
  		<copy todir="${project.dist.dir}/client/reports" failonerror="false">
@@ -897,8 +897,8 @@
 	<target name="dist.clean" description="remove distribution directory.">
 		<delete quiet="true" dir="${project.dist.dir}"/>
 	</target>
-	
-	<target name="war.webstart" description="Builds the webstart-client." depends="jar.server,deploy.client">	
+
+	<target name="war.webstart" description="Builds the webstart-client." depends="jar.server,deploy.client">
 		<!-- unjar libraries to sign them later -->
 		<unjar overwrite="false" src="${nucleus.lib.dir}/xalan.jar" dest="${project.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/commons-beanutils-1.5.jar" dest="${project.build.classes.dir}"/>
@@ -931,23 +931,23 @@
 		<unjar overwrite="false" src="${jboss.client.dir}/jnp-client.jar" dest="${project.build.classes.dir}"/>
 		<unjar overwrite="false" src="${common.dir}/lib/client/layer.jar" dest="${project.build.classes.dir}"/>
 		<unjar overwrite="false" src="${common.dir}/lib/client/jlfgr-1_0.jar" dest="${project.build.classes.dir}"/>
-				
+
 		<delete dir="${project.build.classes.dir}/META-INF"/>
 		<jar jarfile="${project.build.deploy.dir}/${app.name}-libs.jar">
 			<fileset dir="${project.build.classes.dir}" excludes="de/novabit/**"/>
 		</jar>
-		
+
 		<!-- jar native libs -->
 		<jar destfile="${project.build.deploy.dir}/${app.name}-native.jar">
 			<fileset dir="${nucleus.lib.dir}">
 				<include name="jawin.dll"/>
 			</fileset>
 		</jar>
-		
+
 		<!-- create folder structure for war -->
 		<mkdir dir="${project.build.deploy.dir}/plugins"/>
 		<jar jarfile="${project.build.deploy.dir}/plugins/layoutml-plugin.jar" basedir="${nucleus.conf.dir}/xerlin/plugins/"/>
-			
+
 		<copy overwrite="true" todir="${project.build.deploy.dir}/webstart/app">
 			<fileset dir="${nucleus.build.deploy.dir}">
 				<include name="nucleus-client.jar"/>
@@ -961,7 +961,7 @@
 				<include name="plugins/layoutml-plugin.jar"/>
 			</fileset>
 		</copy>
-		
+
 		<copy overwrite="true" todir="${project.build.deploy.dir}/webstart">
 			<fileset dir="${project.conf.dir}/webstart">
 				<exclude name="WEB-INF/web.xml"/>
@@ -978,15 +978,15 @@
 				<include name="doc/"/>
 			</fileset>
 		</copy>
-		
+
 		<replace file="${project.build.deploy.dir}/webstart/app/webstart.jnlp" token="localhost:8080" value="${webstart.url}"/>
 		<replace file="${project.build.deploy.dir}/conf/nucleus-app.properties" token="localhost:8080" value="${webstart.url}"/>
-		
+
 		<!-- jar conf folder -->
 		<jar destfile="${project.build.deploy.dir}/webstart/app/${app.name}-config.jar">
 			<fileset dir="${project.build.deploy.dir}/conf"/>
 		</jar>
-		
+
 		<!-- sign jars (in order to enable security <all-permissions/>) -->
 		<signjar verbose="false" alias="noa" storepass="novabit" keystore="./.keystore">
 			<fileset dir="${project.build.deploy.dir}/webstart/app">
@@ -999,7 +999,7 @@
 				<include name="${app.name}-native.jar"/>
 			</fileset>
 		</signjar>
-		
+
 		<!-- war webstart application -->
 		<war destfile="${project.build.deploy.dir}/nucleus-webstart.war" webxml="${nucleus.conf.dir}/webstart/WEB-INF/web.xml">
 			<lib dir="${nucleus.lib.dir}">
@@ -1008,7 +1008,7 @@
 			<fileset dir="${project.build.deploy.dir}/webstart" excludes="META-INF/"/>
 		</war>
 	</target>
-	
+
 	<target name="dist.webstart" depends="war.webstart, javadoc, build.ruledoc" description="copy files to distribution directory.">
 		<mkdir dir="${project.dist.dir}"/>
 
@@ -1072,7 +1072,7 @@
  		<copy todir="${project.dist.dir}/client/rules" failonerror="false">
  			<fileset dir="${project.src.dir}/rules"/>
  		</copy>
-		
+
 		<!-- copy reports/datasources: -->
  		<mkdir dir="${project.dist.dir}/client/reports"/>
  		<copy todir="${project.dist.dir}/client/reports" failonerror="false">
@@ -1117,12 +1117,12 @@
 		<copy todir="${project.home.dir}" overwrite="false">
 			<fileset dir="${nucleus.dir}" includes=".keystore"/>
 		</copy>
-	
+
 		<!-- bin directory -->
 		<copy todir="${project.home.dir}/bin" overwrite="false">
 			<fileset dir="${nucleus.bin.dir}" includes="run-client.bat, run-console.bat"/>
 		</copy>
-				
+
 		<!-- conf directory -->
 		<copy todir="${project.conf.dir}/icons" overwrite="false">
 			<fileset dir="${nucleus.conf.dir}/icons"/>
@@ -1171,17 +1171,17 @@
 
 		<!-- src directory -->
 		<mkdir dir="${project.home.dir}/src"/>
-		
+
 		<copy todir="${project.src.java.client.dir}/help/releasenotes" overwrite="false">
 			<fileset dir="${nucleus.src.java.dir}/de/novabit/nucleus/client/help/releasenotes"
 				includes="releasenotes.html"/>
 		</copy>
-		
+
 		<mkdir dir="${project.src.dir}/layout/genericobject"/>
 		<mkdir dir="${project.src.dir}/layout/masterdata"/>
 		<mkdir dir="${project.src.dir}/reports"/>
 		<mkdir dir="${project.src.dir}/rules"/>
-		
+
 		<loadfile property="message" srcFile="${nucleus.doc.dir}/SETUP_PROJECT.txt"/>
 		<echo>${message}</echo>
 	</target>
