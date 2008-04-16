@@ -316,10 +316,8 @@
 	<target name="compile.client" depends="compile.server, patch.xerlin.jar, compile.client.nodepend"/>
 
 	<target name="patch.xerlin.jar"
-					description="Patches the xerlin library (Nucleus uses a custom merlot.properties file).">
+					description="Renames the xerlin.jar file to a project specific name.">
 		<copy file="${nucleus.lib.dir}/Xerlin-1.3-patched.jar" tofile="${project.build.deploy.dir}/${app.name}-xerlin.jar"/>
-		<jar jarfile="${project.build.deploy.dir}/${app.name}-xerlin.jar" update="true" basedir="${nucleus.conf.dir}/xerlin"
-				 includes="org/merlotxml/merlot/merlot.properties"/>
 	</target>
 
 	<target name="compile.client.nodepend">
