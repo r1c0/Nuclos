@@ -161,7 +161,7 @@
 		<pathelement location="${project.build.deploy.dir}/${app.name}-client.jar"/>
 		<!-- include nucleus.conf.dir in classpath so the ClassLoader finds nucleus-client.properties: -->
 		<pathelement location="${project.conf.dir}"/>
-		<pathelement location="${project.build.deploy.dir}/${app.name}-help.jar"/>
+		<pathelement location="${project.build.deploy.dir}/nucleus-help.jar"/>
 
 		<path refid="project.client.path"/>
 	</path>
@@ -208,7 +208,7 @@
 		<antcall target="wrong.xdoclet"/>
 	</target>
 
-	<target name="check.build.properties" depends="check.jboss.home, check.xdoclet.home, check.docbook-xsl.home"/>
+	<target name="check.build.properties" depends="check.jboss.home, check.xdoclet.home"/>
 
 	<!-- path to the runtime JBoss directory containing the JBoss application server: -->
 	<target name="check.jboss.home" unless="jboss.home">
@@ -663,17 +663,15 @@
 			</classpath>
 		</javadoc>
 	</target>
-
-	<target name="jar.javahelp"
-					description="Builds javahelp online documentation from docbook sources and puts them in a jar.">
-		<antcall target="compile.javahelp"/>
-
-		<!-- copy images: -->
+	
+	<target name="jar.javahelp" description="copys the helpfiles from /doc/onlinehelp and creates the helpjar.">
+		
 		<copy todir="${project.build.classes.dir}/de/novabit/nucleus/client/help/javahelp">
-			<fileset dir="${nucleus.doc.dir}/usermanual/src" includes="img/"/>
+			<fileset dir="${nucleus.doc.dir}/onlinehelp/src" excludes="CVS,*.jhp"/>
 		</copy>
-
-		<antcall target="jar.javahelp.nodepend"/>
+		<jar jarfile="${project.build.deploy.dir}/nucleus-help.jar">
+			<fileset dir="${project.build.classes.dir}" includes="de/novabit/nucleus/client/help/javahelp/"/>
+		</jar>
 	</target>
 
 	<target name="compile.javahelp" description="Compiles javahelp online documentation from docbook sources.">
@@ -957,6 +955,7 @@
 				<include name="novabit-common.jar"/>
 				<include name="${app.name}-xerlin.jar"/>
 				<include name="${app.name}-libs.jar"/>
+				<include name="nucleus-help.jar"/>
 				<include name="${app.name}-native.jar"/>
 				<include name="plugins/layoutml-plugin.jar"/>
 			</fileset>
@@ -997,6 +996,7 @@
 				<include name="${app.name}-config.jar"/>
 				<include name="${app.name}-libs.jar"/>
 				<include name="${app.name}-native.jar"/>
+				<include name="nucleus-help.jar"/>
 			</fileset>
 		</signjar>
 
