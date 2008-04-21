@@ -820,7 +820,7 @@
 		</copy>
 		<mkdir dir="${project.dist.dir}/client/conf/doc"/>
 		<copy file="${nucleus.build.classes.dir}/de/novabit/nucleus/client/help/releasenotes/releasenotes.html" tofile="${project.dist.dir}/client/conf/doc/nucleus-releasenotes.html"/>
-		<copy file="${project.build.classes.dir}/de/novabit/nucleus/client/help/releasenotes/releasenotes.html" tofile="${project.dist.dir}/client/conf/doc/${app.name}-releasenotes.html"/>
+		<copy file="${project.build.classes.dir}/de/novabit/${app.name}/client/help/releasenotes/releasenotes.html" tofile="${project.dist.dir}/client/conf/doc/${app.name}-releasenotes.html"/>
 		<mkdir dir="${project.dist.dir}/client/conf/icons"/>
 		<copy todir="${project.dist.dir}/client/conf/icons">
 			<fileset dir="${project.conf.dir}/icons" includes="*.png"/>
