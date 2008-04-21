@@ -343,7 +343,7 @@
 							 help/releasenotes/releasenotes.html"/>
 		</copy>
 
-		<copy todir="${project.build.classes.dir}/de/novabit/nucleus/client">
+		<copy todir="${project.build.classes.dir}/de/novabit/${app.name}/client">
 				<fileset dir="${project.src.java.client.dir}"
 							 includes="**/images/,
 							 **/layoutml/*.layoutml,
