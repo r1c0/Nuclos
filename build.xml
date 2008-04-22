@@ -259,25 +259,25 @@
 	</target>
 
 	<target name="xdoclet.generate.all">
-		<ejbdoclet destdir="${nucleus.build.java.dir}" ejbspec="${ejb.version}" verbose="false">
-			<fileset dir="${nucleus.src.java.dir}">
-				<include name="de/novabit/nucleus/server/**/ejb/*Bean.java"/>
-			</fileset>
-			<fileset dir="${project.src.java.dir}">
-				<include name="de/novabit/{${app.name}/server/**/ejb/*Bean.java"/>
-			</fileset>
+			<ejbdoclet destdir="${nucleus.build.java.dir}" ejbspec="${ejb.version}" verbose="false">
+				<fileset dir="${nucleus.src.java.dir}">
+					<include name="de/novabit/nucleus/server/**/ejb/*Bean.java"/>
+				</fileset>
+				<fileset dir="${project.src.java.dir}">
+					<include name="de/novabit/{${app.name}/server/**/ejb/*Bean.java"/>
+				</fileset>
 
-			<packageSubstitution packages="ejb" substituteWith="interfaces"/>
-			<remoteinterface pattern="{0}Remote"/>
-			<homeinterface pattern="{0}RemoteHome"/>
-			<localinterface/>
-			<localhomeinterface/>
-			<deploymentdescriptor destdir="${project.build.classes.dir}/META-INF"/>
+				<packageSubstitution packages="ejb" substituteWith="interfaces"/>
+				<remoteinterface pattern="{0}Remote"/>
+				<homeinterface pattern="{0}RemoteHome"/>
+				<localinterface/>
+				<localhomeinterface/>
+				<deploymentdescriptor destdir="${project.build.classes.dir}/META-INF"/>
 
-			<jboss version="${jboss.version}" createTable="false" removeTable="false" xmlencoding="UTF-8"
-				datasource="${datasource.name}" destdir="${project.build.classes.dir}/META-INF"
-						 validateXml="false" mergedir="./merge"/>
-		</ejbdoclet>
+				<jboss version="${jboss.version}" createTable="false" removeTable="false" xmlencoding="UTF-8"
+					datasource="${datasource.name}" destdir="${project.build.classes.dir}/META-INF"
+							 validateXml="false" mergedir="${nucleus.dir}/merge"/>
+			</ejbdoclet>
 	</target>
 
 	<target name="compile" depends="init, compile.client"/>
