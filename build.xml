@@ -85,6 +85,8 @@
 	<property name="src.nucleus.server.dir" value="${src.nucleus.dir}/server"/>
 
 	<path id="project.server.path">
+		<pathelement location="${nucleus.build.classes.dir}"/>
+		<pathelement location="${project.build.classes.dir}"/>
 		<pathelement location="${common.build.deploy.dir}/novabit-common.jar"/>
 		<pathelement location="${common.build.deploy.dir}/novabit-common-ejb.jar"/>
 		<pathelement location="${nucleus.lib.dir}/log4j-1.2.8.jar"/>
@@ -114,6 +116,8 @@
 	</path>
 
 	<path id="project.client.path">
+		<pathelement location="${nucleus.build.classes.dir}"/>
+		<pathelement location="${project.build.classes.dir}"/>
 		<pathelement location="${project.build.deploy.dir}/novabit-common.jar"/>
 		<pathelement location="${common.dir}/lib/client/jlfgr-1_0.jar"/>
 		<pathelement location="${nucleus.lib.dir}/commons-lang-2.0.jar"/>
@@ -259,12 +263,14 @@
 	</target>
 
 	<target name="xdoclet.generate.all">
-			<ejbdoclet destdir="${nucleus.build.java.dir}" ejbspec="${ejb.version}" verbose="false">
+		<mkdir dir="${project.build.java.dir}"/>
+		
+		<ejbdoclet destdir="${project.build.java.dir}" ejbspec="${ejb.version}" verbose="false">
 				<fileset dir="${nucleus.src.java.dir}">
 					<include name="de/novabit/nucleus/server/**/ejb/*Bean.java"/>
 				</fileset>
 				<fileset dir="${project.src.java.dir}">
-					<include name="de/novabit/{${app.name}/server/**/ejb/*Bean.java"/>
+				<include name="de/novabit/${app.name}/server/**/ejb/*Bean.java"/>
 				</fileset>
 
 				<packageSubstitution packages="ejb" substituteWith="interfaces"/>
@@ -299,7 +305,7 @@
 		</copy>
 
 		<javac destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
-					 srcdir="${nucleus.src.java.dir}:${nucleus.build.java.dir}"
+					 srcdir="${nucleus.src.java.dir}:${project.build.java.dir}"
 					 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/"
 					 excludes="**/test/"
 					 classpathref="project.server.path">
