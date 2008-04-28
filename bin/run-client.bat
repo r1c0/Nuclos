@@ -16,9 +16,9 @@ set CP=%CP%;%NUCLEUS_LIBDIR%\log4j-1.2.8.jar
 set CP=%CP%;%NUCLEUS_LIBDIR%\jlfgr-1_0.jar
 set CP=%CP%;%NUCLEUS_LIBDIR%\commons-lang-2.0.jar
 set CP=%CP%;%NUCLEUS_LIBDIR%\commons-beanutils-1.5.jar
-set CP=%CP%;%NUCLEUS_LIBDIR%\commons-collections-3.0.jar
+set CP=%CP%;%NUCLEUS_LIBDIR%\commons-collections-3.2.jar
 set CP=%CP%;%NUCLEUS_LIBDIR%\commons-digester-1.3.jar
-set CP=%CP%;%NUCLEUS_LIBDIR%\commons-logging-1.0.4.jar
+set CP=%CP%;%NUCLEUS_LIBDIR%\commons-logging-1.1.jar
 
 set CP=%CP%;%NUCLEUS_LIBDIR%\jboss-j2ee.jar
 set CP=%CP%;%NUCLEUS_LIBDIR%\jboss-client.jar
