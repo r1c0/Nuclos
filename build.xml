@@ -90,7 +90,7 @@
 		<pathelement location="${nucleus.lib.dir}/log4j-1.2.8.jar"/>
 		<pathelement location="${nucleus.lib.dir}/commons-lang-2.0.jar"/>
 		<pathelement location="${nucleus.lib.dir}/commons-beanutils-1.5.jar"/>
-		<pathelement location="${nucleus.lib.dir}/commons-collections-3.0.jar"/>
+		<pathelement location="${nucleus.lib.dir}/commons-collections-3.2.jar"/>
 		<pathelement location="${jboss.server.lib.dir}/jboss-j2ee.jar"/>
 		<pathelement location="${jboss.client.dir}/jbosssx-client.jar"/>
 		<pathelement location="${jboss.server.lib.dir}/jbosssx.jar"/>
@@ -100,7 +100,7 @@
 		<pathelement location="${jboss.server.lib.dir}/jboss-common-jdbc-wrapper.jar"/>
 		<pathelement location="${nucleus.lib.dir}/dom4j-full.jar"/>
 		<pathelement location="${nucleus.lib.dir}/jasperreports-0.6.6.jar"/>
-		<pathelement location="${nucleus.lib.dir}/quartz-1.4.2.jar"/>
+		<pathelement location="${nucleus.lib.dir}/quartz-all-1.6.0.jar"/>
 		<pathelement location="${nucleus.lib.dir}/ojdbc14.jar"/>
 		<pathelement location="${nucleus.lib.dir}/sqljdbc.jar"/>
 		<pathelement location="${nucleus.lib.dir}/poi-2.5-final-20040302.jar"/>
@@ -118,8 +118,8 @@
 		<pathelement location="${common.dir}/lib/client/jlfgr-1_0.jar"/>
 		<pathelement location="${nucleus.lib.dir}/commons-lang-2.0.jar"/>
 		<pathelement location="${nucleus.lib.dir}/commons-beanutils-1.5.jar"/>
-		<pathelement location="${nucleus.lib.dir}/commons-collections-3.0.jar"/>
-		<pathelement location="${nucleus.lib.dir}/commons-logging-1.0.4.jar"/>
+		<pathelement location="${nucleus.lib.dir}/commons-collections-3.2.jar"/>
+		<pathelement location="${nucleus.lib.dir}/commons-logging-1.1.jar"/>
 		<pathelement location="${jboss.client.dir}/jboss-j2ee.jar"/>
 		<pathelement location="${jboss.client.dir}/jboss-client.jar"/>
 		<pathelement location="${jboss.client.dir}/jboss-common-client.jar"/>
@@ -170,7 +170,7 @@
 		<pathelement location="${nucleus.lib.dir}/cactus-1.7.1.jar"/>
 		<pathelement location="${nucleus.lib.dir}/cactus-ant-1.7.1.jar"/>
 		<pathelement location="${nucleus.lib.dir}/commons-httpclient-2.0.2.jar"/>
-		<pathelement location="${nucleus.lib.dir}/commons-logging-1.0.4.jar"/>
+		<pathelement location="${nucleus.lib.dir}/commons-logging-1.1.jar"/>
 		<pathelement location="${nucleus.lib.dir}/aspectjrt-1.2.1.jar"/>
 		<pathelement location="${nucleus.lib.dir}/cargo-0.5.jar"/>
 		<!-- junit is needed for cactus, but as it seems it must be available for the parent classloader - why? -->
@@ -401,7 +401,7 @@
 				 excludes="**/test/">
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
-				<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-1.4.2.jar"/>
+				<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-all-1.6.0.jar"/>
 			</manifest>
 		</jar>
 
@@ -411,7 +411,7 @@
 				 excludes="**/test/">
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
-				<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-1.4.2.jar"/>
+				<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-all-1.6.0.jar"/>
 			</manifest>
 		</jar>
 	</target>
@@ -491,7 +491,7 @@
 			<fileset dir="${nucleus.build.deploy.dir}" includes="nucleus-server.jar"/>
 			<fileset dir="${project.build.deploy.dir}" includes="${app.name}-server.jar"/>
 			<fileset dir="${common.build.deploy.dir}" includes="novabit-common.jar, novabit-common-ejb.jar"/>
-			<fileset dir="${nucleus.lib.dir}" includes="quartz-1.4.2.jar"/>
+			<fileset dir="${nucleus.lib.dir}" includes="quartz-all-1.6.0.jar"/>
 		</ear>
 	</target>
 
@@ -900,8 +900,8 @@
 		<unjar overwrite="false" src="${nucleus.lib.dir}/commons-beanutils-1.5.jar" dest="${project.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/commons-lang-2.0.jar" dest="${project.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/commons-beanutils-1.5.jar" dest="${project.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/commons-collections-3.0.jar" dest="${project.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/commons-logging-1.0.4.jar" dest="${project.build.classes.dir}"/>
+		<unjar overwrite="false" src="${nucleus.lib.dir}/commons-collections-3.2.jar" dest="${project.build.classes.dir}"/>
+		<unjar overwrite="false" src="${nucleus.lib.dir}/commons-logging-1.1.jar" dest="${project.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/jdbc2_0-stdext.jar" dest="${project.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/jh.jar" dest="${project.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/log4j-1.2.8.jar" dest="${project.build.classes.dir}"/>
@@ -1015,7 +1015,7 @@
 			<fileset dir="${nucleus.build.deploy.dir}" includes="nucleus-server.jar"/>
 			<fileset dir="${project.build.deploy.dir}" includes="${app.name}-server.jar"/>
 			<fileset dir="${common.build.deploy.dir}" includes="novabit-common.jar, novabit-common-ejb.jar"/>
-			<fileset dir="${nucleus.lib.dir}" includes="quartz-1.4.2.jar"/>
+			<fileset dir="${nucleus.lib.dir}" includes="quartz-all-1.6.0.jar"/>
 			<fileset dir="${project.build.deploy.dir}" includes="nucleus-webstart.war"></fileset>
 		</ear>
 		<mkdir dir="${project.dist.dir}/server/deploy"/>
