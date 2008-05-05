@@ -297,11 +297,16 @@
 		<copy todir="${nucleus.build.classes.dir}">
 			<fileset dir="${nucleus.src.java.dir}" includes="de/novabit/nucleus/common/security/auth.conf"/>
 			<fileset dir="${nucleus.src.java.dir}" includes="de/novabit/nucleus/common/querybuilder/querybuildermodel.dtd"/>
-			<fileset dir="${nucleus.conf.dir}" includes="errorcodes_*.properties"/>
+		</copy>
+		<copy todir="${nucleus.build.classes.dir}/resources">
+			<fileset dir="${nucleus.conf.dir}/resources"/>
 		</copy>
 
 		<copy todir="${project.build.classes.dir}">
 			<fileset dir="${project.conf.dir}" includes="nucleus-app*.properties"/>
+		</copy>
+		<copy todir="${project.build.classes.dir}/resources">
+			<fileset dir="${project.conf.dir}/resources"/>
 		</copy>
 
 		<javac destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
@@ -402,8 +407,7 @@
 		<mkdir dir="${project.build.deploy.dir}"/>
 
 		<jar jarfile="${nucleus.build.deploy.dir}/nucleus-server.jar" basedir="${nucleus.build.classes.dir}"
-				 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, META-INF/,
-				 errorcodes_*.properties"
+				 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, META-INF/, resources/"
 				 excludes="**/test/">
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
@@ -413,7 +417,7 @@
 
 		<jar jarfile="${project.build.deploy.dir}/${app.name}-server.jar" basedir="${project.build.classes.dir}"
 				 includes="de/novabit/${app.name}/common/, de/novabit/${app.name}/server/, META-INF/,
-				 nucleus-app*.properties, errorcodes_*.properties"
+				 nucleus-app*.properties, resources/"
 				 excludes="**/test/">
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
@@ -1165,6 +1169,9 @@
 		<!-- db directory -->
 		<mkdir dir="${project.home.dir}/db"/>
 		<mkdir dir="${project.home.dir}/db/versions"/>
+
+		<!-- resources directory -->
+		<mkdir dir="${project.conf.dir}/resources"/>
 
 		<!-- doc directory -->
 		<copy todir="${project.doc.dir}/Systemdokumentation" overwrite="false">
