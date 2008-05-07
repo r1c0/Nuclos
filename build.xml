@@ -73,7 +73,6 @@
 	<property name="project.build.dir" value="${project.home.dir}/build"/>
 	<property name="project.build.classes.dir" value="${project.build.dir}/classes"/>
 	<property name="project.build.deploy.dir" value="${project.build.dir}/deploy"/>
-	<property name="project.build.java.dir" value="${project.home.dir}/gen"/>
 	<property name="project.dist.dir" value="${project.home.dir}/dist"/>
 	<property name="project.bin.dir" value="${project.home.dir}/bin"/>
 
@@ -263,9 +262,7 @@
 	</target>
 
 	<target name="xdoclet.generate.all">
-		<mkdir dir="${project.build.java.dir}"/>
-		
-		<ejbdoclet destdir="${project.build.java.dir}" ejbspec="${ejb.version}" verbose="false">
+		<ejbdoclet destdir="${nucleus.build.java.dir}" ejbspec="${ejb.version}" verbose="false">
 				<fileset dir="${nucleus.src.java.dir}">
 					<include name="de/novabit/nucleus/server/**/ejb/*Bean.java"/>
 				</fileset>
@@ -278,10 +275,10 @@
 				<homeinterface pattern="{0}RemoteHome"/>
 				<localinterface/>
 				<localhomeinterface/>
-				<deploymentdescriptor destdir="${project.build.classes.dir}/META-INF"/>
+				<deploymentdescriptor destdir="${nucleus.build.classes.dir}/META-INF"/>
 
 				<jboss version="${jboss.version}" createTable="false" removeTable="false" xmlencoding="UTF-8"
-					datasource="${datasource.name}" destdir="${project.build.classes.dir}/META-INF"
+					datasource="${datasource.name}" destdir="${nucleus.build.classes.dir}/META-INF"
 							 validateXml="false" mergedir="${nucleus.dir}/merge"/>
 			</ejbdoclet>
 	</target>
@@ -292,7 +289,6 @@
 
 	<target name="compile.server.nodepend">
 		<mkdir dir="${project.build.classes.dir}"/>
-		<mkdir dir="${project.build.java.dir}"/>
 
 		<copy todir="${nucleus.build.classes.dir}">
 			<fileset dir="${nucleus.src.java.dir}" includes="de/novabit/nucleus/common/security/auth.conf"/>
@@ -310,14 +306,14 @@
 		</copy>
 
 		<javac destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
-					 srcdir="${nucleus.src.java.dir}:${project.build.java.dir}"
+					 srcdir="${nucleus.src.java.dir}:${nucleus.build.java.dir}"
 					 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/"
 					 excludes="**/test/"
 					 classpathref="project.server.path">
 		</javac>
 
 		<javac destdir="${project.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
-				 srcdir="${project.src.java.dir}:${project.build.java.dir}"
+				 srcdir="${project.src.java.dir}:${nucleus.build.java.dir}"
 				 includes="de/novabit/${app.name}/common/, de/novabit/${app.name}/server/"
 				 excludes="**/test/"
 				 classpathref="project.server.path">
@@ -583,7 +579,6 @@
 					de/novabit/nucleus/server/masterdata/interfaces/MDLocalHome.java,
 					de/novabit/nucleus/server/masterdata/interfaces/MDLocalObject.java"/>
 			<fileset dir="${project.build.dir}" includes="*/"/>
-			<fileset dir="${project.build.java.dir}" includes="*/"/>
 			<fileset dir="${nucleus.build.dir}" includes="*/"/>
 			<fileset dir="${nucleus.build.java.dir}" includes="*/"/>
 			<fileset dir="${nucleus.conf.dir}" includes="layoutml.dtd"/>
