@@ -42,6 +42,9 @@
 
 	<property name="java.src.version" value="1.5"/>
 
+	<!-- Set this to "true" when you want to deploy nucleus service (MBeans) configuration -->
+	<property name="deploy.jboss.server.nucleus.service" value="false"/>
+	
 	<!-- common directories: -->
 	<property name="common.dir" value="${project.home.dir}/../common"/>
 	<property name="common.src.dir" value="${common.dir}/src"/>
@@ -472,15 +475,15 @@
 
 	<target name="jar.jboss" description="Creates jboss specific libraries.">
 		<mkdir dir="${nucleus.build.deploy.dir}"/>
-
+		
 		<javac destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
 					 excludes="de/novabit/common/logging/test/"
 					 classpathref="project.path">
-			<src path="${common.src.dir}/de/novabit/common/logging/"/>
+			<src path="${common.src.dir}/de/novabit/common/logging/;${nucleus.src.java.dir}/de/novabit/nucleus/server/mbean/"/>
 		</javac>
 
 		<jar jarfile="${nucleus.build.deploy.dir}/novabit-jboss.jar" basedir="${nucleus.build.classes.dir}"
-				 includes="de/novabit/common/logging/"
+				 includes="de/novabit/common/logging/ de/novabit/nucleus/server/mbean/"
 				 excludes="de/novabit/common/logging/test/">
 		</jar>
 
@@ -508,6 +511,14 @@
 			<fileset dir="${nucleus.conf.dir}/jboss/deploy" includes="jms/nucleus-destinations-service.xml"/>
 			<fileset dir="${project.conf.dir}/jboss/deploy" includes="deploy.last/quartz-service.xml"/>
 		</copy>
+		<switch value="${deploy.jboss.server.nucleus.service}">
+		  <case value="true">
+			<copy todir="${jboss.server.deploy.dir}">
+				<fileset dir="${project.conf.dir}/jboss/deploy" includes="deploy.last/nucleus-service.xml"/>
+			</copy>
+		  </case>
+		  <default/>
+		</switch>
 
 		<!-- quartz-service.xml must be renewed, otherwise it won't be redeployed on hot deployment: -->
 		<touch>
