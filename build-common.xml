@@ -1,0 +1,156 @@
+<project name="common" default="main" basedir=".">
+
+	<!-- Properties may be specified in the build.properties file. This is the preferred way.
+		As an alternative, properties may be defined in the environment. -->
+
+	<!-- First read all properties from the properties file: -->
+	<property file="../build.properties"/>
+
+	<!-- Read properties that are not defined in the properties file from the environment: -->
+	<property environment="env"/>
+
+	<property name="java.src.version" value="1.5"/>
+
+	<!-- Project root directory
+		 (should always be the directory where this build.xml resides): -->
+	<property name="project.home.dir" value="${env.PROJECT_HOME}"/>
+
+	<!-- Project subdirectories: -->
+	<property name="build.dir" value="${project.home.dir}/build"/>
+	<property name="build.tmp.dir" value="${build.dir}/tmp"/>
+	<property name="build.deploy.dir" value="${build.dir}/deploy"/>
+	<property name="build.classes.dir" value="${build.dir}/classes"/>
+
+	<property name="db.dir" value="${project.home.dir}/db"/>
+	<property name="doc.dir" value="${project.home.dir}/doc"/>
+
+	<property name="lib.dir" value="${project.home.dir}/lib"/>
+	<property name="src.dir" value="${project.home.dir}/src/java"/>
+
+	<!-- Source directories: -->
+	<property name="src.novabit.dir" value="${src.dir}/de/novabit"/>
+	<property name="src.novabit.common.dir" value="${src.novabit.dir}/common"/>
+
+	<path id="common.path">
+		<pathelement location="${lib.dir}/commons-beanutils-1.5.jar"/>
+		<pathelement location="${lib.dir}/commons-collections-3.2.jar"/>
+		<pathelement location="${lib.dir}/commons-lang-2.0.jar"/>
+		<pathelement location="${lib.dir}/log4j-1.2.8.jar"/>
+		<pathelement location="${lib.dir}/junit-3.8.1.jar"/>
+		<pathelement location="${lib.dir}/client/jlfgr-1_0.jar"/>
+		<pathelement location="${lib.dir}/client/layer.jar"/>
+
+		<!-- @todo maybe common should not depend on these? -->
+		<pathelement location="${lib.dir}/jfcunit.jar"/>
+		<pathelement location="${jboss.home}/client/jboss-j2ee.jar"/>
+		<pathelement location="${jboss.home}/client/jbosssx-client.jar"/>
+		<pathelement location="${lib.dir}/mail.jar"/>
+	</path>
+
+	<path id="common.jboss.path">
+		<path refid="common.path"/>
+		<!--		<pathelement location="${lib.dir}/server/jbosssx.jar"/>-->
+	</path>
+
+	<target name="init" depends="info"/>
+
+	<target name="info" description="Information about the environment.">
+		<!-- Print out some properties: -->
+		<echo message="Project '${ant.project.name}' using jdk from ${java.vendor}" level="info"/>
+		<echo message="Java Runtime Environment version: ${java.version}" level="info"/>
+		<echo message="Java Virtual Machine implementation version: ${java.vm.version}." level="info"/>
+		<echo message="Java Virtual Machine specification version: ${java.vm.specification.version}." level="info"/>
+		<echo message="Make tool '${ant.version}'." level="info"/>
+		<echo message="Running '${os.name}' version '${os.version}' on '${os.arch}' architecture." level="info"/>
+	</target>
+
+	<target name="main" depends="clean, main.noclean" description="Performs a clean, then builds the jars."/>
+
+	<target name="main.noclean" depends="jar" description="Builds the jars"/>
+
+	<target name="compile" depends="init, compile.common">
+		<mkdir dir="${build.classes.dir}"/>
+
+		<javac destdir="${build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+					 includes="de/novabit/common/server/**/ejb/"
+					 excludes="de/novabit/**/test/"
+					 classpathref="common.jboss.path">
+			<src path="${src.dir}"/>
+		</javac>
+	</target>
+
+	<target name="compile.common" depends="init">
+		<mkdir dir="${build.classes.dir}"/>
+
+		<copy todir="${build.classes.dir}">
+			<fileset dir="${src.dir}" includes="de/novabit/common/layoutml/layoutml.dtd, de/novabit/common/ui/images/"/>
+		</copy>
+
+		<javac destdir="${build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+			 		 includes="de/novabit/common/**/"
+					 excludes="de/novabit/common/server/**/ejb/"
+					 classpathref="common.path">
+			<src path="${src.dir}"/>
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<mkdir dir="${build.deploy.dir}"/>
+
+		<jar jarfile="${build.deploy.dir}/novabit-common.jar">
+			<fileset dir="${build.classes.dir}" includes="de/novabit/common/"
+							 excludes="de/novabit/common/server/**/ejb/, de/novabit/**/test/, de/novabit/**/build.xml"/>
+		</jar>
+
+		<jar jarfile="${build.deploy.dir}/novabit-common-ejb.jar">
+			<fileset dir="${build.classes.dir}" includes="de/novabit/common/server/**/ejb/"
+							 excludes="de/novabit/**/test/, de/novabit/**/build.xml"/>
+		</jar>
+	</target>
+
+	<target name="test" depends="compile">
+		<!-- As of ant 1.6.5, the junit task requires that the junit.jar is included in ant's classpath -->
+		<!-- It is best given over the command line, for example: ant -lib $junit_home/junit.jar -->
+		<junit haltonerror="on" haltonfailure="on" printsummary="on">
+			<classpath>
+				<pathelement location="${build.classes.dir}"/>
+				<path refid="common.path"/>
+			</classpath>
+			<assertions>
+				<enable/>
+			</assertions>
+			<formatter type="plain" usefile="false"/>
+			<test name="de.novabit.common.test.Suite"/>
+		</junit>
+	</target>
+
+	<target name="javadoc" description="Builds the javadoc.">
+		<javadoc destdir="${doc.dir}/api" source="${java.src.version}" maxmemory="120m" access="protected" splitindex="true"
+						 version="true" author="true" use="true" doctitle="Novabit common API Documentation"
+						 windowtitle="Novabit common API Documentation">
+			<tag name="invariant" description="Invariants:"/>
+			<tag name="precondition" description="Preconditions:" scope="constructors,methods"/>
+			<tag name="postcondition" description="Postconditions:" scope="constructors,methods"/>
+			<tag name="ejb.persistence" description="@ejb.persistence" scope="methods"/>
+			<tag name="ejb.transaction" description="@ejb.transaction"/>
+			<sourcepath>
+				<pathelement location="${src.dir}"/>
+			</sourcepath>
+			<packageset dir="${src.dir}"/>
+			<classpath>
+				<path refid="common.path"/>
+			</classpath>
+		</javadoc>
+	</target>
+
+	<target name="clean" depends="clean.javadoc" description="Removes all generated files.">
+		<delete quiet="true" includeEmptyDirs="true">
+			<fileset dir="${src.dir}" includes="**/interfaces/" excludes="pending/"/>
+			<fileset dir="${project.home.dir}" includes="build/*/"/>
+		</delete>
+	</target>
+	<target name="clean.javadoc">
+		<delete quiet="true" dir="${doc.dir}/api"/>
+	</target>
+
+</project>
