@@ -1,4 +1,4 @@
-<project name="nucleus" default="main" basedir=".">
+<project name="Nucleus" default="main" basedir=".">
 
 	<property name="app.name" value="nucleus"/>
 
@@ -47,7 +47,7 @@
 	
 	<!-- common directories: -->
 	<!--property name="common.dir" value="${project.home.dir}/../common"/-->
-	<property name="common.dir" value="${project.home.dir}"/>
+	<property name="common.dir" value="${project.home.dir}/../nucleus"/>
 	<property name="common.src.dir" value="${common.dir}/src/java"/>
 	<property name="common.build.deploy.dir" value="${common.dir}/build/deploy"/>
 
@@ -155,7 +155,7 @@
 
 		<pathelement location="${project.build.deploy.dir}/${app.name}-xerlin.jar"/>
 
-		<pathelement location="${common.dir}/lib/client/layer.jar"/>
+		<pathelement location="${nucleus.dir}/lib/client/layer.jar"/>
 	</path>
 
 	<path id="project.path">
@@ -263,70 +263,27 @@
 
 	<target name="build.novabit.common.noclean">
 		<!--ant dir="${common.dir}" target="main.noclean" inheritall="false"/-->
-		<ant antfile="build-common.xml" dir="${common.dir}" target="main.noclean" inheritall="false"/>
+		<ant antfile="${nucleus.dir}/build-common.xml" dir="${common.dir}" target="main.noclean" inheritall="false"/>
 	</target>
 
 	<target name="xdoclet.generate.all">
-		<copy todir="${project.home.dir}/ejbdoclet_nucleus_tmp">
+		<ejbdoclet destdir="${nucleus.build.java.dir}" ejbspec="${ejb.version}" verbose="true">
 			<fileset dir="${nucleus.src.java.dir}">
-				<exclude name="de/novabit/common/**"/>
+				<include name="de/novabit/nucleus/server/**/ejb/*Bean.java"/>
 			</fileset>
-		</copy>	
-		<if>
-			<equals arg1="${app.name}" arg2="nucleus" />
-				<then>
-					<ejbdoclet destdir="${nucleus.build.java.dir}" ejbspec="${ejb.version}" verbose="true">
-						<fileset dir="${project.home.dir}/ejbdoclet_nucleus_tmp">
-							<include name="de/novabit/nucleus/server/**/ejb/*Bean.java"/>
-						</fileset>
-						<packageSubstitution packages="ejb" substituteWith="interfaces"/>
-						<remoteinterface pattern="{0}Remote"/>
-						<homeinterface pattern="{0}RemoteHome"/>
-						<localinterface/>
-						<localhomeinterface/>
-						<deploymentdescriptor destdir="${nucleus.build.classes.dir}/META-INF"/>
-						<jboss version="${jboss.version}" createTable="false" removeTable="false" xmlencoding="UTF-8"
-							datasource="${datasource.name}" destdir="${nucleus.build.classes.dir}/META-INF"
-									 validateXml="false" mergedir="${nucleus.dir}/merge"/>
-					</ejbdoclet>
-				</then>
-				<else>				
-					<copy todir="${project.home.dir}/ejbdoclet_app_tmp">
-						<fileset dir="${project.src.java.dir}">
-							<exclude name="de/novabit/common/**"/>
-						</fileset>
-					</copy>
-					<ejbdoclet destdir="${nucleus.build.java.dir}" ejbspec="${ejb.version}" verbose="true">
-						<!--fileset dir="${nucleus.src.java.dir}">
-							<include name="de/novabit/nucleus/server/**/ejb/*Bean.java"/>
-						</fileset>
-						<fileset dir="${project.src.java.dir}">
-							<include name="de/novabit/${app.name}/server/**/ejb/*Bean.java"/>
-						</fileset-->
-						<fileset dir="${project.home.dir}/ejbdoclet_nucleus_tmp">
-							<include name="de/novabit/nucleus/server/**/ejb/*Bean.java"/>
-						</fileset>
-						<fileset dir="${project.home.dir}/ejbdoclet_app_tmp">
-							<include name="de/novabit/${app.name}/server/**/ejb/*Bean.java"/>
-						</fileset>
-						<packageSubstitution packages="ejb" substituteWith="interfaces"/>
-						<remoteinterface pattern="{0}Remote"/>
-						<homeinterface pattern="{0}RemoteHome"/>
-						<localinterface/>
-						<localhomeinterface/>
-						<deploymentdescriptor destdir="${nucleus.build.classes.dir}/META-INF"/>
-						<jboss version="${jboss.version}" createTable="false" removeTable="false" xmlencoding="UTF-8"
-							datasource="${datasource.name}" destdir="${nucleus.build.classes.dir}/META-INF"
-									 validateXml="false" mergedir="${nucleus.dir}/merge"/>
-					</ejbdoclet>
-					<delete quiet="true" includeEmptyDirs="true">
-						<fileset dir="${project.home.dir}/ejbdoclet_app_tmp" />
-					</delete>
-				</else>
-		</if>
-		<delete quiet="true" includeEmptyDirs="true">
-			<fileset dir="${project.home.dir}/ejbdoclet_nucleus_tmp" />
-		</delete>
+			<fileset dir="${project.src.java.dir}">
+				<include name="de/novabit/${app.name}/server/**/ejb/*Bean.java"/>
+			</fileset>
+			<packageSubstitution packages="ejb" substituteWith="interfaces"/>
+			<remoteinterface pattern="{0}Remote"/>
+			<homeinterface pattern="{0}RemoteHome"/>
+			<localinterface/>
+			<localhomeinterface/>
+			<deploymentdescriptor destdir="${nucleus.build.classes.dir}/META-INF"/>
+			<jboss version="${jboss.version}" createTable="false" removeTable="false" xmlencoding="UTF-8"
+				datasource="${datasource.name}" destdir="${nucleus.build.classes.dir}/META-INF"
+						 validateXml="false" mergedir="${nucleus.dir}/merge"/>
+		</ejbdoclet>
 	</target>
 
 	<target name="compile" depends="init, compile.client"/>
@@ -411,7 +368,7 @@
 			<fileset dir="${nucleus.src.java.dir}/de/novabit/nucleus/client/report" includes="*.dtd"/>
 		</copy>
 
-		<copy file="${common.src.dir}/de/novabit/common/layoutml/layoutml.dtd" tofile="${project.conf.dir}/layoutml.dtd"
+		<copy file="${nucleus.src.java.dir}/de/novabit/common/layoutml/layoutml.dtd" tofile="${project.conf.dir}/layoutml.dtd"
 					overwrite="true"/>
 
 		<!--
@@ -522,7 +479,7 @@
 		<javac destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
 					 excludes="de/novabit/common/logging/test/"
 					 classpathref="project.path">
-			<src path="${common.src.dir}/de/novabit/common/logging/;${nucleus.src.java.dir}/de/novabit/nucleus/server/mbean/"/>
+			<src path="${nucleus.src.java.dir}/de/novabit/common/logging/;${nucleus.src.java.dir}/de/novabit/nucleus/server/mbean/"/>
 		</javac>
 
 		<jar jarfile="${nucleus.build.deploy.dir}/novabit-jboss.jar" basedir="${nucleus.build.classes.dir}"
@@ -1184,11 +1141,8 @@
 		<copy todir="${project.conf.dir}/icons" overwrite="false">
 			<fileset dir="${nucleus.conf.dir}/icons"/>
 		</copy>
-		<copy todir="${project.conf.dir}/jboss/classes" overwrite="false">
-			<fileset dir="${nucleus.conf.dir}/jboss/classes"/>
-		</copy>
-		<copy todir="${project.conf.dir}/jboss/classes" overwrite="false">
-			<fileset dir="${nucleus.conf.dir}/jboss/classes"/>
+		<copy todir="${project.conf.dir}/jboss/conf" overwrite="false">
+			<fileset dir="${nucleus.conf.dir}/jboss/conf"/>
 		</copy>
 		<copy todir="${project.conf.dir}/jboss/conf" overwrite="false">
 			<fileset dir="${nucleus.conf.dir}/jboss/conf"/>
