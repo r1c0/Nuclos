@@ -960,7 +960,7 @@
 		<mkdir dir="${project.build.deploy.dir}/plugins"/>
 		<jar jarfile="${project.build.deploy.dir}/plugins/layoutml-plugin.jar" basedir="${nucleus.conf.dir}/xerlin/plugins/"/>
 
-		<copy overwrite="true" todir="${project.build.deploy.dir}/nucleus-webstart.war/app">
+		<copy overwrite="true" todir="${project.build.deploy.dir}/webstart/app">
 			<fileset dir="${nucleus.build.deploy.dir}">
 				<include name="nucleus-client.jar"/>
 			</fileset>
@@ -975,7 +975,7 @@
 			</fileset>
 		</copy>
 
-		<copy overwrite="true" todir="${project.build.deploy.dir}/nucleus-webstart.war">
+		<copy overwrite="true" todir="${project.build.deploy.dir}/webstart">
 			<fileset dir="${project.conf.dir}/webstart">
 				<exclude name="WEB-INF/web.xml"/>
 			</fileset>
@@ -992,10 +992,7 @@
 			</fileset>
 		</copy>
 
-		<!--replace file="${project.build.deploy.dir}/webstart/app/webstart.jnlp" token="localhost:8080" value="${webstart.url}"/-->
-		
-		hier weiter
-		
+		<replace file="${project.build.deploy.dir}/webstart/app/webstart.jnlp" token="localhost:8080" value="${webstart.url}"/>
 		<replace file="${project.build.deploy.dir}/conf/nucleus-app.properties" token="localhost:8080" value="${webstart.url}"/>
 
 		<!-- jar conf folder -->
