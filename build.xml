@@ -153,7 +153,7 @@
 		<pathelement location="${nucleus.lib.dir}/thirdparty.jar"/>
 		<pathelement location="${nucleus.lib.dir}/StrutLayout1.2.1.jar"/>
 
-		<pathelement location="${project.build.deploy.dir}/${app.name}-xerlin.jar"/>
+		<pathelement location="${project.build.deploy.dir}/nucleus-xerlin.jar"/>
 
 		<pathelement location="${nucleus.dir}/lib/client/layer.jar"/>
 	</path>
@@ -327,7 +327,7 @@
 
 	<target name="patch.xerlin.jar"
 					description="Renames the xerlin.jar file to a project specific name.">
-		<copy file="${nucleus.lib.dir}/Xerlin-1.3-patched.jar" tofile="${project.build.deploy.dir}/${app.name}-xerlin.jar"/>
+		<copy file="${nucleus.lib.dir}/Xerlin-1.3-patched.jar" tofile="${project.build.deploy.dir}/nucleus-xerlin.jar"/>
 	</target>
 
 	<target name="compile.client.nodepend">
@@ -910,7 +910,7 @@
 		<delete quiet="true" dir="${project.dist.dir}"/>
 	</target>
 
-	<target name="war.webstart" description="Builds the webstart-client." depends="jar.server,deploy.client">
+	<target name="war.webstart" description="Builds the webstart-client." depends="clean, build.novabit.common.noclean, deploy.client, jar.javahelp">
 		<!-- unjar libraries to sign them later -->
 		<unjar overwrite="false" src="${nucleus.lib.dir}/xalan.jar" dest="${project.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/commons-beanutils-1.5.jar" dest="${project.build.classes.dir}"/>
@@ -944,42 +944,59 @@
 		<unjar overwrite="false" src="${common.dir}/lib/client/layer.jar" dest="${project.build.classes.dir}"/>
 		<unjar overwrite="false" src="${common.dir}/lib/client/jlfgr-1_0.jar" dest="${project.build.classes.dir}"/>
 
+		<!-- jar nucleus libs -->
 		<delete dir="${project.build.classes.dir}/META-INF"/>
-		<jar jarfile="${project.build.deploy.dir}/${app.name}-libs.jar">
+		<jar jarfile="${project.build.deploy.dir}/nucleus-libs.jar">
 			<fileset dir="${project.build.classes.dir}" excludes="de/novabit/**"/>
 		</jar>
 
 		<!-- jar native libs -->
-		<jar destfile="${project.build.deploy.dir}/${app.name}-native.jar">
+		<jar destfile="${project.build.deploy.dir}/nucleus-native.jar">
 			<fileset dir="${nucleus.lib.dir}">
 				<include name="jawin.dll"/>
 			</fileset>
 		</jar>
 
 		<!-- create folder structure for war -->
-		<mkdir dir="${project.build.deploy.dir}/plugins"/>
-		<jar jarfile="${project.build.deploy.dir}/plugins/layoutml-plugin.jar" basedir="${nucleus.conf.dir}/xerlin/plugins/"/>
+		<mkdir dir="${project.build.deploy.dir}/plugins/dtd"/>
+		<copy overwrite="true" todir="${project.build.deploy.dir}/plugins">
+			<fileset dir="${nucleus.conf.dir}/xerlin/plugins">
+				<include name="plugin.xml"/>
+			</fileset>
+		</copy>
+		<copy overwrite="true" todir="${project.build.deploy.dir}/plugins/dtd">
+			<fileset dir="${nucleus.conf.dir}">
+				<include name="layoutml.dtd"/>
+			</fileset>
+		</copy>
+		<jar jarfile="${project.build.deploy.dir}/plugins/layoutml-plugin.jar" basedir="${project.build.deploy.dir}/plugins/"/>
 
-		<copy overwrite="true" todir="${project.build.deploy.dir}/webstart/app">
+		<copy overwrite="true" todir="${project.build.deploy.dir}/nucleus-webstart.war/app">
 			<fileset dir="${nucleus.build.deploy.dir}">
 				<include name="nucleus-client.jar"/>
 			</fileset>
 			<fileset dir="${project.build.deploy.dir}">
 				<include name="${app.name}-client.jar"/>
 				<include name="novabit-common.jar"/>
-				<include name="${app.name}-xerlin.jar"/>
-				<include name="${app.name}-libs.jar"/>
+				<include name="nucleus-xerlin.jar"/>
+				<include name="nucleus-libs.jar"/>
 				<include name="nucleus-help.jar"/>
-				<include name="${app.name}-native.jar"/>
+				<include name="nucleus-native.jar"/>
 				<include name="plugins/layoutml-plugin.jar"/>
 			</fileset>
 		</copy>
 
-		<copy overwrite="true" todir="${project.build.deploy.dir}/webstart">
+		<copy overwrite="true" todir="${project.build.deploy.dir}/nucleus-webstart.war">
 			<fileset dir="${project.conf.dir}/webstart">
-				<exclude name="WEB-INF/web.xml"/>
 			</fileset>
 		</copy>
+		
+		<copy overwrite="true" todir="${project.build.deploy.dir}/nucleus-webstart.war/WEB-INF/lib">
+			<fileset dir="${nucleus.lib.dir}">
+				<include name="jnlp-servlet.jar"/>
+			</fileset>
+		</copy>
+		
 		<copy overwrite="true" todir="${project.build.deploy.dir}/conf">
 			<fileset dir="${project.conf.dir}">
 				<include name="jndi.properties"/>
@@ -992,138 +1009,38 @@
 			</fileset>
 		</copy>
 
-		<replace file="${project.build.deploy.dir}/webstart/app/webstart.jnlp" token="localhost:8080" value="${webstart.url}"/>
-		<replace file="${project.build.deploy.dir}/conf/nucleus-app.properties" token="localhost:8080" value="${webstart.url}"/>
-
 		<!-- jar conf folder -->
-		<jar destfile="${project.build.deploy.dir}/webstart/app/${app.name}-config.jar">
+		<jar destfile="${project.build.deploy.dir}/nucleus-webstart.war/app/nucleus-config.jar">
 			<fileset dir="${project.build.deploy.dir}/conf"/>
 		</jar>
 
 		<!-- sign jars (in order to enable security <all-permissions/>) -->
 		<signjar verbose="false" alias="noa" storepass="novabit" keystore="./.keystore">
-			<fileset dir="${project.build.deploy.dir}/webstart/app">
+			<fileset dir="${project.build.deploy.dir}/nucleus-webstart.war/app">
 				<include name="nucleus-client.jar"/>
 				<include name="${app.name}-client.jar"/>
 				<include name="novabit-common.jar"/>
-				<include name="${app.name}-xerlin.jar"/>
-				<include name="${app.name}-config.jar"/>
-				<include name="${app.name}-libs.jar"/>
-				<include name="${app.name}-native.jar"/>
+				<include name="nucleus-xerlin.jar"/>
+				<include name="nucleus-config.jar"/>
+				<include name="nucleus-libs.jar"/>
+				<include name="nucleus-native.jar"/>
 				<include name="nucleus-help.jar"/>
 			</fileset>
 		</signjar>
 
-		<!-- war webstart application -->
-		<war destfile="${project.build.deploy.dir}/nucleus-webstart.war" webxml="${nucleus.conf.dir}/webstart/WEB-INF/web.xml">
-			<lib dir="${nucleus.lib.dir}">
-				<include name="jnlp-servlet.jar"/>
-			</lib>
-			<fileset dir="${project.build.deploy.dir}/webstart" excludes="META-INF/"/>
-		</war>
+		<!-- copy webstart-client to server -->
+		<copy overwrite="true" todir="${jboss.server.deploy.dir}/nucleus-webstart.war">
+			<fileset dir="${project.build.deploy.dir}/nucleus-webstart.war"/>
+		</copy>
 	</target>
 
-	<target name="dist.webstart" depends="war.webstart, javadoc, build.ruledoc" description="copy files to distribution directory.">
-		<mkdir dir="${project.dist.dir}"/>
-
-		<!-- make .ear -->
-		<ear destfile="${project.build.deploy.dir}/${app.name}.ear" appxml="${project.build.deploy.dir}/webstart/META-INF/application.xml">
-			<fileset dir="${nucleus.build.deploy.dir}" includes="nucleus-server.jar"/>
-			<fileset dir="${project.build.deploy.dir}" includes="${app.name}-server.jar"/>
-			<fileset dir="${common.build.deploy.dir}" includes="novabit-common.jar, novabit-common-ejb.jar"/>
-			<fileset dir="${nucleus.lib.dir}" includes="quartz-all-1.6.0.jar"/>
-			<fileset dir="${project.build.deploy.dir}" includes="nucleus-webstart.war"></fileset>
-		</ear>
+	<target name="dist.webstart" depends="dist, war.webstart" description="copy files to distribution directory containing webstart configuration.">
 		<mkdir dir="${project.dist.dir}/server/deploy"/>
-		<copy todir="${project.dist.dir}/server/deploy">
-			<fileset dir="${project.build.deploy.dir}" includes="${app.name}.ear"/>
+		
+		<!-- copy webstart directories to server -->
+		<copy overwrite="true" todir="${project.dist.dir}/server/deploy/nucleus-webstart.war">
+			<fileset dir="${project.build.deploy.dir}/nucleus-webstart.war"/>
 		</copy>
-
-		<!-- copy server config -->
-		<mkdir dir="${project.dist.dir}/server/conf"/>
-		<copy todir="${project.dist.dir}/server/conf">
-			<fileset dir="${project.conf.dir}/jboss/conf" includes="log4j.xml"/>
-		</copy>
-
-		<!-- copy client config: -->
-		<mkdir dir="${project.dist.dir}/client"/>
-		<copy todir="${project.dist.dir}/client">
-			<fileset dir="${project.bin.dir}" includes="run-client.bat, run-console.bat"/>
-		</copy>
-		<mkdir dir="${project.dist.dir}/client/conf"/>
-		<copy todir="${project.dist.dir}/client/conf">
-			<fileset dir="${project.conf.dir}" includes="jndi.properties, layoutml.dtd, nucleus-app.properties, nucleus-client.properties"/>
-		</copy>
-		<mkdir dir="${project.dist.dir}/client/conf/doc"/>
-		<copy file="${nucleus.build.classes.dir}/de/novabit/nucleus/client/help/releasenotes/releasenotes.html" tofile="${project.dist.dir}/client/conf/doc/nucleus-releasenotes.html"/>
-		<copy file="${project.build.classes.dir}/de/novabit/${app.name}/client/help/releasenotes/releasenotes.html" tofile="${project.dist.dir}/client/conf/doc/${app.name}-releasenotes.html"/>
-		<mkdir dir="${project.dist.dir}/client/conf/icons"/>
-		<copy todir="${project.dist.dir}/client/conf/icons">
-			<fileset dir="${project.conf.dir}/icons" includes="*.png"/>
-		</copy>
-		<copy file="${nucleus.conf.dir}/novabit/log4j-client-template.xml" tofile="${project.dist.dir}/client/conf/log4j.xml"/>
-
-		<!-- copy client libs: -->
-		<mkdir dir="${project.dist.dir}/client/lib"/>
-		<copy todir="${project.dist.dir}/client/lib">
-			<fileset dir="${nucleus.build.deploy.dir}" includes="*.jar" excludes="nucleus-server.jar"/>
-			<fileset dir="${project.build.deploy.dir}" includes="*.jar" excludes="${app.name}-server.jar, novabit-jboss.jar"/>
-		</copy>
-
-		<!-- copy layouts: -->
-		<mkdir dir="${project.dist.dir}/client/layoutml"/>
-		<copy todir="${project.dist.dir}/client/layoutml">
-			<fileset dir="${nucleus.src.dir}/layoutml"/>
-			<fileset dir="${project.src.dir}/layoutml"/>
-		</copy>
-
-		<!-- copy rules: -->
- 		<mkdir dir="${project.dist.dir}/client/rules"/>
- 		<copy todir="${project.dist.dir}/client/rules" failonerror="false">
- 			<fileset dir="${nucleus.src.dir}/rules"/>
- 		</copy>
-
- 		<copy todir="${project.dist.dir}/client/rules" failonerror="false">
- 			<fileset dir="${project.src.dir}/rules"/>
- 		</copy>
-
-		<!-- copy reports/datasources: -->
- 		<mkdir dir="${project.dist.dir}/client/reports"/>
- 		<copy todir="${project.dist.dir}/client/reports" failonerror="false">
- 			<fileset dir="${nucleus.src.dir}/reports"/>
- 		</copy>
-
- 		<copy todir="${project.dist.dir}/client/reports" failonerror="false">
- 			<fileset dir="${project.src.dir}/reports"/>
- 		</copy>
-
-		<!-- copy server libs: -->
-		<mkdir dir="${project.dist.dir}/server/lib"/>
-		<copy todir="${project.dist.dir}/server/lib">
-			<fileset dir="${nucleus.build.deploy.dir}" includes="novabit-jboss.jar"/>
-		</copy>
-
-		<!-- copy db script(s): -->
-		<mkdir dir="${project.dist.dir}/scripts"/>
-		<copy todir="${project.dist.dir}/scripts">
-			<fileset dir="${project.db.dir}" excludes="von_eplus/, utils/"/>
-		</copy>
-
-		<!-- zip sources: -->
-		<zip destfile="${project.dist.dir}/source.zip">
-			<fileset dir="${project.home.dir}" includes="build.*, src/" excludes="CVS"/>
-			<fileset dir="${nucleus.dir}" includes="src/" excludes="CVS"/>
-			<fileset dir="${common.dir}" includes="src/" excludes="CVS"/>
-		</zip>
-
-		<!-- zip documentation: -->
-		<zip destfile="${project.dist.dir}/doc.zip">
-			<zipfileset dir="${nucleus.doc.dir}/Systemdokumentation" includes="*.pdf, DB-Schema*/, include/, Licenses/, UML/"
-							 excludes="DB-Schema.vsd, CSV, *.doc"/>
-			<zipfileset dir="${project.doc.dir}/api" prefix="javadoc"/>
-			<zipfileset dir="${project.doc.dir}/Systemdokumentation" includes="*.pdf, index.htm, DB-Schema*/, include/, Licenses/, UML/"
-							 excludes="DB-Schema.vsd, CSV, *.doc"/>
-		</zip>
 	</target>
 
 	<target name="setup.new.project" description="create a new project based on nucleus">
