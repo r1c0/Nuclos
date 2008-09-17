@@ -79,6 +79,7 @@
 	<property name="project.build.deploy.dir" value="${project.build.dir}/deploy"/>
 	<property name="project.dist.dir" value="${project.home.dir}/dist"/>
 	<property name="project.bin.dir" value="${project.home.dir}/bin"/>
+	<property name="project.build.java.dir" value="${project.home.dir}/gen"/>
 
 	<!-- Source directories: -->
 	<property name="src.novabit.dir" value="${nucleus.src.java.dir}/de/novabit"/>
@@ -154,7 +155,7 @@
 		<pathelement location="${nucleus.lib.dir}/thirdparty.jar"/>
 		<pathelement location="${nucleus.lib.dir}/StrutLayout1.2.1.jar"/>
 
-		<pathelement location="${project.build.deploy.dir}/nucleus-xerlin.jar"/>
+		<pathelement location="${project.build.deploy.dir}/${app.name}-xerlin.jar"/>
 
 		<pathelement location="${nucleus.dir}/lib/client/layer.jar"/>
 	</path>
@@ -165,11 +166,11 @@
 	</path>
 
 	<path id="project.client.run.path">
-		<pathelement location="${nucleus.build.deploy.dir}/nucleus-client.jar"/>
+		<pathelement location="${project.build.deploy.dir}/nucleus-client.jar"/>
 		<pathelement location="${project.build.deploy.dir}/${app.name}-client.jar"/>
 		<!-- include nucleus.conf.dir in classpath so the ClassLoader finds nucleus-client.properties: -->
 		<pathelement location="${project.conf.dir}"/>
-		<pathelement location="${project.build.deploy.dir}/nucleus-help.jar"/>
+		<pathelement location="${project.build.deploy.dir}/${app.name}-help.jar"/>
 
 		<path refid="project.client.path"/>
 	</path>
@@ -285,6 +286,18 @@
 				datasource="${datasource.name}" destdir="${nucleus.build.classes.dir}/META-INF"
 						 validateXml="false" mergedir="${nucleus.dir}/merge"/>
 		</ejbdoclet>
+		
+		<if>
+			<equals arg1="${app.name}" arg2="nucleus" />
+			<then>
+			</then>
+			<else>
+				<copy todir="${project.build.java.dir}">
+					<fileset dir="${nucleus.build.java.dir}" includes="de/novabit/${app.name}/**/*.java"/>
+				</copy>
+				<delete quiet="true" dir="${nucleus.build.java.dir}/de/novabit/${app.name}"/>
+			</else>
+		</if>
 	</target>
 
 	<target name="compile" depends="init, compile.client"/>
@@ -306,18 +319,18 @@
 			<fileset dir="${project.conf.dir}" includes="nucleus-app*.properties"/>
 		</copy>
 		<copy todir="${project.build.classes.dir}/resources">
-			<fileset dir="${project.conf.dir}/resources"/>
+			<fileset dir="${nucleus.conf.dir}/resources"/>
 		</copy>
 		
 		<javac destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
-					 srcdir="${nucleus.src.java.dir}:${nucleus.build.java.dir}"
+					 srcdir="${nucleus.src.java.dir}:${nucleus.build.java.dir}:${project.build.java.dir}"
 					 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/"
 					 excludes="**/test/"
 					 classpathref="project.server.path">
 		</javac>
 
 		<javac destdir="${project.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
-				 srcdir="${project.src.java.dir}:${nucleus.build.java.dir}"
+				 srcdir="${project.src.java.dir}:${nucleus.build.java.dir}:${project.build.java.dir}"
 				 includes="de/novabit/${app.name}/common/, de/novabit/${app.name}/server/"
 				 excludes="**/test/"
 				 classpathref="project.server.path">
@@ -328,7 +341,7 @@
 
 	<target name="patch.xerlin.jar"
 					description="Renames the xerlin.jar file to a project specific name.">
-		<copy file="${nucleus.lib.dir}/Xerlin-1.3-patched.jar" tofile="${project.build.deploy.dir}/nucleus-xerlin.jar"/>
+		<copy file="${nucleus.lib.dir}/Xerlin-1.3-patched.jar" tofile="${project.build.deploy.dir}/${app.name}-xerlin.jar"/>
 	</target>
 
 	<target name="compile.client.nodepend">
@@ -430,7 +443,7 @@
 		<mkdir dir="${nucleus.build.deploy.dir}"/>
 		<mkdir dir="${project.build.deploy.dir}"/>
 
-		<jar jarfile="${nucleus.build.deploy.dir}/nucleus-client.jar">
+		<jar jarfile="${project.build.deploy.dir}/nucleus-client.jar">
 			<fileset dir="${nucleus.build.classes.dir}"
 				includes=	"de/novabit/nucleus/client/,
 							de/novabit/nucleus/common/,
@@ -684,7 +697,7 @@
 		<copy todir="${project.build.classes.dir}/de/novabit/nucleus/client/help/javahelp">
 			<fileset dir="${nucleus.doc.dir}/onlinehelp/src" excludes="CVS,*.jhp"/>
 		</copy>
-		<jar jarfile="${project.build.deploy.dir}/nucleus-help.jar">
+		<jar jarfile="${project.build.deploy.dir}/${app.name}-help.jar">
 			<fileset dir="${project.build.classes.dir}" includes="de/novabit/nucleus/client/help/javahelp/"/>
 		</jar>
 	</target>
@@ -723,7 +736,7 @@
 	</target>
 
 	<target name="jar.javahelp.nodepend">
-		<jar jarfile="${project.build.deploy.dir}/nucleus-help.jar">
+		<jar jarfile="${project.build.deploy.dir}/${app.name}-help.jar">
 			<fileset dir="${project.build.classes.dir}" includes="de/novabit/nucleus/client/help/javahelp/"/>
 		</jar>
 	</target>
@@ -837,7 +850,7 @@
 		</copy>
 		<mkdir dir="${project.dist.dir}/client/conf/doc"/>
 		<copy file="${nucleus.build.classes.dir}/de/novabit/nucleus/client/help/releasenotes/releasenotes.html" tofile="${project.dist.dir}/client/conf/doc/nucleus-releasenotes.html"/>
-		<copy file="${project.build.classes.dir}/de/novabit/${app.name}/client/help/releasenotes/releasenotes.html" tofile="${project.dist.dir}/client/conf/doc/${app.name}-releasenotes.html"/>
+		<copy file="${project.src.dir}/doc/releasenotes.html" tofile="${project.dist.dir}/client/conf/doc/releasenotes.html"/>
 		<mkdir dir="${project.dist.dir}/client/conf/icons"/>
 		<copy todir="${project.dist.dir}/client/conf/icons">
 			<fileset dir="${project.conf.dir}/icons" includes="*.png"/>
@@ -911,7 +924,10 @@
 		<delete quiet="true" dir="${project.dist.dir}"/>
 	</target>
 
-	<target name="war.webstart" description="Builds the webstart-client." depends="clean, build.novabit.common.noclean, deploy.client, jar.javahelp">
+	<target name="war.webstart" description="Builds the webstart-client." depends="clean, build.novabit.common.noclean, deploy.client, jar.javahelp, war.webstart.nodepend">
+	</target>
+			
+	<target name="war.webstart.nodepend" description="Builds the webstart-client without dependencies.">
 		<!-- unjar libraries to sign them later -->
 		<unjar overwrite="false" src="${nucleus.lib.dir}/xalan.jar" dest="${project.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/commons-beanutils-1.5.jar" dest="${project.build.classes.dir}"/>
@@ -966,24 +982,25 @@
 			</fileset>
 		</copy>
 		<copy overwrite="true" todir="${project.build.deploy.dir}/plugins/dtd">
-			<fileset dir="${project.conf.dir}">
+			<fileset dir="${nucleus.conf.dir}">
 				<include name="layoutml.dtd"/>
 			</fileset>
 		</copy>
 		<jar jarfile="${project.build.deploy.dir}/plugins/layoutml-plugin.jar" basedir="${project.build.deploy.dir}/plugins/"/>
 
 		<copy overwrite="true" todir="${project.build.deploy.dir}/nucleus-webstart.war/app">
-			<fileset dir="${nucleus.build.deploy.dir}">
-				<include name="nucleus-client.jar"/>
-			</fileset>
 			<fileset dir="${project.build.deploy.dir}">
+				<include name="nucleus-client.jar"/>
 				<include name="${app.name}-client.jar"/>
 				<include name="novabit-common.jar"/>
-				<include name="nucleus-xerlin.jar"/>
+				<include name="${app.name}-xerlin.jar"/>
 				<include name="nucleus-libs.jar"/>
-				<include name="nucleus-help.jar"/>
+				<include name="${app.name}-help.jar"/>
 				<include name="nucleus-native.jar"/>
 				<include name="plugins/layoutml-plugin.jar"/>
+			</fileset>
+			<fileset dir="${project.conf.dir}">
+				<include name="log4j.xml"/>
 			</fileset>
 		</copy>
 
@@ -1011,7 +1028,7 @@
 		</copy>
 
 		<!-- jar conf folder -->
-		<jar destfile="${project.build.deploy.dir}/nucleus-webstart.war/app/nucleus-config.jar">
+		<jar destfile="${project.build.deploy.dir}/nucleus-webstart.war/app/${app.name}-config.jar">
 			<fileset dir="${project.build.deploy.dir}/conf"/>
 		</jar>
 
@@ -1021,11 +1038,11 @@
 				<include name="nucleus-client.jar"/>
 				<include name="${app.name}-client.jar"/>
 				<include name="novabit-common.jar"/>
-				<include name="nucleus-xerlin.jar"/>
-				<include name="nucleus-config.jar"/>
+				<include name="${app.name}-xerlin.jar"/>
+				<include name="${app.name}-config.jar"/>
 				<include name="nucleus-libs.jar"/>
 				<include name="nucleus-native.jar"/>
-				<include name="nucleus-help.jar"/>
+				<include name="${app.name}-help.jar"/>
 			</fileset>
 		</signjar>
 
@@ -1041,6 +1058,12 @@
 		<!-- copy webstart directories to server -->
 		<copy overwrite="true" todir="${project.dist.dir}/server/deploy/nucleus-webstart.war">
 			<fileset dir="${project.build.deploy.dir}/nucleus-webstart.war"/>
+		</copy>
+		
+		<copy overwrite="true" todir="${project.dist.dir}/server/deploy/nucleus-webstart.war/app">
+			<fileset dir="${project.conf.dir}">
+				<include name="log4j.xml"/>
+			</fileset>
 		</copy>
 	</target>
 
