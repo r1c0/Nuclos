@@ -982,7 +982,7 @@
 			</fileset>
 		</copy>
 		<copy overwrite="true" todir="${project.build.deploy.dir}/plugins/dtd">
-			<fileset dir="${nucleus.conf.dir}">
+			<fileset dir="${project.conf.dir}">
 				<include name="layoutml.dtd"/>
 			</fileset>
 		</copy>
