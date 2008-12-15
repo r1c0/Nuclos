@@ -39,6 +39,7 @@
 		<pathelement location="${lib.dir}/junit-3.8.1.jar"/>
 		<pathelement location="${lib.dir}/client/jlfgr-1_0.jar"/>
 		<pathelement location="${lib.dir}/client/layer.jar"/>
+		<pathelement location="${lib.dir}/client/filters.jar"/>
 
 		<!-- @todo maybe common should not depend on these? -->
 		<pathelement location="${lib.dir}/jfcunit.jar"/>
