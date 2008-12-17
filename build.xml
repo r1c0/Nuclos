@@ -158,6 +158,7 @@
 		<pathelement location="${project.build.deploy.dir}/${app.name}-xerlin.jar"/>
 
 		<pathelement location="${nucleus.dir}/lib/client/layer.jar"/>
+		<pathelement location="${nucleus.dir}/lib/client/filters.jar"/>
 	</path>
 
 	<path id="project.path">
@@ -960,6 +961,7 @@
 		<unjar overwrite="false" src="${jboss.client.dir}/concurrent.jar" dest="${project.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/jnp-client.jar" dest="${project.build.classes.dir}"/>
 		<unjar overwrite="false" src="${common.dir}/lib/client/layer.jar" dest="${project.build.classes.dir}"/>
+		<unjar overwrite="false" src="${common.dir}/lib/client/filters.jar" dest="${project.build.classes.dir}"/>
 		<unjar overwrite="false" src="${common.dir}/lib/client/jlfgr-1_0.jar" dest="${project.build.classes.dir}"/>
 
 		<!-- jar nucleus libs -->
