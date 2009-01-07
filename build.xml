@@ -1036,7 +1036,7 @@
 		</jar>
 
 		<!-- sign jars (in order to enable security <all-permissions/>) -->
-		<signjar verbose="false" alias="noa" storepass="novabit" keystore="./.keystore">
+		<signjar verbose="false" alias="nucleus" storepass="suelcun" keystore="./.keystore">
 			<fileset dir="${project.build.deploy.dir}/nucleus-webstart.war/app">
 				<include name="nucleus-client.jar"/>
 				<include name="${app.name}-client.jar"/>
@@ -1142,5 +1142,15 @@
 
 		<loadfile property="message" srcFile="${nucleus.doc.dir}/SETUP_PROJECT.txt"/>
 		<echo>${message}</echo>
+	</target>
+	
+	<target name="genkeystore" description="Generates a key in a keystore for signing jars">
+		<genkey alias="nucleus" storepass="suelcun" keystore=".keystore" validity="3650">
+	  		<dname>
+	  			<param name="OU" value="Novabit Informationssysteme GmbH"/>
+	    		<param name="O"  value="Novabit Informationssysteme GmbH"/>
+	    		<param name="C"  value="DE"/>
+	  		</dname>
+		</genkey>
 	</target>
 </project>
