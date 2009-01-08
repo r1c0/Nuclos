@@ -443,6 +443,11 @@
 	<target name="deploy.client" depends="compile.client" description="Builds the client.">
 		<mkdir dir="${nucleus.build.deploy.dir}"/>
 		<mkdir dir="${project.build.deploy.dir}"/>
+		
+		<mkdir dir="${nucleus.build.deploy.dir}/JNLP-INF/"/>
+		<copy todir="${nucleus.build.deploy.dir}/JNLP-INF/">
+			<fileset dir="${project.conf.dir}/webstart/app/" includes="*.jnlp"/>
+		</copy>
 
 		<jar jarfile="${project.build.deploy.dir}/nucleus-client.jar">
 			<fileset dir="${nucleus.build.classes.dir}"
@@ -464,6 +469,8 @@
 							de/novabit/nucleus/client/help/javahelp/,
 							de/novabit/nucleus/client/main/animatedmenubar/,
 							de/novabit/**/build.xml"/>
+			<fileset dir="${nucleus.build.deploy.dir}"
+				includes=   "JNLP-INF/*.jnlp"/>
 		</jar>
 
 		<if>
