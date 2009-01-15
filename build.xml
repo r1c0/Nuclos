@@ -106,7 +106,7 @@
 		<pathelement location="${jboss.server.lib.dir}/jboss-common-jdbc-wrapper.jar"/>
 		<pathelement location="${nucleus.lib.dir}/dom4j-full.jar"/>
 		<pathelement location="${nucleus.lib.dir}/jasperreports-3.1.2.jar"/>
-		<pathelement location="${nucleus.lib.dir}/quartz-all-1.6.0.jar"/>
+		<pathelement location="${nucleus.lib.dir}/quartz-all-1.6.4.jar"/>
 		<pathelement location="${nucleus.lib.dir}/ojdbc14.jar"/>
 		<pathelement location="${nucleus.lib.dir}/sqljdbc.jar"/>
 		<pathelement location="${nucleus.lib.dir}/poi-2.5-final-20040302.jar"/>
@@ -425,7 +425,7 @@
 				 excludes="**/test/">
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
-				<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-all-1.6.0.jar"/>
+				<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-all-1.6.4.jar"/>
 			</manifest>
 		</jar>
 
@@ -435,7 +435,7 @@
 				 excludes="**/test/">
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
-				<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-all-1.6.0.jar"/>
+				<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-all-1.6.4.jar"/>
 			</manifest>
 		</jar>
 	</target>
@@ -522,7 +522,7 @@
 			<fileset dir="${nucleus.build.deploy.dir}" includes="nucleus-server.jar"/>
 			<fileset dir="${project.build.deploy.dir}" includes="${app.name}-server.jar"/>
 			<fileset dir="${common.build.deploy.dir}" includes="novabit-common.jar, novabit-common-ejb.jar"/>
-			<fileset dir="${nucleus.lib.dir}" includes="quartz-all-1.6.0.jar"/>
+			<fileset dir="${nucleus.lib.dir}" includes="quartz-all-1.6.4.jar"/>
 		</ear>
 	</target>
 
