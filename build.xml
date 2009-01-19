@@ -313,14 +313,14 @@
 			<fileset dir="${nucleus.src.java.dir}" includes="de/novabit/nucleus/common/querybuilder/querybuildermodel.dtd"/>
 		</copy>
 		<copy todir="${nucleus.build.classes.dir}/resources">
-			<fileset dir="${nucleus.conf.dir}/resources"/>
+			<fileset dir="${nucleus.conf.dir}/resources" excludes="project_*.properties"/>
 		</copy>
 
 		<copy todir="${project.build.classes.dir}">
 			<fileset dir="${project.conf.dir}" includes="nucleus-app*.properties"/>
 		</copy>
 		<copy todir="${project.build.classes.dir}/resources">
-			<fileset dir="${nucleus.conf.dir}/resources"/>
+			<fileset dir="${project.conf.dir}/resources"/>
 		</copy>
 		
 		<javac destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
@@ -1114,7 +1114,12 @@
 		<copy todir="${project.conf.dir}/jboss/wrapper" overwrite="false">
 			<fileset dir="${nucleus.conf.dir}/jboss/wrapper"/>
 		</copy>
-
+		
+		<mkdir dir="${project.conf.dir}/resources"/>
+		<copy todir="${project.conf.dir}/resources" overwrite="false">
+			<fileset dir="${nucleus.conf.dir}/resources" includes="project_*.properties"/>
+		</copy>
+		
 		<!-- webstart directory -->
 		<copy todir="${project.conf.dir}/webstart" overwrite="false">
 			<fileset dir="${nucleus.conf.dir}/webstart"/>
@@ -1123,9 +1128,6 @@
 		<!-- db directory -->
 		<mkdir dir="${project.home.dir}/db"/>
 		<mkdir dir="${project.home.dir}/db/versions"/>
-
-		<!-- resources directory -->
-		<mkdir dir="${project.conf.dir}/resources"/>
 
 		<!-- doc directory -->
 		<copy todir="${project.doc.dir}/Systemdokumentation" overwrite="false">
@@ -1142,6 +1144,8 @@
 				includes="releasenotes.html"/>
 		</copy>
 
+		<mkdir dir="${project.build.java.dir}"/>
+		
 		<mkdir dir="${project.src.dir}/layoutml/genericobject"/>
 		<mkdir dir="${project.src.dir}/layoutml/masterdata"/>
 		<mkdir dir="${project.src.dir}/reports"/>
