@@ -47,6 +47,7 @@ set CP=%CP%;%NUCLEUS_LIBDIR%\jasperreports-3.1.2.jar
 set CP=%CP%;%NUCLEUS_LIBDIR%\jawin.jar
 set CP=%CP%;%NUCLEUS_LIBDIR%\jxl.jar
 set CP=%CP%;%NUCLEUS_LIBDIR%\layer.jar
+set CP=%CP%;%NUCLEUS_LIBDIR%\filters.jar
 
 rem !!!! logging unter c:\temp funktioniert bei Terminalservern nicht !!!!!
 
