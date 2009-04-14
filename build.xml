@@ -465,7 +465,8 @@
 							de/novabit/nucleus/server/genericobject/searchcondition/Collectable*SearchExpression.class,
 							de/novabit/nucleus/server/navigation/treenode/*.class,
 							de/novabit/nucleus/server/person/treenode/*.class,
-							de/novabit/nucleus/common/security/auth.conf"
+							de/novabit/nucleus/common/security/auth.conf,
+							resources/*.properties"
 				excludes=	"**/test/,
 							de/novabit/**/ejb/**/*Bean.class,
 							de/novabit/nucleus/client/help/javahelp/,
@@ -487,7 +488,8 @@
 									de/novabit/${app.name}/server/**/valueobject/*,
 									de/novabit/${app.name}/server/**/interfaces/*,
 									de/novabit/${app.name}/server/**/*Exception.class,
-									de/novabit/${app.name}/server/**/*VO*.class"
+									de/novabit/${app.name}/server/**/*VO*.class,
+									resources/*.properties"
 						excludes=	"**/test/,
 									de/novabit/**/ejb/**/*Bean.class,
 									de/novabit/**/build.xml"/>
