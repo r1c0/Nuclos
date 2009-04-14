@@ -186,6 +186,7 @@
 		<pathelement location="${nucleus.lib.dir}/cargo-0.5.jar"/>
 		<!-- junit is needed for cactus, but as it seems it must be available for the parent classloader - why? -->
 		<pathelement location="${nucleus.lib.dir}/junit-3.8.1.jar"/>
+		<pathelement location="${nucleus.lib.dir}/xercesImpl.jar"/>
 	</path>
 
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
@@ -827,11 +828,12 @@
 				<path refid="cactus.path"/>
 			</classpath>
 			<sysproperty key="cactus.contextURL" value="http://localhost:8080/${app.name}-test"/>
-			<sysproperty key="cactus.servletRedirectorName" value="ServletRedirectorSecure"/>
+			<!--<sysproperty key="cactus.servletRedirectorName" value="ServletRedirectorSecure"/>-->
 			<formatter type="plain" usefile="false"/>
-			<!--			<test name="de.novabit.common.collect.collectable.test.CollectableFieldFormatTest"/>-->
-			<test name="de.novabit.nucleus.server.genericobject.searchcondition.test.SearchExpressionUnparserTest"/>
-			<test name="de.novabit.nucleus.server.genericobject.searchcondition.test.DummyTest"/>
+			<test name="de.novabit.nucleus.server.ruleengine.test.rules.RuleInterfaceTest"/>
+			<!--<test name="de.novabit.common.collect.collectable.test.CollectableFieldFormatTest"/>-->
+			<!--test name="de.novabit.nucleus.server.genericobject.searchcondition.test.SearchExpressionUnparserTest"/>-->
+			<!--<test name="de.novabit.nucleus.server.genericobject.searchcondition.test.DummyTest"/>-->
 		</junit>
 	</target>
 
