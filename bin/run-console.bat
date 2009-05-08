@@ -1,8 +1,8 @@
-@echo off
+@echo on
 setlocal
 
 rem set JAVA=P:\Javasoft\JRE\1.5.0.04\bin\java
-set JAVA=c:\java\jdk\1.5.0\bin\java.exe
+set JAVA=%JAVA_HOME%\bin\java
 
 set NUCLEUS_DIR=%~dp0
 set NUCLEUS_LIBDIR=%NUCLEUS_DIR%\lib
@@ -16,9 +16,8 @@ set CP=%CP%;%NUCLEUS_LIBDIR%\log4j-1.2.8.jar
 set CP=%CP%;%NUCLEUS_LIBDIR%\jlfgr-1_0.jar
 set CP=%CP%;%NUCLEUS_LIBDIR%\commons-lang-2.0.jar
 set CP=%CP%;%NUCLEUS_LIBDIR%\commons-beanutils-1.5.jar
-set CP=%CP%;%NUCLEUS_LIBDIR%\commons-collections-3.0.jar
-set CP=%CP%;%NUCLEUS_LIBDIR%\commons-digester-1.3.jar
-set CP=%CP%;%NUCLEUS_LIBDIR%\commons-logging-1.0.4.jar
+set CP=%CP%;%NUCLEUS_LIBDIR%\commons-collections-3.2.jar
+set CP=%CP%;%NUCLEUS_LIBDIR%\commons-logging-1.1.jar
 
 set CP=%CP%;%NUCLEUS_LIBDIR%\jboss-j2ee.jar
 set CP=%CP%;%NUCLEUS_LIBDIR%\jboss-client.jar
@@ -43,7 +42,7 @@ set CP=%CP%;%NUCLEUS_LIBDIR%\xmlParserAPIs.jar
 set CP=%CP%;%NUCLEUS_LIBDIR%\davfilechooser.jar
 set CP=%CP%;%NUCLEUS_LIBDIR%\itext-1.3.jar
 set CP=%CP%;%NUCLEUS_LIBDIR%\poi-2.5-final-20040302.jar
-set CP=%CP%;%NUCLEUS_LIBDIR%\jasperreports-0.6.6.jar
+set CP=%CP%;%NUCLEUS_LIBDIR%\jasperreports-3.1.2.jar
 set CP=%CP%;%NUCLEUS_LIBDIR%\jawin.jar
 set CP=%CP%;%NUCLEUS_LIBDIR%\jxl.jar
 
