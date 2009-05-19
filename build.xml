@@ -40,7 +40,7 @@
 	<!-- Set the EJB version you want to use (see XDoclet's <ejbdoclet> attribute "ejbspec"): -->
 	<property name="ejb.version" value="2.1"/>
 
-	<property name="java.src.version" value="1.5"/>
+	<property name="java.src.version" value="1.6"/>
 
 	<!-- Set this to "true" when you want to deploy nucleus service (MBeans) configuration -->
 	<property name="deploy.jboss.server.nucleus.service" value="false"/>
@@ -137,6 +137,7 @@
 		<pathelement location="${jboss.client.dir}/jbossmq-client.jar"/>
 		<pathelement location="${jboss.client.dir}/concurrent.jar"/>
 		<pathelement location="${nucleus.lib.dir}/client/TableLayout-bin-jdk1.5-2007-04-21.jar"/>
+		<pathelement location="${nucleus.lib.dir}/client/BrowserLauncher2-1_3.jar"/>
 		<pathelement location="${nucleus.lib.dir}/InsaPerformanceLogger.jar"/>
 		<pathelement location="${nucleus.lib.dir}/jdbc2_0-stdext.jar"/>
 		<pathelement location="${nucleus.lib.dir}/jh.jar"/>
