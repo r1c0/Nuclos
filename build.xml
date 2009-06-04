@@ -979,7 +979,8 @@
 		<unjar overwrite="false" src="${common.dir}/lib/client/filters.jar" dest="${project.build.classes.dir}"/>
 		<unjar overwrite="false" src="${common.dir}/lib/client/jlfgr-1_0.jar" dest="${project.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/client/TableLayout-bin-jdk1.5-2007-04-21.jar" dest="${project.build.classes.dir}"/>
-
+		<unjar overwrite="false" src="${nucleus.lib.dir}/client/BrowserLauncher2-1_3.jar" dest="${project.build.classes.dir}"/>
+		
 		<!-- jar nucleus libs -->
 		<delete dir="${project.build.classes.dir}/META-INF"/>
 		<jar jarfile="${project.build.deploy.dir}/nucleus-libs.jar">
