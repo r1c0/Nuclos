@@ -26,6 +26,8 @@
 
 	<property name="lib.dir" value="${project.home.dir}/lib"/>
 	<property name="src.dir" value="${project.home.dir}/src/java"/>
+	
+	<property name="jboss.lib.dir" value="${jboss.home}/lib"/>
 
 	<!-- Source directories: -->
 	<property name="src.novabit.dir" value="${src.dir}/de/novabit"/>
@@ -47,6 +49,8 @@
 		<pathelement location="${jboss.home}/client/jboss-j2ee.jar"/>
 		<pathelement location="${jboss.home}/client/jbosssx-client.jar"/>
 		<pathelement location="${lib.dir}/mail.jar"/>
+		<pathelement location="${jboss.lib.dir}/jboss-system.jar"/>
+		<pathelement location="${jboss.lib.dir}/jboss-common.jar"/>
 	</path>
 
 	<path id="common.jboss.path">

@@ -7,7 +7,6 @@ set CP=%CLASSPATH%;.\conf
 
 set CP=%CP%;.\lib\nucleus-client.jar
 set CP=%CP%;.\lib\nucleus-xerlin.jar
-set CP=%CP%;.\lib\nucleus-help.jar
 set CP=%CP%;.\lib\novabit-common.jar
 set CP=%CP%;.\lib\log4j-1.2.8.jar
 set CP=%CP%;.\lib\jlfgr-1_0.jar
@@ -40,6 +39,8 @@ set CP=%CP%;.\lib\poi-2.5-final-20040302.jar
 set CP=%CP%;.\lib\jasperreports-3.1.2.jar
 set CP=%CP%;.\lib\jawin.jar
 set CP=%CP%;.\lib\jxl.jar
+set CP=%CP%;.\lib\BrowserLauncher2-1_3.jar
+set CP=%CP%;.\lib\commons-codec-1.3.jar
 
 rem !!!! logging unter c:\temp funktioniert bei Terminalservern nicht !!!!!
 

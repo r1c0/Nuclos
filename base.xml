@@ -1,0 +1,222 @@
+<project name="Base Nucleus" basedir=".">
+
+	<property name="base.home.dir" value="../nucleus"/>
+		
+	<property file="../build.properties"/>
+
+	<property environment="env"/>
+
+	<!-- default VM args for running the Nucleus client: -->
+	<condition property="run.client.vmargs" value="-ea -ms64m -mx192m">
+		<not>
+			<isset property="run.client.vmargs"/>
+		</not>
+	</condition>
+
+	<!-- Set the JBoss version you want to use (see XDoclet's <jboss> attribute "version"): -->
+	<property name="jboss.version" value="4.0"/>
+
+	<property name="jboss.lib.dir" value="${jboss.home}/lib"/>
+	<property name="jboss.client.dir" value="${jboss.home}/client"/>
+
+	<!-- Configuration used on JBoss to run your server. There must be a directory with the same name under "${jboss.home}/server": -->
+	<property name="jboss.server.name" value="nucleus"/>
+	<property name="jboss.server.dir" value="${jboss.home}/server/${jboss.server.name}"/>
+	<property name="jboss.server.deploy.dir" value="${jboss.server.dir}/deploy"/>
+	<property name="jboss.server.lib.dir" value="${jboss.server.dir}/lib"/>
+
+	<!-- Set the DataSource name your are going to use (see XDoclet's <jboss> attribute "datasource"): -->
+	<property name="datasource.name" value="java:/ds/nucleus"/>
+
+	<property name="xdoclet.lib.dir" value="${xdoclet.home}/lib"/>
+
+	<!-- Set this to "true" when you want to force the rebuild of the XDoclet generated files (see XDoclet's <ejbdoclet> attribute "force"): -->
+	<property name="xdoclet.force" value="false"/>
+
+	<!-- Set the EJB version you want to use (see XDoclet's <ejbdoclet> attribute "ejbspec"): -->
+	<property name="ejb.version" value="2.1"/>
+
+	<property name="java.src.version" value="1.6"/>
+
+	<!-- Set this to "true" when you want to deploy nucleus service (MBeans) configuration -->
+	<property name="deploy.jboss.server.nucleus.service" value="false"/>
+	
+	<!-- common directories: -->
+	<property name="common.dir" value="${base.home.dir}"/>
+	<property name="common.src.dir" value="${common.dir}/src/java"/>
+	<property name="common.build.deploy.dir" value="${common.dir}/build/deploy"/>
+
+	<!-- nucleus subdirectories: -->
+	<property name="nucleus.dir" value="${base.home.dir}"/>
+	<property name="nucleus.src.dir" value="${nucleus.dir}/src"/>
+	<property name="nucleus.src.java.dir" value="${nucleus.src.dir}/java"/>
+	<property name="nucleus.conf.dir" value="${nucleus.dir}/conf"/>
+	<property name="nucleus.doc.dir" value="${nucleus.dir}/doc"/>
+	<property name="nucleus.db.dir" value="${nucleus.dir}/db"/>
+	<property name="nucleus.lib.dir" value="${nucleus.dir}/lib"/>
+	<property name="nucleus.build.dir" value="${nucleus.dir}/build"/>
+	<property name="nucleus.build.classes.dir" value="${nucleus.build.dir}/classes"/>
+	<property name="nucleus.build.deploy.dir" value="${nucleus.build.dir}/deploy"/>
+	<property name="nucleus.build.java.dir" value="${nucleus.dir}/gen"/>
+	<property name="nucleus.bin.dir" value="${nucleus.dir}/bin"/>
+	<property name="nucleus.dist.dir" value="${nucleus.dir}/dist"/>
+
+	<!-- Source directories: -->
+	<property name="src.novabit.dir" value="${nucleus.src.java.dir}/de/novabit"/>
+	<property name="src.nucleus.dir" value="${src.novabit.dir}/nucleus"/>
+	<property name="src.nucleus.common.dir" value="${src.nucleus.dir}/common"/>
+	<property name="src.nucleus.client.dir" value="${src.nucleus.dir}/client"/>
+	<property name="src.nucleus.server.dir" value="${src.nucleus.dir}/server"/>
+
+	<path id="nucleus.server.path">
+		<pathelement location="${nucleus.build.classes.dir}"/>
+		<pathelement location="${common.build.deploy.dir}/novabit-common.jar"/>
+		<pathelement location="${common.build.deploy.dir}/novabit-common-ejb.jar"/>
+		<pathelement location="${nucleus.lib.dir}/log4j-1.2.8.jar"/>
+		<pathelement location="${nucleus.lib.dir}/commons-lang-2.0.jar"/>
+		<pathelement location="${nucleus.lib.dir}/commons-beanutils-1.5.jar"/>
+		<pathelement location="${nucleus.lib.dir}/commons-collections-3.2.jar"/>
+		<pathelement location="${jboss.server.lib.dir}/jboss-j2ee.jar"/>
+		<pathelement location="${jboss.client.dir}/jbosssx-client.jar"/>
+		<pathelement location="${jboss.server.lib.dir}/jbosssx.jar"/>
+		<pathelement location="${jboss.lib.dir}/jboss-system.jar"/>
+		<pathelement location="${jboss.lib.dir}/jboss-common.jar"/>
+		<pathelement location="${jboss.lib.dir}/jboss-jmx.jar"/>
+		<pathelement location="${jboss.server.lib.dir}/jboss-common-jdbc-wrapper.jar"/>
+		<pathelement location="${nucleus.lib.dir}/dom4j-full.jar"/>
+		<pathelement location="${nucleus.lib.dir}/jasperreports-3.1.2.jar"/>
+		<pathelement location="${nucleus.lib.dir}/quartz-all-1.6.4.jar"/>
+		<pathelement location="${nucleus.lib.dir}/ojdbc14.jar"/>
+		<pathelement location="${nucleus.lib.dir}/sqljdbc.jar"/>
+		<pathelement location="${nucleus.lib.dir}/poi-2.5-final-20040302.jar"/>
+		<pathelement location="${jboss.client.dir}/jnp-client.jar"/>
+		<pathelement location="${jboss.client.dir}/jbossmq-client.jar"/>
+		<pathelement location="${jboss.client.dir}/concurrent.jar"/>
+		<pathelement location="${jboss.server.lib.dir}/jboss.jar"/>
+		<pathelement location="${jboss.server.lib.dir}/mail.jar"/>
+		<pathelement location="${nucleus.lib.dir}/junit-3.8.1.jar"/>
+		<pathelement location="${jboss.lib.dir}/endorsed/xercesImpl.jar"/>
+		<pathelement location="${nucleus.lib.dir}/commons-codec-1.3.jar"/>
+	</path>
+
+	<path id="nucleus.client.path">
+		<pathelement location="${nucleus.build.classes.dir}"/>
+		<pathelement location="${common.build.deploy.dir}/novabit-common.jar"/>
+		<pathelement location="${common.dir}/lib/client/jlfgr-1_0.jar"/>
+		<pathelement location="${nucleus.lib.dir}/commons-lang-2.0.jar"/>
+		<pathelement location="${nucleus.lib.dir}/commons-beanutils-1.5.jar"/>
+		<pathelement location="${nucleus.lib.dir}/commons-collections-3.2.jar"/>
+		<pathelement location="${nucleus.lib.dir}/commons-logging-1.1.jar"/>
+		<pathelement location="${jboss.client.dir}/jboss-j2ee.jar"/>
+		<pathelement location="${jboss.client.dir}/jboss-client.jar"/>
+		<pathelement location="${jboss.client.dir}/jboss-common-client.jar"/>
+		<pathelement location="${jboss.client.dir}/jboss-system-client.jar"/>
+		<pathelement location="${jboss.client.dir}/jbosssx-client.jar"/>
+		<pathelement location="${jboss.client.dir}/jboss-transaction-client.jar"/>
+		<pathelement location="${jboss.client.dir}/jbossmq-client.jar"/>
+		<pathelement location="${jboss.client.dir}/concurrent.jar"/>
+		<pathelement location="${nucleus.lib.dir}/client/TableLayout-bin-jdk1.5-2007-04-21.jar"/>
+		<pathelement location="${nucleus.lib.dir}/client/BrowserLauncher2-1_3.jar"/>
+		<pathelement location="${nucleus.lib.dir}/InsaPerformanceLogger.jar"/>
+		<pathelement location="${nucleus.lib.dir}/jdbc2_0-stdext.jar"/>
+		<pathelement location="${nucleus.lib.dir}/jh.jar"/>
+		<pathelement location="${jboss.client.dir}/jnp-client.jar"/>
+		<pathelement location="${nucleus.lib.dir}/log4j-1.2.8.jar"/>
+		<pathelement location="${nucleus.lib.dir}/dom4j-full.jar"/>
+		<pathelement location="${nucleus.lib.dir}/xercesImpl.jar"/>
+		<pathelement location="${nucleus.lib.dir}/xmlParserAPIs.jar"/>
+		<pathelement location="${nucleus.lib.dir}/poi-2.5-final-20040302.jar"/>
+		<pathelement location="${nucleus.lib.dir}/jasperreports-3.1.2.jar"/>
+		<pathelement location="${nucleus.lib.dir}/itext-1.3.jar"/>
+		<pathelement location="${nucleus.lib.dir}/jawin.jar"/>
+		<pathelement location="${nucleus.lib.dir}/jxl.jar"/>
+		<pathelement location="${nucleus.lib.dir}/sqljdbc.jar"/>
+
+		<pathelement location="${nucleus.lib.dir}/davfilechooser.jar"/>
+		<pathelement location="${nucleus.lib.dir}/thirdparty.jar"/>
+		<pathelement location="${nucleus.lib.dir}/StrutLayout1.2.1.jar"/>
+
+		<pathelement location="${nucleus.build.deploy.dir}/nucleus-xerlin.jar"/>
+
+		<pathelement location="${nucleus.dir}/lib/client/layer.jar"/>
+		<pathelement location="${nucleus.dir}/lib/client/filters.jar"/>
+	</path>
+
+	<path id="nucleus.path">
+		<path refid="nucleus.server.path"/>
+		<path refid="nucleus.client.path"/>
+	</path>
+	
+	<path id="client.run.path">
+		<pathelement location="${nucleus.build.deploy.dir}/nucleus-client.jar"/>
+		<path refid="nucleus.client.path"/>
+	</path>
+	
+	<path id="cactus.path">
+		<pathelement location="${nucleus.lib.dir}/cactus-1.7.1.jar"/>
+		<pathelement location="${nucleus.lib.dir}/cactus-ant-1.7.1.jar"/>
+		<pathelement location="${nucleus.lib.dir}/commons-httpclient-2.0.2.jar"/>
+		<pathelement location="${nucleus.lib.dir}/commons-logging-1.1.jar"/>
+		<pathelement location="${nucleus.lib.dir}/aspectjrt-1.2.1.jar"/>
+		<pathelement location="${nucleus.lib.dir}/cargo-0.5.jar"/>
+		<!-- junit is needed for cactus, but as it seems it must be available for the parent classloader - why? -->
+		<pathelement location="${nucleus.lib.dir}/junit-3.8.1.jar"/>
+		<pathelement location="${nucleus.lib.dir}/xercesImpl.jar"/>
+	</path>
+	
+	
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+  		<classpath>
+    		<pathelement location="${nucleus.lib.dir}/ant-contrib-1.0b3.jar"/>
+  		</classpath>
+	</taskdef>
+	
+	<taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
+		<classpath>
+			<pathelement location="${nucleus.lib.dir}\fop.jar"/>
+			<pathelement location="${nucleus.lib.dir}\avalon-framework.jar"/>
+			<pathelement location="${nucleus.lib.dir}\batik.jar"/>
+		</classpath>
+	</taskdef>
+	
+	<target name="wrong.jboss" unless="jboss.present">
+		<fail>
+			Property "jboss.home" is set but it does not seem to point to the right directory. The file "run.jar" must be
+			available at ${jboss.home}/bin.
+		</fail>
+	</target>
+
+	<target name="wrong.xdoclet" unless="xdoclet.present">
+		<fail>
+			Property "xdoclet.home" is set, but it does not seem to point to the right directory. The file "xdoclet-1.2.3.jar"
+			must be available at ${xdoclet.home}/lib.
+		</fail>
+	</target>
+	
+	<target name="init.common" depends="check.build.properties">
+		<available property="jboss.present" file="${jboss.home}/bin/run.jar"/>
+		<antcall target="wrong.jboss"/>
+		<available property="xdoclet.present" file="${xdoclet.home}/lib/xdoclet-1.3-08012006-lunatech.jar"/>
+		<antcall target="wrong.xdoclet"/>
+	</target>
+	
+	<target name="check.build.properties" depends="check.jboss.home, check.xdoclet.home"/>
+
+	<!-- path to the runtime JBoss directory containing the JBoss application server: -->
+	<target name="check.jboss.home" unless="jboss.home">
+		<fail>
+			Property "jboss.home" is not set. Please use the file "build.properties" to set this property.
+			It must point to the directory which contains the following directory: "deploy", "conf", "tmp" etc.
+		</fail>
+	</target>
+
+	<!-- path to the root directory of the XDoclet distribution (see http://www.sf.net/projects/xdoclet): -->
+	<target name="check.xdoclet.home" unless="xdoclet.home">
+		<fail>Property "xdoclet.home" is not set. Please check your build.properties file.</fail>
+	</target>
+
+	<!-- path to the root directory of the docbook-xsl distribution: -->
+	<target name="check.docbook-xsl.home" unless="docbook-xsl.home">
+		<fail>Property "docbook-xsl.home" is not set. Please check your build.properties file.</fail>
+	</target>
+</project>
