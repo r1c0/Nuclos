@@ -97,6 +97,7 @@
 		<pathelement location="${nucleus.lib.dir}/junit-3.8.1.jar"/>
 		<pathelement location="${jboss.lib.dir}/endorsed/xercesImpl.jar"/>
 		<pathelement location="${nucleus.lib.dir}/commons-codec-1.3.jar"/>
+		<pathelement location="${nucleus.lib.dir}/jmxtools.jar"/>
 	</path>
 
 	<path id="nucleus.client.path">
