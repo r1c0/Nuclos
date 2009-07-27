@@ -521,7 +521,7 @@
 
 		<!-- zip sources: -->
 		<zip destfile="${project.dist.dir}/source_${app.name}.zip">
-			<fileset dir="${project.home.dir}" includes="build-project.xml, src/" excludes="CVS"/>
+			<fileset dir="${project.home.dir}" includes="build-project.xml, src/" excludes="CVS, .svn"/>
 		</zip>
 		
 		<copy file="${nucleus.dist.dir}/source.zip" tofile="${project.dist.dir}/source_nucleus.zip"/>

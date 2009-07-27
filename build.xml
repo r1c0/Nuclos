@@ -561,7 +561,7 @@
 
 		<!-- zip sources: -->
 		<zip destfile="${nucleus.dist.dir}/source.zip">
-			<fileset dir="${nucleus.home.dir}" includes="build.xml, base.xml, build-common.xml, src/" excludes="CVS"/>
+			<fileset dir="${nucleus.home.dir}" includes="build.xml, base.xml, build-common.xml, src/" excludes="CVS, .svn"/>
 		</zip>
 
 		<!-- zip documentation: -->
