@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src/java"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/common"/>
 	<classpathentry kind="lib" path="lib/aspectjrt-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/avalon-framework.jar"/>
 	<classpathentry kind="lib" path="lib/batik.jar"/>
@@ -11,13 +10,13 @@
 	<classpathentry kind="lib" path="lib/cactus-ant-1.7.1.jar"/>
 	<classpathentry kind="lib" path="lib/cargo-0.5.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils-1.5.jar"/>
-	<classpathentry kind="lib" path="lib/commons-collections-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/commons-collections-3.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-httpclient-2.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.0.jar"/>
-	<classpathentry kind="lib" path="lib/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j-full.jar"/>
 	<classpathentry kind="lib" path="lib/fop.jar"/>
-	<classpathentry kind="lib" path="lib/jasperreports-0.6.6.jar"/>
+	<classpathentry kind="lib" path="lib/jasperreports-3.1.2.jar"/>
 	<classpathentry kind="lib" path="lib/jawin.jar"/>
 	<classpathentry kind="lib" path="lib/jcommon-0.9.7.jar"/>
 	<classpathentry kind="lib" path="lib/jdbc2_0-stdext.jar"/>
@@ -33,7 +32,7 @@
 	<classpathentry kind="lib" path="lib/ojdbc14.jar"/>
 	<classpathentry kind="lib" path="lib/p6spy.jar"/>
 	<classpathentry kind="lib" path="lib/poi-2.5-final-20040302.jar"/>
-	<classpathentry kind="lib" path="lib/quartz-1.4.2.jar"/>
+	<classpathentry kind="lib" path="lib/quartz-all-1.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/scheduler-plugin.jar"/>
 	<classpathentry kind="lib" path="lib/serializer.jar"/>
 	<classpathentry kind="lib" path="lib/servlet.jar"/>
@@ -44,22 +43,39 @@
 	<classpathentry kind="lib" path="lib/davfilechooser.jar"/>
 	<classpathentry kind="lib" path="lib/thirdparty.jar"/>
 	<classpathentry kind="lib" path="lib/StrutLayout1.2.1.jar"/>
-	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/client/jnp-client.jar"/>
-	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/client/jbossmq-client.jar"/>
-	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/client/concurrent.jar"/>
-	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/client/jboss-j2ee.jar"/>
-	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/client/jboss-client.jar"/>
-	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/client/jboss-common-client.jar"/>
-	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/client/jboss-system-client.jar"/>
-	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/client/jbosssx-client.jar"/>
-	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/client/jboss-transaction-client.jar"/>
-	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/server/nucleus/lib/jboss.jar"/>
-	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/server/nucleus/lib/mail.jar"/>
-	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/lib/endorsed/xercesImpl.jar"/>
-	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/lib/jboss-system.jar"/>
-	<classpathentry kind="lib" path="C:/JavaTools/jboss-4.0.3/lib/jboss-common.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/client/jnp-client.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/client/jbossmq-client.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/lib/concurrent.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/client/jboss-j2ee.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/client/jboss-client.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/client/jboss-common-client.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/client/jboss-system-client.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/client/jbosssx-client.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/client/jboss-transaction-client.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/server/nucleus/lib/jboss.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/server/nucleus/lib/mail.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/lib/endorsed/xercesImpl.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/lib/jboss-system.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/lib/jboss-common.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/lib/jboss-jmx.jar"/>
 	<classpathentry kind="lib" path="lib/Xerlin-1.3-patched.jar"/>
 	<classpathentry kind="lib" path="lib/itext-1.3.jar"/>
-	<classpathentry kind="lib" path="C:/Programme/Java/jdk1.5.0_12/lib/tools.jar"/>
+	<classpathentry kind="var" path="JDK_HOME/lib/tools.jar"/>
+	<classpathentry kind="lib" path="lib/client/BrowserLauncher2-1_3.jar"/>
+	<classpathentry kind="lib" path="lib/client/filters.jar"/>
+	<classpathentry kind="lib" path="lib/client/jbosssx-client.jar"/>
+	<classpathentry kind="lib" path="lib/client/jlfgr-1_0.jar"/>
+	<classpathentry kind="lib" path="lib/client/layer.jar"/>
+	<classpathentry kind="lib" path="lib/client/TableLayout-bin-jdk1.5-2007-04-21.jar"/>
+	<classpathentry kind="lib" path="lib/server/jbosssx.jar"/>
+	<classpathentry kind="lib" path="lib/ant-contrib-1.0b3.jar"/>
+	<classpathentry kind="lib" path="lib/colorpicker.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/jboss-j2ee.jar"/>
+	<classpathentry kind="lib" path="lib/jboss-jmx.jar"/>
+	<classpathentry kind="lib" path="lib/jboss-system.jar"/>
+	<classpathentry kind="lib" path="lib/jmxtools.jar"/>
+	<classpathentry kind="lib" path="lib/jnlp-servlet.jar"/>
+	<classpathentry kind="lib" path="lib/sqljdbc.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
