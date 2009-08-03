@@ -9,7 +9,7 @@
 	<!-- Read properties that are not defined in the properties file from the environment: -->
 	<property environment="env"/>
 
-	<property name="java.src.version" value="1.5"/>
+	<property name="java.src.version" value="1.6"/>
 
 	<!-- Project root directory
 		 (should always be the directory where this build.xml resides): -->
