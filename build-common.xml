@@ -10,6 +10,7 @@
 	<property environment="env"/>
 
 	<property name="java.src.version" value="1.6"/>
+	<property name="javac.nowarn" value="false"/>
 
 	<!-- Project root directory
 		 (should always be the directory where this build.xml resides): -->
@@ -78,6 +79,7 @@
 		<mkdir dir="${build.classes.dir}"/>
 
 		<javac destdir="${build.classes.dir}" encoding="8859_1" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+					 nowarn="${javac.nowarn}"
 					 includes="de/novabit/common/server/**/ejb/"
 					 excludes="de/novabit/**/test/"
 					 classpathref="common.jboss.path">
@@ -93,6 +95,7 @@
 		</copy>
 
 		<javac destdir="${build.classes.dir}" encoding="8859_1" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+					 nowarn="${javac.nowarn}"
 			 		 includes="de/novabit/common/**/"
 					 excludes="de/novabit/common/server/**/ejb/"
 					 classpathref="common.path">
