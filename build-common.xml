@@ -97,7 +97,7 @@
 		<javac destdir="${build.classes.dir}" encoding="8859_1" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
 			 		 includes="de/novabit/common/**/"
-					 excludes="de/novabit/common/server/**/ejb/"
+					 excludes="de/novabit/common/server/**/ejb/, de/novabit/**/test/"
 					 classpathref="common.path">
 			<src path="${src.dir}"/>
 		</javac>
