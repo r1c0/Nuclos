@@ -37,7 +37,6 @@
 	<property name="ejb.version" value="2.1"/>
 
 	<property name="java.src.version" value="1.6"/>
-	<property name="javac.nowarn" value="false"/>
 
 	<!-- Set this to "true" when you want to deploy nucleus service (MBeans) configuration -->
 	<property name="deploy.jboss.server.nucleus.service" value="false"/>

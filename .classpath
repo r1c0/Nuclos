@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/java"/>
-	<classpathentry kind="src" path="src/test"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/aspectjrt-1.2.1.jar"/>
@@ -60,6 +59,7 @@
 	<classpathentry kind="var" path="JBOSS_HOME/lib/jboss-common.jar"/>
 	<classpathentry kind="var" path="JBOSS_HOME/lib/jboss-jmx.jar"/>
 	<classpathentry kind="lib" path="lib/Xerlin-1.3-patched.jar"/>
+	<classpathentry kind="lib" path="lib/itext-1.3.jar"/>
 	<classpathentry kind="var" path="JDK_HOME/lib/tools.jar"/>
 	<classpathentry kind="lib" path="lib/client/BrowserLauncher2-1_3.jar"/>
 	<classpathentry kind="lib" path="lib/client/filters.jar"/>
@@ -77,7 +77,5 @@
 	<classpathentry kind="lib" path="lib/jmxtools.jar"/>
 	<classpathentry kind="lib" path="lib/jnlp-servlet.jar"/>
 	<classpathentry kind="lib" path="lib/sqljdbc.jar"/>
-	<classpathentry kind="lib" path="lib/iText-2.1.7.jar"/>
-	<classpathentry kind="lib" path="lib/client/xstream-1.3.1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
