@@ -681,6 +681,7 @@
 		<unjar overwrite="false" src="${common.dir}/lib/client/jlfgr-1_0.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/client/TableLayout-bin-jdk1.5-2007-04-21.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/client/BrowserLauncher2-1_3.jar" dest="${nucleus.build.classes.dir}"/>
+		<unjar overwrite="false" src="${nucleus.lib.dir}/client/xstream-1.3.1.jar" dest="${nucleus.build.classes.dir}"/>
 		
 		<!-- jar nucleus libs -->
 		<delete dir="${nucleus.build.classes.dir}/META-INF"/>
