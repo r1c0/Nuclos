@@ -42,7 +42,7 @@ set CP=%CP%;.\lib\jawin.jar
 set CP=%CP%;.\lib\jxl.jar
 set CP=%CP%;.\lib\layer.jar
 set CP=%CP%;.\lib\filters.jar
-set CP=%CP%;.\lib\TableLayout-bin-jdk1.5-2007-04-21.jar
+set CP=%CP%;.\lib\TableLayout-bin-jdk1.5-2009-06-10.jar
 set CP=%CP%;.\lib\BrowserLauncher2-1_3.jar
 set CP=%CP%;.\lib\commons-codec-1.3.jar
 

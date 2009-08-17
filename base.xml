@@ -116,7 +116,7 @@
 		<pathelement location="${jboss.client.dir}/jboss-transaction-client.jar"/>
 		<pathelement location="${jboss.client.dir}/jbossmq-client.jar"/>
 		<pathelement location="${jboss.client.dir}/concurrent.jar"/>
-		<pathelement location="${nucleus.lib.dir}/client/TableLayout-bin-jdk1.5-2007-04-21.jar"/>
+		<pathelement location="${nucleus.lib.dir}/client/TableLayout-bin-jdk1.5-2009-06-10.jar"/>
 		<pathelement location="${nucleus.lib.dir}/client/BrowserLauncher2-1_3.jar"/>
 		<pathelement location="${nucleus.lib.dir}/InsaPerformanceLogger.jar"/>
 		<pathelement location="${nucleus.lib.dir}/jdbc2_0-stdext.jar"/>

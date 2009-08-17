@@ -79,6 +79,7 @@
 		</copy>
 		
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+					 nowarn="${javac.nowarn}"
 					 srcdir="${nucleus.src.java.dir}:${nucleus.build.java.dir}"
 					 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/"
 					 excludes="**/test/"
@@ -132,6 +133,7 @@
 		</copy>
 		-->
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" debug="on" deprecation="off" optimize="on"
+					 nowarn="${javac.nowarn}"
 					 source="${java.src.version}" srcdir="${nucleus.src.java.dir}"
 					 includes="de/novabit/nucleus/client/"
 					 excludes="**/test/">
@@ -210,6 +212,7 @@
 		<mkdir dir="${nucleus.build.deploy.dir}"/>
 
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+					 nowarn="${javac.nowarn}"
 					 excludes="de/novabit/common/logging/test/"
 					 classpathref="nucleus.path">
 			<src path="${nucleus.src.java.dir}/de/novabit/common/logging/;${nucleus.src.java.dir}/de/novabit/common/deploy/;${nucleus.src.java.dir}/de/novabit/nucleus/server/mbean/"/>
@@ -337,6 +340,7 @@
 
 	<target name="compile.ruledoc.taglets">
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" debug="on" deprecation="off" optimize="on"
+					 nowarn="${javac.nowarn}"
 					 source="${java.src.version}" srcdir="${nucleus.src.java.dir}"
 					 includes="de/novabit/nucleus/tools/ruledoc/"/>
 	</target>
@@ -435,6 +439,7 @@
 
 		<mkdir dir="${nucleus.build.classes.dir}"/>
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+					 nowarn="${javac.nowarn}"
 					 srcdir="${nucleus.src.java.dir}"
 					 includes="de/novabit/**/test/" excludes="de/novabit/nucleus/client/">
 			<classpath>
@@ -674,8 +679,9 @@
 		<unjar overwrite="false" src="${common.dir}/lib/client/layer.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${common.dir}/lib/client/filters.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${common.dir}/lib/client/jlfgr-1_0.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/client/TableLayout-bin-jdk1.5-2007-04-21.jar" dest="${nucleus.build.classes.dir}"/>
+		<unjar overwrite="false" src="${nucleus.lib.dir}/client/TableLayout-bin-jdk1.5-2009-06-10.jar" dest="${nucleus.build.classes.dir}"/>
 		<!-- unjar overwrite="false" src="${nucleus.lib.dir}/client/BrowserLauncher2-1_3.jar" dest="${nucleus.build.classes.dir}"/ -->
+		<unjar overwrite="false" src="${nucleus.lib.dir}/client/xstream-1.3.1.jar" dest="${nucleus.build.classes.dir}"/>
 		
 		<!-- jar nucleus libs -->
 		<delete dir="${nucleus.build.classes.dir}/META-INF"/>
