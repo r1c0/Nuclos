@@ -98,6 +98,8 @@
 		<pathelement location="${jboss.lib.dir}/endorsed/xercesImpl.jar"/>
 		<pathelement location="${nucleus.lib.dir}/commons-codec-1.3.jar"/>
 		<pathelement location="${nucleus.lib.dir}/jmxtools.jar"/>
+		<pathelement location="${nucleus.dir}/lib/client/layer.jar"/>
+		<pathelement location="${nucleus.dir}/lib/client/swingx-1.0.jar"/>
 	</path>
 
 	<path id="nucleus.client.path">
@@ -142,6 +144,7 @@
 		<pathelement location="${nucleus.dir}/lib/client/layer.jar"/>
 		<pathelement location="${nucleus.dir}/lib/client/filters.jar"/>
 		<pathelement location="${nucleus.dir}/lib/client/xstream-1.3.1.jar"/>
+		<pathelement location="${nucleus.dir}/lib/client/swingx-1.0.jar"/>
 	</path>
 
 	<path id="nucleus.path">
