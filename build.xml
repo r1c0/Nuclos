@@ -75,7 +75,7 @@
 		</copy>
 
 		<copy todir="${nucleus.build.classes.dir}">
-			<fileset dir="${nucleus.conf.dir}" includes="nucleus-app*.properties, menuConfig.xml"/>
+			<fileset dir="${nucleus.conf.dir}" includes="nucleus-app*.properties, icons.properties, menuConfig.xml"/>
 		</copy>
 		
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
@@ -198,6 +198,7 @@
 							de/novabit/nucleus/server/person/treenode/*.class,
 							de/novabit/nucleus/common/security/auth.conf,
 							resources/*.properties,
+							icons.properties,
 				            menuConfig.xml"
 				excludes=	"**/test/,
 							de/novabit/**/ejb/**/*Bean.class,
@@ -518,7 +519,7 @@
 		</copy>
 		<mkdir dir="${nucleus.dist.dir}/client/conf"/>
 		<copy todir="${nucleus.dist.dir}/client/conf">
-			<fileset dir="${nucleus.conf.dir}" includes="jndi.properties, layoutml.dtd, nucleus-app.properties, nucleus-client.properties, menuConfig.xml"/>
+			<fileset dir="${nucleus.conf.dir}" includes="jndi.properties, layoutml.dtd, nucleus-app.properties, nucleus-client.properties, icons.properties, menuConfig.xml"/>
 		</copy>
 		<mkdir dir="${nucleus.dist.dir}/client/conf/doc"/>
 		<copy file="${nucleus.build.classes.dir}/de/novabit/nucleus/client/help/releasenotes/releasenotes.html" tofile="${nucleus.dist.dir}/client/conf/doc/nucleus-releasenotes.html"/>
@@ -616,6 +617,7 @@
 				<include name="jndi.properties"/>
 				<include name="nucleus-app.properties"/>
 				<include name="nucleus-client.properties"/>
+				<include name="icons.properties"/>
 				<include name="menuConfig.xml"/>
 				<include name="log4j.xml"/>
 				<include name="layoutml.dtd"/>
