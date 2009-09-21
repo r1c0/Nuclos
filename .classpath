@@ -79,5 +79,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/sqljdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/iText-2.1.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/xstream-1.3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/client/swingx-1.0.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
