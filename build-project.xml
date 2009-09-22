@@ -276,7 +276,7 @@
 		</java>
 	</target>
 
-	<target name="clean" depends="clean.javadoc, clean.ruledoc, dist.clean" description="Removes all generated files.">
+	<target name="clean" depends="clean.javadoc, clean.ruledoc" description="Removes all generated files.">
 		<!--ant antfile="build-common.xml" dir="${common.dir}" target="clean" inheritall="false"/-->
 
 		<delete quiet="true" includeEmptyDirs="true">
@@ -429,7 +429,7 @@
 		</junit>
 	</target>
 
-	<target name="dist" description="copy files to distribution directory.">
+	<target name="dist" depends="dist.clean" description="copy files to distribution directory.">
 		<ant antfile="${nucleus.dir}/build.xml" dir="${nucleus.dir}" target="dist" inheritall="false">
 			<property name="jboss.server.name" value="${jboss.server.name}"/>
 			<property name="projectbuild" value="true"/>
