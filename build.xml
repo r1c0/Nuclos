@@ -664,7 +664,6 @@
 		<unjar overwrite="false" src="${nucleus.lib.dir}/thirdparty.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/dom4j-full.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/xercesImpl.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/xmlParserAPIs.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/davfilechooser.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/iText-2.1.7.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/poi-2.5-final-20040302.jar" dest="${nucleus.build.classes.dir}"/>

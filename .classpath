@@ -39,8 +39,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/servlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xalan.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xercesImpl.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/xml-apis.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/xmlParserAPIs.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/davfilechooser.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/thirdparty.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/StrutLayout1.2.1.jar"/>
