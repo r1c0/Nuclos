@@ -128,9 +128,11 @@
 		<if>
 			<equals arg1="${projectbuild}" arg2="false" />
 			<then>
-				<jar jarfile="${nucleus.build.deploy.dir}/nucleus-server.jar" basedir="${nucleus.build.classes.dir}"
-						 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, META-INF/, resources/, nucleus-app*.properties"
-						 excludes="**/test/">
+				<jar jarfile="${nucleus.build.deploy.dir}/nucleus-server.jar">
+					<fileset dir="${nucleus.build.classes.dir}"
+						 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, resources/, nucleus-app*.properties"
+						 excludes="**/test/"/>
+					<fileset dir="${nucleus.conf.dir}/ejb3/"/>
 					<manifest>
 						<attribute name="Manifest-Version" value="1.0"/>
 						<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-all-1.6.4.jar"/>
@@ -138,9 +140,11 @@
 				</jar>
 			</then>
 			<else>
-				<jar jarfile="${nucleus.build.deploy.dir}/nucleus-server.jar" basedir="${nucleus.build.classes.dir}"
-						 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, META-INF/, resources/"
-						 excludes="**/test/">
+				<jar jarfile="${nucleus.build.deploy.dir}/nucleus-server.jar">
+					<fileset dir="${nucleus.build.classes.dir}"
+						 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, resources/"
+						 excludes="**/test/"/>
+					<fileset dir="${nucleus.conf.dir}/ejb3/"/>
 					<manifest>
 						<attribute name="Manifest-Version" value="1.0"/>
 						<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-all-1.6.4.jar"/>
@@ -148,6 +152,15 @@
 				</jar>
 			</else>
 		</if>
+		<jar jarfile="${nucleus.build.deploy.dir}/nucleus-server-ejb3.jar">
+			<fileset dir="${nucleus.build.classes.dir}"
+			     includes="**/ejb3/"
+			     excludes="**/test/"/>
+			<fileset dir="${nucleus.conf.dir}/ejb3/"/>
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0"/>
+			</manifest>
+		</jar>
 	</target>
 
 	<target name="deploy.client" depends="compile.client" description="Builds the client.">
