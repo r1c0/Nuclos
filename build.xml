@@ -15,13 +15,6 @@
 		<path refid="client.run.path"/>
 	</path>
 
-	<taskdef name="ejbdoclet" classname="xdoclet.modules.ejb.EjbDocletTask">
-		<classpath>
-			<path refid="nucleus.server.path"/>
-			<fileset dir="${xdoclet.lib.dir}" includes="*.jar"/>
-		</classpath>
-	</taskdef>
-
 	<target name="init" depends="check.build.properties, init.common">
 		<copy file="${nucleus.conf.dir}/novabit/log4j-client-template.xml" tofile="${nucleus.conf.dir}/log4j.xml" overwrite="false"/>
 		<copy file="${nucleus.conf.dir}/novabit/nucleus-client-template.properties"
@@ -42,26 +35,9 @@
 		<ant antfile="${nucleus.dir}/build-common.xml" dir="${common.dir}" target="main.noclean" inheritall="false"/>
 	</target>
 
-	<target name="xdoclet.generate.all">
-		<ejbdoclet destdir="${nucleus.build.java.dir}" ejbspec="${ejb.version}" verbose="true">
-			<fileset dir="${nucleus.src.java.dir}">
-				<include name="de/novabit/nucleus/server/**/ejb/*Bean.java"/>
-			</fileset>
-			<packageSubstitution packages="ejb" substituteWith="interfaces"/>
-			<remoteinterface pattern="{0}Remote"/>
-			<homeinterface pattern="{0}RemoteHome"/>
-			<localinterface/>
-			<localhomeinterface/>
-			<deploymentdescriptor destdir="${nucleus.build.classes.dir}/META-INF"/>
-			<jboss version="${jboss.version}" createTable="false" removeTable="false" xmlencoding="UTF-8"
-				datasource="${datasource.name}" destdir="${nucleus.build.classes.dir}/META-INF"
-						 validateXml="false" mergedir="${nucleus.dir}/merge"/>
-		</ejbdoclet>
-	</target>
-
 	<target name="compile" depends="init, compile.client"/>
 
-	<target name="compile.server" depends="init, xdoclet.generate.all, compile.server.nodepend"/>
+	<target name="compile.server" depends="init, compile.server.nodepend"/>
 
 	<target name="compile.server.nodepend">
 		<mkdir dir="${nucleus.build.classes.dir}"/>
@@ -154,7 +130,7 @@
 			<then>
 				<jar jarfile="${nucleus.build.deploy.dir}/nucleus-server.jar" basedir="${nucleus.build.classes.dir}"
 						 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, META-INF/, resources/, nucleus-app*.properties"
-						 excludes="**/test/, **/ejb3/">
+						 excludes="**/test/">
 					<manifest>
 						<attribute name="Manifest-Version" value="1.0"/>
 						<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-all-1.6.4.jar"/>
@@ -164,7 +140,7 @@
 			<else>
 				<jar jarfile="${nucleus.build.deploy.dir}/nucleus-server.jar" basedir="${nucleus.build.classes.dir}"
 						 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, META-INF/, resources/"
-						 excludes="**/test/, **/ejb3/">
+						 excludes="**/test/">
 					<manifest>
 						<attribute name="Manifest-Version" value="1.0"/>
 						<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-all-1.6.4.jar"/>
@@ -172,16 +148,6 @@
 				</jar>
 			</else>
 		</if>
-
-		<jar jarfile="${nucleus.build.deploy.dir}/nucleus-server-ejb3.jar">
-			<fileset dir="${nucleus.build.classes.dir}"
-			     includes="**/ejb3/"
-			     excludes="**/test/"/>
-			<fileset dir="${nucleus.conf.dir}/ejb3/"/>
-			<manifest>
-				<attribute name="Manifest-Version" value="1.0"/>
-			</manifest>
-		</jar>
 	</target>
 
 	<target name="deploy.client" depends="compile.client" description="Builds the client.">
@@ -211,7 +177,6 @@
 							icons.properties,
 				            menuConfig.xml"
 				excludes=	"**/test/,
-				            de/novabit/**/ejb/**/*Bean.class,
 	            			de/novabit/**/ejb3/**/*Bean.class,
 	            			de/novabit/**/ejb3/**/*Local.class,
 							de/novabit/nucleus/client/help/javahelp/,
@@ -247,7 +212,7 @@
 	<target name="package.server" description="Builds the server.">
 		<ear destfile="${nucleus.build.deploy.dir}/nucleus.ear" appxml="${nucleus.conf.dir}/jboss/ear/META-INF/application.xml">
 			<!--			<fileset dir="${nucleus.conf.dir}/jboss/ear" includes="META-INF/jboss-app.xml, scheduler-service.xml"/>-->
-			<fileset dir="${nucleus.build.deploy.dir}" includes="nucleus-server.jar, nucleus-server-ejb3.jar"/>
+			<fileset dir="${nucleus.build.deploy.dir}" includes="nucleus-server.jar"/>
 			<fileset dir="${common.build.deploy.dir}" includes="novabit-common.jar, novabit-common-ejb.jar"/>
 			<fileset dir="${nucleus.lib.dir}" includes="quartz-all-1.6.4.jar"/>
 		</ear>
