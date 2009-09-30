@@ -152,15 +152,6 @@
 				</jar>
 			</else>
 		</if>
-		<jar jarfile="${nucleus.build.deploy.dir}/nucleus-server-ejb3.jar">
-			<fileset dir="${nucleus.build.classes.dir}"
-			     includes="**/ejb3/"
-			     excludes="**/test/"/>
-			<fileset dir="${nucleus.conf.dir}/ejb3/"/>
-			<manifest>
-				<attribute name="Manifest-Version" value="1.0"/>
-			</manifest>
-		</jar>
 	</target>
 
 	<target name="deploy.client" depends="compile.client" description="Builds the client.">
