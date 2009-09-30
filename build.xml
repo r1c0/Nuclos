@@ -6,9 +6,9 @@
 	<import file="${nucleus.home.dir}/base.xml"/>
 
 	<property name="codegenerator.source" value ="${jboss.home}/server/nucleus/codegenerator"/>
-	
+
 	<property name="projectbuild" value="false"/>
-	
+
 	<path id="nucleus.client.run.path">
 		<!-- include nucleus.conf.dir in classpath so the ClassLoader finds nucleus-client.properties: -->
 		<pathelement location="${nucleus.conf.dir}"/>
@@ -21,7 +21,7 @@
 			<fileset dir="${xdoclet.lib.dir}" includes="*.jar"/>
 		</classpath>
 	</taskdef>
-	
+
 	<target name="init" depends="check.build.properties, init.common">
 		<copy file="${nucleus.conf.dir}/novabit/log4j-client-template.xml" tofile="${nucleus.conf.dir}/log4j.xml" overwrite="false"/>
 		<copy file="${nucleus.conf.dir}/novabit/nucleus-client-template.properties"
@@ -63,7 +63,7 @@
 
 	<target name="compile.server" depends="init, xdoclet.generate.all, compile.server.nodepend"/>
 
-	<target name="compile.server.nodepend">		
+	<target name="compile.server.nodepend">
 		<mkdir dir="${nucleus.build.classes.dir}"/>
 
 		<copy todir="${nucleus.build.classes.dir}">
@@ -77,7 +77,7 @@
 		<copy todir="${nucleus.build.classes.dir}">
 			<fileset dir="${nucleus.conf.dir}" includes="nucleus-app*.properties, icons.properties, menuConfig.xml"/>
 		</copy>
-		
+
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
 					 srcdir="${nucleus.src.java.dir}:${nucleus.build.java.dir}"
@@ -154,7 +154,7 @@
 			<then>
 				<jar jarfile="${nucleus.build.deploy.dir}/nucleus-server.jar" basedir="${nucleus.build.classes.dir}"
 						 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, META-INF/, resources/, nucleus-app*.properties"
-						 excludes="**/test/">
+						 excludes="**/test/, **/ejb3/">
 					<manifest>
 						<attribute name="Manifest-Version" value="1.0"/>
 						<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-all-1.6.4.jar"/>
@@ -164,7 +164,7 @@
 			<else>
 				<jar jarfile="${nucleus.build.deploy.dir}/nucleus-server.jar" basedir="${nucleus.build.classes.dir}"
 						 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, META-INF/, resources/"
-						 excludes="**/test/">
+						 excludes="**/test/, **/ejb3/">
 					<manifest>
 						<attribute name="Manifest-Version" value="1.0"/>
 						<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-all-1.6.4.jar"/>
@@ -172,11 +172,21 @@
 				</jar>
 			</else>
 		</if>
+
+		<jar jarfile="${nucleus.build.deploy.dir}/nucleus-server-ejb3.jar">
+			<fileset dir="${nucleus.build.classes.dir}"
+			     includes="**/ejb3/"
+			     excludes="**/test/"/>
+			<fileset dir="${nucleus.conf.dir}/ejb3/"/>
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0"/>
+			</manifest>
+		</jar>
 	</target>
 
 	<target name="deploy.client" depends="compile.client" description="Builds the client.">
 		<mkdir dir="${nucleus.build.deploy.dir}"/>
-		
+
 		<mkdir dir="${nucleus.build.deploy.dir}/JNLP-INF/"/>
 		<copy todir="${nucleus.build.deploy.dir}/JNLP-INF/">
 			<fileset dir="${nucleus.conf.dir}/webstart/app/" includes="*.jnlp"/>
@@ -201,7 +211,9 @@
 							icons.properties,
 				            menuConfig.xml"
 				excludes=	"**/test/,
-							de/novabit/**/ejb/**/*Bean.class,
+				            de/novabit/**/ejb/**/*Bean.class,
+	            			de/novabit/**/ejb3/**/*Bean.class,
+	            			de/novabit/**/ejb3/**/*Local.class,
 							de/novabit/nucleus/client/help/javahelp/,
 							de/novabit/nucleus/client/main/animatedmenubar/,
 							de/novabit/**/build.xml"/>
@@ -235,7 +247,7 @@
 	<target name="package.server" description="Builds the server.">
 		<ear destfile="${nucleus.build.deploy.dir}/nucleus.ear" appxml="${nucleus.conf.dir}/jboss/ear/META-INF/application.xml">
 			<!--			<fileset dir="${nucleus.conf.dir}/jboss/ear" includes="META-INF/jboss-app.xml, scheduler-service.xml"/>-->
-			<fileset dir="${nucleus.build.deploy.dir}" includes="nucleus-server.jar"/>
+			<fileset dir="${nucleus.build.deploy.dir}" includes="nucleus-server.jar, nucleus-server-ejb3.jar"/>
 			<fileset dir="${common.build.deploy.dir}" includes="novabit-common.jar, novabit-common-ejb.jar"/>
 			<fileset dir="${nucleus.lib.dir}" includes="quartz-all-1.6.4.jar"/>
 		</ear>
@@ -412,7 +424,7 @@
 			</classpath>
 		</javadoc>
 	</target>
-	
+
 	<target name="compile.datasourcedoc" description="Compiles datasource documentation from docbook sources.">
 		<!-- @todo doesn't compile - eliminate if no longer needed -->
 		<copy todir="${docbook-xsl.home}/fo/">
@@ -585,7 +597,7 @@
 
 	<target name="war.webstart" description="Builds the webstart-client." depends="clean, build.novabit.common.noclean, deploy.client, war.webstart.nodepend">
 	</target>
-			
+
 	<target name="war.webstart.nodepend" description="Builds the webstart-client without dependencies." depends="war.webstart.jar">
 		<copy overwrite="true" todir="${nucleus.build.deploy.dir}/nucleus-webstart.war/app">
 			<fileset dir="${nucleus.build.deploy.dir}">
@@ -605,13 +617,13 @@
 			<fileset dir="${nucleus.conf.dir}/webstart">
 			</fileset>
 		</copy>
-		
+
 		<copy overwrite="true" todir="${nucleus.build.deploy.dir}/nucleus-webstart.war/WEB-INF/lib">
 			<fileset dir="${nucleus.lib.dir}">
 				<include name="jnlp-servlet.jar"/>
 			</fileset>
 		</copy>
-		
+
 		<copy overwrite="true" todir="${nucleus.build.deploy.dir}/conf">
 			<fileset dir="${nucleus.conf.dir}">
 				<include name="jndi.properties"/>
@@ -659,7 +671,7 @@
 		<unjar overwrite="false" src="${nucleus.lib.dir}/commons-logging-1.1.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/jdbc2_0-stdext.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/jh.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/log4j-1.2.8.jar" dest="${nucleus.build.classes.dir}"/>
+		<unjar overwrite="false" src="${nucleus.lib.dir}/log4j.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/StrutLayout1.2.1.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/thirdparty.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/dom4j-full.jar" dest="${nucleus.build.classes.dir}"/>
@@ -677,6 +689,11 @@
 		<unjar overwrite="false" src="${jboss.client.dir}/jbosssx-client.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/jboss-transaction-client.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/jbossmq-client.jar" dest="${nucleus.build.classes.dir}"/>
+		<unjar overwrite="false" src="${jboss.client.dir}/jboss-remoting.jar" dest="${nucleus.build.classes.dir}"/>
+		<unjar overwrite="false" src="${jboss.client.dir}/jboss-serialization.jar" dest="${nucleus.build.classes.dir}"/>
+		<unjar overwrite="false" src="${jboss.client.dir}/jboss-ejb3-client.jar" dest="${nucleus.build.classes.dir}"/>
+		<unjar overwrite="false" src="${jboss.client.dir}/jboss-aop-jdk50-client.jar" dest="${nucleus.build.classes.dir}"/>
+		<unjar overwrite="false" src="${jboss.client.dir}/jboss-aspect-jdk50-client.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/concurrent.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/jnp-client.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${common.dir}/lib/client/layer.jar" dest="${nucleus.build.classes.dir}"/>
@@ -691,12 +708,12 @@
 		<!-- unjar overwrite="false" src="${nucleus.lib.dir}/client/BrowserLauncher2-1_3.jar" dest="${nucleus.build.classes.dir}"/ -->
 		<unjar overwrite="false" src="${nucleus.lib.dir}/client/xstream-1.3.1.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/client/swingx-1.0.jar" dest="${nucleus.build.classes.dir}"/>
-		
+
 		<!-- jar nucleus libs -->
 		<delete dir="${nucleus.build.classes.dir}/META-INF"/>
 		<jar jarfile="${nucleus.build.deploy.dir}/nucleus-libs.jar">
 			<fileset dir="${nucleus.build.classes.dir}" excludes="de/novabit/**"/>
-			<!-- NUCLEUSINT-558: 
+			<!-- NUCLEUSINT-558:
 			   Usually, you would include all jars above via zipfileset here
 			   unfortunately, two of the jars contain
 			   "org/apache/commons/beanutils/BasicDynaBean.class"
@@ -712,7 +729,7 @@
 				<include name="jawin.dll"/>
 			</fileset>
 		</jar>
-		
+
 		<!-- create folder structure for war -->
 		<mkdir dir="${nucleus.build.deploy.dir}/plugins/dtd"/>
 		<copy overwrite="true" todir="${nucleus.build.deploy.dir}/plugins">
@@ -727,15 +744,15 @@
 		</copy>
 		<jar jarfile="${nucleus.build.deploy.dir}/plugins/layoutml-plugin.jar" basedir="${nucleus.build.deploy.dir}/plugins/"/>
 	</target>
-		
+
 	<target name="dist.webstart" depends="dist, war.webstart" description="copy files to distribution directory containing webstart configuration.">
 		<mkdir dir="${nucleus.dist.dir}/server/deploy"/>
-		
+
 		<!-- copy webstart directories to server -->
 		<copy overwrite="true" todir="${nucleus.dist.dir}/server/deploy/nucleus-webstart.war">
 			<fileset dir="${nucleus.build.deploy.dir}/nucleus-webstart.war"/>
 		</copy>
-		
+
 		<copy overwrite="true" todir="${nucleus.dist.dir}/server/deploy/nucleus-webstart.war/app">
 			<fileset dir="${nucleus.conf.dir}">
 				<include name="log4j.xml"/>
@@ -751,6 +768,79 @@
 	    		<param name="C"  value="DE"/>
 	  		</dname>
 		</genkey>
+	</target>
+
+	<target name="install.jboss.files"
+		depends="init.common"
+		description="copy default configuration files and libraries to the JBoss 'server' directory. Handle with care!">
+
+		<if><not><available file="${jboss.server.dir}"/></not>
+			<then><!-- Erstinstallation -->
+				<echo message="Renaming ${jboss.home}/server/default to ${jboss.server.dir}"/>
+				<move file="${jboss.home}/server/default" tofile="${jboss.server.dir}"/>
+				<mkdir dir="${jboss.server.dir}/codegenerator"/>
+				<mkdir dir="${jboss.server.dir}/documents"/>
+				<mkdir dir="${jboss.server.dir}/expimp"/>
+				<mkdir dir="${jboss.server.dir}/reports"/>
+			</then>
+		</if>
+
+		<!-- config files -->
+		<copy overwrite="true" todir="${jboss.server.dir}" verbose="true">
+			<fileset dir="${nucleus.conf.dir}/jboss/install/" excludes="**/install-readme.txt"/>
+		</copy>
+
+		<!-- libraries -->
+		<delete verbose="true">
+			<fileset dir="${jboss.server.dir}/lib/">
+				<include name="dom4j.jar"/>
+				<include name="commons-collections.jar"/>
+			</fileset>
+		</delete>
+
+		<copy overwrite="true" todir="${jboss.server.dir}/lib/" verbose="true">
+			<fileset dir="${nucleus.lib.dir}">
+				<include name="jmxtools.jar"/>
+				<include name="dom4j-full.jar"/>
+				<include name="iText-2.1.7.jar"/>
+				<include name="InsaPerformanceLogger.jar"/>
+				<include name="poi-2.5-final-20040302.jar"/>
+				<include name="jasperreports-3.1.2.jar"/>
+				<include name="commons-beanutils-1.5.jar"/>
+				<include name="commons-collections-3.2.jar"/>
+				<include name="commons-lang-2.0.jar"/>
+				<include name="ojdbc14.jar"/>
+				<include name="sqljdbc.jar"/>
+			</fileset>
+		</copy>
+
+		<!-- DB-Type configuration -->
+		<if><equals arg1="${dbtype}" arg2="mssql"/>
+			<then><!-- MSSQL -->
+				<move verbose="true"
+					file="${jboss.server.dir}/conf/standardjbosscmp-jdbc.xml_mssql2005"
+					tofile="${jboss.server.dir}/conf/standardjbosscmp-jdbc.xml"/>
+				<move verbose="true"
+					file="${jboss.server.dir}/deploy/deploy.last/quartz-service.xml_mssql2005"
+					tofile="${jboss.server.dir}/deploy/deploy.last/quartz-service.xml"/>
+				<delete file="${jboss.server.dir}/conf/standardjbosscmp-jdbc.xml_oracle9i" verbose="true"/>
+				<delete file="${jboss.server.dir}/deploy/oracle-ds.xml" verbose="true"/>
+				<delete file="${jboss.server.dir}/deploy/deploy.last/quartz-service.xml_oacle9i" verbose="true"/>
+				<delete file="${jboss.server.dir}/lib/ojdbc14.jar" verbose="true"/>
+			</then>
+			<else><!-- DEFAULT: Oracle -->
+				<move verbose="true"
+					file="${jboss.server.dir}/conf/standardjbosscmp-jdbc.xml_oracle9i"
+					tofile="${jboss.server.dir}/conf/standardjbosscmp-jdbc.xml"/>
+				<move verbose="true"
+					file="${jboss.server.dir}/deploy/deploy.last/quartz-service.xml_oracle9i"
+					tofile="${jboss.server.dir}/deploy/deploy.last/quartz-service.xml"/>
+				<delete file="${jboss.server.dir}/conf/standardjbosscmp-jdbc.xml_mssql2005" verbose="true"/>
+				<delete file="${jboss.server.dir}/deploy/mssql-ds.xml" verbose="true"/>
+				<delete file="${jboss.server.dir}/deploy/deploy.last/quartz-service.xml_mssql2005" verbose="true"/>
+				<delete file="${jboss.server.dir}/lib/sqljdbc.jar" verbose="true"/>
+			</else>
+		</if>
 	</target>
 
 </project>

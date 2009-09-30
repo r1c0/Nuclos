@@ -1,6 +1,6 @@
 # Properties for build.xml:
 # copy this file to build.properties in the project root directory
-jboss.home=C:/JavaTools/jboss-4.0.3
+jboss.home=C:/JavaTools/jboss-4.2.2.GA
 xdoclet.home=C:/JavaTools/xdoclet-1.2.3-lunatech
 docbook-xsl.home=C:/JavaTools/docbook-xsl-1.69.1
 project.home.dir=.
@@ -9,3 +9,6 @@ codegenerator.source=D:/xfer/nucleus/codegenerator
 
 # URL für die Verwendung von WebStart
 webstart.url=localhost:8080
+
+# uncomment this for configuring JBoss for MSSQL (target: 'install.jboss.files')
+# dbtype=mssql

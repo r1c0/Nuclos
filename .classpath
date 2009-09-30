@@ -23,12 +23,10 @@
 	<classpathentry exported="true" kind="lib" path="lib/jdbc2_0-stdext.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jfcunit.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jh.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jnp-client.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jsearch.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/junit-3.8.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jxl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/kunststoff.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mail.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ojdbc14.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/p6spy.jar"/>
@@ -42,36 +40,19 @@
 	<classpathentry exported="true" kind="lib" path="lib/davfilechooser.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/thirdparty.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/StrutLayout1.2.1.jar"/>
-	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jnp-client.jar"/>
-	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jbossmq-client.jar"/>
-	<classpathentry exported="true" kind="var" path="JBOSS_HOME/lib/concurrent.jar"/>
-	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jboss-j2ee.jar"/>
-	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jboss-client.jar"/>
-	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jboss-common-client.jar"/>
-	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jboss-system-client.jar"/>
-	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jbosssx-client.jar"/>
-	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jboss-transaction-client.jar"/>
-	<classpathentry exported="true" kind="var" path="JBOSS_HOME/server/nucleus/lib/jboss.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-snmp-appender.jar"/>
+	<classpathentry kind="lib" path="lib/log4j.jar"/>
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME/server/nucleus/lib/mail.jar"/>
-	<classpathentry exported="true" kind="var" path="JBOSS_HOME/lib/endorsed/xercesImpl.jar"/>
-	<classpathentry exported="true" kind="var" path="JBOSS_HOME/lib/jboss-system.jar"/>
-	<classpathentry exported="true" kind="var" path="JBOSS_HOME/lib/jboss-common.jar"/>
-	<classpathentry exported="true" kind="var" path="JBOSS_HOME/lib/jboss-jmx.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/Xerlin-1.3-patched.jar"/>
 	<classpathentry exported="true" kind="var" path="JDK_HOME/lib/tools.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/BrowserLauncher2-1_3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/filters.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/client/jbosssx-client.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/jlfgr-1_0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/layer.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/TableLayout-bin-jdk1.5-2009-06-10.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/server/jbosssx.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ant-contrib-1.0b3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/colorpicker.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-codec-1.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jboss-j2ee.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jboss-jmx.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jboss-system.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmxtools.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jnlp-servlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/sqljdbc.jar"/>
@@ -79,6 +60,16 @@
 	<classpathentry exported="true" kind="lib" path="lib/client/xstream-1.3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/swingx-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/antlr-runtime-3.1.3.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME"/>
+	<classpathentry kind="var" path="JBOSS_HOME/client/jbossall-client.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/server/nucleus/lib/jboss.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/client/jboss-ejb3x.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/server/nucleus/lib/jbosssx.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/client/concurrent.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/lib/jboss-system.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/server/nucleus/lib/log4j.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/client/jboss-ejb3-client.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/client/jboss-annotations-ejb3.jar"/>
 	<classpathentry kind="lib" path="lib/client/substance_5.2.jar"/>
 	<classpathentry kind="lib" path="lib/client/substance-flamingo_5.2.jar"/>
 	<classpathentry kind="lib" path="lib/client/synthetica.jar"/>

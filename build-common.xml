@@ -37,7 +37,7 @@
 		<pathelement location="${lib.dir}/commons-beanutils-1.5.jar"/>
 		<pathelement location="${lib.dir}/commons-collections-3.2.jar"/>
 		<pathelement location="${lib.dir}/commons-lang-2.0.jar"/>
-		<pathelement location="${lib.dir}/log4j-1.2.8.jar"/>
+		<pathelement location="${lib.dir}/log4j.jar"/>
 		<pathelement location="${lib.dir}/junit-3.8.1.jar"/>
 		<pathelement location="${lib.dir}/client/jlfgr-1_0.jar"/>
 		<pathelement location="${lib.dir}/client/layer.jar"/>

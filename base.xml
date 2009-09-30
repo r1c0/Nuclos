@@ -72,34 +72,38 @@
 		<pathelement location="${nucleus.build.classes.dir}"/>
 		<pathelement location="${common.build.deploy.dir}/novabit-common.jar"/>
 		<pathelement location="${common.build.deploy.dir}/novabit-common-ejb.jar"/>
-		<pathelement location="${nucleus.lib.dir}/log4j-1.2.8.jar"/>
+		<pathelement location="${nucleus.lib.dir}/log4j.jar"/>
 		<pathelement location="${nucleus.lib.dir}/commons-lang-2.0.jar"/>
 		<pathelement location="${nucleus.lib.dir}/commons-beanutils-1.5.jar"/>
 		<pathelement location="${nucleus.lib.dir}/commons-collections-3.2.jar"/>
-		<pathelement location="${jboss.server.lib.dir}/jboss-j2ee.jar"/>
-		<pathelement location="${jboss.client.dir}/jbosssx-client.jar"/>
-		<pathelement location="${jboss.server.lib.dir}/jbosssx.jar"/>
-		<pathelement location="${jboss.lib.dir}/jboss-system.jar"/>
-		<pathelement location="${jboss.lib.dir}/jboss-common.jar"/>
-		<pathelement location="${jboss.lib.dir}/jboss-jmx.jar"/>
-		<pathelement location="${jboss.server.lib.dir}/jboss-common-jdbc-wrapper.jar"/>
 		<pathelement location="${nucleus.lib.dir}/dom4j-full.jar"/>
 		<pathelement location="${nucleus.lib.dir}/jasperreports-3.1.2.jar"/>
 		<pathelement location="${nucleus.lib.dir}/quartz-all-1.6.4.jar"/>
 		<pathelement location="${nucleus.lib.dir}/ojdbc14.jar"/>
 		<pathelement location="${nucleus.lib.dir}/sqljdbc.jar"/>
 		<pathelement location="${nucleus.lib.dir}/poi-2.5-final-20040302.jar"/>
+		<pathelement location="${nucleus.lib.dir}/junit-3.8.1.jar"/>
+		<pathelement location="${nucleus.lib.dir}/commons-codec-1.3.jar"/>
+		<pathelement location="${nucleus.lib.dir}/jmxtools.jar"/>
+		<pathelement location="${nucleus.lib.dir}/client/layer.jar"/>
+		<pathelement location="${nucleus.lib.dir}/client/swingx-1.0.jar"/>
+		<pathelement location="${jboss.lib.dir}/jboss-system.jar"/>
+		<pathelement location="${jboss.lib.dir}/jboss-common.jar"/>
+		<pathelement location="${jboss.lib.dir}/jboss-jmx.jar"/>
+		<pathelement location="${jboss.lib.dir}/endorsed/xercesImpl.jar"/>
+	    <pathelement location="${jboss.client.dir}/jboss-ejb3x.jar"/>
+	    <pathelement location="${jboss.client.dir}/jboss-ejb3-client.jar"/>
+	    <pathelement location="${jboss.client.dir}/jboss-annotations-ejb3.jar"/>
+		<pathelement location="${jboss.client.dir}/jboss-aop-jdk50-client.jar"/>
+		<pathelement location="${jboss.client.dir}/jboss-aspect-jdk50-client.jar"/>
 		<pathelement location="${jboss.client.dir}/jnp-client.jar"/>
 		<pathelement location="${jboss.client.dir}/jbossmq-client.jar"/>
 		<pathelement location="${jboss.client.dir}/concurrent.jar"/>
+		<pathelement location="${jboss.server.lib.dir}/jbosssx.jar"/>
+		<pathelement location="${jboss.server.lib.dir}/jboss-j2ee.jar"/>
+		<pathelement location="${jboss.server.lib.dir}/jboss-common-jdbc-wrapper.jar"/>
 		<pathelement location="${jboss.server.lib.dir}/jboss.jar"/>
 		<pathelement location="${jboss.server.lib.dir}/mail.jar"/>
-		<pathelement location="${nucleus.lib.dir}/junit-3.8.1.jar"/>
-		<pathelement location="${jboss.lib.dir}/endorsed/xercesImpl.jar"/>
-		<pathelement location="${nucleus.lib.dir}/commons-codec-1.3.jar"/>
-		<pathelement location="${nucleus.lib.dir}/jmxtools.jar"/>
-		<pathelement location="${nucleus.dir}/lib/client/layer.jar"/>
-		<pathelement location="${nucleus.dir}/lib/client/swingx-1.0.jar"/>
 	</path>
 
 	<path id="nucleus.client.path">
@@ -110,21 +114,16 @@
 		<pathelement location="${nucleus.lib.dir}/commons-beanutils-1.5.jar"/>
 		<pathelement location="${nucleus.lib.dir}/commons-collections-3.2.jar"/>
 		<pathelement location="${nucleus.lib.dir}/commons-logging-1.1.jar"/>
-		<pathelement location="${jboss.client.dir}/jboss-j2ee.jar"/>
-		<pathelement location="${jboss.client.dir}/jboss-client.jar"/>
-		<pathelement location="${jboss.client.dir}/jboss-common-client.jar"/>
-		<pathelement location="${jboss.client.dir}/jboss-system-client.jar"/>
-		<pathelement location="${jboss.client.dir}/jbosssx-client.jar"/>
-		<pathelement location="${jboss.client.dir}/jboss-transaction-client.jar"/>
-		<pathelement location="${jboss.client.dir}/jbossmq-client.jar"/>
-		<pathelement location="${jboss.client.dir}/concurrent.jar"/>
+		<pathelement location="${nucleus.lib.dir}/client/layer.jar"/>
+		<pathelement location="${nucleus.lib.dir}/client/filters.jar"/>
+		<pathelement location="${nucleus.lib.dir}/client/xstream-1.3.1.jar"/>
+		<pathelement location="${nucleus.lib.dir}/client/swingx-1.0.jar"/>
 		<pathelement location="${nucleus.lib.dir}/client/TableLayout-bin-jdk1.5-2009-06-10.jar"/>
 		<pathelement location="${nucleus.lib.dir}/client/BrowserLauncher2-1_3.jar"/>
 		<pathelement location="${nucleus.lib.dir}/InsaPerformanceLogger.jar"/>
 		<pathelement location="${nucleus.lib.dir}/jdbc2_0-stdext.jar"/>
 		<pathelement location="${nucleus.lib.dir}/jh.jar"/>
-		<pathelement location="${jboss.client.dir}/jnp-client.jar"/>
-		<pathelement location="${nucleus.lib.dir}/log4j-1.2.8.jar"/>
+		<pathelement location="${nucleus.lib.dir}/log4j.jar"/>
 		<pathelement location="${nucleus.lib.dir}/dom4j-full.jar"/>
 		<pathelement location="${nucleus.lib.dir}/xercesImpl.jar"/>
 		<pathelement location="${nucleus.lib.dir}/xmlParserAPIs.jar"/>
@@ -134,22 +133,27 @@
 		<pathelement location="${nucleus.lib.dir}/jawin.jar"/>
 		<pathelement location="${nucleus.lib.dir}/jxl.jar"/>
 		<pathelement location="${nucleus.lib.dir}/sqljdbc.jar"/>
-
 		<pathelement location="${nucleus.lib.dir}/davfilechooser.jar"/>
 		<pathelement location="${nucleus.lib.dir}/thirdparty.jar"/>
 		<pathelement location="${nucleus.lib.dir}/StrutLayout1.2.1.jar"/>
+		<pathelement location="${jboss.client.dir}/jnp-client.jar"/>
+		<pathelement location="${jboss.client.dir}/jboss-j2ee.jar"/>
+		<pathelement location="${jboss.client.dir}/jboss-client.jar"/>
+		<pathelement location="${jboss.client.dir}/jboss-common-client.jar"/>
+		<pathelement location="${jboss.client.dir}/jboss-system-client.jar"/>
+		<pathelement location="${jboss.client.dir}/jbosssx-client.jar"/>
+		<pathelement location="${jboss.client.dir}/jboss-transaction-client.jar"/>
+		<pathelement location="${jboss.client.dir}/jbossmq-client.jar"/>
+		<pathelement location="${jboss.client.dir}/jboss-remoting.jar"/>
+		<pathelement location="${jboss.client.dir}/jboss-serialization.jar"/>
+		<pathelement location="${jboss.client.dir}/concurrent.jar"/>
+		<pathelement location="${jboss.client.dir}/jboss-ejb3x.jar"/>
 
 		<pathelement location="${nucleus.build.deploy.dir}/nucleus-xerlin.jar"/>
 
-		<pathelement location="${nucleus.dir}/lib/client/layer.jar"/>
-		<pathelement location="${nucleus.dir}/lib/client/filters.jar"/>
-		<pathelement location="${nucleus.dir}/lib/client/xstream-1.3.1.jar"/>
-		<pathelement location="${nucleus.dir}/lib/client/swingx-1.0.jar"/>
-		
 		<pathelement location="${nucleus.dir}/lib/client/substance_5.2.jar"/>
 		<pathelement location="${nucleus.dir}/lib/client/substance-flamingo_5.2.jar"/>
 		<pathelement location="${nucleus.dir}/lib/client/flamingo_4.1.jar"/>
-		
 		<pathelement location="${nucleus.dir}/lib/client/synthetica.jar"/>
 		<pathelement location="${nucleus.dir}/lib/client/syntheticaSimple2D.jar"/>
 	</path>
