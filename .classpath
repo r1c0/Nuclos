@@ -75,5 +75,6 @@
 	<classpathentry kind="lib" path="lib/client/synthetica.jar"/>
 	<classpathentry kind="lib" path="lib/client/flamingo_4.1.jar"/>
 	<classpathentry kind="lib" path="lib/client/syntheticaSimple2D.jar"/>
+	<classpathentry kind="lib" path="lib/client/tinylaf.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
