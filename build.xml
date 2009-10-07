@@ -765,6 +765,7 @@
 			<fileset dir="${jboss.server.dir}/lib/">
 				<include name="dom4j.jar"/>
 				<include name="commons-collections.jar"/>
+				<include name="quartz.jar"/>
 			</fileset>
 		</delete>
 
@@ -781,6 +782,7 @@
 				<include name="commons-lang-2.0.jar"/>
 				<include name="ojdbc14.jar"/>
 				<include name="sqljdbc.jar"/>
+				<include name="quartz-all-1.6.4.jar"/>
 			</fileset>
 		</copy>
 
