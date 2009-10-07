@@ -170,7 +170,6 @@
 							de/novabit/nucleus/server/*/*.class,
 							de/novabit/nucleus/server/database/**/*.class,
 							de/novabit/nucleus/server/**/valueobject/*,
-							de/novabit/nucleus/server/**/interfaces/*,
 							de/novabit/nucleus/server/**/*Exception.class,
 							de/novabit/nucleus/server/**/*VO*.class,
 							de/novabit/nucleus/server/genericobject/searchcondition/Collectable*SearchExpression.class,
@@ -181,11 +180,11 @@
 							icons.properties,
 				            menuConfig.xml"
 				excludes=	"**/test/,
-	            			de/novabit/**/ejb3/**/*Bean.class,
-	            			de/novabit/**/ejb3/**/*Local.class,
 							de/novabit/nucleus/client/help/javahelp/,
 							de/novabit/nucleus/client/main/animatedmenubar/,
 							de/novabit/**/build.xml"/>
+			<fileset dir="${nucleus.build.classes.dir}"
+				includes= "de/novabit/nucleus/server/**/ejb3/*Remote.class"/>
 			<fileset dir="${nucleus.build.deploy.dir}"
 				includes=   "JNLP-INF/*.jnlp"/>
 		</jar>
