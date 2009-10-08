@@ -285,6 +285,29 @@
 		</java>
 	</target>
 
+	<target name="run.translation" description="Runs the translation tool.">
+		<mkdir dir="${nucleus.build.classes.dir}/de/novabit/nucleus/tools/translation/csv"/>
+
+		<copy todir="${nucleus.build.classes.dir}/de/novabit/nucleus/tools/translation/csv">
+			<fileset dir="${nucleus.src.java.dir}/de/novabit/nucleus/tools/translation/csv"/>
+		</copy>
+
+		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+					 nowarn="${javac.nowarn}"
+					 srcdir="${nucleus.src.java.dir}:${nucleus.build.java.dir}"
+					 includes="de/novabit/nucleus/tools/translation/**"
+					 classpathref="nucleus.server.path">
+		</javac>
+        <java classname="de.novabit.nucleus.tools.translation.TranslationMainFrame" fork="true"
+              dir="${nucleus.build.classes.dir}/de/novabit/nucleus/tools/translation">
+              <classpath>
+                    <pathelement location="${nucleus.build.classes.dir}"/>
+                    <pathelement location="${nucleus.lib.dir}/ojdbc14.jar"/>
+                    <pathelement location="${project.src.java.dir}/de/novabit/${app.name}/tools/translation/csv"/>
+              </classpath>
+        </java>
+  	</target>
+
 	<target name="echo.classpath.windows" description="Prints the current classpath to System.out.">
 		<pathconvert refid="nucleus.client.run.path" targetos="windows" property="nucleus.client.run.path.windows"/>
 		<echo message="${nucleus.client.run.path.windows}" level="debug"/>
