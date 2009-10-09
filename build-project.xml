@@ -214,7 +214,10 @@
 	</target>
 
 	<target name="deploy.to.server" description="copys the build result to server deploy directory">
-		<!-- deploy: -->
+		<!--
+		    Diese Version duerfte mit der Einfuehrung von 'install.jboss.files' obsolet sein.
+
+		<!- - deploy: - ->
 		<copy todir="${jboss.server.deploy.dir}">
 			<fileset dir="${project.build.deploy.dir}" includes="${app.name}.ear"/>
 			<fileset dir="${project.conf.dir}/jboss/deploy" includes="deploy.last/quartz-service.xml"/>
@@ -228,10 +231,26 @@
 		  <default/>
 		</switch>
 
-		<!-- quartz-service.xml must be renewed, otherwise it won't be redeployed on hot deployment: -->
+		<!- - quartz-service.xml must be renewed, otherwise it won't be redeployed on hot deployment: - ->
 		<touch>
 			<fileset dir="${jboss.server.deploy.dir}/deploy.last"/>
 		</touch>
+		-->
+
+		<copy overwrite="true"
+			file="${project.build.deploy.dir}/${app.name}.ear"
+			tofile="${jboss.server.deploy.dir}/${app.name}.ear"/>
+
+		<touch>
+			<fileset dir="${jboss.server.deploy.dir}">
+				<include name="jms/nucleus-destinations-service.xml"/>
+				<include name="deploy.last/quartz-service.xml"/>
+			</fileset>
+		</touch>
+		<if><equals arg1="${deploy.jboss.server.nucleus.service}" arg2="true"/>
+			<then><touch file="deploy.last/nucleus-service.xml"/></then>
+		</if>
+
 	</target>
 
 	<!-- Target to run client -->
@@ -434,7 +453,7 @@
 		<!-- copy server config -->
 		<mkdir dir="${project.dist.dir}/server/conf"/>
 		<copy todir="${project.dist.dir}/server/conf">
-			<fileset dir="${project.conf.dir}/jboss/conf" includes="log4j.xml"/>
+			<fileset dir="${project.conf.dir}/jboss/install/conf" includes="log4j.xml"/>
 		</copy>
 
 		<!-- copy client config: -->
@@ -624,18 +643,6 @@
 		<!-- conf directory -->
 		<copy todir="${project.conf.dir}/icons" overwrite="false">
 			<fileset dir="${nucleus.conf.dir}/icons"/>
-		</copy>
-		<copy todir="${project.conf.dir}/jboss/conf" overwrite="false">
-			<fileset dir="${nucleus.conf.dir}/jboss/conf"/>
-		</copy>
-		<copy todir="${project.conf.dir}/jboss/conf" overwrite="false">
-			<fileset dir="${nucleus.conf.dir}/jboss/conf"/>
-		</copy>
-		<copy todir="${project.conf.dir}/jboss/deploy/deploy.last" overwrite="false">
-			<fileset dir="${nucleus.conf.dir}/jboss/deploy/deploy.last"/>
-		</copy>
-		<copy todir="${project.conf.dir}/jboss/deploy" overwrite="false">
-			<fileset dir="${nucleus.conf.dir}/jboss/deploy" includes="*.xml"/>
 		</copy>
 		<copy todir="${project.conf.dir}/jboss/ear/META-INF" overwrite="false">
 			<fileset dir="${nucleus.conf.dir}/jboss/ear/META-INF" includes="application.xml"/>
