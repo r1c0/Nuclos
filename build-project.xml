@@ -647,6 +647,9 @@
 		<copy todir="${project.conf.dir}/jboss/ear/META-INF" overwrite="false">
 			<fileset dir="${nucleus.conf.dir}/jboss/ear/META-INF" includes="application.xml"/>
 		</copy>
+		<replace file="${project.conf.dir}/jboss/ear/META-INF/application.xml"
+			token="nucleus-server.jar" value="${app.name}-server.jar"/>
+
 		<copy todir="${project.conf.dir}" overwrite="false">
 			<fileset dir="${nucleus.conf.dir}"
 				includes="jndi.properties, layoutml.dtd, log4j.xml, nucleus-app.properties, nucleus-client.properties"/>
@@ -657,8 +660,10 @@
 		<copy todir="${project.conf.dir}/ejb3" overwrite="false">
 			<fileset dir="${nucleus.conf.dir}/ejb3"/>
 		</copy>
-		<copy file="${nucleus.dir}/jboss_config.filter.default" tofile="${project.home.dir}/jboss_config.filter.default"/>
-		<copy file="${nucleus.dir}/jboss_config.filter.default" tofile="${project.home.dir}/jboss_config.filter"/>
+		<copy file="${nucleus.dir}/conf/jboss/jboss_config.filter.default"
+			tofile="${project.home.dir}/conf/jboss/jboss_config.filter.default"/>
+		<copy file="${nucleus.dir}/conf/jboss/jboss_config.filter.default"
+			tofile="${project.home.dir}/jboss_config.filter"/>
 
 		<mkdir dir="${project.conf.dir}/resources"/>
 		<copy todir="${project.conf.dir}/resources" overwrite="false">
@@ -701,9 +706,24 @@
 	<target name="install.jboss.files"
 		description="copy default configuration files and libraries to the JBoss 'server' directory. Handle with care!">
 
+		<!-- Ein bloeder Hack fuer die "Filterdatei", die im Nucleus-Verzeichnis liegen muss -->
+		<if><available file="${nucleus.dir}/jboss_config.filter"/>
+			<then><move file="${nucleus.dir}/jboss_config.filter"
+				tofile="${nucleus.dir}/jboss_config.filter.$SIK$"/>
+			</then>
+		</if>
+		<copy file="./jboss_config.filter" tofile="${nucleus.dir}/jboss_config.filter"/>
+
 		<ant antfile="${nucleus.dir}/build.xml" dir="${nucleus.dir}" target="install.jboss.files" inheritall="false">
 			<property name="jboss.server.name" value="${jboss.server.name}"/>
 			<property name="projectbuild" value="true"/>
 		</ant>
+
+		<delete file="${nucleus.dir}/jboss_config.filter"/>
+		<if><available file="${nucleus.dir}/jboss_config.filter.$SIK$"/>
+			<then><move file="${nucleus.dir}/jboss_config.filter.$SIK$"
+				tofile="${nucleus.dir}/jboss_config.filter"/>
+			</then>
+		</if>
 	</target>
 </project>
