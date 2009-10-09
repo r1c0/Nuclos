@@ -706,24 +706,15 @@
 	<target name="install.jboss.files"
 		description="copy default configuration files and libraries to the JBoss 'server' directory. Handle with care!">
 
-		<!-- Ein bloeder Hack fuer die "Filterdatei", die im Nucleus-Verzeichnis liegen muss -->
-		<if><available file="${nucleus.dir}/jboss_config.filter"/>
-			<then><move file="${nucleus.dir}/jboss_config.filter"
-				tofile="${nucleus.dir}/jboss_config.filter.$SIK$"/>
-			</then>
-		</if>
-		<copy file="./jboss_config.filter" tofile="${nucleus.dir}/jboss_config.filter"/>
-
 		<ant antfile="${nucleus.dir}/build.xml" dir="${nucleus.dir}" target="install.jboss.files" inheritall="false">
 			<property name="jboss.server.name" value="${jboss.server.name}"/>
 			<property name="projectbuild" value="true"/>
 		</ant>
 
-		<delete file="${nucleus.dir}/jboss_config.filter"/>
-		<if><available file="${nucleus.dir}/jboss_config.filter.$SIK$"/>
-			<then><move file="${nucleus.dir}/jboss_config.filter.$SIK$"
-				tofile="${nucleus.dir}/jboss_config.filter"/>
-			</then>
-		</if>
+		<!-- Das wird beim 'projectbuild' nicht ausgefuehrt! -->
+		<replace dir="${jboss.server.dir}/"
+			includes="conf/jboss-service.xml,conf/*-server.properties,deploy/*-ds.xml"
+			replacefilterfile="./jboss_config.filter"/>
+
 	</target>
 </project>

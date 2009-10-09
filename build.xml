@@ -812,9 +812,13 @@
 		<copy overwrite="false" file="./conf/jboss/jboss_config.filter.default" tofile="./jboss_config.filter"/>
 
 		<!-- replace tokens with values from 'jboss_config.filter' -->
-		<replace dir="${jboss.server.dir}/"
-			includes="conf/jboss-service.xml,conf/*-server.properties,deploy/*-ds.xml"
-			replacefilterfile="./jboss_config.filter"/>
+		<if><not><equals arg1="${projectbuild}" arg2="true"/></not>
+			<then>
+				<replace dir="${jboss.server.dir}/"
+					includes="conf/jboss-service.xml,conf/*-server.properties,deploy/*-ds.xml"
+					replacefilterfile="./jboss_config.filter"/>
+			</then>
+		</if>
 
 		<!-- obsolete libraries -->
 		<delete verbose="true">
