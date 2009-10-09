@@ -197,10 +197,12 @@
 	<target name="jar.server" depends="compile.server" description="Builds the server.">
 		<mkdir dir="${project.build.deploy.dir}"/>
 
-		<jar jarfile="${project.build.deploy.dir}/${app.name}-server.jar" basedir="${project.build.classes.dir}"
+		<jar jarfile="${project.build.deploy.dir}/${app.name}-server.jar">
+		    <fileset dir="${project.build.classes.dir}"
 				 includes="de/novabit/${app.name}/common/, de/novabit/${app.name}/server/, META-INF/,
 				 nucleus-app*.properties, resources/"
-				 excludes="**/test/">
+				 excludes="**/test/"/>
+			<fileset dir="${project.conf.dir}/ejb3/"/>
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
 				<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-all-1.6.4.jar ./nucleus-server.jar"/>
@@ -221,9 +223,9 @@
 							de/novabit/${app.name}/server/**/*VO*.class,
 							resources/*.properties"
 				excludes=	"**/test/,
-							de/novabit/**/ejb3/**/*Bean.class,
-							de/novabit/**/ejb3/**/*Local.class,
 							de/novabit/**/build.xml"/>
+			<fileset dir="${project.build.classes.dir}"
+				includes= "de/novabit/$app.name}/server/**/ejb3/*Remote.class"/>
 		</jar>
 	</target>
 
@@ -671,6 +673,11 @@
 		<copy todir="${project.conf.dir}/jboss/wrapper" overwrite="false">
 			<fileset dir="${nucleus.conf.dir}/jboss/wrapper"/>
 		</copy>
+		<copy todir="${project.conf.dir}/ejb3" overwrite="false">
+			<fileset dir="${nucleus.conf.dir}/ejb3"/>
+		</copy>
+		<copy file="${nucleus.dir}/jboss_config.filter.default" tofile="${project.home.dir}/jboss_config.filter.default"/>
+		<copy file="${nucleus.dir}/jboss_config.filter.default" tofile="${project.home.dir}/jboss_config.filter"/>
 
 		<mkdir dir="${project.conf.dir}/resources"/>
 		<copy todir="${project.conf.dir}/resources" overwrite="false">
@@ -710,5 +717,14 @@
 
 		<loadfile property="message" srcFile="${nucleus.doc.dir}/SETUP_PROJECT.txt"/>
 		<echo>${message}</echo>
+	</target>
+
+	<target name="install.jboss.files"
+		description="copy default configuration files and libraries to the JBoss 'server' directory. Handle with care!">
+
+		<ant antfile="${nucleus.dir}/build.xml" dir="${nucleus.dir}" target="install.jboss.files" inheritall="false">
+			<property name="jboss.server.name" value="${jboss.server.name}"/>
+			<property name="projectbuild" value="true"/>
+		</ant>
 	</target>
 </project>

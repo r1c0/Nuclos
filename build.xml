@@ -56,7 +56,7 @@
 
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
-					 srcdir="${nucleus.src.java.dir}:${nucleus.build.java.dir}"
+					 srcdir="${nucleus.src.java.dir}"
 					 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/"
 					 excludes="**/test/"
 					 classpathref="nucleus.server.path">
@@ -222,7 +222,10 @@
 	</target>
 
 	<target name="deploy.to.server" description="copys the build result to server deploy directory">
-		<!-- deploy: -->
+		<!--
+		    Diese Version duerfte mit der Einfuehrung von 'install.jboss.files' obsolet sein.
+
+		<!- - deploy: - ->
 		<copy todir="${jboss.server.deploy.dir}">
 			<fileset dir="${nucleus.build.deploy.dir}" includes="nucleus.ear"/>
 			<fileset dir="${nucleus.conf.dir}/jboss/deploy" includes="jms/nucleus-destinations-service.xml"/>
@@ -237,10 +240,26 @@
 		  <default/>
 		</switch>
 
-		<!-- quartz-service.xml must be renewed, otherwise it won't be redeployed on hot deployment: -->
+		<!- - quartz-service.xml must be renewed, otherwise it won't be redeployed on hot deployment: - ->
 		<touch>
 			<fileset dir="${jboss.server.deploy.dir}/deploy.last"/>
 		</touch>
+		-->
+
+		<copy overwrite="true"
+			file="${nucleus.build.deploy.dir}/nucleus.ear"
+			tofile="${jboss.server.deploy.dir}/nucleus.ear"/>
+
+		<touch>
+			<fileset dir="${jboss.server.deploy.dir}">
+				<include name="jms/nucleus-destinations-service.xml"/>
+				<include name="deploy.last/quartz-service.xml"/>
+			</fileset>
+		</touch>
+		<if><equals arg1="${deploy.jboss.server.nucleus.service}" arg2="true"/>
+			<then><touch file="deploy.last/nucleus-service.xml"/></then>
+		</if>
+
 	</target>
 
 	<!-- Target to start the JBoss server: -->
@@ -331,7 +350,6 @@
 					de/novabit/nucleus/server/masterdata/interfaces/MDLocalHome.java,
 					de/novabit/nucleus/server/masterdata/interfaces/MDLocalObject.java"/>
 			<fileset dir="${nucleus.build.dir}" includes="*/"/>
-			<fileset dir="${nucleus.build.java.dir}" includes="*/"/>
 			<fileset dir="${nucleus.conf.dir}" includes="layoutml.dtd"/>
 		</delete>
 	</target>
@@ -513,7 +531,7 @@
 		<!-- copy server config -->
 		<mkdir dir="${nucleus.dist.dir}/server/conf"/>
 		<copy todir="${nucleus.dist.dir}/server/conf">
-			<fileset dir="${nucleus.conf.dir}/jboss/conf" includes="log4j.xml"/>
+			<fileset dir="${nucleus.conf.dir}/jboss/install/conf" includes="log4j.xml"/>
 		</copy>
 
 		<!-- copy client config: -->
@@ -766,10 +784,12 @@
 
 	<target name="install.jboss.files"
 		depends="init.common"
-		description="copy default configuration files and libraries to the JBoss 'server' directory. Handle with care!">
+		description="copy libraries and configuration files to the JBoss directories and fill in values from 'jboss_config.filter'.">
 
-		<if><not><available file="${jboss.server.dir}"/></not>
-			<then><!-- Erstinstallation -->
+		<if><and><not><available file="${jboss.server.dir}"/></not>
+			    <available file="${jboss.home}/server/default"/>
+			</and>
+			<then>
 				<echo message="Renaming ${jboss.home}/server/default to ${jboss.server.dir}"/>
 				<move file="${jboss.home}/server/default" tofile="${jboss.server.dir}"/>
 				<mkdir dir="${jboss.server.dir}/codegenerator"/>
@@ -778,13 +798,25 @@
 				<mkdir dir="${jboss.server.dir}/reports"/>
 			</then>
 		</if>
+		<if><not><available file="${jboss.server.dir}"/></not>
+			<then>
+				<fail>No target directory in ${jboss.home}/server/</fail>
+			</then>
+		</if>
 
 		<!-- config files -->
 		<copy overwrite="true" todir="${jboss.server.dir}" verbose="true">
 			<fileset dir="${nucleus.conf.dir}/jboss/install/" excludes="**/install-readme.txt"/>
 		</copy>
 
-		<!-- libraries -->
+		<copy overwrite="false" file="./conf/jboss/jboss_config.filter.default" tofile="./jboss_config.filter"/>
+
+		<!-- replace tokens with values from 'jboss_config.filter' -->
+		<replace dir="${jboss.server.dir}/"
+			includes="conf/jboss-service.xml,conf/*-server.properties,deploy/*-ds.xml"
+			replacefilterfile="./jboss_config.filter"/>
+
+		<!-- obsolete libraries -->
 		<delete verbose="true">
 			<fileset dir="${jboss.server.dir}/lib/">
 				<include name="dom4j.jar"/>
@@ -793,6 +825,7 @@
 			</fileset>
 		</delete>
 
+		<!-- newer and additional libraries -->
 		<copy overwrite="true" todir="${jboss.server.dir}/lib/" verbose="true">
 			<fileset dir="${nucleus.lib.dir}">
 				<include name="jmxtools.jar"/>
@@ -804,6 +837,7 @@
 				<include name="commons-beanutils-1.5.jar"/>
 				<include name="commons-collections-3.2.jar"/>
 				<include name="commons-lang-2.0.jar"/>
+				<include name="commons-digester-1.6.jar"/>
 				<include name="ojdbc14.jar"/>
 				<include name="sqljdbc.jar"/>
 				<include name="quartz-all-1.6.4.jar"/>
@@ -821,7 +855,7 @@
 					tofile="${jboss.server.dir}/deploy/deploy.last/quartz-service.xml"/>
 				<delete file="${jboss.server.dir}/conf/standardjbosscmp-jdbc.xml_oracle9i" verbose="true"/>
 				<delete file="${jboss.server.dir}/deploy/oracle-ds.xml" verbose="true"/>
-				<delete file="${jboss.server.dir}/deploy/deploy.last/quartz-service.xml_oacle9i" verbose="true"/>
+				<delete file="${jboss.server.dir}/deploy/deploy.last/quartz-service.xml_oracle9i" verbose="true"/>
 				<delete file="${jboss.server.dir}/lib/ojdbc14.jar" verbose="true"/>
 			</then>
 			<else><!-- DEFAULT: Oracle -->

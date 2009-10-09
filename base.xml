@@ -58,7 +58,6 @@
 	<property name="nucleus.build.dir" value="${nucleus.dir}/build"/>
 	<property name="nucleus.build.classes.dir" value="${nucleus.build.dir}/classes"/>
 	<property name="nucleus.build.deploy.dir" value="${nucleus.build.dir}/deploy"/>
-	<property name="nucleus.build.java.dir" value="${nucleus.dir}/gen"/>
 	<property name="nucleus.bin.dir" value="${nucleus.dir}/bin"/>
 	<property name="nucleus.dist.dir" value="${nucleus.dir}/dist"/>
 
