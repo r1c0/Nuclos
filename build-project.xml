@@ -36,7 +36,6 @@
 	<property name="project.build.deploy.dir" value="${project.build.dir}/deploy"/>
 	<property name="project.dist.dir" value="${project.home.dir}/dist"/>
 	<property name="project.bin.dir" value="${project.home.dir}/bin"/>
-	<property name="project.build.java.dir" value="${project.home.dir}/gen"/>
 
 	<path id="project.server.path">
 		<pathelement location="${project.build.classes.dir}"/>
@@ -86,13 +85,6 @@
 		<path refid="client.base.run.path"/>
 	</path>
 
-	<taskdef name="ejbdoclet" classname="xdoclet.modules.ejb.EjbDocletTask">
-		<classpath>
-			<path refid="project.server.path"/>
-			<fileset dir="${xdoclet.lib.dir}" includes="*.jar"/>
-		</classpath>
-	</taskdef>
-
 	<target name="init" depends="check.build.properties, init.common">
 		<copy file="${nucleus.conf.dir}/novabit/log4j-client-template.xml" tofile="${project.conf.dir}/log4j.xml" overwrite="false"/>
 		<copy file="${nucleus.conf.dir}/novabit/nucleus-client-template.properties"
@@ -115,26 +107,9 @@
 	<target name="build.noclean" depends="jar.server, compile.client"
 					description="Builds the server, then builds the client."/>
 
-	<target name="xdoclet.generate.all">
-		<ejbdoclet destdir="${project.build.java.dir}" ejbspec="${ejb.version}" verbose="true">
-			<fileset dir="${project.src.java.dir}">
-				<include name="de/novabit/${app.name}/server/**/ejb/*Bean.java"/>
-			</fileset>
-			<packageSubstitution packages="ejb" substituteWith="interfaces"/>
-			<remoteinterface pattern="{0}Remote"/>
-			<homeinterface pattern="{0}RemoteHome"/>
-			<localinterface/>
-			<localhomeinterface/>
-			<deploymentdescriptor destdir="${project.build.classes.dir}/META-INF"/>
-			<jboss version="${jboss.version}" createTable="false" removeTable="false" xmlencoding="UTF-8"
-				datasource="${datasource.name}" destdir="${project.build.classes.dir}/META-INF"
-						 validateXml="false" mergedir="${nucleus.dir}/merge"/>
-		</ejbdoclet>
-	</target>
-
 	<target name="compile" depends="init, compile.client"/>
 
-	<target name="compile.server" depends="init, xdoclet.generate.all, compile.server.nodepend"/>
+	<target name="compile.server" depends="init, compile.server.nodepend"/>
 
 	<target name="compile.server.nodepend">
 		<mkdir dir="${project.build.classes.dir}"/>
@@ -147,7 +122,7 @@
 		</copy>
 
 		<javac encoding="8859_1" destdir="${project.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
-				 srcdir="${project.src.java.dir}:${project.build.java.dir}"
+				 srcdir="${project.src.java.dir}"
 				 includes="de/novabit/${app.name}/common/, de/novabit/${app.name}/server/"
 				 excludes="**/test/"
 				 classpathref="project.server.path">
@@ -293,7 +268,6 @@
 							 includes="**/interfaces/"
 							 excludes="pending/"/>
 			<fileset dir="${project.build.dir}" includes="*/"/>
-			<fileset dir="${project.build.java.dir}" includes="*/"/>
 			<fileset dir="${project.conf.dir}" includes="layoutml.dtd"/>
 		</delete>
 	</target>
@@ -707,8 +681,6 @@
 			<fileset dir="${nucleus.src.java.dir}/de/novabit/nucleus/client/help/releasenotes"
 				includes="releasenotes.html"/>
 		</copy>
-
-		<mkdir dir="${project.build.java.dir}"/>
 
 		<mkdir dir="${project.src.dir}/layoutml/genericobject"/>
 		<mkdir dir="${project.src.dir}/layoutml/masterdata"/>

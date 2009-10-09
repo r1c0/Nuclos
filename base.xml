@@ -13,10 +13,6 @@
 		</not>
 	</condition>
 
-	<!-- Set the JBoss version you want to use (see XDoclet's <jboss> attribute "version"): -->
-	<!-- "4.0" scheint die letzte unterstuetzte Version zu sein -->
-	<property name="jboss.version" value="4.0"/>
-
 	<property name="jboss.lib.dir" value="${jboss.home}/lib"/>
 	<property name="jboss.client.dir" value="${jboss.home}/client"/>
 
@@ -25,17 +21,6 @@
 	<property name="jboss.server.dir" value="${jboss.home}/server/${jboss.server.name}"/>
 	<property name="jboss.server.deploy.dir" value="${jboss.server.dir}/deploy"/>
 	<property name="jboss.server.lib.dir" value="${jboss.server.dir}/lib"/>
-
-	<!-- Set the DataSource name your are going to use (see XDoclet's <jboss> attribute "datasource"): -->
-	<property name="datasource.name" value="java:/ds/nucleus"/>
-
-	<property name="xdoclet.lib.dir" value="${xdoclet.home}/lib"/>
-
-	<!-- Set this to "true" when you want to force the rebuild of the XDoclet generated files (see XDoclet's <ejbdoclet> attribute "force"): -->
-	<property name="xdoclet.force" value="false"/>
-
-	<!-- Set the EJB version you want to use (see XDoclet's <ejbdoclet> attribute "ejbspec"): -->
-	<property name="ejb.version" value="2.1"/>
 
 	<property name="java.src.version" value="1.6"/>
 
@@ -203,21 +188,12 @@
 		</fail>
 	</target>
 
-	<target name="wrong.xdoclet" unless="xdoclet.present">
-		<fail>
-			Property "xdoclet.home" is set, but it does not seem to point to the right directory. The file "xdoclet-1.2.3.jar"
-			must be available at ${xdoclet.home}/lib.
-		</fail>
-	</target>
-
 	<target name="init.common" depends="check.build.properties">
 		<available property="jboss.present" file="${jboss.home}/bin/run.jar"/>
 		<antcall target="wrong.jboss"/>
-		<available property="xdoclet.present" file="${xdoclet.home}/lib/xdoclet-1.3-08012006-lunatech.jar"/>
-		<antcall target="wrong.xdoclet"/>
 	</target>
 
-	<target name="check.build.properties" depends="check.jboss.home, check.xdoclet.home"/>
+	<target name="check.build.properties" depends="check.jboss.home"/>
 
 	<!-- path to the runtime JBoss directory containing the JBoss application server: -->
 	<target name="check.jboss.home" unless="jboss.home">
@@ -227,13 +203,4 @@
 		</fail>
 	</target>
 
-	<!-- path to the root directory of the XDoclet distribution (see http://www.sf.net/projects/xdoclet): -->
-	<target name="check.xdoclet.home" unless="xdoclet.home">
-		<fail>Property "xdoclet.home" is not set. Please check your build.properties file.</fail>
-	</target>
-
-	<!-- path to the root directory of the docbook-xsl distribution: -->
-	<target name="check.docbook-xsl.home" unless="docbook-xsl.home">
-		<fail>Property "docbook-xsl.home" is not set. Please check your build.properties file.</fail>
-	</target>
 </project>

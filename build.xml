@@ -313,7 +313,7 @@
 
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
-					 srcdir="${nucleus.src.java.dir}:${nucleus.build.java.dir}"
+					 srcdir="${nucleus.src.java.dir}"
 					 includes="de/novabit/nucleus/tools/translation/**"
 					 classpathref="nucleus.server.path">
 		</javac>
