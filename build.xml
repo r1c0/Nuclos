@@ -735,6 +735,7 @@
 				<include name="layoutml.dtd"/>
 			</fileset>
 		</copy>
+		<delete file="${nucleus.build.deploy.dir}/plugins/layoutml-plugin.jar" verbose="true"/>
 		<jar jarfile="${nucleus.build.deploy.dir}/plugins/layoutml-plugin.jar" basedir="${nucleus.build.deploy.dir}/plugins/"/>
 	</target>
 
