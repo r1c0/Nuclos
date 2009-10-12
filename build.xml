@@ -790,8 +790,10 @@
 			    <available file="${jboss.home}/server/default"/>
 			</and>
 			<then>
-				<echo message="Renaming ${jboss.home}/server/default to ${jboss.server.dir}"/>
-				<move file="${jboss.home}/server/default" tofile="${jboss.server.dir}"/>
+				<echo message="Copying ${jboss.home}/server/default to ${jboss.server.dir}"/>
+				<copy todir="${jboss.server.dir}">
+					<fileset dir="${jboss.home}/server/default"/>
+				</copy>
 				<mkdir dir="${jboss.server.dir}/codegenerator"/>
 				<mkdir dir="${jboss.server.dir}/documents"/>
 				<mkdir dir="${jboss.server.dir}/expimp"/>
