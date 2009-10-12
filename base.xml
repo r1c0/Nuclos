@@ -136,12 +136,8 @@
 
 		<pathelement location="${nucleus.build.deploy.dir}/nucleus-xerlin.jar"/>
 
-		<pathelement location="${nucleus.dir}/lib/client/substance_5.2.jar"/>
-		<pathelement location="${nucleus.dir}/lib/client/substance-flamingo_5.2.jar"/>
-		<pathelement location="${nucleus.dir}/lib/client/flamingo_4.1.jar"/>
 		<pathelement location="${nucleus.dir}/lib/client/synthetica.jar"/>
 		<pathelement location="${nucleus.dir}/lib/client/syntheticaSimple2D.jar"/>
-		<pathelement location="${nucleus.dir}/lib/client/tinylaf.jar"/>
 	</path>
 
 	<path id="nucleus.path">

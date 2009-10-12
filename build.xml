@@ -710,12 +710,8 @@
 		<unjar overwrite="false" src="${common.dir}/lib/client/filters.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${common.dir}/lib/client/jlfgr-1_0.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/client/TableLayout-bin-jdk1.5-2009-06-10.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${common.dir}/lib/client/substance_5.2.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${common.dir}/lib/client/substance-flamingo_5.2.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${common.dir}/lib/client/flamingo_4.1.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${common.dir}/lib/client/synthetica.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${common.dir}/lib/client/syntheticaSimple2D.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${common.dir}/lib/client/tinylaf.jar" dest="${nucleus.build.classes.dir}"/>
 		<!-- unjar overwrite="false" src="${nucleus.lib.dir}/client/BrowserLauncher2-1_3.jar" dest="${nucleus.build.classes.dir}"/ -->
 		<unjar overwrite="false" src="${nucleus.lib.dir}/client/xstream-1.3.1.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${nucleus.lib.dir}/client/swingx-1.0.jar" dest="${nucleus.build.classes.dir}"/>
