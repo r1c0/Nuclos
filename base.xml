@@ -169,14 +169,6 @@
   		</classpath>
 	</taskdef>
 
-	<taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
-		<classpath>
-			<pathelement location="${nucleus.lib.dir}\fop.jar"/>
-			<pathelement location="${nucleus.lib.dir}\avalon-framework.jar"/>
-			<pathelement location="${nucleus.lib.dir}\batik.jar"/>
-		</classpath>
-	</taskdef>
-
 	<target name="wrong.jboss" unless="jboss.present">
 		<fail>
 			Property "jboss.home" is set but it does not seem to point to the right directory. The file "run.jar" must be

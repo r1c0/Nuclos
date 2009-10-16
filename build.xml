@@ -435,27 +435,6 @@
 		</javadoc>
 	</target>
 
-	<target name="compile.datasourcedoc" description="Compiles datasource documentation from docbook sources.">
-		<!-- @todo doesn't compile - eliminate if no longer needed -->
-		<copy todir="${docbook-xsl.home}/fo/">
-			<fileset dir="${nucleus.doc.dir}/usermanual/src/" includes="Datenquellen.xsl"/>
-		</copy>
-
-		<xslt basedir="${nucleus.doc.dir}/usermanual/src"
-					destdir="${nucleus.doc.dir}/usermanual"
-					extension=".fo"
-					style="${docbook-xsl.home}/fo/Datenquellen.xsl"
-					includes="Datenquellen.xml">
-			<param name="page.orientation" expression="'landscape'"/>
-		</xslt>
-
-		<delete file="${docbook-xsl.home}/fo/Datenquellen.xsl"/>
-
-		<fop fofile="${nucleus.doc.dir}/usermanual/Datenquellen.fo"
-				 outfile="${nucleus.doc.dir}/usermanual/Datenquellen.pdf"
-				 format="application/pdf"/>
-	</target>
-
 	<target name="build.cactus">
 		<taskdef resource="cactus.tasks">
 			<classpath refid="cactus.path"/>
