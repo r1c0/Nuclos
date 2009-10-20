@@ -69,7 +69,5 @@
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME/server/nucleus/lib/log4j.jar"/>
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jboss-ejb3-client.jar"/>
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jboss-annotations-ejb3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/client/synthetica.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/client/syntheticaSimple2D.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

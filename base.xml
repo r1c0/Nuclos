@@ -135,9 +135,6 @@
 		<pathelement location="${jboss.client.dir}/jboss-ejb3x.jar"/>
 
 		<pathelement location="${nucleus.build.deploy.dir}/nucleus-xerlin.jar"/>
-
-		<pathelement location="${nucleus.dir}/lib/client/synthetica.jar"/>
-		<pathelement location="${nucleus.dir}/lib/client/syntheticaSimple2D.jar"/>
 	</path>
 
 	<path id="nucleus.path">
