@@ -67,7 +67,7 @@
 
 	<target name="patch.xerlin.jar"
 					description="Renames the xerlin.jar file to a project specific name.">
-		<copy file="${nucleus.lib.dir}/Xerlin-1.3-patched.jar" tofile="${nucleus.build.deploy.dir}/nucleus-xerlin.jar"/>
+		<copy file="${nucleus.xerlin.jar}" tofile="${nucleus.build.deploy.dir}/nucleus-xerlin.jar"/>
 	</target>
 
 	<target name="compile.client.nodepend">
@@ -135,7 +135,7 @@
 					<fileset dir="${nucleus.conf.dir}/ejb3/"/>
 					<manifest>
 						<attribute name="Manifest-Version" value="1.0"/>
-						<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-all-1.6.4.jar"/>
+						<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar"/>
 					</manifest>
 				</jar>
 			</then>
@@ -147,7 +147,7 @@
 					<fileset dir="${nucleus.conf.dir}/ejb3/"/>
 					<manifest>
 						<attribute name="Manifest-Version" value="1.0"/>
-						<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-all-1.6.4.jar"/>
+						<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar"/>
 					</manifest>
 				</jar>
 			</else>
@@ -217,7 +217,6 @@
 			<!--			<fileset dir="${nucleus.conf.dir}/jboss/ear" includes="META-INF/jboss-app.xml, scheduler-service.xml"/>-->
 			<fileset dir="${nucleus.build.deploy.dir}" includes="nucleus-server.jar"/>
 			<fileset dir="${common.build.deploy.dir}" includes="novabit-common.jar, novabit-common-ejb.jar"/>
-			<fileset dir="${nucleus.lib.dir}" includes="quartz-all-1.6.4.jar"/>
 		</ear>
 	</target>
 
@@ -321,8 +320,8 @@
               dir="${nucleus.build.classes.dir}/de/novabit/nucleus/tools/translation">
               <classpath>
                     <pathelement location="${nucleus.build.classes.dir}"/>
-                    <pathelement location="${nucleus.lib.dir}/ojdbc14.jar"/>
-              		<pathelement location="${nucleus.lib.dir}/antlr-runtime-3.1.3.jar"/>
+                    <pathelement location="${nucleus.lib.dir}/server/ojdbc14.jar"/>
+              		<pathelement location="${nucleus.lib.dir}/other/antlr-runtime-3.1.3.jar"/>
                     <pathelement location="${project.src.java.dir}/de/novabit/${app.name}/tools/translation/csv"/>
               </classpath>
         </java>
@@ -448,9 +447,9 @@
 			<classpath>
 				<path refid="nucleus.server.path"/>
 				<path location="${common.dir}/build/classes"/>
-				<path location="${nucleus.lib.dir}/jfcunit.jar"/>
-				<path location="${nucleus.lib.dir}/cactus-1.7.1.jar"/>
-				<path location="${nucleus.lib.dir}/servlet.jar"/>
+				<path location="${nucleus.lib.dir}/test/jfcunit-2.08.jar"/>
+				<path location="${nucleus.lib.dir}/test/cactus-1.7.1.jar"/>
+				<path location="${nucleus.lib.dir}/test/servlet.jar"/>
 			</classpath>
 		</javac>
 
@@ -608,9 +607,7 @@
 		</copy>
 
 		<copy overwrite="true" todir="${nucleus.build.deploy.dir}/nucleus-webstart.war/WEB-INF/lib">
-			<fileset dir="${nucleus.lib.dir}">
-				<include name="jnlp-servlet.jar"/>
-			</fileset>
+			<fileset refid="jnlp-servlet.jar"/>
 		</copy>
 
 		<copy overwrite="true" todir="${nucleus.build.deploy.dir}/conf">
@@ -652,25 +649,19 @@
 
 	<target name="war.webstart.jar" description="unjar libraries to sign them later and jar native libs.">
 		<!-- unjar libraries to sign them later -->
-		<unjar overwrite="false" src="${nucleus.lib.dir}/xalan.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/commons-beanutils-1.5.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/commons-lang-2.0.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/commons-beanutils-1.5.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/commons-collections-3.2.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/commons-logging-1.1.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/jdbc2_0-stdext.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/jh.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/log4j.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/StrutLayout1.2.1.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/thirdparty.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/dom4j-full.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/xercesImpl.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/davfilechooser.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/iText-2.1.7.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/poi-2.5-final-20040302.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/jasperreports-3.1.2.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/jawin.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/jxl.jar" dest="${nucleus.build.classes.dir}"/>
+		<unjar overwrite="false" dest="${nucleus.build.classes.dir}">
+			<fileset refid="nucleus.common.jars"/>
+			<fileset refid="nucleus.shared.jars"/>
+			<fileset refid="nucleus.client.jars"/>
+			<fileset refid="nucleus.xerlin.dep.jars"/>
+			<patternset>
+				<!-- TODO: META-INF/** also excludes META-INF/services which contains
+				     the service provider declarations. Is this behavior correct? -->
+				<exclude name="META-INF/**"/>
+			</patternset>
+		</unjar>
+
+		<!-- unjar libraries to sign them later -->
 		<unjar overwrite="false" src="${jboss.client.dir}/jboss-j2ee.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/jboss-client.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/jboss-common-client.jar" dest="${nucleus.build.classes.dir}"/>
@@ -685,31 +676,16 @@
 		<unjar overwrite="false" src="${jboss.client.dir}/jboss-aspect-jdk50-client.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/concurrent.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/jnp-client.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${common.dir}/lib/client/layer.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${common.dir}/lib/client/filters.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${common.dir}/lib/client/jlfgr-1_0.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/client/TableLayout-bin-jdk1.5-2009-06-10.jar" dest="${nucleus.build.classes.dir}"/>
-		<!-- unjar overwrite="false" src="${nucleus.lib.dir}/client/BrowserLauncher2-1_3.jar" dest="${nucleus.build.classes.dir}"/ -->
-		<unjar overwrite="false" src="${nucleus.lib.dir}/client/xstream-1.3.1.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${nucleus.lib.dir}/client/swingx-1.0.jar" dest="${nucleus.build.classes.dir}"/>
 
 		<!-- jar nucleus libs -->
 		<delete dir="${nucleus.build.classes.dir}/META-INF"/>
 		<jar jarfile="${nucleus.build.deploy.dir}/nucleus-libs.jar">
 			<fileset dir="${nucleus.build.classes.dir}" excludes="de/novabit/**"/>
-			<!-- NUCLEUSINT-558:
-			   Usually, you would include all jars above via zipfileset here
-			   unfortunately, two of the jars contain
-			   "org/apache/commons/beanutils/BasicDynaBean.class"
-			   which leads to an error in the following signing step.
-			   Thus, we only include the BrowserLauncher this way.
-			   -->
-			<zipfileset src="${nucleus.lib.dir}/client/BrowserLauncher2-1_3.jar" excludes="META-INF/**" />
 		</jar>
 
 		<!-- jar native libs -->
 		<jar destfile="${nucleus.build.deploy.dir}/nucleus-native.jar">
-			<fileset dir="${nucleus.lib.dir}">
+			<fileset dir="${nucleus.lib.dir}/client">
 				<include name="jawin.dll"/>
 			</fileset>
 		</jar>
@@ -771,6 +747,7 @@
 				<mkdir dir="${jboss.server.dir}/documents"/>
 				<mkdir dir="${jboss.server.dir}/expimp"/>
 				<mkdir dir="${jboss.server.dir}/reports"/>
+				<mkdir dir="${jboss.server.dir}/compiled-reports"/>
 			</then>
 		</if>
 		<if><not><available file="${jboss.server.dir}"/></not>
@@ -806,21 +783,9 @@
 
 		<!-- newer and additional libraries -->
 		<copy overwrite="true" todir="${jboss.server.dir}/lib/" verbose="true">
-			<fileset dir="${nucleus.lib.dir}">
-				<include name="jmxtools.jar"/>
-				<include name="dom4j-full.jar"/>
-				<include name="iText-2.1.7.jar"/>
-				<include name="InsaPerformanceLogger.jar"/>
-				<include name="poi-2.5-final-20040302.jar"/>
-				<include name="jasperreports-3.1.2.jar"/>
-				<include name="commons-beanutils-1.5.jar"/>
-				<include name="commons-collections-3.2.jar"/>
-				<include name="commons-lang-2.0.jar"/>
-				<include name="commons-digester-1.6.jar"/>
-				<include name="ojdbc14.jar"/>
-				<include name="sqljdbc.jar"/>
-				<include name="quartz-all-1.6.4.jar"/>
-			</fileset>
+			<fileset refid="nucleus.common.jars"/>
+			<fileset refid="nucleus.shared.jars"/>
+			<fileset refid="nucleus.server.jars"/>
 		</copy>
 
 		<!-- DB-Type configuration -->

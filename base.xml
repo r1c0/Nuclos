@@ -53,29 +53,27 @@
 	<property name="src.nucleus.client.dir" value="${src.nucleus.dir}/client"/>
 	<property name="src.nucleus.server.dir" value="${src.nucleus.dir}/server"/>
 
+	<fileset id="nucleus.common.jars" dir="${nucleus.lib.dir}/common" includes="*.jar"/>
+	<fileset id="nucleus.client.jars" dir="${nucleus.lib.dir}/client" includes="*.jar"/>
+	<fileset id="nucleus.server.jars" dir="${nucleus.lib.dir}/server" includes="*.jar"/>
+	<fileset id="nucleus.shared.jars" dir="${nucleus.lib.dir}/shared" includes="*.jar"/>
+	<fileset id="jnlp-servlet.jar" dir="${nucleus.lib.dir}/jnlp-servlet" includes="jnlp-servlet-1.6.jar"/>
+	<property name="nucleus.xerlin.jar" value="${nucleus.lib.dir}/xerlin/xerlin-1.3-patched.jar"/>
+	<fileset id="nucleus.xerlin.dep.jars" dir="${nucleus.lib.dir}/xerlin" includes="deps/*.jar"/>
+	
 	<path id="nucleus.server.path">
+		<fileset refid="nucleus.common.jars"/>
+		<fileset refid="nucleus.shared.jars"/>
+		<fileset refid="nucleus.server.jars"/>
+		
 		<pathelement location="${nucleus.build.classes.dir}"/>
 		<pathelement location="${common.build.deploy.dir}/novabit-common.jar"/>
 		<pathelement location="${common.build.deploy.dir}/novabit-common-ejb.jar"/>
-		<pathelement location="${nucleus.lib.dir}/log4j.jar"/>
-		<pathelement location="${nucleus.lib.dir}/commons-lang-2.0.jar"/>
-		<pathelement location="${nucleus.lib.dir}/commons-beanutils-1.5.jar"/>
-		<pathelement location="${nucleus.lib.dir}/commons-collections-3.2.jar"/>
-		<pathelement location="${nucleus.lib.dir}/dom4j-full.jar"/>
-		<pathelement location="${nucleus.lib.dir}/jasperreports-3.1.2.jar"/>
-		<pathelement location="${nucleus.lib.dir}/quartz-all-1.6.4.jar"/>
-		<pathelement location="${nucleus.lib.dir}/ojdbc14.jar"/>
-		<pathelement location="${nucleus.lib.dir}/sqljdbc.jar"/>
-		<pathelement location="${nucleus.lib.dir}/poi-2.5-final-20040302.jar"/>
-		<pathelement location="${nucleus.lib.dir}/junit-3.8.1.jar"/>
-		<pathelement location="${nucleus.lib.dir}/commons-codec-1.3.jar"/>
-		<pathelement location="${nucleus.lib.dir}/jmxtools.jar"/>
 		<pathelement location="${nucleus.lib.dir}/client/layer.jar"/>
 		<pathelement location="${nucleus.lib.dir}/client/swingx-1.0.jar"/>
 		<pathelement location="${jboss.lib.dir}/jboss-system.jar"/>
 		<pathelement location="${jboss.lib.dir}/jboss-common.jar"/>
 		<pathelement location="${jboss.lib.dir}/jboss-jmx.jar"/>
-		<pathelement location="${jboss.lib.dir}/endorsed/xercesImpl.jar"/>
 	    <pathelement location="${jboss.client.dir}/jboss-ejb3x.jar"/>
 	    <pathelement location="${jboss.client.dir}/jboss-ejb3-client.jar"/>
 	    <pathelement location="${jboss.client.dir}/jboss-annotations-ejb3.jar"/>
@@ -92,35 +90,12 @@
 	</path>
 
 	<path id="nucleus.client.path">
+		<fileset refid="nucleus.common.jars"/>
+		<fileset refid="nucleus.shared.jars"/>
+		<fileset refid="nucleus.client.jars"/>		
+		
 		<pathelement location="${nucleus.build.classes.dir}"/>
 		<pathelement location="${common.build.deploy.dir}/novabit-common.jar"/>
-		<pathelement location="${common.dir}/lib/client/jlfgr-1_0.jar"/>
-		<pathelement location="${nucleus.lib.dir}/commons-lang-2.0.jar"/>
-		<pathelement location="${nucleus.lib.dir}/commons-beanutils-1.5.jar"/>
-		<pathelement location="${nucleus.lib.dir}/commons-collections-3.2.jar"/>
-		<pathelement location="${nucleus.lib.dir}/commons-logging-1.1.jar"/>
-		<pathelement location="${nucleus.lib.dir}/client/layer.jar"/>
-		<pathelement location="${nucleus.lib.dir}/client/filters.jar"/>
-		<pathelement location="${nucleus.lib.dir}/client/xstream-1.3.1.jar"/>
-		<pathelement location="${nucleus.lib.dir}/client/swingx-1.0.jar"/>
-		<pathelement location="${nucleus.lib.dir}/client/TableLayout-bin-jdk1.5-2009-06-10.jar"/>
-		<pathelement location="${nucleus.lib.dir}/client/BrowserLauncher2-1_3.jar"/>
-		<pathelement location="${nucleus.lib.dir}/InsaPerformanceLogger.jar"/>
-		<pathelement location="${nucleus.lib.dir}/jdbc2_0-stdext.jar"/>
-		<pathelement location="${nucleus.lib.dir}/jh.jar"/>
-		<pathelement location="${nucleus.lib.dir}/log4j.jar"/>
-		<pathelement location="${nucleus.lib.dir}/dom4j-full.jar"/>
-		<pathelement location="${nucleus.lib.dir}/xercesImpl.jar"/>
-		<pathelement location="${nucleus.lib.dir}/xmlParserAPIs.jar"/>
-		<pathelement location="${nucleus.lib.dir}/poi-2.5-final-20040302.jar"/>
-		<pathelement location="${nucleus.lib.dir}/jasperreports-3.1.2.jar"/>
-		<pathelement location="${nucleus.lib.dir}/itext-1.3.jar"/>
-		<pathelement location="${nucleus.lib.dir}/jawin.jar"/>
-		<pathelement location="${nucleus.lib.dir}/jxl.jar"/>
-		<pathelement location="${nucleus.lib.dir}/sqljdbc.jar"/>
-		<pathelement location="${nucleus.lib.dir}/davfilechooser.jar"/>
-		<pathelement location="${nucleus.lib.dir}/thirdparty.jar"/>
-		<pathelement location="${nucleus.lib.dir}/StrutLayout1.2.1.jar"/>
 		<pathelement location="${jboss.client.dir}/jnp-client.jar"/>
 		<pathelement location="${jboss.client.dir}/jboss-j2ee.jar"/>
 		<pathelement location="${jboss.client.dir}/jboss-client.jar"/>
@@ -148,21 +123,21 @@
 	</path>
 
 	<path id="cactus.path">
-		<pathelement location="${nucleus.lib.dir}/cactus-1.7.1.jar"/>
-		<pathelement location="${nucleus.lib.dir}/cactus-ant-1.7.1.jar"/>
-		<pathelement location="${nucleus.lib.dir}/commons-httpclient-2.0.2.jar"/>
-		<pathelement location="${nucleus.lib.dir}/commons-logging-1.1.jar"/>
-		<pathelement location="${nucleus.lib.dir}/aspectjrt-1.2.1.jar"/>
-		<pathelement location="${nucleus.lib.dir}/cargo-0.5.jar"/>
+		<pathelement location="${nucleus.lib.dir}/test/cactus-1.7.1.jar"/>
+		<pathelement location="${nucleus.lib.dir}/test/cactus-ant-1.7.1.jar"/>
+		<pathelement location="${nucleus.lib.dir}/test/commons-httpclient-2.0.2.jar"/>
+		<pathelement location="${nucleus.lib.dir}/test/commons-logging-1.1.jar"/>
+		<pathelement location="${nucleus.lib.dir}/test/aspectjrt-1.2.1.jar"/>
+		<pathelement location="${nucleus.lib.dir}/test/cargo-0.5.jar"/>
 		<!-- junit is needed for cactus, but as it seems it must be available for the parent classloader - why? -->
-		<pathelement location="${nucleus.lib.dir}/junit-3.8.1.jar"/>
-		<pathelement location="${nucleus.lib.dir}/xercesImpl.jar"/>
+		<pathelement location="${nucleus.lib.dir}/test/junit-3.8.1.jar"/>
+		<!--?OLD? <pathelement location="${nucleus.lib.dir}/xercesImpl.jar"/> -->
 	</path>
 
 
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
   		<classpath>
-    		<pathelement location="${nucleus.lib.dir}/ant-contrib-1.0b3.jar"/>
+    		<pathelement location="${nucleus.lib.dir}/meta/ant-contrib-1.0b3.jar"/>
   		</classpath>
 	</taskdef>
 

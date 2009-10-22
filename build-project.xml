@@ -180,7 +180,7 @@
 			<fileset dir="${project.conf.dir}/ejb3/"/>
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
-				<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./quartz-all-1.6.4.jar ./nucleus-server.jar"/>
+				<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./nucleus-server.jar"/>
 			</manifest>
 		</jar>
 	</target>
@@ -381,9 +381,9 @@
 			<classpath>
 				<path refid="project.server.path"/>
 				<path location="${common.dir}/build/classes"/>
-				<path location="${nucleus.lib.dir}/jfcunit.jar"/>
-				<path location="${nucleus.lib.dir}/cactus-1.7.1.jar"/>
-				<path location="${nucleus.lib.dir}/servlet.jar"/>
+				<path location="${nucleus.lib.dir}/test/jfcunit-2.08.jar"/>
+				<path location="${nucleus.lib.dir}/test/cactus-1.7.1.jar"/>
+				<path location="${nucleus.lib.dir}/test/servlet.jar"/>
 			</classpath>
 		</javac>
 
@@ -572,9 +572,7 @@
 		</copy>
 
 		<copy overwrite="true" todir="${project.build.deploy.dir}/nucleus-webstart.war/WEB-INF/lib">
-			<fileset dir="${nucleus.lib.dir}">
-				<include name="jnlp-servlet.jar"/>
-			</fileset>
+			<fileset refid="jnlp-servlet.jar"/>
 		</copy>
 
 		<copy overwrite="true" todir="${project.build.deploy.dir}/conf">
