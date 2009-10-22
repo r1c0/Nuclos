@@ -32,7 +32,9 @@
 
 	<target name="build.novabit.common.noclean">
 		<!--ant dir="${common.dir}" target="main.noclean" inheritall="false"/-->
-		<ant antfile="${nucleus.dir}/build-common.xml" dir="${common.dir}" target="main.noclean" inheritall="false"/>
+		<ant antfile="${nucleus.dir}/build-common.xml" dir="${common.dir}" target="main.noclean" inheritall="false">
+			<property name="jboss.server.lib.dir" value="${jboss.server.lib.dir}"/>
+		</ant>
 	</target>
 
 	<target name="compile" depends="init, compile.client"/>
