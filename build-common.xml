@@ -48,7 +48,7 @@
 		<pathelement location="${jboss.home}/client/jboss-j2ee.jar"/>
 		<pathelement location="${jboss.home}/client/jboss-ejb3x.jar"/>
 		<pathelement location="${jboss.home}/client/jbosssx-client.jar"/>
-		<pathelement location="${jboss.lib.dir}/mail.jar"/>
+		<pathelement location="${jboss.home}/server/${jboss.server.name}/lib/mail.jar"/>
 		<pathelement location="${jboss.lib.dir}/jboss-system.jar"/>
 		<pathelement location="${jboss.lib.dir}/jboss-common.jar"/>
 	</path>
