@@ -49,6 +49,7 @@
 		<!-- @todo maybe common should not depend on these? -->
 		<pathelement location="${lib.dir}/jfcunit.jar"/>
 		<pathelement location="${jboss.home}/client/jboss-j2ee.jar"/>
+		<pathelement location="${jboss.home}/client/jboss-ejb3x.jar"/>
 		<pathelement location="${jboss.home}/client/jbosssx-client.jar"/>
 		<pathelement location="${lib.dir}/mail.jar"/>
 		<pathelement location="${jboss.lib.dir}/jboss-system.jar"/>
