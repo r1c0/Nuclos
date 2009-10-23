@@ -80,7 +80,8 @@
 			 		 includes="de/novabit/common/**/"
 					 excludes="de/novabit/common/server/**/ejb/, de/novabit/**/test/"
 					 classpathref="common.path"
-			         nowarn="true">
+			         nowarn="true"
+			         includeAntRuntime="false">
 			<src path="${src.dir}"/>
 		</javac>
 	</target>

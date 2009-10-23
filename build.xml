@@ -61,7 +61,8 @@
 					 srcdir="${nucleus.src.java.dir}"
 					 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/"
 					 excludes="**/test/"
-					 classpathref="nucleus.server.path">
+					 classpathref="nucleus.server.path"
+					 includeAntRuntime="false">
 		</javac>
 	</target>
 
@@ -114,7 +115,8 @@
 					 nowarn="${javac.nowarn}"
 					 source="${java.src.version}" srcdir="${nucleus.src.java.dir}"
 					 includes="de/novabit/nucleus/client/"
-					 excludes="**/test/">
+					 excludes="**/test/"
+					 includeAntRuntime="false">
 			<classpath>
 				<!-- @todo the ref to nucleus-server.jar slows the build down.
 				  When we have nucleus-common.jar and nucleus-server-interface.jar, we should try this again. -->
@@ -198,7 +200,8 @@
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
 					 excludes="de/novabit/common/logging/test/"
-					 classpathref="nucleus.path">
+					 classpathref="nucleus.path"
+					 includeAntRuntime="false">
 			<src path="${nucleus.src.java.dir}/de/novabit/common/logging/;${nucleus.src.java.dir}/de/novabit/common/deploy/;${nucleus.src.java.dir}/de/novabit/nucleus/server/mbean/"/>
 		</javac>
 
@@ -316,7 +319,8 @@
 					 nowarn="${javac.nowarn}"
 					 srcdir="${nucleus.src.java.dir}"
 					 includes="de/novabit/nucleus/tools/translation/**"
-					 classpathref="nucleus.server.path">
+					 classpathref="nucleus.server.path"
+					 includeAntRuntime="false">
 		</javac>
         <java classname="de.novabit.nucleus.tools.translation.TranslationMainFrame" fork="true"
               dir="${nucleus.build.classes.dir}/de/novabit/nucleus/tools/translation">
@@ -445,7 +449,8 @@
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
 					 srcdir="${nucleus.src.java.dir}"
-					 includes="de/novabit/**/test/" excludes="de/novabit/nucleus/client/">
+					 includes="de/novabit/**/test/" excludes="de/novabit/nucleus/client/"
+					 includeAntRuntime="false">
 			<classpath>
 				<path refid="nucleus.server.path"/>
 				<path location="${common.dir}/build/classes"/>

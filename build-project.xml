@@ -125,7 +125,8 @@
 				 srcdir="${project.src.java.dir}"
 				 includes="de/novabit/${app.name}/common/, de/novabit/${app.name}/server/"
 				 excludes="**/test/"
-				 classpathref="project.server.path">
+				 classpathref="project.server.path"
+				 includeAntRuntime="false">
 		</javac>
 	</target>
 
@@ -159,7 +160,8 @@
  		<javac encoding="8859_1" destdir="${project.build.classes.dir}" debug="on" deprecation="off" optimize="on"
  					 source="${java.src.version}" srcdir="${project.src.java.dir}"
  					 includes="de/novabit/${app.name}/client/"
- 					 excludes="**/test/">
+ 					 excludes="**/test/"
+ 					 includeAntRuntime="false">
  			<classpath>
  				<!-- @todo the ref to nucleus-server.jar slows the build down.
  				  When we have nucleus-common.jar and nucleus-server-interface.jar, we should try this again. -->
@@ -377,7 +379,8 @@
 		<mkdir dir="${project.build.classes.dir}"/>
 		<javac encoding="8859_1" destdir="${project.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
 					 srcdir="${project.src.java.dir}"
-					 includes="de/novabit/**/test/" excludes="de/novabit/${app.name}/client/">
+					 includes="de/novabit/**/test/" excludes="de/novabit/${app.name}/client/"
+					 includeAntRuntime="false">
 			<classpath>
 				<path refid="project.server.path"/>
 				<path location="${common.dir}/build/classes"/>
