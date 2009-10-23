@@ -9,6 +9,8 @@
 
 	<property name="projectbuild" value="false"/>
 
+	<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpath="${nucleus.lib.dir}/meta/xmltask.jar"/>
+
 	<path id="nucleus.client.run.path">
 		<!-- include nucleus.conf.dir in classpath so the ClassLoader finds nucleus-client.properties: -->
 		<pathelement location="${nucleus.conf.dir}"/>
@@ -754,6 +756,7 @@
 				<mkdir dir="${jboss.server.dir}/documents"/>
 				<mkdir dir="${jboss.server.dir}/expimp"/>
 				<mkdir dir="${jboss.server.dir}/reports"/>
+				<mkdir dir="${jboss.server.dir}/resource"/>
 				<mkdir dir="${jboss.server.dir}/compiled-reports"/>
 			</then>
 		</if>
@@ -769,6 +772,17 @@
 		</copy>
 
 		<copy overwrite="false" file="./conf/jboss/jboss_config.filter.default" tofile="./jboss_config.filter"/>
+		
+		<xmltask todir="${jboss.server.dir}/conf/xmdesc" 
+			    public="-//JBoss//DTD JBOSS XMBEAN 1.1//EN"
+		        system="http://www.jboss.org/j2ee/dtd/jboss_xmbean_1_1.dtd">
+            <fileset dir="${jboss.server.dir}/conf/xmdesc">
+               <include name="org.jboss.deployment.MainDeployer-xmbean.xml"/>
+            </fileset>
+            <replace path="/mbean/attribute[@getMethod='getEnhancedSuffixOrder']/descriptors/value/@value" 
+            	     withText="250:.rar,300:-ds.xml,400:.jar,500:.war,550:.jse,640:nucleus.ear,650:.ear,800:.bsh"/>
+			<remove path="//*/@xml:base"/>
+        </xmltask>
 
 		<!-- replace tokens with values from 'jboss_config.filter' -->
 		<if><not><equals arg1="${projectbuild}" arg2="true"/></not>
