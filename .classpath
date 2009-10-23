@@ -50,5 +50,6 @@
 	<classpathentry kind="lib" path="lib/client/filters.jar"/>
 	<classpathentry kind="lib" path="lib/common/commons-beanutils-1.8.1.jar"/>
 	<classpathentry kind="lib" path="lib/common/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/client/serializer.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
