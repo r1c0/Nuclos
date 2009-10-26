@@ -38,7 +38,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/xerlin/deps/xalan.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xerlin/deps/xercesImpl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/jxlayer-3.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/client/layer.jar"/>
 	<classpathentry kind="lib" path="lib/server/commons-digester-1.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/shared/commons-javaflow-20060411.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/shared/jasperreports-3.5.3.jar"/>
