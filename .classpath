@@ -37,7 +37,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/xerlin/deps/thirdparty.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xerlin/deps/xalan.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xerlin/deps/xercesImpl.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/client/jlfgr-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/jxlayer-3.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/layer.jar"/>
 	<classpathentry kind="lib" path="lib/server/commons-digester-1.7.jar"/>
