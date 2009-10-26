@@ -86,7 +86,8 @@
 		<copy todir="${nucleus.build.classes.dir}">
 			<fileset dir="${nucleus.src.java.dir}"
 							 includes="de/novabit/nucleus/common/security/auth.conf,
-							 de/novabit/nucleus/common/querybuilder/querybuildermodel.dtd"/>
+							 de/novabit/nucleus/common/querybuilder/querybuildermodel.dtd,
+							 de/novabit/nucleus/client/common/prefs/preferences.dtd"/>
 			<fileset dir="${nucleus.src.java.dir}" includes="de/novabit/nucleus/client/layout/wysiwyg/**/*"/>
 		</copy>
 
