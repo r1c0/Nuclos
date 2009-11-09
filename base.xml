@@ -68,6 +68,7 @@
 	    <pathelement location="${jboss.client.dir}/jboss-annotations-ejb3.jar"/>
 		<pathelement location="${jboss.client.dir}/jboss-aop-jdk50-client.jar"/>
 		<pathelement location="${jboss.client.dir}/jboss-aspect-jdk50-client.jar"/>
+		<pathelement location="${jboss.client.dir}/jboss-transaction-client.jar"/>
 		<pathelement location="${jboss.client.dir}/jnp-client.jar"/>
 		<pathelement location="${jboss.client.dir}/concurrent.jar"/>
 		<pathelement location="${jboss.client.dir}/jbossmq-client.jar"/>
@@ -107,7 +108,6 @@
 		<pathelement location="${jboss.client.dir}/jboss-common-client.jar"/>
 		<pathelement location="${jboss.client.dir}/jboss-system-client.jar"/>
 		<pathelement location="${jboss.client.dir}/jbosssx-client.jar"/>
-		<pathelement location="${jboss.client.dir}/jboss-transaction-client.jar"/>
 		<pathelement location="${jboss.client.dir}/jboss-remoting.jar"/>
 		<pathelement location="${jboss.client.dir}/jboss-serialization.jar"/>
 		<pathelement location="${nucleus.build.deploy.dir}/nucleus-xerlin.jar"/>
