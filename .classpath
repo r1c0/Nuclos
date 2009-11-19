@@ -10,13 +10,13 @@
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME"/>
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jbossall-client.jar"/>
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME/server/nucleus/lib/jboss.jar"/>
-	<classpathentry kind="var" path="JBOSS_HOME/client/jboss-ejb3x.jar"/>
+	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jboss-ejb3x.jar"/>
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME/server/nucleus/lib/jbosssx.jar"/>
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/concurrent.jar"/>
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME/lib/jboss-system.jar"/>
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME/server/nucleus/lib/log4j.jar"/>
-	<classpathentry kind="var" path="JBOSS_HOME/client/jboss-ejb3-client.jar"/>
-	<classpathentry kind="var" path="JBOSS_HOME/client/jboss-annotations-ejb3.jar"/>
+	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jboss-ejb3-client.jar"/>
+	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jboss-annotations-ejb3.jar"/>
 	<classpathentry kind="lib" path="lib/test/cactus-1.7.1.jar"/>
 	<classpathentry kind="lib" path="lib/test/jfcunit-2.08.jar"/>
 	<classpathentry kind="lib" path="lib/test/junit-3.8.1.jar"/>
