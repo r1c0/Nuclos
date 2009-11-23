@@ -713,6 +713,7 @@
 		</ant>
 
 		<!-- Das wird beim 'projectbuild' nicht ausgefuehrt! -->
+		<copy overwrite="false" file="${nucleus.dir}/conf/jboss/jboss_config.filter.default" tofile="./jboss_config.filter"/>
 		<replace dir="${jboss.server.dir}/"
 			includes="conf/jboss-service.xml,conf/*-server.properties,deploy/*-ds.xml"
 			replacefilterfile="./jboss_config.filter"/>
