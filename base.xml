@@ -100,6 +100,7 @@
 		<fileset refid="nucleus.common.jars"/>
 		<fileset refid="nucleus.shared.jars"/>
 		<fileset refid="nucleus.client.jars"/>
+		<fileset refid="nucleus.xerlin.dep.jars"/>
 
 		<pathelement location="${nucleus.build.classes.dir}"/>
 		<pathelement location="${common.build.deploy.dir}/novabit-common.jar"/>
