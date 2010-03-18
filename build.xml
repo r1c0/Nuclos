@@ -52,6 +52,8 @@
 		</copy>
 		<copy todir="${nucleus.build.classes.dir}/resources">
 			<fileset dir="${nucleus.conf.dir}/resources" excludes="project_*.properties"/>
+			<!-- include system layoutmls and reports, TODO: move them into conf folder --> 
+			<fileset dir="${nucleus.src.dir}" includes="layoutml/**/*, reports/**/*"/>
 		</copy>
 
 		<copy todir="${nucleus.build.classes.dir}">
