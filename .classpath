@@ -8,6 +8,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/client/TableLayout-bin-jdk1.5-2009-06-10.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/common/xstream-1.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/client/wizard-0.1.12.jar"/>
+	<classpathentry kind="lib" path="lib/client/jgraphx.jar"/>
 	<classpathentry kind="lib" path="lib/client/metadata-extractor-2.3.1.jar"/>
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME"/>
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jbossall-client.jar"/>
