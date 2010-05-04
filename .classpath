@@ -22,7 +22,7 @@
 	<classpathentry kind="lib" path="lib/test/cactus-1.7.1.jar"/>
 	<classpathentry kind="lib" path="lib/test/jfcunit-2.08.jar"/>
 	<classpathentry kind="lib" path="lib/test/junit-3.8.1.jar"/>
-	<classpathentry kind="lib" path="lib/server/ojdbc14.jar"/>
+	<classpathentry kind="lib" path="lib/server/ojdbc6.jar"/>
 	<classpathentry kind="lib" path="lib/server/sqljdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/jawin.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/jh.jar"/>
