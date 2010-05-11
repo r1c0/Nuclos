@@ -70,6 +70,18 @@
 		</javac>
 	</target>
 
+	<target name="compile.reportapi">
+		<mkdir dir="${nucleus.build.classes.dir}"/>
+
+		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+					 nowarn="${javac.nowarn}"
+					 srcdir="${nucleus.src.java.dir}"
+					 includes="org/nuclos/server/report/api/"
+					 classpathref="nucleus.server.path"
+					 includeAntRuntime="false">
+		</javac>
+	</target>
+
 	<target name="compile.client" depends="compile.server, patch.xerlin.jar, compile.client.nodepend"/>
 
 	<target name="patch.xerlin.jar"
@@ -131,7 +143,7 @@
 		</javac>
 	</target>
 
-	<target name="jar.server" depends="compile.server, jar.jboss" description="Builds the server.">
+	<target name="jar.server" depends="compile.server, jar.jboss, jar.reportapi" description="Builds the server.">
 		<mkdir dir="${nucleus.build.deploy.dir}"/>
 
 		<if>
@@ -161,6 +173,23 @@
 				</jar>
 			</else>
 		</if>
+	</target>
+
+	<target name="jar.reportapi" depends="compile.reportapi" description="Package report api.">
+		<mkdir dir="${nucleus.build.deploy.dir}"/>
+
+		<jar jarfile="${nucleus.build.deploy.dir}/nuclos-reportapi.jar">
+			<fileset dir="${nucleus.build.classes.dir}"
+				 includes="org/nuclos/server/report/api/"
+				 excludes="**/test/"/>
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0"/>
+			</manifest>
+		</jar>
+
+		<copy todir="${jboss.server.lib.dir}">
+			<fileset dir="${nucleus.build.deploy.dir}" includes="nuclos-reportapi.jar"/>
+		</copy>
 	</target>
 
 	<target name="deploy.client" depends="compile.client" description="Builds the client.">
@@ -569,7 +598,13 @@
 		<!-- copy server libs: -->
 		<mkdir dir="${nucleus.dist.dir}/server/lib"/>
 		<copy todir="${nucleus.dist.dir}/server/lib">
-			<fileset dir="${nucleus.build.deploy.dir}" includes="novabit-jboss.jar"/>
+			<fileset dir="${nucleus.build.deploy.dir}" includes="novabit-jboss.jar, nuclos-reportapi.jar"/>
+		</copy>
+
+		<!-- copy reportapi libs: -->
+		<mkdir dir="${nucleus.dist.dir}/jasperreports"/>
+		<copy todir="${nucleus.dist.dir}/server/lib">
+			<fileset dir="${nucleus.build.deploy.dir}" includes="nuclos-reportapi.jar"/>
 		</copy>
 
 		<!-- copy db script(s): -->
@@ -775,14 +810,14 @@
 		</copy>
 
 		<copy overwrite="false" file="./conf/jboss/jboss_config.filter.default" tofile="./jboss_config.filter"/>
-		
-		<xmltask todir="${jboss.server.dir}/conf/xmdesc" 
+
+		<xmltask todir="${jboss.server.dir}/conf/xmdesc"
 			    public="-//JBoss//DTD JBOSS XMBEAN 1.1//EN"
 		        system="http://www.jboss.org/j2ee/dtd/jboss_xmbean_1_1.dtd">
             <fileset dir="${jboss.server.dir}/conf/xmdesc">
                <include name="org.jboss.deployment.MainDeployer-xmbean.xml"/>
             </fileset>
-            <replace path="/mbean/attribute[@getMethod='getEnhancedSuffixOrder']/descriptors/value/@value" 
+            <replace path="/mbean/attribute[@getMethod='getEnhancedSuffixOrder']/descriptors/value/@value"
             	     withText="250:.rar,300:-ds.xml,400:.jar,500:.war,550:.jse,640:nucleus.ear,650:.ear,800:.bsh"/>
 			<remove path="//*/@xml:base"/>
         </xmltask>

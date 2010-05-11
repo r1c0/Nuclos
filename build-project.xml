@@ -516,7 +516,13 @@
 		<!-- copy server libs: -->
 		<mkdir dir="${project.dist.dir}/server/lib"/>
 		<copy todir="${project.dist.dir}/server/lib">
-			<fileset dir="${nucleus.build.deploy.dir}" includes="novabit-jboss.jar"/>
+			<fileset dir="${nucleus.build.deploy.dir}" includes="novabit-jboss.jar, nuclos-reportapi.jar"/>
+		</copy>
+
+		<!-- copy reportapi libs: -->
+		<mkdir dir="${project.dist.dir}/jasperreports"/>
+		<copy todir="${project.dist.dir}/server/lib">
+			<fileset dir="${nucleus.build.deploy.dir}" includes="nuclos-reportapi.jar"/>
 		</copy>
 
 		<!-- copy db script(s): -->
