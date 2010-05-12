@@ -47,8 +47,7 @@
 	<property name="nucleus.dist.dir" value="${nucleus.dir}/dist"/>
 
 	<!-- Source directories: -->
-	<property name="src.novabit.dir" value="${nucleus.src.java.dir}/de/novabit"/>
-	<property name="src.nucleus.dir" value="${src.novabit.dir}/nucleus"/>
+	<property name="src.nucleus.dir" value="${nucleus.src.java.dir}/org/nuclos"/>
 	<property name="src.nucleus.common.dir" value="${src.nucleus.dir}/common"/>
 	<property name="src.nucleus.client.dir" value="${src.nucleus.dir}/client"/>
 	<property name="src.nucleus.server.dir" value="${src.nucleus.dir}/server"/>

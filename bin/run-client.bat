@@ -48,4 +48,4 @@ set CP=%CP%;.\lib\commons-codec-1.3.jar
 
 rem !!!! logging unter c:\temp funktioniert bei Terminalservern nicht !!!!!
 
-start %JAVA% -ea -ms128m -mx256m -cp %CP% de.novabit.nucleus.client.main.Main
+start %JAVA% -ea -ms128m -mx256m -cp %CP% org.nuclos.client.main.Main

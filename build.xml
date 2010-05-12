@@ -47,8 +47,8 @@
 		<mkdir dir="${nucleus.build.classes.dir}"/>
 
 		<copy todir="${nucleus.build.classes.dir}">
-			<fileset dir="${nucleus.src.java.dir}" includes="de/novabit/nucleus/common/security/auth.conf"/>
-			<fileset dir="${nucleus.src.java.dir}" includes="de/novabit/nucleus/common/querybuilder/querybuildermodel.dtd"/>
+			<fileset dir="${nucleus.src.java.dir}" includes="org/nuclos/common/security/auth.conf"/>
+			<fileset dir="${nucleus.src.java.dir}" includes="org/nuclos/common/querybuilder/querybuildermodel.dtd"/>
 		</copy>
 		<copy todir="${nucleus.build.classes.dir}/resources">
 			<fileset dir="${nucleus.conf.dir}/resources" excludes="project_*.properties"/>
@@ -63,7 +63,7 @@
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
 					 srcdir="${nucleus.src.java.dir}"
-					 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/"
+					 includes="org/nuclos/common/, org/nuclos/server/"
 					 excludes="**/test/"
 					 classpathref="nucleus.server.path"
 					 includeAntRuntime="false">
@@ -99,28 +99,28 @@
 
 		<copy todir="${nucleus.build.classes.dir}">
 			<fileset dir="${nucleus.src.java.dir}"
-							 includes="de/novabit/nucleus/common/security/auth.conf,
-							 de/novabit/nucleus/common/querybuilder/querybuildermodel.dtd,
-							 de/novabit/nucleus/client/common/prefs/preferences.dtd"/>
-			<fileset dir="${nucleus.src.java.dir}" includes="de/novabit/nucleus/client/layout/wysiwyg/**/*"/>
+							 includes="org/nuclos/common/security/auth.conf,
+							 org/nuclos/common/querybuilder/querybuildermodel.dtd,
+							 org/nuclos/client/common/prefs/preferences.dtd"/>
+			<fileset dir="${nucleus.src.java.dir}" includes="org/nuclos/client/layout/wysiwyg/**/*"/>
 		</copy>
 
-		<copy todir="${nucleus.build.classes.dir}/de/novabit/nucleus/client">
+		<copy todir="${nucleus.build.classes.dir}/org/nuclos/client">
 			<fileset dir="${src.nucleus.client.dir}"
 							 includes="**/images/,
 							 **/layoutml/*.layoutml,
 							 help/releasenotes/releasenotes.html"/>
 		</copy>
 
-		<copy todir="${nucleus.build.classes.dir}/de/novabit/nucleus/client/gef">
-			<fileset dir="${nucleus.src.java.dir}/de/novabit/nucleus/client/gef" includes="**/images/*"/>
+		<copy todir="${nucleus.build.classes.dir}/org/nuclos/client/gef">
+			<fileset dir="${nucleus.src.java.dir}/org/nuclos/client/gef" includes="**/images/*"/>
 		</copy>
 
-		<copy todir="${nucleus.build.classes.dir}/de/novabit/nucleus/client/report">
-			<fileset dir="${nucleus.src.java.dir}/de/novabit/nucleus/client/report" includes="*.dtd"/>
+		<copy todir="${nucleus.build.classes.dir}/org/nuclos/client/report">
+			<fileset dir="${nucleus.src.java.dir}/org/nuclos/client/report" includes="*.dtd"/>
 		</copy>
 
-		<copy file="${nucleus.src.java.dir}/de/novabit/common/layoutml/layoutml.dtd" tofile="${nucleus.conf.dir}/layoutml.dtd"
+		<copy file="${nucleus.src.java.dir}/org/nuclos/common2/layoutml/layoutml.dtd" tofile="${nucleus.conf.dir}/layoutml.dtd"
 					overwrite="true"/>
 
 		<!--
@@ -131,7 +131,7 @@
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
 					 source="${java.src.version}" srcdir="${nucleus.src.java.dir}"
-					 includes="de/novabit/nucleus/client/"
+					 includes="org/nuclos/client/"
 					 excludes="**/test/"
 					 includeAntRuntime="false">
 			<classpath>
@@ -151,7 +151,7 @@
 			<then>
 				<jar jarfile="${nucleus.build.deploy.dir}/nucleus-server.jar">
 					<fileset dir="${nucleus.build.classes.dir}"
-						 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, resources/, nucleus-app*.properties"
+						 includes="org/nuclos/common/, org/nuclos/server/, resources/, nucleus-app*.properties"
 						 excludes="**/test/"/>
 					<fileset dir="${nucleus.conf.dir}/ejb3/"/>
 					<manifest>
@@ -163,7 +163,7 @@
 			<else>
 				<jar jarfile="${nucleus.build.deploy.dir}/nucleus-server.jar">
 					<fileset dir="${nucleus.build.classes.dir}"
-						 includes="de/novabit/nucleus/common/, de/novabit/nucleus/server/, resources/"
+						 includes="org/nuclos/common/, org/nuclos/server/, resources/"
 						 excludes="**/test/"/>
 					<fileset dir="${nucleus.conf.dir}/ejb3/"/>
 					<manifest>
@@ -202,27 +202,27 @@
 
 		<jar jarfile="${nucleus.build.deploy.dir}/nucleus-client.jar">
 			<fileset dir="${nucleus.build.classes.dir}"
-				includes=	"de/novabit/nucleus/client/,
-							de/novabit/nucleus/common/,
-							de/novabit/nucleus/server/*.class,
-							de/novabit/nucleus/server/*/*.class,
-							de/novabit/nucleus/server/database/**/*.class,
-							de/novabit/nucleus/server/**/valueobject/*,
-							de/novabit/nucleus/server/**/*Exception.class,
-							de/novabit/nucleus/server/**/*VO*.class,
-							de/novabit/nucleus/server/genericobject/searchcondition/Collectable*SearchExpression.class,
-							de/novabit/nucleus/server/navigation/treenode/*.class,
-							de/novabit/nucleus/server/person/treenode/*.class,
-							de/novabit/nucleus/common/security/auth.conf,
+				includes=	"org/nuclos/client/,
+							org/nuclos/common/,
+							org/nuclos/server/*.class,
+							org/nuclos/server/*/*.class,
+							org/nuclos/server/database/**/*.class,
+							org/nuclos/server/**/valueobject/*,
+							org/nuclos/server/**/*Exception.class,
+							org/nuclos/server/**/*VO*.class,
+							org/nuclos/server/genericobject/searchcondition/Collectable*SearchExpression.class,
+							org/nuclos/server/navigation/treenode/*.class,
+							org/nuclos/server/person/treenode/*.class,
+							org/nuclos/common/security/auth.conf,
 							resources/*.properties,
 							icons.properties,
 				            menuConfig.xml"
 				excludes=	"**/test/,
-							de/novabit/nucleus/client/help/javahelp/,
-							de/novabit/nucleus/client/main/animatedmenubar/,
-							de/novabit/**/build.xml"/>
+							org/nuclos/client/help/javahelp/,
+							org/nuclos/client/main/animatedmenubar/,
+							org/nuclos/**/build.xml"/>
 			<fileset dir="${nucleus.build.classes.dir}"
-				includes= "de/novabit/nucleus/server/**/ejb3/*Remote.class"/>
+				includes= "org/nuclos/server/**/ejb3/*Remote.class"/>
 			<fileset dir="${nucleus.build.deploy.dir}"
 				includes=   "JNLP-INF/*.jnlp"/>
 		</jar>
@@ -233,15 +233,15 @@
 
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
-					 excludes="de/novabit/common/logging/test/"
+					 excludes="org/nuclos/common2/logging/test/"
 					 classpathref="nucleus.path"
 					 includeAntRuntime="false">
-			<src path="${nucleus.src.java.dir}/de/novabit/common/logging/;${nucleus.src.java.dir}/de/novabit/common/deploy/;${nucleus.src.java.dir}/de/novabit/nucleus/server/mbean/"/>
+			<src path="${nucleus.src.java.dir}/org/nuclos/common2/logging/;${nucleus.src.java.dir}/org/nuclos/common2/deploy/;${nucleus.src.java.dir}/org/nuclos/server/mbean/"/>
 		</javac>
 
 		<jar jarfile="${nucleus.build.deploy.dir}/novabit-jboss.jar" basedir="${nucleus.build.classes.dir}"
-				 includes="de/novabit/common/logging/, de/novabit/nucleus/server/mbean/, de/novabit/common/deploy/"
-				 excludes="de/novabit/common/logging/test/">
+				 includes="org/nuclos/common2/logging/, org/nuclos/server/mbean/, org/nuclos/common2/deploy/"
+				 excludes="org/nuclos/common2/logging/test/">
 		</jar>
 
 		<copy todir="${jboss.server.lib.dir}">
@@ -322,7 +322,7 @@
 
 	<!-- Target to run client (contains no dependencies, just run the client) -->
 	<target name="run.client.nodepend" description="Runs the Nucleus client.">
-		<java classname="de.novabit.nucleus.client.main.Main" fork="true">
+		<java classname="org.nuclos.client.main.Main" fork="true">
 			<classpath>
 				<path refid="nucleus.client.run.path"/>
 			</classpath>
@@ -333,7 +333,7 @@
 	</target>
 
 	<target name="run.console" description="Runs the Nucleus console.">
-		<java classname="de.novabit.nucleus.client.console.NucleusConsole" fork="true">
+		<java classname="org.nuclos.client.console.NucleusConsole" fork="true">
 			<arg line="${console-args}"/>
 			<classpath>
 				<path refid="nucleus.client.run.path"/>
@@ -343,26 +343,26 @@
 	</target>
 
 	<target name="run.translation" description="Runs the translation tool.">
-		<mkdir dir="${nucleus.build.classes.dir}/de/novabit/nucleus/tools/translation/csv"/>
+		<mkdir dir="${nucleus.build.classes.dir}/org/nuclos/tools/translation/csv"/>
 
-		<copy todir="${nucleus.build.classes.dir}/de/novabit/nucleus/tools/translation/csv">
-			<fileset dir="${nucleus.src.java.dir}/de/novabit/nucleus/tools/translation/csv"/>
+		<copy todir="${nucleus.build.classes.dir}/org/nuclos/tools/translation/csv">
+			<fileset dir="${nucleus.src.java.dir}/org/nuclos/tools/translation/csv"/>
 		</copy>
 
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
 					 srcdir="${nucleus.src.java.dir}"
-					 includes="de/novabit/nucleus/tools/translation/**"
+					 includes="org/nuclos/tools/translation/**"
 					 classpathref="nucleus.server.path"
 					 includeAntRuntime="false">
 		</javac>
-        <java classname="de.novabit.nucleus.tools.translation.TranslationMainFrame" fork="true"
-              dir="${nucleus.build.classes.dir}/de/novabit/nucleus/tools/translation">
+        <java classname="org.nuclos.tools.translation.TranslationMainFrame" fork="true"
+              dir="${nucleus.build.classes.dir}/org/nuclos/tools/translation">
               <classpath>
                     <pathelement location="${nucleus.build.classes.dir}"/>
                     <pathelement location="${nucleus.lib.dir}/server/ojdbc14.jar"/>
               		<pathelement location="${nucleus.lib.dir}/other/antlr-runtime-3.1.3.jar"/>
-                    <pathelement location="${project.src.java.dir}/de/novabit/${app.name}/tools/translation/csv"/>
+                    <pathelement location="${project.src.java.dir}/org/nuclos/${app.name}/tools/translation/csv"/>
               </classpath>
         </java>
   	</target>
@@ -386,8 +386,8 @@
 			<fileset dir="${nucleus.src.java.dir}"
 							 includes="**/interfaces/"
 							 excludes="pending/,
-					de/novabit/nucleus/server/masterdata/interfaces/MDLocalHome.java,
-					de/novabit/nucleus/server/masterdata/interfaces/MDLocalObject.java"/>
+					org/nuclos/server/masterdata/interfaces/MDLocalHome.java,
+					org/nuclos/server/masterdata/interfaces/MDLocalObject.java"/>
 			<fileset dir="${nucleus.build.dir}" includes="*/"/>
 			<fileset dir="${nucleus.conf.dir}" includes="layoutml.dtd"/>
 		</delete>
@@ -405,31 +405,31 @@
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
 					 source="${java.src.version}" srcdir="${nucleus.src.java.dir}"
-					 includes="de/novabit/nucleus/tools/ruledoc/"/>
+					 includes="org/nuclos/tools/ruledoc/"/>
 	</target>
 
 	<target name="build.ruledoc" depends="init, compile.ruledoc.taglets" description="@todo compile rule sources">
 		<javadoc access="private" additionalparam="-quiet
 		-d ${nucleus.doc.dir}/ruledoc
-		-taglet de.novabit.nucleus.tools.ruledoc.taglet.NameTaglet  -tagletpath ${nucleus.build.classes.dir}
-		-taglet de.novabit.nucleus.tools.ruledoc.taglet.BeschreibungTaglet -tagletpath ${nucleus.build.classes.dir}
-		-taglet de.novabit.nucleus.tools.ruledoc.taglet.VerwendungTaglet -tagletpath ${nucleus.build.classes.dir}
-		-taglet de.novabit.nucleus.tools.ruledoc.taglet.AnderungTaglet -tagletpath ${nucleus.build.classes.dir}
+		-taglet org.nuclos.tools.ruledoc.taglet.NameTaglet  -tagletpath ${nucleus.build.classes.dir}
+		-taglet org.nuclos.tools.ruledoc.taglet.BeschreibungTaglet -tagletpath ${nucleus.build.classes.dir}
+		-taglet org.nuclos.tools.ruledoc.taglet.VerwendungTaglet -tagletpath ${nucleus.build.classes.dir}
+		-taglet org.nuclos.tools.ruledoc.taglet.AnderungTaglet -tagletpath ${nucleus.build.classes.dir}
 		-linksource"
 
 						 classpath="${nucleus.build.classes.dir}; ${common.dir}/build/classes"
 						 windowtitle="Nucleus Regeln"
 						 sourcefiles="${codegenerator.source}/*.java"
-						 sourcepath="${codegenerator.source};${src.novabit.dir}">
+						 sourcepath="${codegenerator.source};${src.nucleus.dir}">
 
-			<doclet name="de.novabit.nucleus.tools.ruledoc.doclet.NovabitDoclet"
+			<doclet name="org.nuclos.tools.ruledoc.doclet.NovabitDoclet"
 							path="${nucleus.build.classes.dir}"/>
 		</javadoc>
 	</target>
 
 	<target name="javadoc" description="Builds the javadoc.">
 		<copy todir="${nucleus.doc.dir}/api">
-			<fileset dir="${common.src.dir}/de/novabit/common/ui/images" includes="novabit-150x45.gif"/>
+			<fileset dir="${common.src.dir}/org/nuclos/common2/ui/images" includes="novabit-150x45.gif"/>
 		</copy>
 		<javadoc destdir="${nucleus.doc.dir}/api" source="${java.src.version}" maxmemory="128m" access="protected" splitindex="true"
 						 version="true" author="true" use="true" windowtitle="Nucleus API Documentation">
@@ -466,8 +466,8 @@
 				<pathelement location="${nucleus.src.java.dir}"/>
 			</sourcepath>
 
-			<packageset dir="${common.src.dir}" excludes="de/novabit/**/test/**, de/novabit/**/interfaces/**"/>
-			<packageset dir="${nucleus.src.java.dir}" excludes="de/novabit/**/test/**, de/novabit/nucleus/tools/**, de/novabit/**/interfaces/**"/>
+			<packageset dir="${common.src.dir}" excludes="org/nuclos/**/test/**, org/nuclos/**/interfaces/**"/>
+			<packageset dir="${nucleus.src.java.dir}" excludes="org/nuclos/**/test/**, org/nuclos/tools/**, org/nuclos/**/interfaces/**"/>
 			<classpath>
 				<path refid="nucleus.path"/>
 			</classpath>
@@ -483,7 +483,7 @@
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
 					 srcdir="${nucleus.src.java.dir}"
-					 includes="de/novabit/**/test/" excludes="de/novabit/nucleus/client/"
+					 includes="org/nuclos/**/test/" excludes="org/nuclos/client/"
 					 includeAntRuntime="false">
 			<classpath>
 				<path refid="nucleus.server.path"/>
@@ -498,12 +498,12 @@
 
 		<war destfile="${nucleus.build.deploy.dir}/nucleus-test-temp.war" webxml="${nucleus.conf.dir}/cactus/web.xml">
 			<!--			manifest="${nucleus.conf.dir}/cactus/MANIFEST.MF">-->
-			<!--			<classes dir="${project.build.classes.dir}" includes="de/novabit/**/test/*"/>-->
+			<!--			<classes dir="${project.build.classes.dir}" includes="org/nuclos/**/test/*"/>-->
 			<classes dir="${nucleus.build.classes.dir}"
-							 includes="de/novabit/**/test/,
- 					de/novabit/common/security/,
-					de/novabit/nucleus/common/security/,
-					de/novabit/nucleus/server/common/security/auth.conf"/>
+							 includes="org/nuclos/**/test/,
+ 					org/nuclos/common2/security/,
+					org/nuclos/common/security/,
+					org/nuclos/server/common/security/auth.conf"/>
 		</war>
 
 		<cactifywar destfile="${nucleus.build.deploy.dir}/nucleus-test.war" srcfile="${nucleus.build.deploy.dir}/nucleus-test-temp.war"/>
@@ -531,10 +531,10 @@
 			<sysproperty key="cactus.contextURL" value="http://localhost:8080/nucleus-test"/>
 			<!--<sysproperty key="cactus.servletRedirectorName" value="ServletRedirectorSecure"/>-->
 			<formatter type="plain" usefile="false"/>
-			<test name="de.novabit.nucleus.server.ruleengine.test.rules.RuleInterfaceTest"/>
-			<!--<test name="de.novabit.common.collect.collectable.test.CollectableFieldFormatTest"/>-->
-			<!--test name="de.novabit.nucleus.server.genericobject.searchcondition.test.SearchExpressionUnparserTest"/>-->
-			<!--<test name="de.novabit.nucleus.server.genericobject.searchcondition.test.DummyTest"/>-->
+			<test name="org.nuclos.server.ruleengine.test.rules.RuleInterfaceTest"/>
+			<!--<test name="org.nuclos.common2.collect.collectable.test.CollectableFieldFormatTest"/>-->
+			<!--test name="org.nuclos.server.genericobject.searchcondition.test.SearchExpressionUnparserTest"/>-->
+			<!--<test name="org.nuclos.server.genericobject.searchcondition.test.DummyTest"/>-->
 		</junit>
 	</target>
 
@@ -563,7 +563,7 @@
 			<fileset dir="${nucleus.conf.dir}" includes="jndi.properties, layoutml.dtd, nucleus-app.properties, nucleus-client.properties, icons.properties, menuConfig.xml"/>
 		</copy>
 		<mkdir dir="${nucleus.dist.dir}/client/conf/doc"/>
-		<copy file="${nucleus.build.classes.dir}/de/novabit/nucleus/client/help/releasenotes/releasenotes.html" tofile="${nucleus.dist.dir}/client/conf/doc/nucleus-releasenotes.html"/>
+		<copy file="${nucleus.build.classes.dir}/org/nuclos/client/help/releasenotes/releasenotes.html" tofile="${nucleus.dist.dir}/client/conf/doc/nucleus-releasenotes.html"/>
 
 		<mkdir dir="${nucleus.dist.dir}/client/conf/icons"/>
 		<copy todir="${nucleus.dist.dir}/client/conf/icons">
@@ -727,7 +727,7 @@
 		<!-- jar nucleus libs -->
 		<delete dir="${nucleus.build.classes.dir}/META-INF"/>
 		<jar jarfile="${nucleus.build.deploy.dir}/nucleus-libs.jar">
-			<fileset dir="${nucleus.build.classes.dir}" excludes="de/novabit/**"/>
+			<fileset dir="${nucleus.build.classes.dir}" excludes="org/nuclos/**"/>
 		</jar>
 
 		<!-- jar native libs -->

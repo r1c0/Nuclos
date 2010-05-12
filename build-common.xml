@@ -30,8 +30,7 @@
 	<property name="jboss.lib.dir" value="${jboss.home}/lib"/>
 
 	<!-- Source directories: -->
-	<property name="src.novabit.dir" value="${src.dir}/de/novabit"/>
-	<property name="src.novabit.common.dir" value="${src.novabit.dir}/common"/>
+	<property name="src.novabit.common.dir" value="${src.dir}/org/nuclos/common2"/>
 
 	<path id="common.path">
 		<fileset dir="${lib.dir}/common" includes="*.jar"/>
@@ -73,12 +72,12 @@
 		<mkdir dir="${build.classes.dir}"/>
 
 		<copy todir="${build.classes.dir}">
-			<fileset dir="${src.dir}" includes="de/novabit/common/layoutml/layoutml.dtd, de/novabit/common/ui/images/"/>
+			<fileset dir="${src.dir}" includes="org/nuclos/common2/layoutml/layoutml.dtd, org/nuclos/common2/ui/images/"/>
 		</copy>
 
 		<javac destdir="${build.classes.dir}" encoding="8859_1" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
-			 		 includes="de/novabit/common/**/"
-					 excludes="de/novabit/common/server/**/ejb/, de/novabit/**/test/"
+			 		 includes="org/nuclos/common2/**/"
+					 excludes="org/nuclos/common2/server/**/ejb/, org/nuclos/**/test/"
 					 classpathref="common.path"
 			         nowarn="true"
 			         includeAntRuntime="false">
@@ -90,13 +89,13 @@
 		<mkdir dir="${build.deploy.dir}"/>
 
 		<jar jarfile="${build.deploy.dir}/novabit-common.jar">
-			<fileset dir="${build.classes.dir}" includes="de/novabit/common/"
-							 excludes="de/novabit/common/server/**/ejb/, de/novabit/**/test/, de/novabit/**/build.xml"/>
+			<fileset dir="${build.classes.dir}" includes="org/nuclos/common2/"
+							 excludes="org/nuclos/common2/server/**/ejb/, org/nuclos/**/test/, org/nuclos/**/build.xml"/>
 		</jar>
 
 		<jar jarfile="${build.deploy.dir}/novabit-common-ejb.jar">
-			<fileset dir="${build.classes.dir}" includes="de/novabit/common/server/**/ejb/"
-							 excludes="de/novabit/**/test/, de/novabit/**/build.xml"/>
+			<fileset dir="${build.classes.dir}" includes="org/nuclos/common2/server/**/ejb/"
+							 excludes="org/nuclos/**/test/, org/nuclos/**/build.xml"/>
 		</jar>
 	</target>
 
@@ -112,7 +111,7 @@
 				<enable/>
 			</assertions>
 			<formatter type="plain" usefile="false"/>
-			<test name="de.novabit.common.test.Suite"/>
+			<test name="org.nuclos.common2.test.Suite"/>
 		</junit>
 	</target>
 
