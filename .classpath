@@ -9,6 +9,8 @@
 	<classpathentry kind="lib" path="lib/client/wizard-0.1.12.jar"/>
 	<classpathentry kind="lib" path="lib/client/jgraphx.jar"/>
 	<classpathentry kind="lib" path="lib/client/metadata-extractor-2.3.1.jar"/>
+	<classpathentry kind="lib" path="lib/client/synthetica.jar"/>
+	<classpathentry kind="lib" path="lib/client/syntheticaBlueIce.jar"/>
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME"/>
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jbossall-client.jar"/>
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME/server/nucleus/lib/jboss.jar"/>

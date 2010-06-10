@@ -122,7 +122,11 @@
 
 		<copy file="${nucleus.src.java.dir}/org/nuclos/common2/layoutml/layoutml.dtd" tofile="${nucleus.conf.dir}/layoutml.dtd"
 					overwrite="true"/>
-
+		
+		<copy file="${nucleus.conf.dir}/SyntheticaBlueIceLookAndFeel.xml"
+			tofile="${nucleus.build.classes.dir}/org/nuclos/client/lookandfeel/SyntheticaBlueIceLookAndFeel.xml"
+							overwrite="true"/>
+		
 		<!--
 		<copy todir="${project.conf.dir}/doc">
 			<fileset dir="${src.nucleus.client.dir}/help/releasenotes" includes="releasenotes.html"/>
@@ -213,6 +217,7 @@
 							org/nuclos/server/genericobject/searchcondition/Collectable*SearchExpression.class,
 							org/nuclos/server/navigation/treenode/*.class,
 							org/nuclos/server/person/treenode/*.class,
+							org/nuclos/server/dal/provider/*.class,
 							org/nuclos/common/security/auth.conf,
 							resources/*.properties,
 							icons.properties,
@@ -560,7 +565,7 @@
 		</copy>
 		<mkdir dir="${nucleus.dist.dir}/client/conf"/>
 		<copy todir="${nucleus.dist.dir}/client/conf">
-			<fileset dir="${nucleus.conf.dir}" includes="jndi.properties, layoutml.dtd, nucleus-app.properties, nucleus-client.properties, icons.properties, menuConfig.xml"/>
+			<fileset dir="${nucleus.conf.dir}" includes="jndi.properties, layoutml.dtd, nucleus-app.properties, nucleus-client.properties, icons.properties, menuConfig.xml, SyntheticaBlueIceLookAndFeel.xml"/>
 		</copy>
 		<mkdir dir="${nucleus.dist.dir}/client/conf/doc"/>
 		<copy file="${nucleus.build.classes.dir}/org/nuclos/client/help/releasenotes/releasenotes.html" tofile="${nucleus.dist.dir}/client/conf/doc/nucleus-releasenotes.html"/>
@@ -668,6 +673,7 @@
 				<include name="layoutml.dtd"/>
 				<include name="icons/"/>
 				<include name="doc/"/>
+				<include name="SyntheticaBlueIceLookAndFeel.xml"/>
 			</fileset>
 		</copy>
 
