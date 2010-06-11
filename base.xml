@@ -17,7 +17,7 @@
 	<property name="jboss.client.dir" value="${jboss.home}/client"/>
 
 	<!-- Configuration used on JBoss to run your server. There must be a directory with the same name under "${jboss.home}/server": -->
-	<property name="jboss.server.name" value="nucleus"/>
+	<property name="jboss.server.name" value="nuclos"/>
 	<property name="jboss.server.dir" value="${jboss.home}/server/${jboss.server.name}"/>
 	<property name="jboss.server.deploy.dir" value="${jboss.server.dir}/deploy"/>
 	<property name="jboss.server.lib.dir" value="${jboss.server.dir}/lib"/>
