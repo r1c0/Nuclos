@@ -78,17 +78,17 @@
 
 	<path id="project.client.run.path">
 		<pathelement location="${project.build.deploy.dir}/${app.name}-client.jar"/>
-		<!-- include nucleus.conf.dir in classpath so the ClassLoader finds nucleus-client.properties: -->
+		<!-- include nucleus.conf.dir in classpath so the ClassLoader finds nuclos-client.properties: -->
 		<pathelement location="${project.conf.dir}"/>
 		<path refid="client.run.path"/>
 		<path refid="project.client.path"/>
 		<path refid="client.base.run.path"/>
 	</path>
 
-	<target name="init" depends="check.build.properties, init.common">
+	<target name="init">
 		<copy file="${nucleus.conf.dir}/novabit/log4j-client-template.xml" tofile="${project.conf.dir}/log4j.xml" overwrite="false"/>
-		<copy file="${nucleus.conf.dir}/novabit/nucleus-client-template.properties"
-					tofile="${project.conf.dir}/nucleus-client.properties" overwrite="false"/>
+		<copy file="${nucleus.conf.dir}/novabit/nuclos-client-template.properties"
+					tofile="${project.conf.dir}/nuclos-client.properties" overwrite="false"/>
 	</target>
 
 	<target name="main.nucleus" description="Calls the main target of the nucleus core.">
@@ -115,7 +115,7 @@
 		<mkdir dir="${project.build.classes.dir}"/>
 
 		<copy todir="${project.build.classes.dir}">
-			<fileset dir="${project.conf.dir}" includes="nucleus-app*.properties"/>
+			<fileset dir="${project.conf.dir}" includes="nuclos-app*.properties"/>
 		</copy>
 		<copy todir="${project.build.classes.dir}/resources">
 			<fileset dir="${project.conf.dir}/resources"/>
@@ -134,7 +134,7 @@
 
 	<target name="patch.xerlin.jar"
 					description="Renames the xerlin.jar file to a project specific name.">
-		<copy file="${nucleus.build.deploy.dir}/nucleus-xerlin.jar" tofile="${project.build.deploy.dir}/${app.name}-xerlin.jar"/>
+		<copy file="${nucleus.build.deploy.dir}/nuclos-xerlin.jar" tofile="${project.build.deploy.dir}/${app.name}-xerlin.jar"/>
 	</target>
 
 	<target name="compile.client.nodepend">
@@ -163,9 +163,9 @@
  					 excludes="**/test/"
  					 includeAntRuntime="false">
  			<classpath>
- 				<!-- @todo the ref to nucleus-server.jar slows the build down.
+ 				<!-- @todo the ref to nuclos-server.jar slows the build down.
  				  When we have nucleus-common.jar and nucleus-server-interface.jar, we should try this again. -->
- 				<!--<pathelement location="${project.build.deploy.dir}/nucleus-server.jar"/>-->
+ 				<!--<pathelement location="${project.build.deploy.dir}/nuclos-server.jar"/>-->
  				<path refid="project.client.path"/>
  			</classpath>
  		</javac>
@@ -177,12 +177,12 @@
 		<jar jarfile="${project.build.deploy.dir}/${app.name}-server.jar">
 		    <fileset dir="${project.build.classes.dir}"
 				 includes="org/nuclos/${app.name}/common/, org/nuclos/${app.name}/server/, META-INF/,
-				 nucleus-app*.properties, resources/"
+		    	nuclos-app*.properties, resources/"
 				 excludes="**/test/"/>
 			<fileset dir="${project.conf.dir}/ejb3/"/>
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
-				<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./nucleus-server.jar"/>
+				<attribute name="Class-Path" value="./novabit-common.jar ./novabit-common-ejb.jar ./nuclos-server.jar"/>
 			</manifest>
 		</jar>
 	</target>
@@ -227,7 +227,7 @@
 		<switch value="${deploy.jboss.server.nucleus.service}">
 		  <case value="true">
 			<copy todir="${jboss.server.deploy.dir}">
-				<fileset dir="${nucleus.conf.dir}/jboss/deploy" includes="deploy.last/nucleus-service.xml"/>
+				<fileset dir="${nucleus.conf.dir}/jboss/deploy" includes="deploy.last/nuclos-service.xml"/>
 			</copy>
 		  </case>
 		  <default/>
@@ -245,12 +245,12 @@
 
 		<touch>
 			<fileset dir="${jboss.server.deploy.dir}">
-				<include name="jms/nucleus-destinations-service.xml"/>
+				<include name="jms/nuclos-destinations-service.xml"/>
 				<include name="deploy.last/quartz-service.xml"/>
 			</fileset>
 		</touch>
 		<if><equals arg1="${deploy.jboss.server.nucleus.service}" arg2="true"/>
-			<then><touch file="deploy.last/nucleus-service.xml"/></then>
+			<then><touch file="deploy.last/nuclos-service.xml"/></then>
 		</if>
 
 	</target>
@@ -450,7 +450,7 @@
 		<mkdir dir="${project.dist.dir}/server/deploy"/>
 		<copy todir="${project.dist.dir}/server/deploy">
 			<fileset dir="${project.build.deploy.dir}" includes="${app.name}.ear"/>
-			<fileset dir="${nucleus.build.deploy.dir}" includes="nucleus.ear"/>
+			<fileset dir="${nucleus.build.deploy.dir}" includes="nuclos.ear"/>
 		</copy>
 
 		<!-- copy server config -->
@@ -466,7 +466,7 @@
 		</copy>
 		<mkdir dir="${project.dist.dir}/client/conf"/>
 		<copy todir="${project.dist.dir}/client/conf">
-			<fileset dir="${project.conf.dir}" includes="jndi.properties, layoutml.dtd, nucleus-app.properties, nucleus-client.properties"/>
+			<fileset dir="${project.conf.dir}" includes="jndi.properties, layoutml.dtd, nuclos-app.properties, nuclos-client.properties"/>
 		</copy>
 		<mkdir dir="${project.dist.dir}/client/conf/doc"/>
 		<copy file="${nucleus.build.classes.dir}/org/nuclos/client/help/releasenotes/releasenotes.html" tofile="${project.dist.dir}/client/conf/doc/nucleus-releasenotes.html"/>
@@ -482,7 +482,7 @@
 		<mkdir dir="${project.dist.dir}/client/lib"/>
 		<copy todir="${project.dist.dir}/client/lib">
 			<fileset dir="${nucleus.build.deploy.dir}" includes="*.jar"
-				excludes="nucleus-server.jar, novabit-jboss.jar, nucleus-xerlin.jar"/>
+				excludes="nuclos-server.jar, novabit-jboss.jar, nuclos-xerlin.jar"/>
 			<fileset dir="${project.build.deploy.dir}" includes="*.jar" excludes="${app.name}-server.jar, novabit-jboss.jar"/>
 		</copy>
 
@@ -558,12 +558,12 @@
 	<target name="war.webstart.nodepend" description="Builds the webstart-client without dependencies.">
 		<ant antfile="${nucleus.dir}/build.xml" dir="${nucleus.dir}" target="war.webstart.jar" inheritall="false"/>
 
-		<copy overwrite="true" todir="${project.build.deploy.dir}/nucleus-webstart.war/app">
+		<copy overwrite="true" todir="${project.build.deploy.dir}/nuclos-webstart.war/app">
 			<fileset dir="${nucleus.build.deploy.dir}">
-				<include name="nucleus-client.jar"/>
+				<include name="nuclos-client.jar"/>
 				<include name="novabit-common.jar"/>
-				<include name="nucleus-libs.jar"/>
-				<include name="nucleus-native.jar"/>
+				<include name="nuclos-libs.jar"/>
+				<include name="nuclos-native.jar"/>
 				<include name="plugins/layoutml-plugin.jar"/>
 			</fileset>
 			<fileset dir="${project.build.deploy.dir}">
@@ -575,20 +575,20 @@
 			</fileset>
 		</copy>
 
-		<copy overwrite="true" todir="${project.build.deploy.dir}/nucleus-webstart.war">
+		<copy overwrite="true" todir="${project.build.deploy.dir}/nuclos-webstart.war">
 			<fileset dir="${project.conf.dir}/webstart">
 			</fileset>
 		</copy>
 
-		<copy overwrite="true" todir="${project.build.deploy.dir}/nucleus-webstart.war/WEB-INF/lib">
+		<copy overwrite="true" todir="${project.build.deploy.dir}/nuclos-webstart.war/WEB-INF/lib">
 			<fileset refid="jnlp-servlet.jar"/>
 		</copy>
 
 		<copy overwrite="true" todir="${project.build.deploy.dir}/conf">
 			<fileset dir="${project.conf.dir}">
 				<include name="jndi.properties"/>
-				<include name="nucleus-app.properties"/>
-				<include name="nucleus-client.properties"/>
+				<include name="nuclos-app.properties"/>
+				<include name="nuclos-client.properties"/>
 				<include name="log4j.xml"/>
 				<include name="layoutml.dtd"/>
 				<include name="icons/"/>
@@ -597,26 +597,26 @@
 		</copy>
 
 		<!-- jar conf folder -->
-		<jar destfile="${project.build.deploy.dir}/nucleus-webstart.war/app/${app.name}-config.jar">
+		<jar destfile="${project.build.deploy.dir}/nuclos-webstart.war/app/${app.name}-config.jar">
 			<fileset dir="${project.build.deploy.dir}/conf"/>
 		</jar>
 
 		<!-- sign jars (in order to enable security <all-permissions/>) -->
 		<signjar verbose="false" alias="nucleus" storepass="suelcun" keystore="./.keystore">
-			<fileset dir="${project.build.deploy.dir}/nucleus-webstart.war/app">
-				<include name="nucleus-client.jar"/>
+			<fileset dir="${project.build.deploy.dir}/nuclos-webstart.war/app">
+				<include name="nuclos-client.jar"/>
 				<include name="${app.name}-client.jar"/>
 				<include name="novabit-common.jar"/>
 				<include name="${app.name}-xerlin.jar"/>
 				<include name="${app.name}-config.jar"/>
-				<include name="nucleus-libs.jar"/>
-				<include name="nucleus-native.jar"/>
+				<include name="nuclos-libs.jar"/>
+				<include name="nuclos-native.jar"/>
 			</fileset>
 		</signjar>
 
 		<!-- copy webstart-client to server -->
-		<copy overwrite="true" todir="${jboss.server.deploy.dir}/nucleus-webstart.war">
-			<fileset dir="${project.build.deploy.dir}/nucleus-webstart.war"/>
+		<copy overwrite="true" todir="${jboss.server.deploy.dir}/nuclos-webstart.war">
+			<fileset dir="${project.build.deploy.dir}/nuclos-webstart.war"/>
 		</copy>
 	</target>
 
@@ -624,11 +624,11 @@
 		<mkdir dir="${project.dist.dir}/server/deploy"/>
 
 		<!-- copy webstart directories to server -->
-		<copy overwrite="true" todir="${project.dist.dir}/server/deploy/nucleus-webstart.war">
-			<fileset dir="${project.build.deploy.dir}/nucleus-webstart.war"/>
+		<copy overwrite="true" todir="${project.dist.dir}/server/deploy/nuclos-webstart.war">
+			<fileset dir="${project.build.deploy.dir}/nuclos-webstart.war"/>
 		</copy>
 
-		<copy overwrite="true" todir="${project.dist.dir}/server/deploy/nucleus-webstart.war/app">
+		<copy overwrite="true" todir="${project.dist.dir}/server/deploy/nuclos-webstart.war/app">
 			<fileset dir="${project.conf.dir}">
 				<include name="log4j.xml"/>
 			</fileset>
@@ -655,11 +655,11 @@
 			<fileset dir="${nucleus.conf.dir}/jboss/ear/META-INF" includes="application.xml"/>
 		</copy>
 		<replace file="${project.conf.dir}/jboss/ear/META-INF/application.xml"
-			token="nucleus-server.jar" value="${app.name}-server.jar"/>
+			token="nuclos-server.jar" value="${app.name}-server.jar"/>
 
 		<copy todir="${project.conf.dir}" overwrite="false">
 			<fileset dir="${nucleus.conf.dir}"
-				includes="jndi.properties, layoutml.dtd, log4j.xml, nucleus-app.properties, nucleus-client.properties"/>
+				includes="jndi.properties, layoutml.dtd, log4j.xml, nuclos-app.properties, nuclos-client.properties"/>
 		</copy>
 		<copy todir="${project.conf.dir}/jboss/wrapper" overwrite="false">
 			<fileset dir="${nucleus.conf.dir}/jboss/wrapper"/>

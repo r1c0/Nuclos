@@ -110,7 +110,7 @@
 		<pathelement location="${jboss.client.dir}/jbosssx-client.jar"/>
 		<pathelement location="${jboss.client.dir}/jboss-remoting.jar"/>
 		<pathelement location="${jboss.client.dir}/jboss-serialization.jar"/>
-		<pathelement location="${nucleus.build.deploy.dir}/nucleus-xerlin.jar"/>
+		<pathelement location="${nucleus.build.deploy.dir}/nuclos-xerlin.jar"/>
 
 		<path refid="nucleus.common.jboss.client.path"/>
 	</path>
@@ -121,7 +121,7 @@
 	</path>
 
 	<path id="client.run.path">
-		<pathelement location="${nucleus.build.deploy.dir}/nucleus-client.jar"/>
+		<pathelement location="${nucleus.build.deploy.dir}/nuclos-client.jar"/>
 		<path refid="nucleus.client.path"/>
 	</path>
 

@@ -5,8 +5,8 @@ set JAVA=%JAVA_HOME%\bin\java
 
 set CP=%CLASSPATH%;.\conf
 
-set CP=%CP%;.\lib\nucleus-client.jar
-set CP=%CP%;.\lib\nucleus-xerlin.jar
+set CP=%CP%;.\lib\nuclos-client.jar
+set CP=%CP%;.\lib\nuclos-xerlin.jar
 set CP=%CP%;.\lib\novabit-common.jar
 set CP=%CP%;.\lib\log4j-1.2.8.jar
 set CP=%CP%;.\lib\jlfgr-1_0.jar
