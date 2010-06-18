@@ -272,7 +272,7 @@
 	</target>
 
 	<target name="run.console" description="Runs the Nucleus console.">
-		<java classname="org.nuclos.client.console.NucleusConsole" fork="true">
+		<java classname="org.nuclos.client.console.NuclosConsole" fork="true">
 			<arg line="${console-args}"/>
 			<classpath>
 				<path refid="project.client.run.path"/>
