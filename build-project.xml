@@ -321,7 +321,7 @@
 						 sourcefiles="${codegenerator.source}/*.java"
 						 sourcepath="${codegenerator.source};${src.nucleus.dir}">
 
-			<doclet name="org.nuclos.tools.ruledoc.doclet.NovabitDoclet"
+			<doclet name="org.nuclos.tools.ruledoc.doclet.CommonDoclet"
 							path="${project.build.classes.dir}"/>
 		</javadoc>
 	</target>
