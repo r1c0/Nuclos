@@ -881,5 +881,11 @@
 			</else>
 		</if>
 	</target>
+	
+	<target name="copy laf" description="bla">
+		<copy file="${nucleus.conf.dir}/SyntheticaBlueIceLookAndFeel.xml"
+			tofile="${nucleus.build.classes.dir}/org/nuclos/client/lookandfeel/SyntheticaBlueIceLookAndFeel.xml"
+			overwrite="true"/>
+	</target>
 
 </project>
