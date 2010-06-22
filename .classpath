@@ -56,5 +56,6 @@
 	<classpathentry kind="lib" path="lib/client/jdom.jar"/>
 	<classpathentry kind="lib" path="lib/common/json-simple-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/server/postgresql-8.4-701.jdbc4.jar"/>
+	<classpathentry kind="lib" path="lib/client/syntheticaBlackMoon.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
