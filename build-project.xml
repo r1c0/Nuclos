@@ -202,7 +202,7 @@
 				excludes=	"**/test/,
 							org/nuclos/**/build.xml"/>
 			<fileset dir="${project.build.classes.dir}"
-				includes= "org/nuclos/$app.name}/server/**/ejb3/*Remote.class"/>
+				includes= "org/nuclos/${app.name}/server/**/ejb3/*Remote.class"/>
 		</jar>
 	</target>
 
