@@ -217,7 +217,7 @@
 							org/nuclos/server/genericobject/searchcondition/Collectable*SearchExpression.class,
 							org/nuclos/server/navigation/treenode/*.class,
 							org/nuclos/server/person/treenode/*.class,
-							org/nuclos/server/dal/provider/*.class,
+				            org/nuclos/server/dal/**/*.class,
 							org/nuclos/common/security/auth.conf,
 							resources/*.properties,
 							icons.properties,
