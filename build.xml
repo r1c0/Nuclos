@@ -725,6 +725,7 @@
 		<unjar overwrite="false" src="${jboss.client.dir}/jboss-remoting.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/jboss-serialization.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/jboss-ejb3-client.jar" dest="${nucleus.build.classes.dir}"/>
+		<unjar overwrite="false" src="${jboss.client.dir}/jboss-ejb3x.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/jboss-aop-jdk50-client.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/jboss-aspect-jdk50-client.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/concurrent.jar" dest="${nucleus.build.classes.dir}"/>
