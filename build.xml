@@ -123,9 +123,6 @@
 		<copy file="${nucleus.src.java.dir}/org/nuclos/common2/layoutml/layoutml.dtd" tofile="${nucleus.conf.dir}/layoutml.dtd"
 					overwrite="true"/>
 		
-		<copy file="${nucleus.conf.dir}/SyntheticaBlueIceLookAndFeel.xml"
-			tofile="${nucleus.build.classes.dir}/org/nuclos/client/lookandfeel/SyntheticaBlueIceLookAndFeel.xml"
-							overwrite="true"/>
 		
 		<!--
 		<copy todir="${project.conf.dir}/doc">
