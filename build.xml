@@ -34,6 +34,9 @@
 	<target name="main.noclean" depends="build.noclean, deploy.server, deploy.client"
 					description="Builds and deploys the server, then builds the client."/>
 
+	<target name="main.nodeploy" depends="init, clean, build.noclean, package.server"
+					description="Performs a clean build without deploying"/>
+
 	<target name="build.noclean" depends="build.novabit.common.noclean, jar.server, compile.client"
 					description="Builds the server, then builds the client."/>
 
@@ -553,7 +556,7 @@
 		</junit>
 	</target>
 
-	<target name="dist" depends="main, javadoc, build.ruledoc" description="copy files to distribution directory.">
+	<target name="dist" depends="main.nodeploy, javadoc, build.ruledoc" description="copy files to distribution directory.">
 		<mkdir dir="${nucleus.dist.dir}"/>
 
 		<!-- copy .ear to server directory: -->
