@@ -47,7 +47,7 @@
 		<pathelement location="${jboss.home}/client/jboss-j2ee.jar"/>
 		<pathelement location="${jboss.home}/client/jboss-ejb3x.jar"/>
 		<pathelement location="${jboss.home}/client/jbosssx-client.jar"/>
-		<pathelement location="${jboss.server.lib.dir}/mail.jar"/>
+		<pathelement location="${jboss.default.lib.dir}/mail.jar"/>
 		<pathelement location="${jboss.lib.dir}/jboss-system.jar"/>
 		<pathelement location="${jboss.lib.dir}/jboss-common.jar"/>
 	</path>
@@ -115,7 +115,7 @@
 		</junit>
 	</target>
 
-	<target name="javadoc" description="Builds the javadoc.">
+	<target name="javadoc" description="Builds the javadoc." unless="skip.javadoc">
 		<javadoc destdir="${doc.dir}/api" source="${java.src.version}" maxmemory="120m" access="protected" splitindex="true"
 						 version="true" author="true" use="true" doctitle="Novabit common API Documentation"
 						 windowtitle="Novabit common API Documentation">

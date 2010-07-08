@@ -15,10 +15,6 @@
 	<property name="jboss.server.name" value="${app.name}"/>
 	<var name="jboss.server.dir" unset="true"/>
 	<property name="jboss.server.dir" value="${jboss.home}/server/${jboss.server.name}"/>
-	<var name="jboss.server.deploy.dir" unset="true"/>
-	<property name="jboss.server.deploy.dir" value="${jboss.server.dir}/deploy"/>
-	<var name="jboss.server.lib.dir" unset="true"/>
-	<property name="jboss.server.lib.dir" value="${jboss.server.dir}/lib"/>
 
 	<property name="codegenerator.source" value ="${jboss.home}/server/${app.name}/codegenerator"/>
 
@@ -45,18 +41,18 @@
 		   gebraucht wird, wenn man jbosssx.jar im Pfad hat, steht alles im
 		   nucleus.server.path. (ub, 09/2009)
 
-		<pathelement location="${jboss.server.lib.dir}/jboss-j2ee.jar"/>
+		<pathelement location="${jboss.default.lib.dir}/jboss-j2ee.jar"/>
 		<pathelement location="${jboss.client.dir}/jbosssx-client.jar"/>
-		<pathelement location="${jboss.server.lib.dir}/jbosssx.jar"/>
+		<pathelement location="${jboss.default.lib.dir}/jbosssx.jar"/>
 		<pathelement location="${jboss.lib.dir}/jboss-system.jar"/>
 		<pathelement location="${jboss.lib.dir}/jboss-common.jar"/>
 		<pathelement location="${jboss.lib.dir}/jboss-jmx.jar"/>
-		<pathelement location="${jboss.server.lib.dir}/jboss-common-jdbc-wrapper.jar"/>
+		<pathelement location="${jboss.default.lib.dir}/jboss-common-jdbc-wrapper.jar"/>
 		<pathelement location="${jboss.client.dir}/jnp-client.jar"/>
 		<pathelement location="${jboss.client.dir}/jbossmq-client.jar"/>
 		<pathelement location="${jboss.client.dir}/concurrent.jar"/>
-		<pathelement location="${jboss.server.lib.dir}/jboss.jar"/>
-		<pathelement location="${jboss.server.lib.dir}/mail.jar"/>
+		<pathelement location="${jboss.default.lib.dir}/jboss.jar"/>
+		<pathelement location="${jboss.default.lib.dir}/mail.jar"/>
 		<pathelement location="${jboss.lib.dir}/endorsed/xercesImpl.jar"/>
 		 -->
 
@@ -220,13 +216,13 @@
 		    Diese Version duerfte mit der Einfuehrung von 'install.jboss.files' obsolet sein.
 
 		<!- - deploy: - ->
-		<copy todir="${jboss.server.deploy.dir}">
+		<copy todir="${jboss.server.dir}/deploy">
 			<fileset dir="${project.build.deploy.dir}" includes="${app.name}.ear"/>
 			<fileset dir="${project.conf.dir}/jboss/deploy" includes="deploy.last/quartz-service.xml"/>
 		</copy>
 		<switch value="${deploy.jboss.server.nucleus.service}">
 		  <case value="true">
-			<copy todir="${jboss.server.deploy.dir}">
+			<copy todir="${jboss.server.dir}/deploy">
 				<fileset dir="${nucleus.conf.dir}/jboss/deploy" includes="deploy.last/nuclos-service.xml"/>
 			</copy>
 		  </case>
@@ -235,16 +231,16 @@
 
 		<!- - quartz-service.xml must be renewed, otherwise it won't be redeployed on hot deployment: - ->
 		<touch>
-			<fileset dir="${jboss.server.deploy.dir}/deploy.last"/>
+			<fileset dir="${jboss.server.dir}/deploy/deploy.last"/>
 		</touch>
 		-->
 
 		<copy overwrite="true"
 			file="${project.build.deploy.dir}/${app.name}.ear"
-			tofile="${jboss.server.deploy.dir}/${app.name}.ear"/>
+			tofile="${jboss.server.dir}/deploy/${app.name}.ear"/>
 
 		<touch>
-			<fileset dir="${jboss.server.deploy.dir}">
+			<fileset dir="${jboss.server.dir}/deploy">
 				<include name="jms/nuclos-destinations-service.xml"/>
 				<include name="deploy.last/quartz-service.xml"/>
 			</fileset>
@@ -409,7 +405,7 @@
 	</target>
 
 	<target name="deploy.cactus" depends="build.cactus">
-		<copy todir="${jboss.server.deploy.dir}">
+		<copy todir="${jboss.server.dir}/deploy">
 			<fileset dir="${project.build.deploy.dir}" includes="${app.name}-test.war"/>
 		</copy>
 	</target>
@@ -615,7 +611,7 @@
 		</signjar>
 
 		<!-- copy webstart-client to server -->
-		<copy overwrite="true" todir="${jboss.server.deploy.dir}/nuclos-webstart.war">
+		<copy overwrite="true" todir="${jboss.server.dir}/deploy/nuclos-webstart.war">
 			<fileset dir="${project.build.deploy.dir}/nuclos-webstart.war"/>
 		</copy>
 	</target>

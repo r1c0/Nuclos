@@ -1,6 +1,6 @@
 <project name="Base Nucleus" basedir=".">
 
-	<property name="base.home.dir" value="../nucleus"/>
+	<property name="base.home.dir" value="../nuclos"/>
 
 	<property file="../build.properties"/>
 
@@ -19,8 +19,7 @@
 	<!-- Configuration used on JBoss to run your server. There must be a directory with the same name under "${jboss.home}/server": -->
 	<property name="jboss.server.name" value="nuclos"/>
 	<property name="jboss.server.dir" value="${jboss.home}/server/${jboss.server.name}"/>
-	<property name="jboss.server.deploy.dir" value="${jboss.server.dir}/deploy"/>
-	<property name="jboss.server.lib.dir" value="${jboss.server.dir}/lib"/>
+	<property name="jboss.default.lib.dir" value="${jboss.home}/server/default/lib"/> 
 
 	<property name="java.src.version" value="1.6"/>
 
@@ -86,11 +85,11 @@
 		<pathelement location="${jboss.lib.dir}/jboss-system.jar"/>
 		<pathelement location="${jboss.lib.dir}/jboss-common.jar"/>
 		<pathelement location="${jboss.lib.dir}/jboss-jmx.jar"/>
-		<pathelement location="${jboss.server.lib.dir}/jbosssx.jar"/>
-		<pathelement location="${jboss.server.lib.dir}/jboss-j2ee.jar"/>
-		<pathelement location="${jboss.server.lib.dir}/jboss-common-jdbc-wrapper.jar"/>
-		<pathelement location="${jboss.server.lib.dir}/jboss.jar"/>
-		<pathelement location="${jboss.server.lib.dir}/mail.jar"/>
+		<pathelement location="${jboss.default.lib.dir}/jbosssx.jar"/>
+		<pathelement location="${jboss.default.lib.dir}/jboss-j2ee.jar"/>
+		<pathelement location="${jboss.default.lib.dir}/jboss-common-jdbc-wrapper.jar"/>
+		<pathelement location="${jboss.default.lib.dir}/jboss.jar"/>
+		<pathelement location="${jboss.default.lib.dir}/mail.jar"/>
 
 		<path refid="nucleus.common.jboss.client.path"/>
 	</path>
