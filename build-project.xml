@@ -5,7 +5,7 @@
 	<!-- Project root directory (should always be the directory where this build.xml resides): -->
 	<property name="project.home.dir" value="."/>
 
-	<property name="nucleus.home.dir" value="../nucleus"/>
+	<property name="nucleus.home.dir" value="../nuclos"/>
 
 	<import file="${nucleus.home.dir}/base.xml"/>
 	<import file="${project.home.dir}/base-project.xml"/>
@@ -83,8 +83,6 @@
 
 	<target name="init">
 		<copy file="${nucleus.conf.dir}/novabit/log4j-client-template.xml" tofile="${project.conf.dir}/log4j.xml" overwrite="false"/>
-		<copy file="${nucleus.conf.dir}/novabit/nuclos-client-template.properties"
-					tofile="${project.conf.dir}/nuclos-client.properties" overwrite="false"/>
 	</target>
 
 	<target name="main.nucleus" description="Calls the main target of the nucleus core.">
@@ -111,7 +109,7 @@
 		<mkdir dir="${project.build.classes.dir}"/>
 
 		<copy todir="${project.build.classes.dir}">
-			<fileset dir="${project.conf.dir}" includes="nuclos-app*.properties"/>
+			<fileset dir="${project.conf.dir}" includes="nuclos-app.properties"/>
 		</copy>
 		<copy todir="${project.build.classes.dir}/resources">
 			<fileset dir="${project.conf.dir}/resources"/>
@@ -172,8 +170,7 @@
 
 		<jar jarfile="${project.build.deploy.dir}/${app.name}-server.jar">
 		    <fileset dir="${project.build.classes.dir}"
-				 includes="org/nuclos/${app.name}/common/, org/nuclos/${app.name}/server/, META-INF/,
-		    	nuclos-app*.properties, resources/"
+				 includes="org/nuclos/${app.name}/common/, org/nuclos/${app.name}/server/, META-INF/, nuclos-app.properties, resources/"
 				 excludes="**/test/"/>
 			<fileset dir="${project.conf.dir}/ejb3/"/>
 			<manifest>
@@ -462,7 +459,7 @@
 		</copy>
 		<mkdir dir="${project.dist.dir}/client/conf"/>
 		<copy todir="${project.dist.dir}/client/conf">
-			<fileset dir="${project.conf.dir}" includes="jndi.properties, layoutml.dtd, nuclos-app.properties, nuclos-client.properties"/>
+			<fileset dir="${project.conf.dir}" includes="jndi.properties, layoutml.dtd, nuclos-version.properties, nuclos-app.properties"/>
 		</copy>
 		<mkdir dir="${project.dist.dir}/client/conf/doc"/>
 		<copy file="${nucleus.build.classes.dir}/org/nuclos/client/help/releasenotes/releasenotes.html" tofile="${project.dist.dir}/client/conf/doc/nucleus-releasenotes.html"/>
@@ -584,7 +581,7 @@
 			<fileset dir="${project.conf.dir}">
 				<include name="jndi.properties"/>
 				<include name="nuclos-app.properties"/>
-				<include name="nuclos-client.properties"/>
+				<include name="nuclos-version.properties"/>
 				<include name="log4j.xml"/>
 				<include name="layoutml.dtd"/>
 				<include name="icons/"/>
@@ -655,7 +652,7 @@
 
 		<copy todir="${project.conf.dir}" overwrite="false">
 			<fileset dir="${nucleus.conf.dir}"
-				includes="jndi.properties, layoutml.dtd, log4j.xml, nuclos-app.properties, nuclos-client.properties"/>
+				includes="jndi.properties, layoutml.dtd, log4j.xml, nuclos-version.properties, nuclos-app.properties"/>
 		</copy>
 		<copy todir="${project.conf.dir}/jboss/wrapper" overwrite="false">
 			<fileset dir="${nucleus.conf.dir}/jboss/wrapper"/>

@@ -20,7 +20,10 @@
 	<pathconvert property="jar.server.manifest.classpath" pathsep=" ">
 		<fileset refid="nucleus.common.jars"/>
 		<fileset refid="nucleus.shared.jars"/>
-		<fileset refid="nucleus.server.jars"/>
+		<!-- Do not include the whole nucleus.server.jars because these are 
+			 mainly database drivers which shouldn't be included in the EAR file 
+			 (due to license issues) -->
+		<fileset refid="nucleus.server.redist.jars"/>
 		<flattenmapper />
 	</pathconvert>
 
@@ -65,7 +68,7 @@
 		</copy>
 
 		<copy todir="${nucleus.build.classes.dir}">
-			<fileset dir="${nucleus.conf.dir}" includes="nuclos-app*.properties, icons.properties, menuConfig.xml"/>
+			<fileset dir="${nucleus.conf.dir}" includes="nuclos-version.properties, icons.properties, menuConfig.xml"/>
 		</copy>
 
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
@@ -155,33 +158,17 @@
 	<target name="jar.server" depends="compile.server, jar.jboss, jar.reportapi" description="Builds the server.">
 		<mkdir dir="${nucleus.build.deploy.dir}"/>
 
-		<if>
-			<equals arg1="${projectbuild}" arg2="false" />
-			<then>
-				<jar jarfile="${nucleus.build.deploy.dir}/nuclos-server.jar">
-					<fileset dir="${nucleus.build.classes.dir}"
-						 includes="org/nuclos/common/, org/nuclos/server/, resources/, nuclos-app*.properties"
-						 excludes="**/test/"/>
-					<fileset dir="${nucleus.conf.dir}/ejb3/"/>
-					<manifest>
-						<attribute name="Manifest-Version" value="1.0"/>
-						<attribute name="Class-Path" value="${jar.server.manifest.classpath} ./novabit-common.jar ./novabit-common-ejb.jar"/>
-					</manifest>
-				</jar>
-			</then>
-			<else>
-				<jar jarfile="${nucleus.build.deploy.dir}/nuclos-server.jar">
-					<fileset dir="${nucleus.build.classes.dir}"
-						 includes="org/nuclos/common/, org/nuclos/server/, resources/"
-						 excludes="**/test/"/>
-					<fileset dir="${nucleus.conf.dir}/ejb3/"/>
-					<manifest>
-						<attribute name="Manifest-Version" value="1.0"/>
-						<attribute name="Class-Path" value="${jar.server.manifest.classpath} ./novabit-common.jar ./novabit-common-ejb.jar"/>
-					</manifest>
-				</jar>
-			</else>
-		</if>
+		<!-- Plain-vanilla Nuclos does not need nuclos-app.properties files --> 
+		<jar jarfile="${nucleus.build.deploy.dir}/nuclos-server.jar">
+			<fileset dir="${nucleus.build.classes.dir}"
+				 includes="org/nuclos/common/, org/nuclos/server/, resources/, nuclos-version.properties"
+				 excludes="**/test/"/>
+			<fileset dir="${nucleus.conf.dir}/ejb3/"/>
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0"/>
+				<attribute name="Class-Path" value="${jar.server.manifest.classpath} ./novabit-common.jar ./novabit-common-ejb.jar"/>
+			</manifest>
+		</jar>
 	</target>
 
 	<target name="jar.reportapi" depends="compile.reportapi" description="Package report api.">
@@ -267,7 +254,7 @@
 			<fileset dir="${common.build.deploy.dir}" includes="novabit-common.jar, novabit-common-ejb.jar"/>
 			<fileset refid="nucleus.common.jars"/>
 			<fileset refid="nucleus.shared.jars"/>
-			<fileset refid="nucleus.server.jars"/>
+			<fileset refid="nucleus.server.redist.jars"/>
 		</ear>
 	</target>
 
@@ -578,7 +565,7 @@
 		</copy>
 		<mkdir dir="${nucleus.dist.dir}/client/conf"/>
 		<copy todir="${nucleus.dist.dir}/client/conf">
-			<fileset dir="${nucleus.conf.dir}" includes="jndi.properties, layoutml.dtd, nuclos-app.properties, icons.properties, menuConfig.xml, SyntheticaBlueIceLookAndFeel.xml"/>
+			<fileset dir="${nucleus.conf.dir}" includes="jndi.properties, layoutml.dtd, nuclos-version.properties, icons.properties, menuConfig.xml, SyntheticaBlueIceLookAndFeel.xml"/>
 		</copy>
 		<mkdir dir="${nucleus.dist.dir}/client/conf/doc"/>
 		<copy file="${nucleus.build.classes.dir}/org/nuclos/client/help/releasenotes/releasenotes.html" tofile="${nucleus.dist.dir}/client/conf/doc/nucleus-releasenotes.html"/>
@@ -687,7 +674,7 @@
 		<copy overwrite="true" todir="${nucleus.build.deploy.dir}/conf">
 			<fileset dir="${nucleus.conf.dir}">
 				<include name="jndi.properties"/>
-				<include name="nuclos-app.properties"/>
+				<include name="nuclos-version.properties"/>
 				<include name="icons.properties"/>
 				<include name="menuConfig.xml"/>
 				<include name="log4j.xml"/>
@@ -936,6 +923,7 @@
 		<mkdir dir="${nucleus.dist.dir}/installer/data"/>
 		<jar jarfile="${nucleus.dist.dir}/installer/data/nuclos-jbossconf.jar">
 			<fileset dir="${nucleus.conf.dir}/installer/jboss/"/>
+			<fileset dir="${nucleus.conf.dir}" file="${nucleus.conf.dir}/nuclos-version.properties"/>
 		</jar>
 		
 		<copy todir="${nucleus.dist.dir}/installer/data" overwrite="true">
