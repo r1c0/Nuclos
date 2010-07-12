@@ -93,12 +93,7 @@
 		</javac>
 	</target>
 
-	<target name="compile.client" depends="compile.server, patch.xerlin.jar, compile.client.nodepend"/>
-
-	<target name="patch.xerlin.jar"
-					description="Renames the xerlin.jar file to a project specific name.">
-		<copy file="${nucleus.xerlin.jar}" tofile="${nucleus.build.deploy.dir}/nuclos-xerlin.jar"/>
-	</target>
+	<target name="compile.client" depends="compile.server, compile.client.nodepend"/>
 
 	<target name="compile.client.nodepend">
 		<mkdir dir="${nucleus.build.classes.dir}"/>
@@ -223,7 +218,7 @@
 			-->
 			<manifest>
 				<attribute name="Main-Class" value="org.nuclos.client.main.Main"/>
-				<attribute name="Class-Path" value="novabit-common.jar nuclos-config.jar nuclos-libs.jar nuclos-xerlin.jar"/>
+				<attribute name="Class-Path" value="novabit-common.jar nuclos-config.jar nuclos-libs.jar"/>
 			</manifest>
 		</jar>
 	</target>
@@ -543,7 +538,7 @@
 		</junit>
 	</target>
 
-	<target name="dist" depends="main.nodeploy, javadoc, build.ruledoc" description="copy files to distribution directory.">
+	<target name="dist" depends="main.nodeploy" description="copy files to distribution directory.">
 		<mkdir dir="${nucleus.dist.dir}"/>
 
 		<!-- copy .ear to server directory: -->
@@ -565,7 +560,7 @@
 		</copy>
 		<mkdir dir="${nucleus.dist.dir}/client/conf"/>
 		<copy todir="${nucleus.dist.dir}/client/conf">
-			<fileset dir="${nucleus.conf.dir}" includes="jndi.properties, layoutml.dtd, nuclos-version.properties, icons.properties, menuConfig.xml, SyntheticaBlueIceLookAndFeel.xml"/>
+		<fileset dir="${nucleus.conf.dir}" includes="jndi.properties, layoutml.dtd, nuclos-version.properties, icons.properties, menuConfig.xml"/>
 		</copy>
 		<mkdir dir="${nucleus.dist.dir}/client/conf/doc"/>
 		<copy file="${nucleus.build.classes.dir}/org/nuclos/client/help/releasenotes/releasenotes.html" tofile="${nucleus.dist.dir}/client/conf/doc/nucleus-releasenotes.html"/>
@@ -652,10 +647,8 @@
 			<fileset dir="${nucleus.build.deploy.dir}">
 				<include name="nuclos-client.jar"/>
 				<include name="novabit-common.jar"/>
-				<include name="nuclos-xerlin.jar"/>
 				<include name="nuclos-libs.jar"/>
 				<include name="nuclos-native.jar"/>
-				<include name="plugins/layoutml-plugin.jar"/>
 			</fileset>
 			<fileset dir="${nucleus.conf.dir}">
 				<include name="log4j.xml"/>
@@ -695,7 +688,6 @@
 			<fileset dir="${nucleus.build.deploy.dir}/nuclos-webstart.war/app">
 				<include name="nuclos-client.jar"/>
 				<include name="novabit-common.jar"/>
-				<include name="nuclos-xerlin.jar"/>
 				<include name="nuclos-config.jar"/>
 				<include name="nuclos-libs.jar"/>
 				<include name="nuclos-native.jar"/>
@@ -709,7 +701,6 @@
 			<fileset refid="nucleus.common.jars"/>
 			<fileset refid="nucleus.shared.jars"/>
 			<fileset refid="nucleus.client.jars"/>
-			<fileset refid="nucleus.xerlin.dep.jars"/>
 			<patternset>
 				<!-- TODO: META-INF/** also excludes META-INF/services which contains
 				     the service provider declarations. Is this behavior correct? -->
@@ -746,21 +737,6 @@
 				<include name="jawin.dll"/>
 			</fileset>
 		</jar>
-
-		<!-- create folder structure for war -->
-		<mkdir dir="${nucleus.build.deploy.dir}/plugins/dtd"/>
-		<copy overwrite="true" todir="${nucleus.build.deploy.dir}/plugins">
-			<fileset dir="${nucleus.conf.dir}/xerlin/plugins">
-				<include name="plugin.xml"/>
-			</fileset>
-		</copy>
-		<copy overwrite="true" todir="${nucleus.build.deploy.dir}/plugins/dtd">
-			<fileset dir="${nucleus.conf.dir}">
-				<include name="layoutml.dtd"/>
-			</fileset>
-		</copy>
-		<delete file="${nucleus.build.deploy.dir}/plugins/layoutml-plugin.jar" verbose="true"/>
-		<jar jarfile="${nucleus.build.deploy.dir}/plugins/layoutml-plugin.jar" basedir="${nucleus.build.deploy.dir}/plugins/"/>
 	</target>
 
 	<target name="dist.webstart" depends="dist, war.webstart" description="copy files to distribution directory containing webstart configuration.">
@@ -933,7 +909,7 @@
 		
 		<jar jarfile="${nucleus.dist.dir}/installer/data/nuclos-client-all.jar">
 			<fileset dir="${nucleus.build.deploy.dir}/nuclos-webstart.war/app/"
-				includes="novabit-common.jar,nuclos-client.jar,nuclos-libs.jar,nuclos-native.jar,nuclos-xerlin.jar,nuclos-config.jar"/>
+				includes="novabit-common.jar,nuclos-client.jar,nuclos-libs.jar,nuclos-native.jar,nuclos-config.jar"/>
 			<fileset dir="${nucleus.conf.dir}/installer/client/"
 				includes="log4j.xml"/>
 		</jar>
