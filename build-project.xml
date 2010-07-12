@@ -62,7 +62,6 @@
 
 	<path id="project.client.path">
 		<pathelement location="${project.build.classes.dir}"/>
-		<pathelement location="${project.build.deploy.dir}/${app.name}-xerlin.jar"/>
 		<path refid="nucleus.client.path"/>
 		<path refid="project.base.client.path"/>
 	</path>
@@ -124,12 +123,7 @@
 		</javac>
 	</target>
 
-	<target name="compile.client" depends="compile.server, patch.xerlin.jar, compile.client.nodepend"/>
-
-	<target name="patch.xerlin.jar"
-					description="Renames the xerlin.jar file to a project specific name.">
-		<copy file="${nucleus.build.deploy.dir}/nuclos-xerlin.jar" tofile="${project.build.deploy.dir}/${app.name}-xerlin.jar"/>
-	</target>
+	<target name="compile.client" depends="compile.server, compile.client.nodepend"/>
 
 	<target name="compile.client.nodepend">
 		<mkdir dir="${project.build.classes.dir}"/>
@@ -475,7 +469,7 @@
 		<mkdir dir="${project.dist.dir}/client/lib"/>
 		<copy todir="${project.dist.dir}/client/lib">
 			<fileset dir="${nucleus.build.deploy.dir}" includes="*.jar"
-				excludes="nuclos-server.jar, novabit-jboss.jar, nuclos-xerlin.jar"/>
+				excludes="nuclos-server.jar, novabit-jboss.jar"/>
 			<fileset dir="${project.build.deploy.dir}" includes="*.jar" excludes="${app.name}-server.jar, novabit-jboss.jar"/>
 		</copy>
 
@@ -561,7 +555,6 @@
 			</fileset>
 			<fileset dir="${project.build.deploy.dir}">
 				<include name="${app.name}-client.jar"/>
-				<include name="${app.name}-xerlin.jar"/>
 			</fileset>
 			<fileset dir="${project.conf.dir}">
 				<include name="log4j.xml"/>
@@ -600,7 +593,6 @@
 				<include name="nuclos-client.jar"/>
 				<include name="${app.name}-client.jar"/>
 				<include name="novabit-common.jar"/>
-				<include name="${app.name}-xerlin.jar"/>
 				<include name="${app.name}-config.jar"/>
 				<include name="nuclos-libs.jar"/>
 				<include name="nuclos-native.jar"/>

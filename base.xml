@@ -1,6 +1,6 @@
 <project name="Base Nucleus" basedir=".">
 
-	<property name="base.home.dir" value="../nucleus"/>
+	<property name="base.home.dir" value="../nuclos"/>
 
 	<property file="../build.properties"/>
 
@@ -18,8 +18,11 @@
 
 	<!-- Configuration used on JBoss to run your server. There must be a directory with the same name under "${jboss.home}/server": -->
 	<property name="jboss.server.name" value="nuclos"/>
-	<property name="jboss.server.dir" value="${jboss.home}/server/${jboss.server.name}"/>
-	<property name="jboss.default.lib.dir" value="${jboss.home}/server/default/lib"/> 
+	<!-- 
+		property name="jboss.server.dir" value="../jboss_server"/
+		now in build.properties!
+	-->
+	<property name="jboss.default.lib.dir" value="${jboss.home}/server/default/lib"/>
 
 	<property name="java.src.version" value="1.6"/>
 
@@ -57,8 +60,6 @@
 	<fileset id="nucleus.server.redist.jars" dir="${nucleus.lib.dir}/server" includes="quartz-all-1.6.4.jar"/>
 	<fileset id="nucleus.shared.jars" dir="${nucleus.lib.dir}/shared" includes="*.jar"/>
 	<fileset id="jnlp-servlet.jar" dir="${nucleus.lib.dir}/jnlp-servlet" includes="jnlp-servlet-1.6.jar"/>
-	<property name="nucleus.xerlin.jar" value="${nucleus.lib.dir}/xerlin/xerlin-1.3-patched.jar"/>
-	<fileset id="nucleus.xerlin.dep.jars" dir="${nucleus.lib.dir}/xerlin" includes="deps/*.jar"/>
 
 	<!-- Bibliotheken aus <JBOSS_HOME>/client, die vom Server und vom Client benutzt werden -->
 	<path id="nucleus.common.jboss.client.path">
@@ -99,7 +100,6 @@
 		<fileset refid="nucleus.common.jars"/>
 		<fileset refid="nucleus.shared.jars"/>
 		<fileset refid="nucleus.client.jars"/>
-		<fileset refid="nucleus.xerlin.dep.jars"/>
 
 		<pathelement location="${nucleus.build.classes.dir}"/>
 		<pathelement location="${common.build.deploy.dir}/novabit-common.jar"/>
@@ -110,7 +110,6 @@
 		<pathelement location="${jboss.client.dir}/jbosssx-client.jar"/>
 		<pathelement location="${jboss.client.dir}/jboss-remoting.jar"/>
 		<pathelement location="${jboss.client.dir}/jboss-serialization.jar"/>
-		<pathelement location="${nucleus.build.deploy.dir}/nuclos-xerlin.jar"/>
 
 		<path refid="nucleus.common.jboss.client.path"/>
 	</path>
