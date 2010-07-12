@@ -506,18 +506,6 @@
 			<fileset dir="${nucleus.build.deploy.dir}" includes="novabit-jboss.jar, nuclos-reportapi.jar"/>
 		</copy>
 
-		<!-- copy reportapi libs: -->
-		<mkdir dir="${project.dist.dir}/jasperreports"/>
-		<copy todir="${project.dist.dir}/server/lib">
-			<fileset dir="${nucleus.build.deploy.dir}" includes="nuclos-reportapi.jar"/>
-		</copy>
-
-		<!-- copy db script(s): -->
-		<mkdir dir="${project.dist.dir}/scripts"/>
-		<copy todir="${project.dist.dir}/scripts">
-			<fileset dir="${project.db.dir}" excludes="von_eplus/, utils/"/>
-		</copy>
-
 		<!-- zip sources: -->
 		<zip destfile="${project.dist.dir}/source_${app.name}.zip">
 			<fileset dir="${project.home.dir}" includes="build-project.xml, src/" excludes="CVS, .svn"/>
@@ -551,7 +539,6 @@
 				<include name="novabit-common.jar"/>
 				<include name="nuclos-libs.jar"/>
 				<include name="nuclos-native.jar"/>
-				<include name="plugins/layoutml-plugin.jar"/>
 			</fileset>
 			<fileset dir="${project.build.deploy.dir}">
 				<include name="${app.name}-client.jar"/>
