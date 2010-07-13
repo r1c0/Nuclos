@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/java"/>
-	<classpathentry kind="src" path="local_dev/src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME/server/default/lib/mail.jar"/>
 	<classpathentry exported="true" kind="var" path="JDK_HOME/lib/tools.jar"/>
@@ -49,6 +48,6 @@
 	<classpathentry kind="lib" path="lib/common/json-simple-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/server/postgresql-8.4-701.jdbc4.jar"/>
 	<classpathentry kind="lib" path="lib/client/syntheticaBlackMoon.jar"/>
-	<classpathentry kind="lib" path="lib/common/commons-lang-2.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/common/commons-lang-2.5.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
