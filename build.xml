@@ -895,6 +895,11 @@
 				includes="novabit-jboss.jar,nuclos.ear,nuclos-reportapi.jar"/>
 		</copy>
 		
+		<copy todir="${nucleus.dist.dir}/installer/data" overwrite="true">
+			<fileset dir="${nucleus.lib.dir}/server"
+				includes="postgresql-8.4-701.jdbc4.jar"/>
+		</copy>
+
 		<jar jarfile="${nucleus.dist.dir}/installer/data/nuclos-client-all.jar">
 			<fileset dir="${nucleus.build.deploy.dir}/nuclos-webstart.war/app/"
 				includes="novabit-common.jar,nuclos-client.jar,nuclos-libs.jar,nuclos-native.jar,nuclos-config.jar"/>
