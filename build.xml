@@ -603,7 +603,7 @@
 
 		<!-- zip sources: -->
 		<zip destfile="${nucleus.dist.dir}/source.zip">
-			<fileset dir="${nucleus.home.dir}" includes="build.xml, base.xml, build-common.xml, src/" excludes="CVS, .svn"/>
+			<fileset dir="${nucleus.home.dir}" includes="src/java/**" excludes="CVS, .svn, **/test/**"/>
 		</zip>
 
 		<!-- zip documentation: -->
@@ -871,6 +871,7 @@
 		<jar jarfile="${nucleus.build.dir}/installer/nuclos-installer.jar">
 			<fileset dir="${nucleus.build.classes.dir}" includes="org/nuclos/installer/"/>
 			<fileset dir="${nucleus.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
+			<fileset dir="${nucleus.conf.dir}" file="${nucleus.conf.dir}/nuclos-version.properties"/>
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
                 <attribute name="Main-Class" value="org.nuclos.installer.Main"/>
