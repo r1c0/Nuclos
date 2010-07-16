@@ -610,10 +610,14 @@
 		<mkdir dir="${nucleus.doc.dir}/api"/>
 		<!-- does not exist if javadoc generation is skipped -->
 		<zip destfile="${nucleus.dist.dir}/doc.zip">
-			<zipfileset dir="${nucleus.doc.dir}/Systemdokumentation" includes="*.pdf, index.htm, DB-Schema*/, include/, Licenses/, UML/"
+			<zipfileset dir="${nucleus.doc.dir}/Systemdokumentation" includes="*.pdf, index.htm, DB-Schema*/, include/, UML/"
 							 excludes="DB-Schema.vsd, CSV, *.doc"/>
 			<zipfileset dir="${nucleus.doc.dir}/api" prefix="javadoc"/>
 		</zip>
+
+		<copy todir="${nucleus.dist.dir}">
+			<fileset dir="${nucleus.doc.dir}" includes="license/**"/>
+		</copy>
 	</target>
 
 	<target name="dist.clean" description="remove distribution directory.">

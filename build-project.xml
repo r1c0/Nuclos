@@ -515,7 +515,7 @@
 
 		<!-- zip documentation: -->
 		<zip destfile="${project.dist.dir}/doc_${app.name}.zip">
-			<zipfileset dir="${project.doc.dir}/Systemdokumentation" includes="*.pdf, index.htm, DB-Schema*/, include/, Licenses/, UML/"
+			<zipfileset dir="${project.doc.dir}/Systemdokumentation" includes="*.pdf, index.htm, DB-Schema*/, include/, UML/"
 							 excludes="DB-Schema.vsd, CSV, *.doc"/>
 			<zipfileset dir="${project.doc.dir}/api" prefix="javadoc"/>
 		</zip>
