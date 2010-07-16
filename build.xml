@@ -109,6 +109,7 @@
 							 org/nuclos/common/querybuilder/querybuildermodel.dtd,
 							 org/nuclos/client/common/prefs/preferences.dtd"/>
 			<fileset dir="${nucleus.src.java.dir}" includes="org/nuclos/client/layout/wysiwyg/**/*"/>
+			<fileset dir="${nucleus.src.java.dir}" includes="org/nuclos/client/lookandfeel/preferences/*"/>
 		</copy>
 
 		<copy todir="${nucleus.build.classes.dir}/org/nuclos/client">
