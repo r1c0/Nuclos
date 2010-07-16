@@ -614,10 +614,6 @@
 							 excludes="DB-Schema.vsd, CSV, *.doc"/>
 			<zipfileset dir="${nucleus.doc.dir}/api" prefix="javadoc"/>
 		</zip>
-
-		<copy todir="${nucleus.dist.dir}">
-			<fileset dir="${nucleus.doc.dir}" includes="license/**"/>
-		</copy>
 	</target>
 
 	<target name="dist.clean" description="remove distribution directory.">
@@ -911,6 +907,10 @@
 			<fileset dir="${nucleus.conf.dir}/installer/client/"
 				includes="log4j.xml"/>
 		</jar>
+
+		<copy todir="${nucleus.dist.dir}/installer">
+			<fileset dir="${nucleus.doc.dir}" includes="license/**"/>
+		</copy>
 
 		<copy file="${nucleus.conf.dir}/novabit/nuclos-template.xml"
 			todir="${nucleus.dist.dir}/installer"/>
