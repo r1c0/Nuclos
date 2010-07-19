@@ -908,7 +908,7 @@
 		</copy>
 
 		<copy file="${nucleus.conf.dir}/novabit/nuclos-template.xml"
-			todir="${nucleus.dist.dir}/installer"/>
+			tofile="${nucleus.dist.dir}/installer/nuclos.xml"/>
 	</target>
 
 </project>
