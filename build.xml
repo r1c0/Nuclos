@@ -1,4 +1,4 @@
-<project name="Nucleus" default="main" basedir=".">
+<project name="Nuclos" default="main" basedir=".">
 
 	<!-- Nucleus root directory (should always be the directory where this build.xml resides): -->
 	<property name="nucleus.home.dir" value="."/>
