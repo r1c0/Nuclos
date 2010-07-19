@@ -907,6 +907,10 @@
 			<fileset dir="${nucleus.doc.dir}" includes="license/**"/>
 		</copy>
 
+		<copy todir="${nucleus.dist.dir}/installer">
+			<fileset dir="${nucleus.doc.dir}/installation" includes="*.pdf"/>
+		</copy>
+
 		<copy file="${nucleus.conf.dir}/novabit/nuclos-template.xml"
 			tofile="${nucleus.dist.dir}/installer/nuclos.xml"/>
 	</target>
