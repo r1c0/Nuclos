@@ -432,7 +432,7 @@
 
 	<target name="javadoc" description="Builds the javadoc." unless="skip.javadoc">
 		<copy todir="${nucleus.doc.dir}/api">
-			<fileset dir="${common.src.dir}/org/nuclos/common2/ui/images" includes="novabit-150x45.gif"/>
+			<fileset dir="${common.src.dir}/org/nuclos/client/ui/images" includes="novabit-150x45.gif"/>
 		</copy>
 		<javadoc destdir="${nucleus.doc.dir}/api" source="${java.src.version}" maxmemory="128m" access="protected" splitindex="true"
 						 version="true" author="true" use="true" windowtitle="Nucleus API Documentation">

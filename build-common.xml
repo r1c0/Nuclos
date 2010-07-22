@@ -72,7 +72,7 @@
 		<mkdir dir="${build.classes.dir}"/>
 
 		<copy todir="${build.classes.dir}">
-			<fileset dir="${src.dir}" includes="org/nuclos/common2/layoutml/layoutml.dtd, org/nuclos/common2/ui/images/"/>
+			<fileset dir="${src.dir}" includes="org/nuclos/common2/layoutml/layoutml.dtd, org/nuclos/client/ui/images/"/>
 		</copy>
 
 		<javac destdir="${build.classes.dir}" encoding="8859_1" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
