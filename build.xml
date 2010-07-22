@@ -9,6 +9,8 @@
 
 	<property name="projectbuild" value="false"/>
 
+    <property file="${nucleus.conf.dir}/nuclos-version.properties" prefix="version-props"/>	
+
 	<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpath="${nucleus.lib.dir}/meta/xmltask.jar"/>
 
 	<path id="nucleus.client.run.path">
@@ -603,7 +605,7 @@
 		</copy>
 
 		<!-- zip sources: -->
-		<zip destfile="${nucleus.dist.dir}/source.zip">
+		<zip destfile="${nucleus.dist.dir}/nuclos-src-${version-props.nuclos.version.number}.zip">
 			<zipfileset dir="${nucleus.home.dir}/src/java" prefix="src/java" excludes="CVS, .svn, **/test/**, org/nuclos/tools/**"/>
 		</zip>
 
@@ -913,6 +915,10 @@
 
 		<copy file="${nucleus.conf.dir}/novabit/nuclos-template.xml"
 			tofile="${nucleus.dist.dir}/installer/nuclos.xml"/>
+
+		<zip destfile="${nucleus.dist.dir}/nuclos-${version-props.nuclos.version.number}.zip">
+			<zipfileset dir="${nucleus.dist.dir}/installer"/>
+		</zip>
 	</target>
 
 </project>
