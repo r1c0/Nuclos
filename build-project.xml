@@ -511,7 +511,9 @@
 			<fileset dir="${project.home.dir}" includes="build-project.xml, src/" excludes="CVS, .svn"/>
 		</zip>
 
-		<copy file="${nucleus.dist.dir}/source.zip" tofile="${project.dist.dir}/source_nucleus.zip"/>
+		<copy todir="${project.dist.dir}">
+			<fileset dir="${nucleus.dist.dir}/" includesfile="nuclos-src-*.zip"/>
+		</copy>
 
 		<!-- zip documentation: -->
 		<zip destfile="${project.dist.dir}/doc_${app.name}.zip">
