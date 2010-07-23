@@ -48,5 +48,8 @@
 	<classpathentry kind="lib" path="lib/server/postgresql-8.4-701.jdbc4.jar"/>
 	<classpathentry kind="lib" path="lib/client/syntheticaBlackMoon.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/common/commons-lang-2.5.jar"/>
+	<classpathentry kind="lib" path="lib/server/axis2-codegen-1.5.1.jar"/>
+	<classpathentry kind="lib" path="lib/server/axis2-kernel-1.5.1.jar"/>
+	<classpathentry kind="lib" path="lib/server/axis2-transport-http-1.5.1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
