@@ -118,7 +118,8 @@
 			<fileset dir="${src.nucleus.client.dir}"
 							 includes="**/images/,
 							 **/layoutml/*.layoutml,
-							 help/releasenotes/releasenotes.html"/>
+							 help/releasenotes/releasenotes.html,
+							 help/about/about.html"/>
 		</copy>
 
 		<copy todir="${nucleus.build.classes.dir}/org/nuclos/client/gef">
