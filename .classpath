@@ -51,5 +51,6 @@
 	<classpathentry kind="lib" path="lib/server/axis2-codegen-1.5.1.jar"/>
 	<classpathentry kind="lib" path="lib/server/axis2-kernel-1.5.1.jar"/>
 	<classpathentry kind="lib" path="lib/server/axis2-transport-http-1.5.1.jar"/>
+	<classpathentry kind="lib" path="lib/server/jconn3.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
