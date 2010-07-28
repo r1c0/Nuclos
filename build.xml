@@ -536,7 +536,7 @@
 			<!--<sysproperty key="cactus.servletRedirectorName" value="ServletRedirectorSecure"/>-->
 			<formatter type="plain" usefile="false"/>
 			<test name="org.nuclos.server.ruleengine.test.rules.RuleInterfaceTest"/>
-			<!--<test name="org.nuclos.common2.collect.collectable.test.CollectableFieldFormatTest"/>-->
+			<!--<test name="org.nuclos.common.collect.collectable.test.CollectableFieldFormatTest"/>-->
 			<!--test name="org.nuclos.server.genericobject.searchcondition.test.SearchExpressionUnparserTest"/>-->
 			<!--<test name="org.nuclos.server.genericobject.searchcondition.test.DummyTest"/>-->
 		</junit>
