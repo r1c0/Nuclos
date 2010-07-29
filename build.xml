@@ -11,8 +11,6 @@
 
     <property file="${nucleus.conf.dir}/nuclos-version.properties" prefix="version-props"/>	
 
-	<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpath="${nucleus.lib.dir}/meta/xmltask.jar"/>
-
 	<path id="nucleus.client.run.path">
 		<!-- include nucleus.conf.dir in classpath so the ClassLoader finds nuclos-client.properties: -->
 		<pathelement location="${nucleus.conf.dir}"/>
