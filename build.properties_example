@@ -10,6 +10,3 @@ codegenerator.source=D:/xfer/nucleus/codegenerator
 
 # URL für die Verwendung von WebStart
 webstart.url=localhost:8080
-
-# uncomment this for configuring JBoss for MSSQL (target: 'install.jboss.files')
-# dbtype=mssql

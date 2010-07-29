@@ -258,30 +258,6 @@
 	</target>
 
 	<target name="deploy.to.server" description="copys the build result to server deploy directory">
-		<!--
-		    Diese Version duerfte mit der Einfuehrung von 'install.jboss.files' obsolet sein.
-
-		<!- - deploy: - ->
-		<copy todir="${jboss.server.dir}/deploy">
-			<fileset dir="${nucleus.build.deploy.dir}" includes="nuclos.ear"/>
-			<fileset dir="${nucleus.conf.dir}/jboss/deploy" includes="jms/nuclos-destinations-service.xml"/>
-			<fileset dir="${nucleus.conf.dir}/jboss/deploy" includes="deploy.last/quartz-service.xml"/>
-		</copy>
-		<switch value="${deploy.jboss.server.nucleus.service}">
-		  <case value="true">
-			<copy todir="${jboss.server.dir}/deploy">
-				<fileset dir="${nucleus.conf.dir}/jboss/deploy" includes="deploy.last/nuclos-service.xml"/>
-			</copy>
-		  </case>
-		  <default/>
-		</switch>
-
-		<!- - quartz-service.xml must be renewed, otherwise it won't be redeployed on hot deployment: - ->
-		<touch>
-			<fileset dir="${jboss.server.dir}/deploy/deploy.last"/>
-		</touch>
-		-->
-
 		<copy file="${nucleus.build.deploy.dir}/nuclos-reportapi.jar"
 			todir="${jboss.server.dir}/lib"
 			overwrite="true"/>
@@ -301,7 +277,6 @@
 		<if><equals arg1="${deploy.jboss.server.nucleus.service}" arg2="true"/>
 			<then><touch file="deploy.last/nuclos-service.xml"/></then>
 		</if>
-
 	</target>
 
 	<!-- Target to start the JBoss server: -->
@@ -754,104 +729,6 @@
 	    		<param name="C"  value="DE"/>
 	  		</dname>
 		</genkey>
-	</target>
-
-	<target name="install.jboss.files"
-		depends="init.common"
-		description="copy libraries and configuration files to the JBoss directories and fill in values from 'jboss_config.filter'.">
-
-		<if><and><not><available file="${jboss.server.dir}"/></not>
-			    <available file="${jboss.home}/server/default"/>
-			</and>
-			<then>
-				<echo message="Copying ${jboss.home}/server/default to ${jboss.server.dir}"/>
-				<copy todir="${jboss.server.dir}">
-					<fileset dir="${jboss.home}/server/default"/>
-				</copy>
-				<mkdir dir="${jboss.server.dir}/codegenerator"/>
-				<mkdir dir="${jboss.server.dir}/documents"/>
-				<mkdir dir="${jboss.server.dir}/expimp"/>
-				<mkdir dir="${jboss.server.dir}/reports"/>
-				<mkdir dir="${jboss.server.dir}/resource"/>
-				<mkdir dir="${jboss.server.dir}/compiled-reports"/>
-			</then>
-		</if>
-		<if><not><available file="${jboss.server.dir}"/></not>
-			<then>
-				<fail>No target directory in ${jboss.home}/server/</fail>
-			</then>
-		</if>
-
-		<!-- config files -->
-		<copy overwrite="true" todir="${jboss.server.dir}" verbose="true">
-			<fileset dir="${nucleus.conf.dir}/jboss/install/" excludes="**/install-readme.txt"/>
-		</copy>
-
-		<copy overwrite="false" file="./conf/jboss/jboss_config.filter.default" tofile="./jboss_config.filter"/>
-
-		<xmltask todir="${jboss.server.dir}/conf/xmdesc"
-			    public="-//JBoss//DTD JBOSS XMBEAN 1.1//EN"
-		        system="http://www.jboss.org/j2ee/dtd/jboss_xmbean_1_1.dtd">
-            <fileset dir="${jboss.server.dir}/conf/xmdesc">
-               <include name="org.jboss.deployment.MainDeployer-xmbean.xml"/>
-            </fileset>
-            <replace path="/mbean/attribute[@getMethod='getEnhancedSuffixOrder']/descriptors/value/@value"
-            	     withText="250:.rar,300:-ds.xml,400:.jar,500:.war,550:.jse,640:nuclos.ear,650:.ear,800:.bsh"/>
-			<remove path="//*/@xml:base"/>
-        </xmltask>
-
-		<!-- replace tokens with values from 'jboss_config.filter' -->
-		<if><not><equals arg1="${projectbuild}" arg2="true"/></not>
-			<then>
-				<replace dir="${jboss.server.dir}/"
-					includes="conf/jboss-service.xml,conf/*-server.properties,deploy/*-ds.xml"
-					replacefilterfile="./jboss_config.filter"/>
-			</then>
-		</if>
-
-		<!-- obsolete libraries -->
-		<delete verbose="true">
-			<fileset dir="${jboss.server.dir}/lib/">
-				<include name="dom4j.jar"/>
-				<include name="commons-collections.jar"/>
-				<include name="quartz.jar"/>
-			</fileset>
-		</delete>
-
-		<!-- newer and additional libraries -->
-		<copy overwrite="true" todir="${jboss.server.dir}/lib/" verbose="true">
-			<fileset refid="nucleus.common.jars"/>
-			<fileset refid="nucleus.shared.jars"/>
-			<fileset refid="nucleus.server.jars"/>
-		</copy>
-
-		<!-- DB-Type configuration -->
-		<if><equals arg1="${dbtype}" arg2="mssql"/>
-			<then><!-- MSSQL -->
-				<move verbose="true"
-					file="${jboss.server.dir}/conf/standardjbosscmp-jdbc.xml_mssql2005"
-					tofile="${jboss.server.dir}/conf/standardjbosscmp-jdbc.xml"/>
-				<move verbose="true"
-					file="${jboss.server.dir}/deploy/deploy.last/quartz-service.xml_mssql2005"
-					tofile="${jboss.server.dir}/deploy/deploy.last/quartz-service.xml"/>
-				<delete file="${jboss.server.dir}/conf/standardjbosscmp-jdbc.xml_oracle9i" verbose="true"/>
-				<delete file="${jboss.server.dir}/deploy/oracle-ds.xml" verbose="true"/>
-				<delete file="${jboss.server.dir}/deploy/deploy.last/quartz-service.xml_oracle9i" verbose="true"/>
-				<delete file="${jboss.server.dir}/lib/ojdbc14.jar" verbose="true"/>
-			</then>
-			<else><!-- DEFAULT: Oracle -->
-				<move verbose="true"
-					file="${jboss.server.dir}/conf/standardjbosscmp-jdbc.xml_oracle9i"
-					tofile="${jboss.server.dir}/conf/standardjbosscmp-jdbc.xml"/>
-				<move verbose="true"
-					file="${jboss.server.dir}/deploy/deploy.last/quartz-service.xml_oracle9i"
-					tofile="${jboss.server.dir}/deploy/deploy.last/quartz-service.xml"/>
-				<delete file="${jboss.server.dir}/conf/standardjbosscmp-jdbc.xml_mssql2005" verbose="true"/>
-				<delete file="${jboss.server.dir}/deploy/mssql-ds.xml" verbose="true"/>
-				<delete file="${jboss.server.dir}/deploy/deploy.last/quartz-service.xml_mssql2005" verbose="true"/>
-				<delete file="${jboss.server.dir}/lib/sqljdbc.jar" verbose="true"/>
-			</else>
-		</if>
 	</target>
 	
 	<!-- == Installer == -->

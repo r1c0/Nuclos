@@ -203,29 +203,6 @@
 	</target>
 
 	<target name="deploy.to.server" description="copys the build result to server deploy directory">
-		<!--
-		    Diese Version duerfte mit der Einfuehrung von 'install.jboss.files' obsolet sein.
-
-		<!- - deploy: - ->
-		<copy todir="${jboss.server.dir}/deploy">
-			<fileset dir="${project.build.deploy.dir}" includes="${app.name}.ear"/>
-			<fileset dir="${project.conf.dir}/jboss/deploy" includes="deploy.last/quartz-service.xml"/>
-		</copy>
-		<switch value="${deploy.jboss.server.nucleus.service}">
-		  <case value="true">
-			<copy todir="${jboss.server.dir}/deploy">
-				<fileset dir="${nucleus.conf.dir}/jboss/deploy" includes="deploy.last/nuclos-service.xml"/>
-			</copy>
-		  </case>
-		  <default/>
-		</switch>
-
-		<!- - quartz-service.xml must be renewed, otherwise it won't be redeployed on hot deployment: - ->
-		<touch>
-			<fileset dir="${jboss.server.dir}/deploy/deploy.last"/>
-		</touch>
-		-->
-
 		<copy overwrite="true"
 			file="${project.build.deploy.dir}/${app.name}.ear"
 			tofile="${jboss.server.dir}/deploy/${app.name}.ear"/>
@@ -239,7 +216,6 @@
 		<if><equals arg1="${deploy.jboss.server.nucleus.service}" arg2="true"/>
 			<then><touch file="deploy.last/nuclos-service.xml"/></then>
 		</if>
-
 	</target>
 
 	<!-- Target to run client -->
@@ -682,21 +658,5 @@
 
 		<loadfile property="message" srcFile="${nucleus.doc.dir}/SETUP_PROJECT.txt"/>
 		<echo>${message}</echo>
-	</target>
-
-	<target name="install.jboss.files"
-		description="copy default configuration files and libraries to the JBoss 'server' directory. Handle with care!">
-
-		<ant antfile="${nucleus.dir}/build.xml" dir="${nucleus.dir}" target="install.jboss.files" inheritall="false">
-			<property name="jboss.server.name" value="${jboss.server.name}"/>
-			<property name="projectbuild" value="true"/>
-		</ant>
-
-		<!-- Das wird beim 'projectbuild' nicht ausgefuehrt! -->
-		<copy overwrite="false" file="${nucleus.dir}/conf/jboss/jboss_config.filter.default" tofile="./jboss_config.filter"/>
-		<replace dir="${jboss.server.dir}/"
-			includes="conf/jboss-service.xml,conf/*-server.properties,deploy/*-ds.xml"
-			replacefilterfile="./jboss_config.filter"/>
-
 	</target>
 </project>
