@@ -20,10 +20,9 @@
 	<pathconvert property="jar.server.manifest.classpath" pathsep=" ">
 		<fileset refid="nucleus.common.jars"/>
 		<fileset refid="nucleus.shared.jars"/>
-		<!-- Do not include the whole nucleus.server.jars because these are 
-			 mainly database drivers which shouldn't be included in the EAR file 
-			 (due to license issues) -->
-		<fileset refid="nucleus.server.redist.jars"/>
+		<fileset refid="nucleus.server.jars"/>
+		<!-- Do _not_ include the database drivers here because we are
+		     not allowed to redistribute them (due to license issues) -->
 		<flattenmapper />
 	</pathconvert>
 
@@ -251,7 +250,7 @@
 			<fileset dir="${common.build.deploy.dir}" includes="novabit-common.jar, novabit-common-ejb.jar"/>
 			<fileset refid="nucleus.common.jars"/>
 			<fileset refid="nucleus.shared.jars"/>
-			<fileset refid="nucleus.server.redist.jars"/>
+			<fileset refid="nucleus.server.jars"/>
 		</ear>
 	</target>
 
@@ -769,8 +768,9 @@
 				includes="novabit-jboss.jar,nuclos.ear,nuclos-reportapi.jar"/>
 		</copy>
 		
+		<!-- PostgreSQL driver jar is redistributed (as complete jar), that's ok --> 
 		<copy todir="${nucleus.dist.dir}/installer/data" overwrite="true">
-			<fileset dir="${nucleus.lib.dir}/server"
+			<fileset dir="${nucleus.lib.dir}/db-noredist"
 				includes="postgresql-8.4-701.jdbc4.jar"/>
 		</copy>
 

@@ -37,6 +37,7 @@
 		<fileset dir="${lib.dir}/client" includes="*.jar"/>
 		<fileset dir="${lib.dir}/shared" includes="*.jar"/>
 		<fileset dir="${lib.dir}/server" includes="*.jar"/>
+		<fileset dir="${lib.dir}/db-noredist" includes="*.jar"/>
 		<!--
 		<pathelement location="${lib.dir}/client/jlfgr-1_0.jar"/>
 		<pathelement location="${lib.dir}/client/layer.jar"/>

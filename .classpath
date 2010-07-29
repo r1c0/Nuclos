@@ -23,8 +23,6 @@
 	<classpathentry kind="lib" path="lib/test/cactus-1.7.1.jar"/>
 	<classpathentry kind="lib" path="lib/test/jfcunit-2.08.jar"/>
 	<classpathentry kind="lib" path="lib/test/junit-3.8.1.jar"/>
-	<classpathentry kind="lib" path="lib/server/ojdbc6.jar"/>
-	<classpathentry kind="lib" path="lib/server/sqljdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/jawin.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/common/dom4j-1.4-full.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/commons-logging-1.1.jar"/>
@@ -44,13 +42,15 @@
 	<classpathentry kind="lib" path="lib/common/commons-digester-1.7.jar"/>
 	<classpathentry kind="lib" path="lib/client/jdom.jar"/>
 	<classpathentry kind="lib" path="lib/common/json-simple-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/server/postgresql-8.4-701.jdbc4.jar"/>
 	<classpathentry kind="lib" path="lib/client/syntheticaBlackMoon.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/common/commons-lang-2.5.jar"/>
 	<classpathentry kind="lib" path="lib/server/axis2-codegen-1.5.1.jar"/>
 	<classpathentry kind="lib" path="lib/server/axis2-kernel-1.5.1.jar"/>
 	<classpathentry kind="lib" path="lib/server/axis2-transport-http-1.5.1.jar"/>
-	<classpathentry kind="lib" path="lib/server/jconn3.jar"/>
 	<classpathentry kind="lib" path="lib/shared/poi-3.6-20091214.jar" sourcepath="C:/jtools/poi-3.6/src/java"/>
+	<classpathentry exported="true" kind="lib" path="lib/db-noredist/jconn3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/db-noredist/ojdbc6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/db-noredist/postgresql-8.4-701.jdbc4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/db-noredist/sqljdbc.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
