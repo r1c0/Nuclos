@@ -189,6 +189,9 @@
 			<fileset dir="${nucleus.conf.dir}/webstart/app/" includes="*.jnlp"/>
 		</copy>
 		-->
+		<jar jarfile="${nucleus.build.deploy.dir}/nuclos-synthetica.jar">
+			<fileset dir="${nucleus.build.classes.dir}" includes="org/nuclos/tools/synthetica/"/>
+		</jar>
 		<jar jarfile="${nucleus.build.deploy.dir}/nuclos-client.jar">
 			<fileset dir="${nucleus.build.classes.dir}"
 				includes=	"org/nuclos/client/,
@@ -219,7 +222,7 @@
 			-->
 			<manifest>
 				<attribute name="Main-Class" value="org.nuclos.client.main.Main"/>
-				<attribute name="Class-Path" value="novabit-common.jar nuclos-config.jar nuclos-libs.jar"/>
+				<attribute name="Class-Path" value="novabit-common.jar nuclos-config.jar nuclos-libs.jar nuclos-synthetica.jar"/>
 			</manifest>
 		</jar>
 	</target>
@@ -610,6 +613,7 @@
 		<copy overwrite="true" todir="${nucleus.build.deploy.dir}/nuclos-webstart.war/app">
 			<fileset dir="${nucleus.build.deploy.dir}">
 				<include name="nuclos-client.jar"/>
+				<include name="nuclos-synthetica.jar"/>
 				<include name="novabit-common.jar"/>
 				<include name="nuclos-libs.jar"/>
 				<include name="nuclos-native.jar"/>
@@ -651,6 +655,7 @@
 		<signjar verbose="false" alias="nucleus" storepass="suelcun" keystore="./.keystore">
 			<fileset dir="${nucleus.build.deploy.dir}/nuclos-webstart.war/app">
 				<include name="nuclos-client.jar"/>
+				<include name="nuclos-synthetica.jar"/>
 				<include name="novabit-common.jar"/>
 				<include name="nuclos-config.jar"/>
 				<include name="nuclos-libs.jar"/>
@@ -776,7 +781,7 @@
 
 		<jar jarfile="${nucleus.dist.dir}/installer/data/nuclos-client-all.jar">
 			<fileset dir="${nucleus.build.deploy.dir}/nuclos-webstart.war/app/"
-				includes="novabit-common.jar,nuclos-client.jar,nuclos-libs.jar,nuclos-native.jar,nuclos-config.jar"/>
+				includes="novabit-common.jar,nuclos-client.jar,nuclos-libs.jar,nuclos-native.jar,nuclos-config.jar,nuclos-synthetica.jar"/>
 			<fileset dir="${nucleus.conf.dir}/installer/client/"
 				includes="log4j.xml"/>
 		</jar>
