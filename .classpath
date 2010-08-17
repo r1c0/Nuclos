@@ -20,6 +20,7 @@
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME/server/default/lib/log4j.jar"/>
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jboss-ejb3-client.jar"/>
 	<classpathentry exported="true" kind="var" path="JBOSS_HOME/client/jboss-annotations-ejb3.jar"/>
+	<classpathentry exported="true" kind="var" path="JBOSS_HOME/server/default/deploy/jbossws.sar/jbossws-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/test/cactus-1.7.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/test/jfcunit-2.08.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/test/junit-3.8.1.jar"/>

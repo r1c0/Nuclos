@@ -94,7 +94,7 @@
 		<pathelement location="${jboss.default.lib.dir}/jboss-common-jdbc-wrapper.jar"/>
 		<pathelement location="${jboss.default.lib.dir}/jboss.jar"/>
 		<pathelement location="${jboss.default.lib.dir}/mail.jar"/>
-
+		<pathelement location="${jboss.default.lib.dir}/../deploy/jbossws.sar/jbossws-core.jar"/>
 		<path refid="nucleus.common.jboss.client.path"/>
 	</path>
 
