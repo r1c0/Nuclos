@@ -56,5 +56,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/server/poi-ooxml-3.6-20091214.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/server/poi-ooxml-schemas-3.6-20091214.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/server/xmlbeans-2.3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/client/jsyntaxpane-0.9.5-b29.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/common/asm-3.3.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
