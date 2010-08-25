@@ -693,12 +693,16 @@
 		<unjar overwrite="false" src="${jboss.client.dir}/jboss-aspect-jdk50-client.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/concurrent.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/jnp-client.jar" dest="${nucleus.build.classes.dir}"/>
-
-		<!-- jar nucleus libs -->
 		<delete dir="${nucleus.build.classes.dir}/META-INF"/>
+
+		<!-- unjar jsyntaxpane.jar again to ensure the existance of META-INF -->
+		<unjar overwrite="false" src="${nucleus.lib.dir}/client/jsyntaxpane-0.9.5-b29.jar" dest="${nucleus.build.classes.dir}"/>
+		
+		<!-- jar nucleus libs -->
 		<jar jarfile="${nucleus.build.deploy.dir}/nuclos-libs.jar">
 			<fileset dir="${nucleus.build.classes.dir}" excludes="org/nuclos/**"/>
 		</jar>
+		<delete dir="${nucleus.build.classes.dir}/META-INF"/>
 
 		<!-- jar native libs -->
 		<jar destfile="${nucleus.build.deploy.dir}/nuclos-native.jar">
