@@ -432,7 +432,6 @@
 			<fileset dir="${project.conf.dir}" includes="jndi.properties, layoutml.dtd, nuclos-version.properties, nuclos-app.properties"/>
 		</copy>
 		<mkdir dir="${project.dist.dir}/client/conf/doc"/>
-		<copy file="${nucleus.build.classes.dir}/org/nuclos/client/help/releasenotes/releasenotes.html" tofile="${project.dist.dir}/client/conf/doc/nucleus-releasenotes.html"/>
 		<copy file="${project.build.classes.dir}/org/nuclos/${app.name}/client/help/releasenotes/releasenotes.html" tofile="${project.dist.dir}/client/conf/doc/releasenotes.html"/>
 
 		<mkdir dir="${project.dist.dir}/client/conf/icons"/>

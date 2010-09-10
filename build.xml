@@ -115,7 +115,6 @@
 			<fileset dir="${src.nucleus.client.dir}"
 							 includes="**/images/,
 							 **/layoutml/*.layoutml,
-							 help/releasenotes/releasenotes.html,
 							 help/about/about.html"/>
 		</copy>
 
@@ -131,11 +130,6 @@
 					overwrite="true"/>
 		
 		
-		<!--
-		<copy todir="${project.conf.dir}/doc">
-			<fileset dir="${src.nucleus.client.dir}/help/releasenotes" includes="releasenotes.html"/>
-		</copy>
-		-->
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
 					 source="${java.src.version}" srcdir="${nucleus.src.java.dir}"
@@ -541,8 +535,6 @@
 		<copy todir="${nucleus.dist.dir}/client/conf">
 		<fileset dir="${nucleus.conf.dir}" includes="jndi.properties, layoutml.dtd, nuclos-version.properties, icons.properties, menuConfig.xml"/>
 		</copy>
-		<mkdir dir="${nucleus.dist.dir}/client/conf/doc"/>
-		<copy file="${nucleus.build.classes.dir}/org/nuclos/client/help/releasenotes/releasenotes.html" tofile="${nucleus.dist.dir}/client/conf/doc/nucleus-releasenotes.html"/>
 
 		<mkdir dir="${nucleus.dist.dir}/client/conf/icons"/>
 		<copy todir="${nucleus.dist.dir}/client/conf/icons">
