@@ -59,6 +59,7 @@
 		<copy todir="${nucleus.build.classes.dir}">
 			<fileset dir="${nucleus.src.java.dir}" includes="org/nuclos/common/security/auth.conf"/>
 			<fileset dir="${nucleus.src.java.dir}" includes="org/nuclos/common/querybuilder/querybuildermodel.dtd"/>
+			<fileset dir="${nucleus.src.java.dir}" includes="org/nuclos/common/preferences/preferences.dtd"/>
 		</copy>
 		<copy todir="${nucleus.build.classes.dir}/resources">
 			<fileset dir="${nucleus.conf.dir}/resources" excludes="project_*.properties"/>
@@ -106,7 +107,7 @@
 			<fileset dir="${nucleus.src.java.dir}"
 							 includes="org/nuclos/common/security/auth.conf,
 							 org/nuclos/common/querybuilder/querybuildermodel.dtd,
-							 org/nuclos/client/common/prefs/preferences.dtd"/>
+							 org/nuclos/common/preferences/preferences.dtd"/>
 			<fileset dir="${nucleus.src.java.dir}" includes="org/nuclos/client/layout/wysiwyg/**/*"/>
 			<fileset dir="${nucleus.src.java.dir}" includes="org/nuclos/client/lookandfeel/preferences/*"/>
 		</copy>
