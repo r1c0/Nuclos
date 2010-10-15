@@ -9,7 +9,7 @@
 
 	<property name="projectbuild" value="false"/>
 
-    <property file="${nucleus.conf.dir}/nuclos-version.properties" prefix="version-props"/>	
+    <property file="${nucleus.conf.dir}/nuclos-version.properties" prefix="version-props"/>
 
 	<path id="nucleus.client.run.path">
 		<!-- include nucleus.conf.dir in classpath so the ClassLoader finds nuclos-client.properties: -->
@@ -63,12 +63,12 @@
 		</copy>
 		<copy todir="${nucleus.build.classes.dir}/resources">
 			<fileset dir="${nucleus.conf.dir}/resources" excludes="project_*.properties"/>
-			<!-- include system layoutmls and reports, TODO: move them into conf folder --> 
+			<!-- include system layoutmls and reports, TODO: move them into conf folder -->
 			<fileset dir="${nucleus.src.dir}" includes="layoutml/**/*, reports/**/*"/>
 		</copy>
 
 		<copy todir="${nucleus.build.classes.dir}">
-			<fileset dir="${nucleus.conf.dir}" includes="nuclos-version.properties, icons.properties, menuConfig.xml"/>
+			<fileset dir="${nucleus.conf.dir}" includes="nuclos-version.properties, icons.properties, nuclos-menuconfig.xml"/>
 		</copy>
 
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
@@ -129,8 +129,7 @@
 
 		<copy file="${nucleus.src.java.dir}/org/nuclos/common2/layoutml/layoutml.dtd" tofile="${nucleus.conf.dir}/layoutml.dtd"
 					overwrite="true"/>
-		
-		
+
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
 					 source="${java.src.version}" srcdir="${nucleus.src.java.dir}"
@@ -149,7 +148,7 @@
 	<target name="jar.server" depends="compile.server, jar.jboss, jar.reportapi" description="Builds the server.">
 		<mkdir dir="${nucleus.build.deploy.dir}"/>
 
-		<!-- Plain-vanilla Nuclos does not need nuclos-app.properties files --> 
+		<!-- Plain-vanilla Nuclos does not need nuclos-app.properties files -->
 		<jar jarfile="${nucleus.build.deploy.dir}/nuclos-server.jar">
 			<fileset dir="${nucleus.build.classes.dir}"
 				 includes="org/nuclos/common/, org/nuclos/server/, resources/, nuclos-version.properties"
@@ -200,11 +199,11 @@
 							org/nuclos/server/genericobject/searchcondition/Collectable*SearchExpression.class,
 							org/nuclos/server/navigation/treenode/*.class,
 							org/nuclos/server/person/treenode/*.class,
-				            org/nuclos/server/dal/**/*.class,
+							org/nuclos/server/dal/**/*.class,
 							org/nuclos/common/security/auth.conf,
 							resources/*.properties,
 							icons.properties,
-				            menuConfig.xml"
+							nuclos-menuconfig.xml"
 				excludes=	"**/test/,
 							org/nuclos/client/help/javahelp/,
 							org/nuclos/client/main/animatedmenubar/,
@@ -534,7 +533,7 @@
 		</copy>
 		<mkdir dir="${nucleus.dist.dir}/client/conf"/>
 		<copy todir="${nucleus.dist.dir}/client/conf">
-		<fileset dir="${nucleus.conf.dir}" includes="jndi.properties, layoutml.dtd, nuclos-version.properties, icons.properties, menuConfig.xml"/>
+		<fileset dir="${nucleus.conf.dir}" includes="jndi.properties, layoutml.dtd, nuclos-version.properties, icons.properties"/>
 		</copy>
 
 		<mkdir dir="${nucleus.dist.dir}/client/conf/icons"/>
@@ -598,7 +597,7 @@
 			<fileset dir="${nucleus.build.deploy.dir}/nuclos-webstart.war"/>
 		</copy>
 	</target>
-	
+
 	<target name="war.webstart" description="Builds the webstart-client." depends="clean, build.novabit.common.noclean, deploy.client, war.webstart.nodepend">
 	</target>
 
@@ -630,7 +629,6 @@
 				<include name="jndi.properties"/>
 				<include name="nuclos-version.properties"/>
 				<include name="icons.properties"/>
-				<include name="menuConfig.xml"/>
 				<include name="log4j.xml"/>
 				<include name="layoutml.dtd"/>
 				<include name="icons/"/>
@@ -690,7 +688,7 @@
 
 		<!-- unjar jsyntaxpane.jar again to ensure the existance of META-INF -->
 		<unjar overwrite="false" src="${nucleus.lib.dir}/client/jsyntaxpane-0.9.5-b29.jar" dest="${nucleus.build.classes.dir}"/>
-		
+
 		<!-- jar nucleus libs -->
 		<jar jarfile="${nucleus.build.deploy.dir}/nuclos-libs.jar">
 			<fileset dir="${nucleus.build.classes.dir}" excludes="org/nuclos/**"/>
@@ -729,18 +727,18 @@
 	  		</dname>
 		</genkey>
 	</target>
-	
+
 	<!-- == Installer == -->
-	
+
 	<target name="jar.installer" depends="init">
 		<mkdir dir="${nucleus.build.classes.dir}"/>
-		
+
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
 					 srcdir="${nucleus.src.java.dir}"
 					 includes="org/nuclos/installer/"
 					 includeAntRuntime="false"/>
-			
+
 		<mkdir dir="${nucleus.build.dir}/installer"/>
 		<jar jarfile="${nucleus.build.dir}/installer/nuclos-installer.jar">
 			<fileset dir="${nucleus.build.classes.dir}" includes="org/nuclos/installer/"/>
@@ -752,25 +750,25 @@
 			</manifest>
 		</jar>
 	</target>
-	
+
 	<target name="dist.installer" depends="dist.webstart, jar.installer">
 		<mkdir dir="${nucleus.dist.dir}/installer"/>
 		<copy file="${nucleus.build.dir}/installer/nuclos-installer.jar"
 			todir="${nucleus.dist.dir}/installer"
 			overwrite="true"/>
-			
+
 		<mkdir dir="${nucleus.dist.dir}/installer/data"/>
 		<jar jarfile="${nucleus.dist.dir}/installer/data/nuclos-jbossconf.jar">
 			<fileset dir="${nucleus.conf.dir}/installer/jboss/"/>
 			<fileset dir="${nucleus.conf.dir}" file="${nucleus.conf.dir}/nuclos-version.properties"/>
 		</jar>
-		
+
 		<copy todir="${nucleus.dist.dir}/installer/data" overwrite="true">
 			<fileset dir="${nucleus.build.deploy.dir}"
 				includes="novabit-jboss.jar,nuclos.ear,nuclos-reportapi.jar"/>
 		</copy>
-		
-		<!-- PostgreSQL driver jar is redistributed (as complete jar), that's ok --> 
+
+		<!-- PostgreSQL driver jar is redistributed (as complete jar), that's ok -->
 		<copy todir="${nucleus.dist.dir}/installer/data" overwrite="true">
 			<fileset dir="${nucleus.lib.dir}/db-noredist"
 				includes="postgresql-8.4-701.jdbc4.jar"/>
