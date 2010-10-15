@@ -38,7 +38,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/common/commons-beanutils-1.8.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/common/commons-collections-3.2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/serializer.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/client/swingx-1.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/client/swingx-core-1.6.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/shared/itext-2.1.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/common/commons-digester-1.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/jdom.jar"/>
