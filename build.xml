@@ -639,7 +639,9 @@
 
 		<!-- jar conf folder -->
 		<jar destfile="${nucleus.build.deploy.dir}/nuclos-webstart.war/app/nuclos-config.jar">
-			<fileset dir="${nucleus.build.deploy.dir}/conf"/>
+			<fileset dir="${nucleus.build.deploy.dir}/conf">
+				<exclude name="log4j.xml"/>
+			</fileset>
 		</jar>
 
 		<!-- sign jars (in order to enable security <all-permissions/>) -->
