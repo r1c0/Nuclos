@@ -773,7 +773,7 @@
 		<!-- PostgreSQL driver jar is redistributed (as complete jar), that's ok -->
 		<copy todir="${nucleus.dist.dir}/installer/data" overwrite="true">
 			<fileset dir="${nucleus.lib.dir}/db-noredist"
-				includes="postgresql-8.4-701.jdbc4.jar"/>
+				includes="postgresql-9.0-801.jdbc4.jar"/>
 		</copy>
 
 		<jar jarfile="${nucleus.dist.dir}/installer/data/nuclos-client-all.jar">

@@ -48,7 +48,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/shared/poi-3.6-20091214.jar" sourcepath="C:/jtools/poi-3.6/src/java"/>
 	<classpathentry exported="true" kind="lib" path="lib/db-noredist/jconn3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/db-noredist/ojdbc6.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/db-noredist/postgresql-8.4-701.jdbc4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/db-noredist/postgresql-9.0-801.jdbc4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/db-noredist/sqljdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/server/poi-ooxml-3.6-20091214.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/server/poi-ooxml-schemas-3.6-20091214.jar"/>
