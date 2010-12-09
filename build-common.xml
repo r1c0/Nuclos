@@ -31,29 +31,15 @@
 
 	<!-- Source directories: -->
 	<property name="src.novabit.common.dir" value="${src.dir}/org/nuclos/common2"/>
+	
+	<fileset id="nucleus.common.jars" dir="${lib.dir}/common" includes="*.jar"/>
+	<fileset id="nucleus.server.jars" dir="${lib.dir}/server" includes="*.jar"/>
+	<fileset id="nucleus.client.jars" dir="${lib.dir}/client" includes="*.jar"/>
 
 	<path id="common.path">
-		<fileset dir="${lib.dir}/common" includes="*.jar"/>
-		<fileset dir="${lib.dir}/client" includes="*.jar"/>
-		<fileset dir="${lib.dir}/shared" includes="*.jar"/>
-		<fileset dir="${lib.dir}/server" includes="*.jar"/>
-		<fileset dir="${lib.dir}/db-noredist" includes="*.jar"/>
-		<!--
-		<pathelement location="${lib.dir}/client/jlfgr-1_0.jar"/>
-		<pathelement location="${lib.dir}/client/layer.jar"/>
-		<pathelement location="${lib.dir}/client/filters.jar"/>
-		<pathelement location="${lib.dir}/client/TableLayout-bin-jdk1.5-2009-06-10.jar"/>
-		<pathelement location="${lib.dir}/client/xstream-1.3.1.jar"/>
-		<pathelement location="${lib.dir}/client/swingx-1.0.jar"/>
-		-->
-		<!-- @todo maybe common should not depend on these? -->
-		<pathelement location="${jboss.home}/client/jboss-j2ee.jar"/>
-		<pathelement location="${jboss.home}/client/jboss-ejb3x.jar"/>
-		<pathelement location="${jboss.home}/client/jbosssx-client.jar"/>
-		<pathelement location="${jboss.home}/client/jbossall-client.jar"/>
-		<pathelement location="${jboss.default.lib.dir}/mail.jar"/>
-		<pathelement location="${jboss.lib.dir}/jboss-system.jar"/>
-		<pathelement location="${jboss.lib.dir}/jboss-common.jar"/>
+		<fileset refid="nucleus.server.jars"/>
+		<fileset refid="nucleus.common.jars"/>
+		<fileset refid="nucleus.client.jars"/>
 	</path>
 
 	<target name="init" depends="info"/>

@@ -4,6 +4,9 @@
 	<property name="nucleus.home.dir" value="."/>
 
 	<import file="${nucleus.home.dir}/base.xml"/>
+	
+	<property name="tomcat.deploy.lib" value="${tomcat.home}/webapps/nuclos-webstart/WEB-INF/lib"/>
+	<property name="tomcat.deploy.config" value="${tomcat.home}/webapps/nuclos-webstart/WEB-INF"/>
 
 	<property name="codegenerator.source" value="${jboss.server.dir}/codegenerator"/>
 
@@ -19,7 +22,6 @@
 
 	<pathconvert property="jar.server.manifest.classpath" pathsep=" ">
 		<fileset refid="nucleus.common.jars"/>
-		<fileset refid="nucleus.shared.jars"/>
 		<fileset refid="nucleus.server.jars"/>
 		<!-- Do _not_ include the database drivers here because we are
 		     not allowed to redistribute them (due to license issues) -->
@@ -36,8 +38,7 @@
 	<target name="main.noclean" depends="build.noclean, deploy.server, deploy.client"
 					description="Builds and deploys the server, then builds the client."/>
 
-	<target name="main.nodeploy" depends="init, clean, build.noclean, package.server"
-					description="Performs a clean build without deploying"/>
+	<target name="main.nodeploy" depends="init, clean, build.noclean, package.server"/>
 
 	<target name="build.noclean" depends="build.novabit.common.noclean, jar.server, compile.client"
 					description="Builds the server, then builds the client."/>
@@ -128,6 +129,12 @@
 		</copy>
 
 		<copy file="${nucleus.src.java.dir}/org/nuclos/common2/layoutml/layoutml.dtd" tofile="${nucleus.conf.dir}/layoutml.dtd"
+					overwrite="true"/>
+		
+		<copy file="${nucleus.conf.dir}/client/applicationContext.xml" tofile="${nucleus.build.classes.dir}/org/nuclos/client/config/applicationContext.xml"
+					overwrite="true"/>
+
+		<copy file="${nucleus.conf.dir}/client/client.properties" tofile="${nucleus.build.classes.dir}/org/nuclos/client/config/client.properties"
 					overwrite="true"/>
 
 		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" debug="on" deprecation="off" optimize="on"
@@ -246,13 +253,13 @@
 			<fileset dir="${nucleus.build.deploy.dir}" includes="nuclos-server.jar"/>
 			<fileset dir="${common.build.deploy.dir}" includes="novabit-common.jar, novabit-common-ejb.jar"/>
 			<fileset refid="nucleus.common.jars"/>
-			<fileset refid="nucleus.shared.jars"/>
+			
 			<fileset refid="nucleus.server.jars"/>
 		</ear>
 	</target>
 
 	<target name="deploy.to.server" description="copys the build result to server deploy directory">
-		<copy file="${nucleus.build.deploy.dir}/nuclos-reportapi.jar"
+		<!-- copy file="${nucleus.build.deploy.dir}/nuclos-reportapi.jar"
 			todir="${jboss.server.dir}/lib"
 			overwrite="true"/>
 		<copy file="${nucleus.build.deploy.dir}/novabit-jboss.jar"
@@ -260,8 +267,39 @@
 			overwrite="true"/>
 		<copy file="${nucleus.build.deploy.dir}/nuclos.ear"
 			todir="${jboss.server.dir}/deploy"
-			overwrite="true"/>
-
+			overwrite="true"/-->
+		
+		<copy file="${nucleus.build.deploy.dir}/nuclos-server.jar"
+					todir="${jboss.server.dir}/deploy/nuclos-webstart.war/WEB-INF/lib"
+					overwrite="true"/>
+		<copy file="${nucleus.build.deploy.dir}/novabit-common.jar"
+							todir="${jboss.server.dir}/deploy/nuclos-webstart.war/WEB-INF/lib"
+							overwrite="true"/>
+		<copy file="${nucleus.build.deploy.dir}/novabit-common-ejb.jar"
+							todir="${jboss.server.dir}/deploy/nuclos-webstart.war/WEB-INF/lib"
+							overwrite="true"/>
+		
+		
+		<copy file="${nucleus.build.deploy.dir}/nuclos-server.jar" todir="${tomcat.deploy.lib}" overwrite="true"/>
+		<copy file="${nucleus.build.deploy.dir}/novabit-common.jar" todir="${tomcat.deploy.lib}" overwrite="true"/>
+		<copy file="${nucleus.build.deploy.dir}/novabit-common-ejb.jar" todir="${tomcat.deploy.lib}" overwrite="true"/>
+		
+		<copy todir="${tomcat.deploy.lib}">
+			<fileset refid="nucleus.common.jars"></fileset>
+			<fileset refid="nucleus.server.jars"></fileset>
+			<fileset refid="nucleus.db.noredist.jars"></fileset>
+		</copy>
+		
+		<copy overwrite="true" todir="${jboss.server.dir}/deploy/nuclos-webstart.war">
+			<fileset dir="${nucleus.conf.dir}/webstart">
+			</fileset>
+		</copy>
+		
+		<copy overwrite="true" todir="${tomcat.deploy.config}">
+					<fileset dir="${nucleus.conf.dir}/webstart/WEB-INF">
+					</fileset>
+				</copy>
+		
 		<touch>
 			<fileset dir="${jboss.server.dir}/deploy">
 				<include name="jms/nuclos-destinations-service.xml"/>
@@ -271,6 +309,13 @@
 		<if><equals arg1="${deploy.jboss.server.nucleus.service}" arg2="true"/>
 			<then><touch file="deploy.last/nuclos-service.xml"/></then>
 		</if>
+	</target>
+	
+	<target name="copy conf spring" description="spring copy">
+		<copy overwrite="true" todir="${jboss.server.dir}/deploy/nuclos-webstart.war">
+				<fileset dir="${nucleus.conf.dir}/webstart">
+				</fileset>
+		</copy>
 	</target>
 
 	<!-- Target to start the JBoss server: -->
@@ -661,7 +706,7 @@
 		<!-- unjar libraries to sign them later -->
 		<unjar overwrite="false" dest="${nucleus.build.classes.dir}">
 			<fileset refid="nucleus.common.jars"/>
-			<fileset refid="nucleus.shared.jars"/>
+			
 			<fileset refid="nucleus.client.jars"/>
 			<patternset>
 				<!-- TODO: META-INF/** also excludes META-INF/services which contains
@@ -670,7 +715,7 @@
 			</patternset>
 		</unjar>
 
-		<!-- unjar libraries to sign them later -->
+		<!-- unjar libraries to sign them later
 		<unjar overwrite="false" src="${jboss.client.dir}/jboss-j2ee.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/jboss-client.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/jboss-common-client.jar" dest="${nucleus.build.classes.dir}"/>
@@ -687,34 +732,34 @@
 		<unjar overwrite="false" src="${jboss.client.dir}/concurrent.jar" dest="${nucleus.build.classes.dir}"/>
 		<unjar overwrite="false" src="${jboss.client.dir}/jnp-client.jar" dest="${nucleus.build.classes.dir}"/>
 		<delete dir="${nucleus.build.classes.dir}/META-INF"/>
-
+			-->
 		<!-- unjar jsyntaxpane.jar again to ensure the existance of META-INF -->
 		<unjar overwrite="false" src="${nucleus.lib.dir}/client/jsyntaxpane-0.9.5-b29.jar" dest="${nucleus.build.classes.dir}"/>
 
 		<!-- jar nucleus libs -->
-		<jar jarfile="${nucleus.build.deploy.dir}/nuclos-libs.jar">
-			<fileset dir="${nucleus.build.classes.dir}" excludes="org/nuclos/**"/>
+		<jar jarfile="${nuclos.build.deploy.dir}/nuclos-libs.jar">
+			<fileset dir="${nuclos.build.classes.dir}" excludes="org/nuclos/**"/>
 		</jar>
-		<delete dir="${nucleus.build.classes.dir}/META-INF"/>
+		<delete dir="${nuclos.build.classes.dir}/META-INF"/>
 
 		<!-- jar native libs -->
-		<jar destfile="${nucleus.build.deploy.dir}/nuclos-native.jar">
-			<fileset dir="${nucleus.lib.dir}/client">
+		<jar destfile="${nuclos.build.deploy.dir}/nuclos-native.jar">
+			<fileset dir="${nuclos.lib.dir}/client">
 				<include name="jawin.dll"/>
 			</fileset>
 		</jar>
 	</target>
 
 	<target name="dist.webstart" depends="dist, war.webstart" description="copy files to distribution directory containing webstart configuration.">
-		<mkdir dir="${nucleus.dist.dir}/server/deploy"/>
+		<mkdir dir="${nuclos.dist.dir}/server/deploy"/>
 
 		<!-- copy webstart directories to server -->
 		<copy overwrite="true" todir="${nucleus.dist.dir}/server/deploy/nuclos-webstart.war">
-			<fileset dir="${nucleus.build.deploy.dir}/nuclos-webstart.war"/>
+			<fileset dir="${nuclos.build.deploy.dir}/nuclos-webstart.war"/>
 		</copy>
 
-		<copy overwrite="true" todir="${nucleus.dist.dir}/server/deploy/nuclos-webstart.war/app">
-			<fileset dir="${nucleus.conf.dir}">
+		<copy overwrite="true" todir="${nuclos.dist.dir}/server/deploy/nuclos-webstart.war/app">
+			<fileset dir="${nuclos.conf.dir}">
 				<include name="log4j.xml"/>
 			</fileset>
 		</copy>

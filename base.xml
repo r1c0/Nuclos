@@ -13,21 +13,7 @@
 		</not>
 	</condition>
 
-	<property name="jboss.lib.dir" value="${jboss.home}/lib"/>
-	<property name="jboss.client.dir" value="${jboss.home}/client"/>
-
-	<!-- Configuration used on JBoss to run your server. There must be a directory with the same name under "${jboss.home}/server": -->
-	<property name="jboss.server.name" value="nuclos"/>
-	<!-- 
-		property name="jboss.server.dir" value="../jboss_server"/
-		now in build.properties!
-	-->
-	<property name="jboss.default.lib.dir" value="${jboss.home}/server/default/lib"/>
-
 	<property name="java.src.version" value="1.6"/>
-
-	<!-- Set this to "true" when you want to deploy nucleus service (MBeans) configuration -->
-	<property name="deploy.jboss.server.nucleus.service" value="false"/>
 
 	<!-- common directories: -->
 	<property name="common.dir" value="${base.home.dir}"/>
@@ -57,63 +43,21 @@
 	<fileset id="nucleus.common.jars" dir="${nucleus.lib.dir}/common" includes="*.jar"/>
 	<fileset id="nucleus.client.jars" dir="${nucleus.lib.dir}/client" includes="*.jar"/>
 	<fileset id="nucleus.server.jars" dir="${nucleus.lib.dir}/server" includes="*.jar"/>
+	
 	<fileset id="nucleus.db.noredist.jars" dir="${nucleus.lib.dir}/db-noredist" includes="*.jar"/>
-	<fileset id="nucleus.shared.jars" dir="${nucleus.lib.dir}/shared" includes="*.jar"/>
-	<fileset id="jnlp-servlet.jar" dir="${nucleus.lib.dir}/jnlp-servlet" includes="jnlp-servlet-1.6.jar"/>
 
-	<!-- Bibliotheken aus <JBOSS_HOME>/client, die vom Server und vom Client benutzt werden -->
-	<path id="nucleus.common.jboss.client.path">
-	    <pathelement location="${jboss.client.dir}/jboss-ejb3x.jar"/>
-	    <pathelement location="${jboss.client.dir}/jboss-ejb3-client.jar"/>
-	    <pathelement location="${jboss.client.dir}/jboss-annotations-ejb3.jar"/>
-		<pathelement location="${jboss.client.dir}/jboss-aop-jdk50-client.jar"/>
-		<pathelement location="${jboss.client.dir}/jboss-aspect-jdk50-client.jar"/>
-		<pathelement location="${jboss.client.dir}/jboss-transaction-client.jar"/>
-		<pathelement location="${jboss.client.dir}/jnp-client.jar"/>
-		<pathelement location="${jboss.client.dir}/concurrent.jar"/>
-		<pathelement location="${jboss.client.dir}/jbossmq-client.jar"/>
-	</path>
+	<fileset id="jnlp-servlet.jar" dir="${nucleus.lib.dir}/jnlp-servlet" includes="jnlp-servlet-1.6.jar"/>
 
 	<path id="nucleus.server.path">
 		<fileset refid="nucleus.common.jars"/>
-		<fileset refid="nucleus.shared.jars"/>
 		<fileset refid="nucleus.server.jars"/>
 		<!-- Some database driver-specific classes are needed for compilation -->
 		<fileset refid="nucleus.db.noredist.jars"/>
-
-		<pathelement location="${nucleus.build.classes.dir}"/>
-		<pathelement location="${common.build.deploy.dir}/novabit-common.jar"/>
-		<pathelement location="${common.build.deploy.dir}/novabit-common-ejb.jar"/>
-		<pathelement location="${nucleus.lib.dir}/client/layer.jar"/>
-		<pathelement location="${nucleus.lib.dir}/client/swingx-1.0.jar"/>
-		<pathelement location="${jboss.lib.dir}/jboss-system.jar"/>
-		<pathelement location="${jboss.lib.dir}/jboss-common.jar"/>
-		<pathelement location="${jboss.lib.dir}/jboss-jmx.jar"/>
-		<pathelement location="${jboss.default.lib.dir}/jbosssx.jar"/>
-		<pathelement location="${jboss.default.lib.dir}/jboss-j2ee.jar"/>
-		<pathelement location="${jboss.default.lib.dir}/jboss-common-jdbc-wrapper.jar"/>
-		<pathelement location="${jboss.default.lib.dir}/jboss.jar"/>
-		<pathelement location="${jboss.default.lib.dir}/mail.jar"/>
-		<pathelement location="${jboss.default.lib.dir}/../deploy/jbossws.sar/jbossws-core.jar"/>
-		<path refid="nucleus.common.jboss.client.path"/>
 	</path>
 
 	<path id="nucleus.client.path">
 		<fileset refid="nucleus.common.jars"/>
-		<fileset refid="nucleus.shared.jars"/>
 		<fileset refid="nucleus.client.jars"/>
-
-		<pathelement location="${nucleus.build.classes.dir}"/>
-		<pathelement location="${common.build.deploy.dir}/novabit-common.jar"/>
-		<pathelement location="${jboss.client.dir}/jboss-j2ee.jar"/>
-		<pathelement location="${jboss.client.dir}/jboss-client.jar"/>
-		<pathelement location="${jboss.client.dir}/jboss-common-client.jar"/>
-		<pathelement location="${jboss.client.dir}/jboss-system-client.jar"/>
-		<pathelement location="${jboss.client.dir}/jbosssx-client.jar"/>
-		<pathelement location="${jboss.client.dir}/jboss-remoting.jar"/>
-		<pathelement location="${jboss.client.dir}/jboss-serialization.jar"/>
-
-		<path refid="nucleus.common.jboss.client.path"/>
 	</path>
 
 	<path id="nucleus.path">
@@ -157,10 +101,10 @@
 		<antcall target="wrong.jboss"/>
 	</target>
 
-	<target name="check.build.properties" depends="check.jboss.home"/>
+	<target name="check.build.properties" depends="check.tomcat.home"/>
 
 	<!-- path to the runtime JBoss directory containing the JBoss application server: -->
-	<target name="check.jboss.home" unless="jboss.home">
+	<target name="check.tomcat.home" unless="tomcat.home">
 		<fail>
 			Property "jboss.home" is not set. Please use the file "build.properties" to set this property.
 			It must point to the directory which contains the following directory: "deploy", "conf", "tmp" etc.
