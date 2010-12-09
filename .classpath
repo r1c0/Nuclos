@@ -48,7 +48,6 @@
 	<classpathentry kind="lib" path="lib/server/com.springsource.javax.annotation-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/server/com.springsource.javax.mail-1.4.0.jar"/>
 	<classpathentry kind="lib" path="lib/server/com.springsource.org.aspectj.weaver-1.6.8.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/server/commons-dbcp-1.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/server/jnlp-servlet-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/server/org.springframework.aspects-3.0.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/server/org.springframework.instrument-3.0.5.RELEASE.jar"/>
@@ -83,5 +82,6 @@
 	<classpathentry kind="lib" path="lib/server/spring-ldap-core-1.3.0.RELEASE.jar" sourcepath="C:/Projekte/environment/src/spring-ldap-1.3.0.RELEASE-sources.jar"/>
 	<classpathentry kind="lib" path="lib/db-noredist/postgresql-9.0-801.jdbc4.jar"/>
 	<classpathentry kind="lib" path="C:/_development/_environment/nucleus/JAVA_RUNTIME/jdk1.6.0_13/lib/tools.jar"/>
+	<classpathentry kind="lib" path="lib/server/commons-dbcp-1.4.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
