@@ -47,6 +47,7 @@
 	<fileset id="nuclos.common.jars" dir="${nuclos.lib.dir}/common" includes="*.jar"/>
 	<fileset id="nuclos.common.unjars" dir="${nuclos.lib.dir}/common" includes="*.jar" excludes="spring-security-config-3.0.4.RELEASE.jar, activemq-all-5.3.0.jar"/>
 	<fileset id="nuclos.client.jars" dir="${nuclos.lib.dir}/client" includes="*.jar"/>
+	<fileset id="nuclos.client.unjars" dir="${nuclos.lib.dir}/client" includes="*.jar" excludes="groovy-all-1.7.5.jar"/>
 	<fileset id="nuclos.server.jars" dir="${nuclos.lib.dir}/server" includes="*.jar"/>
 	
 	<fileset id="nuclos.db.noredist.jars" dir="${nuclos.lib.dir}/db-noredist" includes="*.jar"/>
@@ -294,6 +295,7 @@
 			<fileset file="${nuclos.conf.dir}/webstart/app/webstart.jnlp"></fileset>
 			<fileset file="${nuclos.lib.dir}/common/spring-security-config-3.0.4.RELEASE.jar"></fileset>
 			<fileset file="${nuclos.lib.dir}/common/activemq-all-5.3.0.jar"/>
+			<fileset file="${nuclos.lib.dir}/client/groovy-all-1.7.5.jar"/>
 		</copy>
 		
 		<signjar verbose="false" alias="nucleus" storepass="suelcun" keystore="./.keystore">
@@ -305,6 +307,7 @@
 				<include name="nuclos-libs.jar"/>
 				<include name="nuclos-native.jar"/>
 				<include name="spring-security-config-3.0.4.RELEASE.jar"/>
+				<include name="groovy-all-1.7.5.jar"/>
 				<include name="activemq-all-5.3.0.jar"/>
 			</fileset>
 		</signjar>
@@ -417,7 +420,7 @@
 		<unjar overwrite="false" dest="${nuclos.build.classes.dir}">
 			<fileset refid="nuclos.common.unjars"/>
 			
-			<fileset refid="nuclos.client.jars"/>
+			<fileset refid="nuclos.client.unjars"/>
 			<patternset>
 				<!-- TODO: META-INF/** also excludes META-INF/services which contains
 				     the service provider declarations. Is this behavior correct? -->
