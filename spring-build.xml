@@ -64,6 +64,7 @@
 		<fileset refid="nuclos.server.jars"/>
 		<!-- Some database driver-specific classes are needed for compilation -->
 		<fileset refid="nuclos.db.noredist.jars"/>
+		<fileset refid="nuclos.client.jars"/>
 	</path>
 
 	<path id="nuclos.client.path">
