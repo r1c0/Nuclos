@@ -57,6 +57,7 @@
 		<fileset refid="nuclos.server.jars"/>
 		<fileset refid="nuclos.common.jars"/>
 		<fileset refid="nuclos.client.jars"/>
+		<fileset refid="nuclos.db.noredist.jars"/>
 	</path>
 	
 	<path id="nuclos.server.path">
