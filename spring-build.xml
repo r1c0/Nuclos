@@ -175,6 +175,8 @@
 							overwrite="true"/>
 		<copy file="${nuclos.conf.dir}/client/client.properties" tofile="${nuclos.build.classes.dir}/org/nuclos/client/config/client.properties"
 									overwrite="true"/>
+		<copy file="${nuclos.conf.dir}/client/client.properties.gen.xsl" tofile="${nuclos.build.classes.dir}/org/nuclos/client/config/client.properties.gen.xsl"
+											overwrite="true"/>
 
 		<javac encoding="8859_1" destdir="${nuclos.build.classes.dir}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
@@ -354,9 +356,13 @@
 				includes="postgresql-8.4-701.jdbc4.jar"/>
 		</copy>
 
-		<jar jarfile="${nuclos.dist.dir}/installer/data/nuclos-webapp.jar">
-			<fileset dir="${nuclos.dist.dir}/"/>
-		</jar>
+		<!--jar jarfile="${nuclos.dist.dir}/installer/data/nuclos-webapp.jar">
+			<fileset dir="${nuclos.dist.dir}/webapp"/>
+		</jar-->
+		
+		<copy todir="${nuclos.dist.dir}/installer/data">
+			<fileset dir="${nuclos.dist.dir}/webapp"/>
+		</copy>
 
 		<copy todir="${nuclos.dist.dir}/installer">
 			<fileset dir="${nuclos.doc.dir}" includes="license/**"/>
