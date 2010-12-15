@@ -1,0 +1,330 @@
+<project name="Nuclos Noa (Spring)" basedir=".">
+
+	<property name="app.name" value="noa"/>
+
+	<!-- Project root directory (should always be the directory where this build.xml resides): -->
+	<property name="project.home.dir" value="."/>
+
+	<property name="nuclos.home.dir" value="../nuclos"/>
+
+	<import file="${nuclos.home.dir}/spring-build.xml"/>
+	<import file="${project.home.dir}/base-project.xml"/>
+	
+		
+	<!-- project subdirectories: -->
+	<property name="project.src.dir" value="${project.home.dir}/src"/>
+	<property name="project.src.java.dir" value="${project.src.dir}/java"/>
+	<property name="project.src.java.client.dir" value="${project.src.java.dir}/de/novabit/${app.name}/client"/>
+	<property name="project.src.java.server.dir" value="${project.src.java.dir}/de/novabit/${app.name}/server"/>
+	<property name="project.conf.dir" value="${project.home.dir}/conf"/>
+	<property name="project.doc.dir" value="${project.home.dir}/doc"/>
+	<property name="project.db.dir" value="${project.home.dir}/db"/>
+	<property name="project.lib.dir" value="${project.home.dir}/lib"/>
+	<property name="project.build.dir" value="${project.home.dir}/build"/>
+	<property name="project.build.classes.dir" value="${project.build.dir}/classes"/>
+	<property name="project.build.deploy.dir" value="${project.build.dir}/deploy"/>
+	<property name="project.dist.dir" value="${project.home.dir}/dist"/>
+	<property name="project.bin.dir" value="${project.home.dir}/bin"/>
+	
+	<path id="project.server.path">
+		<path location="${nuclos.home.dir}/build/classes"></path>
+		<fileset dir="${nuclos.home.dir}/lib/server" includes="*.jar"></fileset>
+		<fileset dir="${nuclos.home.dir}/lib/common" includes="*.jar"></fileset>
+		<fileset dir="${project.lib.dir}" includes="*.jar"></fileset>
+	</path>
+
+	<path id="project.client.path">
+		<path location="${nuclos.home.dir}/build/classes"></path>
+		<fileset dir="${nuclos.home.dir}/lib/common" includes="*.jar" excludes="spring-security-config-3.0.4.RELEASE.jar, activemq-all-5.3.0.jar"></fileset>
+		<fileset dir="${nuclos.home.dir}/lib/client" includes="*.jar"></fileset>
+		<fileset dir="${project.lib.dir}" includes="*.jar"></fileset>
+	</path>
+
+	<path id="project.path">
+		<path refid="project.server.path"/>
+		<path refid="project.client.path"/>
+	</path>
+	
+	<target name="compile.server.nodepend">
+		<mkdir dir="${project.build.classes.dir}"/>
+
+		<copy todir="${project.build.classes.dir}">
+			<fileset dir="${project.conf.dir}" includes="nuclos-app.properties"/>
+		</copy>
+
+		<javac encoding="8859_1" destdir="${project.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+				 srcdir="${project.src.java.dir}"
+				 includes="de/novabit/${app.name}/common/, de/novabit/${app.name}/server/, org/nuclet/${app.name}/common/, org/nuclet/${app.name}/server/"
+				 excludes="**/test/"
+				 classpathref="project.server.path"
+				 includeAntRuntime="false">
+		</javac>
+	</target>
+	
+	<target name="compile.server" depends="compile.server.nodepend"/>
+	
+	<target name="jar.server" depends="compile.server" description="Builds the server.">
+		<mkdir dir="${project.build.deploy.dir}"/>
+
+		<jar jarfile="${project.build.deploy.dir}/${app.name}-server.jar">
+		    <fileset dir="${project.build.classes.dir}"
+				 includes="de/novabit/${app.name}/common/, de/novabit/${app.name}/server/, org/nuclet/${app.name}/common/, org/nuclet/${app.name}/server/, META-INF/, nuclos-app.properties, resources/"
+				 excludes="**/test/"/>
+			<fileset dir="${project.conf.dir}/ejb3/"/>
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0"/>
+				<attribute name="Class-Path" value="./nuclos-common.jar ./nuclos-server.jar"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="compile.client" depends="compile.server, compile.client.nodepend"/>
+
+	<target name="compile.client.nodepend">
+		<mkdir dir="${project.build.classes.dir}"/>
+		<mkdir dir="${project.build.deploy.dir}"/>
+
+		<copy todir="${project.build.classes.dir}/de/novabit/${app.name}/client">
+				<fileset dir="${project.src.java.client.dir}"
+							 includes="**/images/,
+							 **/layoutml/*.layoutml,
+							 help/releasenotes/releasenotes.html"/>
+		</copy>
+
+		<copy file="${nuclos.home.dir}/src/java/org/nuclos/common2/layoutml/layoutml.dtd" tofile="${project.conf.dir}/layoutml.dtd"
+					overwrite="true"/>
+
+ 		<javac encoding="8859_1" destdir="${project.build.classes.dir}" debug="on" deprecation="off" optimize="on"
+ 					 source="${java.src.version}" srcdir="${project.src.java.dir}"
+ 					 includes="de/novabit/${app.name}/client/"
+ 					 excludes="**/test/"
+ 					 includeAntRuntime="false">
+ 			<classpath>
+ 				<path refid="project.client.path"/>
+ 			</classpath>
+ 		</javac>
+	</target>
+	
+	<target name="deploy.client" depends="compile.client" description="Builds the client.">
+		<mkdir dir="${project.build.deploy.dir}"/>
+
+		<jar jarfile="${project.build.deploy.dir}/${app.name}-client.jar">
+			<fileset dir="${project.build.classes.dir}"
+				includes=	"de/novabit/${app.name}/client/,
+							de/novabit/${app.name}/common/,
+							de/novabit/${app.name}/server/**/valueobject/*,
+							de/novabit/${app.name}/server/**/interfaces/*,
+							de/novabit/${app.name}/server/**/*Exception.class,
+							de/novabit/${app.name}/server/**/*VO*.class,
+							resources/*.properties"
+				excludes=	"**/test/,
+							de/novabit/**/build.xml"/>
+			<fileset dir="${project.build.classes.dir}"
+				includes= "de/novabit/${app.name}/server/**/ejb3/*Remote.class"/>
+		</jar>
+	</target>	
+	
+	<target name="dist.project" depends="jar.server, deploy.client">
+		<copy todir="${tomcat.home}/webapps/nuclos/WEB-INF/lib">
+			<fileset dir="${project.build.deploy.dir}" includes="${app.name}-server.jar"></fileset>
+		</copy>
+		<copy todir="${tomcat.home}/webapps/nuclos/WEB-INF/app">
+			<fileset dir="${project.build.deploy.dir}" includes="${app.name}-client.jar"></fileset>
+		</copy>
+		<copy todir="${tomcat.home}/webapps/nuclos">
+			<fileset dir="${project.conf.dir}/webstart/"></fileset>
+		</copy>
+	</target>
+	
+	<target name="dist.webstart" depends="dist, war.webstart" description="copy files to distribution directory containing webstart configuration.">
+		<mkdir dir="${project.dist.dir}/server/deploy"/>
+
+		<!-- copy webstart directories to server -->
+		<copy overwrite="true" todir="${project.dist.dir}/server/deploy/nuclos-webstart.war">
+			<fileset dir="${project.build.deploy.dir}/nuclos-webstart.war"/>
+		</copy>
+
+		<copy overwrite="true" todir="${project.dist.dir}/server/deploy/nuclos-webstart.war/app">
+			<fileset dir="${project.conf.dir}">
+				<include name="log4j.xml"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="deploy.to.tomcat" depends="jar.server">
+	</target>
+
+	<target name="dist" depends="dist.clean" description="copy files to distribution directory.">
+		<ant antfile="${nuclos.home.dir}/spring-build.xml" dir="${nuclos.home.dir}" target="dist" inheritall="false">
+			<!--property name="jboss.server.name" value="${jboss.server.name}"/-->
+			<property name="projectbuild" value="true"/>
+		</ant>
+
+		<antcall target="main"/>
+		<!--antcall target="javadoc"/-->
+		<!--antcall target="build.ruledoc"/-->
+
+		<mkdir dir="${project.dist.dir}"/>
+
+		<!-- copy .ear to server directory: -->
+		<mkdir dir="${project.dist.dir}/server/deploy"/>
+		<copy todir="${project.dist.dir}/server/deploy">
+			<fileset dir="${project.build.deploy.dir}" includes="${app.name}.ear"/>
+			<fileset dir="${nuclos.build.deploy.dir}" includes="nuclos.ear"/>
+		</copy>
+
+		<!-- copy server config -->
+		<mkdir dir="${project.dist.dir}/server/conf"/>
+		<copy todir="${project.dist.dir}/server/conf">
+			<fileset dir="${project.conf.dir}/jboss/install/conf" includes="log4j.xml"/>
+		</copy>
+
+		<!-- copy client config: -->
+		<mkdir dir="${project.dist.dir}/client"/>
+		<copy todir="${project.dist.dir}/client">
+			<fileset dir="${project.bin.dir}" includes="run-client.bat, run-console.bat"/>
+		</copy>
+		<mkdir dir="${project.dist.dir}/client/conf"/>
+		<copy todir="${project.dist.dir}/client/conf">
+			<fileset dir="${project.conf.dir}" includes="jndi.properties, layoutml.dtd, nuclos-version.properties, nuclos-app.properties"/>
+		</copy>
+		<mkdir dir="${project.dist.dir}/client/conf/doc"/>
+		<!--copy file="${nucleus.build.classes.dir}/org/nuclos/client/help/releasenotes/releasenotes.html" tofile="${project.dist.dir}/client/conf/doc/nucleus-releasenotes.html"/-->
+		<copy file="${project.build.classes.dir}/de/novabit/${app.name}/client/help/releasenotes/releasenotes.html" tofile="${project.dist.dir}/client/conf/doc/releasenotes.html"/>
+
+		<mkdir dir="${project.dist.dir}/client/conf/icons"/>
+		<copy todir="${project.dist.dir}/client/conf/icons">
+			<fileset dir="${project.conf.dir}/icons" includes="*.png"/>
+		</copy>
+		<copy file="${project.conf.dir}/log4j.xml" tofile="${project.dist.dir}/client/conf/log4j.xml"/>
+
+		<!-- copy client libs: -->
+		<mkdir dir="${project.dist.dir}/client/lib"/>
+		<copy todir="${project.dist.dir}/client/lib">
+			<fileset dir="${nuclos.build.deploy.dir}" includes="*.jar"
+				excludes="nuclos-server.jar, novabit-jboss.jar"/>
+			<fileset dir="${project.build.deploy.dir}" includes="*.jar" excludes="${app.name}-server.jar, novabit-jboss.jar"/>
+		</copy>
+
+		<!-- copy layouts: -->
+		<mkdir dir="${project.dist.dir}/client/layoutml"/>
+		<copy todir="${project.dist.dir}/client/layoutml">
+			<fileset dir="${nuclos.src.dir}/layoutml"/>
+			<fileset dir="${project.src.dir}/layoutml"/>
+		</copy>
+
+		<!-- copy rules: -->
+ 		<mkdir dir="${project.dist.dir}/client/rules"/>
+ 		<copy todir="${project.dist.dir}/client/rules" failonerror="false">
+ 			<fileset dir="${nuclos.src.dir}/rules"/>
+ 		</copy>
+
+ 		<copy todir="${project.dist.dir}/client/rules" failonerror="false">
+ 			<fileset dir="${project.src.dir}/rules"/>
+ 		</copy>
+
+		<!-- copy reports/datasources: -->
+ 		<mkdir dir="${project.dist.dir}/client/reports"/>
+ 		<copy todir="${project.dist.dir}/client/reports" failonerror="false">
+ 			<fileset dir="${nuclos.src.dir}/reports"/>
+ 		</copy>
+
+ 		<copy todir="${project.dist.dir}/client/reports" failonerror="false">
+ 			<fileset dir="${project.src.dir}/reports"/>
+ 		</copy>
+
+		<!-- copy server libs: -->
+		<mkdir dir="${project.dist.dir}/server/lib"/>
+		<copy todir="${project.dist.dir}/server/lib">
+			<fileset dir="${nuclos.build.deploy.dir}" includes="novabit-jboss.jar, nuclos-reportapi.jar"/>
+		</copy>
+
+		<!-- zip sources: -->
+		<!--zip destfile="${project.dist.dir}/source_${app.name}.zip">
+			<fileset dir="${project.home.dir}" includes="build-project.xml, src/" excludes="CVS, .svn"/>
+		</zip-->
+
+		<!--copy todir="${project.dist.dir}">
+			<fileset dir="${nucleus.dist.dir}/" includesfile="nuclos-src-*.zip"/>
+		</copy-->
+
+		<!-- zip documentation: -->
+		<!--zip destfile="${project.dist.dir}/doc_${app.name}.zip">
+			<zipfileset dir="${project.doc.dir}/Systemdokumentation" includes="*.pdf, index.htm, DB-Schema*/, include/, UML/"
+							 excludes="DB-Schema.vsd, CSV, *.doc"/>
+			<zipfileset dir="${project.doc.dir}/api" prefix="javadoc"/>
+		</zip-->
+
+		<!--copy file="${nucleus.dist.dir}/doc.zip" tofile="${project.dist.dir}/doc_nucleus.zip"/-->
+	</target>
+
+	<target name="war.webstart" description="Builds the webstart-client." depends="deploy.client, war.webstart.nodepend">
+	</target>
+	
+	<target name="war.webstart.nodepend" description="Builds the webstart-client without dependencies.">
+		<ant antfile="${nuclos.home.dir}/spring-build.xml" dir="${nuclos.home.dir}" target="war.webstart.jar" inheritall="false"/>
+
+		<copy overwrite="true" todir="${project.build.deploy.dir}/nuclos-webstart.war/app">
+			<fileset dir="${nuclos.build.deploy.dir}">
+				<include name="nuclos-client.jar"/>
+				<include name="nuclos-common.jar"/>
+				<include name="nuclos-libs.jar"/>
+				<include name="nuclos-native.jar"/>
+			</fileset>
+			<fileset dir="${project.build.deploy.dir}">
+				<include name="${app.name}-client.jar"/>
+			</fileset>
+			<fileset dir="${project.conf.dir}">
+				<include name="log4j.xml"/>
+			</fileset>
+		</copy>
+
+		<copy overwrite="true" todir="${project.build.deploy.dir}/nuclos-webstart.war">
+			<fileset dir="${project.conf.dir}/webstart">
+			</fileset>
+		</copy>
+
+		<copy overwrite="true" todir="${project.build.deploy.dir}/nuclos-webstart.war/WEB-INF/lib">
+			<fileset refid="jnlp-servlet.jar"/>
+		</copy>
+
+		<copy overwrite="true" todir="${project.build.deploy.dir}/conf">
+			<fileset dir="${project.conf.dir}">
+				<include name="jndi.properties"/>
+				<include name="nuclos-app.properties"/>
+				<include name="nuclos-version.properties"/>
+				<include name="log4j.xml"/>
+				<include name="layoutml.dtd"/>
+				<include name="icons/"/>
+				<include name="doc/"/>
+			</fileset>
+		</copy>
+
+		<!-- jar conf folder -->
+		<jar destfile="${project.build.deploy.dir}/nuclos-webstart.war/app/${app.name}-config.jar">
+			<fileset dir="${project.build.deploy.dir}/conf"/>
+		</jar>
+
+		<!-- sign jars (in order to enable security <all-permissions/>) -->
+		<signjar verbose="false" alias="nucleus" storepass="suelcun" keystore="./.keystore">
+			<fileset dir="${project.build.deploy.dir}/nuclos-webstart.war/app">
+				<include name="nuclos-client.jar"/>
+				<include name="${app.name}-client.jar"/>
+				<include name="novabit-common.jar"/>
+				<include name="${app.name}-config.jar"/>
+				<include name="nuclos-libs.jar"/>
+				<include name="nuclos-native.jar"/>
+			</fileset>
+		</signjar>
+
+		<!-- copy webstart-client to server -->
+		<copy overwrite="true" todir="${jboss.server.dir}/deploy/nuclos-webstart.war">
+			<fileset dir="${project.build.deploy.dir}/nuclos-webstart.war"/>
+		</copy>
+	</target>
+
+	<target name="dist.clean" description="remove distribution directory.">
+		<delete quiet="true" dir="${project.dist.dir}"/>
+	</target>
+	
+</project>
