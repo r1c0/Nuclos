@@ -83,5 +83,6 @@
 	<classpathentry kind="lib" path="lib/db-noredist/postgresql-9.0-801.jdbc4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/groovy-all-1.7.5.jar"/>
 	<classpathentry kind="var" path="JDK_HOME/lib/tools.jar"/>
+	<classpathentry kind="lib" path="lib/server/javaparser-1.0.8.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
