@@ -47,13 +47,13 @@
 	<fileset id="nuclos.common.jars" dir="${nuclos.lib.dir}/common" includes="*.jar"/>
 	<fileset id="nuclos.common.unjars" dir="${nuclos.lib.dir}/common" includes="*.jar" excludes="spring-security-config-3.0.4.RELEASE.jar, activemq-all-5.3.0.jar"/>
 	<fileset id="nuclos.client.jars" dir="${nuclos.lib.dir}/client" includes="*.jar"/>
-	<fileset id="nuclos.client.unjars" dir="${nuclos.lib.dir}/client" includes="*.jar" excludes="groovy-all-1.7.5.jar"/>
+	<fileset id="nuclos.client.unjars" dir="${nuclos.lib.dir}/client" includes="*.jar" excludes="groovy-all-1.7.6.jar"/>
 	<fileset id="nuclos.server.jars" dir="${nuclos.lib.dir}/server" includes="*.jar"/>
 	
 	<fileset id="nuclos.db.noredist.jars" dir="${nuclos.lib.dir}/db-noredist" includes="*.jar"/>
 	
 	<fileset id="jnlp-servlet.jar" dir="${nuclos.home.dir}/lib/server" includes="jnlp-servlet-1.6.jar"/>
-
+	
 	<path id="nuclos.common.path">
 		<fileset refid="nuclos.server.jars"/>
 		<fileset refid="nuclos.common.jars"/>
@@ -72,6 +72,12 @@
 	<path id="nuclos.client.path">
 		<fileset refid="nuclos.common.jars"/>
 		<fileset refid="nuclos.client.jars"/>
+	</path>
+	
+	<path id="nuclos.path">
+		<path refid="nuclos.common.path"></path>
+		<path refid="nuclos.server.path"></path>
+		<path refid="nuclos.client.path"></path>
 	</path>
 	
 	<target name="compile.reportapi">
@@ -98,6 +104,35 @@
 			</manifest>
 		</jar>
 	</target>
+	
+	<target name="clean.javadoc">
+		<delete quiet="true" dir="${nucleus.doc.dir}/api"/>
+	</target>
+	
+	<target name="javadoc" description="Builds the javadoc." unless="skip.javadoc">
+			<copy todir="${nuclos.doc.dir}/api">
+				<fileset dir="${nuclos.src.java.dir}/org/nuclos/client/ui/images" includes="novabit-150x45.gif"/>
+			</copy>
+			<javadoc destdir="${nuclos.doc.dir}/api" source="${java.src.version}" maxmemory="128m" access="protected" splitindex="true"
+							 version="true" author="true" use="true" windowtitle="Nucleus API Documentation">
+				<doctitle>Nuclos API Documentation</doctitle>
+				<header>
+					<![CDATA[<img src="{@docRoot}/novabit-150x45.gif">]]></header>
+				<tag name="invariant" description="Invariants:"/>
+				<tag name="precondition" description="Preconditions:" scope="constructors,methods"/>
+				<tag name="postcondition" description="Postconditions:" scope="constructors,methods"/>
+				<tag name="todo" description="To do:"/>
+				<tag name="event-dispatch-thread" description="@event-dispatch-thread"/>
+				<sourcepath>
+					<pathelement location="${nuclos.src.java.dir}"/>
+				</sourcepath>
+
+				<packageset dir="${nuclos.src.java.dir}" excludes="org/nuclos/**/test/**, org/nuclos/tools/**, org/nuclos/**/interfaces/**"/>
+				<classpath>
+					<path refid="nuclos.path"/>
+				</classpath>
+			</javadoc>
+		</target>
 
 	
 	<target name="compile.common">
@@ -295,7 +330,7 @@
 			<fileset file="${nuclos.conf.dir}/webstart/app/webstart.jnlp"></fileset>
 			<fileset file="${nuclos.lib.dir}/common/spring-security-config-3.0.4.RELEASE.jar"></fileset>
 			<fileset file="${nuclos.lib.dir}/common/activemq-all-5.3.0.jar"/>
-			<fileset file="${nuclos.lib.dir}/client/groovy-all-1.7.5.jar"/>
+			<fileset file="${nuclos.lib.dir}/client/groovy-all-1.7.6.jar"/>
 		</copy>
 		
 		<signjar verbose="false" alias="nucleus" storepass="suelcun" keystore="./.keystore">
@@ -307,7 +342,7 @@
 				<include name="nuclos-libs.jar"/>
 				<include name="nuclos-native.jar"/>
 				<include name="spring-security-config-3.0.4.RELEASE.jar"/>
-				<include name="groovy-all-1.7.5.jar"/>
+				<include name="groovy-all-1.7.6.jar"/>
 				<include name="activemq-all-5.3.0.jar"/>
 			</fileset>
 		</signjar>
