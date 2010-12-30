@@ -213,9 +213,7 @@
 							overwrite="true"/>
 		<copy file="${nuclos.conf.dir}/client/client.properties" tofile="${nuclos.build.classes.dir}/org/nuclos/client/config/client.properties"
 									overwrite="true"/>
-		<copy file="${nuclos.conf.dir}/client/client.properties.gen.xsl" tofile="${nuclos.build.classes.dir}/org/nuclos/client/config/client.properties.gen.xsl"
-											overwrite="true"/>
-
+		
 		<javac encoding="8859_1" destdir="${nuclos.build.classes.dir}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
 					 source="${java.src.version}" srcdir="${nuclos.src.java.dir}"
