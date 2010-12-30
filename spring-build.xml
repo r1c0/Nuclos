@@ -211,8 +211,6 @@
 					overwrite="true"/>
 		<copy file="${nuclos.conf.dir}/client/applicationContext.xml" tofile="${nuclos.build.classes.dir}/org/nuclos/client/config/applicationContext.xml"
 							overwrite="true"/>
-		<copy file="${nuclos.conf.dir}/client/client.properties" tofile="${nuclos.build.classes.dir}/org/nuclos/client/config/client.properties"
-									overwrite="true"/>
 		
 		<javac encoding="8859_1" destdir="${nuclos.build.classes.dir}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
