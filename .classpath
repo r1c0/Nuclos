@@ -5,7 +5,7 @@
 	<classpathentry kind="lib" path="lib/common/activemq-all-5.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/common/activemq-pool-5.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/common/asm-3.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/common/com.springsource.javax.ejb-3.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/common/com.springsource.javax.ejb-3.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/common/com.springsource.org.aopalliance-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/common/commons-beanutils-1.8.1.jar"/>
 	<classpathentry kind="lib" path="lib/common/commons-collections-3.2.1.jar"/>
@@ -17,16 +17,16 @@
 	<classpathentry kind="lib" path="lib/common/itext-2.1.7.jar"/>
 	<classpathentry kind="lib" path="lib/common/jasperreports-3.5.3.jar"/>
 	<classpathentry kind="lib" path="lib/common/json-simple-1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/common/jxl-2.6.10.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/common/log4j.jar"/>
-	<classpathentry kind="lib" path="lib/common/org.springframework.aop-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/common/jxl-2.6.10.jar"/>
+	<classpathentry kind="lib" path="lib/common/log4j.jar"/>
+	<classpathentry kind="lib" path="lib/common/org.springframework.aop-3.0.5.RELEASE.jar" sourcepath="C:/java/api/spring-framework-3.0.5.RELEASE/src/org.springframework.aop-sources-3.0.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/common/org.springframework.asm-3.0.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/common/org.springframework.beans-3.0.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/common/org.springframework.context-3.0.5.RELEASE.jar" sourcepath="C:/Projekte/environment/src/spring-framework-3.0.5.RELEASE/src/org.springframework.context-sources-3.0.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/common/org.springframework.context.support-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/common/org.springframework.context-3.0.5.RELEASE.jar" sourcepath="C:/java/api/spring-framework-3.0.5.RELEASE/src/org.springframework.context-sources-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/common/org.springframework.context.support-3.0.5.RELEASE.jar" sourcepath="C:/java/api/spring-framework-3.0.5.RELEASE/src/org.springframework.context.support-sources-3.0.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/common/org.springframework.core-3.0.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/common/org.springframework.expression-3.0.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/common/org.springframework.jms-3.0.5.RELEASE.jar" sourcepath="C:/Projekte/environment/src/spring-framework-3.0.5.RELEASE/src/org.springframework.jms-sources-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/common/org.springframework.jms-3.0.5.RELEASE.jar" sourcepath="C:/java/api/spring-framework-3.0.5.RELEASE/src/org.springframework.jms-sources-3.0.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/common/org.springframework.web-3.0.5.RELEASE.jar" sourcepath="C:/Projekte/environment/src/spring-framework-3.0.5.RELEASE/src/org.springframework.web-sources-3.0.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/common/poi-3.6-20091214.jar"/>
 	<classpathentry kind="lib" path="lib/common/xstream-1.3.1.jar"/>
@@ -45,7 +45,7 @@
 	<classpathentry kind="lib" path="lib/client/syntheticaBlackMoon.jar"/>
 	<classpathentry kind="lib" path="lib/client/TableLayout-bin-jdk1.5-2009-06-10.jar"/>
 	<classpathentry kind="lib" path="lib/client/wizard-0.1.12.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/server/com.springsource.javax.annotation-1.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/server/com.springsource.javax.annotation-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/server/com.springsource.javax.mail-1.4.0.jar"/>
 	<classpathentry kind="lib" path="lib/server/com.springsource.org.aspectj.weaver-1.6.8.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/server/jnlp-servlet-1.6.jar"/>
@@ -81,8 +81,8 @@
 	<classpathentry kind="lib" path="lib/server/jetty-util-6.1.9.jar"/>
 	<classpathentry kind="lib" path="lib/server/spring-ldap-core-1.3.0.RELEASE.jar" sourcepath="C:/Projekte/environment/src/spring-ldap-1.3.0.RELEASE-sources.jar"/>
 	<classpathentry kind="lib" path="lib/db-noredist/postgresql-9.0-801.jdbc4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/client/groovy-all-1.7.6.jar"/>
 	<classpathentry kind="var" path="JDK_HOME/lib/tools.jar"/>
 	<classpathentry kind="lib" path="lib/server/javaparser-1.0.8.jar"/>
+	<classpathentry kind="lib" path="lib/client/groovy-all-1.7.6.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
