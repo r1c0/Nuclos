@@ -150,7 +150,7 @@
 	</target>
 
 	<target name="dist.nuclos">
-		<ant antfile="build.xml" dir="." target="dist.installer" inheritall="false"/>
+		<ant antfile="build.xml" dir="." target="dist" inheritall="false"/>
 	</target>
 
 </project>
