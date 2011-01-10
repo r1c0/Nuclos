@@ -1,6 +1,7 @@
 tomcat.home=[path.to.tomcat]
 tomcat.server.dir=${tomcat.home}/webapps/nuclos
 
+# only needed for nuclets
 project.name=nuclet
 project.home.dir=../${project.name}
 project.package.dir=org/nuclet
