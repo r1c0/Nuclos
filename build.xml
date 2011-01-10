@@ -1,178 +1,104 @@
-<project name="Nuclos" default="main" basedir=".">
+<project name="Nuclos" basedir=".">
 
-	<!-- Nucleus root directory (should always be the directory where this build.xml resides): -->
-	<property name="nucleus.home.dir" value="."/>
+	<property name="app.name" value="nuclos"/>
+	<property name="nuclos.home.dir" value="."/>
 
-	<import file="${nucleus.home.dir}/base.xml"/>
-	
-	<property name="tomcat.deploy.lib" value="${tomcat.home}/webapps/nuclos-webstart/WEB-INF/lib"/>
-	<property name="tomcat.deploy.config" value="${tomcat.home}/webapps/nuclos-webstart/WEB-INF"/>
+	<!--import file="${nuclos.home.dir}/base.xml"/-->
 
-	<property name="codegenerator.source" value="${jboss.server.dir}/codegenerator"/>
+	<!--
+		Properties in build.properties:
+		- tomcat.home: Tomcat home directory
+	 -->
+	<property file="${build.properties}" />
 
-	<property name="projectbuild" value="false"/>
+	<!-- tomcat deployment -->
+	<property name="tomcat.webapp.dir" value="${tomcat.home}/webapps/"/>
+	<property name="tomcat.deploy.dir" value="${tomcat.server.dir}/"/>
+	<property name="tomcat.deploy.webinf.dir" value="${tomcat.deploy.dir}/WEB-INF"/>
+	<property name="tomcat.deploy.webinf.lib.dir" value="${tomcat.deploy.dir}/WEB-INF/lib"/>
+	<property name="tomcat.deploy.lib.dir" value="${tomcat.deploy.webinf.dir}/lib"/>
+	<property name="tomcat.deploy.classes.dir" value="${tomcat.deploy.webinf.dir}/classes"/>
 
-    <property file="${nucleus.conf.dir}/nuclos-version.properties" prefix="version-props"/>
+	<property name="java.src.version" value="1.6"/>
 
-	<path id="nucleus.client.run.path">
-		<!-- include nucleus.conf.dir in classpath so the ClassLoader finds nuclos-client.properties: -->
-		<pathelement location="${nucleus.conf.dir}"/>
-		<path refid="client.run.path"/>
+	<!-- nuclos subdirectories: -->
+	<property name="nuclos.dir" value="${basedir}"/>
+	<property name="nuclos.src.dir" value="${nuclos.dir}/src"/>
+	<property name="nuclos.src.java.dir" value="${nuclos.src.dir}/java"/>
+	<property name="nuclos.conf.dir" value="${nuclos.dir}/conf"/>
+	<property name="nuclos.conf.client.dir" value="${nuclos.conf.dir}/client"/>
+	<property name="nuclos.conf.server.dir" value="${nuclos.conf.dir}/server"/>
+	<property name="nuclos.doc.dir" value="${nuclos.dir}/doc"/>
+	<property name="nuclos.db.dir" value="${nuclos.dir}/db"/>
+	<property name="nuclos.lib.dir" value="${nuclos.dir}/lib"/>
+	<property name="nuclos.build.dir" value="${nuclos.dir}/build"/>
+	<property name="nuclos.build.classes.dir" value="${nuclos.build.dir}/classes"/>
+	<property name="nuclos.build.deploy.dir" value="${nuclos.build.dir}/deploy"/>
+	<property name="nuclos.bin.dir" value="${nuclos.dir}/bin"/>
+	<property name="nuclos.dist.dir" value="${nuclos.dir}/dist"/>
+
+	<property file="${nuclos.conf.dir}/nuclos-version.properties" prefix="version-props"/>
+
+	<!-- Source directories: -->
+	<property name="src.nuclos.dir" value="${nuclos.src.java.dir}/org/nuclos"/>
+	<property name="src.nuclos.common.dir" value="${src.nuclos.dir}/common"/>
+	<property name="src.nuclos.client.dir" value="${src.nuclos.dir}/client"/>
+	<property name="src.nuclos.server.dir" value="${src.nuclos.dir}/server"/>
+
+	<!-- define lib-filesets for common, server and client instead of listing each library -->
+	<fileset id="nuclos.common.jars" dir="${nuclos.lib.dir}/common" includes="*.jar"/>
+	<fileset id="nuclos.common.unjars" dir="${nuclos.lib.dir}/common" includes="*.jar" excludes="spring-security-config-3.0.4.RELEASE.jar, activemq-all-5.3.0.jar"/>
+	<fileset id="nuclos.client.jars" dir="${nuclos.lib.dir}/client" includes="*.jar"/>
+	<fileset id="nuclos.client.unjars" dir="${nuclos.lib.dir}/client" includes="*.jar" excludes="groovy-all-1.7.6.jar"/>
+	<fileset id="nuclos.server.jars" dir="${nuclos.lib.dir}/server" includes="*.jar"/>
+
+	<fileset id="nuclos.db.noredist.jars" dir="${nuclos.lib.dir}/db-noredist" includes="*.jar"/>
+
+	<fileset id="jnlp-servlet.jar" dir="${nuclos.home.dir}/lib/server" includes="jnlp-servlet-1.6.jar"/>
+
+	<path id="nuclos.common.path">
+		<fileset refid="nuclos.server.jars"/>
+		<fileset refid="nuclos.common.jars"/>
+		<fileset refid="nuclos.client.jars"/>
+		<fileset refid="nuclos.db.noredist.jars"/>
 	</path>
 
-	<pathconvert property="jar.server.manifest.classpath" pathsep=" ">
-		<fileset refid="nucleus.common.jars"/>
-		<fileset refid="nucleus.server.jars"/>
-		<!-- Do _not_ include the database drivers here because we are
-		     not allowed to redistribute them (due to license issues) -->
-		<flattenmapper />
-	</pathconvert>
+	<path id="nuclos.server.path">
+		<fileset refid="nuclos.common.jars"/>
+		<fileset refid="nuclos.server.jars"/>
+		<!-- Some database driver-specific classes are needed for compilation -->
+		<fileset refid="nuclos.db.noredist.jars"/>
+		<fileset refid="nuclos.client.jars"/>
+	</path>
 
-	<target name="init" depends="check.build.properties, init.common">
-		<copy file="${nucleus.conf.dir}/novabit/log4j-client-template.xml" tofile="${nucleus.conf.dir}/log4j.xml" overwrite="false"/>
-	</target>
+	<path id="nuclos.client.path">
+		<fileset refid="nuclos.common.jars"/>
+		<fileset refid="nuclos.client.jars"/>
+	</path>
 
-	<target name="main" depends="init, clean, main.noclean"
-					description="Performs a clean, builds and deploys the server, then builds the client."/>
-
-	<target name="main.noclean" depends="build.noclean, deploy.server, deploy.client"
-					description="Builds and deploys the server, then builds the client."/>
-
-	<target name="main.nodeploy" depends="init, clean, build.noclean, package.server"/>
-
-	<target name="build.noclean" depends="build.novabit.common.noclean, jar.server, compile.client"
-					description="Builds the server, then builds the client."/>
-
-	<target name="build.novabit.common.noclean">
-		<!--ant dir="${common.dir}" target="main.noclean" inheritall="false"/-->
-		<ant antfile="${nucleus.dir}/build-common.xml" dir="${common.dir}" target="main.noclean" inheritall="false">
-			<property name="jboss.default.lib.dir" value="${jboss.default.lib.dir}"/>
-		</ant>
-	</target>
-
-	<target name="compile" depends="init, compile.client"/>
-
-	<target name="compile.server" depends="init, compile.server.nodepend"/>
-
-	<target name="compile.server.nodepend">
-		<mkdir dir="${nucleus.build.classes.dir}"/>
-
-		<copy todir="${nucleus.build.classes.dir}">
-			<fileset dir="${nucleus.src.java.dir}" includes="org/nuclos/common/security/auth.conf"/>
-			<fileset dir="${nucleus.src.java.dir}" includes="org/nuclos/common/querybuilder/querybuildermodel.dtd"/>
-			<fileset dir="${nucleus.src.java.dir}" includes="org/nuclos/common/preferences/preferences.dtd"/>
-		</copy>
-		<copy todir="${nucleus.build.classes.dir}/resources">
-			<fileset dir="${nucleus.conf.dir}/resources" excludes="project_*.properties"/>
-			<!-- include system layoutmls and reports, TODO: move them into conf folder -->
-			<fileset dir="${nucleus.src.dir}" includes="layoutml/**/*, reports/**/*"/>
-		</copy>
-
-		<copy todir="${nucleus.build.classes.dir}">
-			<fileset dir="${nucleus.conf.dir}" includes="nuclos-version.properties, icons.properties, nuclos-menuconfig.xml"/>
-		</copy>
-
-		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
-					 nowarn="${javac.nowarn}"
-					 srcdir="${nucleus.src.java.dir}"
-					 includes="org/nuclos/common/, org/nuclos/server/"
-					 excludes="**/test/"
-					 classpathref="nucleus.server.path"
-					 includeAntRuntime="false">
-		</javac>
-	</target>
+	<path id="nuclos.path">
+		<path refid="nuclos.common.path"></path>
+		<path refid="nuclos.server.path"></path>
+		<path refid="nuclos.client.path"></path>
+	</path>
 
 	<target name="compile.reportapi">
-		<mkdir dir="${nucleus.build.classes.dir}"/>
+		<mkdir dir="${nuclos.build.classes.dir}"/>
 
-		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+		<javac encoding="8859_1" destdir="${nuclos.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
-					 srcdir="${nucleus.src.java.dir}"
+					 srcdir="${nuclos.src.java.dir}"
 					 includes="org/nuclos/server/report/api/"
-					 classpathref="nucleus.server.path"
+					 classpathref="nuclos.server.path"
 					 includeAntRuntime="false">
 		</javac>
 	</target>
 
-	<target name="compile.client" depends="compile.server, compile.client.nodepend"/>
+	<target name="jar.reportapi" depends="compile.reportapi">
+		<mkdir dir="${nuclos.build.deploy.dir}"/>
 
-	<target name="compile.client.nodepend">
-		<mkdir dir="${nucleus.build.classes.dir}"/>
-		<mkdir dir="${nucleus.build.deploy.dir}"/>
-
-		<copy todir="${nucleus.build.deploy.dir}">
-			<fileset dir="${common.build.deploy.dir}" includes="novabit-common.jar"/>
-		</copy>
-
-		<copy todir="${nucleus.build.classes.dir}">
-			<fileset dir="${nucleus.src.java.dir}"
-							 includes="org/nuclos/common/security/auth.conf,
-							 org/nuclos/common/querybuilder/querybuildermodel.dtd,
-							 org/nuclos/common/preferences/preferences.dtd"/>
-			<fileset dir="${nucleus.src.java.dir}" includes="org/nuclos/client/layout/wysiwyg/**/*"/>
-			<fileset dir="${nucleus.src.java.dir}" includes="org/nuclos/client/lookandfeel/preferences/*"/>
-		</copy>
-
-		<copy todir="${nucleus.build.classes.dir}/org/nuclos/client">
-			<fileset dir="${src.nucleus.client.dir}"
-							 includes="**/images/,
-							 **/layoutml/*.layoutml,
-							 help/about/about.html"/>
-		</copy>
-
-		<copy todir="${nucleus.build.classes.dir}/org/nuclos/client/gef">
-			<fileset dir="${nucleus.src.java.dir}/org/nuclos/client/gef" includes="**/images/*"/>
-		</copy>
-
-		<copy todir="${nucleus.build.classes.dir}/org/nuclos/client/report">
-			<fileset dir="${nucleus.src.java.dir}/org/nuclos/client/report" includes="*.dtd"/>
-		</copy>
-
-		<copy file="${nucleus.src.java.dir}/org/nuclos/common2/layoutml/layoutml.dtd" tofile="${nucleus.conf.dir}/layoutml.dtd"
-					overwrite="true"/>
-		
-		<copy file="${nucleus.conf.dir}/client/applicationContext.xml" tofile="${nucleus.build.classes.dir}/org/nuclos/client/config/applicationContext.xml"
-					overwrite="true"/>
-
-		<copy file="${nucleus.conf.dir}/client/client.properties" tofile="${nucleus.build.classes.dir}/org/nuclos/client/config/client.properties"
-					overwrite="true"/>
-
-		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" debug="on" deprecation="off" optimize="on"
-					 nowarn="${javac.nowarn}"
-					 source="${java.src.version}" srcdir="${nucleus.src.java.dir}"
-					 includes="org/nuclos/client/"
-					 excludes="**/test/"
-					 includeAntRuntime="false">
-			<classpath>
-				<!-- @todo the ref to nuclos-server.jar slows the build down.
-				  When we have nucleus-common.jar and nucleus-server-interface.jar, we should try this again. -->
-				<!--<pathelement location="${project.build.deploy.dir}/nuclos-server.jar"/>-->
-				<path refid="nucleus.client.path"/>
-			</classpath>
-		</javac>
-	</target>
-
-	<target name="jar.server" depends="compile.server, jar.jboss, jar.reportapi" description="Builds the server.">
-		<mkdir dir="${nucleus.build.deploy.dir}"/>
-
-		<!-- Plain-vanilla Nuclos does not need nuclos-app.properties files -->
-		<jar jarfile="${nucleus.build.deploy.dir}/nuclos-server.jar">
-			<fileset dir="${nucleus.build.classes.dir}"
-				 includes="org/nuclos/common/, org/nuclos/server/, resources/, nuclos-version.properties"
-				 excludes="**/test/"/>
-			<fileset dir="${nucleus.conf.dir}/ejb3/"/>
-			<manifest>
-				<attribute name="Manifest-Version" value="1.0"/>
-				<attribute name="Class-Path" value="${jar.server.manifest.classpath} ./novabit-common.jar ./novabit-common-ejb.jar"/>
-			</manifest>
-		</jar>
-	</target>
-
-	<target name="jar.reportapi" depends="compile.reportapi" description="Package report api.">
-		<mkdir dir="${nucleus.build.deploy.dir}"/>
-
-		<jar jarfile="${nucleus.build.deploy.dir}/nuclos-reportapi.jar">
-			<fileset dir="${nucleus.build.classes.dir}"
+		<jar jarfile="${nuclos.build.deploy.dir}/nuclos-reportapi.jar">
+			<fileset dir="${nuclos.build.classes.dir}"
 				 includes="org/nuclos/server/report/api/"
 				 excludes="**/test/"/>
 			<manifest>
@@ -181,21 +107,166 @@
 		</jar>
 	</target>
 
-	<target name="deploy.client" depends="compile.client" description="Builds the client.">
-		<mkdir dir="${nucleus.build.deploy.dir}"/>
+	<target name="clean.javadoc">
+		<delete quiet="true" dir="${nucleus.doc.dir}/api"/>
+	</target>
 
-		<!-- JNLP-INF file is not needed and complicates install customizations
-		<mkdir dir="${nucleus.build.deploy.dir}/JNLP-INF/"/>
-		<copy todir="${nucleus.build.deploy.dir}/JNLP-INF/">
-			<fileset dir="${nucleus.conf.dir}/webstart/app/" includes="*.jnlp"/>
+	<target name="javadoc" unless="skip.javadoc">
+			<copy todir="${nuclos.doc.dir}/api">
+				<fileset dir="${nuclos.src.java.dir}/org/nuclos/client/ui/images" includes="novabit-150x45.gif"/>
+			</copy>
+			<javadoc destdir="${nuclos.doc.dir}/api" source="${java.src.version}" maxmemory="128m" access="protected" splitindex="true"
+							 version="true" author="true" use="true" windowtitle="Nucleus API Documentation">
+				<doctitle>Nuclos API Documentation</doctitle>
+				<header>
+					<![CDATA[<img src="{@docRoot}/novabit-150x45.gif">]]></header>
+				<tag name="invariant" description="Invariants:"/>
+				<tag name="precondition" description="Preconditions:" scope="constructors,methods"/>
+				<tag name="postcondition" description="Postconditions:" scope="constructors,methods"/>
+				<tag name="todo" description="To do:"/>
+				<tag name="event-dispatch-thread" description="@event-dispatch-thread"/>
+				<sourcepath>
+					<pathelement location="${nuclos.src.java.dir}"/>
+				</sourcepath>
+
+				<packageset dir="${nuclos.src.java.dir}" excludes="org/nuclos/**/test/**, org/nuclos/tools/**, org/nuclos/**/interfaces/**"/>
+				<classpath>
+					<path refid="nuclos.path"/>
+				</classpath>
+			</javadoc>
+		</target>
+
+
+	<target name="compile.common">
+		<mkdir dir="${nuclos.build.classes.dir}"/>
+
+		<copy todir="${nuclos.build.classes.dir}">
+			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/common2/layoutml/layoutml.dtd, org/nuclos/client/ui/images/"/>
 		</copy>
-		-->
-		<jar jarfile="${nucleus.build.deploy.dir}/nuclos-synthetica.jar">
-			<fileset dir="${nucleus.build.classes.dir}" includes="org/nuclos/tools/synthetica/"/>
+
+		<javac destdir="${nuclos.build.classes.dir}" encoding="8859_1" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+			 		 includes="org/nuclos/common2/**/"
+					 excludes="org/nuclos/common2/server/**/ejb/, org/nuclos/**/test/"
+					 classpathref="nuclos.common.path"
+			         nowarn="true"
+			         includeAntRuntime="false">
+			<src path="${nuclos.src.java.dir}"/>
+		</javac>
+	</target>
+
+	<target name="compile.server" depends="compile.common">
+		<mkdir dir="${nuclos.build.classes.dir}"/>
+
+		<copy todir="${nuclos.build.classes.dir}">
+			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/common/security/auth.conf"/>
+			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/common/querybuilder/querybuildermodel.dtd"/>
+			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/common/preferences/preferences.dtd"/>
+			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/server/jnlp/jnlp.xsl"/>
+		</copy>
+		<copy todir="${nuclos.build.classes.dir}/resources">
+			<fileset dir="${nuclos.conf.dir}/resources" excludes="project_*.properties"/>
+			<!-- include system layoutmls and reports, TODO: move them into conf folder -->
+			<fileset dir="${nuclos.src.dir}" includes="layoutml/**/*, reports/**/*"/>
+		</copy>
+
+		<copy todir="${nuclos.build.classes.dir}">
+			<fileset dir="${nuclos.conf.dir}" includes="nuclos-version.properties, icons.properties, nuclos-menuconfig.xml"/>
+		</copy>
+
+		<javac encoding="8859_1" destdir="${nuclos.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+					 nowarn="${javac.nowarn}"
+					 srcdir="${nuclos.src.java.dir}"
+					 includes="org/nuclos/common/, org/nuclos/server/"
+					 excludes="**/test/"
+					 classpathref="nuclos.server.path"
+					 includeAntRuntime="false">
+		</javac>
+	</target>
+
+	<target name="compile.client" depends="compile.server">
+		<mkdir dir="${nuclos.build.classes.dir}"/>
+
+		<copy todir="${nuclos.build.classes.dir}">
+			<fileset dir="${nuclos.src.java.dir}"
+							 includes="org/nuclos/common/security/auth.conf,
+							 org/nuclos/common/querybuilder/querybuildermodel.dtd,
+							 org/nuclos/common/preferences/preferences.dtd"/>
+			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/client/layout/wysiwyg/**/*"/>
+			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/client/lookandfeel/preferences/*"/>
+		</copy>
+
+		<copy todir="${nuclos.build.classes.dir}/org/nuclos/client">
+			<fileset dir="${src.nuclos.client.dir}"
+							 includes="**/images/,
+							 **/layoutml/*.layoutml,
+							 help/about/about.html"/>
+		</copy>
+
+		<copy todir="${nuclos.build.classes.dir}/org/nuclos/client/gef">
+			<fileset dir="${nuclos.src.java.dir}/org/nuclos/client/gef" includes="**/images/*"/>
+		</copy>
+
+		<copy todir="${nuclos.build.classes.dir}/org/nuclos/client/report">
+			<fileset dir="${nuclos.src.java.dir}/org/nuclos/client/report" includes="*.dtd"/>
+		</copy>
+
+		<copy file="${nuclos.src.java.dir}/org/nuclos/common2/layoutml/layoutml.dtd" tofile="${nuclos.conf.dir}/layoutml.dtd"
+					overwrite="true"/>
+
+
+		<javac encoding="8859_1" destdir="${nuclos.build.classes.dir}" debug="on" deprecation="off" optimize="on"
+					 nowarn="${javac.nowarn}"
+					 source="${java.src.version}" srcdir="${nuclos.src.java.dir}"
+					 includes="org/nuclos/client/"
+					 excludes="**/test/"
+					 includeAntRuntime="false">
+			<classpath>
+				<!-- @todo the ref to nuclos-server.jar slows the build down.
+				  When we have nuclos-common.jar and nuclos-server-interface.jar, we should try this again. -->
+				<!--<pathelement location="${project.build.deploy.dir}/nuclos-server.jar"/>-->
+				<path refid="nuclos.client.path"/>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="jar.common" depends="compile.common">
+		<mkdir dir="${nuclos.build.deploy.dir}"/>
+
+		<jar jarfile="${nuclos.build.deploy.dir}/nuclos-common.jar">
+			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/common2/"
+							 excludes="org/nuclos/common2/server/**/ejb/, org/nuclos/**/test/, org/nuclos/**/build.xml"/>
 		</jar>
-		<jar jarfile="${nucleus.build.deploy.dir}/nuclos-client.jar">
-			<fileset dir="${nucleus.build.classes.dir}"
+	</target>
+
+
+	<target name="jar.server" depends="jar.common, compile.server">
+		<mkdir dir="${nuclos.build.deploy.dir}"/>
+
+		<jar jarfile="${nuclos.build.deploy.dir}/nuclos-server.jar">
+			<fileset dir="${nuclos.build.classes.dir}"
+				 includes="org/nuclos/common2/, org/nuclos/common/, org/nuclos/server/, resources/, nuclos-version.properties"
+				 excludes="**/test/"/>
+			<fileset dir="${nuclos.build.classes.dir}"
+				 includes="org/nuclos/common2/server/**/ejb/"
+				 excludes="org/nuclos/**/test/, org/nuclos/**/build.xml"/>
+			<fileset dir="${nuclos.conf.server.dir}" includes="META-INF/**" />
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="jar.client" depends="jar.common, compile.client">
+		<mkdir dir="${nuclos.build.deploy.dir}"/>
+
+		<jar jarfile="${nuclos.build.deploy.dir}/nuclos-synthetica.jar">
+			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/tools/synthetica/"/>
+		</jar>
+
+		<jar jarfile="${nuclos.build.deploy.dir}/nuclos-client.jar">
+			<fileset dir="${nuclos.build.classes.dir}"
 				includes=	"org/nuclos/client/,
+							org/nuclos/common2/,
 							org/nuclos/common/,
 							org/nuclos/server/*.class,
 							org/nuclos/server/*/*.class,
@@ -212,502 +283,181 @@
 							icons.properties,
 							nuclos-menuconfig.xml"
 				excludes=	"**/test/,
+							org/nuclos/common2/server/**/ejb/,
 							org/nuclos/client/help/javahelp/,
 							org/nuclos/client/main/animatedmenubar/,
 							org/nuclos/**/build.xml"/>
-			<fileset dir="${nucleus.build.classes.dir}"
-				includes= "org/nuclos/server/**/ejb3/*Remote.class"/>
-			<!--
-			<fileset dir="${nucleus.build.deploy.dir}"
-				includes=   "JNLP-INF/*.jnlp"/>
-			-->
+			<fileset dir="${nuclos.build.classes.dir}" includes= "org/nuclos/server/**/ejb3/*Remote.class"/>
+
+			<fileset dir="${nuclos.conf.dir}/client" includes="*.properties"/>
+
+			<fileset dir="${nuclos.conf.client.dir}" includes="META-INF/**" />
+
 			<manifest>
 				<attribute name="Main-Class" value="org.nuclos.client.main.Main"/>
-				<attribute name="Class-Path" value="novabit-common.jar nuclos-config.jar nuclos-libs.jar nuclos-synthetica.jar"/>
+				<attribute name="Class-Path" value="nuclos-config.jar nuclos-libs.jar nuclos-synthetica.jar spring-security-config-3.0.4.RELEASE.jar activemq-all-5.3.0.jar"/>
 			</manifest>
 		</jar>
 	</target>
 
-	<target name="jar.jboss" description="Creates jboss specific libraries.">
-		<mkdir dir="${nucleus.build.deploy.dir}"/>
+	<target name="dist.client" depends="war.webstart.unjar">
 
-		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
-					 nowarn="${javac.nowarn}"
-					 excludes="org/nuclos/common2/logging/test/"
-					 classpathref="nucleus.path"
-					 includeAntRuntime="false">
-			<src path="${nucleus.src.java.dir}/org/nuclos/common2/logging/;${nucleus.src.java.dir}/org/nuclos/common2/deploy/;${nucleus.src.java.dir}/org/nuclos/server/mbean/"/>
-		</javac>
-
-		<jar jarfile="${nucleus.build.deploy.dir}/novabit-jboss.jar" basedir="${nucleus.build.classes.dir}"
-				 includes="org/nuclos/common2/logging/, org/nuclos/server/mbean/, org/nuclos/common2/deploy/"
-				 excludes="org/nuclos/common2/logging/test/">
-		</jar>
-	</target>
-
-	<target name="deploy.server" depends="jar.server,package.server,deploy.to.server" description="Builds and deploys the server."/>
-
-	<target name="package.server" description="Builds the server.">
-		<ear destfile="${nucleus.build.deploy.dir}/nuclos.ear" appxml="${nucleus.conf.dir}/jboss/ear/META-INF/application.xml">
-			<!--			<fileset dir="${nucleus.conf.dir}/jboss/ear" includes="META-INF/jboss-app.xml, scheduler-service.xml"/>-->
-			<fileset dir="${nucleus.build.deploy.dir}" includes="nuclos-server.jar"/>
-			<fileset dir="${common.build.deploy.dir}" includes="novabit-common.jar, novabit-common-ejb.jar"/>
-			<fileset refid="nucleus.common.jars"/>
-			
-			<fileset refid="nucleus.server.jars"/>
-		</ear>
-	</target>
-
-	<target name="deploy.to.server" description="copys the build result to server deploy directory">
-		<!-- copy file="${nucleus.build.deploy.dir}/nuclos-reportapi.jar"
-			todir="${jboss.server.dir}/lib"
-			overwrite="true"/>
-		<copy file="${nucleus.build.deploy.dir}/novabit-jboss.jar"
-			todir="${jboss.server.dir}/lib"
-			overwrite="true"/>
-		<copy file="${nucleus.build.deploy.dir}/nuclos.ear"
-			todir="${jboss.server.dir}/deploy"
-			overwrite="true"/-->
-		
-		<copy file="${nucleus.build.deploy.dir}/nuclos-server.jar"
-					todir="${jboss.server.dir}/deploy/nuclos-webstart.war/WEB-INF/lib"
-					overwrite="true"/>
-		<copy file="${nucleus.build.deploy.dir}/novabit-common.jar"
-							todir="${jboss.server.dir}/deploy/nuclos-webstart.war/WEB-INF/lib"
-							overwrite="true"/>
-		<copy file="${nucleus.build.deploy.dir}/novabit-common-ejb.jar"
-							todir="${jboss.server.dir}/deploy/nuclos-webstart.war/WEB-INF/lib"
-							overwrite="true"/>
-		
-		
-		<copy file="${nucleus.build.deploy.dir}/nuclos-server.jar" todir="${tomcat.deploy.lib}" overwrite="true"/>
-		<copy file="${nucleus.build.deploy.dir}/novabit-common.jar" todir="${tomcat.deploy.lib}" overwrite="true"/>
-		<copy file="${nucleus.build.deploy.dir}/novabit-common-ejb.jar" todir="${tomcat.deploy.lib}" overwrite="true"/>
-		
-		<copy todir="${tomcat.deploy.lib}">
-			<fileset refid="nucleus.common.jars"></fileset>
-			<fileset refid="nucleus.server.jars"></fileset>
-			<fileset refid="nucleus.db.noredist.jars"></fileset>
-		</copy>
-		
-		<copy overwrite="true" todir="${jboss.server.dir}/deploy/nuclos-webstart.war">
-			<fileset dir="${nucleus.conf.dir}/webstart">
-			</fileset>
-		</copy>
-		
-		<copy overwrite="true" todir="${tomcat.deploy.config}">
-					<fileset dir="${nucleus.conf.dir}/webstart/WEB-INF">
-					</fileset>
-				</copy>
-		
-		<touch>
-			<fileset dir="${jboss.server.dir}/deploy">
-				<include name="jms/nuclos-destinations-service.xml"/>
-				<include name="deploy.last/quartz-service.xml"/>
-			</fileset>
-		</touch>
-		<if><equals arg1="${deploy.jboss.server.nucleus.service}" arg2="true"/>
-			<then><touch file="deploy.last/nuclos-service.xml"/></then>
-		</if>
-	</target>
-	
-	<target name="copy conf spring" description="spring copy">
-		<copy overwrite="true" todir="${jboss.server.dir}/deploy/nuclos-webstart.war">
-				<fileset dir="${nucleus.conf.dir}/webstart">
-				</fileset>
-		</copy>
-	</target>
-
-	<!-- Target to start the JBoss server: -->
-	<target name="run.server">
-		<exec executable="run.bat" dir="${jboss.home}/bin" vmlauncher="false">
-			<arg line="-c ${jboss.server.name}"/>
-		</exec>
-	</target>
-
-	<!-- Target to start the JBoss server in debugging mode: -->
-	<target name="debug.server">
-		<exec executable="run.bat" dir="${jboss.home}/bin" vmlauncher="false">
-			<arg line="-c ${jboss.server.name}"/>
-			<env key="JAVA_OPTS"
-					 value="${env.JAVA_OPTS} -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"/>
-		</exec>
-	</target>
-
-	<!-- Target to run client -->
-	<target name="run.client" depends="deploy.client, run.client.nodepend"
-					description="Compiles the server and client, then runs the client."/>
-
-	<!-- Target to run client (contains no dependencies, just run the client) -->
-	<target name="run.client.nodepend" description="Runs the Nucleus client.">
-		<java classname="org.nuclos.client.main.Main" fork="true">
-			<classpath>
-				<path refid="nucleus.client.run.path"/>
-			</classpath>
-			<jvmarg line="${run.client.vmargs}"/>
-			<sysproperty key="nucleus.client.conf.dir" value="${nucleus.conf.dir}"/>
-			<sysproperty key="com.sun.management.jmxremote" value="true"/>
-		</java>
-	</target>
-
-	<target name="run.console" description="Runs the Nucleus console.">
-		<java classname="org.nuclos.client.console.NuclosConsole" fork="true">
-			<arg line="${console-args}"/>
-			<classpath>
-				<path refid="nucleus.client.run.path"/>
-			</classpath>
-			<sysproperty key="nucleus.client.conf.dir" value="${nucleus.conf.dir}"/>
-		</java>
-	</target>
-
-	<target name="run.translation" description="Runs the translation tool.">
-		<mkdir dir="${nucleus.build.classes.dir}/org/nuclos/tools/translation/csv"/>
-
-		<copy todir="${nucleus.build.classes.dir}/org/nuclos/tools/translation/csv">
-			<fileset dir="${nucleus.src.java.dir}/org/nuclos/tools/translation/csv"/>
-		</copy>
-
-		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
-					 nowarn="${javac.nowarn}"
-					 srcdir="${nucleus.src.java.dir}"
-					 includes="org/nuclos/tools/translation/**"
-					 classpathref="nucleus.server.path"
-					 includeAntRuntime="false">
-		</javac>
-        <java classname="org.nuclos.tools.translation.TranslationMainFrame" fork="true"
-              dir="${nucleus.build.classes.dir}/org/nuclos/tools/translation">
-              <classpath>
-                    <pathelement location="${nucleus.build.classes.dir}"/>
-                    <pathelement location="${nucleus.lib.dir}/server/ojdbc14.jar"/>
-              		<pathelement location="${nucleus.lib.dir}/other/antlr-runtime-3.1.3.jar"/>
-                    <pathelement location="${project.src.java.dir}/org/nuclos/${app.name}/tools/translation/csv"/>
-              </classpath>
-        </java>
-  	</target>
-
-	<target name="echo.classpath.windows" description="Prints the current classpath to System.out.">
-		<pathconvert refid="nucleus.client.run.path" targetos="windows" property="nucleus.client.run.path.windows"/>
-		<echo message="${nucleus.client.run.path.windows}" level="debug"/>
-	</target>
-
-	<target name="show.serialver" description="Runs the UI version of the serialver tool with the current classpath.">
-		<pathconvert refid="nucleus.client.run.path" property="nucleus.client.run.path.os"/>
-		<exec executable="serialver">
-			<arg line="-classpath ${nucleus.client.run.path.os} -show"/>
-		</exec>
-	</target>
-
-	<target name="clean" depends="clean.javadoc, clean.ruledoc, dist.clean" description="Removes all generated files.">
-		<!--ant antfile="build-common.xml" dir="${common.dir}" target="clean" inheritall="false"/-->
-
-		<delete quiet="true" includeEmptyDirs="true">
-			<fileset dir="${nucleus.src.java.dir}"
-							 includes="**/interfaces/"
-							 excludes="pending/,
-					org/nuclos/server/masterdata/interfaces/MDLocalHome.java,
-					org/nuclos/server/masterdata/interfaces/MDLocalObject.java"/>
-			<fileset dir="${nucleus.build.dir}" includes="*/"/>
-			<fileset dir="${nucleus.conf.dir}" includes="layoutml.dtd"/>
-		</delete>
-	</target>
-
-	<target name="clean.javadoc">
-		<delete quiet="true" dir="${nucleus.doc.dir}/api"/>
-	</target>
-
-	<target name="clean.ruledoc">
-		<delete quiet="true" dir="${nucleus.doc.dir}/ruledoc"/>
-	</target>
-
-	<target name="compile.ruledoc.taglets">
-		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" debug="on" deprecation="off" optimize="on"
-					 nowarn="${javac.nowarn}"
-					 source="${java.src.version}" srcdir="${nucleus.src.java.dir}"
-					 includes="org/nuclos/tools/ruledoc/"/>
-	</target>
-
-	<target name="build.ruledoc" depends="init, compile.ruledoc.taglets" description="@todo compile rule sources" unless="skip.javadoc">
-		<javadoc access="private" additionalparam="-quiet
-		-d ${nucleus.doc.dir}/ruledoc
-		-taglet org.nuclos.tools.ruledoc.taglet.NameTaglet  -tagletpath ${nucleus.build.classes.dir}
-		-taglet org.nuclos.tools.ruledoc.taglet.BeschreibungTaglet -tagletpath ${nucleus.build.classes.dir}
-		-taglet org.nuclos.tools.ruledoc.taglet.VerwendungTaglet -tagletpath ${nucleus.build.classes.dir}
-		-taglet org.nuclos.tools.ruledoc.taglet.AnderungTaglet -tagletpath ${nucleus.build.classes.dir}
-		-linksource"
-
-						 classpath="${nucleus.build.classes.dir}; ${common.dir}/build/classes"
-						 windowtitle="Nucleus Regeln"
-						 sourcefiles="${codegenerator.source}/*.java"
-						 sourcepath="${codegenerator.source};${src.nucleus.dir}">
-
-			<doclet name="org.nuclos.tools.ruledoc.doclet.CommonDoclet"
-							path="${nucleus.build.classes.dir}"/>
-		</javadoc>
-	</target>
-
-	<target name="javadoc" description="Builds the javadoc." unless="skip.javadoc">
-		<copy todir="${nucleus.doc.dir}/api">
-			<fileset dir="${common.src.dir}/org/nuclos/client/ui/images" includes="novabit-150x45.gif"/>
-		</copy>
-		<javadoc destdir="${nucleus.doc.dir}/api" source="${java.src.version}" maxmemory="128m" access="protected" splitindex="true"
-						 version="true" author="true" use="true" windowtitle="Nucleus API Documentation">
-			<doctitle>Nucleus API Documentation</doctitle>
-			<header>
-				<![CDATA[<img src="{@docRoot}/novabit-150x45.gif">]]></header>
-			<tag name="invariant" description="Invariants:"/>
-			<tag name="precondition" description="Preconditions:" scope="constructors,methods"/>
-			<tag name="postcondition" description="Postconditions:" scope="constructors,methods"/>
-			<tag name="todo" description="To do:"/>
-			<tag name="beaninfo" description="@beaninfo"/>
-			<tag name="ejb.bean" description="@ejb.bean" scope="types"/>
-			<tag name="ejb.home" description="@ejb.home"/>
-			<tag name="ejb.interface" description="@ejb.interface"/>
-			<tag name="ejb.finder" description="@ejb.finder"/>
-			<tag name="ejb.persistence" description="@ejb.persistence" scope="types, methods"/>
-			<tag name="ejb.transaction" description="@ejb.transaction" scope="types, methods"/>
-			<tag name="ejb.create-method" description="@ejb.create-method" scope="methods"/>
-			<tag name="ejb.interface-method" description="@ejb.interface-method" scope="methods"/>
-			<tag name="ejb.permission" description="@ejb.permission"/>
-			<tag name="ejb.pk" description="Primary key"/>
-			<tag name="ejb.security-identity" description="@ejb.security-identity"/>
-			<tag name="event-dispatch-thread" description="@event-dispatch-thread"/>
-			<tag name="xdoclet-generated" description="@xdoclet-generated"/>
-			<tag name="jboss.persistence" description="@jboss.persistence"/>
-			<tag name="jboss.read-ahead" description="@jboss.read-ahead"/>
-			<tag name="jboss.entity-command" description="@jboss.entity-command"/>
-			<tag name="jboss.entity-command-attribute" description="@jboss.entity-command-attribute"/>
-			<tag name="jboss.security-proxy" description="@jboss.security-proxy"/>
-			<tag name="jboss.query" description="@jboss.query"/>
-
-			<sourcepath>
-				<pathelement location="${common.src.dir}"/>
-				<pathelement location="${nucleus.src.java.dir}"/>
-			</sourcepath>
-
-			<packageset dir="${common.src.dir}" excludes="org/nuclos/**/test/**, org/nuclos/**/interfaces/**"/>
-			<packageset dir="${nucleus.src.java.dir}" excludes="org/nuclos/**/test/**, org/nuclos/tools/**, org/nuclos/**/interfaces/**"/>
-			<classpath>
-				<path refid="nucleus.path"/>
-			</classpath>
-		</javadoc>
-	</target>
-
-	<target name="build.cactus">
-		<taskdef resource="cactus.tasks">
-			<classpath refid="cactus.path"/>
-		</taskdef>
-
-		<mkdir dir="${nucleus.build.classes.dir}"/>
-		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
-					 nowarn="${javac.nowarn}"
-					 srcdir="${nucleus.src.java.dir}"
-					 includes="org/nuclos/**/test/" excludes="org/nuclos/client/"
-					 includeAntRuntime="false">
-			<classpath>
-				<path refid="nucleus.server.path"/>
-				<path location="${common.dir}/build/classes"/>
-				<path location="${nucleus.lib.dir}/test/jfcunit-2.08.jar"/>
-				<path location="${nucleus.lib.dir}/test/cactus-1.7.1.jar"/>
-				<path location="${nucleus.lib.dir}/test/servlet.jar"/>
-			</classpath>
-		</javac>
-
-		<touch file="${nucleus.conf.dir}/cactus/web.xml"/>
-
-		<war destfile="${nucleus.build.deploy.dir}/nucleus-test-temp.war" webxml="${nucleus.conf.dir}/cactus/web.xml">
-			<!--			manifest="${nucleus.conf.dir}/cactus/MANIFEST.MF">-->
-			<!--			<classes dir="${project.build.classes.dir}" includes="org/nuclos/**/test/*"/>-->
-			<classes dir="${nucleus.build.classes.dir}"
-							 includes="org/nuclos/**/test/,
- 					org/nuclos/common2/security/,
-					org/nuclos/common/security/,
-					org/nuclos/server/common/security/auth.conf"/>
-		</war>
-
-		<cactifywar destfile="${nucleus.build.deploy.dir}/nucleus-test.war" srcfile="${nucleus.build.deploy.dir}/nucleus-test-temp.war"/>
-
-		<ear destfile="${nucleus.build.deploy.dir}/nucleus-test.ear" appxml="${nucleus.conf.dir}/cactus/application.xml"
-				 basedir="${nucleus.build.deploy.dir}" includes="nucleus-test.war"/>
-	</target>
-
-	<target name="deploy.cactus" depends="build.cactus">
-		<copy todir="${jboss.server.dir}/deploy">
-			<fileset dir="${nucleus.build.deploy.dir}" includes="nucleus-test.war"/>
-		</copy>
-	</target>
-
-	<target name="run.cactus" depends="deploy.cactus">
-		<!-- wait for the server to deploy -->
-		<sleep seconds="5"/>
-
-		<junit printsummary="withOutAndErr" showoutput="on" filtertrace="off">
-			<classpath>
-				<path location="${nucleus.build.classes.dir}"/>
-				<path refid="nucleus.path"/>
-				<path refid="cactus.path"/>
-			</classpath>
-			<sysproperty key="cactus.contextURL" value="http://localhost:8080/nucleus-test"/>
-			<!--<sysproperty key="cactus.servletRedirectorName" value="ServletRedirectorSecure"/>-->
-			<formatter type="plain" usefile="false"/>
-			<test name="org.nuclos.server.ruleengine.test.rules.RuleInterfaceTest"/>
-			<!--<test name="org.nuclos.common.collect.collectable.test.CollectableFieldFormatTest"/>-->
-			<!--test name="org.nuclos.server.genericobject.searchcondition.test.SearchExpressionUnparserTest"/>-->
-			<!--<test name="org.nuclos.server.genericobject.searchcondition.test.DummyTest"/>-->
-		</junit>
-	</target>
-
-	<target name="dist" depends="main.nodeploy" description="copy files to distribution directory.">
-		<mkdir dir="${nucleus.dist.dir}"/>
-
-		<!-- copy .ear to server directory: -->
-		<mkdir dir="${nucleus.dist.dir}/server/deploy"/>
-		<copy todir="${nucleus.dist.dir}/server/deploy">
-			<fileset dir="${nucleus.build.deploy.dir}" includes="nuclos.ear"/>
-		</copy>
-
-		<!-- copy server config -->
-		<mkdir dir="${nucleus.dist.dir}/server/conf"/>
-		<copy todir="${nucleus.dist.dir}/server/conf">
-			<fileset dir="${nucleus.conf.dir}/jboss/install/conf" includes="nuclos-log4j.xml"/>
-		</copy>
-
-		<!-- copy client config: -->
-		<mkdir dir="${nucleus.dist.dir}/client"/>
-		<copy todir="${nucleus.dist.dir}/client">
-			<fileset dir="${nucleus.bin.dir}" includes="run-client.bat, run-console.bat"/>
-		</copy>
-		<mkdir dir="${nucleus.dist.dir}/client/conf"/>
-		<copy todir="${nucleus.dist.dir}/client/conf">
-		<fileset dir="${nucleus.conf.dir}" includes="jndi.properties, layoutml.dtd, nuclos-version.properties, icons.properties"/>
-		</copy>
-
-		<mkdir dir="${nucleus.dist.dir}/client/conf/icons"/>
-		<copy todir="${nucleus.dist.dir}/client/conf/icons">
-			<fileset dir="${nucleus.conf.dir}/icons" includes="*.png"/>
-		</copy>
-		<copy file="${nucleus.conf.dir}/novabit/log4j-client-template.xml" tofile="${nucleus.dist.dir}/client/conf/log4j.xml"/>
-
-		<!-- copy client libs: -->
-		<mkdir dir="${nucleus.dist.dir}/client/lib"/>
-		<copy todir="${nucleus.dist.dir}/client/lib">
-			<fileset dir="${nucleus.build.deploy.dir}" includes="*.jar" excludes="nuclos-server.jar, novabit-jboss.jar"/>
-		</copy>
-
-		<!-- copy layouts: -->
-		<mkdir dir="${nucleus.dist.dir}/client/layoutml"/>
-		<copy todir="${nucleus.dist.dir}/client/layoutml">
-			<fileset dir="${nucleus.src.dir}/layoutml"/>
-		</copy>
-
-		<!-- copy rules: -->
- 		<mkdir dir="${nucleus.dist.dir}/client/rules"/>
- 		<copy todir="${nucleus.dist.dir}/client/rules" failonerror="false">
- 			<fileset dir="${nucleus.src.dir}/rules"/>
- 		</copy>
-
-		<!-- copy reports/datasources: -->
- 		<mkdir dir="${nucleus.dist.dir}/client/reports"/>
- 		<copy todir="${nucleus.dist.dir}/client/reports" failonerror="false">
- 			<fileset dir="${nucleus.src.dir}/reports"/>
- 		</copy>
-
-		<!-- copy server libs: -->
-		<mkdir dir="${nucleus.dist.dir}/server/lib"/>
-		<copy todir="${nucleus.dist.dir}/server/lib">
-			<fileset dir="${nucleus.build.deploy.dir}" includes="novabit-jboss.jar, nuclos-reportapi.jar"/>
-		</copy>
-
-		<!-- zip sources: -->
-		<zip destfile="${nucleus.dist.dir}/nuclos-src-${version-props.nuclos.version.number}.zip">
-			<zipfileset dir="${nucleus.home.dir}/src/java" prefix="src/java" excludes="CVS, .svn, **/test/**, org/nuclos/tools/**"/>
-		</zip>
-
-		<!-- zip documentation: -->
-		<mkdir dir="${nucleus.doc.dir}/api"/>
-		<!-- does not exist if javadoc generation is skipped -->
-		<zip destfile="${nucleus.dist.dir}/doc.zip">
-			<zipfileset dir="${nucleus.doc.dir}/Systemdokumentation" includes="*.pdf, index.htm, DB-Schema*/, include/, UML/"
-							 excludes="DB-Schema.vsd, CSV, *.doc"/>
-			<zipfileset dir="${nucleus.doc.dir}/api" prefix="javadoc"/>
-		</zip>
-	</target>
-
-	<target name="dist.clean" description="remove distribution directory.">
-		<delete quiet="true" dir="${nucleus.dist.dir}"/>
-	</target>
-
-	<target name="deploy.webstart" description="Deploys the webstart-client." depends="clean, build.novabit.common.noclean, deploy.client, war.webstart.nodepend">
-		<!-- copy webstart-client to server -->
-		<copy overwrite="true" todir="${jboss.server.dir}/deploy/nuclos-webstart.war">
-			<fileset dir="${nucleus.build.deploy.dir}/nuclos-webstart.war"/>
-		</copy>
-	</target>
-
-	<target name="war.webstart" description="Builds the webstart-client." depends="clean, build.novabit.common.noclean, deploy.client, war.webstart.nodepend">
-	</target>
-
-	<target name="war.webstart.nodepend" description="Builds the webstart-client without dependencies." depends="war.webstart.jar">
-		<copy overwrite="true" todir="${nucleus.build.deploy.dir}/nuclos-webstart.war/app">
-			<fileset dir="${nucleus.build.deploy.dir}">
-				<include name="nuclos-client.jar"/>
-				<include name="nuclos-synthetica.jar"/>
-				<include name="novabit-common.jar"/>
-				<include name="nuclos-libs.jar"/>
-				<include name="nuclos-native.jar"/>
-			</fileset>
-			<fileset dir="${nucleus.conf.dir}">
-				<include name="log4j.xml"/>
-			</fileset>
-		</copy>
-
-		<copy overwrite="true" todir="${nucleus.build.deploy.dir}/nuclos-webstart.war">
-			<fileset dir="${nucleus.conf.dir}/webstart">
-			</fileset>
-		</copy>
-
-		<copy overwrite="true" todir="${nucleus.build.deploy.dir}/nuclos-webstart.war/WEB-INF/lib">
-			<fileset refid="jnlp-servlet.jar"/>
-		</copy>
-
-		<copy overwrite="true" todir="${nucleus.build.deploy.dir}/conf">
-			<fileset dir="${nucleus.conf.dir}">
+		<jar destfile="${nuclos.dist.dir}/webapp/${app.name}/app/nuclos-config.jar">
+			<fileset dir="${nuclos.conf.dir}">
 				<include name="jndi.properties"/>
 				<include name="nuclos-version.properties"/>
 				<include name="icons.properties"/>
-				<include name="log4j.xml"/>
 				<include name="layoutml.dtd"/>
+				<include name="log4j.xml"/>
 				<include name="icons/"/>
 				<include name="doc/"/>
 				<include name="SyntheticaBlueIceLookAndFeel.xml"/>
 			</fileset>
-		</copy>
-
-		<!-- jar conf folder -->
-		<jar destfile="${nucleus.build.deploy.dir}/nuclos-webstart.war/app/nuclos-config.jar">
-			<fileset dir="${nucleus.build.deploy.dir}/conf">
-				<exclude name="log4j.xml"/>
-			</fileset>
 		</jar>
 
-		<!-- sign jars (in order to enable security <all-permissions/>) -->
+		<jar destfile="${nuclos.dist.dir}/webapp/${app.name}/app/nuclos-native.jar">
+			<fileset dir="${nuclos.lib.dir}/client">
+				<include name="jawin.dll"/>
+			</fileset>
+		</jar>
+		<copy todir="${nuclos.dist.dir}/webapp/${app.name}/app">
+			<fileset dir="${nuclos.build.deploy.dir}">
+				<include name="nuclos-client.jar"/>
+				<include name="nuclos-common.jar"/>
+				<include name="nuclos-synthetica.jar"/>
+				<include name="nuclos-native.jar"/>
+				<include name="nuclos-libs.jar"/>
+			</fileset>
+			<fileset file="${nuclos.conf.dir}/log4j.xml"></fileset>
+			<fileset file="${nuclos.conf.dir}/webstart/app/webstart.jnlp"></fileset>
+			<fileset file="${nuclos.lib.dir}/common/spring-security-config-3.0.4.RELEASE.jar"></fileset>
+			<fileset file="${nuclos.lib.dir}/common/activemq-all-5.3.0.jar"/>
+			<fileset file="${nuclos.lib.dir}/client/groovy-all-1.7.6.jar"/>
+		</copy>
+
 		<signjar verbose="false" alias="nucleus" storepass="suelcun" keystore="./.keystore">
-			<fileset dir="${nucleus.build.deploy.dir}/nuclos-webstart.war/app">
+			<fileset dir="${nuclos.dist.dir}/webapp/${app.name}/app">
 				<include name="nuclos-client.jar"/>
 				<include name="nuclos-synthetica.jar"/>
-				<include name="novabit-common.jar"/>
+				<include name="nuclos-common.jar"/>
 				<include name="nuclos-config.jar"/>
 				<include name="nuclos-libs.jar"/>
 				<include name="nuclos-native.jar"/>
+				<include name="spring-security-config-3.0.4.RELEASE.jar"/>
+				<include name="groovy-all-1.7.6.jar"/>
+				<include name="activemq-all-5.3.0.jar"/>
 			</fileset>
 		</signjar>
+
 	</target>
 
-	<target name="war.webstart.jar" description="unjar libraries to sign them later and jar native libs.">
+	<target name="prepare.server">
+		<mkdir dir="${nuclos.dist.dir}/webapp/${app.name}/app"/>
+		<mkdir dir="${nuclos.dist.dir}/webapp/${app.name}/META-INF"/>
+		<mkdir dir="${nuclos.dist.dir}/webapp/${app.name}/WEB-INF"/>
+		<mkdir dir="${nuclos.dist.dir}/webapp/${app.name}/WEB-INF/classes"/>
+		<mkdir dir="${nuclos.dist.dir}/webapp/${app.name}/WEB-INF/lib"/>
+	</target>
+
+	<target name="dist.server" depends="clean, prepare.server, jar.reportapi, deploy.server, compile.client,jar.client, dist.client">
+
+	</target>
+
+	<target name="jar.installer">
+		<mkdir dir="${nuclos.build.classes.dir}"/>
+
+		<javac encoding="8859_1" destdir="${nuclos.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+					 nowarn="${javac.nowarn}"
+					 srcdir="${nuclos.src.java.dir}"
+					 includes="org/nuclos/installer/"
+					 includeAntRuntime="false"/>
+
+		<mkdir dir="${nuclos.build.dir}/installer"/>
+		<jar jarfile="${nuclos.build.dir}/installer/nuclos-installer.jar">
+			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/"/>
+			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
+			<fileset dir="${nuclos.conf.dir}" file="${nuclos.conf.dir}/nuclos-version.properties"/>
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0"/>
+                <attribute name="Main-Class" value="org.nuclos.installer.Main"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="dist" depends="dist.server, jar.installer" description="dist with installer">
+		<mkdir dir="${nuclos.dist.dir}/installer"/>
+		<copy file="${nuclos.build.dir}/installer/nuclos-installer.jar"
+			todir="${nuclos.dist.dir}/installer"
+			overwrite="true"/>
+
+		<mkdir dir="${nuclos.dist.dir}/installer/data"/>
+
+		<!-- PostgreSQL driver jar is redistributed (as complete jar), that's ok -->
+		<copy todir="${nuclos.dist.dir}/installer/data" overwrite="true">
+			<fileset dir="${nuclos.lib.dir}/db-noredist"
+				includes="postgresql-8.4-701.jdbc4.jar"/>
+		</copy>
+
+		<!--jar jarfile="${nuclos.dist.dir}/installer/data/nuclos-webapp.jar">
+			<fileset dir="${nuclos.dist.dir}/webapp"/>
+		</jar-->
+
+		<copy todir="${nuclos.dist.dir}/installer/data">
+			<fileset dir="${nuclos.dist.dir}/webapp"/>
+		</copy>
+
+		<copy todir="${nuclos.dist.dir}/installer">
+			<fileset dir="${nuclos.doc.dir}" includes="license/**"/>
+		</copy>
+
+		<copy todir="${nuclos.dist.dir}/installer">
+			<fileset dir="${nuclos.doc.dir}/installation" includes="*.pdf"/>
+		</copy>
+
+		<copy file="${nuclos.conf.dir}/novabit/nuclos-template.xml"
+			tofile="${nuclos.dist.dir}/installer/nuclos.xml"/>
+
+		<zip destfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}.zip">
+			<zipfileset dir="${nuclos.dist.dir}/installer"/>
+		</zip>
+	</target>
+
+
+	<target name="deploy.server" depends="jar.server">
+		<copy file="${nuclos.build.deploy.dir}/nuclos-common.jar" todir="${nuclos.dist.dir}/webapp/${app.name}/WEB-INF/lib" overwrite="true"/>
+		<copy file="${nuclos.build.deploy.dir}/nuclos-server.jar" todir="${nuclos.dist.dir}/webapp/${app.name}/WEB-INF/lib" overwrite="true"/>
+
+		<copy todir="${nuclos.dist.dir}/webapp/${app.name}/WEB-INF/lib">
+			<fileset refid="nuclos.common.jars"></fileset>
+			<fileset refid="nuclos.server.jars"></fileset>
+			<fileset refid="nuclos.db.noredist.jars"></fileset>
+		</copy>
+
+		<copy todir="${nuclos.dist.dir}/webapp/${app.name}/">
+			<fileset dir="${nuclos.conf.dir}/webstart"></fileset>
+		</copy>
+
+	</target>
+
+	<target name="deploy.to.tomcat" depends="jar.server">
+		<copy file="${nuclos.build.deploy.dir}/nuclos-common.jar" todir="${tomcat.deploy.webinf.lib.dir}" overwrite="true"/>
+		<copy file="${nuclos.build.deploy.dir}/nuclos-server.jar" todir="${tomcat.deploy.webinf.lib.dir}" overwrite="true"/>
+	</target>
+
+	<target name="clean">
+		<delete quiet="true" includeEmptyDirs="true">
+			<fileset dir="${nuclos.build.dir}" includes="*/"/>
+			<fileset dir="${nuclos.dist.dir}" includes="*/"/>
+			<fileset dir="${nuclos.conf.dir}" includes="layoutml.dtd"/>
+		</delete>
+	</target>
+
+	<target name="war.webstart.unjar">
 		<!-- unjar libraries to sign them later -->
-		<unjar overwrite="false" dest="${nucleus.build.classes.dir}">
-			<fileset refid="nucleus.common.jars"/>
-			
-			<fileset refid="nucleus.client.jars"/>
+		<unjar overwrite="false" dest="${nuclos.build.classes.dir}">
+			<fileset refid="nuclos.common.unjars"/>
+
+			<fileset refid="nuclos.client.unjars"/>
 			<patternset>
 				<!-- TODO: META-INF/** also excludes META-INF/services which contains
 				     the service provider declarations. Is this behavior correct? -->
@@ -715,28 +465,12 @@
 			</patternset>
 		</unjar>
 
-		<!-- unjar libraries to sign them later
-		<unjar overwrite="false" src="${jboss.client.dir}/jboss-j2ee.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${jboss.client.dir}/jboss-client.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${jboss.client.dir}/jboss-common-client.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${jboss.client.dir}/jboss-system-client.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${jboss.client.dir}/jbosssx-client.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${jboss.client.dir}/jboss-transaction-client.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${jboss.client.dir}/jbossmq-client.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${jboss.client.dir}/jboss-remoting.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${jboss.client.dir}/jboss-serialization.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${jboss.client.dir}/jboss-ejb3-client.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${jboss.client.dir}/jboss-ejb3x.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${jboss.client.dir}/jboss-aop-jdk50-client.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${jboss.client.dir}/jboss-aspect-jdk50-client.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${jboss.client.dir}/concurrent.jar" dest="${nucleus.build.classes.dir}"/>
-		<unjar overwrite="false" src="${jboss.client.dir}/jnp-client.jar" dest="${nucleus.build.classes.dir}"/>
-		<delete dir="${nucleus.build.classes.dir}/META-INF"/>
-			-->
-		<!-- unjar jsyntaxpane.jar again to ensure the existance of META-INF -->
-		<unjar overwrite="false" src="${nucleus.lib.dir}/client/jsyntaxpane-0.9.5-b29.jar" dest="${nucleus.build.classes.dir}"/>
+		<delete dir="${nuclos.build.classes.dir}/META-INF"/>
 
-		<!-- jar nucleus libs -->
+		<!-- unjar jsyntaxpane.jar again to ensure the existance of META-INF -->
+		<unjar overwrite="false" src="${nuclos.lib.dir}/client/jsyntaxpane-0.9.5-b29.jar" dest="${nuclos.build.classes.dir}"/>
+
+		<!-- jar nuclos libs -->
 		<jar jarfile="${nuclos.build.deploy.dir}/nuclos-libs.jar">
 			<fileset dir="${nuclos.build.classes.dir}" excludes="org/nuclos/**"/>
 		</jar>
@@ -750,98 +484,38 @@
 		</jar>
 	</target>
 
-	<target name="dist.webstart" depends="dist, war.webstart" description="copy files to distribution directory containing webstart configuration.">
-		<mkdir dir="${nuclos.dist.dir}/server/deploy"/>
+	<target name="main.noclean" depends="compile.client, deploy.to.tomcat" description="main.noclean"/>
 
-		<!-- copy webstart directories to server -->
-		<copy overwrite="true" todir="${nucleus.dist.dir}/server/deploy/nuclos-webstart.war">
-			<fileset dir="${nuclos.build.deploy.dir}/nuclos-webstart.war"/>
-		</copy>
+	<target name="main" depends="clean, prepare.server, compile.client, deploy.to.tomcat" description="main"/>
 
-		<copy overwrite="true" todir="${nuclos.dist.dir}/server/deploy/nuclos-webstart.war/app">
-			<fileset dir="${nuclos.conf.dir}">
-				<include name="log4j.xml"/>
+	<target name="war.webstart.jar">
+		<!-- unjar libraries to sign them later -->
+		<unjar overwrite="false" dest="${nuclos.build.classes.dir}">
+			<fileset refid="nuclos.common.jars"/>
+
+			<fileset refid="nuclos.client.jars"/>
+			<patternset>
+				<!-- TODO: META-INF/** also excludes META-INF/services which contains
+				     the service provider declarations. Is this behavior correct? -->
+				<exclude name="META-INF/**"/>
+			</patternset>
+		</unjar>
+
+		<!-- unjar jsyntaxpane.jar again to ensure the existance of META-INF -->
+		<unjar overwrite="false" src="${nuclos.lib.dir}/client/jsyntaxpane-0.9.5-b29.jar" dest="${nuclos.build.classes.dir}"/>
+
+		<!-- jar nucleus libs -->
+		<jar jarfile="${nuclos.build.deploy.dir}/nuclos-libs.jar">
+			<fileset dir="${nuclos.build.classes.dir}" excludes="org/nuclos/**"/>
+		</jar>
+		<delete dir="${nuclos.build.classes.dir}/META-INF"/>
+
+		<!-- jar native libs -->
+		<jar destfile="${nuclos.build.deploy.dir}/nuclos-native.jar">
+			<fileset dir="${nuclos.lib.dir}/client">
+				<include name="jawin.dll"/>
 			</fileset>
-		</copy>
-	</target>
-
-	<target name="genkeystore" description="Generates a key in a keystore for signing jars">
-		<genkey alias="nucleus" storepass="suelcun" keystore=".keystore" validity="3650">
-	  		<dname>
-	  			<param name="OU" value="Novabit Informationssysteme GmbH"/>
-	    		<param name="O"  value="Novabit Informationssysteme GmbH"/>
-	    		<param name="C"  value="DE"/>
-	  		</dname>
-		</genkey>
-	</target>
-
-	<!-- == Installer == -->
-
-	<target name="jar.installer" depends="init">
-		<mkdir dir="${nucleus.build.classes.dir}"/>
-
-		<javac encoding="8859_1" destdir="${nucleus.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
-					 nowarn="${javac.nowarn}"
-					 srcdir="${nucleus.src.java.dir}"
-					 includes="org/nuclos/installer/"
-					 includeAntRuntime="false"/>
-
-		<mkdir dir="${nucleus.build.dir}/installer"/>
-		<jar jarfile="${nucleus.build.dir}/installer/nuclos-installer.jar">
-			<fileset dir="${nucleus.build.classes.dir}" includes="org/nuclos/installer/"/>
-			<fileset dir="${nucleus.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
-			<fileset dir="${nucleus.conf.dir}" file="${nucleus.conf.dir}/nuclos-version.properties"/>
-			<manifest>
-				<attribute name="Manifest-Version" value="1.0"/>
-                <attribute name="Main-Class" value="org.nuclos.installer.Main"/>
-			</manifest>
 		</jar>
-	</target>
-
-	<target name="dist.installer" depends="dist.webstart, jar.installer">
-		<mkdir dir="${nucleus.dist.dir}/installer"/>
-		<copy file="${nucleus.build.dir}/installer/nuclos-installer.jar"
-			todir="${nucleus.dist.dir}/installer"
-			overwrite="true"/>
-
-		<mkdir dir="${nucleus.dist.dir}/installer/data"/>
-		<jar jarfile="${nucleus.dist.dir}/installer/data/nuclos-jbossconf.jar">
-			<fileset dir="${nucleus.conf.dir}/installer/jboss/"/>
-			<fileset dir="${nucleus.conf.dir}" file="${nucleus.conf.dir}/nuclos-version.properties"/>
-		</jar>
-
-		<copy todir="${nucleus.dist.dir}/installer/data" overwrite="true">
-			<fileset dir="${nucleus.build.deploy.dir}"
-				includes="novabit-jboss.jar,nuclos.ear,nuclos-reportapi.jar"/>
-		</copy>
-
-		<!-- PostgreSQL driver jar is redistributed (as complete jar), that's ok -->
-		<copy todir="${nucleus.dist.dir}/installer/data" overwrite="true">
-			<fileset dir="${nucleus.lib.dir}/db-noredist"
-				includes="postgresql-9.0-801.jdbc4.jar"/>
-		</copy>
-
-		<jar jarfile="${nucleus.dist.dir}/installer/data/nuclos-client-all.jar">
-			<fileset dir="${nucleus.build.deploy.dir}/nuclos-webstart.war/app/"
-				includes="novabit-common.jar,nuclos-client.jar,nuclos-libs.jar,nuclos-native.jar,nuclos-config.jar,nuclos-synthetica.jar"/>
-			<fileset dir="${nucleus.conf.dir}/installer/client/"
-				includes="log4j.xml"/>
-		</jar>
-
-		<copy todir="${nucleus.dist.dir}/installer">
-			<fileset dir="${nucleus.doc.dir}" includes="license/**"/>
-		</copy>
-
-		<copy todir="${nucleus.dist.dir}/installer">
-			<fileset dir="${nucleus.doc.dir}/installation" includes="*.pdf"/>
-		</copy>
-
-		<copy file="${nucleus.conf.dir}/novabit/nuclos-template.xml"
-			tofile="${nucleus.dist.dir}/installer/nuclos.xml"/>
-
-		<zip destfile="${nucleus.dist.dir}/nuclos-${version-props.nuclos.version.number}.zip">
-			<zipfileset dir="${nucleus.dist.dir}/installer"/>
-		</zip>
 	</target>
 
 </project>

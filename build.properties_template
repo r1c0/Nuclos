@@ -1,0 +1,9 @@
+tomcat.home=[path.to.tomcat]
+tomcat.server.dir=${tomcat.home}/webapps/nuclos
+
+project.name=nuclet
+project.home.dir=../${project.name}
+project.package.dir=org/nuclet
+project.package.common.dir=${project.package.dir}/common
+project.package.client.dir=${project.package.dir}/client
+project.package.server.dir=${project.package.dir}/server
