@@ -357,6 +357,8 @@
 		<mkdir dir="${nuclos.dist.dir}/webapp/${app.name}/WEB-INF"/>
 		<mkdir dir="${nuclos.dist.dir}/webapp/${app.name}/WEB-INF/classes"/>
 		<mkdir dir="${nuclos.dist.dir}/webapp/${app.name}/WEB-INF/lib"/>
+		<mkdir dir="${nuclos.dist.dir}/webapp/${app.name}/WEB-INF/data"/>
+		<mkdir dir="${nuclos.dist.dir}/webapp/${app.name}/WEB-INF/data/axislibs"/>
 	</target>
 
 	<target name="dist.server" depends="clean, prepare.server, jar.reportapi, deploy.server, compile.client,jar.client, dist.client">
@@ -403,7 +405,7 @@
 		</jar-->
 
 		<copy todir="${nuclos.dist.dir}/installer/data">
-			<fileset dir="${nuclos.dist.dir}/webapp"/>
+			<fileset dir="${nuclos.dist.dir}/webapp"/>			
 		</copy>
 
 		<copy todir="${nuclos.dist.dir}/installer">
@@ -416,6 +418,15 @@
 
 		<copy file="${nuclos.conf.dir}/novabit/nuclos-template.xml"
 			tofile="${nuclos.dist.dir}/installer/nuclos.xml"/>
+		
+		<copy todir="${nuclos.dist.dir}/installer/data">
+			<fileset file="${nuclos.conf.dir}/installer/tomcat/apache-tomcat-6.0.29.zip"/>
+			<fileset file="${nuclos.conf.dir}/installer/tomcat/conf/server.xml"/>
+		</copy>
+		
+		<copy todir="${nuclos.dist.dir}/installer/data/${app.name}/WEB-INF/data/axislibs">
+			<fileset dir="${nuclos.lib.dir}/axislibs"/>
+		</copy>
 
 		<zip destfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}.zip">
 			<zipfileset dir="${nuclos.dist.dir}/installer"/>
