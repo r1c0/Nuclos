@@ -47,7 +47,7 @@
 
 	<!-- define lib-filesets for common, server and client instead of listing each library -->
 	<fileset id="nuclos.common.jars" dir="${nuclos.lib.dir}/common" includes="*.jar"/>
-	<fileset id="nuclos.common.unjars" dir="${nuclos.lib.dir}/common" includes="*.jar" excludes="spring-security-config-3.0.4.RELEASE.jar, activemq-all-5.3.0.jar"/>
+	<fileset id="nuclos.common.unjars" dir="${nuclos.lib.dir}/common" includes="*.jar" excludes="spring-security-config-3.0.4.RELEASE.jar, activemq-all-5.3.0.jar, org.springframework.beans-3.0.5.RELEASE.jar"/>
 	<fileset id="nuclos.client.jars" dir="${nuclos.lib.dir}/client" includes="*.jar"/>
 	<fileset id="nuclos.client.unjars" dir="${nuclos.lib.dir}/client" includes="*.jar" excludes="groovy-all-1.7.6.jar"/>
 	<fileset id="nuclos.server.jars" dir="${nuclos.lib.dir}/server" includes="*.jar"/>
@@ -295,7 +295,7 @@
 
 			<manifest>
 				<attribute name="Main-Class" value="org.nuclos.client.main.Main"/>
-				<attribute name="Class-Path" value="nuclos-config.jar nuclos-libs.jar nuclos-synthetica.jar spring-security-config-3.0.4.RELEASE.jar activemq-all-5.3.0.jar"/>
+				<attribute name="Class-Path" value="nuclos-config.jar nuclos-libs.jar nuclos-synthetica.jar spring-security-config-3.0.4.RELEASE.jar activemq-all-5.3.0.jar org.springframework.beans-3.0.5.RELEASE.jar"/>
 			</manifest>
 		</jar>
 	</target>
@@ -333,6 +333,7 @@
 			<fileset file="${nuclos.lib.dir}/common/spring-security-config-3.0.4.RELEASE.jar"></fileset>
 			<fileset file="${nuclos.lib.dir}/common/activemq-all-5.3.0.jar"/>
 			<fileset file="${nuclos.lib.dir}/client/groovy-all-1.7.6.jar"/>
+			<fileset file="${nuclos.lib.dir}/common/org.springframework.beans-3.0.5.RELEASE.jar"></fileset>
 		</copy>
 
 		<signjar verbose="false" alias="nucleus" storepass="suelcun" keystore="./.keystore">
@@ -346,6 +347,7 @@
 				<include name="spring-security-config-3.0.4.RELEASE.jar"/>
 				<include name="groovy-all-1.7.6.jar"/>
 				<include name="activemq-all-5.3.0.jar"/>
+				<include name="org.springframework.beans-3.0.5.RELEASE.jar"/>
 			</fileset>
 		</signjar>
 
