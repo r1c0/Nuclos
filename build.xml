@@ -457,7 +457,7 @@
 		<copy file="${nuclos.build.deploy.dir}/nuclos-server.jar" todir="${tomcat.deploy.webinf.lib.dir}" overwrite="true"/>
 	</target>
 	
-	<target name="deploy.client.to.tomcat" depends="compile.client">
+	<target name="deploy.client.to.tomcat" depends="jar.client">
 		<signjar verbose="false" alias="nucleus" storepass="suelcun" keystore="./.keystore">
 			<fileset dir="${nuclos.build.deploy.dir}">
 				<include name="nuclos-client.jar"/>
