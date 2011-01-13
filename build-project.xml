@@ -118,8 +118,18 @@
 	</target>
 
 	<target name="main.noclean" depends="jar.server, jar.client">
+		<signjar verbose="false" alias="nucleus" storepass="suelcun" keystore="../nuclos/.keystore">
+			<fileset dir="${project.build.deploy.dir}">
+				<include name="${project.name}-client.jar"/>
+			</fileset>
+		</signjar>
+	
+		<copy todir="${tomcat.server.dir}/app/">
+			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-server.jar" overwrite="true"></fileset>
+		</copy>
+		
 		<copy todir="${tomcat.server.dir}/WEB-INF/lib/">
-			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-server.jar"></fileset>
+			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-client.jar" overwrite="true"></fileset>
 		</copy>
 	</target>
 

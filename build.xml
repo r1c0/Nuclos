@@ -456,6 +456,18 @@
 		<copy file="${nuclos.build.deploy.dir}/nuclos-common.jar" todir="${tomcat.deploy.webinf.lib.dir}" overwrite="true"/>
 		<copy file="${nuclos.build.deploy.dir}/nuclos-server.jar" todir="${tomcat.deploy.webinf.lib.dir}" overwrite="true"/>
 	</target>
+	
+	<target name="deploy.client.to.tomcat" depends="compile.client">
+		<signjar verbose="false" alias="nucleus" storepass="suelcun" keystore="./.keystore">
+			<fileset dir="${nuclos.build.deploy.dir}">
+				<include name="nuclos-client.jar"/>
+				<include name="nuclos-common.jar"/>
+			</fileset>
+		</signjar>
+		
+		<copy file="${nuclos.build.deploy.dir}/nuclos-common.jar" todir="${tomcat.deploy.dir}/app" overwrite="true"/>
+		<copy file="${nuclos.build.deploy.dir}/nuclos-client.jar" todir="${tomcat.deploy.dir}/app" overwrite="true"/>
+	</target>
 
 	<target name="clean">
 		<delete quiet="true" includeEmptyDirs="true">
@@ -497,9 +509,9 @@
 		</jar>
 	</target>
 
-	<target name="main.noclean" depends="compile.client, deploy.to.tomcat" description="main.noclean"/>
+	<target name="main.noclean" depends="deploy.client.to.tomcat, deploy.to.tomcat" description="main.noclean"/>
 
-	<target name="main" depends="clean, prepare.server, compile.client, deploy.to.tomcat" description="main"/>
+	<target name="main" depends="clean, prepare.server, deploy.client.to.tomcat, deploy.to.tomcat" description="main"/>
 
 	<target name="war.webstart.jar">
 		<!-- unjar libraries to sign them later -->
