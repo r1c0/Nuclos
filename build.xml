@@ -435,6 +435,10 @@
 		<zip destfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}.zip">
 			<zipfileset dir="${nuclos.dist.dir}/installer"/>
 		</zip>
+		
+		<zip destfile="${nuclos.dist.dir}/nuclos-src-${version-props.nuclos.version.number}.zip">
+			<zipfileset dir="${nuclos.home.dir}/src/java" prefix="src/java" excludes="CVS, .svn, **/test/**, org/nuclos/tools/**"/>
+		</zip>
 	</target>
 
 
