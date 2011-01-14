@@ -395,6 +395,8 @@
 			overwrite="true"/>
 
 		<mkdir dir="${nuclos.dist.dir}/installer/data"/>
+		<mkdir dir="${nuclos.dist.dir}/installer/data/extensions/client"/>
+		<mkdir dir="${nuclos.dist.dir}/installer/data/extensions/server"/>
 
 		<!-- PostgreSQL driver jar is redistributed (as complete jar), that's ok -->
 		<copy todir="${nuclos.dist.dir}/installer/data" overwrite="true">
