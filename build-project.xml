@@ -123,13 +123,13 @@
 				<include name="${project.name}-client.jar"/>
 			</fileset>
 		</signjar>
-	
-		<copy todir="${tomcat.server.dir}/app/">
-			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-server.jar" overwrite="true"></fileset>
+
+		<copy todir="${tomcat.server.dir}/app/" overwrite="true">
+			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-client.jar"></fileset>
 		</copy>
-		
-		<copy todir="${tomcat.server.dir}/WEB-INF/lib/">
-			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-client.jar" overwrite="true"></fileset>
+
+		<copy todir="${tomcat.server.dir}/WEB-INF/lib/" overwrite="true">
+			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-server.jar"></fileset>
 		</copy>
 	</target>
 
