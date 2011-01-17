@@ -149,10 +149,13 @@
 			</fileset>
 		</signjar>
 
-		<copy todir="${project.dist.dir}/installer/data">
-			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-client.jar"></fileset>
+		<copy todir="${project.dist.dir}/installer/data/extensions/client">
+			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-client.jar"></fileset>			
+		</copy>
+		<copy todir="${project.dist.dir}/installer/data/extensions/server">
 			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-server.jar"></fileset>
 		</copy>
+
 	</target>
 
 	<target name="dist.clean">
