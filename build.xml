@@ -9,6 +9,7 @@
 		Properties in build.properties:
 		- tomcat.home: Tomcat home directory
 	 -->
+	<property name="build.properties" value="build.properties"/>
 	<property file="${build.properties}" />
 
 	<!-- tomcat deployment -->
