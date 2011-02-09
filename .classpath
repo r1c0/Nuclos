@@ -60,7 +60,7 @@
 	<classpathentry kind="lib" path="lib/server/org.springframework.web.struts-3.0.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/server/poi-ooxml-3.6-20091214.jar"/>
 	<classpathentry kind="lib" path="lib/server/poi-ooxml-schemas-3.6-20091214.jar"/>
-	<classpathentry kind="lib" path="lib/server/quartz-all-1.6.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/server/quartz-all-1.6.6.jar"/>
 	<classpathentry kind="lib" path="lib/server/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib/server/xbean-spring-3.7.jar"/>
 	<classpathentry kind="lib" path="lib/common/org.springframework.transaction-3.0.5.RELEASE.jar"/>
