@@ -20,7 +20,10 @@
 	<property name="tomcat.deploy.lib.dir" value="${tomcat.deploy.webinf.dir}/lib"/>
 	<property name="tomcat.deploy.classes.dir" value="${tomcat.deploy.webinf.dir}/classes"/>
 
+	<!-- Set default value for build.compiler (modern means javac) -->
+	<property name="build.compiler" value="modern"/>
 	<property name="java.src.version" value="1.6"/>
+	<property name="java.tgt.version" value="1.6"/>
 
 	<!-- nuclos subdirectories: -->
 	<property name="nuclos.dir" value="${basedir}"/>
@@ -83,10 +86,18 @@
 		<path refid="nuclos.client.path"></path>
 	</path>
 
+	<target name="info">
+		<echo message="${version-props.nuclos.name} ${version-props.nuclos.version.number} (${version-props.nuclos.version.date})"/>
+		<echo message="Java: ${java.version} (${java.vm.version})" level="info"/>
+		<echo message="OS: ${os.name} (${os.version}, ${os.arch})" level="info"/>
+		<echo message="Ant: ${ant.version}"/>
+		<echo message="Compiler: ${build.compiler}" level="info"/>
+	</target>
+
 	<target name="compile.reportapi">
 		<mkdir dir="${nuclos.build.classes.dir}"/>
 
-		<javac encoding="8859_1" destdir="${nuclos.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+		<javac encoding="8859_1" destdir="${nuclos.build.classes.dir}" source="${java.src.version}" target="${java.tgt.version}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
 					 srcdir="${nuclos.src.java.dir}"
 					 includes="org/nuclos/server/report/api/"
@@ -145,7 +156,7 @@
 			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/common2/layoutml/layoutml.dtd, org/nuclos/client/ui/images/"/>
 		</copy>
 
-		<javac destdir="${nuclos.build.classes.dir}" encoding="8859_1" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+		<javac destdir="${nuclos.build.classes.dir}" encoding="8859_1" source="${java.src.version}" target="${java.tgt.version}" debug="on" deprecation="off" optimize="on"
 			 		 includes="org/nuclos/common2/**/"
 					 excludes="org/nuclos/common2/server/**/ejb/, org/nuclos/**/test/"
 					 classpathref="nuclos.common.path"
@@ -174,7 +185,7 @@
 			<fileset dir="${nuclos.conf.dir}" includes="nuclos-version.properties, icons.properties, nuclos-menuconfig.xml"/>
 		</copy>
 
-		<javac encoding="8859_1" destdir="${nuclos.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+		<javac encoding="8859_1" destdir="${nuclos.build.classes.dir}" source="${java.src.version}" target="${java.tgt.version}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
 					 srcdir="${nuclos.src.java.dir}"
 					 includes="org/nuclos/common/, org/nuclos/server/"
@@ -217,7 +228,7 @@
 
 		<javac encoding="8859_1" destdir="${nuclos.build.classes.dir}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
-					 source="${java.src.version}" srcdir="${nuclos.src.java.dir}"
+					 source="${java.src.version}" target="${java.tgt.version}" srcdir="${nuclos.src.java.dir}"
 					 includes="org/nuclos/client/"
 					 excludes="**/test/"
 					 includeAntRuntime="false">
@@ -371,7 +382,7 @@
 	<target name="jar.installer">
 		<mkdir dir="${nuclos.build.classes.dir}"/>
 
-		<javac encoding="8859_1" destdir="${nuclos.build.classes.dir}" source="${java.src.version}" debug="on" deprecation="off" optimize="on"
+		<javac encoding="8859_1" destdir="${nuclos.build.classes.dir}" source="${java.src.version}" target="${java.tgt.version}" debug="on" deprecation="off" optimize="on"
 					 nowarn="${javac.nowarn}"
 					 srcdir="${nuclos.src.java.dir}"
 					 includes="org/nuclos/installer/"
@@ -389,7 +400,7 @@
 		</jar>
 	</target>
 
-	<target name="dist" depends="dist.server, jar.installer" description="dist with installer">
+	<target name="dist" depends="info, dist.server, jar.installer" description="dist with installer">
 		<mkdir dir="${nuclos.dist.dir}/installer"/>
 		<copy file="${nuclos.build.dir}/installer/nuclos-installer.jar"
 			todir="${nuclos.dist.dir}/installer"
@@ -516,9 +527,9 @@
 		</jar>
 	</target>
 
-	<target name="main.noclean" depends="deploy.client.to.tomcat, deploy.to.tomcat" description="main.noclean"/>
+	<target name="main.noclean" depends="info, deploy.client.to.tomcat, deploy.to.tomcat" description="main.noclean"/>
 
-	<target name="main" depends="clean, prepare.server, deploy.client.to.tomcat, deploy.to.tomcat" description="main"/>
+	<target name="main" depends="info, clean, prepare.server, deploy.client.to.tomcat, deploy.to.tomcat" description="main"/>
 
 	<target name="war.webstart.jar">
 		<!-- unjar libraries to sign them later -->
