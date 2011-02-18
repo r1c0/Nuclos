@@ -30,7 +30,7 @@
 	<classpathentry kind="lib" path="lib/common/org.springframework.web-3.0.5.RELEASE.jar" sourcepath="C:/Projekte/environment/src/spring-framework-3.0.5.RELEASE/src/org.springframework.web-sources-3.0.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/common/poi-3.6-20091214.jar"/>
 	<classpathentry kind="lib" path="lib/common/xstream-1.3.1.jar"/>
-	<classpathentry kind="lib" path="lib/client/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/common/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/client/filters.jar"/>
 	<classpathentry kind="lib" path="lib/client/jawin.dll"/>
 	<classpathentry kind="lib" path="lib/client/jawin.jar"/>
@@ -69,7 +69,7 @@
 	<classpathentry kind="lib" path="lib/other/antlr-runtime-3.1.3.jar"/>
 	<classpathentry kind="lib" path="lib/db-noredist/ojdbc6.jar"/>
 	<classpathentry kind="lib" path="lib/server/spring-security-ldap-3.0.4.RELEASE.jar" sourcepath="C:/Projekte/environment/src/spring-security-3.0.4.RELEASE/dist/spring-security-ldap-3.0.4.RELEASE-sources.jar"/>
-	<classpathentry kind="lib" path="lib/common/commons-codec-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/common/commons-codec-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/common/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/common/spring-security-config-3.0.4.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/common/xmlsec-1.4.4.jar"/>
