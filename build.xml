@@ -261,7 +261,7 @@
 			<fileset dir="${nuclos.build.classes.dir}"
 				 includes="org/nuclos/common2/server/**/ejb/"
 				 excludes="org/nuclos/**/test/, org/nuclos/**/build.xml"/>
-			<fileset dir="${nuclos.conf.server.dir}" includes="META-INF/**" />
+			<fileset dir="${nuclos.conf.server.dir}" includes="META-INF/**" excludes="**/*-ws.xml"/>
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
 			</manifest>
@@ -421,7 +421,7 @@
 		</jar-->
 
 		<copy todir="${nuclos.dist.dir}/installer/data">
-			<fileset dir="${nuclos.dist.dir}/webapp"/>			
+			<fileset dir="${nuclos.dist.dir}/webapp"/>
 		</copy>
 
 		<copy todir="${nuclos.dist.dir}/installer">
@@ -434,12 +434,12 @@
 
 		<copy file="${nuclos.conf.dir}/novabit/nuclos-template.xml"
 			tofile="${nuclos.dist.dir}/installer/nuclos.xml"/>
-		
+
 		<copy todir="${nuclos.dist.dir}/installer/data">
 			<fileset file="${nuclos.conf.dir}/installer/tomcat/apache-tomcat-6.0.29.zip"/>
 			<fileset file="${nuclos.conf.dir}/installer/tomcat/conf/server.xml"/>
 		</copy>
-		
+
 		<copy todir="${nuclos.dist.dir}/installer/data/${app.name}/WEB-INF/data/axislibs">
 			<fileset dir="${nuclos.lib.dir}/axislibs"/>
 		</copy>
@@ -447,7 +447,7 @@
 		<zip destfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}.zip">
 			<zipfileset dir="${nuclos.dist.dir}/installer"/>
 		</zip>
-		
+
 		<zip destfile="${nuclos.dist.dir}/nuclos-src-${version-props.nuclos.version.number}.zip">
 			<zipfileset dir="${nuclos.home.dir}/src/java" prefix="src/java" excludes="CVS, .svn, **/test/**, org/nuclos/tools/**"/>
 		</zip>
@@ -474,7 +474,7 @@
 		<copy file="${nuclos.build.deploy.dir}/nuclos-common.jar" todir="${tomcat.deploy.webinf.lib.dir}" overwrite="true"/>
 		<copy file="${nuclos.build.deploy.dir}/nuclos-server.jar" todir="${tomcat.deploy.webinf.lib.dir}" overwrite="true"/>
 	</target>
-	
+
 	<target name="deploy.client.to.tomcat" depends="jar.client">
 		<signjar verbose="false" alias="nucleus" storepass="suelcun" keystore="./.keystore">
 			<fileset dir="${nuclos.build.deploy.dir}">
@@ -482,7 +482,7 @@
 				<include name="nuclos-common.jar"/>
 			</fileset>
 		</signjar>
-		
+
 		<copy file="${nuclos.build.deploy.dir}/nuclos-common.jar" todir="${tomcat.deploy.dir}/app" overwrite="true"/>
 		<copy file="${nuclos.build.deploy.dir}/nuclos-client.jar" todir="${tomcat.deploy.dir}/app" overwrite="true"/>
 	</target>
