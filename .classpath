@@ -81,6 +81,7 @@
 	<classpathentry kind="lib" path="lib/client/jnlp.jar"/>
 	<classpathentry kind="lib" path="lib/client/synthetica.jar"/>
 	<classpathentry kind="lib" path="lib/server/commons-dbcp-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/server/spring-ws-2.0.0.RELEASE-all.jar"/>
 	<classpathentry kind="var" path="JDK_HOME/lib/tools.jar"/>
 	<classpathentry kind="lib" path="lib/server/javaparser-1.0.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/client/groovy-all-1.7.6.jar"/>
