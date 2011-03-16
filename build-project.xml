@@ -21,6 +21,9 @@
 	<property name="project.dist.dir" value="${project.home.dir}/dist"/>
 	<property name="project.bin.dir" value="${project.home.dir}/bin"/>
 
+	<!-- tomcat deployment -->
+	<property name="tomcat.deploy.dir" value="${nuclos.home.dir}/webapp"/>
+
 	<path id="project.server.path">
 		<path location="build/classes"></path>
 		<fileset dir="lib/server" includes="*.jar"></fileset>
@@ -124,11 +127,11 @@
 			</fileset>
 		</signjar>
 
-		<copy todir="${tomcat.server.dir}/app/" overwrite="true">
+		<copy todir="${tomcat.deploy.dir}/app/" overwrite="true">
 			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-client.jar"></fileset>
 		</copy>
 
-		<copy todir="${tomcat.server.dir}/WEB-INF/lib/" overwrite="true">
+		<copy todir="${tomcat.deploy.dir}/WEB-INF/lib/" overwrite="true">
 			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-server.jar"></fileset>
 		</copy>
 	</target>

@@ -1,5 +1,4 @@
-tomcat.home=[path.to.tomcat]
-tomcat.server.dir=${tomcat.home}/webapps/nuclos
+nuclos.home.dir=[path.to.nuclos.homedir]
 
 # only needed for nuclets
 project.name=nuclet
