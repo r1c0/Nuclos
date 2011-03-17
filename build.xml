@@ -396,17 +396,13 @@
 		<echo message="Directory for third-party applications: ${3rdparty.dir}"/>
 		<mkdir dir="${3rdparty.dir}"/>
 
-		<get dest="${3rdparty.dir}" skipexisting="true">
-			<!--
-			<url url="http://get.enterprisedb.com/postgresql/postgresql-9.0.3-1-windows.exe"/>
-			<url url="http://get.enterprisedb.com/postgresql/postgresql-9.0.3-1-windows_x64.exe"/>
-			-->
-			<url url="http://apache.org/dist/tomcat/tomcat-7/v7.0.11/bin/apache-tomcat-7.0.11.zip"/>
-			<!--
-			<url url="http://apache.org/dist/tomcat/tomcat-7/v7.0.11/bin/apache-tomcat-7.0.11-windows-x86.zip"/>
-			<url url="http://apache.org/dist/tomcat/tomcat-7/v7.0.11/bin/apache-tomcat-7.0.11-windows-x64.zip"/>
-			-->
-		</get>
+		<get src="http://apache.org/dist/tomcat/tomcat-7/v7.0.11/bin/apache-tomcat-7.0.11.zip" dest="${3rdparty.dir}" skipexisting="true"/>
+		<!--
+		<get src="http://apache.org/dist/tomcat/tomcat-7/v7.0.11/bin/apache-tomcat-7.0.11-windows-x86.zip" dest="${3rdparty.dir}" skipexisting="true"/>
+		<get src="http://apache.org/dist/tomcat/tomcat-7/v7.0.11/bin/apache-tomcat-7.0.11-windows-x64.zip" dest="${3rdparty.dir}" skipexisting="true"/>
+		<get src="http://get.enterprisedb.com/postgresql/postgresql-9.0.3-1-windows.exe" dest="${3rdparty.dir}" skipexisting="true"/>
+		<get src="http://get.enterprisedb.com/postgresql/postgresql-9.0.3-1-windows_x64.exe" dest="${3rdparty.dir}" skipexisting="true"/>
+		-->
 		<checksum todir="${nuclos.conf.dir}/3rdparty" algorithm="MD5" verifyproperty="3rdparty.checksum.valid">
 			<fileset dir="${3rdparty.dir}"/>
 		</checksum>
