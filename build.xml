@@ -218,6 +218,12 @@
 							 **/layoutml/*.layoutml,
 							 help/about/about.html"/>
 		</copy>
+		
+		<copy todir="${nuclos.build.classes.dir}/org/nuclos/client/resource">
+				<fileset dir="${src.nuclos.client.dir}/resource"
+								 includes="**/*.png,
+								 **/*.properties"/>
+		</copy>
 
 		<copy todir="${nuclos.build.classes.dir}/org/nuclos/client/gef">
 			<fileset dir="${nuclos.src.java.dir}/org/nuclos/client/gef" includes="**/images/*"/>
