@@ -109,7 +109,10 @@
 							${project.package.server.dir}/**/ejb3/*Remote.class,"
 				excludes="**/test/"/>
 			<fileset dir="${project.conf.client.dir}" includes="META-INF/**"/>
-			<fileset dir="${project.conf.dir}" includes="*.properties"/>
+			<fileset dir="${project.conf.dir}">
+				<include name="*.properties"/>
+				<include name="icons/"/>
+			</fileset>
 		</jar>
 	</target>
 
