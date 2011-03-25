@@ -26,6 +26,8 @@
 
 	<path id="project.server.path">
 		<path location="build/classes"></path>
+		<fileset dir="${project.lib.dir}/server" includes="*.jar"></fileset>
+		<fileset dir="${project.lib.dir}/common" includes="*.jar"></fileset>
 		<fileset dir="lib/server" includes="*.jar"></fileset>
 		<fileset dir="lib/common" includes="*.jar"></fileset>
 	</path>
@@ -160,6 +162,8 @@
 		</copy>
 		<copy todir="${project.dist.dir}/installer/data/extensions/server">
 			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-server.jar"></fileset>
+			<fileset dir="${project.lib.dir}/server" includes="*.jar"></fileset>
+			<fileset dir="${project.lib.dir}/common" includes="*.jar"></fileset>
 		</copy>
 
 	</target>
