@@ -78,6 +78,7 @@
 	<target name="compile.client" depends="compile.server">
 		<mkdir dir="${project.build.classes.dir}"/>
 		<mkdir dir="${project.build.deploy.dir}"/>
+		<mkdir dir="${project.src.java.client.dir}"/>
 
 		<copy todir="${project.build.classes.dir}/${project.package.client.dir}">
 				<fileset dir="${project.src.java.client.dir}"
@@ -160,6 +161,10 @@
 		<copy todir="${project.dist.dir}/installer/data/extensions/client">
 			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-client.jar"></fileset>			
 		</copy>
+		
+		<mkdir dir="${project.lib.dir}/common"/>
+		<mkdir dir="${project.lib.dir}/server"/>
+		
 		<copy todir="${project.dist.dir}/installer/data/extensions/server">
 			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-server.jar"></fileset>
 			<fileset dir="${project.lib.dir}/server" includes="*.jar"></fileset>
