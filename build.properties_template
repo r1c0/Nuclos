@@ -7,3 +7,6 @@ project.package.dir=org/nuclet
 project.package.common.dir=${project.package.dir}/common
 project.package.client.dir=${project.package.dir}/client
 project.package.server.dir=${project.package.dir}/server
+
+# only needed for gui installer
+launch4j.home.dir=[path.to.nuclos.launch4j]
