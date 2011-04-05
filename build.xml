@@ -491,7 +491,7 @@
 
 		<copy todir="${nuclos.dist.dir}/installer">
 			<fileset dir="${nuclos.doc.dir}" includes="license/**"/>
-			<fileset dir="${nuclos.doc.dir}/installation" includes="*.pdf"/>
+			<!--fileset dir="${nuclos.doc.dir}/installation" includes="*.pdf"/-->
 			<fileset dir="${nuclos.conf.dir}/novabit" includes="nuclos-template.xml"/>
 		</copy>
 		<zip destfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}.zip">
