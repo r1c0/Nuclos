@@ -42,6 +42,7 @@
 
 	<property name="nuclos.instdata.dir" location="${nuclos.dist.dir}/installer/data"/>
 	<property name="nuclos.instdata.app.dir" location="${nuclos.instdata.dir}/nuclos"/>
+	<property name="nuclos.instdata.extension.dir" location="${nuclos.instdata.dir}/extensions"/>
 
 	<property file="${nuclos.conf.dir}/nuclos-version.properties" prefix="version-props"/>
 
@@ -494,7 +495,7 @@
 			<!--fileset dir="${nuclos.doc.dir}/installation" includes="*.pdf"/-->
 			<fileset dir="${nuclos.conf.dir}/novabit" includes="nuclos-template.xml"/>
 		</copy>
-		<zip destfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}.zip">
+		<zip destfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-generic.zip">
 			<zipfileset dir="${nuclos.dist.dir}/installer"/>
 		</zip>
 		<zip destfile="${nuclos.dist.dir}/nuclos-src-${version-props.nuclos.version.number}.zip">
@@ -502,10 +503,12 @@
 		</zip>
 	</target>
 
-	<target name="installer.gui" depends="get3rdparty.guiinstaller, installer.classic">
+	<target name="installer.gui" depends="installer.classic, installer.iz" />
+
+	<target name="installer.iz" depends="get3rdparty.guiinstaller">
 		<!-- IzPack-based installers -->
 		<jar jarfile="${nuclos.build.dir}/izpack-extras.jar">
-			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/,com/izforge/izpack/"/>
+			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/"/>
 			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
 			<fileset dir="${nuclos.conf.dir}" file="${nuclos.conf.dir}/nuclos-version.properties"/>
 		</jar>
@@ -549,9 +552,9 @@
 		    classpath="${launch4j.home.dir}/launch4j.jar:${launch4j.home.dir}/lib/xstream.jar" />
 
 		<launch4j configFile="${nuclos.build.dir}/launch4j.xml" jar="${nuclos.build.dir}/nuclos-installer-win-x86.jar"
-			outfile="${nuclos.dist.dir}/nuclos-installer-windows-x86.exe"/>
+			outfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-windows32.exe"/>
 		<launch4j configFile="${nuclos.build.dir}/launch4j.xml" jar="${nuclos.build.dir}/nuclos-installer-win-x64.jar"
-			outfile="${nuclos.dist.dir}/nuclos-installer-windows-x64.exe"/>
+			outfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-windows64.exe"/>
 	</target>
 
 	<target name="dist" depends="info, installer.classic" description="dist with classic"/>

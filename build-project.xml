@@ -159,18 +159,17 @@
 		</signjar>
 
 		<copy todir="${project.dist.dir}/installer/data/extensions/client">
-			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-client.jar"></fileset>			
+			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-client.jar"></fileset>
 		</copy>
-		
+
 		<mkdir dir="${project.lib.dir}/common"/>
 		<mkdir dir="${project.lib.dir}/server"/>
-		
+
 		<copy todir="${project.dist.dir}/installer/data/extensions/server">
 			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-server.jar"></fileset>
 			<fileset dir="${project.lib.dir}/server" includes="*.jar"></fileset>
 			<fileset dir="${project.lib.dir}/common" includes="*.jar"></fileset>
 		</copy>
-
 	</target>
 
 	<target name="dist.clean">
@@ -181,4 +180,11 @@
 		<ant antfile="build.xml" dir="." target="dist" inheritall="false"/>
 	</target>
 
+	<target name="installer.gui" depends="dist">
+		<property name="nuclos.dist.dir" location="${project.dist.dir}"/>
+		<property name="nuclos.instdata.dir" location="${project.dist.dir}/installer/data"/>
+		<property name="nuclos.instdata.app.dir" location="${nuclos.instdata.dir}/nuclos"/>
+		<property name="nuclos.instdata.extension.dir" location="${nuclos.instdata.dir}/extensions"/>
+		<ant antfile="build.xml" target="installer.iz" inheritall="true"/>
+	</target>
 </project>
