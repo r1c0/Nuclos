@@ -345,7 +345,7 @@
 			<fileset file="${nuclos.lib.dir}/common/org.springframework.beans-3.0.5.RELEASE.jar"></fileset>
 		</copy>
 
-		<signjar verbose="false" alias="nucleus" storepass="suelcun" keystore="./.keystore">
+		<signjar verbose="false" alias="nuclos" storepass="solcun" keystore="./.keystore">
 			<fileset dir="${nuclos.dist.dir}/webapp/${app.name}/app">
 				<include name="nuclos-client.jar"/>
 				<include name="nuclos-synthetica.jar"/>
