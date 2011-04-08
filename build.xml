@@ -581,7 +581,7 @@
 	</target>
 
 	<target name="deploy.client.to.tomcat" depends="jar.client">
-		<signjar verbose="false" alias="nucleus" storepass="suelcun" keystore="./.keystore">
+		<signjar verbose="false" alias="nuclos" storepass="solcun" keystore="./.keystore">
 			<fileset dir="${nuclos.build.deploy.dir}">
 				<include name="nuclos-client.jar"/>
 				<include name="nuclos-common.jar"/>
