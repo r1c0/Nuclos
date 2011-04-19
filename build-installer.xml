@@ -1,0 +1,339 @@
+<project name="Installer" basedir=".">
+
+	<property name="app.name" value="nuclos"/>
+
+	<!-- <property name="3rdparty.dir" value="${user.home}/.nuclosbuild/3rdparty"> -->
+	<property name="3rdparty.dir" location="${basedir}/3rdparty"/>
+
+	<property name="build.properties" value="build.properties"/>
+	<property file="${build.properties}" />
+
+	<!-- Set default value for build.compiler (modern means javac) -->
+	<property name="build.compiler" value="modern"/>
+	<property name="java.src.version" value="1.6"/>
+	<property name="java.tgt.version" value="1.6"/>
+
+	<!-- nuclos subdirectories: -->
+	<property name="nuclos.dir" value="${basedir}"/>
+	<property name="nuclos.src.dir" value="${nuclos.dir}/src"/>
+	<property name="nuclos.src.java.dir" value="${nuclos.src.dir}/java"/>
+	<property name="nuclos.conf.dir" value="${nuclos.dir}/conf"/>
+	<property name="nuclos.conf.client.dir" value="${nuclos.conf.dir}/client"/>
+	<property name="nuclos.conf.server.dir" value="${nuclos.conf.dir}/server"/>
+	<property name="nuclos.doc.dir" value="${nuclos.dir}/doc"/>
+	<property name="nuclos.db.dir" value="${nuclos.dir}/db"/>
+	<property name="nuclos.lib.dir" value="${nuclos.dir}/lib"/>
+	<property name="nuclos.build.dir" value="${nuclos.dir}/build"/>
+	<property name="nuclos.build.classes.dir" value="${nuclos.build.dir}/classes"/>
+	<property name="nuclos.build.deploy.dir" value="${nuclos.build.dir}/deploy"/>
+	<property name="nuclos.build.installer.dir" value="${nuclos.build.deploy.dir}/installer"/>
+	<property name="nuclos.bin.dir" value="${nuclos.dir}/bin"/>
+
+	<property name="nuclos.dist.dir" value="${nuclos.dir}/dist"/>
+	<property name="nuclos.dist.installer.dir" value="${nuclos.dist.dir}/installer"/>
+
+	<!-- nuclet subdirectories: -->
+	<property name="project.lib.dir" value="${project.home.dir}/lib"/>
+	<property name="project.build.dir" value="${project.home.dir}/build"/>
+	<property name="project.build.deploy.dir" value="${project.build.dir}/deploy"/>
+
+	<property file="${nuclos.conf.dir}/nuclos-version.properties" prefix="version-props"/>
+
+	<!-- Source directories: -->
+	<property name="src.nuclos.dir" value="${nuclos.src.java.dir}/org/nuclos"/>
+	<property name="src.nuclos.installer.dir" value="${src.nuclos.dir}/installer"/>
+
+	<!-- define lib-filesets for common, server and client instead of listing each library -->
+	<fileset id="nuclos.common.jars" dir="${nuclos.lib.dir}/common" includes="*.jar"/>
+	<fileset id="nuclos.common.unjars" dir="${nuclos.lib.dir}/common" includes="*.jar" excludes="spring-security-config-3.0.4.RELEASE.jar, activemq-all-5.3.0.jar, org.springframework.beans-3.0.5.RELEASE.jar"/>
+	<fileset id="nuclos.client.jars" dir="${nuclos.lib.dir}/client" includes="*.jar"/>
+	<fileset id="nuclos.client.unjars" dir="${nuclos.lib.dir}/client" includes="*.jar" excludes="groovy-all-1.7.6.jar"/>
+	<fileset id="nuclos.server.jars" dir="${nuclos.lib.dir}/server" includes="*.jar"/>
+	<fileset id="nuclos.installer.jars" dir="${nuclos.lib.dir}/installer" includes="*.jar" />
+
+	<fileset id="nuclos.db.noredist.jars" dir="${nuclos.lib.dir}/db-noredist" includes="*.jar"/>
+	<property name="nuclos.lib.postgresql.jdbc" location="${nuclos.lib.dir}/db-noredist/postgresql-9.0-801.jdbc4.jar"/>
+
+	<path id="nuclos.installer.path">
+		<fileset refid="nuclos.installer.jars" />
+		<fileset dir="${nuclos.lib.dir}/installer/izpack/" includes="*.jar" />
+	</path>
+
+	<target name="info">
+		<echo message="${version-props.nuclos.name} ${version-props.nuclos.version.number} (${version-props.nuclos.version.date})"/>
+		<echo message="Java: ${java.version} (${java.vm.version})" level="info"/>
+		<echo message="OS: ${os.name} (${os.version}, ${os.arch})" level="info"/>
+		<echo message="Ant: ${ant.version}"/>
+		<echo message="Compiler: ${build.compiler}" level="info"/>
+		<condition property="nuclet.exists">
+			<available file="${project.home.dir}" type="dir" />
+		</condition>
+		<echo message="Nuclet: ${project.home.dir}" level="info" />
+	</target>
+
+	<target name="get3rdparty">
+		<echo message="Directory for third-party applications: ${3rdparty.dir}"/>
+		<mkdir dir="${3rdparty.dir}"/>
+
+		<get src="http://apache.org/dist/tomcat/tomcat-7/v7.0.11/bin/apache-tomcat-7.0.11.zip" dest="${3rdparty.dir}" skipexisting="true"/>
+		<get src="http://apache.org/dist/tomcat/tomcat-7/v7.0.11/bin/apache-tomcat-7.0.11-windows-x86.zip" dest="${3rdparty.dir}" skipexisting="true"/>
+		<get src="http://apache.org/dist/tomcat/tomcat-7/v7.0.11/bin/apache-tomcat-7.0.11-windows-x64.zip" dest="${3rdparty.dir}" skipexisting="true"/>
+		<get src="http://get.enterprisedb.com/postgresql/postgresql-9.0.3-1-windows.exe" dest="${3rdparty.dir}" skipexisting="true"/>
+		<get src="http://get.enterprisedb.com/postgresql/postgresql-9.0.3-1-windows_x64.exe" dest="${3rdparty.dir}" skipexisting="true"/>
+
+		<checksum todir="${nuclos.conf.dir}/3rdparty" algorithm="MD5" verifyproperty="3rdparty.checksum.valid">
+			<fileset dir="${3rdparty.dir}" />
+		</checksum>
+		<echo message="Checksums valid: ${3rdparty.checksum.valid}"/>
+		<condition property="3rdpatchy.checksum.fail">
+			<equals arg1="${3rdparty.checksum.valid}" arg2="false"/>
+		</condition>
+		<fail if="3rdpatchy.checksum.fail">Checksum error</fail>
+	</target>
+
+	<target name="clean">
+		<delete quiet="true" includeEmptyDirs="true">
+			<fileset dir="${nuclos.dist.dir}" />
+		</delete>
+	</target>
+
+	<target name="prepare.nuclos">
+		<ant antfile="build.xml" target="main" />
+		<mkdir dir="${nuclos.dist.installer.dir}"/>
+		<mkdir dir="${nuclos.dist.installer.dir}/webapp"/>
+		<mkdir dir="${nuclos.dist.installer.dir}/webapp/app"/>
+		<mkdir dir="${nuclos.dist.installer.dir}/webapp/META-INF"/>
+		<mkdir dir="${nuclos.dist.installer.dir}/webapp/WEB-INF"/>
+		<mkdir dir="${nuclos.dist.installer.dir}/webapp/WEB-INF/classes"/>
+		<mkdir dir="${nuclos.dist.installer.dir}/webapp/WEB-INF/lib"/>
+
+		<copy file="${nuclos.build.deploy.dir}/nuclos-common.jar" todir="${nuclos.dist.installer.dir}/webapp/WEB-INF/lib" overwrite="true"/>
+		<copy file="${nuclos.build.deploy.dir}/nuclos-server.jar" todir="${nuclos.dist.installer.dir}/webapp/WEB-INF/lib" overwrite="true"/>
+
+		<copy todir="${nuclos.dist.installer.dir}/webapp">
+			<fileset dir="${nuclos.conf.dir}/webapp"/>
+		</copy>
+
+		<copy todir="${nuclos.dist.installer.dir}/webapp/WEB-INF/lib">
+			<fileset refid="nuclos.common.jars">
+			</fileset>
+			<fileset refid="nuclos.server.jars">
+			</fileset>
+			<fileset refid="nuclos.db.noredist.jars">
+			</fileset>
+		</copy>
+
+		<copy todir="${nuclos.dist.installer.dir}/webapp/WEB-INF/axislibs">
+			<fileset dir="${nuclos.lib.dir}/axislibs"/>
+		</copy>
+
+		<!-- unjar libraries to sign them later -->
+		<unjar overwrite="false" dest="${nuclos.build.classes.dir}">
+			<fileset refid="nuclos.common.unjars"/>
+
+			<fileset refid="nuclos.client.unjars"/>
+			<patternset>
+				<!-- TODO: META-INF/** also excludes META-INF/services which contains
+				     the service provider declarations. Is this behavior correct? -->
+				<exclude name="META-INF/**"/>
+			</patternset>
+		</unjar>
+
+		<delete dir="${nuclos.build.classes.dir}/META-INF"/>
+
+		<!-- unjar jsyntaxpane.jar again to ensure the existance of META-INF -->
+		<unjar overwrite="false" src="${nuclos.lib.dir}/client/jsyntaxpane-0.9.5-b29.jar" dest="${nuclos.build.classes.dir}"/>
+
+		<!-- jar nuclos libs -->
+		<jar jarfile="${nuclos.build.deploy.dir}/nuclos-libs.jar">
+			<fileset dir="${nuclos.build.classes.dir}" excludes="org/nuclos/**"/>
+		</jar>
+
+		<delete dir="${nuclos.build.classes.dir}/META-INF"/>
+
+		<!-- jar native libs -->
+		<jar destfile="${nuclos.build.deploy.dir}/nuclos-native.jar">
+			<fileset dir="${nuclos.lib.dir}/client">
+				<include name="jawin.dll"/>
+			</fileset>
+		</jar>
+
+		<copy todir="${nuclos.dist.installer.dir}/app">
+			<fileset dir="${nuclos.build.deploy.dir}">
+				<include name="nuclos-client.jar"/>
+				<include name="nuclos-common.jar"/>
+				<include name="nuclos-synthetica.jar"/>
+				<include name="nuclos-native.jar"/>
+				<include name="nuclos-libs.jar"/>
+			</fileset>
+			<fileset file="${nuclos.conf.dir}/log4j.xml">
+			</fileset>
+			<fileset file="${nuclos.lib.dir}/common/spring-security-config-3.0.4.RELEASE.jar">
+			</fileset>
+			<fileset file="${nuclos.lib.dir}/common/activemq-all-5.3.0.jar"/>
+			<fileset file="${nuclos.lib.dir}/client/groovy-all-1.7.6.jar"/>
+			<fileset file="${nuclos.lib.dir}/common/org.springframework.beans-3.0.5.RELEASE.jar">
+			</fileset>
+		</copy>
+
+		<signjar verbose="false" alias="nuclos" storepass="solcun" keystore="./.keystore">
+			<fileset dir="${nuclos.dist.installer.dir}/app">
+				<include name="nuclos-client.jar"/>
+				<include name="nuclos-synthetica.jar"/>
+				<include name="nuclos-common.jar"/>
+				<include name="nuclos-libs.jar"/>
+				<include name="nuclos-native.jar"/>
+				<include name="spring-security-config-3.0.4.RELEASE.jar"/>
+				<include name="groovy-all-1.7.6.jar"/>
+				<include name="activemq-all-5.3.0.jar"/>
+				<include name="org.springframework.beans-3.0.5.RELEASE.jar"/>
+			</fileset>
+		</signjar>
+
+		<copy todir="${nuclos.dist.installer.dir}/client">
+			<fileset dir="${nuclos.dist.installer.dir}/app" includes="**/*"/>
+		</copy>
+
+		<mkdir dir="${nuclos.dist.installer.dir}/data"/>
+		<mkdir dir="${nuclos.dist.installer.dir}/data/documents"/>
+		<mkdir dir="${nuclos.dist.installer.dir}/data/resource"/>
+		<mkdir dir="${nuclos.dist.installer.dir}/data/expimp"/>
+		<mkdir dir="${nuclos.dist.installer.dir}/data/codegenerator"/>
+		<mkdir dir="${nuclos.dist.installer.dir}/data/compiled-reports"/>
+		<mkdir dir="${nuclos.dist.installer.dir}/logs"/>
+
+		<mkdir dir="${nuclos.dist.installer.dir}"/>
+		<mkdir dir="${nuclos.dist.installer.dir}/extensions/client"/>
+		<mkdir dir="${nuclos.dist.installer.dir}/extensions/server"/>
+
+		<copy todir="${nuclos.dist.installer.dir}">
+			<fileset dir="${nuclos.conf.dir}/installer" includes="extra/** bin/**" excludes=""/>
+			<fileset dir="${nuclos.conf.dir}" file="${nuclos.conf.dir}/nuclos-version.properties"/>
+		</copy>
+		<copy todir="${nuclos.dist.installer.dir}">
+			<fileset dir="${nuclos.doc.dir}" includes="license/**"/>
+			<fileset dir="${nuclos.doc.dir}/installation" includes="*.pdf"/>
+		</copy>
+	</target>
+
+	<target name="prepare.nuclet" if="nuclet.exists">
+		<ant antfile="build-project.xml" target="main">
+			<property name="build.properties" value="${build.properties}"/>
+		</ant>
+
+		<copy todir="${nuclos.dist.installer.dir}/extensions/client">
+			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-client.jar"></fileset>
+		</copy>
+
+		<mkdir dir="${project.lib.dir}/common"/>
+		<mkdir dir="${project.lib.dir}/server"/>
+
+		<copy todir="${nuclos.dist.installer.dir}/extensions/server">
+			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-server.jar"></fileset>
+			<fileset dir="${project.lib.dir}/server" includes="*.jar"></fileset>
+			<fileset dir="${project.lib.dir}/common" includes="*.jar"></fileset>
+		</copy>
+	</target>
+
+	<target name="compile">
+		<javac encoding="8859_1" destdir="${nuclos.build.classes.dir}" source="${java.src.version}" target="${java.tgt.version}" debug="on" deprecation="off" optimize="on"
+					nowarn="${javac.nowarn}"
+					srcdir="${nuclos.src.java.dir}"
+					includes="org/nuclos/installer/"
+					sourcepath="" includeAntRuntime="false">
+			<classpath refid="nuclos.installer.path" />
+		</javac>
+
+		<copy todir="${nuclos.build.classes.dir}">
+			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/**/*.png" />
+		</copy>
+	</target>
+
+	<target name="jar">
+		<zip destfile="${nuclos.dist.dir}/resources.zip">
+			<zipfileset dir="${nuclos.dist.installer.dir}/"/>
+			<zipfileset file="${nuclos.conf.dir}/installer/template-nuclos.xml" />
+		</zip>
+
+		<unjar overwrite="false" dest="${nuclos.build.installer.dir}">
+			<fileset refid="nuclos.installer.jars"/>
+			<patternset>
+				<!-- TODO: META-INF/** also excludes META-INF/services which contains
+				     the service provider declarations. Is this behavior correct? -->
+				<exclude name="META-INF/**"/>
+			</patternset>
+		</unjar>
+
+		<!-- Installer -->
+		<jar jarfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-generic.jar">
+			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" excludes="org/nuclos/installer/iz/" />
+			<fileset dir="${nuclos.build.installer.dir}" />
+			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
+			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
+			<fileset file="${nuclos.dist.dir}/resources.zip"/>
+			<fileset file="${3rdparty.dir}/apache-tomcat-7.0.11.zip"/>
+			<fileset dir="${nuclos.dist.dir}" includes="lib/*.jar"/>
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0"/>
+				<attribute name="Main-Class" value="org.nuclos.installer.Main"/>
+			</manifest>
+		</jar>
+
+		<delete file="${nuclos.dist.dir}/resources.zip" />
+	</target>
+
+	<target name="jar.iz">
+		<!-- IzPack-based installers -->
+		<jar jarfile="${nuclos.build.dir}/izpack-extras.jar">
+			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/"/>
+			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
+			<fileset dir="${nuclos.conf.dir}" file="${nuclos.conf.dir}/nuclos-version.properties"/>
+		</jar>
+
+		<property name="izres" location="${nuclos.conf.dir}/installer/izres"/>
+		<property name="binres" location="${nuclos.conf.dir}/installer/bin"/>
+
+		<mkdir dir="${nuclos.dist.dir}/installer"/>
+		<taskdef name="izpack"
+		    classname="com.izforge.izpack.ant.IzPackTask"
+			classpath="lib/installer/izpack/standalone-compiler.jar"/>
+
+		<!-- Preapre IzPack install files -->
+		<xslt in="${nuclos.conf.dir}/installer/install.gen.xml" out="${nuclos.build.dir}/installer-generic.xml" style="${nuclos.conf.dir}/installer/install.gen.xsl"/>
+		<xslt in="${nuclos.conf.dir}/installer/install.gen.xml" out="${nuclos.build.dir}/installer-win-x86.xml" style="${nuclos.conf.dir}/installer/install.gen.xsl">
+			<param name="os" expression="win-x86"/>
+		</xslt>
+		<xslt in="${nuclos.conf.dir}/installer/install.gen.xml" out="${nuclos.build.dir}/installer-win-x64.xml" style="${nuclos.conf.dir}/installer/install.gen.xsl">
+			<param name="os" expression="win-x64"/>
+		</xslt>
+
+		<!-- Prepare launch4j config files -->
+		<copy todir="${nuclos.build.dir}">
+			<fileset dir="${nuclos.conf.dir}/installer" includes="launch4j.xml nuclos.ico"/>
+		</copy>
+		<replace file="${nuclos.build.dir}/launch4j.xml">
+			<replacefilter token="@version@" value="${version-props.nuclos.version.number}"/>
+		</replace>
+
+		<!-- Generate 2 IzPack install configuration (win-x86, win-x64) -->
+		<izpack basedir="${nuclos.dist.installer.dir}" inheritAll="true" installerType="standard" compression="deflate" compressionlevel="9"
+			 input="${nuclos.build.dir}/installer-win-x86.xml" output="${nuclos.build.dir}/nuclos-installer-win-x86.jar"/>
+		<izpack basedir="${nuclos.dist.installer.dir}" inheritAll="true" installerType="standard" compression="deflate" compressionlevel="9"
+			 input="${nuclos.build.dir}/installer-win-x64.xml" output="${nuclos.build.dir}/nuclos-installer-win-x64.jar"/>
+
+		<taskdef name="launch4j"
+		    classname="net.sf.launch4j.ant.Launch4jTask"
+		    classpath="${launch4j.home.dir}/launch4j.jar:${launch4j.home.dir}/lib/xstream.jar" />
+
+		<launch4j configFile="${nuclos.build.dir}/launch4j.xml" jar="${nuclos.build.dir}/nuclos-installer-win-x86.jar"
+			outfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-windows32.exe"/>
+		<launch4j configFile="${nuclos.build.dir}/launch4j.xml" jar="${nuclos.build.dir}/nuclos-installer-win-x64.jar"
+			outfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-windows64.exe"/>
+	</target>
+
+	<target name="main" description="Build installer" depends="info, clean, get3rdparty, prepare.nuclos, prepare.nuclet, compile, jar, jar.iz">
+		<zip destfile="${nuclos.dist.dir}/nuclos-src-${version-props.nuclos.version.number}.zip">
+			<zipfileset dir="${nuclos.dir}/src/java" prefix="src/java" excludes="CVS, .svn, **/test/**, org/nuclos/tools/**"/>
+		</zip>
+	</target>
+</project>
