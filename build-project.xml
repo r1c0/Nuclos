@@ -127,7 +127,7 @@
 	</target>
 
 	<target name="main.noclean" depends="jar.server, jar.client">
-		<signjar verbose="false" alias="nucleus" storepass="suelcun" keystore="../nuclos/.keystore">
+		<signjar verbose="false" alias="nuclos" storepass="solcun" keystore="../nuclos/.keystore">
 			<fileset dir="${project.build.deploy.dir}">
 				<include name="${project.name}-client.jar"/>
 			</fileset>
