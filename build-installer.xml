@@ -119,8 +119,7 @@
 			</fileset>
 			<fileset refid="nuclos.server.jars">
 			</fileset>
-			<fileset refid="nuclos.db.noredist.jars">
-			</fileset>
+			<fileset file="${nuclos.lib.postgresql.jdbc}"></fileset>
 		</copy>
 
 		<copy todir="${nuclos.dist.installer.dir}/webapp/WEB-INF/axislibs">
@@ -158,7 +157,7 @@
 			</fileset>
 		</jar>
 
-		<copy todir="${nuclos.dist.installer.dir}/app">
+		<copy todir="${nuclos.dist.installer.dir}/client">
 			<fileset dir="${nuclos.build.deploy.dir}">
 				<include name="nuclos-client.jar"/>
 				<include name="nuclos-common.jar"/>
@@ -177,7 +176,7 @@
 		</copy>
 
 		<signjar verbose="false" alias="nuclos" storepass="solcun" keystore="./.keystore">
-			<fileset dir="${nuclos.dist.installer.dir}/app">
+			<fileset dir="${nuclos.dist.installer.dir}/client">
 				<include name="nuclos-client.jar"/>
 				<include name="nuclos-synthetica.jar"/>
 				<include name="nuclos-common.jar"/>
@@ -189,10 +188,6 @@
 				<include name="org.springframework.beans-3.0.5.RELEASE.jar"/>
 			</fileset>
 		</signjar>
-
-		<copy todir="${nuclos.dist.installer.dir}/client">
-			<fileset dir="${nuclos.dist.installer.dir}/app" includes="**/*"/>
-		</copy>
 
 		<mkdir dir="${nuclos.dist.installer.dir}/data"/>
 		<mkdir dir="${nuclos.dist.installer.dir}/data/documents"/>
@@ -246,6 +241,8 @@
 
 		<copy todir="${nuclos.build.classes.dir}">
 			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/**/*.png" />
+			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/**/*.properties" />
+			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/resource/*" />
 		</copy>
 	</target>
 
@@ -264,7 +261,22 @@
 			</patternset>
 		</unjar>
 
-		<!-- Installer -->
+		<!-- Generic Installer -->
+		<propertyfile file="${nuclos.build.installer.dir}/installer.properties">
+			<entry key="arch" value="generic"/>
+		</propertyfile>
+
+		<jar jarfile="${nuclos.build.deploy.dir}/uninstaller.jar">
+			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" excludes="org/nuclos/installer/iz/" />
+			<fileset dir="${nuclos.build.installer.dir}" />
+			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
+			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0"/>
+				<attribute name="Main-Class" value="org.nuclos.installer.Uninstaller"/>
+			</manifest>
+		</jar>
+
 		<jar jarfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-generic.jar">
 			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" excludes="org/nuclos/installer/iz/" />
 			<fileset dir="${nuclos.build.installer.dir}" />
@@ -279,33 +291,67 @@
 			</manifest>
 		</jar>
 
-		<delete file="${nuclos.dist.dir}/resources.zip" />
-	</target>
+		<!-- Installer Windows 32 bit -->
+		<propertyfile file="${nuclos.build.installer.dir}/installer.properties">
+			<entry key="arch" value="x86"/>
+		</propertyfile>
 
-	<target name="jar.iz">
-		<!-- IzPack-based installers -->
-		<jar jarfile="${nuclos.build.dir}/izpack-extras.jar">
-			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/"/>
+		<jar jarfile="${nuclos.build.deploy.dir}/uninstaller.jar">
+			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" excludes="org/nuclos/installer/iz/" />
+			<fileset dir="${nuclos.build.installer.dir}" />
 			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
-			<fileset dir="${nuclos.conf.dir}" file="${nuclos.conf.dir}/nuclos-version.properties"/>
+			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0"/>
+				<attribute name="Main-Class" value="org.nuclos.installer.Uninstaller"/>
+			</manifest>
 		</jar>
 
-		<property name="izres" location="${nuclos.conf.dir}/installer/izres"/>
-		<property name="binres" location="${nuclos.conf.dir}/installer/bin"/>
+		<jar jarfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-win32.jar">
+			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" excludes="org/nuclos/installer/iz/" />
+			<fileset dir="${nuclos.build.installer.dir}" />
+			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
+			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
+			<fileset file="${nuclos.dist.dir}/resources.zip"/>
+			<fileset file="${3rdparty.dir}/apache-tomcat-7.0.11.zip"/>
+			<fileset file="${3rdparty.dir}/postgresql-9.0.3-1-windows.exe"/>
+			<fileset file="${nuclos.build.deploy.dir}/uninstaller.jar"/>
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0"/>
+				<attribute name="Main-Class" value="org.nuclos.installer.Main"/>
+			</manifest>
+		</jar>
 
-		<mkdir dir="${nuclos.dist.dir}/installer"/>
-		<taskdef name="izpack"
-		    classname="com.izforge.izpack.ant.IzPackTask"
-			classpath="lib/installer/izpack/standalone-compiler.jar"/>
+		<!-- Installer Windows 64 bit -->
+		<propertyfile file="${nuclos.build.installer.dir}/installer.properties">
+			<entry key="arch" value="x64"/>
+		</propertyfile>
 
-		<!-- Preapre IzPack install files -->
-		<xslt in="${nuclos.conf.dir}/installer/install.gen.xml" out="${nuclos.build.dir}/installer-generic.xml" style="${nuclos.conf.dir}/installer/install.gen.xsl"/>
-		<xslt in="${nuclos.conf.dir}/installer/install.gen.xml" out="${nuclos.build.dir}/installer-win-x86.xml" style="${nuclos.conf.dir}/installer/install.gen.xsl">
-			<param name="os" expression="win-x86"/>
-		</xslt>
-		<xslt in="${nuclos.conf.dir}/installer/install.gen.xml" out="${nuclos.build.dir}/installer-win-x64.xml" style="${nuclos.conf.dir}/installer/install.gen.xsl">
-			<param name="os" expression="win-x64"/>
-		</xslt>
+		<jar jarfile="${nuclos.build.deploy.dir}/uninstaller.jar">
+			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" excludes="org/nuclos/installer/iz/" />
+			<fileset dir="${nuclos.build.installer.dir}" />
+			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
+			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0"/>
+				<attribute name="Main-Class" value="org.nuclos.installer.Uninstaller"/>
+			</manifest>
+		</jar>
+
+		<jar jarfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-win64.jar">
+			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" excludes="org/nuclos/installer/iz/" />
+			<fileset dir="${nuclos.build.installer.dir}" />
+			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
+			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
+			<fileset file="${nuclos.dist.dir}/resources.zip"/>
+			<fileset file="${3rdparty.dir}/apache-tomcat-7.0.11.zip"/>
+			<fileset file="${3rdparty.dir}/postgresql-9.0.3-1-windows_x64.exe"/>
+			<fileset file="${nuclos.build.deploy.dir}/uninstaller.jar"/>
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0"/>
+				<attribute name="Main-Class" value="org.nuclos.installer.Main"/>
+			</manifest>
+		</jar>
 
 		<!-- Prepare launch4j config files -->
 		<copy todir="${nuclos.build.dir}">
@@ -315,23 +361,21 @@
 			<replacefilter token="@version@" value="${version-props.nuclos.version.number}"/>
 		</replace>
 
-		<!-- Generate 2 IzPack install configuration (win-x86, win-x64) -->
-		<izpack basedir="${nuclos.dist.installer.dir}" inheritAll="true" installerType="standard" compression="deflate" compressionlevel="9"
-			 input="${nuclos.build.dir}/installer-win-x86.xml" output="${nuclos.build.dir}/nuclos-installer-win-x86.jar"/>
-		<izpack basedir="${nuclos.dist.installer.dir}" inheritAll="true" installerType="standard" compression="deflate" compressionlevel="9"
-			 input="${nuclos.build.dir}/installer-win-x64.xml" output="${nuclos.build.dir}/nuclos-installer-win-x64.jar"/>
-
 		<taskdef name="launch4j"
 		    classname="net.sf.launch4j.ant.Launch4jTask"
 		    classpath="${launch4j.home.dir}/launch4j.jar:${launch4j.home.dir}/lib/xstream.jar" />
 
-		<launch4j configFile="${nuclos.build.dir}/launch4j.xml" jar="${nuclos.build.dir}/nuclos-installer-win-x86.jar"
+		<launch4j configFile="${nuclos.build.dir}/launch4j.xml" jar="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-win32.jar"
 			outfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-windows32.exe"/>
-		<launch4j configFile="${nuclos.build.dir}/launch4j.xml" jar="${nuclos.build.dir}/nuclos-installer-win-x64.jar"
+		<launch4j configFile="${nuclos.build.dir}/launch4j.xml" jar="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-win64.jar"
 			outfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-windows64.exe"/>
+
+		<!-- delete file="${nuclos.dist.dir}/resources.zip" /-->
+		<delete file="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-win32.jar" />
+		<delete file="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-win64.jar" />
 	</target>
 
-	<target name="main" description="Build installer" depends="info, clean, get3rdparty, prepare.nuclos, prepare.nuclet, compile, jar, jar.iz">
+	<target name="main" description="Build installer" depends="info, clean, get3rdparty, prepare.nuclos, prepare.nuclet, compile, jar">
 		<zip destfile="${nuclos.dist.dir}/nuclos-src-${version-props.nuclos.version.number}.zip">
 			<zipfileset dir="${nuclos.dir}/src/java" prefix="src/java" excludes="CVS, .svn, **/test/**, org/nuclos/tools/**"/>
 		</zip>
