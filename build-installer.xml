@@ -56,7 +56,6 @@
 
 	<path id="nuclos.installer.path">
 		<fileset refid="nuclos.installer.jars" />
-		<fileset dir="${nuclos.lib.dir}/installer/izpack/" includes="*.jar" />
 	</path>
 
 	<target name="info">
@@ -246,28 +245,30 @@
 		</copy>
 	</target>
 
-	<target name="jar">
+	<target name="prepare" depends="prepare.nuclos, prepare.nuclet" >
 		<zip destfile="${nuclos.dist.dir}/resources.zip">
-			<zipfileset dir="${nuclos.dist.installer.dir}/"/>
-			<zipfileset file="${nuclos.conf.dir}/installer/template-nuclos.xml" />
-		</zip>
+					<zipfileset dir="${nuclos.dist.installer.dir}/"/>
+					<zipfileset file="${nuclos.conf.dir}/installer/template-nuclos.xml" />
+				</zip>
 
-		<unjar overwrite="false" dest="${nuclos.build.installer.dir}">
-			<fileset refid="nuclos.installer.jars"/>
-			<patternset>
-				<!-- TODO: META-INF/** also excludes META-INF/services which contains
-				     the service provider declarations. Is this behavior correct? -->
-				<exclude name="META-INF/**"/>
-			</patternset>
-		</unjar>
+				<unjar overwrite="false" dest="${nuclos.build.installer.dir}">
+					<fileset refid="nuclos.installer.jars"/>
+					<patternset>
+						<!-- TODO: META-INF/** also excludes META-INF/services which contains
+						     the service provider declarations. Is this behavior correct? -->
+						<exclude name="META-INF/**"/>
+					</patternset>
+				</unjar>
+	</target>
 
+	<target name="jar.generic" depends="prepare">
 		<!-- Generic Installer -->
 		<propertyfile file="${nuclos.build.installer.dir}/installer.properties">
 			<entry key="arch" value="generic"/>
 		</propertyfile>
 
 		<jar jarfile="${nuclos.build.deploy.dir}/uninstaller.jar">
-			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" excludes="org/nuclos/installer/iz/" />
+			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" />
 			<fileset dir="${nuclos.build.installer.dir}" />
 			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
 			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
@@ -278,7 +279,7 @@
 		</jar>
 
 		<jar jarfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-generic.jar">
-			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" excludes="org/nuclos/installer/iz/" />
+			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" />
 			<fileset dir="${nuclos.build.installer.dir}" />
 			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
 			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
@@ -290,14 +291,16 @@
 				<attribute name="Main-Class" value="org.nuclos.installer.Main"/>
 			</manifest>
 		</jar>
+	</target>
 
+	<target name="jar.win" depends="prepare">
 		<!-- Installer Windows 32 bit -->
 		<propertyfile file="${nuclos.build.installer.dir}/installer.properties">
 			<entry key="arch" value="x86"/>
 		</propertyfile>
 
 		<jar jarfile="${nuclos.build.deploy.dir}/uninstaller.jar">
-			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" excludes="org/nuclos/installer/iz/" />
+			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" />
 			<fileset dir="${nuclos.build.installer.dir}" />
 			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
 			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
@@ -308,7 +311,7 @@
 		</jar>
 
 		<jar jarfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-win32.jar">
-			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" excludes="org/nuclos/installer/iz/" />
+			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" />
 			<fileset dir="${nuclos.build.installer.dir}" />
 			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
 			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
@@ -328,7 +331,7 @@
 		</propertyfile>
 
 		<jar jarfile="${nuclos.build.deploy.dir}/uninstaller.jar">
-			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" excludes="org/nuclos/installer/iz/" />
+			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" />
 			<fileset dir="${nuclos.build.installer.dir}" />
 			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
 			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
@@ -339,7 +342,7 @@
 		</jar>
 
 		<jar jarfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-win64.jar">
-			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" excludes="org/nuclos/installer/iz/" />
+			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" />
 			<fileset dir="${nuclos.build.installer.dir}" />
 			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
 			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
@@ -375,7 +378,7 @@
 		<delete file="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-win64.jar" />
 	</target>
 
-	<target name="main" description="Build installer" depends="info, clean, get3rdparty, prepare.nuclos, prepare.nuclet, compile, jar">
+	<target name="main" description="Build installer" depends="info, clean, get3rdparty, prepare.nuclos, prepare.nuclet, compile, jar.generic, jar.win">
 		<zip destfile="${nuclos.dist.dir}/nuclos-src-${version-props.nuclos.version.number}.zip">
 			<zipfileset dir="${nuclos.dir}/src/java" prefix="src/java" excludes="CVS, .svn, **/test/**, org/nuclos/tools/**"/>
 		</zip>
