@@ -286,6 +286,7 @@
 			<fileset file="${nuclos.dist.dir}/resources.zip"/>
 			<fileset file="${3rdparty.dir}/apache-tomcat-7.0.11.zip"/>
 			<fileset dir="${nuclos.dist.dir}" includes="lib/*.jar"/>
+			<fileset file="${nuclos.build.deploy.dir}/uninstaller.jar"/>
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
 				<attribute name="Main-Class" value="org.nuclos.installer.Main"/>
