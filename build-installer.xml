@@ -58,6 +58,13 @@
 		<fileset refid="nuclos.installer.jars" />
 	</path>
 
+	<fileset id="nuclos.build.classes.installer" dir="${nuclos.build.classes.dir}">
+		<include name="nuclos-version.properties"/>
+		<include name="org/nuclos/installer/**"/>
+		<include name="org/nuclos/tools/synthetica/**"/>
+		<include name="org/nuclos/common/CryptUtil*.class"/>
+	</fileset>
+
 	<target name="info">
 		<echo message="${version-props.nuclos.name} ${version-props.nuclos.version.number} (${version-props.nuclos.version.date})"/>
 		<echo message="Java: ${java.version} (${java.vm.version})" level="info"/>
@@ -74,14 +81,15 @@
 		<echo message="Directory for third-party applications: ${3rdparty.dir}"/>
 		<mkdir dir="${3rdparty.dir}"/>
 
-		<get src="http://apache.org/dist/tomcat/tomcat-7/v7.0.11/bin/apache-tomcat-7.0.11.zip" dest="${3rdparty.dir}" skipexisting="true"/>
-		<get src="http://apache.org/dist/tomcat/tomcat-7/v7.0.11/bin/apache-tomcat-7.0.11-windows-x86.zip" dest="${3rdparty.dir}" skipexisting="true"/>
-		<get src="http://apache.org/dist/tomcat/tomcat-7/v7.0.11/bin/apache-tomcat-7.0.11-windows-x64.zip" dest="${3rdparty.dir}" skipexisting="true"/>
-		<get src="http://get.enterprisedb.com/postgresql/postgresql-9.0.3-1-windows.exe" dest="${3rdparty.dir}" skipexisting="true"/>
-		<get src="http://get.enterprisedb.com/postgresql/postgresql-9.0.3-1-windows_x64.exe" dest="${3rdparty.dir}" skipexisting="true"/>
+		<get src="http://apache.org/dist/tomcat/tomcat-7/v7.0.14/bin/apache-tomcat-7.0.14.zip" dest="${3rdparty.dir}" skipexisting="true"/>
+		<get src="http://get.enterprisedb.com/postgresql/postgresql-9.0.4-1-windows.exe" dest="${3rdparty.dir}" skipexisting="true"/>
+		<get src="http://get.enterprisedb.com/postgresql/postgresql-9.0.4-1-windows_x64.exe" dest="${3rdparty.dir}" skipexisting="true"/>
+		<get src="http://get.enterprisedb.com/postgresql/postgresql-9.0.4-1-linux.bin" dest="${3rdparty.dir}" skipexisting="true"/>
+		<get src="http://get.enterprisedb.com/postgresql/postgresql-9.0.4-1-linux-x64.bin" dest="${3rdparty.dir}" skipexisting="true"/>
+		<get src="http://get.enterprisedb.com/postgresql/postgresql-9.0.4-1-osx.dmg" dest="${3rdparty.dir}" skipexisting="true"/>
 
 		<checksum todir="${nuclos.conf.dir}/3rdparty" algorithm="MD5" verifyproperty="3rdparty.checksum.valid">
-			<fileset dir="${3rdparty.dir}" />
+			<fileset dir="${3rdparty.dir}" includes="apache-tomcat-7.0.14.zip, postgresql-9.0.4-1*" />
 		</checksum>
 		<echo message="Checksums valid: ${3rdparty.checksum.valid}"/>
 		<condition property="3rdpatchy.checksum.fail">
@@ -196,15 +204,11 @@
 		<mkdir dir="${nuclos.dist.installer.dir}/data/compiled-reports"/>
 		<mkdir dir="${nuclos.dist.installer.dir}/logs"/>
 
-		<mkdir dir="${nuclos.dist.installer.dir}"/>
-		<mkdir dir="${nuclos.dist.installer.dir}/extensions/client"/>
-		<mkdir dir="${nuclos.dist.installer.dir}/extensions/server"/>
-
 		<copy todir="${nuclos.dist.installer.dir}">
-			<fileset dir="${nuclos.conf.dir}/installer" includes="extra/** bin/**" excludes=""/>
+			<fileset dir="${nuclos.conf.dir}/installer" includes="extra/**, bin/**" excludes=""/>
 			<fileset dir="${nuclos.conf.dir}" file="${nuclos.conf.dir}/nuclos-version.properties"/>
 		</copy>
-		<copy todir="${nuclos.dist.installer.dir}">
+		<copy todir="${nuclos.dist.installer.dir}/extra">
 			<fileset dir="${nuclos.doc.dir}" includes="license/**"/>
 			<fileset dir="${nuclos.doc.dir}/installation" includes="*.pdf"/>
 		</copy>
@@ -215,14 +219,14 @@
 			<property name="build.properties" value="${build.properties}"/>
 		</ant>
 
-		<copy todir="${nuclos.dist.installer.dir}/extensions/client">
+		<copy todir="${nuclos.dist.installer.dir}/client">
 			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-client.jar"></fileset>
 		</copy>
 
 		<mkdir dir="${project.lib.dir}/common"/>
 		<mkdir dir="${project.lib.dir}/server"/>
 
-		<copy todir="${nuclos.dist.installer.dir}/extensions/server">
+		<copy todir="${nuclos.dist.installer.dir}/webapp/WEB-INF/lib">
 			<fileset dir="${project.build.deploy.dir}" includes="${project.name}-server.jar"></fileset>
 			<fileset dir="${project.lib.dir}/server" includes="*.jar"></fileset>
 			<fileset dir="${project.lib.dir}/common" includes="*.jar"></fileset>
@@ -242,51 +246,46 @@
 			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/**/*.png" />
 			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/**/*.properties" />
 			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/resource/*" />
+			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
 		</copy>
 	</target>
 
-	<target name="prepare" depends="prepare.nuclos, prepare.nuclet" >
-		<zip destfile="${nuclos.dist.dir}/resources.zip">
-					<zipfileset dir="${nuclos.dist.installer.dir}/"/>
-					<zipfileset file="${nuclos.conf.dir}/installer/template-nuclos.xml" />
-				</zip>
+	<target name="prepare" depends="prepare.nuclos, prepare.nuclet, compile" >
+		<unjar overwrite="false" dest="${nuclos.build.installer.dir}">
+			<fileset refid="nuclos.installer.jars"/>
+			<patternset>
+				<!-- TODO: META-INF/** also excludes META-INF/services which contains
+				     the service provider declarations. Is this behavior correct? -->
+				<exclude name="META-INF/**"/>
+			</patternset>
+		</unjar>
 
-				<unjar overwrite="false" dest="${nuclos.build.installer.dir}">
-					<fileset refid="nuclos.installer.jars"/>
-					<patternset>
-						<!-- TODO: META-INF/** also excludes META-INF/services which contains
-						     the service provider declarations. Is this behavior correct? -->
-						<exclude name="META-INF/**"/>
-					</patternset>
-				</unjar>
-	</target>
-
-	<target name="jar.generic" depends="prepare">
-		<!-- Generic Installer -->
-		<propertyfile file="${nuclos.build.installer.dir}/installer.properties">
-			<entry key="arch" value="generic"/>
-		</propertyfile>
-
-		<jar jarfile="${nuclos.build.deploy.dir}/uninstaller.jar">
-			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" />
+		<!-- Generic Uninstaller -->
+		<jar jarfile="${nuclos.dist.installer.dir}/bin/uninstaller.jar">
+			<fileset refid="nuclos.build.classes.installer" />
 			<fileset dir="${nuclos.build.installer.dir}" />
-			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
-			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
 				<attribute name="Main-Class" value="org.nuclos.installer.Uninstaller"/>
 			</manifest>
 		</jar>
 
+		<zip destfile="${nuclos.build.installer.dir}/resources.zip">
+			<zipfileset dir="${nuclos.dist.installer.dir}/"/>
+			<zipfileset file="${nuclos.conf.dir}/installer/nuclos.xml" />
+		</zip>
+
+		<delete quiet="true" includeEmptyDirs="true">
+			<fileset dir="${nuclos.dist.installer.dir}" />
+		</delete>
+	</target>
+
+	<target name="jar.generic">
+		<!-- Generic Installer -->
 		<jar jarfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-generic.jar">
-			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" />
+			<fileset refid="nuclos.build.classes.installer" />
 			<fileset dir="${nuclos.build.installer.dir}" />
-			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
-			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
-			<fileset file="${nuclos.dist.dir}/resources.zip"/>
-			<fileset file="${3rdparty.dir}/apache-tomcat-7.0.11.zip"/>
-			<fileset dir="${nuclos.dist.dir}" includes="lib/*.jar"/>
-			<fileset file="${nuclos.build.deploy.dir}/uninstaller.jar"/>
+			<fileset file="${3rdparty.dir}/apache-tomcat-7.0.14.zip"/>
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
 				<attribute name="Main-Class" value="org.nuclos.installer.Main"/>
@@ -294,32 +293,13 @@
 		</jar>
 	</target>
 
-	<target name="jar.win" depends="prepare">
+	<target name="jar.win">
 		<!-- Installer Windows 32 bit -->
-		<propertyfile file="${nuclos.build.installer.dir}/installer.properties">
-			<entry key="arch" value="x86"/>
-		</propertyfile>
-
-		<jar jarfile="${nuclos.build.deploy.dir}/uninstaller.jar">
-			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" />
-			<fileset dir="${nuclos.build.installer.dir}" />
-			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
-			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
-			<manifest>
-				<attribute name="Manifest-Version" value="1.0"/>
-				<attribute name="Main-Class" value="org.nuclos.installer.Uninstaller"/>
-			</manifest>
-		</jar>
-
 		<jar jarfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-win32.jar">
-			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" />
+			<fileset refid="nuclos.build.classes.installer" />
 			<fileset dir="${nuclos.build.installer.dir}" />
-			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
-			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
-			<fileset file="${nuclos.dist.dir}/resources.zip"/>
-			<fileset file="${3rdparty.dir}/apache-tomcat-7.0.11.zip"/>
-			<fileset file="${3rdparty.dir}/postgresql-9.0.3-1-windows.exe"/>
-			<fileset file="${nuclos.build.deploy.dir}/uninstaller.jar"/>
+			<fileset file="${3rdparty.dir}/apache-tomcat-7.0.14.zip"/>
+			<fileset file="${3rdparty.dir}/postgresql-9.0.4-1-windows.exe"/>
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
 				<attribute name="Main-Class" value="org.nuclos.installer.Main"/>
@@ -327,30 +307,11 @@
 		</jar>
 
 		<!-- Installer Windows 64 bit -->
-		<propertyfile file="${nuclos.build.installer.dir}/installer.properties">
-			<entry key="arch" value="x64"/>
-		</propertyfile>
-
-		<jar jarfile="${nuclos.build.deploy.dir}/uninstaller.jar">
-			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" />
-			<fileset dir="${nuclos.build.installer.dir}" />
-			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
-			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
-			<manifest>
-				<attribute name="Manifest-Version" value="1.0"/>
-				<attribute name="Main-Class" value="org.nuclos.installer.Uninstaller"/>
-			</manifest>
-		</jar>
-
 		<jar jarfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-win64.jar">
-			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/installer/, org/nuclos/tools/synthetica/, org/nuclos/common/CryptUtil*.class" />
+			<fileset refid="nuclos.build.classes.installer" />
 			<fileset dir="${nuclos.build.installer.dir}" />
-			<fileset dir="${nuclos.src.java.dir}" includes="org/nuclos/installer/*.properties"/>
-			<fileset file="${nuclos.conf.dir}/nuclos-version.properties"/>
-			<fileset file="${nuclos.dist.dir}/resources.zip"/>
-			<fileset file="${3rdparty.dir}/apache-tomcat-7.0.11.zip"/>
-			<fileset file="${3rdparty.dir}/postgresql-9.0.3-1-windows_x64.exe"/>
-			<fileset file="${nuclos.build.deploy.dir}/uninstaller.jar"/>
+			<fileset file="${3rdparty.dir}/apache-tomcat-7.0.14.zip"/>
+			<fileset file="${3rdparty.dir}/postgresql-9.0.4-1-windows_x64.exe"/>
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0"/>
 				<attribute name="Main-Class" value="org.nuclos.installer.Main"/>
@@ -379,7 +340,66 @@
 		<delete file="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-win64.jar" />
 	</target>
 
-	<target name="main" description="Build installer" depends="info, clean, get3rdparty, prepare.nuclos, prepare.nuclet, compile, jar.generic, jar.win">
+	<target name="jar.linux">
+		<!-- Installer Linux 32 bit -->
+		<jar jarfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-linux32.jar">
+			<fileset refid="nuclos.build.classes.installer" />
+			<fileset dir="${nuclos.build.installer.dir}" />
+			<fileset file="${3rdparty.dir}/apache-tomcat-7.0.14.zip"/>
+			<fileset file="${3rdparty.dir}/postgresql-9.0.4-1-linux.bin"/>
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0"/>
+				<attribute name="Main-Class" value="org.nuclos.installer.Main"/>
+			</manifest>
+		</jar>
+
+		<!-- Installer Linux 64 bit -->
+		<jar jarfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-linux64.jar">
+			<fileset refid="nuclos.build.classes.installer" />
+			<fileset dir="${nuclos.build.installer.dir}" />
+			<fileset file="${3rdparty.dir}/apache-tomcat-7.0.14.zip"/>
+			<fileset file="${3rdparty.dir}/postgresql-9.0.4-1-linux-x64.bin"/>
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0"/>
+				<attribute name="Main-Class" value="org.nuclos.installer.Main"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="jar.mac">
+		<!-- Prepare .app -->
+		<copy todir="${nuclos.dist.dir}">
+			<fileset dir="${nuclos.conf.dir}/installer" includes="Installer.app/**"/>
+		</copy>
+		<replace file="${nuclos.dist.dir}/Installer.app/Contents/Info.plist">
+			<replacefilter token="@version@" value="${version-props.nuclos.version.number}"/>
+		</replace>
+
+		<!-- Installer Mac OS X -->
+		<jar jarfile="${nuclos.dist.dir}/Installer.app/Contents/Resources/nuclos-installer-macosx.jar">
+			<fileset refid="nuclos.build.classes.installer" />
+			<fileset dir="${nuclos.build.installer.dir}" />
+			<fileset file="${3rdparty.dir}/apache-tomcat-7.0.14.zip"/>
+			<fileset file="${3rdparty.dir}/postgresql-9.0.4-1-osx.dmg"/>
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0"/>
+				<attribute name="Main-Class" value="org.nuclos.installer.Main"/>
+			</manifest>
+		</jar>
+
+		<move file="${nuclos.dist.dir}/Installer.app" tofile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-osx.app"></move>
+
+		<zip destfile="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-osx.app.zip">
+			<zipfileset dir="${nuclos.dist.dir}" includes="nuclos-${version-props.nuclos.version.number}-installer-osx.app/" excludes="**/applet, **/main.scpt" />
+			<zipfileset dir="${nuclos.dist.dir}" includes="**/applet, **/main.scpt" filemode="755" />
+		</zip>
+
+		<delete quiet="true" includeEmptyDirs="true">
+			<fileset dir="${nuclos.dist.dir}/nuclos-${version-props.nuclos.version.number}-installer-osx.app" />
+		</delete>
+	</target>
+
+	<target name="main" description="Build installer" depends="info, clean, get3rdparty, prepare, jar.generic, jar.win, jar.linux, jar.mac">
 		<zip destfile="${nuclos.dist.dir}/nuclos-src-${version-props.nuclos.version.number}.zip">
 			<zipfileset dir="${nuclos.dir}/src/java" prefix="src/java" excludes="CVS, .svn, **/test/**, org/nuclos/tools/**"/>
 		</zip>
