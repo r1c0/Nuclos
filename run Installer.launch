@@ -23,5 +23,6 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.nuclos.installer.Main"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-d"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="nuclos"/>
 </launchConfiguration>
