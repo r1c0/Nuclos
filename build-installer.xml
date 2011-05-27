@@ -2,11 +2,10 @@
 
 	<property name="app.name" value="nuclos"/>
 
-	<!-- <property name="3rdparty.dir" value="${user.home}/.nuclosbuild/3rdparty"> -->
-	<property name="3rdparty.dir" location="${basedir}/3rdparty"/>
-
 	<property name="build.properties" value="build.properties"/>
 	<property file="${build.properties}" />
+
+	<property name="3rdparty.dir" location="${basedir}/3rdparty"/>
 
 	<!-- Set default value for build.compiler (modern means javac) -->
 	<property name="build.compiler" value="modern"/>
