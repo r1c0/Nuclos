@@ -8,5 +8,5 @@ project.package.common.dir=${project.package.dir}/common
 project.package.client.dir=${project.package.dir}/client
 project.package.server.dir=${project.package.dir}/server
 
-# only needed for gui installer
-launch4j.home.dir=[path.to.nuclos.launch4j]
+launch4j.home.dir=[path.to.launch4j]
+3rdparty.dir=[path.to.3rdpartydir]
