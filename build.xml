@@ -281,9 +281,9 @@
 	<target name="jar.client" depends="jar.common, compile.client">
 		<mkdir dir="${nuclos.build.deploy.dir}"/>
 
-		<jar jarfile="${nuclos.build.deploy.dir}/nuclos-synthetica.jar">
+		<!--jar jarfile="${nuclos.build.deploy.dir}/nuclos-synthetica.jar">
 			<fileset dir="${nuclos.build.classes.dir}" includes="org/nuclos/tools/synthetica/"/>
-		</jar>
+		</jar -->
 
 		<jar jarfile="${nuclos.build.deploy.dir}/nuclos-client.jar">
 			<fileset dir="${nuclos.build.classes.dir}"
