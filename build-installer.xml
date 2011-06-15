@@ -400,7 +400,7 @@
 
 	<target name="main" description="Build installer" depends="info, clean, get3rdparty, prepare, jar.generic, jar.win, jar.linux, jar.mac">
 		<zip destfile="${nuclos.dist.dir}/nuclos-src-${version-props.nuclos.version.number}.zip">
-			<zipfileset dir="${nuclos.dir}/src/java" prefix="src/java" excludes="CVS, .svn, **/test/**, org/nuclos/tools/**"/>
+			<zipfileset dir="${nuclos.dir}/src/java" prefix="src/java" excludes="CVS, .svn, **/test/**, org/nuclos/tools/**, org/nuclos/client/synthetica/**"/>
 		</zip>
 	</target>
 </project>
