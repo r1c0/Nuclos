@@ -60,7 +60,7 @@
 	<fileset id="nuclos.build.classes.installer" dir="${nuclos.build.classes.dir}">
 		<include name="nuclos-version.properties"/>
 		<include name="org/nuclos/installer/**"/>
-		<include name="org/nuclos/tools/synthetica/**"/>
+		<include name="org/nuclos/client/synthetica/**"/>
 		<include name="org/nuclos/common/CryptUtil*.class"/>
 	</fileset>
 
