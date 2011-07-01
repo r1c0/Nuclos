@@ -38,6 +38,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @version 01.00.00
  */
 public class InsertRolePanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JTable tblRoles = new JTable();
 
 	public InsertRolePanel() {

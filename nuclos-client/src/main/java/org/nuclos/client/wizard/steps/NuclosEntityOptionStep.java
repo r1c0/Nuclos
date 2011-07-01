@@ -76,6 +76,11 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	JLabel lbName;
 	
 	ButtonGroup bGroup;

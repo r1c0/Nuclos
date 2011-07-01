@@ -52,6 +52,10 @@ public class CollectableCheckBox extends AbstractCollectableComponent {
 	 * TriStateCheckBox with support for dynamic tooltips.
 	 */
 	private static class CheckBox extends TriStateCheckBox {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private ToolTipTextProvider provider;
 
 		private void setToolTipTextProvider(ToolTipTextProvider provider) {

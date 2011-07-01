@@ -50,6 +50,11 @@ import org.nuclos.common2.exception.CommonFatalException;
 @SuppressWarnings("serial")
 public class WYSIWYGStaticTitledSeparator extends TitledSeparator implements WYSIWYGComponent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String PROPERTY_TITLE = PROPERTY_LABELS.SEPERATOR_TITLE;
 	
 	public static final String[][] PROPERTIES_TO_LAYOUTML_ATTRIBUTES = new String[][] {

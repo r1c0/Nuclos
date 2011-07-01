@@ -44,6 +44,11 @@ import javax.swing.text.Document;
 
 public class CommonJTextField extends javax.swing.JTextField {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * caches the column width so it needn't be recalculated every time.
 	 */
 	private int iColumnWidth;

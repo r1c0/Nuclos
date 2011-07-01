@@ -28,6 +28,11 @@ import java.io.Serializable;
  * @version 01.00.00
  */
 public class CommandMessage implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final int CMD_SHUTDOWN = 1;
 
 	private int iCommand;

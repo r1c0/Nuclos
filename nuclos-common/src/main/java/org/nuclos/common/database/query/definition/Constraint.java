@@ -32,6 +32,10 @@ import java.util.List;
  */
 public class Constraint implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final String name;
 	private final ConstraintEmumerationType type;
 	private final Table table;

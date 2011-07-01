@@ -54,6 +54,11 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
 public class GenericObjectVO extends NuclosValueObject implements Cloneable {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * name of the attribute, if any, that contains the name.
 	 */
 	public static final String ATTRIBUTENAME_NAME = "name";

@@ -136,6 +136,11 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 		final String sSingletaskButtonName = CommonLocaleDelegate.getMessage("EditPersonalTaskDefinitionPanel.Button.Singletask",null);
 		sSingletaskButton = new JButton(
 			new AbstractAction(sSingletaskButtonName) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					CollectableMasterDataWithDependants selectedCollectable = PersonalTaskCollectController.this.getSelectedCollectable();

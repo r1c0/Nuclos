@@ -45,6 +45,10 @@ import org.nuclos.common.NuclosBusinessException;
 @SuppressWarnings("serial")
 public class WYSIWYGCollectableListOfValues extends WYSIWYGCollectableComponent {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private LabeledListOfValues component = new LabeledListOfValues();
 	
 	public WYSIWYGCollectableListOfValues() {

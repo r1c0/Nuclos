@@ -42,6 +42,10 @@ import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
  */
 @SuppressWarnings("serial")
 public class PropertyValueBoolean implements PropertyValue<Boolean> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private boolean selected = true;
 	
 	/**
@@ -183,6 +187,10 @@ public class PropertyValueBoolean implements PropertyValue<Boolean> {
 	 */
 	public class PropertyEditorBoolean extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private JCheckBox checkbox;
 		
 		/*

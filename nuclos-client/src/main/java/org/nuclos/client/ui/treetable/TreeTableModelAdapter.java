@@ -39,6 +39,10 @@ import javax.swing.tree.TreePath;
  * @version	01.00.00
  */
 public class TreeTableModelAdapter extends AbstractTableModel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JTree tree;
 	TreeTableModel treeTableModel;
 

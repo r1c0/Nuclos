@@ -60,6 +60,10 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
 @SuppressWarnings("serial")
 public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Serializable, WYSIWYGEditorModes {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static final String PROPERTY_LABEL = PROPERTY_LABELS.LABEL;
 	public static final String PROPERTY_VISIBLE = PROPERTY_LABELS.VISIBLE;

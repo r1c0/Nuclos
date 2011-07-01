@@ -123,6 +123,11 @@ import org.nuclos.common2.exception.PreferencesException;
  */
 public class MainFrame extends CommonJFrame implements WorkspaceFrame, ComponentNameSetter {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger log = Logger.getLogger(MainFrame.class);
 	
 	private static final String PREFS_NODE_BOOKMARK = "bookmark";
@@ -179,6 +184,11 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private static String lastWorkspace;
 	
 	private static final AbstractAction actDeactivateSplitting = new AbstractAction() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			setSplittingDeactivated(!isSplittingDeactivated());
@@ -501,6 +511,11 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 					CommonLocaleDelegate.getMessage("ExternalFrame.Title","Erweiterungsfenster {0}",((WorkspaceFrame) frame).getNumber()) :
 						CommonLocaleDelegate.getMessage("MainFrame.Title","Hauptfenster");
 				JMenuItem miFrameToFront = new JMenuItem(new AbstractAction("Nuclos " + title) {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						frame.setVisible(true);
@@ -1693,6 +1708,11 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	static void setupLiveSearchKey(JFrame frame) {
 		frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyBindingProvider.FOCUS_ON_LIVE_SEARCH.getKeystroke(), KeyBindingProvider.FOCUS_ON_LIVE_SEARCH.getKey());
 		frame.getRootPane().getActionMap().put(KeyBindingProvider.FOCUS_ON_LIVE_SEARCH	.getKey(), new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				MainFrame.cmdFocusLiveSearch();

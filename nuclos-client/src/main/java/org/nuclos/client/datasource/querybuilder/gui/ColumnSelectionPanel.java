@@ -46,6 +46,11 @@ import org.nuclos.common.database.query.definition.Table;
  */
 public class ColumnSelectionPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private class ColumnMouseAdapter extends MouseAdapter {
 		@Override
 		public void mouseClicked(MouseEvent e) {
@@ -56,6 +61,11 @@ public class ColumnSelectionPanel extends JPanel {
 	}
 
 	private class ClearColumnAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		ClearColumnAction() {
 			super(CommonLocaleDelegate.getMessage("ColumnSelectionPanel.2","Spalte zur\u00fccksetzen"));
 		}
@@ -67,6 +77,11 @@ public class ColumnSelectionPanel extends JPanel {
 	}
 
 	private class ClearAllColumnsAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		ClearAllColumnsAction() {
 			super(CommonLocaleDelegate.getMessage("ColumnSelectionPanel.1","Alle Spalten zur\u00fccksetzen"));
 		}

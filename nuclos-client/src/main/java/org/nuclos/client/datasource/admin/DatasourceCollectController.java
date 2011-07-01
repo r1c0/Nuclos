@@ -87,6 +87,11 @@ public class DatasourceCollectController extends AbstractDatasourceCollectContro
 	
 	private void setupResultToolBar() {
 		this.getResultPanel().addToolBarComponent(new JButton(new AbstractAction("", Icons.getInstance().getIconTree16()) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Main.getMainController().getExplorerController().cmdShowDatasources(null);

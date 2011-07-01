@@ -51,6 +51,10 @@ import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 @SuppressWarnings("serial")
 public class SaveAndCancelButtonPanel extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JButton saveButton = null;
 	private JButton cancelButton = null;
 	

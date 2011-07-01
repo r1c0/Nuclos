@@ -30,6 +30,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 
 public class SystemEntityMetaDataVO extends EntityMetaDataVO {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final MasterDataMetaVO mdMeta;
 	private Map<String, SystemEntityFieldMetaDataVO> entityFields;
 

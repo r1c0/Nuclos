@@ -48,7 +48,12 @@ import org.nuclos.common2.LocaleInfo;
  * @version 01.00.00
  */
 public class LocalUserProperties extends java.util.Properties {
-    private static LocalUserProperties singleton;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private static LocalUserProperties singleton;
 
     private static final String KEY_LOOKANDFEEL = "look.and.feel";
     private static final String KEY_USERNAME = "user.name";

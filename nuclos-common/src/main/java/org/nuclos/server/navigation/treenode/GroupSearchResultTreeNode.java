@@ -33,6 +33,11 @@ import java.util.List;
 public class GroupSearchResultTreeNode extends AbstractSearchResultTreeNode {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * @param cond
 	 * @param sFilterName
 	 */

@@ -38,6 +38,10 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public class NucletTreeNode extends MasterDataTreeNode<Integer> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final String label;
 	private final String description;
 	

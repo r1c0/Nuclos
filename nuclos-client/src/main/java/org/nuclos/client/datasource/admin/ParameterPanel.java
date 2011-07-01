@@ -65,6 +65,11 @@ import org.nuclos.server.report.valueobject.DatasourceParameterVO;
  */
 public class ParameterPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final int iComponentWidth = 200;
 
 	private final Map<String, JComponent> mpFields = CollectionUtils.newHashMap();

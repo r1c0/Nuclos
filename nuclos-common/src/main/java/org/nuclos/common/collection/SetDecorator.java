@@ -32,6 +32,11 @@ import java.util.Set;
 public class SetDecorator<E> extends GenericCollectionDecorator<E, Set<E>> implements Set<E> {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Note that it's not useful to create direct instances of this class.
 	 * @param st
 	 */

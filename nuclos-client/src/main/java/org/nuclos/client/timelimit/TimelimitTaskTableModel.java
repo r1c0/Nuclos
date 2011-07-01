@@ -31,6 +31,11 @@ import org.nuclos.server.common.valueobject.TimelimitTaskVO;
 
 public class TimelimitTaskTableModel extends SortableCollectableTableModelImpl<CollectableTimelimitTask> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public TimelimitTaskTableModel() {
 		super(null);
 	}

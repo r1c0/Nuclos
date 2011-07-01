@@ -33,6 +33,11 @@ import javax.swing.Icon;
 
 public abstract class CommonAbstractAction extends AbstractAction {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * creates a bare action
 	 */
 	public CommonAbstractAction() {

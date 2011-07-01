@@ -21,6 +21,10 @@ import org.nuclos.server.dblayer.DbException;
 
 public class DbColumn extends DbTableArtifact {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final DbColumnType	columnType;
 	private final DbNullable nullable;
 	private final Object defaultValue;

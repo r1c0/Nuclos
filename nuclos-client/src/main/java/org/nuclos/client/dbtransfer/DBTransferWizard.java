@@ -36,6 +36,10 @@ import org.pietschy.wizard.WizardModel;
 
 public class DBTransferWizard extends Wizard {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private boolean blnCancelEnabled = true;
 
 	/**
@@ -50,6 +54,11 @@ public class DBTransferWizard extends Wizard {
 	@Override
 	public Action getCancelAction() {
 		return new WizardAction("cancel", this){
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void doAction(ActionEvent e) throws InvalidStateException {
@@ -72,6 +81,11 @@ public class DBTransferWizard extends Wizard {
 	@Override
 	protected ButtonBar createButtonBar() {
 		return new ButtonBar(this){
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void layoutButtons(JButton helpButton,

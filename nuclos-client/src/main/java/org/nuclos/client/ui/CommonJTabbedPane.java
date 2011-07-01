@@ -71,7 +71,11 @@ import javax.swing.TransferHandler;
  */
 public class CommonJTabbedPane extends DnDTabbedPane {
 
-   private static final DataFlavor TAB_COMPONENT_DATAFLAVOR = new DataFlavor(TabComponent.class, "Tab");
+   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+private static final DataFlavor TAB_COMPONENT_DATAFLAVOR = new DataFlavor(TabComponent.class, "Tab");
 
    /** Constructor of this object...
     */
@@ -120,7 +124,12 @@ public class CommonJTabbedPane extends DnDTabbedPane {
 
    private final class TransferHandlerExtension extends TransferHandler {
    	
-   	@Override
+   	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
    	protected Transferable createTransferable(JComponent c) {
    		return super.createTransferable(c);
    	}
@@ -168,7 +177,11 @@ public class CommonJTabbedPane extends DnDTabbedPane {
 
    private class TabComponent extends JComponent implements Transferable {
 
-      JLabel label;
+      /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	JLabel label;
       JButton button;
 
       public TabComponent(String title, Icon icon, String tip) {
@@ -246,7 +259,11 @@ public class CommonJTabbedPane extends DnDTabbedPane {
 // Code from http://java-swing-tips.blogspot.com/2008/04/drag-and-drop-tabs-in-jtabbedpane.html
 //
 class DnDTabbedPane extends JTabbedPane {
-   private static final int LINEWIDTH = 3;
+   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+private static final int LINEWIDTH = 3;
    private static final String NAME = "test";
    private final GhostGlassPane glassPane = new GhostGlassPane();
    private final Rectangle lineRect  = new Rectangle();
@@ -537,7 +554,11 @@ class DnDTabbedPane extends JTabbedPane {
        return tabbedRect;
    }
    class GhostGlassPane extends JPanel {
-       private final AlphaComposite composite;
+       /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private final AlphaComposite composite;
        private Point location = new Point(0, 0);
        private BufferedImage draggingGhost = null;
        public GhostGlassPane() {

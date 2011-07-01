@@ -518,7 +518,12 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 
     public abstract class QueryBuilder extends DbQueryBuilder {
 
-        @SuppressWarnings({ "unchecked", "rawtypes" })
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@SuppressWarnings({ "unchecked", "rawtypes" })
         protected <T, R> ResultSetRunner<List<R>> createListResultSetRunner(final DbQuery<? extends T> query, Transformer<? super T, R> transformer) {
             final List<DbSelection<?>> selections = getPrimitiveSelections(query.getSelection());
             final DbTupleElementImpl<?>[] elements = new DbTupleElementImpl<?>[selections.size()];

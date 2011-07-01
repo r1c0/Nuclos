@@ -17,6 +17,10 @@
 package org.nuclos.common;
 
 public class CommandInformationMessage extends CommandMessage {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final int CMD_INFO_SHUTDOWN = 2;
 	private String info;
 	private boolean needLogout = true;

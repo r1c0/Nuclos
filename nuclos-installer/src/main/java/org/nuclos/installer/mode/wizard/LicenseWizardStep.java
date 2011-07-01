@@ -38,6 +38,11 @@ import org.pietschy.wizard.WizardModel;
  */
 public class LicenseWizardStep extends AbstractWizardStep {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private JEditorPane pane = new JEditorPane();
 
 	private JRadioButton accept = new JRadioButton();

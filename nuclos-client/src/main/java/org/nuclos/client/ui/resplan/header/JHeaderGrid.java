@@ -62,6 +62,11 @@ import org.nuclos.client.ui.util.Range;
 
 public class JHeaderGrid<E> extends JComponent implements ListDataListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Dimension DEFAULT_CELL_EXTENT = new Dimension(75, 20);
 
 	private static final Dimension MINIMUM_CELL_EXTENT = new Dimension(10, 10);
@@ -205,9 +210,18 @@ public class JHeaderGrid<E> extends JComponent implements ListDataListener {
 
 	protected ComponentProvider<?> createDefaultCellRendererProvider() {
 		return new LabelProvider(JLabel.CENTER) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected DefaultVisuals<JLabel> createDefaultVisuals() {
 				return new  DefaultVisuals<JLabel>() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
 					private final Painter<?> painter = new PainterUtils.HeaderPainter();
 					@Override
 					protected void configurePainter(JLabel renderingComponent, CellContext context) {
@@ -686,6 +700,11 @@ public class JHeaderGrid<E> extends JComponent implements ListDataListener {
 	}
 
 	public static class GridHeaderContext extends CellContext {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public JHeaderGrid<?> getComponent() {

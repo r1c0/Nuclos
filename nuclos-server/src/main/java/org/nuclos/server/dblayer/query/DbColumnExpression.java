@@ -20,6 +20,10 @@ import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 
 public class DbColumnExpression<T> extends DbExpression<T> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final DbFrom fromTable;
 	private final String columnName;
 

@@ -56,6 +56,10 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGOptions;
 @SuppressWarnings("serial")
 public class PropertyOptions implements PropertyValue<WYSIWYGOptions>, LayoutMLConstants {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private WYSIWYGOptions options = null;
 
 	/**
@@ -167,6 +171,11 @@ public class PropertyOptions implements PropertyValue<WYSIWYGOptions>, LayoutMLC
 	 * @version 01.00.00
 	 */
 	class PropertyEditorOptions extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		/*
 		 * (non-Javadoc)

@@ -40,6 +40,10 @@ import javax.swing.border.Border;
  * @version 01.00.00
  */
 public class ReportFormatPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	Border border1;
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JLabel lblHeadline = new JLabel();

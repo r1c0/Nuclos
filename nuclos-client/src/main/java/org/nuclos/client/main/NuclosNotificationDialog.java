@@ -71,6 +71,10 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
  */
 public class NuclosNotificationDialog extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final String COL_PRIORITY = CommonLocaleDelegate.getMessage("NuclosNotificationDialog.6","Priorit\u00e4t");
 	private static final String COL_MSGTEXT = CommonLocaleDelegate.getMessage("NuclosNotificationDialog.2","Meldung");
 	private static final String COL_OWNER = CommonLocaleDelegate.getMessage("NuclosNotificationDialog.9","Versendet von");
@@ -100,6 +104,11 @@ public class NuclosNotificationDialog extends JDialog {
 	};
 
 	private final DefaultTableModel tblmodel = new DefaultTableModel(asHeaders, 0) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public boolean isCellEditable(int iRow, int iColumn) {
 			return false;

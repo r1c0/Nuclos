@@ -29,6 +29,11 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class ClientConfigurationWizardStep extends AbstractWizardStep {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private JCheckBox chkSingleInstance = new JCheckBox();
 
 	private static double	layout[][]			= {

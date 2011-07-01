@@ -34,6 +34,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class SearchFilterUserVO extends NuclosValueObject {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer iSearchFilterId;
 	private Integer iUserId;
 	private Boolean bEditable;

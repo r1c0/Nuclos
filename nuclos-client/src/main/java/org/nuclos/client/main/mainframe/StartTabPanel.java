@@ -88,6 +88,11 @@ import org.nuclos.common2.exception.CommonBusinessException;
 
 public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger log = Logger.getLogger(StartTabPanel.class);
 	
 	public final static int CENTER_COLUMNS_PREFFERED_WIDTH = 200;
@@ -207,6 +212,11 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	 */
 	private void setupActions() {
 		actionNeverHideStartmenu =  new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.2","Immer anzeigen")) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (transferSelected(e, actionNeverHideStartmenu))
@@ -215,6 +225,11 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			}
 		};
 		actionNeverHideHistory = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.2","Immer anzeigen")) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (transferSelected(e, actionNeverHideHistory))
@@ -223,6 +238,11 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			}
 		};
 		actionNeverHideBookmark = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.2","Immer anzeigen")) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (transferSelected(e, actionNeverHideBookmark))
@@ -231,6 +251,11 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			}
 		};
 		actionAlwaysHideStartmenu =  new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.16","Niemals anzeigen")) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (transferSelected(e, actionAlwaysHideStartmenu))
@@ -239,6 +264,11 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			}
 		};
 		actionAlwaysHideHistory = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.16","Niemals anzeigen")) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (transferSelected(e, actionAlwaysHideHistory))
@@ -247,6 +277,11 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			}
 		};
 		actionAlwaysHideBookmark = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.16","Niemals anzeigen")) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (transferSelected(e, actionAlwaysHideBookmark))
@@ -255,6 +290,11 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			}
 		};
 		actionShowAdministration = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.3","Administration")) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean selected = transferSelected(e, actionShowAdministration); 
@@ -262,6 +302,11 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			}
 		};
 		actionShowEntity = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.14","Entitäten")) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean selected = transferSelected(e, actionShowEntity); 
@@ -269,6 +314,11 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			}
 		};
 		actionShowConfiguration = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.15","Konfiguration")) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean selected = transferSelected(e, actionShowConfiguration); 
@@ -276,12 +326,22 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			}
 		};
 		actionClearHistory = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.4","Alle Eintraege entfernen"), Icons.getInstance().getIconRealDelete16()) { 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				MainFrame.clearHistory();
 			}
 		};
 		actionClearBookmark = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.5","Alle Lesezeichen entfernen"), Icons.getInstance().getIconRealDelete16()) { 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				MainFrame.clearBookmark();
@@ -401,6 +461,11 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	 */
 	public Action createSelectHistorySize(final int index) {
 		Action result = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.6","Merke {0} Eintraege",MainFrame.HISTORY_SIZES[index])) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JRadioButtonMenuItem radmi = (JRadioButtonMenuItem) e.getSource();
@@ -771,6 +836,11 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	
 	private LinkLabel createHeadline(Action action) {
 		return new LinkLabel(action, true){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected List<JMenuItem> getContextMenuItems() {
 				return null;
@@ -951,6 +1021,11 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	 */
 	private LinkLabel createBookmarkEntry(final EntityBookmark eb) {
 		Action act = new AbstractAction(eb.getLabel()) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				tabbedPane.newNuclosTab(eb);
@@ -961,10 +1036,20 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		
 		LinkLabel result = new LinkLabel(act) {
 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected List<JMenuItem> getContextMenuItems() {
 				List<JMenuItem> result = new ArrayList<JMenuItem>();
 				result.add(new JMenuItem(new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.7","Lesezeichen entfernen"), Icons.getInstance().getIconDelete16()){
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						MainFrame.getBookmark().removeValue(eb.getEntity(), eb);
@@ -986,6 +1071,11 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	 */
 	private LinkLabel createHistoryEntry(final EntityBookmark eb) {
 		Action act = new AbstractAction(eb.getLabel()) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				tabbedPane.newNuclosTab(eb);
@@ -996,16 +1086,31 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		
 		LinkLabel result = new LinkLabel(act) {
 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected List<JMenuItem> getContextMenuItems() {
 				List<JMenuItem> result = new ArrayList<JMenuItem>();
 				result.add(new JMenuItem(new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.8","Lesezeichen setzen"), Icons.getInstance().getIconBookmark16()){ 
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						MainFrame.addBookmark(eb.copy(), true);
 					}
 				}));
 				result.add(new JMenuItem(new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.9","Eintrag entfernen"), Icons.getInstance().getIconDelete16()){
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						MainFrame.getHistory().removeValue(eb.getEntity(), eb);
@@ -1033,11 +1138,21 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		action.putValue(Action.SELECTED_KEY, true);
 		
 		LinkLabel result = new LinkLabel(action) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected List<JMenuItem> getContextMenuItems() {
 				List<JMenuItem>result = new ArrayList<JMenuItem>();
 				
 				JCheckBoxMenuItem cbmiOpenHere = new JCheckBoxMenuItem(new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.10","Immer hier oeffnen")) {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						JCheckBoxMenuItem cbmiThis = (JCheckBoxMenuItem) e.getSource();
@@ -1073,11 +1188,21 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	void addHiddenTab(final MainFrameTab tab) {
 		hiddenTabs.add(tab);
 		final LinkLabel restoreLink = new LinkLabel(new AbstractAction(tab.getTitle(), tab.getTabIcon()) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				tabbedPane.restoreHiddenTab(tab);
 			}
 		}) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected List<JMenuItem> getContextMenuItems() {
 				return null;
@@ -1198,6 +1323,10 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	 */
 	abstract static class LinkLabel extends JLabel {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private LinkMarker marker = LinkMarker.NONE;
 		private boolean hover = false;
 		private boolean selected = true;
@@ -1366,6 +1495,10 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	 */
 	private class ExpandOrReduceAction extends AbstractAction {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private Collection<LinkLabel> items = new ArrayList<StartTabPanel.LinkLabel>();
 		
 		public ExpandOrReduceAction(String menu) {

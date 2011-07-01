@@ -154,6 +154,11 @@ public class AtomicNodeController {
 
 	private ValidatingJOptionPane newOptionPane(String sTitle, final AtomicNodePanel pnl) {
 		return new ValidatingJOptionPane(parent, sTitle, pnl, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected void validateInput() throws ValidatingJOptionPane.ErrorInfo {
 				try {
@@ -167,6 +172,11 @@ public class AtomicNodeController {
 	}
 
 	private class AtomicNodePanel extends JPanel {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		private static final int MAX_COLUMNS = 20;
 
 		private final JComboBox cmbbxEntityField = new JComboBox();
@@ -204,6 +214,11 @@ public class AtomicNodeController {
 			pnl.add(new JLabel(CommonLocaleDelegate.getMessage("AtomicNodeController.7","Operator")), new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE, new Insets(0, 0, 2, 5), 0, 0));
 			pnl.add(cmbbxOperator, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 5), 0, 0));
 			cmbbxOperator.setRenderer(new DefaultListCellRenderer() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 					String label = null;

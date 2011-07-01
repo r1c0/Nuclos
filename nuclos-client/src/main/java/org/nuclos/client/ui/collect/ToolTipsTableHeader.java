@@ -38,6 +38,10 @@ import org.nuclos.common.collection.Predicate;
 
 public class ToolTipsTableHeader extends JTableHeader {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private CollectableEntityFieldBasedTableModel entityTableModel;
 	private final Icon ascendingSortIcon;
 	private final Icon descendingSortIcon;

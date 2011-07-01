@@ -28,6 +28,10 @@ import org.nuclos.common2.StringUtils;
 
 public class PointerCollection implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final Pointer mainPointer;
 	private final MultiListHashMap<String, Pointer> fieldPointers = new MultiListHashMap<String, Pointer>();
 	
@@ -200,6 +204,10 @@ public class PointerCollection implements Serializable{
 	 * 
 	 */
 	public static class Pointer implements Serializable{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		public String message;
 		public Object[] localizeParameter;
 		

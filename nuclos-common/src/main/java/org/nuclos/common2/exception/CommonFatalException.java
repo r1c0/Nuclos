@@ -30,6 +30,11 @@ import javax.ejb.EJBException;
 
 public class CommonFatalException extends RuntimeException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public CommonFatalException() {
 		super();
 	}

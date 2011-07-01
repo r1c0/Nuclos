@@ -43,6 +43,11 @@ import org.nuclos.common.collection.CollectionUtils;
  */
 public final class CollectableComparison extends AtomicCollectableSearchCondition {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Set<ComparisonOperator> stValidOperators = CollectionUtils.asSet(
 			ComparisonOperator.EQUAL, ComparisonOperator.NOT_EQUAL,
 			ComparisonOperator.LESS, ComparisonOperator.LESS_OR_EQUAL,

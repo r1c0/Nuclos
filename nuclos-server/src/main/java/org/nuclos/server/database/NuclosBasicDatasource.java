@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.database;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
@@ -24,31 +23,23 @@ import java.util.Properties;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.nuclos.common.NuclosFatalException;
+import org.nuclos.server.common.ServerProperties;
 
-public class NuclosBasicDatasource extends BasicDataSource { 
+public class NuclosBasicDatasource extends BasicDataSource {
 
 	@PostConstruct
 	public void setInitSqlStatements() {
-		try {
-			Properties prop = new Properties();		
-			prop.load(this.getClass().getClassLoader().getResourceAsStream("nuclos-server.properties"));
-			Collection<String> colInitSqls = new ArrayList<String>();
-			if("postgresql".equals(prop.get("database.adapter"))) {
-				String sDBSchema = prop.getProperty("database.schema");
-				colInitSqls.add("set search_path to "+ sDBSchema + ",public");
-			}
-			else if("oracle".equals(prop.get("database.adapter"))) {
-				colInitSqls.add("alter session set nls_comp='BINARY' nls_sort='GERMAN'");
-			}
-			
-			this.setConnectionInitSqls(colInitSqls);
+		Properties prop = ServerProperties.loadProperties(ServerProperties.JNDI_SERVER_PROPERTIES);
+		Collection<String> colInitSqls = new ArrayList<String>();
+		if("postgresql".equals(prop.get("database.adapter"))) {
+			String sDBSchema = prop.getProperty("database.schema");
+			colInitSqls.add("set search_path to "+ sDBSchema + ",public");
 		}
-		catch(IOException e) {
-			throw new NuclosFatalException(e);
+		else if("oracle".equals(prop.get("database.adapter"))) {
+			colInitSqls.add("alter session set nls_comp='BINARY' nls_sort='GERMAN'");
 		}
-		
-		
+
+		this.setConnectionInitSqls(colInitSqls);
 	}
-	
+
 }

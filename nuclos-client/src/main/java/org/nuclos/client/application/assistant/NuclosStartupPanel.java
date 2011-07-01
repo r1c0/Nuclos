@@ -75,6 +75,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
  */
 public class NuclosStartupPanel extends JPanel implements ApplicationAssistantListener {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JPanel pnlOverview;
 	JLabel lbLink;
 	JLabel lbSteep;
@@ -910,6 +914,11 @@ public class NuclosStartupPanel extends JPanel implements ApplicationAssistantLi
 	private AbstractAction createCloseAction() {
 		return new AbstractAction(getMessage("nuclos.startuppanel.19", "Assistent schlie\u00dfen")) {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(iFrame != null) {
@@ -1273,6 +1282,10 @@ public class NuclosStartupPanel extends JPanel implements ApplicationAssistantLi
 	
 	class StartupJLabel extends JLabel {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		Pair<Integer, Integer> xyPosition;
 		String sLinkName;
 

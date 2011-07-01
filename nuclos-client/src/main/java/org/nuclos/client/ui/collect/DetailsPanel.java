@@ -73,6 +73,11 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 public class DetailsPanel extends SearchOrDetailsPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	protected static final Logger log = Logger.getLogger(SearchOrDetailsPanel.class);
 	
 	CollectPanelIndicator cpi = new CollectPanelIndicator(CollectPanel.TAB_DETAILS);
@@ -364,6 +369,10 @@ public class DetailsPanel extends SearchOrDetailsPanel {
 	
 	class ComponentSpot extends Window implements AncestorListener {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		JComponent parent;
 
 		ComponentSpot(JComponent parent) throws HeadlessException {

@@ -24,6 +24,10 @@ import org.nuclos.server.dblayer.query.DbJoin.JoinType;
 
 public class DbFrom implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	final DbQuery<?> query;
 	private final String tableName;
 	private String alias;

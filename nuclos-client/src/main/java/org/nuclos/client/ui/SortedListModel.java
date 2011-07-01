@@ -37,6 +37,11 @@ import org.apache.commons.lang.NullArgumentException;
  */
 public class SortedListModel<E> extends AbstractListModel implements MutableListModel<E> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private final List<E> lst;
 
 	private final Comparator<? super E> comparator;

@@ -22,6 +22,10 @@ import java.awt.dnd.DropTargetDragEvent;
 
 public class NuclosDropTargetDragEvent extends DropTargetDragEvent {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	Object userObject;
 
 	public NuclosDropTargetDragEvent(DropTargetContext dtc, Point cursorLocn,	int dropAction, int srcActions) {

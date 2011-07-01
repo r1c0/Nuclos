@@ -35,6 +35,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class SearchFilterVO extends NuclosValueObject {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String sFilterName;
 	private String sDescription;
 	private String sFilterPrefs;

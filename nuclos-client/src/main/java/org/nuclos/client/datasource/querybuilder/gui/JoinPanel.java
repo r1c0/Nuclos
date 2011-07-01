@@ -43,6 +43,10 @@ import org.nuclos.client.datasource.querybuilder.shapes.RelationConnector;
  * @version 01.00.00
  */
 public class JoinPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final String sJoin = CommonLocaleDelegate.getMessage("JoinPanel.1", "<html>Nur verkn\u00fcpfte Datens\u00e4tze ber\u00fccksichtigen,<br>deren Feldinhalte auf beiden Seiten identisch sind</html>");
 	private static final String sOuterJoin = CommonLocaleDelegate.getMessage("JoinPanel.2", "<html>ALLE Datens\u00e4tze von {0}<br>und nur Datens\u00e4tze von {1} selektieren,<br>wenn die verkn\u00fcpften Felder identisch sind ({2} Outer Join)</html>");
 

@@ -29,6 +29,11 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
  */
 public class NucletContentRuleTreeNode extends DefaultNucletContentEntryTreeNode {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public NucletContentRuleTreeNode(EntityObjectVO eo) {
 		super(eo);
 	}

@@ -28,6 +28,10 @@ package org.nuclos.common.collect.collectable.searchcondition;
  */
 public final class TrueCondition extends AbstractCollectableSearchCondition {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final TrueCondition TRUE = new TrueCondition();
 
 	private TrueCondition() {

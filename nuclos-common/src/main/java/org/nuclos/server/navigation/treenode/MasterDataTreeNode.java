@@ -36,6 +36,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public abstract class MasterDataTreeNode<Id> extends AbstractTreeNode<Id> implements Comparable<MasterDataTreeNode<Id>> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final String sEntityName;
 
 	/**

@@ -713,6 +713,11 @@ public class UndoRedoFunction implements WYSIWYGToolbarAttachable {
 	@SuppressWarnings("serial")
 	private class UndoAction extends AbstractAction {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			undoChanges();
@@ -724,6 +729,11 @@ public class UndoRedoFunction implements WYSIWYGToolbarAttachable {
 	 */
 	@SuppressWarnings("serial")
 	private class RedoAction extends AbstractAction {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {

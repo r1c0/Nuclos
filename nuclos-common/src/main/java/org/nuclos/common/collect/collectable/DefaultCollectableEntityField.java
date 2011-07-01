@@ -39,6 +39,10 @@ import org.nuclos.common2.RelativeDate;
  */
 public class DefaultCollectableEntityField extends AbstractCollectableEntityField implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final String sName;
 	private final Class<?> cls;
 	private final String sLabel;

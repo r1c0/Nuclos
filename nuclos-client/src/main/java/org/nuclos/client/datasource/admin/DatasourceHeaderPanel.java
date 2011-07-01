@@ -44,6 +44,11 @@ import org.nuclos.common2.CommonLocaleDelegate;
 
 public class DatasourceHeaderPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private final JPanel pnlTextFields = new JPanel();
 
 	final CollectableTextField clcttfName;

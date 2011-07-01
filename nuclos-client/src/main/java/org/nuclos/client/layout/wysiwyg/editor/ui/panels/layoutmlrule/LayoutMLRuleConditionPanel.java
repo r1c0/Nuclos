@@ -37,6 +37,10 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.L
 @SuppressWarnings("serial")
 public class LayoutMLRuleConditionPanel extends JPanel {
 	
+		/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 		private LayoutMLRuleCondition layoutMLRuleCondition = null;
 		
 		/**

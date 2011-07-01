@@ -30,6 +30,10 @@ import java.util.List;
  */
 public class EntityRuleNode extends AbstractRuleTreeNode {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final boolean isAllRuleSubnode;
 	private final String entity;
 	private final String eventName;

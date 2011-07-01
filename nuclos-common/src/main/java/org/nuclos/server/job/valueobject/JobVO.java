@@ -35,6 +35,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class JobVO extends NuclosValueObject {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String sName;
 	private String sType;
 	private String sDescription;

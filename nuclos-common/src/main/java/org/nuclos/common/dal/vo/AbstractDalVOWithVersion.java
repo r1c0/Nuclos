@@ -20,6 +20,10 @@ import org.nuclos.common2.InternalTimestamp;
 
 public abstract class AbstractDalVOWithVersion extends AbstractDalVOBasic {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private InternalTimestamp createdAt;
 	private String createdBy;
 	private InternalTimestamp changedAt;

@@ -35,6 +35,11 @@ import javax.swing.border.Border;
  */
 
 public class NuclosEntityBorder implements Border, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private Insets insets;
 
 	private final static NuclosEntityBorder instance = new NuclosEntityBorder();

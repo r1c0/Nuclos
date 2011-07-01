@@ -89,6 +89,11 @@ public class LogbookController extends Controller {
 	private final JButton btnRefresh = new JButton();
 	private final Action actRefresh = new CommonAbstractAction(CommonLocaleDelegate.getMessage("LogbookController.1", "Aktualisieren"),
 			Icons.getInstance().getIconRefresh16(), CommonLocaleDelegate.getMessage("LogbookController.1", "Aktualisieren")) {
+		/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdRefresh();
@@ -110,6 +115,11 @@ public class LogbookController extends Controller {
 	
 	private final Action actFilter = new CommonAbstractAction(CommonLocaleDelegate.getMessage("LogbookController.2", "Filter"),
 			Icons.getInstance().getIconFilter16(), CommonLocaleDelegate.getMessage("LogbookController.2", "Filter")) {
+		/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdFilter();
@@ -118,6 +128,11 @@ public class LogbookController extends Controller {
 	
 	private final Action actClearFilter = new CommonAbstractAction(CommonLocaleDelegate.getMessage("LogbookController.3", "Filter leeren"),
 			Icons.getInstance().getIconClearSearch16(), CommonLocaleDelegate.getMessage("LogbookController.3", "Filter leeren")) {
+		/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdClearFilter();
@@ -424,6 +439,11 @@ public class LogbookController extends Controller {
 	private static void setupEscapeKey(final MainFrameTab ifrm, LogbookPanel pnlLogbook) {
 		// Escape key is to close the window:
 		final Action actClose = new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				ifrm.dispose();

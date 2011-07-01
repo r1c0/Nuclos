@@ -38,12 +38,21 @@ import javax.swing.UIManager;
 
 public class TriStateCheckBox extends JCheckBox {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private boolean lockModel;
 	private boolean bUndefined;
 	
 	public TriStateCheckBox() {
 		super();
 		setModel(new ToggleButtonModel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void setSelected(boolean b) {
 				setUndefined(false);

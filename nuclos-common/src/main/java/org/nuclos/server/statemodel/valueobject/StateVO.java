@@ -34,6 +34,10 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
  */
 public class StateVO extends NuclosValueObject {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer iClientId;
 	private Integer iNumeral;
 	private String sStatename;
@@ -258,18 +262,33 @@ public class StateVO extends NuclosValueObject {
 	 * maps a role id to a collection of <code>AttributegroupPermissionVO</code>.
 	 */
 	public static class UserRights extends MultiListHashMap<Integer, AttributegroupPermissionVO> {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 	}
 	
 	/**
 	 * maps a role id to a collection of <code>AttributegroupPermissionVO</code>.
 	 */
 	public static class UserFieldRights extends MultiListHashMap<Integer, EntityFieldPermissionVO> {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 	}
 
 	/**
 	 * maps a role id to a collection of <code>SubformPermissionVO</code>.
 	 */
 	public static class UserSubformRights extends MultiListHashMap<Integer, SubformPermissionVO> {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 	}
 
 }	// class StateVO

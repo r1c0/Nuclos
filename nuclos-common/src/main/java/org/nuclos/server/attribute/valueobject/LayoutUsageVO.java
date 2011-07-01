@@ -30,6 +30,10 @@ import java.io.Serializable;
  */
 public class LayoutUsageVO implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final Integer iLayoutId;
 	private final UsageCriteria usagecriteria;
 	private final boolean bSearchScreen;

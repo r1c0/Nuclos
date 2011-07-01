@@ -22,6 +22,10 @@ import org.nuclos.common2.LangUtils;
 
 public class TransferNuclet implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Long id;
 	private String label;
 	

@@ -31,6 +31,10 @@ import java.io.IOException;
  */
 public class PlainSubCondition implements CollectableSearchCondition {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String plainSQL;
 	private String conditionName;
 	

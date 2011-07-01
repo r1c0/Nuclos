@@ -21,6 +21,10 @@ import java.util.List;
 
 public class DbBatchStatement extends DbStatement {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final boolean failFirst;
 	private final List<DbStatement> statements;
 	

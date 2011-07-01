@@ -96,6 +96,11 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	 */
 	public static class Event extends CollectableComponentEvent {
 		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
 		 * @param clctlovSource the <code>CollectableListOfValues</code> that triggered this event.
 		 * @precondition clctlovSource != null
 		 */

@@ -33,6 +33,11 @@ import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 
 public class ResPlanAction extends AbstractAction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public ResPlanAction(CustomComponentVO componentVO) {
 		putValue(Action.NAME, componentVO.getDefaultLabel() + "...");
 		putValue(Action.SMALL_ICON, MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish.83-calendar.png")));

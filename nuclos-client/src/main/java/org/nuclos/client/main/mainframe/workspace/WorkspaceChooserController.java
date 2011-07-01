@@ -65,6 +65,11 @@ public class WorkspaceChooserController {
 	private final JMenuItem miNew = new JMenuItem(new AbstractAction(
 		CommonLocaleDelegate.getMessage("WorkspaceChooserController.1","Create new workspace") + "...", 
 		MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconNew16(), ICON_SIZE)) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String newName = JOptionPane.showInputDialog(Main.getMainFrame(), 
@@ -84,6 +89,11 @@ public class WorkspaceChooserController {
 	private final JMenuItem miSaveAs = new JMenuItem(new AbstractAction(
 		CommonLocaleDelegate.getMessage("WorkspaceChooserController.4","Arbeitsbereich sichern unter") + "...", 
 		MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconSave16(), ICON_SIZE)) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String newName = JOptionPane.showInputDialog(Main.getMainFrame(), 
@@ -102,6 +112,11 @@ public class WorkspaceChooserController {
 	private final JMenuItem miRemove = new JMenuItem(new AbstractAction(
 		CommonLocaleDelegate.getMessage("WorkspaceChooserController.7","Aktuellen Arbeitsbereich löschen") + "...", 
 		MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconRealDelete16(), ICON_SIZE)) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (JOptionPane.YES_OPTION == 
@@ -201,6 +216,11 @@ public class WorkspaceChooserController {
 			
 			workspaces.put(workspace, i); i++;
 			workspaceChooser.addItem(new JMenuItem(new AbstractAction(workspace, MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconTabGeneric(), ICON_SIZE)) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					RestoreUtils.storeWorkspace(getSelectedWorkspace());

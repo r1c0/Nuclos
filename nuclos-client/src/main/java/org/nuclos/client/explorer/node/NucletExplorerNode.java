@@ -72,6 +72,11 @@ import org.nuclos.server.navigation.treenode.nuclet.content.AbstractNucletConten
  * @version 01.00.00
  */
 public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger log = Logger.getLogger(NucletExplorerNode.class);
 	
 	private static final String PREFS_NODE_NUCLET_EXPLORER = "nucletExplorer";
@@ -135,12 +140,22 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 	@Override
 	public List<JComponent> getToolBarComponents(final JTree jTree) {
 		btnAddContent.setAction(new AbstractAction(null, Icons.getInstance().getIconPlus16()) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cmdShowAddDialog(jTree);
 			}
 		});
 		btnRemoveContent.setAction(new AbstractAction(null, Icons.getInstance().getIconMinus16()) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cmdShowRemoveDialog(jTree);
@@ -216,6 +231,11 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 	
 	private class NucletContentSelectObjectPanel extends DefaultSelectObjectsPanel {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public NucletContentSelectObjectPanel() {
 			super();
 			btnDown.setVisible(false);
@@ -227,6 +247,11 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 		protected JList newList() {
 			final JList result = super.newList();
 			result.setCellRenderer(new DefaultListCellRenderer() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 					if (value instanceof AbstractNucletContentEntryTreeNode) {

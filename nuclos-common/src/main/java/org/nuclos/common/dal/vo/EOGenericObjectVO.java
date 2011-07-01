@@ -18,6 +18,10 @@ package org.nuclos.common.dal.vo;
 
 public class EOGenericObjectVO extends AbstractDalVOWithVersion {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Long moduleId;
 
 	public Long getModuleId() {

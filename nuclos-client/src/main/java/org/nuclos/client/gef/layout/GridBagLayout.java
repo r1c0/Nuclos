@@ -164,7 +164,16 @@ import org.nuclos.client.gef.shapes.ContainerShape;
  * @version 01.00.00
  */
 public class GridBagLayout implements ILayout2, java.io.Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	class GridBagLayoutInfo implements java.io.Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		int width, height;		/* number of cells horizontally, vertically */
 		double startx, starty;	/* starting point for layout */
 		double minWidth[];		/* largest minWidth in each column */

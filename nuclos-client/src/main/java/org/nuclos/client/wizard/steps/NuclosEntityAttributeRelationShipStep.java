@@ -73,6 +73,10 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttributeAbstractStep {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JLabel lbEntity;
 	JComboBox cbxEntity;
 	

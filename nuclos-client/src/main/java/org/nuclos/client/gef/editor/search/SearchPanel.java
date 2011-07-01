@@ -21,6 +21,10 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 
 public class SearchPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JLabel lblSearch = new JLabel();
 	JLabel lblReplace = new JLabel();

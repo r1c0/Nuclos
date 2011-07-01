@@ -35,6 +35,11 @@ import javax.swing.JTextArea;
 
 public class NuclosEntityFinalStep extends NuclosEntityAbstractStep {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	JLabel lbName;
 
 	JScrollPane pane;

@@ -27,6 +27,10 @@ import org.jdesktop.swingx.renderer.CellContext;
 
 public class ResPlanCellContext extends CellContext {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected transient boolean mouseOver;
 
 	@SuppressWarnings("rawtypes")

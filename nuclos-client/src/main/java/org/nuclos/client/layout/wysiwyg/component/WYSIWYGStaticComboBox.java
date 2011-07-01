@@ -57,6 +57,10 @@ import org.nuclos.common2.exception.CommonFatalException;
 @SuppressWarnings("serial")
 public class WYSIWYGStaticComboBox extends JComboBox implements WYSIWYGComponent, WYSIWYGEditorModes {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static final String PROPERTY_ENABLED = PROPERTY_LABELS.ENABLED;
 	public static final String PROPERTY_EDITABLE = PROPERTY_LABELS.EDITABLE;

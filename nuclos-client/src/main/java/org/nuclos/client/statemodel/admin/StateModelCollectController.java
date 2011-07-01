@@ -524,6 +524,11 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 	}	// class CompleteCollectableStateModelsStrategy
 
 	private class StateModelCollectPanel extends CollectPanel<CollectableStateModel> {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		StateModelCollectPanel(boolean bSearchPanelAvailable) {
 			super(bSearchPanelAvailable);
 		}

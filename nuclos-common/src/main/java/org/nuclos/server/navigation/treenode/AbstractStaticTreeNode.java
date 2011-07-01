@@ -29,6 +29,10 @@ import org.nuclos.common2.exception.CommonFinderException;
  */
 public abstract class AbstractStaticTreeNode<Id> extends AbstractTreeNode<Id> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final String sLabel;
 	private final String sDescription;
 

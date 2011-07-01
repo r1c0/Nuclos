@@ -50,6 +50,11 @@ import javax.swing.tree.MutableTreeNode;
  */
 public class RootNode extends SearchConditionTreeNode {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public RootNode() {
 	}
 

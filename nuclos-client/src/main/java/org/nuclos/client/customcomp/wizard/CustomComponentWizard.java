@@ -37,6 +37,11 @@ import org.pietschy.wizard.WizardModel;
 
 public class CustomComponentWizard extends Wizard {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	protected CustomComponentWizard(WizardModel model) {
 		super(model);
 		
@@ -45,6 +50,11 @@ public class CustomComponentWizard extends Wizard {
 	@Override
 	protected ButtonBar createButtonBar() {
 		return new ButtonBar(this){
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void layoutButtons(JButton helpButton,

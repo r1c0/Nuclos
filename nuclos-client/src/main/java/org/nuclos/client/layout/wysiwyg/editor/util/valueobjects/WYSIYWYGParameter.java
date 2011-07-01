@@ -37,6 +37,10 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
 @SuppressWarnings("serial")
 public class WYSIYWYGParameter implements Cloneable, Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String parameterName = "";
 	private String parameterValue = "";
 	private Integer maximumNumberOfUsage = null;

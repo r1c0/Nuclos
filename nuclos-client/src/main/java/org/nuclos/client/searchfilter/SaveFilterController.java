@@ -161,6 +161,11 @@ public class SaveFilterController {
 
 	public static int showDialog(Component parent, String sTitleEnterFilter, final EnterNameDescriptionPanel pnlEnterFilter, final String oldName, final Command cmd) {
 		final ValidatingJOptionPane optpn = new ValidatingJOptionPane(parent, sTitleEnterFilter, pnlEnterFilter) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected void validateInput() throws ErrorInfo {
 				final String sFilterName = pnlEnterFilter.getTextFieldName().getText();

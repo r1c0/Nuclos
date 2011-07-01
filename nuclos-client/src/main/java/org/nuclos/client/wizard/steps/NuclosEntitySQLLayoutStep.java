@@ -154,6 +154,10 @@ import org.xml.sax.SAXException;
 
 public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	static String[] labels = NuclosWizardConstants.labels;
 	static String[] labelsFields = {getMessage("wizard.step.entitytranslationstable.1", "Anzeigename"), getMessage("wizard.step.entitytranslationstable.2", "Beschreibung")};
 	static String[] sEditFields = {"STRCREATED", "DATCREATED", "STRCHANGED", "DATCHANGED" };
@@ -2050,6 +2054,11 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
     }
 	
 	class MyTreeCellRenderer extends DefaultTreeCellRenderer {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public Icon getLeafIcon() {

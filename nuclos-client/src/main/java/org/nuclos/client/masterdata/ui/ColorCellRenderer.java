@@ -27,7 +27,12 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVOWrappe
 
 public class ColorCellRenderer extends JLabel implements ListCellRenderer {
 
-    public Component getListCellRendererComponent(
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public Component getListCellRendererComponent(
       JList list,
       MasterDataWithDependantsVOWrapper value,            // value to display
       int index,               // cell index

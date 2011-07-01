@@ -81,6 +81,11 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 //	private static final String ACTIONCOMMAND_ADD_TO_GROUP = "ADD TO GROUP";
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * action: remove from parent group
 	 */
 	private static final String ACTIONCOMMAND_REMOVE_FROM_PARENT_GROUP = "REMOVE FROM PARENT GROUP";
@@ -272,6 +277,11 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 	 */
 	private class ShowDetailsAction extends TreeNodeAction {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		ShowDetailsAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
 		}
@@ -300,6 +310,11 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 	 * inner class RemoveFromParentGroupAction. Removes this leased object from its parent (group).
 	 */
 	private class RemoveFromParentGroupAction extends TreeNodeAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		/**
 		 * @param tree
 		 */
@@ -350,6 +365,11 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 	 * inner class RemoveRelationAction. Removes the relation between this node and its parent.
 	 */
 	private class RemoveRelationAction extends TreeNodeAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		/**
 		 * @param tree
 		 */

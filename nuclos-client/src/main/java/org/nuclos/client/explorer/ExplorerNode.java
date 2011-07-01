@@ -66,6 +66,11 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  * @version 01.00.00
  */
 public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger log = Logger.getLogger(ExplorerNode.class);
 
 	public static final String ACTIONCOMMAND_SHOW_DETAILS = "SHOW DETAILS";
@@ -491,6 +496,11 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 * Action: Show the current node in its own tab.
 	 */
 	protected class ShowInOwnTabAction extends TreeNodeAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public ShowInOwnTabAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_IN_OWN_TAB, CommonLocaleDelegate.getMessage("ExplorerNode.3","In eigenem Reiter anzeigen"), tree);
 		}
@@ -509,6 +519,11 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 * Action: Refresh the descendants of the current node
 	 */
 	protected class RefreshAction extends TreeNodeAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public RefreshAction(JTree tree) {
 			super(ACTIONCOMMAND_REFRESH, CommonLocaleDelegate.getMessage("ExplorerNode.1","Aktualisieren"), tree);
 		}
@@ -533,6 +548,11 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 * Action: Expand all Subnodes
 	 */
 	protected class ExpandAction extends TreeNodeAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public ExpandAction(JTree tree) {
 			super(ACTIONCOMMAND_EXPAND, CommonLocaleDelegate.getMessage("ExplorerNode.5","Unterelemente aufklappen"), tree);
 		}
@@ -557,6 +577,11 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 * Action: Collapse all Subnodes
 	 */
 	protected class CollapseAction extends TreeNodeAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public CollapseAction(JTree tree) {
 			super(ACTIONCOMMAND_COLLAPSE, CommonLocaleDelegate.getMessage("ExplorerNode.6","Unterelemente zuklappen"), tree);
 		}

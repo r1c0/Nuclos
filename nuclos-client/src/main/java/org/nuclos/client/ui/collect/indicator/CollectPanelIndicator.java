@@ -182,6 +182,11 @@ public class CollectPanelIndicator {
 	
 	private class IndicatorLabel extends JLabel {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		final int presentation;
 		
 		boolean active = true;

@@ -90,6 +90,10 @@ import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 @SuppressWarnings("serial")
 public class ValueListProviderEditor extends JDialog implements SaveAndCancelButtonPanelControllable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	final int height = 300;
 	final int width = 650;
 
@@ -136,6 +140,11 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 		cbxType.setPreferredSize(new Dimension(250, 20));
 		cbxType.setEditable(true);
 		cbxType.setRenderer(new BasicComboBoxRenderer(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public Component getListCellRendererComponent(JList list,
 				Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -152,6 +161,11 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 			}
 		});
 		cbxType.setModel(new DefaultComboBoxModel(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void setSelectedItem(Object anObject) {
 				if (VALUELIST_PROVIDER_EDITOR.SEPARATOR_DATASOURCES.equals(anObject) ||
@@ -636,6 +650,10 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 	 */
 	class ParameterPanel extends JPanel implements AddRemoveButtonControllable {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		WYSIYWYGParameter wysiwygParameter = null;
 		private JTextField txtName = null;
 		private JTextField txtValue = null;

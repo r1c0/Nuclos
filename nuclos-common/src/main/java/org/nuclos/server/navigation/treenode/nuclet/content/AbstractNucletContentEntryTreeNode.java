@@ -42,6 +42,10 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public abstract class AbstractNucletContentEntryTreeNode implements TreeNode {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected final NuclosEntity entity;
 	protected final EntityObjectVO eo;
 

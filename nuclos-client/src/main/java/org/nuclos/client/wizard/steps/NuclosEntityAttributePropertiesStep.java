@@ -75,6 +75,10 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAbstractStep implements ChangeListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JLabel lbName;
 	JTextField tfName;
 	JLabel lbDesc;

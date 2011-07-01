@@ -40,6 +40,10 @@ import org.nuclos.client.gef.layout.XYLayout;
  * @version 01.00.00
  */
 public abstract class AbstractComponentViewer extends AbstractViewer {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JLayeredPane viewPane = new JLayeredPane();
 
 	public AbstractComponentViewer() {

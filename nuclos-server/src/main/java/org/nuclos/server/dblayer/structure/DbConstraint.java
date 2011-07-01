@@ -26,6 +26,10 @@ import org.nuclos.server.dblayer.DbException;
 
 public abstract class DbConstraint extends DbTableArtifact implements DbTableColumnGroup {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final List<String>	columns;
 
 	DbConstraint(String tableName, String constraintName, List<String> columns) {
@@ -44,6 +48,11 @@ public abstract class DbConstraint extends DbTableArtifact implements DbTableCol
 	
 	public static class DbPrimaryKeyConstraint extends DbConstraint {
 	
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public DbPrimaryKeyConstraint(String tableName, String constraintName, List<String> columns) {
 			super(tableName, constraintName, columns);
 		}
@@ -66,6 +75,11 @@ public abstract class DbConstraint extends DbTableArtifact implements DbTableCol
 
 	public static class DbUniqueConstraint extends DbConstraint {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public DbUniqueConstraint(String tableName, String constraintName, List<String> columns) {
 			super(tableName, constraintName, columns);
 		}
@@ -84,6 +98,10 @@ public abstract class DbConstraint extends DbTableArtifact implements DbTableCol
 	
 	public static class DbForeignKeyConstraint extends DbConstraint implements DbReference {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final String referencedTable;
 		private final String referencedConstraint;
 		private final List<String> referencedColumns;

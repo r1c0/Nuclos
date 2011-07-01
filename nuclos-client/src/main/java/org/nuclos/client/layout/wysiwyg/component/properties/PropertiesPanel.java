@@ -643,6 +643,11 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 	private class PropertiesTable extends JTable {
 
 		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
 		 * @param tableModel the {@link TableModel} for the {@link PropertiesTable}
 		 */
 		public PropertiesTable(MapDisplayTableModel tableModel) {

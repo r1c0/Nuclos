@@ -33,6 +33,10 @@ import javax.swing.JScrollPane;
  * @version	01.00.00
  */
 public abstract class SelectObjectsPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public final JButton btnRight = new JButton();
 	public final JButton btnLeft = new JButton();
 	public final JButton btnUp = new JButton();

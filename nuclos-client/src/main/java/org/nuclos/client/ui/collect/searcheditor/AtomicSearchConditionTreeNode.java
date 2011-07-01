@@ -46,6 +46,11 @@ import org.apache.commons.lang.NullArgumentException;
  */
 public class AtomicSearchConditionTreeNode extends SearchConditionTreeNode {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	protected static final String ACTIONCOMMAND_EDIT_ATOMICNODE = "EDIT ATOMIC NODE";
 
 	private final AtomicCollectableSearchCondition atomiccond;
@@ -115,6 +120,10 @@ public class AtomicSearchConditionTreeNode extends SearchConditionTreeNode {
 	}
 
 	protected class EditAtomicNodeAction extends TreeNodeAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final CollectableEntity clcte;
 		private final CollectableFieldsProviderFactory clctfproviderfactory;
 		private final Collection<CollectableEntityField> additionalFields;

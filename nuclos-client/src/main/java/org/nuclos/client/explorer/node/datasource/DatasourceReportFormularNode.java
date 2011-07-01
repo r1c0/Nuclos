@@ -27,6 +27,10 @@ import java.util.List;
  */
 public class DatasourceReportFormularNode extends AbstractDatasourceTreeNode {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final ReportVO reportVo;
 	private final DatasourceNode.DatasourceUsage usage;
 

@@ -478,6 +478,11 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 	}
 
 	private class DatasourceCollectPanel extends CollectPanel<CollectableDataSource> {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		DatasourceCollectPanel(boolean bSearchPanelAvailable) {
 			super(bSearchPanelAvailable);
 		}
@@ -485,6 +490,11 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 		@Override
 		public ResultPanel<CollectableDataSource> newResultPanel() {
 			return new NuclosResultPanel<CollectableDataSource>() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				protected void postXMLImport(final CollectController<CollectableDataSource> clctctl) {
 					// initialize attribute cache on server side

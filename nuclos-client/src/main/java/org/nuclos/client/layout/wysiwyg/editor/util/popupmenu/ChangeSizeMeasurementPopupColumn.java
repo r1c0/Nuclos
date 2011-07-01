@@ -63,7 +63,12 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPane
 @SuppressWarnings("serial")
 public class ChangeSizeMeasurementPopupColumn implements ActionListener, Serializable {
 
-    private JPopupMenu changeSizeMeasurementPopupColumn;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private JPopupMenu changeSizeMeasurementPopupColumn;
 
     private TableLayoutUtil tableLayoutUtil;
 

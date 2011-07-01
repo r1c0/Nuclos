@@ -311,7 +311,7 @@ public class StartUp  {
 						}
 
 						private void compareClientAndServerVersions() {
-							final ApplicationProperties.Version versionClient = ApplicationProperties.getInstance().getCurrentVersion();
+							final ApplicationProperties.Version versionClient = ApplicationProperties.getInstance().getNuclosVersion();
 							final ApplicationProperties.Version versionServer = SecurityDelegate.getInstance().getCurrentApplicationVersionOnServer();
 							if (!versionClient.equals(versionServer)) {
 								final String sMessage = "The version of this client is not compatible with the version of the connected server." +

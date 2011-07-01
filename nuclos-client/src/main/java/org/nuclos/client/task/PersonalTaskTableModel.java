@@ -30,6 +30,11 @@ import org.nuclos.server.common.valueobject.TaskVO;
  */
 public class PersonalTaskTableModel extends SortableCollectableTableModelImpl<CollectableTask> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public PersonalTaskTableModel() {
 		super(null);
 	}

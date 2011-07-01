@@ -42,6 +42,11 @@ import org.apache.commons.lang.ObjectUtils;
 public class JInfoTabbedPane extends JTabbedPane {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Tab title text without the additional (size) information.
 	 */
 	private final List<String>	tabTitles		= new ArrayList<String>();

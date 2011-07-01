@@ -28,7 +28,7 @@ public class VersionInformation {
 	private VersionInformation() {
 		versionproperties = new Properties();
 		try {
-			versionproperties.load(getClass().getClassLoader().getResourceAsStream("nuclos-version.properties"));
+			versionproperties.load(getClass().getClassLoader().getResourceAsStream("version.properties"));
 		}
 		catch(IOException e) {
 			throw new RuntimeException(e);

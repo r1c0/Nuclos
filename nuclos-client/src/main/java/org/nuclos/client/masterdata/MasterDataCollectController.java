@@ -1272,7 +1272,12 @@ protected void setupSearchToolBar() {
       final JTable tbl = this.getResultTable();
       tbl.setDragEnabled(true);
       tbl.setTransferHandler(new TransferHandler() {
-         @Override
+         /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
          public int getSourceActions(JComponent comp) {
             int result = NONE;
             if (comp == tbl) {
@@ -1388,7 +1393,12 @@ protected void setupSearchToolBar() {
 
    class MasterDataCollectPanel extends CollectPanel<CollectableMasterDataWithDependants> {
       
-      MasterDataCollectPanel(boolean bSearchPanelAvailable) {
+      /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	MasterDataCollectPanel(boolean bSearchPanelAvailable) {
           super(bSearchPanelAvailable);
        }
 
@@ -1411,7 +1421,11 @@ protected void setupSearchToolBar() {
 
    protected class MasterDataSearchPanel extends SearchPanel {
 
-      private final JCheckBoxMenuItem chkbxHideInvalid = new JCheckBoxMenuItem();
+      /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private final JCheckBoxMenuItem chkbxHideInvalid = new JCheckBoxMenuItem();
 
       MasterDataSearchPanel() {
          this(newLayoutRoot(true));
@@ -1460,7 +1474,11 @@ protected void setupSearchToolBar() {
 
    protected class MasterDataDetailsPanel extends DetailsPanel {
 
-      @Deprecated
+      /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	@Deprecated
       private final LayoutRoot layoutroot;
       
       public MasterDataDetailsPanel() {

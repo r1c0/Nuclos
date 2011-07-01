@@ -195,6 +195,11 @@ public class GenericObjectClientUtils {
 	 */
 	public static <Clct extends Collectable> SortableCollectableTableModel<Clct> newGenericObjectsResultTableModel(final CollectableEntity clcteMain, final List<? extends CollectableEntityField> lstclctefSelected) {
 		final SortableCollectableTableModel<Clct> result = new SortableCollectableTableModelImpl<Clct>(clcteMain.getName()) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public CollectableField getValueAt(int iRow, int iColumn) {
 				/* @todo How shall we handle exceptions here?!

@@ -570,6 +570,11 @@ public class DBTransferImport {
 	private PanelWizardStep newStep2(final MainFrameTab ifrm) {
 		final PanelWizardStep step = new PanelWizardStep(getMessage("configuration.transfer.options", "Optionen"), 
 			getMessage("dbtransfer.import.step2.1", "Bitte w\u00e4hlen Sie die Import Optionen aus.")){
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void prepare() {
 					Map<TransferOption,Serializable> exportOptions = TransferOption.copyOptionMap(importTransferObject.getTransferOptions());
@@ -676,6 +681,10 @@ public class DBTransferImport {
 	private PanelWizardStep newStep3(final MainFrameTab ifrm) {
 		final PanelWizardStep step = new PanelWizardStep(getMessage("dbtransfer.import.step3.1", "System Parameter"), 
 			getMessage("dbtransfer.import.step3.2", "Bestimmen Sie die Parameter dieses Systems. Sie k\u00f6nnen w\u00e4hlen zwischen dem aktuellen Zustand und dem aus der Konfigurationsdatei importierten Zustand (default). Sollte keine der beiden Vorgaben stimmen, so k\u00f6nnen Sie auch einen anderen Wert setzen.")){
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
 				@Override
 				public void prepare() {
 					setupParameterPanel(importTransferObject.getParameter());
@@ -1074,6 +1083,11 @@ public class DBTransferImport {
 		
 		final PanelWizardStep step = new PanelWizardStep(getMessage("dbtransfer.import.step5.4", "Ergebnis"), 
 			getMessage("dbtransfer.import.step5.5", "Hier wird Ihnen das Ergebnis des Imports angezeigt.")){
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void prepare() {
 					if (!importTransferResult.hasWarnings() && !importTransferResult.hasCriticals()){

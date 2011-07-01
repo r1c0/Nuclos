@@ -43,6 +43,11 @@ import org.nuclos.client.gef.editor.syntax.tokenmarker.TokenMarker;
  */
 public class SyntaxDocument extends PlainDocument {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Returns the token marker that is to be used to split lines
 	 * of this document up into tokens. May return null if this
 	 * document is not to be colorized.

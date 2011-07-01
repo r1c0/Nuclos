@@ -86,6 +86,10 @@ import org.pietschy.wizard.WizardListener;
 
 public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JScrollPane scrolPane;
 	JTable tblAttributes;
 	

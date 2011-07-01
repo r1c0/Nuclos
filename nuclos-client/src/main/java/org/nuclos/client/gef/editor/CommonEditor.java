@@ -35,9 +35,18 @@ import java.awt.event.*;
  */
 public class CommonEditor extends JEditTextArea {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int iTabSize;
 
 	public class SearchAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public SearchAction() {
 			super("Suchen");
 			this.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK));
@@ -50,6 +59,11 @@ public class CommonEditor extends JEditTextArea {
 	}
 
 	public class SearchAgainAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public SearchAgainAction() {
 			super("Weitersuchen");
 			this.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("F3"));
@@ -62,6 +76,11 @@ public class CommonEditor extends JEditTextArea {
 	}
 
 	public class ReplaceAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public ReplaceAction() {
 			super("Ersetzen");
 			this.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
@@ -74,6 +93,11 @@ public class CommonEditor extends JEditTextArea {
 	}
 
 	public class SelectAllAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public SelectAllAction() {
 			super("Alles markieren");
 			this.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
@@ -86,6 +110,11 @@ public class CommonEditor extends JEditTextArea {
 	}
 
 	public class CutAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public CutAction() {
 			super("Ausschneiden");
 			this.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
@@ -98,6 +127,11 @@ public class CommonEditor extends JEditTextArea {
 	}
 
 	public class CopyAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public CopyAction() {
 			super("Kopieren");
 			this.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
@@ -110,6 +144,11 @@ public class CommonEditor extends JEditTextArea {
 	}
 
 	public class PasteAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public PasteAction() {
 			super("Einf\u00fcgen");
 			this.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
@@ -122,6 +161,11 @@ public class CommonEditor extends JEditTextArea {
 	}
 
 	public class UndoAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public UndoAction() {
 			super("R\u00fcckg\u00e4ngig");
 			this.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));

@@ -29,6 +29,10 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondit
  */
 public class IdConditionTreeNode extends SearchConditionTreeNode {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final CollectableIdCondition cond;
 
 	public IdConditionTreeNode(CollectableIdCondition cond) {

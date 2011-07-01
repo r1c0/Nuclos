@@ -41,6 +41,10 @@ import javax.swing.tree.TreeModel;
  */
 
 public class SearchEditorPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	final RootNode nodeRoot = new RootNode();
 	final JTree tree = new JTree(nodeRoot);
 	final JButton btnSimplify = new JButton(CommonLocaleDelegate.getMessage("SearchEditorPanel.1","Vereinfachen"));

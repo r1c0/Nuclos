@@ -27,6 +27,11 @@ import javax.swing.JLabel;
 import org.nuclos.client.datasource.querybuilder.QueryBuilderIcons;
 
 public class TableHeader extends JLabel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public TableHeader(String title) {
 		super(title);
 		setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));

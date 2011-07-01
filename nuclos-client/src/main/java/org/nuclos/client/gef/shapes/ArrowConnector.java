@@ -34,6 +34,10 @@ import org.nuclos.client.gef.math.Vector2d;
  * @version 01.00.00
  */
 public class ArrowConnector extends AbstractConnector {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected Point2D pRightArrow = new Point2D.Double();
 	protected Point2D pLeftArrow = new Point2D.Double();
 	protected float dArrowWidth = 12f;

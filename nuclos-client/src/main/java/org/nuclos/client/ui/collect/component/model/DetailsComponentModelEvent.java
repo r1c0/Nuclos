@@ -27,6 +27,10 @@ package org.nuclos.client.ui.collect.component.model;
  */
 public class DetailsComponentModelEvent extends CollectableComponentModelEvent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	final boolean bValueToBeChanged;
 
 	public DetailsComponentModelEvent(CollectableComponentModel source, boolean bValueToBeChanged) {

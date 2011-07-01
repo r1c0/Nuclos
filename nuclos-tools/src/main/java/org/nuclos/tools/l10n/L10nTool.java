@@ -50,6 +50,10 @@ import org.nuclos.common2.StringUtils;
 
 public class L10nTool extends JXFrame{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private File file;
 	private L10nTableModel tableModel;
 	private JXTable	table;
@@ -74,6 +78,11 @@ public class L10nTool extends JXFrame{
 	}
 
 	Action saveAction = new AbstractAction("Save") {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			List<Object> array = new ArrayList<Object>();
@@ -101,6 +110,11 @@ public class L10nTool extends JXFrame{
 	};
 	
 	Action addRowAction = new AbstractAction("Add") {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			List<L10n> list = new ArrayList<L10n>();
@@ -114,6 +128,11 @@ public class L10nTool extends JXFrame{
 	};
 	
 	Action deleteRowAction = new AbstractAction("Remove") {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			List<Integer> rows = new ArrayList<Integer>();
@@ -206,6 +225,11 @@ public class L10nTool extends JXFrame{
 	}
 	
 	static class L10nTableModel extends AbstractListTableModel<L10n> {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		public L10nTableModel() {
 		}

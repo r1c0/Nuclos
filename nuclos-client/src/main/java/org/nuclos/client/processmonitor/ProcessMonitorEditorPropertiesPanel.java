@@ -41,6 +41,10 @@ import org.nuclos.client.statemodel.panels.TransitionRulesPanel;
  * @version 01.00.00
  */
 public class ProcessMonitorEditorPropertiesPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final CardLayout cardLayout = new CardLayout();
 	//private final StatePropertiesPanel pnlStateProperties = new StatePropertiesPanel();
 	private final SubProcessPropertiesPanel pnlSubProcessProperties = new SubProcessPropertiesPanel();

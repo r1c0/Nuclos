@@ -65,7 +65,7 @@ public class DataBaseHelper {
 	static {
 		try {
 			Map<String, String> config = new HashMap<String, String>();
-			for (Map.Entry<?, ?> p : ServerProperties.loadProperties(ServerProperties.NUCLOS_SERVER_PROPERTIES).entrySet()) {
+			for (Map.Entry<?, ?> p : ServerProperties.loadProperties(ServerProperties.JNDI_SERVER_PROPERTIES).entrySet()) {
 				if (p.getKey().toString().startsWith("database."))
 					config.put(p.getKey().toString().substring(9), p.getValue().toString());
 			}

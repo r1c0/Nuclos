@@ -620,6 +620,10 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	 */
 	public static class HeaderTable extends CommonJTable {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private TableCellEditorProvider cellEditorProvider;
 		private TableCellRendererProvider cellRendererProvider;
 
@@ -713,6 +717,10 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	 * @author <a href="mailto:rainer.schneider@novabit.de">rainer.schneider</a>
 	 */
 	public static class FixedRowIndicatorTableModel extends SubformRowHeader.RowIndicatorTableModel {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private static final int ROWMARKERCOLUMN_INDEX = 0;
 		public static final int ROWMARKERCOLUMN_COUNT = 1;
 		private TableModel externalModel = new DefaultTableModel(0, 0);
@@ -789,6 +797,11 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	}
 	
 	private static class FixedRowToolTipsTableHeader extends ToolTipsTableHeader {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public FixedRowToolTipsTableHeader(CollectableEntityFieldBasedTableModel aTableModel, TableColumnModel cm) {
 			super(aTableModel, cm);
 		}

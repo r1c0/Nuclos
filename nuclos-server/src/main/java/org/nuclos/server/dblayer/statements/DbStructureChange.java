@@ -23,6 +23,11 @@ import org.nuclos.server.dblayer.structure.DbArtifact;
  */
 public class DbStructureChange extends DbStatement {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static enum Type {
 		DROP(1),
 		CREATE(2),

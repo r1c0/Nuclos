@@ -43,6 +43,11 @@ import org.nuclos.client.wizard.model.DataTyp;
 
 public class DataTypDialog extends JDialog{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	DataTyp dataTyp;
 	
 	JLabel lbBaseDatatyp;
@@ -133,6 +138,11 @@ public class DataTypDialog extends JDialog{
 		
 		tfFieldWidth.setDocument(new PlainDocument() {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
 				if (str.matches("[0-9]")) {
@@ -146,6 +156,11 @@ public class DataTypDialog extends JDialog{
 		tfFieldPrecision.setHorizontalAlignment(SwingConstants.RIGHT);
 		tfFieldPrecision.setDocument(new PlainDocument() {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
 				DataTyp typ =  (DataTyp)cbxBaseDatatyp.getSelectedItem();

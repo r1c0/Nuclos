@@ -31,6 +31,10 @@ import java.awt.event.ActionEvent;
  */
 
 public class ChainedTreeNodeAction extends TreeNodeAction {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final Action act;
 
 	public ChainedTreeNodeAction(String sActionCommand, String sName, Action act, JTree tree) {

@@ -55,6 +55,11 @@ import org.nuclos.client.gef.editor.syntax.tokenmarker.TokenMarker;
  */
 public class TextAreaPainter extends JComponent implements TabExpander {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Creates a new repaint manager. This should be not be called
 	 * directly.
 	 */

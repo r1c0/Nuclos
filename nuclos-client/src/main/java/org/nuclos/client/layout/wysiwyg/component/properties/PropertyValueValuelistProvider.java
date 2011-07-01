@@ -58,6 +58,10 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGValuelis
 @SuppressWarnings("serial")
 public class PropertyValueValuelistProvider implements PropertyValue<WYSIWYGValuelistProvider>, LayoutMLConstants {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private WYSIWYGValuelistProvider wysiwygStaticValuelistProvider = null;
 	//NUCLEUSINT-811 need to know what component the vp is for
 	private WYSIWYGComponent c = null;
@@ -111,6 +115,10 @@ public class PropertyValueValuelistProvider implements PropertyValue<WYSIWYGValu
 	}
 	class PropertyEditorValuelistProvider extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private JLabel valuelistprovider = null;
 
 		@Override

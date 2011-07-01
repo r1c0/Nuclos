@@ -201,6 +201,16 @@ public class FileUtils {
 		return targetFile.getAbsolutePath();
 	}
 
+	public static String copyFile(InputStream is, File targetFile, Installer i) throws IOException {
+		i.info("info.create.file", targetFile.getAbsolutePath());
+		try {
+			copyInputStreamToFile(is, targetFile, false);
+		} finally {
+			is.close();
+		}
+		return targetFile.getAbsolutePath();
+	}
+
 	public static Map<String, byte[]> getChecksums(File file, Collection<String> algorithms) throws IOException {
 		int digestCount = 0;
 		MessageDigest[] digests = new MessageDigest[algorithms.size()];

@@ -38,6 +38,11 @@ public class NuclosJMSBrokerTunnelServlet extends HttpEmbeddedTunnelServlet {
 	
 	
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	protected BrokerService createBroker() throws Exception {
 		XBeanBrokerService obj = (XBeanBrokerService) SpringApplicationContextHolder.getBean("broker");

@@ -53,6 +53,10 @@ import org.nuclos.common2.exception.CommonFatalException;
 @SuppressWarnings("serial")
 public class WYSIWYGStaticLabel extends JLabel implements WYSIWYGComponent, WYSIWYGEditorModes {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static final String PROPERTY_ENABLED = PROPERTY_LABELS.ENABLED;
 	public static String PROPERTY_BORDER = PROPERTY_LABELS.BORDER;

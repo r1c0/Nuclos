@@ -60,6 +60,11 @@ import org.nuclos.server.ruleengine.NuclosCompileException.ErrorMessage;
  * @version 01.00.00
  */
 public class RuleEditPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private final List<ChangeListener> changeListeners = new ArrayList<ChangeListener>();
 
 	private final RuleHeaderPanel pnlHeader;
@@ -197,6 +202,10 @@ public class RuleEditPanel extends JPanel {
 	}
 
 	static class ErrorMessageConverter implements StringValue, IconValue {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		@Override
 		public String getString(Object value) {
 			ErrorMessage error = (ErrorMessage) value;

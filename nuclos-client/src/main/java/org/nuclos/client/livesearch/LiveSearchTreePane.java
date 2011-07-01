@@ -45,6 +45,11 @@ import org.nuclos.common.collection.LazyInitMapWrapper;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 
 /*package*/ class LiveSearchTreePane extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final int    ROW_HEIGHT = 48;
 	
 	private List<LiveSearchResultPaneListener>   listeners;
@@ -246,6 +251,11 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 	}
 	
 	private class LabelIconRenderer extends DefaultTreeCellRenderer {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public LabelIconRenderer() {
 			super();
 			/*

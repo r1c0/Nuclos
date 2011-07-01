@@ -398,6 +398,11 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		if (subFormTransferHandler == null)
 			subFormTransferHandler = new TransferHandler(){
 
+			/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 			@Override
             public boolean importData(JComponent comp, Transferable t) {
 				try {

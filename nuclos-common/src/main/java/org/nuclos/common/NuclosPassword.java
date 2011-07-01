@@ -23,6 +23,10 @@ import java.io.Serializable;
  *
  */
 public class NuclosPassword implements Serializable, NuclosAttributeExternalValue {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String value;
 	
 	public NuclosPassword() {

@@ -1580,6 +1580,10 @@ public abstract class AbstractCollectableComponent
 
 	protected static class CollectableComponentDetailTableCellRenderer extends javax.swing.table.DefaultTableCellRenderer implements TableCellRenderer {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		// blurfilter to hide data on which the user has no read permission
 		BoxBlurFilter filter = new BoxBlurFilter(20, 10, 1);
 		BufferedImageOpEffect blurEffect = new BufferedImageOpEffect(filter);

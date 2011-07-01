@@ -47,6 +47,10 @@ import org.nuclos.server.genericobject.valueobject.CanonicalAttributeFormat;
  */
 public class DynamicAttributeVO implements Serializable, Cloneable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int iId;
 	private boolean bRemoved = false;
 	private int iAttributeId;

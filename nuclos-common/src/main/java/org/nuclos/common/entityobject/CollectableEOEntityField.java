@@ -28,6 +28,10 @@ import org.nuclos.common2.exception.CommonFatalException;
 
 public class CollectableEOEntityField extends AbstractCollectableEntityField {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final EntityFieldMetaDataVO efMeta;
 	
 	public CollectableEOEntityField(EntityFieldMetaDataVO efMeta) {

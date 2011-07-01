@@ -49,6 +49,11 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public class RelationExplorerNode extends ExplorerNode<RelationTreeNode> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public RelationExplorerNode(TreeNode treenode) {
 		super(treenode);
 	}
@@ -80,6 +85,11 @@ public class RelationExplorerNode extends ExplorerNode<RelationTreeNode> {
 	 */
 	private class ShowDetailsAction extends TreeNodeAction {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		ShowDetailsAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("RelationExplorerNode.3","Details anzeigen"), tree);
 		}
@@ -108,6 +118,11 @@ public class RelationExplorerNode extends ExplorerNode<RelationTreeNode> {
 	 * inner class RemoveAction. Removes this relation.
 	 */
 	private class RemoveAction extends TreeNodeAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		/**
 		 * @param tree
 		 */

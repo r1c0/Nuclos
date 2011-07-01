@@ -36,6 +36,10 @@ import org.nuclos.common.database.query.definition.Table;
  */
 public class ConstraintColumn extends Column implements Comparable<ConstraintColumn> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<Constraint> constraints = new ArrayList<Constraint>();
 	private boolean bMarked = false;
 

@@ -32,6 +32,10 @@ import org.nuclos.common2.StringUtils;
 
 public class EntityAttributeTableModel extends AbstractTableModel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	List<Attribute> lstAttribute;
 	List<Attribute> lstRemovedAttribute;
 	Map<Attribute, List<TranslationVO>> mpTranslation;

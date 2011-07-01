@@ -119,8 +119,18 @@ import org.nuclos.server.statemodel.valueobject.SubformPermissionVO;
 
 public class StatePropertiesPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static class StateDependantRightsPanel extends JPanel implements RightAndMandatoryConstants{
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public static final int LEFT_BORDER = 5;
 		
 		public final static String PREFS_NODE_SELECTEDROLES = "selectedRoles";
@@ -400,6 +410,11 @@ public class StatePropertiesPanel extends JPanel {
 				iCol++;
 			}
 			JPanel lastGridOnTheRight = new JPanel() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				protected void paintComponent(Graphics g) {
 					Graphics2D g2d = (Graphics2D) g;				
@@ -413,6 +428,11 @@ public class StatePropertiesPanel extends JPanel {
 			header.add(lastGridOnTheRight, iCol + ",0");
 			
 			class LastGridOfGroup extends JPanel {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				protected void paintComponent(Graphics g) {
 					Graphics2D g2d = (Graphics2D) g;				
@@ -1253,6 +1273,10 @@ public class StatePropertiesPanel extends JPanel {
 	
 	public static class HorizontalLabel extends JLabel {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private boolean needsRotate;
 		
 		public HorizontalLabel(String text) {

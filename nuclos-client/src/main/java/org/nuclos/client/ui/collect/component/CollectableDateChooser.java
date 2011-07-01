@@ -68,12 +68,22 @@ public class CollectableDateChooser extends CollectableTextComponent {
 
 		// The actions
 		Action nextFocusAction = new AbstractAction("insert-tab") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
             public void actionPerformed(ActionEvent evt) {
 				((Component) evt.getSource()).transferFocus();
 			}
 		};
 		Action prevFocusAction = new AbstractAction("Move Focus Backwards") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
             public void actionPerformed(ActionEvent evt) {
 				((Component) evt.getSource()).transferFocusBackward();

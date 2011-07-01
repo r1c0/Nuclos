@@ -76,7 +76,11 @@ import org.nuclos.common2.exception.CommonFatalException;
 @SuppressWarnings("serial")
 public class WYSIWYGTabbedPane extends JTabbedPane implements WYSIWYGComponent, WYSIWYGEditorModes {
 
-   public static String PROPERTY_NAME = PROPERTY_LABELS.NAME;
+   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+public static String PROPERTY_NAME = PROPERTY_LABELS.NAME;
    public static String PROPERTY_PREFFEREDSIZE = PROPERTY_LABELS.PREFFEREDSIZE;
    public static String PROPERTY_TABLAYOUTPOLICY = PROPERTY_LABELS.TABLAYOUTPOLICY;
    public static String PROPERTY_TABPLACEMENT = PROPERTY_LABELS.TABPLACEMENT;
@@ -191,6 +195,11 @@ public class WYSIWYGTabbedPane extends JTabbedPane implements WYSIWYGComponent, 
         box.add(new JLabel(PROPERTY_LABELS.TRANSLATIONS));
         box.add(Box.createHorizontalStrut(InterfaceGuidelines.DISTANCE_TO_OTHER_OBJECTS));
         box.add(new JButton(new AbstractAction(BUTTON_LABELS.LABEL_EDIT) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Map<String, String> res = TranslationPanel.showDialog(

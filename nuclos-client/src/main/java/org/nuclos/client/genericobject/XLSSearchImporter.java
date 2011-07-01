@@ -183,6 +183,10 @@ public class XLSSearchImporter implements ExtSourceSearchImporter {
 	}
 	
 	private class ValidateImportPane extends ValidatingJOptionPane {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private ValidateImportPanel pnlContents;
 		
 		public ValidateImportPane(ValidateImportPanel contents) {
@@ -205,6 +209,10 @@ public class XLSSearchImporter implements ExtSourceSearchImporter {
 	} // inner class ValidateImportPane
 	
 	private class ValidateImportPanel extends JPanel {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		final JComboBox cbSheetName = new JComboBox();
 		final JComboBox cbColumnName = new JComboBox();
 		final JComboBox cbAttributeName = new JComboBox();

@@ -37,6 +37,11 @@ import org.pietschy.wizard.Wizard;
 
 public class WizardFrame extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	final Wizard wiz;
 	
 	private final Color transparent = new Color(0, 0, 0, 0);

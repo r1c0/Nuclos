@@ -43,6 +43,11 @@ import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 @SuppressWarnings("serial")
 public class BorderPreviewPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private JTextField toDecorate = null;
 
 	public static int PREVIEW_BORDER_SIZE = 200;

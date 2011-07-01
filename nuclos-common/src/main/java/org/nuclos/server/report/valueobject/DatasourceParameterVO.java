@@ -31,6 +31,10 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
  */
 public class DatasourceParameterVO extends NuclosValueObject {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer iDatasourceId;
 	private String sParameter;
 	private String sDescription;

@@ -32,6 +32,11 @@ import javax.swing.DefaultListModel;
  */
 
 public class CommonDefaultListModel<E> extends DefaultListModel implements MutableListModel<E> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public CommonDefaultListModel() {
 		super();
 	}

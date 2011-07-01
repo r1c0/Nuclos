@@ -39,6 +39,10 @@ import org.nuclos.client.ui.table.CommonJTable;
 
 @Deprecated
 public class ManageSearchFiltersPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final JPanel pnlMain = new JPanel(new BorderLayout());
 	private final JScrollPane scrlpn = new JScrollPane();
 	final JTable tbl = new CommonJTable();

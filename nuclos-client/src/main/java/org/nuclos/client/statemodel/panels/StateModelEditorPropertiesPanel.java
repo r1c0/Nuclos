@@ -35,6 +35,10 @@ import org.nuclos.client.ui.UIUtils;
  * @version 01.00.00
  */
 public class StateModelEditorPropertiesPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final CardLayout cardLayout = new CardLayout();
 	private final StatePropertiesPanel pnlStateProperties = new StatePropertiesPanel();
 	private final NotePropertiesPanel pnlNote = new NotePropertiesPanel();

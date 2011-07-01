@@ -44,6 +44,10 @@ import org.nuclos.common.NuclosBusinessException;
 @SuppressWarnings("serial")
 public class WYSIWYGCollectableCheckBox extends WYSIWYGCollectableComponent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private TriStateCheckBox component = new TriStateCheckBox();
 	
 	public WYSIWYGCollectableCheckBox() {

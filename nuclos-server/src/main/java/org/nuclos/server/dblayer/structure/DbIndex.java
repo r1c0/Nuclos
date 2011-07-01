@@ -23,6 +23,10 @@ import org.nuclos.server.dblayer.DbException;
 
 public class DbIndex extends DbTableArtifact implements DbTableColumnGroup {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final List<String>	columns;
 
 	public DbIndex(String tableName, String constraintName, List<String> columns) {

@@ -81,6 +81,10 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 	private static final Logger log = Logger.getLogger(MnemonicCollectablePanel.class);
 
 	private static class MnemonicValuePanel extends LabeledComponent {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		protected LabeledComboBox mnemonicBox;
 		protected JTextArea valueArea;
 		JScrollPane scrlTxtArea;

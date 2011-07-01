@@ -28,6 +28,10 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
  * @version 01.00.00
  */
 public class StateHistoryVO extends NuclosValueObject {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer iGenericObjectId;
 	private Integer iStateId;
 	private String sStateName;

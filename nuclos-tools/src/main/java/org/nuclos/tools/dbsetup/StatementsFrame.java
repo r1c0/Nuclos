@@ -58,6 +58,11 @@ import org.nuclos.server.dblayer.structure.DbArtifact;
 @SuppressWarnings("serial")
 public class StatementsFrame extends JXFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Color ERROR_COLOR = Color.RED;
 	
 	private final JComboBox versionComboBox;
@@ -83,6 +88,11 @@ public class StatementsFrame extends JXFrame {
 		versions.add(null);
 		versionComboBox = new JComboBox(versions.toArray());
 		versionComboBox.setRenderer(new DefaultListCellRenderer() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			@SuppressWarnings("unchecked")
 			public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -112,12 +122,22 @@ public class StatementsFrame extends JXFrame {
 		toolBar.add(versionComboBox);
 		toolBar.addSeparator();
 		toolBar.add(new AbstractAction("Run Selected") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				executeStatements(table.getSelectedRows());
 			}
 		});
 		toolBar.add(new AbstractAction("Run All") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int[] all = new int[table.getRowCount()];
@@ -129,6 +149,11 @@ public class StatementsFrame extends JXFrame {
 		toolBar.add(stopOnFirstError);
 		toolBar.addSeparator();
 		toolBar.add(new AbstractAction("View Metadata") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Collection<DbArtifact> metaData = StatementsFrame.this.dbAccess.getAllMetaData();
@@ -145,6 +170,11 @@ public class StatementsFrame extends JXFrame {
 		table.getColumn(1).setPreferredWidth(300);
 		table.getColumn(2).setPreferredWidth(150);
 		table.getColumn(2).setCellRenderer(new DefaultTableCellRenderer() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected void setValue(Object value) {
 				super.setValue(value);

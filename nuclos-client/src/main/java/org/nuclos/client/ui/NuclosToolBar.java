@@ -29,6 +29,11 @@ import org.nuclos.common2.StringUtils;
 
 public class NuclosToolBar extends JToolBar implements NuclosSyntheticaConstants{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public NuclosToolBar() {
 		super();
 		setLayout(new WrapLayout(WrapLayout.LEFT));

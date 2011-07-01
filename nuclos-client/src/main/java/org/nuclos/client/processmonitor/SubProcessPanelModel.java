@@ -44,6 +44,10 @@ import org.nuclos.server.statemodel.valueobject.StateModelVO;
  */
 public class SubProcessPanelModel implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// one document for every subprocess attribute
 	// below the methods to get/set the content of the model's
 	public Document docSubProcessStateModel = new PlainDocument();

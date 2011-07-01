@@ -23,6 +23,10 @@ package org.nuclos.server.dblayer.expression;
  */
 public class DbCurrentDate extends DbSpecialValue<java.util.Date> {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final DbCurrentDate CURRENT_DATE = new DbCurrentDate();
 	
 	private DbCurrentDate() {

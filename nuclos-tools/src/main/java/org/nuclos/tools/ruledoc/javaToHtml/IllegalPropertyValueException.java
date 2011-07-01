@@ -19,6 +19,11 @@ package org.nuclos.tools.ruledoc.javaToHtml;
 @SuppressWarnings("serial")
 public class IllegalPropertyValueException extends IllegalConfigurationException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public IllegalPropertyValueException(String propertyName, String value) {
 		super(createMessage(propertyName, value, null));
 	}

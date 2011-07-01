@@ -23,6 +23,10 @@ package org.nuclos.server.dblayer.expression;
  */
 public class DbIncrement extends DbSpecialValue<Integer> {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final DbIncrement INCREMENT = new DbIncrement();
 	
 	private DbIncrement() {

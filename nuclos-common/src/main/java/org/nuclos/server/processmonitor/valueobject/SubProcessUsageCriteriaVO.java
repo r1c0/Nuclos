@@ -24,6 +24,11 @@ import org.nuclos.common.UsageCriteria;
  */
 public class SubProcessUsageCriteriaVO extends UsageCriteria {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public SubProcessUsageCriteriaVO(Integer moduleId, Integer processId) {
 		super(moduleId, processId);
 	}

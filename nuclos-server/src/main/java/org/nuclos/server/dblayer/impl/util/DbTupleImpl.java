@@ -24,6 +24,11 @@ import org.nuclos.server.dblayer.DbTuple;
 
 public class DbTupleImpl implements DbTuple, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static class DbTupleElementImpl<T> implements DbTuple.DbTupleElement<T> {
 		
 		private final String alias;

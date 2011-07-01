@@ -109,6 +109,11 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	//private final RuleTransferHandler transferhandler;
 
 	private final Action actCheckRuleSource = new CommonAbstractAction(Icons.getInstance().getIconValidate16(), CommonLocaleDelegate.getMessage("RuleCollectController.2", "Quelltext pr\u00fcfen")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdCheckRuleSource();
@@ -165,6 +170,11 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 
 	private void setupResultToolBar() {
 		this.getResultPanel().addToolBarComponent(new JButton(new AbstractAction("", Icons.getInstance().getIconTree16()) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Main.getMainController().getExplorerController().cmdShowRuleUsage(null, null);
@@ -442,6 +452,11 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 		final JTable tbl = this.getResultTable();
 		tbl.setDragEnabled(true);
 		tbl.setTransferHandler(new TransferHandler() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public int getSourceActions(JComponent comp) {
 				int result = NONE;
@@ -571,6 +586,11 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	}
 
 	private class RuleCollectPanel extends CollectPanel<CollectableRule> {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		RuleCollectPanel(boolean bSearchPanelAvailable) {
 			super(bSearchPanelAvailable);
 		}
@@ -578,6 +598,11 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 		@Override
 		public ResultPanel<CollectableRule> newResultPanel() {
 			return new NuclosResultPanel<CollectableRule>() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				protected void postXMLImport(final CollectController<CollectableRule> clctctl) {
 					// initialize attribute cache on server side

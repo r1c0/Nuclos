@@ -65,6 +65,10 @@ import org.nuclos.common2.exception.CommonFatalException;
 @SuppressWarnings("serial")
 public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSIWYGComponent, MouseListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static final String PROPERTY_SHOWONLY = PROPERTY_LABELS.SHOWONLY;
 	public static final String PROPERTY_ENABLED = PROPERTY_LABELS.ENABLED;

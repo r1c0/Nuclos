@@ -23,6 +23,10 @@ package org.nuclos.server.dblayer;
  */
 public class DbInvalidResultSizeException extends DbException {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int resultSize = -1;
 	
 	public DbInvalidResultSizeException(String message, int resultSize) {

@@ -52,6 +52,11 @@ import org.nuclos.client.ui.Icons;
  */
 public class BackgroundProcessStatusPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private final BackgroundProcessStatusTableModel tblmodel = new BackgroundProcessStatusTableModel();
 
 	private final JTable tblStatus = new JTable(tblmodel);

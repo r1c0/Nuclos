@@ -24,6 +24,10 @@ import java.util.Map;
  */
 public class DbUpdateStatement extends DbTableStatement {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final Map<String, Object> values;
 	private final Map<String, Object> conditions;
 	

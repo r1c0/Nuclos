@@ -32,6 +32,10 @@ import org.nuclos.common2.LangUtils;
 
 public class NuclosImage implements Serializable, NuclosAttributeExternalValue {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	String sFileName;
 	byte[] content;
 	byte[] thumbnail;

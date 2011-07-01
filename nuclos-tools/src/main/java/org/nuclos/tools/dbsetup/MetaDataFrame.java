@@ -28,6 +28,11 @@ import org.nuclos.server.dblayer.structure.DbArtifact;
 @SuppressWarnings("serial")
 public class MetaDataFrame extends JXFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private final JXTreeTable treeTable;
 	
 	private final MetaDataTreeTableModel metaDataModel;

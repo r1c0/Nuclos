@@ -21,6 +21,10 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
 public class SearchExpressionVO extends NuclosValueObject {
 
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String sFieldName;
 	private String sOperator;
 	private String sFieldValue;

@@ -41,6 +41,10 @@ import org.nuclos.common.collection.CollectionUtils;
  */
 public class MultiListHashMap<K,V> implements MultiListMap<K, V>, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final Map<K, List<V>> mp;
 
 	/**

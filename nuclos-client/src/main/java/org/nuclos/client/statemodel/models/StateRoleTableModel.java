@@ -36,6 +36,11 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @version 01.00.00
  */
 public class StateRoleTableModel extends DefaultTableModel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	class RoleOrderComparator implements Comparator<MasterDataVO> {
 		@Override
 		public int compare(MasterDataVO mdvo1, MasterDataVO mdvo2) {

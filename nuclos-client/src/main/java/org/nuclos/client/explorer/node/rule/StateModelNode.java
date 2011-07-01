@@ -36,6 +36,10 @@ import java.util.*;
  */
 public class StateModelNode extends AbstractRuleTreeNode {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private StateModelVO stateModelVo;
 	private StateTransitionVO transitionVo;
 	private final boolean isAllRuleSubnode;

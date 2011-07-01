@@ -29,6 +29,11 @@ package org.nuclos.common2.exception;
 
 public class CommonPermissionException extends CommonBusinessException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public CommonPermissionException() {
 		super(CommonBusinessException.PERMISSION);
 	}

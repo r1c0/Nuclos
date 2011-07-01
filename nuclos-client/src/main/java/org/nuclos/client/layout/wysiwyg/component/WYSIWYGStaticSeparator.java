@@ -52,6 +52,11 @@ import org.nuclos.common2.exception.CommonFatalException;
 @SuppressWarnings("serial")
 public class WYSIWYGStaticSeparator extends JSeparator implements WYSIWYGComponent, WYSIWYGEditorModes {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private ComponentProperties properties;
 	
 	public static String PROPERTY_ORIENTATION = PROPERTY_LABELS.ORIENTATION;

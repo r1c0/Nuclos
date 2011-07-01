@@ -64,6 +64,10 @@ import org.nuclos.common2.StringUtils;
  */
 class OtherRelationPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	final SwappableRelationPanel relationpanel;
 	final CenterPanel pnlCenter;
 	final CollectableComboBox clctcmbbxRelationType;
@@ -146,6 +150,10 @@ class OtherRelationPanel extends JPanel {
 	}
 
 	private class CenterPanel extends JPanel {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		final CardLayout cardlayout = new CardLayout();
 
 		CenterPanel() {

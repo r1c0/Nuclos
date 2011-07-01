@@ -177,6 +177,10 @@ public class CustomComponentWizardModel extends StaticModel {
 	@SuppressWarnings("serial")
 	abstract static class CustomComponentWizardAbstractStep extends PanelWizardStep implements DocumentListener {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		CustomComponentWizardModel model;
 
 		CustomComponentWizardAbstractStep(String titleResId) {
@@ -231,6 +235,11 @@ public class CustomComponentWizardModel extends StaticModel {
 	@SuppressWarnings("serial")
 	static class CustomComponentWizardStep1 extends CustomComponentWizardAbstractStep {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		private static final Pattern INTERNAL_NAME_PATTERN = Pattern.compile("[a-zA-Z][a-zA-Z0-9]*");
 
 		JTextField internalNameTextField;
@@ -251,6 +260,11 @@ public class CustomComponentWizardModel extends StaticModel {
 				}
 			});
 			removeButton = new JButton(new AbstractAction(getText("nuclos.resplan.wizard.step1.remove", null)) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					final String selectedComponent = (String) existingComponents.getSelectedItem();
@@ -321,6 +335,10 @@ public class CustomComponentWizardModel extends StaticModel {
 	@SuppressWarnings("serial")
 	static class CustomComponentWizardStep2 extends CustomComponentWizardAbstractStep {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		JTextField internalName;
 		JTextField labelTextField;
 		JTextField menuPathTextField;
@@ -366,6 +384,10 @@ public class CustomComponentWizardModel extends StaticModel {
 	@SuppressWarnings("serial")
 	static class CustomComponentWizardStep3 extends CustomComponentWizardAbstractStep implements ItemListener, ChangeListener {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		JComboBox resEntityComboBox;
 		JComboBox resSortFieldComboBox;
 		JComboBox entryEntityComboBox;
@@ -616,6 +638,11 @@ public class CustomComponentWizardModel extends StaticModel {
 	@SuppressWarnings("serial")
 	static class CustomComponentWizardStep4 extends CustomComponentWizardAbstractStep {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		JTabbedPane tabbedPane;
 		
 		JTextComponent resLabelTextField;
@@ -689,6 +716,10 @@ public class CustomComponentWizardModel extends StaticModel {
 	@SuppressWarnings("serial")
 	static class CustomComponentWizardStep5 extends CustomComponentWizardAbstractStep implements ItemListener {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		JCheckBox scriptActiveCheckBox;
 		JButton editCodeButton;
 		JLabel codeStateLabel;
@@ -821,6 +852,10 @@ public class CustomComponentWizardModel extends StaticModel {
 	@SuppressWarnings("serial")
 	static class CustomComponentCodeEditor extends JPanel {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		RuleEditPanel editPanel;
 		GroovySupport support;
 
@@ -833,12 +868,22 @@ public class CustomComponentWizardModel extends StaticModel {
 
 			JToolBar toolBar = new JToolBar();
 			toolBar.add(new AbstractAction(getText("nuclos.resplan.wizard.step5.scriptEditor.compile", null)) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					compile();
 				}
 			});
 			toolBar.add(new AbstractAction(getText("nuclos.resplan.wizard.step5.scriptEditor.close", null)) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					compile();
@@ -887,6 +932,11 @@ public class CustomComponentWizardModel extends StaticModel {
 	@SuppressWarnings("serial")
 	static class CustomComponentWizardStep6 extends CustomComponentWizardAbstractStep {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		CustomComponentWizardStep6() {
 			super("nuclos.resplan.wizard.step6.title", "nuclos.resplan.wizard.step6.summary");
 
@@ -917,6 +967,10 @@ public class CustomComponentWizardModel extends StaticModel {
 
 	static class LocalTimeSpanPane extends JPanel {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private LocalTimeSpanTableModel tableModel;
 		private JTable table;
 		private JToolBar toolBar;
@@ -945,6 +999,11 @@ public class CustomComponentWizardModel extends StaticModel {
 			toolBar.setBackground(getBackground());
 			toolBar.setOpaque(true);
 			toolBar.add(new AbstractAction("Add", Icons.getInstance().getIconNew16()) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					int row = table.getSelectedRow();
@@ -965,6 +1024,11 @@ public class CustomComponentWizardModel extends StaticModel {
 				}
 			});
 			toolBar.add(new AbstractAction("Remove", Icons.getInstance().getIconDelete16()) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					int row = table.getSelectedRow();
@@ -1019,6 +1083,11 @@ public class CustomComponentWizardModel extends StaticModel {
 
 	static class LocalTimeSpanTableModel extends AbstractListTableModel<Pair<LocalTime, LocalTime>> {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public LocalTimeSpanTableModel() {
 		}
 
@@ -1064,6 +1133,10 @@ public class CustomComponentWizardModel extends StaticModel {
 
 	static class LocalTimeSpinnerCellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer, ActionListener, ChangeListener {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final JSpinner spinner;
 		private final JSpinner.DateEditor dateEditor;
 

@@ -31,6 +31,10 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
  */
 public class ResourceVO extends NuclosValueObject {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// Resources internally used by Nucleus 
 	public static final String NCL_SEARCH_ICON = "NCL_SEARCH_ICON";
 	public static final String NCL_MAINFRAME_TITLE = "NCL_MAINFRAME_TITLE";

@@ -39,6 +39,10 @@ import org.nuclos.server.genericobject.ejb3.GenericObjectGroupFacadeRemote;
  */
 public class ModulePermissions implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final Map<Pair<String, Integer>, ModulePermission> mpByEntityName;
 	private final Map<Pair<Integer, Integer>, ModulePermission> mpByModuleId;
 	private final Map<String, Boolean> mpNewAllowedByEntityName;

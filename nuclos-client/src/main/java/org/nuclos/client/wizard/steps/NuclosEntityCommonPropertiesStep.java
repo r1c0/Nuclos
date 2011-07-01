@@ -82,6 +82,10 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep implements CollectableResouceSaveListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JLabel lbLabelSingular;
 	JTextField tfLabelSingular;	
 	JLabel lbMenupath;
@@ -860,6 +864,10 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 	
 	private class LimitDocument extends PlainDocument {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		int max;
 		
 		public LimitDocument(int max) {

@@ -25,6 +25,10 @@ import java.util.TreeMap;
  */
 public class DbBatchException extends DbException {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final SortedMap<Integer, DbException> exceptions;
 	
 	public DbBatchException(String message) {

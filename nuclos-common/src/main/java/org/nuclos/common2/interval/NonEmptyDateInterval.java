@@ -36,6 +36,11 @@ import org.nuclos.common2.LangUtils;
 class NonEmptyDateInterval implements DateInterval {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * <code>null</code> means -infinity.
 	 */
 	private final Date dateDayFrom;

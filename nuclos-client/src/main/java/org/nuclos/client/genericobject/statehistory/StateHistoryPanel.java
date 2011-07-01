@@ -41,6 +41,10 @@ import org.nuclos.server.statemodel.valueobject.StateHistoryVO;
  */
 
 public class StateHistoryPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final JScrollPane scrlpn = new JScrollPane();
 	final JTable tbl = new JTable();
 
@@ -63,6 +67,10 @@ public class StateHistoryPanel extends JPanel {
 	 * inner class TableModel
 	 */
 	static class TableModel extends AbstractTableModel {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private static final int COLUMN_STATE = 0;
 		private static final int COLUMN_CREATEDAT = 1;
 		private static final int COLUMN_CREATEDBY = 2;

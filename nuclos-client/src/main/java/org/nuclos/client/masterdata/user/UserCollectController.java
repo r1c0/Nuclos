@@ -122,6 +122,11 @@ public class UserCollectController extends MasterDataCollectController {
 			final UserCollectController uctl = this;
 			// action: Select Columns
 			btnSynchronizeWithLDAP.setAction(new CommonAbstractAction(btnSynchronizeWithLDAP) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void actionPerformed(ActionEvent ev) {
 					uctl.cmdSynchronizeUser(uctl);
@@ -281,6 +286,10 @@ public class UserCollectController extends MasterDataCollectController {
 	}
 
 	final Action copyPrefsAction = new AbstractAction() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		{
 			putValue(Action.SHORT_DESCRIPTION, CommonLocaleDelegate.getMessage("nuclos.preferences.transfer", null));
 			putValue(Action.SMALL_ICON, Icons.getInstance().getIconPrefsCopy());

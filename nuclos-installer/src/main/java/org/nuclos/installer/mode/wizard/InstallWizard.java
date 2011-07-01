@@ -29,6 +29,11 @@ import org.pietschy.wizard.WizardModel;
 
 public class InstallWizard extends Wizard implements PropertyChangeListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public InstallWizard(WizardModel model) {
 		super(model);
 		getModel().addPropertyChangeListener("activeStep", this);

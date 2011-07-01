@@ -33,6 +33,10 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
  */
 public class ProcessTransitionVO extends NuclosValueObject {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final Integer iClientId;
 	private Integer iStateSource;
 	private Integer iStateTarget;

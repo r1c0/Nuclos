@@ -46,6 +46,11 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
 
 public class WorkflowWizardPanel extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	String sUsername;
 	
 	final static String[] sFields = {NuclosEOField.STATE.getMetaData().getField() };

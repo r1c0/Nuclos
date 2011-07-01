@@ -223,6 +223,10 @@ public class RightAndMandatoryColumnHeader implements RightAndMandatoryConstants
 	 */
 	public class View extends JPanel{
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		NameLabel nameLabel;
 		
 		/**
@@ -323,6 +327,11 @@ public class RightAndMandatoryColumnHeader implements RightAndMandatoryConstants
 	 */
 	public class NameLabel extends JLabel implements Transferable{
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		private boolean needsRotate;
 		
 		private int namewidth;
@@ -349,6 +358,10 @@ public class RightAndMandatoryColumnHeader implements RightAndMandatoryConstants
 			
 			// disable default handler
 			setTransferHandler(new TransferHandler() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
 				@Override
 				public boolean importData(JComponent comp, Transferable t) {
 					return true;
@@ -449,6 +462,11 @@ public class RightAndMandatoryColumnHeader implements RightAndMandatoryConstants
 	 */
 	public class Marker extends JLabel {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public Marker() {
 			addMouseListener(selectionMouseListener);
 		}

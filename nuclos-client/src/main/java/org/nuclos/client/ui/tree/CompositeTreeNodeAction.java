@@ -39,6 +39,10 @@ import org.nuclos.common2.LangUtils;
 
 public class CompositeTreeNodeAction extends TreeNodeAction.NoAction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final List<TreeNodeAction> lst;
 
 	public CompositeTreeNodeAction(String sName) {

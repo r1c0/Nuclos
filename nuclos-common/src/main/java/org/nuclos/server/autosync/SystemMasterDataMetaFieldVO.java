@@ -27,6 +27,10 @@ import static org.nuclos.server.autosync.SystemMasterDataVO.VERSION;
 @SuppressWarnings("deprecation")
 public class SystemMasterDataMetaFieldVO extends MasterDataMetaFieldVO {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final boolean onDeleteCascade;
 	
 	SystemMasterDataMetaFieldVO(Integer iId, String sFieldName,

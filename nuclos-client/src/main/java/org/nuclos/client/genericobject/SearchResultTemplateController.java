@@ -64,6 +64,11 @@ class SearchResultTemplateController {
 	
 	private final Action actSaveTemplate = new CommonAbstractAction(CommonLocaleDelegate.getMessage("SearchResultTemplateController.1", "Suchergebnisvorlage speichern"), Icons.getInstance().getIconSave16(),
 			CommonLocaleDelegate.getMessage("SearchResultTemplateController.2", "Eingestelltes Ergebnisformat als Suchergebnisvorlage speichern")) {
+		/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdSaveTemplate();
@@ -72,6 +77,11 @@ class SearchResultTemplateController {
 
 	private final Action actRemoveTemplate = new CommonAbstractAction(CommonLocaleDelegate.getMessage("SearchResultTemplateController.3", "Suchergebnisvorlage l\u00f6schen"), Icons.getInstance().getIconDelete16(),
 		CommonLocaleDelegate.getMessage("SearchResultTemplateController.4", "Ausgew\u00e4hlte Suchergebnisvorlage l\u00f6schen")) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdRemoveTemplate();
@@ -120,6 +130,11 @@ class SearchResultTemplateController {
 
 		// set tool tips dynamically:
 		this.getSearchResultTemplateComboBox().setRenderer(new DefaultListCellRenderer() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public Component getListCellRendererComponent(JList lst, Object oValue, int index, boolean bSelected,
 					boolean bCellHasFocus) {

@@ -31,6 +31,11 @@ import javax.swing.JSeparator;
  */
 
 public class CommonJSeparator extends JSeparator {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public CommonJSeparator() {
 	}
 

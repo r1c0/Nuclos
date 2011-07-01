@@ -27,6 +27,10 @@ import org.nuclos.common2.CommonLocaleDelegate;
 
 class MultiActionProgressTableModel extends AbstractListTableModel<MultiActionProgressLine> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final int COLUMN_ID = 0;
 	public static final int COLUMN_RESULT = 1;
 	public static final int COLUMN_STATE = 2;

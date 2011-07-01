@@ -46,6 +46,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class CollectableGenericObjectEntityField extends AbstractCollectableEntityField {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final AttributeCVO attrcvo;
 	private final EntityFieldMetaDataVO  entityFieldMeta;
 	

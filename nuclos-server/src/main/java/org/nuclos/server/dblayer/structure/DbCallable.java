@@ -20,6 +20,10 @@ import org.nuclos.server.dblayer.DbException;
 
 public class DbCallable extends DbArtifact {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private DbCallableType type;
 	private String code;
 	

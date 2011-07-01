@@ -36,6 +36,10 @@ import java.awt.event.ActionEvent;
  */
 public abstract class TreeNodeAction extends AbstractAction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String ACTIONCOMMAND_CUT = "CUT";
 	public static final String ACTIONCOMMAND_COPY = "COPY";
 	public static final String ACTIONCOMMAND_PASTE = "PASTE";
@@ -141,6 +145,11 @@ public abstract class TreeNodeAction extends AbstractAction {
 	}
 
 	static class NoAction extends TreeNodeAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public NoAction() {
 			this(null);
 		}
@@ -156,6 +165,11 @@ public abstract class TreeNodeAction extends AbstractAction {
 	}
 
 	private static class SeparatorAction extends NoAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void addToMenu(JPopupMenu menu, boolean bDefault) {
 			menu.addSeparator();

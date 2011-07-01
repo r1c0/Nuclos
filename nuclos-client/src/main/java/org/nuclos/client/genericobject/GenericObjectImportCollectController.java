@@ -90,6 +90,11 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 	private ImportDelegate delegate = ImportDelegate.getInstance();
 
 	private final Action actImport = new CommonAbstractAction(Icons.getInstance().getIconPlay16(), CommonLocaleDelegate.getMessage("GenericObjectImportCollectController.import", "Importieren")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdImport();
@@ -97,6 +102,11 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 	};
 
 	private final Action actStop = new CommonAbstractAction(Icons.getInstance().getIconStop16(), CommonLocaleDelegate.getMessage("GenericObjectImportCollectController.stopimport", "Import abbrechen")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdCancelImport();
@@ -384,6 +394,11 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
     }
 
 	private class TrafficLightCellRenderer extends DefaultTableCellRenderer {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object oValue, boolean bSelected, boolean bHasFocus,int iRow, int iColumn) {

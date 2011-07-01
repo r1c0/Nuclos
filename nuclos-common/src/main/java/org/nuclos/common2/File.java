@@ -34,6 +34,10 @@ import org.apache.commons.lang.NullArgumentException;
  * @version	00.01.000
  */
 public class File implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String TYPE_PDF = "PDF";
 	public static final String TYPE_XLS = "XLS";
 	public static final String TYPE_DOC = "DOC";

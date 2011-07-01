@@ -28,6 +28,10 @@ import org.nuclos.common.NuclosBusinessException;
  * @version	00.01.000
  */
 public class GenericObjectImportParseException extends NuclosBusinessException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final String sDefaultMessage = "goimport.parse.exception";//"Beim Parsen der Importdatei ist ein nicht n\u00e4her spezifizierter Fehler aufgetreten.";
 
 	public GenericObjectImportParseException() {

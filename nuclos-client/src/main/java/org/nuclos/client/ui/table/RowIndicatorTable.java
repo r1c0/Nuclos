@@ -49,7 +49,16 @@ import org.nuclos.client.ui.Icons;
  * @version	01.00.00
  */
 public class RowIndicatorTable extends JTable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public class RowIndicatorCellRenderer extends DefaultTableCellRenderer {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		ImageIcon icon = (ImageIcon) Icons.getInstance().getIconRowSelection16();
 		JPanel panel = new JPanel();
 		JLabel bgLabel = new JLabel();
@@ -75,6 +84,10 @@ public class RowIndicatorTable extends JTable {
 	}
 
 	public class RowIndicatorTableModel extends DefaultTableModel {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private Object[] rows;
 
 		public void setRows(Object[] oArray) {

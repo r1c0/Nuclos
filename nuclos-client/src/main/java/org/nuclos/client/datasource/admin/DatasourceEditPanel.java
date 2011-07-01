@@ -67,6 +67,10 @@ import org.nuclos.server.report.valueobject.ResultVO;
  */
 public class DatasourceEditPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final DatasourceEditController controller;
 	final DatasourceHeaderPanel pnlHeader;
 	final QueryBuilderEditor pnlQueryEditor;
@@ -254,6 +258,10 @@ public class DatasourceEditPanel extends JPanel {
 	}
 
 	class SqlPanel extends JPanel {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final boolean blnWithParameterPanel;
 		private final boolean blnWithValuelistProviderColumn;
 		private final boolean blnWithParameterLabelColumn;
@@ -388,6 +396,10 @@ public class DatasourceEditPanel extends JPanel {
 	}
 
 	class PreviewPanel extends JPanel {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final JPanel pnlOptions = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		private final JLabel lbMaxRowCount = new JLabel(CommonLocaleDelegate.getMessage("DatasourceEditPanel.3","Anzahl Zeilen: "));
 		private final JTextField tfMaxRowCount = new JTextField("500", 5);

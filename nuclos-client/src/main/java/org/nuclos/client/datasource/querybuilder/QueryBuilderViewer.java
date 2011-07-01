@@ -41,6 +41,10 @@ import org.nuclos.client.gef.Shape;
  * @version 01.00.00
  */
 public class QueryBuilderViewer extends AbstractComponentViewer {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	DropTarget dropTarget;
 
 	public QueryBuilderViewer() {

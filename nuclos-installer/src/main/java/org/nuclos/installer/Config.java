@@ -33,7 +33,12 @@ import org.xml.sax.SAXException;
 
 public class Config extends Properties implements Constants {
 
-    @Override
+    /**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
     public synchronized void loadFromXML(InputStream in) throws IOException, InvalidPropertiesFormatException {
         this.clear();
         ConfigFile config = new ConfigFile();
@@ -176,6 +181,7 @@ public class Config extends Properties implements Constants {
     }
 
     public void setDerivedProperties() throws InstallException {
+    	ensurePropertyDefault(this, "database.adapter", "postgresql");
         DbType type = DbType.findType(getProperty("database.adapter"));
         this.setProperty("database.driver", type.getDriverClassName());
         this.setProperty("database.connection.url", type.buildJdbcConnectionString(this));

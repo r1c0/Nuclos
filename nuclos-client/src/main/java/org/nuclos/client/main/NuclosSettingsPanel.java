@@ -40,6 +40,11 @@ import org.nuclos.common2.CommonLocaleDelegate;
 
 public class NuclosSettingsPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public NuclosSettingsPanel(final MainFrame frm) {
 		setBackground(Color.WHITE);
 		setBorder(new TitledBorder(""));
@@ -51,6 +56,11 @@ public class NuclosSettingsPanel extends JPanel {
 		clearHistBox.setBorder(new TitledBorder(CommonLocaleDelegate.getMessage("R00022913", "Client-Daten")));
 		JButton btClearHistory = new JButton();
 		btClearHistory.setAction(new AbstractAction(CommonLocaleDelegate.getMessage("R00022898", "Suchhistorie l\u00f6schen")) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(JOptionPane.showConfirmDialog(frm, 

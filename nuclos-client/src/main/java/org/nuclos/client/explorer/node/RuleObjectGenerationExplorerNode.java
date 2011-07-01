@@ -46,6 +46,10 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public class RuleObjectGenerationExplorerNode extends AbstractRuleExplorerNode {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final String ACTIONCOMMAND_SHOW_DETAILS = "SHOW DETAILS";
 
 	public RuleObjectGenerationExplorerNode(TreeNode treenode) {
@@ -92,6 +96,11 @@ public class RuleObjectGenerationExplorerNode extends AbstractRuleExplorerNode {
 	 * Shows the details the generation object in its collect controller.
 	 */
 	private class ShowDetailsAction extends TreeNodeAction {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		ShowDetailsAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("RuleExplorerNode.1","Details anzeigen"), tree);

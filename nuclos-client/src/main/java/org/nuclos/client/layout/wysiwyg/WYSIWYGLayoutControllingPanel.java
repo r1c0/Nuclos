@@ -70,6 +70,11 @@ import org.nuclos.client.layout.wysiwyg.palette.PaletteController;
 @SuppressWarnings({"serial", "unchecked"})
 public class WYSIWYGLayoutControllingPanel extends JPanel implements WYSIWYGToolbarAttachable, WYSIWYGEditorModes {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private PaletteController paletteCtrl;
 
 	private LayoutMLGenerator mlGenerator;

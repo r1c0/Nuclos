@@ -31,6 +31,10 @@ import java.io.Serializable;
  */
 // mtj: somebody said "Deprecated" w/o fixing access - forget it for the moment
 public class ByteArrayCarrier implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private byte[] data;
 
 	public ByteArrayCarrier(byte[] data) {

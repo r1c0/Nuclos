@@ -34,6 +34,11 @@ import java.util.Set;
 
 public class GenericObjectWithDependantsVO extends GenericObjectVO {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * the parent object, if any, for this object.
 	 */
 	private GenericObjectVO govoParent;

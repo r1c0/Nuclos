@@ -31,6 +31,11 @@ import org.nuclos.client.gef.shapes.TextShape;
  * @version 01.00.00
  */
 public class NoteShape extends TextShape {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public NoteShape() {
 		super("", 0d, 0d, 160d, 80d);
 		setBorderColor(Color.BLACK);

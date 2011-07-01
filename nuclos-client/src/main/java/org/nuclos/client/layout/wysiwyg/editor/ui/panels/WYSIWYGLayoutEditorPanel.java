@@ -97,6 +97,10 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
 @SuppressWarnings("serial")
 public class WYSIWYGLayoutEditorPanel extends JPanel implements WYSIWYGComponent, MouseListener, LayoutMLConstants, WYSIWYGEditorModes {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static String PROPERTY_VISIBLE = PROPERTY_LABELS.VISIBLE;
 	public static String PROPERTY_OPAQUE = PROPERTY_LABELS.OPAQUE;

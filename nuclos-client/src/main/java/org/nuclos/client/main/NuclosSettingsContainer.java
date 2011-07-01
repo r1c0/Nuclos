@@ -29,6 +29,10 @@ import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.common2.CommonLocaleDelegate;
 
 public class NuclosSettingsContainer extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private NuclosSettingsPanel      settingsPanel;
 	private LiveSearchSettingsPanel  livesearchPanel;
 	

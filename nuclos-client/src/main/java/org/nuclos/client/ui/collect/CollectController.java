@@ -410,6 +410,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		 */
 		private class ToggleSearchEditorAction extends CommonAbstractAction {
 			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			/**
 			 * avoids recursion
 			 */
 			boolean bLocked;
@@ -479,6 +483,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		 */
 		private final Action actNewWithSearchValues = new CommonAbstractAction("Neu", Icons.getInstance().getIconNewWithSearchValues16(),
 			CommonLocaleDelegate.getMessage("CollectController.31","\u00dcbernahme der Suchkriterien in den neuen Datensatz")) {
+			/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				if (askAndSaveIfNecessary()) {
@@ -491,6 +500,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		 * action: Search
 		 */
 		private final Action actSearch = new CommonAbstractAction("Suchen", Icons.getInstance().getIconFind16(), CommonLocaleDelegate.getMessage("CollectController.30","Suche starten")) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				if(CollectController.this.getCollectPanel().getTabbedPaneSelectedIndex() == CollectPanel.TAB_SEARCH)
@@ -503,6 +517,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		 */
 		private final AbstractAction actClearSearchCondition = new CommonAbstractAction(Icons.getInstance().getIconClearSearch16(),
 			CommonLocaleDelegate.getMessage("CollectController.27","Suchbedingung leeren")) {
+			/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				cmdClearSearchCondition();
@@ -681,6 +700,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 		private final Action actDeleteCurrentCollectable = new CommonAbstractAction("L\u00f6schen", Icons.getInstance().getIconRealDelete16(),
 			CommonLocaleDelegate.getMessage("CollectController.15","Diesen Datensatz l\u00f6schen")) {
+			/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				CollectController.this.cmdDeleteCurrentCollectableInDetails();
@@ -822,6 +846,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final Action actNew = new CommonAbstractAction(CommonLocaleDelegate.getMessage("CollectController.39","Neu"), Icons.getInstance().getIconNew16(),
 		CommonLocaleDelegate.getMessage("CollectController.23","Neuen Datensatz erfassen")) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
         public void actionPerformed(ActionEvent ev) {
 			if (askAndSaveIfNecessary()) {
@@ -835,6 +864,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final Action actSave = new CommonAbstractAction(CommonLocaleDelegate.getMessage("CollectController.40","Speichern"), Icons.getInstance().getIconSave16(),
 		CommonLocaleDelegate.getMessage("CollectController.6","\u00c4nderungen an diesem Datensatz speichern")) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
         public void actionPerformed(ActionEvent ev) {
 			cmdSave();
@@ -845,6 +879,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * action: Bookmark
 	 */
 	private final Action actBookmark = new CommonAbstractAction(CommonLocaleDelegate.getMessage("CollectController.105","Lesezeichen setzen"), Icons.getInstance().getIconBookmark16(), CommonLocaleDelegate.getMessage("CollectController.106","Lesezeichen auf den Start Tabs setzen")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
         public void actionPerformed(ActionEvent ev) {
 			cmdBookmarkSelectedCollectable();
@@ -861,6 +900,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * action: Open in new tab
 	 */
 	private final Action actOpenInNewTab = new CommonAbstractAction(CommonLocaleDelegate.getMessage("CollectController.107","In neuem Tab \u00f6ffnen"), Icons.getInstance().getIconOpenInNewTab16(), CommonLocaleDelegate.getMessage("CollectController.108","Details in neuem Tab \u00f6ffnen")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
         public void actionPerformed(ActionEvent ev) {
 			cmdOpenSelectedCollectableInNewTab();
@@ -878,6 +922,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final Action actClone = new CommonAbstractAction(CommonLocaleDelegate.getMessage("CollectController.38","Klonen"), Icons.getInstance().getIconClone16(),
 		CommonLocaleDelegate.getMessage("CollectController.7","Ausgew\u00e4hlten Datensatz klonen")) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
         public void actionPerformed(ActionEvent ev) {
 			if (askAndSaveIfNecessary()) {
@@ -891,6 +940,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final Action actRefreshCurrentCollectable = new CommonAbstractAction(CommonLocaleDelegate.getMessage("CollectController.37","Aktualisieren"),
 			Icons.getInstance().getIconRefresh16(), CommonLocaleDelegate.getMessage("CollectController.4","Aktualisieren (Datensatz neu laden und \u00c4nderungen verwerfen)")) {
+		/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 		@Override
         public void actionPerformed(ActionEvent ev) {
 			cmdRefreshCurrentCollectable();
@@ -902,6 +956,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final Action actFirst = new CommonAbstractAction(MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconFirstWhite16(), DetailsPanel.recordNavIconSize),
 		null) { //CommonLocaleDelegate.getMessage("CollectController.33","Zum ersten Datensatz springen")) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
         public void actionPerformed(ActionEvent ev) {
 			cmdFirst();
@@ -913,6 +972,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final Action actLast = new CommonAbstractAction(MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconLastWhite16(), DetailsPanel.recordNavIconSize),
 		null) { //CommonLocaleDelegate.getMessage("CollectController.34","Zum letzten Datensatz springen")) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
         public void actionPerformed(ActionEvent ev) {
 			cmdLast();
@@ -924,6 +988,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final Action actPrevious = new CommonAbstractAction(MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconPreviousWhite16(), DetailsPanel.recordNavIconSize),
 		null) { //CommonLocaleDelegate.getMessage("CollectController.36","Zum vorigen Datensatz springen")) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
         public void actionPerformed(ActionEvent ev) {
 			cmdPrevious();
@@ -935,6 +1004,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final Action actNext = new CommonAbstractAction(MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconNextWhite16(), DetailsPanel.recordNavIconSize),
 		null) { //CommonLocaleDelegate.getMessage("CollectController.35","Zum n\u00e4chsten Datensatz springen")) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
         public void actionPerformed(ActionEvent ev) {
 			cmdNext();
@@ -1929,6 +2003,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 		getResultTable().getActionMap().put(KeyBindingProvider.EDIT_2.getKey(), new AbstractAction() {
 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				acceptLookedUpCollectable(clctlovSource);
@@ -2496,6 +2575,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	// TODO don't define those keybindings here
 	protected void setupShortcutsForTabs(MainFrameTab ifrm) {
 		final Action actSelectSearchTab = new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				if (getCollectPanel().isTabbedPaneEnabledAt(CollectPanel.TAB_SEARCH)) {
@@ -2505,6 +2589,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		};
 
 		final Action actSelectResultTab = new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				if (getCollectPanel().isTabbedPaneEnabledAt(CollectPanel.TAB_RESULT)) {
@@ -2514,6 +2603,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		};
 
 		final Action actSelectDetailsTab = new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				if (getCollectPanel().isTabbedPaneEnabledAt(CollectPanel.TAB_DETAILS)) {
@@ -2538,6 +2632,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		 * inner class SelectTabAction
 		 */
 		class SelectTabAction extends AbstractAction {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 			private int iDirection;
 
 			/**

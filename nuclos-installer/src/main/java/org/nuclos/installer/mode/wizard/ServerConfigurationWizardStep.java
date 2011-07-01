@@ -45,6 +45,10 @@ import org.pietschy.wizard.InvalidStateException;
  */
 public class ServerConfigurationWizardStep extends AbstractWizardStep implements Constants {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JTextField txtJavaHomePath = new JTextField();
 	private JButton btnJavaHomeSelect = new JButton();
 

@@ -71,6 +71,11 @@ import org.nuclos.common2.exception.CommonBusinessException;
 
 public class ListOfValues extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final int QUICKSEARCH_DELAY_TIME = 756;
 	
 	private static final int QUICKSEARCH_POPUP_ROWS = 16;
@@ -128,6 +133,11 @@ public class ListOfValues extends JPanel {
 	private Timer lastTimer = null;
 
 	private final TextFieldWithButton tf = new TextFieldWithButton(Icons.getInstance().getIconTextFieldButtonLOV()) {		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public String getToolTipText(MouseEvent ev) {
 			final ToolTipTextProvider provider = ListOfValues.this.tooltiptextprovider;
@@ -213,6 +223,11 @@ public class ListOfValues extends JPanel {
 	
 	private final JComboBox cbxQuickChooser = new JComboBox() {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Dimension getSize() {
 			return ListOfValues.this.tf.getSize();
@@ -251,6 +266,11 @@ public class ListOfValues extends JPanel {
 		this.cbxQuickChooser.setMaximumRowCount(QUICKSEARCH_POPUP_ROWS);
 		this.cbxQuickChooser.addActionListener(new QuickSearchActionListener());
 		this.cbxQuickChooser.setRenderer(new DefaultListCellRenderer() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 				if (value instanceof String) {
@@ -457,6 +477,10 @@ public class ListOfValues extends JPanel {
 	 */
 	class QuickSearchNavigationAction extends AbstractAction {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final boolean navUp;
 
 		public QuickSearchNavigationAction(boolean navUp) {
@@ -501,6 +525,11 @@ public class ListOfValues extends JPanel {
 	 *
 	 */
 	class QuickSearchAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {		
 			actionPerformed(false);
@@ -623,6 +652,11 @@ public class ListOfValues extends JPanel {
 	 *
 	 */
 	class QuickSearchCancelAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (searchRunning) {

@@ -39,6 +39,11 @@ import org.nuclos.client.statemodel.SortedRuleVO;
  */
 public class SelectRuleTableModel extends AbstractTableModel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final String[] asColumnNames = {CommonLocaleDelegate.getMessage("SelectRuleTableModel.2","Regel"), CommonLocaleDelegate.getMessage("SelectRuleTableModel.1","Beschreibung")};
 
 	private List<SortedRuleVO> lstRules;

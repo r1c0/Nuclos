@@ -47,6 +47,11 @@ import org.nuclos.client.gef.shapes.AbstractShape;
  * @version 01.00.00
  */
 public abstract class AbstractViewer extends JPanel implements ShapeViewer, ShapeModelListener, Printable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	class AbstractViewerComponentListener implements ComponentListener {
 		@Override
 		public void componentHidden(ComponentEvent e) {

@@ -111,6 +111,11 @@ public class SaveSearchResultTemplateController {
 			final Command resultFinal = result;
 
 			final ValidatingJOptionPane optpn = new ValidatingJOptionPane(parent, sTitleEnterTemplate, pnlEnterTemplate) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				protected void validateInput() throws ErrorInfo {
 					final String sTemplateName = pnlEnterTemplate.getTextFieldName().getText();

@@ -37,7 +37,16 @@ import org.nuclos.common2.StringUtils;
 
 public class LabeledPasswordField extends LabeledTextComponent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final CommonJPasswordField tf = new CommonJPasswordField() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public String getToolTipText(MouseEvent ev) {
 			final ToolTipTextProvider provider = LabeledPasswordField.this.getToolTipTextProviderForControl();

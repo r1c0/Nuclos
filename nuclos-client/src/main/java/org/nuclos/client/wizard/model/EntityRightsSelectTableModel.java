@@ -36,6 +36,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class EntityRightsSelectTableModel extends AbstractTableModel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	List<MasterDataVO> lstUserRights;
 	Map<String, Integer> mapPermission;
 	

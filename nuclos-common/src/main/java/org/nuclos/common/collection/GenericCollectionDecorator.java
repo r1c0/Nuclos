@@ -32,6 +32,10 @@ import java.util.Iterator;
  */
 public class GenericCollectionDecorator<E, Coll extends Collection<E>> implements Collection<E>, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final Coll coll;
 
 	/**

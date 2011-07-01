@@ -44,7 +44,16 @@ import org.nuclos.server.report.valueobject.ReportVO;
  * @version 01.00.00
  */
 public class ReportSelectionPanel extends JXPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	protected class ReportSelectionTableModel extends AbstractTableModel {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		protected final String[] captions = {
 			CommonLocaleDelegate.getMessage("ReportSelectionPanel.1", "Formular"),
 			CommonLocaleDelegate.getMessage("R00011618", "Vorlage"),

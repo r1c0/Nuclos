@@ -56,6 +56,10 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  * @version 01.00.00
  */
 public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends ExplorerNode<TN> implements EntityExplorerNode {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(SubFormExplorerNode.class);
 
 	public SubFormExplorerNode(TreeNode treenode) {

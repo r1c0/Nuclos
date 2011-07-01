@@ -33,6 +33,10 @@ import javax.swing.JDialog;
  * @version 01.00.00
  */
 public class BackgroundProcessStatusDialog extends JDialog {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	BackgroundProcessStatusPanel pnlStatus = new BackgroundProcessStatusPanel();
 
 	/**

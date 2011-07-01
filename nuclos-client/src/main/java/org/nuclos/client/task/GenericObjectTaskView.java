@@ -102,6 +102,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
  */
 public class GenericObjectTaskView extends TaskView implements IMainFrameTabClosableController, NuclosDropTargetVisitor{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
 	final JButton btnRefresh = new JButton();
 	final JMenuItem btnPrint = new JMenuItem();
@@ -336,6 +340,11 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 
 	private SortableCollectableTableModel<Collectable> newMasterDataResultTableModel(final CollectableEntity clcteMain, final List<? extends CollectableEntityField> lstclctefSelected) {
 		final SortableCollectableTableModel<Collectable> result = new SortableCollectableTableModelImpl<Collectable>(clcteMain.getName()) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public CollectableField getValueAt(int iRow, int iColumn) {
 				final Collectable clct = this.getCollectable(iRow);

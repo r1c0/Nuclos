@@ -33,6 +33,10 @@ import java.util.Vector;
 @SuppressWarnings("serial")
 public class WYSIYWYGProperty implements Cloneable, Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public Vector<WYSIYWYGPropertySet> properties = null;
 
 	public WYSIYWYGProperty(){

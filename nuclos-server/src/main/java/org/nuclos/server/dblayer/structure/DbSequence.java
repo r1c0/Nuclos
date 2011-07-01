@@ -23,6 +23,10 @@ import org.nuclos.server.dblayer.DbException;
  */
 public class DbSequence extends DbArtifact {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final long startWith;
 	
 	public DbSequence(String name, Long startWith) {

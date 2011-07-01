@@ -81,6 +81,11 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttributeAbstractStep {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	static String[] forbiddenNames = {"INTID","DATCREATED", "STRCREATED", "DATCHANGED", "STRCHANGED", "INTVERSION",
 		"STRSYSTEMID", "INTID_T_MD_PROCESS", "STRORIGIN", "BLNDELETED", "INTID_T_MD_STATE"};
 
@@ -1004,6 +1009,11 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 	static class LimitCharacterDocument extends PlainDocument {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void insertString(int offset, String str, javax.swing.text.AttributeSet a)  throws javax.swing.text.BadLocationException {
 			if(offset > 22) {
@@ -1096,6 +1106,11 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 	static class SpecialCharacterDocument extends PlainDocument {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void insertString(int offset, String str, javax.swing.text.AttributeSet a)  throws javax.swing.text.BadLocationException {
 			str = StringUtils.replace(str, "\u00e4", "ae");

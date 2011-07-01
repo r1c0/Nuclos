@@ -113,6 +113,11 @@ import org.nuclos.server.statemodel.valueobject.TransitionLayout;
  */
 public class StateModelEditor extends JPanel implements ShapeModelListener, FocusListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private final Logger log = Logger.getLogger(this.getClass());
 
 	/**
@@ -121,6 +126,11 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private static final Integer STARTING_STATE_ID = -666;
 
 	private class SelectAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		SelectAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.1","Auswahl"), Icons.getInstance().getIconSelectObject());
 		}
@@ -133,6 +143,11 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 
 	private class NewStateAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		NewStateAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.9","Neuer Status"), Icons.getInstance().getIconState());
 		}
@@ -145,6 +160,11 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 
 	private class NewTransitionAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		NewTransitionAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.10","Neue Transition"), Icons.getInstance().getIconStateTransition());
 		}
@@ -157,6 +177,11 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 
 	private class NewNoteAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		NewNoteAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.8","Neue Bemerkung"), Icons.getInstance().getIconStateNewNote());
 		}
@@ -169,6 +194,11 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 
 	private class DeleteAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		DeleteAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.3","Auswahl l\u00f6schen"), Icons.getInstance().getIconDelete16());
 		}
@@ -180,6 +210,11 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 	
 	private class CopyStateRightsAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		CopyStateRightsAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.17","Rechte & Pflichten kopieren"), Icons.getInstance().getIconCopy16());
 		}
@@ -191,6 +226,11 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 	
 	private class PasteStateRightsAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		PasteStateRightsAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.18","Rechte & Pflichten einfügen"), Icons.getInstance().getIconPaste16());
 		}
@@ -202,6 +242,11 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 
 	private class ZoomInAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		ZoomInAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.15","Zoom +"), Icons.getInstance().getIconZoomIn());
 		}
@@ -213,6 +258,11 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 
 	private class ZoomOutAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		ZoomOutAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.13","Zoom -"), Icons.getInstance().getIconZoomOut());
 		}
@@ -224,6 +274,11 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 
 	private class PrintAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		PrintAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.5","Drucken..."), Icons.getInstance().getIconPrint16());
 		}

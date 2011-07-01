@@ -36,6 +36,10 @@ import org.pietschy.wizard.WizardModel;
  */
 public class UnpackWizardStep extends AbstractWizardStep {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JTextArea text = new JTextArea();
 	private Thread unpackThread;
 

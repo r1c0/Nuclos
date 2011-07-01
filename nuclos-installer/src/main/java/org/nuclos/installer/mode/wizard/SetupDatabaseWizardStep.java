@@ -38,6 +38,11 @@ import org.pietschy.wizard.InvalidStateException;
  */
 public class SetupDatabaseWizardStep extends AbstractWizardStep implements ActionListener, Constants {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private JTextField txtHost = new JTextField();
 
 	private JTextField txtPort = new JTextField();

@@ -72,6 +72,11 @@ import org.nuclos.common.collection.Predicate;
  */
 public class SearchPanel extends SearchOrDetailsPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	CollectPanelIndicator cpi = new CollectPanelIndicator(CollectPanel.TAB_SEARCH);
 
 	/**
@@ -235,6 +240,11 @@ public class SearchPanel extends SearchOrDetailsPanel {
 	 * A panel laying a transparent component over a main component.
 	 */
 	private static class OverlayPanel extends JPanel {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		OverlayPanel(Component compTransparent, Component compMain) {
 			this.setLayout(new OverlayLayout(this));

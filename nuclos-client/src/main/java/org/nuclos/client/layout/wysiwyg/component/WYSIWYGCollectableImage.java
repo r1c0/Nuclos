@@ -46,6 +46,11 @@ import org.nuclos.common.NuclosBusinessException;
 @SuppressWarnings("serial")
 public class WYSIWYGCollectableImage extends WYSIWYGCollectableComponent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static String PROPERTY_SCALABLE = "Skalierbar";
 	
 	private LabeledImage component = new LabeledImage();

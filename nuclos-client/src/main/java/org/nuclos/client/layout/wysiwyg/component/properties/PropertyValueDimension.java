@@ -58,6 +58,10 @@ import org.nuclos.common.NuclosFatalException;
 @SuppressWarnings("serial")
 public class PropertyValueDimension implements PropertyValue<Dimension>, LayoutMLConstants {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Dimension dimension;
 
 	/**
@@ -191,6 +195,10 @@ public class PropertyValueDimension implements PropertyValue<Dimension>, LayoutM
 	 */
 	class PropertyEditorDimension extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		JTextField textWidth = new JTextField(4);
 		JTextField textHeight = new JTextField(4);
 		

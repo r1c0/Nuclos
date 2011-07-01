@@ -27,6 +27,10 @@ import org.nuclos.server.dblayer.util.StatementToStringVisitor;
 @SuppressWarnings("serial")
 public class StatementsTableModel extends AbstractTableModel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private DbStatement[] statements;
 	private Object[] success;
 

@@ -24,6 +24,10 @@ package org.nuclos.server.dblayer.expression;
  */
 public class DbId extends DbSpecialValue<Long> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final String sequenceName;
 	private Long id;
 	

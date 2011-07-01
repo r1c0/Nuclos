@@ -35,6 +35,10 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
 @SuppressWarnings("serial")
 public class WYSIWYGOptions implements Cloneable, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String name = "";
 	private String defaultValue = "";
 	private String orientation = "";

@@ -32,6 +32,10 @@ import org.apache.commons.lang.NullArgumentException;
  */
 public class Column implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Table table;
 	private final String name;
 	private String alias;

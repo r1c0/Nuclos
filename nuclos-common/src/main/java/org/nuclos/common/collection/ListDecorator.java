@@ -34,6 +34,11 @@ import java.util.ListIterator;
 public class ListDecorator<E> extends GenericCollectionDecorator<E, List<E>> implements List<E> {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Note that it's not useful to create direct instances of this class.
 	 * @param lst
 	 */

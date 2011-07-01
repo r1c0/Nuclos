@@ -36,6 +36,11 @@ package org.nuclos.common2.exception;
 @Deprecated
 class CommonException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private CommonException() {
 		super();
 	}

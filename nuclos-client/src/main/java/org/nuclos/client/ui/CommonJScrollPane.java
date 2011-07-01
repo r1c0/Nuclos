@@ -33,6 +33,11 @@ import javax.swing.JScrollPane;
 
 public class CommonJScrollPane extends JScrollPane {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public CommonJScrollPane() {
 		super();
 	}

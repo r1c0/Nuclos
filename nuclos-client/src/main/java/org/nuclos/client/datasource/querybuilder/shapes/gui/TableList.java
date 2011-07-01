@@ -40,10 +40,18 @@ import java.util.List;
  */
 public class TableList extends JList implements DragGestureListener, Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected Color background = new Color(220, 235, 250);
 
 	private class TableListModel extends AbstractListModel implements Serializable {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final List<Object> lstRows = new ArrayList<Object>();
 
 		/**
@@ -87,6 +95,10 @@ public class TableList extends JList implements DragGestureListener, Serializabl
 	}
 
 	class TableListCellRenderer implements ListCellRenderer, Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private JLabel label = new JLabel();
 		private Font regularFont = new Font("Dialog", Font.PLAIN, 10);
 		private Font boldFont = new Font("Dialog", Font.BOLD, 10);

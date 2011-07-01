@@ -21,6 +21,11 @@ import javax.swing.text.PlainDocument;
 import org.nuclos.common2.CommonLocaleDelegate;
 
 public class DoubleFormatDocument extends PlainDocument {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public void insertString(int offset, String str, javax.swing.text.AttributeSet a)  throws javax.swing.text.BadLocationException {
 		try {

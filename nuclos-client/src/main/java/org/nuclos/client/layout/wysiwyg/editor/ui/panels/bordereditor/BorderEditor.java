@@ -77,6 +77,10 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  */
 @SuppressWarnings("serial")
 public class BorderEditor extends JDialog implements SaveAndCancelButtonPanelControllable, ListDataListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	int width = 850;
 	int height = 400;
 
@@ -414,6 +418,11 @@ public class BorderEditor extends JDialog implements SaveAndCancelButtonPanelCon
 	 * @version 01.00.00
 	 */
 	private class CompleteSingleBorderPanel extends JPanel implements AddRemoveButtonControllable, MovePanelUpAndDownControllable {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		private int index;
 

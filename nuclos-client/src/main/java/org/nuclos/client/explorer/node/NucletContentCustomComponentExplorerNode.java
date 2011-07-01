@@ -52,6 +52,10 @@ import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentEntityT
  * @version 01.00.00
  */
 public class NucletContentCustomComponentExplorerNode extends ExplorerNode<NucletContentEntityTreeNode> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(NucletContentCustomComponentExplorerNode.class);
 
 	public NucletContentCustomComponentExplorerNode(TreeNode treenode) {
@@ -81,6 +85,11 @@ public class NucletContentCustomComponentExplorerNode extends ExplorerNode<Nucle
 	 */
 	private class ShowDetailsAction extends TreeNodeAction {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		ShowDetailsAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("NucletContentCustomComponentExplorerNode.1","Ressourcenplanung konfigurieren"), tree);
 		}
@@ -107,6 +116,11 @@ public class NucletContentCustomComponentExplorerNode extends ExplorerNode<Nucle
 	}	// inner class ShowDetailsAction
 	
 	private class RemoveFromNucletAction extends TreeNodeAction {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		public RemoveFromNucletAction(JTree tree) {
 			super(ACTIONCOMMAND_REMOVE, CommonLocaleDelegate.getMessage("NucletContentEntryExplorerNode.1","Vom Nuclet entfernen"), tree);

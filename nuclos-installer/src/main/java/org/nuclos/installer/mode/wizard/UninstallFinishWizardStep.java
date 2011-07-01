@@ -32,6 +32,10 @@ import org.pietschy.wizard.WizardModel;
  */
 public class UninstallFinishWizardStep extends AbstractWizardStep {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static double layout[][] = {
         { 20.0, TableLayout.FILL }, // Columns
         { 20.0, 20.0, TableLayout.FILL } // Rows

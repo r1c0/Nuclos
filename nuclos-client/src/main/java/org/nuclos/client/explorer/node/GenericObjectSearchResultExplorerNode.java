@@ -30,6 +30,11 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public class GenericObjectSearchResultExplorerNode extends ExplorerNode<TreeNode> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public GenericObjectSearchResultExplorerNode(TreeNode treenode) {
 		super(treenode);
 	}

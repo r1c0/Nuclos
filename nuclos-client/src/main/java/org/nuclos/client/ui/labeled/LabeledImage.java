@@ -44,6 +44,10 @@ import org.nuclos.common.NuclosImage;
 
 public class LabeledImage extends LabeledMediaComponent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JLabel lbImage;
 	private NuclosImage ni;
 	
@@ -56,6 +60,11 @@ public class LabeledImage extends LabeledMediaComponent {
 		super(isNullable, javaClass, inputFormat, bSearchable);
 		
 		lbImage = new JLabel() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			@SuppressWarnings("unchecked")
 			@Override
@@ -115,6 +124,11 @@ public class LabeledImage extends LabeledMediaComponent {
 	}
 	
 	class MyToolTip extends JToolTip {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void setTipText(String tipText) {

@@ -32,6 +32,10 @@ import java.util.Set;
  */
 public class Table implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final Set<Column> stColumns = new HashSet<Column>();
 	private final Set<Constraint> stConstraints = new HashSet<Constraint>();
 

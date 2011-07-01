@@ -34,6 +34,10 @@ public class TruncatableCollectionDecorator<E>
 		extends GenericCollectionDecorator<E, Collection<E>>
 		implements TruncatableCollection<E>, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final boolean bTruncated;
 	private final int iTotalSize;
 

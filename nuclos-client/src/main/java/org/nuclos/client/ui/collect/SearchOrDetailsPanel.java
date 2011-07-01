@@ -50,6 +50,11 @@ import org.nuclos.common2.StringUtils;
 abstract class SearchOrDetailsPanel extends JPanel {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * the toolbar.
 	 */
 	private final JToolBar toolBar = UIUtils.createNonFloatableToolBar();

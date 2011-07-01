@@ -36,6 +36,10 @@ import org.nuclos.common.database.query.definition.Table;
  */
 public class ColumnSelectionTableModel extends DefaultTableModel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected static final int COLUMN_COUNT = 255;
 	protected static final int TABLE_ROW = 0;
 	protected static final int COLUMN_ROW = 1;

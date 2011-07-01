@@ -443,6 +443,10 @@ public class DbArtifactXmlReader {
 	
 	private static class DbReferenceImpl implements DbReference, Serializable {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private List<Pair<String, String>> references;
 		private String	tableName;
 		private String	foreignTableName;

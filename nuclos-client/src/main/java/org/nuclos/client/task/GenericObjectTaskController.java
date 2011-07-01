@@ -136,6 +136,11 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		KeyBinding keybinding = KeyBindingProvider.REFRESH;
 		gotaskview.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(keybinding.getKeystroke(), keybinding.getKey());
 		gotaskview.getActionMap().put(keybinding.getKey(), new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				refresh(gotaskview);
@@ -185,6 +190,11 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		});
 		
 		gotaskview.btnRefresh.setAction(new AbstractAction("", Icons.getInstance().getIconRefresh16()) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cmdRefresh(gotaskview);
@@ -193,6 +203,11 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 
 		gotaskview.btnPrint.setAction(new AbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.4","Aufgabenliste drucken"), 
 			Icons.getInstance().getIconPrintReport16()) {
+			/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cmdPrint(gotaskview);
@@ -206,6 +221,11 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		}
 		
 		gotaskview.btnRename.setAction(new AbstractAction(CommonLocaleDelegate.getMessage("ExplorerController.31", "Umbenennen"), Icons.getInstance().getIconClearSearch16()) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				EntitySearchFilter filter = gotaskview.getFilter();

@@ -58,6 +58,10 @@ import org.nuclos.common2.exception.CommonBusinessException;
  * than one way.
  */
 public class ShowAsDialog extends JDialog {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final String META_VO = "META_VO";
 	private List<JCheckBox>    openAsList;
 	private EntityObjectVO     object;
@@ -126,6 +130,11 @@ public class ShowAsDialog extends JDialog {
 	
 	
 	private Action okAction = new AbstractAction(CommonLocaleDelegate.getResource("livesearch.showasdiag.ok", "OK")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			for(JCheckBox b : openAsList)
@@ -145,6 +154,11 @@ public class ShowAsDialog extends JDialog {
 	};
 
 	private Action cancelAction = new AbstractAction(CommonLocaleDelegate.getResource("livesearch.showasdiag.cancel", "Cancel")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			dispose();

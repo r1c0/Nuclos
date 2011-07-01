@@ -52,6 +52,11 @@ import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 @SuppressWarnings("serial")
 public class PropertyValueInteger implements PropertyValue<Integer> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private Integer value;
 
 	Map<Integer, String> values;
@@ -205,6 +210,10 @@ public class PropertyValueInteger implements PropertyValue<Integer> {
 	 */
 	class PropertyEditorInteger extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private Map<Integer, String> list;
 		private JComboBox comboBox;
 		private JTextField textField;

@@ -43,6 +43,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class RuleObjectContainerCVO implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private GenericObjectVO govo;
 	private MasterDataVO mdvo;
 

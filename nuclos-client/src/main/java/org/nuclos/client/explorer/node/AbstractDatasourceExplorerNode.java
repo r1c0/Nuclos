@@ -37,6 +37,11 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public abstract class AbstractDatasourceExplorerNode extends ExplorerNode<TreeNode> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractDatasourceExplorerNode(TreeNode treenode) {
 		super(treenode);
 	}

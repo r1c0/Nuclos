@@ -30,6 +30,10 @@ import java.awt.*;
  */
 public class SaveNameDescriptionPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final Box pnlMain = Box.createVerticalBox();
 	private final ButtonGroup bg = new ButtonGroup();
 

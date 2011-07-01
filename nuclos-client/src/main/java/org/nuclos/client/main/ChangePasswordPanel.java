@@ -26,6 +26,10 @@ import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common.NuclosBusinessException;
 
 class ChangePasswordPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final JPasswordField pfOld = new JPasswordField();
 	private final JPasswordField pfNew1 = new JPasswordField();
 	private final JPasswordField pfNew2 = new JPasswordField();

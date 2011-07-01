@@ -108,6 +108,10 @@ import com.mxgraph.view.mxGraph;
  */
 public class EntityRelationshipModelEditPanel extends JPanel implements ApplicationAssistantListener {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static String[] labels = TranslationVO.labelsField;
 	public static String ENTITYSTYLE = "rounded=1";
 	public static String DIAMONDARROW = "endArrow=diamond";

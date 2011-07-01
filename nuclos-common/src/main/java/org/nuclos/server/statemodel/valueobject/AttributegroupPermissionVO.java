@@ -29,6 +29,10 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
  */
 public class AttributegroupPermissionVO extends NuclosValueObject {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer attributegroupId;
 	private String attributegroup;
 	private Integer roleId;

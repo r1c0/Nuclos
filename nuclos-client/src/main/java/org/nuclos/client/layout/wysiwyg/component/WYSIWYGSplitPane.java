@@ -56,6 +56,10 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
 @SuppressWarnings("serial")
 public class WYSIWYGSplitPane extends JPanel implements WYSIWYGComponent{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static final String PROPERTY_PREFFEREDSIZE = PROPERTY_LABELS.PREFFEREDSIZE;
 	public static final String PROPERTY_ORIENTATION = PROPERTY_LABELS.ORIENTATION;

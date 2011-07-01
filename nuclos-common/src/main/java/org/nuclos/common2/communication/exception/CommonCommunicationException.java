@@ -29,6 +29,11 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 public class CommonCommunicationException extends CommonBusinessException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public CommonCommunicationException() {
 		super();
 	}

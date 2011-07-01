@@ -158,6 +158,11 @@ public class StateHistoryController extends Controller {
 	private static void setupEscapeKey(final MainFrameTab ifrm, final StateHistoryPanel pnlHistory) {
 		// Escape key is to close the window:
 		final Action actClose = new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				ifrm.dispose();

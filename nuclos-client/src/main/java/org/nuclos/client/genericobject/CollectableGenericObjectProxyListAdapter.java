@@ -36,6 +36,11 @@ class CollectableGenericObjectProxyListAdapter
 		implements ProxyList<CollectableGenericObjectWithDependants> {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * @param lstlowdcvoAdaptee ProxyList<GenericObjectWithDependantsVO>
 	 */
 	CollectableGenericObjectProxyListAdapter(ProxyList<GenericObjectWithDependantsVO> lstlowdcvoAdaptee) {

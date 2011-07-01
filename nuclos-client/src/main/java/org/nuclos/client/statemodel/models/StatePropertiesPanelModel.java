@@ -40,6 +40,10 @@ import org.nuclos.common2.StringUtils;
  * @version 01.00.00
  */
 public class StatePropertiesPanelModel implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String PROPERTY_SHAPE_NAME = "ShapeName";
 	public static final String PROPERTY_SHAPE_MNEMONIC = "ShapeMnemonic";
 	public static final String PROPERTY_SHAPE_DESCRIPTION = "ShapeDescription";

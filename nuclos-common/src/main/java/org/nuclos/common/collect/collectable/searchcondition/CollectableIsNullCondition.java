@@ -31,6 +31,11 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 public final class CollectableIsNullCondition extends AtomicCollectableSearchCondition {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * @param clctef
 	 * @postcondition this.getComparisonOperator() == ComparisonOperator.IS_NULL
 	 */

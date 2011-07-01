@@ -46,6 +46,10 @@ import org.nuclos.common.NuclosBusinessException;
 @SuppressWarnings("serial")
 public class WYSIWYGCollectableTextfield extends WYSIWYGCollectableComponent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private LabeledTextField component = new LabeledTextField();
 
 	public WYSIWYGCollectableTextfield() {

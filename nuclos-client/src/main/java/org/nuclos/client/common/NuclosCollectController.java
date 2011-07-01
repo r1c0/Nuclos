@@ -212,6 +212,11 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		final DetailsPanel pnlDetails = this.getDetailsPanel();
 
 		final Action actSelectSearchTab = new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				if (pnlCollect.isTabbedPaneEnabledAt(CollectPanel.TAB_SEARCH)) {
@@ -224,6 +229,11 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 		//TODO This is a workaround. The detailpanel should keep the focus
 		final Action actGrabFocus = new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				pnlDetails.grabFocus();
@@ -333,6 +343,11 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		pnlDetails.btnNext.setAction(actNext);
 
 		Action actClose = new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
             public void actionPerformed(ActionEvent e) {
 				getFrame().dispose();
@@ -911,6 +926,11 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			= new CommonAbstractAction(CommonLocaleDelegate.getMessage("NuclosCollectController.9","Filter speichern"),
 						Icons.getInstance().getIconSave16(),
 						CommonLocaleDelegate.getMessage("NuclosCollectController.5","Eingestelltes Suchkriterium als Filter speichern")) {
+			/**
+							 * 
+							 */
+							private static final long serialVersionUID = 1L;
+
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				cmdSaveFilter();
@@ -921,6 +941,11 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			= new CommonAbstractAction(CommonLocaleDelegate.getMessage("NuclosCollectController.8","Filter l\u00f6schen"),
 						Icons.getInstance().getIconDelete16(),
 						CommonLocaleDelegate.getMessage("NuclosCollectController.2","Ausgew\u00e4hlten Filter l\u00f6schen")) {
+			/**
+							 * 
+							 */
+							private static final long serialVersionUID = 1L;
+
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				cmdRemoveFilter();
@@ -930,6 +955,11 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		//result.add(Box.createHorizontalStrut(5));
 
 		CenteringPanel cpSearchFilter = new CenteringPanel(getSearchPanel().cmbbxSearchFilter) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public Dimension getMinimumSize() {
 				return this.getCenteredComponent().getMinimumSize();
@@ -964,6 +994,11 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 		// set tool tips dynamically:
 		getSearchPanel().cmbbxSearchFilter.setRenderer(new DefaultListCellRenderer() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public Component getListCellRendererComponent(JList lst, Object oValue, int index, boolean bSelected,
 					boolean bCellHasFocus) {
@@ -1264,6 +1299,10 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	 */
 	class SelectController extends SelectObjectsController {
 		class SelectObjectsPanel extends DefaultSelectObjectsPanel {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 			final JCheckBox cbxSaveAfterRuleExecution = new JCheckBox();
 
 			public SelectObjectsPanel() {

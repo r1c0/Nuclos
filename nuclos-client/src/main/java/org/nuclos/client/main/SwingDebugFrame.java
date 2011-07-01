@@ -64,6 +64,10 @@ import org.nuclos.server.console.ejb3.ConsoleFacadeRemote;
  * @version 01.00.00
  */
 public class SwingDebugFrame extends JFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JScrollPane scrl;
 	JEditorPane text;
 	MainController ctrl;
@@ -99,6 +103,11 @@ public class SwingDebugFrame extends JFrame {
 		epDbInfo.setEditable(false);
 		final JPanel pnlDbInfo = new JPanel(new BorderLayout());
 		final JButton btnDbInfo = new JButton(new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
             public void actionPerformed(ActionEvent e) {
 				epDbInfo.setText(cmdDbInfo());
@@ -114,6 +123,11 @@ public class SwingDebugFrame extends JFrame {
 		epServerProps.setEditable(false);
 		final JPanel pnlServerProps = new JPanel(new BorderLayout());
 		final JButton btnServerProps = new JButton(new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
             public void actionPerformed(ActionEvent e) {
 				epServerProps.setText(cmdGetServerProps());

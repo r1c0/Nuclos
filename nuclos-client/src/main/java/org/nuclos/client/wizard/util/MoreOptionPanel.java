@@ -30,6 +30,11 @@ import org.nuclos.common2.CommonLocaleDelegate;
 
 public class MoreOptionPanel extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	boolean blnFadeIn;
 	
 	JPanel content;

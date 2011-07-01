@@ -43,6 +43,11 @@ public class DevelopersPlayground extends JFrame {
 		cp.setLayout(new FlowLayout());
 
 		cp.add(new JButton(new AbstractAction("Test locale") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
             public void actionPerformed(ActionEvent e) {
 				testLocale();

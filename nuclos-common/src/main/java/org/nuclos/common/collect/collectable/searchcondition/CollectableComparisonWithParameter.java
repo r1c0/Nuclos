@@ -31,6 +31,11 @@ import org.nuclos.common2.Localizable;
  */
 public final class CollectableComparisonWithParameter extends AtomicCollectableSearchCondition {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static enum ComparisonParameter implements Localizable{
 		TODAY("TODAY", "nuclos.comparisonParameter.TODAY") {
 			@Override

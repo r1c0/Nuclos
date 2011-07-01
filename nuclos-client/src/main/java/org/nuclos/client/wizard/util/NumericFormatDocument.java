@@ -19,6 +19,11 @@ package org.nuclos.client.wizard.util;
 import javax.swing.text.PlainDocument;
 
 public class NumericFormatDocument extends PlainDocument {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public void insertString(int offset, String str, javax.swing.text.AttributeSet a)  throws javax.swing.text.BadLocationException {
 		try {

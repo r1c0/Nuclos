@@ -34,6 +34,10 @@ import javax.swing.JTextField;
  * A JTextField, which can additionally display a progress in the background
  */
 public class ProgressTextField extends JTextField {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final Color TOP_COLOR = new Color(0x95ff86);
 	private static final Color MID_COLOR = new Color(0xd7ffd2);
 	private static final Color BOT_COLOR = new Color(0x43c931);

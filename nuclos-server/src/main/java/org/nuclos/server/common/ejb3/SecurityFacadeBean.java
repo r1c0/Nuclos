@@ -102,7 +102,7 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	@Override
     @RolesAllowed("Login")
 	public ApplicationProperties.Version getCurrentApplicationVersionOnServer() {
-		return ApplicationProperties.getInstance().getCurrentVersion();
+		return ApplicationProperties.getInstance().getNuclosVersion();
 	}
 
 	/**
@@ -280,7 +280,7 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 		}
 		return executeQuerySingleResult;
 	}
-	
+
 	/**
 	 * @return the readable subforms
 	 */

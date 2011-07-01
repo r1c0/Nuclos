@@ -27,6 +27,10 @@ package org.nuclos.client.login;
  */
 
 public class LoginEvent extends java.util.EventObject {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final String sUserName;
 	private final String sServerName;
 

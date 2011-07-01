@@ -44,6 +44,11 @@ public abstract class RefreshableTaskController extends Controller {
     		for (int i = 0; i < sr.getRefreshIntervals().length; i++) {
     			final int min = sr.getRefreshIntervals()[i];
     			sr.getRefreshIntervalRadioButtons()[i].setAction(new AbstractAction(sr.getRefreshIntervalLabels()[i]) {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						setRefreshIntervalForMultiViewRefreshable(sr, min);

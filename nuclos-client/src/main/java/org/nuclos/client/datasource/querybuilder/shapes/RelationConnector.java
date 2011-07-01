@@ -41,6 +41,11 @@ import org.nuclos.client.gef.shapes.AbstractConnector;
  * @version 01.00.00
  */
 public class RelationConnector extends AbstractConnector {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	protected static final int CONTROLPOINT_WIDTH = 24;
 
 	public static final int TYPE_JOIN = 1;

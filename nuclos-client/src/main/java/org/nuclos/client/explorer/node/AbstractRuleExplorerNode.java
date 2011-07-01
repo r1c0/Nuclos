@@ -54,6 +54,11 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public abstract class AbstractRuleExplorerNode extends ExplorerNode<AbstractRuleTreeNode> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractRuleExplorerNode(TreeNode treenode) {
 		super(treenode);
 	}

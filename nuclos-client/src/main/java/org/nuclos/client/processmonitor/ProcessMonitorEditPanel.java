@@ -37,6 +37,11 @@ import javax.swing.JSplitPane;
 public class ProcessMonitorEditPanel extends JPanel {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private final JPanel pnlProcessMonitorModelEditor = new JPanel(new BorderLayout());
 	
 	final ProcessMonitorEditHeaderPanel pnlHeader = new ProcessMonitorEditHeaderPanel();

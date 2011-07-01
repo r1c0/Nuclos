@@ -35,6 +35,10 @@ import javax.swing.Timer;
  * @version 01.00.00
  */
 public class ImageStripPlayer extends JComponent {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int size = 0;
 	private int stages = 0;
 	private int stagePlayed = -1;

@@ -30,6 +30,10 @@ import java.util.*;
  */
 public class DatasourceUsageNode extends DirectoryDatasourceNode {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final DatasourceNode.DatasourceUsage usage;
 	private final DatasourceVO parentDatasource;
 

@@ -39,6 +39,10 @@ import java.awt.print.PrinterException;
 import java.util.Iterator;
 
 public abstract class AbstractShapeViewer extends AbstractViewer {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected BufferedImage screenBuffer = null;
 	protected Graphics2D gfxBuffer = null;
 	protected MapMode mapMode = null;

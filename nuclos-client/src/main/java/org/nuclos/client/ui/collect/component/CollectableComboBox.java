@@ -699,6 +699,11 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP {
 	public TableCellRenderer getTableCellRenderer() {
 		if (!isSearchComponent() && getValueListProvider() != null) {
 			return new CollectableComponentDetailTableCellRenderer() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
 					CollectableField cf = (CollectableField) oValue;
@@ -743,6 +748,11 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP {
 		} else if (isSearchComponent()){
 			//NOAINT-215
 			return new CollectableComponentDetailTableCellRenderer() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				protected void setValue(Object value) {
 					if (value instanceof AbstractCollectableSearchCondition)
@@ -759,6 +769,11 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP {
 		}
 		else {
 			return new CollectableComponentDetailTableCellRenderer() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				protected void setValue(Object value) {
 					super.setValue(value);
@@ -810,6 +825,11 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP {
 	}
 
 	public class CollectableFieldRenderer extends DefaultListCellRenderer {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Component getListCellRendererComponent(JList list, Object oValue, int iIndex, boolean bSelected, boolean bCellHasFocus) {
 			super.getListCellRendererComponent(list, oValue, iIndex, bSelected, bCellHasFocus);

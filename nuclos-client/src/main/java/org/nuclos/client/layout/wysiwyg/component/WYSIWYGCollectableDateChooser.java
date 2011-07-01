@@ -45,6 +45,10 @@ import org.nuclos.common.NuclosBusinessException;
 @SuppressWarnings("serial")
 public class WYSIWYGCollectableDateChooser extends WYSIWYGCollectableComponent {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private LabeledDateChooser component = new LabeledDateChooser();
 	
 	public WYSIWYGCollectableDateChooser() {

@@ -23,6 +23,10 @@ import java.awt.dnd.DropTargetListener;
 
 public class NuclosDropTarget extends DropTarget {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	Object userobject;
 
 	public NuclosDropTarget(Component c, DropTargetListener dtl) throws HeadlessException {

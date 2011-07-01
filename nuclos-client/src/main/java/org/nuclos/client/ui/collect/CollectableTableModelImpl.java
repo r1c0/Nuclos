@@ -47,6 +47,11 @@ public class CollectableTableModelImpl <Clct extends Collectable>
 		implements CollectableTableModel<Clct> {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * the list of columns.
 	 */
 	private List<CollectableEntityField> lstclctefColumns;

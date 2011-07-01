@@ -56,6 +56,11 @@ import org.nuclos.common2.exception.CommonValidationException;
  * @version	01.00.00
  */
 public class CollectableComponentTableCellEditor extends AbstractCellEditor implements TableCellEditor, CollectableComponentModelListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger log = Logger.getLogger(CollectableComponentTableCellEditor.class);
 
 	private CollectableComponent clctcomp;

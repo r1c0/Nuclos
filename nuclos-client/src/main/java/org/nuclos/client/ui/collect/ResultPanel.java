@@ -91,6 +91,11 @@ import org.nuclos.common2.exception.PreferencesException;
  */
 public class ResultPanel<Clct extends Collectable> extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	CollectPanelIndicator cpi = new CollectPanelIndicator(CollectPanel.TAB_RESULT);
 
 	/**

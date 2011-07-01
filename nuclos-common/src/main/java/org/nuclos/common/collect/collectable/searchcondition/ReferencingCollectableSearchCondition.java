@@ -39,6 +39,10 @@ import org.nuclos.common2.LangUtils;
  */
 public final class ReferencingCollectableSearchCondition extends AbstractCollectableSearchCondition {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private transient CollectableEntityField clctefReferencing;
 	private final CollectableSearchCondition condSub;
 

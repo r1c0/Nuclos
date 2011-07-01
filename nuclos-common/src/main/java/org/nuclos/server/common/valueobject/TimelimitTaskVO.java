@@ -30,6 +30,10 @@ import java.util.Date;
  */
 public class TimelimitTaskVO extends NuclosValueObject {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String sDescription;
 	private java.util.Date dateExpired;
 	private java.util.Date dateCompleted;

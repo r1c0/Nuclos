@@ -23,6 +23,10 @@ import java.util.Locale;
 
 public class LocaleInfo implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/** The standardized (IETF) "i-default" language tag which represents our null locale */ 
 	public static LocaleInfo I_DEFAULT = new LocaleInfo(null, null, "i-default", null);
 	public static final String I_DEFAULT_TAG = "i-default";

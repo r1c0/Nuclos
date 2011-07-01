@@ -20,6 +20,10 @@ import java.io.Serializable;
 
 public class NuclosFile implements Serializable{
 		
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	String fileName;
 	byte[] fileContents;
 	

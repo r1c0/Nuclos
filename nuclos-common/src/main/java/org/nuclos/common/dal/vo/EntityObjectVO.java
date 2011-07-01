@@ -33,6 +33,11 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
  */
 public class EntityObjectVO extends AbstractDalVOWithFields {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public EntityObjectVO() {
 		
 	}

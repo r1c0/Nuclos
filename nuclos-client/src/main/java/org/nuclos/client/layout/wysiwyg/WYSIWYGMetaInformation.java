@@ -684,6 +684,11 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 	 */
 	public static class StringResourceIdPair extends Pair<String, String> implements Localizable, Serializable {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public StringResourceIdPair(String value, String resourceId) {
 			super(value, resourceId);
 		}

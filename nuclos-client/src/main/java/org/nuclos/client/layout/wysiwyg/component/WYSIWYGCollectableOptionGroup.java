@@ -42,6 +42,11 @@ import org.nuclos.common.collect.collectable.CollectableComponentTypes;
 @SuppressWarnings("serial")
 public class WYSIWYGCollectableOptionGroup extends WYSIWYGUniversalComponent {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public WYSIWYGCollectableOptionGroup(WYSIWYGMetaInformation meta) {
 		super(meta);
 		

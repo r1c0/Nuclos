@@ -31,6 +31,11 @@ import org.nuclos.common.collect.collectable.CollectableField;
  */
 public class CollectableComponentModelEvent extends ChangeEvent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private final CollectableField clctfOldValue;
 
 	private final CollectableField clctfNewValue;

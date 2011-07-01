@@ -82,6 +82,10 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JLabel lbName;
 	JTextField tfName;	
 	

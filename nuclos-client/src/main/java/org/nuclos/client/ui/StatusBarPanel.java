@@ -34,6 +34,11 @@ import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 
 public class StatusBarPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public StatusBarPanel() {
 		super();
 

@@ -101,6 +101,11 @@ public class JobControlCollectController extends MasterDataCollectController {
 	final private JobControlDelegate delegate = JobControlDelegate.getInstance();
 
 	private final Action actSchedule = new CommonAbstractAction(Icons.getInstance().getIconPlay16(), CommonLocaleDelegate.getMessage("JobControlCollectController.1","Aktivieren")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			try {
@@ -113,6 +118,11 @@ public class JobControlCollectController extends MasterDataCollectController {
 	};
 
 	private final Action actUnschedule = new CommonAbstractAction(Icons.getInstance().getIconStop16(), CommonLocaleDelegate.getMessage("JobControlCollectController.3","Deaktivieren")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			try {
@@ -125,6 +135,11 @@ public class JobControlCollectController extends MasterDataCollectController {
 	};
 
 	private final Action actStartImmediately = new CommonAbstractAction(Icons.getInstance().getIconNext16(), CommonLocaleDelegate.getMessage("JobControlCollectController.2","Ausf\u00fchren")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdStartJobImmediately();
@@ -582,6 +597,11 @@ public class JobControlCollectController extends MasterDataCollectController {
 	private TableCellRenderer createResultLastRunRenderer() {
 
 		class TrafficLightCellRenderer extends DefaultTableCellRenderer {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			public TrafficLightCellRenderer() {
 				super();

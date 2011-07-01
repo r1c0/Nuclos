@@ -105,6 +105,11 @@ public class SearchFilterCollectController extends MasterDataCollectController{
 	}
 
 	private	class SearchDeletedCellRenderer extends DefaultTableCellRenderer {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public SearchDeletedCellRenderer() {
 			super();
 		}

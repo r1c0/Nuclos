@@ -38,6 +38,10 @@ public class CollectableMasterDataProxyListAdapter
 		implements ProxyList<CollectableMasterDataWithDependants> {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
 	 * the entity of the contained master data elements.
 	 */
 	private CollectableMasterDataEntity clcte;

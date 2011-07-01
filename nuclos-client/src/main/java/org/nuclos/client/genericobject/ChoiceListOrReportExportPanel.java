@@ -44,6 +44,10 @@ import org.nuclos.server.report.NuclosReportException;
  * @version 01.00.00
  */
 public class ChoiceListOrReportExportPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	Border border1;
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JLabel lblHeadline = new JLabel();

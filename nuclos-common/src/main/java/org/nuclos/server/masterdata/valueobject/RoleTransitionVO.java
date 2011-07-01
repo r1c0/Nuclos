@@ -29,6 +29,10 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
  */
 public class RoleTransitionVO extends NuclosValueObject {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer roleId;
 	private Integer transitionId;
 

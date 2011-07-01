@@ -33,7 +33,7 @@ public class NuclosSystemParameters {
 	public static final String GENERATOR_OUTPUT_PATH = "nuclos.codegenerator.output.path";
 	public static final String WSDL_GENERATOR_LIB_PATH = "nuclos.wsdl.generator.lib.path";
 	public static final String WSDL_GENERATOR_OUTPUT_PATH = "nuclos.wsdl.generator.output.path";
-	
+
 	// for JasperReports, we use the same name as the latter system property (see ReportFacadeBean)
 	// @Deprecated public static final String JASPER_REPORTS_COMPILE_CLASS_PATH = "jasper.reports.compile.class.path";
 	public static final String JASPER_REPORTS_COMPILE_KEEP_JAVA_FILE = "jasper.reports.compile.keep.java.file";
@@ -51,9 +51,9 @@ public class NuclosSystemParameters {
 	static {
 		// For a list of predefined JBoss properties, see http://community.jboss.org/wiki/JBossProperties
 		systemParameters= new Properties(System.getProperties());
-		ServerProperties.loadProperties(systemParameters, "nuclos-server.properties", true);
+		ServerProperties.loadProperties(systemParameters, ServerProperties.JNDI_SERVER_PROPERTIES, true);
 	}
-	
+
 	private NuclosSystemParameters() {
 	}
 
@@ -63,7 +63,7 @@ public class NuclosSystemParameters {
 	public static File getDirectory(String key) {
 		return getFile(key); // internally is getDirectory the same as getFile()
 	}
-	
+
 	/**
 	 * Returns a parameter which denotes a server-side file as {@link File} object.
 	 */
@@ -74,20 +74,20 @@ public class NuclosSystemParameters {
 		}
 		return null;
 	}
-	
+
 	public static Integer getInteger(String key) {
 		String value = getString(key);
 		if (value != null) {
 			return Integer.parseInt(value);
 		}
-		return null;		
+		return null;
 	}
-	
+
 	public static String getString(String key) {
 		return getImpl(key);
 	}
-	
-	private static String getImpl(String key) {		
+
+	private static String getImpl(String key) {
 		String value = systemParameters.getProperty(key);
 		if (value != null) {
 			return StringUtils.replaceParametersRecursively(value, systemParameters);

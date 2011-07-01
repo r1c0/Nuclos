@@ -64,6 +64,10 @@ import org.nuclos.server.statemodel.valueobject.StateModelVO;
  */
 
 public class SubProcessShape extends ContainerShape implements ImageObserver {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final int STATE_START = 1;
 	public static final int STATE_END = 2;
 	public static final int STATE_INTERMEDIATE = 3;

@@ -34,6 +34,10 @@ import org.nuclos.server.dblayer.structure.DbColumnType.DbGenericType;
  */
 public class DbTableData implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final String tableName;
 	private final List<Pair<String, DbGenericType>> columns;
 	private final List<List<Object>> data;

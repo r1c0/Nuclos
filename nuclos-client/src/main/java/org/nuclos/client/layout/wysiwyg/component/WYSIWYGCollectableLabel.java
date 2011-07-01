@@ -44,6 +44,11 @@ import org.nuclos.common2.StringUtils;
 @SuppressWarnings("serial")
 public class WYSIWYGCollectableLabel extends WYSIWYGCollectableComponent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	//NUCLEUSINT-275 Uses LabeledComponnent instead of normal JLabel (insets from GridbagLayout caused the WYSIAWYG :) )
 	private LabeledComponent component = new LabeledTextField();
 		

@@ -32,6 +32,10 @@ import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder.Parameter;
 
 public abstract class DbQueryBuilder implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String DATE_PATTERN_GERMAN = "dd.mm.yyyy";
 	
 	protected DbQueryBuilder() {

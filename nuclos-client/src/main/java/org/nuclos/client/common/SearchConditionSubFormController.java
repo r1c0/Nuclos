@@ -104,6 +104,10 @@ public class SearchConditionSubFormController extends SubFormController {
 	 */
 	private class SearchConditionTableModelImpl extends DefaultTableModel implements SearchConditionTableModel {
 		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		/**
 		 * List<CollectableEntityField>
 		 */
 		private List<CollectableEntityField> lstclctefColumns;

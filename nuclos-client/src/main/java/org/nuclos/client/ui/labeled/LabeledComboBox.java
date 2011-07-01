@@ -40,9 +40,19 @@ import org.nuclos.client.ui.UIUtils;
 
 public class LabeledComboBox extends LabeledComponent {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public final static Dimension DEFAULT_PREFFERED_SIZE = (new JTextField()).getPreferredSize();
 
 	private final JComboBox cmbbx = new JComboBox() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		/**
 		 * Note that this (a dynamic tooltip) doesn't really work for JComboBox. The editor and the button (or the CellRenderer and the button,
 		 * for a non-editable combobox) have their own tooltips, which are kept in sync with the JComboBox's tooltip.

@@ -34,6 +34,10 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
  */
 public abstract class AtomicCollectableSearchCondition extends AbstractCollectableSearchCondition {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private transient CollectableEntityField clctef;
 	private transient ComparisonOperator compop;
 

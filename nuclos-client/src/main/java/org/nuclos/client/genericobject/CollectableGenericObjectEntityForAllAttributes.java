@@ -81,6 +81,11 @@ public class CollectableGenericObjectEntityForAllAttributes implements Collectab
 				final String sFieldName = CollectableGenericObjectEntity.getParentObjectFieldName(sEntityName);
 				final String sReferencedEntityName = Modules.getParentModuleName(mdvoModule);
 				this.mpVirtualFields.put(sFieldName, new AbstractCollectableEntityField() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public String getDescription() {
 						return "Verweis auf \u00fcbergeordneten Datensatz";

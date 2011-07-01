@@ -45,6 +45,10 @@ import org.nuclos.client.ui.UIUtils;
 @SuppressWarnings("serial")
 public class WYSIWYGEditorsToolbar extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JToolBar wysiwygToolbar = null;
 
 	/**

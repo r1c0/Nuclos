@@ -35,6 +35,11 @@ import org.nuclos.server.dblayer.DbIdent;
  */
 public class DbSimpleView extends DbTableArtifact {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static enum DbSimpleViewColumnType {
 		TABLE,
 		FOREIGN_REFERENCE,
@@ -43,6 +48,10 @@ public class DbSimpleView extends DbTableArtifact {
 	
 	public static class DbSimpleViewColumn implements Serializable {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final DbSimpleViewColumnType type;
 		private final String columnName;
 		private final DbColumnType columnType;

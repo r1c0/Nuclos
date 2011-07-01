@@ -311,6 +311,11 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 			implements DetailsSubFormTableModel<T> {
 
 		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
 		 * @param lstclct
 		 */
 		DetailsSubFormTableModelImpl(List<T> lstclct) {

@@ -47,6 +47,11 @@ import org.nuclos.client.gef.layout.Insets2D;
  */
 public abstract class AbstractShape implements Serializable, Cloneable, Shape, Connectable {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 *	Unique system generated shape id
 	 */
 	protected static int iShapeId;

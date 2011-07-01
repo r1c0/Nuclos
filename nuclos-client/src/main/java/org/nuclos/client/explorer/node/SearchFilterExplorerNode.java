@@ -55,6 +55,10 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final String ACTIONCOMMAND_REMOVEFILTER = "REMOVE_FILTER";
 	private static final String ACTIONCOMMAND_SHOWINTASKPANEL = "SHOW_FILTER_IN_TASKPANEL";
 	private static final String ACTIONCOMMAND_SHOW_RESULT = "SHOW RESULT";
@@ -93,6 +97,11 @@ public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode>
 	 * Action: remove filter
 	 */
 	private class RemoveFilterAction extends TreeNodeAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		RemoveFilterAction(JTree tree) {
 			super(ACTIONCOMMAND_REMOVEFILTER, CommonLocaleDelegate.getMessage("SearchFilterExplorerNode.1","Filter l\u00f6schen") + "...", tree);
 		}
@@ -129,6 +138,11 @@ public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode>
 	 * Action: show filter in task panel
 	 */
 	private class ShowFilterInTaskPanelAction extends TreeNodeAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		ShowFilterInTaskPanelAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOWINTASKPANEL, CommonLocaleDelegate.getMessage("SearchFilterExplorerNode.3","Als Aufgabenliste anzeigen"), tree);
 		}
@@ -153,6 +167,11 @@ public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode>
 	 * Action: show search result in a new internal frame
 	 */
 	private class ShowResultAction extends TreeNodeAction {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		ShowResultAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_RESULT, CommonLocaleDelegate.getMessage("SearchFilterExplorerNode.4","Suchergebnis anzeigen"), tree);

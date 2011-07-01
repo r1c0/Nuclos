@@ -29,6 +29,11 @@ import java.util.*;
  */
 public abstract class AbstractDatasourceTreeNode implements TreeNode {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	protected static final Collator textCollator = Collator.getInstance();
 
 	private final Integer iId;

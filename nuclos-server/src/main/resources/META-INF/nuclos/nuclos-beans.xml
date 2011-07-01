@@ -9,6 +9,7 @@
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sec="http://www.springframework.org/schema/security"
+       xmlns:jee="http://www.springframework.org/schema/jee"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context
@@ -22,7 +23,9 @@
 						   http://www.springframework.org/schema/aop
      					   http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
      					   http://www.springframework.org/schema/security
-     					   http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+     					   http://www.springframework.org/schema/security/spring-security-3.0.xsd
+     					   http://www.springframework.org/schema/jee
+       					   http://www.springframework.org/schema/jee/spring-jee-2.0.xsd">
 
 
     <bean id="appContext" class="org.nuclos.common.SpringApplicationContextHolder"/>
@@ -36,8 +39,7 @@
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
-				<value>WEB-INF/jdbc.properties</value>
-				<value>WEB-INF/nuclos-quartz.properties</value>
+				<jee:jndi-lookup jndi-name="java:comp/env/nuclos-conf-jdbc"/>
 			</list>
 		</property>
 	</bean>
@@ -188,7 +190,7 @@
 	    <property name="quartzProperties">
 	    	<bean class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		      <property name="location">
-		        <value>WEB-INF/nuclos-quartz.properties</value>
+		      	<jee:jndi-lookup jndi-name="java:comp/env/nuclos-conf-quartz"/>
 		      </property>
 		    </bean>
 		</property>

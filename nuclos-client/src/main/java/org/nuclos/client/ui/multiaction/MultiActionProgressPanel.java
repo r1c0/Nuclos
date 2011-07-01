@@ -69,6 +69,10 @@ import org.nuclos.common2.CommonLocaleDelegate;
  * can double click to get the detailed message. Double click on the specific object should be possible also.
  */
 public class MultiActionProgressPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public final JToggleButton btnPause = new JToggleButton(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.2","Pause"), Icons.getInstance().getIconPause16());
 	public final JButton btnStop = new JButton(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.3","Stop"), Icons.getInstance().getIconStop16());
 	public final JButton btnClose = new JButton(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.4","Schlie\u00dfen"));
@@ -77,6 +81,11 @@ public class MultiActionProgressPanel extends JPanel {
 	private JProgressBar progressbar;
 	private MultiActionProgressTableModel tblmdl;
 	protected final JTable tblResult = new CommonJTable() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return false;
@@ -328,6 +337,11 @@ public class MultiActionProgressPanel extends JPanel {
 	}
 
 	private class ColorRenderer extends DefaultTableCellRenderer {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
 			Component returnMe = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);

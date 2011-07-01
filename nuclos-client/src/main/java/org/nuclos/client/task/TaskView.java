@@ -27,6 +27,10 @@ import org.nuclos.common2.CommonLocaleDelegate;
 public abstract class TaskView extends JPanel implements ScheduledRefreshable {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	final int[] intervals = new int[] {	0, 5, 10, 30};
 	final String[] intervalLabels = new String[] {
 		CommonLocaleDelegate.getMessage("TaskController.Refresh.0.name","Manuell aktualisieren"),

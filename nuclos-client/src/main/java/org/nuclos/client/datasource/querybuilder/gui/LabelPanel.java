@@ -36,6 +36,10 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 public class LabelPanel extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String[] labels = {CommonLocaleDelegate.getMessage("LabelPanel.8","Tabelle"), CommonLocaleDelegate.getMessage("LabelPanel.7","Spalte"), CommonLocaleDelegate.getMessage("LabelPanel.1","Alias"), CommonLocaleDelegate.getMessage("LabelPanel.5","Sichtbar"), CommonLocaleDelegate.getMessage("LabelPanel.3","Gruppierung"), CommonLocaleDelegate.getMessage("LabelPanel.6","Sortierung"), CommonLocaleDelegate.getMessage("LabelPanel.2","Bedingung"), CommonLocaleDelegate.getMessage("LabelPanel.4","oder")};
 	private ColumnSelectionTable table;
 	

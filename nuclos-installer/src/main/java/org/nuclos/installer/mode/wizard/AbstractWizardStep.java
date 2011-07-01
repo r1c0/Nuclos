@@ -43,6 +43,11 @@ import org.pietschy.wizard.WizardModel;
 
 public abstract class AbstractWizardStep extends PanelWizardStep implements DocumentListener, ActionListener, Constants {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger log = Logger.getLogger(AbstractWizardStep.class);
 
 	private InstallerWizardModel model;

@@ -20,6 +20,10 @@ import javax.security.auth.login.LoginException;
 
 public class NuclosLoginException extends LoginException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public final static Integer DEFAULT_ERROR_CODE = 0;
 	public final static Integer AUTHENTICATION_ERROR = 1;
 	public final static Integer AUTHORISATION_ERROR = 2;

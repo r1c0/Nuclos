@@ -30,6 +30,11 @@ import java.awt.datatransfer.UnsupportedFlavorException;
  */
 public abstract class AbstractCollectableSearchCondition implements CollectableSearchCondition {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private String conditionName;
 
 	public static final DataFlavor dataflavorSearchCondition = new DataFlavor(CollectableSearchCondition.class,

@@ -2143,6 +2143,11 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					throws SAXException {
 				final JLabel lb = new JLabel() {
 					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					/**
 					 * set the minimum size equal to the preferred size in order to avoid
 					 * GridBagLayout flaws.
 					 * @return the value of the <code>preferredSize</code> property
@@ -2204,6 +2209,11 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
             public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes)
 					throws SAXException {
 				final JTextField tf = new JTextField() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					/**
 					 * set the minimum size equal to the preferred size in order to avoid
 					 * GridBagLayout flaws.

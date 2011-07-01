@@ -46,6 +46,10 @@ import org.nuclos.server.processmonitor.valueobject.ProcessTransitionVO;
  */
 public class SubProcessTransition extends ArrowConnector implements ImageObserver {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final ProcessTransitionVO transitionvo;
 	private final float[] afDashes = {5f, 5f};
 	private final Stroke strokeAutomatic = new BasicStroke(1f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1f, afDashes, 1f);

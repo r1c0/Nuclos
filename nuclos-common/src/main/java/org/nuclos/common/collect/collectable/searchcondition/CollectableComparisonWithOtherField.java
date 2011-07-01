@@ -38,6 +38,10 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
 public final class CollectableComparisonWithOtherField extends AtomicCollectableSearchCondition {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
 	 * @invariant clctefOther != null
 	 */
 	private transient CollectableEntityField clctefOther;

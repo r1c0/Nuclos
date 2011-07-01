@@ -41,6 +41,8 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.ApplicationProperties;
+import org.nuclos.server.common.ServerProperties;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -55,25 +57,45 @@ import org.w3c.dom.Node;
  */
 public class JnlpServlet extends HttpServlet {
 
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger log = Logger.getLogger(JnlpServlet.class);
 
 	private boolean enabled = false;
 	private boolean singleinstance = false;
 	private File appDir = null;
-	
+
+	private boolean hasExtensions = false;
+	private File extensionDir = null;
+
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 
-		
+
 		try {
-			Properties props = new Properties();
-			props.load(config.getServletContext().getResourceAsStream("/WEB-INF/jnlp/jnlp.properties"));
-			enabled = Boolean.parseBoolean(props.getProperty("webstart.enabled"));
-			singleinstance = Boolean.parseBoolean(props.getProperty("singleinstance"));
+			Properties props = ServerProperties.loadProperties(ServerProperties.JNDI_SERVER_PROPERTIES);//new Properties();
+			//props.load(config.getServletContext().getResourceAsStream("/WEB-INF/jnlp/jnlp.properties"));
+			enabled = true;//Boolean.parseBoolean(props.getProperty("webstart.enabled"));
+			singleinstance = Boolean.parseBoolean(props.getProperty("client.singleinstance"));
 			appDir = new File(config.getServletContext().getRealPath(""), "app");
+
+			extensionDir = new File(appDir, "extensions");
+			if (extensionDir.isDirectory()) {
+				if (extensionDir.list(new FilenameFilter() {
+						@Override
+						public boolean accept(File dir, String name) {
+							if (name.endsWith(".jar")) {
+								return true;
+							}
+							return false;
+						}
+					}).length > 0) {
+					hasExtensions = true;
+				}
+			}
 		}
-		catch(IOException e) {
+		catch(Exception e) {
 			log.error("Failed to initialize JnlpServlet.", e);
 		}
 	}
@@ -84,21 +106,31 @@ public class JnlpServlet extends HttpServlet {
 			response.sendError(response.SC_NOT_FOUND, "Webstart is disabled.");
 			return;
 		}
-		
+
+		boolean isExtensionRequest = request.getRequestURI().endsWith("extension.jnlp");
+
 		String urlPrefix = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
 
 		Properties props = new Properties();
-		props.put("codebase", urlPrefix + "/app");
+		props.put("codebase", urlPrefix + "/app" + (isExtensionRequest ? "/extensions" : ""));
 		props.put("url.remoting", urlPrefix + "/remoting");
 		props.put("url.jms", urlPrefix + "/jmsbroker");
 		props.put("singleinstance", Boolean.toString(singleinstance));
-		
-		String attachment = "inline; filename=\"nuclos.jnlp\"";
+		props.put("nuclos.version", ApplicationProperties.getInstance().getNuclosVersion().getVersionNumber());
+		props.put("extensions", Boolean.toString(hasExtensions));
+
+		String attachment = "inline; filename=\"" + (isExtensionRequest ? "extension.jnlp" : "nuclos.jnlp") + "\"";
 		response.setContentType("application/x-java-jnlp-file");
 		response.setHeader("Cache-Control", "max-age=30");
 		response.setHeader("Content-disposition", attachment);
-		
-		InputStream is = getServletContext().getResourceAsStream("/WEB-INF/jnlp/jnlp.xsl");
+
+		InputStream is;
+		if (!isExtensionRequest) {
+			is = getServletContext().getResourceAsStream("jnlp/jnlp.xsl");
+		}
+		else {
+			is = getServletContext().getResourceAsStream("jnlp/extension.jnlp.xsl");
+		}
 
 		try {
 			TransformerFactory transformFactory = TransformerFactory.newInstance();
@@ -127,7 +159,14 @@ public class JnlpServlet extends HttpServlet {
 				}
 			});
 
-			transformer.transform(new DOMSource(getTransformationSource(request.getParameterMap())), output);
+			Document source;
+			if (!isExtensionRequest) {
+				source = getTransformationSource(request.getParameterMap());
+			}
+			else {
+				source = getExtTransformationSource();
+			}
+			transformer.transform(new DOMSource(source), output);
 		}
 		catch (Exception ex) {
 			throw new ServletException(ex);
@@ -144,19 +183,19 @@ public class JnlpServlet extends HttpServlet {
 
         Node jnlp = document.appendChild(document.createElement("jnlp"));
         Node jars = jnlp.appendChild(document.createElement("jars"));
-        
+
         if(appDir.isDirectory()) {
         	String sFiles [] = appDir.list(new FilenameFilter() {
-				
+
 				@Override
 				public boolean accept(File dir, String name) {
-					if(name.endsWith(".jar") && !(name.equals("nuclos-client.jar") || name.equals("nuclos-native.jar")))
+					if(name.endsWith(".jar") && !(name.equals("nuclos-client-" + ApplicationProperties.getInstance().getNuclosVersion().getVersionNumber() + ".jar") || name.equals("nuclos-native-1.0.jar")))
 						return true;
 					else
 						return false;
 				}
 			});
-        	
+
         	for(String sFile : sFiles) {
         		Node jar = jars.appendChild(document.createElement("jar"));
     			jar.setTextContent(sFile);
@@ -170,6 +209,34 @@ public class JnlpServlet extends HttpServlet {
         	Node argument = document.createElement("argument");
         	argument.setTextContent(e.getKey() + (e.getValue() != null ? "=" + ((String[]) e.getValue())[0] : ""));
         	arguments.appendChild(argument);
+        }
+
+        return document;
+	}
+
+	private Document getExtTransformationSource() throws ParserConfigurationException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.newDocument();
+
+        Node jnlp = document.appendChild(document.createElement("jnlp"));
+        Node jars = jnlp.appendChild(document.createElement("jars"));
+
+        if(extensionDir.isDirectory()) {
+        	String sFiles [] = extensionDir.list(new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					if(name.endsWith(".jar")) {
+						return true;
+					}
+					return false;
+				}
+			});
+
+        	for(String sFile : sFiles) {
+        		Node jar = jars.appendChild(document.createElement("jar"));
+    			jar.setTextContent(sFile);
+        	}
         }
 
         return document;

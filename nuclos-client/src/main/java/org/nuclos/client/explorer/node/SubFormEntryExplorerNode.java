@@ -70,6 +70,10 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  * @version 01.00.00
  */
 public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends ExplorerNode<TN> implements EntityExplorerNode {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(SubFormEntryExplorerNode.class);
 
 	public SubFormEntryExplorerNode(TreeNode treenode) {
@@ -105,7 +109,12 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
     
     protected class RemoveAction extends TreeNodeAction {
     	
-    	public static final int KEY = KeyEvent.VK_DELETE;
+    	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public static final int KEY = KeyEvent.VK_DELETE;
     	
     	private Integer iObjectId = null;
     	private Integer iModuleId = null;
@@ -234,6 +243,10 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 	
 	private class ShowReferenceAction extends TreeNodeAction {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		final String entityName;
 		final Integer id;
 

@@ -16,16 +16,24 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dal.provider;
 
+import java.io.IOException;
 import java.util.Properties;
 
 import org.nuclos.common.AbstractProvider;
-import org.nuclos.server.common.ServerProperties;
+import org.nuclos.common.NuclosFatalException;
 
-public class AbstractDalProvider extends AbstractProvider{
-	
+public class AbstractDalProvider extends AbstractProvider {
+
 	public static final String NUCLOS_DAL_PROPERTIES = "nuclos-dal.properties";
-	
+
 	public static Properties getDalProperties() {
-		return ServerProperties.loadProperties(NUCLOS_DAL_PROPERTIES);
+		Properties props = new Properties();
+		try {
+			props.load(AbstractDalProvider.class.getClassLoader().getResourceAsStream(NUCLOS_DAL_PROPERTIES));
+		}
+		catch (IOException e) {
+			throw new NuclosFatalException(e);
+		}
+		return props;
 	}
 }

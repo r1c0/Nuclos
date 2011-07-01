@@ -51,6 +51,11 @@ import org.nuclos.server.attribute.valueobject.LayoutUsageVO;
 @Deprecated
 public class GenericObjectMetaDataVO implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private final LayoutCache layoutcache;
 
 	private final LayoutUsageCache layoutusagecache;
@@ -229,6 +234,11 @@ public class GenericObjectMetaDataVO implements Serializable {
 	 */
 	private static class LayoutCache implements Serializable {
 		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
 		 * Map<Integer iLayoutId, String sLayoutML>
 		 */
 		private final Map<Integer, String> mpLayoutML;
@@ -336,6 +346,11 @@ public class GenericObjectMetaDataVO implements Serializable {
 	 * Layout usage cache.
 	 */
 	class LayoutUsageCache implements Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		/**
 		 * Map<UsageCriteria, Integer iLayoutId>
 		 */

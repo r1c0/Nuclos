@@ -143,6 +143,11 @@ import org.nuclos.common2.exception.CommonFinderException;
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
 public class SubForm extends JPanel implements TableCellRendererProvider, ActionListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static interface SubFormToolListener {
 		public void toolbarAction(String actionCommand);
 	};
@@ -1406,6 +1411,10 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	 */
 	public static class SubFormTable extends CommonJTable {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private TableCellEditorProvider celleditorprovider;
 		private TableCellRendererProvider cellrendererprovider;
 		private SubForm subform;
@@ -1429,6 +1438,11 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		@Override
 		protected TableColumnModel createDefaultColumnModel() {
 			return new DefaultTableColumnModel() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void addColumn(TableColumn column) {
 					TableModel model = getModel();

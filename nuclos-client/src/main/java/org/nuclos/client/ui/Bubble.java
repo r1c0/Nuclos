@@ -630,6 +630,11 @@ public class Bubble extends Window implements AncestorListener, WindowListener {
 		f.add(
 			new JButton(
 				new AbstractAction("Show") {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
                     public void actionPerformed(ActionEvent e) {
 						new Bubble(

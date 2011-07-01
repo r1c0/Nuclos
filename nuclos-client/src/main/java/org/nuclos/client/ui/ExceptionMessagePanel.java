@@ -53,6 +53,10 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 
 class ExceptionMessagePanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JDialog dlg;
 	private final JPanel pnl1 = new JPanel();
 	private final JPanel pnlMain = new JPanel();

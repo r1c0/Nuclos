@@ -39,6 +39,11 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 public class SortableRuleTableModel extends DefaultTableModel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	class RuleOrderComparator implements Comparator<SortedRuleVO> {
 		@Override
 		public int compare(SortedRuleVO vo1, SortedRuleVO vo2) {

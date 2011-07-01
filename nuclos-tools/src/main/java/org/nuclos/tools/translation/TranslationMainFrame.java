@@ -61,6 +61,10 @@ import org.nuclos.tools.translation.translationdata.TranslationData.TranslationA
 @SuppressWarnings("serial")
 public class TranslationMainFrame extends JFrame implements MouseListener, ActionListener, TableModelListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel mainPanel;
 	private JLabel pSourceFilePath;
 	private JTextField tfSourceFilePath;
@@ -117,6 +121,11 @@ public class TranslationMainFrame extends JFrame implements MouseListener, Actio
 		mainPanel.add(tfSourceFilePath,gbc);
 
 		Action browseAction = new AbstractAction("") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				chooseSourceFiles();
@@ -144,6 +153,11 @@ public class TranslationMainFrame extends JFrame implements MouseListener, Actio
 		mainPanel.add(tfBackupFilePath, gbc);
 
 		Action browseAction = new AbstractAction("") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				chooseSourceFiles();
@@ -187,6 +201,11 @@ public class TranslationMainFrame extends JFrame implements MouseListener, Actio
 				if(e.isPopupTrigger()) {
 					JPopupMenu m = new JPopupMenu();
 					m.add(new AbstractAction("Select") {
+						/**
+						 * 
+						 */
+						private static final long serialVersionUID = 1L;
+
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							for(int i : translationTable.getSelectedRows())
@@ -194,6 +213,11 @@ public class TranslationMainFrame extends JFrame implements MouseListener, Actio
 						}
 					});
 					m.add(new AbstractAction("Deselect") {
+						/**
+						 * 
+						 */
+						private static final long serialVersionUID = 1L;
+
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							for(int i : translationTable.getSelectedRows())
@@ -209,6 +233,11 @@ public class TranslationMainFrame extends JFrame implements MouseListener, Actio
 
 	private void initAnalyseSection() {
 		Action analyseAction = new AbstractAction("") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				startAnalysing();
@@ -228,6 +257,11 @@ public class TranslationMainFrame extends JFrame implements MouseListener, Actio
 
 	private void initFileEditingSection() {
 		Action startAction = new AbstractAction("") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				performSelectedActions();
@@ -246,6 +280,11 @@ public class TranslationMainFrame extends JFrame implements MouseListener, Actio
 		mainPanel.add(btnStartActions, gbc);
 
 		Action rollbackAction = new AbstractAction("") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				rollbackSelectedActions();

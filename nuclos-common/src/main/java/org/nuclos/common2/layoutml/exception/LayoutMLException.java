@@ -33,10 +33,19 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 
 public class LayoutMLException extends CommonBusinessException implements Locator {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final Locator locator;
 	
 	private static class MyLocator implements Locator, Serializable {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		private final String publicId;
 		
 		private final String systemId;

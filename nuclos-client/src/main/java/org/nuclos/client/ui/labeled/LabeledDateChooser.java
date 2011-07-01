@@ -38,6 +38,10 @@ import org.nuclos.common2.StringUtils;
  */
 public class LabeledDateChooser extends LabeledTextComponent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final DateChooser datechooser;
 
 	public LabeledDateChooser() {

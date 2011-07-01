@@ -226,6 +226,11 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 	 */
 	private class DeleteTableAction extends AbstractAction {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		DeleteTableAction() {
 			super(CommonLocaleDelegate.getMessage("QueryBuilderController.1", "Ausgew\u00e4hlte Tabelle l\u00f6schen"));
 		}
@@ -241,6 +246,11 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 	 */
 	private class DeleteRelationAction extends AbstractAction {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		DeleteRelationAction() {
 			super(CommonLocaleDelegate.getMessage("QueryBuilderController.2", "Relation l\u00f6schen"));
 		}
@@ -255,6 +265,10 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 	 *
 	 */
 	private class EditRelationAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final RelationConnector connector;
 
 		EditRelationAction(RelationConnector shape) {

@@ -29,6 +29,10 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
  */
 public class MandatoryColumnVO extends NuclosValueObject {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String entity;
 	private String column;
 	private Integer stateId;

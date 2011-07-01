@@ -56,6 +56,11 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 public class CollectPanel<Clct extends Collectable> extends JPanel {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * external index of the Search tab
 	 */
 	public static final int TAB_SEARCH = 0;

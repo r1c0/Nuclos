@@ -106,6 +106,11 @@ public class RelateGenericObjectsController extends Controller {
 		this.selectFirstEnabledRadioButton(pnl);
 
 		final ValidatingJOptionPane voptpn = new ValidatingJOptionPane(this.getParent(), CommonLocaleDelegate.getMessage("RelateGenericObjectsController.2", "Beziehung herstellen"), pnl) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected void validateInput() throws ValidatingJOptionPane.ErrorInfo {
 				if (pnl.getRelationType() == RelateGenericObjectsPanel.RelationType.USERDEFINED) {

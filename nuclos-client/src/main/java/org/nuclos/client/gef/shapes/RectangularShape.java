@@ -33,6 +33,10 @@ import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
 
 public class RectangularShape extends AbstractShape {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected double left;
 	protected double top;
 	protected double width;

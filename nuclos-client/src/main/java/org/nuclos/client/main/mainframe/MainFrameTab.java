@@ -103,6 +103,11 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 
 public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDropTargetVisitor {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String IMAGE_ICON_PROPERTY = "NOVABIT_DESKTOP_ICON";
 	
 	private static final Logger log = Logger.getLogger(MainFrameTab.class);
@@ -136,6 +141,10 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	private final List<IOverlayChangeListener> overlayChangeListeners = new ArrayList<IOverlayChangeListener>(1);
 	
 	private final AbstractAction actMaximize = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.5","Maximieren"), Icons.getInstance().getIconTabbedPaneMax()) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			MainFrame.maximizeTabbedPane(MainFrame.getTabbedPane(MainFrameTab.this));
@@ -147,6 +156,10 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 	};
 	private final AbstractAction actRestore = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.6","Wiederherstellen"), Icons.getInstance().getIconTabbedPaneSplit()) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			MainFrameTabbedPane tabbedPane = MainFrame.getTabbedPane(MainFrameTab.this);
@@ -159,6 +172,10 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 	};
 	private final AbstractAction actNeverClose = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.7","Niemals Schlieﬂen")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			neverClose = !neverClose;
@@ -176,6 +193,10 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 	};
 	private final AbstractAction actClose = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.4","Schlieﬂen")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			dispose();
@@ -186,6 +207,11 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 	};
 	private final AbstractAction actCloseAll = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.3","Alle Schlieﬂen")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			MainFrameTabbedPane tabbedPane = MainFrame.getTabbedPane(MainFrameTab.this);
@@ -194,6 +220,11 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 	};
 	private final AbstractAction actCloseOthers = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.2","Andere Schlieﬂen")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			MainFrameTabbedPane tabbedPane = MainFrame.getTabbedPane(MainFrameTab.this);
@@ -452,6 +483,11 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 */
 	private class OverlayComponent extends JPanel implements IOverlayChangeListener {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public static final int HEADER_HEIGHT = 18;
 		
 		public static final int BORDER_SIZE = 2;
@@ -466,6 +502,11 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		private final IOverlayComponent oc;
 		
 		private final JLabel title = new JLabel() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			/**@Override
 			public void paint(Graphics g) {
@@ -495,6 +536,11 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		};
 		
 		private final JPanel lockPanel = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paint(Graphics g) {
 				g.setColor(overlayLockColor);
@@ -1064,6 +1110,11 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 */
 	public class TabTitle extends JLayeredPane{
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		/**
 		 * sum of: look & feel, insets, empty Component...
 		 */

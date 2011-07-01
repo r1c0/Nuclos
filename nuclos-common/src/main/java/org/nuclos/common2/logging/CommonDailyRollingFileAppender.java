@@ -329,6 +329,10 @@ public class CommonDailyRollingFileAppender extends FileAppender {
  * */
 class RollingCalendar extends GregorianCalendar {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	int type = CommonDailyRollingFileAppender.TOP_OF_TROUBLE;
 
 	RollingCalendar() {

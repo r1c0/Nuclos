@@ -16,32 +16,59 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import javax.naming.NamingException;
+
 import org.nuclos.common.NuclosFatalException;
+import org.springframework.jndi.JndiTemplate;
+import org.springframework.util.ResourceUtils;
+import org.springframework.util.SystemPropertyUtils;
 
 public class ServerProperties {
 
-	public static final String NUCLOS_SERVER_PROPERTIES = "nuclos-server.properties";
+	public static final String JNDI_SERVER_PROPERTIES = "java:comp/env/nuclos-conf-server";
 
 	private ServerProperties() {
 	}
 
-	public static Properties loadProperties(String filename) {
-		return loadProperties(filename, true);
+	public static Properties loadProperties(String jndiname) {
+		return loadProperties(jndiname, true);
 	}
 
-	public static Properties loadProperties(String filename, boolean failIfMissing) {
-		return loadProperties(new Properties(), filename, failIfMissing);
+	public static Properties loadProperties(String jndiname, boolean failIfMissing) {
+		return loadProperties(new Properties(), jndiname, failIfMissing);
 	}
-	
-	public static Properties loadProperties(Properties properties, String filename, boolean failIfMissing) {
-		InputStream is = ServerProperties.class.getClassLoader().getResourceAsStream(filename);
+
+	public static Properties loadProperties(Properties properties, String jndiname, boolean failIfMissing) {
+		// try to get the path of the properties-file from JNDI
+		String location = null;
+		try {
+			JndiTemplate template = new JndiTemplate();
+			location = template.lookup(jndiname, String.class);
+		}
+		catch (NamingException ex) {
+			System.out.println(jndiname + " not found.");
+		}
+
+		InputStream is = null;
+		if (location != null) {
+			String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(location);
+			try {
+				is = new FileInputStream(ResourceUtils.getFile(resolvedLocation));
+			}
+			catch (FileNotFoundException ex) {
+				throw new NuclosFatalException(ex);
+			}
+		}
+		
 		if (is == null) {
 			if (failIfMissing) {
-				throw new NuclosFatalException("Missing server properties file " + filename);
+				throw new NuclosFatalException("Missing server properties file from jndi " + jndiname);
 			} else {
 				return null;
 			}
@@ -50,7 +77,7 @@ public class ServerProperties {
 			properties.load(is);
 			is.close();
 		} catch (IOException ex) {
-			throw new NuclosFatalException("Error loading server properties file " + filename, ex);
+			throw new NuclosFatalException("Error loading server properties file from jndi " + jndiname, ex);
 		}
 		return properties;
 	}

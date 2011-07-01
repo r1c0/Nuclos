@@ -30,6 +30,10 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
  */
 public class RuleEventUsageVO extends NuclosValueObject {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static String DELETE_EVENT = "Delete";
 	public static String DELETE_AFTER_EVENT = "Delete.after";
 	public static String SAVE_EVENT = "Save";

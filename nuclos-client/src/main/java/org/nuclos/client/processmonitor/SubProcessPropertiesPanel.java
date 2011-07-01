@@ -51,6 +51,10 @@ import org.nuclos.server.statemodel.valueobject.StateModelVO;
 
 public class SubProcessPropertiesPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final SubProcessPanelModel model = new SubProcessPanelModel();
 
 

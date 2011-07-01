@@ -28,6 +28,11 @@ import org.nuclos.client.gef.ShapeControllerException;
  * @version 01.00.00
  */
 public class StateEditorException extends ShapeControllerException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public StateEditorException() {
 		super();
 	}

@@ -30,6 +30,11 @@ package org.nuclos.common2.exception;
 
 public class CommonRemoveException extends CommonBusinessException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public CommonRemoveException() {
 		super(CommonBusinessException.REMOVE);
 	}

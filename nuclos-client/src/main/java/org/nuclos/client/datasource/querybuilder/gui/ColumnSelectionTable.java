@@ -75,7 +75,16 @@ import org.nuclos.server.report.valueobject.DatasourceVO;
  */
 public class ColumnSelectionTable extends CommonJTable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static class CheckBoxCellRenderer extends DefaultTableCellRenderer {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private JCheckBox checkBox = new JCheckBox();
 
 		@Override
@@ -100,6 +109,11 @@ public class ColumnSelectionTable extends CommonJTable {
 	 * so that the user can read the contents better
 	 */
 	protected class ColumnSelectionTableCellRenderer extends DefaultTableCellRenderer {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 				int row, int column) {
@@ -119,6 +133,11 @@ public class ColumnSelectionTable extends CommonJTable {
 
 
 	private static class ComboBoxEditor extends DefaultCellEditor {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		ComboBoxEditor(JComboBox cb) {
 			super(cb);
 			cb.setEditable(false);
@@ -127,6 +146,10 @@ public class ColumnSelectionTable extends CommonJTable {
 	}
 
 	private static class TextFieldEditor extends DefaultCellEditor {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		final JTextField textField;
 		TextFieldEditor(JTextField textField) {
 			super(textField);
@@ -168,6 +191,10 @@ public class ColumnSelectionTable extends CommonJTable {
 	}
 
 	private class HeaderRenderer extends DefaultTableCellRenderer {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final JLabel label = new JLabel(QueryBuilderIcons.iconEmpty16);
 
 		@Override

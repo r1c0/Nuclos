@@ -110,6 +110,10 @@ public class ComparatorUtils {
 
 	private static final class CompoundComparator<T> implements Comparator<T>, Serializable {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final Comparator<? super T>[] comparators;
 
 		@SuppressWarnings("unchecked")

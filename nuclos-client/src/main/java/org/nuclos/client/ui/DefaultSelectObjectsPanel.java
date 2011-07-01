@@ -40,6 +40,11 @@ import javax.swing.JScrollPane;
 
 public class DefaultSelectObjectsPanel extends SelectObjectsPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public DefaultSelectObjectsPanel() {
 		super();
 

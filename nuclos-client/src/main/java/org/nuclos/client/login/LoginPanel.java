@@ -79,6 +79,10 @@ import org.nuclos.common.ApplicationProperties;
  * @version 01.00.00
  */
 public class LoginPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final JPanel	   pnlLogin	     = new JPanel();
 	private final JPanel	   pnlLogo	     = new JPanel();
 

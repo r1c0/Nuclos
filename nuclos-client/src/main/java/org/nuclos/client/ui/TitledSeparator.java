@@ -33,6 +33,10 @@ import javax.swing.JSeparator;
  */
 
 public class TitledSeparator extends JLayeredPane {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final JSeparator separator = new JSeparator();
 	private final JLabel lab = new JLabel();
 	private final int OFFSET_LABEL = 5;

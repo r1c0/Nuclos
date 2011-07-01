@@ -68,6 +68,10 @@ import info.clearthought.layout.TableLayoutConstraints;
 @SuppressWarnings("serial")
 public class OptionsEditor extends JDialog implements SaveAndCancelButtonPanelControllable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	int height = 500;
 	int width = 470;
 
@@ -375,6 +379,10 @@ public class OptionsEditor extends JDialog implements SaveAndCancelButtonPanelCo
 	 */
 	class OptionPanel extends JPanel implements AddRemoveButtonControllable {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		WYSIWYGOption option = null;
 		private JTextField txtName = null;
 		private JTextField txtValue = null;

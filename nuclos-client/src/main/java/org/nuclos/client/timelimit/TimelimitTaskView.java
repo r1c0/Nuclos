@@ -48,12 +48,21 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 
 public class TimelimitTaskView extends TaskView {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
 	final JButton btnRefresh = new JButton();
 	final JMenuItem btnPerform = new JMenuItem();
 	final JMenuItem btnRemove = new JMenuItem();
 	final JMenuItem btnPrint = new JMenuItem();
 	final JToggleButton btnFinish = new JToggleButton() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		/**
 		 * JToggleButton doesn't respect the "hideActionText" client property.
 		 * @param a

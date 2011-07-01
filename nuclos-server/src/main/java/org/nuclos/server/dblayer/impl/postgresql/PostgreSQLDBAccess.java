@@ -338,6 +338,11 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 
 	class PostgreSQLQueryBuilder extends QueryBuilder {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public DbExpression<String> upper(DbExpression<String> x) {
 			return buildExpressionSql(String.class, "UPPER(CAST(", x, " AS VARCHAR))");

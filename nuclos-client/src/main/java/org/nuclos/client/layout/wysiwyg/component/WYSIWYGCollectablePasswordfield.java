@@ -42,6 +42,10 @@ import org.nuclos.common.NuclosBusinessException;
 @SuppressWarnings("serial")
 public class WYSIWYGCollectablePasswordfield extends WYSIWYGCollectableComponent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private LabeledPasswordField component = new LabeledPasswordField();
 
 	public WYSIWYGCollectablePasswordfield() {

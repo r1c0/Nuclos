@@ -30,6 +30,10 @@ import javax.security.auth.login.LoginException;
  * @version	01.00.00
  */
 public class FatalLoginException extends LoginException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final Throwable tCause;
 
 	public FatalLoginException(String sMessage) {

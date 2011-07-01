@@ -60,6 +60,10 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIYWYGPropert
 @SuppressWarnings("serial")
 public class CollectableComponentPropertyEditor extends JDialog implements SaveAndCancelButtonPanelControllable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int height = 300;
 	private int width = 350;
 
@@ -262,6 +266,10 @@ public class CollectableComponentPropertyEditor extends JDialog implements SaveA
 	 */
 	private class PropertyPanel extends JPanel implements AddRemoveButtonControllable {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		WYSIYWYGPropertySet wysiwygPropertySet = null;
 		private JTextField txtName = null;
 		private JTextField txtValue = null;

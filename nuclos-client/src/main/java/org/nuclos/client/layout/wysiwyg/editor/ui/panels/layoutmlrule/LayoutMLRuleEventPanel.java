@@ -50,6 +50,10 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.L
  */
 @SuppressWarnings("serial")
 public class LayoutMLRuleEventPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private LayoutMLRuleEventType layoutMLRuleEventType = null;
 	private JComboBox eventSelector = null;
 		

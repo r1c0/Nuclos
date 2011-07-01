@@ -30,6 +30,10 @@ import java.io.Serializable;
  */
 public class FileImportResult implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final String entity;
 	private final int inserted;
 	private final int updated;

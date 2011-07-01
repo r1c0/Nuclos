@@ -22,6 +22,10 @@ import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 
 public class DbCondition implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	final DbQueryBuilder parent;
 	final PreparedStringBuilder sqlString; 
 

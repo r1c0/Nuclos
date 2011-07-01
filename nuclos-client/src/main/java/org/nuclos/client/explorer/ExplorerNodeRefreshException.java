@@ -20,6 +20,11 @@ import org.nuclos.common.NuclosFatalException;
 
 public class ExplorerNodeRefreshException extends NuclosFatalException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public ExplorerNodeRefreshException(String message) {
 		super(message);
 	}

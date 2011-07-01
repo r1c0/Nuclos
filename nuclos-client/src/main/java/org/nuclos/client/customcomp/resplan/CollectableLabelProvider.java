@@ -35,6 +35,11 @@ import org.nuclos.common2.StringUtils;
 
 public class CollectableLabelProvider extends LabelProvider {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static Class<?>[] SCRIPTING_SIGNATURE = { Collectable.class, LabelCell.class };
 	
 	private String labelTemplate;

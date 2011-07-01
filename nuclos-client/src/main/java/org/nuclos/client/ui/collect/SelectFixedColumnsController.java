@@ -62,6 +62,10 @@ public class SelectFixedColumnsController extends SelectObjectsController {
 	// TODO For generification: is this class always used for CollectableEntityField?
 	private static class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private JTable tblSelectedColumn;
 
 		public SelectFixedColumnsPanel() {
@@ -145,6 +149,10 @@ public class SelectFixedColumnsController extends SelectObjectsController {
 
 	private static class FixedTableModel<T> extends AbstractTableModel {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private MutableListModel<T> objectListModel;
 		private final Set<T> fixedObjSet;
 

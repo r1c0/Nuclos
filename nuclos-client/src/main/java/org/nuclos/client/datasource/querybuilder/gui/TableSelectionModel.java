@@ -38,6 +38,10 @@ import org.nuclos.common.database.query.definition.Table;
  */
 public class TableSelectionModel extends AbstractTableModel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final String COLUMN_TYPE = CommonLocaleDelegate.getMessage("TableSelectionModel.3","Typ");
 	private static final String COLUMN_TABLE = CommonLocaleDelegate.getMessage("TableSelectionModel.2","Tabelle");
 	private static final String COLUMN_DESCRIPTION = CommonLocaleDelegate.getMessage("TableSelectionModel.1","Beschreibung");

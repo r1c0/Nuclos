@@ -33,6 +33,10 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
  */
 public class TransitionSubProcess implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	StateVO stateVO;
 	
 	/**

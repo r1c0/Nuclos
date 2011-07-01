@@ -40,6 +40,11 @@ import org.nuclos.client.ui.RuntimeTextField;
  */
 public class InstanceViewObjectPropertiesPanel extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private final JTextField tfIdentifier = new JTextField();
 	
 	private final JTextField tfPlanStart = new JTextField();

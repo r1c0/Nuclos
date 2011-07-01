@@ -35,6 +35,10 @@ import org.nuclos.tools.translation.translationdata.columns.TranslationDataColum
 @SuppressWarnings("serial")
 public class TranslationDataTable extends JTable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JComboBox comboBox = new JComboBox();
 
 	public TranslationDataTable(TranslationDataTableModel model) {

@@ -27,6 +27,10 @@ import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 
 public class StatusBarTextField extends JTextField {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	final int fade = 4;
 
 	public StatusBarTextField(String text) {

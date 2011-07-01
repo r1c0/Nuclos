@@ -26,6 +26,10 @@ import java.util.*;
  */
 @SuppressWarnings("serial")
 public class LinkedProperties extends Properties {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private LinkedHashMap map = new LinkedHashMap();
 
 	@Override

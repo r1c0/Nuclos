@@ -85,6 +85,11 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 	 *
 	 */
 	protected class ExecuteAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public ExecuteAction() {
 			super(CommonLocaleDelegate.getMessage("ReportExecutionCollectController.2","Ausf\u00fchren..."));
 		}

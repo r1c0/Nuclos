@@ -62,6 +62,11 @@ import org.nuclos.common.NuclosBusinessException;
 @SuppressWarnings("serial")
 public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	//NUCLEUSINT-288
 	public static final String ATTRIBUTEVALUE_LABEL_AND_CONTROL = "label and control";
 	

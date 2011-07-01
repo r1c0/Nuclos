@@ -73,6 +73,11 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
 @SuppressWarnings("serial")
 public class LayoutMLRuleActionPanel extends JPanel implements AddRemoveButtonControllable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger log = Logger.getLogger(LayoutMLRuleActionPanel.class);
 	
 	/** the action to attach to this panel */

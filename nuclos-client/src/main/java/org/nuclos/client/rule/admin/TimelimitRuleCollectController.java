@@ -67,6 +67,11 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 	private RuleEditPanel pnlEdit;
 
 	private final Action actCheckRuleSource = new CommonAbstractAction(Icons.getInstance().getIconValidate16(), CommonLocaleDelegate.getMessage("RuleCollectController.2", "Quelltext pr\u00fcfen")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdCheckRuleSource();

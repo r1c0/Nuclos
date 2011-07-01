@@ -1,1 +1,7 @@
-<Context docBase='${server.webapp.dir}'/>
+<Context docBase='${server.webapp.dir}'>
+	<Environment name="nuclos-conf-log4j" type="java.lang.String" value="file:///${server.home}/conf/log4j.properties"/>
+   	<Environment name="nuclos-conf-jdbc" type="java.lang.String" value="file:///${server.home}/conf/jdbc.properties"/>
+   	<Environment name="nuclos-conf-quartz" type="java.lang.String" value="file:///${server.home}/conf/quartz.properties"/>
+	<Environment name="nuclos-conf-server" type="java.lang.String" value="file:///${server.home}/conf/server.properties"/>
+   	<Environment name="nuclos-conf-log4j-refresh" type="java.lang.Integer" value="60000"/>
+</Context>

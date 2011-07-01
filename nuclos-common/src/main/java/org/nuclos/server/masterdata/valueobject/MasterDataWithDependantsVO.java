@@ -30,6 +30,10 @@ import org.nuclos.common.collect.collectable.Collectable;
 public class MasterDataWithDependantsVO extends MasterDataVO {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
 	 * the dependants of this object.
 	 */
 	private DependantMasterDataMap mpDependants;

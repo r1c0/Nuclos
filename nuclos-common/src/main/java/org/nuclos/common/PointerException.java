@@ -23,6 +23,10 @@ import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
 public class PointerException extends NuclosBusinessRuleException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final PointerCollection pointerCollection;
 	
 	/**

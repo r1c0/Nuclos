@@ -53,6 +53,11 @@ import org.nuclos.common2.CommonLocaleDelegate;
  * @version 01.00.00
  */
 public class HtmlPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private JEditorPane editorpn;
 
 	public final JButton btnClose = new JButton();
@@ -77,6 +82,11 @@ public class HtmlPanel extends JPanel {
 	    this.setLayout(new BorderLayout());
 
 		editorpn = new JEditorPane() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected void paintComponent(Graphics g) {
 				final Graphics2D g2 = (Graphics2D) g;
@@ -140,6 +150,10 @@ public class HtmlPanel extends JPanel {
             }};
             
 		editorpn.setEditorKit(new HTMLEditorKit() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 			private final ViewFactory htmlFactory = new HTMLFactory() {
 				@Override
 				public View create(Element elem) {

@@ -388,6 +388,10 @@ public class RightAndMandatoryRow implements RightAndMandatoryConstants{
 	 */
 	public class View extends JPanel {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		RowHeader rowHeader = null;
 		Map<Integer, RightButton> rightButtons = new HashMap<Integer, RightButton>();
 		RevertButton revert = new RevertButton();
@@ -433,6 +437,11 @@ public class RightAndMandatoryRow implements RightAndMandatoryConstants{
 				col++;
 			}
 			JPanel lastGridOnTheRight = new JPanel() {
+
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
 
 				@Override
 				protected void paintComponent(Graphics g) {
@@ -557,6 +566,11 @@ public class RightAndMandatoryRow implements RightAndMandatoryConstants{
 		 */
 		class RevertButton extends JLabel {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			public RevertButton() {
 				if (DEV_MODUS) setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));	
 				if (DEV_MODUS) 
@@ -600,6 +614,10 @@ public class RightAndMandatoryRow implements RightAndMandatoryConstants{
 		 */
 		class RightButton extends JLabel {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 			Integer role;
 			Boolean right;
 			boolean selected;
@@ -720,6 +738,10 @@ public class RightAndMandatoryRow implements RightAndMandatoryConstants{
 		 */
 		class RowHeader extends JPanel {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 			private JLabel labExpandCollapse;
 			private MouseListener mlExpandCollapse;
 			final private JCheckBox checkbMandatory = new JCheckBox();

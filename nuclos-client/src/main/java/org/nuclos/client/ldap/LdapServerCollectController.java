@@ -47,6 +47,11 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 public class LdapServerCollectController extends MasterDataCollectController {
 
 	private final Action actTestAuthentication = new CommonAbstractAction(Icons.getInstance().getIconValidate16(), CommonLocaleDelegate.getMessage("LdapServerCollectController.testauthentication", "Anmeldung testen")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdTryAuthentication();

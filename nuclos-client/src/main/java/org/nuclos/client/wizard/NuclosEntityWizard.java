@@ -36,6 +36,10 @@ import org.pietschy.wizard.WizardModel;
 */
 public class NuclosEntityWizard extends Wizard {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	boolean blnCancelEnabled = true;
 
 	/**
@@ -58,6 +62,11 @@ public class NuclosEntityWizard extends Wizard {
 	@Override
 	public Action getCancelAction() {
 		return new WizardAction("cancel", this){
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void doAction(ActionEvent e) throws InvalidStateException {

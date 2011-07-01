@@ -20,6 +20,11 @@ import org.nuclos.common.collection.Pair;
 
 public class DbJoin extends DbFrom {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static enum JoinType {
 		INNER,
 		LEFT,

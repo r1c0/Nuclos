@@ -33,6 +33,10 @@ import java.util.Vector;
 @SuppressWarnings("serial")
 public class LayoutMLRuleActions implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/** here are the LayoutMLRuleAction Objects stored */
 	private Vector<LayoutMLRuleAction> allActions = new Vector<LayoutMLRuleAction>(1);
 

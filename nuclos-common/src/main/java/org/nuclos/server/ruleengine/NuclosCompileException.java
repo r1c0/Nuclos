@@ -35,6 +35,10 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 public class NuclosCompileException extends CommonBusinessException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final List<ErrorMessage> messages;
 
 	public NuclosCompileException(Throwable t) {
@@ -62,6 +66,10 @@ public class NuclosCompileException extends CommonBusinessException {
 
 	public static class ErrorMessage implements javax.tools.Diagnostic<String>, Serializable {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final Kind kind;
 		private final String source;
 		private final String message;

@@ -62,6 +62,10 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttributeAbstractStep {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JLabel lbName;
 	JTextField tfName;
 	JPanel pnlName;
@@ -218,6 +222,11 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 	
 	class ValuelistTableModel extends AbstractTableModel {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		ValuelistTableModel() {
 			lstValues = new ArrayList<ValueList>();
 		}
@@ -317,6 +326,10 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 	
 	class DateEditor extends AbstractCellEditor implements TableCellEditor {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		DateChooser dateChooser;
 		
 		public DateEditor() {
@@ -350,6 +363,10 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 	
 	private class LimitSpecialCharacterDocument extends PlainDocument {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		int max;
 		
 		public LimitSpecialCharacterDocument(int max) {

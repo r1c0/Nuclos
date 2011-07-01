@@ -56,6 +56,11 @@ import org.nuclos.common2.LocaleInfo;
 
 public class RelationAttributePanel extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	static String[] labels = {getMessage("wizard.step.entitytranslationstable.1", "Anzeigename"), getMessage("wizard.step.entitytranslationstable.2", "Beschreibung")};
 
 	JLabel lbLabel;

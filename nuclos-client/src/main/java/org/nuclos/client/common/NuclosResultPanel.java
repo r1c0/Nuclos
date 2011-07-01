@@ -118,6 +118,10 @@ import org.nuclos.server.genericobject.ProxyList;
 /** @todo refactor: This class contains a lot of Controller code, which should be in a (Nucleus)ResultController. */
 public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clct> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JTable tblFixedResult;
 	private Set<CollectableEntityField> stFixedColumns;
 	public static final String PREFS_NODE_FIXEDFIELDS = "fixedFields";
@@ -1003,6 +1007,11 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 		//override copy Action for both tables
 		final ActionMap am = new ActionMap();
 		am.put("copy", new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				final StringBuffer sb = new StringBuffer();

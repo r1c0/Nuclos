@@ -45,7 +45,17 @@ import org.nuclos.common2.StringUtils;
 
 public class LabeledTextArea extends LabeledTextComponent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private JTextArea ta = new JTextArea() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public String getToolTipText(MouseEvent ev) {
 			final ToolTipTextProvider provider = LabeledTextArea.this.getToolTipTextProviderForControl();
@@ -61,6 +71,11 @@ public class LabeledTextArea extends LabeledTextComponent {
 	};
 
 	private JScrollPane scrlpn = new CommonJScrollPane(this.ta, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public boolean hasFocus() {
 			return ta.hasFocus();

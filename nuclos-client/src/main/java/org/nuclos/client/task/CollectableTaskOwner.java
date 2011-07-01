@@ -53,6 +53,11 @@ public class CollectableTaskOwner extends DefaultCollectable{
 	
 	private static class TaskOwnerCollectableEntityField extends DefaultCollectableEntityField {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public TaskOwnerCollectableEntityField(String sName, Class<?> cls, String sLabel, String sDescription, Integer iMaxLength,
 				boolean bNullable, int iFieldType, String sReferencedEntityName, CollectableField clctfDefault, String sFormatInput, String sFormatOutput) {
 			super(sName, cls, sLabel, sDescription, iMaxLength, null, bNullable, iFieldType, sReferencedEntityName, clctfDefault, sFormatInput, sFormatOutput);

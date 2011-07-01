@@ -53,6 +53,11 @@ import org.xml.sax.Attributes;
 @SuppressWarnings("serial")
 public class PropertyValueString implements PropertyValue<String> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private String value;
 
 	private List<StringResourceIdPair> values;
@@ -216,6 +221,10 @@ public class PropertyValueString implements PropertyValue<String> {
 	 */
 	class PropertyEditorString extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final List<String> list;
 		private final ResourceIdMapper<String> resourceIdMapper;
 		private JComboBox comboBox;

@@ -28,6 +28,10 @@ import java.util.*;
  */
 public class RuleGenerationNode extends AbstractRuleTreeNode {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final GeneratorActionVO generationAd;
 	private final boolean isAllRuleSubnode;
 

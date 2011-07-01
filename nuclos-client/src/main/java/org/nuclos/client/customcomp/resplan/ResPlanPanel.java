@@ -98,6 +98,11 @@ import org.nuclos.common2.exception.PreferencesException;
 
 public class ResPlanPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String TIME_HORIZON_PROPERTY = "timeHorizon";
 
 	public static final String SEARCH_CONDITION_PROPERTY = "searchCondition";
@@ -136,6 +141,11 @@ public class ResPlanPanel extends JPanel {
 		JToolBar tb = UIUtils.createNonFloatableToolBar();
 		tb.setFloatable(false);
 		tb.add(new AbstractAction(getText("nuclos.resplan.action.refresh", null), Icons.getInstance().getIconRefresh16()) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				controller.refresh();
@@ -434,6 +444,11 @@ public class ResPlanPanel extends JPanel {
 				if (clct != null) {
 					JPopupMenu popupMenu = new JPopupMenu();
 					popupMenu.add(new AbstractAction(getText("nuclos.resplan.action.showDetails", null)) {
+						/**
+						 * 
+						 */
+						private static final long serialVersionUID = 1L;
+
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							runDetailsCollectable(resPlanModel.getResourceEntity().getEntityName(), clct);
@@ -477,6 +492,11 @@ public class ResPlanPanel extends JPanel {
 			final NuclosCollectController ctl = NuclosCollectControllerFactory.getInstance().newCollectController(
 					Main.getMainFrame().getHomePane(), resPlanModel.getResourceEntity().getEntityName(), null);
 			ctl.getSearchPanel().btnSearch.setAction(new CommonAbstractAction(Icons.getInstance().getIconFind16(), CommonLocaleDelegate.getText("CollectController.30", "Suchen")) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void actionPerformed(ActionEvent ev) {
 					UIUtils.runCommand(getParent(), new CommonRunnable() {
@@ -598,6 +618,11 @@ public class ResPlanPanel extends JPanel {
 	}
 	
 	private Action switchOrientationAction = new AbstractAction(getText("nuclos.resplan.action.switchOrientation", null), Icons.getInstance().getIconRelate()) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Runnable runnable = createScrollToCurrentAreaRunnable();
@@ -617,6 +642,11 @@ public class ResPlanPanel extends JPanel {
 	};
 	
 	private Action removeAction = new AbstractAction(getText("nuclos.resplan.action.remove", null)) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			ResPlanModel<Collectable, Date, Collectable> model = resPlan.getModel();
@@ -643,6 +673,11 @@ public class ResPlanPanel extends JPanel {
 	};
 	
 	private Action detailsAction = new AbstractAction(getText("nuclos.resplan.action.showDetails", null)) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			final List<Collectable> selectedEntries = resPlan.getSelectedEntries();
@@ -653,6 +688,11 @@ public class ResPlanPanel extends JPanel {
 	};
 	
 	private Action infoAction = new AbstractAction(null, Icons.getInstance().getIconAbout16()) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			showInfoMessages();
@@ -663,6 +703,10 @@ public class ResPlanPanel extends JPanel {
 	
 	class FindAction extends AbstractAction implements AncestorListener {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final JXFindPanel findPanel;
 		
 		public FindAction() {
@@ -697,6 +741,11 @@ public class ResPlanPanel extends JPanel {
 	
 	class RemoveAction extends AbstractAction {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public RemoveAction() {
 			super(getText("nuclos.resplan.action.remove", null));
 		}
@@ -728,6 +777,10 @@ public class ResPlanPanel extends JPanel {
 	
 	class AddAction extends AbstractAction {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		Collectable resource;
 		Interval<Date> interval;
 		

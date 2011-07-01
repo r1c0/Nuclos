@@ -34,6 +34,10 @@ import org.nuclos.server.statemodel.valueobject.StateModelVO;
  */
 public class SubProcess implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	SubProcessVO subprocessVO;
 
 	/**

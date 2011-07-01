@@ -65,6 +65,11 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 public class NuclosConsoleGui extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private PipedInputStream piOut;
 
 	private PipedOutputStream poOut;
@@ -80,6 +85,11 @@ public class NuclosConsoleGui extends JPanel {
 	private final JTextField txfArgument;
 
 	private final JButton btnStart = new JButton(new AbstractAction(CommonLocaleDelegate.getMessage("NuclosConsoleGui.3","Aktion starten...")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			startCommand();
@@ -90,6 +100,11 @@ public class NuclosConsoleGui extends JPanel {
 	Thread thread = null;
 
 	private final JButton btnCancel = new JButton(new AbstractAction(CommonLocaleDelegate.getMessage("NuclosConsoleGui.2","Aktion abbrechen...")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		@SuppressWarnings("deprecation")
 		public void actionPerformed(ActionEvent e) {
@@ -102,6 +117,11 @@ public class NuclosConsoleGui extends JPanel {
 	private static final List<String> shortCuts = NuclosConsole.getInstance().LSTCOMMANDS;
 
 	private JButton btnClearOutput = new JButton(new AbstractAction(CommonLocaleDelegate.getMessage("NuclosConsoleGui.5","Ausgabe l\u00f6schen")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			textArea.setText("");
@@ -359,6 +379,10 @@ public class NuclosConsoleGui extends JPanel {
 	}
 
 	static class LoginPanel extends JPanel {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private JLabel lbUser = new JLabel(CommonLocaleDelegate.getMessage("NuclosConsoleGui.6","Benutzername"));
 		private JLabel lbPassword = new JLabel(CommonLocaleDelegate.getMessage("NuclosConsoleGui.9","Passwort"));
 		JTextField loginField = new JTextField();

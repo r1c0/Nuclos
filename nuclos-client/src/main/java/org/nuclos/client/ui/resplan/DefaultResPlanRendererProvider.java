@@ -25,6 +25,11 @@ import org.jdesktop.swingx.renderer.LabelProvider;
 
 public class DefaultResPlanRendererProvider extends LabelProvider {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public DefaultResPlanRendererProvider() {
 		super(JLabel.CENTER);
 	}

@@ -31,6 +31,10 @@ import org.nuclos.server.dblayer.DbException;
 
 public class DbTable extends DbArtifact {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final List<DbTableArtifact> tableArtifacts;
 	
 	public DbTable(String tableName, DbTableArtifact...tableArtifacts) {

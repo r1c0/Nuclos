@@ -43,6 +43,11 @@ import org.pietschy.wizard.WizardStep;
 */
 public class NuclosWizardButtonBar extends ButtonBar {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	Wizard mywizard;
 	
 	JButton btFinish;
@@ -61,6 +66,11 @@ public class NuclosWizardButtonBar extends ButtonBar {
 	protected void post() {
 		btFinish.setAction(new WizardAction("finish", this.mywizard) {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected void updateState() {
 		      WizardStep activeStep = getActiveStep();

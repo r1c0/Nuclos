@@ -32,6 +32,10 @@ import java.util.Vector;
  * @version 01.00.00
  */
 public class PanelModel implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected Vector<PropertyChangeListener> listener = new Vector<PropertyChangeListener>();
 
 	public PanelModel() {

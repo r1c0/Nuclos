@@ -38,6 +38,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class CollectableMasterDataForeignKeyEntityField extends AbstractCollectableEntityField {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final MasterDataMetaFieldVO mdmetafield;
 
 	/**

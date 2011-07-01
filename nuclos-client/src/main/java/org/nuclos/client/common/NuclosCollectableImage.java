@@ -175,6 +175,11 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		final JPopupMenu result = new JPopupMenu();
 		result.add(new AbstractAction(getMessage("collectableimage.filechooser.1", "Bild \u00f6ffnen")) {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {					
 				JFileChooser chosser = new JFileChooser();
@@ -193,6 +198,11 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		});
 		result.add(new AbstractAction(getMessage("collectableimage.filechooser.2","Bild speichern")) {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JComponent comp = NuclosCollectableImage.this.getJComponent();
@@ -227,6 +237,11 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		});
 		result.add(new AbstractAction(getMessage("collectableimage.filechooser.3","Bild anzeigen")) {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -249,6 +264,11 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		
 		result.add(new AbstractAction(getMessage("CollectableFileNameChooserBase.1", "zurücksetzen")) {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JComponent comp = NuclosCollectableImage.this.getJComponent();

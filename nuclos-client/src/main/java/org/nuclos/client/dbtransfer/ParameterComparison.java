@@ -19,6 +19,10 @@ package org.nuclos.client.dbtransfer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 
 public class ParameterComparison extends EntityObjectVO {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final boolean isNew, isDeleted;
 	private final String currentValue;
 	protected ParameterComparison(EntityObjectVO eovo, boolean isNew, boolean isDeleted, String currentValue) {

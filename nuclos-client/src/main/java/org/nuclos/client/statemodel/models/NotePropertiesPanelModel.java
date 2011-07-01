@@ -33,6 +33,11 @@ import javax.swing.text.Document;
  * @version 01.00.00
  */
 public class NotePropertiesPanelModel implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String PROPERTY_NOTE_TEXT = "NoteText";
 
 	public final Document docText = new DefaultStyledDocument();

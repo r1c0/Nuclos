@@ -26,6 +26,11 @@ public class NucletContentHashMap extends MultiListHashMap<NuclosEntity, EntityO
 	
 	
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public void addAll(NucletContentMap map) {
 		for (NuclosEntity entity : map.keySet()) {

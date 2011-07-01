@@ -20,6 +20,10 @@ import java.io.Serializable;
 
 public class DbOrder implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final DbExpression<?> expression;
 	private final boolean ascending;
 

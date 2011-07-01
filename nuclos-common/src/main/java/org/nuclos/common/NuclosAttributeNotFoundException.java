@@ -30,6 +30,11 @@ import org.nuclos.common2.StringUtils;
 public class NuclosAttributeNotFoundException extends NuclosFatalException {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * @param sAttributeName
 	 */
 	public NuclosAttributeNotFoundException(String sAttributeName) {

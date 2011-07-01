@@ -30,6 +30,10 @@ import javax.ejb.EJBException;
 
 public class CommonBusinessException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	static final String PERMISSION = "common.exception.novabitpermissionexception";
 	static final String CREATE = "common.exception.novabitcreateexception";
 	static final String FINDER = "common.exception.novabitfinderexception";

@@ -24,6 +24,10 @@ import java.sql.SQLException;
  */
 public class DbNotUniqueException extends DbException {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final String schemaName;
 	private final String constraintName;
 

@@ -35,6 +35,11 @@ import org.nuclos.server.report.valueobject.DatasourceVO;
  */
 public class AllDatasourceNode extends DirectoryDatasourceNode {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AllDatasourceNode() {
 		super(false, CommonLocaleDelegate.getMessage("AllDatasourceNode.1", "Alle Datenquellen"), CommonLocaleDelegate.getMessage("AllDatasourceNode.1", "Alle Datenquellen"), null);
 	}

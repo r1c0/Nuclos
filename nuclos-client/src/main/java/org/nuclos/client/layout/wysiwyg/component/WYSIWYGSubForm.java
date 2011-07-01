@@ -114,6 +114,11 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
 @SuppressWarnings("serial")
 public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, MouseListener {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private boolean isInitialLoading = true;
 
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;

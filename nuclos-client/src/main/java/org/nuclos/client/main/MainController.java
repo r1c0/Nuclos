@@ -396,6 +396,11 @@ public class MainController {
 		final String sKeyWindowShow = "CtlShiftF11";
 		frm.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F11, (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK)), sKeyWindowShow);
 		frm.getRootPane().getActionMap().put(sKeyWindowShow, new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				debugFrame.showComponentDetails(frm.findComponentAt(frm.getMousePosition()));
@@ -406,6 +411,11 @@ public class MainController {
 		final String sKeyWikiShow = "CtlShiftF1";
 		frm.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F1, (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK)), sKeyWikiShow);
 		frm.getRootPane().getActionMap().put(sKeyWikiShow, new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 
@@ -425,6 +435,11 @@ public class MainController {
 	}
 
 	private Action cmdDirectHelp = new AbstractAction() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			dha.actionPerformed(e);
@@ -434,6 +449,10 @@ public class MainController {
 	private Action cmdShowTimelimitTasks = new AbstractAction(
 		CommonLocaleDelegate.getMessage("miShowTimelimitTasks","Fristen anzeigen"),
 		Icons.getInstance().getIconTabTimtlimit()) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			MainController.this.getTaskController().getTimelimitTaskController().cmdShowTimelimitTasks();
@@ -447,6 +466,10 @@ public class MainController {
 	private Action cmdShowPersonalTasks = new AbstractAction(
 		CommonLocaleDelegate.getMessage("miShowPersonalTasks","Meine Aufgaben anzeigen"),
 		Icons.getInstance().getIconTabTask()) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			MainController.this.getTaskController().getPersonalTaskController().cmdShowPersonalTasks();
@@ -460,6 +483,11 @@ public class MainController {
 	private Action cmdShowPersonalSearchFilters = new AbstractAction(
 		CommonLocaleDelegate.getMessage("ExplorerPanel.3","Meine Suchfilter anzeigen"),
 		Icons.getInstance().getIconFilter16()) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			MainController.this.getExplorerController().cmdShowPersonalSearchFilters();
@@ -467,6 +495,11 @@ public class MainController {
 	};
 
 	private Action cmdChangePassword = new AbstractAction() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			ChangePasswordPanel panel = new ChangePasswordPanel();
@@ -490,6 +523,11 @@ public class MainController {
 	private Action cmdOpenManagementConsole = new AbstractAction(
 		CommonLocaleDelegate.getMessage("miManagementConsole", "Management Console"),
 		MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.158-wrench-2.png"))) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			UIUtils.runCommand(frm, new Runnable() {
@@ -503,6 +541,11 @@ public class MainController {
 	private Action cmdOpenEntityWizard = new AbstractAction(
 			CommonLocaleDelegate.getMessage("miEntityWizard", "Entity Wizard"),
 			MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.81-dashboard.png"))) {
+		/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			UIUtils.runCommand(frm, new Runnable() {
@@ -517,6 +560,11 @@ public class MainController {
 	private Action cmdOpenCustomComponentWizard = new AbstractAction(
 			CommonLocaleDelegate.getMessage("miResPlanWizard", "Ressourcenplanung"),
 			MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.83-calendar.png"))) {
+		/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(final ActionEvent evt) {
 			UIUtils.runCommand(frm, new Runnable() {
@@ -530,6 +578,11 @@ public class MainController {
 	private Action cmdOpenRelationEditor = new AbstractAction(
 		CommonLocaleDelegate.getMessage("miRelationEditor", "Relationeneditor"),
 		MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.55-network.png"))) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent evt) {
 				UIUtils.runCommand(frm, new Runnable() {
@@ -561,6 +614,11 @@ public class MainController {
 	private Action cmdOpenNucletWizard = new AbstractAction(
 		CommonLocaleDelegate.getMessage("miNucletWizard", "Nuclet Wizard"),
 		MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.73-radar.png"))) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			UIUtils.runCommand(frm, new Runnable() {
@@ -572,6 +630,11 @@ public class MainController {
 		}};
 
 	private Action cmdOpenSettings = new AbstractAction() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			cmdOpenSettings();
@@ -597,6 +660,11 @@ public class MainController {
 	}
 
 	public Action cmdRefreshClientCaches = new AbstractAction() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			UIUtils.runCommandLater(getFrame(), new CommonRunnable() {
@@ -613,6 +681,11 @@ public class MainController {
 	};
 
 	private Action cmdSelectAll = new AbstractAction() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// select all rows in the Result panel of the current CollectController (if any):
@@ -635,6 +708,11 @@ public class MainController {
 	};
 
 	private Action cmdHelpContents = new AbstractAction() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			WikiController.getInstance().openURLinBrowser(ClientParameterProvider.getInstance().getValue(ClientParameterProvider.KEY_WIKI_STARTPAGE));
@@ -642,6 +720,11 @@ public class MainController {
 	};
 
 	private Action cmdShowAboutDialog  = new AbstractAction() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			cmdShowAboutDialog();
@@ -689,6 +772,11 @@ public class MainController {
 	}
 
 	private Action cmdShowProjectReleaseNotes  = new AbstractAction() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			new ReleaseNotesController(getFrame(), getDesktopPane()).showReleaseNotes(ApplicationProperties.getInstance().getName());
@@ -696,6 +784,11 @@ public class MainController {
 	};
 
 	private Action cmdShowNuclosReleaseNotes  = new AbstractAction() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			ReleaseNotesController.openReleaseNotesInBrowser();
@@ -703,6 +796,11 @@ public class MainController {
 	};
 
 	private Action cmdWindowClosing = new AbstractAction() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			cmdWindowClosing();
@@ -710,6 +808,11 @@ public class MainController {
 	};
 
 	private Action cmdLogoutExit = new AbstractAction() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			cmdLogoutExit();
@@ -724,6 +827,11 @@ public class MainController {
 	}
 
 	private Action cmdShowInternalInfo = new AbstractAction() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			cmdShowInternalInfo();
@@ -733,7 +841,11 @@ public class MainController {
 	private Action cmdExecuteRport = createEntityAction(NuclosEntity.REPORTEXECUTION);
 
    private static class UIDefTableModel extends AbstractTableModel {
-      private ArrayList<Pair<String, Object>> values;
+      /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private ArrayList<Pair<String, Object>> values;
 
       public UIDefTableModel() {
          values = new ArrayList<Pair<String, Object>>();
@@ -787,7 +899,12 @@ public class MainController {
    }
 
    private static class UIDefaultsRenderer extends DefaultTableCellRenderer {
-      @Override
+      /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
       public Component getTableCellRendererComponent(JTable table, Object val, boolean isSelected, boolean hasFocus, int row, int column) {
          JLabel c = (JLabel) super.getTableCellRendererComponent(table, val, isSelected, hasFocus, row, column);
          c.setIcon(null);
@@ -856,6 +973,11 @@ public class MainController {
 				if(pt.length == 0 || (pt.length == 1 && pt[0].isAssignableFrom(ActionEvent.class))) {
 					final Method fm = m;
 					Action a = new AbstractAction(m.getName()) {
+						/**
+						 * 
+						 */
+						private static final long serialVersionUID = 1L;
+
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							miDelegator(e, fm);
@@ -878,6 +1000,11 @@ public class MainController {
 		HashMap<String, Action> dev = new HashMap<String, Action>();
 		dev.put("jmsNotification",
 			new AbstractAction("Test JMS notification") {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					String s = JOptionPane.showInputDialog(frm, "Topic: Message");
@@ -894,6 +1021,11 @@ public class MainController {
 			});
 
 		dev.put("webPrefs", new AbstractAction("Test Web Prefs-Access") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String s = JOptionPane.showInputDialog(frm, "Access-Path");
@@ -913,6 +1045,11 @@ public class MainController {
 			}});
 
 		dev.put("uiDefaults", new AbstractAction("UIDefaults") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFrame out = new JFrame("UIDefaults");
@@ -942,6 +1079,11 @@ public class MainController {
 		});
 
 		dev.put("checkJawin", new AbstractAction("Check Jawin") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -1178,6 +1320,11 @@ public class MainController {
 
 		Action action = new AbstractAction(
 				CommonLocaleDelegate.getLabelFromMetaDataVO(entitymetavo)) {
+			/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent evt) {
 				cmdCollectMasterData(evt);
@@ -1688,6 +1835,10 @@ public class MainController {
 	} //DirectHelpActionListener
 
 	private static class MemoryMonitor extends JPanel implements Runnable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private JLabel  content;
 		private JButton gc;
 		private long inuse;
@@ -1720,6 +1871,11 @@ public class MainController {
 		}
 
 		private AbstractAction gcAction = new AbstractAction("GC") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.gc();

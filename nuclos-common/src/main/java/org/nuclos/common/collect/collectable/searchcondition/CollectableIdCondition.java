@@ -29,6 +29,10 @@ import org.nuclos.common2.LangUtils;
  */
 public final class CollectableIdCondition extends AbstractCollectableSearchCondition {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final Object oId;
 
 	public CollectableIdCondition(Object oId) {

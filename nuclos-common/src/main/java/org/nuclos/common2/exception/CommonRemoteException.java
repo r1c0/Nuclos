@@ -28,6 +28,11 @@ package org.nuclos.common2.exception;
  */
 
 public class CommonRemoteException extends CommonFatalException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public CommonRemoteException() {
 		this((Throwable) null);
 	}

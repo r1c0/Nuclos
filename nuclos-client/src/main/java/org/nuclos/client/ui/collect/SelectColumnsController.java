@@ -41,6 +41,11 @@ public class SelectColumnsController extends SelectObjectsController {
 
 	private static class SelectColumnsPanel extends DefaultSelectObjectsPanel {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		SelectColumnsPanel() {
 			super();
 

@@ -55,6 +55,10 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class NuclosEntityAttributeTranslationStep extends NuclosEntityAttributeAbstractStep {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JScrollPane scrolPane;
 	JTable tblAttributes;
 	

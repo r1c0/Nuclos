@@ -292,6 +292,11 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 
 	class OracleQueryBuilder extends QueryBuilder {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public DbExpression<Date> currentDate() {
 			return buildExpressionSql(java.util.Date.class, PreparedStringBuilder.valueOf("TRUNC(SYSDATE)"));

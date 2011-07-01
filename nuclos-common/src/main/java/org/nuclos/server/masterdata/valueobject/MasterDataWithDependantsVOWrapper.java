@@ -22,6 +22,10 @@ import java.util.Map;
 
 public class MasterDataWithDependantsVOWrapper extends MasterDataWithDependantsVO {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	//only wrapper data exist
 	public final static int IS_WRAPPED = 0;
 	//both wrapper and native data exist

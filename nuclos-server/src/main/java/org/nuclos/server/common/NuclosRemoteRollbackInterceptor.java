@@ -28,6 +28,13 @@ import org.springframework.transaction.support.CallbackPreferringPlatformTransac
 
 public class NuclosRemoteRollbackInterceptor extends TransactionInterceptor implements MethodInterceptor, Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+
 	public NuclosRemoteRollbackInterceptor() {	
 		
 	}

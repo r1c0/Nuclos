@@ -27,6 +27,11 @@ package org.nuclos.common.collect.exception;
  */
 
 public class CollectableFieldFormatException extends CollectableFieldValidationException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public CollectableFieldFormatException() {
 	}
 

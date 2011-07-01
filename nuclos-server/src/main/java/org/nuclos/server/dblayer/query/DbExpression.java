@@ -23,6 +23,10 @@ import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 
 public class DbExpression<T> extends DbSelection<T> implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	PreparedStringBuilder sqlString;
 	
 	public DbExpression(DbQueryBuilder builder, Class<? extends T> javaType, PreparedStringBuilder sqlString) {

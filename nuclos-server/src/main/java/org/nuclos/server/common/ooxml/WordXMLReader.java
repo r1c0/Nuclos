@@ -218,6 +218,11 @@ public class WordXMLReader {
 						long timeMillis = calendar.toGregorianCalendar(null, null, null).getTimeInMillis();
 						final String dateText = text;
 						value = new Date(timeMillis) {
+							/**
+							 * 
+							 */
+							private static final long serialVersionUID = 1L;
+
 							@Override public String toString() { return dateText; };
 						};
 					} catch(DatatypeConfigurationException e) {

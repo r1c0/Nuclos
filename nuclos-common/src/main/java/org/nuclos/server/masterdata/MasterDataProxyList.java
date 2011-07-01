@@ -39,6 +39,11 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
  */
 public class MasterDataProxyList extends AbstractProxyList<Object, MasterDataWithDependantsVO> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static MasterDataFacadeRemote mdfacade;
 
 	protected final String sEntityName;

@@ -25,6 +25,10 @@ import org.nuclos.common2.InternalTimestamp;
  */
 public class DbCurrentDateTime extends DbSpecialValue<InternalTimestamp> {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final DbCurrentDateTime CURRENT_DATETIME = new DbCurrentDateTime();
 	
 	private DbCurrentDateTime() {

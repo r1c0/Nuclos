@@ -82,6 +82,10 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
 @SuppressWarnings("serial")
 public class LayoutMLRuleEditorDialog extends JPanel implements SaveAndCancelButtonPanelControllable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	int width = 600;
 	int height = 500;
 

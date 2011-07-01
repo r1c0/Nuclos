@@ -32,6 +32,11 @@ public class SelectUserController extends SelectObjectsController {
 
 	private static class SelectUserPanel extends DefaultSelectObjectsPanel {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		SelectUserPanel(String text1, String text2, String text3, String text4) {
 			super();
 

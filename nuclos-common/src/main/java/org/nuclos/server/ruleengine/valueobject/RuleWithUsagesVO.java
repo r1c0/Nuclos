@@ -31,6 +31,11 @@ import java.util.Collections;
  */
 public class RuleWithUsagesVO implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private final RuleVO rulevo;
 
 	private final Collection<RuleEventUsageVO> collRuleEventUsages;

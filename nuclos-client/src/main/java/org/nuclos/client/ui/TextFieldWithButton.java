@@ -44,6 +44,11 @@ import org.nuclos.client.ui.labeled.LabeledComboBox;
  */
 public abstract class TextFieldWithButton extends CommonJTextField {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private Icon iconButton;
 	
 	private ColorProvider colorproviderBackground;

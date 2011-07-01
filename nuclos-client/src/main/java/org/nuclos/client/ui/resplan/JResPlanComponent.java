@@ -78,6 +78,11 @@ import org.nuclos.common2.LangUtils;
 
 public class JResPlanComponent<R, T extends Comparable<? super T>, E> extends JComponent implements ResPlanModelListener, ChangeListener, Scrollable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public interface Area<R, T extends Comparable<? super T>> {
 		
 		public R getResource();

@@ -46,6 +46,11 @@ import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
  */
 @SuppressWarnings("serial")
 public class MovePanelUpAndDown extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private String path = "org/nuclos/client/layout/wysiwyg/editor/ui/panels/icons/";
 
 	private Icon iconUp = new ImageIcon(this.getClass().getClassLoader().getResource(path + "go-up.png"));

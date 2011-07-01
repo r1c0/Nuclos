@@ -30,6 +30,11 @@ import org.nuclos.client.gef.shapes.OvalShape;
  * @version 01.00.00
  */
 public class StateModelStartShape extends OvalShape {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public StateModelStartShape() {
 		super(0d, 0d, 12d, 12d);
 		init();

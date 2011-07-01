@@ -36,6 +36,11 @@ import org.nuclos.common2.exception.CommonValidationException;
  */
 public class ProcessMonitorGraphVO implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private final ProcessMonitorVO statemodel;
 
 	// Set for Subprocesses

@@ -41,6 +41,11 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
 public class WYSIWYGValuelistProvider implements Cloneable, Serializable {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * <!ELEMENT valuelist-provider (parameter*)> <!ATTLIST valuelist-provider
 	 * type CDATA #REQUIRED >
 	 */

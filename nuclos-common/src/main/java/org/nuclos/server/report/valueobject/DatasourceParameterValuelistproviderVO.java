@@ -37,6 +37,10 @@ import org.nuclos.common2.StringUtils;
  */
 public class DatasourceParameterValuelistproviderVO implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String type;
 	private Map<String, String> parameters;
 

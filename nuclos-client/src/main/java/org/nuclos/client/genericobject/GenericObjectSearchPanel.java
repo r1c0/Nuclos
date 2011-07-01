@@ -51,6 +51,10 @@ import org.nuclos.client.ui.collect.component.CollectableComponent.CanDisplay;
  */
 public class GenericObjectSearchPanel extends SearchPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Collection<CollectableComponent> additionalSearchComponents;
 
 	public GenericObjectSearchPanel(Collection<CollectableComponent> additionalSearchComponents) {

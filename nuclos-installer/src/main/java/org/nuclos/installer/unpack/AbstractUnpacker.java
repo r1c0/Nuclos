@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,6 +33,8 @@ import org.apache.log4j.Logger;
 import org.nuclos.installer.ConfigContext;
 import org.nuclos.installer.Constants;
 import org.nuclos.installer.InstallException;
+import org.nuclos.installer.Main;
+import org.nuclos.installer.VersionInformation;
 import org.nuclos.installer.database.DbSetup;
 import org.nuclos.installer.database.DbSetup.SetupAction;
 import org.nuclos.installer.database.PostgresDbSetup;
@@ -203,28 +206,7 @@ public abstract class AbstractUnpacker implements Unpacker, Constants {
 			}
 
 			if (DBOPTION_INSTALL.equals(dbsetup) || DBOPTION_SETUP.equals(dbsetup)) {
-				cb.info("unpack.step.setupdb");
-				PostgresDbSetup dbSetup = new PostgresDbSetup();
-				String superuser = ConfigContext.getProperty(POSTGRES_SUPERUSER);
-				String superpwd = ConfigContext.getProperty(POSTGRES_SUPERPWD);
-
-				dbSetup.init(ConfigContext.getCurrentConfig(), superuser, superpwd);
-				dbSetup.prepare();
-
-				dbSetup.run(new DbSetup.Callback() {
-					@Override
-					public void message(SetupAction a) {
-						if (a.getKind() == DbSetup.Kind.ERROR) {
-							cb.error(a.getMessage());
-						}
-						else if (a.getKind() == DbSetup.Kind.WARN) {
-							cb.warn(a.getMessage());
-						}
-						else {
-							cb.info(a.getMessage());
-						}
-					}
-				});
+				setupDatabase(cb);
 			}
 
 			cb.info("unpack.step.unpack");
@@ -275,14 +257,8 @@ public abstract class AbstractUnpacker implements Unpacker, Constants {
 				}
 			}
 
-			// Write settings
-			PropUtils.replaceTextParameters(new File(nuclosHome, "nuclos.xml"), ConfigContext.getCurrentConfig(), "UTF-8");
-
-			File webappTargetDir = ConfigContext.getFileProperty("server.webapp.dir");
-			PropUtils.replacePropertyParameters(new File(webappTargetDir, "WEB-INF/classes/nuclos-server.properties"), ConfigContext.getCurrentConfig());
-			PropUtils.replacePropertyParameters(new File(webappTargetDir, "WEB-INF/nuclos-quartz.properties"), ConfigContext.getCurrentConfig());
-			PropUtils.replacePropertyParameters(new File(webappTargetDir, "WEB-INF/jdbc.properties"), ConfigContext.getCurrentConfig());
-			PropUtils.replacePropertyParameters(new File(webappTargetDir, "WEB-INF/log4j.properties"), ConfigContext.getCurrentConfig());
+			files.addAll(createDataAndLogsDirectory());
+			files.addAll(createConfDirectory(cb));
 
 			PropUtils.replaceTextParameters(new File(nuclosHome, "bin/client.bat"), ConfigContext.getCurrentConfig(), null);
 			PropUtils.replaceTextParameters(new File(nuclosHome, "bin/startup.bat"), ConfigContext.getCurrentConfig(), null);
@@ -293,8 +269,6 @@ public abstract class AbstractUnpacker implements Unpacker, Constants {
 			PropUtils.replaceTextParameters(new File(nuclosHome, "bin/uninstall.sh"), ConfigContext.getCurrentConfig(), null);
 			PropUtils.replaceTextParameters(new File(nuclosHome, "extra/context.xml"), ConfigContext.getCurrentConfig(), "UTF-8");
 			PropUtils.replaceTextParameters(new File(nuclosHome, "bin/launchd.sh"), ConfigContext.getCurrentConfig(), null);
-
-			PropUtils.replacePropertyParameters(new File(ConfigContext.getFileProperty("server.webapp.dir"), "WEB-INF/jnlp/jnlp.properties"), ConfigContext.getCurrentConfig());
 
 			Catalina catalina = new Catalina(ConfigContext.getFileProperty(SERVER_TOMCAT_DIR), EnvironmentUtils.isWindows());
 			catalina.checkTomcat();
@@ -337,7 +311,7 @@ public abstract class AbstractUnpacker implements Unpacker, Constants {
 				// nothin to do - https is disabled by default
 			}
 
-			files.addAll(FileUtils.copyDirectory(new File(nuclosHome, "client"), new File(nuclosHome, "webapp/app"), cb));
+			files.addAll(FileUtils.copyDirectory(new File(nuclosHome, "webapp/app"), new File(nuclosHome, "client"), cb));
 
 			File nativeJar = new File(nuclosHome, "client/nuclos-native.jar");
 			if (nativeJar.exists()) {
@@ -748,5 +722,79 @@ public abstract class AbstractUnpacker implements Unpacker, Constants {
 			log.error(ex);
 			cb.warn("migrate.error", ex.getMessage());
 		}
+	}
+
+	protected static void setupDatabase(final Installer cb) throws SQLException {
+		cb.info("unpack.step.setupdb");
+		PostgresDbSetup dbSetup = new PostgresDbSetup();
+		String superuser = ConfigContext.getProperty(POSTGRES_SUPERUSER);
+		String superpwd = ConfigContext.getProperty(POSTGRES_SUPERPWD);
+
+		dbSetup.init(ConfigContext.getCurrentConfig(), superuser, superpwd);
+		dbSetup.prepare();
+
+		dbSetup.run(new DbSetup.Callback() {
+			@Override
+			public void message(SetupAction a) {
+				if (a.getKind() == DbSetup.Kind.ERROR) {
+					cb.error(a.getMessage());
+				}
+				else if (a.getKind() == DbSetup.Kind.WARN) {
+					cb.warn(a.getMessage());
+				}
+				else {
+					cb.info(a.getMessage());
+				}
+			}
+		});
+	}
+
+	protected static List<String> createConfDirectory(Installer cb) throws IOException {
+		List<String> result = new ArrayList<String>();
+
+		File nuclosHome = ConfigContext.getFileProperty(NUCLOS_HOME);
+		File conf = new File(nuclosHome, "conf");
+
+		FileUtils.forceMkdir(conf);
+		result.add(conf.getAbsolutePath());
+
+		//Unpack configfiles
+		result.add(FileUtils.copyFile(AbstractUnpacker.class.getClassLoader().getResourceAsStream("nuclos.xml"), new File(nuclosHome, "nuclos.xml"), cb));
+		result.add(FileUtils.copyFile(AbstractUnpacker.class.getClassLoader().getResourceAsStream("jdbc.properties"), new File(conf, "jdbc.properties"), cb));
+		result.add(FileUtils.copyFile(AbstractUnpacker.class.getClassLoader().getResourceAsStream("server.properties"), new File(conf, "server.properties"), cb));
+		result.add(FileUtils.copyFile(AbstractUnpacker.class.getClassLoader().getResourceAsStream("quartz.properties"), new File(conf, "quartz.properties"), cb));
+		result.add(FileUtils.copyFile(AbstractUnpacker.class.getClassLoader().getResourceAsStream("log4j.properties"), new File(conf, "log4j.properties"), cb));
+
+		// Write settings
+		PropUtils.replaceTextParameters(new File(nuclosHome, "nuclos.xml"), ConfigContext.getCurrentConfig(), "UTF-8");
+		PropUtils.replacePropertyParameters(new File(conf, "jdbc.properties"), ConfigContext.getCurrentConfig());
+		PropUtils.replacePropertyParameters(new File(conf, "server.properties"), ConfigContext.getCurrentConfig());
+		PropUtils.replacePropertyParameters(new File(conf, "quartz.properties"), ConfigContext.getCurrentConfig());
+		PropUtils.replacePropertyParameters(new File(conf, "log4j.properties"), ConfigContext.getCurrentConfig());
+
+		return result;
+
+	}
+
+	protected static List<String> createDataAndLogsDirectory() throws IOException {
+		List<String> result = new ArrayList<String>();
+
+		File nuclosHome = ConfigContext.getFileProperty(NUCLOS_HOME);
+		File datadir = new File(nuclosHome, "data");
+
+		result.add(mkDir(datadir));
+		result.add(mkDir(new File(datadir, "documents")));
+		result.add(mkDir(new File(datadir, "resource")));
+		result.add(mkDir(new File(datadir, "expimp")));
+		result.add(mkDir(new File(datadir, "codegenerator")));
+		result.add(mkDir(new File(datadir, "compiled-reports")));
+		result.add(mkDir(new File(nuclosHome, "logs")));
+
+		return result;
+	}
+
+	private static String mkDir(File dir) throws IOException {
+		FileUtils.forceMkdir(dir);
+		return dir.getAbsolutePath();
 	}
 }

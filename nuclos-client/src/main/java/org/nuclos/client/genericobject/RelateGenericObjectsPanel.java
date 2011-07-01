@@ -54,6 +54,11 @@ import org.nuclos.client.ui.UIUtils;
  */
 class RelateGenericObjectsPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	static enum RelationType {
 		PREDECESSOROF, PARTOF, USERDEFINED
 	}
@@ -161,6 +166,10 @@ class RelateGenericObjectsPanel extends JPanel {
 	 * Displays a relation between objects.
 	 */
 	static abstract class RelationPanel extends JPanel {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		final JPanel pnlSourceObjects = new JPanel(new LineLayout(LineLayout.VERTICAL));
 		final JLabel labTargetObject = new JLabel();
 
@@ -236,6 +245,11 @@ class RelateGenericObjectsPanel extends JPanel {
 	 * Displays a relation between objects and lets the user swap the relation's direction.
 	 */
 	static class SwappableRelationPanel extends RelationPanel {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		SwappableRelationPanel(String sLeftTitle, String sRightTitle) {
 			super(sLeftTitle, sRightTitle);
 
@@ -284,12 +298,22 @@ class RelateGenericObjectsPanel extends JPanel {
 	}	// inner class SwappableRelationPanel
 
 	static class SuccessorOfPanel extends SwappableRelationPanel {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		SuccessorOfPanel() {
 			super(CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.5", "Vorg\u00e4nger"), CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.6", "Nachfolger"));
 		}
 	}
 
 	static class PartOfPanel extends RelationPanel {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		PartOfPanel() {
 			super(CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.7", "Teilobjekt(e)"), CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.8", "Zusammengesetztes Objekt"));
 		}

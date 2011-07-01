@@ -45,6 +45,10 @@ import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSubFormColumn;
 @SuppressWarnings("serial")
 public class LayoutMLRule implements Serializable, Cloneable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private LayoutMLRuleEventType layoutMLRuleEventType = new LayoutMLRuleEventType();
 	private LayoutMLRuleCondition layoutMLRuleCondition = new LayoutMLRuleCondition();
 	private LayoutMLRuleActions layoutMLRuleActions = new LayoutMLRuleActions();

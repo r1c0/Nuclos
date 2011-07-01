@@ -192,6 +192,11 @@ public class ExcelReader {
 	
 	public static class InvalidCellReferenceException extends IllegalArgumentException {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public InvalidCellReferenceException(String cell) {
 			super(cell);
 		}

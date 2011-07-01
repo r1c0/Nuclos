@@ -34,6 +34,10 @@ import org.nuclos.server.genericobject.valueobject.LogbookVO;
  */
 class LogbookTableModel extends AbstractListTableModel<LogbookVO> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	static final int COLUMN_CHANGEDAT = 0;
 	static final int COLUMN_CHANGEDBY = 1;
 	static final int COLUMN_LABEL = 2;
@@ -96,6 +100,11 @@ class LogbookTableModel extends AbstractListTableModel<LogbookVO> {
 		switch (iColumn) {
 			case COLUMN_CHANGEDAT:
 				result = new Date(logbookvo.getCreatedAt().getTime()) {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override public String toString() {
 						return dateformat.format(logbookvo.getCreatedAt());
 					}

@@ -35,6 +35,10 @@ import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 @SuppressWarnings("serial")
 public class DragElement implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String element;
 	private String controltype;
 	//NUCLEUSINT-496

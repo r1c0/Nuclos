@@ -46,6 +46,11 @@ import org.nuclos.client.ui.UIUtils;
 
 public class ExplorerView extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final int FADE = 2;
 	
 	private final JToolBar toolBar = UIUtils.createNonFloatableToolBar();
@@ -53,6 +58,11 @@ public class ExplorerView extends JPanel {
 	List<JComponent> additionalToolBarContents;
 	
 	private final JPanel content = new JPanel(new BorderLayout()) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void paint(Graphics g) {
 			Graphics2D g2 = (Graphics2D) g;

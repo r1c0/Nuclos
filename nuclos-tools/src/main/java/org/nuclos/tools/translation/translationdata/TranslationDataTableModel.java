@@ -27,6 +27,10 @@ import org.nuclos.tools.translation.translationdata.columns.TranslationDataColum
 @SuppressWarnings("all")
 public class TranslationDataTableModel extends AbstractTableModel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<TranslationData> data;
 
 	public TranslationDataTableModel( ) {

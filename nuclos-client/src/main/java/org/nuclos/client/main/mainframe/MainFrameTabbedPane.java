@@ -87,6 +87,11 @@ import org.nuclos.common2.exception.CommonBusinessException;
 
 public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTargetVisitor {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger log = Logger.getLogger(MainFrameTabbedPane.class);
 	
 	private static MainFrameTabbedPane.DragParameter dp = null;
@@ -161,6 +166,11 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 	 *
 	 */
 	public class DragWindow extends Window {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		public DragWindow(Frame owner, Image image, Dimension imageSize) {
 			super(owner);
@@ -732,6 +742,11 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 	 */
 	protected Action createHomeAction() {
 		AbstractAction result = new AbstractAction(null, homeIcon) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cmdHome();
@@ -758,6 +773,11 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 	 */
 	protected Action createHomeTreeAction() {
 		AbstractAction result = new AbstractAction(null, homeTreeIcon) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cmdHomeTree();
@@ -1720,6 +1740,11 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 	
 	private class ShowHideJCheckBoxMenuItem extends JCheckBoxMenuItem {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public ShowHideJCheckBoxMenuItem(Action a) {
 			super(a);
 			setForeground(NuclosSyntheticaConstants.ICON_BLUE);

@@ -29,6 +29,10 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
  */
 public class SubformColumnPermissionVO extends NuclosValueObject {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer roleSubformId;
 	private String column;
 	private boolean writeable;

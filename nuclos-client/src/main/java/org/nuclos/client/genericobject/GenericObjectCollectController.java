@@ -489,6 +489,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	final Action actDeleteSelectedCollectablesPhysically = new CommonAbstractAction(CommonLocaleDelegate.getMessage("GenericObjectCollectController.11","Ausgew\u00e4hlte Datens\u00e4tze endg\u00fcltig l\u00f6schen"),
 		Icons.getInstance().getIconRealDelete16(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.11","Ausgew\u00e4hlte Datens\u00e4tze endg\u00fcltig l\u00f6schen")) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdDeleteSelectedCollectablesPhysically();
@@ -497,6 +502,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	final Action actDeleteSelectedCollectables = new CommonAbstractAction(CommonLocaleDelegate.getMessage("GenericObjectCollectController.52","L\u00f6schen..."),
 		Icons.getInstance().getIconDelete16(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.12","Ausgew\u00e4hlte Datens\u00e4tze l\u00f6schen")) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdDeleteSelectedCollectables();
@@ -505,6 +515,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	final Action actDeleteCurrentCollectableInDetails = new CommonAbstractAction(CommonLocaleDelegate.getMessage("GenericObjectCollectController.53","L\u00f6schen..."),
 		Icons.getInstance().getIconDelete16(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.37","Diesen Datensatz l\u00f6schen")) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdDeleteCurrentCollectableInDetails();
@@ -513,6 +528,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	final Action actRestoreSelectedCollectables = new CommonAbstractAction(CommonLocaleDelegate.getMessage("GenericObjectCollectController.98","Wiederherstellen..."),
 		Icons.getInstance().getIconDelete16(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.13","Ausgew\u00e4hlte Datens\u00e4tze wiederherstellen")) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdRestoreSelectedCollectables();
@@ -521,6 +541,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	final Action actRestoreCurrentCollectableInDetails = new CommonAbstractAction(CommonLocaleDelegate.getMessage("GenericObjectCollectController.99","Wiederherstellen"),
 		Icons.getInstance().getIconDelete16(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.38","Diesen Datensatz wiederherstellen")) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdRestoreCurrentCollectableInDetails();
@@ -591,6 +616,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					mi.setVisible(lstActions.size() != 0);
 					for(final GeneratorActionVO actionVO : lstActions) {
 						JMenuItem action = new JMenuItem(new AbstractAction(actionVO.toString()) {
+
+							/**
+							 * 
+							 */
+							private static final long serialVersionUID = 1L;
 
 							@Override
 							public void actionPerformed(ActionEvent e) {
@@ -836,6 +866,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final DefaultBoundedRangeModel model = (DefaultBoundedRangeModel) scrlbarVertical.getModel();
 
 		getResultTable().getActionMap().put("last", new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				final int iSupposedValue = model.getMaximum() - model.getExtent();
@@ -848,6 +883,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		});
 
 		getResultTable().getActionMap().put("nextrow", new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				final int iSelectedRow = getResultTable().getSelectedRow();
@@ -872,6 +912,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		});
 
 		getResultTable().getActionMap().put("nextpage", new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				final int iSupposedValue = Math.min(model.getValue() + model.getExtent(), model.getMaximum() - model.getExtent());
@@ -888,6 +933,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		});
 
 		final Action actShowLogBook = new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				cmdShowLogBook();
@@ -897,6 +947,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		KeyBindingProvider.bindActionToComponent(KeyBindingProvider.SHOW_LOGBOOK, actShowLogBook, getDetailsPanel());
 
 		final Action actShowStateHistory = new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				cmdShowStateHistory();
@@ -906,6 +961,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		KeyBindingProvider.bindActionToComponent(KeyBindingProvider.SHOW_STATE_HISTORIE, actShowStateHistory, getDetailsPanel());
 
 		final Action actPrintCurrentGenericObject = new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				cmdPrintCurrentGenericObject();
@@ -927,6 +987,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private void prepareTableForDragAndDrop(final JTable tbl) {
 		tbl.setDragEnabled(true);
 		tbl.setTransferHandler(new TransferHandler() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public int getSourceActions(JComponent comp) {
 				int result = NONE;
@@ -2668,6 +2733,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					if (clctcomp instanceof CollectableComboBox) {
 						CollectableComboBox clctcmbx = (CollectableComboBox) clctcomp;
 						clctcmbx.getJComboBox().setRenderer(clctcmbx.new CollectableFieldRenderer() {
+							/**
+							 * 
+							 */
+							private static final long serialVersionUID = 1L;
+
 							@Override
 							protected void paintComponent(Graphics g) {
 								setBackground(colorHistoricalChanged);
@@ -3581,6 +3651,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/** @todo consider to move this one to [nucleus.]common */
 
 	private static class NoSuchElementException extends NuclosBusinessException {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 	}
 
 	/**
@@ -3667,6 +3742,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				});
 			final ListCellRenderer originalRenderer = cmbbxActions.getRenderer();
 			cmbbxActions.setRenderer(new DefaultListCellRenderer() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public Component getListCellRendererComponent(JList jlst, Object oValue, int iIndex, boolean bSelected,
 					boolean bHasFocus) {
@@ -5633,6 +5713,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	protected static class GenericObjectDetailsPanel extends DetailsPanel {
 
 		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
 		 * @param compRoot the edit component according to the LayoutML
 		 * @return the edit component to be used in the Details panel. Default is <code>compRoot</code> itself.
 		 *         Successors may build their own component/panel out of compRoot.
@@ -5650,6 +5735,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}	// inner class GenericObjectDetailsPanel
 
 	protected static class GenericObjectResultPanel extends NuclosResultPanel<CollectableGenericObjectWithDependants> {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		@Override
 		protected AbstractButton getDeleteButton() {
 			return new JToggleButton();
@@ -5661,6 +5750,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	protected class GenericObjectCollectPanel extends CollectPanel<CollectableGenericObjectWithDependants> {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		protected GenericObjectCollectPanel(boolean bSearch) {
 			super(bSearch);

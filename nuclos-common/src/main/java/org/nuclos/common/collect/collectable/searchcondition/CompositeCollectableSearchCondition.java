@@ -36,6 +36,11 @@ import java.util.List;
  */
 public final class CompositeCollectableSearchCondition extends AbstractCollectableSearchCondition {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final int UNDEFINED = -1;
 
 	private transient LogicalOperator logicalOperator;

@@ -90,6 +90,11 @@ public class ScissorToggleButton implements WYSIWYGToolbarAttachable{
 	@Override
 	public JComponent[] getToolbarItems() {
 		this.scissorAction = new AbstractActionExt(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			{init();}
 
 			private void init() {

@@ -104,6 +104,11 @@ import org.nuclos.server.statemodel.valueobject.TransitionLayout;
  */
 public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, FocusListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private final Logger log = Logger.getLogger(this.getClass());
 
 	/**
@@ -112,6 +117,11 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 	private static final Integer STARTING_STATE_ID = -666;
 
 	private class SelectAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		SelectAction() {
 			super("Auswahl", Icons.getInstance().getIconSelectObject());
 		}
@@ -128,6 +138,11 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 	 * action when a new SubProcess is inserted
 	 */
 	private class NewSubProcessAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		NewSubProcessAction() {
 			super("Neuer Teilprozess", Icons.getInstance().getIconState());
 		}
@@ -143,6 +158,11 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 	 * action when a new SubProcess Transition is inserted
 	 */
 	private class NewTransitionAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		NewTransitionAction() {
 			super("Neuer Prozess\u00fcbergang ", Icons.getInstance().getIconStateTransition());
 		}
@@ -156,6 +176,11 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 	
 
 	private class NewNoteAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		NewNoteAction() {
 			super("Neue Bemerkung", Icons.getInstance().getIconStateNewNote());
 		}
@@ -168,6 +193,11 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 	}
 
 	private class DeleteAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		DeleteAction() {
 			super("Auswahl l\u00f6schen", Icons.getInstance().getIconDelete16());
 		}
@@ -179,6 +209,11 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 	}
 
 	private class ZoomInAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		ZoomInAction() {
 			super("Zoom +", Icons.getInstance().getIconZoomIn());
 		}
@@ -190,6 +225,11 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 	}
 
 	private class ZoomOutAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		ZoomOutAction() {
 			super("Zoom -", Icons.getInstance().getIconZoomOut());
 		}
@@ -201,6 +241,11 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 	}
 
 	private class PrintAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		PrintAction() {
 			super("Drucken...", Icons.getInstance().getIconPrint16());
 		}

@@ -31,6 +31,10 @@ import org.nuclos.common2.exception.CommonValidationException;
  */
 public class CollectableValidationException extends CommonValidationException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final CollectableEntityField clctef;
 
 	/**

@@ -29,6 +29,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 public class AnimationTimer  extends Timer implements ActionListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final int ANIM_STEPS_PER_SEC = 16;
 	private final boolean horizontal;
 	private boolean show = false;

@@ -52,6 +52,10 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class NuclosUserGroupRightsStep extends NuclosEntityAbstractStep {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JTable table;
 	JScrollPane scroll;
 	EntityRightsSelectTableModel userRightsModel;

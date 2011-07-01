@@ -33,6 +33,10 @@ import org.pietschy.wizard.WizardModel;
 
 public abstract class NuclosEntityAttributeAbstractStep extends PanelWizardStep {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	NuclosEntityAttributeWizardStaticModel model;
 
 	public NuclosEntityAttributeAbstractStep() {

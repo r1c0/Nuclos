@@ -54,6 +54,10 @@ import org.nuclos.common2.exception.CommonFatalException;
 @SuppressWarnings("serial")
 public class WYSIWYGScrollPane extends JScrollPane implements WYSIWYGComponent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static String PROPERTY_PREFFEREDSIZE = PROPERTY_LABELS.PREFFEREDSIZE;
 	public static String PROPERTY_HORIZONTALSCROLLBAR = PROPERTY_LABELS.HORIZONTALSCROLLBAR;

@@ -49,6 +49,11 @@ import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 
 public class CommonJFrame extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private final Logger log = Logger.getLogger(this.getClass());
 	
 	private Map<Object, Object> clientProperties = new HashMap<Object, Object>();

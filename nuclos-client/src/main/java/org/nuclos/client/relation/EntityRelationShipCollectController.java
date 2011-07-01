@@ -288,6 +288,11 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 
 	
 	private class EntityRelationshipCollectPanel extends CollectPanel<EntityRelationshipModel> {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		EntityRelationshipCollectPanel(boolean bSearchPanelAvailable) {
 			super(bSearchPanelAvailable);
 		}

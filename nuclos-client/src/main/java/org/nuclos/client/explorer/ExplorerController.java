@@ -147,6 +147,11 @@ public class ExplorerController extends Controller {
 	private final Map<ExplorerView, MainFrameTab> explorerTabs = new HashMap<ExplorerView, MainFrameTab>();
 
 	private final static AbstractTreeNode<Object> nullNode = new AbstractTreeNode<Object>(null, "(" + CommonLocaleDelegate.getMessage("ExplorerController.20","In Bearbeitung") + ")", CommonLocaleDelegate.getMessage("ExplorerController.21","Inhalt wird erstellt")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		protected List<? extends TreeNode> getSubNodesImpl() {
 			return Collections.emptyList();
@@ -337,6 +342,11 @@ public class ExplorerController extends Controller {
 		List<JComponent> result = new ArrayList<JComponent>();
 		
 		result.add(new JButton(new AbstractAction("", Icons.getInstance().getIconRefresh16()) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cmdRefreshTab(view);
@@ -737,6 +747,11 @@ public class ExplorerController extends Controller {
 		 * @todo OPTIMIZE: We probably don't need a custom renderer for the tooltip (seems to be quite expensive). And for the icon?
 		 */
 		class Renderer extends DefaultTreeCellRenderer {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public Component getTreeCellRendererComponent(JTree tree, Object oValue, boolean bSelected, boolean bExpanded,
 					boolean bLeaf, int iRow, boolean bHasFocus) {
@@ -1015,6 +1030,11 @@ public class ExplorerController extends Controller {
 			final CollectableSearchCondition cond = getCollectableSearchCondition(collexplorernodeSelected);
 
 			final Action actShowInList = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ExplorerController.22","In Liste anzeigen"), null, CommonLocaleDelegate.getMessage("ExplorerController.4","Ausgew\u00e4hlte Objekte in Ergebnisliste anzeigen")) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
                 public void actionPerformed(ActionEvent ev) {
 					UIUtils.runCommand(getParent(), new CommonRunnable() {
@@ -1044,6 +1064,11 @@ public class ExplorerController extends Controller {
 			
 			if (bShowRemoveRelationAction) {
 				final Action actRemoveRelation = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ExplorerController.5","Beziehungen entfernen"), null, CommonLocaleDelegate.getMessage("ExplorerController.9","Beziehung von ausgew\u00e4hlten Objekten zu \u00fcbergordnetem Object entfernen")) {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
                     public void actionPerformed(ActionEvent ev) {
 						
@@ -1121,6 +1146,11 @@ public class ExplorerController extends Controller {
 			
 			if (bShowRemoveFromParentGroupAction) {
 				final Action actRemoveRelation = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ExplorerController.3","Aus der Gruppe entfernen"), null, CommonLocaleDelegate.getMessage("ExplorerController.8","Beziehung von ausgew\u00e4hlten Objekten zur Objektgruppe entfernen")) {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
                     public void actionPerformed(ActionEvent ev) {
 						
@@ -1232,6 +1262,10 @@ public class ExplorerController extends Controller {
 	 * inner class TransferHandler. Handles drag&drop, copy&paste for the explorer trees.
 	 */
 	private class TransferHandler extends javax.swing.TransferHandler {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final Component parent;
 		private boolean result = false;
 

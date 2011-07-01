@@ -94,6 +94,11 @@ import org.nuclos.server.statemodel.valueobject.TransitionLayout;
  */
 public class InstanceViewer extends JPanel implements ShapeModelListener{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private final Logger log = Logger.getLogger(this.getClass());
 
 	private final DefaultShapeViewer pnlShapeViewer;
@@ -410,6 +415,11 @@ public class InstanceViewer extends JPanel implements ShapeModelListener{
 	
 	private class ForwardAction extends AbstractAction {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
         public void actionPerformed(ActionEvent e) {
 			if (e.getSource() instanceof SubProcessVO) {
@@ -474,6 +484,11 @@ public class InstanceViewer extends JPanel implements ShapeModelListener{
 	}
 	
 	private class BackwardAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		BackwardAction() {
 			super("Zur\u00fcck", Icons.getInstance().getIconLeft16());
 		}
@@ -488,6 +503,11 @@ public class InstanceViewer extends JPanel implements ShapeModelListener{
 	}
 	
 	private class ZoomInAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		ZoomInAction() {
 			super("Zoom +", Icons.getInstance().getIconZoomIn());
 		}
@@ -499,6 +519,11 @@ public class InstanceViewer extends JPanel implements ShapeModelListener{
 	}
 
 	private class ZoomOutAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		ZoomOutAction() {
 			super("Zoom -", Icons.getInstance().getIconZoomOut());
 		}
@@ -510,6 +535,11 @@ public class InstanceViewer extends JPanel implements ShapeModelListener{
 	}
 
 	private class PrintAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		PrintAction() {
 			super("Drucken...", Icons.getInstance().getIconPrint16());
 		}

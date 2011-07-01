@@ -35,6 +35,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
  * @version 01.00.000
  */
 public class LogbookVO extends NuclosValueObject {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer iGenericObjectId;
 	private Integer iAttributeId;
 	private Integer iMasterDataMetaId;

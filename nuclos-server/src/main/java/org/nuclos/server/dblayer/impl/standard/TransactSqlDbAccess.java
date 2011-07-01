@@ -220,6 +220,11 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 
 	class TransactSqlQueryBuilder extends QueryBuilder {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public DbExpression<Date> currentDate() {
 			// convert GETDATE() to VARCHAR and then to DATETIME because there is no trunc function in sql server

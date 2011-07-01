@@ -35,6 +35,10 @@ import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 @SuppressWarnings("serial")
 public class LayoutMLRules implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/** this is where the rules are stored */
 	private Vector<LayoutMLRule> singleRules = new Vector<LayoutMLRule>();
 

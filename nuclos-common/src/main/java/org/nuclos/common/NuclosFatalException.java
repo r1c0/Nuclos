@@ -29,6 +29,11 @@ import org.nuclos.common2.exception.CommonFatalException;
  */
 public class NuclosFatalException extends CommonFatalException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public NuclosFatalException() {
 		super();
 	}

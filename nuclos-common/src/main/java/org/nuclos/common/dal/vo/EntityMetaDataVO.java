@@ -33,6 +33,10 @@ import org.apache.commons.lang.StringUtils;
  */
 public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String entity;
 	private String dbEntity;
 	

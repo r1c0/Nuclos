@@ -20,6 +20,10 @@ import java.io.Serializable;
 
 public abstract class DbTableStatement extends DbStatement implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final String tableName;
 	
 	public DbTableStatement(String tableName) {

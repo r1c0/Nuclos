@@ -28,6 +28,11 @@ import java.util.List;
 public class DatasourceNode extends AbstractDatasourceTreeNode {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Usage of an Datasource node or an datasource directory node
 	 */
 	public enum DatasourceUsage {

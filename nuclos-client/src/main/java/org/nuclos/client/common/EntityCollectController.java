@@ -735,6 +735,11 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	 */
 	protected class PointerAction extends AbstractAction {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public PointerAction() {
 			super(null, iconPointer);
 		}

@@ -38,6 +38,10 @@ import java.util.GregorianCalendar;
 public class ProcessStateRuntimeFormatVO implements Serializable{
 	
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
 	 * GregorianCalendar.MINUTE
 	 */
 	public final static int MINUTE = GregorianCalendar.MINUTE;

@@ -34,6 +34,11 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
  */
 public class EntityFieldMetaDataTO implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	EntityFieldMetaDataVO entityFieldMeta;
 	
 	List<TranslationVO> lstTranslation;

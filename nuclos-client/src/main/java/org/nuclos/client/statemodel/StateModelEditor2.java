@@ -108,6 +108,11 @@ import com.mxgraph.view.mxGraph;
  */
 public class StateModelEditor2 extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	int clientId = -1;
 	
 	private List<CollectableEntityObject> usages;
@@ -262,6 +267,13 @@ public class StateModelEditor2 extends JPanel {
 	}
 	
 	class MyGraphHandler extends mxGraphHandler {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+
 
 		public MyGraphHandler(mxGraphComponent graphComponent) {
 			super(graphComponent);			

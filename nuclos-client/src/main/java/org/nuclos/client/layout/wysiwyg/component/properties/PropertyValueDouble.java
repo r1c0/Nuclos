@@ -46,6 +46,10 @@ import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 @SuppressWarnings("serial")
 public class PropertyValueDouble implements PropertyValue<Double> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Double value;
 	
 	/**
@@ -168,6 +172,11 @@ public class PropertyValueDouble implements PropertyValue<Double> {
 	 * @version 01.00.00
 	 */
 	class PropertyEditorDouble extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		private JTextField textField;
 		

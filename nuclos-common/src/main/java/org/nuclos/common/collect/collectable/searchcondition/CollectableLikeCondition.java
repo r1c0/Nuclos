@@ -35,6 +35,10 @@ import org.nuclos.common2.LangUtils;
  */
 public final class CollectableLikeCondition extends AtomicCollectableSearchCondition {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final String sLikeComparand;
 
 	/**

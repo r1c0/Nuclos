@@ -45,6 +45,10 @@ import org.nuclos.common2.CommonLocaleDelegate;
 
 public class EntityChoicePanel extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JTable tblEntities;
 	JScrollPane paneEntities;
 	EntityChoiceTableModel model;
@@ -172,6 +176,11 @@ public class EntityChoicePanel extends JPanel {
 		
 		
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public String getColumnName(int column) {
 			switch(column) {
@@ -223,6 +232,11 @@ public class EntityChoicePanel extends JPanel {
 	}
 	
 	class CheckboxRenderer extends JCheckBox implements TableCellRenderer {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {

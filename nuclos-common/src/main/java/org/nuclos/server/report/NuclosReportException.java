@@ -29,6 +29,11 @@ import org.nuclos.common.NuclosBusinessException;
  */
 public class NuclosReportException extends NuclosBusinessException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public NuclosReportException() {
 		super("report.error.exception.nucleusreportexception");
 	}

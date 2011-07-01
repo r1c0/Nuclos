@@ -38,6 +38,11 @@ import org.nuclos.client.ui.ValidationLayerFactory.TypeInputValidator;
 
 public abstract class LabeledPasswordComponent extends LabeledComponent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public LabeledPasswordComponent() {
 		super();
 	}

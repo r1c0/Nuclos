@@ -30,6 +30,11 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 public class NuclosFileImportException extends CommonBusinessException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public NuclosFileImportException(String sMessage) {
 		super(sMessage);
 	}

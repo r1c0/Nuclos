@@ -48,6 +48,10 @@ import org.nuclos.common2.CommonLocaleDelegate;
  * @version 01.00.00
  */
 public class PersonalTaskView extends TaskView {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
 	final JButton btnRefresh = new JButton();
 	final JButton btnNew = new JButton();
@@ -57,6 +61,11 @@ public class PersonalTaskView extends TaskView {
 	final JMenuItem btnPrint = new JMenuItem();
 
 	final JToggleButton btnComplete = new JToggleButton() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		// JToggleButton doesn't respect the "hideActionText" client property.
 		@Override
 		public void setAction(Action a) {
