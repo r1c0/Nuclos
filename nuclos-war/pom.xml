@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>nuclos</artifactId>
+		<groupId>org.nuclos</groupId>
+		<version>3.1.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<groupId>org.nuclos</groupId>
+	<artifactId>nuclos-war</artifactId>
+	<version>3.1.0-SNAPSHOT</version>
+	<packaging>war</packaging>
+	<name>nuclos-war</name>
+	<url>http://www.nuclos.de/</url>
+	<build>
+		<finalName>nuclos-war</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo.webstart</groupId>
+				<artifactId>webstart-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jnlp-download-servlet</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<outputDirectoryName>app</outputDirectoryName>
+					<jnlpFiles>
+						<jnlpFile>
+							<jarResources>
+								<jarResource>
+									<groupId>org.nuclos</groupId>
+									<artifactId>nuclos-client</artifactId>
+									<version>${project.version}</version>
+									<mainClass>org.nuclos.client.main.Main</mainClass>
+								</jarResource>
+							</jarResources>
+						</jnlpFile>
+					</jnlpFiles>
+					<sign>
+						<keystore>${project.build.directory}/.keystore</keystore>
+						<keypass>solcun</keypass>  <!-- we need to override passwords easily from the command line. ${keypass} -->
+						<storepass>solcun</storepass> <!-- ${storepass} -->
+						<alias>nuclos</alias> <!-- alias of the key to use -->
+
+						<!-- the following key-settings are only used if the keystore and key
+							has to be generated at build-time -->
+						<storetype>jks</storetype>
+						<validity>365</validity>
+						<dnameCn>Firstname Lastname</dnameCn>
+						<dnameOu>OrganisationalUnit</dnameOu>
+						<dnameO>Organisation</dnameO>
+						<dnameL>Location</dnameL>
+						<dnameSt>State</dnameSt>
+						<dnameC>CountryCode</dnameC>
+
+						<!-- KEYSTORE MANAGEMENT -->
+						<keystoreConfig>
+							<delete>true</delete> <!-- delete the keystore at build time -->
+							<gen>true</gen>       <!-- generate keystore and key at build time -->
+						</keystoreConfig>
+
+						<verify>false</verify> <!-- verify the signature after signing -->
+					</sign>
+					<unsign>true</unsign> <!-- unsign already signed packages and sign them with own key -->
+
+					<verifyjar>false</verifyjar>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>org.nuclos</groupId>
+			<artifactId>nuclos-server</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+</project>

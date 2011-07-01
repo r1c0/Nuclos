@@ -1,0 +1,144 @@
+<!--
+  This file contains the MSSQL-specific definitions for Nuclos.
+-->
+<database>
+  <procedure name="GETNEXTSEQUENTIALNUMBER">
+    <code><![CDATA[PROCEDURE GETNEXTSEQUENTIALNUMBER
+	@imoduleid numeric
+as
+
+begin
+	SET  IMPLICIT_TRANSACTIONS  ON
+
+    DECLARE
+         @iresult numeric(9, 0), 
+         @dlastreset datetime,
+		 @iCount numeric
+
+    set NOCOUNT ON
+
+	begin
+
+		select @iCount = count(*) from T_AD_MODULE_SEQUENTIALNUMBER 
+		WITH (UPDLOCK)
+		WHERE T_AD_MODULE_SEQUENTIALNUMBER.INTMODULE_ID = @imoduleid
+
+		IF (@iCount <= 0)
+			BEGIN
+				INSERT T_AD_MODULE_SEQUENTIALNUMBER(INTMODULE_ID, DATLASTRESET, INTNEXTVAL)
+				VALUES (@imoduleid, getdate(), 0)
+
+				SET @iresult = 1
+			END
+		ELSE
+			BEGIN
+				select @iresult = T_AD_MODULE_SEQUENTIALNUMBER.INTNEXTVAL, @dlastreset = T_AD_MODULE_SEQUENTIALNUMBER.DATLASTRESET from T_AD_MODULE_SEQUENTIALNUMBER 
+				WITH ( UPDLOCK )
+				WHERE T_AD_MODULE_SEQUENTIALNUMBER.INTMODULE_ID = @imoduleid
+			END
+
+		IF (MONTH(GETDATE()) != MONTH(@dlastreset))
+         BEGIN
+            UPDATE T_AD_MODULE_SEQUENTIALNUMBER
+               SET DATLASTRESET = getdate()
+
+            SET @iresult = 1
+         END
+
+         UPDATE T_AD_MODULE_SEQUENTIALNUMBER
+			SET INTNEXTVAL = @iresult + 1
+			WHERE T_AD_MODULE_SEQUENTIALNUMBER.INTMODULE_ID = @imoduleid
+
+         COMMIT WORK 
+	end
+     
+return @iresult
+
+end]]></code>
+  </procedure>
+
+
+  <procedure name="WRITE_TO_JOBPROTOCOL">
+    <code><![CDATA[PROCEDURE WRITE_TO_JOBPROTOCOL
+       @session_id  numeric,
+       @state       varchar(max)
+AS
+  BEGIN
+      UPDATE T_MD_JOBRUN SET STRENDDATE = getdate(), STRSTATE=@state WHERE INTID = @session_id;
+  END]]></code>
+  </procedure>
+  <procedure name="WRITE_TO_JOBPROTOCOL_MESSAGE">
+    <code><![CDATA[PROCEDURE WRITE_TO_JOBPROTOCOL_MESSAGE
+       @session_id  numeric,
+	   @level varchar(max),	   
+       @message varchar(max),
+	   @name varchar(max)
+AS
+BEGIN
+ declare @intid numeric;
+  begin
+	exec get_next_id @intid OUT
+    INSERT INTO T_MD_JOBRUN_MESSAGES (INTID, INTID_T_MD_JOBRUN, STRMESSAGELEVEL, STRMESSAGE, STRRULE, DATCREATED, STRCREATED, DATCHANGED, STRCHANGED, INTVERSION)
+    VALUES (@intid, @session_id, @level, @message, @name, getdate(), SYSTEM_USER, getdate(), SYSTEM_USER, 1);
+  end
+END]]></code>
+  </procedure>
+  
+
+  <procedure name="LOG_INFO_MESSAGE">
+    <code><![CDATA[PROCEDURE LOG_INFO_MESSAGE
+       @session_id  numeric,
+       @message varchar(max),
+	   @name varchar(max)
+AS
+BEGIN
+	EXECUTE WRITE_TO_JOBPROTOCOL_MESSAGE @session_id, 'INFO', @message, @name;
+END]]></code>
+  </procedure>
+  <procedure name="LOG_WARNING_MESSAGE">
+    <code><![CDATA[PROCEDURE LOG_WARNING_MESSAGE
+       @session_id  numeric,
+       @message varchar(max),
+	   @name varchar(max)
+AS
+BEGIN
+	EXECUTE WRITE_TO_JOBPROTOCOL_MESSAGE @session_id, 'WARNING', @message, @name;
+END]]></code>
+  </procedure>
+  <procedure name="LOG_ERROR_MESSAGE">
+    <code><![CDATA[PROCEDURE LOG_ERROR_MESSAGE
+       @session_id  numeric,
+       @message varchar(max),
+	   @name varchar(max)
+AS
+BEGIN
+	EXECUTE WRITE_TO_JOBPROTOCOL_MESSAGE @session_id, 'ERROR', @message, @name;
+END]]></code>
+  </procedure>
+  
+  
+  <procedure name="INSERT_NUCLOS_UPDATE_JOB">
+    <code><![CDATA[PROCEDURE INSERT_NUCLOS_UPDATE_JOB as
+begin
+ declare @number_jobs numeric;
+ begin
+  SELECT @number_jobs = COUNT(*) 
+  FROM t_ad_qrtz_triggers 
+  WHERE trigger_name='trigger_NuclosUpdateJob' 
+  AND trigger_group='DEFAULT';
+  
+  IF @number_jobs = 0
+    begin
+      insert into T_AD_QRTZ_JOB_DETAILS (JOB_NAME, JOB_GROUP, DESCRIPTION, JOB_CLASS_NAME, IS_DURABLE, IS_VOLATILE, IS_STATEFUL, REQUESTS_RECOVERY)
+      values ('NucloUpdateJob', 'DEFAULT', 'Job for Updates', 'org.nuclos.server.common.NuclosUpdateJob',0, 0, 0, 0);
+      
+      insert into T_AD_QRTZ_TRIGGERS (TRIGGER_NAME, TRIGGER_GROUP, JOB_NAME, JOB_GROUP, IS_VOLATILE, DESCRIPTION, NEXT_FIRE_TIME, PREV_FIRE_TIME, TRIGGER_STATE, TRIGGER_TYPE, START_TIME, END_TIME, CALENDAR_NAME, MISFIRE_INSTR)
+      values ('trigger_NuclosUpdateJob', 'DEFAULT', 'NucloUpdateJob', 'DEFAULT', '0', null, 1199142000000, -1, 'WAITING', 'CRON', 1199142000000, 0, null, 0);
+      
+      insert into T_AD_QRTZ_CRON_TRIGGERS (TRIGGER_NAME, TRIGGER_GROUP, CRON_EXPRESSION, TIME_ZONE_ID)
+      values ('trigger_NuclosUpdateJob', 'DEFAULT', '0 0 0 ? * *', 'Europe/Berlin');
+    end
+ end
+end]]></code>
+  </procedure>
+</database>

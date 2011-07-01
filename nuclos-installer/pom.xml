@@ -1,0 +1,82 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<groupId>org.nuclos</groupId>
+		<artifactId>nuclos</artifactId>
+		<version>3.1.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.nuclos</groupId>
+	<artifactId>nuclos-installer</artifactId>
+	<version>3.1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>nuclos-installer</name>
+	<url>http://www.nuclos.de/</url>
+
+	<properties>
+		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+	</properties>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>version.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>version.properties</exclude>
+				</excludes>
+			</resource>
+		</resources>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.nuclos</groupId>
+			<artifactId>nuclos-client-synthetica</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.novabit</groupId>
+			<artifactId>TableLayout</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>de.novabit</groupId>
+			<artifactId>wizard</artifactId>
+			<version>0.1.12</version>
+		</dependency>
+		<dependency>
+			<groupId>de.novabit</groupId>
+			<artifactId>WinRegistry</artifactId>
+			<version>4.4</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+		</dependency>
+		<dependency>
+			<groupId>org.ini4j</groupId>
+			<artifactId>ini4j</artifactId>
+			<version>0.5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.0-801.jdbc4</version>
+		</dependency>
+	</dependencies>
+
+</project>

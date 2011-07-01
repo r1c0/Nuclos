@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+
+<!--
+  - Dispatcher servlet for HTTP remoting via Hessian, Burlap, and Spring's
+  - HTTP invoker (see remoting-servlet.xml for the controllers).
+  -->
+<beans>
+
+	<bean id="httpInvokerServiceExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" abstract="true">
+		<property name="remoteInvocationExecutor" ref="remoteInvocationExecutor"/>
+	    <property name="interceptors">
+	    	<list>
+	    		<ref bean="nuclosRemoteRollback"/>
+	    	</list>
+	    </property>
+	</bean>
+
+	 <bean name="/RemoteAuthenticationManager" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+        <property name="service" ref="remoteAuthenticationManager" />
+        <property name="serviceInterface" value="org.springframework.security.authentication.rcp.RemoteAuthenticationManager" />
+    </bean>
+
+
+	<!-- Spring's HTTP invoker uses Java serialization via HTTP  -->
+	<bean name="/ParameterService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="parameterService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.common.ejb3.ParameterFacadeRemote"/>
+	</bean>
+
+	<bean name="/AttributeService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="attributeService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.attribute.ejb3.AttributeFacadeRemote"/>
+	</bean>
+
+	<bean name="/MasterDataService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="masterDataService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote"/>
+	</bean>
+
+	<bean name="/ServerMetaService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="serverMetaService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.servermeta.ejb3.ServerMetaFacadeRemote"/>
+	</bean>
+
+	<bean name="/LocaleService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="localeService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.common.ejb3.LocaleFacadeRemote"/>
+	</bean>
+
+	<bean name="/PreferencesService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="preferencesService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.common.ejb3.PreferencesFacadeRemote"/>
+	</bean>
+
+	<bean name="/SecurityService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="securityService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.common.ejb3.SecurityFacadeRemote"/>
+	</bean>
+
+	<bean name="/MetaDataService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="metaDataService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.masterdata.ejb3.MetaDataFacadeRemote"/>
+	</bean>
+
+	<bean name="/GenericObjectService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="genericObjectService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.genericobject.ejb3.GenericObjectFacadeRemote"/>
+	</bean>
+
+	<bean name="/GeneratorService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="generatorService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.genericobject.ejb3.GeneratorFacadeRemote"/>
+	</bean>
+
+	<bean name="/SearchFilterService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="searchFilterService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.searchfilter.ejb3.SearchFilterFacadeRemote"/>
+	</bean>
+
+	<bean name="/ResourceService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="resourceService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.resource.ejb3.ResourceFacadeRemote"/>
+	</bean>
+
+	<bean name="/TaskService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="taskService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.common.ejb3.TaskFacadeRemote"/>
+	</bean>
+
+	<bean name="/TimelimitTaskService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="timelimitTaskService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.common.ejb3.TimelimitTaskFacadeRemote"/>
+	</bean>
+
+	<bean name="/LayoutService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="layoutService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.attribute.ejb3.LayoutFacadeRemote"/>
+	</bean>
+
+	<bean name="/DatasourceService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="datasourceService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.report.ejb3.DatasourceFacadeRemote"/>
+	</bean>
+
+	<bean name="/EntityService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="entityService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.masterdata.ejb3.EntityFacadeRemote"/>
+	</bean>
+
+	<bean name="/GenericObjectGroupService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="genericObjectGroupService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.genericobject.ejb3.GenericObjectGroupFacadeRemote"/>
+	</bean>
+
+	<bean name="/ReportService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="reportService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.report.ejb3.ReportFacadeRemote"/>
+	</bean>
+
+	<bean name="/RuleEngineService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="ruleEngineService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.ruleengine.ejb3.RuleEngineFacadeRemote"/>
+	</bean>
+
+	<bean name="/TimelimitRuleService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="timelimitRuleService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.ruleengine.ejb3.TimelimitRuleFacadeRemote"/>
+	</bean>
+
+	<bean name="/TreeNodeService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="treeNodeService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote"/>
+	</bean>
+
+	<bean name="/ConsoleService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="consoleService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.console.ejb3.ConsoleFacadeRemote"/>
+	</bean>
+
+	<bean name="/WikiService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="wikiService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.wiki.ejb3.WikiFacadeRemote"/>
+	</bean>
+
+	<bean name="/TransferService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="transferService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.dbtransfer.TransferFacadeRemote"/>
+	</bean>
+
+	<bean name="/StateService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="stateService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.statemodel.ejb3.StateFacadeRemote"/>
+	</bean>
+
+	<bean name="/ImportService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="importService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.fileimport.ejb3.ImportFacadeRemote"/>
+	</bean>
+
+	<bean name="/LiveSearchService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="liveSearchService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.livesearch.ejb3.LiveSearchFacadeRemote"/>
+	</bean>
+
+	<bean name="/SchedulerControlService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="schedulerControlService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.report.ejb3.SchedulerControlFacadeRemote"/>
+	</bean>
+
+	<bean name="/ProcessMonitorService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="processMonitorService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.processmonitor.ejb3.ProcessMonitorFacadeRemote"/>
+	</bean>
+
+	<bean name="/MasterDataModuleService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="masterDataModuleService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.masterdata.ejb3.MasterDataModuleFacadeRemote"/>
+	</bean>
+
+	<bean name="/JobControlService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="jobControlService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.job.ejb3.JobControlFacadeRemote"/>
+	</bean>
+
+	<bean name="/LdapDataService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="ldapDataService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.ldap.ejb3.LDAPDataFacadeRemote"/>
+	</bean>
+
+	<bean name="/XmlExportImportProtocolService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="xmlExportImportProtocolService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.transfer.ejb3.XmlExportImportProtocolFacadeRemote"/>
+	</bean>
+
+	<bean name="/XmlExportService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="xmlExportService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.transfer.ejb3.XmlExportFacadeRemote"/>
+	</bean>
+
+	<bean name="/XmlImportService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="xmlImportService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.transfer.ejb3.XmlImportFacadeRemote"/>
+	</bean>
+
+	<bean name="/InstanceService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="instanceService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.processmonitor.ejb3.InstanceFacadeRemote"/>
+	</bean>
+
+	<bean name="/CustomComponentService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="customComponentService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.customcomp.ejb3.CustomComponentFacadeRemote"/>
+	</bean>
+
+	<bean name="/CodeService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="codeService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.customcode.ejb3.CodeFacadeRemote"/>
+	</bean>
+</beans>
+

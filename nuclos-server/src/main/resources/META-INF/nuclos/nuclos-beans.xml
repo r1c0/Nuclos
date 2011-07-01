@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jms="http://www.springframework.org/schema/jms"
+       xmlns:amq="http://activemq.apache.org/schema/core"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:sec="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/jms
+                           http://www.springframework.org/schema/jms/spring-jms.xsd
+                           http://activemq.apache.org/schema/core
+                           http://activemq.apache.org/schema/core/activemq-core.xsd
+                           http://www.springframework.org/schema/tx
+     					   http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+						   http://www.springframework.org/schema/aop
+     					   http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+     					   http://www.springframework.org/schema/security
+     					   http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+
+
+    <bean id="appContext" class="org.nuclos.common.SpringApplicationContextHolder"/>
+
+    <bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"/>
+
+	<!-- for transaction manager annotation based -->
+	<tx:annotation-driven/>
+
+	<!-- Configurer that replaces ${...} placeholders with values from properties files -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>WEB-INF/jdbc.properties</value>
+				<value>WEB-INF/nuclos-quartz.properties</value>
+			</list>
+		</property>
+	</bean>
+
+
+	<!-- JDBC start -->
+
+	<bean id="nuclosDataSource" class="org.nuclos.server.database.NuclosBasicDatasource" destroy-method="close">
+        <property name="driverClassName" value="${driverClassName}"/>
+        <property name="url" value="${jdbcUrl}"/>
+        <property name="username" value="${username}"/>
+        <property name="password" value="${password}"/>
+        <property name="accessToUnderlyingConnectionAllowed" value="true"/>
+    </bean>
+
+    <!-- JDBC end -->
+
+	<!-- Transaction Manager annotation based -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+  		<property name="dataSource" ref="nuclosDataSource"/>
+	</bean>
+
+	<!-- Dynamic classloading start -->
+	<bean id="customCodeManager" class="org.nuclos.server.customcode.CustomCodeManager">
+	</bean>
+	<!-- Dynamic classloading end -->
+
+	<!-- Remoting start -->
+
+	<bean id="remoteInvocationExecutor" class="org.nuclos.server.common.NuclosRemoteInvocationExecutor"></bean>
+
+	<bean id="attrSource" class="org.nuclos.server.common.NuclosAnnotationTransactionAttributeSource"/>
+
+	<bean id="nuclosRemoteRollback" class="org.nuclos.server.common.NuclosRemoteRollbackInterceptor">
+		<property name="transactionManager" ref="transactionManager"></property>
+		<property name="transactionAttributeSource" ref="attrSource"></property>
+	</bean>
+
+
+	<bean id="masterDataService" class="org.nuclos.server.masterdata.ejb3.MasterDataFacadeBean"/>
+
+	<bean id="parameterService" class="org.nuclos.server.common.ejb3.ParameterFacadeBean"/>
+
+	<bean id="stateService" class="org.nuclos.server.statemodel.ejb3.StateFacadeBean"/>
+
+	<bean id="serverMetaService" class="org.nuclos.server.servermeta.ejb3.ServerMetaFacadeBean"/>
+
+	<bean id="localeService" class="org.nuclos.server.common.ejb3.LocaleFacadeBean"/>
+
+	<bean id="preferencesService" class="org.nuclos.server.common.ejb3.PreferencesFacadeBean"/>
+
+	<bean id="securityService" class="org.nuclos.server.common.ejb3.SecurityFacadeBean"/>
+
+	<bean id="layoutService" class="org.nuclos.server.attribute.ejb3.LayoutFacadeBean"/>
+
+	<bean id="attributeService" class="org.nuclos.server.attribute.ejb3.AttributeFacadeBean"/>
+
+	<bean id="metaDataService" class="org.nuclos.server.masterdata.ejb3.MetaDataFacadeBean"/>
+
+	<bean id="genericObjectService" class="org.nuclos.server.genericobject.ejb3.GenericObjectFacadeBean"/>
+
+	<bean id="generatorService" class="org.nuclos.server.genericobject.ejb3.GeneratorFacadeBean"/>
+
+	<bean id="searchFilterService" class="org.nuclos.server.searchfilter.ejb3.SearchFilterFacadeBean"/>
+
+	<bean id="resourceService" class="org.nuclos.server.resource.ejb3.ResourceFacadeBean"/>
+
+	<bean id="timelimitTaskService" class="org.nuclos.server.common.ejb3.TimelimitTaskFacadeBean"/>
+
+	<bean id="taskService" class="org.nuclos.server.common.ejb3.TaskFacadeBean"/>
+
+	<bean id="datasourceService" class="org.nuclos.server.report.ejb3.DatasourceFacadeBean"/>
+
+	<bean id="entityService" class="org.nuclos.server.masterdata.ejb3.EntityFacadeBean"/>
+
+	<bean id="genericObjectGroupService" class="org.nuclos.server.genericobject.ejb3.GenericObjectGroupFacadeBean"/>
+
+	<bean id="reportService" class="org.nuclos.server.report.ejb3.ReportFacadeBean"/>
+
+	<bean id="ruleEngineService" class="org.nuclos.server.ruleengine.ejb3.RuleEngineFacadeBean">
+		<property name="customCodeManager" ref="customCodeManager" />
+	</bean>
+
+	<bean id="ruleInterfaceService" class="org.nuclos.server.ruleengine.ejb3.RuleInterfaceFacadeBean"/>
+
+	<bean id="timelimitRuleService" class="org.nuclos.server.ruleengine.ejb3.TimelimitRuleFacadeBean">
+		<property name="customCodeManager" ref="customCodeManager" />
+	</bean>
+
+	<bean id="treeNodeService" class="org.nuclos.server.navigation.ejb3.TreeNodeFacadeBean"/>
+
+	<bean id="consoleService" class="org.nuclos.server.console.ejb3.ConsoleFacadeBean"/>
+
+	<bean id="wikiService" class="org.nuclos.server.wiki.ejb3.WikiFacadeBean"/>
+
+	<bean id="transferService" class="org.nuclos.server.dbtransfer.TransferFacadeBean"/>
+
+	<bean id="importService" class="org.nuclos.server.fileimport.ejb3.ImportFacadeBean"/>
+
+	<bean id="liveSearchService" class="org.nuclos.server.livesearch.ejb3.LiveSearchFacadeBean"/>
+
+	<bean id="schedulerControlService" class="org.nuclos.server.report.ejb3.SchedulerControlFacadeBean"/>
+
+	<bean id="processMonitorService" class="org.nuclos.server.processmonitor.ejb3.ProcessMonitorFacadeBean"/>
+
+	<bean id="masterDataModuleService" class="org.nuclos.server.masterdata.ejb3.MasterDataModuleFacadeBean"/>
+
+	<bean id="jobControlService" class="org.nuclos.server.job.ejb3.JobControlFacadeBean"/>
+
+	<bean id="ldapDataService" class="org.nuclos.server.ldap.ejb3.LDAPDataFacadeBean"/>
+
+	<bean id="xmlExportImportProtocolService" class="org.nuclos.server.transfer.ejb3.XmlExportImportProtocolFacadeBean"/>
+
+	<bean id="xmlExportService" class="org.nuclos.server.transfer.ejb3.XmlExportFacadeBean"/>
+
+	<bean id="xmlImportService" class="org.nuclos.server.transfer.ejb3.XmlImportFacadeBean"/>
+
+	<bean id="instanceService" class="org.nuclos.server.processmonitor.ejb3.InstanceFacadeBean"/>
+
+	<bean id="customComponentService" class="org.nuclos.server.customcomp.ejb3.CustomComponentFacadeBean"/>
+
+	<bean id="codeService" class="org.nuclos.server.customcode.ejb3.CodeFacadeBean"/>
+
+	<bean id="lookupService" class="org.nuclos.server.common.ServerLocaleDelegate">
+		<property name="service" ref="localeService" />
+	</bean>
+
+	<bean id="parameterProvider" class="org.nuclos.server.common.ServerParameterProvider" />
+
+	<bean id="attributeProvider" class="org.nuclos.server.common.AttributeCache" />
+
+	<bean id="masterdataMetaProvider" class="org.nuclos.server.common.MasterDataMetaCache" />
+
+	<bean id="moduleProvider" class="org.nuclos.server.genericobject.Modules" />
+
+	<bean id="metaDataProvider" class="org.nuclos.server.common.MetaDataServerProvider" />
+
+	<bean id="serviceLocator" class="org.nuclos.server.common.ServerServiceLocator" />
+
+	<!-- Caching init on startup -->
+	<bean id="nuclosCacheService" class="org.nuclos.server.mbean.NuclosCacheService"></bean>
+
+
+	<!-- quartz scheduler instance start -->
+    <bean id="nuclosScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" depends-on="nuclosCacheService">
+	    <property name="dataSource" ref="nuclosDataSource"></property>
+	    <property name="nonTransactionalDataSource" ref="nuclosDataSource"></property>
+	    <property name="quartzProperties">
+	    	<bean class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		      <property name="location">
+		        <value>WEB-INF/nuclos-quartz.properties</value>
+		      </property>
+		    </bean>
+		</property>
+		<property name="applicationContextSchedulerContextKey"><value>applicationContext</value></property>
+		<property name="waitForJobsToCompleteOnShutdown"><value>true</value></property>
+	</bean>
+
+  <!-- security -->
+
+  <sec:authentication-manager alias="authenticationManager">
+    <sec:authentication-provider ref='nuclosAuthenticationProvider'/>
+  </sec:authentication-manager>
+
+  <bean id="remoteAuthenticationManager" class="org.springframework.security.authentication.rcp.RemoteAuthenticationManagerImpl">
+    <property name="authenticationManager" ref="authenticationManager" />
+  </bean>
+
+  <bean id="nuclosAuthenticationProvider" class="org.nuclos.server.security.NuclosAuthenticationProvider">
+    <property name="userDetailsService" ref="userDetailsService" />
+  </bean>
+
+  <bean id="userDetailsService" class="org.nuclos.server.security.NuclosUserDetailsService"></bean>
+
+  <sec:global-method-security jsr250-annotations="enabled" secured-annotations="enabled" />
+
+  <sec:http create-session="never">
+	<sec:http-basic/>
+	<sec:intercept-url pattern="/*"/>
+  </sec:http>
+
+
+</beans>

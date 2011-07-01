@@ -1,0 +1,178 @@
+<!--
+Menu configuration
+
+The top level item is the menubar, which takes the same types of children as
+the menu element. For both types, the children can be menu, menuitem, separator,
+customcomponent, customInsertionPoint, and glue.
+
+Each component on each level can have a condition. The component will only be
+shown, if the condition evaluates to "true".
+
+menubar-attributes:
+  (none)
+
+menu-attributes:
+  name:              (optional) internal name, used for merging
+  text:              the display label
+  resId:             the resource id for localized lookups
+
+menuitem-attributes:
+  text:              the display label
+  resId:             the resource id for localized lookups
+  accelerator:       menu accel as defined in the KeyStroke class
+  commandreference:  action lookup path
+  actioncommand:     actioncommand to be set at the menu item
+  mnemonic:          mnemonic-char (also see "text replacements" below)
+
+customcomponent-attributes:
+  componentreference: custom component lookup path
+
+separator, glue, customInsertionPoint:
+  (none)
+
+The customInsertionPoint element may appear once on each menu level (at most)
+and marks the point, where additional items will be inserted via the dynamic
+menu path mechanism. If no customInsertionPoint is given, new elements will be
+added at the end of the menu.
+
+Empty menu elements will be rendered invisible by default. If at a later time
+some elements get added via menu-path they will be set to visible. This can
+be used to fix the place for a known custom menu in advance.
+
+Locale / Text replacements:
+
+The text or resource strings can contain a single placeholder "{0}", which will
+be replaced with the application name as configured in nuclos-app.properties.
+Furthermore, the character "^" will be extracted and the following char will be
+used as the menu (-items) mnemonic, e.g. "Select ^All" will become "Select All"
+with the "a" as the mnemonic.
+
+Conditions:
+Every element can contain a condition element. If such a sub-element exists,
+the element will only be shown, if the condition element evaluates to "true".
+Known condition types are:
+  SecurityAction: value must return true when passed to
+                  SecurityCache.isActionAllowed
+  SecurityEntityReadAllowed: value must return true when passed to
+                  SecurityCache.isReadAllowedForEntity
+  Appname:        value must equal the application name
+  Dev:            Dev-Login only
+  AND, OR, NOT:   logical combination or inversion of sub-conditions
+  DynamicClass:   Implementation of DynamicClassCondition
+  
+Command Maps:
+
+Additionally, a command map can be defined (toplevel element commandmap).
+A command map itself defines one or more commands.  A command definition
+has a name and an associated action class name.  The class name must be fully
+qualified and the class must implement javax.swing.Action.
+
+commandmap-attributes:
+  name:           (required) name of the command map
+
+command-attributes:
+  name:           (required) name of the command
+  action:         (required) class name
+-->
+
+<menubar>
+	<menu name="file" text="^Datei" resId="miFile">
+		<menuitem text="Execute reporting" resId="nuclos.entity.reportExecution.label" commandreference="MainController.cmdExecuteRport">
+			<condition type="SecurityEntityReadAllowed" value="nuclos_reportExecution" />
+		</menuitem>
+		<separator>
+			<condition type="SecurityEntityReadAllowed" value="nuclos_reportExecution" />
+		</separator>
+		
+		<menuitem text="Meine Suchfilter anzeigen" resId="ExplorerPanel.3" accelerator="alt pressed F2" commandreference="MainController.cmdShowPersonalSearchFilters" />
+		<menuitem text="Meine Aufgaben anzeigen" resId="miShowPersonalTasks" commandreference="MainController.cmdShowPersonalTasks" />
+		<menuitem text="Fristen anzeigen" resId="miShowTimelimitTasks" commandreference="MainController.cmdShowTimelimitTasks" />
+		
+		<separator>
+			<condition type="SecurityAction" value="NucletWizard" />
+		</separator>
+		<menuitem text="Nuclet Wizard" resId="miNucletWizard" commandreference="MainController.cmdOpenNucletWizard">
+			<condition type="SecurityAction" value="NucletWizard" />
+		</menuitem>
+		
+		<separator />
+		<menuitem text="Eigenes ^Passwort &#x00e4;ndern..." resId="miChPass" accelerator="alt pressed F3" commandreference="MainController.cmdChangePassword" />
+        <menuitem text="Einstellungen" resId="miSettings" commandreference="MainController.cmdOpenSettings" />
+		<separator />
+		<menuitem text="^Abmelden und Beenden" resId="miLogoutExit" commandreference="MainController.cmdLogoutExit">
+			<condition type="DynamicClass" name="org.nuclos.client.login.LogoutMenuCondition" />
+		</menuitem>
+		<menuitem text="^Beenden" resId="miExit" accelerator="alt pressed F4" commandreference="MainController.cmdWindowClosing" />
+	</menu>
+
+	<menu name="edit" text="^Bearbeiten" resId="miEdit">
+		<menuitem text="^Ausschneiden" resId="miCut" accelerator="ctrl X" commandreference="ClipboardUtils.cutAction" />
+		<menuitem text="^Kopieren" resId="miCopy" accelerator="ctrl C" commandreference="ClipboardUtils.copyAction" />
+		<menuitem text="^Einf&#x00fc;gen" resId="miPaste" accelerator="ctrl V" commandreference="ClipboardUtils.pasteAction" />
+		<separator />
+		<menuitem text="Alles ^markieren" resId="miMarkAll" accelerator="ctrl A" commandreference="MainController.cmdSelectAll" />
+	</menu>
+
+	<menu name="administration" text="^Administration" resId="MainMenuAdministration">
+		<!--separator>
+			<condition type="SecurityAction" value="UseManagementConsole" />
+		</separator-->
+
+		<!--menuitem text="Management Console ..." resId="miManagementConsole" commandreference="MainController.cmdOpenManagementConsole">
+			<condition type="SecurityAction" value="UseManagementConsole" />
+		</menuitem-->
+
+		<!--menuitem text="Entity Wizard ..." resId="miEntityWizard" commandreference="MainController.cmdOpenEntityWizard">
+			<condition type="SecurityAction" value="EntityWizard" />
+		</menuitem-->
+		
+		<!--menuitem text="Relationeneditor ..." resId="miRelationEditor" commandreference="MainController.cmdOpenRelationEditor">
+			<condition type="SecurityAction" value="RelationEditor" />
+		</menuitem-->
+		
+		<!--menuitem text="Ressourcenplanung..." resId="miResPlanWizard" commandreference="MainController.cmdOpenCustomComponentWizard">
+			<condition type="SecurityAction" value="ResPlanWizard" />
+		</menuitem-->
+		
+		<!--menuitem text="Nuclet Wizard ..." resId="miNucletWizard" commandreference="MainController.cmdOpenNucletWizard">
+			<condition type="SecurityAction" value="NucletWizard" />
+		</menuitem-->
+	</menu>
+	
+	<menu name="configuration" text="^Konfiguration" resId="MainMenuConfiguration">
+		<customInsertionPoint/>
+		<menu text="Stammdaten" resId="miMasterdata" />
+	</menu>
+
+	<customInsertionPoint/>
+
+	<customcomponent componentreference="MainFrame.windowMenu" />
+
+	<menu name="help" text="^Hilfe" resId="miHelp">
+		<menuitem text="^Inhalt" resId="miHelpContents" commandreference="MainController.cmdHelpContents" />
+		<!-- <menuitem text="^Direkthilfe" resId="miHelpDirect" commandreference="MainController.cmdDirectHelp" /> -->
+		<menuitem text="{0} Release Notes" resId="miProjRelNotes" commandreference="MainController.cmdShowProjectReleaseNotes">
+			<condition type="NOT"><condition type="appId" value="nuclos"/></condition>
+		</menuitem>
+		<menuitem text="Nuclos ^Release Notes" resId="miNucRelNotes" commandreference="MainController.cmdShowNuclosReleaseNotes"/>
+		<!-- <menuitem text="{0} Info^rmation" resId="miProjInfo" commandreference="MainController.cmdShowInternalInfo" /> -->
+		<menuitem text="Inf^o" resId="miInfo" commandreference="MainController.cmdShowAboutDialog" />
+	</menu>
+
+	<glue/>
+
+	<customcomponent componentreference="Dev.memoryMonitor">
+		<condition type="Dev" />
+	</customcomponent>
+
+	<customcomponent componentreference="MainFrame.workspaceChooser" />
+	<customcomponent componentreference="MainFrame.liveSearch" />
+
+	<menu name="dev" text="Dev">
+		<condition type="Dev" />
+		<menuitem text="Test JMS Notification" commandreference="Dev.jmsNotification" />
+		<menuitem text="Test Web Prefs-Access" commandreference="Dev.webPrefs" />
+		<menuitem text="Test Jawin" commandreference="Dev.checkJawin" />
+		<menuitem text="UIDefaults" commandreference="Dev.uiDefaults" />
+	</menu>
+</menubar>

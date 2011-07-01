@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE layoutml SYSTEM "http://www.novabit.de/technologies/layoutml/layoutml.dtd">
+<layoutml>
+	<layout>
+		<panel>
+			<columnlayout/>
+			<empty-border left="5" right="5" top="5" bottom="5"/>
+			<collectable-component columns="30" name="name"/>
+		</panel>
+	</layout>
+</layoutml>

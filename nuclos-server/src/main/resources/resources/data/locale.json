@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Null",
+    "language": "i-default",
+    "numberformat": "#.##",
+    "dateformat": "yyyy-MM-dd",
+    "timeformat": "hh:mm:ss",
+    "decimalpoint": ".",
+    "description": "Null Locale"
+  },
+  {
+    "name": "English",
+    "language": "en",
+    "numberformat": "#,##",
+    "dateformat": "MM\/dd\/yyyy",
+    "timeformat": "hh:mm:ss",
+    "decimalpoint": ",",
+    "description": "British English"
+  },
+  {
+    "name": "German",
+    "language": "de",
+    "numberformat": "#,##",
+    "dateformat": "dd.MM.yyyy",
+    "timeformat": "hh:mm:ss",
+    "decimalpoint": ",",
+    "description": "Deutsch"
+  }
+]

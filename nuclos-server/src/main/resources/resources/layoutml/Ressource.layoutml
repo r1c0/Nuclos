@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE layoutml SYSTEM "http://www.novabit.de/technologies/layoutml/layoutml.dtd">
+<layoutml>
+    <layout>
+        <panel>
+            <borderlayout vgap="10"/>
+            <empty-border bottom="5" left="5" right="5" top="5"/>
+            <panel>
+                <borderlayout-constraints position="north"/>
+                <columnlayout/>
+                <collectable-component columns="30" name="name"/>
+                <panel name="filechooser">
+                    <gridbaglayout/>
+                    <label text="Datei">
+                        <gridbag-constraints anchor="west" gridx="0" insetbottom="3" insetright="5" insettop="2"/>
+                    </label>
+                    <collectable-component columns="30" controltypeclass="org.nuclos.client.resource.admin.CollectableResourceFileChooser" label="Datei" name="file">
+                        <gridbag-constraints fill="horizontal" gridx="1" insetbottom="3" insettop="2" weightx="1.0"/>
+                    </collectable-component>
+                </panel>
+            </panel>
+            <panel>
+                <borderlayout-constraints position="center"/>
+                <borderlayout/>
+                <label text="Beschreibung">
+                    <borderlayout-constraints position="north"/>
+                </label>
+                <collectable-component columns="25" controltype="textarea" fill-control-horizontally="yes" name="description" rows="5" show-only="control">
+                    <borderlayout-constraints position="center"/>
+                </collectable-component>
+            </panel>
+        </panel>
+    </layout>
+</layoutml>

@@ -1,0 +1,17 @@
+[
+  {
+    "name": "view",
+  },
+  {
+    "name": "function",
+  },
+  {
+    "name": "procedure",
+  },
+  {
+    "name": "package",
+  },
+  {
+    "name": "package body",
+  }
+]

@@ -1,0 +1,128 @@
+[
+  {
+    "name": "Fristenliste bearbeiten",
+    "description": "Bearbeiten der Fristenliste",
+    "action": "EditTimelimits",
+    "labelres": "action.EditTimelimits"
+  },
+  {
+    "name": "Management Console ausführen",
+    "description": "Management Console ausführen",
+    "action": "UseManagementConsole",
+    "labelres": "action.UseManagementConsole"
+  },
+  {
+    "name": "Suchergebnisliste drucken",
+    "description": "Suchergebnisse aller Suchergebnislisten drucken",
+    "action": "PrintSearchResultList",
+    "labelres": "action.PrintSearchResultList"
+  },
+  {
+    "name": "Aufgabenliste",
+    "description": "Aufgabenliste",
+    "action": "TaskList",
+    "labelres": "action.TaskList"
+  },
+  {
+    "name": "Aufgabenliste drucken",
+    "description": "Aufgabenliste drucken",
+    "action": "PrintTaskList",
+    "labelres": "action.PrintTaskList"
+  },
+  {
+    "name": "XML Ex\/Import",
+    "description": "Daten via XML Ex\/Importieren",
+    "action": "XMLTransfer",
+    "labelres": "action.XMLTransfer"
+  },
+  {
+    "name": "Übersetzungen bearbeiten",
+    "description": "Bearbeiten der Übersetzungen von Locales",
+    "action": "EditTranslationsForLocale",
+    "labelres": "action.EditTranslationsForLocale"
+  },
+  {
+    "name": "Nuclet exportieren",
+    "description": "Nuclet exportieren",
+    "action": "Export Configuration",
+    "labelres": "action.ExportConfiguration"
+  },
+  {
+    "name": "Nuclet importieren",
+    "description": "Nuclet importieren",
+    "action": "Import Configuration",
+    "labelres": "action.ImportConfiguration"
+  },
+  {
+    "name": "Entity Wizard aufrufen",
+    "description": "Entity Wizard ausführen",
+    "action": "EntityWizard",
+    "labelres": "action.EntityWizard"
+  },
+  {
+    "name": "Modulobjekte physikalisch löschen",
+    "description": "Modulobjekte endgültig aus der Datenbank entfernen",
+    "action": "PhysicallyDeleteGenericObjects",
+    "labelres": "action.PhysicallyDeleteGenericObjects"
+  },
+  {
+    "name": "Gelöschte Modulobjekte sehen",
+    "description": "Als gelöscht markierte Modulobjekte suchen und ansehen",
+    "action": "ViewDeletedGenericObjects",
+    "labelres": "action.ViewDeletedGenericObjects"
+  },
+  {
+    "name": "Testfunktionen aufrufen",
+    "description": "Testfunktionen aufrufen, die nicht zum Produktivcode des Systems gehören.",
+    "action": "PerformTests",
+    "labelres": "action.PerformTests"
+  },
+  {
+    "name": "Volltextsuche ausführen",
+    "description": "Volltextsuche ausführen",
+    "action": "PerformFullTextSearch",
+    "labelres": "action.PerformFullTextSearch"
+  },
+  {
+    "name": "Ungültige Stammdaten in Modulobjekten verwenden",
+    "description": "Ungültige oder inaktive Stammdatensätze können in Modulobjekte eingefügt werden (z.B. zur Nachpflege)",
+    "action": "ViewInvalidMasterData",
+    "labelres": "action.ViewInvalidMasterData"
+  },
+  {
+    "name": "Regelausführung manuell starten",
+    "description": "Regeln mit der Verwendung \"Benutzer\" innerhalb der Modulfenster starten",
+    "action": "ExecuteRulesManually",
+    "labelres": "action.ExecuteRulesManually"
+  },
+  {
+    "name": "Systemstart",
+    "description": "Systemstart",
+    "action": "Login",
+    "labelres": "action.Login"
+  },
+  {
+    "name": "Allgemeine Suche ausführen",
+    "description": "Allgemeine Suche ausführen",
+    "action": "PerformGeneralSearch",
+    "labelres": "action.PerformGeneralSearch"
+  },
+  {
+    "name": "Relationen Editor aufrufen",
+    "description": "Relationen Editor ausführen",
+    "action": "RelationEditor",
+    "labelres": "action.RelationEditor"
+  },
+  {
+    "name": "Nuclet Wizard aufrufen",
+    "description": "Nuclet Wizard ausführen",
+    "action": "NucletWizard",
+    "labelres": "action.NucletWizard"
+  },
+  {
+    "name": "Ressourcenplanung konfigurieren",
+    "description": "Ressourcenplanung konfigurieren",
+    "action": "ResPlanWizard",
+    "labelres": "action.ResPlanWizard"
+  }
+]

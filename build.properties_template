@@ -1,12 +1,3 @@
 nuclos.home.dir=[path.to.nuclos.homedir]
-
-# only needed for nuclets
-project.name=nuclet
-project.home.dir=../${project.name}
-project.package.dir=org/nuclet
-project.package.common.dir=${project.package.dir}/common
-project.package.client.dir=${project.package.dir}/client
-project.package.server.dir=${project.package.dir}/server
-
 launch4j.home.dir=[path.to.launch4j]
 3rdparty.dir=[path.to.3rdpartydir]

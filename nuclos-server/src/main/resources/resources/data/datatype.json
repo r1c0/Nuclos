@@ -1,0 +1,93 @@
+[
+  {
+    "name": "Text",
+    "scale": 255,
+    "precision": 0,
+    "javatyp": "java.lang.String",
+    "databasetyp": "varchar"
+  },
+  {
+    "name": "Referenz Feld",
+    "scale": 255,
+    "precision": 0,
+    "javatyp": "java.lang.String",
+    "databasetyp": "varchar"
+  },
+  {
+    "name": "Memo",
+    "scale": 4000,
+    "precision": 0,
+    "javatyp": "java.lang.String",
+    "databasetyp": "varchar"
+  },
+  {
+    "name": "Text (Large Object)",
+    "javatyp": "java.lang.String",
+    "databasetyp": "clob"
+  },  
+  {
+    "name": "Binär (Large Object)",
+    "javatyp": "[B",
+    "databasetyp": "blob"
+  },
+  {
+    "name": "Datum",
+    "javatyp": "java.util.Date",
+    "databasetyp": "date"
+  },
+  {
+    "name": "Dokumentenanhang",
+    "scale": 255,
+    "javatyp": "org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile",
+    "databasetyp": "blob"
+  },
+  {
+    "name": "Ganzzahl",
+    "scale": 9,
+    "precision": 0,
+    "javatyp": "java.lang.Integer",
+    "databasetyp": "number"
+  },
+  {
+    "name": "Kommazahl",
+    "scale": 9,
+    "precision": 4,
+    "javatyp": "java.lang.Double",
+    "databasetyp": "number"
+  },
+  {
+    "name": "Kommazahl 2-stellig",
+    "scale": 9,
+    "precision": 2,
+    "javatyp": "java.lang.Double",
+    "databasetyp": "number"
+  },
+  {
+    "name": "Ja\/Nein",
+    "scale": 1,
+    "precision": 0,
+    "javatyp": "java.lang.Boolean",
+    "databasetyp": "number"
+  },
+  {
+    "name": "Postleitzahl (D)",
+    "scale": 5,
+    "precision": 0,
+    "javatyp": "java.lang.Integer",
+    "databasetyp": "number"
+  },
+  {
+    "name": "Verschlüsselter Text",
+    "scale": 255,
+    "precision": 0,
+    "javatyp": "org.nuclos.common.NuclosPassword",
+    "databasetyp": "varchar"
+  },
+    {
+    "name": "Bild",
+    "scale": 255,
+    "precision": 0,
+    "javatyp": "org.nuclos.common.NuclosImage",
+    "databasetyp": "blob"
+  }
+]

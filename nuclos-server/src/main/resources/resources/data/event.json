@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Save",
+    "description": "Ereignis, ausgelöst beim Speichern.",
+    "labelres": "event.Save"
+  },
+  {
+    "name": "Save.after",
+    "description": "Ereignis, ausgelöst nach erfolgreichen Speichern.",
+    "labelres": "event.Save.after"
+  },
+  {
+    "name": "User",
+    "description": "Regeln die manuell von einem Benutzer ausgeführt werden können",
+    "labelres": "event.User"
+  },
+  {
+    "name": "Delete",
+    "description": "Ereignis, ausgelöst beim Löschen eines Modulobjekts",
+    "labelres": "event.Delete"
+  },
+  {
+    "name": "Delete.after",
+    "description": "Ereignis, ausgelöst beim erfolgreichen Löschen eines Modulobjekts",
+    "labelres": "event.Delete.after"
+  }
+]

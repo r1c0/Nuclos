@@ -1,0 +1,144 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<groupId>org.nuclos</groupId>
+		<artifactId>nuclos</artifactId>
+		<version>3.1.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.nuclos</groupId>
+	<artifactId>nuclos-client</artifactId>
+	<version>3.1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>nuclos-client</name>
+	<url>http://www.nuclos.de/</url>
+
+	<properties>
+		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>org.nuclos.client.main.Main</mainClass>
+							<packageName>com.nuclos.client</packageName>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<!-- Missing: - jawin.jar / .dll - jgraphx.jar - jnlp.jar - jsyntaxpane-0.9.5-b25.jar
+			- metadata-extractor-2.3.1.jar - synthetica.jar - syntheticaBlackMoon.jar
+			- TableLayout-bin-jdk1.5-2009-06-10.jar - wizard-0.1.12.jar -->
+		<dependency>
+			<groupId>com.jhlabs</groupId>
+			<artifactId>filters</artifactId>
+			<version>2.0.235</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>1.7.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.swinglabs</groupId>
+			<artifactId>jxlayer</artifactId>
+			<version>3.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>xalan</groupId>
+			<artifactId>serializer</artifactId>
+			<version>2.7.1</version>
+		</dependency>
+		<dependency>
+			<groupId>de.novabit</groupId>
+			<artifactId>swingx-core</artifactId>
+			<version>1.6.2</version>
+		</dependency>
+		<dependency>
+			<groupId>de.novabit</groupId>
+			<artifactId>jnlp</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>de.novabit</groupId>
+			<artifactId>jawin</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>de.novabit</groupId>
+			<artifactId>jgraphx</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>de.novabit</groupId>
+			<artifactId>jsyntaxpane</artifactId>
+			<version>0.9.5-b29</version>
+		</dependency>
+		<dependency>
+			<groupId>de.novabit</groupId>
+			<artifactId>metadata-extractor</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>de.novabit</groupId>
+			<artifactId>TableLayout</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>de.novabit</groupId>
+			<artifactId>wizard</artifactId>
+			<version>0.1.12</version>
+		</dependency>
+		<dependency>
+			<groupId>de.novabit</groupId>
+			<artifactId>nuclos-native</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.nuclos</groupId>
+			<artifactId>nuclos-common</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.nuclos</groupId>
+			<artifactId>nuclos-client-synthetica</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>central</id>
+			<name>Maven Repository Switchboard</name>
+			<url>http://repo1.maven.org/maven2</url>
+			<releases>
+				<updatePolicy>always</updatePolicy>
+			</releases>
+		</repository>
+	</repositories>
+</project>

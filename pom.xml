@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.nuclos</groupId>
+	<artifactId>nuclos</artifactId>
+	<version>3.1.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>nuclos</name>
+	<url>http://www.nuclos.de/</url>
+
+	<properties>
+		<nuclos.version.date>15.06.2011</nuclos.version.date>
+		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+	</properties>
+
+	<modules>
+		<module>nuclos-common</module>
+		<module>nuclos-server</module>
+		<module>nuclos-client</module>
+		<module>nuclos-client-synthetica</module>
+		<module>nuclos-war</module>
+		<module>nuclos-installer</module>
+		<module>nuclos-tools</module>
+	</modules>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>ISO-8859-1</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>public.maven.novabit.de</id>
+			<name>Novabit Maven Repository</name>
+			<url>http://mucsvx103:8081/nexus/content/groups/public</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>releases.maven.novabit.de</id>
+			<url>http://mucsvx103:8081/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots.maven.novabit.de</id>
+			<url>http://mucsvx103:8081/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+</project>

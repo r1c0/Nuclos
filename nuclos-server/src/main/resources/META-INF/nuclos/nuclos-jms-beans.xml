@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jms="http://www.springframework.org/schema/jms"
+       xmlns:amq="http://activemq.apache.org/schema/core"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/jms
+                           http://www.springframework.org/schema/jms/spring-jms.xsd
+                           http://activemq.apache.org/schema/core
+                           http://activemq.apache.org/schema/core/activemq-core.xsd
+                           http://www.springframework.org/schema/tx
+     					   http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+						   http://www.springframework.org/schema/aop
+     					   http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+	<!-- JMS start -->
+
+	<!--  Embedded ActiveMQ Broker -->
+    <amq:broker id="broker" useJmx="true" persistent="false">
+        <amq:transportConnectors>
+            <amq:transportConnector uri="vm://localhost"/>
+        </amq:transportConnectors>
+    </amq:broker>
+
+    <!--  ActiveMQ Destinations  -->
+    <amq:topic id="destinationParameterProvider" physicalName="topic/parameterProvider"/>
+
+    <amq:topic id="destinationStatemodel" physicalName="topic/statemodel"/>
+
+    <amq:topic id="destinationRuleNotification" physicalName="topic/ruleNotification"/>
+
+    <amq:topic id="destinationMasterdataCache" physicalName="topic/masterdataCache"/>
+
+    <amq:topic id="destinationMetadataCache" physicalName="topic/metadataCache"/>
+
+    <amq:topic id="destinationSecurityCache" physicalName="topic/securityCache"/>
+
+    <amq:topic id="destinationSearchfilterCache" physicalName="topic/searchfilterCache"/>
+
+    <amq:topic id="destinationResourceCache" physicalName="topic/resourceCache"/>
+
+    <amq:topic id="destinationLocalizationChanges" physicalName="topic/localizationChanges"/>
+
+    <amq:topic id="destinationProgressNotification" physicalName="topic/progressNotification"/>
+    
+    <amq:topic id="destinationLockedTabProgressNotification" physicalName="topic/lockedTabProgressNotification"/>
+
+    <amq:topic id="destinationCustomcomponentCache" physicalName="topic/customcomponentCache"/>
+
+
+    <!-- JMS ConnectionFactory to use, configuring the embedded broker using XML -->
+    <amq:connectionFactory id="jmsFactory" brokerURL="vm://localhost" >
+
+    </amq:connectionFactory>
+
+	<!-- JMS Producer Configuration -->
+    <bean id="jmsProducerConnectionFactory"
+          class="org.springframework.jms.connection.DelegatingConnectionFactory"
+          depends-on="broker" p:targetConnectionFactory-ref="jmsFactory" />
+
+	<!-- JMS Templates -->
+    <bean id="topic.parameterProvider" class="org.springframework.jms.core.JmsTemplate"
+          p:connectionFactory-ref="jmsProducerConnectionFactory"
+          p:defaultDestination-ref="destinationParameterProvider" >
+          <property name="pubSubDomain" value="true"></property>
+    </bean>
+
+    <bean id="topic.statemodel" class="org.springframework.jms.core.JmsTemplate"
+          p:connectionFactory-ref="jmsProducerConnectionFactory"
+          p:defaultDestination-ref="destinationStatemodel" >
+          <property name="pubSubDomain" value="true"></property>
+    </bean>
+
+    <bean id="topic.ruleNotification" class="org.springframework.jms.core.JmsTemplate"
+          p:connectionFactory-ref="jmsProducerConnectionFactory"
+          p:defaultDestination-ref="destinationRuleNotification" >
+          <property name="pubSubDomain" value="true"></property>
+    </bean>
+
+    <bean id="topic.masterdataCache" class="org.springframework.jms.core.JmsTemplate"
+          p:connectionFactory-ref="jmsProducerConnectionFactory"
+          p:defaultDestination-ref="destinationMasterdataCache" >
+          <property name="pubSubDomain" value="true"></property>
+    </bean>
+
+    <bean id="topic.metadataCache" class="org.springframework.jms.core.JmsTemplate"
+          p:connectionFactory-ref="jmsProducerConnectionFactory"
+          p:defaultDestination-ref="destinationMetadataCache" >
+          <property name="pubSubDomain" value="true"></property>
+    </bean>
+
+    <bean id="topic.securityCache" class="org.springframework.jms.core.JmsTemplate"
+          p:connectionFactory-ref="jmsProducerConnectionFactory"
+          p:defaultDestination-ref="destinationSecurityCache" >
+          <property name="pubSubDomain" value="true"></property>
+    </bean>
+
+    <bean id="topic.searchfilterCache" class="org.springframework.jms.core.JmsTemplate"
+          p:connectionFactory-ref="jmsProducerConnectionFactory"
+          p:defaultDestination-ref="destinationSearchfilterCache" >
+          <property name="pubSubDomain" value="true"></property>
+    </bean>
+
+    <bean id="topic.resourceCache" class="org.springframework.jms.core.JmsTemplate"
+          p:connectionFactory-ref="jmsProducerConnectionFactory"
+          p:defaultDestination-ref="destinationResourceCache" >
+          <property name="pubSubDomain" value="true"></property>
+    </bean>
+
+    <bean id="topic.localizationChanges" class="org.springframework.jms.core.JmsTemplate"
+          p:connectionFactory-ref="jmsProducerConnectionFactory"
+          p:defaultDestination-ref="destinationLocalizationChanges" >
+          <property name="pubSubDomain" value="true"></property>
+    </bean>
+
+    <bean id="topic.progressNotification" class="org.springframework.jms.core.JmsTemplate"
+          p:connectionFactory-ref="jmsProducerConnectionFactory"
+          p:defaultDestination-ref="destinationProgressNotification" >
+          <property name="pubSubDomain" value="true"></property>
+    </bean>
+    
+    <bean id="topic.lockedTabProgressNotification" class="org.springframework.jms.core.JmsTemplate"
+          p:connectionFactory-ref="jmsProducerConnectionFactory"
+          p:defaultDestination-ref="destinationLockedTabProgressNotification" >
+          <property name="pubSubDomain" value="true"></property>
+    </bean>
+
+    <bean id="topic.customcomponentCache" class="org.springframework.jms.core.JmsTemplate"
+          p:connectionFactory-ref="jmsProducerConnectionFactory"
+          p:defaultDestination-ref="destinationCustomcomponentCache" >
+          <property name="pubSubDomain" value="true"></property>
+    </bean>
+
+	<!-- JMS end  -->
+
+	<!-- JMS client -->
+	<bean id="listener.masterdataCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+    	<property name="connectionFactory" ref="jmsFactory"></property>
+    	<property name="destinationName" value="topic/masterdataCache"></property>
+    	<property name="pubSubDomain" value="true"></property>
+    	<property name="messageListener" ref="nuclosAuthenticationProvider"></property>
+    </bean>
+
+
+</beans>
