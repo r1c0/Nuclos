@@ -126,10 +126,10 @@ public class JnlpServlet extends HttpServlet {
 
 		InputStream is;
 		if (!isExtensionRequest) {
-			is = getServletContext().getResourceAsStream("jnlp/jnlp.xsl");
+			is = JnlpServlet.class.getClassLoader().getResourceAsStream("jnlp/jnlp.xsl");
 		}
 		else {
-			is = getServletContext().getResourceAsStream("jnlp/extension.jnlp.xsl");
+			is = JnlpServlet.class.getClassLoader().getResourceAsStream("jnlp/extension.jnlp.xsl");
 		}
 
 		try {
