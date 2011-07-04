@@ -1,4 +1,11 @@
 .svn
 /build.properties
 /build
+# m2 stuff
+.classpath
+.project
+.settings
+target
+META-INF
+
 
