@@ -255,7 +255,9 @@ class ClassDebugAdapter extends ClassAdapter {
 		}
 
 		private void insertDebugOutput(int var, int opcode, String valueClassName, String valueClassDesc) {
-			mv.visitVarInsn(ALOAD, 0);
+			// Method '__out' is now static, thus the stack size would change 
+			// if we load the class instance here. (Thomas Pasch)
+			// mv.visitVarInsn(ALOAD, 0);
 			mv.visitLdcInsn("\t" + className + "." + methodName + desc + " [" + (this.line) + "] => ");
 			mv.visitLdcInsn(methodName + var);
 			mv.visitVarInsn(opcode, var);
