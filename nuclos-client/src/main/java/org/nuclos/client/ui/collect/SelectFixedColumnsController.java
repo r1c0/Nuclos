@@ -21,6 +21,7 @@ import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.MutableListModel;
 import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.client.ui.SortedListModel;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -57,7 +58,7 @@ import javax.swing.table.AbstractTableModel;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class SelectFixedColumnsController extends SelectObjectsController {
+public class SelectFixedColumnsController extends SelectObjectsController<CollectableEntityField> {
 
 	// TODO For generification: is this class always used for CollectableEntityField?
 	private static class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel {
@@ -105,7 +106,7 @@ public class SelectFixedColumnsController extends SelectObjectsController {
 		}
 
 		@SuppressWarnings("unchecked")
-		public Set<Object> getFixedColumns() {
+		public Set<CollectableEntityField> getFixedColumns() {
 			return ((FixedTableModel) this.tblSelectedColumn.getModel()).getFixedObjSet();
 		}
 
@@ -344,15 +345,15 @@ public class SelectFixedColumnsController extends SelectObjectsController {
 	 * @param sTitle
 	 * @return Did the user press OK?
 	 */
-	public <T> boolean run(List<T> aLstAvailableFields, List<T> aLstSelectedFields, Set<T> fixedColumns, Comparator<T> comparatorAvailableFields, String sTitle) {
+	public boolean run(List<CollectableEntityField> aLstAvailableFields, List<CollectableEntityField> aLstSelectedFields, Set<CollectableEntityField> fixedColumns, Comparator<CollectableEntityField> comparatorAvailableFields, String sTitle) {
 		// model --> dialog:
 
 		// The lists given as parameters are copied here. The original lists are not modified.
-		final List<T> lstAvailableFields = new ArrayList<T>(aLstAvailableFields);
-		final List<T> lstSelectedFields = new ArrayList<T>(aLstSelectedFields);
+		final List<CollectableEntityField> lstAvailableFields = new ArrayList<CollectableEntityField>(aLstAvailableFields);
+		final List<CollectableEntityField> lstSelectedFields = new ArrayList<CollectableEntityField>(aLstSelectedFields);
 
-		final MutableListModel<T> listmodelAvailableFields = new SortedListModel<T>(lstAvailableFields, comparatorAvailableFields);
-		final MutableListModel<T> listmodelSelectedFields = new CommonDefaultListModel<T>(lstSelectedFields);
+		final MutableListModel<CollectableEntityField> listmodelAvailableFields = new SortedListModel<CollectableEntityField>(lstAvailableFields, comparatorAvailableFields);
+		final MutableListModel<CollectableEntityField> listmodelSelectedFields = new CommonDefaultListModel<CollectableEntityField>(lstSelectedFields);
 
 		this.getPanel().setAvailableColumnsModel(listmodelAvailableFields);
 		this.getPanel().setSelectedColumnsModel(listmodelSelectedFields);
@@ -376,11 +377,11 @@ public class SelectFixedColumnsController extends SelectObjectsController {
 		return (iBtn != null && iBtn.intValue() == JOptionPane.OK_OPTION);
 	}
 
-	private static List<?> getObjects(ListModel model) {
-		final List<Object> result = new ArrayList<Object>();
+	private static List<CollectableEntityField> getObjects(ListModel model) {
+		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
 
 		for (int i = 0; i < model.getSize(); ++i) {
-			result.add(model.getElementAt(i));
+			result.add((CollectableEntityField) model.getElementAt(i));
 		}
 
 		return result;
@@ -390,7 +391,7 @@ public class SelectFixedColumnsController extends SelectObjectsController {
 	 * @return the selected objects, when the dialog is closed.
 	 */
 	@Override
-	public List<?> getSelectedObjects() {
+	public List<CollectableEntityField> getSelectedObjects() {
 		return getObjects(this.getPanel().getSelectedColumnsModel());
 	}
 
@@ -398,15 +399,15 @@ public class SelectFixedColumnsController extends SelectObjectsController {
 	 * @return the available objects, when the dialog is closed
 	 */
 	@Override
-	public List<?> getAvailableObjects() {
+	public List<CollectableEntityField> getAvailableObjects() {
 		return getObjects(this.getPanel().getAvailableColumnsModel());
 	}
 
 	/**
 	 * @return the fixed columns, when the dialog is closed
 	 */
-	public Set<?> getFixedObjects() {
-		return new HashSet<Object>(this.getPanel().getFixedColumns());
+	public Set<CollectableEntityField> getFixedObjects() {
+		return new HashSet<CollectableEntityField>(this.getPanel().getFixedColumns());
 	}
 
 	private void moveLeft() {

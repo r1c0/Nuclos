@@ -83,6 +83,7 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.client.ui.SelectObjectsPanel;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.model.ResultObjects;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collection.CollectionUtils;
@@ -759,24 +760,26 @@ public class StatePropertiesPanel extends JPanel {
 				public void actionPerformed(ActionEvent e) {
 					
 					RoleSelection roleSelectionCtrl = new RoleSelection(roleSelection);
-					boolean changed = roleSelectionCtrl.run(
-						CollectionUtils.select(roleColumns.values(), 
+					ResultObjects<RightAndMandatoryColumnHeader> ro = new ResultObjects<RightAndMandatoryColumnHeader>();
+					ro.set(CollectionUtils.select(roleColumns.values(),
 							new Predicate<RightAndMandatoryColumnHeader>() {
-							@Override
-							public boolean evaluate(RightAndMandatoryColumnHeader t) {
-								return !selectedRoles.contains(t.getId());
-							}}), 
-						
-						CollectionUtils.sorted(CollectionUtils.select(roleColumns.values(), 
+								@Override
+								public boolean evaluate(
+										RightAndMandatoryColumnHeader t) {
+									return !selectedRoles.contains(t.getId());
+								}
+							}), CollectionUtils.sorted(CollectionUtils.select(
+							roleColumns.values(),
 							new Predicate<RightAndMandatoryColumnHeader>() {
-							@Override
-							public boolean evaluate(RightAndMandatoryColumnHeader t) {
-								return selectedRoles.contains(t.getId());
-							}}), new RightAndMandatoryColumnHeader.Comparator()),  
-							
-						new RightAndMandatoryColumnHeader.Comparator(), 
-						
-						CommonLocaleDelegate.getMessage("StatePropertiesPanel.17", "Benutzergruppenauswahl"));
+								@Override
+								public boolean evaluate(
+										RightAndMandatoryColumnHeader t) {
+									return selectedRoles.contains(t.getId());
+								}
+							}), new RightAndMandatoryColumnHeader.Comparator()));
+					boolean changed = roleSelectionCtrl.run(ro,
+							new RightAndMandatoryColumnHeader.Comparator(), 
+							CommonLocaleDelegate.getMessage("StatePropertiesPanel.17", "Benutzergruppenauswahl"));
 					
 					if (changed) {
 						@SuppressWarnings("unchecked")
@@ -825,7 +828,7 @@ public class StatePropertiesPanel extends JPanel {
 			help.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					(new Bubble(help, CommonLocaleDelegate.getMessage("StatePropertiesPanel.18", "<html>grau=nicht sichtbar<br/>gelb=lesen<br/>grün=schreiben</html>"), 10, Bubble.Position.SE)).setVisible(true);
+					(new Bubble(help, CommonLocaleDelegate.getMessage("StatePropertiesPanel.18", "<html>grau=nicht sichtbar<br/>gelb=lesen<br/>grï¿½n=schreiben</html>"), 10, Bubble.Position.SE)).setVisible(true);
 				}
 			});
 			toolBar.add(help);

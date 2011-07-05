@@ -28,6 +28,7 @@ import org.nuclos.client.ui.collect.CollectableTableModel;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
+import org.nuclos.client.ui.collect.model.ResultObjects;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableComparator;
 import org.nuclos.common.collect.collectable.CollectableFactory;
@@ -104,7 +105,10 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 		}
 
 		// perform the dialog:
-		final boolean bOK = this.run(oldAvailableObjects, oldSelectedObjects,
+		ResultObjects<CollectableField> ro = new ResultObjects<CollectableField>();
+		ro.set(oldAvailableObjects, oldSelectedObjects);
+		
+		final boolean bOK = this.run(ro,
 				CollectableComparator.getFieldComparator(comboBox.getEntityField()),
 				CommonLocaleDelegate.getMessage("SubFormMultiEditController.3", "Mehrere Datens\u00e4tze in Unterformular einf\u00fcgen/l\u00f6schen"));
 

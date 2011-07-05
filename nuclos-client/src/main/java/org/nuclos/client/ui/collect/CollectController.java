@@ -118,6 +118,7 @@ import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModel;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
+import org.nuclos.client.ui.collect.model.ResultFields;
 import org.nuclos.client.ui.collect.searcheditor.SearchEditorController;
 import org.nuclos.client.ui.collect.searcheditor.SearchEditorPanel;
 import org.nuclos.client.ui.labeled.LabeledComboBox;
@@ -1039,7 +1040,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * the lists of available and selected fields, resp.
 	 * TODO move to ResultController!
 	 */
-	protected final ResultController.Fields fields = new ResultController.Fields();
+	protected final ResultFields fields = new ResultFields();
 
 	protected final DocumentListener documentlistenerDetailsChanged = new SimpleDocumentListener() {
 		@Override
@@ -1149,7 +1150,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @return the fields displayed in the result panel
 	 * TODO move to ResultController or ResultPanel (or ResultModel?)
 	 */
-	public ResultController.Fields getFields() {
+	public ResultFields getFields() {
 		return fields;
 	}
 
@@ -1361,7 +1362,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @postcondition result != null
 	 * TODO move to ResultController or ResultPanel
 	 */
-	protected Comparator<? extends CollectableEntityField> getCollectableEntityFieldComparator() {
+	protected Comparator<CollectableEntityField> getCollectableEntityFieldComparator() {
 		return new CollectableEntityField.LabelComparator();
 	}
 
@@ -1960,8 +1961,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				}
 			}
 
-			final JMenuItem miPopupApplySelection = new JMenuItem(CommonLocaleDelegate.getMessage("CollectController.41","Auswahl übernehmen"));
-			miPopupApplySelection.setToolTipText(CommonLocaleDelegate.getMessage("CollectController.42","Findet die Übernahme in einem Unterformular statt werden mittels Mehrfachauswahl zusätzliche Datensätze im Unterformular erzeugt."));
+			final JMenuItem miPopupApplySelection = new JMenuItem(CommonLocaleDelegate.getMessage("CollectController.41","Auswahl ï¿½bernehmen"));
+			miPopupApplySelection.setToolTipText(CommonLocaleDelegate.getMessage("CollectController.42","Findet die ï¿½bernahme in einem Unterformular statt werden mittels Mehrfachauswahl zusï¿½tzliche Datensï¿½tze im Unterformular erzeugt."));
 			getResultPanel().popupmenuRow.addSeparator();
 			getResultPanel().popupmenuRow.add(miPopupApplySelection);
 			miPopupApplySelection.addActionListener(new ActionListener() {
@@ -2759,8 +2760,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 							try {
 								if (currentIndex == openQuestionCount && size >= openQuestionCount*2) {
 									int res = JOptionPane.showConfirmDialog(openInTabbed,
-										CommonLocaleDelegate.getMessage("CollectController.openInNewTab.1","Es wurden bereits {0} Tabs geöffnet. Möchten Sie die weiteren {1} Tabs auch noch öffnen?", openQuestionCount, (size-openQuestionCount)),
-										CommonLocaleDelegate.getMessage("CollectController.openInNewTab.2","Wirklich alle selektierten Datensätze in neuen Tabs öffnen?"),
+										CommonLocaleDelegate.getMessage("CollectController.openInNewTab.1","Es wurden bereits {0} Tabs geï¿½ffnet. Mï¿½chten Sie die weiteren {1} Tabs auch noch ï¿½ffnen?", openQuestionCount, (size-openQuestionCount)),
+										CommonLocaleDelegate.getMessage("CollectController.openInNewTab.2","Wirklich alle selektierten Datensï¿½tze in neuen Tabs ï¿½ffnen?"),
 										JOptionPane.YES_NO_OPTION,
 										JOptionPane.QUESTION_MESSAGE);
 

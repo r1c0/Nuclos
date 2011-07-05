@@ -87,6 +87,7 @@ import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateConstants;
 import org.nuclos.client.ui.collect.DetailsPanel;
+import org.nuclos.client.ui.collect.model.ResultObjects;
 import org.nuclos.common.Actions;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
@@ -846,7 +847,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	 * Make visible for ResultPanel
 	 */
 	@Override
-	protected Comparator<? extends CollectableEntityField> getCollectableEntityFieldComparator() {
+	protected Comparator<CollectableEntityField> getCollectableEntityFieldComparator() {
 		return super.getCollectableEntityFieldComparator();
 	}
 
@@ -1246,7 +1247,9 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 							return !rulevo.isActive();
 						}
 					});
-					if (controller.run(new ArrayList<RuleVO>(collRules), Collections.<RuleVO>emptyList(), new Comparator<RuleVO>() {
+					final ResultObjects<RuleVO> ro = new ResultObjects<RuleVO>();
+					ro.set(new ArrayList<RuleVO>(collRules), Collections.<RuleVO>emptyList());
+					if (controller.run(ro , new Comparator<RuleVO>() {
 						@Override
                         public int compare(RuleVO o1, RuleVO o2) {
 							return o1.getName().compareTo(o2.getName());

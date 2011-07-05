@@ -19,6 +19,7 @@ package org.nuclos.client.ui.collect;
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.client.ui.SelectObjectsPanel;
+import org.nuclos.client.ui.collect.model.ResultObjects;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 import java.awt.Component;
@@ -37,7 +38,7 @@ import java.util.List;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
  */
-public class SelectColumnsController extends SelectObjectsController {
+public class SelectColumnsController extends SelectObjectsController<CollectableEntityField> {
 
 	private static class SelectColumnsPanel extends DefaultSelectObjectsPanel {
 
@@ -79,8 +80,8 @@ public class SelectColumnsController extends SelectObjectsController {
 	 * @param lstSelectedFields List<CollectableEntityField>
 	 * @return Did the user press OK?
 	 */
-	public boolean run(List<CollectableEntityField> lstAvailableFields, List<CollectableEntityField> lstSelectedFields) {
-		return this.run(lstAvailableFields, lstSelectedFields, new CollectableEntityField.LabelComparator());
+	public boolean run(ResultObjects<CollectableEntityField> ro) {
+		return this.run(ro, new CollectableEntityField.LabelComparator());
 	}
 
 	/**
@@ -89,9 +90,8 @@ public class SelectColumnsController extends SelectObjectsController {
 	 * @param lstSelectedFields List<CollectableEntityField>
 	 * @return Did the user press OK?
 	 */
-	public <T extends CollectableEntityField> boolean run(List<T> lstAvailableFields,
-			List<T> lstSelectedFields, Comparator<T> comparator) {
-		return this.run(lstAvailableFields, lstSelectedFields, comparator, CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
+	public boolean run(ResultObjects<CollectableEntityField> ro, Comparator<CollectableEntityField> comparator) {
+		return this.run(ro, comparator, CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 	}
 
 	/**

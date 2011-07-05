@@ -78,7 +78,7 @@ public class LangUtils {
 	 * @param t2 may be <code>null</code>
 	 * @param comparator
 	 */
-	public static <T> int compare(T t1, T t2, Comparator<T> comparator) {
+	public static <T> int compare(T t1, T t2, Comparator<? super T> comparator) {
 		final int result;
 
 		if (t1 == null) {

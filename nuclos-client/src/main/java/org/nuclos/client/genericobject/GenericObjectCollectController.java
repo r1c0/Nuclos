@@ -2232,17 +2232,22 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 *         Fields of the main entity are sorted lower than all other fields.
 	 */
 	@Override
-	protected Comparator<? extends CollectableEntityField> getCollectableEntityFieldComparator() {
-		return new Comparator<CollectableEntityFieldWithEntity>() {
+	protected Comparator<CollectableEntityField> getCollectableEntityFieldComparator() {
+		return new Comparator<CollectableEntityField>() {
 			final Collator collator = LangUtils.getDefaultCollator();
 
+			/**
+			 * @param clctefwe1 Expecting a CollectableEntityFieldWithEntity
+			 * @param clctefwe2 Expecting a CollectableEntityFieldWithEntity
+			 */
 			@Override
-			public int compare(CollectableEntityFieldWithEntity clctefwe1, CollectableEntityFieldWithEntity clctefwe2) {
-				final int iCompareEntities = LangUtils.compare(this.getEntityLabel(clctefwe1), this.getEntityLabel(clctefwe2), collator);
+			public int compare(CollectableEntityField clctefwe1, CollectableEntityField clctefwe2) {
+				final int iCompareEntities = LangUtils.compare(getEntityLabel(clctefwe1), getEntityLabel(clctefwe2), collator);
 				return (iCompareEntities != 0) ? iCompareEntities : LangUtils.compare(clctefwe1.getLabel(), clctefwe2.getLabel(), collator);
 			}
 
-			private String getEntityLabel(CollectableEntityFieldWithEntity clctefwe) {
+			private String getEntityLabel(CollectableEntityField field) {
+				final CollectableEntityFieldWithEntity clctefwe = (CollectableEntityFieldWithEntity) field;
 				return clctefwe.getCollectableEntityName().equals(GenericObjectCollectController.this.getCollectableEntity().getName()) ?
 					null : clctefwe.getCollectableEntityLabel();
 			}

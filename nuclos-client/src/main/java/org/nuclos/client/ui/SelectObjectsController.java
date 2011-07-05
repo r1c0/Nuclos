@@ -33,6 +33,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.nuclos.client.ui.collect.model.ResultObjects;
+
 /**
  * Controller for selecting objects from a list of available objects.
  * <br>
@@ -43,7 +45,7 @@ import javax.swing.event.ListSelectionListener;
  * @version	01.00.00
  */
 
-public abstract class SelectObjectsController extends Controller {
+public abstract class SelectObjectsController<T> extends Controller {
 
 	public SelectObjectsController(Component parent) {
 		super(parent);
@@ -185,12 +187,12 @@ public abstract class SelectObjectsController extends Controller {
 	 * @param sTitle
 	 * @return Did the user press OK?
 	 */
-	public <T> boolean run(List<? extends T> lstAvailableFields, List<? extends T> lstSelectedFields, Comparator<? super T> comparatorAvailableFields, String sTitle) {
+	public boolean run(ResultObjects<? extends T> ro, Comparator<? super T> comparatorAvailableFields, String sTitle) {
 		// model --> dialog:
 
 		// The lists given as parameters are copied here. The original lists are not modified.
-		final List<T> _lstAvailableFields = new ArrayList<T>(lstAvailableFields);
-		final List<T> _lstSelectedFields = new ArrayList<T>(lstSelectedFields);
+		final List<T> _lstAvailableFields = new ArrayList<T>(ro.getAvailableFields());
+		final List<T> _lstSelectedFields = new ArrayList<T>(ro.getSelectedFields());
 
 		final MutableListModel<T> listmodelAvailableFields = new SortedListModel<T>(_lstAvailableFields, comparatorAvailableFields);
 		final MutableListModel<T> listmodelSelectedFields = new CommonDefaultListModel<T>(_lstSelectedFields);
@@ -216,11 +218,11 @@ public abstract class SelectObjectsController extends Controller {
 		return (iBtn != null && iBtn.intValue() == JOptionPane.OK_OPTION);
 	}
 
-	private static List<?> getObjects(ListModel model) {
-		final List<Object> result = new ArrayList<Object>();
+	private List<T> getObjects(ListModel model) {
+		final List<T> result = new ArrayList<T>();
 
 		for (int i = 0; i < model.getSize(); ++i) {
-			result.add(model.getElementAt(i));
+			result.add((T) model.getElementAt(i));
 		}
 
 		return result;
@@ -229,14 +231,14 @@ public abstract class SelectObjectsController extends Controller {
 	/**
 	 * @return the selected objects, when the dialog is closed.
 	 */
-	public List<?> getSelectedObjects() {
+	public List<T> getSelectedObjects() {
 		return getObjects(this.getPanel().getJListSelectedObjects().getModel());
 	}
 
 	/**
 	 * @return the available objects, when the dialog is closed
 	 */
-	public List<?> getAvailableObjects() {
+	public List<T> getAvailableObjects() {
 		return getObjects(this.getPanel().getJListAvailableObjects().getModel());
 	}
 
