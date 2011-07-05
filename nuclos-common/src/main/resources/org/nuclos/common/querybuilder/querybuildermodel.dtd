@@ -15,7 +15,7 @@
 
 <!ENTITY % boolean "yes|no">
 
-<!ELEMENT querybuildermodel (entityoptions?, tables?, connectors?, columns?, sql?)>
+<!ELEMENT querybuildermodel (entityoptions?, tables?, connectors?, columns?)>
 
 <!ELEMENT entityoptions EMPTY>
 <!ATTLIST entityoptions
