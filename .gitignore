@@ -6,6 +6,6 @@
 .project
 .settings
 target
-META-INF
+#META-INF
 
 
