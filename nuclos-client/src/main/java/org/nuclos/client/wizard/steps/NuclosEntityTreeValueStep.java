@@ -52,6 +52,7 @@ import javax.swing.text.BadLocationException;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.dnd.IReorderable;
 import org.nuclos.client.ui.dnd.TableRowTransferHandler;
 import org.nuclos.client.wizard.model.Attribute;
 import org.nuclos.client.wizard.model.EntityTreeViewTableModel;
@@ -109,12 +110,9 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 	
 	private JComboBox cbxSubformRefField;
 	
-	/**
-	 * CellEditor with ComboBox for the reference field in the subform entity.
-	 */
-	private List<DefaultCellEditor> refToBaseEntityEditor;
-	
 	private JPanel pnlMoreOptions;
+	
+	private TreeValueTableCellEditor refNameCellEditor;
 	
 	public NuclosEntityTreeValueStep() {	
 		initComponents();		
@@ -173,24 +171,22 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 		lbMultiEditEquation = new JLabel(getMessage("wizard.step.entitytreevalue.3", "Felder f\u00fcr Vergleich in der Sammelbearbeitung"));
 		tfMultiEditEquation = new JTextField();
 		tfMultiEditEquation.setToolTipText(getMessage("wizard.step.entitytreevalue.tooltip.3", "Felder f\u00fcr Vergleich in der Sammelbearbeitung"));
-		tfMultiEditEquation.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		
+		tfMultiEditEquation.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());	
 		
 		lbTreeViewSubform = new JLabel("Baumdarstellung f\u00fcr Unterformulare");
-		tableModel = new EntityTreeViewTableModel();
+		cbxSubformRefField = new JComboBox();
+		refNameCellEditor = new TreeValueTableCellEditor(cbxSubformRefField);
+		
+		tableModel = new EntityTreeViewTableModel(refNameCellEditor);
 		tblTreeView = new JTable(tableModel);
 		tblTreeView.setDragEnabled(true);
 		tblTreeView.setDropMode(DropMode.INSERT_ROWS);
 		tblTreeView.setTransferHandler(new TableRowTransferHandler(tblTreeView));
-		tblTreeView.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		  
+		tblTreeView.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		paneTreeView = new JScrollPane(tblTreeView);
-
-		cbxSubformRefField = new JComboBox();
-	
-		TableColumn colSubform = tblTreeView.getColumnModel().getColumn(1);
 		
-		colSubform.setCellEditor(new TreeValueTableCellEditor(cbxSubformRefField));
+		TableColumn colSubform = tblTreeView.getColumnModel().getColumn(1);		
+		colSubform.setCellEditor(refNameCellEditor);
 		
 		btnAddToValueField.addActionListener(new ActionListener() {
 			
@@ -659,7 +655,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 		Long id = MetaDataDelegate.getInstance().getEntityIdByName(model.getEntityName());
 		NavigableSet<EntityTreeViewVO> lst = new TreeSet<EntityTreeViewVO>();
 		int row = 0;
-		refToBaseEntityEditor = new ArrayList<DefaultCellEditor>();
+		refNameCellEditor.clear();
 		
 		// For all subforms in the entity layout...
 		for(String subform : GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(id.intValue())) {
@@ -681,16 +677,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 			}
 			
 			// Treat the cells in field name column special:
-			JComboBox editBox = new JComboBox();
-			DefaultCellEditor edit = new DefaultCellEditor(editBox);
-			refToBaseEntityEditor.add(edit);
-			// editBox.addItem("");
-			for(EntityFieldMetaDataVO voField : MetaDataDelegate.getInstance().getAllEntityFieldsByEntity(subform).values()) {
-				final String fEntity = voField.getForeignEntity();
-				if(model.getEntityName().equals(fEntity) || NuclosEntity.GENERICOBJECT.getEntityName().equals(fEntity))
-					editBox.addItem(voField.getField());
-			}
-			
+			refNameCellEditor.initCellEditors(subform);
 			row++;
 		}
 		
@@ -708,10 +695,32 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 		model.setTreeView(tableModel.getRows());
 	}
 	
-	private class TreeValueTableCellEditor extends DefaultCellEditor {	
+	private class TreeValueTableCellEditor extends DefaultCellEditor implements IReorderable {	
 
+		/**
+		 * CellEditor with ComboBox for the reference field in the subform entity.
+		 */
+		private List<DefaultCellEditor> refToBaseEntityEditor = new ArrayList<DefaultCellEditor>();
+		
 		public TreeValueTableCellEditor(JComboBox comboBox) {
 			super(comboBox);
+		}
+		
+		public void clear() {
+			refToBaseEntityEditor.clear();
+		}
+		
+		public void initCellEditors(String subformEntityName) {
+			// Treat the cells in field name column special:
+			JComboBox editBox = new JComboBox();
+			DefaultCellEditor edit = new DefaultCellEditor(editBox);
+			refToBaseEntityEditor.add(edit);
+			// editBox.addItem("");
+			for(EntityFieldMetaDataVO voField : MetaDataDelegate.getInstance().getAllEntityFieldsByEntity(subformEntityName).values()) {
+				final String fEntity = voField.getForeignEntity();
+				if(model.getEntityName().equals(fEntity) || NuclosEntity.GENERICOBJECT.getEntityName().equals(fEntity))
+					editBox.addItem(voField.getField());
+			}			
 		}
 		
 		@Override
@@ -734,6 +743,15 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 			return box.getSelectedItem();
 		}
 
+		@Override
+		public void reorder(int fromModel, int toModel) {
+			// swap editors
+			DefaultCellEditor from = refToBaseEntityEditor.get(fromModel);
+			refToBaseEntityEditor.set(fromModel, refToBaseEntityEditor.get(toModel));
+			refToBaseEntityEditor.set(toModel, from);
+		}
+
 	}
 		
 }
+

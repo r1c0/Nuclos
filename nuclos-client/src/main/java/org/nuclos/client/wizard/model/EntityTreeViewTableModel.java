@@ -36,9 +36,11 @@ public class EntityTreeViewTableModel extends AbstractTableModel implements IReo
 
 	private List<EntityTreeViewVO> lstRows;
 	
+	private IReorderable editor;
 	
-	public EntityTreeViewTableModel() {
-		lstRows = new ArrayList<EntityTreeViewVO>();
+	public EntityTreeViewTableModel(IReorderable editor) {
+		this.lstRows = new ArrayList<EntityTreeViewVO>();
+		this.editor = editor;
 	}	
 	
 	public void setRows(Collection<EntityTreeViewVO> rows) {
@@ -157,18 +159,18 @@ public class EntityTreeViewTableModel extends AbstractTableModel implements IReo
 
 	@Override
 	public void reorder(int fromModel, int toModel) {
+		// swap the 2 rows (but don't swap the sort order)
 		final EntityTreeViewVO from = lstRows.get(fromModel);
 		final Integer fromSO = from.getSortOrder();
 		final EntityTreeViewVO to = lstRows.get(toModel);
 		from.setSortOrder(to.getSortOrder());
 		to.setSortOrder(fromSO);
-		
 		lstRows.set(fromModel, to);
 		lstRows.set(toModel, from);
 		
-		// fireTableRowsUpdated(fromModel, fromModel);
-		// fireTableRowsUpdated(toModel, toModel);
 		
+		
+		// ensure that every row has an distinct sort order value
 		int so = -99999;
 		for (EntityTreeViewVO vo: lstRows) {
 			int cso = vo.getSortOrder() == null ? -99999 : vo.getSortOrder().intValue();
@@ -179,7 +181,14 @@ public class EntityTreeViewTableModel extends AbstractTableModel implements IReo
 				so = cso;
 			}
 		}
+		
+		// swap editor as well
+		editor.reorder(fromModel, toModel);
+		
+		// fireTableRowsUpdated(fromModel, fromModel);
+		// fireTableRowsUpdated(toModel, toModel);
 		fireTableDataChanged();
 	}
 
 }
+
