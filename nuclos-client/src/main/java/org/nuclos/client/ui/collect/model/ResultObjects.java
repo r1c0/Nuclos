@@ -1,18 +1,23 @@
 package org.nuclos.client.ui.collect.model;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang.NullArgumentException;
 
 /**
- * Encapsulates the lists of available and selected fields, resp.
+ * Encapsulates the lists of available and selected objects, resp.
  * The selected fields are shown as columns in the result table.
  * The selected fields are always in sync with the table column model, but not necessarily
  * with the table model's columns.
  */
-public class ResultObjects<T> {
+public class ResultObjects<T> implements Cloneable {
+	
+	private static final Class<?>[] NO_ARGS = new Class<?>[0];
 
 	/**
 	 * the list of available (currently not selected) fields
@@ -24,7 +29,42 @@ public class ResultObjects<T> {
 	 */
 	private List<T> lstclctefSelected = new ArrayList<T>();
 	
+	private Comparator<? super T> compAvailable;
+	
 	public ResultObjects() {
+	}
+	
+	public Object clone() throws CloneNotSupportedException {
+		final ResultObjects<T> clone = (ResultObjects<T>) super.clone();
+		clone.lstclctefAvailable = cloneList(lstclctefAvailable);
+		clone.lstclctefSelected = cloneList(lstclctefSelected);
+		return clone;
+	}
+	
+	private static <T> List<T> cloneList(List<T> l) throws CloneNotSupportedException {
+		if (l == null)
+			return null;
+		final Class<?> clazz = l.getClass();
+		// Don't try this on the unmodifiable stuff
+		if (clazz.getName().startsWith("java.util.Collections")) {
+			return new ArrayList<T>(l);
+		}
+		final List<T> result;
+		try {
+			Method m = clazz.getMethod("clone", NO_ARGS);
+			result = (List<T>) m.invoke(l);
+		} catch (IllegalArgumentException e) {
+			throw new CloneNotSupportedException(e.toString());
+		} catch (IllegalAccessException e) {
+			throw new CloneNotSupportedException(e.toString());
+		} catch (InvocationTargetException e) {
+			throw new CloneNotSupportedException(e.toString());
+		} catch (SecurityException e) {
+			throw new CloneNotSupportedException(e.toString());
+		} catch (NoSuchMethodException e) {
+			throw new CloneNotSupportedException(e.toString());
+		}
+		return result;
 	}
 
 	/**
@@ -34,7 +74,7 @@ public class ResultObjects<T> {
 	 * @precondition lstclctefAvailable != null;
 	 * @precondition lstclctefSelected != null;
 	 */
-	public void set(List<T> lstclctefAvailable, List<T> lstclctefSelected) {
+	public void set(List<T> lstclctefAvailable, List<T> lstclctefSelected, Comparator<? super T> comp) {
 		if (lstclctefAvailable == null) {
 			throw new NullArgumentException("lstclctefAvailable");
 		}
@@ -43,7 +83,7 @@ public class ResultObjects<T> {
 		}
 		this.lstclctefAvailable = lstclctefAvailable;
 		this.lstclctefSelected = lstclctefSelected;
-
+		this.compAvailable = comp;
 	}
 
 	/**
@@ -52,6 +92,10 @@ public class ResultObjects<T> {
 	 */
 	public List<T> getAvailableFields() {
 		return Collections.unmodifiableList(this.lstclctefAvailable);
+	}
+	
+	public Comparator<? super T> getComparatorForAvaible() {
+		return compAvailable;
 	}
 
 	/**

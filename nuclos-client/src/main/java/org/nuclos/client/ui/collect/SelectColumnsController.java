@@ -23,11 +23,7 @@ import org.nuclos.client.ui.collect.model.ResultObjects;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 import java.awt.Component;
-import java.util.Comparator;
 import java.util.List;
-
-
-
 
 /**
  * Controller for selecting visible columns.
@@ -75,39 +71,29 @@ public class SelectColumnsController extends SelectObjectsController<Collectable
 	}
 
 	/**
-	 * runs this Controller, using the default <code>Comparator</code> for the fields, which compares the fields' labels.
-	 * @param lstAvailableFields List<CollectableEntityField>
-	 * @param lstSelectedFields List<CollectableEntityField>
-	 * @return Did the user press OK?
-	 */
-	public boolean run(ResultObjects<CollectableEntityField> ro) {
-		return this.run(ro, new CollectableEntityField.LabelComparator());
-	}
-
-	/**
 	 * runs this Controller, using the given <code>Comparator</code> for the fields.
 	 * @param lstAvailableFields List<CollectableEntityField>
 	 * @param lstSelectedFields List<CollectableEntityField>
 	 * @return Did the user press OK?
 	 */
-	public boolean run(ResultObjects<CollectableEntityField> ro, Comparator<CollectableEntityField> comparator) {
-		return this.run(ro, comparator, CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
+	public boolean run(ResultObjects<CollectableEntityField> ro) {
+		return this.run(ro, CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 	}
 
 	/**
 	 * @return the selected columns, when the dialog is closed.
+	 * @deprecated Use getSelectedObjects()
 	 */
-	@SuppressWarnings("unchecked")
 	public List<CollectableEntityField> getSelectedColumns() {
-		return (List<CollectableEntityField>) this.getSelectedObjects();
+		return getSelectedObjects();
 	}
 
 	/**
 	 * @return the available columns, when the dialog is closed
+	 * @deprecated Use getAvailableObjects()
 	 */
-	@SuppressWarnings("unchecked")
 	public List<CollectableEntityField> getAvailableColumns() {
-		return (List<CollectableEntityField>) this.getAvailableObjects();
+		return getAvailableObjects();
 	}
 
 }  // class SelectColumnsController

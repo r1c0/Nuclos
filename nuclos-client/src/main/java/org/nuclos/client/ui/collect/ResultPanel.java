@@ -614,26 +614,26 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public void cmdSelectColumns(final ResultFields fields, final CollectController<Clct> clctctl) {
 
 		final SelectColumnsController ctl = new SelectColumnsController(clctctl.getFrame());
-		final List<CollectableEntityField> lstAvailable = (List<CollectableEntityField>) fields.getAvailableFields();
-		final List<CollectableEntityField> lstSelected = (List<CollectableEntityField>) fields.getSelectedFields();
+		// final List<CollectableEntityField> lstAvailable = (List<CollectableEntityField>) fields.getAvailableFields();
+		// final List<CollectableEntityField> lstSelected = (List<CollectableEntityField>) fields.getSelectedFields();
 
 		final JTable tbl = getResultTable();
 
-		final Map<CollectableEntityField, Integer> mpWidths = getVisibleColumnWidth(lstSelected);
+		final Map<CollectableEntityField, Integer> mpWidths = getVisibleColumnWidth(fields.getSelectedFields());
 
-		final boolean bOK = ctl.run(fields, (Comparator<CollectableEntityField>) clctctl.getCollectableEntityFieldComparator());
+		final boolean bOK = ctl.run(fields);
 
 		if (bOK) {
 			UIUtils.runCommand(clctctl.getFrame(), new CommonRunnable() {
 				@Override
                 public void run() throws CommonBusinessException {
 					final int iSelectedRow = tbl.getSelectedRow();
-					fields.set(ctl.getAvailableColumns(), ctl.getSelectedColumns());
+					fields.set(ctl.getAvailableColumns(), ctl.getSelectedColumns(), clctctl.getCollectableEntityFieldComparator());
 					final List<? extends CollectableEntityField> lstSelectedNew = fields.getSelectedFields();
 					((CollectableTableModel<?>) getResultTable().getModel()).setColumns(lstSelectedNew);
 					setupTableCellRenderers(getResultTable());
 					Collection<CollectableEntityField> collNewlySelected = new ArrayList<CollectableEntityField>(lstSelectedNew);
-					collNewlySelected.removeAll(lstSelected);
+					collNewlySelected.removeAll(fields.getSelectedFields());
 					if (!collNewlySelected.isEmpty()) {
 						if (!clctctl.getCollectablesInResultAreAlwaysComplete()) {
 							// refresh the result:
@@ -698,7 +698,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 * @param preferences
 	 */
 	protected void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl, Preferences preferences) {
-		clctctl.fields.set(clctctl.getFieldsAvailableForResult(clcte), new ArrayList<CollectableEntityField>());
+		clctctl.fields.set(clctctl.getFieldsAvailableForResult(clcte), new ArrayList<CollectableEntityField>(), clctctl.getCollectableEntityFieldComparator());
 
 		// select the previously selected fields according to user preferences:
 		clctctl.fields.moveToSelectedFields(getSelectedFieldsFromPreferences(clcte, clctctl));

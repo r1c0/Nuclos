@@ -1362,7 +1362,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @postcondition result != null
 	 * TODO move to ResultController or ResultPanel
 	 */
-	protected Comparator<CollectableEntityField> getCollectableEntityFieldComparator() {
+	public Comparator<CollectableEntityField> getCollectableEntityFieldComparator() {
 		return new CollectableEntityField.LabelComparator();
 	}
 

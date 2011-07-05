@@ -189,10 +189,12 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 		};
 		
 		ResultObjects<AbstractNucletContentEntryTreeNode> ro = new ResultObjects<AbstractNucletContentEntryTreeNode>();
-		ro.set(getTreeNodeFacade().getAvailableNucletContents(), new ArrayList<AbstractNucletContentEntryTreeNode>());
+		ro.set(getTreeNodeFacade().getAvailableNucletContents(), 
+				new ArrayList<AbstractNucletContentEntryTreeNode>(),
+				new AbstractNucletContentEntryTreeNode.Comparator());
 		
-		final boolean userPressedOk = selectCtrl.run(ro,
-			new AbstractNucletContentEntryTreeNode.Comparator(), CommonLocaleDelegate.getText("NucletExplorerNode.2", "Zum Nuclet hinzufuegen") + "...");
+		final boolean userPressedOk = selectCtrl.run(ro, 
+				CommonLocaleDelegate.getText("NucletExplorerNode.2", "Zum Nuclet hinzufuegen") + "...");
 		PreferencesUtils.putRectangle(prefs, PREFS_NODE_ADDREMOVE_DIALOG_SIZE, selectPanel.getBounds());
 		
 		if (userPressedOk) {
@@ -216,9 +218,11 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 		};
 		
 		final ResultObjects<AbstractNucletContentEntryTreeNode> ro = new ResultObjects<AbstractNucletContentEntryTreeNode>();
-		ro.set(getTreeNodeFacade().getNucletContent(getTreeNode()), new ArrayList<AbstractNucletContentEntryTreeNode>());
+		ro.set(getTreeNodeFacade().getNucletContent(getTreeNode()), 
+				new ArrayList<AbstractNucletContentEntryTreeNode>(),
+				new AbstractNucletContentEntryTreeNode.Comparator());
 		final boolean userPressedOk = selectCtrl.run(ro,  
-			new AbstractNucletContentEntryTreeNode.Comparator(), CommonLocaleDelegate.getText("NucletExplorerNode.4", "Vom Nuclet entfernen") + "...");
+				CommonLocaleDelegate.getText("NucletExplorerNode.4", "Vom Nuclet entfernen") + "...");
 		PreferencesUtils.putRectangle(prefs, PREFS_NODE_ADDREMOVE_DIALOG_SIZE, selectPanel.getBounds());
 		
 		if (userPressedOk) {

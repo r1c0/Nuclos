@@ -844,14 +844,6 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	}
 
 	/**
-	 * Make visible for ResultPanel
-	 */
-	@Override
-	protected Comparator<CollectableEntityField> getCollectableEntityFieldComparator() {
-		return super.getCollectableEntityFieldComparator();
-	}
-
-	/**
 	 * translates Boolean fields by mapping <code>null</code> to <code>false</code> as there are no nullable
 	 * booleans in Nucleus.
 	 * @param clctCurrent
@@ -1248,13 +1240,15 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 						}
 					});
 					final ResultObjects<RuleVO> ro = new ResultObjects<RuleVO>();
-					ro.set(new ArrayList<RuleVO>(collRules), Collections.<RuleVO>emptyList());
-					if (controller.run(ro , new Comparator<RuleVO>() {
-						@Override
-                        public int compare(RuleVO o1, RuleVO o2) {
-							return o1.getName().compareTo(o2.getName());
-						}
-					}, CommonLocaleDelegate.getMessage("NuclosCollectController.11","Regeln ausf\u00fchren"))) {
+					ro.set(new ArrayList<RuleVO>(collRules),
+							Collections.<RuleVO> emptyList(),
+							new Comparator<RuleVO>() {
+								@Override
+								public int compare(RuleVO o1, RuleVO o2) {
+									return o1.getName().compareTo(o2.getName());
+								}
+							});
+					if (controller.run(ro, CommonLocaleDelegate.getMessage("NuclosCollectController.11","Regeln ausf\u00fchren"))) {
 						//execute the selected Rules
 						final List<RuleVO> lstRuleToExecute = CollectionUtils.typecheck(controller.getSelectedObjects(), RuleVO.class);
 						if (lstRuleToExecute != null && !lstRuleToExecute.isEmpty()) {

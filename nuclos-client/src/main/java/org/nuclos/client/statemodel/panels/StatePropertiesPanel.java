@@ -776,9 +776,9 @@ public class StatePropertiesPanel extends JPanel {
 										RightAndMandatoryColumnHeader t) {
 									return selectedRoles.contains(t.getId());
 								}
-							}), new RightAndMandatoryColumnHeader.Comparator()));
-					boolean changed = roleSelectionCtrl.run(ro,
-							new RightAndMandatoryColumnHeader.Comparator(), 
+							}), new RightAndMandatoryColumnHeader.Comparator()),
+							new RightAndMandatoryColumnHeader.Comparator());
+					boolean changed = roleSelectionCtrl.run(ro, 
 							CommonLocaleDelegate.getMessage("StatePropertiesPanel.17", "Benutzergruppenauswahl"));
 					
 					if (changed) {

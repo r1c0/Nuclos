@@ -526,10 +526,13 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 		final SelectFixedColumnsController ctl = new SelectFixedColumnsController(clctctl.getFrame());
 		final List<CollectableEntityField> lstAvailable = fields.getAvailableFields();
 		final List<CollectableEntityField> lstSelected = fields.getSelectedFields();
+		final ResultFields ro = new ResultFields();
+		ro.set(lstAvailable, lstSelected, nucleusctl.getCollectableEntityFieldComparator());
 
 		getVisibleColumnWidth(lstSelected);
 
-		final boolean bOK = ctl.run(lstAvailable, lstSelected, this.stFixedColumns, nucleusctl.getCollectableEntityFieldComparator(), CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
+		final boolean bOK = ctl.run(ro, this.stFixedColumns, 
+				CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 
 		if (bOK) {
 			setSelectColumns(fields, clctctl, (List<CollectableEntityField>) ctl.getAvailableObjects(), (List<CollectableEntityField>) ctl.getSelectedObjects(), (Set<CollectableEntityField>) ctl.getFixedObjects());
@@ -560,7 +563,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 				public void run() throws CommonBusinessException {
 					final int iSelRow = tblResult.getSelectedRow();
 					final List<CollectableEntityField> lstSelectedOld = (List<CollectableEntityField>) fields.getSelectedFields();
-					fields.set(lstAvailableObjects, lstSelectedObjects);
+					fields.set(lstAvailableObjects, lstSelectedObjects, clctctl.getCollectableEntityFieldComparator());
 
 					final List<CollectableEntityField> lstSelectedNew = (List<CollectableEntityField>) fields.getSelectedFields();
 					NuclosResultPanel.this.stFixedColumns = stFixedObjects;

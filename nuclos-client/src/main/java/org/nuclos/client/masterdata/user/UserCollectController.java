@@ -163,8 +163,8 @@ public class UserCollectController extends MasterDataCollectController {
 		final JTable tbl = getResultTable();
 
 		final ResultObjects<MasterDataVO> ro = new ResultObjects<MasterDataVO>();
-		ro.set(lstAvailable, new ArrayList<MasterDataVO>());
-		final boolean bOK = ctl.run(ro, new MasterDataVO.NameComparator());
+		ro.set(lstAvailable, new ArrayList<MasterDataVO>(), new MasterDataVO.NameComparator());
+		final boolean bOK = ctl.run(ro);
 
 		if (bOK) {
 			UIUtils.runCommand(clctctl.getFrame(), new CommonRunnable() {

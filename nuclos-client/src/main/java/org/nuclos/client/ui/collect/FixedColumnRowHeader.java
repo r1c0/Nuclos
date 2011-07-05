@@ -52,6 +52,7 @@ import javax.swing.table.TableModel;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm.SubFormTableModel;
+import org.nuclos.client.ui.collect.model.ResultFields;
 import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableCellEditorProvider;
@@ -199,6 +200,9 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		final List<CollectableEntityField> lstAvailable = getAllAvailableFields();
 		final List<CollectableEntityField> lstFixed = getDisplayedHeaderTableFields();
 		final List<CollectableEntityField> lstSelected = new ArrayList<CollectableEntityField>(lstFixed);
+		final ResultFields ro = new ResultFields();
+		ro.set(lstAvailable, lstSelected,
+				(Comparator<CollectableEntityField>) getCollectableEntityFieldComparator());
 
 		lstSelected.addAll(getDisplayedExternalTableFields());
 
@@ -209,7 +213,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		// remember the widths of the currently visible columns
 		final Map<Object,Integer> mpWidths = getVisibleColumnWidth();
 
-		final boolean bOK = ctl.run(lstAvailable, lstSelected, new HashSet<CollectableEntityField>(lstFixed), (Comparator<CollectableEntityField>) getCollectableEntityFieldComparator(), CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
+		final boolean bOK = ctl.run(ro, new HashSet<CollectableEntityField>(lstFixed), CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 
 		if (bOK) {
 			UIUtils.runCommand(this.getHeaderTable(), new CommonRunnable() {

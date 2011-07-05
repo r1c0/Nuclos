@@ -80,8 +80,8 @@ public class SelectUserController<T extends MasterDataVO> extends SelectObjectsC
 		return this.pnl;
 	}
 
-	public boolean run(ResultObjects<T> ro, Comparator<T> comparator) {
-		return this.run(ro, new MasterDataVO.NameComparator(), CommonLocaleDelegate.getMessage("SelectUserController.7", "Mit LDAP Synchronisieren"));
+	public boolean run(ResultObjects<T> ro) {
+		return this.run(ro, CommonLocaleDelegate.getMessage("SelectUserController.7", "Mit LDAP Synchronisieren"));
 	}
 
 	@SuppressWarnings("unchecked")

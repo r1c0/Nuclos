@@ -21,6 +21,8 @@ import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.MutableListModel;
 import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.client.ui.SortedListModel;
+import org.nuclos.client.ui.collect.model.ResultFields;
+import org.nuclos.client.ui.collect.model.ResultObjects;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 import java.awt.Component;
@@ -345,15 +347,20 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 	 * @param sTitle
 	 * @return Did the user press OK?
 	 */
-	public boolean run(List<CollectableEntityField> aLstAvailableFields, List<CollectableEntityField> aLstSelectedFields, Set<CollectableEntityField> fixedColumns, Comparator<CollectableEntityField> comparatorAvailableFields, String sTitle) {
+	public boolean run(ResultFields ro, Set<CollectableEntityField> fixedColumns, String sTitle) {
 		// model --> dialog:
 
 		// The lists given as parameters are copied here. The original lists are not modified.
-		final List<CollectableEntityField> lstAvailableFields = new ArrayList<CollectableEntityField>(aLstAvailableFields);
-		final List<CollectableEntityField> lstSelectedFields = new ArrayList<CollectableEntityField>(aLstSelectedFields);
+		try {
+			ro = (ResultFields) ro.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalArgumentException(e);
+		}
+		// final List<CollectableEntityField> lstAvailableFields = new ArrayList<CollectableEntityField>(aLstAvailableFields);
+		// final List<CollectableEntityField> lstSelectedFields = new ArrayList<CollectableEntityField>(aLstSelectedFields);
 
-		final MutableListModel<CollectableEntityField> listmodelAvailableFields = new SortedListModel<CollectableEntityField>(lstAvailableFields, comparatorAvailableFields);
-		final MutableListModel<CollectableEntityField> listmodelSelectedFields = new CommonDefaultListModel<CollectableEntityField>(lstSelectedFields);
+		final MutableListModel<CollectableEntityField> listmodelAvailableFields = new SortedListModel<CollectableEntityField>(ro.getAvailableFields(), ro.getComparatorForAvaible());
+		final MutableListModel<CollectableEntityField> listmodelSelectedFields = new CommonDefaultListModel<CollectableEntityField>(ro.getSelectedFields());
 
 		this.getPanel().setAvailableColumnsModel(listmodelAvailableFields);
 		this.getPanel().setSelectedColumnsModel(listmodelSelectedFields);

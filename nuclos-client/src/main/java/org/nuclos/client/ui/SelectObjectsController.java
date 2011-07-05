@@ -22,7 +22,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JDialog;
@@ -187,15 +186,20 @@ public abstract class SelectObjectsController<T> extends Controller {
 	 * @param sTitle
 	 * @return Did the user press OK?
 	 */
-	public boolean run(ResultObjects<? extends T> ro, Comparator<? super T> comparatorAvailableFields, String sTitle) {
+	public boolean run(ResultObjects<T> ro, String sTitle) {
 		// model --> dialog:
 
 		// The lists given as parameters are copied here. The original lists are not modified.
-		final List<T> _lstAvailableFields = new ArrayList<T>(ro.getAvailableFields());
-		final List<T> _lstSelectedFields = new ArrayList<T>(ro.getSelectedFields());
+		try {
+			ro = (ResultObjects<T>) ro.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalArgumentException(e);
+		}
+		// final List<T> _lstAvailableFields = new ArrayList<T>(ro.getAvailableFields());
+		// final List<T> _lstSelectedFields = new ArrayList<T>(ro.getSelectedFields());
 
-		final MutableListModel<T> listmodelAvailableFields = new SortedListModel<T>(_lstAvailableFields, comparatorAvailableFields);
-		final MutableListModel<T> listmodelSelectedFields = new CommonDefaultListModel<T>(_lstSelectedFields);
+		final MutableListModel<T> listmodelAvailableFields = new SortedListModel<T>(ro.getAvailableFields(), ro.getComparatorForAvaible());
+		final MutableListModel<T> listmodelSelectedFields = new CommonDefaultListModel<T>(ro.getSelectedFields());
 
 		this.getPanel().getJListAvailableObjects().setModel(listmodelAvailableFields);
 		this.getPanel().getJListSelectedObjects().setModel(listmodelSelectedFields);

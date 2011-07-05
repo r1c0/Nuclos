@@ -2232,7 +2232,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 *         Fields of the main entity are sorted lower than all other fields.
 	 */
 	@Override
-	protected Comparator<CollectableEntityField> getCollectableEntityFieldComparator() {
+	public Comparator<CollectableEntityField> getCollectableEntityFieldComparator() {
 		return new Comparator<CollectableEntityField>() {
 			final Collator collator = LangUtils.getDefaultCollator();
 
