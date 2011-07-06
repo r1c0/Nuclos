@@ -87,6 +87,8 @@ public class LoginController extends Controller {
 		(byte) 0xb3
 	};
 
+	private static final String ARGUMENT_USERID = "userid";
+
 	/**
 	 * the default username that is taken if none has ever been entered before.
 	 */
@@ -96,11 +98,13 @@ public class LoginController extends Controller {
 	private LoginPanel	              loginPanel;
 	private List<LoginListener>	      loginListeners	= new LinkedList<LoginListener>();
 	private double                    shakeStepSize	    = 0;
+	private final String[] args;
 
-	public LoginController(Component parent, ServerConfiguration serverConfig) {
+	public LoginController(Component parent, ServerConfiguration serverConfig, String[] args) {
 		super(parent);
 
 		this.serverConfig = serverConfig;
+		this.args = args;
 
 		try {
 	        ServerMetaFacadeRemote sm = ServiceLocator.getInstance().getFacade(ServerMetaFacadeRemote.class);
@@ -161,22 +165,32 @@ public class LoginController extends Controller {
 
 		// fill in last entered username:
 		String userName = props.getUserName();
-		if(userName == null)
+		if(userName == null) {
 			userName = USERNAME_DEFAULT;
-		
-		String argumentLoginUsername = System.getProperty("loginUsername");
+		}
 
-		loginPanel.tfUserName.setText(argumentLoginUsername!=null?argumentLoginUsername:userName);
+		String userid = System.getProperty("loginUsername");
+
+		if (StringUtils.isNullOrEmpty(userid) && this.args != null) {
+			for (String arg : this.args) {
+				if (arg != null && arg.toLowerCase().startsWith(ARGUMENT_USERID.toLowerCase()) && arg.indexOf('=') > -1 && arg.indexOf('=') + 1 < arg.length()) {
+					userid = arg.substring(arg.indexOf('=') + 1);
+				}
+			}
+		}
+
+		loginPanel.tfUserName.setText(userid != null ? userid : userName);
 		loginPanel.tfUserName.addFocusListener(new SelectAllFocusAdapter());
 		loginPanel.tfPassword.addFocusListener(new SelectAllFocusAdapter());
 
 		// set focus to password field:
 		if(!userName.equals("")) {
 			String pass = StringUtils.nullIfEmpty(props.getUserPasswd());
-			
-			if (argumentLoginUsername != null && !argumentLoginUsername.equals(userName))
+
+			if (userid != null && !userid.equals(userName)) {
 				pass = null;
-			
+			}
+
 			if(pass != null && passwordSaveAllowed) {
 				try {
 					String dec = CryptUtil.decryptAESHex(pass, CRYPT);
@@ -297,7 +311,7 @@ public class LoginController extends Controller {
 		final Class<?>[] acls = {JButton.class, JTextField.class, JPasswordField.class, JComboBox.class, JCheckBox.class};
 		setSubComponentsEnabled(optpn, acls, false);
 		UIUtils.paintImmediately(optpn);
-		
+
 		boolean result = false;
 		try {
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -339,7 +353,7 @@ public class LoginController extends Controller {
 									optpn.firePropertyChange("value", 0, JOptionPane.CLOSED_OPTION);
 									break;
 								}
-								case 1: 
+								case 1:
 								default: {
 									loginPanel.shake(shakeStepSize);
 									loginPanel.setPasswordError(LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_UPASS));

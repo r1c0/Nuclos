@@ -194,7 +194,7 @@ public class StartUp  {
 			ServerConfiguration serverConfig = ServerConfiguration.getDefaultServerConfiguration();
 
 			// perform login:
-			final LoginController ctlLogin = new LoginController(null, serverConfig);
+			final LoginController ctlLogin = new LoginController(null, serverConfig, this.args);
 
 			ctlLogin.addLoginListener(new LoginListener() {
 				@Override
