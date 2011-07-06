@@ -44,27 +44,10 @@
 						</jnlpFile>
 					</jnlpFiles>
 					<sign>
-						<keystore>${project.build.directory}/.keystore</keystore>
+						<keystore>../../.keystore</keystore>
 						<keypass>solcun</keypass>  <!-- we need to override passwords easily from the command line. ${keypass} -->
 						<storepass>solcun</storepass> <!-- ${storepass} -->
 						<alias>nuclos</alias> <!-- alias of the key to use -->
-
-						<!-- the following key-settings are only used if the keystore and key
-							has to be generated at build-time -->
-						<storetype>jks</storetype>
-						<validity>365</validity>
-						<dnameCn>Firstname Lastname</dnameCn>
-						<dnameOu>OrganisationalUnit</dnameOu>
-						<dnameO>Organisation</dnameO>
-						<dnameL>Location</dnameL>
-						<dnameSt>State</dnameSt>
-						<dnameC>CountryCode</dnameC>
-
-						<!-- KEYSTORE MANAGEMENT -->
-						<keystoreConfig>
-							<delete>true</delete> <!-- delete the keystore at build time -->
-							<gen>true</gen>       <!-- generate keystore and key at build time -->
-						</keystoreConfig>
 
 						<verify>false</verify> <!-- verify the signature after signing -->
 					</sign>
