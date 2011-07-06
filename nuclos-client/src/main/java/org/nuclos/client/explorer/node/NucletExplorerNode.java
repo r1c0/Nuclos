@@ -51,7 +51,7 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.client.ui.SelectObjectsPanel;
-import org.nuclos.client.ui.collect.model.ResultObjects;
+import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.ClientPreferences;
@@ -188,7 +188,7 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 			}
 		};
 		
-		ResultObjects<AbstractNucletContentEntryTreeNode> ro = new ResultObjects<AbstractNucletContentEntryTreeNode>();
+		ChoiceList<AbstractNucletContentEntryTreeNode> ro = new ChoiceList<AbstractNucletContentEntryTreeNode>();
 		ro.set(getTreeNodeFacade().getAvailableNucletContents(), 
 				new ArrayList<AbstractNucletContentEntryTreeNode>(),
 				new AbstractNucletContentEntryTreeNode.Comparator());
@@ -217,7 +217,7 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 			}
 		};
 		
-		final ResultObjects<AbstractNucletContentEntryTreeNode> ro = new ResultObjects<AbstractNucletContentEntryTreeNode>();
+		final ChoiceList<AbstractNucletContentEntryTreeNode> ro = new ChoiceList<AbstractNucletContentEntryTreeNode>();
 		ro.set(getTreeNodeFacade().getNucletContent(getTreeNode()), 
 				new ArrayList<AbstractNucletContentEntryTreeNode>(),
 				new AbstractNucletContentEntryTreeNode.Comparator());

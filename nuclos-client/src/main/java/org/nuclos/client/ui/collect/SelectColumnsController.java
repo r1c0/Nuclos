@@ -19,7 +19,7 @@ package org.nuclos.client.ui.collect;
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.client.ui.SelectObjectsPanel;
-import org.nuclos.client.ui.collect.model.ResultObjects;
+import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 import java.awt.Component;
@@ -76,7 +76,7 @@ public class SelectColumnsController extends SelectObjectsController<Collectable
 	 * @param lstSelectedFields List<CollectableEntityField>
 	 * @return Did the user press OK?
 	 */
-	public boolean run(ResultObjects<CollectableEntityField> ro) {
+	public boolean run(ChoiceList<CollectableEntityField> ro) {
 		return this.run(ro, CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 	}
 

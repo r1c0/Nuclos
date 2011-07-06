@@ -1,4 +1,4 @@
-package org.nuclos.client.ui.collect.model;
+package org.nuclos.client.ui.model;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,7 +15,7 @@ import org.apache.commons.lang.NullArgumentException;
  * The selected fields are always in sync with the table column model, but not necessarily
  * with the table model's columns.
  */
-public class ResultObjects<T> implements Cloneable {
+public class ChoiceList<T> implements Cloneable {
 	
 	private static final Class<?>[] NO_ARGS = new Class<?>[0];
 
@@ -31,11 +31,11 @@ public class ResultObjects<T> implements Cloneable {
 	
 	private Comparator<? super T> compAvailable;
 	
-	public ResultObjects() {
+	public ChoiceList() {
 	}
 	
 	public Object clone() throws CloneNotSupportedException {
-		final ResultObjects<T> clone = (ResultObjects<T>) super.clone();
+		final ChoiceList<T> clone = (ChoiceList<T>) super.clone();
 		clone.lstclctefAvailable = cloneList(lstclctefAvailable);
 		clone.lstclctefSelected = cloneList(lstclctefSelected);
 		return clone;

@@ -62,8 +62,8 @@ import org.nuclos.client.ui.StatusBarTextField;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
+import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
 import org.nuclos.client.ui.collect.indicator.CollectPanelIndicator;
-import org.nuclos.client.ui.collect.model.ResultFields;
 import org.nuclos.client.ui.popupmenu.AbstractJPopupMenuListener;
 import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
 import org.nuclos.client.ui.table.CommonJTable;
@@ -507,7 +507,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 * removes the given column from the table
 	 * @param entityField the column of the column model (as opposed to the column of the table model)
 	 */
-	protected void cmdRemoveColumn(final ResultFields fields, CollectableEntityField entityField, CollectController<Clct> ctl) {
+	protected void cmdRemoveColumn(final ChoiceEntityFieldList fields, CollectableEntityField entityField, CollectController<Clct> ctl) {
 		fields.moveToAvailableFields(entityField);
 
 		// Note that it is not enough to remove the column from the result table model.
@@ -522,7 +522,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 * @param columnBefore the column of the column model (as opposed to the column of the table model)
 	 * @param sFieldNameToAdd name of the column to add
 	 */
-	protected void cmdAddColumn(final ResultFields fields, TableColumn columnBefore, final String sFieldNameToAdd) throws CommonBusinessException {
+	protected void cmdAddColumn(final ChoiceEntityFieldList fields, TableColumn columnBefore, final String sFieldNameToAdd) throws CommonBusinessException {
 		// find the field with the given name in available fields:
 		final CollectableEntityField clctef = CollectionUtils.findFirst(fields.getAvailableFields(),
 				PredicateUtils.transformedInputEquals(new CollectableEntityField.GetName(), sFieldNameToAdd));
@@ -611,7 +611,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 * Lets the user select the columns to show in the result list.
 	 */
 	@SuppressWarnings("unchecked")
-	public void cmdSelectColumns(final ResultFields fields, final CollectController<Clct> clctctl) {
+	public void cmdSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl) {
 
 		final SelectColumnsController ctl = new SelectColumnsController(clctctl.getFrame());
 		// final List<CollectableEntityField> lstAvailable = (List<CollectableEntityField>) fields.getAvailableFields();
@@ -712,7 +712,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 * @param lstFixedNew
 	 * @param lstColumnWiths
 	 */
-	public void initializeFields(final ResultFields fields, final CollectController<Clct> clctctl, final List<CollectableEntityField> lstSelectedNew, 
+	public void initializeFields(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl, final List<CollectableEntityField> lstSelectedNew, 
 			final List<CollectableEntityField> lstFixedNew, final Map<CollectableEntityField,Integer> lstColumnWiths) {		
 		clctctl.fields.setSelectedFields(lstSelectedNew);
 	}
@@ -877,7 +877,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	}
 
 	/** called when a column was moved in the header*/
-	public void columnMovedInHeader(ResultFields fields) {
+	public void columnMovedInHeader(ChoiceEntityFieldList fields) {
 		fields.setSelectedFields(CollectableTableHelper.getCollectableEntityFieldsFromColumns(this.tblResult));
 	}
 

@@ -83,7 +83,7 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.client.ui.SelectObjectsPanel;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.client.ui.collect.model.ResultObjects;
+import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collection.CollectionUtils;
@@ -760,7 +760,7 @@ public class StatePropertiesPanel extends JPanel {
 				public void actionPerformed(ActionEvent e) {
 					
 					RoleSelection roleSelectionCtrl = new RoleSelection(roleSelection);
-					ResultObjects<RightAndMandatoryColumnHeader> ro = new ResultObjects<RightAndMandatoryColumnHeader>();
+					ChoiceList<RightAndMandatoryColumnHeader> ro = new ChoiceList<RightAndMandatoryColumnHeader>();
 					ro.set(CollectionUtils.select(roleColumns.values(),
 							new Predicate<RightAndMandatoryColumnHeader>() {
 								@Override

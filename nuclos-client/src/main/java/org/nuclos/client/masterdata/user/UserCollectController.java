@@ -44,7 +44,7 @@ import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
-import org.nuclos.client.ui.collect.model.ResultObjects;
+import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SearchConditionUtils;
@@ -162,7 +162,7 @@ public class UserCollectController extends MasterDataCollectController {
 
 		final JTable tbl = getResultTable();
 
-		final ResultObjects<MasterDataVO> ro = new ResultObjects<MasterDataVO>();
+		final ChoiceList<MasterDataVO> ro = new ChoiceList<MasterDataVO>();
 		ro.set(lstAvailable, new ArrayList<MasterDataVO>(), new MasterDataVO.NameComparator());
 		final boolean bOK = ctl.run(ro);
 

@@ -14,12 +14,13 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.client.ui;
+package org.nuclos.client.ui.model;
 
 import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
+
 
 /**
  * adds a decent constructor to <code>DefaultListModel</code>.

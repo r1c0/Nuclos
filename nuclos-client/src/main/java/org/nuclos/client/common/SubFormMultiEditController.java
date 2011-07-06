@@ -28,7 +28,7 @@ import org.nuclos.client.ui.collect.CollectableTableModel;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
-import org.nuclos.client.ui.collect.model.ResultObjects;
+import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableComparator;
 import org.nuclos.common.collect.collectable.CollectableFactory;
@@ -105,7 +105,7 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 		}
 
 		// perform the dialog:
-		ResultObjects<CollectableField> ro = new ResultObjects<CollectableField>();
+		ChoiceList<CollectableField> ro = new ChoiceList<CollectableField>();
 		ro.set(oldAvailableObjects, oldSelectedObjects,
 				CollectableComparator.getFieldComparator(comboBox.getEntityField()));
 		

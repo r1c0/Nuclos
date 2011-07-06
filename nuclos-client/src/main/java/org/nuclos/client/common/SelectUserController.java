@@ -25,7 +25,7 @@ import org.nuclos.client.masterdata.ui.ColorCellRenderer;
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.client.ui.SelectObjectsPanel;
-import org.nuclos.client.ui.collect.model.ResultObjects;
+import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVOWrapper;
 
@@ -80,7 +80,7 @@ public class SelectUserController<T extends MasterDataVO> extends SelectObjectsC
 		return this.pnl;
 	}
 
-	public boolean run(ResultObjects<T> ro) {
+	public boolean run(ChoiceList<T> ro) {
 		return this.run(ro, CommonLocaleDelegate.getMessage("SelectUserController.7", "Mit LDAP Synchronisieren"));
 	}
 

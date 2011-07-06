@@ -88,7 +88,7 @@ import org.nuclos.client.ui.collect.ResultPanel;
 import org.nuclos.client.ui.collect.SelectFixedColumnsController;
 import org.nuclos.client.ui.collect.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.ToolTipsTableHeader;
-import org.nuclos.client.ui.collect.model.ResultFields;
+import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
 import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableUtils;
@@ -219,7 +219,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 			lstSelectedFieldNames = new ArrayList<String>();
 		}
 
-		ResultFields fields = clctctl.getFields();
+		ChoiceEntityFieldList fields = clctctl.getFields();
 		for (CollectableEntityField clctef : fields.getSelectedFields()) {
 			if (lstSelectedFieldNames.contains(clctef.getName())) {
 				this.stFixedColumns.add(clctef);
@@ -436,7 +436,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	 * @param preferences
 	 */
 	@Override
-	public void initializeFields(final ResultFields fields, final CollectController<Clct> clctctl, final List<CollectableEntityField> lstSelectedNew, final List<CollectableEntityField> lstFixedNew, final Map<CollectableEntityField,Integer> lstColumnWiths) {
+	public void initializeFields(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl, final List<CollectableEntityField> lstSelectedNew, final List<CollectableEntityField> lstFixedNew, final Map<CollectableEntityField,Integer> lstColumnWiths) {
 		final NuclosCollectController<Clct> elisaController = (NuclosCollectController<Clct>) clctctl;
 		final List<CollectableEntityField> lstSelected = new ArrayList<CollectableEntityField>(fields.getSelectedFields());
 		final JTable tblResult = getResultTable();
@@ -519,12 +519,12 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void cmdSelectColumns(final ResultFields fields, final CollectController<Clct> clctctl) {
+	public void cmdSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl) {
 		final NuclosCollectController<Clct> nucleusctl = (NuclosCollectController<Clct>) clctctl;
 		final SelectFixedColumnsController ctl = new SelectFixedColumnsController(clctctl.getFrame());
 		final List<CollectableEntityField> lstAvailable = fields.getAvailableFields();
 		final List<CollectableEntityField> lstSelected = fields.getSelectedFields();
-		final ResultFields ro = new ResultFields(stFixedColumns);
+		final ChoiceEntityFieldList ro = new ChoiceEntityFieldList(stFixedColumns);
 		ro.set(lstAvailable, lstSelected, nucleusctl.getCollectableEntityFieldComparator());
 
 		getVisibleColumnWidth(lstSelected);
@@ -537,7 +537,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 		}
 	}
 
-	protected final void setSelectColumns(final ResultFields fields, final CollectController<Clct> clctctl, final List<CollectableEntityField> lstAvailableObjects, final List<CollectableEntityField> lstSelectedObjects, final Set<CollectableEntityField> stFixedObjects) {
+	protected final void setSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl, final List<CollectableEntityField> lstAvailableObjects, final List<CollectableEntityField> lstSelectedObjects, final Set<CollectableEntityField> stFixedObjects) {
 		final JTable tblResult = getResultTable();
 		// remember the widths of the currently visible columns
 		final Map<CollectableEntityField, Integer> mpWidths = getVisibleColumnWidth(fields.getSelectedFields());
@@ -637,7 +637,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	}
 
 	@Override
-	protected void cmdAddColumn(ResultFields fields, TableColumn columnBefore, String sFieldNameToAdd) throws CommonBusinessException {
+	protected void cmdAddColumn(ChoiceEntityFieldList fields, TableColumn columnBefore, String sFieldNameToAdd) throws CommonBusinessException {
 		super.cmdAddColumn(fields, columnBefore, sFieldNameToAdd);
 		final TableColumnModel columnmodelVariable = getResultTable().getColumnModel();
 		final TableColumnModel columnmodelFixed = tblFixedResult.getColumnModel();
@@ -645,7 +645,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	}
 
 	@Override
-	protected void cmdRemoveColumn(ResultFields fields, CollectableEntityField clctef, CollectController<Clct> ctl) {
+	protected void cmdRemoveColumn(ChoiceEntityFieldList fields, CollectableEntityField clctef, CollectController<Clct> ctl) {
 		super.cmdRemoveColumn(fields, clctef, ctl);
 		stFixedColumns.remove(clctef);
 //		final TableColumnModel columnmodelVariable = getResultTable().getColumnModel();
@@ -997,7 +997,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 
 	/** called when a column was moved in the header*/
 	@Override
-	public void columnMovedInHeader(ResultFields fields) {
+	public void columnMovedInHeader(ChoiceEntityFieldList fields) {
 		final List<CollectableEntityField> allColumns = CollectableTableHelper.getCollectableEntityFieldsFromColumns(this.tblFixedResult);
 		allColumns.addAll(CollectableTableHelper.getCollectableEntityFieldsFromColumns(this.getResultTable()));
 		fields.setSelectedFields(allColumns);

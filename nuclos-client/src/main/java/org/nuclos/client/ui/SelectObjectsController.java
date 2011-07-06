@@ -32,7 +32,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.nuclos.client.ui.collect.model.ResultObjects;
+import org.nuclos.client.ui.model.ChoiceList;
+import org.nuclos.client.ui.model.CommonDefaultListModel;
+import org.nuclos.client.ui.model.MutableListModel;
+import org.nuclos.client.ui.model.SortedListModel;
 
 /**
  * Controller for selecting objects from a list of available objects.
@@ -186,12 +189,12 @@ public abstract class SelectObjectsController<T> extends Controller {
 	 * @param sTitle
 	 * @return Did the user press OK?
 	 */
-	public boolean run(ResultObjects<T> ro, String sTitle) {
+	public boolean run(ChoiceList<T> ro, String sTitle) {
 		// model --> dialog:
 
 		// The lists given as parameters are copied here. The original lists are not modified.
 		try {
-			ro = (ResultObjects<T>) ro.clone();
+			ro = (ChoiceList<T>) ro.clone();
 		} catch (CloneNotSupportedException e) {
 			throw new IllegalArgumentException(e);
 		}

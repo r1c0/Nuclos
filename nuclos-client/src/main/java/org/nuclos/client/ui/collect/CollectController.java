@@ -110,6 +110,7 @@ import org.nuclos.client.ui.collect.component.CollectableCheckBox;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableListOfValues;
 import org.nuclos.client.ui.collect.component.ICollectableListOfValues;
+import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelAdapter;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
@@ -118,7 +119,6 @@ import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModel;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
-import org.nuclos.client.ui.collect.model.ResultFields;
 import org.nuclos.client.ui.collect.searcheditor.SearchEditorController;
 import org.nuclos.client.ui.collect.searcheditor.SearchEditorPanel;
 import org.nuclos.client.ui.labeled.LabeledComboBox;
@@ -1040,7 +1040,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * the lists of available and selected fields, resp.
 	 * TODO move to ResultController!
 	 */
-	protected final ResultFields fields = new ResultFields(null);
+	protected final ChoiceEntityFieldList fields = new ChoiceEntityFieldList(null);
 
 	protected final DocumentListener documentlistenerDetailsChanged = new SimpleDocumentListener() {
 		@Override
@@ -1150,7 +1150,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @return the fields displayed in the result panel
 	 * TODO move to ResultController or ResultPanel (or ResultModel?)
 	 */
-	public ResultFields getFields() {
+	public ChoiceEntityFieldList getFields() {
 		return fields;
 	}
 

@@ -39,11 +39,11 @@ import javax.swing.event.ListSelectionListener;
 
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.security.SecurityCache;
-import org.nuclos.client.ui.CommonDefaultListModel;
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.Errors;
-import org.nuclos.client.ui.MutableListModel;
-import org.nuclos.client.ui.SortedListModel;
+import org.nuclos.client.ui.model.CommonDefaultListModel;
+import org.nuclos.client.ui.model.MutableListModel;
+import org.nuclos.client.ui.model.SortedListModel;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;

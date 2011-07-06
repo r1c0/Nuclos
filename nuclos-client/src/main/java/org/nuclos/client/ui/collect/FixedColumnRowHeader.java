@@ -52,7 +52,7 @@ import javax.swing.table.TableModel;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm.SubFormTableModel;
-import org.nuclos.client.ui.collect.model.ResultFields;
+import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
 import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableCellEditorProvider;
@@ -200,7 +200,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		final List<CollectableEntityField> lstAvailable = getAllAvailableFields();
 		final Set<CollectableEntityField> lstFixed = getDisplayedHeaderTableFields();
 		final List<CollectableEntityField> lstSelected = new ArrayList<CollectableEntityField>(lstFixed);
-		final ResultFields ro = new ResultFields(lstFixed);
+		final ChoiceEntityFieldList ro = new ChoiceEntityFieldList(lstFixed);
 		ro.set(lstAvailable, lstSelected,
 				(Comparator<CollectableEntityField>) getCollectableEntityFieldComparator());
 

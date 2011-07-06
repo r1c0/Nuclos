@@ -16,12 +16,12 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect;
 
-import org.nuclos.client.ui.CommonDefaultListModel;
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
-import org.nuclos.client.ui.MutableListModel;
 import org.nuclos.client.ui.SelectObjectsController;
-import org.nuclos.client.ui.SortedListModel;
-import org.nuclos.client.ui.collect.model.ResultFields;
+import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
+import org.nuclos.client.ui.model.CommonDefaultListModel;
+import org.nuclos.client.ui.model.MutableListModel;
+import org.nuclos.client.ui.model.SortedListModel;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 import java.awt.Component;
@@ -345,12 +345,12 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 	 * @param sTitle
 	 * @return Did the user press OK?
 	 */
-	public boolean run(ResultFields ro, String sTitle) {
+	public boolean run(ChoiceEntityFieldList ro, String sTitle) {
 		// model --> dialog:
 
 		// The lists given as parameters are copied here. The original lists are not modified.
 		try {
-			ro = (ResultFields) ro.clone();
+			ro = (ChoiceEntityFieldList) ro.clone();
 		} catch (CloneNotSupportedException e) {
 			throw new IllegalArgumentException(e);
 		}

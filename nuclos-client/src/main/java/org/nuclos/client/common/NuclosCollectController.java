@@ -87,7 +87,7 @@ import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateConstants;
 import org.nuclos.client.ui.collect.DetailsPanel;
-import org.nuclos.client.ui.collect.model.ResultObjects;
+import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.Actions;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
@@ -1238,7 +1238,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 							return !rulevo.isActive();
 						}
 					});
-					final ResultObjects<RuleVO> ro = new ResultObjects<RuleVO>();
+					final ChoiceList<RuleVO> ro = new ChoiceList<RuleVO>();
 					ro.set(new ArrayList<RuleVO>(collRules),
 							Collections.<RuleVO> emptyList(),
 							new Comparator<RuleVO>() {

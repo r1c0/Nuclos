@@ -1,7 +1,8 @@
-package org.nuclos.client.ui.collect.model;
+package org.nuclos.client.ui.collect.component.model;
 
 import java.util.Set;
 
+import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 
 /**
@@ -10,11 +11,11 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
  * The selected fields are always in sync with the table column model, but not necessarily
  * with the table model's columns.
  */
-public class ResultFields extends ResultObjects<CollectableEntityField> {
+public class ChoiceEntityFieldList extends ChoiceList<CollectableEntityField> {
 	
 	private Set<CollectableEntityField> fixed;
 	
-	public ResultFields(Set<CollectableEntityField> fixed) {
+	public ChoiceEntityFieldList(Set<CollectableEntityField> fixed) {
 		super();
 		this.fixed = fixed;
 	}
