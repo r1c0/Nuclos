@@ -226,7 +226,7 @@ public abstract class AbstractUnpacker implements Unpacker, Constants {
 				if (commonextensions.exists() && !FileUtils.isEmptyDir(commonextensions, true)) {
 					files.addAll(FileUtils.getFiles(commonextensions));
 					files.addAll(FileUtils.copyDirectory(commonextensions, new File(ConfigContext.getFileProperty("server.webapp.dir"), "WEB-INF/lib/"), cb));
-					files.addAll(FileUtils.copyDirectory(commonextensions, new File(ConfigContext.getFileProperty("server.webapp.dir"), "app"), cb));
+					files.addAll(FileUtils.copyDirectory(commonextensions, new File(ConfigContext.getFileProperty("server.webapp.dir"), "app/extensions"), cb));
 					files.addAll(FileUtils.copyDirectory(commonextensions, new File(nuclosHome, "client"), cb));
 				}
 				File serverextensions = new File(extensiondir, "server");
@@ -237,7 +237,7 @@ public abstract class AbstractUnpacker implements Unpacker, Constants {
 				File clientextensions = new File(extensiondir, "client");
 				if (clientextensions.exists() && !FileUtils.isEmptyDir(clientextensions, true)) {
 					files.addAll(FileUtils.getFiles(clientextensions));
-					files.addAll(FileUtils.copyDirectory(clientextensions, new File(ConfigContext.getFileProperty("server.webapp.dir"), "app"), cb));
+					files.addAll(FileUtils.copyDirectory(clientextensions, new File(ConfigContext.getFileProperty("server.webapp.dir"), "app/extensions"), cb));
 					files.addAll(FileUtils.copyDirectory(clientextensions, new File(nuclosHome, "client"), cb));
 				}
 			}
