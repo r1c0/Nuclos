@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -85,7 +84,6 @@ import org.nuclos.client.ui.UIUtils.CommandHandler;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
 import org.nuclos.client.ui.collect.CollectableTableModel;
-import org.nuclos.client.ui.collect.ResultController;
 import org.nuclos.client.ui.collect.ResultPanel;
 import org.nuclos.client.ui.collect.SelectFixedColumnsController;
 import org.nuclos.client.ui.collect.SortableCollectableTableModel;
@@ -526,16 +524,16 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 		final SelectFixedColumnsController ctl = new SelectFixedColumnsController(clctctl.getFrame());
 		final List<CollectableEntityField> lstAvailable = fields.getAvailableFields();
 		final List<CollectableEntityField> lstSelected = fields.getSelectedFields();
-		final ResultFields ro = new ResultFields();
+		final ResultFields ro = new ResultFields(stFixedColumns);
 		ro.set(lstAvailable, lstSelected, nucleusctl.getCollectableEntityFieldComparator());
 
 		getVisibleColumnWidth(lstSelected);
 
-		final boolean bOK = ctl.run(ro, this.stFixedColumns, 
+		final boolean bOK = ctl.run(ro,  
 				CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 
 		if (bOK) {
-			setSelectColumns(fields, clctctl, (List<CollectableEntityField>) ctl.getAvailableObjects(), (List<CollectableEntityField>) ctl.getSelectedObjects(), (Set<CollectableEntityField>) ctl.getFixedObjects());
+			setSelectColumns(fields, clctctl, ctl.getAvailableObjects(), ctl.getSelectedObjects(), ctl.getFixedObjects());
 		}
 	}
 

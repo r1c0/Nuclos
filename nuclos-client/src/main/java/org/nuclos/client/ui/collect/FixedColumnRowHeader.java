@@ -198,9 +198,9 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 
 		final SelectFixedColumnsController ctl = new SelectFixedColumnsController(this.getHeaderTable());
 		final List<CollectableEntityField> lstAvailable = getAllAvailableFields();
-		final List<CollectableEntityField> lstFixed = getDisplayedHeaderTableFields();
+		final Set<CollectableEntityField> lstFixed = getDisplayedHeaderTableFields();
 		final List<CollectableEntityField> lstSelected = new ArrayList<CollectableEntityField>(lstFixed);
-		final ResultFields ro = new ResultFields();
+		final ResultFields ro = new ResultFields(lstFixed);
 		ro.set(lstAvailable, lstSelected,
 				(Comparator<CollectableEntityField>) getCollectableEntityFieldComparator());
 
@@ -213,7 +213,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		// remember the widths of the currently visible columns
 		final Map<Object,Integer> mpWidths = getVisibleColumnWidth();
 
-		final boolean bOK = ctl.run(ro, new HashSet<CollectableEntityField>(lstFixed), CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
+		final boolean bOK = ctl.run(ro, CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 
 		if (bOK) {
 			UIUtils.runCommand(this.getHeaderTable(), new CommonRunnable() {
@@ -285,9 +285,9 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	 * get the CollectableEntityField of the displayed columns of the header table
 	 * @return List of CollectableEntityField
 	 */
-	private List<CollectableEntityField> getDisplayedHeaderTableFields() {
+	private Set<CollectableEntityField> getDisplayedHeaderTableFields() {
 		TableColumnModel externalColumnModel = getHeaderTable().getColumnModel();
-		List<CollectableEntityField> resultList = new ArrayList<CollectableEntityField>();
+		Set<CollectableEntityField> resultList = new HashSet<CollectableEntityField>();
 		for (Enumeration<TableColumn> columnEnum = externalColumnModel.getColumns(); columnEnum.hasMoreElements();) {
 			TableColumn varColumn = columnEnum.nextElement();
 			if (varColumn.getModelIndex() != FixedRowIndicatorTableModel.ROWMARKERCOLUMN_INDEX) {

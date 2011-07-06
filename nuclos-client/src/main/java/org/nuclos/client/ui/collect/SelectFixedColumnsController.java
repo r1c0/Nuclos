@@ -22,7 +22,6 @@ import org.nuclos.client.ui.MutableListModel;
 import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.client.ui.SortedListModel;
 import org.nuclos.client.ui.collect.model.ResultFields;
-import org.nuclos.client.ui.collect.model.ResultObjects;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 import java.awt.Component;
@@ -32,7 +31,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -333,7 +331,7 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 			}
 		});
 	}
-
+	
 	/**
 	 * performs the dialog. The lists given to the method are not modified.
 	 * The resulting lists are available in the <code>getAvailableFields()</code> and
@@ -347,7 +345,7 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 	 * @param sTitle
 	 * @return Did the user press OK?
 	 */
-	public boolean run(ResultFields ro, Set<CollectableEntityField> fixedColumns, String sTitle) {
+	public boolean run(ResultFields ro, String sTitle) {
 		// model --> dialog:
 
 		// The lists given as parameters are copied here. The original lists are not modified.
@@ -364,7 +362,7 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 
 		this.getPanel().setAvailableColumnsModel(listmodelAvailableFields);
 		this.getPanel().setSelectedColumnsModel(listmodelSelectedFields);
-		this.getPanel().setFixedColumns(fixedColumns);
+		this.getPanel().setFixedColumns(ro.getFixed());
 
 		// @todo the listeners are added here so calling run() multiple times is not possible
 		this.setupListeners(listmodelSelectedFields);

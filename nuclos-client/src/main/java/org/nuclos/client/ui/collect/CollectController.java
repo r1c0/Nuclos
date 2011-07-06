@@ -1040,7 +1040,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * the lists of available and selected fields, resp.
 	 * TODO move to ResultController!
 	 */
-	protected final ResultFields fields = new ResultFields();
+	protected final ResultFields fields = new ResultFields(null);
 
 	protected final DocumentListener documentlistenerDetailsChanged = new SimpleDocumentListener() {
 		@Override

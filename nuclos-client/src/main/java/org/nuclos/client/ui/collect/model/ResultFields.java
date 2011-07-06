@@ -1,5 +1,7 @@
 package org.nuclos.client.ui.collect.model;
 
+import java.util.Set;
+
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 
 /**
@@ -9,6 +11,16 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
  * with the table model's columns.
  */
 public class ResultFields extends ResultObjects<CollectableEntityField> {
-
+	
+	private Set<CollectableEntityField> fixed;
+	
+	public ResultFields(Set<CollectableEntityField> fixed) {
+		super();
+		this.fixed = fixed;
+	}
+	
+	public Set<CollectableEntityField> getFixed() {
+		return fixed;
+	}
 
 }	// inner class Fields
