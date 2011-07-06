@@ -53,6 +53,7 @@ import javax.tools.ToolProvider;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Factory;
 import org.nuclos.server.common.NuclosSystemParameters;
@@ -68,6 +69,7 @@ import org.nuclos.server.ruleengine.NuclosCompileException.ErrorMessage;
 import org.nuclos.server.ruleengine.ejb3.RuleEngineFacadeBean;
 import org.nuclos.server.ruleengine.ejb3.TimelimitRuleFacadeBean;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
+import org.springframework.core.io.Resource;
 
 public class NuclosJavaCompiler implements Closeable {
 
@@ -416,14 +418,21 @@ public class NuclosJavaCompiler implements Closeable {
 			@Override
 			public List<File> create() {
 				List<File> classPath = new ArrayList<File>();
-				String parameter = NuclosSystemParameters.getString(NuclosSystemParameters.GENERATOR_CLASS_PATH);
-				for (String s : parameter.split(";")) {
-					File file = new File(s);
-					if (!file.exists())
-						continue;
-					classPath.add(file);
+
+				File path = NuclosSystemParameters.getDirectory(NuclosSystemParameters.GENERATOR_CLASS_PATH);
+
+				// if the configured path does not exist, try to obtain path from application context (development)
+				if (!path.isDirectory()) {
+					Resource r = SpringApplicationContextHolder.getApplicationContext().getResource("WEB-INF/lib/");
+					try {
+						path = r.getFile();
+					}
+					catch (Exception ex) {
+						log.warn("Cannot resolve compiler class path.");
+					}
 				}
-				classPath.addAll(getLibs(NuclosSystemParameters.getDirectory(NuclosSystemParameters.GENERATOR_CLASS_PATH)));
+
+				classPath.addAll(getLibs(path));
 				return classPath;
 			}
 		}));

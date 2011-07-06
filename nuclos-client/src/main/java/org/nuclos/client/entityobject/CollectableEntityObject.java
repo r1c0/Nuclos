@@ -99,13 +99,7 @@ public class CollectableEntityObject extends CollectableMasterData implements Re
 	public void setField(String sFieldName, CollectableField clctfValue) {
 		mpFields.put(sFieldName, clctfValue);
 		vo.getFields().put(sFieldName, clctfValue.getValue());
-		if(clctfValue instanceof CollectableValueIdField && clctfValue.getValueId() != null) {
-			vo.getFieldIds().put(sFieldName, IdUtils.toLongId(clctfValue.getValueId()));
-		}
-		else if(clctfValue instanceof CollectableGenericObjectAttributeField && clctfValue.isIdField() && clctfValue.getValueId() != null) {
-			vo.getFieldIds().put(sFieldName, IdUtils.toLongId(clctfValue.getValueId()));
-		}
-		else if(clctfValue instanceof CollectableMasterDataField && clctfValue.isIdField() && clctfValue.getValueId() != null){
+		if(clctfValue.isIdField()) {
 			vo.getFieldIds().put(sFieldName, IdUtils.toLongId(clctfValue.getValueId()));
 		}
 		vo.flagUpdate();
