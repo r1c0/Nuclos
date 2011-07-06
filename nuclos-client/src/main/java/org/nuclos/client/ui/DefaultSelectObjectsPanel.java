@@ -26,8 +26,6 @@ import java.awt.Insets;
 import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 
-
-
 /**
  * Panel for selecting objects from a list of available objects.
  * <br>
@@ -40,9 +38,6 @@ import javax.swing.JScrollPane;
 
 public class DefaultSelectObjectsPanel extends SelectObjectsPanel {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public DefaultSelectObjectsPanel() {

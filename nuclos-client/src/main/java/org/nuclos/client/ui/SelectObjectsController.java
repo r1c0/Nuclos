@@ -47,15 +47,26 @@ import org.nuclos.client.ui.model.SortedListModel;
  * @version	01.00.00
  */
 
-public abstract class SelectObjectsController<T> extends Controller {
+public class SelectObjectsController<T> extends Controller {
+	
+	/**
+	 * Warning: Don't even think about making this non-final! (Thomas Pasch)
+	 */
+	private final SelectObjectsPanel panel;
 
-	public SelectObjectsController(Component parent) {
+	public SelectObjectsController(Component parent, SelectObjectsPanel panel) {
 		super(parent);
+		this.panel = panel;
 	}
 
-	protected abstract SelectObjectsPanel getPanel();
+	/**
+	 * Warning: Don't even think about making this non-final! (Thomas Pasch)
+	 */
+	public final SelectObjectsPanel getPanel() {
+		return panel;
+	}
 
-	protected void setupListeners(final MutableListModel<?> listmodelSelectedFields) {
+	protected void setupListeners(final MutableListModel<T> listmodelSelectedFields) {
 		// add list selection listener for "right" button:
 		this.getPanel().getJListAvailableObjects().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			@Override
@@ -97,8 +108,8 @@ public abstract class SelectObjectsController<T> extends Controller {
 			@Override
 			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent ev) {
-				final MutableListModel<Object> modelSrc = (MutableListModel<Object>) jlstSrc.getModel();
-				final MutableListModel<Object> modelDest = (MutableListModel<Object>) jlstDest.getModel();
+				final MutableListModel<T> modelSrc = (MutableListModel<T>) jlstSrc.getModel();
+				final MutableListModel<T> modelDest = (MutableListModel<T>) jlstDest.getModel();
 				final int[] aiSelectedIndices = jlstSrc.getSelectedIndices();
 
 				// 1. add the selected rows to the dest list, in increasing order:
@@ -225,7 +236,7 @@ public abstract class SelectObjectsController<T> extends Controller {
 		return (iBtn != null && iBtn.intValue() == JOptionPane.OK_OPTION);
 	}
 
-	private List<T> getObjects(ListModel model) {
+	protected List<T> getObjects(ListModel model) {
 		final List<T> result = new ArrayList<T>();
 
 		for (int i = 0; i < model.getSize(); ++i) {

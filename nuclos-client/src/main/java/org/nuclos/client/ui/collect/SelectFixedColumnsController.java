@@ -16,20 +16,11 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect;
 
-import org.nuclos.client.ui.DefaultSelectObjectsPanel;
-import org.nuclos.client.ui.SelectObjectsController;
-import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
-import org.nuclos.client.ui.model.CommonDefaultListModel;
-import org.nuclos.client.ui.model.MutableListModel;
-import org.nuclos.client.ui.model.SortedListModel;
-import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common2.CommonLocaleDelegate;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -37,17 +28,17 @@ import java.util.Set;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
 
-
-
+import org.nuclos.client.ui.SelectObjectsController;
+import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
+import org.nuclos.client.ui.model.CommonDefaultListModel;
+import org.nuclos.client.ui.model.MutableListModel;
+import org.nuclos.client.ui.model.SortedListModel;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common2.CommonLocaleDelegate;
 
 /**
  * Controller for selecting visible columns.
@@ -60,209 +51,17 @@ import javax.swing.table.AbstractTableModel;
  */
 public class SelectFixedColumnsController extends SelectObjectsController<CollectableEntityField> {
 
-	// TODO For generification: is this class always used for CollectableEntityField?
-	private static class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private JTable tblSelectedColumn;
-
-		public SelectFixedColumnsPanel() {
-			super();
-
-			this.labAvailableColumns.setText(CommonLocaleDelegate.getMessage("SelectFixedColumnsController.8","Verf\u00fcgbare Spalten"));
-			this.labSelectedColumns.setText(CommonLocaleDelegate.getMessage("SelectFixedColumnsController.1","Ausgew\u00e4hlte Spalten"));
-
-			this.btnLeft.setToolTipText(CommonLocaleDelegate.getMessage("SelectFixedColumnsController.5","Markierte Spalte(n) nicht anzeigen"));
-			this.btnRight.setToolTipText(CommonLocaleDelegate.getMessage("SelectFixedColumnsController.4","Markierte Spalte(n) anzeigen"));
-			this.btnUp.setToolTipText(CommonLocaleDelegate.getMessage("SelectFixedColumnsController.6","Markierte Spalte nach oben verschieben"));
-			this.btnDown.setToolTipText(CommonLocaleDelegate.getMessage("SelectFixedColumnsController.7","Markierte Spalte nach unten verschieben"));
-
-			this.btnUp.setVisible(true);
-			this.btnDown.setVisible(true);
-		}
-
-		@Override
-		protected void init() {
-			super.init();
-
-			this.tblSelectedColumn = new JTable();
-			this.tblSelectedColumn.setShowHorizontalLines(false);
-			this.scrlpnSelectedColumns.getViewport().add(tblSelectedColumn, null);
-			scrlpnSelectedColumns.getViewport().setBackground(tblSelectedColumn.getBackground());
-
-		}
-
-		@SuppressWarnings("unchecked")
-		public MutableListModel<Object> getAvailableColumnsModel() {
-			return (MutableListModel<Object>) this.getJListAvailableObjects().getModel();
-		}
-
-		@SuppressWarnings("unchecked")
-		public MutableListModel<Object> getSelectedColumnsModel() {
-			return ((FixedTableModel) this.tblSelectedColumn.getModel()).getObjectListModel();
-		}
-
-		@SuppressWarnings("unchecked")
-		public Set<CollectableEntityField> getFixedColumns() {
-			return ((FixedTableModel) this.tblSelectedColumn.getModel()).getFixedObjSet();
-		}
-
-		public <T> void setAvailableColumnsModel(MutableListModel<T> listmodelAvailableFields) {
-			this.getJListAvailableObjects().setModel(listmodelAvailableFields);
-		}
-
-		public <T> void setSelectedColumnsModel(MutableListModel<T> listmodelSelectedFields) {
-			this.tblSelectedColumn.setModel(new FixedTableModel<T>(listmodelSelectedFields));
-		}
-
-		public void addMouseListenerAvailableJComponent(MouseListener aListener) {
-			this.getJListAvailableObjects().addMouseListener(aListener);
-		}
-
-		public void addMouseListenerSelectedJComponent(MouseListener aListener) {
-			this.getJListSelectedObjects().addMouseListener(aListener);
-		}
-
-		public void addSelectionListnerSelectedJCmponent(ListSelectionListener aListener) {
-			this.tblSelectedColumn.getSelectionModel().addListSelectionListener(aListener);
-		}
-
-		public ListSelectionModel getSelectedModelSelectedJComponent() {
-			return this.tblSelectedColumn.getSelectionModel();
-		}
-
-		public ListSelectionModel getSelectedModelAvailabelJComponent() {
-			return this.getJListAvailableObjects().getSelectionModel();
-		}
-
-		@SuppressWarnings("unchecked")
-		public <T> void setFixedColumns(Set<T> fixedColumns) {
-			((FixedTableModel<T>) this.tblSelectedColumn.getModel()).setFixedObjSet(fixedColumns);
-			this.tblSelectedColumn.getColumnModel().getColumn(0).setPreferredWidth(200);
-			this.tblSelectedColumn.getColumnModel().getColumn(1).setPreferredWidth(50);
-			this.tblSelectedColumn.getColumnModel().getColumn(1).setMaxWidth(50);
-		}
-
-	}	// inner class SelectColumnsPanel
-
-	private static class FixedTableModel<T> extends AbstractTableModel {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private MutableListModel<T> objectListModel;
-		private final Set<T> fixedObjSet;
-
-		public FixedTableModel(MutableListModel<T> objectColl) {
-			super();
-			this.fixedObjSet = new HashSet<T>();
-			this.objectListModel = objectColl;
-			this.objectListModel.addListDataListener(new ListDataListener() {
-
-				@Override
-				public void intervalAdded(ListDataEvent e) {
-					FixedTableModel.this.fireTableRowsInserted(e.getIndex0(), e.getIndex1());
-				}
-
-				@Override
-				public void intervalRemoved(ListDataEvent e) {
-					FixedTableModel.this.fireTableRowsDeleted(e.getIndex0(), e.getIndex1());
-				}
-
-				@Override
-				public void contentsChanged(ListDataEvent e) {
-					FixedTableModel.this.fireTableRowsUpdated(e.getIndex0(), e.getIndex1());
-				}
-			});
-		}
-
-		public void setFixedObjSet(Set<T> fixedColumns) {
-			fixedObjSet.clear();
-			fixedObjSet.addAll(fixedColumns);
-			FixedTableModel.this.fireTableStructureChanged();
-		}
-
-		@Override
-		public int getColumnCount() {
-			return 2;
-		}
-
-		@Override
-		public int getRowCount() {
-			return objectListModel.getSize();
-		}
-
-		@Override
-		public String getColumnName(int col) {
-			return (col == 0) ? "Spalte" : "Fixiert";
-		}
-
-		@Override
-		public Object getValueAt(int row, int col) {
-			return (col == 0) ? objectListModel.getElementAt(row) : isObjectFixed(objectListModel.getElementAt(row));
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-			if (columnIndex == 1 && aValue instanceof Boolean) {
-				if (((Boolean) aValue).booleanValue()) {
-					if (this.fixedObjSet.size() + 1 >= objectListModel.getSize()) {
-						JOptionPane.showMessageDialog(null, CommonLocaleDelegate.getMessage("SelectFixedColumnsController.2","Es d\u00fcrfen nicht alle Spalten ausgeblendet und fixiert werden"));
-
-					}
-					else {
-						this.fixedObjSet.add((T) objectListModel.getElementAt(rowIndex));
-					}
-				}
-				else {
-					this.fixedObjSet.remove(objectListModel.getElementAt(rowIndex));
-				}
-			}
-		}
-
-		@Override
-		public boolean isCellEditable(int rowIndex, int columnIndex) {
-			return (columnIndex != 0);
-		}
-
-		@Override
-		public Class<?> getColumnClass(int columnIndex) {
-			return (columnIndex == 0) ? Object.class : Boolean.class;
-		}
-
-		private Boolean isObjectFixed(Object rowObj) {
-			return this.fixedObjSet.contains(rowObj);
-		}
-
-		public MutableListModel<T> getObjectListModel() {
-			return objectListModel;
-		}
-
-		public Set<T> getFixedObjSet() {
-			return fixedObjSet;
-		}
-	}
-
-	private final SelectFixedColumnsPanel selectPnl = new SelectFixedColumnsPanel();
-
-	public SelectFixedColumnsController(Component parent) {
-		super(parent);
+	public SelectFixedColumnsController(Component parent, SelectFixedColumnsPanel panel) {
+		super(parent, panel);
 	}
 
 	@Override
-	protected SelectFixedColumnsPanel getPanel() {
-		return this.selectPnl;
-	}
-
-	@Override
-	protected void setupListeners(final MutableListModel<?> listmodelSelectedFields) {
+	protected void setupListeners(final MutableListModel<CollectableEntityField> listmodelSelectedFields) {
+		final SelectFixedColumnsPanel panel = getSfcPanel();
+		
 		// add list selection listener for "right" button:
-		this.getPanel().getJListAvailableObjects().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+		panel.getJListAvailableObjects().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent ev) {
 
@@ -273,7 +72,7 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 		});
 
 		// add list selectioners for "left", "up" and "down" buttons:
-		(this.getPanel()).addSelectionListnerSelectedJCmponent(new ListSelectionListener() {
+		panel.addSelectionListnerSelectedJCmponent(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent ev) {
 				final ListSelectionModel lsm = (ListSelectionModel) ev.getSource();
@@ -286,13 +85,13 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 			}	// valueChanged
 		});
 
-		this.getPanel().btnRight.addActionListener(new ActionListener() {
+		panel.btnRight.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				moveRight();
 			}
 		});
-		this.getPanel().btnLeft.addActionListener(new ActionListener() {
+		panel.btnLeft.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				moveLeft();
@@ -300,7 +99,7 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 		});
 
 		// double click on list entry as shortcut for pressing the corresponding button:
-		this.getPanel().addMouseListenerAvailableJComponent(new MouseAdapter() {
+		panel.addMouseListenerAvailableJComponent(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent ev) {
 				if (ev.getClickCount() == 2) {
@@ -309,7 +108,7 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 			}
 		});
 
-		this.getPanel().addMouseListenerSelectedJComponent(new MouseAdapter() {
+		panel.addMouseListenerSelectedJComponent(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent ev) {
 				if (ev.getClickCount() == 2) {
@@ -318,13 +117,13 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 			}
 		});
 
-		this.getPanel().btnUp.addActionListener(new ActionListener() {
+		panel.btnUp.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				moveUpDown(-1);
 			}
 		});
-		this.getPanel().btnDown.addActionListener(new ActionListener() {
+		panel.btnDown.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				moveUpDown(+1);
@@ -360,9 +159,10 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 		final MutableListModel<CollectableEntityField> listmodelAvailableFields = new SortedListModel<CollectableEntityField>(ro.getAvailableFields(), ro.getComparatorForAvaible());
 		final MutableListModel<CollectableEntityField> listmodelSelectedFields = new CommonDefaultListModel<CollectableEntityField>(ro.getSelectedFields());
 
-		this.getPanel().setAvailableColumnsModel(listmodelAvailableFields);
-		this.getPanel().setSelectedColumnsModel(listmodelSelectedFields);
-		this.getPanel().setFixedColumns(ro.getFixed());
+		final SelectFixedColumnsPanel panel = getSfcPanel();
+		panel.setAvailableColumnsModel(listmodelAvailableFields);
+		panel.setSelectedColumnsModel(listmodelSelectedFields);
+		panel.setFixedColumns(ro.getFixed());
 
 		// @todo the listeners are added here so calling run() multiple times is not possible
 		this.setupListeners(listmodelSelectedFields);
@@ -382,46 +182,21 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 		return (iBtn != null && iBtn.intValue() == JOptionPane.OK_OPTION);
 	}
 
-	private static List<CollectableEntityField> getObjects(ListModel model) {
-		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
-
-		for (int i = 0; i < model.getSize(); ++i) {
-			result.add((CollectableEntityField) model.getElementAt(i));
-		}
-
-		return result;
-	}
-
-	/**
-	 * @return the selected objects, when the dialog is closed.
-	 */
-	@Override
-	public List<CollectableEntityField> getSelectedObjects() {
-		return getObjects(this.getPanel().getSelectedColumnsModel());
-	}
-
-	/**
-	 * @return the available objects, when the dialog is closed
-	 */
-	@Override
-	public List<CollectableEntityField> getAvailableObjects() {
-		return getObjects(this.getPanel().getAvailableColumnsModel());
-	}
-
 	/**
 	 * @return the fixed columns, when the dialog is closed
 	 */
 	public Set<CollectableEntityField> getFixedObjects() {
-		return new HashSet<CollectableEntityField>(this.getPanel().getFixedColumns());
+		return new HashSet<CollectableEntityField>(getSfcPanel().getFixedColumns());
 	}
 
 	private void moveLeft() {
-		MutableListModel<Object> modelSrc = this.getPanel().getSelectedColumnsModel();
-		ListSelectionModel selectionModel = this.getPanel().getSelectedModelSelectedJComponent();
-		MutableListModel<Object> modelDest = this.getPanel().getAvailableColumnsModel();
+		final SelectFixedColumnsPanel panel = getSfcPanel();
+		MutableListModel<CollectableEntityField> modelSrc = panel.getSelectedColumnsModel();
+		ListSelectionModel selectionModel = panel.getSelectedModelSelectedJComponent();
+		MutableListModel<CollectableEntityField> modelDest = panel.getAvailableColumnsModel();
 		final int[] aiSelectedIndices = getSelectedIndices(selectionModel);
 
-		final List<Object> lstNotSelected = new ArrayList<Object>();
+		final List<CollectableEntityField> lstNotSelected = new ArrayList<CollectableEntityField>();
 
 		for (int i = modelSrc.getSize() - 1; i >= 0; --i) {
 			boolean isSelected = false;
@@ -433,7 +208,7 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 			}
 
 			if (!isSelected) {
-				lstNotSelected.add(modelSrc.getElementAt(i));
+				lstNotSelected.add((CollectableEntityField) modelSrc.getElementAt(i));
 			}
 		}
 
@@ -448,13 +223,14 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 	}
 
 	private void moveRight() {
+		final SelectFixedColumnsPanel panel = getSfcPanel();
 		moveLeftRight(
-				this.getPanel().getAvailableColumnsModel(),
-				this.getPanel().getSelectedColumnsModel(),
-				this.getPanel().getSelectedModelAvailabelJComponent());
+				panel.getAvailableColumnsModel(),
+				panel.getSelectedColumnsModel(),
+				panel.getSelectedModelAvailabelJComponent());
 	}
 
-	private static void moveLeftRight(MutableListModel<Object> modelSrc, MutableListModel<Object> modelDest, ListSelectionModel selectionModel) {
+	private static void moveLeftRight(MutableListModel<CollectableEntityField> modelSrc, MutableListModel<CollectableEntityField> modelDest, ListSelectionModel selectionModel) {
 		final int[] aiSelectedIndices = getSelectedIndices(selectionModel);
 
 		// 1. add the selected rows to the dest list, in increasing order:
@@ -474,15 +250,16 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 	}
 
 	public void moveUpDown(int iDirection) {
-		final MutableListModel<Object> listmodelSelectedFields = this.getPanel().getSelectedColumnsModel();
+		final SelectFixedColumnsPanel panel = getSfcPanel();
+		final MutableListModel<CollectableEntityField> listmodelSelectedFields = panel.getSelectedColumnsModel();
 
-		final int iIndex = this.getPanel().getSelectedModelSelectedJComponent().getAnchorSelectionIndex();
+		final int iIndex = panel.getSelectedModelSelectedJComponent().getAnchorSelectionIndex();
 		final int iNewIndex = iIndex + iDirection;
 		if (iNewIndex >= 0 && iNewIndex < listmodelSelectedFields.getSize()) {
 			final Object o = listmodelSelectedFields.getElementAt(iIndex);
 			listmodelSelectedFields.remove(iIndex);
 			listmodelSelectedFields.add(iNewIndex, o);
-			this.getPanel().getSelectedModelSelectedJComponent().setSelectionInterval(iNewIndex, iNewIndex);
+			panel.getSelectedModelSelectedJComponent().setSelectionInterval(iNewIndex, iNewIndex);
 		}
 	}
 
@@ -506,5 +283,17 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 		return result;
 	}
 
-
+	public SelectFixedColumnsPanel getSfcPanel() {
+		return (SelectFixedColumnsPanel) getPanel();
+	}
+	
+	/**
+	 * @return the selected objects, when the dialog is closed.
+	 */
+	@Override
+	public List<CollectableEntityField> getSelectedObjects() {
+		// return getObjects(getSfcPanel().getJListSelectedObjects().getModel());
+		return getObjects(getSfcPanel().getSelectedColumnsModel());
+	}
+	
 }	// class SelectColumnsController

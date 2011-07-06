@@ -59,15 +59,8 @@ public class SelectColumnsController extends SelectObjectsController<Collectable
 		}
 	}  // inner class SelectColumnsPanel
 
-	private final SelectColumnsPanel pnl = new SelectColumnsPanel();
-
 	public SelectColumnsController(Component parent) {
-		super(parent);
-	}
-
-	@Override
-	protected SelectObjectsPanel getPanel() {
-		return this.pnl;
+		super(parent, new SelectColumnsPanel());
 	}
 
 	/**

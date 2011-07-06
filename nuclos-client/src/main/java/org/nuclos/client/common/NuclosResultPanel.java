@@ -86,6 +86,7 @@ import org.nuclos.client.ui.collect.CollectableTableHelper;
 import org.nuclos.client.ui.collect.CollectableTableModel;
 import org.nuclos.client.ui.collect.ResultPanel;
 import org.nuclos.client.ui.collect.SelectFixedColumnsController;
+import org.nuclos.client.ui.collect.SelectFixedColumnsPanel;
 import org.nuclos.client.ui.collect.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
@@ -521,7 +522,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	@Override
 	public void cmdSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl) {
 		final NuclosCollectController<Clct> nucleusctl = (NuclosCollectController<Clct>) clctctl;
-		final SelectFixedColumnsController ctl = new SelectFixedColumnsController(clctctl.getFrame());
+		final SelectFixedColumnsController ctl = new SelectFixedColumnsController(clctctl.getFrame(), new SelectFixedColumnsPanel());
 		final List<CollectableEntityField> lstAvailable = fields.getAvailableFields();
 		final List<CollectableEntityField> lstSelected = fields.getSelectedFields();
 		final ChoiceEntityFieldList ro = new ChoiceEntityFieldList(stFixedColumns);

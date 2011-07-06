@@ -180,13 +180,8 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 	
 	@SuppressWarnings("unchecked")
 	private void cmdShowAddDialog(final JTree jTree) {
-		final SelectObjectsPanel selectPanel = new NucletContentSelectObjectPanel();
-		SelectObjectsController<AbstractNucletContentEntryTreeNode> selectCtrl = new SelectObjectsController<AbstractNucletContentEntryTreeNode>(null) {
-			@Override
-			protected SelectObjectsPanel getPanel() {
-				return selectPanel;
-			}
-		};
+		SelectObjectsController<AbstractNucletContentEntryTreeNode> selectCtrl = 
+			new SelectObjectsController<AbstractNucletContentEntryTreeNode>(null, new NucletContentSelectObjectPanel());
 		
 		ChoiceList<AbstractNucletContentEntryTreeNode> ro = new ChoiceList<AbstractNucletContentEntryTreeNode>();
 		ro.set(getTreeNodeFacade().getAvailableNucletContents(), 
@@ -195,6 +190,7 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 		
 		final boolean userPressedOk = selectCtrl.run(ro, 
 				CommonLocaleDelegate.getText("NucletExplorerNode.2", "Zum Nuclet hinzufuegen") + "...");
+		final NucletContentSelectObjectPanel selectPanel = (NucletContentSelectObjectPanel) selectCtrl.getPanel();
 		PreferencesUtils.putRectangle(prefs, PREFS_NODE_ADDREMOVE_DIALOG_SIZE, selectPanel.getBounds());
 		
 		if (userPressedOk) {
@@ -209,13 +205,8 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 	
 	@SuppressWarnings("unchecked")
 	private void cmdShowRemoveDialog(final JTree jTree) {
-		final SelectObjectsPanel selectPanel = new NucletContentSelectObjectPanel();
-		SelectObjectsController<AbstractNucletContentEntryTreeNode> selectCtrl = new SelectObjectsController<AbstractNucletContentEntryTreeNode>(null) {
-			@Override
-			protected SelectObjectsPanel getPanel() {
-				return selectPanel;
-			}
-		};
+		SelectObjectsController<AbstractNucletContentEntryTreeNode> selectCtrl = 
+				new SelectObjectsController<AbstractNucletContentEntryTreeNode>(null, new NucletContentSelectObjectPanel());
 		
 		final ChoiceList<AbstractNucletContentEntryTreeNode> ro = new ChoiceList<AbstractNucletContentEntryTreeNode>();
 		ro.set(getTreeNodeFacade().getNucletContent(getTreeNode()), 
@@ -223,6 +214,8 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 				new AbstractNucletContentEntryTreeNode.Comparator());
 		final boolean userPressedOk = selectCtrl.run(ro,  
 				CommonLocaleDelegate.getText("NucletExplorerNode.4", "Vom Nuclet entfernen") + "...");
+		
+		NucletContentSelectObjectPanel selectPanel = (NucletContentSelectObjectPanel) selectCtrl.getPanel();
 		PreferencesUtils.putRectangle(prefs, PREFS_NODE_ADDREMOVE_DIALOG_SIZE, selectPanel.getBounds());
 		
 		if (userPressedOk) {

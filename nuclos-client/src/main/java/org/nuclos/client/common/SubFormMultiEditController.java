@@ -52,17 +52,10 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 	private final SubForm subform;
 	private final CollectableFactory<Clct> clctfactory;
 
-	private final DefaultSelectObjectsPanel pnl = new DefaultSelectObjectsPanel();
-
 	SubFormMultiEditController(SubForm subform, CollectableFactory<Clct> clctfactory) {
-		super(subform);
+		super(subform, new DefaultSelectObjectsPanel());
 		this.subform = subform;
 		this.clctfactory = clctfactory;
-	}
-
-	@Override
-	protected SelectObjectsPanel getPanel() {
-		return this.pnl;
 	}
 
 	@SuppressWarnings("unchecked")

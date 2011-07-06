@@ -196,7 +196,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	@SuppressWarnings("unchecked")
 	private void cmdSelectColumns() {
 
-		final SelectFixedColumnsController ctl = new SelectFixedColumnsController(this.getHeaderTable());
+		final SelectFixedColumnsController ctl = new SelectFixedColumnsController(this.getHeaderTable(), new SelectFixedColumnsPanel());
 		final List<CollectableEntityField> lstAvailable = getAllAvailableFields();
 		final Set<CollectableEntityField> lstFixed = getDisplayedHeaderTableFields();
 		final List<CollectableEntityField> lstSelected = new ArrayList<CollectableEntityField>(lstFixed);

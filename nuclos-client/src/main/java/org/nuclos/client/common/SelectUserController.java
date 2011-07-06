@@ -17,7 +17,6 @@
 package org.nuclos.client.common;
 
 import java.awt.Component;
-import java.util.Comparator;
 import java.util.List;
 
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -57,11 +56,9 @@ public class SelectUserController<T extends MasterDataVO> extends SelectObjectsC
 		}
 	}  // inner class SelectColumnsPanel
 
-	private SelectUserPanel pnl = null;
-
 	public SelectUserController(Component parent, String text1, String text2, String text3, String text4) {
-		super(parent);
-		pnl = new SelectUserPanel(text1, text2, text3, text4);
+		super(parent, new SelectUserPanel(text1, text2, text3, text4));
+		final SelectUserPanel pnl = (SelectUserPanel) getPanel();
 		this.getPanel().getJListAvailableObjects().setCellRenderer(new ColorCellRenderer());
 		this.getPanel().getJListSelectedObjects().setCellRenderer(new ColorCellRenderer());
 
@@ -75,20 +72,21 @@ public class SelectUserController<T extends MasterDataVO> extends SelectObjectsC
 		this.getPanel().getJListSelectedObjects().setToolTipText(tooltipTxt);
 	}
 
-	@Override
-	protected SelectObjectsPanel getPanel() {
-		return this.pnl;
-	}
-
 	public boolean run(ChoiceList<T> ro) {
 		return this.run(ro, CommonLocaleDelegate.getMessage("SelectUserController.7", "Mit LDAP Synchronisieren"));
 	}
 
+	/**
+	 * @deprecated Use getSelectedObjects(). 
+	 */
 	@SuppressWarnings("unchecked")
 	public List<MasterDataWithDependantsVOWrapper> getSelectedColumns() {
 		return (List<MasterDataWithDependantsVOWrapper>) this.getSelectedObjects();
 	}
 
+	/**
+	 * @deprecated Use getAvailableObjects(). 
+	 */
 	@SuppressWarnings("unchecked")
 	public List<MasterDataVO> getAvailableColumns() {
 		return (List<MasterDataVO>) this.getAvailableObjects();

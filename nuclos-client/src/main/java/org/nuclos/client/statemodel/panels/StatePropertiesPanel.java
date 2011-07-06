@@ -868,17 +868,10 @@ public class StatePropertiesPanel extends JPanel {
 		 */
 		class RoleSelection extends SelectObjectsController {
 
-			private final DefaultSelectObjectsPanel pnl = new DefaultSelectObjectsPanel();
-			
 			public RoleSelection(Component parent) {
-				super(parent);
+				super(parent, new DefaultSelectObjectsPanel());
 			}
 
-			@Override
-			protected SelectObjectsPanel getPanel() {
-				return pnl;
-			}
-			
 		}
 		
 		/**

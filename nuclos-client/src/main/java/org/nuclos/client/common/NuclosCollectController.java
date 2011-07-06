@@ -1252,7 +1252,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 						final List<RuleVO> lstRuleToExecute = CollectionUtils.typecheck(controller.getSelectedObjects(), RuleVO.class);
 						if (lstRuleToExecute != null && !lstRuleToExecute.isEmpty()) {
 							try {
-								executeBusinessRules(lstRuleToExecute, controller.getPanel().cbxSaveAfterRuleExecution.isSelected());
+								executeBusinessRules(lstRuleToExecute, controller.getMySelectObjectsPanel().getSaveAfterExec().isSelected());
 							} catch (CommonBusinessException ex) {
 								if (!handleSpecialException(ex))
 									throw ex;
@@ -1262,7 +1262,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 				}
 			});
 			//refresh the current object if it has been saved
-			if (controller.getPanel().cbxSaveAfterRuleExecution.isSelected() && !controller.getSelectedObjects().isEmpty()) {
+			if (controller.getMySelectObjectsPanel().getSaveAfterExec().isSelected() && !controller.getSelectedObjects().isEmpty()) {
 				this.cmdRefreshCurrentCollectable();
 			}
 		}
@@ -1291,39 +1291,43 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		return bTransferable;
 	}
 
-	/* helper class for cmdExecuteRulesByUser
-	 */
-	class SelectController extends SelectObjectsController {
-		class SelectObjectsPanel extends DefaultSelectObjectsPanel {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-			final JCheckBox cbxSaveAfterRuleExecution = new JCheckBox();
+	private static class MySelectObjectsPanel extends DefaultSelectObjectsPanel {
 
-			public SelectObjectsPanel() {
-				super();
-				init();
-				cbxSaveAfterRuleExecution.setText(CommonLocaleDelegate.getMessage("NuclosCollectController.10","Objekt nach Regelausf\u00fchrung speichern"));
-				this.pnlMain.add(cbxSaveAfterRuleExecution, new GridBagConstraints(2, 2, 1, 1, 1.0, 1.0
-						, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-			}
+		private static final long serialVersionUID = 1L;
+		
+		private final JCheckBox cbxSaveAfterRuleExecution = new JCheckBox();
+
+		MySelectObjectsPanel() {
+			super();
+			init();
+			cbxSaveAfterRuleExecution.setText(CommonLocaleDelegate.getMessage("NuclosCollectController.10","Objekt nach Regelausf\u00fchrung speichern"));
+			this.pnlMain.add(cbxSaveAfterRuleExecution, new GridBagConstraints(2, 2, 1, 1, 1.0, 1.0
+					, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		}
-
-		private SelectObjectsPanel panel = new SelectObjectsPanel();
+		
+		JCheckBox getSaveAfterExec() {
+			return cbxSaveAfterRuleExecution;
+		}
+	}
+	
+	/**
+	 *  helper class for cmdExecuteRulesByUser
+	 */
+	private static class SelectController extends SelectObjectsController {
 
 		public SelectController(Component parent) {
-			super(parent);
+			super(parent, new MySelectObjectsPanel());
+			final MySelectObjectsPanel panel = (MySelectObjectsPanel) getPanel();
 			panel.btnUp.setEnabled(true);
 			panel.btnDown.setEnabled(true);
 			panel.btnUp.setVisible(true);
 			panel.btnDown.setVisible(true);
 		}
-
-		@Override
-		public SelectObjectsPanel getPanel() {
-			return panel;
+		
+		MySelectObjectsPanel getMySelectObjectsPanel() {
+			return (MySelectObjectsPanel) getPanel();
 		}
+
 	}
 
 	@Override

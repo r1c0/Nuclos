@@ -33,14 +33,17 @@ import javax.swing.JScrollPane;
  * @version	01.00.00
  */
 public abstract class SelectObjectsPanel extends JPanel {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
+	
+	/*
+	 * TODO: Make these protected (Thomas Pasch). 
+	 */
 	public final JButton btnRight = new JButton();
 	public final JButton btnLeft = new JButton();
 	public final JButton btnUp = new JButton();
 	public final JButton btnDown = new JButton();
+	
 	protected final JLabel labAvailableColumns = new JLabel();
 	protected final JLabel labSelectedColumns = new JLabel();
 	protected final JPanel pnlMain = new JPanel();
