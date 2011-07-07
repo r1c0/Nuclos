@@ -41,7 +41,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -80,7 +79,6 @@ import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
 import javax.swing.RowSorter.SortKey;
-import javax.swing.SortOrder;
 import javax.swing.TransferHandler;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -124,6 +122,7 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterData;
+import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
@@ -153,11 +152,14 @@ import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.DeleteSelectedCollectablesController;
 import org.nuclos.client.ui.collect.DetailsCollectableEventListener;
 import org.nuclos.client.ui.collect.DetailsPanel;
+import org.nuclos.client.ui.collect.GenericObjectResultController;
+import org.nuclos.client.ui.collect.ResultController;
 import org.nuclos.client.ui.collect.ResultPanel;
 import org.nuclos.client.ui.collect.SearchPanel;
 import org.nuclos.client.ui.collect.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.UpdateSelectedCollectablesController.UpdateAction;
+import org.nuclos.client.ui.collect.UserResultController;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
@@ -200,11 +202,11 @@ import org.nuclos.common.PointerException;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
-import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
@@ -241,7 +243,6 @@ import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonValidationException;
-import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.nuclos.server.genericobject.ProxyList;
 import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectSearchExpression;
@@ -556,31 +557,56 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	/**
 	 * controller for search result templates
+	 * 
+	 * @deprecated Move to GenericObjectResultController.
 	 */
 	private SearchResultTemplateController searchResultTemplatesController;
 
 	/**
 	 * Use the static method <code>newGenericObjectCollectController</code> to create new instances.
+	 * 
 	 * @param parent
 	 * @param iModuleId
 	 * @param bAutoInit TODO
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
 	 */
 	public GenericObjectCollectController(JComponent parent, Integer iModuleId, boolean bAutoInit, MainFrameTab tabIfAny) {
-		super(parent, CollectableGenericObjectEntity.getByModuleId(iModuleId));
-
+		super(parent, CollectableGenericObjectEntity.getByModuleId(iModuleId), new GenericObjectResultController<CollectableGenericObjectWithDependants>());
 		this.iModuleId = iModuleId;
-
 		setCompleteCollectablesStrategy(new CompleteGenericObjectsStrategy());
-
 		final MainFrameTab frame = tabIfAny != null ? tabIfAny : newInternalFrame();
-
 		frame.setLayeredComponent(pnlCollect);
-
 		if (bAutoInit)
 			init();
 
 		addCollectableEventListener(collectableEventListener);
 		setInternalFrame(frame, tabIfAny==null);
+	}
+
+	public GenericObjectCollectController(JComponent parent, Integer iModuleId, boolean bAutoInit, 
+			MainFrameTab tabIfAny, ResultController<CollectableGenericObjectWithDependants> rc) 
+	{
+		super(parent, CollectableGenericObjectEntity.getByModuleId(iModuleId), rc);
+		this.iModuleId = iModuleId;
+		setCompleteCollectablesStrategy(new CompleteGenericObjectsStrategy());
+		final MainFrameTab frame = tabIfAny != null ? tabIfAny : newInternalFrame();
+		frame.setLayeredComponent(pnlCollect);
+		if (bAutoInit)
+			init();
+
+		addCollectableEventListener(collectableEventListener);
+		setInternalFrame(frame, tabIfAny==null);
+	}
+	
+	/**
+	 * @deprecated Move to GenericObjectResultController.
+	 */
+	public SearchResultTemplateController getSearchResultTemplateController() {
+		return searchResultTemplatesController;
 	}
 
 	/**
@@ -784,75 +810,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		closeSubFormControllersInDetails();
 
 		super.close();
-	}
-
-	/**
-	 * @param clcte
-	 * @return the fields of the given entity, plus the fields of all subentities for that entity.
-	 */
-	@Override
-	protected List<CollectableEntityField> getFieldsAvailableForResult(org.nuclos.common.collect.collectable.CollectableEntity clcte) {
-		final List<CollectableEntityField> result = super.getFieldsAvailableForResult(clcte);
-
-		// add parent entity's fields, if any:
-		final org.nuclos.common.collect.collectable.CollectableEntity clcteParent = this.getParentEntity();
-		if (clcteParent != null)
-			result.addAll(CollectionUtils.transform(clcteParent.getFieldNames(), new GetCollectableEntityFieldForResult(clcteParent)));
-
-		// add subentities' fields, if any:
-		final Set<String> stSubEntityNames = GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(getModuleId());
-		final Set<String> stSubEntityLabels = new HashSet<String>();
-		for (String sSubEntityName : stSubEntityNames) {
-			final org.nuclos.common.collect.collectable.CollectableEntity clcteSub = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sSubEntityName);
-			// WORKAROUND for general search: We don't want duplicate entities (assetcomment, ordercomment etc.), so we
-			// ignore entities with duplicate labels:
-			/** @todo eliminate this workaround */
-			final String sSubEntityLabel = clcteSub.getLabel();
-			if (!stSubEntityLabels.contains(sSubEntityLabel)) {
-				stSubEntityLabels.add(sSubEntityLabel);
-				result.addAll(CollectionUtils.transform(clcteSub.getFieldNames(), new GetCollectableEntityFieldForResult(clcteSub)));
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * reads the selected fields and their entities from the user preferences.
-	 * @param clcte
-	 * @return the list of previously selected fields
-	 */
-	@Override
-	protected List<CollectableEntityFieldWithEntity> readSelectedFieldsFromPreferences(org.nuclos.common.collect.collectable.CollectableEntity clcte) {
-		return GenericObjectClientUtils.readCollectableEntityFieldsFromPreferences(getPreferences(), clcte, PREFS_NODE_SELECTEDFIELDS, PREFS_NODE_SELECTEDFIELDENTITIES);
-	}
-
-	/**
-	 * writes the selected fields and their entities to the user preferences.
-	 * @param lstclctefweSelected
-	 * @throws PreferencesException
-	 */
-	@Override
-	protected void writeSelectedFieldsToPreferences(List<? extends CollectableEntityField> lstclctefweSelected) throws PreferencesException {
-		GenericObjectClientUtils.writeCollectableEntityFieldsToPreferences(getPreferences(), CollectionUtils.typecheck(lstclctefweSelected, CollectableEntityFieldWithEntity.class), PREFS_NODE_SELECTEDFIELDS, PREFS_NODE_SELECTEDFIELDENTITIES);
-		super.writeSelectedFieldsToPreferences(lstclctefweSelected);
-	}
-
-	/**
-	 * We need to return a <code>CollectableEntityFieldWithEntity</code> here so we can filter by entity.
-	 * @param clcte
-	 * @param sFieldName
-	 * @return a <code>CollectableEntityField</code> of the given entity with the given field name, to be used in the Result metadata.
-	 */
-	@Override
-	protected CollectableEntityField getCollectableEntityFieldForResult(org.nuclos.common.collect.collectable.CollectableEntity sClcte, String sFieldName) {
-		org.nuclos.common.collect.collectable.CollectableEntity clcte = sClcte;
-		CollectableEntityFieldWithEntity.QualifiedEntityFieldName qFieldName = new CollectableEntityFieldWithEntity.QualifiedEntityFieldName(sFieldName);
-		if(qFieldName.isQualifiedEntityFieldName()){
-			String clcteName = qFieldName.getEntityName();
-			if(clcteName != null && !clcteName.equals(getCollectableEntity().getName()))
-				clcte = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(clcteName);
-		}
-		return GenericObjectClientUtils.getCollectableEntityFieldForResult(clcte, qFieldName.getFieldName(), getCollectableEntity());
 	}
 
 	private void setupKeyActionsForResultPanelVerticalScrollBar() {
@@ -1132,7 +1089,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							}
 							clct = new CollectableGenericObjectWithDependants(lowdcvoHistorical);
 						}
-						replaceSelectedCollectableInTableModel(clct);
+						getResultController().replaceSelectedCollectableInTableModel(clct);
 						cmdEnterViewMode();
 						disableToolbarButtonsForHistoricalView();
 					}
@@ -1312,18 +1269,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	@Override
 	protected SearchFilters getSearchFilters() {
 		return SearchFilters.forEntity(this.getEntityName());
-	}
-
-	/**
-	 * sets all column widths to user preferences; set optimal width if no preferences yet saved
-	 * Unfinalized in the CollectController
-	 * @param tbl
-	 * TODO move to ResultController or ResultPanel
-	 */
-	@Override
-	public void setColumnWidths(final JTable tbl) {
-		if(searchResultTemplatesController == null || searchResultTemplatesController.isSelectedDefaultSearchResultTemplate())
-			super.setColumnWidths(tbl);
 	}
 
 	@Override
@@ -2138,20 +2083,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 	}
 
-	// @todo eliminate this workaround
-	@Override
-	protected List<CollectableSorting> getCollectableSortingSequence() {
-		final List<CollectableSorting> result = new LinkedList<CollectableSorting>();
-		for (SortKey sortKey :  getResultTableModel().getSortKeys()) {
-			final CollectableEntityFieldWithEntity clctefwe = (CollectableEntityFieldWithEntity) getResultTableModel().getCollectableEntityField(sortKey.getColumn());
-			if (clctefwe.getCollectableEntityName().equals(getCollectableEntity().getName())) {
-				final String fieldName = clctefwe.getName();
-				result.add(new CollectableSorting(fieldName, sortKey.getSortOrder() == SortOrder.ASCENDING));
-			}
-		}
-		return result;
-	}
-
 	/**
 	 * @param bMakeConsistent
 	 * @return the search condition contained in the search panel's fields (including the subforms' search fields).
@@ -2222,17 +2153,18 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @throws CollectableFieldFormatException
 	 */
 	protected CollectableGenericObjectSearchExpression getInternalSearchExpression() throws CollectableFieldFormatException {
-		CollectableGenericObjectSearchExpression clctGOSearchExpression = new CollectableGenericObjectSearchExpression(getInternalSearchCondition(), getCollectableSortingSequence(), iSearchDeleted);
-
+		CollectableGenericObjectSearchExpression clctGOSearchExpression = new CollectableGenericObjectSearchExpression(
+				getInternalSearchCondition(), getResultController().getCollectableSortingSequence(), iSearchDeleted);
 		return clctGOSearchExpression;
 	}
 
 	/**
 	 * @return a Comparator that compares the entity labels first, then the field labels.
 	 *         Fields of the main entity are sorted lower than all other fields.
+	 *         
+	 * @deprecated Remove this.
 	 */
-	@Override
-	public Comparator<CollectableEntityField> getCollectableEntityFieldComparator() {
+	private Comparator<CollectableEntityField> getCollectableEntityFieldComparator() {
 		return new Comparator<CollectableEntityField>() {
 			final Collator collator = LangUtils.getDefaultCollator();
 
@@ -2259,7 +2191,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	@Override
 	protected SortableCollectableTableModel<CollectableGenericObjectWithDependants> newResultTableModel() {
-		final SortableCollectableTableModel<CollectableGenericObjectWithDependants> result = GenericObjectClientUtils.<CollectableGenericObjectWithDependants>newGenericObjectsResultTableModel(getCollectableEntity(), fields.getSelectedFields());
+		final SortableCollectableTableModel<CollectableGenericObjectWithDependants> result = 
+			GenericObjectClientUtils.<CollectableGenericObjectWithDependants>newGenericObjectsResultTableModel(
+					getCollectableEntity(), getFields().getSelectedFields());
 
 		// setup sorted fields and sorting order from preferences
 		List<SortKey> sortKeys = readColumnOrderFromPreferences();
@@ -2375,7 +2309,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	private List<CollectableEntityFieldWithEntity> getSelectedFields() {
-		return CollectionUtils.typecheck(fields.getSelectedFields(), CollectableEntityFieldWithEntity.class);
+		return CollectionUtils.typecheck(getFields().getSelectedFields(), CollectableEntityFieldWithEntity.class);
 	}
 
 	private Set<Integer> getSelectedAndRequiredAttributeIds() {
@@ -2991,7 +2925,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @return the CollectableEntity that contains exactly the fields that are contained in the details tab.
 	 */
 	@Override
-	protected final org.nuclos.common.collect.collectable.CollectableEntity getCollectableEntityForDetails() {
+	protected final CollectableEntity getCollectableEntityForDetails() {
 		final Collection<String> collFieldNames = layoutrootDetails.getFieldNames();
 		return new CollectableGenericObjectEntity(this.getEntityName(), getEntityLabel(), collFieldNames);
 	}
@@ -2999,11 +2933,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/**
 	 * @return the parent entity, if any, of this <code>CollectController</code>'s entity.
 	 */
-	protected org.nuclos.common.collect.collectable.CollectableEntity getParentEntity() {
+	public final CollectableEntity getParentEntity() {
 		return getParentEntity(this.getEntityName());
 	}
 
-	private static org.nuclos.common.collect.collectable.CollectableEntity getParentEntity(String sEntityName) {
+	private static CollectableEntity getParentEntity(String sEntityName) {
 		final String sParentEntityName = getParentEntityName(sEntityName);
 		return (sParentEntityName == null) ? null : DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sParentEntityName);
 	}
@@ -3226,7 +3160,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/**
 	 * @return the module id for leased objects collected in this controller. <code>null</code> for "general search".
 	 */
-	protected final Integer getModuleId() {
+	public final Integer getModuleId() {
 		return iModuleId;
 	}
 
@@ -5401,7 +5335,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 				// store field widths before performing search:
 				/** @todo this should be done by the search itself! */
-				ctl.writeSelectedFieldsAndWidthsToPreferences();
+				ctl.getResultController().writeSelectedFieldsAndWidthsToPreferences();
 				// refresh search result in order to reflect changes made by state transitions:
 				ctl.refreshResult();
 				ctl.setCollectState(CollectState.OUTERSTATE_RESULT, CollectState.RESULTMODE_NOSELECTION);
@@ -5702,16 +5636,22 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		actRestoreCurrentCollectableInDetails.setEnabled(enabled);
 	}
 
-	protected final class GetCollectableEntityFieldForResult implements Transformer<String, CollectableEntityField> {
+	/**
+	 * @deprecated Factor out, move to GenericObjectResultController or remove completely.
+	 */
+	public final class GetCollectableEntityFieldForResult implements Transformer<String, CollectableEntityField> {
 		private final org.nuclos.common.collect.collectable.CollectableEntity clcte;
 
+		/**
+		 * @deprecated Factor out, move to GenericObjectResultController or remove completely.
+		 */
 		public GetCollectableEntityFieldForResult(org.nuclos.common.collect.collectable.CollectableEntity clcte) {
 			this.clcte = clcte;
 		}
 
 		@Override
 		public CollectableEntityField transform(String sFieldName) {
-			return getCollectableEntityFieldForResult(clcte, sFieldName);
+			return getResultController().getCollectableEntityFieldForResult(clcte, sFieldName);
 		}
 	}
 
@@ -5830,7 +5770,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		for(CollectableEntityField clFiled : lstSelectedNew)
 			if(listColumnsWidths.containsKey(clFiled.getName()))
 				clefListColumnsWidths.put(clFiled, listColumnsWidths.get(clFiled.getName()));
-		getResultPanel().initializeFields(fields, this, lstSelectedNew, fixedColumns, clefListColumnsWidths);
+		getResultPanel().initializeFields(getFields(), this, lstSelectedNew, fixedColumns, clefListColumnsWidths);
 	}
 
 	/*

@@ -3,6 +3,7 @@ package org.nuclos.client.ui.collect;
 import java.awt.event.MouseListener;
 import java.util.Set;
 
+import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
@@ -24,7 +25,11 @@ public class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel {
 	private JTable tblSelectedColumn;
 
 	public SelectFixedColumnsPanel() {
-		super();
+		this(null);
+	}
+	
+	public SelectFixedColumnsPanel(JComponent header) {
+		super(header);
 
 		this.labAvailableColumns.setText(CommonLocaleDelegate.getMessage("SelectFixedColumnsController.8","Verf\u00fcgbare Spalten"));
 		this.labSelectedColumns.setText(CommonLocaleDelegate.getMessage("SelectFixedColumnsController.1","Ausgew\u00e4hlte Spalten"));

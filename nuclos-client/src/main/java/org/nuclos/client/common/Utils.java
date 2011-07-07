@@ -32,6 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.Modules;
@@ -73,6 +74,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class Utils {
 
+	private static final Logger log = Logger.getLogger(Utils.class);
+	
 	private static final String FIELDNAME_ACTIVE = "active";
 	private static final String FIELDNAME_VALIDFROM = "validFrom";
 	private static final String FIELDNAME_VALIDUNTIL = "validUntil";
@@ -373,4 +376,20 @@ public class Utils {
 			}
 		}
 	}
+	
+	public static List<CollectableEntityField> createCollectableEntityFieldListFromFieldNames(org.nuclos.client.ui.collect.ResultController ctl, CollectableEntity clcte, List<String> lstSelectedFieldNames) {
+		assert lstSelectedFieldNames != null;
+		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
+		for (String sFieldName : lstSelectedFieldNames) {
+			try {
+				result.add(ctl.getCollectableEntityFieldForResult(clcte, sFieldName));
+			}
+			catch (Exception ex) {
+				// ignore unknown fields
+				log.warn("Ein Feld mit dem Namen \"" + sFieldName + "\" ist nicht in der Entit\u00e4t " + clcte.getName() + " enthalten.", ex);
+			}
+		}
+		return result;
+	}
+
 }	// class Utils

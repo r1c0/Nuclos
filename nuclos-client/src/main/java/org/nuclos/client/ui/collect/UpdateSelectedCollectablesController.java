@@ -65,7 +65,7 @@ public class UpdateSelectedCollectablesController <Clct extends Collectable> ext
 				}
 			}
 
-			ctl.replaceCollectableInTableModel(ctl.updateCollectable(clct, ctl.getAdditionalDataForMultiUpdate(clct)));
+			ctl.getResultController().replaceCollectableInTableModel(ctl.updateCollectable(clct, ctl.getAdditionalDataForMultiUpdate(clct)));
 			return null;
 		}
 

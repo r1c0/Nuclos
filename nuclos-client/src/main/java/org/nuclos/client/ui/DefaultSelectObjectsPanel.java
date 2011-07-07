@@ -24,6 +24,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 
 /**
@@ -39,11 +41,16 @@ import javax.swing.JScrollPane;
 public class DefaultSelectObjectsPanel extends SelectObjectsPanel {
 
 	private static final long serialVersionUID = 1L;
+	
+	protected final JComponent header;
 
 	public DefaultSelectObjectsPanel() {
-		super();
-
-		this.init();
+		this(null);
+	}
+	
+	public DefaultSelectObjectsPanel(JComponent header) {
+		this.header = header;
+		init();
 	}
 
 	protected void init() {
@@ -62,6 +69,9 @@ public class DefaultSelectObjectsPanel extends SelectObjectsPanel {
 		this.btnUp.setEnabled(false);
 		this.btnDown.setEnabled(false);
 		this.scrlpnSelectedColumns.setPreferredSize(new Dimension(200, 300));
+		if (header != null) {
+			add(header, BorderLayout.NORTH);
+		}
 		this.add(pnlMain, BorderLayout.CENTER);
 		this.pnlMain.add(pnlTitleAvailableObjects, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 																		  , GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));

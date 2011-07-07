@@ -474,7 +474,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 			@Override
 			public List<? extends CollectableEntityField> getSelectedFields() {
-				return ctl.fields.getSelectedFields();
+				return ctl.getFields().getSelectedFields();
 			}
 		};
 		tblResult.getTableHeader().addMouseListener(this.tableHeaderColumnListener);
@@ -482,19 +482,20 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 	protected void toggleColumnVisibility(TableColumn columnBefore, final String sFieldName, final CollectController<Clct> ctl,  final CollectableEntity clcte)  {
 		try {
-			final Map<CollectableEntityField, Integer> mpWidths = getVisibleColumnWidth(ctl.getFields().getSelectedFields());
+			final ChoiceEntityFieldList fields = ctl.getFields();
+			final Map<CollectableEntityField, Integer> mpWidths = getVisibleColumnWidth(fields.getSelectedFields());
 			final CollectableEntityField clctef = clcte.getEntityField(sFieldName);
-			final int iIndex = ctl.fields.getSelectedFields().indexOf(clctef);
+			final int iIndex = fields.getSelectedFields().indexOf(clctef);
 			if (iIndex == -1) {
-				cmdAddColumn(ctl.fields, columnBefore, sFieldName);
+				cmdAddColumn(fields, columnBefore, sFieldName);
 				if (!ctl.getCollectablesInResultAreAlwaysComplete()) {
 					ctl.refreshResult();
 				}
 			}
 			else {
-				cmdRemoveColumn(ctl.getFields(), clctef, ctl);
+				cmdRemoveColumn(fields, clctef, ctl);
 			}
-			restoreColumnWidths(ctl.getFields().getSelectedFields(), mpWidths);
+			restoreColumnWidths(fields.getSelectedFields(), mpWidths);
 		} 
 		catch (CommonBusinessException ex) {
 			// TODO Auto-generated catch block
@@ -627,7 +628,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 				@Override
                 public void run() throws CommonBusinessException {
 					final int iSelectedRow = tbl.getSelectedRow();
-					fields.set(ctl.getAvailableColumns(), ctl.getSelectedColumns(), clctctl.getCollectableEntityFieldComparator());
+					fields.set(ctl.getAvailableColumns(), ctl.getSelectedColumns(), clctctl.getResultController().getCollectableEntityFieldComparator());
 					final List<? extends CollectableEntityField> lstSelectedNew = fields.getSelectedFields();
 					((CollectableTableModel<?>) getResultTable().getModel()).setColumns(lstSelectedNew);
 					setupTableCellRenderers(getResultTable());
@@ -697,10 +698,13 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 * @param preferences
 	 */
 	protected void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl, Preferences preferences) {
-		clctctl.fields.set(clctctl.getFieldsAvailableForResult(clcte), new ArrayList<CollectableEntityField>(), clctctl.getCollectableEntityFieldComparator());
+		clctctl.getFields().set(
+				clctctl.getResultController().getFieldsAvailableForResult(clcte), 
+				new ArrayList<CollectableEntityField>(), 
+				clctctl.getResultController().getCollectableEntityFieldComparator());
 
 		// select the previously selected fields according to user preferences:
-		clctctl.fields.moveToSelectedFields(getSelectedFieldsFromPreferences(clcte, clctctl));
+		clctctl.getFields().moveToSelectedFields(getSelectedFieldsFromPreferences(clcte, clctctl));
 	}
 	
 	/**
@@ -713,7 +717,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 */
 	public void initializeFields(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl, final List<CollectableEntityField> lstSelectedNew, 
 			final List<CollectableEntityField> lstFixedNew, final Map<CollectableEntityField,Integer> lstColumnWiths) {		
-		clctctl.fields.setSelectedFields(lstSelectedNew);
+		clctctl.getFields().setSelectedFields(lstSelectedNew);
 	}
 
 	protected void setVisibleTable(boolean visibility){
@@ -728,7 +732,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 */
 	@SuppressWarnings("unchecked")
 	private List<CollectableEntityField> getSelectedFieldsFromPreferences(CollectableEntity clcte, CollectController<Clct> clctctl) {
-		final List<CollectableEntityField> result = (List<CollectableEntityField>) clctctl.readSelectedFieldsFromPreferences(clcte);
+		final List<CollectableEntityField> result = (List<CollectableEntityField>) clctctl.getResultController().readSelectedFieldsFromPreferences(clcte);
 
 		clctctl.makeSureSelectedFieldsAreNonEmpty(clcte, result);
 

@@ -40,7 +40,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -87,6 +86,7 @@ import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.NuclosDropTargetVisitor;
 import org.nuclos.client.common.OneDropNuclosDropTargetListener;
+import org.nuclos.client.common.Utils;
 import org.nuclos.client.genericobject.CollectableGenericObject;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.Modules;
@@ -140,7 +140,6 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
-import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
@@ -176,7 +175,6 @@ import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.report.valueobject.DatasourceVO;
-
 
 
 /**
@@ -251,13 +249,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final CollectableEntity clcte;
 
-	/**
-	 * Use custom column widths? This will always be true as soon as the user changed one or more column width
-	 * the first time.
-	 * TODO move to ResultController or ResultPanel
-	 */
-	boolean bUseCustomColumnWidths;
-
 	private int iLockCount = 0;
 
 	private CompleteCollectablesStrategy<Clct> completecollectablesstrategy = new AlwaysLoadCompleteCollectablesStrategy();
@@ -268,6 +259,45 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	protected CollectableFieldsProviderCache valueListProviderCache = new CollectableFieldsProviderCache();
 
+	/**
+	 * @see #isSearchChangedIgnored()
+	 */
+	private boolean bSearchChangedIgnored;
+
+	/**
+	 * @see #isDetailsChangedIgnored()
+	 */
+	private boolean bDetailsChangedIgnored;
+
+	/**
+	 * the source of the last invocation of detailsChanged
+	 */
+	private Object oSourceOfLastDetailsChange;
+
+	/**
+	 * used internally while the frame is closing.
+	 */
+	private boolean bFrameMayBeClosed;
+
+	private List<CollectableEventListener> collectableListeners = new LinkedList<CollectableEventListener>();
+
+	/**
+	 * Valuelist provider datasource for additional search condition
+	 */
+	private DatasourceVO valueListProviderDatasource;
+	private Map<String, Object> valueListProviderDatasourceParameter;
+
+	private final SearchController ctlSearch = new SearchController();
+
+	/**
+	 * TODO: Not every CollectController has a ResultController associated with it.
+	 * 		Hence, this field should appear more 'upward' in the hierarchy.
+	 *      (Thomas Pasch)
+	 */
+	private final ResultController<Clct> ctlResult;
+
+	private final DetailsController ctlDetails = new DetailsController();
+	
 	/**
 	 * Messages for Collectable events
 	 */
@@ -286,8 +316,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	public static interface CollectableEventListener {
 		public void handleCollectableEvent(Collectable collectable, MessageType messageType);
 	}
-
-	private List<CollectableEventListener> collectableListeners = new LinkedList<CollectableEventListener>();
 
 	CollectableEventListener mandatoryResetEventListener = new CollectableEventListener() {
 		@Override
@@ -319,12 +347,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			CollectController.this.setDefaultButton();
 		}
 	};
-
-	/**
-	 * Valuelist provider datasource for additional search condition
-	 */
-	private DatasourceVO valueListProviderDatasource;
-	private Map<String, Object> valueListProviderDatasourceParameter;
 
 	/**
 	 * common controller for the Search and Details panels.
@@ -821,27 +843,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	}	// class DetailsController
 
-	// is entity of this controller transferable, that means that collectables
-	// of this entity can be exported and imported. Default is NOT transferable!
-	protected boolean isTransferable() {
-		return false;
-	}
-
-	private final SearchController ctlSearch = new SearchController();
-
-	final ResultController<Clct> ctlResult = new ResultController<Clct>(this);
-
-	private final DetailsController ctlDetails = new DetailsController();
-
-	public Collection<SearchComponentModel> getSearchCollectableComponentModels() {
-		return this.ctlSearch.getCollectableComponentModels();
-	}
-
-	public List<CollectableComponent> getDetailCollectableComponentsFor(String sFieldName) {
-		return (List<CollectableComponent>)this.ctlDetails.getDetailsPanel().getEditView().getCollectableComponentsFor(sFieldName);
-	}
-
-
 	/**
 	 * action: New
 	 */
@@ -1016,32 +1017,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 	};
 
-	/**
-	 * @see #isSearchChangedIgnored()
-	 */
-	private boolean bSearchChangedIgnored;
-
-	/**
-	 * @see #isDetailsChangedIgnored()
-	 */
-	private boolean bDetailsChangedIgnored;
-
-	/**
-	 * the source of the last invocation of detailsChanged
-	 */
-	private Object oSourceOfLastDetailsChange;
-
-	/**
-	 * used internally while the frame is closing.
-	 */
-	private boolean bFrameMayBeClosed;
-
-	/**
-	 * the lists of available and selected fields, resp.
-	 * TODO move to ResultController!
-	 */
-	protected final ChoiceEntityFieldList fields = new ChoiceEntityFieldList(null);
-
 	protected final DocumentListener documentlistenerDetailsChanged = new SimpleDocumentListener() {
 		@Override
 		public void documentChanged(DocumentEvent ev) {
@@ -1087,10 +1062,56 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * in this order.</em>
 	 * @param parent
 	 */
-	protected CollectController(JComponent parent, CollectableEntity clcte) {
+	protected CollectController(JComponent parent, CollectableEntity clcte, ResultController<Clct> rc) {
 		super(parent);
 		this.parent = parent;
 		this.clcte = clcte;
+		this.ctlResult = rc;
+		this.ctlResult.setCollectController(this);
+	}
+
+	/**
+	 * Don't make this public!
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
+	protected CollectController(JComponent parent, CollectableEntity clcte) {
+		this(parent, clcte, new ResultController<Clct>());
+	}
+	
+	// is entity of this controller transferable, that means that collectables
+	// of this entity can be exported and imported. Default is NOT transferable!
+	protected boolean isTransferable() {
+		return false;
+	}
+
+	/**
+	 * @deprecated I would wish we could avoid method.
+	 * 		Not every CollectController has a ResultController associated with it.
+	 * 		Hence, this field should appear more 'upward' in the hierarchy.
+	 */
+	public final ResultController<Clct> getResultController() {
+		return ctlResult;
+	}
+	
+	/**
+	 * @deprecated I would wish we could avoid method.
+	 * 		Not every CollectController has a ResultController associated with it.
+	 * 		Hence, this field should appear more 'upward' in the hierarchy.
+	 */
+	public ChoiceEntityFieldList getFields() {
+		return ctlResult.getFields();
+	}
+
+	public Collection<SearchComponentModel> getSearchCollectableComponentModels() {
+		return this.ctlSearch.getCollectableComponentModels();
+	}
+
+	public List<CollectableComponent> getDetailCollectableComponentsFor(String sFieldName) {
+		return (List<CollectableComponent>)this.ctlDetails.getDetailsPanel().getEditView().getCollectableComponentsFor(sFieldName);
 	}
 
 	/**
@@ -1114,7 +1135,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 		this.getResultPanel().setupTableCellRenderers(getResultTable());
 
-		this.setColumnWidths(getResultTable());
+		getResultController().setColumnWidths(getResultTable());
 
 		this.addCollectableEventListener(mandatoryResetEventListener);
 
@@ -1145,14 +1166,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 *         of getPreferences. Always use getPreferences when you want to store CollectController-specific preferences.
 	 */
 	protected abstract Preferences getUserPreferencesRoot();
-
-	/**
-	 * @return the fields displayed in the result panel
-	 * TODO move to ResultController or ResultPanel (or ResultModel?)
-	 */
-	public ChoiceEntityFieldList getFields() {
-		return fields;
-	}
 
 	/**
 	 * @return the "New" action
@@ -1239,29 +1252,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	/**
-	 * reads the previously selected fields from the user preferences, ignoring unknown fields that might occur when
-	 * the database schema has changed from one software release to another. This method tries to avoid throwing exceptions.
-	 * @param clcte
-	 * @return List<CollectableEntityField> the previously selected fields from the user preferences.
-	 * @see #writeSelectedFieldsToPreferences(List)
-	 * TODO move to ResultController or ResultPanel
-	 */
-	protected List<? extends CollectableEntityField> readSelectedFieldsFromPreferences(CollectableEntity clcte) {
-		List<String> lstSelectedFieldNames;
-		try {
-			lstSelectedFieldNames = PreferencesUtils.getStringList(getPreferences(), PREFS_NODE_SELECTEDFIELDS);
-		}
-		catch (PreferencesException ex) {
-			log.error("Die selektierten Felder konnten nicht aus den Preferences geladen werden.", ex);
-			lstSelectedFieldNames = new ArrayList<String>();
-			// no exception is thrown here.
-		}
-		final List<CollectableEntityField> result = createCollectableEntityFieldListFromFieldNames(clcte, lstSelectedFieldNames);
-
-		return result;
-	}
-
-	/**
 	 * Reads the user-preferences for the sorting order.
 	 */
 	protected List<SortKey> readColumnOrderFromPreferences() {
@@ -1274,98 +1264,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 	}
 
-	private List<CollectableEntityField> createCollectableEntityFieldListFromFieldNames(CollectableEntity clcte, List<String> lstSelectedFieldNames) {
-		assert lstSelectedFieldNames != null;
-
-		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
-
-		for (String sFieldName : lstSelectedFieldNames) {
-			try {
-				result.add(this.getCollectableEntityFieldForResult(clcte, sFieldName));
-			}
-			catch (Exception ex) {
-				// ignore unknown fields
-				log.warn("Ein Feld mit dem Namen \"" + sFieldName + "\" ist nicht in der Entit\u00e4t " + clcte.getName() + " enthalten.", ex);
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * writes the given list of selected fields to the preferences, so they can be restored later by calling <code>readSelectedFieldsFromPreferences</code>.
-	 * @param lstclctefSelected List<CollectableEntityField>
-	 * @throws PreferencesException
-	 * @see #readSelectedFieldsFromPreferences(CollectableEntity)
-	 * TODO move to ResultController or ResultPanel
-	 */
-	protected void writeSelectedFieldsToPreferences(List<? extends CollectableEntityField> lstclctefSelected) throws PreferencesException {
-		PreferencesUtils.putStringList(getPreferences(), PREFS_NODE_SELECTEDFIELDS, CollectableUtils.getFieldNamesFromCollectableEntityFields(lstclctefSelected));
-	}
-
-	/**
-	 * writes the selected columns (fields) and their widths to the user preferences.
-	 * TODO make private again or refactor!
-	 * TODO move to ResultController or ResultPanel
-	 */
-	protected final void writeSelectedFieldsAndWidthsToPreferences() {
-		try {
-			this.writeSelectedFieldsToPreferences(this.fields.getSelectedFields());
-			this.getResultPanel().writeFieldWidthsToPreferences(this.getPreferences());
-		}
-		catch (PreferencesException ex) {
-			log.error("Failed to write selected field names and widths (search result columns) to preferences.", ex);
-			// No exception is thrown here.
-		}
-	}
-
-	/**
-	 * @param clcte
-	 * @return List<CollectableEntityField> the fields that are available for the result. This default implementation
-	 * returns all fields of the given entity that are to be display in the table.
-	 * Successors may want to do weird things like appending fields from subentities here...
-	 * TODO move to ResultController or ResultPanel
-	 */
-	protected List<CollectableEntityField> getFieldsAvailableForResult(CollectableEntity clcte) {
-		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
-		for (String sFieldName : clcte.getFieldNames()) {
-			if (this.isFieldToBeDisplayedInTable(sFieldName)) {
-				result.add(this.getCollectableEntityFieldForResult(clcte, sFieldName));
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * can be used to hide columns in the table.
-	 * @param sFieldName
-	 * @return Is the field with the given name to be displayed in a table?
-	 * TODO move to ResultPanel.isFieldToBeShown
-	 */
-	protected boolean isFieldToBeDisplayedInTable(String sFieldName) {
-		return true;
-	}
-
-	/**
-	 * @param clcte
-	 * @param sFieldName
-	 * @return a <code>CollectableEntityField</code> of the given entity with the given field name, to be used in the Result metadata.
-	 * Some successors may want to do weird things here...
-	 * TODO move to ResultController or ResultPanel
-	 */
-	protected CollectableEntityField getCollectableEntityFieldForResult(CollectableEntity clcte, String sFieldName) {
-		return clcte.getEntityField(sFieldName);
-	}
-
-	/**
-	 * @return the <code>Comparator</code> used for <code>CollectableEntityField</code>s (columns in the Result).
-	 * The default is to compare the column labels.
-	 * @postcondition result != null
-	 * TODO move to ResultController or ResultPanel
-	 */
-	public Comparator<CollectableEntityField> getCollectableEntityFieldComparator() {
-		return new CollectableEntityField.LabelComparator();
-	}
-
 	/**
 	 * displays the current search condition in the Search panel's status bar.
 	 */
@@ -1376,16 +1274,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				CollectController.this.ctlSearch.displayCurrentSearchConditionInSearchPanelStatusBar();
 			}
 		});
-	}
-
-	/**
-	 * sets all column widths to user preferences; set optimal width if no preferences yet saved
-	 * Copied from the SubFormController
-	 * @param tbl
-	 * TODO move to ResultController or ResultPanel
-	 */
-	public void setColumnWidths(final JTable tbl) {
-		this.getResultPanel().setColumnWidths(tbl, this.bUseCustomColumnWidths, this.getPreferences());
 	}
 
 	/**
@@ -2260,19 +2148,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	/**
-	 * @return the list of sorting columns.
-	 * TODO move to ResultController
-	 */
-	protected List<CollectableSorting> getCollectableSortingSequence() {
-		final List<CollectableSorting> result = new LinkedList<CollectableSorting>();
-		for (SortKey sortKey : this.getResultTableModel().getSortKeys()) {
-			final String fieldName = this.getResultTableModel().getCollectableEntityField(sortKey.getColumn()).getName();
-			result.add(new CollectableSorting(fieldName, sortKey.getSortOrder() == SortOrder.ASCENDING));
-		}
-		return result;
-	}
-
-	/**
 	 * @param bMakeConsistent make the search component models consistent with their components? That is: transfer the
 	 * search condition from the view to the model if they differ? This parameter is passed to #getCollectableSearchConditionFromSearchFields.
 	 * @return the search condition taken from the search fields or the search editor. May be <code>null</code>.
@@ -2898,9 +2773,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * Note that there is no selected <code>Collectable</code> in New mode.
 	 * Note that the result might be incomplete, that means, some fields might be missing.
 	 * TODO consider inlining or renaming this method. It's too easy to forget that the result might be incomplete.
+	 * 
+	 * @deprecated Use getResultController().getSelectedCollectableFromTableModel()
 	 */
 	protected final Clct getSelectedCollectable() {
-		return this.getSelectedCollectableFromTableModel();
+		return getResultController().getSelectedCollectableFromTableModel();
 	}
 
 	/**
@@ -2909,17 +2786,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	public final Object getSelectedCollectableId() {
 		final Collectable clctSelected = this.getSelectedCollectable();
 		return (clctSelected == null ? null : clctSelected.getId());
-	}
-
-	/**
-	 * @return the selected <code>Collectable</code>, if any, from the table model.
-	 * Note that there is no selected <code>Collectable</code> in New mode.
-	 * Note that the result might be incomplete, that means, some fields might be missing.
-	 * TODO move to ResultController
-	 */
-	private Clct getSelectedCollectableFromTableModel() {
-		final int iSelectedRow = this.getResultTable().getSelectedRow();
-		return (iSelectedRow == -1) ? null : this.getResultTableModel().getCollectable(iSelectedRow);
 	}
 
 	/**
@@ -2941,14 +2807,14 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @throws CommonBusinessException
 	 */
 	protected final Clct getCompleteSelectedCollectable(boolean blnWithoutDependants) throws CommonBusinessException {
-		final Clct clct = this.getSelectedCollectableFromTableModel();
+		final Clct clct = getResultController().getSelectedCollectableFromTableModel();
 		final Clct result;
 		if (clct == null || isCollectableComplete(clct)) {
 			result = clct;
 		}
 		else {
 			result = this.readCollectable(clct, blnWithoutDependants);
-			this.replaceSelectedCollectableInTableModel(result);
+			getResultController().replaceSelectedCollectableInTableModel(result);
 		}
 		assert !(result != null) || isCollectableComplete(result);
 		// Note that the postcondition "result == this.getSelectedCollectableFromTableModel()" is not possible for some
@@ -2988,7 +2854,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	public final List<Clct> getCompleteSelectedCollectables() throws CommonBusinessException {
 		final List<Clct> result = new ArrayList<Clct>(this.getCompleteCollectablesStrategy().getCompleteCollectables(this.getSelectedCollectables()));
-		this.replaceCollectablesInTableModel(result);
+		getResultController().replaceCollectablesInTableModel(result);
 
 		assert result != null;
 		return result;
@@ -3136,67 +3002,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	/**
-	 * replaces the selected <code>Collectable</code> in the table model with <code>clct</code>.
-	 * @param clct
-	 * @precondition clct != null
-	 * TODO move to ResultController
-	 */
-	protected final void replaceSelectedCollectableInTableModel(Clct clct) {
-		if (clct == null) {
-			throw new NullArgumentException("clct");
-		}
-		this.replaceCollectableInTableModel(this.getResultTable().getSelectedRow(), clct);
-	}
-
-	/**
-	 * replaces the <code>Collectable</code> in the table model that has the same id as <code>clct</code>
-	 * with <code>clct</code>.
-	 * @param clct
-	 * @precondition clct != null
-	 * TODO move to ResultController
-	 */
-	protected final void replaceCollectableInTableModel(Clct clct) {
-		if (clct == null) {
-			throw new NullArgumentException("clct");
-		}
-		final int iRow = this.getResultTableModel().findRowById(clct.getId());
-		if (iRow == -1) {
-			throw new CommonFatalException("Der Datensatz mit der Id " + clct.getId() + " ist nicht im Suchergebnis vorhanden.");
-		}
-		this.replaceCollectableInTableModel(iRow, clct);
-	}
-
-	/**
-	 * replaces the <code>Collectable</code> in the given row of the table model with <code>clct</code>.
-	 * @param iRow
-	 * @param clct
-	 * @precondition clct != null
-	 * TODO move to ResultController
-	 */
-	private void replaceCollectableInTableModel(int iRow, Clct clct) {
-		if (clct == null) {
-			throw new NullArgumentException("clct");
-		}
-		this.getResultTableModel().setCollectable(iRow, clct);
-	}
-
-	/**
-	 * replaces the <code>Collectable</code>s the table model that have the same ids
-	 * as the given <code>Collectable</code>s, with those <code>Collectable</code>s.
-	 * @param collclct
-	 * @precondition collclct != null
-	 * TODO move to ResultController
-	 */
-	protected final void replaceCollectablesInTableModel(Collection<Clct> collclct) {
-		if (collclct == null) {
-			throw new NullArgumentException("collclct");
-		}
-		for (Clct clct : collclct) {
-			this.replaceCollectableInTableModel(clct);
-		}
-	}
-
-	/**
 	 * command: refresh current <code>Collectable</code>
 	 * TODO this action is "overloaded". It's at least refresh and cancel in one...
 	 */
@@ -3292,7 +3097,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				if(clct == null) return;
 
 				// replace the selected object in the result list:
-				CollectController.this.replaceSelectedCollectableInTableModel(clct);
+				getResultController().replaceSelectedCollectableInTableModel(clct);
 
 				CollectController.this.enterViewMode();
 
@@ -3900,7 +3705,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 					log.debug("FINISHED save updateCurrentCollectable");
 
 					// update the selected collectable in the table model:
-					this.replaceSelectedCollectableInTableModel(clct);
+					getResultController().replaceSelectedCollectableInTableModel(clct);
 
 					log.debug("START save enterViewMode");
 					this.enterViewMode();
@@ -4257,7 +4062,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 						UIUtils.paintImmediately(CollectController.this.getSearchPanel().tfStatusBar);
 
 						// Write the column widths to preferences, so they can be restored after searching is finished
-						writeSelectedFieldsAndWidthsToPreferences();
+						getResultController().writeSelectedFieldsAndWidthsToPreferences();
 
 						adjustVerticalScrollBarForSearch(bRefreshOnly);
 
@@ -4270,7 +4075,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 						setCollectState(CollectState.OUTERSTATE_RESULT, CollectState.RESULTMODE_NOSELECTION);
 
 						// Searching is finished, the result columns have been replaced in the model, so retore the previous widths
-						setColumnWidths(getResultTable());
+						getResultController().setColumnWidths(getResultTable());
 						if(CollectController.this.getResultPanel() != null){
 							CollectController.this.getResultPanel().requestFocusInWindow();
 						}
@@ -4301,7 +4106,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				else {
 					// TODO remove - painting isn't necessary here:
 					UIUtils.paintImmediately(CollectController.this.getSearchPanel().tfStatusBar);
-					CollectController.this.writeSelectedFieldsAndWidthsToPreferences();
+					getResultController().writeSelectedFieldsAndWidthsToPreferences();
 					final List<Clct> selected = CollectController.this.getSelectedCollectables();
 					CollectController.this.adjustVerticalScrollBarForSearch(bRefreshOnly);
 
@@ -4365,6 +4170,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	/**
 	 * shortcut for <code>this.getCollectPanel().getResultPanel().getResultTable()</code>.
+	 * 
+	 * @deprecated Move this to ResultController.
 	 */
 	public final JTable getResultTable() {
 		return this.getResultPanel().getResultTable();
@@ -4380,6 +4187,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	/**
 	 * @return the table model containing the results of the last search.
+	 * 
+	 * @deprecated Move this to ResultController.
 	 */
 	@SuppressWarnings("unchecked")
 	protected final SortableCollectableTableModel<Clct> getResultTableModel() {
@@ -4395,7 +4204,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	protected SortableCollectableTableModel<Clct> newResultTableModel() {
 		final SortableCollectableTableModel<Clct> result = new SortableCollectableTableModelImpl<Clct>(getEntityName());
-		result.setColumns(this.fields.getSelectedFields());
+		result.setColumns(getFields().getSelectedFields());
 
 		// setup sorted fields and sorting order from preferences
 		List<SortKey> sortKeys = readColumnOrderFromPreferences();
@@ -4743,6 +4552,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		return this.getCollectPanel().getSearchPanel();
 	}
 
+	/**
+	 * @deprecated Move this to ResultController.
+	 */
 	public ResultPanel<Clct> getResultPanel() {
 		return this.getCollectPanel().getResultPanel();
 	}
@@ -4961,7 +4773,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @param fieldNames
 	 */
 	protected List<CollectableEntityField> getFieldsFromFieldNames(CollectableEntity clcte, List<String> fieldNames) {
-		final List<CollectableEntityField> result = createCollectableEntityFieldListFromFieldNames(clcte, fieldNames);
+		final List<CollectableEntityField> result = Utils.createCollectableEntityFieldListFromFieldNames(getResultController(), clcte, fieldNames);
 
 		makeSureSelectedFieldsAreNonEmpty(clcte, result);
 
@@ -4987,7 +4799,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			final String sIdentifierFieldName = clcte.getIdentifierFieldName();
 			if (sIdentifierFieldName != null) {
 				try {
-					lstclctefSelected.add(getCollectableEntityFieldForResult(clcte, sIdentifierFieldName));
+					lstclctefSelected.add(getResultController().getCollectableEntityFieldForResult(clcte, sIdentifierFieldName));
 				}
 				catch (CommonFatalException ex) {
 					// Strictly, this is an error in the definition of the entity. We don't want to throw an exception here though:
@@ -5002,7 +4814,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				}
 				else {
 					final String sRandomFieldName = clcte.getFieldNames().iterator().next();
-					lstclctefSelected.add(getCollectableEntityFieldForResult(clcte, sRandomFieldName));
+					lstclctefSelected.add(getResultController().getCollectableEntityFieldForResult(clcte, sRandomFieldName));
 				}
 			}
 		}

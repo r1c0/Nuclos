@@ -56,7 +56,9 @@ import org.nuclos.client.ui.CommonJTextField;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.LayoutResultController;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.UserResultController;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableTextArea;
 import org.nuclos.client.ui.collect.component.CollectableTextField;
@@ -67,7 +69,6 @@ import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
@@ -98,7 +99,10 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 	protected static final String PREFS_KEY_LASTIMPORTEXPORTPATH = "lastImportExportPath";
 	protected static final String LAYOUTML_EXTENSION = ".layoutml";
 
-	protected List<? extends SortKey> lastSortKeys = Collections.emptyList();
+	/**
+	 * @deprecated Move to LayoutResultController.
+	 */
+	private List<? extends SortKey> lastSortKeys = Collections.emptyList();
 	
 	LocaleInfo DEFAULT_LOCALE = LocaleDelegate.getInstance().getDefaultLocale();
 	LocaleDelegate locale = LocaleDelegate.getInstance();
@@ -126,8 +130,14 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 		}
 	};
 
+	/**
+ 	 * @deprecated You should normally do sth. like this:<code><pre>
+ 	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+     */
 	public LayoutCollectController(JComponent parent, NuclosEntity entity, MainFrameTab tabIfAny) {
-		super(parent, entity, tabIfAny);
+		super(parent, entity, tabIfAny, new LayoutResultController<CollectableMasterDataWithDependants>());
 
 		this.setupDetailsToolBar();
 
@@ -138,6 +148,20 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 		// // performs cleanup (remove temp. file) in the XML editor
 		// }
 		// });
+	}
+	
+	/**
+	 * @deprecated Move to LayoutResultController.
+	 */
+	public List<? extends SortKey> getLastSortKeys() {
+		return lastSortKeys;
+	}
+	
+	/**
+	 * @deprecated Move to LayoutResultController.
+	 */
+	public void setLastSortKeys(List<? extends SortKey> lastSortKeys) {
+		this.lastSortKeys = lastSortKeys;
 	}
 
 	@Override
@@ -495,37 +519,16 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 	}
 
 	@Override
-	protected List<CollectableSorting> getCollectableSortingSequence() {
-		List<? extends SortKey> sortKeys = getResultTableModel().getSortKeys();
-		boolean valid = true;
-		for (SortKey sortKey : sortKeys) {
-			final String fieldName = getResultTableModel().getCollectableEntityField(sortKey.getColumn()).getName();
-			if(fieldName.equals("layoutML")){
-				Errors.getInstance().showExceptionDialog(getFrame(), CommonLocaleDelegate.getMessage("LayoutCollectController.7","Eine Sortierung nach der Spalte \"LayoutML\" ist nicht durchf\u00fchrbar."), new CommonBusinessException(""));
-				this.getResultTableModel().setSortKeys(lastSortKeys, false);
-				valid = false;
-				break;
-			}
-		}
-		if (valid) {
-			lastSortKeys = sortKeys;
-		}
-		return super.getCollectableSortingSequence();
-	}
-	
-	@Override
-	protected boolean isFieldToBeDisplayedInTable(String sFieldName) {
-		return !sFieldName.equals("layoutML");
-	}
-	
-	@Override
 	protected void cloneSelectedCollectable() throws CommonBusinessException {
 		super.cloneSelectedCollectable();
 	}
 	
+	/**
+	 * @deprecated Move this to LayoutResultController.
+	 */
 	@Override
-   protected CollectableMasterDataProxyListAdapter getSearchResult() throws CollectableFieldFormatException {
-      final CollectableSearchExpression clctexpr = new CollectableSearchExpression(this.getCollectableSearchCondition(), this.getCollectableSortingSequence());
+    protected CollectableMasterDataProxyListAdapter getSearchResult() throws CollectableFieldFormatException {
+      final CollectableSearchExpression clctexpr = new CollectableSearchExpression(this.getCollectableSearchCondition(), getResultController().getCollectableSortingSequence());
       clctexpr.setIncludingSystemData(ApplicationProperties.getInstance().isFunctionBlockDev() == Boolean.TRUE);
       final ProxyList<MasterDataWithDependantsVO> mdproxylst = mddelegate.getMasterDataProxyList(this.getEntityName(), clctexpr);
       return new CollectableMasterDataProxyListAdapter(mdproxylst, this.getCollectableEntity());

@@ -60,6 +60,7 @@ import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.EditView;
+import org.nuclos.client.ui.collect.ResultController;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
@@ -68,6 +69,7 @@ import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.common.PointerCollection;
 import org.nuclos.common.PointerException;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.exception.CollectableValidationException;
@@ -97,7 +99,58 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	private List<ActionListener> lstPointerChangeListener = new ArrayList<ActionListener>();
 	
 	protected Map<String, SearchConditionSubFormController> mpsubformctlSearch;
+
+	/**
+	 * Don't make this public!
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
+	protected EntityCollectController(JComponent parent, String sEntityName) {
+		this(parent, NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName));
+	}
 	
+	/**
+	 * Don't make this public!
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
+	protected EntityCollectController(JComponent parent, org.nuclos.common.collect.collectable.CollectableEntity clcte) {
+		super(parent, clcte);
+		this.loadingLabel = new JLabel(notLoadingLabelText);
+		this.loadingLabel.setName("loadingLabel");
+		subFormsLoader = new SubFormsLoader();
+		this.addPointerChangeListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				btnPointer.setEnabled(btnPointer.getAction().isEnabled());
+			}
+		});
+		btnPointer.addMouseListener(getPointerContextListener());
+	}
+	
+	protected EntityCollectController(JComponent parent, String sEntityName, ResultController<Clct> rc) {
+		this(parent, NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName), rc);
+	}
+	
+	protected EntityCollectController(JComponent parent, CollectableEntity clcte, ResultController<Clct> rc) {
+		super(parent, clcte, rc);
+		this.loadingLabel = new JLabel(notLoadingLabelText);
+		this.loadingLabel.setName("loadingLabel");
+		subFormsLoader = new SubFormsLoader();
+		this.addPointerChangeListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				btnPointer.setEnabled(btnPointer.getAction().isEnabled());
+			}
+		});
+		btnPointer.addMouseListener(getPointerContextListener());
+	}
 
 	protected void showLoading(boolean loading){
 		synchronized (getFrame()) {
@@ -120,41 +173,16 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		}
 	}
 
-//	@Override
-//	protected String getTitle(int iTab, int iMode) {
-//		String sTitle = super.getTitle(iTab, iMode);
-//		if(this.subFormsLoader.isLoadingSubForms()){
-//			sTitle = (sTitle != null ? sTitle+" " : "") +loadingLabelText;
-//		}
-//		return sTitle;
-//	}
-
-	protected EntityCollectController(JComponent parent, String sEntityName) {
-		this(parent, NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName));
-	}
-	
+	/**
+	 * @deprecated Move this to ResultController or remove it.
+	 */
 	@SuppressWarnings("unchecked")
-	@Override
 	protected void writeSelectedFieldsToPreferences(List<? extends CollectableEntityField> lstclctefweSelected) throws PreferencesException {
-		super.writeSelectedFieldsToPreferences(lstclctefweSelected);
+		getResultController().writeSelectedFieldsToPreferences(lstclctefweSelected);
 		NuclosResultPanel<Collectable> r = (NuclosResultPanel<Collectable>) getResultPanel();
 		PreferencesUtils.putStringList(getPreferences(), NuclosResultPanel.PREFS_NODE_FIXEDFIELDS, CollectableUtils.getFieldNamesFromCollectableEntityFields(r.getFixedColumns()));
 	}
 
-	protected EntityCollectController(JComponent parent, org.nuclos.common.collect.collectable.CollectableEntity clcte) {
-		super(parent, clcte);
-		this.loadingLabel = new JLabel(notLoadingLabelText);
-		this.loadingLabel.setName("loadingLabel");
-		subFormsLoader = new SubFormsLoader();
-		this.addPointerChangeListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				btnPointer.setEnabled(btnPointer.getAction().isEnabled());
-			}
-		});
-		btnPointer.addMouseListener(getPointerContextListener());
-	}
-	
 	/**
 	 * creates a searchable subform ctl for each subform. If the subform is disabled, the controller will be disabled.
 	 * @param mpSubForms
@@ -672,7 +700,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 					try {
 						if(iDetailsMode == CollectState.DETAILSMODE_EDIT || iDetailsMode == CollectState.DETAILSMODE_VIEW) {
 							if(getResultTable().getSelectedRow() >= 0) {
-								replaceCollectableInTableModel(readSelectedCollectable());
+								getResultController().replaceCollectableInTableModel(readSelectedCollectable());
 							}
 						}
 					}

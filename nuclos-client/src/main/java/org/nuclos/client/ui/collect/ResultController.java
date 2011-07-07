@@ -16,14 +16,20 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect;
 
+import org.nuclos.client.common.Utils;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableSorting;
+import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.PreferencesUtils;
 
 
 import java.awt.Rectangle;
@@ -33,14 +39,18 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
+import javax.swing.RowSorter.SortKey;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -48,37 +58,66 @@ import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.log4j.Logger;
 
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
+import org.nuclos.common2.exception.PreferencesException;
 
 /**
  * Controller for the Result panel.
  */
-public class ResultController <Clct extends Collectable> {
+public class ResultController<Clct extends Collectable> {
+	
+	private static final Logger LOG = Logger.getLogger(ResultController.class);
 
-	/** @todo Try to avoid cyclic dependency: The ResultController shouldn't depend on the CollectController. */
-	private final CollectController<Clct> clctctl;
+	/** 
+	 * TODO: Try to avoid cyclic dependency: The ResultController shouldn't depend on the CollectController. 
+	 * 		While this would be desirable, it is - in real - completely unrealistic at present. Even
+	 * 		more, a Result is always the result (pun intended!) of some other (controller) operation!
+	 * 		(Thomas Pasch)
+	 */
+	private CollectController<Clct> clctctl;
+
+	/**
+	 * the lists of available and selected fields, resp.
+	 */
+	private final ChoiceEntityFieldList fields = new ChoiceEntityFieldList(null);
+
+	/**
+	 * Use custom column widths? This will always be true as soon as the user changed one or more column width
+	 * the first time.
+	 * TODO move to ResultController or ResultPanel
+	 */
+	private boolean bUseCustomColumnWidths;
 
 	/**
 	 * action: Edit selected Collectable (in Result panel)
+	 * 
+	 * TODO: make private
 	 */
 	Action actEditSelectedCollectables;
 
 	/**
 	 * action: Delete selected Collectable (in Result panel)
+	 * 
+	 * TODO: make private
 	 */
 	final Action actDeleteSelectedCollectables;
+
+	/**
+	 * TODO: make private
+	 */
+	MouseListener mouselistenerTableDblClick;
 
 	/**
 	 * action: Define as new Search result
 	 */
 	private final Action actDefineAsNewSearchResult = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultController.3","Als neues Suchergebnis"),
 			Icons.getInstance().getIconEmpty16(), CommonLocaleDelegate.getMessage("ResultController.4","Ausgew\u00e4hlte Datens\u00e4tze als neues Suchergebnis anzeigen")) {
-		/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
+
+		private static final long serialVersionUID = 1L;
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -86,26 +125,43 @@ public class ResultController <Clct extends Collectable> {
 		}
 	};
 
-	MouseListener mouselistenerTableDblClick;
-
-	public ResultController(CollectController<Clct> clctctl) {
-		this.clctctl = clctctl;
-		
+	/**
+	 * Don't make this public!
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
+	ResultController(CollectController<Clct> clctctl) {
+		this();
+		setCollectController(clctctl);
+	}
+	
+	public ResultController() {
 		actDeleteSelectedCollectables = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultController.10","L\u00f6schen..."),
 				(clctctl instanceof GenericObjectCollectController)? // quick and dirty... I know
-					Icons.getInstance().getIconDelete16():
-						Icons.getInstance().getIconRealDelete16(), 
-						CommonLocaleDelegate.getMessage("ResultController.5","Ausgew\u00e4hlte Datens\u00e4tze l\u00f6schen")) {
-			/**
-							 * 
-							 */
-							private static final long serialVersionUID = 1L;
+				Icons.getInstance().getIconDelete16() : Icons.getInstance().getIconRealDelete16(), 
+				CommonLocaleDelegate.getMessage("ResultController.5","Ausgew\u00e4hlte Datens\u00e4tze l\u00f6schen")) {
+			
+			private static final long serialVersionUID = 1L;
 
 			@Override
 	        public void actionPerformed(ActionEvent ev) {
 				cmdDeleteSelectedCollectables();
 			}
 		};
+	}
+	
+	/**
+	 * Don't make this public!
+	 */
+	void setCollectController(CollectController<Clct> controller) {
+		this.clctctl = controller;
+	}
+	
+	protected CollectController<Clct> getCollectController() {
+		return clctctl;
 	}
 
 	private ResultPanel<Clct> getResultPanel() {
@@ -193,7 +249,7 @@ public class ResultController <Clct extends Collectable> {
 
 			@Override
             public void actionPerformed(ActionEvent ev) {
-				pnlResult.cmdSelectColumns(clctctl.fields, clctctl);
+				pnlResult.cmdSelectColumns(clctctl.getFields(), clctctl);
 			}
 		});
 
@@ -285,7 +341,7 @@ public class ResultController <Clct extends Collectable> {
 				if (iFromColumn != iToColumn) {
 					//log.debug("column moved from " + iFromColumn + " to " + iToColumn);
 					// Sync the "selected fields" with the table column model:
-					getResultPanel().columnMovedInHeader(clctctl.fields);
+					getResultPanel().columnMovedInHeader(clctctl.getFields());
 
 					// Note that the columns of the result table model are not adjusted here.
 					// That means, the table column model and the table model are not 1:1 -
@@ -303,7 +359,7 @@ public class ResultController <Clct extends Collectable> {
 
 			@Override
             public void columnMarginChanged(ChangeEvent ev) {
-				clctctl.bUseCustomColumnWidths = true;
+				bUseCustomColumnWidths = true;
 			}
 
 			@Override
@@ -335,7 +391,7 @@ public class ResultController <Clct extends Collectable> {
 		UIUtils.removeAllMouseListeners(this.getResultPanel().getResultTable().getTableHeader());
 
 		/** @todo this doesn't really belong here */
-		clctctl.writeSelectedFieldsAndWidthsToPreferences();
+		writeSelectedFieldsAndWidthsToPreferences();
 		clctctl.writeColumnOrderToPreferences();
 	}
 
@@ -400,6 +456,205 @@ public class ResultController <Clct extends Collectable> {
 					}
 				});
 			}
+		}
+	}
+
+	/**
+	 * @return the fields displayed in the result panel
+	 */
+	public ChoiceEntityFieldList getFields() {
+		return fields;
+	}
+
+	/**
+	 * reads the previously selected fields from the user preferences, ignoring unknown fields that might occur when
+	 * the database schema has changed from one software release to another. This method tries to avoid throwing exceptions.
+	 * @param clcte
+	 * @return List<CollectableEntityField> the previously selected fields from the user preferences.
+	 * @see #writeSelectedFieldsToPreferences(List)
+	 * TODO: make private?
+	 */
+	protected List<? extends CollectableEntityField> readSelectedFieldsFromPreferences(CollectableEntity clcte) {
+		List<String> lstSelectedFieldNames;
+		try {
+			lstSelectedFieldNames = PreferencesUtils.getStringList(clctctl.getPreferences(), CollectController.PREFS_NODE_SELECTEDFIELDS);
+		}
+		catch (PreferencesException ex) {
+			LOG.error("Die selektierten Felder konnten nicht aus den Preferences geladen werden.", ex);
+			lstSelectedFieldNames = new ArrayList<String>();
+			// no exception is thrown here.
+		}
+		final List<CollectableEntityField> result = Utils.createCollectableEntityFieldListFromFieldNames(this, clcte, lstSelectedFieldNames);
+		return result;
+	}
+
+	/**
+	 * writes the given list of selected fields to the preferences, so they can be restored later by calling <code>readSelectedFieldsFromPreferences</code>.
+	 * @param lstclctefSelected List<CollectableEntityField>
+	 * @throws PreferencesException
+	 * @see #readSelectedFieldsFromPreferences(CollectableEntity)
+	 * TODO make this private
+	 */
+	public void writeSelectedFieldsToPreferences(List<? extends CollectableEntityField> lstclctefSelected) throws PreferencesException {
+		PreferencesUtils.putStringList(clctctl.getPreferences(), CollectController.PREFS_NODE_SELECTEDFIELDS, CollectableUtils.getFieldNamesFromCollectableEntityFields(lstclctefSelected));
+	}
+
+	/**
+	 * writes the selected columns (fields) and their widths to the user preferences.
+	 * TODO make private again or refactor!
+	 * TODO move to ResultController or ResultPanel
+	 */
+	public final void writeSelectedFieldsAndWidthsToPreferences() {
+		try {
+			this.writeSelectedFieldsToPreferences(getFields().getSelectedFields());
+			this.getResultPanel().writeFieldWidthsToPreferences(clctctl.getPreferences());
+		}
+		catch (PreferencesException ex) {
+			LOG.error("Failed to write selected field names and widths (search result columns) to preferences.", ex);
+			// No exception is thrown here.
+		}
+	}
+
+	/**
+	 * @param clcte
+	 * @return List<CollectableEntityField> the fields that are available for the result. This default implementation
+	 * returns all fields of the given entity that are to be display in the table.
+	 * Successors may want to do weird things like appending fields from subentities here...
+	 * TODO Make this private.
+	 */
+	public List<CollectableEntityField> getFieldsAvailableForResult(CollectableEntity clcte) {
+		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
+		for (String sFieldName : clcte.getFieldNames()) {
+			if (this.isFieldToBeDisplayedInTable(sFieldName)) {
+				result.add(this.getCollectableEntityFieldForResult(clcte, sFieldName));
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * can be used to hide columns in the table.
+	 * @param sFieldName
+	 * @return Is the field with the given name to be displayed in a table?
+	 * TODO move to ResultPanel.isFieldToBeShown
+	 */
+	protected boolean isFieldToBeDisplayedInTable(String sFieldName) {
+		return true;
+	}
+
+	/**
+	 * @param clcte
+	 * @param sFieldName
+	 * @return a <code>CollectableEntityField</code> of the given entity with the given field name, to be used in the Result metadata.
+	 * Some successors may want to do weird things here...
+	 * TODO: Make this private.
+	 */
+	public CollectableEntityField getCollectableEntityFieldForResult(CollectableEntity clcte, String sFieldName) {
+		return clcte.getEntityField(sFieldName);
+	}
+
+	/**
+	 * @return the <code>Comparator</code> used for <code>CollectableEntityField</code>s (columns in the Result).
+	 * The default is to compare the column labels.
+	 * @postcondition result != null
+	 * TODO move to ResultController or ResultPanel
+	 */
+	public Comparator<CollectableEntityField> getCollectableEntityFieldComparator() {
+		return new CollectableEntityField.LabelComparator();
+	}
+
+	/**
+	 * sets all column widths to user preferences; set optimal width if no preferences yet saved
+	 * Copied from the SubFormController
+	 * @param tbl
+	 * TODO move to ResultController or ResultPanel
+	 */
+	public void setColumnWidths(final JTable tbl) {
+		this.getResultPanel().setColumnWidths(tbl, this.bUseCustomColumnWidths, clctctl.getPreferences());
+	}
+
+	/**
+	 * @return the list of sorting columns.
+	 * TODO make this private
+	 */
+	public List<CollectableSorting> getCollectableSortingSequence() {
+		final List<CollectableSorting> result = new LinkedList<CollectableSorting>();
+		for (SortKey sortKey : clctctl.getResultTableModel().getSortKeys()) {
+			final String fieldName = clctctl.getResultTableModel().getCollectableEntityField(sortKey.getColumn()).getName();
+			result.add(new CollectableSorting(fieldName, sortKey.getSortOrder() == SortOrder.ASCENDING));
+		}
+		return result;
+	}
+
+	/**
+	 * @return the selected <code>Collectable</code>, if any, from the table model.
+	 * Note that there is no selected <code>Collectable</code> in New mode.
+	 * Note that the result might be incomplete, that means, some fields might be missing.
+	 * TODO make this private
+	 */
+	public Clct getSelectedCollectableFromTableModel() {
+		final int iSelectedRow = clctctl.getResultTable().getSelectedRow();
+		return (iSelectedRow == -1) ? null : clctctl.getResultTableModel().getCollectable(iSelectedRow);
+	}
+
+	/**
+	 * replaces the selected <code>Collectable</code> in the table model with <code>clct</code>.
+	 * @param clct
+	 * @precondition clct != null
+	 * TODO make this private
+	 */
+	public final void replaceSelectedCollectableInTableModel(Clct clct) {
+		if (clct == null) {
+			throw new NullArgumentException("clct");
+		}
+		this.replaceCollectableInTableModel(clctctl.getResultTable().getSelectedRow(), clct);
+	}
+
+	/**
+	 * replaces the <code>Collectable</code> in the table model that has the same id as <code>clct</code>
+	 * with <code>clct</code>.
+	 * @param clct
+	 * @precondition clct != null
+	 * TODO make this private
+	 */
+	public final void replaceCollectableInTableModel(Clct clct) {
+		if (clct == null) {
+			throw new NullArgumentException("clct");
+		}
+		final int iRow = clctctl.getResultTableModel().findRowById(clct.getId());
+		if (iRow == -1) {
+			throw new CommonFatalException("Der Datensatz mit der Id " + clct.getId() + " ist nicht im Suchergebnis vorhanden.");
+		}
+		this.replaceCollectableInTableModel(iRow, clct);
+	}
+
+	/**
+	 * replaces the <code>Collectable</code> in the given row of the table model with <code>clct</code>.
+	 * @param iRow
+	 * @param clct
+	 * @precondition clct != null
+	 * TODO move to ResultController
+	 */
+	private void replaceCollectableInTableModel(int iRow, Clct clct) {
+		if (clct == null) {
+			throw new NullArgumentException("clct");
+		}
+		clctctl.getResultTableModel().setCollectable(iRow, clct);
+	}
+
+	/**
+	 * replaces the <code>Collectable</code>s the table model that have the same ids
+	 * as the given <code>Collectable</code>s, with those <code>Collectable</code>s.
+	 * @param collclct
+	 * @precondition collclct != null
+	 * TODO move to ResultController
+	 */
+	protected final void replaceCollectablesInTableModel(Collection<Clct> collclct) {
+		if (collclct == null) {
+			throw new NullArgumentException("collclct");
+		}
+		for (Clct clct : collclct) {
+			this.replaceCollectableInTableModel(clct);
 		}
 	}
 

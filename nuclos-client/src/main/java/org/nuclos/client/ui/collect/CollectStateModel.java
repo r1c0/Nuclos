@@ -501,7 +501,7 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 						// this will be caught further down.
 					}
 					
-					this.ctlCollect.replaceSelectedCollectableInTableModel(clctNew);
+					this.ctlCollect.getResultController().replaceSelectedCollectableInTableModel(clctNew);
 				}
 				else {
 					this.setEditedCollectable(clctOld);

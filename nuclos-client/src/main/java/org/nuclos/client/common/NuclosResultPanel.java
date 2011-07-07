@@ -84,6 +84,7 @@ import org.nuclos.client.ui.UIUtils.CommandHandler;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
 import org.nuclos.client.ui.collect.CollectableTableModel;
+import org.nuclos.client.ui.collect.PivotPanel;
 import org.nuclos.client.ui.collect.ResultPanel;
 import org.nuclos.client.ui.collect.SelectFixedColumnsController;
 import org.nuclos.client.ui.collect.SelectFixedColumnsPanel;
@@ -522,11 +523,11 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	@Override
 	public void cmdSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl) {
 		final NuclosCollectController<Clct> nucleusctl = (NuclosCollectController<Clct>) clctctl;
-		final SelectFixedColumnsController ctl = new SelectFixedColumnsController(clctctl.getFrame(), new SelectFixedColumnsPanel());
+		final SelectFixedColumnsController ctl = new SelectFixedColumnsController(clctctl.getFrame(), new PivotPanel());
 		final List<CollectableEntityField> lstAvailable = fields.getAvailableFields();
 		final List<CollectableEntityField> lstSelected = fields.getSelectedFields();
 		final ChoiceEntityFieldList ro = new ChoiceEntityFieldList(stFixedColumns);
-		ro.set(lstAvailable, lstSelected, nucleusctl.getCollectableEntityFieldComparator());
+		ro.set(lstAvailable, lstSelected, nucleusctl.getResultController().getCollectableEntityFieldComparator());
 
 		getVisibleColumnWidth(lstSelected);
 
@@ -562,7 +563,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 				public void run() throws CommonBusinessException {
 					final int iSelRow = tblResult.getSelectedRow();
 					final List<CollectableEntityField> lstSelectedOld = (List<CollectableEntityField>) fields.getSelectedFields();
-					fields.set(lstAvailableObjects, lstSelectedObjects, clctctl.getCollectableEntityFieldComparator());
+					fields.set(lstAvailableObjects, lstSelectedObjects, clctctl.getResultController().getCollectableEntityFieldComparator());
 
 					final List<CollectableEntityField> lstSelectedNew = (List<CollectableEntityField>) fields.getSelectedFields();
 					NuclosResultPanel.this.stFixedColumns = stFixedObjects;

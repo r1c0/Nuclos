@@ -44,6 +44,7 @@ import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
+import org.nuclos.client.ui.collect.UserResultController;
 import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosEntity;
@@ -80,15 +81,21 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVOWrappe
  */
 public class UserCollectController extends MasterDataCollectController {
 
-	private final static String FIELD_PREFERENCES = "preferences";
-	private final static String FIELD_PASSWORD = "password";
+	public final static String FIELD_PREFERENCES = "preferences";
+	public final static String FIELD_PASSWORD = "password";
 
 	protected final boolean useLDAP = useLDAP();
 	protected LDAPDataDelegate ldapdelegate = null;
 	private List<MasterDataWithDependantsVO> ldapRegisteredUsers = null;
 
+	/**
+ 	 * @deprecated You should normally do sth. like this:<code><pre>
+ 	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+     */
 	public UserCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.USER, tabIfAny);
+		super(parent, NuclosEntity.USER, tabIfAny, new UserResultController<CollectableMasterDataWithDependants>());
 		this.setupDetailsToolBar();
 		if(this.useLDAP){
 			this.ldapdelegate = LDAPDataDelegate.getInstance();
@@ -320,14 +327,4 @@ public class UserCollectController extends MasterDataCollectController {
 		}
 	};
 
-	@Override
-	protected List<CollectableEntityField> getFieldsAvailableForResult(CollectableEntity clcte) {
-		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
-		for (CollectableEntityField cef : super.getFieldsAvailableForResult(clcte)) {
-			if (!FIELD_PREFERENCES.equals(cef.getName()) && !FIELD_PASSWORD.equals(cef.getName())) {
-				result.add(cef);
-			}
-		}
-		return result;
-	}
 }	// class UserCollectController

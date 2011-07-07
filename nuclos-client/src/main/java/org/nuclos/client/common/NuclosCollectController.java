@@ -87,6 +87,7 @@ import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateConstants;
 import org.nuclos.client.ui.collect.DetailsPanel;
+import org.nuclos.client.ui.collect.ResultController;
 import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.Actions;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
@@ -154,13 +155,39 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	 */
 	private ActionListener alLayoutMLButtons;
 
+	/**
+	 * Don't make this public!
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	protected NuclosCollectController(JComponent parent, String sEntityName) {
 		this(parent, NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName));
 		this.sEntity = sEntityName;
 	}
-
+	
+	/**
+	 * Don't make this public!
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	protected NuclosCollectController(JComponent parent, CollectableEntity clcte) {
 		super(parent, clcte);
+		this.sEntity = clcte.getName();
+	}
+
+	protected NuclosCollectController(JComponent parent, String sEntityName, ResultController<Clct> rc) {
+		this(parent, NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName), rc);
+		this.sEntity = sEntityName;
+	}
+	
+	protected NuclosCollectController(JComponent parent, CollectableEntity clcte, ResultController<Clct> rc) {
+		super(parent, clcte, rc);
 		this.sEntity = clcte.getName();
 	}
 

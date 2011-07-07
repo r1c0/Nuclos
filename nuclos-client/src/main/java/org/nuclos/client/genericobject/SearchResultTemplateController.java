@@ -59,7 +59,7 @@ import org.nuclos.common2.exception.PreferencesException;
  * @author	<a href="mailto:Rostislav.Maksymovskyi@novabit.de">Rostislav Maksymovskyi</a>
  * @version 01.00.00
  */
-class SearchResultTemplateController {
+public class SearchResultTemplateController {
 	protected static final Logger log = Logger.getLogger(SearchResultTemplateController.class);
 	
 	private final Action actSaveTemplate = new CommonAbstractAction(CommonLocaleDelegate.getMessage("SearchResultTemplateController.1", "Suchergebnisvorlage speichern"), Icons.getInstance().getIconSave16(),

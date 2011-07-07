@@ -79,6 +79,7 @@ import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.DetailsPanel;
 import org.nuclos.client.ui.collect.EditView;
+import org.nuclos.client.ui.collect.ResultController;
 import org.nuclos.client.ui.collect.ResultPanel;
 import org.nuclos.client.ui.collect.SearchPanel;
 import org.nuclos.client.ui.collect.SortableCollectableTableModel;
@@ -181,38 +182,68 @@ public class MasterDataCollectController extends EntityCollectController<Collect
     * Use <code>newMasterDataCollectController()</code> to create an instance of this class.
     * @param parent
     * @param sEntityName
+    * 
+	* @deprecated You should normally do sth. like this:<code><pre>
+	* ResultController<~> rc = new ResultController<~>();
+	* *CollectController<~> cc = new *CollectController<~>(.., rc);
+	* </code></pre>
     */
    public MasterDataCollectController(JComponent parent, NuclosEntity systemEntity, MainFrameTab tabIfAny) {
       this(parent, systemEntity.getEntityName(), tabIfAny);
    }
    
+   /**
+	* @deprecated You should normally do sth. like this:<code><pre>
+	* ResultController<~> rc = new ResultController<~>();
+	* *CollectController<~> cc = new *CollectController<~>(.., rc);
+	* </code></pre>
+    */
    public MasterDataCollectController(JComponent parent, NuclosEntity systemEntity, MainFrameTab tabIfAny, boolean detailsWithScrollbar) {
 	   this(parent, systemEntity.getEntityName(), tabIfAny, detailsWithScrollbar);
    }
    
+   /**
+	* @deprecated You should normally do sth. like this:<code><pre>
+	* ResultController<~> rc = new ResultController<~>();
+	* *CollectController<~> cc = new *CollectController<~>(.., rc);
+	* </code></pre>
+    */
    public MasterDataCollectController(JComponent parent, String sEntityName, MainFrameTab tabIfAny) {
 	   this(parent, sEntityName, tabIfAny, true);
    }
 
+   /**
+	* @deprecated You should normally do sth. like this:<code><pre>
+	* ResultController<~> rc = new ResultController<~>();
+	* *CollectController<~> cc = new *CollectController<~>(.., rc);
+	* </code></pre>
+    */
    public MasterDataCollectController(JComponent parent, String sEntityName, MainFrameTab tabIfAny, boolean detailsWithScrollbar) {
-      super(parent, sEntityName);
+	   this(parent, sEntityName, tabIfAny, detailsWithScrollbar, new ResultController<CollectableMasterDataWithDependants>());
+   }
+   
+   /**
+    * Use <code>newMasterDataCollectController()</code> to create an instance of this class.
+    * @param parent
+    * @param sEntityName
+    */
+   public MasterDataCollectController(JComponent parent, NuclosEntity systemEntity, MainFrameTab tabIfAny,
+		   ResultController<CollectableMasterDataWithDependants> rc) {
+	   this(parent, systemEntity.getEntityName(), tabIfAny, true, rc);
+   }
+   
+   public MasterDataCollectController(JComponent parent, String sEntityName, MainFrameTab tabIfAny, 
+		   boolean detailsWithScrollbar, ResultController<CollectableMasterDataWithDependants> rc) {
+      super(parent, sEntityName, rc);
       ifrm = tabIfAny != null ? tabIfAny : newInternalFrame();
-
       this.setCompleteCollectablesStrategy(new CompleteCollectableMasterDataStrategy());
-
       final boolean bSearchPanelAvailable = this.mddelegate.getMetaData(sEntityName).isSearchable();
-
       this.detailsWithScrollbar = detailsWithScrollbar;
       final CollectPanel<CollectableMasterDataWithDependants> pnlCollect = new MasterDataCollectPanel(bSearchPanelAvailable);
-
       this.ifrm.setLayeredComponent(pnlCollect);
-
       this.initialize(pnlCollect);
-      
       this.setInternalFrame(this.ifrm, tabIfAny==null);
-
       this.setupEditPanelForDetailsTab();
-
       this.setupShortcutsForTabs(ifrm);
 
       this.getCollectStateModel().addCollectStateListener(new CollectStateAdapter() {
@@ -1099,7 +1130,7 @@ protected void setupSearchToolBar() {
    }
 
    protected CollectableMasterDataProxyListAdapter getSearchResult() throws CollectableFieldFormatException {
-      final CollectableSearchExpression clctexpr = new CollectableSearchExpression(this.getCollectableSearchCondition(), this.getCollectableSortingSequence());
+      final CollectableSearchExpression clctexpr = new CollectableSearchExpression(getCollectableSearchCondition(), getResultController().getCollectableSortingSequence());
       clctexpr.setValueListProviderDatasource(getValueListProviderDatasource());
       clctexpr.setValueListProviderDatasourceParameter(getValueListProviderDatasourceParameter());
       final ProxyList<MasterDataWithDependantsVO> mdproxylst = mddelegate.getMasterDataProxyList(this.getEntityName(), clctexpr);
@@ -1547,7 +1578,7 @@ protected void setupSearchToolBar() {
 
    private List<CollectableEntityFieldWithEntity> getSelectedFields() {
       List<CollectableEntityFieldWithEntity> lst = new ArrayList<CollectableEntityFieldWithEntity>();
-      for (CollectableEntityField cef : this.fields.getSelectedFields()) {
+      for (CollectableEntityField cef : getFields().getSelectedFields()) {
          lst.add(new CollectableEntityFieldWithEntity(this.getCollectableEntity(), cef.getName()));
       }
       return lst;
