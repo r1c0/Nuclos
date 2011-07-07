@@ -58240,6 +58240,51 @@
     "text": "Die Buchung {0} enthält ungültige Zeitdaten und wurde aus der Sicht entfernt."
   },
   {
+    "resourceID": "nuclos.resplan.l10n.language",
+    "locale": "i-default",
+    "text": "Language"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.language",
+    "locale": "en",
+    "text": "Language"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.language",
+    "locale": "de",
+    "text": "Sprache"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.label",
+    "locale": "i-default",
+    "text": "Label"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.label",
+    "locale": "en",
+    "text": "Label"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.label",
+    "locale": "de",
+    "text": "Beschriftung"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.menupath",
+    "locale": "i-default",
+    "text": "Menu path"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.menupath",
+    "locale": "en",
+    "text": "Menu path"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.menupath",
+    "locale": "de",
+    "text": "Menüpfad"
+  },
+  {
     "resourceID": "nuclos.entity.librule.label",
     "locale": "i-default",
     "text": "Library rule"

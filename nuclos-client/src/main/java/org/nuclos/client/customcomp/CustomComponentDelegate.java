@@ -22,6 +22,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.TranslationVO;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -51,22 +52,25 @@ public class CustomComponentDelegate {
 	private CustomComponentDelegate() {
 		this.facade = ServiceLocator.getInstance().getFacade(CustomComponentFacadeRemote.class);
 	}
-	
+
 	public List<CustomComponentVO> getAll() {
 		return facade.getAll();
 	}
-	
-	public void create(CustomComponentVO vo) throws CommonBusinessException {
-		facade.create(vo);
-	}
-	
-	
-	public void modify(CustomComponentVO vo) throws CommonBusinessException {
-		facade.modify(vo);
-	}
-	
+
 	public void remove(CustomComponentVO vo) throws CommonBusinessException {
 		facade.remove(vo);
+	}
+
+	public void create(CustomComponentVO vo, List<TranslationVO> translations) throws CommonBusinessException {
+		facade.create(vo, translations);
+	}
+
+	public void modify(CustomComponentVO vo, List<TranslationVO> translations) throws CommonBusinessException {
+		facade.modify(vo, translations);
+	}
+
+	public List<TranslationVO> getTranslations(Integer ccid) throws CommonBusinessException {
+		return facade.getTranslations(ccid);
 	}
 
 	private static void storeAll(List<CustomComponentVO> all) {
@@ -79,8 +83,8 @@ public class CustomComponentDelegate {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private static Preferences getPreferences() {
-		return Preferences.userRoot().node("customcomponent3");	
+		return Preferences.userRoot().node("customcomponent3");
 	}
 }

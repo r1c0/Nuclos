@@ -17,6 +17,14 @@
 
 package org.nuclos.client.customcomp.wizard;
 
+import static info.clearthought.layout.TableLayoutConstants.FILL;
+import static info.clearthought.layout.TableLayoutConstants.FULL;
+import static info.clearthought.layout.TableLayoutConstants.LEFT;
+import static info.clearthought.layout.TableLayoutConstants.PREFERRED;
+import static info.clearthought.layout.TableLayoutConstants.TOP;
+import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
+import static org.nuclos.common2.CommonLocaleDelegate.getText;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -28,18 +36,24 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -65,11 +79,13 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.tools.Diagnostic.Kind;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.jdesktop.swingx.combobox.ListComboBoxModel;
+import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.customcomp.CustomComponentCache;
 import org.nuclos.client.customcomp.CustomComponentDelegate;
@@ -85,12 +101,16 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.table.AbstractListTableModel;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.client.ui.util.TableLayoutBuilder;
+import org.nuclos.client.wizard.util.NuclosWizardUtils;
+import org.nuclos.common.TranslationVO;
+import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.time.LocalTime;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
@@ -101,14 +121,6 @@ import org.pietschy.wizard.Wizard;
 import org.pietschy.wizard.WizardModel;
 import org.pietschy.wizard.models.StaticModel;
 
-import static info.clearthought.layout.TableLayoutConstants.FILL;
-import static info.clearthought.layout.TableLayoutConstants.FULL;
-import static info.clearthought.layout.TableLayoutConstants.LEFT;
-import static info.clearthought.layout.TableLayoutConstants.PREFERRED;
-import static info.clearthought.layout.TableLayoutConstants.TOP;
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
-import static org.nuclos.common2.CommonLocaleDelegate.getText;
-
 
 public class CustomComponentWizardModel extends StaticModel {
 
@@ -116,6 +128,7 @@ public class CustomComponentWizardModel extends StaticModel {
 	boolean completed;
 	CustomComponentVO componentVO;
 	ResPlanConfigVO configVO;
+	List<TranslationVO> translations;
 
 	CustomComponentWizardModel() {
 		add(new CustomComponentWizardStep1());
@@ -141,6 +154,10 @@ public class CustomComponentWizardModel extends StaticModel {
 		}
 	}
 
+	void setTranslations(List<TranslationVO> translations) {
+		this.translations = translations;
+	}
+
 	@Override
 	public void refreshModelState() {
 		super.refreshModelState();
@@ -158,9 +175,9 @@ public class CustomComponentWizardModel extends StaticModel {
 			@Override
 			public void run() throws CommonBusinessException {
 				if (componentVO.getId() != null) {
-					CustomComponentDelegate.getInstance().modify(componentVO);
+					CustomComponentDelegate.getInstance().modify(componentVO, translations);
 				} else {
-					CustomComponentDelegate.getInstance().create(componentVO);
+					CustomComponentDelegate.getInstance().create(componentVO, translations);
 				}
 			}
 		});
@@ -178,7 +195,7 @@ public class CustomComponentWizardModel extends StaticModel {
 	abstract static class CustomComponentWizardAbstractStep extends PanelWizardStep implements DocumentListener {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		CustomComponentWizardModel model;
@@ -216,11 +233,11 @@ public class CustomComponentWizardModel extends StaticModel {
 		public void changedUpdate(DocumentEvent e) {
 			updateState();
 		}
-		
+
 		protected void invalidStateLocalized(JComponent comp, String resourceId, Object...args) throws InvalidStateException {
 			invalidState(comp, getMessage(resourceId, null, args));
 		}
-		
+
 		protected void invalidState(JComponent comp, String message) throws InvalidStateException {
 			Bubble.Position position = Bubble.Position.SE;
 			if (comp == null) {
@@ -236,7 +253,7 @@ public class CustomComponentWizardModel extends StaticModel {
 	static class CustomComponentWizardStep1 extends CustomComponentWizardAbstractStep {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -261,7 +278,7 @@ public class CustomComponentWizardModel extends StaticModel {
 			});
 			removeButton = new JButton(new AbstractAction(getText("nuclos.resplan.wizard.step1.remove", null)) {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -329,55 +346,97 @@ public class CustomComponentWizardModel extends StaticModel {
 				}
 			}
 			model.setCustomComponentVO(componentVO);
+
+			// Load translations
+			try {
+				model.setTranslations(CustomComponentDelegate.getInstance().getTranslations(componentVO.getId()));
+			} catch (CommonBusinessException e) {
+				throw new InvalidStateException(e.getMessage());
+			}
 		}
 	}
 
 	@SuppressWarnings("serial")
 	static class CustomComponentWizardStep2 extends CustomComponentWizardAbstractStep {
 
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
-		JTextField internalName;
-		JTextField labelTextField;
-		JTextField menuPathTextField;
+
+		JScrollPane scrollPane;
+		JTable translationTable;
+
+		Collection<LocaleInfo> locales;
+		CustomComponentTranslationTableModel tablemodel;
+
+		public static String[] labels = TranslationVO.labelsCustomComponent;
 
 		CustomComponentWizardStep2() {
 			super("nuclos.resplan.wizard.step2.title", "nuclos.resplan.wizard.step2.summary");
 
-			labelTextField = new JTextField(40);
-			menuPathTextField = new JTextField(40);
+			tablemodel = new CustomComponentTranslationTableModel();
+			List<TranslationVO> lstTranslation = new ArrayList<TranslationVO>();
 
-			labelTextField.getDocument().addDocumentListener(this);
-			menuPathTextField.getDocument().addDocumentListener(this);
+			locales = LocaleDelegate.getInstance().getAllLocales(false);
+			for(LocaleInfo voLocale : locales) {
+				String sLocaleLabel = voLocale.language;
+				Integer iLocaleID = voLocale.localeId;
+				String sCountry = voLocale.title;
+				Map<String, String> map = new HashMap<String, String>();
 
-			new TableLayoutBuilder(this)
-				.columns(PREFERRED, PREFERRED, PREFERRED, FILL).gaps(5, 5)
-				.newRow().addLocalizedLabel("nuclos.resplan.wizard.step2.label.label").add(labelTextField) // .add(new JButton("..."))
-				.newRow(5)
-				.newRow().addLocalizedLabel("nuclos.resplan.wizard.step2.menupath.label").add(menuPathTextField) // .add(new JButton("..."))
-				;
-//				.newMoreOptionPanel().gaps(5, 5)
-//					.columns(-2, -2)
-//					.addLabel("Interner Name").add(internalName);
+				TranslationVO translation = new TranslationVO(iLocaleID, sCountry, sLocaleLabel, map);
+				for(String sLabel : labels) {
+					translation.getLabels().put(sLabel, "");
+				}
+				lstTranslation.add(translation);
+			}
+			tablemodel.setRows(lstTranslation);
+
+			translationTable = new JTable(tablemodel);
+			JTextField txtField = new JTextField();
+			txtField.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
+			DefaultCellEditor editor = new DefaultCellEditor(txtField);
+			editor.setClickCountToStart(1);
+
+			for(TableColumn col : CollectionUtils.iterableEnum(translationTable.getColumnModel().getColumns())) {
+				col.setCellEditor(editor);
+			}
+
+			translationTable.getTableHeader().addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					stopCellEditing();
+				}
+			});
+
+			scrollPane = new JScrollPane(translationTable);
+
+			new TableLayoutBuilder(this).columns(FILL).gaps(5, 5).newRow(FILL).add(scrollPane);
+		}
+
+		private void stopCellEditing() {
+	        for(TableColumn col : CollectionUtils.iterableEnum(translationTable.getColumnModel().getColumns())) {
+	        	TableCellEditor cellEditor = col.getCellEditor();
+				if(cellEditor != null)
+	        		cellEditor.stopCellEditing();
+	        }
 		}
 
 		@Override
 		public void prepare() {
-			labelTextField.setText(model.componentVO.getDefaultLabel());
-			menuPathTextField.setText(model.componentVO.getDefaultMenuPath());
+			if(model.translations != null && model.translations.size() > 0) {
+				tablemodel.setRows(model.translations);
+			}
+			setComplete(true);
 		}
 
 		@Override
 		protected void updateState() {
-			setComplete(!labelTextField.getText().isEmpty());
+
 		}
 
 		@Override
 		public void applyState() throws InvalidStateException {
-			model.componentVO.setDefaultLabel(StringUtils.nullIfEmpty(labelTextField.getText()));
-			model.componentVO.setDefaultMenuPath(StringUtils.nullIfEmpty(menuPathTextField.getText()));
+			stopCellEditing();
+			model.translations = tablemodel.getRows();
 		}
 	}
 
@@ -385,7 +444,7 @@ public class CustomComponentWizardModel extends StaticModel {
 	static class CustomComponentWizardStep3 extends CustomComponentWizardAbstractStep implements ItemListener, ChangeListener {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		JComboBox resEntityComboBox;
@@ -458,7 +517,7 @@ public class CustomComponentWizardModel extends StaticModel {
 
 			configureResourceSortFieldComboBox();
 			resSortFieldComboBox.setSelectedItem(model.configVO.getResourceSortField());
-			
+
 			configureReferenceFieldComboBox();
 			referenceFieldComboBox.setSelectedItem(model.configVO.getReferenceField());
 
@@ -564,7 +623,7 @@ public class CustomComponentWizardModel extends StaticModel {
 		public void stateChanged(ChangeEvent e) {
 			updateState();
 		}
-		
+
 		@Override
 		protected void updateState() {
 			boolean complete = resEntityComboBox.getSelectedItem() != null
@@ -639,12 +698,12 @@ public class CustomComponentWizardModel extends StaticModel {
 	static class CustomComponentWizardStep4 extends CustomComponentWizardAbstractStep {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
 		JTabbedPane tabbedPane;
-		
+
 		JTextComponent resLabelTextField;
 		JTextComponent resToolTipTextField;
 		JTextComponent entryLabelTextField;
@@ -661,16 +720,16 @@ public class CustomComponentWizardModel extends StaticModel {
 			entryToolTipTextField = new JTextArea();
 			captionLabelTextField = new JTextArea();
 			captionToolTipTextField = new JTextArea();
-			
+
 			setLayout(new BorderLayout());
 			tabbedPane = new JTabbedPane();
 			add(tabbedPane);
-			
+
 			addTab("nuclos.resplan.wizard.step4.resource", resLabelTextField, resToolTipTextField);
 			addTab("nuclos.resplan.wizard.step4.entry", entryLabelTextField, entryToolTipTextField);
 			addTab("nuclos.resplan.wizard.step4.caption", captionLabelTextField, captionToolTipTextField);
 		}
-		
+
 		protected void addTab(String titleResId, JTextComponent labelTextField, JTextComponent toolTipTextField) {
 			JPanel panel = new JPanel();
 			new TableLayoutBuilder(panel)
@@ -717,7 +776,7 @@ public class CustomComponentWizardModel extends StaticModel {
 	static class CustomComponentWizardStep5 extends CustomComponentWizardAbstractStep implements ItemListener {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		JCheckBox scriptActiveCheckBox;
@@ -812,7 +871,7 @@ public class CustomComponentWizardModel extends StaticModel {
 //			}
 			return methodName;
 		}
-		
+
 		@Override
 		public void itemStateChanged(ItemEvent e) {
 			if (e.getStateChange() == ItemEvent.SELECTED)
@@ -853,7 +912,7 @@ public class CustomComponentWizardModel extends StaticModel {
 	static class CustomComponentCodeEditor extends JPanel {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		RuleEditPanel editPanel;
@@ -869,7 +928,7 @@ public class CustomComponentWizardModel extends StaticModel {
 			JToolBar toolBar = new JToolBar();
 			toolBar.add(new AbstractAction(getText("nuclos.resplan.wizard.step5.scriptEditor.compile", null)) {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -880,7 +939,7 @@ public class CustomComponentWizardModel extends StaticModel {
 			});
 			toolBar.add(new AbstractAction(getText("nuclos.resplan.wizard.step5.scriptEditor.close", null)) {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -933,7 +992,7 @@ public class CustomComponentWizardModel extends StaticModel {
 	static class CustomComponentWizardStep6 extends CustomComponentWizardAbstractStep {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -968,7 +1027,7 @@ public class CustomComponentWizardModel extends StaticModel {
 	static class LocalTimeSpanPane extends JPanel {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		private LocalTimeSpanTableModel tableModel;
@@ -1000,7 +1059,7 @@ public class CustomComponentWizardModel extends StaticModel {
 			toolBar.setOpaque(true);
 			toolBar.add(new AbstractAction("Add", Icons.getInstance().getIconNew16()) {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -1025,7 +1084,7 @@ public class CustomComponentWizardModel extends StaticModel {
 			});
 			toolBar.add(new AbstractAction("Remove", Icons.getInstance().getIconDelete16()) {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -1042,30 +1101,30 @@ public class CustomComponentWizardModel extends StaticModel {
 					}
 				}
 			});
-			
+
 			JScrollPane sp = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			sp.setBorder(null);
-			
+
 			add(toolBar, BorderLayout.WEST);
 			add(sp);
 			setPreferredSize(new Dimension(220, 100));
 		}
-		
+
 		public void addChangeListener(ChangeListener listener) {
 			changeListeners.add(listener);
 		}
-		
+
 		public void removeChangeListener(ChangeListener listener) {
 			changeListeners.remove(listener);
 		}
-		
+
 		public List<Pair<LocalTime, LocalTime>> getLocalTimeSpans() {
 			TableCellEditor cellEditor = table.getCellEditor();
 			if (cellEditor != null)
 				cellEditor.stopCellEditing();
 			return tableModel.getRows();
 		}
-		
+
 		public String getText() {
 			StringBuilder sb = new StringBuilder();
 			for (Pair<LocalTime, LocalTime> p : getLocalTimeSpans()) {
@@ -1084,7 +1143,7 @@ public class CustomComponentWizardModel extends StaticModel {
 	static class LocalTimeSpanTableModel extends AbstractListTableModel<Pair<LocalTime, LocalTime>> {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -1095,7 +1154,7 @@ public class CustomComponentWizardModel extends StaticModel {
 		public List<Pair<LocalTime, LocalTime>> getRows() {
 			return super.getRows();
 		}
-		
+
 		@Override
 		public int getColumnCount() {
 			return 2;
@@ -1134,7 +1193,7 @@ public class CustomComponentWizardModel extends StaticModel {
 	static class LocalTimeSpinnerCellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer, ActionListener, ChangeListener {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		private final JSpinner spinner;
@@ -1193,7 +1252,7 @@ public class CustomComponentWizardModel extends StaticModel {
 			}
 			return spinner;
 		}
-		
+
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 			configure(table, value, true);

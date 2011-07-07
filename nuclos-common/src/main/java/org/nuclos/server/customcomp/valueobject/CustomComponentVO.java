@@ -25,14 +25,13 @@ public class CustomComponentVO extends NuclosValueObject implements Cloneable {
 
 	String internalName;
 
-	// TODO_RESPLAN: make resource id
-	String defaultLabel;
-	String defaultMenuPath;
+	String labelResourceId;
+	String menupathResourceId;
 
 	String componentType;
 	String componentVersion;
 	byte[] data;
-	
+
 	public CustomComponentVO() {
 	}
 
@@ -43,31 +42,31 @@ public class CustomComponentVO extends NuclosValueObject implements Cloneable {
 	public String getInternalName() {
 		return internalName;
 	}
-	
+
 	public void setInternalName(String internalName) {
 		this.internalName = internalName;
 	}
 
-	public String getDefaultLabel() {
-		return defaultLabel != null ? defaultLabel : internalName;
+	public String getLabelResourceId() {
+		return labelResourceId != null ? labelResourceId : internalName;
 	}
-	
-	public void setDefaultLabel(String label) {
-		this.defaultLabel = label;
+
+	public void setLabelResourceId(String label) {
+		this.labelResourceId = label;
 	}
-	
-	public void setDefaultMenuPath(String menuPath) {
-		this.defaultMenuPath = menuPath;
+
+	public void setMenupathResourceId(String menuPath) {
+		this.menupathResourceId = menuPath;
 	}
-	
-	public String getDefaultMenuPath() {
-		return defaultMenuPath;
+
+	public String getMenupathResourceId() {
+		return menupathResourceId;
 	}
-	
+
 	public String getComponentType() {
 		return componentType;
 	}
-	
+
 	public void setComponentType(String componentType) {
 		this.componentType = componentType;
 	}
@@ -75,24 +74,24 @@ public class CustomComponentVO extends NuclosValueObject implements Cloneable {
 	public String getComponentVersion() {
 		return componentVersion;
 	}
-	
+
 	public void setComponentVersion(String componentVersion) {
 		this.componentVersion = componentVersion;
 	}
-	
+
 	public void setData(byte[] data) {
 		this.data = data;
 	}
-	
+
 	public byte[] getData() {
 		return data;
 	}
-	
+
 	@Override
 	public String toString() {
 		return internalName;
 	}
-	
+
 	@Override
 	public CustomComponentVO clone() {
 		CustomComponentVO clone = (CustomComponentVO) super.clone();

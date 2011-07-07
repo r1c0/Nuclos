@@ -29,17 +29,15 @@ import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 
 public class ResPlanAction extends AbstractAction {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public ResPlanAction(CustomComponentVO componentVO) {
-		putValue(Action.NAME, componentVO.getDefaultLabel() + "...");
+		putValue(Action.NAME, CommonLocaleDelegate.getText(componentVO.getLabelResourceId()) + "...");
 		putValue(Action.SMALL_ICON, MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish.83-calendar.png")));
 		putValue(Action.ACTION_COMMAND_KEY, componentVO.getInternalName());
 		boolean enabled = false;
@@ -53,7 +51,7 @@ public class ResPlanAction extends AbstractAction {
 		}
 		setEnabled(enabled);
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent evt) {
 		final String internalName = evt.getActionCommand();
@@ -67,6 +65,6 @@ public class ResPlanAction extends AbstractAction {
 					Errors.getInstance().showExceptionDialog(Main.getMainFrame(), ex);
 				}
 			}
-		});	
+		});
 	}
 }

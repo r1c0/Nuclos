@@ -23,9 +23,9 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import org.nuclos.common.HashResourceBundle;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.exception.CommonFatalException;
-import org.nuclos.common.HashResourceBundle;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 @Local
@@ -76,14 +76,16 @@ public interface LocaleFacadeLocal {
 	 * @throws CommonFatalException
 	 */
 	public abstract LocaleInfo getDefaultLocale() throws CommonFatalException;
-	
+
 	public Date getLastChange();
 
 	public abstract MasterDataVO getLocaleVO(LocaleInfo localeInfo);
 
 	public abstract List<LocaleInfo> getParentChain(LocaleInfo localeInfo);
-	
+
 	public void update(String resourceId, LocaleInfo localeInfo, String text);
-	
+
 	public String insert(String sResourceId, LocaleInfo localeInfo, String sText);
+
+	public boolean isResourceId(String s);
 }

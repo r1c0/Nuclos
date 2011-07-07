@@ -43,6 +43,7 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.UIUtils.CommandHandler;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.ClientPreferences;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
@@ -57,17 +58,17 @@ public abstract class CustomComponentController extends TopController {
 
 	private final String componentName;
 	private MainFrameTab ifrm;
-	
+
 	protected CustomComponentController(JComponent parent, String componentName) {
 		super(parent);
 		this.componentName = componentName;
 	}
-	
+
 	@Override
 	public JComponent getParent() {
 		return (JComponent) super.getParent();
 	}
-	
+
 	public final String getCustomComponentName() {
 		return componentName;
 	}
@@ -75,14 +76,14 @@ public abstract class CustomComponentController extends TopController {
 	/**
 	 * This method is one of the entry points. The component is initialized for presentation
 	 * and the corresponding internal frame is shown.
-	 * Note: Controller subclasses may provide alternative entry points which allows a more 
+	 * Note: Controller subclasses may provide alternative entry points which allows a more
 	 * specific initialization.
 	 */
 	public void run() {
 		ifrm.setVisible(true);
 		MainFrame.setSelectedTab(ifrm);
 	}
-	
+
 	protected abstract JComponent getComponent();
 
 	protected void storeSharedState() throws PreferencesException {
@@ -95,10 +96,10 @@ public abstract class CustomComponentController extends TopController {
 	protected Preferences getPreferences() {
 		return ClientPreferences.getUserPreferences().node("customcomponent").node(getCustomComponentName());
 	}
-	
+
 	/** Runs the CommonRunnable and performs error handling.*/
 	public void runCommandWithSpecialHandler(CommonRunnable runnable) {
-		// This is similar to UIUtils.runCommand but handles 
+		// This is similar to UIUtils.runCommand but handles
 		try {
 			CommandHandler cmdHandler = UIUtils.getCommandHandler();
 			cmdHandler.commandStarted(ifrm);
@@ -121,7 +122,7 @@ public abstract class CustomComponentController extends TopController {
 	protected boolean handleSpecialException(Exception ex) {
 		return false;
 	}
-	
+
 	/** Executes a background task in this controller. This method performs all relevant locking and error
 	 * handling.
 	 */
@@ -130,7 +131,7 @@ public abstract class CustomComponentController extends TopController {
 		CommonMultiThreader.getInstance().execute(new CommonClientWorker() {
 			@Override
 			public void init() throws CommonBusinessException {
-				if (ifrm != null) 
+				if (ifrm != null)
 					ifrm.lockLayer();
 				task.init();
 			}
@@ -140,7 +141,7 @@ public abstract class CustomComponentController extends TopController {
 			}
 			@Override
 			public void paint() throws CommonBusinessException {
-				if (ifrm != null) 
+				if (ifrm != null)
 					ifrm.unlockLayer();
 				task.done();
 			}
@@ -159,7 +160,7 @@ public abstract class CustomComponentController extends TopController {
 
 	/**
 	 * A background task is similar to a CommonClientWorker but is only responsible for performing task-related actions.
-	 * In contrast to the CommonClientWorker(Adapter), the BackgroundTask should not perform any GUI locking or error 
+	 * In contrast to the CommonClientWorker(Adapter), the BackgroundTask should not perform any GUI locking or error
 	 * handling. These will be performed by the particular executor in a uniform way.
 	 */
 	public static abstract class BackgroundTask {
@@ -181,7 +182,7 @@ public abstract class CustomComponentController extends TopController {
 	public static CustomComponentController newController(String customComponent) {
 		return newController(customComponent, CustomComponentController.class, null);
 	}
-	
+
 	/**
 	 * Instantiates the given component controller.  This method is identical to {@link #newController(String, JDesktopPane)}
 	 * but ensures that the created controller is of the specified class.
@@ -198,12 +199,13 @@ public abstract class CustomComponentController extends TopController {
 		}
 		boolean newTab = false;
 		final MainFrameTab mainFrameTab;
+		String title = CommonLocaleDelegate.getText(componentVO.getLabelResourceId());
 		if (tabIfAny == null) {
 			newTab = true;
-			mainFrameTab = MainController.newMainFrameTab(controller, componentVO.getDefaultLabel());
+			mainFrameTab = MainController.newMainFrameTab(controller, title);
 		} else {
-			mainFrameTab = tabIfAny;	
-			mainFrameTab.setTitle(componentVO.getDefaultLabel());
+			mainFrameTab = tabIfAny;
+			mainFrameTab.setTitle(title);
 		}
 		controller.ifrm = mainFrameTab;
 		mainFrameTab.setLayeredComponent(controller.getComponent());
@@ -231,7 +233,7 @@ public abstract class CustomComponentController extends TopController {
 				mainFrameTab.removeMainFrameTabListener(this);
 			}
 		});
-		
+
 		if (newTab)
 		MainFrame.getPredefinedEntityOpenLocation(customComponent).add(mainFrameTab);
 		UIUtils.runShortCommand(mainFrameTab, new CommonRunnable() {
@@ -242,21 +244,21 @@ public abstract class CustomComponentController extends TopController {
 		});
 		return controller;
 	}
-	
+
 	public abstract boolean isRestoreTab();
-	
+
 	/**
-	 * 
+	 *
 	 *
 	 */
 	private static class RestorePreferences implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
-		
+
 		String customComponentName;
 		String customComponentClass;
 		String instanceStateXML;
 	}
-	
+
 	private static String toXML(RestorePreferences rp) {
 		XStream xstream = new XStream(new DomDriver());
 		return xstream.toXML(rp);
@@ -266,18 +268,18 @@ public abstract class CustomComponentController extends TopController {
 		XStream xstream = new XStream(new DomDriver());
 		return (RestorePreferences) xstream.fromXML(xml);
 	}
-	
+
 	protected abstract String storeInstanceStateToXML();
-	
+
 	protected abstract void restoreInstanceStateFromXML(String xml);
-	
+
 	/**
 	 *
 	 *
 	 */
 	public static class CustomComponentTabStoreController implements ITabStoreController {
 		private final CustomComponentController ctl;
-		
+
 		public CustomComponentTabStoreController(CustomComponentController ctl) {
 			super();
 			this.ctl = ctl;
@@ -296,11 +298,11 @@ public abstract class CustomComponentController extends TopController {
 		public Class<?> getTabRestoreControllerClass() {
 			return CustomComponentTabRestoreController.class;
 		}
-		
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 *
 	 */
 	public static class CustomComponentTabRestoreController extends TabRestoreController {
@@ -310,23 +312,23 @@ public abstract class CustomComponentController extends TopController {
 			RestorePreferences rp = fromXML(preferencesXML);
 			Class<?> customComponentControllerClass = Class.forName(rp.customComponentClass);
 			CustomComponentController ctl = CustomComponentController.newController(rp.customComponentName, customComponentControllerClass, tab);
-			
+
 			MainController.initMainFrameTab(ctl, tab);
 			// Main.getMainController().addMainFrameTab would be called from listener inside of initMainFrameTab, but only when tab added.
 			// During restore the tabs are already added, so we need to do this manually.
 			Main.getMainController().addMainFrameTab(tab, ctl);
-			
+
 			ctl.restoreInstanceStateFromXML(rp.instanceStateXML);
 			ctl.run();
 		}
-		
+
 	}
 
 	@Override
 	public ImageIcon getIcon() {
 		return MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish.83-calendar.png"));
 	}
-	
+
 	public MainFrameTab getFrame() {
 		return ifrm;
 	}

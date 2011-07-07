@@ -20,15 +20,12 @@ import java.io.Serializable;
 import java.util.Map;
 
 public class TranslationVO implements Serializable {
-	
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	public static String labelsEntity[] = {"titel","menupath","treeview","treeviewdescription"};
 	public static String labelsField[] = {"label","description"};
-	
+	public static String labelsCustomComponent[] = {"label","menupath"};
+
 	Integer iLanguage;
 	String sLanguage;
 	String sCountry;
@@ -41,27 +38,27 @@ public class TranslationVO implements Serializable {
 		this.sLanguage = sLanguage;
 		this.mpValues = lstLanguage;
 	}
-	
+
 	public String getLanguage() {
 		return sLanguage;
 	}
-	
+
 	public void setLanguage(String sLanguage) {
 		this.sLanguage = sLanguage;
 	}
-	
+
 	public String getCountry() {
 		return this.sCountry;
 	}
-	
+
 	public Map<String, String> getLabels() {
 		return mpValues;
 	}
-	
+
 	public void setLabels(Map<String, String> lstLabels) {
 		this.mpValues = lstLabels;
 	}
-	
+
 	public Integer getLocaleId() {
 		return iLanguage;
 	}

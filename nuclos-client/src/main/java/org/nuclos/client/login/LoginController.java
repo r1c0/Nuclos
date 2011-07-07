@@ -88,6 +88,7 @@ public class LoginController extends Controller {
 	};
 
 	private static final String ARGUMENT_USERID = "userid";
+	private static final String ARGUMENT_USER_ID = "user_id";
 
 	/**
 	 * the default username that is taken if none has ever been entered before.
@@ -173,7 +174,7 @@ public class LoginController extends Controller {
 
 		if (StringUtils.isNullOrEmpty(userid) && this.args != null) {
 			for (String arg : this.args) {
-				if (arg != null && arg.toLowerCase().startsWith(ARGUMENT_USERID.toLowerCase()) && arg.indexOf('=') > -1 && arg.indexOf('=') + 1 < arg.length()) {
+				if (arg != null && (arg.toLowerCase().startsWith(ARGUMENT_USERID.toLowerCase()) || arg.toLowerCase().startsWith(ARGUMENT_USER_ID.toLowerCase())) && arg.indexOf('=') > -1 && arg.indexOf('=') + 1 < arg.length()) {
 					userid = arg.substring(arg.indexOf('=') + 1);
 				}
 			}
