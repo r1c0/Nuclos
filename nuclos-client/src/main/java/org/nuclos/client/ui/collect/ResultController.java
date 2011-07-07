@@ -67,6 +67,24 @@ import org.nuclos.common2.exception.PreferencesException;
 
 /**
  * Controller for the Result panel.
+ * <p>
+ * This implementation is to use with {@link CollectController}s for which
+ * no subtype is defined.
+ * </p><p>
+ * The ResultController is used for displaying a search result on
+ * ResultPanel. The result shown are (list) representations of 
+ * (DB) persisted entities.
+ * </p><p>
+ * Since Nuclos 3.1.01 ResultController is a Controller hierarchy of its own.
+ * The main intention of this is to remove as many methods away from
+ * CollectController as possible. In principle, the ResultController hierarchy 
+ * should mimic the hierarchy of CollectControllers. In practice, subtypes of 
+ * ResultController are only implemented in case they change the behaviour 
+ * defined here.
+ * </p>
+ * @see ResultPanel
+ * @since Nuclos 3.1.01 this is a top-level class.
+ * @author Thomas Pasch
  */
 public class ResultController<Clct extends Collectable> {
 	
