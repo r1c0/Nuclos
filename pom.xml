@@ -13,7 +13,7 @@
 
 	<properties>
 		<nuclos.version.date>15.06.2011</nuclos.version.date>
-		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<modules>
