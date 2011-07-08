@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.JAXB;
@@ -29,8 +30,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.time.LocalTime;
+import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.StringUtils;
 
 @XmlType
@@ -41,7 +44,7 @@ public class ResPlanConfigVO implements Serializable {
 
 	@XmlAttribute(name="version", required=true)
 	static final String VERSION = "0.1";
-	
+
 	private String resourceEntity;
 	private String resourceSortField;
 	private String entryEntity;
@@ -65,6 +68,8 @@ public class ResPlanConfigVO implements Serializable {
 	private String backgroundPaintMethod;
 	private String scriptingResourceCellMethod;
 	private String scriptingEntryCellMethod;
+
+	private List<ResPlanResourceVO> resources;
 
 	public ResPlanConfigVO() {
 	}
@@ -139,12 +144,12 @@ public class ResPlanConfigVO implements Serializable {
 	public void setTimeUntilField(String timeUntilField) {
 		this.timeUntilField = timeUntilField;
 	}
-	
+
 	@XmlElement(name="timePerods")
 	public String getTimePeriodsString() {
 		return timePeriodsString;
 	}
-	
+
 	public void setTimePeriodsString(String timePeriodsString) {
 		this.timePeriodsString = timePeriodsString;
 	}
@@ -229,7 +234,7 @@ public class ResPlanConfigVO implements Serializable {
 	public void setScriptingBackgroundPaintMethod(String backgroundPaintCellMethod) {
 		this.backgroundPaintMethod = backgroundPaintCellMethod;
 	}
-	
+
 	@XmlElement(name="resourceCellMethod")
 	public String getScriptingResourceCellMethod() {
 		return scriptingResourceCellMethod;
@@ -247,19 +252,40 @@ public class ResPlanConfigVO implements Serializable {
 	public void setScriptingEntryCellMethod(String scriptingEntryCellMethod) {
 		this.scriptingEntryCellMethod = scriptingEntryCellMethod;
 	}
-	
+
+	@XmlElement(name="resources")
+	public List<ResPlanResourceVO> getResources() {
+		return resources;
+	}
+
+	public void setResources(List<ResPlanResourceVO> resources) {
+		this.resources = resources;
+	}
+
+	public ResPlanResourceVO getResources(LocaleInfo li) {
+		for (LocaleInfo locale : LocaleDelegate.getInstance().getParentChain()) {
+			for (ResPlanResourceVO result : resources) {
+				if (locale.localeId.equals(result.getLocaleId())) {
+					return result;
+				}
+			}
+		}
+		// if no resources can be determined, return an empty resource set
+		return new ResPlanResourceVO();
+	}
+
 	public List<Pair<LocalTime, LocalTime>> getParsedTimePeriods() {
 		if (StringUtils.looksEmpty(getTimePeriodsString()))
 			return null;
 		return parseTimePeriodsString(getTimePeriodsString());
 	}
-	
+
 	public byte[] toBytes() {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		JAXB.marshal(this, out);
 		return out.toByteArray();
 	}
-	
+
 	public static List<Pair<LocalTime, LocalTime>> parseTimePeriodsString(String period) {
 		List<Pair<LocalTime, LocalTime>> list = new ArrayList<Pair<LocalTime, LocalTime>>();
 		if (period == null || period.trim().isEmpty())
@@ -279,7 +305,26 @@ public class ResPlanConfigVO implements Serializable {
 
 	public static ResPlanConfigVO fromBytes(byte[] b) {
 		ByteArrayInputStream in = new ByteArrayInputStream(b);
-		return JAXB.unmarshal(in, ResPlanConfigVO.class);
+		ResPlanConfigVO result = JAXB.unmarshal(in, ResPlanConfigVO.class);
+
+		// transfer resources from template
+		if (result.getResources() == null || result.getResources().size() == 0) {
+			List<ResPlanResourceVO> resources = new ArrayList<ResPlanResourceVO>();
+			Collection<LocaleInfo> locales = LocaleDelegate.getInstance().getAllLocales(false);
+			for (LocaleInfo li : locales) {
+				ResPlanResourceVO vo = new ResPlanResourceVO();
+				vo.setLocaleId(li.localeId);
+				vo.setResourceLabel(result.getResourceLabelText());
+				vo.setResourceTooltip(result.getResourceToolTipText());
+				vo.setBookingLabel(result.getEntryLabelText());
+				vo.setBookingTooltip(result.getEntryToolTipText());
+				vo.setLegendLabel(result.getCornerLabelText());
+				vo.setLegendTooltip(result.getCornerToolTipText());
+				resources.add(vo);
+			}
+			result.setResources(resources);
+		}
+		return result;
 	}
 }
 

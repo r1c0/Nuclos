@@ -90,12 +90,13 @@ public class ResPlanController extends CustomComponentController {
 
 	CustomComponentVO componentVO;
 	ResPlanConfigVO configVO;
+	ResPlanResourceVO resourceVO;
 	ResPlanPanel component;
 	CollectableResPlanModel resPlanModel;
 
 	CollectableHelper<?> resEntity;
 	CollectableHelper<?> entryEntity;
-	
+
 	Rectangle viewRectFromPreferences;
 
 	public ResPlanController(JComponent parent, CustomComponentVO componentVO) {
@@ -111,30 +112,31 @@ public class ResPlanController extends CustomComponentController {
 	void init(CustomComponentVO vo) {
 		componentVO = vo;
 		configVO = ResPlanConfigVO.fromBytes(vo.getData());
+		resourceVO = configVO.getResources(CommonLocaleDelegate.getUserLocaleInfo());
 
 		resEntity = CollectableHelper.getForEntity(configVO.getResourceEntity());
 		entryEntity = CollectableHelper.getForEntity(configVO.getEntryEntity());
-		
+
 		CollectableLabelProvider resourceLabelProvider = new CollectableLabelProvider();
-		resourceLabelProvider.setLabelTemplate(configVO.getResourceLabelText());
-		resourceLabelProvider.setToolTipTemplate(configVO.getResourceToolTipText());
+		resourceLabelProvider.setLabelTemplate(resourceVO.getResourceLabel());
+		resourceLabelProvider.setToolTipTemplate(resourceVO.getResourceTooltip());
 
 		CollectableLabelProvider entryLabelProvider = new CollectableLabelProvider();
-		entryLabelProvider.setLabelTemplate(configVO.getEntryLabelText());
-		entryLabelProvider.setToolTipTemplate(configVO.getEntryToolTipText());
+		entryLabelProvider.setLabelTemplate(resourceVO.getBookingLabel());
+		entryLabelProvider.setToolTipTemplate(resourceVO.getBookingTooltip());
 
 		JXLabel captionLabel = new JXLabel();
 		captionLabel.setVerticalAlignment(JLabel.TOP);
-		captionLabel.setText(configVO.getCornerLabelText());
-		captionLabel.setToolTipText(StringUtils.nullIfEmpty(configVO.getCornerToolTipText()));
+		captionLabel.setText(resourceVO.getLegendLabel());
+		captionLabel.setToolTipText(StringUtils.nullIfEmpty(resourceVO.getLegendTooltip()));
 		captionLabel.setBackgroundPainter(new PainterUtils.HeaderPainter());
 		JPanel captionPanel = new JPanel(new BorderLayout());
 		captionPanel.add(captionLabel);
 		captionPanel.setBackground(new Color(163, 172, 187));
 		captionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 1, 1));
-		
+
 		BackgroundPainter backgroundPainter = new BackgroundPainter();
-		
+
 		if (configVO.isScriptingActivated()) {
 			String code = configVO.getScriptingCode();
 			String entryLabelCode = configVO.getScriptingEntryCellMethod();
@@ -143,7 +145,7 @@ public class ResPlanController extends CustomComponentController {
 					GroovySupport support = new GroovySupport();
 					support.compile(code);
 					support.prepare();
-					
+
 					resourceLabelProvider.setGroovyMethod(support.getInvocable(
 						configVO.getScriptingResourceCellMethod(), CollectableLabelProvider.SCRIPTING_SIGNATURE));
 					entryLabelProvider.setGroovyMethod(support.getInvocable(
@@ -161,16 +163,16 @@ public class ResPlanController extends CustomComponentController {
 		}
 
 		resPlanModel = new CollectableResPlanModel(this);
-		
+
 		DateTimeModel dateTimeModel = new DateTimeModel(configVO.getParsedTimePeriods());
-		
+
 		component = new ResPlanPanel(this, resPlanModel, dateTimeModel);
 		component.setResourceRenderer(resourceLabelProvider);
 		component.setEntryRenderer(entryLabelProvider);
 		component.setBackgroundPainter(backgroundPainter);
 		component.setCaptionComponent(captionPanel);
 	}
-	
+
 	/**
 	 * {@inheritDoc}.
 	 * Additionally to this method, the {@link ResPlanController} supports the alternative
@@ -187,7 +189,7 @@ public class ResPlanController extends CustomComponentController {
 			}
 		});
 		refresh();
-		
+
 		super.run();
 	}
 
@@ -200,7 +202,7 @@ public class ResPlanController extends CustomComponentController {
 		component.setCustomSearchFilter(new CollectableIdListCondition(new ArrayList<Object>(ids)));
 		run();
 	}
-	
+
 	/**
 	 * Alternative entry point which starts this controller with the ressources specified
 	 * by the given search condition.
@@ -222,15 +224,15 @@ public class ResPlanController extends CustomComponentController {
 	CollectableHelper<?> getResEntity() {
 		return resEntity;
 	}
-	
+
 	CollectableHelper<?> getEntryEntity() {
 		return entryEntity;
 	}
-	
+
 	ResPlanConfigVO getConfigVO() {
 		return configVO;
 	}
-	
+
 	List<TimeGranularity> getTimeGranularityOptions() {
 		List<TimeGranularity> options = new ArrayList<TimeGranularity>();
 		List<Pair<LocalTime, LocalTime>> timePeriods = configVO.getParsedTimePeriods();
@@ -241,7 +243,7 @@ public class ResPlanController extends CustomComponentController {
 		options.add(new TimeGranularity(GranularityType.MONTH, new MonthModel()));
 		return options;
 	}
-	
+
 	private CollectableSearchExpression getInternalResourceSearchExpression() {
 		List<CollectableSorting> sorting = new ArrayList<CollectableSorting>();
 		if (configVO.getResourceSortField() != null) {
@@ -249,7 +251,7 @@ public class ResPlanController extends CustomComponentController {
 		}
 		return new CollectableSearchExpression(component.getSearchCondition(), sorting);
 	}
-	
+
 	private CollectableSearchCondition getInteralEntrySearchCondition(Interval<Date> interval) {
 		CollectableEntityField dateFromField = entryEntity.getCollectableEntity().getEntityField(configVO.getDateFromField());
 		CollectableEntityField dateUntilField = entryEntity.getCollectableEntity().getEntityField(configVO.getDateUntilField());
@@ -257,7 +259,7 @@ public class ResPlanController extends CustomComponentController {
 			new CollectableComparison(dateFromField, ComparisonOperator.LESS_OR_EQUAL, new CollectableValueField(interval.getEnd())),
 			new CollectableComparison(dateUntilField, ComparisonOperator.GREATER_OR_EQUAL, new CollectableValueField(interval.getStart()))));
 	}
-	
+
 	public void refresh() {
 		execute(new RefreshTask(true));
 	}
@@ -271,7 +273,7 @@ public class ResPlanController extends CustomComponentController {
 	protected void storeSharedState() throws PreferencesException {
 		super.storeSharedState();
 		Preferences defaultPrefs = getPreferences().node("default");
-		
+
 		defaultPrefs.put("granularity", component.getTimeGranularity().getValue());
 		component.storeViewPreferences(defaultPrefs, null);
 	}
@@ -280,7 +282,7 @@ public class ResPlanController extends CustomComponentController {
 	protected void restoreSharedState() throws PreferencesException {
 		super.restoreSharedState();
 		Preferences defaultPrefs = getPreferences().node("default");
-		
+
 		Date startDate = DateUtils.getPureDate(new Date());
 		Date endDate = DateUtils.addMonths(startDate, 1);
 		GranularityType granularity = KeyEnum.Utils.findEnum(GranularityType.class, defaultPrefs.get("granularity", null));
@@ -290,7 +292,7 @@ public class ResPlanController extends CustomComponentController {
 		component.setTimeHorizon(new Interval<Date>(startDate, endDate, true));
 		component.restoreViewPreferences(defaultPrefs, null);
 	}
-	
+
 	@Override
 	public boolean isRestoreTab() {
 		return true;
@@ -302,30 +304,30 @@ public class ResPlanController extends CustomComponentController {
 		Interval<Date> timeHorizon = component.getTimeHorizon();
 		String searchFilter = component.getSearchFilter();
 		CollectableSearchCondition searchCondition = component.getSearchCondition();
-		
+
 		rp.granularity = component.getTimeGranularity().getValue();
 		rp.startDate =  String.format("%tF", timeHorizon.getStart());
 		rp.endDate = String.format("%tF", timeHorizon.getEnd());
 		rp.searchFilter = searchFilter;
 		rp.searchCondition = searchCondition;
 		rp.viewRect = component.getViewRect();
-		
+
 		try {
 			component.storeViewPreferences(null, rp);
 		} catch(PreferencesException e) {}
-		
+
 		return toXML(rp);
 	}
 
 	@Override
 	protected void restoreInstanceStateFromXML(String xml) {
 		RestorePreferences rp = fromXML(xml);
-		
+
 		GranularityType granularity = KeyEnum.Utils.findEnum(GranularityType.class, rp.granularity);
 		if (granularity != null) {
 			component.setTimeGranularity(granularity);
 		}
-		
+
 		if (component != null && rp.startDate != null && rp.endDate != null) {
 			Date startDate = java.sql.Date.valueOf(rp.startDate);
 			Date endDate = java.sql.Date.valueOf(rp.endDate);
@@ -340,9 +342,9 @@ public class ResPlanController extends CustomComponentController {
 		try {
 			component.restoreViewPreferences(null, rp);
 		} catch(PreferencesException e) {}
-		
+
 		viewRectFromPreferences = rp.viewRect;
-		
+
 		/*execute(new RefreshTask(true) {
 			@Override
 			public void done() throws CommonBusinessException {
@@ -355,26 +357,26 @@ public class ResPlanController extends CustomComponentController {
 			}
 		});*/
 	}
-	
+
 	/**
-	 * 
+	 *
 	 *
 	 */
 	public static class RestorePreferences implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
-		
+
 		String granularity;
 		String startDate;
 		String endDate;
 		String searchFilter;
 		Rectangle viewRect;
 		CollectableSearchCondition searchCondition;
-		
+
 		int orientation;
 		final Map<String, Integer> resourceCellExtent = new HashMap<String, Integer>();
 		final Map<String, Integer> timelineCellExtent = new HashMap<String, Integer>();
 	}
-	
+
 	private static String toXML(RestorePreferences rp) {
 		XStream xstream = new XStream(new DomDriver());
 		return xstream.toXML(rp);
@@ -390,7 +392,7 @@ public class ResPlanController extends CustomComponentController {
 		NuclosBusinessRuleException.extractNuclosBusinessRuleExceptionIfAny(ex);
 		if (ex != null) {
 			String exceptionMessage;
-			
+
 			String originMessage = NuclosBusinessRuleException.extractOriginFromNuclosBusinessRuleExceptionIfAny(ex);
 			if (originMessage != null) {
 				exceptionMessage = originMessage;
@@ -406,9 +408,9 @@ public class ResPlanController extends CustomComponentController {
 		}
 		return super.handleSpecialException(ex);
 	}
-	
+
 	class RefreshTask extends BackgroundTask {
-		
+
 		final int resourceLimit;
 		final boolean showMessage;
 		final CollectableSearchExpression resourceSearchExpr;
@@ -417,7 +419,7 @@ public class ResPlanController extends CustomComponentController {
 		volatile List<? extends Collectable> resources;
 		volatile List<? extends Collectable> entries;
 		volatile boolean truncated;
-		
+
 		List<EntitySearchFilter> searchFilters;
 
 		public RefreshTask(boolean show) {
@@ -466,8 +468,8 @@ public class ResPlanController extends CustomComponentController {
 	public int getResourceLimit() {
 		return Math.max(1, ClientParameterProvider.getInstance().getIntValue(
 			ParameterProvider.KEY_RESPLAN_RESOURCE_LIMIT, DEFAULT_RESOURCE_LIMIT));
-	}	
-	
+	}
+
 	public List<EntitySearchFilter> getSearchFilters() {
 		List<EntitySearchFilter> entitySearchFilters = new ArrayList<EntitySearchFilter>();
 		entitySearchFilters.add(EntitySearchFilter.newDefaultFilter());
@@ -477,46 +479,48 @@ public class ResPlanController extends CustomComponentController {
 			ex.printStackTrace();
 		}
 		entitySearchFilters.add(new NewCustomSearchFilter());
-		
+
 		return entitySearchFilters;
 	}
-	
+
 	public static enum GranularityType implements KeyEnum<String> {
 		MONTH("month", 0),
 		TIME("time", 3),
 		DAY("day", 2);
-		
+
 		private final String name;
 		private final int level;
-		
+
 		private GranularityType(String name, int level) {
 			this.name = name;
 			this.level = level;
 		}
-		
+
 		@Override
 		public String getValue() {
 			return name;
 		}
 	}
-	
+
 	public static class TimeGranularity implements GroupMapper<Interval<Date>> {
-		
+
 		private final GregorianCalendar calendar = new GregorianCalendar();
 
 		private final TimeModel<Date> timeModel;
 		private final GranularityType type;
 		private final Map<Orientation, Integer> mapCellExtent = new HashMap<Orientation, Integer>();
-		
+		private final String cwLabel;
+
 		private TimeGranularity(GranularityType type, TimeModel<Date> timeModel) {
 			this.type = type;
 			this.timeModel = timeModel;
+			this.cwLabel = CommonLocaleDelegate.getText("nuclos.resplan.cw.label");
 		}
 
 		public GranularityType getType() {
 			return type;
 		}
-		
+
 		public TimeModel<Date> getTimeModel() {
 			return timeModel;
 		}
@@ -530,7 +534,7 @@ public class ResPlanController extends CustomComponentController {
 		public int getCategoryCount() {
 			return type.level + 1;
 		}
-		
+
 		@Override
 		public String getCategoryName(int category) {
 			switch (category) {
@@ -550,7 +554,7 @@ public class ResPlanController extends CustomComponentController {
 				return String.format("%1$Tb %1$Ty", calendar);
 			case 1:
 				calendar.setTime(interval.getStart());
-				return String.format("KW%02d", calendar.get(GregorianCalendar.WEEK_OF_YEAR));
+				return cwLabel + String.format("%02d", calendar.get(GregorianCalendar.WEEK_OF_YEAR));
 			case 2:
 				return String.format("%1$Td.%1$Tm", interval.getStart());
 			case 3:
@@ -559,7 +563,7 @@ public class ResPlanController extends CustomComponentController {
 				throw new IllegalArgumentException();
 			}
 		}
-		
+
 		@Override
 		public void setCellExtent(Orientation o, int extent) {
 			this.mapCellExtent.put(o, extent);

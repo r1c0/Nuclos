@@ -59903,5 +59903,125 @@
     "resourceID": "nuclet.circular.reference.found",
     "locale": "de",
     "text": "Zirkelbezug gefunden"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.locale",
+    "locale": "i-default",
+    "text": "Language"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.locale",
+    "locale": "en",
+    "text": "Language"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.locale",
+    "locale": "de",
+    "text": "Sprache"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.resource.label",
+    "locale": "i-default",
+    "text": "Resource label"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.resource.label",
+    "locale": "en",
+    "text": "Resource label"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.resource.label",
+    "locale": "de",
+    "text": "Beschriftung Ressource"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.resource.looltip",
+    "locale": "i-default",
+    "text": "Resource tooltip"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.resource.looltip",
+    "locale": "en",
+    "text": "Resource tooltip"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.resource.looltip",
+    "locale": "de",
+    "text": "Tooltip Ressource"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.booking.label",
+    "locale": "i-default",
+    "text": "Booking label"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.booking.label",
+    "locale": "en",
+    "text": "Booking label"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.booking.label",
+    "locale": "de",
+    "text": "Beschriftung Buchung"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.booking.tooltip",
+    "locale": "i-default",
+    "text": "Booking tooltip"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.booking.tooltip",
+    "locale": "en",
+    "text": "Booking tooltip"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.booking.tooltip",
+    "locale": "de",
+    "text": "Tooltip Buchung"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.legend.label",
+    "locale": "i-default",
+    "text": "Legend label"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.legend.label",
+    "locale": "en",
+    "text": "Legend label"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.legend.label",
+    "locale": "de",
+    "text": "Beschriftung Legende"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.legend.tooltip",
+    "locale": "i-default",
+    "text": "Legend tooltip"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.legend.tooltip",
+    "locale": "en",
+    "text": "Legend tooltip"
+  },
+  {
+    "resourceID": "nuclos.resplan.l10n.labels.legend.tooltip",
+    "locale": "de",
+    "text": "Tooltip Legende"
+  },
+  {
+    "resourceID": "nuclos.resplan.cw.label",
+    "locale": "i-default",
+    "text": "CW"
+  },
+  {
+    "resourceID": "nuclos.resplan.cw.label",
+    "locale": "en",
+    "text": "CW"
+  },
+  {
+    "resourceID": "nuclos.resplan.cw.label",
+    "locale": "de",
+    "text": "KW"
   }
 ]

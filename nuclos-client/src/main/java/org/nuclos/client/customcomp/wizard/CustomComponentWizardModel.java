@@ -36,6 +36,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
@@ -64,11 +66,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
@@ -80,7 +82,6 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.text.JTextComponent;
 import javax.tools.Diagnostic.Kind;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -92,6 +93,8 @@ import org.nuclos.client.customcomp.CustomComponentDelegate;
 import org.nuclos.client.customcomp.resplan.BackgroundPainter;
 import org.nuclos.client.customcomp.resplan.CollectableLabelProvider;
 import org.nuclos.client.customcomp.resplan.ResPlanConfigVO;
+import org.nuclos.client.customcomp.resplan.ResPlanResourceVO;
+import org.nuclos.client.customcomp.resplan.ResPlanTranslationTableModel;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.rule.admin.RuleEditPanel;
 import org.nuclos.client.scripting.GroovySupport;
@@ -702,56 +705,65 @@ public class CustomComponentWizardModel extends StaticModel {
 		 */
 		private static final long serialVersionUID = 1L;
 
-		JTabbedPane tabbedPane;
+		JScrollPane scrollPane;
+		JTable translationTable;
 
-		JTextComponent resLabelTextField;
-		JTextComponent resToolTipTextField;
-		JTextComponent entryLabelTextField;
-		JTextComponent entryToolTipTextField;
-		JTextComponent captionLabelTextField;
-		JTextComponent captionToolTipTextField;
+		Collection<LocaleInfo> locales;
+		ResPlanTranslationTableModel tablemodel;
 
 		CustomComponentWizardStep4() {
 			super("nuclos.resplan.wizard.step4.title", "nuclos.resplan.wizard.step4.summary");
 
-			resLabelTextField = new JTextArea();
-			resToolTipTextField = new JTextArea();
-			entryLabelTextField = new JTextArea();
-			entryToolTipTextField = new JTextArea();
-			captionLabelTextField = new JTextArea();
-			captionToolTipTextField = new JTextArea();
+			locales = LocaleDelegate.getInstance().getAllLocales(false);
+			tablemodel = new ResPlanTranslationTableModel(locales);
 
-			setLayout(new BorderLayout());
-			tabbedPane = new JTabbedPane();
-			add(tabbedPane);
+			translationTable = new JTable(tablemodel);
+			TableCellEditor editor = new ResourceCellEditor();
 
-			addTab("nuclos.resplan.wizard.step4.resource", resLabelTextField, resToolTipTextField);
-			addTab("nuclos.resplan.wizard.step4.entry", entryLabelTextField, entryToolTipTextField);
-			addTab("nuclos.resplan.wizard.step4.caption", captionLabelTextField, captionToolTipTextField);
+			for(TableColumn col : CollectionUtils.iterableEnum(translationTable.getColumnModel().getColumns())) {
+				col.setCellEditor(editor);
+			}
+
+			translationTable.getTableHeader().addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					stopCellEditing();
+				}
+			});
+
+			translationTable.setRowHeight(50);
+
+			scrollPane = new JScrollPane(translationTable);
+
+			new TableLayoutBuilder(this).columns(FILL).gaps(5, 5).newRow(FILL).add(scrollPane);
 		}
 
-		protected void addTab(String titleResId, JTextComponent labelTextField, JTextComponent toolTipTextField) {
-			JPanel panel = new JPanel();
-			new TableLayoutBuilder(panel)
-				.columns(FILL)
-				.newRow(5)
-				.newRow().addLocalizedLabel("nuclos.resplan.wizard.step4.labelText", TOP)
-				.newRow(FILL).add(new JScrollPane(labelTextField))
-				.newRow(5)
-				.newRow().addLocalizedLabel("nuclos.resplan.wizard.step4.toolTipText", TOP)
-				.newRow(FILL).add(new JScrollPane(toolTipTextField))
-			;
-			tabbedPane.addTab(getText(titleResId, null), panel);
+		private void stopCellEditing() {
+	        for(TableColumn col : CollectionUtils.iterableEnum(translationTable.getColumnModel().getColumns())) {
+	        	TableCellEditor cellEditor = col.getCellEditor();
+				if(cellEditor != null) {
+	        		cellEditor.stopCellEditing();
+				}
+	        }
 		}
 
 		@Override
 		public void prepare() {
-			resLabelTextField.setText(model.configVO.getResourceLabelText());
-			resToolTipTextField.setText(model.configVO.getResourceToolTipText());
-			entryLabelTextField.setText(model.configVO.getEntryLabelText());
-			entryToolTipTextField.setText(model.configVO.getEntryToolTipText());
-			captionLabelTextField.setText(model.configVO.getCornerLabelText());
-			captionToolTipTextField.setText(model.configVO.getCornerToolTipText());
+			List<ResPlanResourceVO> resources = new ArrayList<ResPlanResourceVO>();
+			for (LocaleInfo locale : locales) {
+				boolean found = false;
+				for (ResPlanResourceVO vo : model.configVO.getResources()) {
+					if (locale.localeId.equals(vo.getLocaleId())) {
+						found = true;
+						resources.add(vo);
+					}
+				}
+				if (!found) {
+					ResPlanResourceVO vo = new ResPlanResourceVO();
+					vo.setLocaleId(locale.localeId);
+				}
+			}
+			tablemodel.setRows(resources);
 
 			updateState();
 		}
@@ -763,12 +775,8 @@ public class CustomComponentWizardModel extends StaticModel {
 
 		@Override
 		public void applyState() throws InvalidStateException {
-			model.configVO.setResourceLabelText(StringUtils.nullIfEmpty(resLabelTextField.getText().trim()));
-			model.configVO.setResourceToolTipText(StringUtils.nullIfEmpty(resToolTipTextField.getText().trim()));
-			model.configVO.setEntryLabelText(StringUtils.nullIfEmpty(entryLabelTextField.getText().trim()));
-			model.configVO.setEntryToolTipText(StringUtils.nullIfEmpty(entryToolTipTextField.getText().trim()));
-			model.configVO.setCornerLabelText(StringUtils.nullIfEmpty(captionLabelTextField.getText().trim()));
-			model.configVO.setCornerToolTipText(StringUtils.nullIfEmpty(captionToolTipTextField.getText().trim()));
+			stopCellEditing();
+			model.configVO.setResources(tablemodel.getRows());
 		}
 	}
 
@@ -1192,9 +1200,6 @@ public class CustomComponentWizardModel extends StaticModel {
 
 	static class LocalTimeSpinnerCellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer, ActionListener, ChangeListener {
 
-		/**
-		 *
-		 */
 		private static final long serialVersionUID = 1L;
 		private final JSpinner spinner;
 		private final JSpinner.DateEditor dateEditor;
@@ -1262,6 +1267,74 @@ public class CustomComponentWizardModel extends StaticModel {
 		private void configure(JTable table, Object value, boolean focused) {
 			spinner.setValue(((LocalTime) value).toDate(new Date(0)));
 		}
+	}
+
+	static class ResourceCellEditor extends AbstractCellEditor implements TableCellEditor, KeyListener {
+
+		private static final long serialVersionUID = 1L;
+		private final JScrollPane scroll;
+		private final JTextArea ta;
+		private JTable table;
+
+		public ResourceCellEditor() {
+			ta = new JTextArea();
+			ta.setLineWrap(true);
+			ta.setWrapStyleWord(true);
+			ta.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
+			ta.addKeyListener(this);
+			scroll = new JScrollPane(ta);
+			scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		}
+
+		@Override
+		public Object getCellEditorValue() {
+			return ta.getText();
+		}
+
+		@Override
+		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+			if (this.table == null) {
+				this.table = table;
+			}
+			String text = LangUtils.defaultIfNull((String)value, "");
+	        ta.setText(text);
+	        return scroll;
+		}
+
+		@Override
+		public void keyTyped(KeyEvent e) { }
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+	        if (e.getKeyCode() == KeyEvent.VK_TAB && !e.isShiftDown() && table != null) {
+	            e.consume();
+
+	            int column = table.getEditingColumn();
+	            int row = table.getEditingRow();
+	            stopCellEditing();
+	            if ((column + 1)  >= table.getColumnCount()) {
+	                if ((row + 1) >= table.getRowCount()) {
+	                	row = -1;
+	                }
+	                else {
+	                    row++;
+	                    column = 0;
+	                }
+
+	            }
+	            else {
+	            	column++;
+	            }
+
+	            if (row > -1 && column > -1) {
+	            	table.changeSelection(row, column, false, false);
+	            }
+	        }
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) { }
 	}
 }
 

@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -154,8 +154,8 @@ public class NuclosWizardUtils {
 
 			@Override
 			public void focusGained(FocusEvent e) {
-				if(e.getSource() instanceof JTextField) {
-					JTextField tf = (JTextField)e.getSource();
+				if(e.getSource() instanceof JTextComponent) {
+					JTextComponent tf = (JTextComponent)e.getSource();
 					tf.setSelectionStart(0);
 					tf.setSelectionEnd(tf.getText().length());
 				}
