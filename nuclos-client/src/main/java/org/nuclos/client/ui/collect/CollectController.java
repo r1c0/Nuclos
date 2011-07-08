@@ -1127,9 +1127,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 		this.setCollectPanel(pnlCollect);
 
-		this.getResultPanel().initializeFields(clcte, this, this.getPreferences());
+		getResultController().initializeFields(clcte, this, getPreferences());
 
-		this.getResultPanel().setModel(this.newResultTableModel(), clcte, this);
+		getResultController().setModel(newResultTableModel(), clcte, this);
 
 		this.getCollectStateModel().addCollectStateListener(new DefaultCollectStateListener());
 
@@ -3885,6 +3885,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		this.cmdSearch(true);
 	}
 
+	/**
+	 * @deprecated Move to NuclosResultController.
+	 */
 	public final void cmdRefreshResult(List<Observer> lstObservers) {
 		this.cmdObservableMultiThreadingSearch(lstObservers);
 	}
@@ -3955,6 +3958,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * Command: search.
 	 * Observable implementation for cmdSearch() and cmdRefreshResult().
 	 * @param lstObservers "search finished" Observers
+	 *
+	 * @deprecated Move to NuclosResultController.
 	 */
 	private void cmdObservableMultiThreadingSearch(List<Observer> lstObservers) {
 		log.debug("START cmdObservableMultiThreadingSearch");

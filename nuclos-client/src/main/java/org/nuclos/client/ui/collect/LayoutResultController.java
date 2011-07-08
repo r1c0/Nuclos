@@ -33,7 +33,7 @@ import org.nuclos.common2.exception.CommonBusinessException;
  * @author Thomas Pasch
  * @since Nuclos 3.1.01
  */
-public class LayoutResultController<Clct extends CollectableMasterDataWithDependants> extends ResultController<Clct> {
+public class LayoutResultController<Clct extends CollectableMasterDataWithDependants> extends NuclosResultController<Clct> {
 	
 	public LayoutResultController() {
 	}

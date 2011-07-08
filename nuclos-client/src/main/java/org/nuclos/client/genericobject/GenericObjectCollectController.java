@@ -122,7 +122,6 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterData;
-import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
@@ -159,7 +158,6 @@ import org.nuclos.client.ui.collect.SearchPanel;
 import org.nuclos.client.ui.collect.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.UpdateSelectedCollectablesController.UpdateAction;
-import org.nuclos.client.ui.collect.UserResultController;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
@@ -5770,7 +5768,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		for(CollectableEntityField clFiled : lstSelectedNew)
 			if(listColumnsWidths.containsKey(clFiled.getName()))
 				clefListColumnsWidths.put(clFiled, listColumnsWidths.get(clFiled.getName()));
-		getResultPanel().initializeFields(getFields(), this, lstSelectedNew, fixedColumns, clefListColumnsWidths);
+		getResultController().initializeFields(getFields(), this, lstSelectedNew, fixedColumns, clefListColumnsWidths);
 	}
 
 	/*

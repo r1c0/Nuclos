@@ -43,7 +43,7 @@ import org.nuclos.common2.exception.PreferencesException;
  * @author Thomas Pasch
  * @since Nuclos 3.1.01
  */
-public class GenericObjectResultController<Clct extends CollectableGenericObjectWithDependants> extends ResultController<Clct> {
+public class GenericObjectResultController<Clct extends CollectableGenericObjectWithDependants> extends NuclosResultController<Clct> {
 	
 	public GenericObjectResultController() {
 		super();

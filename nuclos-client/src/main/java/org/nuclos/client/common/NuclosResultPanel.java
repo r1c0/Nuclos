@@ -18,7 +18,6 @@ package org.nuclos.client.common;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
@@ -28,14 +27,11 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,7 +47,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
@@ -62,9 +57,7 @@ import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.basic.BasicScrollPaneUI.VSBChangeListener;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
@@ -80,32 +73,23 @@ import org.nuclos.client.ui.CommonBackgroundProcessClientWorkerAdapter;
 import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.client.ui.UIUtils.CommandHandler;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
-import org.nuclos.client.ui.collect.CollectableTableModel;
-import org.nuclos.client.ui.collect.PivotPanel;
 import org.nuclos.client.ui.collect.ResultPanel;
-import org.nuclos.client.ui.collect.SelectFixedColumnsController;
-import org.nuclos.client.ui.collect.SelectFixedColumnsPanel;
 import org.nuclos.client.ui.collect.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
 import org.nuclos.client.ui.table.CommonJTable;
-import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.Collectable;
-import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.CommonLocaleDelegate;
-import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.PreferencesUtils;
@@ -118,14 +102,13 @@ import org.nuclos.server.genericobject.ProxyList;
 /** @todo refactor: This class contains a lot of Controller code, which should be in a (Nucleus)ResultController. */
 public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clct> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private JTable tblFixedResult;
-	private Set<CollectableEntityField> stFixedColumns;
 	public static final String PREFS_NODE_FIXEDFIELDS = "fixedFields";
 	public static final String PREFS_NODE_FIXEDFIELDS_WIDTHS = "fixedFieldWidths";
+	
+	private static final long serialVersionUID = 1L;
+	
+	private JTable tblFixedResult;
+	private Set<CollectableEntityField> stFixedColumns;
 
 	private static final String PREFS_KEY_LASTXMLTRANSFERPATH = "lastXMLTransferPath";
 
@@ -185,7 +168,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 
 		return result;
 	}
-
+	
 	/**
 	 * @return the number of selected rows, 0 if no rows are selected
 	 */
@@ -209,102 +192,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 		return this.tblFixedResult;
 	}
 
-	@Override
-	protected void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl, Preferences preferences) {
-		super.initializeFields(clcte, clctctl, preferences);
-
-		List<String> lstSelectedFieldNames;
-		try {
-			lstSelectedFieldNames = PreferencesUtils.getStringList(preferences, PREFS_NODE_FIXEDFIELDS);
-		}
-		catch (PreferencesException ex) {
-			lstSelectedFieldNames = new ArrayList<String>();
-		}
-
-		ChoiceEntityFieldList fields = clctctl.getFields();
-		for (CollectableEntityField clctef : fields.getSelectedFields()) {
-			if (lstSelectedFieldNames.contains(clctef.getName())) {
-				this.stFixedColumns.add(clctef);
-			}
-		}
-	}
-
-	@Override
-	protected void setModel(CollectableTableModel<Clct> tblmodel, final CollectableEntity clcte, final CollectController<Clct> clctctl) {
-		super.setModel(tblmodel, clcte, clctctl);
-		tblFixedResult.setModel(tblmodel);
-		
-		ToolTipsTableHeader tblHeader = new ToolTipsTableHeader(tblmodel, tblFixedResult.getColumnModel());
-
-		tblHeader.setName("tblHeader");
-		tblFixedResult.setTableHeader(tblHeader);
-		
-		TableUtils.addMouseListenerForSortingToTableHeader(tblFixedResult, (SortableTableModel) tblmodel, new CommonRunnable() {
-	         @Override
-	       	public void run() {
-	             clctctl.cmdRefreshResult();
-	          }
-	       });
-
-		removeColumnsFromFixedTable();
-		removeColumnsFromResultTable();
-
-		setFixedTable();
-		TableUtils.setOptimalColumnWidths(tblFixedResult);
-		
-	}
-
-	/**
-	 * removes the columns from the result tabll, wich are  in the stFixedColumns
-	 */
-	private void removeColumnsFromResultTable() {
-		TableColumnModel resultColumnModel = getResultTable().getColumnModel();
-		Set<TableColumn> columnsToRemove = new HashSet<TableColumn>();
-		for (Enumeration<TableColumn> columnEnum = resultColumnModel.getColumns(); columnEnum.hasMoreElements();) {
-
-			final TableColumn varColumn = columnEnum.nextElement();
-			boolean doRemove = false;
-			for (CollectableEntityField clctefFixed : stFixedColumns) {
-				if (clctefFixed.getLabel().equals(varColumn.getIdentifier())) {
-					doRemove = true;
-				}
-			}
-			if (doRemove) {
-				columnsToRemove.add(varColumn);
-			}
-		}
-
-		for (TableColumn columnToRemove : columnsToRemove) {
-			resultColumnModel.removeColumn(columnToRemove);
-		}
-	}
-
-	/**
-	 * removes the columns from the fixed table, wich are not in the stFixedColumns
-	 */
-	private void removeColumnsFromFixedTable() {
-		TableColumnModel fixedColumnModel = tblFixedResult.getColumnModel();
-		Set<TableColumn> columnsToRemove = new HashSet<TableColumn>();
-		for (Enumeration<TableColumn> columnEnum = fixedColumnModel.getColumns(); columnEnum.hasMoreElements();) {
-
-			TableColumn varColumn = columnEnum.nextElement();
-			boolean doRemove = true;
-			for (CollectableEntityField clctefFixed : stFixedColumns) {
-				if (clctefFixed.getLabel().equals(varColumn.getIdentifier())) {
-					doRemove = false;
-				}
-			}
-			if (doRemove) {
-				columnsToRemove.add(varColumn);
-			}
-		}
-
-		for (TableColumn columnToRemove : columnsToRemove) {
-			fixedColumnModel.removeColumn(columnToRemove);
-		}
-	}
-
-	private void invalidateFixedTable() {
+	public void invalidateFixedTable() {
 		getResultTableScrollPane().getRowHeader().setPreferredSize(tblFixedResult.getPreferredSize());
 		tblFixedResult.setRowHeight(getResultTable().getRowHeight());
 		tblFixedResult.revalidate();
@@ -321,35 +209,9 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	}
 
 	@Override
-	protected void setupTableCellRenderers(JTable table) {
+	public void setupTableCellRenderers(JTable table) {
 		super.setupTableCellRenderers(table);
 		super.setupTableCellRenderers(tblFixedResult);
-		invalidateFixedTable();
-	}
-
-	private void setFixedTable() {
-		tblFixedResult.setRowHeight(getResultTable().getRowHeight());
-		getResultTableScrollPane().setRowHeaderView(tblFixedResult);
-		getResultTableScrollPane().getRowHeader().setBackground(tblFixedResult.getBackground());
-		getResultTableScrollPane().getRowHeader().setPreferredSize(tblFixedResult.getPreferredSize());
-		getResultTableScrollPane().setCorner(JScrollPane.UPPER_LEFT_CORNER, tblFixedResult.getTableHeader());
-
-		final TableCellRenderer originalRenderer = tblFixedResult.getTableHeader().getDefaultRenderer();
-		TableCellRenderer headerRenderer = new TableCellRenderer() {
-			@Override
-			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-				Component renderComp = originalRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-				if (renderComp != null && renderComp.getBackground() != null) {
-					renderComp.setBackground(Color.LIGHT_GRAY);
-				}
-				return renderComp;
-			}
-
-			;
-		};
-				
-		tblFixedResult.getTableHeader().setDefaultRenderer(headerRenderer);
-
 		invalidateFixedTable();
 	}
 
@@ -385,7 +247,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	}
 
 	@Override
-	protected Map<CollectableEntityField, Integer> getVisibleColumnWidth(List<? extends CollectableEntityField> lstclctefSelected) {
+	public Map<CollectableEntityField, Integer> getVisibleColumnWidth(List<? extends CollectableEntityField> lstclctefSelected) {
 
 		final Map<CollectableEntityField, Integer> mpWidths = new HashMap<CollectableEntityField, Integer>(lstclctefSelected.size());
 		for (CollectableEntityField clctef : lstclctefSelected) {
@@ -414,7 +276,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	}
 
 	@Override
-	protected void restoreColumnWidths(List<? extends CollectableEntityField> lstclctefColumns, Map<CollectableEntityField, Integer> mpWidths) {
+	public void restoreColumnWidths(List<? extends CollectableEntityField> lstclctefColumns, Map<CollectableEntityField, Integer> mpWidths) {
 		// restore the widths of the still present columns:
 		for (CollectableEntityField clctef : lstclctefColumns) {
 			if (mpWidths.containsKey(clctef)) {
@@ -433,232 +295,13 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	}
 
 	/**
-	 * initializes the <code>fields</code> field.
-	 * @param clcte
-	 * @param preferences
-	 */
-	@Override
-	public void initializeFields(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl, final List<CollectableEntityField> lstSelectedNew, final List<CollectableEntityField> lstFixedNew, final Map<CollectableEntityField,Integer> lstColumnWiths) {
-		final NuclosCollectController<Clct> elisaController = (NuclosCollectController<Clct>) clctctl;
-		final List<CollectableEntityField> lstSelected = new ArrayList<CollectableEntityField>(fields.getSelectedFields());
-		final JTable tblResult = getResultTable();
-		UIUtils.runCommand(clctctl.getFrame(),
-			new CommandHandler() {
-				@Override
-				public void commandStarted(Component parent) {
-					setVisibleTable(false);
-				}
-
-				@Override
-				public void commandFinished(Component parent) {
-					//don't set setVisibleTable(true) here
-					//see finishSearchObserver in this.refreshResult(... and this.run(...
-				}
-			},
-			new CommonRunnable() {
-			@Override
-			@SuppressWarnings("unchecked")
-			public void run() throws CommonBusinessException {
-				final int iSelRow = tblResult.getSelectedRow();
-				NuclosResultPanel.super.initializeFields(fields, clctctl, lstSelectedNew, lstFixedNew, lstColumnWiths);
-
-				NuclosResultPanel.this.stFixedColumns = new HashSet<CollectableEntityField>(lstFixedNew);
-
-				final List<CollectableEntityField> lstSelectedNewAfterMove = (List<CollectableEntityField>) fields.getSelectedFields();
-				((SortableCollectableTableModel<Clct>) getResultTable().getModel()).setColumns(lstSelectedNewAfterMove);
-				TableColumnModel variableColumnModel = getResultTable().getColumnModel();
-				TableColumnModel fixedColumnModel = tblFixedResult.getColumnModel();
-
-				adjustColumnModels(lstSelectedNewAfterMove, variableColumnModel, fixedColumnModel);
-
-				final Collection<CollectableEntityField> collNewlySelected = CollectionUtils.subtract(lstSelectedNewAfterMove, lstSelected);
-				if (!collNewlySelected.isEmpty() && !elisaController.getCollectablesInResultAreAlwaysComplete()) {
-					// refresh the result:
-					refreshResult(clctctl);
-				} else {
-					setVisibleTable(true);
-				}
-
-				// reselect the previously selected row (which gets lost be refreshing the model)
-				if (iSelRow != -1) {
-					tblResult.setRowSelectionInterval(iSelRow, iSelRow);
-				}
-
-				// restore the widths of the still present columns
-				restoreColumnWidths(lstSelectedNew, lstColumnWiths);
-
-				invalidateFixedTable();
-			}
-
-			private void refreshResult(final CollectController<Clct> clctctl) throws CommonBusinessException {
-				//((ElisaCollectController) clctctl).refreshResult();
-				Observer finishSearchObserver = new Observer() {
-					@Override
-					public void update(Observable beobachtbarer, Object arg) {
-						setVisibleTable(true);
-					}
-				};
-				List<Observer> lstObserver = new ArrayList<Observer>();
-				lstObserver.add(finishSearchObserver);
-				((NuclosCollectController<Clct>) clctctl).refreshResult(lstObserver);
-			}
-		});
-	}
-
-	/**
 	 * set both(fixed fields / not fixed fields) visible/invisible.
 	 * @param visibility
 	 */
 	@Override
-	protected void setVisibleTable(boolean visibility){
+	public void setVisibleTable(boolean visibility){
 		super.setVisibleTable(visibility);
 		tblFixedResult.setVisible(visibility);
-	}
-
-	/**
-	 * command: select columns
-	 * Lets the user select the columns to show in the result list.
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public void cmdSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl) {
-		final NuclosCollectController<Clct> nucleusctl = (NuclosCollectController<Clct>) clctctl;
-		final SelectFixedColumnsController ctl = new SelectFixedColumnsController(clctctl.getFrame(), new PivotPanel());
-		final List<CollectableEntityField> lstAvailable = fields.getAvailableFields();
-		final List<CollectableEntityField> lstSelected = fields.getSelectedFields();
-		final ChoiceEntityFieldList ro = new ChoiceEntityFieldList(stFixedColumns);
-		ro.set(lstAvailable, lstSelected, nucleusctl.getResultController().getCollectableEntityFieldComparator());
-
-		getVisibleColumnWidth(lstSelected);
-
-		final boolean bOK = ctl.run(ro,  
-				CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
-
-		if (bOK) {
-			setSelectColumns(fields, clctctl, ctl.getAvailableObjects(), ctl.getSelectedObjects(), ctl.getFixedObjects());
-		}
-	}
-
-	protected final void setSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl, final List<CollectableEntityField> lstAvailableObjects, final List<CollectableEntityField> lstSelectedObjects, final Set<CollectableEntityField> stFixedObjects) {
-		final JTable tblResult = getResultTable();
-		// remember the widths of the currently visible columns
-		final Map<CollectableEntityField, Integer> mpWidths = getVisibleColumnWidth(fields.getSelectedFields());
-
-		UIUtils.runCommand(clctctl.getFrame(),
-				new CommandHandler() {
-					@Override
-					public void commandStarted(Component parent) {
-						setVisibleTable(false);
-					}
-
-					@Override
-					public void commandFinished(Component parent) {
-						//don't set setVisibleTable(true) here
-						//see finishSearchObserver in this.refreshResult(... and this.run(...
-					}
-				},
-				new CommonRunnable() {
-				@Override
-				@SuppressWarnings("unchecked")
-				public void run() throws CommonBusinessException {
-					final int iSelRow = tblResult.getSelectedRow();
-					final List<CollectableEntityField> lstSelectedOld = (List<CollectableEntityField>) fields.getSelectedFields();
-					fields.set(lstAvailableObjects, lstSelectedObjects, clctctl.getResultController().getCollectableEntityFieldComparator());
-
-					final List<CollectableEntityField> lstSelectedNew = (List<CollectableEntityField>) fields.getSelectedFields();
-					NuclosResultPanel.this.stFixedColumns = stFixedObjects;
-
-					((SortableCollectableTableModel<Clct>) getResultTable().getModel()).setColumns(lstSelectedNew);
-					TableColumnModel variableColumnModel = getResultTable().getColumnModel();
-					TableColumnModel fixedColumnModel = tblFixedResult.getColumnModel();
-
-					adjustColumnModels(lstSelectedNew, variableColumnModel, fixedColumnModel);
-
-					final Collection<? extends CollectableEntityField> collNewlySelected = CollectionUtils.subtract(lstSelectedNew, lstSelectedOld);
-					if (!collNewlySelected.isEmpty() && !((NuclosCollectController<Clct>)clctctl).getCollectablesInResultAreAlwaysComplete()) {
-						// refresh the result:
-						refreshResult(clctctl);
-					} else {
-						setVisibleTable(true);
-					}
-
-					// reselect the previously selected row (which gets lost be refreshing the model)
-					if (iSelRow != -1) {
-						tblResult.setRowSelectionInterval(iSelRow, iSelRow);
-					}
-
-					// restore the widths of the still present columns
-					restoreColumnWidths(lstSelectedNew, mpWidths);
-
-					// write preferences after column width was restored
-					writeFieldWidthsToPreferences(clctctl.getPreferences());
-
-					invalidateFixedTable();
-
-					setupTableCellRenderers(tblResult);
-				}
-
-				private void refreshResult(final CollectController<Clct> clctctl) throws CommonBusinessException {
-					Observer finishSearchObserver = new Observer() {
-						@Override
-						public void update(Observable beobachtbarer, Object arg) {
-							setVisibleTable(true);
-						}
-					};
-					List<Observer> lstObserver = new ArrayList<Observer>();
-					lstObserver.add(finishSearchObserver);
-					((NuclosCollectController<Clct>) clctctl).refreshResult(lstObserver);
-				}
-
-			});
-	}
-
-	private void adjustColumnModels(final List<? extends CollectableEntityField> lstclctefSelected,
-			TableColumnModel columnmodelVariable, TableColumnModel columnmodelFixed) {
-
-		for (CollectableEntityField clctefSelected : lstclctefSelected) {
-			if (NuclosResultPanel.this.stFixedColumns.contains(clctefSelected)) {
-				try {
-					final int iSelectedIndex = columnmodelVariable.getColumnIndex(clctefSelected.getLabel());
-					columnmodelVariable.removeColumn(columnmodelVariable.getColumn(iSelectedIndex));
-				}
-				catch (IllegalArgumentException ex) {
-					// ignore
-				}
-			}
-			else {
-				try {
-					final int iSelectedIndex = columnmodelFixed.getColumnIndex(clctefSelected.getLabel());
-					columnmodelFixed.removeColumn(columnmodelFixed.getColumn(iSelectedIndex));
-				}
-				catch (IllegalArgumentException ex) {
-					// ignore
-				}
-			}
-		}
-	}
-
-	@Override
-	protected void cmdAddColumn(ChoiceEntityFieldList fields, TableColumn columnBefore, String sFieldNameToAdd) throws CommonBusinessException {
-		super.cmdAddColumn(fields, columnBefore, sFieldNameToAdd);
-		final TableColumnModel columnmodelVariable = getResultTable().getColumnModel();
-		final TableColumnModel columnmodelFixed = tblFixedResult.getColumnModel();
-		adjustColumnModels(fields.getSelectedFields(), columnmodelVariable, columnmodelFixed);
-	}
-
-	@Override
-	protected void cmdRemoveColumn(ChoiceEntityFieldList fields, CollectableEntityField clctef, CollectController<Clct> ctl) {
-		super.cmdRemoveColumn(fields, clctef, ctl);
-		stFixedColumns.remove(clctef);
-//		final TableColumnModel columnmodelVariable = getResultTable().getColumnModel();
-//		final TableColumnModel columnmodelFixed = tblFixedResult.getColumnModel();
-//		adjustColumnModels(fields.getSelectedFields(), columnmodelVariable, columnmodelFixed);
-
-		List<CollectableEntityField> lstAvailableFields = new ArrayList<CollectableEntityField>(fields.getAvailableFields());
-		//Collections.copy(lstAvailableFields, (List<CollectableEntityField>)fields.getAvailableFields());
-		List<CollectableEntityField> lstSelectedFields = new ArrayList<CollectableEntityField>(fields.getSelectedFields());
-		//Collections.copy(lstSelectedFields, (List<CollectableEntityField>)fields.getSelectedFields());
-		setSelectColumns(fields, ctl, lstAvailableFields, lstSelectedFields, stFixedColumns);
 	}
 
 	/**
@@ -920,13 +563,6 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	}
 
 	@Override
-	protected void writeFieldWidthsToPreferences(Preferences preferences) throws PreferencesException {
-		super.writeFieldWidthsToPreferences(preferences);
-
-		PreferencesUtils.putIntegerList(preferences, PREFS_NODE_FIXEDFIELDS_WIDTHS, CollectableTableHelper.getColumnWidths(tblFixedResult));
-	}
-
-	@Override
 	protected void setColumnWidths(JTable tblResult, boolean bUseCustomColumnWidths, Preferences preferences) {
 		super.setColumnWidths(tblResult, bUseCustomColumnWidths, preferences);
 
@@ -977,6 +613,10 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 		return stFixedColumns;
 	}
 
+	public void setFixedColumns(Set<CollectableEntityField> stFixedColumns) {
+		this.stFixedColumns = stFixedColumns;
+	}
+	
 	@Override
 	protected void addDoubleClickMouseListener(MouseListener mouselistener) {
 		super.addDoubleClickMouseListener(mouselistener);

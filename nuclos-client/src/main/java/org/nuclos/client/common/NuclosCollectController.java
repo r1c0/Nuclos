@@ -87,6 +87,7 @@ import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateConstants;
 import org.nuclos.client.ui.collect.DetailsPanel;
+import org.nuclos.client.ui.collect.NuclosResultController;
 import org.nuclos.client.ui.collect.ResultController;
 import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.Actions;
@@ -177,7 +178,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	 * </code></pre>
 	 */
 	protected NuclosCollectController(JComponent parent, CollectableEntity clcte) {
-		super(parent, clcte);
+		super(parent, clcte, new NuclosResultController<Clct>());
 		this.sEntity = clcte.getName();
 	}
 
@@ -857,7 +858,10 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		cmdRefreshResult();
 	}
 
-	protected void refreshResult(List<Observer> lstObserver) throws CommonBusinessException {
+	/**
+	 * @deprecated Move to NuclosResultController.
+	 */
+	public void refreshResult(List<Observer> lstObserver) throws CommonBusinessException {
 		cmdRefreshResult(lstObserver);
 	}
 

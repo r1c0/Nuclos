@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui;
 
-import org.nuclos.common2.CommonLocaleDelegate;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -24,9 +23,10 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.swing.BorderFactory;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
+
+import org.nuclos.common2.CommonLocaleDelegate;
 
 /**
  * Panel for selecting objects from a list of available objects.

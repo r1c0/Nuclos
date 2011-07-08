@@ -16,14 +16,14 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect;
 
+import java.awt.Component;
+import java.util.List;
+
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.SelectObjectsController;
-import org.nuclos.client.ui.SelectObjectsPanel;
 import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
-import java.awt.Component;
-import java.util.List;
 
 /**
  * Controller for selecting visible columns.

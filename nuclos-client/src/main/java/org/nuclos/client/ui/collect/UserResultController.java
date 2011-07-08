@@ -30,7 +30,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
  * @author Thomas Pasch
  * @since Nuclos 3.1.01
  */
-public class UserResultController<Clct extends CollectableMasterDataWithDependants> extends ResultController<Clct> {
+public class UserResultController<Clct extends CollectableMasterDataWithDependants> extends NuclosResultController<Clct> {
 	
 	public UserResultController() {
 	}
