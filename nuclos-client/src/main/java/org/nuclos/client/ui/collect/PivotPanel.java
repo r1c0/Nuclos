@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect;
 
+import java.awt.event.ActionListener;
+
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
@@ -31,7 +33,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 	
 	private static class Header extends JPanel {
 		
-		private JCheckBox checkbox;
+		private final JCheckBox checkbox;
 		
 		private Header() {
 			checkbox = new JCheckBox("Test");
@@ -39,11 +41,25 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			setVisible(true);
 			checkbox.setVisible(true);
 			checkbox.setEnabled(true);
+			checkbox.setSelected(false);
+		}
+		
+		public JCheckBox getCheckbox() {
+			return checkbox;
 		}
 	}
 	
 	public PivotPanel() {
 		super(new Header());		
+	}
+	
+	public void addActionListener(ActionListener l) {
+		if (getHeader() != null)
+			getHeader().getCheckbox().addActionListener(l);
+	}
+	
+	private Header getHeader() {
+		return (Header) getHeaderComponent();
 	}
 		
 }

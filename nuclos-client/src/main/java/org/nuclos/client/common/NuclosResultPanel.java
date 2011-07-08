@@ -33,8 +33,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.prefs.Preferences;
 
@@ -111,8 +109,6 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	private Set<CollectableEntityField> stFixedColumns;
 
 	private static final String PREFS_KEY_LASTXMLTRANSFERPATH = "lastXMLTransferPath";
-
-	final ExecutorService cachedThreadPoolExecutor = Executors.newCachedThreadPool();
 
 	public NuclosResultPanel() {
 		super();
@@ -556,10 +552,6 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	 */
 	public Preferences getTransferPreferences() {
 		return ClientPreferences.getUserPreferences().node("transfer");
-	}
-
-	public Future<?> executeInterruptible(Runnable runnable) {
-		return cachedThreadPoolExecutor.submit(runnable);
 	}
 
 	@Override

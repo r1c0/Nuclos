@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect;
 
+import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.ui.CommonAbstractAction;
@@ -98,6 +99,14 @@ public class ResultController<Clct extends Collectable> {
 	
 	private static final Logger LOG = Logger.getLogger(ResultController.class);
 
+	/**
+	 * The entity for which the results are displayed.
+	 * 
+	 * @since Nuclos 3.1.01
+	 * @author Thomas Pasch
+	 */
+	private final CollectableEntity clcte;
+	
 	/** 
 	 * TODO: Try to avoid cyclic dependency: The ResultController shouldn't depend on the CollectController. 
 	 * 		While this would be desirable, it is - in real - completely unrealistic at present. Even
@@ -159,12 +168,12 @@ public class ResultController<Clct extends Collectable> {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	ResultController(CollectController<Clct> clctctl) {
-		this();
+	ResultController(CollectController<Clct> clctctl, CollectableEntity clcte) {
+		this(clcte);
 		setCollectController(clctctl);
 	}
 	
-	public ResultController() {
+	public ResultController(CollectableEntity clcte) {
 		actDeleteSelectedCollectables = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultController.10","L\u00f6schen..."),
 				(clctctl instanceof GenericObjectCollectController)? // quick and dirty... I know
 				Icons.getInstance().getIconDelete16() : Icons.getInstance().getIconRealDelete16(), 
@@ -177,6 +186,14 @@ public class ResultController<Clct extends Collectable> {
 				cmdDeleteSelectedCollectables();
 			}
 		};
+		this.clcte = clcte;
+	}
+	
+	/**
+	 * @deprecated You should really provide a CollectableEntity here.
+	 */
+	public ResultController(String entityName) {
+		this(NuclosCollectableEntityProvider.getInstance().getCollectableEntity(entityName));
 	}
 	
 	/**
@@ -188,6 +205,10 @@ public class ResultController<Clct extends Collectable> {
 	
 	protected CollectController<Clct> getCollectController() {
 		return clctctl;
+	}
+	
+	protected CollectableEntity getEntity() {
+		return clcte;
 	}
 
 	private ResultPanel<Clct> getResultPanel() {
@@ -326,6 +347,7 @@ public class ResultController<Clct extends Collectable> {
 	 */
 	protected void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl, Preferences preferences) {
 		assert clctctl == this.clctctl && clctctl.getFields() == fields;
+		assert this.clcte.equals(clcte);
 		fields.set(
 				getFieldsAvailableForResult(clcte), 
 				new ArrayList<CollectableEntityField>(), 
@@ -359,6 +381,7 @@ public class ResultController<Clct extends Collectable> {
 	@SuppressWarnings("unchecked")
 	private List<CollectableEntityField> getSelectedFieldsFromPreferences(CollectableEntity clcte, CollectController<Clct> clctctl) {
 		assert clctctl == this.clctctl && clctctl.getFields() == fields;
+		assert this.clcte.equals(clcte);
 		final List<CollectableEntityField> result = (List<CollectableEntityField>) readSelectedFieldsFromPreferences(clcte);
 
 		clctctl.makeSureSelectedFieldsAreNonEmpty(clcte, result);
@@ -550,6 +573,7 @@ public class ResultController<Clct extends Collectable> {
 	 * TODO: make private?
 	 */
 	protected List<? extends CollectableEntityField> readSelectedFieldsFromPreferences(CollectableEntity clcte) {
+		assert this.clcte.equals(clcte);
 		List<String> lstSelectedFieldNames;
 		try {
 			lstSelectedFieldNames = PreferencesUtils.getStringList(clctctl.getPreferences(), CollectController.PREFS_NODE_SELECTEDFIELDS);
@@ -597,6 +621,7 @@ public class ResultController<Clct extends Collectable> {
 	 * TODO Make this private.
 	 */
 	public List<CollectableEntityField> getFieldsAvailableForResult(CollectableEntity clcte) {
+		assert this.clcte.equals(clcte);
 		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
 		for (String sFieldName : clcte.getFieldNames()) {
 			if (this.isFieldToBeDisplayedInTable(sFieldName)) {
@@ -624,6 +649,7 @@ public class ResultController<Clct extends Collectable> {
 	 * TODO: Make this private.
 	 */
 	public CollectableEntityField getCollectableEntityFieldForResult(CollectableEntity clcte, String sFieldName) {
+		assert this.clcte.equals(clcte);
 		return clcte.getEntityField(sFieldName);
 	}
 
@@ -738,6 +764,7 @@ public class ResultController<Clct extends Collectable> {
 	 */
 	@SuppressWarnings("unchecked")
 	public void cmdSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl) {
+		assert clctctl == this.clctctl && clctctl.getFields() == fields;
 
 		final SelectColumnsController ctl = new SelectColumnsController(clctctl.getFrame());
 		// final List<CollectableEntityField> lstAvailable = (List<CollectableEntityField>) fields.getAvailableFields();
@@ -812,6 +839,7 @@ public class ResultController<Clct extends Collectable> {
 	 * @param entityField the column of the column model (as opposed to the column of the table model)
 	 */
 	protected void cmdRemoveColumn(final ChoiceEntityFieldList fields, CollectableEntityField entityField, CollectController<Clct> ctl) {
+		assert clctctl == this.clctctl && clctctl.getFields() == fields;
 		fields.moveToAvailableFields(entityField);
 
 		// Note that it is not enough to remove the column from the result table model.
@@ -821,6 +849,8 @@ public class ResultController<Clct extends Collectable> {
 	}
 
 	protected void setModel(CollectableTableModel<Clct> tblmodel, final CollectableEntity clcte, final CollectController<Clct> ctl) {
+		assert clctctl == this.clctctl && clctctl.getFields() == fields;
+		assert this.clcte.equals(clcte);
 		final ResultPanel<Clct> panel = getResultPanel();
 		final JTable resultTable = panel.getResultTable();
 		resultTable.setModel(tblmodel);
@@ -845,6 +875,8 @@ public class ResultController<Clct extends Collectable> {
 	}
 
 	protected void toggleColumnVisibility(TableColumn columnBefore, final String sFieldName, final CollectController<Clct> ctl,  final CollectableEntity clcte)  {
+		assert clctctl == this.clctctl && clctctl.getFields() == fields;
+		assert this.clcte.equals(clcte);
 		final ResultPanel<Clct> panel = getResultPanel();
 		try {
 			final ChoiceEntityFieldList fields = ctl.getFields();

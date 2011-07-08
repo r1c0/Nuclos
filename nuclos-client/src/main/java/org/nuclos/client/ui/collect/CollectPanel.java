@@ -223,6 +223,8 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 
 	/**
 	 * @return Is the search panel available?
+	 * 
+	 * @deprecated The CollectPanel must not contain the ResultPanel. Refactoring needed! 
 	 */
 	public boolean containsSearchPanel() {
 		return this.bContainsSearchPanel;
@@ -231,6 +233,8 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 	/**
 	 * @return the Search panel
 	 * @todo add precondition containsSearchPanel() OR add precondition "result != null <--> containsSearchPanel()
+	 * 
+	 * @deprecated The CollectPanel must not contain the ResultPanel. Refactoring needed! 
 	 */
 	public SearchPanel getSearchPanel() {
 		return this.pnlSearch;
@@ -239,6 +243,8 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 	/**
 	 * @return the Result panel
 	 * @postcondition result != null
+	 * 
+	 * @deprecated The CollectPanel must not contain the ResultPanel. Refactoring needed! 
 	 */
 	public ResultPanel<Clct> getResultPanel() {
 		return this.pnlResult;

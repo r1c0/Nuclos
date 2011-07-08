@@ -178,7 +178,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	 * </code></pre>
 	 */
 	protected NuclosCollectController(JComponent parent, CollectableEntity clcte) {
-		super(parent, clcte, new NuclosResultController<Clct>());
+		super(parent, clcte, new NuclosResultController<Clct>(clcte));
 		this.sEntity = clcte.getName();
 	}
 

@@ -20,8 +20,8 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.nuclos.client.common.NuclosCollectController;
+import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.common.NuclosResultPanel;
-import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.UIUtils.CommandHandler;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
@@ -45,11 +45,21 @@ import org.nuclos.common2.exception.PreferencesException;
  */
 public class NuclosResultController<Clct extends Collectable> extends ResultController<Clct> {
 	
-	public NuclosResultController() {	
+	public NuclosResultController(CollectableEntity clcte) {
+		super(clcte);
 	}
 
+	/**
+	 * @deprecated You should really provide a CollectableEntity here.
+	 */
+	public NuclosResultController(String entityName) {
+		super(entityName);
+	}
+	
 	@Override
 	protected void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl, Preferences preferences) {
+		assert clctctl == getCollectController() && clctctl.getFields() == getFields();
+		assert getEntity().equals(clcte);
 		super.initializeFields(clcte, clctctl, preferences);
 
 		List<String> lstSelectedFieldNames;
@@ -79,6 +89,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 			final List<CollectableEntityField> lstSelectedNew, final List<CollectableEntityField> lstFixedNew, 
 			final Map<CollectableEntityField,Integer> lstColumnWiths) 
 	{
+		assert clctctl == getCollectController() && clctctl.getFields() == getFields();
 		final NuclosCollectController<Clct> elisaController = (NuclosCollectController<Clct>) clctctl;
 		final List<CollectableEntityField> lstSelected = new ArrayList<CollectableEntityField>(fields.getSelectedFields());
 		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
@@ -173,7 +184,11 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		}
 	}
 
-	protected final void setSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl, final List<CollectableEntityField> lstAvailableObjects, final List<CollectableEntityField> lstSelectedObjects, final Set<CollectableEntityField> stFixedObjects) {
+	protected final void setSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl, 
+			final List<CollectableEntityField> lstAvailableObjects, final List<CollectableEntityField> lstSelectedObjects, 
+			final Set<CollectableEntityField> stFixedObjects) 
+	{
+		assert clctctl == getCollectController() && clctctl.getFields() == getFields();
 		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
 		final JTable tblResult = panel.getResultTable();
 		// remember the widths of the currently visible columns
@@ -250,6 +265,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 
 	@Override
 	protected void setModel(CollectableTableModel<Clct> tblmodel, final CollectableEntity clcte, final CollectController<Clct> clctctl) {
+		assert getEntity().equals(clcte);
 		super.setModel(tblmodel, clcte, clctctl);
 		
 		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
@@ -370,10 +386,11 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	@SuppressWarnings("unchecked")
 	@Override
 	public void cmdSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl) {
+		assert clctctl == getCollectController() && clctctl.getFields() == getFields();
 		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
 
 		final NuclosCollectController<Clct> nucleusctl = (NuclosCollectController<Clct>) clctctl;
-		final SelectFixedColumnsController ctl = new SelectFixedColumnsController(clctctl.getFrame(), new PivotPanel());
+		final SelectFixedColumnsController ctl = new PivotController(clctctl.getFrame(), new PivotPanel(), nucleusctl.getResultController());
 		final List<CollectableEntityField> lstAvailable = fields.getAvailableFields();
 		final List<CollectableEntityField> lstSelected = fields.getSelectedFields();
 		final ChoiceEntityFieldList ro = new ChoiceEntityFieldList(panel.getFixedColumns());

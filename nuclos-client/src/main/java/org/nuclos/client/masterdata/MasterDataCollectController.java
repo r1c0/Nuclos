@@ -219,7 +219,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	* </code></pre>
     */
    public MasterDataCollectController(JComponent parent, String sEntityName, MainFrameTab tabIfAny, boolean detailsWithScrollbar) {
-	   this(parent, sEntityName, tabIfAny, detailsWithScrollbar, new ResultController<CollectableMasterDataWithDependants>());
+	   this(parent, sEntityName, tabIfAny, detailsWithScrollbar, new ResultController<CollectableMasterDataWithDependants>(sEntityName));
    }
    
    /**

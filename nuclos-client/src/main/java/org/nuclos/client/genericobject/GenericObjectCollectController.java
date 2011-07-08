@@ -573,7 +573,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * </code></pre>
 	 */
 	public GenericObjectCollectController(JComponent parent, Integer iModuleId, boolean bAutoInit, MainFrameTab tabIfAny) {
-		super(parent, CollectableGenericObjectEntity.getByModuleId(iModuleId), new GenericObjectResultController<CollectableGenericObjectWithDependants>());
+		super(parent, CollectableGenericObjectEntity.getByModuleId(iModuleId), 
+				new GenericObjectResultController<CollectableGenericObjectWithDependants>(
+						CollectableGenericObjectEntity.getByModuleId(iModuleId)));
 		this.iModuleId = iModuleId;
 		setCompleteCollectablesStrategy(new CompleteGenericObjectsStrategy());
 		final MainFrameTab frame = tabIfAny != null ? tabIfAny : newInternalFrame();
@@ -600,9 +602,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		setInternalFrame(frame, tabIfAny==null);
 	}
 	
-	/**
-	 * @deprecated Move to GenericObjectResultController.
-	 */
 	public SearchResultTemplateController getSearchResultTemplateController() {
 		return searchResultTemplatesController;
 	}
@@ -5632,25 +5631,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	protected void setDeleteActionEnabled(boolean enabled) {
 		actDeleteCurrentCollectableInDetails.setEnabled(enabled);
 		actRestoreCurrentCollectableInDetails.setEnabled(enabled);
-	}
-
-	/**
-	 * @deprecated Factor out, move to GenericObjectResultController or remove completely.
-	 */
-	public final class GetCollectableEntityFieldForResult implements Transformer<String, CollectableEntityField> {
-		private final org.nuclos.common.collect.collectable.CollectableEntity clcte;
-
-		/**
-		 * @deprecated Factor out, move to GenericObjectResultController or remove completely.
-		 */
-		public GetCollectableEntityFieldForResult(org.nuclos.common.collect.collectable.CollectableEntity clcte) {
-			this.clcte = clcte;
-		}
-
-		@Override
-		public CollectableEntityField transform(String sFieldName) {
-			return getResultController().getCollectableEntityFieldForResult(clcte, sFieldName);
-		}
 	}
 
 	protected static class GenericObjectDetailsPanel extends DetailsPanel {

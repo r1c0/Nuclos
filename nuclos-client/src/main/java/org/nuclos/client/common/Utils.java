@@ -42,6 +42,7 @@ import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.ui.collect.CollectableComponentsProvider;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.EditView;
+import org.nuclos.client.ui.collect.ResultController;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.common.NuclosFatalException;
@@ -377,7 +378,7 @@ public class Utils {
 		}
 	}
 	
-	public static List<CollectableEntityField> createCollectableEntityFieldListFromFieldNames(org.nuclos.client.ui.collect.ResultController ctl, CollectableEntity clcte, List<String> lstSelectedFieldNames) {
+	public static List<CollectableEntityField> createCollectableEntityFieldListFromFieldNames(ResultController<?> ctl, CollectableEntity clcte, List<String> lstSelectedFieldNames) {
 		assert lstSelectedFieldNames != null;
 		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
 		for (String sFieldName : lstSelectedFieldNames) {
@@ -393,3 +394,4 @@ public class Utils {
 	}
 
 }	// class Utils
+

@@ -35,6 +35,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.exception.PreferencesException;
 
 /**
@@ -45,8 +46,21 @@ import org.nuclos.common2.exception.PreferencesException;
  */
 public class GenericObjectResultController<Clct extends CollectableGenericObjectWithDependants> extends NuclosResultController<Clct> {
 	
-	public GenericObjectResultController() {
-		super();
+	public GenericObjectResultController(CollectableEntity clcte) {
+		super(clcte);
+	}
+
+	private final class GetCollectableEntityFieldForResult implements Transformer<String, CollectableEntityField> {
+		private final org.nuclos.common.collect.collectable.CollectableEntity clcte;
+
+		public GetCollectableEntityFieldForResult(org.nuclos.common.collect.collectable.CollectableEntity clcte) {
+			this.clcte = clcte;
+		}
+
+		@Override
+		public CollectableEntityField transform(String sFieldName) {
+			return getCollectableEntityFieldForResult(clcte, sFieldName);
+		}
 	}
 
 	/**
@@ -63,7 +77,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 		// add parent entity's fields, if any:
 		final CollectableEntity clcteParent = controller.getParentEntity();
 		if (clcteParent != null)
-			result.addAll(CollectionUtils.transform(clcteParent.getFieldNames(), controller.new GetCollectableEntityFieldForResult(clcteParent)));
+			result.addAll(CollectionUtils.transform(clcteParent.getFieldNames(), new GetCollectableEntityFieldForResult(clcteParent)));
 
 		// add subentities' fields, if any:
 		final Set<String> stSubEntityNames = GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(controller.getModuleId());
@@ -72,11 +86,11 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 			final CollectableEntity clcteSub = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sSubEntityName);
 			// WORKAROUND for general search: We don't want duplicate entities (assetcomment, ordercomment etc.), so we
 			// ignore entities with duplicate labels:
-			/** @todo eliminate this workaround */
+			// TODO: eliminate this workaround 
 			final String sSubEntityLabel = clcteSub.getLabel();
 			if (!stSubEntityLabels.contains(sSubEntityLabel)) {
 				stSubEntityLabels.add(sSubEntityLabel);
-				result.addAll(CollectionUtils.transform(clcteSub.getFieldNames(), controller.new GetCollectableEntityFieldForResult(clcteSub)));
+				result.addAll(CollectionUtils.transform(clcteSub.getFieldNames(), new GetCollectableEntityFieldForResult(clcteSub)));
 			}
 		}
 		return result;
@@ -119,7 +133,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	 * @deprecated Remove this.
 	 */
 	@Override
-	public CollectableEntityField getCollectableEntityFieldForResult(org.nuclos.common.collect.collectable.CollectableEntity sClcte, String sFieldName) {
+	public CollectableEntityField getCollectableEntityFieldForResult(CollectableEntity sClcte, String sFieldName) {
 		final GenericObjectCollectController controller = getGenericObjectCollectController();
 		final CollectableEntity ce = controller.getCollectableEntity();
 		CollectableEntity clcte = sClcte;
@@ -148,7 +162,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 
 
 	/**
-	 * @todo eliminate this workaround
+	 * TODO: eliminate this workaround
 	 * @deprecated Remove this.
 	 */
 	public List<CollectableSorting> getCollectableSortingSequence() {

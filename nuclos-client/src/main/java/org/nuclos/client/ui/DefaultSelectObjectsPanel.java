@@ -112,5 +112,9 @@ public class DefaultSelectObjectsPanel extends SelectObjectsPanel {
 		this.btnUp.setVisible(false);
 		this.btnDown.setVisible(false);
 	}
+	
+	protected JComponent getHeaderComponent() {
+		return header;
+	}
 
 }  // class DefaultSelectObjectsPanel

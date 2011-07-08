@@ -1079,7 +1079,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * </code></pre>
 	 */
 	protected CollectController(JComponent parent, CollectableEntity clcte) {
-		this(parent, clcte, new ResultController<Clct>());
+		this(parent, clcte, new ResultController<Clct>(clcte));
 	}
 	
 	// is entity of this controller transferable, that means that collectables
@@ -4552,7 +4552,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		return this.pnlCollect;
 	}
 
-	// TODO add precondition this.isSearchPanelAvailable()
+	/**
+	 * TODO: add precondition this.isSearchPanelAvailable()
+	 */
 	public SearchPanel getSearchPanel() {
 		return this.getCollectPanel().getSearchPanel();
 	}

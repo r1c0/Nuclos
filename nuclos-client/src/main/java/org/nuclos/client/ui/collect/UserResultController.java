@@ -32,14 +32,23 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
  */
 public class UserResultController<Clct extends CollectableMasterDataWithDependants> extends NuclosResultController<Clct> {
 	
-	public UserResultController() {
+	public UserResultController(CollectableEntity clcte) {
+		super(clcte);
 	}
 
+	/**
+	 * @deprecated You should really provide a CollectableEntity here.
+	 */
+	public UserResultController(String entityName) {
+		super(entityName);
+	}
+	
 	/**
 	 * @deprecated Remove this.
 	 */
 	@Override
 	public List<CollectableEntityField> getFieldsAvailableForResult(CollectableEntity clcte) {
+		assert getEntity().equals(clcte);
 		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
 		for (CollectableEntityField cef : super.getFieldsAvailableForResult(clcte)) {
 			if (!UserCollectController.FIELD_PREFERENCES.equals(cef.getName()) && !UserCollectController.FIELD_PASSWORD.equals(cef.getName())) {

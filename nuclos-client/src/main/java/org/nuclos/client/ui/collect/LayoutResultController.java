@@ -23,6 +23,7 @@ import javax.swing.RowSorter.SortKey;
 import org.nuclos.client.layout.admin.LayoutCollectController;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -35,7 +36,15 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 public class LayoutResultController<Clct extends CollectableMasterDataWithDependants> extends NuclosResultController<Clct> {
 	
-	public LayoutResultController() {
+	public LayoutResultController(CollectableEntity clcte) {
+		super(clcte);
+	}
+	
+	/**
+	 * @deprecated You should really provide a CollectableEntity here.
+	 */
+	public LayoutResultController(String entityName) {
+		super(entityName);
 	}
 	
 	/**

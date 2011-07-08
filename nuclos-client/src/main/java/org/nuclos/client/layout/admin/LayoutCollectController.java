@@ -137,7 +137,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 	 * </code></pre>
      */
 	public LayoutCollectController(JComponent parent, NuclosEntity entity, MainFrameTab tabIfAny) {
-		super(parent, entity, tabIfAny, new LayoutResultController<CollectableMasterDataWithDependants>());
+		super(parent, entity, tabIfAny, new LayoutResultController<CollectableMasterDataWithDependants>(entity.getEntityName()));
 
 		this.setupDetailsToolBar();
 

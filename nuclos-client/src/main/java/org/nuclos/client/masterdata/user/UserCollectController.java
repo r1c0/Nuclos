@@ -95,7 +95,8 @@ public class UserCollectController extends MasterDataCollectController {
 	 * </code></pre>
      */
 	public UserCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.USER, tabIfAny, new UserResultController<CollectableMasterDataWithDependants>());
+		super(parent, NuclosEntity.USER, tabIfAny, 
+				new UserResultController<CollectableMasterDataWithDependants>(NuclosEntity.USER.getEntityName()));
 		this.setupDetailsToolBar();
 		if(this.useLDAP){
 			this.ldapdelegate = LDAPDataDelegate.getInstance();
