@@ -1298,7 +1298,7 @@ public class MainController {
 	public List<Pair<String[], Action>> getCustomComponentMenuActions() {
 		List<Pair<String[], Action>> customComponentMenuAction = new ArrayList<Pair<String[], Action>>();
 		for (CustomComponentVO ccvo : CustomComponentCache.getInstance().getAll()) {
-			String[] menuPath = splitMenuPath(CommonLocaleDelegate.getText(ccvo.getMenupathResourceId()));
+			String[] menuPath = splitMenuPath(CommonLocaleDelegate.getTextFallback(ccvo.getMenupathResourceId(), ccvo.getMenupathResourceId()));
 			Action action = new ResPlanAction(ccvo);
 			// If the component is not allowed to run (due to missing permissions), the action is disabled and skipped
 			if (menuPath != null && menuPath.length > 0 && action != null && action.isEnabled()) {

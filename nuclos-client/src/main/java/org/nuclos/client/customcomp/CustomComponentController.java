@@ -199,7 +199,7 @@ public abstract class CustomComponentController extends TopController {
 		}
 		boolean newTab = false;
 		final MainFrameTab mainFrameTab;
-		String title = CommonLocaleDelegate.getText(componentVO.getLabelResourceId());
+		String title = CommonLocaleDelegate.getTextFallback(componentVO.getLabelResourceId(), componentVO.getLabelResourceId());
 		if (tabIfAny == null) {
 			newTab = true;
 			mainFrameTab = MainController.newMainFrameTab(controller, title);
