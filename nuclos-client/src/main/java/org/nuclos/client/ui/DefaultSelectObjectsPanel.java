@@ -38,7 +38,7 @@ import org.nuclos.common2.CommonLocaleDelegate;
  * @version	01.00.00
  */
 
-public class DefaultSelectObjectsPanel extends SelectObjectsPanel {
+public class DefaultSelectObjectsPanel<T> extends SelectObjectsPanel<T> {
 
 	private static final long serialVersionUID = 1L;
 	

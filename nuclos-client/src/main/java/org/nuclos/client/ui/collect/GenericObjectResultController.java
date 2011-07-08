@@ -16,15 +16,18 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JTable;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 
+import org.nuclos.client.data.pivot.PivotInfo;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
@@ -40,20 +43,46 @@ import org.nuclos.common2.exception.PreferencesException;
 
 /**
  * A specialization of ResultController for use with an {@link GenericObjectCollectController}.
- * 
+ * <p>
+ * At present the feature to include rows from a subform in the base entity result list 
+ * is only available for GenericObjects. The support for finding the support fields is 
+ * implemented in {@link #getFieldsAvailableForResult}. 
+ * </p>
  * @author Thomas Pasch
  * @since Nuclos 3.1.01
  */
 public class GenericObjectResultController<Clct extends CollectableGenericObjectWithDependants> extends NuclosResultController<Clct> {
 	
+	/**
+	 * subform name -> pivot information.
+	 * <p>
+	 * If a subform is included in this list, {@link #getFieldsAvailableForResult} will provide a
+	 * pivot representation instead of a subform field representation.
+	 * </p> 
+	 */
+	private final Map<String,PivotInfo> pivots;
+	
 	public GenericObjectResultController(CollectableEntity clcte) {
 		super(clcte);
+		pivots = new HashMap<String, PivotInfo>();
+	}
+	
+	public void putPivotInfo(PivotInfo info) {
+		pivots.put(info.getSubform(), info);
+	}
+	
+	public PivotInfo getPivotInfo(String subformName) {
+		return pivots.get(subformName);
+	}
+	
+	public void clearPivotInfo() {
+		pivots.clear();
 	}
 
 	private final class GetCollectableEntityFieldForResult implements Transformer<String, CollectableEntityField> {
-		private final org.nuclos.common.collect.collectable.CollectableEntity clcte;
+		private final CollectableEntity clcte;
 
-		public GetCollectableEntityFieldForResult(org.nuclos.common.collect.collectable.CollectableEntity clcte) {
+		public GetCollectableEntityFieldForResult(CollectableEntity clcte) {
 			this.clcte = clcte;
 		}
 
@@ -83,19 +112,33 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 		final Set<String> stSubEntityNames = GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(controller.getModuleId());
 		final Set<String> stSubEntityLabels = new HashSet<String>();
 		for (String sSubEntityName : stSubEntityNames) {
-			final CollectableEntity clcteSub = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sSubEntityName);
-			// WORKAROUND for general search: We don't want duplicate entities (assetcomment, ordercomment etc.), so we
-			// ignore entities with duplicate labels:
-			// TODO: eliminate this workaround 
-			final String sSubEntityLabel = clcteSub.getLabel();
-			if (!stSubEntityLabels.contains(sSubEntityLabel)) {
-				stSubEntityLabels.add(sSubEntityLabel);
-				result.addAll(CollectionUtils.transform(clcteSub.getFieldNames(), new GetCollectableEntityFieldForResult(clcteSub)));
+			if (pivots.containsKey(sSubEntityName)) {
+				getFieldsAvaibleInPivotSubform(result, stSubEntityLabels, sSubEntityName);
+			}
+			else {
+				getFieldsAvaibleInSubform(result, stSubEntityLabels, sSubEntityName);
 			}
 		}
 		return result;
 	}
+	
+	private void getFieldsAvaibleInSubform(List<CollectableEntityField> result, Set<String> stSubEntityLabels, String sSubEntityName) {
+		final CollectableEntity clcteSub = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sSubEntityName);
+		// WORKAROUND for general search: We don't want duplicate entities (assetcomment, ordercomment etc.), so we
+		// ignore entities with duplicate labels:
+		// TODO: eliminate this workaround 
+		final String sSubEntityLabel = clcteSub.getLabel();
+		if (!stSubEntityLabels.contains(sSubEntityLabel)) {
+			stSubEntityLabels.add(sSubEntityLabel);
+			result.addAll(CollectionUtils.transform(clcteSub.getFieldNames(), new GetCollectableEntityFieldForResult(clcteSub)));
+		}
+	}
 
+	private void getFieldsAvaibleInPivotSubform(List<CollectableEntityField> result, Set<String> stSubEntityLabels, String sSubEntityName) {
+		// remove the subform entries
+		// TODO: make sth sensible here!
+	}
+	
 	/**
 	 * reads the selected fields and their entities from the user preferences.
 	 * @param clcte

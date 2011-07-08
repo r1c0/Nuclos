@@ -52,9 +52,9 @@ public class SelectObjectsController<T> extends Controller {
 	/**
 	 * Warning: Don't even think about making this non-final! (Thomas Pasch)
 	 */
-	private final SelectObjectsPanel panel;
+	private final SelectObjectsPanel<T> panel;
 
-	public SelectObjectsController(Component parent, SelectObjectsPanel panel) {
+	public SelectObjectsController(Component parent, SelectObjectsPanel<T> panel) {
 		super(parent);
 		this.panel = panel;
 	}
@@ -62,7 +62,7 @@ public class SelectObjectsController<T> extends Controller {
 	/**
 	 * Warning: Don't even think about making this non-final! (Thomas Pasch)
 	 */
-	public final SelectObjectsPanel getPanel() {
+	public final SelectObjectsPanel<T> getPanel() {
 		return panel;
 	}
 
@@ -200,9 +200,26 @@ public class SelectObjectsController<T> extends Controller {
 	 * @param sTitle
 	 * @return Did the user press OK?
 	 */
-	public boolean run(ChoiceList<T> ro, String sTitle) {
+	public final boolean run(ChoiceList<T> ro, String sTitle) {
 		// model --> dialog:
+		setModel(ro);
 
+		final JOptionPane optpn = new JOptionPane(getPanel(), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+
+		// perform the dialog:
+		final JDialog dlg = optpn.createDialog(this.getParent(), sTitle);
+		dlg.setModal(true);
+		dlg.setResizable(true);
+		dlg.pack();
+		dlg.setLocationRelativeTo(this.getParent());
+		dlg.setVisible(true);
+
+		final Integer iBtn = (Integer) optpn.getValue();
+
+		return (iBtn != null && iBtn.intValue() == JOptionPane.OK_OPTION);
+	}
+	
+	protected final void setModel(ChoiceList<T> ro) {
 		// The lists given as parameters are copied here. The original lists are not modified.
 		try {
 			ro = (ChoiceList<T>) ro.clone();
@@ -217,32 +234,22 @@ public class SelectObjectsController<T> extends Controller {
 
 		this.getPanel().getJListAvailableObjects().setModel(listmodelAvailableFields);
 		this.getPanel().getJListSelectedObjects().setModel(listmodelSelectedFields);
+		getPanel().setAvailableColumnsModel(listmodelAvailableFields);
+		getPanel().setSelectedColumnsModel(listmodelSelectedFields);
 
-		final JOptionPane optpn = new JOptionPane(getPanel(), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-
-		/** @todo the listeners are added here so calling run() multiple times is not possible */
+		// TODO: the listeners are added here so calling run() multiple times is not possible.
 		this.setupListeners(listmodelSelectedFields);
-
-		// perform the dialog:
-		final JDialog dlg = optpn.createDialog(this.getParent(), sTitle);
-		dlg.setModal(true);
-		dlg.setResizable(true);
-		dlg.pack();
-		dlg.setLocationRelativeTo(this.getParent());
-		dlg.setVisible(true);
-
-		final Integer iBtn = (Integer) optpn.getValue();
-
-		return (iBtn != null && iBtn.intValue() == JOptionPane.OK_OPTION);
+	}
+	
+	public final void updateModel(ChoiceList<T> ro) {
+		setModel(ro);
 	}
 
-	protected List<T> getObjects(ListModel model) {
+	protected final List<T> getObjects(ListModel model) {
 		final List<T> result = new ArrayList<T>();
-
 		for (int i = 0; i < model.getSize(); ++i) {
 			result.add((T) model.getElementAt(i));
 		}
-
 		return result;
 	}
 
@@ -256,7 +263,7 @@ public class SelectObjectsController<T> extends Controller {
 	/**
 	 * @return the available objects, when the dialog is closed
 	 */
-	public List<T> getAvailableObjects() {
+	public final List<T> getAvailableObjects() {
 		return getObjects(this.getPanel().getJListAvailableObjects().getModel());
 	}
 

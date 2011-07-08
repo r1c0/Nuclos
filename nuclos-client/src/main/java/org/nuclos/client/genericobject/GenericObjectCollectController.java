@@ -5736,9 +5736,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		});
 	}
 
-	/*
+	/**
 	 * sets search result format accordng to selected SearchResultTemplate
 	 * @param templateSelected
+	 * 
+	 * @deprecated Remove if possible.
 	 */
 	protected void setSearchResultFormatAccordingToTemplate(SearchResultTemplate templateSelected){
 		final List<CollectableEntityField> lstSelectedNew = getFieldsFromFieldNames(getCollectableEntity(), templateSelected.getVisibleColumns());

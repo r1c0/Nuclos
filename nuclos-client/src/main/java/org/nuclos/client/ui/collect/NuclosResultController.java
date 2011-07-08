@@ -390,7 +390,8 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
 
 		final NuclosCollectController<Clct> nucleusctl = (NuclosCollectController<Clct>) clctctl;
-		final SelectFixedColumnsController ctl = new PivotController(clctctl.getFrame(), new PivotPanel(), nucleusctl.getResultController());
+		final SelectFixedColumnsController ctl = new PivotController(clctctl.getFrame(), new PivotPanel(), 
+				(GenericObjectResultController) nucleusctl.getResultController());
 		final List<CollectableEntityField> lstAvailable = fields.getAvailableFields();
 		final List<CollectableEntityField> lstSelected = fields.getSelectedFields();
 		final ChoiceEntityFieldList ro = new ChoiceEntityFieldList(panel.getFixedColumns());

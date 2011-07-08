@@ -36,7 +36,7 @@ import org.nuclos.common2.CommonLocaleDelegate;
  * @author Thomas Pasch
  * @since Nuclos 3.1.01 this is a top-level class.
  */
-public class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel {
+public class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel<CollectableEntityField> {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -87,10 +87,7 @@ public class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel {
 		return ((FixedTableModel<CollectableEntityField>) this.tblSelectedColumn.getModel()).getFixedObjSet();
 	}
 
-	public void setAvailableColumnsModel(MutableListModel<CollectableEntityField> listmodelAvailableFields) {
-		this.getJListAvailableObjects().setModel(listmodelAvailableFields);
-	}
-
+	@Override
 	public void setSelectedColumnsModel(MutableListModel<CollectableEntityField> listmodelSelectedFields) {
 		this.tblSelectedColumn.setModel(new FixedTableModel<CollectableEntityField>(listmodelSelectedFields));
 	}

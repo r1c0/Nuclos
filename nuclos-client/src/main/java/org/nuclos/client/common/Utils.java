@@ -378,6 +378,9 @@ public class Utils {
 		}
 	}
 	
+	/**
+	 * @deprecated Move to ResultController.
+	 */
 	public static List<CollectableEntityField> createCollectableEntityFieldListFromFieldNames(ResultController<?> ctl, CollectableEntity clcte, List<String> lstSelectedFieldNames) {
 		assert lstSelectedFieldNames != null;
 		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();

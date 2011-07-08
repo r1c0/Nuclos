@@ -19,7 +19,8 @@ package org.nuclos.common;
 import org.nuclos.common.collect.collectable.*;
 
 /**
- * @todo enter class description.
+ * CollectableEntityFieldWithEntityForExternal supports including rows from a subform 
+ * in the base entity result list.
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
@@ -74,6 +75,9 @@ public class CollectableEntityFieldWithEntityForExternal extends CollectableEnti
 				this.getCollectableEntityLabel() + "." + this.getField().getLabel();
 	}
 
+	/**
+	 * TODO: This is a HACK that takes debug representation as view representaion.
+	 */
 	@Override
 	public String toString() {
 		/** @todo This formatting doesn't really belong here, but in the respective renderers */

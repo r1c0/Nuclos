@@ -24,6 +24,10 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.nuclos.client.ui.model.FixedTableModel;
+import org.nuclos.client.ui.model.MutableListModel;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
+
 /**
  * Base class for panels, in which data can be moved from one list to another to choose from a selection
  * <br>
@@ -32,7 +36,7 @@ import javax.swing.JScrollPane;
  * @author	<a href="mailto:uwe.allner@novabit.de">uwe.allner</a>
  * @version	01.00.00
  */
-public abstract class SelectObjectsPanel extends JPanel {
+public abstract class SelectObjectsPanel<T> extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -65,18 +69,27 @@ public abstract class SelectObjectsPanel extends JPanel {
 	/**
 	 * @return the <code>JList</code> containing available columns
 	 */
-	public JList getJListAvailableObjects() {
-		return this.jlstAvailableColumns;
+	public final JList getJListAvailableObjects() {
+		return jlstAvailableColumns;
 	}
 
 	/**
 	 * @return the <code>JList</code> containing selected columns
 	 */
 	public JList getJListSelectedObjects() {
-		return this.jlstSelectedColumns;
+		return jlstSelectedColumns;
 	}
 
 	protected JList newList() {
 		return new JList();
 	}
+
+	public final void setAvailableColumnsModel(MutableListModel<T> listmodelAvailableFields) {
+		getJListAvailableObjects().setModel(listmodelAvailableFields);
+	}
+
+	public void setSelectedColumnsModel(MutableListModel<T> listmodelSelectedFields) {
+		jlstSelectedColumns.setModel(listmodelSelectedFields);
+	}
+
 }

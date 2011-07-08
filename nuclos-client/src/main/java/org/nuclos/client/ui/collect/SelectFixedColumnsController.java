@@ -34,6 +34,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
+import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.client.ui.model.CommonDefaultListModel;
 import org.nuclos.client.ui.model.MutableListModel;
 import org.nuclos.client.ui.model.SortedListModel;
@@ -144,28 +145,9 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 	 * @param sTitle
 	 * @return Did the user press OK?
 	 */
-	public boolean run(ChoiceEntityFieldList ro, String sTitle) {
+	public final boolean run(ChoiceEntityFieldList ro, String sTitle) {
 		// model --> dialog:
-
-		// The lists given as parameters are copied here. The original lists are not modified.
-		try {
-			ro = (ChoiceEntityFieldList) ro.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new IllegalArgumentException(e);
-		}
-		// final List<CollectableEntityField> lstAvailableFields = new ArrayList<CollectableEntityField>(aLstAvailableFields);
-		// final List<CollectableEntityField> lstSelectedFields = new ArrayList<CollectableEntityField>(aLstSelectedFields);
-
-		final MutableListModel<CollectableEntityField> listmodelAvailableFields = new SortedListModel<CollectableEntityField>(ro.getAvailableFields(), ro.getComparatorForAvaible());
-		final MutableListModel<CollectableEntityField> listmodelSelectedFields = new CommonDefaultListModel<CollectableEntityField>(ro.getSelectedFields());
-
-		final SelectFixedColumnsPanel panel = getSfcPanel();
-		panel.setAvailableColumnsModel(listmodelAvailableFields);
-		panel.setSelectedColumnsModel(listmodelSelectedFields);
-		panel.setFixedColumns(ro.getFixed());
-
-		// @todo the listeners are added here so calling run() multiple times is not possible
-		this.setupListeners(listmodelSelectedFields);
+		setModel(ro);
 
 		final JOptionPane optpn = new JOptionPane(getPanel(), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 
@@ -182,10 +164,16 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 		return (iBtn != null && iBtn.intValue() == JOptionPane.OK_OPTION);
 	}
 
+	protected final void setModel(ChoiceEntityFieldList ro) {
+		super.setModel(ro);
+		final SelectFixedColumnsPanel panel = getSfcPanel();
+		panel.setFixedColumns(ro.getFixed());
+	}
+
 	/**
 	 * @return the fixed columns, when the dialog is closed
 	 */
-	public Set<CollectableEntityField> getFixedObjects() {
+	public final Set<CollectableEntityField> getFixedObjects() {
 		return new HashSet<CollectableEntityField>(getSfcPanel().getFixedColumns());
 	}
 
@@ -249,7 +237,7 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 		}	// for
 	}
 
-	public void moveUpDown(int iDirection) {
+	public final void moveUpDown(int iDirection) {
 		final SelectFixedColumnsPanel panel = getSfcPanel();
 		final MutableListModel<CollectableEntityField> listmodelSelectedFields = panel.getSelectedColumnsModel();
 
@@ -283,7 +271,10 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 		return result;
 	}
 
-	public SelectFixedColumnsPanel getSfcPanel() {
+	/**
+	 * TODO: Make this private or protected.
+	 */
+	public final SelectFixedColumnsPanel getSfcPanel() {
 		return (SelectFixedColumnsPanel) getPanel();
 	}
 	
