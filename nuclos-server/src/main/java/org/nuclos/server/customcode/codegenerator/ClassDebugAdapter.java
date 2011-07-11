@@ -26,11 +26,9 @@ import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Type;
 
 /**
  * An ASM ClassAdapter that logs each method body instruction line of the processed
@@ -39,8 +37,6 @@ import org.objectweb.asm.Type;
  * @author Thomas Pasch (javadoc)
  */
 class ClassDebugAdapter extends ClassAdapter {
-
-	private static final String LOG4J_LOG_METHOD = "info";
 
 	private Map<String, String> varLookup = new HashMap<String, String>();
 	private String className;
@@ -71,9 +67,6 @@ class ClassDebugAdapter extends ClassAdapter {
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
 		MethodVisitor mv;
 		mv = cv.visitMethod(access, name, desc, signature, exceptions);
-		if (name.equals("<clinit>")) {
-			throw new IllegalStateException("Java class files with static (init) blocks are unsupported: " + className);
-		}
 		if(mv != null && !name.equals("<init>")) {
 			mv = new MethodDebugAdapter(className, varLookup, mv, name, desc);
 		}
@@ -83,64 +76,65 @@ class ClassDebugAdapter extends ClassAdapter {
 	@Override
 	public void visitEnd() {
 		insertDebugResolveMethod();
-		insertLogger();
 		cv.visitEnd();
 	}
 
 	private void insertDebugOutMethod() {
 		/*
-        private void __out(String prefix, String varKey, Object o) {
+		Old code:
+        private static void __out(String prefix, String varKey, Object o) {
            String var = __resolve(varKey);
            String value = "<null>";
            if(o != null)
               value = o.toString();
-           System.out.println(prefix + var + "=> " + value);
+           __LOG.info(prefix + var + "=> " + value);
         }
+        
+        New code:
+        private static void __out(String prefix, String varKey, Object o) {
+        	String var = __resolve(varKey);
+        	RuleDebugLoggerSingleton.getInstance().log(prefix, var, o);		
+        }
+        
+        ASM code:
+   L0
+    ALOAD 1
+    INVOKESTATIC org/nuclos/server/customcode/codegenerator/ClassDebugAdapter.__resolve(Ljava/lang/String;)Ljava/lang/String;
+    ASTORE 3
+   L1
+    INVOKESTATIC org/nuclos/server/customcode/codegenerator/RuleDebugLoggerSingleton.getInstance()Lorg/nuclos/server/customcode/codegenerator/RuleDebugLoggerSingleton;
+    ALOAD 0
+    ALOAD 3
+    ALOAD 2
+    INVOKEVIRTUAL org/nuclos/server/customcode/codegenerator/RuleDebugLoggerSingleton.log(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)V
+   L2
+    RETURN
+   L3
+    LOCALVARIABLE prefix Ljava/lang/String; L0 L3 0
+    LOCALVARIABLE varKey Ljava/lang/String; L0 L3 1
+    LOCALVARIABLE o Ljava/lang/Object; L0 L3 2
+    LOCALVARIABLE var Ljava/lang/String; L1 L3 3
+    MAXSTACK = 4
+    MAXLOCALS = 4		 
 		 */
 		MethodVisitor mv = cv.visitMethod(ACC_PRIVATE + ACC_STATIC, "__out", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)V", null, null);
 		mv.visitCode();
 		Label l0 = new Label();
 		mv.visitLabel(l0);
-		// mv.visitVarInsn(ALOAD, 0);
 		mv.visitVarInsn(ALOAD, 1);
 		mv.visitMethodInsn(INVOKESTATIC, className, "__resolve", "(Ljava/lang/String;)Ljava/lang/String;");
-		mv.visitVarInsn(ASTORE, 4);
+		mv.visitVarInsn(ASTORE, 3);
 		Label l1 = new Label();
 		mv.visitLabel(l1);
-		mv.visitLdcInsn("<null>");
-		mv.visitVarInsn(ASTORE, 5);
+		mv.visitMethodInsn(INVOKESTATIC, "org/nuclos/server/customcode/codegenerator/RuleDebugLoggerSingleton", "getInstance", "()Lorg/nuclos/server/customcode/codegenerator/RuleDebugLoggerSingleton;");
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitVarInsn(ALOAD, 3);
+		mv.visitVarInsn(ALOAD, 2);
+		mv.visitMethodInsn(INVOKEVIRTUAL, "org/nuclos/server/customcode/codegenerator/RuleDebugLoggerSingleton", "log", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)V");
 		Label l2 = new Label();
 		mv.visitLabel(l2);
-		mv.visitVarInsn(ALOAD, 2);
-		Label l3 = new Label();
-		mv.visitJumpInsn(IFNULL, l3);
-		Label l4 = new Label();
-		mv.visitLabel(l4);
-		mv.visitVarInsn(ALOAD, 2);
-		mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Object", "toString", "()Ljava/lang/String;");
-		mv.visitVarInsn(ASTORE, 5);
-		mv.visitLabel(l3);
-		mv.visitFrame(F_APPEND, 2, new Object[] {"java/lang/String", "java/lang/String"}, 0, null);
-		// mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-		mv.visitFieldInsn(GETSTATIC, className, "__LOG", "Lorg/apache/log4j/Logger;");
-		mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
-		mv.visitInsn(DUP);
-		mv.visitVarInsn(ALOAD, 0);
-		mv.visitMethodInsn(INVOKESTATIC, "java/lang/String", "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;");
-		mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "(Ljava/lang/String;)V");
-		mv.visitVarInsn(ALOAD, 4);
-		mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;");
-		mv.visitLdcInsn(" = ");
-		mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;");
-		mv.visitVarInsn(ALOAD, 5);
-		mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;");
-		mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;");
-		// mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V");
-		mv.visitMethodInsn(INVOKEVIRTUAL, "org/apache/log4j/Logger", LOG4J_LOG_METHOD, "(Ljava/lang/Object;)V");
-		Label l5 = new Label();
-		mv.visitLabel(l5);
 		mv.visitInsn(RETURN);
-		mv.visitMaxs(4, 6);
+		mv.visitMaxs(4, 4);
 		mv.visitEnd();
 	}
 
@@ -283,30 +277,6 @@ class ClassDebugAdapter extends ClassAdapter {
 				return "boolean";
 			return desc;
 		}
-	}
-
-	private void insertLogger() {
-		FieldVisitor fv = cv.visitField(ACC_PRIVATE + ACC_STATIC + ACC_FINAL, "__LOG", "Lorg/apache/log4j/Logger;", null, null);
-		fv.visitEnd();
-
-		// private static final Logger LOG	= Logger.getLogger(ComponentBuilderStack.class);
-		//
-	    // LDC Lorg/nuclos/client/ui/layoutml/ComponentBuilderStack;.class
-	    // INVOKESTATIC org/apache/log4j/Logger.getLogger(Ljava/lang/Class;)Lorg/apache/log4j/Logger;
-	    // PUTSTATIC org/nuclos/client/ui/layoutml/ComponentBuilderStack.LOG : Lorg/apache/log4j/Logger;
-	    // RETURN
-	    // MAXSTACK = 1
-	    // MAXLOCALS = 0
-	    MethodVisitor mv = cv.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
-		mv.visitCode();
-		Label l0 = new Label();
-		mv.visitLabel(l0);
-		mv.visitLdcInsn(Type.getType("L" + className + ";"));
-		mv.visitMethodInsn(INVOKESTATIC, "org/apache/log4j/Logger", "getLogger", "(Ljava/lang/Class;)Lorg/apache/log4j/Logger;");
-		mv.visitFieldInsn(PUTSTATIC, className, "__LOG", "Lorg/apache/log4j/Logger;");
-		mv.visitInsn(RETURN);
-		mv.visitMaxs(1, 0);
-		mv.visitEnd();
 	}
 
 }
