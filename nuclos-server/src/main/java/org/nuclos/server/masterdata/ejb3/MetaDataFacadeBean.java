@@ -738,11 +738,11 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			}
 			
 			for(EntityTreeViewVO voTreeView : updatedTOEntity.getTreeView()) {
-				/*
+				
 				if(voTreeView.getField() == null){
 					continue;
 				}
-				 */	
+				 
 				Map<String, Object> conditionMap = new HashMap<String, Object>();
 				conditionMap.put(EntityTreeViewVO.SUBFORM_ENTITY_COLUMN, voTreeView.getEntity());
 				conditionMap.put(EntityTreeViewVO.ENTITY_COLUMN, voTreeView.getOriginentityid());	
