@@ -41,7 +41,7 @@ import org.nuclos.common2.LocaleInfo;
 public class TranslationPanel extends JPanel {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private final List<LocaleInfo> localeList;
@@ -49,17 +49,17 @@ public class TranslationPanel extends JPanel {
 	private final String defaultText;
 
 	private final JTable table;
-	
+
 	public TranslationPanel(Map<String, String> translations, String defaultText) {
 		this.translations = new HashMap<String, String>(translations);
 		this.defaultText = (defaultText != null) ? defaultText : translations.get(LocaleInfo.I_DEFAULT_TAG);
-		
+
 		Map<String, LocaleInfo> allLocales = CollectionUtils.transformIntoMap(
 			LocaleDelegate.getInstance().getAllLocales(false),
 			new Transformer<LocaleInfo, String>() {
 				@Override public String transform(LocaleInfo li) { return li.getTag(); }
 			});
-		
+
 		// Extend locale list with unknown locale from the provided translations
 		localeList = new ArrayList<LocaleInfo>(allLocales.values());
 		for (String tag : translations.keySet()) {
@@ -67,14 +67,14 @@ public class TranslationPanel extends JPanel {
 				localeList.add(LocaleInfo.parseTag(tag));
 			}
 		}
-		
+
 		table = new JTable();
 		table.setModel(new TranslationTableModel());
 		table.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableRenderer(new TranslationLabelProvider()));
 		add(new JScrollPane(table));
 	}
-	
-	
+
+
 	/**
 	 * Returns the current translations.
 	 * Note that the map can contain null values even if the initial map doesn't.
@@ -82,11 +82,11 @@ public class TranslationPanel extends JPanel {
 	public Map<String, String> getTranslations() {
 		return translations;
 	}
-	
+
 	private class TranslationTableModel extends AbstractTableModel {
-		
+
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -100,12 +100,12 @@ public class TranslationPanel extends JPanel {
 			}
 			return null;
 		}
-		
+
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			return String.class;
 		}
-		
+
 		@Override
 		public int getColumnCount() {
 			return 2;
@@ -127,12 +127,12 @@ public class TranslationPanel extends JPanel {
 			}
 			return null;
 		}
-		
+
 		@Override
 		public boolean isCellEditable(int rowIndex, int columnIndex) {
 			return columnIndex == 1;
 		}
-		
+
 		@Override
 		public void setValueAt(Object value, int rowIndex, int columnIndex) {
 			LocaleInfo localeInfo = localeList.get(rowIndex);
@@ -146,11 +146,11 @@ public class TranslationPanel extends JPanel {
 			}
 		}
 	}
-	
+
 	private class TranslationLabelProvider extends LabelProvider {
-		
+
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -161,7 +161,7 @@ public class TranslationPanel extends JPanel {
 			}
 			super.configureState(context);
 		}
-		
+
 		@Override
 		protected String getValueAsString(CellContext context) {
 			if (context.getValue() == null) {
@@ -171,7 +171,7 @@ public class TranslationPanel extends JPanel {
 			return super.getValueAsString(context);
 		}
 	}
-	
+
 	public static Map<String, String> showDialog(Component parent, Map<String, String> translations, String defaultText) {
 		TranslationPanel translationPanel = new TranslationPanel(translations, defaultText);
 		int option =JOptionPane.showConfirmDialog(
@@ -181,6 +181,9 @@ public class TranslationPanel extends JPanel {
 			JOptionPane.OK_CANCEL_OPTION,
 			JOptionPane.PLAIN_MESSAGE);
 		if (option == JOptionPane.OK_OPTION) {
+			if (translationPanel.table.getCellEditor() != null) {
+				translationPanel.table.getCellEditor().stopCellEditing();
+			}
 			return translationPanel.getTranslations();
 		} else {
 			return null;
