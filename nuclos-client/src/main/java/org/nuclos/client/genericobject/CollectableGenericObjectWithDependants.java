@@ -19,13 +19,16 @@ package org.nuclos.client.genericobject;
 import java.util.Collection;
 import java.util.List;
 
+import org.nuclos.client.common.Utils;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.masterdata.CollectableWithDependants;
+import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
+import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
@@ -68,13 +71,25 @@ public class CollectableGenericObjectWithDependants extends CollectableGenericOb
 	 */
 	@Override
 	public Collection<CollectableEntityObject> getDependants(String sSubEntityName) {
-		final CollectableEOEntity clctmde = (CollectableEOEntity) DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sSubEntityName);
-		final Collection<EntityObjectVO> collmdvoDependants = this.getGenericObjectWithDependantsCVO().getDependants().getData(sSubEntityName);
-		final List<CollectableEntityObject> result = CollectionUtils.transform(collmdvoDependants, new CollectableEntityObject.MakeCollectable(clctmde));
-		assert result != null;
-		return result;
+		CollectableEntity ce = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sSubEntityName);
+		if(ce instanceof CollectableEOEntity) {
+			final CollectableEOEntity clctmde = (CollectableEOEntity) ce;
+			final Collection<EntityObjectVO> collmdvoDependants = this.getGenericObjectWithDependantsCVO().getDependants().getData(sSubEntityName);
+			final List<CollectableEntityObject> result = CollectionUtils.transform(collmdvoDependants, new CollectableEntityObject.MakeCollectable(clctmde));
+			assert result != null;
+			return result;
+		}
+		else {
+			final CollectableMasterDataEntity clctmde = (CollectableMasterDataEntity)ce;
+			final Collection<EntityObjectVO> collmdvoDependants = this.getGenericObjectWithDependantsCVO().getDependants().getData(sSubEntityName);
+			final CollectableEOEntity cee = Utils.transformCollectableMasterDataEntityTOCollectableEOEntity(clctmde);
+			final List<CollectableEntityObject> result = CollectionUtils.transform(collmdvoDependants, new CollectableEntityObject.MakeCollectable(cee));
+			assert result != null;
+			return result;
+		}
+		
 	}
-
+	
 	/**
 	 * inner class MakeCollectable
 	 */

@@ -18,13 +18,10 @@ package org.nuclos.client.entityobject;
 
 import java.util.Map;
 
-import org.nuclos.client.genericobject.CollectableGenericObjectAttributeField;
 import org.nuclos.client.masterdata.CollectableMasterData;
-import org.nuclos.client.masterdata.CollectableMasterDataField;
 import org.nuclos.common.collect.collectable.AbstractCollectable;
 import org.nuclos.common.collect.collectable.CollectableEntityProvider;
 import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Removable;
 import org.nuclos.common.collection.Transformer;
@@ -139,6 +136,7 @@ public class CollectableEntityObject extends CollectableMasterData implements Re
 		}
 
 	}
+
 
 	public static class ExtractAbstractCollectableVO implements Transformer<AbstractCollectable, EntityObjectVO> {
 		@Override

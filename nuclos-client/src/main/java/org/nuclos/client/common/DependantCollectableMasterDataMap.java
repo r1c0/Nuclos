@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.masterdata.CollectableMasterData;
+import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
@@ -28,6 +29,7 @@ import org.nuclos.common.collection.multimap.MultiListHashMap;
 import org.nuclos.common.collection.multimap.MultiListMap;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
+import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 
 /**
@@ -66,10 +68,19 @@ public class DependantCollectableMasterDataMap {
 	public DependantCollectableMasterDataMap(DependantMasterDataMap mpDependants) {
 		this();
 		for (String sEntityName : mpDependants.getEntityNames()) {
-			final CollectableEOEntity clctmde = (CollectableEOEntity) DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName);
-			this.addValues(sEntityName, CollectionUtils.transform(mpDependants.getData(sEntityName), new CollectableEntityObject.MakeCollectable(clctmde)));
+			CollectableEntity ce = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName);
+			if(ce instanceof CollectableEOEntity) {
+				final CollectableEOEntity clctmde = (CollectableEOEntity) ce;
+				this.addValues(sEntityName, CollectionUtils.transform(mpDependants.getData(sEntityName), new CollectableEntityObject.MakeCollectable(clctmde)));
+			}
+			else {
+				final CollectableMasterDataEntity clctmde = (CollectableMasterDataEntity)ce;
+				final CollectableEOEntity cee = Utils.transformCollectableMasterDataEntityTOCollectableEOEntity(clctmde);
+				this.addValues(sEntityName, CollectionUtils.transform(mpDependants.getData(sEntityName), new CollectableEntityObject.MakeCollectable(cee)));
+			}
 		}
 	}
+	
 
 	/**
 	 * transforms a <code>DependantMasterDataMap</code> into a <code>DependantCollectableMap</code>.

@@ -54,6 +54,7 @@ import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.masterdata.MakeMasterDataValueIdField;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -394,6 +395,15 @@ public class Utils {
 			}
 		}
 		return result;
+	}
+	
+	public static CollectableEOEntity transformCollectableMasterDataEntityTOCollectableEOEntity(CollectableMasterDataEntity cmde) {
+		String entity = cmde.getName();		
+		
+		CollectableEOEntity cee = new CollectableEOEntity(MetaDataClientProvider.getInstance().getEntity(entity), 
+				MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(entity));
+		
+		return cee;
 	}
 
 }	// class Utils
