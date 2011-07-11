@@ -125,7 +125,7 @@ public class ChoiceList<T> implements Cloneable {
 	public List<T> getSelectedFields() {
 		return Collections.unmodifiableList(this.lstclctefSelected);
 	}
-
+	
 	/**
 	 * sets the selected fields. The available fields are adjusted accordingly.
 	 * @param lstclctefSelected
@@ -173,4 +173,4 @@ public class ChoiceList<T> implements Cloneable {
 		this.lstclctefAvailable.add(clctef);
 	}
 
-}	// class ResultObjects
+}	// class ChoiceList

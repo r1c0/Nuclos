@@ -50,6 +50,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 import javax.swing.Action;
@@ -341,7 +342,12 @@ public class ResultController<Clct extends Collectable> {
 	}
 
 	/**
-	 * initializes the <code>fields</code> field.
+	 * Initializes the <code>fields</code> field as follows: 
+	 * <ol>
+	 *   <li>(re-)set the list of avaiable fields to {@link #getFieldsAvailableForResult}</li>
+	 *   <li>(re-)set the list of selected fields to {@link #getSelectedFieldsFromPreferences}</li>
+	 *   <li>(re)-set the comparator to {@link #getCollectableEntityFieldComparator()}</li>
+	 * </ul>
 	 * @param clcte
 	 * @param preferences
 	 */
@@ -365,8 +371,7 @@ public class ResultController<Clct extends Collectable> {
 	 * @param lstFixedNew
 	 * @param lstColumnWiths
 	 */
-	public void initializeFields(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl, final List<CollectableEntityField> lstSelectedNew, 
-			final List<CollectableEntityField> lstFixedNew, final Map<CollectableEntityField,Integer> lstColumnWiths) 
+	public final void initializeFields(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl, final List<CollectableEntityField> lstSelectedNew) 
 	{		
 		assert clctctl == this.clctctl && clctctl.getFields() == fields;
 		fields.setSelectedFields(lstSelectedNew);
@@ -772,7 +777,7 @@ public class ResultController<Clct extends Collectable> {
 		final ResultPanel<Clct> panel = getResultPanel();
 		final JTable tbl = panel.getResultTable();
 
-		final Map<CollectableEntityField, Integer> mpWidths = panel.getVisibleColumnWidth(fields.getSelectedFields());
+		final Map<String, Integer> mpWidths = panel.getVisibleColumnWidth(fields.getSelectedFields());
 
 		final boolean bOK = ctl.run(fields);
 
@@ -860,7 +865,7 @@ public class ResultController<Clct extends Collectable> {
 
 			@Override
 			protected void removeColumnVisibility(TableColumn column) {
-				final Map<CollectableEntityField, Integer> mpWidths = panel.getVisibleColumnWidth(ctl.getFields().getSelectedFields());
+				final Map<String, Integer> mpWidths = panel.getVisibleColumnWidth(ctl.getFields().getSelectedFields());
 				final CollectableEntityField clctef = ((CollectableEntityFieldBasedTableModel) resultTable.getModel()).getCollectableEntityField(column.getModelIndex());
 				cmdRemoveColumn(ctl.getFields(), clctef, ctl);
 				panel.restoreColumnWidths(ctl.getFields().getSelectedFields(), mpWidths);
@@ -880,7 +885,7 @@ public class ResultController<Clct extends Collectable> {
 		final ResultPanel<Clct> panel = getResultPanel();
 		try {
 			final ChoiceEntityFieldList fields = ctl.getFields();
-			final Map<CollectableEntityField, Integer> mpWidths = panel.getVisibleColumnWidth(fields.getSelectedFields());
+			final Map<String, Integer> mpWidths = panel.getVisibleColumnWidth(fields.getSelectedFields());
 			final CollectableEntityField clctef = clcte.getEntityField(sFieldName);
 			final int iIndex = fields.getSelectedFields().indexOf(clctef);
 			if (iIndex == -1) {

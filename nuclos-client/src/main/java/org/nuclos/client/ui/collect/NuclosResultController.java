@@ -56,6 +56,14 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		super(entityName);
 	}
 	
+	/**
+	 * Initializes the <code>fields</code> field as follows: 
+	 * <ol>
+	 *   <li>Calling {@link ResultController#initializeFields(CollectableEntity, CollectController, Preferences)}</li>
+	 *   <li>(re-)set the fixed column set by reading the preferences. The set will only contain fixed columns that
+	 *     have been <em>selected</em>.</li>
+	 * </ul>
+	 */
 	@Override
 	protected void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl, Preferences preferences) {
 		assert clctctl == getCollectController() && clctctl.getFields() == getFields();
@@ -84,10 +92,9 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	 * @param clcte
 	 * @param preferences
 	 */
-	@Override
 	public void initializeFields(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl, 
-			final List<CollectableEntityField> lstSelectedNew, final List<CollectableEntityField> lstFixedNew, 
-			final Map<CollectableEntityField,Integer> lstColumnWiths) 
+			final List<CollectableEntityField> lstSelectedNew, final Set<CollectableEntityField> lstFixedNew, 
+			final Map<String,Integer> lstColumnWiths) 
 	{
 		assert clctctl == getCollectController() && clctctl.getFields() == getFields();
 		final NuclosCollectController<Clct> elisaController = (NuclosCollectController<Clct>) clctctl;
@@ -113,7 +120,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 			@SuppressWarnings("unchecked")
 			public void run() throws CommonBusinessException {
 				final int iSelRow = tblResult.getSelectedRow();
-				NuclosResultController.super.initializeFields(fields, clctctl, lstSelectedNew, lstFixedNew, lstColumnWiths);
+				NuclosResultController.super.initializeFields(fields, clctctl, lstSelectedNew);
 
 				panel.setFixedColumns(new HashSet<CollectableEntityField>(lstFixedNew));
 
@@ -132,7 +139,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 					panel.setVisibleTable(true);
 				}
 
-				// reselect the previously selected row (which gets lost be refreshing the model)
+				// reselect the previously selected row (which gets lost by refreshing the model)
 				if (iSelRow != -1) {
 					tblResult.setRowSelectionInterval(iSelRow, iSelRow);
 				}
@@ -192,7 +199,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
 		final JTable tblResult = panel.getResultTable();
 		// remember the widths of the currently visible columns
-		final Map<CollectableEntityField, Integer> mpWidths = panel.getVisibleColumnWidth(fields.getSelectedFields());
+		final Map<String, Integer> mpWidths = panel.getVisibleColumnWidth(fields.getSelectedFields());
 
 		UIUtils.runCommand(clctctl.getFrame(),
 				new CommandHandler() {
@@ -397,6 +404,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		final ChoiceEntityFieldList ro = new ChoiceEntityFieldList(panel.getFixedColumns());
 		ro.set(lstAvailable, lstSelected, nucleusctl.getResultController().getCollectableEntityFieldComparator());
 
+		// TODO: What the hell is the side effect of this? (Thomas Pasch)
 		panel.getVisibleColumnWidth(lstSelected);
 
 		final boolean bOK = ctl.run(ro,  

@@ -106,47 +106,56 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 	/**
 	 * Button: "Enter New mode"
+	 * TODO: make private.
 	 */
 	public final JButton btnNew = new JButton();
 
 	/**
 	 * Button: "Clone selected object"
+	 * TODO: make private.
 	 */
 	public final JMenuItem btnClone = new JMenuItem();
 
 	/**
 	 * Button: "Delete selected object(s)"
+	 * TODO: make private.
 	 */
 	public final AbstractButton btnDelete;
 
 	/**
 	 * Button: "Edit selected object(s)"
+	 * TODO: make private.
 	 */
 	public final JButton btnEdit = new JButton();
 
 	/**
 	 * Button: "Refresh search result"
+	 * TODO: make private.
 	 */
 	public final JButton btnRefresh = new JButton();
 
 	/**
 	 * Button: "Select columns"
+	 * TODO: make private.
 	 */
 	public final JMenuItem btnSelectColumns = new JMenuItem();
 	
 
 	/**
 	 * Button: "Export selected Collectables."
+	 * TODO: make private.
 	 */
 	public final JMenuItem btnExport = new JMenuItem();
 	
 	/**
 	 * Button: "Import Collectables."
+	 * TODO: make private.
 	 */
 	public final JMenuItem btnImport = new JMenuItem();
 	
 	/**
 	 * Button: "Add Bookmark"
+	 * TODO: make private.
 	 */
 	public final JMenuItem btnBookmark = new JMenuItem();
 	
@@ -162,6 +171,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 	/**
 	 * the popup menu for a row
+	 * TODO: make private.
 	 */
 	public final JPopupMenu popupmenuRow = new JPopupMenu();
 	public final JMenuItem miPopupEdit = new JMenuItem(CommonLocaleDelegate.getMessage("ResultPanel.3","Bearbeiten"));
@@ -534,21 +544,29 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		throw new UnsupportedOperationException("cmdImport");
 	}
 	
-	protected Map<CollectableEntityField, Integer> getVisibleColumnWidth(List<? extends CollectableEntityField> lstclctefSelected) {
+	/**
+	 * @param lstclctefSelected
+	 * @return field -> column width
+	 */
+	protected Map<String, Integer> getVisibleColumnWidth(List<? extends CollectableEntityField> lstclctefSelected) {
 		// remember the widths of the currently visible columns
-		final Map<CollectableEntityField, Integer> result = new HashMap<CollectableEntityField, Integer>();
+		final Map<String, Integer> result = new HashMap<String, Integer>();
 		for (CollectableEntityField clctef : lstclctefSelected) {
 			final Integer iWidth = this.getResultTable().getColumn(clctef.getLabel()).getWidth();
-			result.put(clctef, iWidth);
+			result.put(clctef.getName(), iWidth);
 		}
 		return result; 
 	}
 
-	protected void restoreColumnWidths(List<? extends CollectableEntityField> lstclctefColumns, Map<CollectableEntityField, Integer> mpWidths) {
+	/**
+	 * @param lstclctefColumns
+	 * @param mpWidths field name -> column width
+	 */
+	protected void restoreColumnWidths(List<? extends CollectableEntityField> lstclctefColumns, Map<String, Integer> mpWidths) {
 		// restore the widths of the still present columns
 		for (final CollectableEntityField clctef : lstclctefColumns) {
-			if (mpWidths.containsKey(clctef)) {
-				getResultTable().getColumn(clctef.getLabel()).setPreferredWidth(mpWidths.get(clctef));
+			if (mpWidths.containsKey(clctef.getName())) {
+				getResultTable().getColumn(clctef.getLabel()).setPreferredWidth(mpWidths.get(clctef.getName()));
 			}
 		}
 	}

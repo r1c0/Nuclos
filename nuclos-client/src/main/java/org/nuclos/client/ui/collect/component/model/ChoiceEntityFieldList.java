@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.component.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.nuclos.client.ui.model.ChoiceList;
@@ -43,5 +45,16 @@ public class ChoiceEntityFieldList extends ChoiceList<CollectableEntityField> {
 	public Set<CollectableEntityField> getFixed() {
 		return fixed;
 	}
+	
+	/**
+	 * @deprecated Not in use.
+	 */
+	public List<String> getSelectedFieldNames() {
+		final List<String> result = new ArrayList<String>(getSelectedFields().size());
+		for (CollectableEntityField i: getSelectedFields()) {
+			result.add(i.getName());
+		}
+		return result;
+	}
 
-}	// inner class Fields
+}	// class ChoiceEntityFieldList

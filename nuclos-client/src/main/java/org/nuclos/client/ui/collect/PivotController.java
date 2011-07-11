@@ -51,9 +51,22 @@ public class PivotController extends SelectFixedColumnsController {
 					resultController.putPivotInfo(new PivotInfo(subform, null, null));
 				}
 			}
+			/*
 			resultController.initializeFields(resultController.getEntity(), 
 					(CollectController) resultController.getCollectController(), resultController.getCollectController().getPreferences());
-			
+			 */
+			resultController.getFields().set(
+					resultController.getFieldsAvailableForResult(resultController.getEntity()), 
+					resultController.getFields().getSelectedFields(), 
+					resultController.getFields().getComparatorForAvaible());
+			/*
+			resultController.initializeFields(
+					resultController.getFields(),
+					resultController.getCollectController(), 
+					getSelectedObjects(), getFixedObjects(), 
+					// resultController.getGenericObjectCollectController().getSearchResultTemplateController().getSelectedSearchResultTemplate().getListColumnsWidths()
+					null);
+			 */
 			updateModel(resultController.getFields());
 		}
 		

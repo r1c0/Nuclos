@@ -602,6 +602,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		setInternalFrame(frame, tabIfAny==null);
 	}
 	
+	/**
+	 * @deprecated Move to GenericObjectResultController.
+	 */
 	public SearchResultTemplateController getSearchResultTemplateController() {
 		return searchResultTemplatesController;
 	}
@@ -5742,15 +5745,16 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * 
 	 * @deprecated Remove if possible.
 	 */
-	protected void setSearchResultFormatAccordingToTemplate(SearchResultTemplate templateSelected){
+	protected void setSearchResultFormatAccordingToTemplate(SearchResultTemplate templateSelected) {
 		final List<CollectableEntityField> lstSelectedNew = getFieldsFromFieldNames(getCollectableEntity(), templateSelected.getVisibleColumns());
-		final List<CollectableEntityField> fixedColumns = getFieldsFromFieldNames(getCollectableEntity(), templateSelected.getListColumnsFixed());
+		final Set<CollectableEntityField> fixedColumns = new HashSet<CollectableEntityField>(
+				getFieldsFromFieldNames(getCollectableEntity(), templateSelected.getListColumnsFixed()));
 		Map<String, Integer> listColumnsWidths = templateSelected.getListColumnsWidths();
-		Map<CollectableEntityField, Integer> clefListColumnsWidths = new HashMap<CollectableEntityField, Integer>();
+		Map<String, Integer> clefListColumnsWidths = new HashMap<String, Integer>();
 		for(CollectableEntityField clFiled : lstSelectedNew)
 			if(listColumnsWidths.containsKey(clFiled.getName()))
-				clefListColumnsWidths.put(clFiled, listColumnsWidths.get(clFiled.getName()));
-		getResultController().initializeFields(getFields(), this, lstSelectedNew, fixedColumns, clefListColumnsWidths);
+				clefListColumnsWidths.put(clFiled.getName(), listColumnsWidths.get(clFiled.getName()));
+		getResultController().initializeFields(getFields(), this, lstSelectedNew);
 	}
 
 	/*

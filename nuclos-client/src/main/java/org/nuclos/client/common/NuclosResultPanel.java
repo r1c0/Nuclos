@@ -102,13 +102,13 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 
 	public static final String PREFS_NODE_FIXEDFIELDS = "fixedFields";
 	public static final String PREFS_NODE_FIXEDFIELDS_WIDTHS = "fixedFieldWidths";
+
+	private static final String PREFS_KEY_LASTXMLTRANSFERPATH = "lastXMLTransferPath";
 	
 	private static final long serialVersionUID = 1L;
 	
 	private JTable tblFixedResult;
 	private Set<CollectableEntityField> stFixedColumns;
-
-	private static final String PREFS_KEY_LASTXMLTRANSFERPATH = "lastXMLTransferPath";
 
 	public NuclosResultPanel() {
 		super();
@@ -248,9 +248,9 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	}
 
 	@Override
-	public Map<CollectableEntityField, Integer> getVisibleColumnWidth(List<? extends CollectableEntityField> lstclctefSelected) {
+	public Map<String, Integer> getVisibleColumnWidth(List<? extends CollectableEntityField> lstclctefSelected) {
 
-		final Map<CollectableEntityField, Integer> mpWidths = new HashMap<CollectableEntityField, Integer>(lstclctefSelected.size());
+		final Map<String, Integer> mpWidths = new HashMap<String, Integer>(lstclctefSelected.size());
 		for (CollectableEntityField clctef : lstclctefSelected) {
 			TableColumn column = null;
 			try {
@@ -261,7 +261,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 				column = tblFixedResult.getColumn(clctef.getLabel());
 			}
 			if (column != null) {
-				mpWidths.put(clctef, column.getWidth());
+				mpWidths.put(clctef.getName(), column.getWidth());
 			}
 		}
 
@@ -277,10 +277,11 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	}
 
 	@Override
-	public void restoreColumnWidths(List<? extends CollectableEntityField> lstclctefColumns, Map<CollectableEntityField, Integer> mpWidths) {
+	public void restoreColumnWidths(List<? extends CollectableEntityField> lstclctefColumns, Map<String, Integer> mpWidths) {
+		if (mpWidths == null || mpWidths.isEmpty()) return;
 		// restore the widths of the still present columns:
 		for (CollectableEntityField clctef : lstclctefColumns) {
-			if (mpWidths.containsKey(clctef)) {
+			if (mpWidths.containsKey(clctef.getName())) {
 				TableColumn column = null;
 				try {
 					column = getResultTable().getColumn(clctef.getLabel());
@@ -289,8 +290,8 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 					// ignore
 					column = tblFixedResult.getColumn(clctef.getLabel());
 				}
-				column.setPreferredWidth(mpWidths.get(clctef));
-				column.setWidth(mpWidths.get(clctef));
+				column.setPreferredWidth(mpWidths.get(clctef.getName()));
+				column.setWidth(mpWidths.get(clctef.getName()));
 			}
 		}
 	}

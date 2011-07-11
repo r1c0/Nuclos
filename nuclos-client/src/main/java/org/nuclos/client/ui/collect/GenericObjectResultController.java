@@ -93,6 +93,8 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	}
 
 	/**
+	 * This methods adds (pivot, subform, and parent key) field inclusion to result display.
+	 * 
 	 * @param clcte
 	 * @return the fields of the given entity, plus the fields of all subentities for that entity.
 	 * 
@@ -222,7 +224,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 		return result;
 	}
 	
-	private GenericObjectCollectController getGenericObjectCollectController() {
+	public GenericObjectCollectController getGenericObjectCollectController() {
 		return (GenericObjectCollectController) getCollectController();
 	}
 
