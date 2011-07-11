@@ -212,8 +212,8 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 
 		// remember the widths of the currently visible columns
 		final Map<Object,Integer> mpWidths = getVisibleColumnWidth();
-
-		final boolean bOK = ctl.run(ro, CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
+		ctl.setModel(ro);
+		final boolean bOK = ctl.run(CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 
 		if (bOK) {
 			UIUtils.runCommand(this.getHeaderTable(), new CommonRunnable() {

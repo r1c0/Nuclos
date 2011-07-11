@@ -101,8 +101,8 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 		ChoiceList<CollectableField> ro = new ChoiceList<CollectableField>();
 		ro.set(oldAvailableObjects, oldSelectedObjects,
 				CollectableComparator.getFieldComparator(comboBox.getEntityField()));
-		
-		final boolean bOK = this.run(ro,
+		setModel(ro);
+		final boolean bOK = run(
 				CommonLocaleDelegate.getMessage("SubFormMultiEditController.3", "Mehrere Datens\u00e4tze in Unterformular einf\u00fcgen/l\u00f6schen"));
 
 		if (bOK) {

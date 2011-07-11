@@ -54,11 +54,15 @@ public class ChoiceList<T> implements Cloneable {
 	public ChoiceList() {
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
-		final ChoiceList<T> clone = (ChoiceList<T>) super.clone();
-		clone.lstclctefAvailable = cloneList(lstclctefAvailable);
-		clone.lstclctefSelected = cloneList(lstclctefSelected);
-		return clone;
+	public Object clone() {
+		try {
+			final ChoiceList<T> clone = (ChoiceList<T>) super.clone();
+			clone.lstclctefAvailable = cloneList(lstclctefAvailable);
+			clone.lstclctefSelected = cloneList(lstclctefSelected);
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException("clone() not supported", e);
+		}
 	}
 	
 	private static <T> List<T> cloneList(List<T> l) throws CloneNotSupportedException {

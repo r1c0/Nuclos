@@ -163,7 +163,7 @@ public class UserCollectController extends MasterDataCollectController {
 		if(!synchronizeWithLDAP()){
 			return;
 		}
-		final SelectUserController ctl = new SelectUserController(clctctl.getFrame(), CommonLocaleDelegate.getMessage("UserCollectController.2", "LDAP Benutzer"),
+		final SelectUserController<MasterDataVO> ctl = new SelectUserController<MasterDataVO>(clctctl.getFrame(), CommonLocaleDelegate.getMessage("UserCollectController.2", "LDAP Benutzer"),
 			CommonLocaleDelegate.getMessage("UserCollectController.3", "Ausgew\u00e4hlte Benutzer synchronisieren"), null, null);
 
 		final List<MasterDataVO> lstAvailable = CollectionUtils.typecheck(this.ldapRegisteredUsers, MasterDataVO.class);
@@ -172,7 +172,8 @@ public class UserCollectController extends MasterDataCollectController {
 
 		final ChoiceList<MasterDataVO> ro = new ChoiceList<MasterDataVO>();
 		ro.set(lstAvailable, new ArrayList<MasterDataVO>(), new MasterDataVO.NameComparator());
-		final boolean bOK = ctl.run(ro);
+		ctl.setModel(ro);
+		final boolean bOK = ctl.run(CommonLocaleDelegate.getMessage("SelectUserController.7", "Mit LDAP Synchronisieren"));
 
 		if (bOK) {
 			UIUtils.runCommand(clctctl.getFrame(), new CommonRunnable() {

@@ -55,7 +55,7 @@ public class PivotController extends SelectFixedColumnsController {
 			resultController.initializeFields(resultController.getEntity(), 
 					(CollectController) resultController.getCollectController(), resultController.getCollectController().getPreferences());
 			 */
-			resultController.getFields().set(
+			getModel().set(
 					resultController.getFieldsAvailableForResult(resultController.getEntity()), 
 					resultController.getFields().getSelectedFields(), 
 					resultController.getFields().getComparatorForAvaible());
@@ -67,13 +67,17 @@ public class PivotController extends SelectFixedColumnsController {
 					// resultController.getGenericObjectCollectController().getSearchResultTemplateController().getSelectedSearchResultTemplate().getListColumnsWidths()
 					null);
 			 */
-			updateModel(resultController.getFields());
+			// TODO: ???
+			setModel(getModel());
 		}
 		
 	}
 	
 	private final GenericObjectResultController<CollectableGenericObjectWithDependants> resultController;
-	
+
+	/**
+	 * @deprecated This would be far better. But is completely unrealistic at present. (Thomas Pasch)
+	 */
 	public PivotController(Component parent, PivotPanel panel, List<? extends CollectableEntityField> base, List<? extends CollectableEntityField> subforms) {
 		super(parent, panel);
 		resultController = null;

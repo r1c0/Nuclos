@@ -72,10 +72,6 @@ public class SelectUserController<T extends MasterDataVO> extends SelectObjectsC
 		this.getPanel().getJListSelectedObjects().setToolTipText(tooltipTxt);
 	}
 
-	public boolean run(ChoiceList<T> ro) {
-		return this.run(ro, CommonLocaleDelegate.getMessage("SelectUserController.7", "Mit LDAP Synchronisieren"));
-	}
-
 	/**
 	 * @deprecated Use getSelectedObjects(). 
 	 */

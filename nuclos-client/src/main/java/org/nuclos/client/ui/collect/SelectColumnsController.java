@@ -64,16 +64,6 @@ public class SelectColumnsController extends SelectObjectsController<Collectable
 	}
 
 	/**
-	 * runs this Controller, using the given <code>Comparator</code> for the fields.
-	 * @param lstAvailableFields List<CollectableEntityField>
-	 * @param lstSelectedFields List<CollectableEntityField>
-	 * @return Did the user press OK?
-	 */
-	public boolean run(ChoiceList<CollectableEntityField> ro) {
-		return this.run(ro, CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
-	}
-
-	/**
 	 * @return the selected columns, when the dialog is closed.
 	 * @deprecated Use getSelectedObjects()
 	 */

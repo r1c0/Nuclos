@@ -145,9 +145,10 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 	 * @param sTitle
 	 * @return Did the user press OK?
 	 */
-	public final boolean run(ChoiceEntityFieldList ro, String sTitle) {
+	@Override
+	public boolean run(String sTitle) {
 		// model --> dialog:
-		setModel(ro);
+		if (getModel() == null) throw new IllegalStateException();
 
 		final JOptionPane optpn = new JOptionPane(getPanel(), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 
@@ -164,7 +165,7 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 		return (iBtn != null && iBtn.intValue() == JOptionPane.OK_OPTION);
 	}
 
-	protected final void setModel(ChoiceEntityFieldList ro) {
+	public final void setModel(ChoiceEntityFieldList ro) {
 		super.setModel(ro);
 		final SelectFixedColumnsPanel panel = getSfcPanel();
 		panel.setFixedColumns(ro.getFixed());

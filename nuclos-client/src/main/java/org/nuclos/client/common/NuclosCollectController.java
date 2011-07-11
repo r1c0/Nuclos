@@ -1278,7 +1278,8 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 									return o1.getName().compareTo(o2.getName());
 								}
 							});
-					if (controller.run(ro, CommonLocaleDelegate.getMessage("NuclosCollectController.11","Regeln ausf\u00fchren"))) {
+					controller.setModel(ro);
+					if (controller.run(CommonLocaleDelegate.getMessage("NuclosCollectController.11","Regeln ausf\u00fchren"))) {
 						//execute the selected Rules
 						final List<RuleVO> lstRuleToExecute = CollectionUtils.typecheck(controller.getSelectedObjects(), RuleVO.class);
 						if (lstRuleToExecute != null && !lstRuleToExecute.isEmpty()) {
@@ -1344,7 +1345,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	/**
 	 *  helper class for cmdExecuteRulesByUser
 	 */
-	private static class SelectController extends SelectObjectsController {
+	private static class SelectController extends SelectObjectsController<RuleVO> {
 
 		public SelectController(Component parent) {
 			super(parent, new MySelectObjectsPanel());

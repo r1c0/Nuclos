@@ -38,7 +38,8 @@ import org.nuclos.client.ui.model.MutableListModel;
 import org.nuclos.client.ui.model.SortedListModel;
 
 /**
- * Controller for selecting objects from a list of available objects.
+ * Controller for selecting objects from a list of available objects. 
+ * This is normally displayed as dialog.
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
@@ -53,6 +54,14 @@ public class SelectObjectsController<T> extends Controller {
 	 * Warning: Don't even think about making this non-final! (Thomas Pasch)
 	 */
 	private final SelectObjectsPanel<T> panel;
+	
+	/**
+	 * The model. It is different from the model in the ResultController because
+	 * it will be modified and is only copied to the ResultController is the
+	 * user presses the OK button. (If the users decides to cancel the operation,
+	 * the model in the ResultController must not change.)
+	 */
+	private ChoiceList<T> model;
 
 	public SelectObjectsController(Component parent, SelectObjectsPanel<T> panel) {
 		super(parent);
@@ -64,6 +73,10 @@ public class SelectObjectsController<T> extends Controller {
 	 */
 	public final SelectObjectsPanel<T> getPanel() {
 		return panel;
+	}
+	
+	public final ChoiceList<T> getModel() {
+		return model;
 	}
 
 	protected void setupListeners(final MutableListModel<T> listmodelSelectedFields) {
@@ -200,9 +213,9 @@ public class SelectObjectsController<T> extends Controller {
 	 * @param sTitle
 	 * @return Did the user press OK?
 	 */
-	public final boolean run(ChoiceList<T> ro, String sTitle) {
+	public boolean run(String sTitle) {
 		// model --> dialog:
-		setModel(ro);
+		if (model == null) throw new IllegalStateException();
 
 		final JOptionPane optpn = new JOptionPane(getPanel(), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 
@@ -219,18 +232,14 @@ public class SelectObjectsController<T> extends Controller {
 		return (iBtn != null && iBtn.intValue() == JOptionPane.OK_OPTION);
 	}
 	
-	protected final void setModel(ChoiceList<T> ro) {
+	public final void setModel(ChoiceList<T> ro) {
 		// The lists given as parameters are copied here. The original lists are not modified.
-		try {
-			ro = (ChoiceList<T>) ro.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new IllegalArgumentException(e);
-		}
+		model = (ChoiceList<T>) ro.clone();
 		// final List<T> _lstAvailableFields = new ArrayList<T>(ro.getAvailableFields());
 		// final List<T> _lstSelectedFields = new ArrayList<T>(ro.getSelectedFields());
 
-		final MutableListModel<T> listmodelAvailableFields = new SortedListModel<T>(ro.getAvailableFields(), ro.getComparatorForAvaible());
-		final MutableListModel<T> listmodelSelectedFields = new CommonDefaultListModel<T>(ro.getSelectedFields());
+		final MutableListModel<T> listmodelAvailableFields = new SortedListModel<T>(model.getAvailableFields(), model.getComparatorForAvaible());
+		final MutableListModel<T> listmodelSelectedFields = new CommonDefaultListModel<T>(model.getSelectedFields());
 
 		this.getPanel().getJListAvailableObjects().setModel(listmodelAvailableFields);
 		this.getPanel().getJListSelectedObjects().setModel(listmodelSelectedFields);
@@ -241,10 +250,6 @@ public class SelectObjectsController<T> extends Controller {
 		this.setupListeners(listmodelSelectedFields);
 	}
 	
-	public final void updateModel(ChoiceList<T> ro) {
-		setModel(ro);
-	}
-
 	protected final List<T> getObjects(ListModel model) {
 		final List<T> result = new ArrayList<T>();
 		for (int i = 0; i < model.getSize(); ++i) {

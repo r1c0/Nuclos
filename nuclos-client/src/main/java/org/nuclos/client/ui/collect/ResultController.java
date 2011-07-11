@@ -778,8 +778,8 @@ public class ResultController<Clct extends Collectable> {
 		final JTable tbl = panel.getResultTable();
 
 		final Map<String, Integer> mpWidths = panel.getVisibleColumnWidth(fields.getSelectedFields());
-
-		final boolean bOK = ctl.run(fields);
+		ctl.setModel(fields);
+		final boolean bOK = ctl.run(CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 
 		if (bOK) {
 			UIUtils.runCommand(clctctl.getFrame(), new CommonRunnable() {

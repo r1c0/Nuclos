@@ -406,8 +406,8 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 
 		// TODO: What the hell is the side effect of this? (Thomas Pasch)
 		panel.getVisibleColumnWidth(lstSelected);
-
-		final boolean bOK = ctl.run(ro,  
+		ctl.setModel(ro);
+		final boolean bOK = ctl.run(  
 				CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 
 		if (bOK) {
