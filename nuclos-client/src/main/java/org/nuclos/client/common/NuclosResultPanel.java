@@ -189,7 +189,12 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	}
 
 	public void invalidateFixedTable() {
-		getResultTableScrollPane().getRowHeader().setPreferredSize(tblFixedResult.getPreferredSize());
+		JViewport header = getResultTableScrollPane().getRowHeader();
+		// TODO: Why could this sometimes be null - after the ResultPanel/ResultController
+		// refactoring? Test case: Search for a MasterData entity. (Thomas Pasch)
+		if (header != null) {
+			header.setPreferredSize(tblFixedResult.getPreferredSize());
+		}
 		tblFixedResult.setRowHeight(getResultTable().getRowHeight());
 		tblFixedResult.revalidate();
 		tblFixedResult.invalidate();

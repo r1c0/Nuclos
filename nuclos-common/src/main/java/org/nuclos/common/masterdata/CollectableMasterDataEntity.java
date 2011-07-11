@@ -164,5 +164,18 @@ public class CollectableMasterDataEntity implements CollectableEntity {
 		result.setCollectableEntity(this);
 		return result;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof CollectableMasterDataEntity)) return false;
+		final CollectableMasterDataEntity other = (CollectableMasterDataEntity) o;
+		return mdmetavo.equals(other.mdmetavo);
+	}
+	
+	@Override
+	public int hashCode() {
+		return mdmetavo.hashCode() + 1871;
+	}
 
 }	// class CollectableMasterDataEntity

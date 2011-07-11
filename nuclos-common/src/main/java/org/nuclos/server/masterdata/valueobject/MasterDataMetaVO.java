@@ -460,6 +460,10 @@ public class MasterDataMetaVO extends NuclosValueObject implements Localizable {
 		}
 		return false;
 	}
-
 	
+	@Override
+	public int hashCode() {
+		return sEntityName.hashCode() + 3971;
+	}
+
 }	// class MasterDataMetaVO
