@@ -171,7 +171,7 @@ public class UserCollectController extends MasterDataCollectController {
 		final JTable tbl = getResultTable();
 
 		final ChoiceList<MasterDataVO> ro = new ChoiceList<MasterDataVO>();
-		ro.set(lstAvailable, new ArrayList<MasterDataVO>(), new MasterDataVO.NameComparator());
+		ro.set(lstAvailable, new MasterDataVO.NameComparator());
 		ctl.setModel(ro);
 		final boolean bOK = ctl.run(CommonLocaleDelegate.getMessage("SelectUserController.7", "Mit LDAP Synchronisieren"));
 

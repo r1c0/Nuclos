@@ -23,6 +23,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.swing.JDialog;
 import javax.swing.JList;
@@ -251,7 +253,17 @@ public class SelectObjectsController<T> extends Controller {
 	}
 	
 	protected final List<T> getObjects(ListModel model) {
+		assert model == getPanel().getJListAvailableObjects().getModel();
 		final List<T> result = new ArrayList<T>();
+		for (int i = 0; i < model.getSize(); ++i) {
+			result.add((T) model.getElementAt(i));
+		}
+		return result;
+	}
+	
+	protected final SortedSet<T> getObjectsAsSortedSet(ListModel model) {
+		assert model == getPanel().getJListAvailableObjects().getModel();
+		final SortedSet<T> result = new TreeSet<T>();
 		for (int i = 0; i < model.getSize(); ++i) {
 			result.add((T) model.getElementAt(i));
 		}
@@ -262,14 +274,14 @@ public class SelectObjectsController<T> extends Controller {
 	 * @return the selected objects, when the dialog is closed.
 	 */
 	public List<T> getSelectedObjects() {
-		return getObjects(this.getPanel().getJListSelectedObjects().getModel());
+		return getObjects(getPanel().getJListSelectedObjects().getModel());
 	}
 
 	/**
 	 * @return the available objects, when the dialog is closed
 	 */
-	public final List<T> getAvailableObjects() {
-		return getObjects(this.getPanel().getJListAvailableObjects().getModel());
+	public final SortedSet<T> getAvailableObjects() {
+		return getObjectsAsSortedSet(getPanel().getJListAvailableObjects().getModel());
 	}
 
 }  // class SelectObjectsController

@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
 import javax.swing.JScrollPane;
@@ -20,7 +22,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.nuclos.client.common.NuclosCollectController;
-import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.UIUtils.CommandHandler;
@@ -192,7 +193,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	}
 
 	protected final void setSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl, 
-			final List<CollectableEntityField> lstAvailableObjects, final List<CollectableEntityField> lstSelectedObjects, 
+			final SortedSet<CollectableEntityField> lstAvailableObjects, final List<CollectableEntityField> lstSelectedObjects, 
 			final Set<CollectableEntityField> stFixedObjects) 
 	{
 		assert clctctl == getCollectController() && clctctl.getFields() == getFields();
@@ -399,7 +400,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		final NuclosCollectController<Clct> nucleusctl = (NuclosCollectController<Clct>) clctctl;
 		final SelectFixedColumnsController ctl = new PivotController(clctctl.getFrame(), new PivotPanel(), 
 				(GenericObjectResultController) nucleusctl.getResultController());
-		final List<CollectableEntityField> lstAvailable = fields.getAvailableFields();
+		final SortedSet<CollectableEntityField> lstAvailable = fields.getAvailableFields();
 		final List<CollectableEntityField> lstSelected = fields.getSelectedFields();
 		final ChoiceEntityFieldList ro = new ChoiceEntityFieldList(panel.getFixedColumns());
 		ro.set(lstAvailable, lstSelected, nucleusctl.getResultController().getCollectableEntityFieldComparator());
@@ -434,14 +435,11 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 
 		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
 		panel.getFixedColumns().remove(clctef);
-//		final TableColumnModel columnmodelVariable = getResultTable().getColumnModel();
-//		final TableColumnModel columnmodelFixed = tblFixedResult.getColumnModel();
-//		adjustColumnModels(fields.getSelectedFields(), columnmodelVariable, columnmodelFixed);
-
-		List<CollectableEntityField> lstAvailableFields = new ArrayList<CollectableEntityField>(fields.getAvailableFields());
-		//Collections.copy(lstAvailableFields, (List<CollectableEntityField>)fields.getAvailableFields());
+		// TODO: Is the copy really needed? (Thomas Pasch)
+		SortedSet<CollectableEntityField> lstAvailableFields = new TreeSet<CollectableEntityField>(fields.getComparatorForAvaible());
+		lstAvailableFields.addAll(fields.getAvailableFields());
+		// TODO: Is the copy really needed? (Thomas Pasch)
 		List<CollectableEntityField> lstSelectedFields = new ArrayList<CollectableEntityField>(fields.getSelectedFields());
-		//Collections.copy(lstSelectedFields, (List<CollectableEntityField>)fields.getSelectedFields());
 		setSelectColumns(fields, ctl, lstAvailableFields, lstSelectedFields, panel.getFixedColumns());
 	}
 

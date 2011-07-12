@@ -38,9 +38,6 @@ public class SelectColumnsController extends SelectObjectsController<Collectable
 
 	private static class SelectColumnsPanel extends DefaultSelectObjectsPanel {
 
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
 
 		SelectColumnsPanel() {
@@ -61,22 +58,6 @@ public class SelectColumnsController extends SelectObjectsController<Collectable
 
 	public SelectColumnsController(Component parent) {
 		super(parent, new SelectColumnsPanel());
-	}
-
-	/**
-	 * @return the selected columns, when the dialog is closed.
-	 * @deprecated Use getSelectedObjects()
-	 */
-	public List<CollectableEntityField> getSelectedColumns() {
-		return getSelectedObjects();
-	}
-
-	/**
-	 * @return the available columns, when the dialog is closed
-	 * @deprecated Use getAvailableObjects()
-	 */
-	public List<CollectableEntityField> getAvailableColumns() {
-		return getAvailableObjects();
 	}
 
 }  // class SelectColumnsController

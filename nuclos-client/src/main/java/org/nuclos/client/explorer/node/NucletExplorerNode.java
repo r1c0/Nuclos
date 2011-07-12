@@ -184,8 +184,7 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 			new SelectObjectsController<AbstractNucletContentEntryTreeNode>(null, new NucletContentSelectObjectPanel());
 		
 		ChoiceList<AbstractNucletContentEntryTreeNode> ro = new ChoiceList<AbstractNucletContentEntryTreeNode>();
-		ro.set(getTreeNodeFacade().getAvailableNucletContents(), 
-				new ArrayList<AbstractNucletContentEntryTreeNode>(),
+		ro.set(getTreeNodeFacade().getAvailableNucletContents(),
 				new AbstractNucletContentEntryTreeNode.Comparator());
 		
 		selectCtrl.setModel(ro);
@@ -211,7 +210,6 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 		
 		final ChoiceList<AbstractNucletContentEntryTreeNode> ro = new ChoiceList<AbstractNucletContentEntryTreeNode>();
 		ro.set(getTreeNodeFacade().getNucletContent(getTreeNode()), 
-				new ArrayList<AbstractNucletContentEntryTreeNode>(),
 				new AbstractNucletContentEntryTreeNode.Comparator());
 		selectCtrl.setModel(ro);
 		final boolean userPressedOk = selectCtrl.run(  

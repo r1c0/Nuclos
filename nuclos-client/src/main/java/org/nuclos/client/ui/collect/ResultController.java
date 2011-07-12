@@ -16,6 +16,38 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect;
 
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.prefs.Preferences;
+
+import javax.swing.Action;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.RowSorter.SortKey;
+import javax.swing.SortOrder;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
+import javax.swing.table.TableColumn;
+
+import org.apache.commons.lang.NullArgumentException;
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
@@ -36,40 +68,6 @@ import org.nuclos.common.collection.PredicateUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.PreferencesUtils;
-
-
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.prefs.Preferences;
-
-import javax.swing.Action;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SortOrder;
-import javax.swing.SwingUtilities;
-import javax.swing.RowSorter.SortKey;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableColumnModelEvent;
-import javax.swing.event.TableColumnModelListener;
-import javax.swing.table.TableColumn;
-
-import org.apache.commons.lang.NullArgumentException;
-import org.apache.log4j.Logger;
-
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -354,10 +352,11 @@ public class ResultController<Clct extends Collectable> {
 	protected void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl, Preferences preferences) {
 		assert clctctl == this.clctctl && clctctl.getFields() == fields;
 		assert this.clcte.equals(clcte);
+		final Comparator<CollectableEntityField> comp = getCollectableEntityFieldComparator();
 		fields.set(
-				getFieldsAvailableForResult(clcte), 
+				getFieldsAvailableForResult(clcte, comp), 
 				new ArrayList<CollectableEntityField>(), 
-				getCollectableEntityFieldComparator());
+				comp);
 
 		// select the previously selected fields according to user preferences:
 		fields.moveToSelectedFields(getSelectedFieldsFromPreferences(clcte, clctctl));
@@ -625,12 +624,12 @@ public class ResultController<Clct extends Collectable> {
 	 * Successors may want to do weird things like appending fields from subentities here...
 	 * TODO Make this private.
 	 */
-	public List<CollectableEntityField> getFieldsAvailableForResult(CollectableEntity clcte) {
+	public SortedSet<CollectableEntityField> getFieldsAvailableForResult(CollectableEntity clcte, Comparator<CollectableEntityField> comp) {
 		assert this.clcte.equals(clcte);
-		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
+		final SortedSet<CollectableEntityField> result = new TreeSet<CollectableEntityField>(comp);
 		for (String sFieldName : clcte.getFieldNames()) {
 			if (this.isFieldToBeDisplayedInTable(sFieldName)) {
-				result.add(this.getCollectableEntityFieldForResult(clcte, sFieldName));
+				result.add(getCollectableEntityFieldForResult(clcte, sFieldName));
 			}
 		}
 		return result;
@@ -786,7 +785,7 @@ public class ResultController<Clct extends Collectable> {
 				@Override
                 public void run() throws CommonBusinessException {
 					final int iSelectedRow = tbl.getSelectedRow();
-					fields.set(ctl.getAvailableColumns(), ctl.getSelectedColumns(), clctctl.getResultController().getCollectableEntityFieldComparator());
+					fields.set(ctl.getAvailableObjects(), ctl.getSelectedObjects(), clctctl.getResultController().getCollectableEntityFieldComparator());
 					final List<? extends CollectableEntityField> lstSelectedNew = fields.getSelectedFields();
 					((CollectableTableModel<?>) tbl.getModel()).setColumns(lstSelectedNew);
 					panel.setupTableCellRenderers(tbl);
@@ -804,7 +803,7 @@ public class ResultController<Clct extends Collectable> {
 						tbl.setRowSelectionInterval(iSelectedRow, iSelectedRow);
 					}
 
-					panel.restoreColumnWidths(ctl.getSelectedColumns(), mpWidths);
+					panel.restoreColumnWidths(ctl.getSelectedObjects(), mpWidths);
 
 					// Set the newly added columns to optimal width
 					for (CollectableEntityField clctef : collNewlySelected) {
@@ -844,7 +843,7 @@ public class ResultController<Clct extends Collectable> {
 	 * @param entityField the column of the column model (as opposed to the column of the table model)
 	 */
 	protected void cmdRemoveColumn(final ChoiceEntityFieldList fields, CollectableEntityField entityField, CollectController<Clct> ctl) {
-		assert clctctl == this.clctctl && clctctl.getFields() == fields;
+		assert ctl == this.clctctl && ctl.getFields() == fields;
 		fields.moveToAvailableFields(entityField);
 
 		// Note that it is not enough to remove the column from the result table model.
@@ -854,7 +853,7 @@ public class ResultController<Clct extends Collectable> {
 	}
 
 	protected void setModel(CollectableTableModel<Clct> tblmodel, final CollectableEntity clcte, final CollectController<Clct> ctl) {
-		assert clctctl == this.clctctl && clctctl.getFields() == fields;
+		assert ctl == this.clctctl && ctl.getFields() == fields;
 		assert this.clcte.equals(clcte);
 		final ResultPanel<Clct> panel = getResultPanel();
 		final JTable resultTable = panel.getResultTable();
@@ -880,7 +879,7 @@ public class ResultController<Clct extends Collectable> {
 	}
 
 	protected void toggleColumnVisibility(TableColumn columnBefore, final String sFieldName, final CollectController<Clct> ctl,  final CollectableEntity clcte)  {
-		assert clctctl == this.clctctl && clctctl.getFields() == fields;
+		assert ctl == this.clctctl && ctl.getFields() == fields;
 		assert this.clcte.equals(clcte);
 		final ResultPanel<Clct> panel = getResultPanel();
 		try {

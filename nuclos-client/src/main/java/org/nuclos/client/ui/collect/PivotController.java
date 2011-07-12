@@ -19,8 +19,10 @@ package org.nuclos.client.ui.collect;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import javax.swing.JCheckBox;
 
@@ -55,10 +57,13 @@ public class PivotController extends SelectFixedColumnsController {
 			resultController.initializeFields(resultController.getEntity(), 
 					(CollectController) resultController.getCollectController(), resultController.getCollectController().getPreferences());
 			 */
-			getModel().set(
-					resultController.getFieldsAvailableForResult(resultController.getEntity()), 
-					resultController.getFields().getSelectedFields(), 
-					resultController.getFields().getComparatorForAvaible());
+			final Comparator<CollectableEntityField> comp = (Comparator<CollectableEntityField>) 
+				resultController.getFields().getComparatorForAvaible();
+			final SortedSet<CollectableEntityField> available = 
+				resultController.getFieldsAvailableForResult(resultController.getEntity(), comp);
+			final List<CollectableEntityField> selected = resultController.getFields().getSelectedFields();
+			
+			getModel().set(available, selected, comp);
 			/*
 			resultController.initializeFields(
 					resultController.getFields(),

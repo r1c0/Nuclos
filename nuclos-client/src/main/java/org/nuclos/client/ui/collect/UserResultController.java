@@ -16,8 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Comparator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.user.UserCollectController;
@@ -47,10 +48,10 @@ public class UserResultController<Clct extends CollectableMasterDataWithDependan
 	 * @deprecated Remove this.
 	 */
 	@Override
-	public List<CollectableEntityField> getFieldsAvailableForResult(CollectableEntity clcte) {
+	public SortedSet<CollectableEntityField> getFieldsAvailableForResult(CollectableEntity clcte, Comparator<CollectableEntityField> comp) {
 		assert getEntity().equals(clcte);
-		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
-		for (CollectableEntityField cef : super.getFieldsAvailableForResult(clcte)) {
+		final SortedSet<CollectableEntityField> result = new TreeSet<CollectableEntityField>(comp);
+		for (CollectableEntityField cef : super.getFieldsAvailableForResult(clcte, comp)) {
 			if (!UserCollectController.FIELD_PREFERENCES.equals(cef.getName()) && !UserCollectController.FIELD_PASSWORD.equals(cef.getName())) {
 				result.add(cef);
 			}

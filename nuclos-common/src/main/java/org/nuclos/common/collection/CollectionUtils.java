@@ -34,6 +34,8 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.nuclos.common.collection.multimap.MultiListHashMap;
@@ -585,6 +587,20 @@ public class CollectionUtils {
       assert result != iterable;
       return result;
    }
+
+	public static <E> SortedSet<E> selectIntoSortedSet(Iterable<E> iterable,
+			Predicate<? super E> predicate, Comparator<E> comp) 
+	{
+		final SortedSet<E> result = new TreeSet<E>(comp);
+		for (E e : iterable) {
+			if (predicate.evaluate(e)) {
+				result.add(e);
+			}
+		}
+		assert result != null;
+		assert result != iterable;
+		return result;
+	}
 
    /**
     * @param iterable

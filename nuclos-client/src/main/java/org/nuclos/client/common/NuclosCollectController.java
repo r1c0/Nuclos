@@ -28,7 +28,6 @@ import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -1270,8 +1269,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 						}
 					});
 					final ChoiceList<RuleVO> ro = new ChoiceList<RuleVO>();
-					ro.set(new ArrayList<RuleVO>(collRules),
-							Collections.<RuleVO> emptyList(),
+					ro.set(collRules,
 							new Comparator<RuleVO>() {
 								@Override
 								public int compare(RuleVO o1, RuleVO o2) {

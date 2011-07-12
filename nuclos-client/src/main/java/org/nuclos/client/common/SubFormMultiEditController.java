@@ -17,7 +17,10 @@
 package org.nuclos.client.common;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
@@ -79,16 +82,17 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 
 		final CollectableComboBox comboBox = (CollectableComboBox) celleditor.getCollectableComponent();
 
-		final List<CollectableField> oldAvailableObjects = getNonNullValues(comboBox);
+		final Comparator<CollectableField> comp = CollectableComparator.getFieldComparator(comboBox.getEntityField());
+		final SortedSet<CollectableField> oldAvailableObjects = getNonNullValues(comboBox, comp);
 		final List<CollectableField> oldSelectedObjects = new ArrayList<CollectableField>();
 
 		// iterate through the table and compute selected fields:
 		for (int row = 0; row < model.getRowCount(); ++row) {
 			final CollectableField value = model.getValueAt(row, colIndex);
 
-			int oldAvailableIdx = oldAvailableObjects.indexOf(value);
-			if(oldAvailableIdx >= 0) {
-				oldSelectedObjects.add(oldAvailableObjects.get(oldAvailableIdx));
+			// int oldAvailableIdx = oldAvailableObjects.indexOf(value);
+			if(oldAvailableObjects.contains(value)) {
+				oldSelectedObjects.add(value);
 				oldAvailableObjects.remove(value);
 				log.debug("Value " + value + " removed from available objects.");
 			}
@@ -99,8 +103,7 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 
 		// perform the dialog:
 		ChoiceList<CollectableField> ro = new ChoiceList<CollectableField>();
-		ro.set(oldAvailableObjects, oldSelectedObjects,
-				CollectableComparator.getFieldComparator(comboBox.getEntityField()));
+		ro.set(oldAvailableObjects, oldSelectedObjects, comp);
 		setModel(ro);
 		final boolean bOK = run(
 				CommonLocaleDelegate.getMessage("SubFormMultiEditController.3", "Mehrere Datens\u00e4tze in Unterformular einf\u00fcgen/l\u00f6schen"));
@@ -128,7 +131,7 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 		}
 	}
 
-	private static List<CollectableField> getNonNullValues(CollectableComboBox clctcmbbx) {
+	private static SortedSet<CollectableField> getNonNullValues(CollectableComboBox clctcmbbx, Comparator<CollectableField> comp) {
 		final List<CollectableField> result = clctcmbbx.getValueList();
 
 		// remove the first entry, if it is null:
@@ -137,7 +140,9 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 				result.remove(0);
 			}
 		}
-		return result;
+		final SortedSet<CollectableField> realResult = new TreeSet<CollectableField>(comp);
+		realResult.addAll(result);
+		return realResult;
 	}
 
 	private static <Clct extends Collectable> boolean isContainedInTableModel(Object oSelected, CollectableTableModel<Clct> tblmdl, int iColumn) {

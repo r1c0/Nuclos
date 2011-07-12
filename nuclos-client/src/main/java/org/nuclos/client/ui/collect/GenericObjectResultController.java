@@ -16,12 +16,14 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import javax.swing.JTable;
 import javax.swing.RowSorter.SortKey;
@@ -101,8 +103,8 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	 * @deprecated Remove this.
 	 */
 	@Override
-	public List<CollectableEntityField> getFieldsAvailableForResult(CollectableEntity clcte) {
-		final List<CollectableEntityField> result = super.getFieldsAvailableForResult(clcte);
+	public SortedSet<CollectableEntityField> getFieldsAvailableForResult(CollectableEntity clcte, Comparator<CollectableEntityField> comp) {
+		final SortedSet<CollectableEntityField> result = super.getFieldsAvailableForResult(clcte, comp);
 		final GenericObjectCollectController controller = getGenericObjectCollectController();
 
 		// add parent entity's fields, if any:
@@ -124,7 +126,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 		return result;
 	}
 	
-	private void getFieldsAvaibleInSubform(List<CollectableEntityField> result, Set<String> stSubEntityLabels, String sSubEntityName) {
+	private void getFieldsAvaibleInSubform(SortedSet<CollectableEntityField> result, Set<String> stSubEntityLabels, String sSubEntityName) {
 		final CollectableEntity clcteSub = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sSubEntityName);
 		// WORKAROUND for general search: We don't want duplicate entities (assetcomment, ordercomment etc.), so we
 		// ignore entities with duplicate labels:
@@ -136,7 +138,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 		}
 	}
 
-	private void getFieldsAvaibleInPivotSubform(List<CollectableEntityField> result, Set<String> stSubEntityLabels, String sSubEntityName) {
+	private void getFieldsAvaibleInPivotSubform(SortedSet<CollectableEntityField> result, Set<String> stSubEntityLabels, String sSubEntityName) {
 		// remove the subform entries
 		// TODO: make sth sensible here!
 	}

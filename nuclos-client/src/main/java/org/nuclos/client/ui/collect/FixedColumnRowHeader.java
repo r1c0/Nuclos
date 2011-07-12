@@ -29,6 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
 import javax.swing.BorderFactory;
@@ -197,12 +199,12 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	private void cmdSelectColumns() {
 
 		final SelectFixedColumnsController ctl = new SelectFixedColumnsController(this.getHeaderTable(), new SelectFixedColumnsPanel());
-		final List<CollectableEntityField> lstAvailable = getAllAvailableFields();
+		final Comparator<CollectableEntityField> comp = (Comparator<CollectableEntityField>) getCollectableEntityFieldComparator();
+		final SortedSet<CollectableEntityField> lstAvailable = getAllAvailableFields(comp);
 		final Set<CollectableEntityField> lstFixed = getDisplayedHeaderTableFields();
 		final List<CollectableEntityField> lstSelected = new ArrayList<CollectableEntityField>(lstFixed);
 		final ChoiceEntityFieldList ro = new ChoiceEntityFieldList(lstFixed);
-		ro.set(lstAvailable, lstSelected,
-				(Comparator<CollectableEntityField>) getCollectableEntityFieldComparator());
+		ro.set(lstAvailable, lstSelected, comp);
 
 		lstSelected.addAll(getDisplayedExternalTableFields());
 
@@ -254,14 +256,12 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	 * Get all possible column field from the table model
 	 * @return List of CollectableEntityField
 	 */
-	private List<CollectableEntityField> getAllAvailableFields() {
-		ArrayList<CollectableEntityField> resultList = new ArrayList<CollectableEntityField>();
-		CollectableEntityFieldBasedTableModel subformtblmdl = getExternalModel();
-
+	private SortedSet<CollectableEntityField> getAllAvailableFields(Comparator<CollectableEntityField> comp) {
+		final SortedSet<CollectableEntityField> resultList = new TreeSet<CollectableEntityField>(comp);
+		final CollectableEntityFieldBasedTableModel subformtblmdl = getExternalModel();
 		for (int iColumnNr = 0; iColumnNr < subformtblmdl.getColumnCount(); iColumnNr++) {
 			resultList.add(subformtblmdl.getCollectableEntityField(iColumnNr));
 		}
-
 		return resultList;
 	}
 

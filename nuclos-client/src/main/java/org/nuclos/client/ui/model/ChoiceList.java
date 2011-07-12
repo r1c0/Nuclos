@@ -16,14 +16,16 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.model;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.nuclos.common.CloneUtils;
 
 /**
  * Encapsulates the lists of available and selected objects, resp.
@@ -37,17 +39,15 @@ import org.apache.commons.lang.NullArgumentException;
  */
 public class ChoiceList<T> implements Cloneable {
 	
-	private static final Class<?>[] NO_ARGS = new Class<?>[0];
-
 	/**
 	 * the list of available (currently not selected) fields
 	 */
-	private List<T> lstclctefAvailable = new ArrayList<T>();
+	private SortedSet<T> lstclctefAvailable;
 
 	/**
 	 * the list of selected fields
 	 */
-	private List<T> lstclctefSelected = new ArrayList<T>();
+	private List<T> lstclctefSelected;
 	
 	private Comparator<? super T> compAvailable;
 	
@@ -57,40 +57,14 @@ public class ChoiceList<T> implements Cloneable {
 	public Object clone() {
 		try {
 			final ChoiceList<T> clone = (ChoiceList<T>) super.clone();
-			clone.lstclctefAvailable = cloneList(lstclctefAvailable);
-			clone.lstclctefSelected = cloneList(lstclctefSelected);
+			clone.lstclctefAvailable = (SortedSet<T>) CloneUtils.cloneCollection(lstclctefAvailable);
+			clone.lstclctefSelected = (List<T>) CloneUtils.cloneCollection(lstclctefSelected);
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			throw new IllegalStateException("clone() not supported", e);
 		}
 	}
 	
-	private static <T> List<T> cloneList(List<T> l) throws CloneNotSupportedException {
-		if (l == null)
-			return null;
-		final Class<?> clazz = l.getClass();
-		// Don't try this on the unmodifiable stuff
-		if (clazz.getName().startsWith("java.util.Collections")) {
-			return new ArrayList<T>(l);
-		}
-		final List<T> result;
-		try {
-			Method m = clazz.getMethod("clone", NO_ARGS);
-			result = (List<T>) m.invoke(l);
-		} catch (IllegalArgumentException e) {
-			throw new CloneNotSupportedException(e.toString());
-		} catch (IllegalAccessException e) {
-			throw new CloneNotSupportedException(e.toString());
-		} catch (InvocationTargetException e) {
-			throw new CloneNotSupportedException(e.toString());
-		} catch (SecurityException e) {
-			throw new CloneNotSupportedException(e.toString());
-		} catch (NoSuchMethodException e) {
-			throw new CloneNotSupportedException(e.toString());
-		}
-		return result;
-	}
-
 	/**
 	 * sets the available and selected fields, respectively.
 	 * @param lstclctefAvailable available (currently not selected) fields
@@ -98,24 +72,36 @@ public class ChoiceList<T> implements Cloneable {
 	 * @precondition lstclctefAvailable != null;
 	 * @precondition lstclctefSelected != null;
 	 */
-	public void set(List<T> lstclctefAvailable, List<T> lstclctefSelected, Comparator<? super T> comp) {
+	public void set(SortedSet<T> lstclctefAvailable, List<T> lstclctefSelected, Comparator<? super T> comp) {
 		if (lstclctefAvailable == null) {
 			throw new NullArgumentException("lstclctefAvailable");
 		}
 		if (lstclctefSelected == null) {
 			throw new NullArgumentException("lstclctefSelected");
 		}
+		if (comp == null) {
+			throw new NullArgumentException("compAvailable");
+		}
 		this.lstclctefAvailable = lstclctefAvailable;
 		this.lstclctefSelected = lstclctefSelected;
 		this.compAvailable = comp;
+	}
+	
+	public void set(Collection<T> available, Comparator<? super T> comp) {
+		if (comp == null) {
+			throw new NullArgumentException("compAvailable");
+		}
+		final SortedSet<T> set = new TreeSet<T>(comp);
+		set.addAll(available);
+		set(set, new ArrayList<T>(), comp);
 	}
 
 	/**
 	 * @return the available (currently not selected) fields
 	 * @postcondition result != null
 	 */
-	public List<T> getAvailableFields() {
-		return Collections.unmodifiableList(this.lstclctefAvailable);
+	public SortedSet<T> getAvailableFields() {
+		return Collections.unmodifiableSortedSet(this.lstclctefAvailable);
 	}
 	
 	public Comparator<? super T> getComparatorForAvaible() {

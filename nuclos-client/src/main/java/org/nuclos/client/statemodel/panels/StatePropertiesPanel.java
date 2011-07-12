@@ -35,6 +35,7 @@ import java.awt.event.AdjustmentListener;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -757,27 +758,27 @@ public class StatePropertiesPanel extends JPanel {
 			toolBar.add(filter);
 			roleSelection.addActionListener(new ActionListener() {
 				@Override
-				public void actionPerformed(ActionEvent e) {
+				public void actionPerformed(ActionEvent e) {		
+					final RoleSelection roleSelectionCtrl = new RoleSelection(roleSelection);
+					final ChoiceList<RightAndMandatoryColumnHeader> ro = new ChoiceList<RightAndMandatoryColumnHeader>();
+					final Comparator<RightAndMandatoryColumnHeader> comp = new RightAndMandatoryColumnHeader.Comparator();
 					
-					RoleSelection roleSelectionCtrl = new RoleSelection(roleSelection);
-					ChoiceList<RightAndMandatoryColumnHeader> ro = new ChoiceList<RightAndMandatoryColumnHeader>();
-					ro.set(CollectionUtils.select(roleColumns.values(),
+					ro.set(CollectionUtils.selectIntoSortedSet(roleColumns.values(),
 							new Predicate<RightAndMandatoryColumnHeader>() {
 								@Override
-								public boolean evaluate(
-										RightAndMandatoryColumnHeader t) {
+								public boolean evaluate(RightAndMandatoryColumnHeader t) {
 									return !selectedRoles.contains(t.getId());
 								}
-							}), CollectionUtils.sorted(CollectionUtils.select(
+							}, comp), 
+							CollectionUtils.sorted(CollectionUtils.select(
 							roleColumns.values(),
 							new Predicate<RightAndMandatoryColumnHeader>() {
 								@Override
-								public boolean evaluate(
-										RightAndMandatoryColumnHeader t) {
+								public boolean evaluate(RightAndMandatoryColumnHeader t) {
 									return selectedRoles.contains(t.getId());
 								}
-							}), new RightAndMandatoryColumnHeader.Comparator()),
-							new RightAndMandatoryColumnHeader.Comparator());
+							}), comp), comp);
+					
 					roleSelectionCtrl.setModel(ro);
 					boolean changed = roleSelectionCtrl.run( 
 							CommonLocaleDelegate.getMessage("StatePropertiesPanel.17", "Benutzergruppenauswahl"));
@@ -867,10 +868,10 @@ public class StatePropertiesPanel extends JPanel {
 		 * 
 		 * select roles to show in columns
 		 */
-		class RoleSelection extends SelectObjectsController {
+		class RoleSelection extends SelectObjectsController<RightAndMandatoryColumnHeader> {
 
 			public RoleSelection(Component parent) {
-				super(parent, new DefaultSelectObjectsPanel());
+				super(parent, new DefaultSelectObjectsPanel<RightAndMandatoryColumnHeader>());
 			}
 
 		}
