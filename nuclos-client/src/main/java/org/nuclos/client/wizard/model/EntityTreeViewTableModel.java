@@ -168,8 +168,6 @@ public class EntityTreeViewTableModel extends AbstractTableModel implements IReo
 		lstRows.set(fromModel, to);
 		lstRows.set(toModel, from);
 		
-		
-		
 		// ensure that every row has an distinct sort order value
 		int so = -99999;
 		for (EntityTreeViewVO vo: lstRows) {

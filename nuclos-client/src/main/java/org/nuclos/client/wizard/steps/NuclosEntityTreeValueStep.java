@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NavigableSet;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -670,7 +671,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 			}
 			if(voTmp == null) {
 				// create a new tree view preferences table line if a (former) preference have not been found
-				lst.add(new EntityTreeViewVO(id, subform, null, null, Boolean.FALSE, 0));
+				lst.add(new EntityTreeViewVO(id, subform, getRefFieldTo(subform).iterator().next(), null, Boolean.FALSE, 0));
 			}
 			else { 
 				lst.add(voTmp);
@@ -695,6 +696,17 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 		model.setTreeView(tableModel.getRows());
 	}
 	
+	private SortedSet<String> getRefFieldTo(String subformEntityName) {
+		final SortedSet<String> result = new TreeSet<String>();
+		for(EntityFieldMetaDataVO voField : MetaDataDelegate.getInstance().getAllEntityFieldsByEntity(subformEntityName).values()) {
+			final String fEntity = voField.getForeignEntity();
+			if(model.getEntityName().equals(fEntity) || NuclosEntity.GENERICOBJECT.getEntityName().equals(fEntity)) {
+				result.add(voField.getField());
+			}
+		}
+		return result;
+	}
+	
 	private class TreeValueTableCellEditor extends DefaultCellEditor implements IReorderable {	
 
 		/**
@@ -716,10 +728,8 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 			DefaultCellEditor edit = new DefaultCellEditor(editBox);
 			refToBaseEntityEditor.add(edit);
 			// editBox.addItem("");
-			for(EntityFieldMetaDataVO voField : MetaDataDelegate.getInstance().getAllEntityFieldsByEntity(subformEntityName).values()) {
-				final String fEntity = voField.getForeignEntity();
-				if(model.getEntityName().equals(fEntity) || NuclosEntity.GENERICOBJECT.getEntityName().equals(fEntity))
-					editBox.addItem(voField.getField());
+			for(String voField : getRefFieldTo(subformEntityName)) {
+				editBox.addItem(voField);
 			}			
 		}
 		
@@ -736,7 +746,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 		@Override
 		public Object getCellEditorValue() {
 			final int row = tblTreeView.getSelectedRow();
-			final int column = tblTreeView.getSelectedColumn();
+			// final int column = tblTreeView.getSelectedColumn();
 			
 			DefaultCellEditor celleditor = refToBaseEntityEditor.get(row);
 			JComboBox box = (JComboBox)celleditor.getComponent();
