@@ -18,6 +18,9 @@ package org.nuclos.server.searchfilter.ejb3;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.CreateException;
@@ -27,18 +30,27 @@ import javax.ejb.Stateless;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SearchConditionUtils;
+import org.nuclos.common.TranslationVO;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
+import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.DalSupportForMD;
+import org.nuclos.common2.LocaleInfo;
+import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.TruncatableCollection;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
+import org.nuclos.server.common.LocaleUtils;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.SecurityCache;
+import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
+import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.jms.NuclosJMSUtils;
@@ -60,16 +72,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Remote(SearchFilterFacadeRemote.class)
 @Transactional
 public class SearchFilterFacadeBean extends MasterDataFacadeBean implements SearchFilterFacadeRemote {
-	
+
 	//private final ClientNotifier clientnotifier = new ClientNotifier(JMSConstants.TOPICNAME_SEARCHFILTERCACHE);
 
+	private static final String SEARCHFILTER_TABLE = "T_UD_SEARCHFILTER";
+
 	@Override
-	public Object modify(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants)
-	throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException,
-	CommonValidationException, CommonPermissionException, NuclosBusinessRuleException {
+	public Object modify(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants, List<TranslationVO> resources)
+			throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException,
+			CommonValidationException, CommonPermissionException, NuclosBusinessRuleException {
 
 		Object id = super.modify(sEntityName, mdvo, mpDependants);
-		
+		setResources(mdvo, resources);
+
 		Collection<MasterDataVO> colldep = this.getDependantMasterData(NuclosEntity.SEARCHFILTERUSER.getEntityName(), "searchfilter", id);
 		String asUsers[] = new String[colldep.size()];
 		int i = 0;
@@ -80,10 +95,10 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 		notifyClients(asUsers);
 		// Invalidate security cache (compulsory filters are security-related)
 		SecurityCache.getInstance().invalidate();
-		
+
 		return id;
 	}
-	
+
 	/**
 	 * @return all searchfilters for the given user
 	 * @throws CreateException
@@ -105,11 +120,11 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 			// 3. transform MasterdataVOs to SearchFilterVO
 			collSearchFilter.add(SearchFilterVO.transformToSearchFilter(mdVO_searchfilter, mdVO_searchFilteruser));
 		}
-		
+
 		for (Integer iRoleId : SecurityCache.getInstance().getUserRoles(sUser)) {
 			// 4. get all searchfilterrole objects for given user
 			final CollectableSearchCondition condSearchFilterRole = SearchConditionUtils.newMDReferenceComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.SEARCHFILTERROLE), "role", iRoleId);
-			
+
 			for (MasterDataVO mdVO_searchFilterrole : getMasterDataFacade().getMasterData(NuclosEntity.SEARCHFILTERROLE.getEntityName(), condSearchFilterRole, true)) {
 				// 5. get corresponding searchfilter
 				MasterDataVO mdVO_searchfilter = getMasterDataFacade().get(NuclosEntity.SEARCHFILTER.getEntityName(), mdVO_searchFilterrole.getField("searchfilterId"));
@@ -117,15 +132,15 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 				// 6. set user id and editable cause of transformToSearchFilter in 7. | Now this entry looks like an SEARCHFILTERUSER entry
 				mdVO_searchFilterrole.setField("userId", SecurityCache.getInstance().getUserId(sUser));
 				mdVO_searchFilterrole.setField("editable", Boolean.FALSE);
-				
+
 				// 7. transform MasterdataVOs to SearchFilterVO and check if exists already in list
 				SearchFilterVO sfRoleVO = SearchFilterVO.transformToSearchFilter(mdVO_searchfilter, mdVO_searchFilterrole);
 				boolean sfUserVOFound = false;
 				for (SearchFilterVO sfUserVO : collSearchFilter) {
-					if (sfUserVO.getId().equals(sfRoleVO.getId())) 
+					if (sfUserVO.getId().equals(sfRoleVO.getId()))
 						sfUserVOFound = true;
 				}
-				if (!sfUserVOFound) 
+				if (!sfUserVOFound)
 					collSearchFilter.add(sfRoleVO);
 			}
 		}
@@ -226,9 +241,57 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 
 		return collmdvo.iterator().next().getIntId();
 	}
-	
+
 	private void notifyClients(String[] asUsers) {
 		NuclosJMSUtils.sendObjectMessage(asUsers, JMSConstants.TOPICNAME_SEARCHFILTERCACHE, null);
 		//clientnotifier.notifyClientsByUsers(asUsers);
+	}
+
+	@Override
+	public List<TranslationVO> getResources(Integer id) throws CommonBusinessException {
+		ArrayList<TranslationVO> result = new ArrayList<TranslationVO>();
+
+		MasterDataVO sf = getMasterDataFacade().get(NuclosEntity.SEARCHFILTER.getEntityName(), id);
+
+		LocaleFacadeLocal service = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+
+		String labelResourceId = sf.getField("labelres", String.class);
+		String descriptionResourceId = sf.getField("descriptionres", String.class);
+
+		for (LocaleInfo li : service.getAllLocales(false)) {
+			Map<String, String> labels = new HashMap<String, String>();
+			labels.put(TranslationVO.labelsField[0], service.getResourceById(li, labelResourceId));
+			labels.put(TranslationVO.labelsField[1], service.getResourceById(li, descriptionResourceId));
+
+			TranslationVO vo = new TranslationVO(li.localeId, li.title, li.language, labels);
+			result.add(vo);
+		}
+		return result;
+	}
+
+	private void setResources(MasterDataVO sf, List<TranslationVO>  translations) {
+		String labelResourceId = sf.getField("labelres", String.class);
+		String descriptionResourceId = sf.getField("descriptionres", String.class);
+
+		Map<Integer, LocaleInfo> lis = CollectionUtils.transformIntoMap(getLocaleFacade().getAllLocales(false), new Transformer<LocaleInfo, Integer>() {
+				@Override
+				public Integer transform(LocaleInfo i) {
+					return i.localeId;
+				}
+			}, new Transformer<LocaleInfo, LocaleInfo>() {
+				@Override
+				public LocaleInfo transform(LocaleInfo i) {
+					return i;
+				}
+			});
+
+		for(TranslationVO vo : translations) {
+			LocaleInfo li = lis.get(vo.getLocaleId());
+
+			labelResourceId = getLocaleFacade().setResourceForLocale(labelResourceId, li, vo.getLabels().get(TranslationVO.labelsField[0]));
+			descriptionResourceId = getLocaleFacade().setResourceForLocale(descriptionResourceId, li, vo.getLabels().get(TranslationVO.labelsField[1]));
+		}
+		LocaleUtils.setResourceIdForField(SEARCHFILTER_TABLE, sf.getIntId(), LocaleUtils.FIELD_LABEL, labelResourceId);
+		LocaleUtils.setResourceIdForField(SEARCHFILTER_TABLE, sf.getIntId(), LocaleUtils.FIELD_DESCRIPTION, descriptionResourceId);
 	}
 }

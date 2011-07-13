@@ -36,7 +36,7 @@ import org.nuclos.server.searchfilter.valueobject.SearchFilterVO;
  * @version 01.00.00
  */
 public abstract class SearchFilter {
-	
+
 	private boolean bValid = true;
 
 	private SearchFilterVO searchfilterVO;
@@ -53,22 +53,22 @@ public abstract class SearchFilter {
 	public boolean isDefaultFilter() {
 		return false;
 	}
-	
+
 	public void setSearchFilterVO(SearchFilterVO searchfilterVO) {
 		this.searchfilterVO = searchfilterVO;
 	}
-	
+
 	public SearchFilterVO getSearchFilterVO() {
 		return this.searchfilterVO;
 	}
-	
+
 	/**
 	 * @return the filter's id
 	 */
 	public Integer getId() {
 		return this.searchfilterVO.getId();
 	}
-	
+
 	/**
 	 * @return this filter's name
 	 */
@@ -90,7 +90,7 @@ public abstract class SearchFilter {
 	public void setDescription(String sDescription) {
 		this.searchfilterVO.setDescription(sDescription);
 	}
-	
+
 	/**
 	 * @return the owner of this filter
 	 */
@@ -105,23 +105,23 @@ public abstract class SearchFilter {
 	public void setSearchDeleted(Integer searchDeleted) {
 		this.searchfilterVO.setSearchDeleted(searchDeleted);
 	}
-	
+
 	public Boolean isEditable() {
 		return this.searchfilterVO.isEditable();
 	}
-	
+
 	public void setEditable(Boolean bEditable) {
 		this.searchfilterVO.setEditable(bEditable);
 	}
-	
+
 	public void setValidFrom(Date datValidFrom) {
 		getSearchFilterVO().setValidFrom(datValidFrom);
 	}
-	
+
 	public Date getValidFrom() {
 		return getSearchFilterVO().getValidFrom();
 	}
-	
+
 	public void setValidUntil(Date datValidUntil) {
 		getSearchFilterVO().setValidUntil(datValidUntil);
 	}
@@ -129,7 +129,7 @@ public abstract class SearchFilter {
 	public Date getValidUntil() {
 		return getSearchFilterVO().getValidUntil();
 	}
-	
+
 	/**
 	 * @return this filter's search condition
 	 */
@@ -192,7 +192,7 @@ public abstract class SearchFilter {
 		catch (Exception ex) {
 			throw new NuclosBusinessException(ex);
 		}
-			
+
 		SearchFilterDelegate.getInstance().insertSearchFilter(this);
 	}
 
@@ -213,7 +213,7 @@ public abstract class SearchFilter {
 	static String decoded(String sFilterName) {
 		return sFilterName.replace('\\', '/');
 	}
-	
+
 	public boolean isValid() {
 		return bValid;
 	}
@@ -222,4 +222,11 @@ public abstract class SearchFilter {
 		this.bValid = bValid;
 	}
 
+	public String getLabelResourceId() {
+		return searchfilterVO.getLabelResourceId();
+	}
+
+	public String getDescriptionResourceId() {
+		return searchfilterVO.getDescriptionResourceId();
+	}
 }	// class SearchFilter

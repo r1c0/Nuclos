@@ -17,11 +17,14 @@
 package org.nuclos.server.searchfilter.ejb3;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.CreateException;
 import javax.ejb.Remote;
 
+import org.nuclos.common.TranslationVO;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -36,11 +39,13 @@ import org.nuclos.server.searchfilter.valueobject.SearchFilterVO;
 @Remote
 public interface SearchFilterFacadeRemote {
 
-	public Object modify(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants)
-		throws CommonCreateException, CommonFinderException, CommonRemoveException, 
-		CommonStaleVersionException,	CommonValidationException, CommonPermissionException, 
+	public Object modify(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants, List<TranslationVO> resources)
+		throws CommonCreateException, CommonFinderException, CommonRemoveException,
+		CommonStaleVersionException,	CommonValidationException, CommonPermissionException,
 		NuclosBusinessRuleException;
-	
+
+	public List<TranslationVO> getResources(Integer id) throws CommonBusinessException;
+
 	/**
 	 * @return all searchfilters for the given user
 	 * @throws CreateException

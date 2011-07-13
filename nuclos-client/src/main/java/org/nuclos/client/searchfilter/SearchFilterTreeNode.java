@@ -16,19 +16,18 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.searchfilter;
 
-import org.nuclos.common2.CommonLocaleDelegate;
-
-
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.nuclos.common2.exception.CommonFatalException;
-import org.nuclos.common2.exception.CommonFinderException;
-import org.nuclos.common2.exception.PreferencesException;
+import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.main.Main;
 import org.nuclos.common.Utils;
+import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.common2.exception.CommonFinderException;
+import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectSearchExpression;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.navigation.treenode.EntitySearchResultTreeNode;
@@ -44,7 +43,10 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  * @version 00.01.000
  */
 public class SearchFilterTreeNode extends EntitySearchResultTreeNode {
+
 	private static final long serialVersionUID = -5356067512724852062L;
+
+	private static final Logger log = Logger.getLogger(SearchFilterTreeNode.class);
 
 	private transient EntitySearchFilter searchfilter;
 	private Integer searchFilterId;
@@ -93,5 +95,33 @@ public class SearchFilterTreeNode extends EntitySearchResultTreeNode {
 			searchfilter = SearchFilterCache.getInstance().getEntitySearchFilterById(searchFilterId);
 		return searchfilter;
 	}
+
+	@Override
+	public String getLabel() {
+		try {
+			if (getSearchFilter().getLabelResourceId() != null) {
+				return CommonLocaleDelegate.getTextFallback(getSearchFilter().getLabelResourceId(), super.getLabel());
+			}
+		}
+		catch (Exception ex) {
+			log.warn(ex.getMessage(), ex);
+		}
+		return super.getLabel();
+	}
+
+	@Override
+	public String getDescription() {
+		try {
+			if (getSearchFilter().getDescriptionResourceId() != null) {
+				return CommonLocaleDelegate.getTextFallback(getSearchFilter().getDescriptionResourceId(), super.getDescription());
+			}
+		}
+		catch (Exception ex) {
+			log.warn(ex.getMessage(), ex);
+		}
+		return super.getDescription();
+	}
+
+
 
 }	// class SearchFilterTreeNode

@@ -57,6 +57,8 @@ public interface LocaleFacadeLocal {
 
 	public abstract void deleteResource(String resourceId);
 
+	public abstract void deleteResourceFromLocale(String resourceId, LocaleInfo localeInfo);
+
 	/**
 	 * get resource by the given id
 	 */

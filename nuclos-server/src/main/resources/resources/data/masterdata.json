@@ -1922,6 +1922,30 @@
         "descriptionres": "nuclos.entityfield.searchfilter.description.description"
       },
       {
+        "name": "labelres",
+        "dbfield": "STR_LOCALERESOURCE_L",
+        "label": "Ressourcen-ID für den Namen",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.searchfilter.labelres.label"
+      },
+      {
+        "name": "descriptionres",
+        "dbfield": "STR_LOCALERESOURCE_D",
+        "label": "Ressourcen-ID für die Beschreibung",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.searchfilter.descriptionres.label"
+      },
+      {
         "name": "clbsearchfilter",
         "dbfield": "CLBSEARCHFILTER",
         "label": "Suchfilter",
@@ -4771,7 +4795,7 @@
         "logbook": false,
         "unique": false,
         "labelres": "nuclos.entityfield.generationAttribute.attributeTarget.label",
-        "descriptionres": "nuclos.entityfield.generationAttribute.attributeTarget.description"        
+        "descriptionres": "nuclos.entityfield.generationAttribute.attributeTarget.description"
       }
     ]
   },
@@ -7586,7 +7610,7 @@
         "labelres": "nuclos.entityfield.generationSubentity.groupby.label",
         "descriptionres": "nuclos.entityfield.generationSubentity.groupby.description"
       }
-      
+
     ]
   },
   {
@@ -7598,7 +7622,7 @@
     "dbentity": "V_MD_GENERATION_SUBENTITY_ATTR",
     "importexport": true,
     "systementity": true,
-    "labelres": "nuclos.entity.generationSubentityAttribute.label",    
+    "labelres": "nuclos.entity.generationSubentityAttribute.label",
     "nuclos_entityfield": [
       {
         "name": "entity",
@@ -7642,7 +7666,7 @@
         "datascale": 255,
         "nullable": false,
         "searchable": false,
-        "logbook": false,        
+        "logbook": false,
         "unique": false,
         "labelres": "nuclos.entityfield.generationSubentityAttribute.attributeTarget.label",
         "descriptionres": "nuclos.entityfield.generationSubentityAttribute.attributeTarget.description"
@@ -7656,7 +7680,7 @@
         "datascale": 255,
         "nullable": true,
         "searchable": false,
-        "logbook": false,        
+        "logbook": false,
         "unique": false,
         "labelres": "nuclos.entityfield.generationSubentityAttribute.groupfunction.label",
         "descriptionres": "nuclos.entityfield.generationSubentityAttribute.groupfunction.description"

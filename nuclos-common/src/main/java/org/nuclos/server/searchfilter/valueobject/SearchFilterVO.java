@@ -35,9 +35,6 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class SearchFilterVO extends NuclosValueObject {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private String sFilterName;
 	private String sDescription;
@@ -45,129 +42,148 @@ public class SearchFilterVO extends NuclosValueObject {
 	private String sOwner;
 	private String sEntity;
 	private Integer iSearchDeleted;
-	
+	private String labelResourceId;
+	private String descriptionResourceId;
+
 	private SearchFilterUserVO searchFilterUserVO;
-	
+
 	public SearchFilterVO() {
 		super();
-		
+
 		this.searchFilterUserVO = new SearchFilterUserVO();
 	}
-	
+
 	public SearchFilterVO(Integer iId, String sFilterName, String sDescription, String sFilterPrefs, String sOwner, String sEntity,
-			Integer iSearchDeleted, SearchFilterUserVO searchFilterUserVO,
+			Integer iSearchDeleted, String labelResourceId, String descriptionResourceId, SearchFilterUserVO searchFilterUserVO,
 			java.util.Date dCreated, String sCreated, java.util.Date dChanged, String sChanged, Integer iVersion) {
 		super(iId, dCreated, sCreated, dChanged, sChanged, iVersion);
-		
+
 		setFilterName(sFilterName);
 		setDescription(sDescription);
 		setFilterPrefs(sFilterPrefs);
 		setOwner(sOwner);
 		setEntity(sEntity);
 		setSearchDeleted(iSearchDeleted);
-		
+		setLabelResourceId(labelResourceId);
+		setDescriptionResourceId(descriptionResourceId);
 		setSearchFilterUser(searchFilterUserVO);
 	}
 
 	public SearchFilterVO (SearchFilterVO searchFilterVO) {
 		this(searchFilterVO.getId(), searchFilterVO.getFilterName(), searchFilterVO.getDescription(), searchFilterVO.getFilterPrefs(),
-				searchFilterVO.getOwner(), searchFilterVO.getEntity(), searchFilterVO.getSearchDeleted(),
+				searchFilterVO.getOwner(), searchFilterVO.getEntity(), searchFilterVO.getSearchDeleted(), searchFilterVO.getLabelResourceId(), searchFilterVO.getDescriptionResourceId(),
 				searchFilterVO.getSearchFilterUser(), searchFilterVO.getChangedAt(), searchFilterVO.getCreatedBy(), searchFilterVO.getChangedAt(),
 				searchFilterVO.getCreatedBy(), searchFilterVO.getVersion());
 	}
-	
+
 	public void setFilterName(String sFilterName) {
 		this.sFilterName = sFilterName;
 	}
-	
+
 	public String getFilterName() {
 		return this.sFilterName;
 	}
-	
+
 	public void setDescription(String sDescription) {
 		this.sDescription = sDescription;
 	}
-	
+
 	public String getDescription() {
 		return this.sDescription;
 	}
-	
+
 	public void setFilterPrefs(String sFilterPrefs) {
 		this.sFilterPrefs = sFilterPrefs;
 	}
-	
+
 	public String getFilterPrefs() {
 		return this.sFilterPrefs;
 	}
-	
+
 	public void setOwner(String sOwner) {
 		this.sOwner = sOwner;
 	}
-	
+
 	public String getOwner() {
 		return this.sOwner;
 	}
-	
+
 	public void setEntity(String sEntity) {
 		this.sEntity = sEntity;
 	}
-	
+
 	public String getEntity() {
 		return this.sEntity;
 	}
-	
+
 	public void setSearchDeleted(Integer iSearchDeleted) {
 		if (iSearchDeleted == null) {
 			iSearchDeleted = CollectableGenericObjectSearchExpression.SEARCH_UNDELETED;
 		}
-		
+
 		this.iSearchDeleted = iSearchDeleted;
 	}
-	
+
 	public Integer getSearchDeleted() {
 		return this.iSearchDeleted;
 	}
-	
+
 	public void setSearchFilterUser(SearchFilterUserVO searchFilterUserVO) {
 		this.searchFilterUserVO = searchFilterUserVO;
 	}
-	
+
 	public SearchFilterUserVO getSearchFilterUser() {
 		return this.searchFilterUserVO;
 	}
-	
+
 	public void setEditable(Boolean bEditable) {
 		this.getSearchFilterUser().setEditable(bEditable);
 	}
-	
+
 	public Boolean isEditable() {
 		return this.getSearchFilterUser().isEditable();
 	}
-	
+
 	public void setForced(Boolean bForced) {
 		this.getSearchFilterUser().setForced(bForced);
 	}
-	
+
 	public Boolean isForced() {
 		return this.getSearchFilterUser().isForced();
 	}
-	
+
 	public void setValidFrom(Date dValidFrom) {
 		this.getSearchFilterUser().setValidFrom(dValidFrom);
 	}
-	
+
 	public Date getValidFrom() {
 		return this.getSearchFilterUser().getValidFrom();
 	}
-	
+
 	public void setValidUntil(Date dValidUntil) {
 		this.getSearchFilterUser().setValidUntil(dValidUntil);
 	}
-	
+
 	public Date getValidUntil() {
 		return this.getSearchFilterUser().getValidUntil();
 	}
-	
+
+	public String getLabelResourceId() {
+		return labelResourceId;
+	}
+
+	public void setLabelResourceId(String labelResourceId) {
+		this.labelResourceId = labelResourceId;
+	}
+
+	public String getDescriptionResourceId() {
+		return descriptionResourceId;
+	}
+
+	public void setDescriptionResourceId(String descriptionResourceId) {
+		this.descriptionResourceId = descriptionResourceId;
+	}
+
 	/**
 	 * transforms a MasterDataVO into a SearchFilterVO
 	 * @param mdVO_searchfilter
@@ -176,7 +192,7 @@ public class SearchFilterVO extends NuclosValueObject {
 	 */
 	public static SearchFilterVO transformToSearchFilter(MasterDataVO mdVO_searchfilter, MasterDataVO mdVO_searchFilteruser) {
 		SearchFilterUserVO searchFilerUserVO = SearchFilterUserVO.transformToSearchFilterUser(mdVO_searchFilteruser);
-		
+
 		SearchFilterVO searchFilter = new SearchFilterVO(
 				mdVO_searchfilter.getIntId(),
 		(String)mdVO_searchfilter.getField("name"),
@@ -185,16 +201,18 @@ public class SearchFilterVO extends NuclosValueObject {
 		mdVO_searchfilter.getCreatedBy(),
 		(String)mdVO_searchfilter.getField("entity"),
 		(Integer)mdVO_searchfilter.getField("searchDeleted"),
+		(String)mdVO_searchfilter.getField("labelres"),
+		(String)mdVO_searchfilter.getField("descriptionres"),
 		searchFilerUserVO,
 		mdVO_searchfilter.getCreatedAt(),
 		mdVO_searchfilter.getCreatedBy(),
 		mdVO_searchfilter.getChangedAt(),
 		mdVO_searchfilter.getChangedBy(),
 		mdVO_searchfilter.getVersion());
-		
+
 		return searchFilter;
 	}
-	
+
 	/**
 	 * transforms a SearchFilterVO into a MasterDataVO
 	 * @param searchFilter
@@ -207,7 +225,7 @@ public class SearchFilterVO extends NuclosValueObject {
 		mpField.put("clbsearchfilter", searchFilter.getFilterPrefs());
 		mpField.put("entity", searchFilter.getEntity());
 		mpField.put("searchDeleted", searchFilter.getSearchDeleted());
-		
+
 		MasterDataVO mdVO = new MasterDataVO(
 				searchFilter.getId(),
 				searchFilter.getCreatedAt(),
@@ -216,7 +234,7 @@ public class SearchFilterVO extends NuclosValueObject {
 				searchFilter.getChangedBy(),
 				searchFilter.getVersion(),
 				mpField);
-		
+
 		return mdVO;
 	}
 }

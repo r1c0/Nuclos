@@ -20,11 +20,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.TranslationVO;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -81,11 +83,10 @@ public class SearchFilterDelegate {
 		}
 		return singleton;
 	}
-	
-	public Object update(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants) 
-							throws CommonBusinessException {
+
+	public Object update(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants, List<TranslationVO> resources) throws CommonBusinessException {
 		try {
-			return this.facade.modify(sEntityName, mdvo, mpDependants);
+			return this.facade.modify(sEntityName, mdvo, mpDependants, resources);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -159,7 +160,7 @@ public class SearchFilterDelegate {
 				EntitySearchFilter.writeCollectableEntityFieldsToPreferences(prefs, ((EntitySearchFilter)filter).getVisibleColumns(), PREFS_NODE_VISIBLECOLUMNS, PREFS_NODE_VISIBLECOLUMNENTITIES);
 				PreferencesUtils.putStringList(prefs, PREFS_NODE_SORTINGCOLUMNS, ((EntitySearchFilter)filter).getSortingColumnNames());
 			}
-			
+
 			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			prefs.exportSubtree(baos);
 			filter.getSearchFilterVO().setFilterPrefs(baos.toString("UTF-8"));
@@ -264,10 +265,10 @@ public class SearchFilterDelegate {
 			}
 
 			String sEntityName = searchFilterVO.getEntity();
-			
+
 			// SearchFilter properties
 			result.setSearchCondition(SearchConditionUtils.getSearchCondition(prefs.node(PREFS_NODE_SEARCHCONDITION),sEntityName));
-			
+
 			// EntitySearchFilter properties
 			((EntitySearchFilter)result).setVisibleColumns(EntitySearchFilter.readCollectableEntityFieldsFromPreferences(prefs,
 					DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName),
@@ -285,5 +286,9 @@ public class SearchFilterDelegate {
 		}
 
 		return result;
+	}
+
+	public List<TranslationVO> getResources(Integer id) throws CommonBusinessException {
+		return facade.getResources(id);
 	}
 }

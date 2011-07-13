@@ -68,6 +68,7 @@ import org.nuclos.client.customcomp.resplan.ResPlanController.RestorePreferences
 import org.nuclos.client.customcomp.resplan.ResPlanController.TimeGranularity;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
+import org.nuclos.client.searchfilter.SearchFilterListCellRenderer;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.DateChooser;
@@ -99,7 +100,7 @@ import org.nuclos.common2.exception.PreferencesException;
 public class ResPlanPanel extends JPanel {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -108,14 +109,14 @@ public class ResPlanPanel extends JPanel {
 	public static final String SEARCH_CONDITION_PROPERTY = "searchCondition";
 
 	ResPlanController controller;
-	
+
 	DateChooser startDateChooser;
 	DateChooser endDateChooser;
-	
+
 	JResPlanComponent<Collectable, Date, Collectable> resPlan;
 	CollectableResPlanModel resPlanModel;
 	DateTimeModel timeModel;
-	
+
 	private CollectableSearchCondition searchCondition;
 	private Interval<Date> timeHorizon;
 
@@ -125,7 +126,7 @@ public class ResPlanPanel extends JPanel {
 	private JComboBox timeGranularityComboBox;
 	private JScrollPane scrollPane;
 	private final JButton infoButton;
-	
+
 	private List<String> infoMessages;
 
 	// Last known user-specified extents
@@ -137,12 +138,12 @@ public class ResPlanPanel extends JPanel {
 		this.timeModel = timeModel;
 		this.resPlanModel = model;
 		setLayout(new BorderLayout());
-		
+
 		JToolBar tb = UIUtils.createNonFloatableToolBar();
 		tb.setFloatable(false);
 		tb.add(new AbstractAction(getText("nuclos.resplan.action.refresh", null), Icons.getInstance().getIconRefresh16()) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -152,18 +153,18 @@ public class ResPlanPanel extends JPanel {
 			}
 		});
 		tb.addSeparator();
-		
+
 		this.timeHorizon = new Interval<Date>(
 			DateUtils.getPureDate(DateUtils.addDays(new Date(), -5)),
 			DateUtils.getPureDate(DateUtils.addDays(new Date(), 25)));
-		
+
 		startDateChooser = new DateChooser(timeHorizon.getStart());
 		startDateChooser.setMinimumSize(startDateChooser.getPreferredSize());
 		startDateChooser.setMaximumSize(startDateChooser.getPreferredSize());
 		endDateChooser = new DateChooser(timeHorizon.getEnd());
 		endDateChooser.setMinimumSize(endDateChooser.getPreferredSize());
 		endDateChooser.setMaximumSize(endDateChooser.getPreferredSize());
-		
+
 		tb.add(new JLabel(getText("nuclos.resplan.toolbar.from", null)));
 		tb.add(startDateChooser);
 		tb.add(Box.createHorizontalStrut(5));
@@ -180,12 +181,13 @@ public class ResPlanPanel extends JPanel {
 		tb.addSeparator();
 		tb.add(new JLabel(getText("nuclos.resplan.toolbar.resourceFilter", null)));
 		searchFilterComboBox = new JComboBox();
+		searchFilterComboBox.setRenderer(new SearchFilterListCellRenderer());
 		refreshSearchFilter();
 		tb.add(searchFilterComboBox);
 		searchFilterComboBox.setMaximumSize(Orientation.VERTICAL.updateExtent(searchFilterComboBox.getPreferredSize(), 20));
-		
+
 		tb.add(Box.createGlue());
-		
+
 		infoButton = new JButton(infoAction);
 		infoButton.setVisible(false);
 		tb.add(infoButton);
@@ -193,7 +195,7 @@ public class ResPlanPanel extends JPanel {
 		tb.add(Box.createHorizontalStrut(3));
 
 		initJResPlan();
-		
+
 		ActionListener dateChooserListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -228,9 +230,9 @@ public class ResPlanPanel extends JPanel {
 				}
 			}
 		});
-		
+
 		scrollPane = new JScrollPane(resPlan);
-		
+
 		JButton corner = new JButton(switchOrientationAction);
 		corner.setBorderPainted(false);
 		scrollPane.setCorner(JScrollPane.LOWER_RIGHT_CORNER, corner);
@@ -239,27 +241,27 @@ public class ResPlanPanel extends JPanel {
 
 		add(tb, BorderLayout.NORTH);
 		add(scrollPane, BorderLayout.CENTER);
-		
+
 		resPlan.invalidate();
-		
+
 		setFocusable(true);
 		setFocusCycleRoot(true);
 		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("DELETE"), "delete");
 		//getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control F"), "find");
 		getActionMap().put("delete", removeAction);
-		//getActionMap().put("find", findAction);		
+		//getActionMap().put("find", findAction);
 		KeyBindingProvider.bindActionToComponent(KeyBindingProvider.ACTIVATE_SEARCH_PANEL_2, findAction, this);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public ListComboBoxModel<EntitySearchFilter> getSearchFilterModel() {
 		return (ListComboBoxModel<EntitySearchFilter>) searchFilterComboBox.getModel();
 	}
-	
+
 	public void refreshSearchFilter() {
 		this.refreshSearchFilter(controller.getSearchFilters());
 	}
-	
+
 	public void refreshSearchFilter(List<EntitySearchFilter> searchFilters) {
 		Object selectedItem = searchFilterComboBox.getSelectedItem();
 		entitySearchFilters = searchFilters;
@@ -268,11 +270,11 @@ public class ResPlanPanel extends JPanel {
 		if (selectedItem != null)
 			searchFilterComboBox.setSelectedItem(selectedItem);
 	}
-	
+
 	public CollectableSearchCondition getSearchCondition() {
 		return searchCondition;
 	}
-	
+
 	private void setSearchCondition(CollectableSearchCondition newSearchCondition) {
 		CollectableSearchCondition oldSearchCondition = this.searchCondition;
 		if (!ObjectUtils.equals(oldSearchCondition, newSearchCondition)) {
@@ -288,7 +290,7 @@ public class ResPlanPanel extends JPanel {
 		}
 		return filter.getName();
 	}
-	
+
 	public void setSearchFilter(String name) {
 		for (EntitySearchFilter filter : entitySearchFilters) {
 			if ((name == null && filter.isDefaultFilter()) || name.equals(filter.getName())) {
@@ -307,12 +309,12 @@ public class ResPlanPanel extends JPanel {
 		searchFilterComboBox.setSelectedItem(customFilter);
 		// -> fires event -> setSearchCondition
 	}
-	
+
 	public GranularityType getTimeGranularity() {
 		ResPlanController.TimeGranularity granularity = timeGranularityModel.getSelectedItem();
 		return (granularity != null) ? granularity.getType() : null;
 	}
-	
+
 	public void setTimeGranularity(GranularityType granularity) {
 		for (int i = 0; i < timeGranularityModel.getSize(); i++) {
 			ResPlanController.TimeGranularity option = timeGranularityModel.getElementAt(i);
@@ -322,11 +324,11 @@ public class ResPlanPanel extends JPanel {
 			}
 		}
 	}
-	
+
 	public Interval<Date> getTimeHorizon() {
 		return timeHorizon;
 	}
-	
+
 	public void setTimeHorizon(Interval<Date> newTimeHorizon) {
 		Interval<Date> oldTimeHorizon = this.timeHorizon;
 		if (!ObjectUtils.equals(oldTimeHorizon, newTimeHorizon)) {
@@ -337,7 +339,7 @@ public class ResPlanPanel extends JPanel {
 			firePropertyChange(TIME_HORIZON_PROPERTY, oldTimeHorizon, newTimeHorizon);
 		}
 	}
-	
+
 	private void timeHorzionChanged() {
 		try {
 			Date startDate = startDateChooser.getDate();
@@ -348,14 +350,14 @@ public class ResPlanPanel extends JPanel {
 			return;
 		}
 	}
-	
+
 	public void setInfoMessages(List<String> messages, boolean show) {
 		this.infoMessages = messages == null || messages.isEmpty() ? null : messages;
 		infoButton.setVisible(infoMessages != null);
 		if (show)
 			showInfoMessages();
 	}
-	
+
 	private void showInfoMessages() {
 		if (infoMessages != null && infoButton.isVisible()) {
 			StringBuilder sb = new StringBuilder("<html>");
@@ -406,7 +408,7 @@ public class ResPlanPanel extends JPanel {
 				if (!selection.isEmpty()) {
 					popupMenu.add(detailsAction);
 				}
-				
+
 				return popupMenu;
 			}
 
@@ -445,7 +447,7 @@ public class ResPlanPanel extends JPanel {
 					JPopupMenu popupMenu = new JPopupMenu();
 					popupMenu.add(new AbstractAction(getText("nuclos.resplan.action.showDetails", null)) {
 						/**
-						 * 
+						 *
 						 */
 						private static final long serialVersionUID = 1L;
 
@@ -460,7 +462,7 @@ public class ResPlanPanel extends JPanel {
 			}
 		});
 		Date start = DateUtils.addDays(DateUtils.getPureDate(new Date()), -5);
-		Date end = DateUtils.addDays(start, 30);	
+		Date end = DateUtils.addDays(start, 30);
 		resPlan.setTimeHorizon(new Interval<Date>(start, end));
 	}
 
@@ -475,7 +477,7 @@ public class ResPlanPanel extends JPanel {
 	public void setBackgroundPainter(Painter<? super Area<Collectable, Date>> painter) {
 		resPlan.setTimeslotBackgroundPainter(painter);
 	}
-	
+
 	public void setCaptionComponent(Component c) {
 		scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, c);
 		resPlan.getResourceHeader().setCornerComponent(c);
@@ -483,7 +485,7 @@ public class ResPlanPanel extends JPanel {
 	}
 
 	private void runCustomSearch() {
-		// Set-up new custom filter with the current search condition 
+		// Set-up new custom filter with the current search condition
 		// (since the underlying search conditon does not change, no events are triggered)
 		setCustomSearchFilter(searchCondition);
 
@@ -493,7 +495,7 @@ public class ResPlanPanel extends JPanel {
 					Main.getMainFrame().getHomePane(), resPlanModel.getResourceEntity().getEntityName(), null);
 			ctl.getSearchPanel().btnSearch.setAction(new CommonAbstractAction(Icons.getInstance().getIconFind16(), CommonLocaleDelegate.getText("CollectController.30", "Suchen")) {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -519,15 +521,15 @@ public class ResPlanPanel extends JPanel {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public Rectangle getViewRect() {
 		return scrollPane.getViewport().getViewRect();
 	}
-	
+
 	public void setViewRect(Rectangle rect) {
 		scrollPane.getViewport().setViewPosition(rect.getLocation());
 	}
-	
+
 	public void storeViewPreferences(Preferences prefs, RestorePreferences rp) throws PreferencesException {
 		preserveCellExtent(userResourceCellExtent, resPlan.getResourceHeader());
 //		preserveCellExtent(userTimelineCellExtent, resPlan.getTimelineHeader());
@@ -547,7 +549,7 @@ public class ResPlanPanel extends JPanel {
 			}
 			if (rp != null) {
 				rp.resourceCellExtent.put("resourceCellExtent" + vh, orientation.extentFrom(userResourceCellExtent));
-				
+
 				//rp.timelineCellExtent.put("timelineCellExtent" + vh, orientation.extentFrom(userTimelineCellExtent));
 				for (TimeGranularity tg : this.getTimeGranularities()) {
 					rp.timelineCellExtent.put(tg.getType().getValue()+"_timelineCellExtent" + "H", tg.getCellExtent(Orientation.HORIZONTAL));
@@ -556,7 +558,7 @@ public class ResPlanPanel extends JPanel {
 			}
 		}
 	}
-	
+
 	public void restoreViewPreferences(Preferences prefs, RestorePreferences rp) throws PreferencesException {
 		if (prefs != null) {
 			int orientation = prefs.getInt("orientation", -1);
@@ -567,16 +569,16 @@ public class ResPlanPanel extends JPanel {
 			setCellExtent(resPlan.getResourceHeader(), userResourceCellExtent);
 //			setCellExtent(resPlan.getTimelineHeader(), userTimelineCellExtent);
 		}
-		
+
 		if (rp != null) {
-			userResourceCellExtent = new Dimension(LangUtils.defaultIfNull(rp.resourceCellExtent.get("resourceCellExtentH"), -1), 
+			userResourceCellExtent = new Dimension(LangUtils.defaultIfNull(rp.resourceCellExtent.get("resourceCellExtentH"), -1),
 				LangUtils.defaultIfNull(rp.resourceCellExtent.get("resourceCellExtentV"), -1));
-//			userTimelineCellExtent = new Dimension(LangUtils.defaultIfNull(rp.timelineCellExtent.get("timelineCellExtentH"), -1), 
+//			userTimelineCellExtent = new Dimension(LangUtils.defaultIfNull(rp.timelineCellExtent.get("timelineCellExtentH"), -1),
 //				LangUtils.defaultIfNull(rp.timelineCellExtent.get("timelineCellExtentV"), -1));
 			if (rp.orientation != -1)
 				resPlan.setOrientation(Orientation.fromSwingConstant(rp.orientation));
 			setCellExtent(resPlan.getResourceHeader(), userResourceCellExtent);
-			
+
 			//setCellExtent(resPlan.getTimelineHeader(), userTimelineCellExtent);
 			for (TimeGranularity tg : this.getTimeGranularities()) {
 				tg.setCellExtent(Orientation.HORIZONTAL, rp.timelineCellExtent.get(tg.getType().getValue()+"_timelineCellExtent" + "H"));
@@ -587,15 +589,15 @@ public class ResPlanPanel extends JPanel {
 			}
 		}
 	}
-	
+
 	private static void preserveCellExtent(Dimension dim, JHeaderGrid<?> header) {
 		header.getOrientation().updateExtent(dim, header.getCellExtent());
 	}
-	
+
 	private static void setCellExtent(JHeaderGrid<?> header, Dimension dim) {
 		header.setCellExtent(header.getOrientation().extentFrom(dim));
 	}
-	
+
 	private static void setCellExtent(JHeaderGrid<?> header, int extent) {
 		header.setCellExtent(extent);
 	}
@@ -616,10 +618,10 @@ public class ResPlanPanel extends JPanel {
 			}
 		};
 	}
-	
+
 	private Action switchOrientationAction = new AbstractAction(getText("nuclos.resplan.action.switchOrientation", null), Icons.getInstance().getIconRelate()) {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -632,7 +634,7 @@ public class ResPlanPanel extends JPanel {
 			resPlan.setOrientation(orientation.opposite());
 			setCellExtent(resPlan.getResourceHeader(), userResourceCellExtent);
 //			setCellExtent(resPlan.getTimelineHeader(), userTimelineCellExtent);
-			if (timeGranularityModel.getSelectedItem() != null && 
+			if (timeGranularityModel.getSelectedItem() != null &&
 				timeGranularityModel.getSelectedItem().getCellExtent(resPlan.getOrientation()) > 0) {
 				setCellExtent(resPlan.getTimelineHeader(), timeGranularityModel.getSelectedItem().getCellExtent(resPlan.getOrientation()));
 			}
@@ -640,10 +642,10 @@ public class ResPlanPanel extends JPanel {
 			SwingUtilities.invokeLater(runnable);
 		}
 	};
-	
+
 	private Action removeAction = new AbstractAction(getText("nuclos.resplan.action.remove", null)) {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -671,10 +673,10 @@ public class ResPlanPanel extends JPanel {
 			}
 		}
 	};
-	
+
 	private Action detailsAction = new AbstractAction(getText("nuclos.resplan.action.showDetails", null)) {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -686,10 +688,10 @@ public class ResPlanPanel extends JPanel {
 			}
 		}
 	};
-	
+
 	private Action infoAction = new AbstractAction(null, Icons.getInstance().getIconAbout16()) {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -697,23 +699,23 @@ public class ResPlanPanel extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			showInfoMessages();
 		}
-	}; 
-	
+	};
+
 	private Action findAction = new FindAction();
-	
+
 	class FindAction extends AbstractAction implements AncestorListener {
-		
+
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		private final JXFindPanel findPanel;
-		
+
 		public FindAction() {
 			super("find");
 			findPanel = SearchFactory.getInstance().getSharedFindPanel();
 		}
-		
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (!Arrays.asList(findPanel.getAncestorListeners()).contains(this)) {
@@ -738,18 +740,18 @@ public class ResPlanPanel extends JPanel {
 		public void ancestorMoved(AncestorEvent event) {
 		}
 	}
-	
+
 	class RemoveAction extends AbstractAction {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
 		public RemoveAction() {
 			super(getText("nuclos.resplan.action.remove", null));
 		}
-		
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			ResPlanModel<Collectable, Date, Collectable> model = resPlan.getModel();
@@ -774,16 +776,16 @@ public class ResPlanPanel extends JPanel {
 			}
 		}
 	}
-	
+
 	class AddAction extends AbstractAction {
-		
+
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		Collectable resource;
 		Interval<Date> interval;
-		
+
 		public AddAction(Collectable resource, Interval<Date> interval) {
 			super(getText("nuclos.resplan.action.add", null));
 			setEnabled(resPlanModel.isCreateAllowed());
@@ -810,11 +812,11 @@ public class ResPlanPanel extends JPanel {
 			});
 		}
 	}
-	
+
 	private void runDetailsCollectable(final String entityName, final Collectable clct) {
 		if (clct == null)
 			return;
-		
+
 		UIUtils.runCommand(Main.getMainFrame(), new CommonRunnable() {
 			@Override
 			@SuppressWarnings("rawtypes")
@@ -826,15 +828,15 @@ public class ResPlanPanel extends JPanel {
 			}
 		});
 	}
-	
+
 	private final class CollectControllerEventHandler implements CollectableEventListener {
-		
+
 		private final NuclosCollectController<?> collectController;
-		
+
 		public CollectControllerEventHandler(NuclosCollectController<?> clctCntrl) {
 			this.collectController = clctCntrl;
 		}
-		
+
 		@Override
 		public void handleCollectableEvent(Collectable collectable, MessageType messageType) {
 			switch (messageType) {
@@ -864,26 +866,26 @@ public class ResPlanPanel extends JPanel {
 	public static class CustomSearchFilter extends EntitySearchFilter {
 
 		static int ID_COUNTER = -3;
-		
+
 		private final int id;
 		private boolean initialized;
-		
+
 		public CustomSearchFilter() {
 			setName(getText("nuclos.resplan.action.customSearch", null));
 			id = ID_COUNTER--;
 		}
-		
+
 		public CustomSearchFilter(CollectableSearchCondition cond) {
 			this();
 			setSearchCondition(cond);
 		}
-		
+
 		@Override
 		public void setSearchCondition(CollectableSearchCondition searchcond) {
 			super.setSearchCondition(searchcond);
 			this.initialized = searchcond != null;
 		}
-		
+
 		public boolean isInitialized() {
 			return initialized;
 		}
@@ -893,7 +895,7 @@ public class ResPlanPanel extends JPanel {
 			return id;
 		}
 	}
-	
+
 	public List<TimeGranularity> getTimeGranularities() {
 		List<TimeGranularity> result = new ArrayList<TimeGranularity>();
 		for (int i = 0; i < timeGranularityModel.getSize(); i++) {

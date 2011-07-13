@@ -60023,5 +60023,51 @@
     "resourceID": "nuclos.resplan.cw.label",
     "locale": "de",
     "text": "KW"
+  },
+  {
+    "resourceID": "StatePropertiesPanel.tab.translations",
+    "locale": "i-default",
+    "text": "Translations"
+  },
+  {
+    "resourceID": "StatePropertiesPanel.tab.translations",
+    "locale": "en",
+    "text": "Translations"
+  },
+  {
+    "resourceID": "StatePropertiesPanel.tab.translations",
+    "locale": "de",
+    "text": "Übersetzungen"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.labelres.label",
+    "locale": "i-default",
+    "text": "Resource-id for label"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.labelres.label",
+    "locale": "en",
+    "text": "Resource-id for label"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.labelres.label",
+    "locale": "de",
+    "text": "Ressourcen-ID für Label"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.descriptionres.label",
+    "locale": "i-default",
+    "text": "Resource-id for tooltip"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.descriptionres.label",
+    "locale": "en",
+    "text": "Resource-id for tooltip"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.descriptionres.label",
+    "locale": "de",
+    "text": "Ressourcen-ID für Tooltip"
   }
 ]
+

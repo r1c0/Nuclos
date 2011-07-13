@@ -48,6 +48,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -109,6 +110,7 @@ import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -157,7 +159,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 	/**
 	 * Don't make this public!
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -167,10 +169,10 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		this(parent, NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName));
 		this.sEntity = sEntityName;
 	}
-	
+
 	/**
 	 * Don't make this public!
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -185,7 +187,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		this(parent, NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName), rc);
 		this.sEntity = sEntityName;
 	}
-	
+
 	protected NuclosCollectController(JComponent parent, CollectableEntity clcte, ResultController<Clct> rc) {
 		super(parent, clcte, rc);
 		this.sEntity = clcte.getName();
@@ -240,7 +242,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 		final Action actSelectSearchTab = new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -257,7 +259,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		//TODO This is a workaround. The detailpanel should keep the focus
 		final Action actGrabFocus = new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -333,8 +335,8 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		pnlDetails.getActionMap().put(keybinding.getKey(), this.getRefreshCurrentCollectableAction());
 		getResultPanel().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(keybinding.getKeystroke(), keybinding.getKey());
 		getResultPanel().getActionMap().put(keybinding.getKey(), getResultPanel().btnRefresh.getAction());
-		
-		
+
+
 		// the new action
 		KeyBindingProvider.bindActionToComponent(KeyBindingProvider.NEW, this.getNewAction(), pnlDetails);
 
@@ -371,7 +373,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 		Action actClose = new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -446,17 +448,17 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	public boolean isRestorableFromPreferences() {
 		return true;
 	}
-	
+
 	private static class RestorePreferences implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
-		
+
 		String entity;
 		Integer iCollectState;
 		Long objectId;
 		CollectableSearchCondition searchCondition;
 		Map<String, String> inheritControllerPreferences = new HashMap<String, String>(1);
 	}
-	
+
 	private static String toXML(RestorePreferences rp) {
 		XStream xstream = new XStream(new DomDriver());
 		return xstream.toXML(rp);
@@ -466,17 +468,17 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		XStream xstream = new XStream(new DomDriver());
 		return (RestorePreferences) xstream.fromXML(xml);
 	}
-	
+
 	protected void storeInstanceStateToPreferences(Map<String, String> inheritControllerPreferences) {}
-	
+
 	protected void restoreInstanceStateFromPreferences(Map<String, String> inheritControllerPreferences) {}
-	
+
 	/**
 	 *
 	 *
 	 */
 	public static class NuclosCollectTabStoreController implements ITabStoreController {
-		
+
 		private NuclosCollectController<?> ctl;
 
 		public NuclosCollectTabStoreController(NuclosCollectController<?> ctl) {
@@ -487,7 +489,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		@Override
 		public String getPreferencesXML() {
 			RestorePreferences rp = new RestorePreferences();
-			
+
 			rp.entity = ctl.getEntity();
 			try {
 				if (ctl.getCollectStateModel().getOuterState() == CollectState.OUTERSTATE_DETAILS) {
@@ -498,9 +500,9 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			} catch(Exception e) {
 				log.warn("Preferences not completely stored.", e);
 			}
-			
+
 			ctl.storeInstanceStateToPreferences(rp.inheritControllerPreferences);
-			
+
 			return toXML(rp);
 		}
 
@@ -508,9 +510,9 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		public Class<?> getTabRestoreControllerClass() {
 			return NuclosCollectTabRestoreController.class;
 		}
-		
+
 	}
-	
+
 	/**
 	 *
 	 *
@@ -520,16 +522,16 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		@Override
 		public void restoreFromPreferences(String preferencesXML, MainFrameTab tab) throws Exception {
 			RestorePreferences rp = fromXML(preferencesXML);
-			
+
 			NuclosCollectController<?> ctl = createFromPreferences(rp, tab);
 			MainController.initMainFrameTab(ctl, tab);
 			// Main.getMainController().addMainFrameTab would be called from listener inside of initMainFrameTab, but only when tab added.
 			// During restore the tabs are already added, so we need to do this manually.
 			Main.getMainController().addMainFrameTab(tab, ctl);
-			
+
 			ctl.restoreInstanceStateFromPreferences(rp.inheritControllerPreferences);
 		}
-		
+
 	}
 
 	/**
@@ -543,7 +545,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		if (sEntity == null) {
 			throw new PreferencesException(CommonLocaleDelegate.getMessage("NuclosCollectController.6","Entit\u00e4t {0} fehlt in den Benutzereinstellungen.", sEntity));
 		}
-		
+
 		boolean allowed;
 		allowed = SecurityCache.getInstance().isReadAllowedForModule(sEntity, null) || SecurityCache.getInstance().isReadAllowedForMasterData(sEntity);
 
@@ -555,7 +557,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			final NuclosCollectController<?> result = NuclosCollectControllerFactory.getInstance().newCollectController(MainFrame.getPredefinedEntityOpenLocation(sEntity), sEntity, null);
 
 			final int iCollectState = result.restoreStateFromPreferences(prefs);
-			
+
 			UIUtils.runCommandLater(MainFrame.getPredefinedEntityOpenLocation(sEntity), new CommonRunnable() {
 				// This must be done later as reloading the layout in restoreStateFromPreferences is done later also:
 				@Override
@@ -589,9 +591,9 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			throw new PreferencesException(ex.getMessage(),ex);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param rp
 	 * @param tabIfAny
 	 * @return
@@ -606,9 +608,9 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		}
 
 		final NuclosCollectController<?> result = NuclosCollectControllerFactory.getInstance().newCollectController(Main.getMainFrame().getHomePane(), rp.entity, tabIfAny);
-		
+
 		final int cs = result.restoreStateFromPreferences(rp.iCollectState, rp.searchCondition);
-		
+
 		UIUtils.runCommandLater(tabIfAny != null? tabIfAny : Main.getMainFrame().getHomePane(), new CommonRunnable() {
 			// This must be done later as reloading the layout in restoreStateFromPreferences is done later also:
 			@Override
@@ -636,13 +638,13 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 		return result;
 	}
-	
+
 	/**
 	 * restores the state of this <code>CollectController</code> from the preferences.
 	 * @param iCollectState
 	 * @param cond
 	 * @return
-	 * @throws CommonBusinessException 
+	 * @throws CommonBusinessException
 	 */
 	protected int restoreStateFromPreferences(Integer iCollectState, CollectableSearchCondition cond) throws CommonBusinessException {
 		if (this.isSearchPanelAvailable()) {
@@ -677,13 +679,13 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 	/**
 	 * @param prefs
-	 * @throws CollectableFieldFormatException 
+	 * @throws CollectableFieldFormatException
 	 * @throws PreferencesException
 	 * @precondition this.isSearchPanelVisible()
 	 */
 	protected void writeSearchCriteriaToPreferences(RestorePreferences rp) throws CommonBusinessException {
 		// write current search criteria (which may differ from the current search filter's criteria):
-		
+
 		// We don't call makeConsistent (see below), but we want to get the last input of a table cell editor, if any:
 		this.stopEditingInSearch();
 
@@ -692,11 +694,11 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		final CollectableSearchCondition cond = this.getCollectableSearchConditionFromSearchPanel(false);
 		rp.searchCondition = cond;
 		log.debug("Wrote searchcondition to prefs: " + LangUtils.toString(cond));
-	
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param cond
 	 * @throws CommonBusinessException
 	 * @precondition this.isSearchPanelVisible()
@@ -735,13 +737,13 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	/**
 	 * writes the state of this <code>CollectController</code> to the preferences.
 	 * @param prefs
-	 * @throws CommonBusinessException 
+	 * @throws CommonBusinessException
 	 * @throws PreferencesException
 	 */
 	protected void writeStateToPreferences(RestorePreferences rp) throws CommonBusinessException {
 		// write collect state:
 		rp.iCollectState = this.getCollectStateModel().getOuterState();
-		
+
 		if (this.isSearchPanelAvailable()) {
 			this.writeSearchCriteriaToPreferences(rp);
 		}
@@ -949,7 +951,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 						Icons.getInstance().getIconSave16(),
 						CommonLocaleDelegate.getMessage("NuclosCollectController.5","Eingestelltes Suchkriterium als Filter speichern")) {
 			/**
-							 * 
+							 *
 							 */
 							private static final long serialVersionUID = 1L;
 
@@ -964,7 +966,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 						Icons.getInstance().getIconDelete16(),
 						CommonLocaleDelegate.getMessage("NuclosCollectController.2","Ausgew\u00e4hlten Filter l\u00f6schen")) {
 			/**
-							 * 
+							 *
 							 */
 							private static final long serialVersionUID = 1L;
 
@@ -978,7 +980,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 		CenteringPanel cpSearchFilter = new CenteringPanel(getSearchPanel().cmbbxSearchFilter) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -1016,9 +1018,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 		// set tool tips dynamically:
 		getSearchPanel().cmbbxSearchFilter.setRenderer(new DefaultListCellRenderer() {
-			/**
-			 * 
-			 */
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -1029,14 +1029,24 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 				String sToolTip = null;
 				if (oValue != null) {
 					final SearchFilter filter = (SearchFilter) oValue;
-					sToolTip = filter.getDescription();
+
+					if (result instanceof JLabel && !StringUtils.isNullOrEmpty(filter.getLabelResourceId())) {
+						((JLabel) result).setText(CommonLocaleDelegate.getTextFallback(filter.getLabelResourceId(), filter.getName()));
+					}
+
+					if (!StringUtils.isNullOrEmpty(filter.getDescriptionResourceId())) {
+						sToolTip = CommonLocaleDelegate.getTextFallback(filter.getDescriptionResourceId(), filter.getDescriptionResourceId());
+					}
+					else {
+						sToolTip = filter.getDescription();
+					}
 
 					if (filter.getOwner() != null && !(filter.getOwner().equals(Main.getMainController().getUserName()))) {
-						sToolTip = sToolTip + "(" + filter.getOwner() + ")";
+						sToolTip = sToolTip + " (" + filter.getOwner() + ")";
 					}
-				}
-				result.setToolTipText(sToolTip);
 
+					result.setToolTipText(sToolTip);
+				}
 				return result;
 			}
 		});
@@ -1324,7 +1334,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	private static class MySelectObjectsPanel extends DefaultSelectObjectsPanel {
 
 		private static final long serialVersionUID = 1L;
-		
+
 		private final JCheckBox cbxSaveAfterRuleExecution = new JCheckBox();
 
 		MySelectObjectsPanel() {
@@ -1334,12 +1344,12 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			this.pnlMain.add(cbxSaveAfterRuleExecution, new GridBagConstraints(2, 2, 1, 1, 1.0, 1.0
 					, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		}
-		
+
 		JCheckBox getSaveAfterExec() {
 			return cbxSaveAfterRuleExecution;
 		}
 	}
-	
+
 	/**
 	 *  helper class for cmdExecuteRulesByUser
 	 */
@@ -1353,7 +1363,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			panel.btnUp.setVisible(true);
 			panel.btnDown.setVisible(true);
 		}
-		
+
 		MySelectObjectsPanel getMySelectObjectsPanel() {
 			return (MySelectObjectsPanel) getPanel();
 		}
@@ -1364,7 +1374,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	protected boolean isDetailsModeViewLoadingWithoutDependants() {
 		return false;
 	}
-	
+
 	/**
 	 * @return the user preferences node for this
 	 */
@@ -1374,19 +1384,19 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			Preferences prefs = this.getUserPreferencesRoot().node("collect").node("entity").node(this.getEntityName());
 			checkPreferences(prefs);
 			return prefs;
-			
+
 		}
 		catch (Exception e) {
 			// if any Exception return the original Preferences
 			return this.getUserPreferencesRoot().node("collect").node("entity").node(this.getEntityName());
-		} 
+		}
 	}
-	
+
 	private void checkPreferences(Preferences prefs) throws BackingStoreException, PreferencesException {
-		if(!Modules.getInstance().isModuleEntity(this.getEntityName())) {				
+		if(!Modules.getInstance().isModuleEntity(this.getEntityName())) {
 			List<String> lstSelectedEntityNames = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES);
 			List<String> lstSelectedFieldNames = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS);
-			
+
 			final List<CollectableEntityFieldWithEntity> result = new ArrayList<CollectableEntityFieldWithEntity>();
 			final CollectableEntityProvider clcteprovider = DefaultCollectableEntityProvider.getInstance();
 			for (int i = 0; i < lstSelectedFieldNames.size(); i++) {
@@ -1415,11 +1425,11 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS, CollectableUtils.getFieldNamesFromCollectableEntityFields(result));
 			final List<String> lstEntityNames = CollectionUtils.transform(result, new CollectableEntityFieldWithEntity.GetEntityName());
 			PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES, lstEntityNames);
-			
+
 			String[] strNodes = {CollectController.PREFS_NODE_SELECTEDFIELDWIDTHS,CollectController.PREFS_NODE_ORDERASCENDING,
 				CollectController.PREFS_NODE_ORDERBYSELECTEDFIELD};
-			
-			for(String sNode : strNodes) {				
+
+			for(String sNode : strNodes) {
 				for(CollectableEntityFieldWithEntity keyRemoved : lstRemovedKeys) {
 					Preferences prefsSelectedNode = prefs.node(sNode);
 					String sSize = prefsSelectedNode.get("size", "0");
@@ -1430,25 +1440,25 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 					}
 					List<String> lstValues = new ArrayList<String>();
 					String [] keys = prefsSelectedNode.keys();
-					for(String key : keys) {						
-						if(key.equals("size")) 
+					for(String key : keys) {
+						if(key.equals("size"))
 							continue;
 						lstValues.add(prefsSelectedNode.get(key, null));
-						prefsSelectedNode.remove(key);						
+						prefsSelectedNode.remove(key);
 					}
 					for(int i = 0; i < lstValues.size(); i++) {
 						prefsSelectedNode.put(String.valueOf(i), lstValues.get(i));
 					}
 				}
-			}				
+			}
 		}
 		else {
-			
+
 			Set<String> setFieldNames = GenericObjectMetaDataCache.getInstance().getAttributeNamesByModuleId(Modules.getInstance().getModuleIdByEntityName(this.getEntityName()), false);
-			
+
 			List<String> lstSelectedEntityNames = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES);
 			List<String> lstSelectedFieldNames = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS);
-			
+
 			final List<CollectableEntityFieldWithEntity> result = new ArrayList<CollectableEntityFieldWithEntity>();
 			final CollectableEntityProvider clcteprovider = DefaultCollectableEntityProvider.getInstance();
 			for (int i = 0; i < lstSelectedFieldNames.size(); i++) {
@@ -1462,7 +1472,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 				final boolean bFieldBelongsToParentEntity = clcteForField.getName().equals(sParentEntityName);
 				final boolean bFieldBelongsToSubEntity = !(bFieldBelongsToMainEntity || bFieldBelongsToParentEntity);
 				final CollectableEntityFieldWithEntityForExternal clctefwefe = new CollectableEntityFieldWithEntityForExternal(clcteForField, sFieldName, bFieldBelongsToSubEntity, bFieldBelongsToMainEntity);
-										
+
 				result.add(clctefwefe);
 			}
 			List<CollectableEntityFieldWithEntity> lstRemovedKeys = new ArrayList<CollectableEntityFieldWithEntity>();
@@ -1486,7 +1496,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			final List<String> lstEntityNames = CollectionUtils.transform(result, new CollectableEntityFieldWithEntity.GetEntityName());
 			PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS, lstEntityFields);
 			PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES, lstEntityNames);
-			
+
 			String[] strNodes = {CollectController.PREFS_NODE_SELECTEDFIELDWIDTHS, CollectController.PREFS_NODE_ORDERASCENDING,
 				CollectController.PREFS_NODE_ORDERBYSELECTEDFIELD, "fixedFields", "fixedFieldWidths"};
 			for(String sNode : strNodes) {
@@ -1500,11 +1510,11 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 					}
 					List<String> lstValues = new ArrayList<String>();
 					String [] keys = prefsSelectedNode.keys();
-					for(String key : keys) {						
-						if(key.equals("size")) 
+					for(String key : keys) {
+						if(key.equals("size"))
 							continue;
 						lstValues.add(prefsSelectedNode.get(key, null));
-						prefsSelectedNode.remove(key);						
+						prefsSelectedNode.remove(key);
 					}
 					for(int i = 0; i < lstValues.size(); i++) {
 						prefsSelectedNode.put(String.valueOf(i), lstValues.get(i));
@@ -1524,5 +1534,4 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	public ImageIcon getIcon() {
 		return Main.getMainFrame().getEntityIcon(getEntityName());
 	}
-	
 }	// class NuclosCollectController
