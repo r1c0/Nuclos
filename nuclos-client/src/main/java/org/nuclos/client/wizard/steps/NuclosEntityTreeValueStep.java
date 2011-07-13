@@ -26,7 +26,9 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -78,47 +80,47 @@ import org.pietschy.wizard.InvalidStateException;
  * @version 01.00.00
  */
 public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
-	
+
 	private static final Logger LOG = Logger.getLogger(NuclosEntityTreeValueStep.class);
 
 	private JScrollPane scrollAttribute;
 	private JList lAttribute;
-	
+
 	private JLabel lbValue;
-	private JButton btnAddToValueField;	
+	private JButton btnAddToValueField;
 	private JTextField tfValue;
-	
+
 	private JLabel lbTooltip;
 	private JTextField tfTooltip;
 	private JButton btnAddToTooltipField;
-	
+
 	private JLabel lbDirectory;
 	private JTextField tfDirectory;
 	private JButton btnDirectory;
-	
+
 	private JLabel lbReportName;
 	private JTextField tfReportName;
 	private JButton btnReportName;
-	
+
 	private JLabel lbMultiEditEquation;
 	private JTextField tfMultiEditEquation;
 	private JButton btnMultiEditEquation;
-	
+
 	private JScrollPane paneTreeView;
 	private JTable tblTreeView;
-	
+
 	private JLabel lbTreeViewSubform;
 	private List<String> subForms;
 	private EntityTreeViewTableModel tableModel;
-	
+
 	private JComboBox cbxSubformRefField;
-	
+
 	private JPanel pnlMoreOptions;
-	
+
 	private TreeValueTableCellEditor refNameCellEditor;
-	
-	public NuclosEntityTreeValueStep() {	
-		initComponents();		
+
+	public NuclosEntityTreeValueStep() {
+		initComponents();
 	}
 
 	public NuclosEntityTreeValueStep(String name, String summary) {
@@ -130,56 +132,56 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 		super(name, summary, icon);
 		initComponents();
 	}
-	
+
 	@Override
 	protected void initComponents() {
-		
+
 		subForms = new ArrayList<String>();
-		
+
 		double size [][] = {{TableLayout.PREFERRED, 50, TableLayout.FILL}, {20,20,5,20,20,5,20,20,5,20,20,5,20,20,7,150, TableLayout.FILL}};
-		
+
 		TableLayout layout = new TableLayout(size);
 		layout.setVGap(3);
 		layout.setHGap(5);
 		this.setLayout(layout);
-		
+
 		lAttribute = new JList();
 		lAttribute.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollAttribute = new JScrollPane();
 		scrollAttribute.setPreferredSize(new Dimension(150, 100));
-		scrollAttribute.getViewport().add(lAttribute);		
+		scrollAttribute.getViewport().add(lAttribute);
 		btnAddToValueField = new JButton(">>");
 		btnAddToTooltipField = new JButton(">>");
 		btnMultiEditEquation = new JButton(">>");
 		btnDirectory = new JButton(">>");
 		btnReportName = new JButton(">>");
 		lbValue = new JLabel(getMessage("wizard.step.entitytreevalue.1", "Anzeige Knotendarstellung & dynamischer Fenster-Titel *"));
-		tfValue = new JTextField();	
+		tfValue = new JTextField();
 		tfValue.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 		tfValue.setToolTipText(getMessage("wizard.step.entitytreevalue.tooltip.1", "Anzeige Knotendarstellung & dynamischer Fenster-Titel *"));
-			
+
 		lbTooltip = new JLabel(getMessage("wizard.step.entitytreevalue.2", "Bezeichnung des Knoten Tooltips"));
 		tfTooltip = new JTextField();
 		tfTooltip.setToolTipText(getMessage("wizard.step.entitytreevalue.tooltip.2", "Bezeichnung des Knoten Tooltips"));
 		tfTooltip.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		
+
 		lbDirectory = new JLabel(getMessage("wizard.step.entitytreevalue.4", "Verzeichnispfad"));
 		lbDirectory.setToolTipText(getMessage("wizard.step.entitytreevalue.tooltip.4", "Bezeichnung des Knoten Tooltips"));
 		tfDirectory = new JTextField();
-		
+
 		lbReportName = new JLabel(getMessage("wizard.step.entitytreevalue.5", "Report Dateiname"));
-		tfReportName = new JTextField();		
+		tfReportName = new JTextField();
 		tfReportName.setToolTipText(getMessage("wizard.step.entitytreevalue.tooltip.5", "Report Dateiname"));
-		
+
 		lbMultiEditEquation = new JLabel(getMessage("wizard.step.entitytreevalue.3", "Felder f\u00fcr Vergleich in der Sammelbearbeitung"));
 		tfMultiEditEquation = new JTextField();
 		tfMultiEditEquation.setToolTipText(getMessage("wizard.step.entitytreevalue.tooltip.3", "Felder f\u00fcr Vergleich in der Sammelbearbeitung"));
-		tfMultiEditEquation.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());	
-		
+		tfMultiEditEquation.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
+
 		lbTreeViewSubform = new JLabel("Baumdarstellung f\u00fcr Unterformulare");
 		cbxSubformRefField = new JComboBox();
 		refNameCellEditor = new TreeValueTableCellEditor(cbxSubformRefField);
-		
+
 		tableModel = new EntityTreeViewTableModel(refNameCellEditor);
 		tblTreeView = new JTable(tableModel);
 		tblTreeView.setDragEnabled(true);
@@ -187,12 +189,12 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 		tblTreeView.setTransferHandler(new TableRowTransferHandler(tblTreeView));
 		tblTreeView.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		paneTreeView = new JScrollPane(tblTreeView);
-		
-		TableColumn colSubform = tblTreeView.getColumnModel().getColumn(1);		
+
+		TableColumn colSubform = tblTreeView.getColumnModel().getColumn(1);
 		colSubform.setCellEditor(refNameCellEditor);
-		
+
 		btnAddToValueField.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				 Attribute attr = (Attribute)lAttribute.getSelectedValue();
@@ -206,9 +208,9 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 				 tfValue.requestFocus();
 			}
 		});
-		
+
 		btnDirectory.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				 Attribute attr = (Attribute)lAttribute.getSelectedValue();
@@ -222,9 +224,9 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 				 tfDirectory.requestFocus();
 			}
 		});
-		
+
 		btnReportName.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				 Attribute attr = (Attribute)lAttribute.getSelectedValue();
@@ -238,52 +240,52 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 				 tfReportName.requestFocus();
 			}
 		});
-		
+
 		tfValue.getDocument().addDocumentListener(new DocumentListener() {
-			
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
-			protected void doSomeWork(DocumentEvent e) {				
+
+			protected void doSomeWork(DocumentEvent e) {
 				try {
-					NuclosEntityTreeValueStep.this.model.setNodeLabel(e.getDocument().getText(0, e.getDocument().getLength()));	
+					NuclosEntityTreeValueStep.this.model.setNodeLabel(e.getDocument().getText(0, e.getDocument().getLength()));
 					NuclosEntityTreeValueStep.this.setComplete(e.getDocument().getLength() > 0);
 				} catch (BadLocationException ex) {
 					Errors.getInstance().showExceptionDialog(NuclosEntityTreeValueStep.this, ex);
 				}
 			}
 		});
-		
+
 		tfDirectory.getDocument().addDocumentListener(new DocumentListener() {
-			
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
-			protected void doSomeWork(DocumentEvent e) {				
+
+			protected void doSomeWork(DocumentEvent e) {
 				try {
 					NuclosEntityTreeValueStep.this.model.setDocumentPath(e.getDocument().getText(0, e.getDocument().getLength()));
 				} catch (BadLocationException ex) {
@@ -291,25 +293,25 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 				}
 			}
 		});
-		
+
 		tfReportName.getDocument().addDocumentListener(new DocumentListener() {
-			
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
-			protected void doSomeWork(DocumentEvent e) {				
+
+			protected void doSomeWork(DocumentEvent e) {
 				try {
 					NuclosEntityTreeValueStep.this.model.setReportFilename(e.getDocument().getText(0, e.getDocument().getLength()));
 				} catch (BadLocationException ex) {
@@ -318,9 +320,9 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 			}
 		});
 
-		
+
 		btnAddToTooltipField.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				 Attribute attr = (Attribute)lAttribute.getSelectedValue();
@@ -334,35 +336,35 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 				 tfTooltip.requestFocus();
 			}
 		});
-		
+
 		tfTooltip.getDocument().addDocumentListener(new DocumentListener() {
-			
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
-			protected void doSomeWork(DocumentEvent e) {				
+
+			protected void doSomeWork(DocumentEvent e) {
 				try {
-					NuclosEntityTreeValueStep.this.model.setNodeTooltip(e.getDocument().getText(0, e.getDocument().getLength()));					
+					NuclosEntityTreeValueStep.this.model.setNodeTooltip(e.getDocument().getText(0, e.getDocument().getLength()));
 				} catch (BadLocationException ex) {
 					Errors.getInstance().showExceptionDialog(NuclosEntityTreeValueStep.this, ex);
 				}
 			}
 		});
-		
+
 		btnMultiEditEquation.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				 Attribute attr = (Attribute)lAttribute.getSelectedValue();
@@ -374,49 +376,49 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 					 strText += "," + attr.getInternalName();
 				 }
 				 else {
-					 strText += attr.getInternalName(); 
-				 }				 
+					 strText += attr.getInternalName();
+				 }
 				 tfMultiEditEquation.setText(strText);
 				 tfMultiEditEquation.setCaretPosition(strText.length());
 				 tfMultiEditEquation.requestFocus();
 			}
 		});
-		
+
 		tfMultiEditEquation.getDocument().addDocumentListener(new DocumentListener() {
-			
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
-			protected void doSomeWork(DocumentEvent e) {				
+
+			protected void doSomeWork(DocumentEvent e) {
 				try {
-					NuclosEntityTreeValueStep.this.model.setMultiEditEquation(e.getDocument().getText(0, e.getDocument().getLength()));					
+					NuclosEntityTreeValueStep.this.model.setMultiEditEquation(e.getDocument().getText(0, e.getDocument().getLength()));
 				} catch (BadLocationException ex) {
 					Errors.getInstance().showExceptionDialog(NuclosEntityTreeValueStep.this, ex);
 				}
 			}
 		});
-		
+
 		double sizeMoreOptions [][] = {{50,5, TableLayout.FILL,5}, {20,20,5,20,20,5,20,20, TableLayout.FILL}};
-		
+
 		pnlMoreOptions = new JPanel();
-		
+
 		TableLayout tblLayout = new TableLayout(sizeMoreOptions);
-		
+
 		layout.setVGap(3);
 		layout.setHGap(5);
-		
+
 		pnlMoreOptions.setLayout(tblLayout);
 		pnlMoreOptions.add(lbDirectory, "0,0,2,0");
 		pnlMoreOptions.add(btnDirectory, "0,1");
@@ -427,28 +429,28 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 		pnlMoreOptions.add(lbMultiEditEquation, "0,6,2,6");
 		pnlMoreOptions.add(btnMultiEditEquation, "0,7");
 		pnlMoreOptions.add(tfMultiEditEquation, "2,7");
-		
+
 		MoreOptionPanel optionPanel = new MoreOptionPanel(pnlMoreOptions);
-		
+
 		this.add(scrollAttribute, "0,0,0,14");
 		this.add(lbValue, "1,0,2,0");
 		this.add(btnAddToValueField, "1,1");
 		this.add(tfValue, "2,1");
-		
+
 		this.add(lbTooltip, "1,3,2,3");
 		this.add(btnAddToTooltipField, "1,4");
 		this.add(tfTooltip, "2,4");
-		
+
 		this.add(optionPanel, "1,6, 2,14");
-		
+
 		this.add(lbTreeViewSubform, "0,14");
 		this.add(paneTreeView, "0,15,2,15");
-		
+
 	}
-	
+
 	@Override
 	public void prepare() {
-		super.prepare();		
+		super.prepare();
 		List<Attribute> lstAttribute = new ArrayList<Attribute>(model.getAttributeModel().getAttributes());
 
         try {
@@ -469,45 +471,45 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
         catch(CommonPermissionException e) {
         	throw new CommonFatalException(e);
         }
-        
+
         Collections.sort(lstAttribute, new Comparator<Attribute>() {
 
 			@Override
-            public int compare(Attribute o1,Attribute o2) {	            
+            public int compare(Attribute o1,Attribute o2) {
 	            return o1.getLabel().compareToIgnoreCase(o2.getLabel());
             }
-        	
+
         });
-				
+
 		lAttribute.setListData(lstAttribute.toArray());
-		
-		
+
+
 		if(this.model.isEditMode()) {
 			String sLabel = this.model.getNodeLabel();
 			sLabel = removeAttributesFromString(sLabel);
 			sLabel = changeAttributesInString(sLabel);
 			tfValue.setText(sLabel);
-			
+
 			sLabel = this.model.getNodeTooltip();
 			sLabel = removeAttributesFromString(sLabel);
 			sLabel = changeAttributesInString(sLabel);
 			tfTooltip.setText(sLabel);
-			
+
 			sLabel = this.model.getMultiEditEquation();
 			sLabel = removeAttributesFromMultiEditEquation(sLabel);
 			sLabel = changeAttributesInMultiEditEquation(sLabel);
 			tfMultiEditEquation.setText(sLabel);
-			
+
 			sLabel = this.model.getDocumentPath();
 			sLabel = removeAttributesFromString(sLabel);
-			sLabel = changeAttributesInString(sLabel);		
+			sLabel = changeAttributesInString(sLabel);
 			tfDirectory.setText(sLabel);
-			
+
 			sLabel = this.model.getReportFilename();
 			sLabel = removeAttributesFromString(sLabel);
-			sLabel = changeAttributesInString(sLabel);	
+			sLabel = changeAttributesInString(sLabel);
 			tfReportName.setText(sLabel);
-			
+
 			loadSubforms();
 			/*if(model.isStateModel())
 				loadSubforms();
@@ -520,12 +522,12 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 			paneTreeView.setVisible(false);
 			lbTreeViewSubform.setVisible(false);
 		}
-		
+
 		tfDirectory.setEnabled(model.isStateModel());
 		tfReportName.setEnabled(model.isStateModel());
 		btnDirectory.setEnabled(model.isStateModel());
 		btnReportName.setEnabled(model.isStateModel());
-		
+
 	}
 
 	private String removeAttributesFromString(String sNodeLabel) {
@@ -535,10 +537,10 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 		Pattern referencedEntityPattern = Pattern.compile ("[$][{][\\w\\[\\]]+[}]");
 	    Matcher referencedEntityMatcher = referencedEntityPattern.matcher (sField);
 	    StringBuffer sb = new StringBuffer();
-	    
+
 		while (referencedEntityMatcher.find()) {
 		  Object value = referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1);
-		  	  	
+
 		  String sName = value.toString();
 		  for(Attribute attr : this.model.getAttributeModel().getRemoveAttributes()) {
 			  if(attr.getInternalName().equals(sName)){
@@ -546,7 +548,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 				  break;
 			  }
 		  }
-		  
+
 		}
 
       // complete the transfer to the StringBuffer
@@ -554,28 +556,28 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
       sField = sb.toString();
       return sField;
 	}
-	
+
 	private String removeAttributesFromMultiEditEquation(String sNodeLabel) {
 		if(sNodeLabel == null)
 			return null;
 		String sField = sNodeLabel +",";
-		
+
 		Pattern referencedEntityPattern = Pattern.compile ("[\\w\\[\\]]+[,]");
 	    Matcher referencedEntityMatcher = referencedEntityPattern.matcher (sField);
 	    StringBuffer sb = new StringBuffer();
-	    
+
 		while (referencedEntityMatcher.find()) {
 		  String value = referencedEntityMatcher.group();
 		  if(value.endsWith(","))
 			  value = value.substring(0, value.length()-1);
-		  	  	
+
 		  String sName = value.toString();
 		  for(Attribute attr : this.model.getAttributeModel().getRemoveAttributes()) {
 			  if(attr.getInternalName().equals(sName)){
 				  referencedEntityMatcher.appendReplacement (sb, "");
 				  break;
 			  }
-		  }		  
+		  }
 		}
 
       // complete the transfer to the StringBuffer
@@ -586,11 +588,11 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
       else {
     	  sField = sb.toString();
       }
-        
+
       return sField;
 	}
 
-	
+
 	private String changeAttributesInMultiEditEquation(String sNodeLabel) {
 		if(sNodeLabel == null)
 			return null;
@@ -598,12 +600,12 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 		Pattern referencedEntityPattern = Pattern.compile ("[\\w\\[\\]]+[,]");
 	    Matcher referencedEntityMatcher = referencedEntityPattern.matcher (sField);
 	    StringBuffer sb = new StringBuffer();
-	    
+
 		while (referencedEntityMatcher.find()) {
 			 String value = referencedEntityMatcher.group();
 			  if(value.endsWith(","))
 				  value = value.substring(0, value.length()-1);
-		  	  	
+
 		  String sName = value.toString();
 		  for(Attribute attr : this.model.getAttributeModel().getAttributes()) {
 			  if(!attr.hasInternalNameChanged())
@@ -613,7 +615,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 				  break;
 			  }
 		  }
-		  
+
 		}
 
       // complete the transfer to the StringBuffer
@@ -622,7 +624,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
       return sField;
 	}
 
-	
+
 	private String changeAttributesInString(String sNodeLabel) {
 		if(sNodeLabel == null)
 			return null;
@@ -630,10 +632,10 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 		Pattern referencedEntityPattern = Pattern.compile ("[$][{][\\w\\[\\]]+[}]");
 	    Matcher referencedEntityMatcher = referencedEntityPattern.matcher (sField);
 	    StringBuffer sb = new StringBuffer();
-	    
+
 		while (referencedEntityMatcher.find()) {
 		  Object value = referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1);
-		  	  	
+
 		  String sName = value.toString();
 		  for(Attribute attr : this.model.getAttributeModel().getAttributes()) {
 			  if(!attr.hasInternalNameChanged())
@@ -644,7 +646,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 				  break;
 			  }
 		  }
-		  
+
 		}
 
       // complete the transfer to the StringBuffer
@@ -652,14 +654,14 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
       sField = sb.toString();
       return sField;
 	}
-	
+
 	private void loadSubforms() {
 		subForms = new ArrayList<String>();
 		Long id = MetaDataDelegate.getInstance().getEntityIdByName(model.getEntityName());
 		SortedSet<EntityTreeViewVO> lst = new TreeSet<EntityTreeViewVO>();
 		int row = 0;
 		refNameCellEditor.clear();
-		
+
 		// For all subforms in the entity layout...
 		for(String subform : GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(id.intValue())) {
 			subForms.add(subform);
@@ -675,15 +677,15 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 				// create a new tree view preferences table line if a (former) preference have not been found
 				lst.add(new EntityTreeViewVO(id, subform, getRefFieldTo(subform).iterator().next(), null, Boolean.FALSE, 0));
 			}
-			else { 
+			else {
 				lst.add(voTmp);
 			}
-			
+
 			row++;
-		}		
+		}
 		paneTreeView.setVisible(subForms.size() > 0);
-		lbTreeViewSubform.setVisible(subForms.size() > 0);		
-		
+		lbTreeViewSubform.setVisible(subForms.size() > 0);
+
 		// The sequence of lst could be another as the sequence of the for-loop.
 		// Hence, we must set the cell editors in its own loop.
 		for (EntityTreeViewVO vo: lst) {
@@ -700,10 +702,10 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 			tblTreeView.getCellEditor().stopCellEditing();
 		model.setTreeView(tableModel.getRows());
 	}
-	
+
 	private SortedSet<String> getRefFieldTo(String subformEntityName) {
 		final SortedSet<String> result = new TreeSet<String>();
-		final SortedSet<EntityFieldMetaDataVO> strange = new TreeSet<EntityFieldMetaDataVO>();
+		final Set<EntityFieldMetaDataVO> strange = new HashSet<EntityFieldMetaDataVO>();
 		for(EntityFieldMetaDataVO voField : MetaDataDelegate.getInstance().getAllEntityFieldsByEntity(subformEntityName).values()) {
 			final String fEntity = voField.getForeignEntity();
 			if(model.getEntityName().equals(fEntity) || NuclosEntity.GENERICOBJECT.getEntityName().equals(fEntity)) {
@@ -737,22 +739,22 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 		}
 		return result;
 	}
-	
-	private class TreeValueTableCellEditor extends DefaultCellEditor implements IReorderable {	
+
+	private class TreeValueTableCellEditor extends DefaultCellEditor implements IReorderable {
 
 		/**
 		 * CellEditor with ComboBox for the reference field in the subform entity.
 		 */
 		private List<DefaultCellEditor> refToBaseEntityEditor = new ArrayList<DefaultCellEditor>();
-		
+
 		public TreeValueTableCellEditor(JComboBox comboBox) {
 			super(comboBox);
 		}
-		
+
 		public void clear() {
 			refToBaseEntityEditor.clear();
 		}
-		
+
 		public void initCellEditors(String subformEntityName) {
 			// Treat the cells in field name column special:
 			JComboBox editBox = new JComboBox();
@@ -761,15 +763,15 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 			// editBox.addItem("");
 			for(String voField : getRefFieldTo(subformEntityName)) {
 				editBox.addItem(voField);
-			}			
+			}
 		}
-		
+
 		@Override
 		public Component getTableCellEditorComponent(JTable table,
 			Object value, boolean isSelected, int row, int column) {
 			if(column == 1)
 				return refToBaseEntityEditor.get(row).getComponent();
-			
+
 			return super.getTableCellEditorComponent(table, value, isSelected,
 				row, column);
 		}
@@ -778,7 +780,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 		public Object getCellEditorValue() {
 			final int row = tblTreeView.getSelectedRow();
 			// final int column = tblTreeView.getSelectedColumn();
-			
+
 			DefaultCellEditor celleditor = refToBaseEntityEditor.get(row);
 			JComboBox box = (JComboBox)celleditor.getComponent();
 			return box.getSelectedItem();
@@ -793,6 +795,6 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 		}
 
 	}
-		
+
 }
 
