@@ -21,6 +21,7 @@ import java.util.Collection;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Local;
 
+import org.nuclos.common.CommonMetaDataProvider;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -29,8 +30,12 @@ import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
+/**
+ * Local facade for accessing meta data information from the
+ * server side.
+ */
 @Local
-public interface MetaDataFacadeLocal {
+public interface MetaDataFacadeLocal extends CommonMetaDataProvider {
 
 	/**
 	 * method to delete an existing master data record
@@ -41,11 +46,11 @@ public interface MetaDataFacadeLocal {
 	 * @nucleus.permission checkDeleteAllowed(sEntityName)
 	 */
 	@RolesAllowed("Login")
-	public abstract void remove(String sEntityName, MasterDataVO mdvo,
+	void remove(String sEntityName, MasterDataVO mdvo,
 		boolean bRemoveDependants) throws NuclosBusinessRuleException,
 		CommonPermissionException, CommonStaleVersionException,
 		CommonRemoveException, CommonFinderException;
 
 	@RolesAllowed("Login")	
-	public Collection<EntityMetaDataVO> getAllEntities();
+	Collection<EntityMetaDataVO> getAllEntities();
 }

@@ -23,8 +23,15 @@ import java.util.Map;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common2.exception.CommonFatalException;
 
+/**
+ * An implementation of MetaDataProvider for defining a desired state of the DB meta data. 
+ * <p>
+ * You use this class to define desired <em>changes</em> to your DB (meta) data model.
+ * </p>
+ */
 public class StaticMetaDataProvider extends AbstractProvider implements MetaDataProvider {
 
 	public StaticMetaDataProvider(){
@@ -66,6 +73,11 @@ public class StaticMetaDataProvider extends AbstractProvider implements MetaData
 		return result;
 	}
 
+	@Override
+	public Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info) {
+		throw new UnsupportedOperationException();
+	}
+	
 	@Override
 	public EntityFieldMetaDataVO getEntityField(String entity, String field) {
 		final EntityFieldMetaDataVO result = getAllEntityFieldsByEntity(entity).get(field);

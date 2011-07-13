@@ -29,7 +29,7 @@ import javax.swing.JTable;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 
-import org.nuclos.client.data.pivot.PivotInfo;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
@@ -41,6 +41,8 @@ import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common2.exception.PreferencesException;
 
 /**
@@ -142,6 +144,8 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	private void getFieldsAvaibleInPivotSubform(SortedSet<CollectableEntityField> result, Set<String> stSubEntityLabels, String sSubEntityName) {
 		// remove the subform entries
 		// TODO: make sth sensible here!
+		final PivotInfo info = new PivotInfo("t_eo_warenart", "strshortname", "strquantityunit");
+		final Map<String, EntityFieldMetaDataVO> fields = MetaDataClientProvider.getInstance().getAllPivotEntityFields(info);
 	}
 	
 	/**

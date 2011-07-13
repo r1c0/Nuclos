@@ -34,10 +34,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
-import org.nuclos.client.ui.model.ChoiceList;
-import org.nuclos.client.ui.model.CommonDefaultListModel;
 import org.nuclos.client.ui.model.MutableListModel;
-import org.nuclos.client.ui.model.SortedListModel;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 

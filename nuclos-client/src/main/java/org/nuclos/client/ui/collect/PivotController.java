@@ -19,19 +19,23 @@ package org.nuclos.client.ui.collect;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
 import javax.swing.JCheckBox;
 
 import org.nuclos.client.common.MetaDataClientProvider;
-import org.nuclos.client.data.pivot.PivotInfo;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common2.IdUtils;
 
 public class PivotController extends SelectFixedColumnsController {
@@ -50,18 +54,26 @@ public class PivotController extends SelectFixedColumnsController {
 				final Set<String> subforms = GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(
 						IdUtils.unsafeToId(entityMd.getId()));
 				for (String subform: subforms) {
+					final Map<String, EntityFieldMetaDataVO> map = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(subform);
+					
 					resultController.putPivotInfo(new PivotInfo(subform, null, null));
 				}
 			}
-			/*
-			resultController.initializeFields(resultController.getEntity(), 
-					(CollectController) resultController.getCollectController(), resultController.getCollectController().getPreferences());
-			 */
 			final Comparator<CollectableEntityField> comp = (Comparator<CollectableEntityField>) 
 				resultController.getFields().getComparatorForAvaible();
 			final SortedSet<CollectableEntityField> available = 
 				resultController.getFieldsAvailableForResult(resultController.getEntity(), comp);
-			final List<CollectableEntityField> selected = resultController.getFields().getSelectedFields();
+			// TODO: check if the unmodifiable List is necessary here
+			final List<CollectableEntityField> selected = new ArrayList<CollectableEntityField>(
+					resultController.getFields().getSelectedFields());
+			
+			// remove field that are not available any more from selected fields
+			for(Iterator<CollectableEntityField> it = selected.iterator(); it.hasNext();) {
+				final CollectableEntityField ef = it.next();
+				if(!available.remove(ef)) {
+					it.remove();
+				}
+			}
 			
 			getModel().set(available, selected, comp);
 			/*

@@ -21,14 +21,26 @@ import java.util.Map;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.PivotInfo;
 
-public interface MetaDataProvider {
+/**
+ * Interface implemented by MetaDataProviders for accessing meta data information. 
+ */
+public interface MetaDataProvider extends CommonMetaDataProvider {
 
-	public Collection<EntityMetaDataVO> getAllEntities();
-	public EntityMetaDataVO getEntity(Long id);
-	public EntityMetaDataVO getEntity(String entity);
-	public EntityMetaDataVO getEntity(NuclosEntity entity);
-	public Map<String, EntityFieldMetaDataVO> getAllEntityFieldsByEntity(String entity);
-	public EntityFieldMetaDataVO getEntityField(String entity, String field);
-	public EntityFieldMetaDataVO getEntityField(String entity, Long fieldId);
+	Collection<EntityMetaDataVO> getAllEntities();
+	
+	EntityMetaDataVO getEntity(Long id);
+	
+	EntityMetaDataVO getEntity(String entity);
+	
+	EntityMetaDataVO getEntity(NuclosEntity entity);
+	
+	Map<String, EntityFieldMetaDataVO> getAllEntityFieldsByEntity(String entity);
+	
+    Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info);
+
+    EntityFieldMetaDataVO getEntityField(String entity, String field);
+	
+	EntityFieldMetaDataVO getEntityField(String entity, Long fieldId);
 }

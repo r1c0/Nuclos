@@ -32,17 +32,27 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.transport.GzipMap;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.jdbc.impl.DynamicMetaDataProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.dal.provider.NuclosDalProvider;
+import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.dblayer.query.DbFrom;
+import org.nuclos.server.dblayer.query.DbQuery;
+import org.nuclos.server.dblayer.query.DbSelection;
 import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.report.SchemaCache;
 
+/**
+ * An caching singleton for accessing the meta data information 
+ * on the server side.
+ */
 public class MetaDataServerProvider extends AbstractProvider implements MetaDataProvider{
 
 	//private final ClientNotifier clientnotifier = new ClientNotifier(JMSConstants.TOPICNAME_METADATACACHE);
@@ -138,7 +148,36 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		return result;
 	}
 
-
+	@Override
+	public Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info) {
+		Map<String, EntityFieldMetaDataVO> result = dataCache.getMapPivotMetaData().get(info);
+		if (result == null) {
+			// select distinct p.<keyfield> from <subform> p 
+			DbQuery<String> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(String.class);
+			DbFrom from = query.distinct(true).from(info.getSubform()).alias("p");
+			query.select(from.column(info.getKeyField(), String.class));
+			List<String> columns = DataBaseHelper.getDbAccess().executeQuery(query);
+			//
+			result = new HashMap<String, EntityFieldMetaDataVO>(columns.size());
+			for (String c: columns) {
+				final EntityObjectVO vo = new EntityObjectVO();
+				vo.initFields(columns.size(), 1);
+				vo.setEntity(info.getSubform());
+				// vo.setDependants(mpDependants);
+				
+				final EntityFieldMetaDataVO md = new EntityFieldMetaDataVO(vo);
+				md.setDynamic(true);
+				md.setDbColumn(c);
+				md.setField(c);
+				md.setNullable(Boolean.TRUE);
+				
+				result.put(c, md);
+			}
+			dataCache.getMapPivotMetaData().put(info, result);
+		}
+		return result;
+	}
+	
 	public Map<String, Map<String, EntityFieldMetaDataVO>> getAllEntityFieldsByEntitiesGz(Collection<String> entities) {
 		// We can simply iterate most inefficiently over the single get results,
 		// as these depend on caches themselves. All in all, the only thing
@@ -216,6 +255,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		private Map<String, EntityMetaDataVO> mapMetaDataByEntity = null;
 		private Map<Long, EntityMetaDataVO> mapMetaDataById = null;
 		private Map<String, Map<String, EntityFieldMetaDataVO>> mapFieldMetaData = null;
+		private ConcurrentHashMap<PivotInfo, Map<String, EntityFieldMetaDataVO>> mapPivotMetaData = new ConcurrentHashMap<PivotInfo, Map<String,EntityFieldMetaDataVO>>();
 
 		public Map<String, EntityMetaDataVO> getMapMetaDataByEntity() {
 			if (isRevalidating()) {
@@ -270,6 +310,14 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 			}
 		}
 
+		public Map<PivotInfo, Map<String, EntityFieldMetaDataVO>> getMapPivotMetaData() {
+			if (isRevalidating()) {
+				return getMapPivotMetaData();
+			} else {
+				return mapPivotMetaData;
+			}
+		}
+
 		private Map<String, Map<String, EntityFieldMetaDataVO>> buildMapFieldMetaData(Map<String, EntityMetaDataVO> mapMetaDataByEntity) {
 			Map<String, Map<String, EntityFieldMetaDataVO>> result = new HashMap<String, Map<String,EntityFieldMetaDataVO>>();
 
@@ -316,6 +364,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 			mapMetaDataByEntity = Collections.unmodifiableMap(buildMapMetaDataByEntity());
 			mapMetaDataById = Collections.unmodifiableMap(buildMapMetaDataById(mapMetaDataByEntity));
 			mapFieldMetaData = Collections.unmodifiableMap(buildMapFieldMetaData(mapMetaDataByEntity));
+			mapPivotMetaData.clear();
 			revalidating = false;
 		}
 

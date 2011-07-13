@@ -21,8 +21,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.CommonMetaDataProvider;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
 import org.nuclos.common.transport.vo.EntityMetaDataTO;
 import org.nuclos.common.valueobject.EntityRelationshipModelVO;
@@ -35,7 +37,16 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
-public class MetaDataDelegate {
+/**
+ * An singleton for remotely accessing the meta data information 
+ * from the client side.
+ * <p>
+ * This class will directly call to the server. You normally
+ * want to use {@link org.nuclos.client.common.MetaDataClientProvider}.
+ * </p>
+ */
+public class MetaDataDelegate implements CommonMetaDataProvider {
+	
 	private static MetaDataDelegate singleton;
 
 	public static final String ENTITYNAME_ENTITY = "entity";
@@ -214,6 +225,11 @@ public class MetaDataDelegate {
 		return getMetaDataFacade().getAllEntityFieldsByEntity(entity);
 	}
 
+	@Override
+	public Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info) {
+		return getMetaDataFacade().getAllPivotEntityFields(info);
+	}
+	
 	public Map<String, Map<String, EntityFieldMetaDataVO>> getAllEntityFieldsByEntitiesGz(List<String> entities) {
 		return getMetaDataFacade().getAllEntityFieldsByEntitiesGz(entities);
     }

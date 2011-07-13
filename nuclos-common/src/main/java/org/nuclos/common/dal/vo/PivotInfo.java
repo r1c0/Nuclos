@@ -14,7 +14,9 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.client.data.pivot;
+package org.nuclos.common.dal.vo;
+
+import java.io.Serializable;
 
 /**
  * For displaying pivot subforms as part of the result list of a entity, we
@@ -23,7 +25,7 @@ package org.nuclos.client.data.pivot;
  * @author Thomas Pasch
  * @since Nuclos 3.1.01
  */
-public class PivotInfo implements Comparable<PivotInfo> {
+public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 	
 	private final String subform;
 	

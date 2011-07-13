@@ -19,6 +19,7 @@ package org.nuclos.client.common;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -34,9 +35,18 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.util.DalTransformations;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.springframework.beans.factory.InitializingBean;
 
+/**
+ * An caching singleton for remotely accessing the meta data information 
+ * from the client side.
+ * <p>
+ * For accessing the remote (server) side, this implementation uses 
+ * {@link org.nuclos.client.masterdata.MetaDataDelegate}.
+ * </p>
+ */
 public class MetaDataClientProvider extends AbstractProvider implements MetaDataProvider, InitializingBean {
 
 	private final DataCache dataCache = new DataCache();
@@ -121,8 +131,17 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 		}
 		return result;
 	}
-
-
+	
+	// @Override
+    public Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info) {
+    	Map<String, EntityFieldMetaDataVO> result = dataCache.getMapPivotMetaData().get(info);
+    	if (result == null) {
+    		// load data lazy
+    		result = MetaDataDelegate.getInstance().getAllPivotEntityFields(info);
+    		dataCache.getMapPivotMetaData().put(info, result);
+    	}
+    	return result;
+	}
 
 	/**
 	 *
@@ -182,6 +201,7 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 		private Map<String, EntityMetaDataVO> mapMetaDataByEntity = null;
 		private Map<Long, EntityMetaDataVO> mapMetaDataById = null;
 		private Map<String, Map<String, EntityFieldMetaDataVO>> mapFieldMetaData = null;
+		private Map<PivotInfo, Map<String, EntityFieldMetaDataVO>> mapPivotMetaData = new ConcurrentHashMap<PivotInfo, Map<String,EntityFieldMetaDataVO>>();
 
 		public Map<String, EntityMetaDataVO> getMapMetaDataByEntity() {
 			if (isRevalidating()) {
@@ -207,6 +227,14 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 			}
 		}
 
+		public Map<PivotInfo, Map<String, EntityFieldMetaDataVO>> getMapPivotMetaData() {
+			if (isRevalidating()) {
+				return getMapPivotMetaData();
+			} else {
+				return mapPivotMetaData;
+			}
+		}
+
 		private Map<String, Map<String, EntityFieldMetaDataVO>> buildMapFieldMetaData(Collection<EntityMetaDataVO> allEntities) {
 			return MetaDataDelegate.getInstance().getAllEntityFieldsByEntitiesGz(
 				CollectionUtils.transform(allEntities, DalTransformations.getEntity()));
@@ -219,6 +247,7 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 			mapMetaDataByEntity = Collections.unmodifiableMap(CollectionUtils.generateLookupMap(allEntities, DalTransformations.getEntity()));
 			mapMetaDataById = Collections.unmodifiableMap(CollectionUtils.generateLookupMap(allEntities, DalTransformations.<EntityMetaDataVO>getId()));
 			mapFieldMetaData = Collections.unmodifiableMap(buildMapFieldMetaData(allEntities));
+			mapPivotMetaData.clear();
 			revalidating = false;
 		}
 

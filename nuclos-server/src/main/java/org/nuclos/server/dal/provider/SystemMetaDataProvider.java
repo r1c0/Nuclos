@@ -22,14 +22,20 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.autosync.SystemMasterDataMetaVO;
 import org.nuclos.server.autosync.XMLEntities;
 
+/**
+ * An implementation for accessing the system (i.e. JSON, like 'masterdata.json') 
+ * meta data information on the server side.
+ */
 @SuppressWarnings("deprecation")
 public class SystemMetaDataProvider implements MetaDataProvider {
 
@@ -84,6 +90,15 @@ public class SystemMetaDataProvider implements MetaDataProvider {
 	}
 
 	@Override
+	public Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info) {
+		final Map<String, EntityFieldMetaDataVO> fields = getAllEntityFieldsByEntity(info.getSubform());
+		final EntityFieldMetaDataVO key = fields.get(info.getKeyField());
+		final EntityFieldMetaDataVO value = fields.get(info.getValueField());
+		
+		throw new NotImplementedException();
+	}
+	
+	@Override
 	public EntityFieldMetaDataVO getEntityField(String entity, String field) {
 		SystemEntityFieldMetaDataVO result = getEntity(entity).getEntityFields().get(field);
 		if (result == null) {
@@ -104,4 +119,5 @@ public class SystemMetaDataProvider implements MetaDataProvider {
 	public EntityMetaDataVO getEntity(NuclosEntity entity) {
 		return getEntity(entity.getEntityName());
 	}
+
 }

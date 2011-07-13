@@ -24,6 +24,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Remote;
 
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.CommonMetaDataProvider;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
@@ -38,11 +39,15 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
+/**
+ * Remote facade for accessing meta data information from the
+ * client side.
+ */
 @Remote
-public interface MetaDataFacadeRemote {
+public interface MetaDataFacadeRemote extends CommonMetaDataProvider {
 	
 	@RolesAllowed("Login")
-	public abstract Object modifyEntityMetaData(EntityMetaDataVO metaVO, List<EntityFieldMetaDataTO> lstFields);
+	Object modifyEntityMetaData(EntityMetaDataVO metaVO, List<EntityFieldMetaDataTO> lstFields);
 
 	/**
 	 * method to delete an existing master data record
@@ -53,7 +58,7 @@ public interface MetaDataFacadeRemote {
 	 * @nucleus.permission checkDeleteAllowed(sEntityName)
 	 */
 	@RolesAllowed("Login")
-	public abstract void remove(String sEntityName, MasterDataVO mdvo,
+	void remove(String sEntityName, MasterDataVO mdvo,
 		boolean bRemoveDependants) throws NuclosBusinessRuleException,
 		CommonPermissionException, CommonStaleVersionException,
 		CommonRemoveException, CommonFinderException;

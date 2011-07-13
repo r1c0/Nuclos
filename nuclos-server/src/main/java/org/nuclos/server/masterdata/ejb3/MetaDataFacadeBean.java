@@ -59,6 +59,7 @@ import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
 import org.nuclos.common.transport.vo.EntityMetaDataTO;
 import org.nuclos.common.valueobject.EntityRelationshipModelVO;
@@ -119,7 +120,10 @@ import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
-* Facade bean for all meta data management functions.
+* Facade bean for all meta data management functions (server side).
+* <p>
+* Uses the MetaDataServerProvider as implementation.
+* </p>
 * <br>
 * <br>Created by Novabit Informationssysteme GmbH
 * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
@@ -162,12 +166,15 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	}
 	
 	@Override
+	public Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info) {
+		return MetaDataServerProvider.getInstance().getAllPivotEntityFields(info);
+	}
+	
+	@Override
     @RolesAllowed("Login")
 	public Map<String, Map<String, EntityFieldMetaDataVO>> getAllEntityFieldsByEntitiesGz(Collection<String> entities) {
 		return MetaDataServerProvider.getInstance().getAllEntityFieldsByEntitiesGz(entities);
 	}
-	
-	
 	
 	@Override
     @RolesAllowed("Login")

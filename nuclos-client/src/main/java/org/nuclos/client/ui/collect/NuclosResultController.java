@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -21,8 +22,10 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosResultPanel;
+import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.UIUtils.CommandHandler;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
@@ -32,8 +35,12 @@ import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
@@ -396,9 +403,20 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	public void cmdSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl) {
 		assert clctctl == getCollectController() && clctctl.getFields() == getFields() && clctctl.getResultController() == this;
 		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
-
 		final NuclosCollectController<Clct> nucleusctl = (NuclosCollectController<Clct>) clctctl;
-		final SelectFixedColumnsController ctl = new PivotController(clctctl.getFrame(), new PivotPanel(), 
+		
+		// retrieve sub form fields
+		final Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields = new HashMap<String, Map<String,EntityFieldMetaDataVO>>();
+		final String entityName = getEntity().getName();
+		final EntityMetaDataVO entityMd = MetaDataClientProvider.getInstance().getEntity(entityName);
+		final Set<String> subforms = GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(
+				IdUtils.unsafeToId(entityMd.getId()));
+		for (String subform: subforms) {
+			final Map<String, EntityFieldMetaDataVO> map = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(subform);
+			subFormFields.put(subform, map);
+		}
+		
+		final SelectFixedColumnsController ctl = new PivotController(clctctl.getFrame(), new PivotPanel(subFormFields), 
 				(GenericObjectResultController) nucleusctl.getResultController());
 		final SortedSet<CollectableEntityField> lstAvailable = fields.getAvailableFields();
 		final List<CollectableEntityField> lstSelected = fields.getSelectedFields();
