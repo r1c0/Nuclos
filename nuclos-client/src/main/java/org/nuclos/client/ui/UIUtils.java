@@ -62,6 +62,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
@@ -77,6 +78,7 @@ import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.CommonRunnableAdapter;
 import org.nuclos.common2.LangUtils;
@@ -463,6 +465,42 @@ public class UIUtils {
 				else {
 					result = findJComponent(jcompChild, sName);
 				}
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * finds a <code>JComponent</code> with the given name as direct or indirect successor of the given parent component.
+	 * Performs a depth first search.
+	 * @param parent
+	 * @param sName
+	 * @return the component if found; else null
+	 * @precondition parent != null
+	 */
+	public static JComponent findJComponentStartsWithName(JComponent parent, String sName) {
+		JComponent result = null;
+
+		for (Iterator<Component> iter = Arrays.asList(parent.getComponents()).iterator(); iter.hasNext() && result == null;)
+		{
+			final Component compChild = iter.next();
+			
+			if (JComponent.class.isAssignableFrom(compChild.getClass())) {
+				final JComponent jcompChild = (JComponent) compChild;
+				if(jcompChild instanceof LabeledComponent) {
+					LabeledComponent lc = (LabeledComponent)jcompChild;
+					if(!lc.getControlComponent().isVisible())
+						continue;
+				}
+				
+				if (jcompChild.getName() != null && jcompChild.getName().startsWith(sName)) {
+					result = jcompChild;
+					break;
+				}
+				else {
+					result = findJComponentStartsWithName(jcompChild, sName);
+				}
+				
 			}
 		}
 		return result;

@@ -83,4 +83,11 @@ public class NuclosCollectableStateControl extends DelegatingCollectableComponen
 		// only for special components
 	}
 
+	@Override
+	public void setNextFocusComponent(String sNextFocusComponent) {
+		// don't set here		
+	}
+	
+	
+
 }	// class NuclosCollectableStateControl

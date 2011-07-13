@@ -81,6 +81,11 @@ public abstract class LabeledComponent extends JPanel {
 	public JLabel getJLabel() {
 		return this.lab;
 	}
+	
+	@Override
+	public void requestFocus() {
+		this.getControlComponent().requestFocusInWindow();
+	}
 
 	protected final void addControl(JComponent comp) {
 		this.pnlControl.add(comp, BorderLayout.CENTER);

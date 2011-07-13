@@ -54,6 +54,7 @@ import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.EntityCollectController;
 import org.nuclos.client.common.MultiUpdateOfDependants;
 import org.nuclos.client.common.NuclosCollectableListOfValues;
+import org.nuclos.client.common.NuclosFocusTraversalPolicy;
 import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.common.SearchConditionSubFormController;
 import org.nuclos.client.common.SubFormController;
@@ -314,6 +315,11 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       initSubFormsLoader();
 
       setupDataTransfer();
+      
+      getDetailsPanel().getLayoutRoot().getRootComponent().setFocusCycleRoot(true);
+      getDetailsPanel().getLayoutRoot().getRootComponent().setFocusTraversalPolicyProvider(true);
+      getDetailsPanel().getLayoutRoot().getRootComponent().setFocusTraversalPolicy(new NuclosFocusTraversalPolicy(getDetailsPanel().getLayoutRoot().getRootComponent()));
+      
    }
 
    @Override

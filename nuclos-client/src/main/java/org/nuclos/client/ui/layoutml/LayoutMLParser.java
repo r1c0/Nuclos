@@ -1586,6 +1586,15 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 						clctcomp.setScalable(true);
 					}
 				}
+				
+				// next focus component
+				final String sNextFocusComponent = attributes.getValue(ATTRIBUTE_NEXTFOCUSCOMPONENT);
+				if(sNextFocusComponent != null) {					
+					clctcomp.setNextFocusComponent(sNextFocusComponent);		
+					clctcomp.getControlComponent().putClientProperty(ATTRIBUTE_NEXTFOCUSCOMPONENT, sNextFocusComponent);
+					clctcomp.getJComponent().putClientProperty(ATTRIBUTE_NEXTFOCUSCOMPONENT, sNextFocusComponent);
+					
+				}
 
 				// visible:
 				boolean bVisible = true;

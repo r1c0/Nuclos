@@ -190,6 +190,7 @@ mnemonic CDATA #IMPLIED
 opaque (%boolean;) #IMPLIED
 fill-control-horizontally (%boolean;) #IMPLIED
 resourceId CDATA #IMPLIED
+nextfocuscomponent CDATA #IMPLIED
 >
 
 <!ELEMENT options (option*)>

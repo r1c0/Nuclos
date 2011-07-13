@@ -16,16 +16,19 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect;
 
+import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -34,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.EventObject;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -52,11 +56,14 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.JViewport;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableColumnModelEvent;
@@ -64,6 +71,7 @@ import javax.swing.event.TableColumnModelListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -77,6 +85,7 @@ import org.apache.log4j.Logger;
 import org.jdesktop.jxlayer.JXLayer;
 import org.jdesktop.jxlayer.plaf.ext.LockableUI;
 import org.jdesktop.swingx.event.TableColumnModelExtListener;
+import org.nuclos.client.common.FocusActionListener;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SizeKnownListener;
@@ -246,6 +255,8 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	private final String         foreignKeyFieldToParent;
 
 	private final List<LookupListener>		lookupListener = new ArrayList<LookupListener>();
+	
+	protected List<FocusActionListener> lstFocusActionListener;
 	
 	/**
 	 * NUCLOSINT-63: To display the size of subform list in the corresponding tab.
@@ -675,6 +686,13 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 			for (ChangeListener changelistener : lstchangelistener) {
 				changelistener.stateChanged(ev);
 			}
+		}
+	}
+	
+	public void fireFocusGained() {		
+		if(getJTable().getModel().getRowCount() > 0) {			
+			getJTable().editCellAt(0, 0);				
+			getSubformTable().changeSelection(0, 0, false, false);			
 		}
 	}
 
@@ -1419,8 +1437,12 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		private TableCellRendererProvider cellrendererprovider;
 		private SubForm subform;
 		private boolean calculateRowHeight;
+		
+		private final KeyStroke tabKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0); 
 
 		private SubformRowHeader rowheader;
+		
+		private boolean newRowOnNext = false;
 
 		public SubFormTable() {
 			setCellSelectionEnabled(true);
@@ -1433,6 +1455,52 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 
 		public SubForm getSubForm() {
 			return subform;
+		}
+		
+
+		@Override
+		public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
+			super.changeSelection(rowIndex, columnIndex, toggle, extend);
+			
+			if(newRowOnNext) {
+				if(getRowCount() == 1) {
+					for(FocusActionListener fal : subform.getFocusActionLister()) {
+						fal.focusAction(new EventObject(this));
+						if (editCellAt(++rowIndex, columnIndex)) {
+							SwingUtilities.invokeLater(new Runnable() {
+								
+								@Override
+								public void run() {
+									Component editor = getEditorComponent();
+									editor.requestFocusInWindow();
+									
+								}
+							});
+							
+						}
+					}
+				}
+				newRowOnNext = false;
+			}
+			int colCount = getColumnCount();
+			if(columnIndex == colCount-1) {
+				newRowOnNext = true;			
+				
+			}
+			
+			if (editCellAt(rowIndex, columnIndex)) {
+				SwingUtilities.invokeLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						Component editor = getEditorComponent();
+						editor.requestFocusInWindow();
+						
+					}
+				});
+				
+			}
+			
 		}
 
 		@Override
@@ -1704,7 +1772,25 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
     public void addLookupListener(LookupListener lookupListener) {
 	    this.lookupListener.add(lookupListener);
     }
+    
+    public void addFocusActionListener(FocusActionListener fal) {
+    	if(lstFocusActionListener == null) {
+    		lstFocusActionListener = new ArrayList<FocusActionListener>();
+    	}
+    	lstFocusActionListener.add(fal);
+    }
 
+    public void removeFocusActionListener(FocusActionListener fal) {
+    	if(lstFocusActionListener == null) {
+    		lstFocusActionListener = new ArrayList<FocusActionListener>();
+    		return;
+    	}
+    	lstFocusActionListener.remove(fal);
+    }
+    
+    public List<FocusActionListener> getFocusActionLister() {
+    	return lstFocusActionListener;
+    }
 
 	/**
 	 * <code>TableModel</code> that can be used in a <code>SubForm</code>.

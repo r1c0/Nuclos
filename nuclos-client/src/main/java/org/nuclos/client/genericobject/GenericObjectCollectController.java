@@ -103,6 +103,7 @@ import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.MultiUpdateOfDependants;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.NuclosCollectableStateComboBox;
+import org.nuclos.client.common.NuclosFocusTraversalPolicy;
 import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.common.SearchConditionSubFormController;
 import org.nuclos.client.common.SubFormController;
@@ -4747,7 +4748,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				comp.getControlComponent().addFocusListener(collectableComponentSearchFocusListener);
 			}
 		}
-
+		
+		result.getRootComponent().setFocusCycleRoot(true);
+		result.getRootComponent().setFocusTraversalPolicyProvider(true);
+		result.getRootComponent().setFocusTraversalPolicy(new NuclosFocusTraversalPolicy(result.getRootComponent()));
+		
+		
 		customizeLayout(result, usagecriteria, collectstate);
 
 		return result;

@@ -16,12 +16,16 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.common;
 
+import java.awt.AWTEvent;
 import java.awt.Component;
+import java.awt.EventQueue;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.EventObject;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -30,7 +34,9 @@ import java.util.prefs.Preferences;
 
 import javax.swing.JComponent;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellEditor;
@@ -53,6 +59,7 @@ import org.nuclos.client.ui.collect.SubForm.SubFormTableModel;
 import org.nuclos.client.ui.collect.SubForm.ToolbarFunction;
 import org.nuclos.client.ui.collect.SubFormParameterProvider;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
+import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.table.TableCellEditorProvider;
@@ -87,7 +94,7 @@ import org.nuclos.common2.exception.PreferencesException;
  * @version 01.00.00
  */
 public abstract class SubFormController extends Controller
-		implements TableCellRendererProvider, TableCellEditorProvider, SubFormParameterProvider {
+		implements TableCellRendererProvider, TableCellEditorProvider, SubFormParameterProvider, FocusActionListener {
 
 	protected static final Logger log = Logger.getLogger(DetailsSubFormController.class);
 	
@@ -95,6 +102,9 @@ public abstract class SubFormController extends Controller
 //		NuclosEOField.CREATEDBY.getMetaData().getField(), NuclosEOField.CHANGEDBY.getMetaData().getField(), 
 //		NuclosEOField.CREATEDAT.getMetaData().getField()};
 
+	
+	private final KeyStroke tabKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0); 
+	
 	/**
 	 * this controller's subform
 	 */
@@ -173,6 +183,10 @@ public abstract class SubFormController extends Controller
 				listener.actionPerformed(new SizeKnownEvent(subform, null));
 			}
 		}
+		
+		
+		subform.addFocusActionListener(this);
+				
 	}
 
 	public void close() {
@@ -490,6 +504,42 @@ public abstract class SubFormController extends Controller
 	protected final boolean isEnabled() {
 		return this.getSubForm().isEnabled();
 	}
+	
+	public class FocusListSelectionListener implements ListSelectionListener {
+
+		private final JTable tbl;
+		private final KeyStroke tabKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0); 
+
+		public FocusListSelectionListener(JTable tbl) {
+			this.tbl = tbl;
+		}
+		
+		@Override
+		public void valueChanged(final ListSelectionEvent e) {
+			AWTEvent currentEvent = EventQueue.getCurrentEvent(); 
+	        if(currentEvent instanceof KeyEvent){ 
+	        	KeyEvent ke = (KeyEvent)currentEvent;
+	            if(!KeyStroke.getKeyStrokeForEvent(ke).equals(tabKeyStroke))
+	            	return;
+	            int rowIndex = tbl.getSelectedRow();
+	            int columnIndex = tbl.getSelectedColumn();
+	            if(rowIndex == 0 && columnIndex == 0 && e.getLastIndex() > 0) {	            	
+					SubFormController.this.cmdInsert();	
+					SwingUtilities.invokeLater(new Runnable() {
+						
+						@Override
+						public void run() {
+							tbl.editCellAt(e.getLastIndex()+1, 0);
+							tbl.getEditorComponent().requestFocusInWindow();
+						}
+					});
+					
+	            }
+	            // focus change with keyboard 
+	        } 
+		}
+		
+	}
 
 	protected class IsRemovableListSelectionListener implements ListSelectionListener {
 		private final JTable tbl;
@@ -524,6 +574,8 @@ public abstract class SubFormController extends Controller
 		this.listselectionlistener = new IsRemovableListSelectionListener(tbl);
 
 		tbl.getSelectionModel().addListSelectionListener(listselectionlistener);
+		
+		tbl.getSelectionModel().addListSelectionListener(new FocusListSelectionListener(tbl));
 	}
 
 	private void removeListSelectionListener(final JTable tbl) {
@@ -619,7 +671,7 @@ public abstract class SubFormController extends Controller
 			throw new NuclosFieldNotInModelException();
 		}
 		else if(result == null) {
-			throw new CommonFatalException(CommonLocaleDelegate.getMessage("SubFormController.2", "Das Feld ({0}) ist nicht in der Entität ({1}) vorhanden!", sParentComponentEntityName, this.getParentEntityName()));
+			throw new CommonFatalException(CommonLocaleDelegate.getMessage("SubFormController.2", "Das Feld ({0}) ist nicht in der Entitï¿½t ({1}) vorhanden!", sParentComponentEntityName, this.getParentEntityName()));
 		}
 		
 		return result;
@@ -659,5 +711,13 @@ public abstract class SubFormController extends Controller
 		this.getSubForm().setupStaticTableCellEditors(tbl, this.isSearchable(), this.getPrefs(), this.getSubFormTableModel(),
 				this.getCollectableFieldsProviderFactory(), this.getParentEntityName(), this.getCollectableEntity());
 	}
+	
+	@Override
+	public void focusAction(EventObject eObject) {
+		cmdInsert();
+	}
+
+
+	
 
 }	// class SubFormController

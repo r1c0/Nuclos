@@ -123,6 +123,8 @@ public abstract class AbstractCollectableComponent
 	private CollectableComponentModel clctcompmodel;
 	private final boolean bSearchable;
 	private boolean bViewLocked;
+	
+	private String sNextFocusComponent;
 
 	private ReferencingListener reflistener;
 
@@ -668,6 +670,14 @@ public abstract class AbstractCollectableComponent
 	public void setScalable(boolean bln) {
 		// only for special components
 	}
+	
+	/**
+	 * @param sNextFocusComponent
+	 */
+	@Override
+	public void setNextFocusComponent(String sNextFocusComponent) {
+		this.sNextFocusComponent = sNextFocusComponent;
+	}	
 
 	/**
 	 * @param bEnabled

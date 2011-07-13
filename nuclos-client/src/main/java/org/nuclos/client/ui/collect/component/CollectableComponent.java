@@ -180,6 +180,12 @@ public interface CollectableComponent {
 	 * @param bEnabled
 	 */
 	void setScalable(boolean bScalable);
+	
+	/**
+	 * sets the component for next tab key event
+	 * @param sNextFocusComponent
+	 */
+	void setNextFocusComponent(String sNextFocusComponent);
 
 	/**
 	 * enables this component by initial, that is makes it accessible (or not).

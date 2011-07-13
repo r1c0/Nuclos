@@ -71,6 +71,7 @@ public interface WYSIWYGComponent extends LayoutMLConstants, WYSIWYGEditorModes 
 	public static final String PROPERTY_ROWS = PROPERTY_LABELS.ROWS;
 	public static final String PROPERTY_COLUMNS =PROPERTY_LABELS.COLUMNS;
 	public static final String PROPERTY_TRANSLATIONS = PROPERTY_LABELS.TRANSLATIONS;
+	public static final String PROPERTY_NEXTFOCUSCOMPONENT = PROPERTY_LABELS.NEXTFOCUSCOMPONENT;
 	
 	public static Class<Integer> CONSTRAINT_CLASS = Integer.class;
 	public static String[] CONSTRAINT_NAMES = new String[] {CONSTRAINT_COL1, CONSTRAINT_COL2, CONSTRAINT_ROW1, CONSTRAINT_ROW2, CONSTRAINT_HALIGN, CONSTRAINT_VALIGN};

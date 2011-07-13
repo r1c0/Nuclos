@@ -199,6 +199,8 @@ public interface LayoutMLConstants {
 	public static final String ATTRIBUTE_LANG = "lang";
 	public static final String ATTRIBUTE_INTERNALNAME = "internalname";
 	public static final String ATTRIBUTE_COLUMNWIDTH = "width";
+	public static final String ATTRIBUTE_NEXTFOCUSCOMPONENT = "nextfocuscomponent";
+	
 
 	// constants for XML attribute values used in the LayoutML:
 	public static final String ATTRIBUTEVALUE_LOWERED = "lowered";

@@ -82,6 +82,7 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 	public static final String PROPERTY_FILL_CONTROL_HORIZONTALLY = PROPERTY_LABELS.FILL_HORIZONTALLY;
 	public static final String PROPERTY_COLLECTABLECOMPONENTPROPERTY = PROPERTY_LABELS.COLLECTABLECOMPONENTPROPERTY;
 	public static final String PROPERTY_OPTIONS = "options";
+	public static final String PROPERTY_NEXTFOCUSCOMPONENT = PROPERTY_LABELS.NEXTFOCUSCOMPONENT;
 	
 	protected ComponentProperties properties;
 	protected LayoutMLRules componentsRules = new LayoutMLRules();
@@ -112,6 +113,7 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 		propertyNames.add(PROPERTY_VALUELISTPROVIDER);
 		propertyNames.add(PROPERTY_DESCRIPTION);
 		propertyNames.add(PROPERTY_TRANSLATIONS);
+		propertyNames.add(PROPERTY_NEXTFOCUSCOMPONENT);
 		
 		propertiesToAttributes.put(PROPERTY_NAME, ATTRIBUTE_NAME);
 		propertiesToAttributes.put(PROPERTY_ENABLED, ATTRIBUTE_ENABLED);
@@ -124,6 +126,7 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 		propertiesToAttributes.put(PROPERTY_LABEL, ATTRIBUTE_LABEL);
 		propertiesToAttributes.put(PROPERTY_ROWS, ATTRIBUTE_ROWS);
 		propertiesToAttributes.put(PROPERTY_FILL_CONTROL_HORIZONTALLY, ATTRIBUTE_FILLCONTROLHORIZONTALLY);
+		propertiesToAttributes.put(PROPERTY_NEXTFOCUSCOMPONENT, ATTRIBUTE_NEXTFOCUSCOMPONENT);
 		
 		propertyClasses.put(PROPERTY_NAME, new PropertyClass(PROPERTY_NAME, String.class));
 		propertyClasses.put(PROPERTY_SHOWONLY, new PropertyClass(PROPERTY_SHOWONLY, String.class));
@@ -139,6 +142,7 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 		propertyClasses.put(PROPERTY_MNEMONIC, new PropertyClass(PROPERTY_MNEMONIC, String.class));
 		propertyClasses.put(PROPERTY_COLLECTABLECOMPONENTPROPERTY, new PropertyClass(PROPERTY_COLLECTABLECOMPONENTPROPERTY, WYSIYWYGProperty.class));
 		propertyClasses.put(PROPERTY_CONTROLTYPECLASS, new PropertyClass(PROPERTY_CONTROLTYPECLASS, String.class));
+		propertyClasses.put(PROPERTY_NEXTFOCUSCOMPONENT, new PropertyClass(PROPERTY_NEXTFOCUSCOMPONENT, String.class));
 		//NUCLEUSINT-269
 		propertyClasses.put(PROPERTY_CONTROLTYPE, new PropertyClass(PROPERTY_CONTROLTYPE, String.class));
 		propertyClasses.put(PROPERTY_LABEL, new PropertyClass(PROPERTY_LABEL, String.class));
@@ -175,13 +179,15 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 		propertyFilters.put(PROPERTY_FILL_CONTROL_HORIZONTALLY, new PropertyFilter(PROPERTY_FILL_CONTROL_HORIZONTALLY, STANDARD_AND_EXPERT_MODE));
 		propertyFilters.put(PROPERTY_VALUELISTPROVIDER, new PropertyFilter(PROPERTY_VALUELISTPROVIDER, EXPERT_MODE));
 		propertyFilters.put(PROPERTY_DESCRIPTION, new PropertyFilter(PROPERTY_DESCRIPTION, STANDARD_AND_EXPERT_MODE));
+		propertyFilters.put(PROPERTY_NEXTFOCUSCOMPONENT, new PropertyFilter(PROPERTY_NEXTFOCUSCOMPONENT, STANDARD_AND_EXPERT_MODE));
 	}
 	
 	private EventListenerList listenerList = new EventListenerList();
 	
 	public static final String[][] PROPERTY_VALUES_FROM_METAINFORMATION = new String[][] {
 		{PROPERTY_NAME, WYSIWYGMetaInformation.META_FIELD_NAMES},
-		{PROPERTY_SHOWONLY, WYSIWYGMetaInformation.META_SHOWONLY}
+		{PROPERTY_SHOWONLY, WYSIWYGMetaInformation.META_SHOWONLY},
+		{PROPERTY_NEXTFOCUSCOMPONENT, WYSIWYGMetaInformation.META_FIELD_NAMES} 
 	};
 	
 	/**
