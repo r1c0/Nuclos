@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.NavigableSet;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -50,6 +49,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.TableColumn;
 import javax.swing.text.BadLocationException;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.ui.Errors;
@@ -78,6 +78,8 @@ import org.pietschy.wizard.InvalidStateException;
  * @version 01.00.00
  */
 public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
+	
+	private static final Logger LOG = Logger.getLogger(NuclosEntityTreeValueStep.class);
 
 	private JScrollPane scrollAttribute;
 	private JList lAttribute;
@@ -654,7 +656,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 	private void loadSubforms() {
 		subForms = new ArrayList<String>();
 		Long id = MetaDataDelegate.getInstance().getEntityIdByName(model.getEntityName());
-		NavigableSet<EntityTreeViewVO> lst = new TreeSet<EntityTreeViewVO>();
+		SortedSet<EntityTreeViewVO> lst = new TreeSet<EntityTreeViewVO>();
 		int row = 0;
 		refNameCellEditor.clear();
 		
@@ -677,14 +679,17 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 				lst.add(voTmp);
 			}
 			
-			// Treat the cells in field name column special:
-			refNameCellEditor.initCellEditors(subform);
 			row++;
-		}
-		
+		}		
 		paneTreeView.setVisible(subForms.size() > 0);
 		lbTreeViewSubform.setVisible(subForms.size() > 0);		
 		
+		// The sequence of lst could be another as the sequence of the for-loop.
+		// Hence, we must set the cell editors in its own loop.
+		for (EntityTreeViewVO vo: lst) {
+			// Treat the cells in field name column special:
+			refNameCellEditor.initCellEditors(vo.getEntity());
+		}
 		tableModel.setRows(lst);
 	}
 
@@ -698,11 +703,37 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 	
 	private SortedSet<String> getRefFieldTo(String subformEntityName) {
 		final SortedSet<String> result = new TreeSet<String>();
+		final SortedSet<EntityFieldMetaDataVO> strange = new TreeSet<EntityFieldMetaDataVO>();
 		for(EntityFieldMetaDataVO voField : MetaDataDelegate.getInstance().getAllEntityFieldsByEntity(subformEntityName).values()) {
 			final String fEntity = voField.getForeignEntity();
 			if(model.getEntityName().equals(fEntity) || NuclosEntity.GENERICOBJECT.getEntityName().equals(fEntity)) {
 				result.add(voField.getField());
 			}
+			// TODO: sometimes we don't find the 'right' base entity reference with the if clause above,
+			// thus the result set is empty. See http://support.novabit.de/browse/NUCLOSINT-1192 for details.
+			// We log this case now, to get an (better) idea what is happening here.
+			else if(fEntity != null) {
+				strange.add(voField);
+			}
+		}
+		if (result.isEmpty()) {
+			LOG.warn("NuclosEntityTreeValueStep.getRefFieldTo: unable to find a ref to " + model.getEntityName() + ", using fallback...");
+			for (EntityFieldMetaDataVO md: strange) {
+				result.add(md.getField());
+			}
+		}
+		if (!strange.isEmpty()) {
+			final StringBuilder msg = new StringBuilder();
+			msg.append("NuclosEntityTreeValueStep.getRefFieldTo: fallback contains: [\n");
+			for (EntityFieldMetaDataVO md: strange) {
+				msg.append("\t(field: ").append(md.getField());
+				msg.append(", entity: ").append(md.getEntityIdAsString());
+				msg.append(", foreign entity:").append(md.getForeignEntity());
+				msg.append(", foreign field:").append(md.getForeignEntityField());
+				msg.append(")\n");
+			}
+			msg.append("]\n");
+			LOG.warn(msg.toString());
 		}
 		return result;
 	}
