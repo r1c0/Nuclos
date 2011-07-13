@@ -350,7 +350,7 @@ public class ResultController<Clct extends Collectable> {
 	 * @param preferences
 	 */
 	protected void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl, Preferences preferences) {
-		assert clctctl == this.clctctl && clctctl.getFields() == fields;
+		assert clctctl == this.clctctl && clctctl.getFields() == fields && clctctl.getResultController() == this;
 		assert this.clcte.equals(clcte);
 		final Comparator<CollectableEntityField> comp = getCollectableEntityFieldComparator();
 		fields.set(
@@ -372,7 +372,7 @@ public class ResultController<Clct extends Collectable> {
 	 */
 	public final void initializeFields(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl, final List<CollectableEntityField> lstSelectedNew) 
 	{		
-		assert clctctl == this.clctctl && clctctl.getFields() == fields;
+		assert clctctl == this.clctctl && clctctl.getFields() == fields && clctctl.getResultController() == this;
 		fields.setSelectedFields(lstSelectedNew);
 	}
 
@@ -384,7 +384,7 @@ public class ResultController<Clct extends Collectable> {
 	 */
 	@SuppressWarnings("unchecked")
 	private List<CollectableEntityField> getSelectedFieldsFromPreferences(CollectableEntity clcte, CollectController<Clct> clctctl) {
-		assert clctctl == this.clctctl && clctctl.getFields() == fields;
+		assert clctctl == this.clctctl && clctctl.getFields() == fields && clctctl.getResultController() == this;
 		assert this.clcte.equals(clcte);
 		final List<CollectableEntityField> result = (List<CollectableEntityField>) readSelectedFieldsFromPreferences(clcte);
 
@@ -768,7 +768,7 @@ public class ResultController<Clct extends Collectable> {
 	 */
 	@SuppressWarnings("unchecked")
 	public void cmdSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl) {
-		assert clctctl == this.clctctl && clctctl.getFields() == fields;
+		assert clctctl == this.clctctl && clctctl.getFields() == fields && clctctl.getResultController() == this;
 
 		final SelectColumnsController ctl = new SelectColumnsController(clctctl.getFrame());
 		// final List<CollectableEntityField> lstAvailable = (List<CollectableEntityField>) fields.getAvailableFields();
@@ -843,7 +843,7 @@ public class ResultController<Clct extends Collectable> {
 	 * @param entityField the column of the column model (as opposed to the column of the table model)
 	 */
 	protected void cmdRemoveColumn(final ChoiceEntityFieldList fields, CollectableEntityField entityField, CollectController<Clct> ctl) {
-		assert ctl == this.clctctl && ctl.getFields() == fields;
+		assert ctl == this.clctctl && ctl.getFields() == fields && ctl.getResultController() == this;
 		fields.moveToAvailableFields(entityField);
 
 		// Note that it is not enough to remove the column from the result table model.
@@ -853,7 +853,7 @@ public class ResultController<Clct extends Collectable> {
 	}
 
 	protected void setModel(CollectableTableModel<Clct> tblmodel, final CollectableEntity clcte, final CollectController<Clct> ctl) {
-		assert ctl == this.clctctl && ctl.getFields() == fields;
+		assert ctl == this.clctctl && ctl.getFields() == fields && ctl.getResultController() == this;
 		assert this.clcte.equals(clcte);
 		final ResultPanel<Clct> panel = getResultPanel();
 		final JTable resultTable = panel.getResultTable();
@@ -879,7 +879,7 @@ public class ResultController<Clct extends Collectable> {
 	}
 
 	protected void toggleColumnVisibility(TableColumn columnBefore, final String sFieldName, final CollectController<Clct> ctl,  final CollectableEntity clcte)  {
-		assert ctl == this.clctctl && ctl.getFields() == fields;
+		assert ctl == this.clctctl && ctl.getFields() == fields && ctl.getResultController() == this;
 		assert this.clcte.equals(clcte);
 		final ResultPanel<Clct> panel = getResultPanel();
 		try {

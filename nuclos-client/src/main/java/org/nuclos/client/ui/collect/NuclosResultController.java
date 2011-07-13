@@ -67,7 +67,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	 */
 	@Override
 	protected void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl, Preferences preferences) {
-		assert clctctl == getCollectController() && clctctl.getFields() == getFields();
+		assert clctctl == getCollectController() && clctctl.getFields() == getFields() && clctctl.getResultController() == this;
 		assert getEntity().equals(clcte);
 		super.initializeFields(clcte, clctctl, preferences);
 
@@ -97,7 +97,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 			final List<CollectableEntityField> lstSelectedNew, final Set<CollectableEntityField> lstFixedNew, 
 			final Map<String,Integer> lstColumnWiths) 
 	{
-		assert clctctl == getCollectController() && clctctl.getFields() == getFields();
+		assert clctctl == getCollectController() && clctctl.getFields() == getFields() && clctctl.getResultController() == this;
 		final NuclosCollectController<Clct> elisaController = (NuclosCollectController<Clct>) clctctl;
 		final List<CollectableEntityField> lstSelected = new ArrayList<CollectableEntityField>(fields.getSelectedFields());
 		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
@@ -196,7 +196,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 			final SortedSet<CollectableEntityField> lstAvailableObjects, final List<CollectableEntityField> lstSelectedObjects, 
 			final Set<CollectableEntityField> stFixedObjects) 
 	{
-		assert clctctl == getCollectController() && clctctl.getFields() == getFields();
+		assert clctctl == getCollectController() && clctctl.getFields() == getFields() && clctctl.getResultController() == this;
 		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
 		final JTable tblResult = panel.getResultTable();
 		// remember the widths of the currently visible columns
@@ -394,7 +394,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	@SuppressWarnings("unchecked")
 	@Override
 	public void cmdSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl) {
-		assert clctctl == getCollectController() && clctctl.getFields() == getFields();
+		assert clctctl == getCollectController() && clctctl.getFields() == getFields() && clctctl.getResultController() == this;
 		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
 
 		final NuclosCollectController<Clct> nucleusctl = (NuclosCollectController<Clct>) clctctl;

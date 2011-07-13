@@ -104,6 +104,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	 */
 	@Override
 	public SortedSet<CollectableEntityField> getFieldsAvailableForResult(CollectableEntity clcte, Comparator<CollectableEntityField> comp) {
+		assert getEntity().equals(clcte);
 		final SortedSet<CollectableEntityField> result = super.getFieldsAvailableForResult(clcte, comp);
 		final GenericObjectCollectController controller = getGenericObjectCollectController();
 
@@ -151,6 +152,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	 */
 	@Override
 	protected List<CollectableEntityFieldWithEntity> readSelectedFieldsFromPreferences(CollectableEntity clcte) {
+		assert getEntity().equals(clcte);
 		return GenericObjectClientUtils.readCollectableEntityFieldsFromPreferences(
 				getGenericObjectCollectController().getPreferences(), clcte, 
 				CollectController.PREFS_NODE_SELECTEDFIELDS, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES);
@@ -181,6 +183,8 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	 */
 	@Override
 	public CollectableEntityField getCollectableEntityFieldForResult(CollectableEntity sClcte, String sFieldName) {
+		// TODO: Find out why the following condition does *not* hold:
+		// assert getEntity().equals(sClcte);
 		final GenericObjectCollectController controller = getGenericObjectCollectController();
 		final CollectableEntity ce = controller.getCollectableEntity();
 		CollectableEntity clcte = sClcte;

@@ -261,11 +261,11 @@ public class SelectObjectsController<T> extends Controller {
 		return result;
 	}
 	
-	protected final SortedSet<T> getObjectsAsSortedSet(ListModel model) {
-		assert model == getPanel().getJListAvailableObjects().getModel();
-		final SortedSet<T> result = new TreeSet<T>();
-		for (int i = 0; i < model.getSize(); ++i) {
-			result.add((T) model.getElementAt(i));
+	protected final SortedSet<T> getObjectsAsSortedSet(ListModel listModel) {
+		assert listModel == getPanel().getJListAvailableObjects().getModel();
+		final SortedSet<T> result = new TreeSet<T>(model.getComparatorForAvaible());
+		for (int i = 0; i < listModel.getSize(); ++i) {
+			result.add((T) listModel.getElementAt(i));
 		}
 		return result;
 	}

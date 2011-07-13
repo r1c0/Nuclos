@@ -19,12 +19,10 @@ package org.nuclos.client.common;
 import java.awt.Component;
 import java.util.List;
 
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.client.masterdata.ui.ColorCellRenderer;
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.SelectObjectsController;
-import org.nuclos.client.ui.SelectObjectsPanel;
-import org.nuclos.client.ui.model.ChoiceList;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVOWrapper;
 
