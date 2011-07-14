@@ -19,20 +19,17 @@ package org.nuclos.client.common;
 import java.awt.Component;
 import java.awt.Container;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.LayoutFocusTraversalPolicy;
 
 import org.nuclos.client.ui.JInfoTabbedPane;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm;
-import org.nuclos.client.ui.collect.component.LabeledCollectableComponent;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
 
@@ -80,14 +77,27 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 		else if(comp instanceof JButton) { // may be subform
 			JButton bt = (JButton)comp;
 			if(bt.getParent() instanceof JToolBar) {
-				comp = bt.getParent().getParent().getParent().getParent();
+				comp = getSubFormIfAny(bt);
 				if(comp instanceof SubForm) {
 					SubForm subform = (SubForm)comp;
 					subform.fireFocusGained();
 				}
 			}
 		}
-		return comp;
+		if(UIUtils.isEditable(comp))
+			return comp;
+		else
+			return getComponentAfter(aContainer, comp);
+	}
+	
+	private Component getSubFormIfAny(JButton bt) {
+		try {
+			return bt.getParent().getParent().getParent().getParent();
+		}
+		catch(Exception ex) {
+			// no Subform return default
+		}
+		return bt;
 	}
 
 	@Override

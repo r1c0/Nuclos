@@ -55,6 +55,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
@@ -73,6 +74,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
 import javax.swing.text.View;
 import javax.swing.tree.TreePath;
 
@@ -1007,6 +1009,21 @@ public class UIUtils {
 		catch (ClassNotFoundException ex) {
 			return false;
 		}
+	}
+	
+	/**
+	 * return false if Component is not editable, otherwise true
+	 */
+	public static boolean isEditable(Component comp) {
+		if(comp instanceof JTextComponent) {
+			return ((JTextComponent)comp).isEditable();
+		}
+		else if(comp instanceof JComboBox) {
+			return ((JComboBox)comp).isEditable();
+		}
+		
+		else 
+			return true;
 	}
 
 	/**
