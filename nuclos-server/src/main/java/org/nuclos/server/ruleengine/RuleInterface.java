@@ -458,7 +458,10 @@ public class RuleInterface extends CustomCodeInterface {
 	 */
 	@Override
 	public GenericObjectVO getGenericObject() {
-		return this.getRuleObjectContainerCVO().getGenericObject();
+		if (this.roccvo != null) {
+			return this.getRuleObjectContainerCVO().getGenericObject();
+		}
+		return null;
 	}
 
 	/**
@@ -466,7 +469,10 @@ public class RuleInterface extends CustomCodeInterface {
 	 */
 	@Override
 	public MasterDataVO getMasterData() {
-		return this.getRuleObjectContainerCVO().getMasterData();
+		if (this.roccvo != null) {
+			return this.getRuleObjectContainerCVO().getMasterData();
+		}
+		return null;
 	}
 
 	/** get the GenericObjectVO with the given id

@@ -573,8 +573,11 @@ public abstract class CustomCodeInterface {
 		if (this.getGenericObject() != null) {
 			return this.getGenericObject().getId();
 		}
-		else {
+		else if (this.getMasterData() != null) {
 			return this.getMasterData().getIntId();
+		}
+		else {
+			return null;
 		}
 	}
 
