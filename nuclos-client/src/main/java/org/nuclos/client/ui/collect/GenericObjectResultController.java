@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect;
 
+import java.awt.Component;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,7 +43,9 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.PreferencesException;
 
 /**
@@ -83,6 +86,25 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 		pivots.clear();
 	}
 
+	/**
+	 * Adds the ability to select subforms as pivot columns in the result list view.
+	 */
+	@Override
+	public SelectFixedColumnsController newSelectColumnsController(Component parent) {
+		// retrieve sub form fields
+		final Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields = new HashMap<String, Map<String,EntityFieldMetaDataVO>>();
+		final String entityName = getEntity().getName();
+		final EntityMetaDataVO entityMd = MetaDataClientProvider.getInstance().getEntity(entityName);
+		final Set<String> subforms = GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(
+				IdUtils.unsafeToId(entityMd.getId()));
+		for (String subform: subforms) {
+			final Map<String, EntityFieldMetaDataVO> map = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(subform);
+			subFormFields.put(subform, map);
+		}
+		
+		return new PivotController(parent, new PivotPanel(subFormFields), this);
+	}
+	
 	private final class GetCollectableEntityFieldForResult implements Transformer<String, CollectableEntityField> {
 		private final CollectableEntity clcte;
 

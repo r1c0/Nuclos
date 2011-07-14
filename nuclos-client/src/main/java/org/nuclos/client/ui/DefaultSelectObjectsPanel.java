@@ -113,7 +113,7 @@ public class DefaultSelectObjectsPanel<T> extends SelectObjectsPanel<T> {
 		this.btnDown.setVisible(false);
 	}
 	
-	protected JComponent getHeaderComponent() {
+	protected final JComponent getHeaderComponent() {
 		return header;
 	}
 

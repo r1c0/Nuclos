@@ -130,6 +130,12 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 
 	}
 
+	/**
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	public StateModelCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, CollectableStateModel.clcte);
 

@@ -5,7 +5,6 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -22,10 +21,8 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosResultPanel;
-import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.UIUtils.CommandHandler;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
@@ -35,19 +32,17 @@ import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
-import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
-import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
 
 /**
  * A specialization of ResultController for use with an {@link NuclosCollectController}.
- * 
+ * <p>
+ * This implementation adds support for 'fixed' columns in the shown result.
+ * </p>
  * @author Thomas Pasch
  * @since Nuclos 3.1.01
  */
@@ -62,6 +57,17 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	 */
 	public NuclosResultController(String entityName) {
 		super(entityName);
+	}
+	
+	/**
+	 * Factory method for instantiating a {@link SelectFixedColumnsController} suited 
+	 * for the NuclosResultController. 
+	 * <p>
+	 * Maybe overridden by subclasses.
+	 * </p>
+	 */
+	public SelectFixedColumnsController newSelectColumnsController(Component parent) {
+		return new SelectFixedColumnsController(parent, new SelectFixedColumnsPanel());
 	}
 	
 	/**
@@ -400,24 +406,14 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void cmdSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl) {
+	public final void cmdSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl) {
 		assert clctctl == getCollectController() && clctctl.getFields() == getFields() && clctctl.getResultController() == this;
 		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
 		final NuclosCollectController<Clct> nucleusctl = (NuclosCollectController<Clct>) clctctl;
 		
-		// retrieve sub form fields
-		final Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields = new HashMap<String, Map<String,EntityFieldMetaDataVO>>();
-		final String entityName = getEntity().getName();
-		final EntityMetaDataVO entityMd = MetaDataClientProvider.getInstance().getEntity(entityName);
-		final Set<String> subforms = GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(
-				IdUtils.unsafeToId(entityMd.getId()));
-		for (String subform: subforms) {
-			final Map<String, EntityFieldMetaDataVO> map = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(subform);
-			subFormFields.put(subform, map);
-		}
-		
-		final SelectFixedColumnsController ctl = new PivotController(clctctl.getFrame(), new PivotPanel(subFormFields), 
-				(GenericObjectResultController) nucleusctl.getResultController());
+		// final SelectFixedColumnsController ctl = new PivotController(clctctl.getFrame(), new PivotPanel(subFormFields), 
+		// 		(GenericObjectResultController) nucleusctl.getResultController());
+		final SelectFixedColumnsController ctl = newSelectColumnsController(clctctl.getFrame());
 		final SortedSet<CollectableEntityField> lstAvailable = fields.getAvailableFields();
 		final List<CollectableEntityField> lstSelected = fields.getSelectedFields();
 		final ChoiceEntityFieldList ro = new ChoiceEntityFieldList(panel.getFixedColumns());
@@ -435,7 +431,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	}
 
 	@Override
-	protected void cmdAddColumn(ChoiceEntityFieldList fields, TableColumn columnBefore, String sFieldNameToAdd) throws CommonBusinessException {
+	protected final void cmdAddColumn(ChoiceEntityFieldList fields, TableColumn columnBefore, String sFieldNameToAdd) throws CommonBusinessException {
 		super.cmdAddColumn(fields, columnBefore, sFieldNameToAdd);
 		
 		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
@@ -448,7 +444,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	}
 
 	@Override
-	protected void cmdRemoveColumn(ChoiceEntityFieldList fields, CollectableEntityField clctef, CollectController<Clct> ctl) {
+	protected final void cmdRemoveColumn(ChoiceEntityFieldList fields, CollectableEntityField clctef, CollectController<Clct> ctl) {
 		super.cmdRemoveColumn(fields, clctef, ctl);
 
 		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
@@ -462,7 +458,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	}
 
 	@Override
-	protected void writeFieldWidthsToPreferences(Preferences preferences) throws PreferencesException {
+	protected final void writeFieldWidthsToPreferences(Preferences preferences) throws PreferencesException {
 		super.writeFieldWidthsToPreferences(preferences);
 
 		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();

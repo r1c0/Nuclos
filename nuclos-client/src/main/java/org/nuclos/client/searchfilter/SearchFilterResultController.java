@@ -22,8 +22,6 @@ import java.util.TreeSet;
 
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.SearchFilterCollectController;
-import org.nuclos.client.masterdata.user.UserCollectController;
-import org.nuclos.client.ui.collect.NuclosResultController;
 import org.nuclos.client.ui.collect.ResultController;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;

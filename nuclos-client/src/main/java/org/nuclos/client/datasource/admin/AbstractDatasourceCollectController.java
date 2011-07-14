@@ -84,6 +84,14 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 	protected JButton btnExport;
 	protected JButton btnValidate;
 	
+	/**
+	 * Don't make this public!
+	 *
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	protected AbstractDatasourceCollectController(JComponent parent,
 		CollectableEntity clcte, MainFrameTab tabIfAny) {
 		super(parent, clcte);

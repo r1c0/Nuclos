@@ -78,6 +78,12 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 	private final EntityRelationshipModelEditPanel pnlEdit;
 	private final MainFrameTab ifrm; 
 	
+	/**
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	public EntityRelationShipCollectController(JComponent parent, MainFrame mf, MainFrameTab tabIfAny) {
 		super(parent, EntityRelationshipModel.clcte);
 		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame(CommonLocaleDelegate.getMessage("nuclos.entityrelation.controller.2","Relationen Editor")); 

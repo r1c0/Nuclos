@@ -26,8 +26,21 @@ import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVOWrapper;
 
+/**
+ * Controller for the LDAP user synchronization dialog panel.
+ */
 public class SelectUserController<T extends MasterDataVO> extends SelectObjectsController<T> {
 
+	/**
+	 * LDAP user synchronization dialog panel.
+	 * <p>
+	 * <dl>
+	 *   <dt>blue</dt><dd>user known to both systems, can be synchronized</dd>
+	 *   <dt>yellow</dt><dd>user known to LDAP only, can be added to nuclos</dd>
+	 *   <dt>red</dt><dd>user known to nuclos only, can be deleted in nuclos</dd>
+	 * </dl>
+	 * </p>
+	 */
 	private static class SelectUserPanel extends DefaultSelectObjectsPanel {
 
 		/**

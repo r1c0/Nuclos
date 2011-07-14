@@ -54,6 +54,12 @@ public class ProzessWizardCollectController extends NuclosCollectController<Enti
 	
 	private MainFrame mf;
 	
+	/**
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	public ProzessWizardCollectController(JComponent parent, MainFrame mf) {
 		super(parent, CollectableStateModel.clcte);
 		

@@ -93,7 +93,7 @@ public class PivotController extends SelectFixedColumnsController {
 		
 	}
 	
-	private final GenericObjectResultController<CollectableGenericObjectWithDependants> resultController;
+	private final GenericObjectResultController<? extends CollectableGenericObjectWithDependants> resultController;
 
 	/**
 	 * @deprecated This would be far better. But is completely unrealistic at present. (Thomas Pasch)
@@ -103,7 +103,7 @@ public class PivotController extends SelectFixedColumnsController {
 		resultController = null;
 	}
 	
-	public PivotController(Component parent, final PivotPanel panel, GenericObjectResultController<CollectableGenericObjectWithDependants> resultController) {
+	public PivotController(Component parent, final PivotPanel panel, GenericObjectResultController<? extends CollectableGenericObjectWithDependants> resultController) {
 		super(parent, panel);
 		this.resultController = resultController;
 		// panel.addPivotItemListener(new ShowPivotListener());
