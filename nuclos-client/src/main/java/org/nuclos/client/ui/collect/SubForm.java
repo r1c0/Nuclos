@@ -1515,7 +1515,8 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 				});				
 			}
 			else {
-				
+				// TODO 
+				// do not jump onto disabled cells
 			}
 			
 		}
