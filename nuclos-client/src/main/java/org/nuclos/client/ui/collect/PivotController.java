@@ -17,27 +17,20 @@
 package org.nuclos.client.ui.collect;
 
 import java.awt.Component;
+import java.awt.ItemSelectable;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 
-import javax.swing.JCheckBox;
-
 import org.apache.log4j.Logger;
-import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
-import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
-import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
-import org.nuclos.common2.IdUtils;
 
 public class PivotController extends SelectFixedColumnsController {
 	
@@ -47,20 +40,25 @@ public class PivotController extends SelectFixedColumnsController {
 
 		@Override
 		public void itemStateChanged(ItemEvent e) {
-			final JCheckBox src = (JCheckBox) e.getSource();
-			resultController.clearPivotInfo();
-			if (src.isSelected()) {
-				// Make all pivot
-				// TODO: Make sth sensible here!
+			final ItemSelectable src = e.getItemSelectable();
+			final int index = getPivotPanel().indexFromKeyComponent(src);
+			final String subform = getPivotPanel().getSubformName(index);
+			final PivotInfo newState = getPivotPanel().getState(subform);
+			final EntityFieldMetaDataVO item = (EntityFieldMetaDataVO) e.getItem();
+			LOG.info("index: " + index + " subform: " + subform + " newState: " + newState + " md: " + item);
+			if (newState != null) {
+				/* get subforms
 				final String entityName = resultController.getEntity().getName();
 				final EntityMetaDataVO entityMd = MetaDataClientProvider.getInstance().getEntity(entityName);
 				final Set<String> subforms = GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(
 						IdUtils.unsafeToId(entityMd.getId()));
-				for (String subform: subforms) {
+
 					final Map<String, EntityFieldMetaDataVO> map = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(subform);
-					
-					resultController.putPivotInfo(new PivotInfo(subform, null, null));
-				}
+				 */
+				resultController.putPivotInfo(newState);
+			}
+			else {
+				resultController.removePivotInfo(subform);
 			}
 			final Comparator<CollectableEntityField> comp = (Comparator<CollectableEntityField>) 
 				resultController.getFields().getComparatorForAvaible();
@@ -106,7 +104,7 @@ public class PivotController extends SelectFixedColumnsController {
 	public PivotController(Component parent, final PivotPanel panel, GenericObjectResultController<? extends CollectableGenericObjectWithDependants> resultController) {
 		super(parent, panel);
 		this.resultController = resultController;
-		// panel.addPivotItemListener(new ShowPivotListener());
+		panel.addPivotItemListener(new ShowPivotListener());
 		panel.addPivotItemListener(new ItemListener() {
 			
 			@Override

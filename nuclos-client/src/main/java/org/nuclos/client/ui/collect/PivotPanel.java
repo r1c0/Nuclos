@@ -231,7 +231,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			}
 		}
 		
-		private void fireItemEvent(JComboBox source, EntityFieldMetaDataVO item) {
+		private void fireItemEvent(ItemSelectable source, EntityFieldMetaDataVO item) {
 			final List<ItemListener> l;
 			synchronized (listener) {
 				if (listener.isEmpty()) return;
@@ -273,9 +273,12 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 		}
 	}
 	
-	public PivotInfo getState(int index) {
-		final String subform = getHeader().subformNames.get(index);
-		return getHeader().state.get(subform);
+	public PivotInfo getState(String subformName) {
+		return getHeader().state.get(subformName);
+	}
+	
+	public String getSubformName(int index) {
+		return getHeader().subformNames.get(index);
 	}
 	
 	public int indexFromKeyComponent(ItemSelectable key) {

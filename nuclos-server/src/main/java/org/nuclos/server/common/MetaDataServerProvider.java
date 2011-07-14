@@ -41,6 +41,7 @@ import org.nuclos.server.dal.processor.jdbc.impl.DynamicMetaDataProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.dal.provider.NuclosDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbSelection;
@@ -150,12 +151,17 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 
 	@Override
 	public Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info) {
+		final EntityMetaDataVO subform = getEntity(info.getSubform());
+		final String subformTable = EntityObjectMetaDbHelper.getTableName(subform);
+		final EntityFieldMetaDataVO keyField = getEntityField(info.getSubform(), info.getKeyField());
+		// final EntityFieldMetaDataVO valueField = getEntityField(info.getSubform(), info.getValueField());
+		
 		Map<String, EntityFieldMetaDataVO> result = dataCache.getMapPivotMetaData().get(info);
 		if (result == null) {
 			// select distinct p.<keyfield> from <subform> p 
 			DbQuery<String> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(String.class);
-			DbFrom from = query.distinct(true).from(info.getSubform()).alias("p");
-			query.select(from.column(info.getKeyField(), String.class));
+			DbFrom from = query.distinct(true).from(subformTable).alias("p");
+			query.select(from.column(keyField.getDbColumn(), String.class)).maxResults(40);
 			List<String> columns = DataBaseHelper.getDbAccess().executeQuery(query);
 			//
 			result = new HashMap<String, EntityFieldMetaDataVO>(columns.size());

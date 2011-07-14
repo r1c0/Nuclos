@@ -82,8 +82,8 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 		return pivots.get(subformName);
 	}
 	
-	public void clearPivotInfo() {
-		pivots.clear();
+	public void removePivotInfo(String subformName) {
+		pivots.remove(subformName);
 	}
 
 	/**
@@ -166,7 +166,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	private void getFieldsAvaibleInPivotSubform(SortedSet<CollectableEntityField> result, Set<String> stSubEntityLabels, String sSubEntityName) {
 		// remove the subform entries
 		// TODO: make sth sensible here!
-		final PivotInfo info = new PivotInfo("t_eo_warenart", "strshortname", "strquantityunit");
+		final PivotInfo info = new PivotInfo("WarenArt", "shortName", "quantityUnit");
 		final Map<String, EntityFieldMetaDataVO> fields = MetaDataClientProvider.getInstance().getAllPivotEntityFields(info);
 	}
 	
