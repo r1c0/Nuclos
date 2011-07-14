@@ -694,6 +694,23 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 			getJTable().editCellAt(0, 0);				
 			getSubformTable().changeSelection(0, 0, false, false);			
 		}
+		else if(getJTable().getModel().getRowCount() == 0) {
+			for(FocusActionListener fal : getFocusActionLister()) {
+				fal.focusAction(new EventObject(this));
+				if (getJTable().editCellAt(0, 0)) {
+					SwingUtilities.invokeLater(new Runnable() {
+						
+						@Override
+						public void run() {
+							Component editor = getJTable().getEditorComponent();
+							editor.requestFocusInWindow();
+							
+						}
+					});
+					
+				}
+			}
+		}
 	}
 
 	/**
@@ -1484,8 +1501,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 			}
 			int colCount = getColumnCount();
 			if(columnIndex == colCount-1) {
-				newRowOnNext = true;			
-				
+				newRowOnNext = true;							
 			}
 			
 			if (editCellAt(rowIndex, columnIndex)) {
@@ -1494,10 +1510,11 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 					@Override
 					public void run() {
 						Component editor = getEditorComponent();
-						editor.requestFocusInWindow();
-						
+						editor.requestFocusInWindow();						
 					}
-				});
+				});				
+			}
+			else {
 				
 			}
 			

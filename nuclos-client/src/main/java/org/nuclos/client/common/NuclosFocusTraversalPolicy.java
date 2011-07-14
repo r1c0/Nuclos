@@ -18,6 +18,7 @@ package org.nuclos.client.common;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +40,7 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 	
 	JComponent compRoot;
 	
-	Map<String, JComponent> mpComponents;
+	Map<String, JComponent> mpComponentsBackwards;
 
 	/**
 	 *  
@@ -48,6 +49,7 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 
 	public NuclosFocusTraversalPolicy(JComponent compRoot) {
 		this.compRoot = compRoot;
+		mpComponentsBackwards = new HashMap<String, JComponent>();
 	}
 	
 	@Override
@@ -58,6 +60,7 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 			if(obj != null && obj instanceof String) {
 				if(aContainer instanceof JPanel) {
 					JComponent jFound = UIUtils.findJComponentStartsWithName((JPanel)aContainer, (String)obj);
+					mpComponentsBackwards.put((String)obj, (JComponent)aComponent);
 					if(jFound instanceof LabeledComponent){
 						return ((LabeledComponent)jFound).getControlComponent();
 					}
@@ -74,7 +77,7 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 				subform.fireFocusGained();
 			}
 		}
-		else if(comp instanceof JButton) {
+		else if(comp instanceof JButton) { // may be subform
 			JButton bt = (JButton)comp;
 			if(bt.getParent() instanceof JToolBar) {
 				comp = bt.getParent().getParent().getParent().getParent();
@@ -89,6 +92,19 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 
 	@Override
 	public Component getComponentBefore(Container aContainer, Component aComponent) {
+		if(aComponent instanceof JComponent) {
+			if(mpComponentsBackwards.containsValue((JComponent)aComponent)) {
+				for(String sNext : mpComponentsBackwards.keySet()) {
+					if(mpComponentsBackwards.get(sNext).equals(aComponent)) {
+						JComponent jFound = UIUtils.findJComponentStartsWithName((JPanel)aContainer, sNext);
+						if(jFound instanceof LabeledComponent){
+							return ((LabeledComponent)jFound).getControlComponent();
+						}
+						return jFound;
+					}
+				}
+			}
+		}
 		return super.getComponentBefore(aContainer, aComponent);
 	}
 
