@@ -61,6 +61,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
 
@@ -94,7 +95,7 @@ public class TaskController extends Controller {
 	private final PersonalTaskController ctlPersonalTasks;
 	private final TimelimitTaskController ctlTimelimitTasks;
 	private final GenericObjectTaskController ctlGenericObjectTasks;
-	
+
 	private final Map<GenericObjectTaskView, MainFrameTab> taskTabs = new HashMap<GenericObjectTaskView, MainFrameTab>();
 
 	/**
@@ -129,14 +130,14 @@ public class TaskController extends Controller {
 		ctlPersonalTasks.storeShowAllTasksIsPressedToPreferences();
 		ctlPersonalTasks.storeShowDelegatedTasksIsSelectedToPreferences();
 	}
-	
+
 	public static class RestorePreferences implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
-		
+
 		public static final int GENERIC = -1;
 		public static final int PERSONAL = 1;
 		public static final int TIMELIMIT = 2;
-		
+
 		/**
 		 * use GENERIC, PERSONAL or TIMELIMIT
 		 */
@@ -147,7 +148,7 @@ public class TaskController extends Controller {
 		 */
 		Integer searchFilterId;
 	}
-	
+
 	private static String toXML(RestorePreferences rp) {
 		XStream xstream = new XStream(new DomDriver());
 		return xstream.toXML(rp);
@@ -157,16 +158,16 @@ public class TaskController extends Controller {
 		XStream xstream = new XStream(new DomDriver());
 		return (RestorePreferences) xstream.fromXML(xml);
 	}
-	
+
 	/**
 	 *
 	 *
 	 */
 	public static class TaskTabStoreController implements ITabStoreController {
-		
+
 		int type;
 		TaskView view;
-		
+
 		public TaskTabStoreController(int type, TaskView view) {
 			this.view = view;
 			this.type = type;
@@ -185,13 +186,13 @@ public class TaskController extends Controller {
 			if (type == rp.GENERIC) {
 				rp.searchFilterId = ((GenericObjectTaskView)view).getFilter().getId();
 			}
-			
+
 			return toXML(rp);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 *
 	 */
 	public static class TaskTabRestoreController extends TabRestoreController {
@@ -199,7 +200,7 @@ public class TaskController extends Controller {
 		@Override
 		public void restoreFromPreferences(String preferencesXML, final MainFrameTab tab) throws Exception {
 			RestorePreferences rp = fromXML(preferencesXML);
-			
+
 			switch (rp.type) {
 				case RestorePreferences.PERSONAL:
 					if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TASKLIST)) {
@@ -223,7 +224,7 @@ public class TaskController extends Controller {
 					throw new IllegalArgumentException("Task type: "+rp.type);
 			}
 		}
-		
+
 	}
 
 	private Preferences getPreferences(GenericObjectTaskView goTaskView) {
@@ -268,7 +269,7 @@ public class TaskController extends Controller {
 	@Deprecated
 	private Map<String,Integer> getRefreshIntervalsFromPreferences() throws PreferencesException, BackingStoreException {
 		Map<String,Integer> refreshIntervals = new HashMap<String,Integer>();
-		
+
 		String[] tabNames = null;
 		try {
 			tabNames = prefs.node(PREFS_NODE_TASKPANEL_TABS).childrenNames();
@@ -291,7 +292,7 @@ public class TaskController extends Controller {
 	/**
 	 * ONLY FOR MIGRATION
 	 * restores the generic object views from the preferences
-	 * @throws BackingStoreException 
+	 * @throws BackingStoreException
 	 */
 	@Deprecated
 	public void restoreGenericObjectTaskViewsFromPreferences()
@@ -301,7 +302,7 @@ public class TaskController extends Controller {
 		prefs.node(PREFS_NODE_FILTERS).removeNode();
 		Map<String, Integer> mapRefreshIntervals = getRefreshIntervalsFromPreferences();
 		int i = 0;
-		
+
 		//search for task tabbed...
 		MainFrameTabbedPane taskTabbed = null;
 		for (MainFrameTabbedPane tabbedPane : MainFrame.getAllTabbedPanes()) {
@@ -310,7 +311,7 @@ public class TaskController extends Controller {
 			}
 		}
 		if (taskTabbed == null) Main.getMainFrame().getHomePane();
-		
+
 		for (String sFilterName : lstFilterNames) {
 			try {
 				Integer refreshInterval = mapRefreshIntervals.get(sFilterName);
@@ -396,9 +397,9 @@ public class TaskController extends Controller {
 			return null;
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param filter
 	 * @param tab
 	 * @return true if added, false if replaced
@@ -408,13 +409,13 @@ public class TaskController extends Controller {
 		if (!filter.isValid()) {
 			throw new CommonBusinessException("Filter " + filter.getName() + " is not valid");
 		}
-		
+
 		GenericObjectTaskView view = getTaskViewFor(filter);
 		if(view == null) {
 			// This filter is not yet in the task list; create a new tab for it
-			
+
 			final GenericObjectTaskView newView = ctlGenericObjectTasks.newGenericObjectTaskView(filter);
-			final String sLabel = filter.getName();
+			final String sLabel = StringUtils.isNullOrEmpty(filter.getLabelResourceId()) ? filter.getName() : CommonLocaleDelegate.getTextFallback(filter.getLabelResourceId(), filter.getName());
 			tab.addMainFrameTabListener(new MainFrameTabAdapter() {
 				@Override
 				public boolean tabClosing(MainFrameTab tab) {
@@ -426,12 +427,12 @@ public class TaskController extends Controller {
 					tab.removeMainFrameTabListener(this);
 				}
 			});
-			
+
 			tab.setTabIcon(Icons.getInstance().getIconFilter16());
 			tab.setTitle(sLabel);
 			tab.setLayeredComponent(newView);
 			tab.setTabStoreController(new TaskTabStoreController(RestorePreferences.GENERIC, newView));
-			
+
 			taskTabs.put(newView, tab);
 
 			setupColumnModelListener(newView);
@@ -498,7 +499,7 @@ public class TaskController extends Controller {
 	 * @param view
 	 */
 	private void closeGenericObjectTaskView(GenericObjectTaskView view)	throws PreferencesException, CommonBusinessException {
-		
+
 		if (view.getFilter().isForced()) {
 			throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("tasklist.error.searchfilter.fixed", "Der Suchfilter ist fixiert und darf nicht entfernt werden."));
 		}
@@ -530,7 +531,7 @@ public class TaskController extends Controller {
 		}
 		return result;
 	}
-	
+
 	protected MainFrameTab getTabFor(GenericObjectTaskView view) {
 		MainFrameTab result = taskTabs.get(view);
 		if (result == null) {
@@ -562,7 +563,7 @@ public class TaskController extends Controller {
 	 * @param sFilterName
 	 */
 	public void cmdShowFilterInTaskPanel(final EntitySearchFilter searchFilter) {
-		
+
 		UIUtils.runCommand(getParent(), new Runnable() {
 			@Override
 			public void run() {
@@ -620,7 +621,7 @@ public class TaskController extends Controller {
 	public PersonalTaskController getPersonalTaskController() {
 		return this.ctlPersonalTasks;
 	}
-	
+
 	public TimelimitTaskController getTimelimitTaskController() {
 		return this.ctlTimelimitTasks;
 	}
@@ -628,25 +629,25 @@ public class TaskController extends Controller {
 	private void removeGenericObjectTaskView(GenericObjectTaskView view) {
 		taskTabs.remove(view);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tab
 	 */
 	public boolean isTaskTab(MainFrameTab tab) {
-		if (taskTabs.values().contains(tab)) 
+		if (taskTabs.values().contains(tab))
 			return true;
-		
+
 		if (ctlPersonalTasks.getTab() == tab)
 			return true;
-		
+
 		if (ctlTimelimitTasks.getTab() == tab)
 			return true;
-		
+
 		if (tab.getContent() instanceof TaskView)
 			return true;
-		
+
 		return false;
 	}
-	
+
 } // class TaskController
