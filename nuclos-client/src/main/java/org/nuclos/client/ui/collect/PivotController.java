@@ -17,8 +17,8 @@
 package org.nuclos.client.ui.collect;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -29,6 +29,7 @@ import java.util.SortedSet;
 
 import javax.swing.JCheckBox;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
@@ -40,10 +41,12 @@ import org.nuclos.common2.IdUtils;
 
 public class PivotController extends SelectFixedColumnsController {
 	
-	private class ShowPivotListener implements ActionListener {
+	private static final Logger LOG = Logger.getLogger(PivotController.class);
+	
+	private class ShowPivotListener implements ItemListener {
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public void itemStateChanged(ItemEvent e) {
 			final JCheckBox src = (JCheckBox) e.getSource();
 			resultController.clearPivotInfo();
 			if (src.isSelected()) {
@@ -100,10 +103,18 @@ public class PivotController extends SelectFixedColumnsController {
 		resultController = null;
 	}
 	
-	public PivotController(Component parent, PivotPanel panel, GenericObjectResultController<CollectableGenericObjectWithDependants> resultController) {
+	public PivotController(Component parent, final PivotPanel panel, GenericObjectResultController<CollectableGenericObjectWithDependants> resultController) {
 		super(parent, panel);
 		this.resultController = resultController;
-		panel.addActionListener(new ShowPivotListener());
+		// panel.addPivotItemListener(new ShowPivotListener());
+		panel.addPivotItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				LOG.info("contentsChanged: " + panel.indexFromKeyComponent(e.getItemSelectable()) + ": " + panel.getState());
+			}
+			
+		});
 	}
 	
 	private PivotPanel getPivotPanel() {

@@ -78,5 +78,13 @@ public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 	public int compareTo(PivotInfo o) {
 		return subform.compareTo(o.subform);
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append("PivotInfo[").append(subform).append(", ");
+		result.append(keyField).append(", ").append(valueField).append("]");
+		return result.toString();
+	}
 
 }

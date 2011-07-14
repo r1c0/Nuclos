@@ -39,7 +39,7 @@ public class CloneUtils {
 		// Never invoked.
 	}
 
-	public static <T> Collection<T> cloneCollection(Collection<T> l) throws CloneNotSupportedException {
+	public static <T> Collection<T> cloneCollection(Collection<T> l) {
 		if (l == null)
 			return null;
 		final Class<?> clazz = l.getClass();
@@ -69,15 +69,15 @@ public class CloneUtils {
 			Method m = clazz.getMethod("clone", NO_ARGS);
 			result = (Collection<T>) m.invoke(l);
 		} catch (IllegalArgumentException e) {
-			throw new CloneNotSupportedException(e.toString());
+			throw new IllegalStateException(e.toString());
 		} catch (IllegalAccessException e) {
-			throw new CloneNotSupportedException(e.toString());
+			throw new IllegalStateException(e.toString());
 		} catch (InvocationTargetException e) {
-			throw new CloneNotSupportedException(e.toString());
+			throw new IllegalStateException(e.getTargetException().toString());
 		} catch (SecurityException e) {
-			throw new CloneNotSupportedException(e.toString());
+			throw new IllegalStateException(e.toString());
 		} catch (NoSuchMethodException e) {
-			throw new CloneNotSupportedException(e.toString());
+			throw new IllegalStateException(e.toString());
 		}
 		return result;
 	}

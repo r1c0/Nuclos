@@ -726,7 +726,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 		}
 		if (!strange.isEmpty()) {
 			final StringBuilder msg = new StringBuilder();
-			msg.append("NuclosEntityTreeValueStep.getRefFieldTo: fallback contains: [\n");
+			msg.append("NuclosEntityTreeValueStep.getRefFieldTo: fallback ref to " + model.getEntityName() + " contains: [\n");
 			for (EntityFieldMetaDataVO md: strange) {
 				msg.append("\t(field: ").append(md.getField());
 				msg.append(", entity: ").append(md.getEntityIdAsString());
