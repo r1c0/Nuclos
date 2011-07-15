@@ -115,6 +115,7 @@ public class TimelimitTaskView extends TaskView {
 		
 		this.scrlpn.setBackground(Color.WHITE);
 		this.tblTasks.setBackground(Color.WHITE);
+		UIUtils.setupCopyAction(this.tblTasks);
 	}
 
 	/**

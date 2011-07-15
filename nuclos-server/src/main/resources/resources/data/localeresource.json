@@ -30764,7 +30764,26 @@
     "locale": "de",
     "text": "Arbeitsschritte"
   },
-
+  {
+    "resourceID": "ResultPanel.13",
+    "locale": "en",
+    "text": "Copy marked cells to Clipboard"
+  },
+  {
+    "resourceID": "ResultPanel.13",
+    "locale": "de",
+    "text": "Kopiere markierte Zellen"
+  },
+  {
+    "resourceID": "ResultPanel.14",
+    "locale": "en",
+    "text": "Copy marked rows to Clipboard"
+  },
+  {
+    "resourceID": "ResultPanel.14",
+    "locale": "de",
+    "text": "Kopiere markierte Zeilen"
+  },
   {
     "resourceID": "ResultPanel.11",
     "locale": "i-default",

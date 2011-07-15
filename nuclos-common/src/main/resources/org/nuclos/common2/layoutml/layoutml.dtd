@@ -326,6 +326,7 @@ title CDATA #REQUIRED
 enabled (%boolean;) #IMPLIED
 resourceId CDATA #IMPLIED
 internalname CDATA #IMPLIED
+mnemonic CDATA #IMPLIED
 >
 
 <!ELEMENT clear-border EMPTY>

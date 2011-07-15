@@ -655,18 +655,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 
 			@Override
 			public void actionPerformed(ActionEvent ev) {
-				final StringBuffer sb = new StringBuffer();
-
-				for (int iSelectedRow : tblFixedResult.getSelectedRows()) {
-					sb.append(getColumnData(tblFixedResult, iSelectedRow));
-					if (tblFixedResult.getColumnCount() > 0 && NuclosResultPanel.this.getResultTable().getColumnCount() > 0) {
-						sb.append("\t");
-					}
-					sb.append(getColumnData(NuclosResultPanel.this.getResultTable(), iSelectedRow));
-					sb.append("\n");
-				}
-				final StringSelection stsel = new StringSelection(sb.toString());
-				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stsel, stsel);
+				UIUtils.copyCells(NuclosResultPanel.this.getResultTable());				
 			}
 
 			@SuppressWarnings("unchecked")
@@ -690,7 +679,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 					// especially the collectable is a masterdata entity
 					// in this cases just go on working
 				}
-				
+				int iCol = table.getSelectedColumn();
 				for (int iColumn = 0; iColumn < iColumnCount; iColumn++) {
 					boolean readAllowed = true;
 					if (iStatusId != null && tablemodel != null) {

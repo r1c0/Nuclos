@@ -144,6 +144,8 @@ public class PersonalTaskView extends TaskView {
 		this.tblTasks.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		this.scrlpn.setBackground(Color.WHITE);
 		this.tblTasks.setBackground(Color.WHITE);
+		this.tblTasks.setColumnSelectionAllowed(true);
+		UIUtils.setupCopyAction(this.tblTasks);
 	}
 
 	JTable getTable() {

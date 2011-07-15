@@ -189,6 +189,37 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			PersonalTaskController.this.cmdPerformPersonalTask(personaltaskview);
 		}
 	};
+	
+	private final Action actCopyCell = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen"), Icons.getInstance().getIconCopy16(),
+			CommonLocaleDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen")) {
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			JTable table = personaltaskview.getTable();
+			UIUtils.copyCells(table);
+		}
+	};
+	
+	private final Action actCopyRows = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen"), Icons.getInstance().getIconCopy16(),
+			CommonLocaleDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen")) {
+	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			JTable table = personaltaskview.getTable();
+			UIUtils.copyRows(table);
+		}
+	
+	};
+
+
 
 	private final Action actRemoveTask = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.21","L\u00f6schen..."), Icons.getInstance().getIconRealDelete16(), CommonLocaleDelegate.getMessage("PersonalTaskController.6","Ausgew\u00e4hlte Aufgabe l\u00f6schen")) {
 		/**
@@ -433,6 +464,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		personaltaskview.btnEdit.setAction(actEditTask);
 		personaltaskview.btnComplete.setAction(actCompleteTask);
 		personaltaskview.btnPerform.setAction(actPerformTask);
+		
 		personaltaskview.btnRemove.setAction(actRemoveTask);
 		personaltaskview.btnPrint.setAction(actPrint);
 
@@ -993,6 +1025,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		private final JCheckBoxMenuItem miComplete = new JCheckBoxMenuItem();
 		protected final JMenuItem miEditDefinition = new JMenuItem();
 		protected final JMenuItem miEditDefinitionInNewTab = new JMenuItem();
+		protected final JMenuItem miCopyCell = new JMenuItem();
+		protected final JMenuItem miCopyRows = new JMenuItem();
 		private final JMenuItem miRemove = new JMenuItem();
 
 		public PersonalTasksPopupMenu(final PersonalTaskView taskview) {
@@ -1001,12 +1035,16 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			this.add(miComplete);
 			this.add(miPerform);
 			this.add(miRemove);
+			this.add(miCopyCell);
+			this.add(miCopyRows);
 
 			miComplete.setAction(actCompleteTask);
 			miPerform.setAction(actPerformTask);
 			miEditDefinition.setAction(actEditTask);
 			UIUtils.setFontStyleBold(miEditDefinition, true);
 			miEditDefinitionInNewTab.setAction(actEditTaskInNewTab);
+			miCopyCell.setAction(actCopyCell);
+			miCopyRows.setAction(actCopyRows);
 			miRemove.setAction(actRemoveTask);
 		}
 	}

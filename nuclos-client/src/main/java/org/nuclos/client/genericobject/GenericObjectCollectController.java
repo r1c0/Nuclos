@@ -5675,10 +5675,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		protected AbstractButton getDeleteButton() {
 			return new JToggleButton();
 		}
-		@Override
-        protected void setupCopyAction() {
-	        // no default copy action! GenericObject has it's own
-        }
+		
 	}
 
 	protected class GenericObjectCollectPanel extends CollectPanel<CollectableGenericObjectWithDependants> {

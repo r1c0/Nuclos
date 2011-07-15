@@ -36,6 +36,7 @@ import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
@@ -253,6 +254,8 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		//context menu:		
 		final JMenuItem miDetails = new JMenuItem(CommonLocaleDelegate.getMessage("AbstractCollectableComponent.7","Details anzeigen..."));
 		final JMenuItem miDefineAsNewSearchResult = new JMenuItem(CommonLocaleDelegate.getMessage("ExplorerController.22", "In Liste anzeigen"));
+		final JMenuItem miCopyCells = new JMenuItem(CommonLocaleDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen"));
+		final JMenuItem miCopyRows = new JMenuItem(CommonLocaleDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen"));
 		
 		final JPopupMenuFactory factory = new JPopupMenuFactory() {
 			@Override
@@ -270,9 +273,33 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 						cmdDefineSelectedCollectablesAsNewSearchResult(gotaskview);
 					}
 				});
+				
+				miCopyCells.addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						JTable table = gotaskview.getJTable();
+						UIUtils.copyCells(table);
+						
+					}
+				});
+				miCopyRows.addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						JTable table = gotaskview.getJTable();
+						UIUtils.copyRows(table);						
+					}
+					
+					
+				});
+				
 				result.add(miDetails);
 				result.addSeparator();
 				result.add(miDefineAsNewSearchResult);
+				result.addSeparator();
+				result.add(miCopyCells);
+				result.add(miCopyRows);
 				return result;
 			}
 		};

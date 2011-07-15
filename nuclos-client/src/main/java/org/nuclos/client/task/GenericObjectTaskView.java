@@ -158,6 +158,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 		tbl.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		scrlpn.setBackground(Color.WHITE);
 		tbl.setBackground(Color.WHITE);
+		UIUtils.setupCopyAction(tbl);
 		setupDragDrop();
 	}
 	

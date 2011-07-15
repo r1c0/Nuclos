@@ -897,6 +897,39 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 
 	};
+	
+	/**
+	 * action: Bookmark
+	 */
+	private final Action actCopyCells = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen"), Icons.getInstance().getIconCopy16(), CommonLocaleDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+        public void actionPerformed(ActionEvent ev) {			
+			UIUtils.copyCells(getResultTable());
+		}
+
+	};
+	
+	/**
+	 * action: Bookmark
+	 */
+	private final Action actCopyRows = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen"), Icons.getInstance().getIconCopy16(), CommonLocaleDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen")) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+        public void actionPerformed(ActionEvent ev) {
+			UIUtils.copyRows(getResultTable());
+		}		
+		
+	};
+
 
 	/**
 	 * action: Open in new tab
@@ -1207,6 +1240,14 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	protected final Action getOpenInNewTabAction() {
 		return this.actOpenInNewTab;
+	}
+	
+	protected final Action getCopyCellsAction() {
+		return this.actCopyCells;
+	}
+	
+	protected final Action getCopyRowsAction() {
+		return this.actCopyRows;
 	}
 
 	/**

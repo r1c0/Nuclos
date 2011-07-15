@@ -337,6 +337,9 @@ public class ResultController<Clct extends Collectable> {
 		pnlResult.miPopupOpenInNewTab.setAction(clctctl.getOpenInNewTabAction());
 		pnlResult.miPopupBookmark.setAction(clctctl.getBookmarkAction());
 		pnlResult.miPopupDefineAsNewSearchResult.setAction(actDefineAsNewSearchResult);
+		pnlResult.miPopupCopyCells.setAction(clctctl.getCopyCellsAction());
+		pnlResult.miPopupCopyRows.setAction(clctctl.getCopyRowsAction());		
+		
 	}
 
 	/**

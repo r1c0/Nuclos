@@ -35,6 +35,8 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Transparency;
 import java.awt.Window;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -50,7 +52,9 @@ import java.util.LinkedList;
 import java.util.concurrent.Callable;
 import java.util.prefs.Preferences;
 
+import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
+import javax.swing.ActionMap;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -67,6 +71,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
+import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.JViewport;
@@ -79,12 +84,21 @@ import javax.swing.text.View;
 import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.NuclosResultPanel;
+import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.ui.collect.SortableCollectableTableModel;
 import org.nuclos.client.ui.labeled.LabeledComponent;
+import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
+import org.nuclos.common.NuclosEOField;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.security.Permission;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.CommonRunnableAdapter;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
+import org.nuclos.common2.exception.CommonFatalException;
 
 /**
  * UI utility methods.
@@ -677,6 +691,44 @@ public class UIUtils {
 			}
 		}
 	}
+	
+	public static void setupCopyAction(final JTable table) {
+		//override copy Action for both tables
+		final ActionMap am = new ActionMap();
+		am.put("copy", new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				final StringBuffer sb = new StringBuffer();
+
+				for (int iSelectedRow : table.getSelectedRows()) {
+					sb.append(getColumnData(table, iSelectedRow));
+				}
+				final StringSelection stsel = new StringSelection(sb.toString());
+				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stsel, stsel);
+			}
+
+			@SuppressWarnings("unchecked")
+			private StringBuffer getColumnData(final JTable table, final int iSelectedRow) {
+				final StringBuffer sb = new StringBuffer();
+				
+				
+				int col[] = table.getSelectedColumns();
+				for(int i = 0; i < col.length; i++) {
+					sb.append(table.getValueAt(iSelectedRow, col[i]));
+					sb.append("\t");
+				}
+				return sb;
+			}
+		});
+		am.setParent(table.getActionMap());
+
+		table.setActionMap(am);
+    }
 
 	/**
 	 * @return the CommandHandler used in <code>runCommand[Later]</code>.
@@ -1346,6 +1398,40 @@ public class UIUtils {
 		}
 		return box;
 	}
+	
+	public static void copyCells(JTable table) {		
+		StringBuffer sb = new StringBuffer();
+		int row = table.getSelectedRow();
+		for(int col : table.getSelectedColumns()) {
+			sb.append(table.getValueAt(row, col));
+			sb.append("\t");
+		}
+		final StringSelection stsel = new StringSelection(sb.toString());
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stsel, stsel);
+	}
+	
+	public static void copyRows(JTable table) {
+		
+		StringBuffer sb = new StringBuffer();
+		for (int iSelectedRow : table.getSelectedRows()) {
+			sb.append(getColumnData(table, iSelectedRow));
+			sb.append("\n");
+		}
+		
+		final StringSelection stsel = new StringSelection(sb.toString());
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stsel, stsel);
+	}
+	
+	private static StringBuffer getColumnData(final JTable table, final int iSelectedRow) {
+		final int iColumnCount = table.getColumnCount();
+		final StringBuffer sb = new StringBuffer();
+		for (int iColumn = 0; iColumn < iColumnCount; iColumn++) {
+			sb.append(table.getValueAt(iSelectedRow, iColumn));
+			sb.append("\t");
+		}
+		return sb;
+	}
+
 
 	public static StatusBarPanel newStatusBar(Component...comps) {
 		final StatusBarPanel result = new StatusBarPanel();
