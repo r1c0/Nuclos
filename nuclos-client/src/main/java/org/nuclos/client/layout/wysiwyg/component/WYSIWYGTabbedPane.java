@@ -20,6 +20,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
@@ -41,6 +42,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
+import javax.swing.KeyStroke;
 import javax.swing.border.Border;
 
 import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor.WYSIWYGLayoutEditorChangeDescriptor;
@@ -221,6 +223,43 @@ public static String PROPERTY_NAME = PROPERTY_LABELS.NAME;
         	getWYSIWYGLayoutEditorChangeDescriptor().setContentChanged();
         }
    }
+   
+   /**
+    * Externalized Method for renaming Tabs
+    * Triggered by Contextual Menu and with Doubleclick on Tab.
+    */
+   private void setMnemonicForTab() {
+        int iSelected = getSelectedIndex();
+
+        JTextField titleTextField;
+        String s = String.valueOf((char)getMnemonicAt(iSelected));
+        if(!(s != null && s.length() > 0)) {
+        	titleTextField = new JTextField();
+        }
+        else { 
+        	int keycode = getMnemonicAt(iSelected);
+        	keycode += 32;
+        	byte b[] = {(byte)keycode};
+			String sKey = new String(b);
+        	titleTextField = new JTextField(sKey);        	
+        }
+        
+        int opt = JOptionPane.showConfirmDialog(
+        	WYSIWYGTabbedPane.this,
+        	new Object[]{ JTABBEDPANE.INPUTDIALOG_SETMNEMONIC_ACTION, titleTextField},
+        	JTABBEDPANE.INPUTDIALOG_SETMNEMONIC_ACTION_TEXT,
+        	JOptionPane.OK_CANCEL_OPTION,
+        	JOptionPane.PLAIN_MESSAGE);
+        if (opt == JOptionPane.OK_OPTION) {
+        	int keycode = titleTextField.getText().trim().charAt(0);
+        	if(keycode > 90)
+				keycode -= 32;
+        	KeyStroke stroke = KeyStroke.getKeyStroke(keycode, InputEvent.ALT_MASK);
+        	if(stroke.getKeyCode() > 0)
+        		setMnemonicAt(iSelected, stroke.getKeyCode());
+        	getWYSIWYGLayoutEditorChangeDescriptor().setContentChanged();
+        }
+   }
 
    private WYSIWYGLayoutEditorChangeDescriptor getWYSIWYGLayoutEditorChangeDescriptor() {
       return this.wysiwygLayoutEditorChangeDescriptor;
@@ -379,6 +418,18 @@ public List<JMenuItem> getAdditionalContextMenuItems(int xClick) {
 
       });
       list.add(miRenameTab);
+      
+      JMenuItem miSetMnemonic = new JMenuItem(JTABBEDPANE.MENUITEM_SET_MNEMONIC);
+      miSetMnemonic.addActionListener(new ActionListener() {
+
+         @Override
+        public void actionPerformed(ActionEvent e) {
+           setMnemonicForTab();
+         }
+
+      });
+      list.add(miSetMnemonic);
+      
 
       JMenuItem miRemoveTab = new JMenuItem(JTABBEDPANE.MENUITEM_REMOVE_TAB);
       miRemoveTab.addActionListener(new ActionListener() {

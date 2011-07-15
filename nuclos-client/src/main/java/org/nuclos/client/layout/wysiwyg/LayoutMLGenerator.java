@@ -425,7 +425,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 				else {
 					sTitle = tabPane.getTitleAt(i);
 				}
-				block.append(getLayoutMLForPanel((WYSIWYGLayoutEditorPanel) c, blockDeep + 1, getLayoutMLTabbedPaneConstraints(tabPane.getTitleAt(i), tabPane.isEnabledAt(i), blockDeep + 1, tabPane.getTabTranslations().get(i), sTitle)));
+				block.append(getLayoutMLForPanel((WYSIWYGLayoutEditorPanel) c, blockDeep + 1, getLayoutMLTabbedPaneConstraints(tabPane.getTitleAt(i), tabPane.isEnabledAt(i), blockDeep + 1, tabPane.getTabTranslations().get(i), sTitle, tabPane.getMnemonicAt(i))));
 			}
 		}
 
@@ -1032,7 +1032,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
 	 */
-	private synchronized StringBuffer getLayoutMLTabbedPaneConstraints(String title, boolean enabled, int blockDeep, TranslationMap translations, String internalname) {
+	private synchronized StringBuffer getLayoutMLTabbedPaneConstraints(String title, boolean enabled, int blockDeep, TranslationMap translations, String internalname, Integer  mnemonic) {
 		LayoutMLBlock block = new LayoutMLBlock(blockDeep);
 
 		block.append("<" + ELEMENT_TABBEDPANECONSTRAINTS + " ");
@@ -1043,6 +1043,10 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		if(internalname != null) {
 			block.append("\" " + ATTRIBUTE_INTERNALNAME + "=\"");
 			block.append(internalname);
+		}
+		if(mnemonic != null && mnemonic > 0) {			
+			block.append("\" " + ATTRIBUTE_MNEMONIC + "=\"");
+			block.append(mnemonic);
 		}
 		block.append("\"");
 		if (translations != null && !translations.isEmpty()) {

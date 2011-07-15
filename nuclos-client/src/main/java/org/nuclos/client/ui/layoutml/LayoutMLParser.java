@@ -184,6 +184,8 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			private String sTitle;
 			private boolean bEnabled = true;
 			private String sInternalname;
+			private String sMnemonic;
+			
 			
 			private TabbedPaneConstraints() {
 			}
@@ -1278,6 +1280,9 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				final int index = tbdpn.indexOfComponent(comp);
 				tbdpn.setEnabledAt(index, tbdpaneconstraints.bEnabled);
 				tbdpn.setTabComponentAt(index, new JLabel(tbdpaneconstraints.sTitle));
+				if(tbdpaneconstraints.sMnemonic != null) {					
+					tbdpn.setMnemonicAt(index, Integer.parseInt(tbdpaneconstraints.sMnemonic));
+				}
 				final JComponent jcomp = (JComponent) tbdpn.getTabComponentAt(index);
 				setupDragDrop(jcomp);
 				if(tbdpaneconstraints.sInternalname != null)
@@ -1818,8 +1823,8 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			 */
 			@Override
             public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes) {
+				//final JInfoTabbedPane tbdpn = new JInfoTabbedPane();
 				final JInfoTabbedPane tbdpn = new JInfoTabbedPane();
-
 				final String sName = attributes.getValue(ATTRIBUTE_NAME);
 				if (sName != null) {
 					tbdpn.setName(sName);
@@ -2873,6 +2878,10 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				final String sInternalname = attributes.getValue(ATTRIBUTE_INTERNALNAME);
 				if(sInternalname != null) {
 					tbc.sInternalname = sInternalname;
+				}
+				final String sMnemonic = attributes.getValue(ATTRIBUTE_MNEMONIC);
+				if(sMnemonic != null) {
+					tbc.sMnemonic = sMnemonic;
 				}
 
 				localizationHandler = tbc;

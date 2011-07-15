@@ -1241,11 +1241,14 @@ public class WYSIWYGStringsAndLabels {
 
 		public static final String MENUITEM_ADD_TAB = "Reiter hinzuf\u00fcgen";
 		public static final String MENUITEM_RENAME_TAB = "Reiter umbenennen";
+		public static final String MENUITEM_SET_MNEMONIC = "Reiter Tastenkürzel";
 		public static final String MENUITEM_REMOVE_TAB = "Reiter entfernen";
 		public static final String MENUITEM_ORDER_TABS = "Reiter umsortieren";
 		public static final String MENUITEM_ENABLE_OR_DISABLE_TABS = "Reiter (de)aktivieren";
 
 		public static final String INPUTDIALOG_RENAME_ACTION_TITLE = "Neuen Namen eingeben:";
+		public static final String INPUTDIALOG_SETMNEMONIC_ACTION = "Tastenkürzel eingeben:";
+		public static final String INPUTDIALOG_SETMNEMONIC_ACTION_TEXT = "Schnelltaste für Tab-Aktivierung eingeben:";
 		public static final String INPUTDIALOG_RENAME_ACTION_BUTTON = "Reiter umbenennen...";
 
 		public static final String INPUTDIALOG_REMOVE_ACTION_TITLE = "W\u00e4hlen sie den Reiter zum Entfernen aus:";

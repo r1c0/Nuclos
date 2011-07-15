@@ -1018,6 +1018,12 @@ public class LayoutMLLoader implements LayoutMLConstants {
 				translations = new TranslationMap();
 				migrateLocaleResourceId(translations, atts);
 				tabbedPane.getTabTranslations().put(tabbedPane.getTabCount() - 1, translations);
+				
+				String sMnemonic = atts.getValue(ATTRIBUTE_MNEMONIC);
+				if(sMnemonic != null) {
+					Integer iMnemonic = Integer.parseInt(sMnemonic);
+					tabbedPane.setMnemonicAt(tabbedPane.getTabCount() - 1 , iMnemonic);
+				}
 
 				String enabled = atts.getValue(ATTRIBUTE_ENABLED);
 				if (enabled != null) {

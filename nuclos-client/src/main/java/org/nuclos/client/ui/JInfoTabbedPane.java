@@ -142,7 +142,7 @@ public class JInfoTabbedPane extends JTabbedPane {
 	private void updateTab(int tab) {
 		final JLabel label = (JLabel) getTabComponentAt(tab);
 		final String title = tabTitles.get(tab);
-		final String text;
+		String text;
 		if(displayTabInfo.get(tab)) {
 			final Integer info = tabInfo.get(tab);
 			if(info == null) {
@@ -169,7 +169,41 @@ public class JInfoTabbedPane extends JTabbedPane {
 		else {
 			text = title;
 		}
+		
+		text = getMnemonicTextIfAny(text, tab);
+		
 		label.setText(text);
+	}
+	
+	/**
+	 * parse text for Mnemonic and underline it
+	 * @param text
+	 * @param tab
+	 * @return
+	 */
+	private String getMnemonicTextIfAny(String text, int tab) {
+		int keycode = this.getMnemonicAt(tab);
+		try {
+			if(keycode > 0) {
+				keycode += 32;			
+				byte b[] = {(byte)keycode};
+				String sKey = new String(b);
+				int index = text.indexOf(sKey);
+				if(index >= 0) {
+					String sBeforeMnemonic = text.substring(0, index);
+					String sAfterMnemonic = text.substring(index+1);
+					text = "<html>" + sBeforeMnemonic + "<u>" + sKey + "</u>" + sAfterMnemonic + "</html>";
+				}
+				else {
+					text = "<html>" + text + "&nbsp;<u>" + sKey + "</u>" + "</html>";
+				}
+				
+			}	
+		}
+		catch (Exception e) {
+			// if any Exception return default text
+		}
+		return text;
 	}
 
 }
