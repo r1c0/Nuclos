@@ -107,6 +107,7 @@ import org.nuclos.server.dblayer.structure.DbSimpleView;
 import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.dblayer.structure.DbTableArtifact;
 import org.nuclos.server.dbtransfer.content.ActionNucletContent;
+import org.nuclos.server.dbtransfer.content.CustomComponentNucletContent;
 import org.nuclos.server.dbtransfer.content.DefaultNucletContent;
 import org.nuclos.server.dbtransfer.content.EntityFieldNucletContent;
 import org.nuclos.server.dbtransfer.content.EntityNucletContent;
@@ -117,6 +118,7 @@ import org.nuclos.server.dbtransfer.content.ImportFileNucletContent;
 import org.nuclos.server.dbtransfer.content.RelationTypenucletContent;
 import org.nuclos.server.dbtransfer.content.ResourceNucletContent;
 import org.nuclos.server.dbtransfer.content.RuleNucletContent;
+import org.nuclos.server.dbtransfer.content.SearchFilterNucletContent;
 import org.nuclos.server.dbtransfer.content.StateNucletContent;
 import org.nuclos.server.dbtransfer.content.UserNucletContent;
 import org.nuclos.server.dbtransfer.content.ValidityType;
@@ -183,10 +185,10 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			importFileNC.setEnabled(false);
 			importUsageNC.setEnabled(false);
 		}
-		
+
 		contents.add(new DefaultNucletContent(NuclosEntity.NUCLET, null, contents, true));
 		contents.add(new DefaultNucletContent(NuclosEntity.NUCLETDEPENDENCE, NuclosEntity.NUCLET, contents, true));
-		
+
 		contents.add(new ResourceNucletContent(contents));
 		contents.add(new RelationTypenucletContent(contents));
 		contents.add(new ActionNucletContent(contents));
@@ -198,7 +200,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		contents.add(new EntitySubnodesNucletContent(contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.ENTITYFIELDGROUP, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.ENTITYRELATION, null, contents));
-		
+
 		contents.add(new DefaultNucletContent(NuclosEntity.GROUPTYPE, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.GROUP, NuclosEntity.GROUPTYPE, contents));
 		contents.add(userNC);
@@ -255,7 +257,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 
 		contents.add(new DefaultNucletContent(NuclosEntity.WEBSERVICE, null, contents));
 
-		contents.add(new DefaultNucletContent(NuclosEntity.CUSTOMCOMPONENT, null, contents));
+		contents.add(new CustomComponentNucletContent(contents));
 
 		contents.add(new DefaultNucletContent(NuclosEntity.REPORT, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.REPORTOUTPUT, NuclosEntity.REPORT, contents));
@@ -274,7 +276,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		contents.add(new DefaultNucletContent(NuclosEntity.ROLESUBFORMCOLUMN, NuclosEntity.ROLESUBFORM, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.ROLEREPORT, NuclosEntity.ROLE, contents));
 
-		contents.add(new DefaultNucletContent(NuclosEntity.SEARCHFILTER, null, contents));
+		contents.add(new SearchFilterNucletContent(contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.SEARCHFILTERUSER, NuclosEntity.SEARCHFILTER, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.SEARCHFILTERROLE, NuclosEntity.SEARCHFILTER, contents));
 
@@ -291,7 +293,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		for (EntityObjectVO nucletObject : getProcessor(NuclosEntity.NUCLET).getAll()) {
 			result.add(new TransferNuclet(nucletObject.getId(), nucletObject.getField("name", String.class)));
 		}
-		
+
 		return CollectionUtils.sorted(result, new Comparator<TransferNuclet>() {
 			@Override
 			public int compare(TransferNuclet o1, TransferNuclet o2) {
@@ -1219,7 +1221,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 					info("import eo: " + getIdentifier(nc, importEO));
 					NucletContentUID uid = uidLocalizedMap.get(new NucletContentUID.Key(nc.getEntity(), importEO.getId()));
 					info("localized uid: " + uid);
-					
+
 					NucletContentProcessor ncp = new NucletContentProcessor(nc, importEO);
 
 					if (!contentSkipped.getValues(nc.getEntity()).contains(importEO)) {
@@ -1232,7 +1234,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 								contentSkipped.addAll(getDependencies(importContentMap, contentTypes, nc, importEO));
 								continue;
 							}
-							
+
 							if (!t.isNuclon()) {
 								ncp.createUIDRecord(uid);
 							}
@@ -1272,33 +1274,33 @@ public class TransferFacadeBean extends NuclosFacadeBean
 				}
 			}
 		}
-		
+
 		info("process nuclet content");
 		for (NucletContentProcessor ncp : contentProcessors) {
 			info(ncp.getEntity().getEntityName() + " import eo: " + getIdentifier(ncp.getNC(), ncp.getNcObject()));
 			if (!contentSkipped.getValues(ncp.getEntity()).contains(ncp.getNcObject())) {
 				info("skipped content dos not contains import eo");
-				
+
 				if (ncp.isCreateUID()) {
 					info("is not nuclon --> store uid");
 					if (!testMode) {
 						logDalCallResult(createUIDRecord(ncp.getUID(), ncp.getEntity(), ncp.getNcObject().getId()), t.result.sbWarning);
 					}
 				}
-				
+
 				else if (ncp.isUpdateUID()) {
 					info("uid version \"" + ncp.getUID().version + "\" differs from import eo version \"" + ncp.getNcObject().getVersion() + "\" --> update version in existing uid");
 					if (!testMode) {
 						logDalCallResult(updateUIDRecord(ncp.getUID().id, ncp.getNcObject().getVersion()), t.result.sbWarning);
 					}
-					
+
 					Integer existingEOversion = getProcessor(ncp.getEntity()).getVersion(ncp.getNcObject().getId());
 					if (!LangUtils.equals(ncp.getUID().version, existingEOversion)) {
 						info("uid version \"" + ncp.getUID().version + "\" differs from existing object version \"" + existingEOversion + "\" --> add overrite information for user");
 						t.result.newWarningLine("Overriting " + ncp.getEntity().getEntityName() + ": " + getIdentifier(ncp.getNC(), ncp.getNcObject()));
 					}
 				}
-				
+
 				info("insert or update");
 				if (!testMode) {
 					// no update of version information here
@@ -1364,7 +1366,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 						contentUntouched.add(existingEO);
 						continue;
 					}
-						
+
 					boolean isInUse = false;
 					// check if in use by user entity
 					for (EntityFieldMetaDataVO efMeta : userFieldDependencies) {
@@ -1408,12 +1410,12 @@ public class TransferFacadeBean extends NuclosFacadeBean
 				}
 			}
 		}
-		
+
 		info("check for references");
 		int oldUntouchedContentSize;
 		do {
 			oldUntouchedContentSize = contentUntouched.getAllValues().size();
-			
+
 			// check if untouched content is referencing on
 			for (NucletContentProcessor ncp : contentProcessors) {
 				info("existing eo: " + getIdentifier(ncp.getNC(), ncp.getNcObject()));
@@ -1421,7 +1423,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 					info(ncp.getEntity().getEntityName() + " existing eo is already untouched");
 					continue;
 				}
-				
+
 				Collection<EntityFieldMetaDataVO> fieldDependencies = ncp.getNC().getFieldDependencies();
 				for (NuclosEntity untouchedContentEntity : contentUntouched.keySet()) {
 					if (entityFieldMetaContainsNuclosEntity(fieldDependencies, untouchedContentEntity)) {
@@ -1432,9 +1434,9 @@ public class TransferFacadeBean extends NuclosFacadeBean
 					}
 				}
 			}
-			
+
 		} while (oldUntouchedContentSize != contentUntouched.getAllValues().size());
-		
+
 		info("process nuclet content");
 		for (NucletContentProcessor ncp : contentProcessors) {
 			info(ncp.getEntity().getEntityName() + " existing eo: " + getIdentifier(ncp.getNC(), ncp.getNcObject()));
@@ -1443,7 +1445,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			} else {
 				info("--> delete existing eo");
 				if (!testMode) {
-					logDalCallResult(ncp.getNC().deleteNcObject(ncp.getNcObject().getId()), t.result.sbWarning);	
+					logDalCallResult(ncp.getNC().deleteNcObject(ncp.getNcObject().getId()), t.result.sbWarning);
 				}
 				if (ncp.isDeleteUID()) {
 					info("delete existing uid");
