@@ -55,7 +55,7 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 	}
 
 	@Override
-	protected void setupListeners(final MutableListModel<CollectableEntityField> listmodelSelectedFields) {
+	protected void setupListeners() {
 		final SelectFixedColumnsPanel panel = getSfcPanel();
 		
 		// add list selection listener for "right" button:

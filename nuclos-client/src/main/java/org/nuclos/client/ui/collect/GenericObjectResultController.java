@@ -30,6 +30,7 @@ import javax.swing.JTable;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
@@ -45,6 +46,9 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
+import org.nuclos.common.entityobject.CollectableEOEntity;
+import org.nuclos.common.entityobject.CollectableEOEntityField;
+import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.PreferencesException;
 
@@ -59,6 +63,8 @@ import org.nuclos.common2.exception.PreferencesException;
  * @since Nuclos 3.1.01
  */
 public class GenericObjectResultController<Clct extends CollectableGenericObjectWithDependants> extends NuclosResultController<Clct> {
+	
+	private static final Logger LOG = Logger.getLogger(GenericObjectResultController.class);
 	
 	/**
 	 * subform name -> pivot information.
@@ -166,8 +172,13 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	private void getFieldsAvaibleInPivotSubform(SortedSet<CollectableEntityField> result, Set<String> stSubEntityLabels, String sSubEntityName) {
 		// remove the subform entries
 		// TODO: make sth sensible here!
-		final PivotInfo info = new PivotInfo("WarenArt", "shortName", "quantityUnit");
+		// final PivotInfo info = new PivotInfo("WarenArt", "shortName", "quantityUnit");
+		final PivotInfo info = getPivotInfo(sSubEntityName);
 		final Map<String, EntityFieldMetaDataVO> fields = MetaDataClientProvider.getInstance().getAllPivotEntityFields(info);
+		for (String fn: fields.keySet()) {
+			final EntityFieldMetaDataVO md = fields.get(fn);
+			result.add(new CollectableEOEntityField(md));
+		}
 	}
 	
 	/**

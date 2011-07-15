@@ -76,7 +76,7 @@ public class CollectableEntityFieldWithEntityForExternal extends CollectableEnti
 	}
 
 	/**
-	 * TODO: This is a HACK that takes debug representation as view representaion.
+	 * TODO: This is a HACK that takes debug representation as view representation.
 	 */
 	@Override
 	public String toString() {

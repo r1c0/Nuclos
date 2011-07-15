@@ -252,13 +252,6 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 		super(new Header(subFormFields));		
 	}
 	
-	public void addActionListener(ActionListener l) {
-		/*
-		if (getHeader() != null)
-			getHeader().getCheckbox().addActionListener(l);
-		 */
-	}
-	
 	public void addPivotItemListener(ItemListener l) {
 		List<ItemListener> listener = getHeader().listener;
 		synchronized (listener) {
@@ -266,7 +259,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 		}
 	}
 	
-	public void removeListDataListener(ItemListener l) {
+	public void removePivotItemListener(ItemListener l) {
 		List<ItemListener> listener = getHeader().listener;
 		synchronized (listener) {
 			listener.remove(l);

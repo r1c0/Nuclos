@@ -52,31 +52,33 @@ public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 		return valueField;
 	}
 	
-	/**
-	 * Only uses the subform field.
-	 */
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (!(o instanceof PivotInfo)) return false;
 		final PivotInfo other = (PivotInfo) o;
-		return subform.equals(other.subform);
+		return subform.equals(other.subform) && keyField.equals(other.keyField) &&
+			valueField.equals(other.valueField);
 	}
 	
-	/**
-	 * Only uses the subform field.
-	 */
 	@Override
 	public int hashCode() {
-		return subform.hashCode() + 82781;
+		int result = subform.hashCode() + 82781;
+		result += 7 * keyField.hashCode() + 123;
+		result += 11 * valueField.hashCode() + 721;
+		return result;
 	}
 
-	/**
-	 * Only uses the subform field.
-	 */
 	@Override
 	public int compareTo(PivotInfo o) {
-		return subform.compareTo(o.subform);
+		int result = subform.compareTo(o.subform);
+		if (result == 0) {
+			result = keyField.compareTo(o.keyField);
+			if (result == 0) {
+				result = valueField.compareTo(o.valueField);
+			}
+		}
+		return result;
 	}
 	
 	@Override

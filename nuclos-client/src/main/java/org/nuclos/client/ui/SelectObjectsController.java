@@ -68,6 +68,7 @@ public class SelectObjectsController<T> extends Controller {
 	public SelectObjectsController(Component parent, SelectObjectsPanel<T> panel) {
 		super(parent);
 		this.panel = panel;
+		setupListeners();
 	}
 
 	/**
@@ -81,7 +82,7 @@ public class SelectObjectsController<T> extends Controller {
 		return model;
 	}
 
-	protected void setupListeners(final MutableListModel<T> listmodelSelectedFields) {
+	protected void setupListeners() {
 		// add list selection listener for "right" button:
 		this.getPanel().getJListAvailableObjects().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			@Override
@@ -190,10 +191,12 @@ public class SelectObjectsController<T> extends Controller {
 				final JList jlstSelectedColumns = SelectObjectsController.this.getPanel().getJListSelectedObjects();
 				final int iIndex = jlstSelectedColumns.getSelectedIndex();
 				final int iNewIndex = iIndex + this.iDirection;
-				if (iNewIndex >= 0 && iNewIndex < listmodelSelectedFields.getSize()) {
-					final Object o = listmodelSelectedFields.getElementAt(iIndex);
-					listmodelSelectedFields.remove(iIndex);
-					listmodelSelectedFields.add(iNewIndex, o);
+				final MutableListModel<T> m = (MutableListModel<T>) getPanel().getJListSelectedObjects().getModel();
+				
+				if (iNewIndex >= 0 && iNewIndex < m.getSize()) {
+					final Object o = m.getElementAt(iIndex);
+					m.remove(iIndex);
+					m.add(iNewIndex, o);
 					jlstSelectedColumns.setSelectedIndex(iNewIndex);
 				}
 			}
@@ -247,9 +250,6 @@ public class SelectObjectsController<T> extends Controller {
 		this.getPanel().getJListSelectedObjects().setModel(listmodelSelectedFields);
 		getPanel().setAvailableColumnsModel(listmodelAvailableFields);
 		getPanel().setSelectedColumnsModel(listmodelSelectedFields);
-
-		// TODO: the listeners are added here so calling run() multiple times is not possible.
-		this.setupListeners(listmodelSelectedFields);
 	}
 
 	protected final List<T> getObjects(ListModel model) {

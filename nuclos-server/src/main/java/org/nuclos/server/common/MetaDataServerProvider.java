@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuclos.common.AbstractProvider;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.MetaDataProvider;
@@ -164,17 +165,19 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 			query.select(from.column(keyField.getDbColumn(), String.class)).maxResults(40);
 			List<String> columns = DataBaseHelper.getDbAccess().executeQuery(query);
 			//
+			final EntityObjectVO vo = new EntityObjectVO();
+			vo.initFields(columns.size(), 1);
+			vo.setEntity(info.getSubform());
+			// vo.setDependants(mpDependants);
+			
 			result = new HashMap<String, EntityFieldMetaDataVO>(columns.size());
 			for (String c: columns) {
-				final EntityObjectVO vo = new EntityObjectVO();
-				vo.initFields(columns.size(), 1);
-				vo.setEntity(info.getSubform());
-				// vo.setDependants(mpDependants);
-				
+				if (StringUtils.isBlank(c)) continue;
 				final EntityFieldMetaDataVO md = new EntityFieldMetaDataVO(vo);
 				md.setDynamic(true);
-				md.setDbColumn(c);
+				md.setDbColumn(keyField.getDbColumn());
 				md.setField(c);
+				md.setFallbacklabel(info.getSubform() + ":" + info.getKeyField() + ":" + c);
 				md.setNullable(Boolean.TRUE);
 				
 				result.put(c, md);
