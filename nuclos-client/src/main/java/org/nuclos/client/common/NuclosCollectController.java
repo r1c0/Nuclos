@@ -843,6 +843,8 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 	/**
 	 * Make visible for ResultPanel
+	 * 
+	 * @deprecated Move to ResultController hierarchy.
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
@@ -851,27 +853,13 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	}
 
 	/**
-	 * Make visible for ResultPanel
-	 */
-	@Override
-	protected void refreshResult() throws CommonBusinessException {
-		//super.refreshResult();
-		cmdRefreshResult();
-	}
-
-	/**
-	 * @deprecated Move to NuclosResultController.
-	 */
-	public void refreshResult(List<Observer> lstObserver) throws CommonBusinessException {
-		cmdRefreshResult(lstObserver);
-	}
-
-	/**
 	 * @todo refactor viewAll()!
+	 * 
+	 * @deprecated Move to ResultController hierarchy.
 	 */
 	@Override
 	protected void viewAll() throws CommonBusinessException {
-		this.refreshResult();
+		getResultController().refreshResult();
 	}
 
 	/**

@@ -151,7 +151,9 @@ public class DatasourceCollectController extends AbstractDatasourceCollectContro
 		return SecurityCache.getInstance().isDeleteAllowedForMasterData(sEntity);
 	}
 
-
+	/**
+	 * @deprecated Move to ResultController hierarchy.
+	 */
 	@Override
 	protected void search() {
 		try {

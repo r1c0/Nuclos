@@ -1104,6 +1104,8 @@ protected void setupSearchToolBar() {
 
    /**
     * @return a specific table model, with support for chunkwise reading.
+    * 
+    * @deprecated Move to ResultController hierarchy.
     */
    @Override
    protected SortableCollectableTableModel<CollectableMasterDataWithDependants> newResultTableModel() {
@@ -1114,18 +1116,24 @@ protected void setupSearchToolBar() {
       TableUtils.addMouseListenerForSortingToTableHeader(this.getResultTable(), result, new CommonRunnable() {
          @Override
       	public void run() {
-            cmdRefreshResult();
+            getResultController().cmdRefreshResult();
          }
       });
 
       return result;
    }
 
+   /**
+	 * @deprecated Move to ResultController hierarchy.
+    */
    @Override
    protected SearchWorker<CollectableMasterDataWithDependants> getSearchWorker() {
       return new ObservableSearchWorker();
    }
 
+   /**
+	 * @deprecated Move to ResultController hierarchy.
+    */
    @Override
    protected SearchWorker<CollectableMasterDataWithDependants> getSearchWorker(List<Observer> lstObservers) {
       ObservableSearchWorker observableSearchWorker = new ObservableSearchWorker();
@@ -1143,6 +1151,9 @@ protected void setupSearchToolBar() {
       return new CollectableMasterDataProxyListAdapter(mdproxylst, this.getCollectableEntity());
    }
 
+   /**
+	 * @deprecated Move to ResultController hierarchy.
+    */
    @Override
    protected void search() throws CommonBusinessException {
       /** @todo move to CollectController! */

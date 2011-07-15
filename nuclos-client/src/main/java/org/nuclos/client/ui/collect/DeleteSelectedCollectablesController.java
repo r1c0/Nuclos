@@ -79,7 +79,7 @@ public class DeleteSelectedCollectablesController <Clct extends Collectable>
 		@Override
 		public void executeFinalAction() throws CommonBusinessException {
 			// NUCLOSINT-884 refresh afterwards
-			ctl.refreshResult();
+			ctl.getResultController().refreshResult();
 		}
 	}
 

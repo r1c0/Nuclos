@@ -90,6 +90,9 @@ public class InstanceCollectController extends NuclosCollectController<Collectab
 		this.getCollectStateModel().addCollectStateListener(new InstanceCollectStateListener());
 	}
 	
+	/**
+	 * @deprecated Move to ResultController hierarchy.
+	 */
 	@Override
 	protected void search() throws CommonBusinessException {
 		try {

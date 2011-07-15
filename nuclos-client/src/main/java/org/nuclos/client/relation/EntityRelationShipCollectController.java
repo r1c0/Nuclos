@@ -248,6 +248,9 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 		return model;
 	}
 	
+	/**
+	 * @deprecated Move to ResultController hierarchy.
+	 */
 	@Override
 	protected void search() {
 		try {

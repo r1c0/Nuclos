@@ -156,6 +156,8 @@ public class UserCollectController extends MasterDataCollectController {
 	 * command: select columns
 	 * Lets the user select the columns to show in the result list.
 	 * @throws CommonBusinessException
+	 *
+	 * @deprecated Move to ResultController hierarchy.
 	 */
 	public void cmdSynchronizeUser(final UserCollectController clctctl) {
 		if(!synchronizeWithLDAP()){
@@ -208,7 +210,7 @@ public class UserCollectController extends MasterDataCollectController {
 
 					}
 					// refresh the result:
-					clctctl.refreshResult();
+					getResultController().refreshResult();
 
 					// reselect the previously selected row (which gets lost be refreshing the model)
 					if (iSelectedRow != -1) {

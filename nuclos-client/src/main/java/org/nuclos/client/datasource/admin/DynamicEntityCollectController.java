@@ -99,7 +99,9 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 		return SecurityCache.getInstance().isDeleteAllowedForMasterData(sEntity);
 	}
 
-
+	/**
+	 * @deprecated Move to ResultController hierarchy.
+	 */
 	@Override
 	protected void search() {
 		try {

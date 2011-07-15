@@ -1441,6 +1441,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		return super.getCollectableSearchCondition();
 	}
 
+	/**
+	 * @deprecated Move to ResultController hierarchy.
+	 */
 	private void cmdRestoreSelectedCollectables(){
 		assert getCollectStateModel().getOuterState() == CollectState.OUTERSTATE_RESULT;
 		assert CollectState.isResultModeSelected(getCollectStateModel().getResultMode());
@@ -1465,7 +1468,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					public void run() {
 						try {
 							checkedRestoreCollectable(getSelectedCollectable());
-							refreshResult();
+							getResultController().refreshResult();
 						}
 						catch (CommonPermissionException ex) {
 							final String sErrorMsg = CommonLocaleDelegate.getMessage("GenericObjectCollectController.66","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz wiederherzustellen.");
@@ -1483,6 +1486,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 	}
 
+	/**
+	 * @deprecated Move to ResultController hierarchy.
+	 */
 	private void cmdRestoreCurrentCollectableInDetails() {
 		assert getCollectStateModel().getCollectState().equals(new CollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_VIEW));
 
@@ -1522,7 +1528,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							if (iNewSelectedRow == -1) {
 								tblResult.clearSelection();
 								// switch to new mode:
-								refreshResult();
+								getResultController().refreshResult();
 							}
 							else {
 								tblResult.setRowSelectionInterval(iNewSelectedRow, iNewSelectedRow);
@@ -1543,6 +1549,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		setDeleteButtonToggleInDetails();
 	}
 
+	/**
+	 * @deprecated Move to ResultController hierarchy.
+	 */
 	private void cmdDeleteCurrentCollectableInDetails() {
 		assert getCollectStateModel().getCollectState().equals(new CollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_VIEW));
 
@@ -1581,7 +1590,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							if (iNewSelectedRow == -1) {
 								tblResult.clearSelection();
 								// switch to new mode:
-								refreshResult();
+								getResultController().refreshResult();
 							}
 							else {
 								tblResult.getSelectionModel().setSelectionInterval(iNewSelectedRow, iNewSelectedRow);
@@ -2189,6 +2198,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	/**
 	 * @return a specific table model with an overridden getValueAt method, providing access to subform entries.
+	 * 
+	 * @deprecated Move to ResultController hierarchy.
 	 */
 	@Override
 	protected SortableCollectableTableModel<CollectableGenericObjectWithDependants> newResultTableModel() {
@@ -2206,6 +2217,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 		}
 
+		/**
+		 * @deprecated Move to ResultController hierarchy.
+		 */
 		class GenericObjectSortingRunnable implements CommonRunnable {
 			@Override
 			public void run() throws CommonBusinessException {
@@ -2219,7 +2233,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				});
 				if (filteredSortKeys.size() == sortKeys.size()) {
 					//NUCLEUSINT-1039
-					cmdSearch();
+					getResultController().cmdSearch();
 				} else {
 					result.setSortKeys(Collections.<SortKey>emptyList(), false);
 					throw new CommonBusinessException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.19","Das Suchergebnis kann nicht nach Unterformularspalten bzw. Vaterspalten sortiert werden."));
@@ -2249,11 +2263,17 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		return getResultPanel().getFixedResultTable();
 	}
 
+	/**
+	 * @deprecated Move to ResultController hierarchy.
+	 */
 	@Override
 	protected SearchWorker<CollectableGenericObjectWithDependants> getSearchWorker() {
 		return new ObservableSearchWorker();
 	}
 
+	/**
+	 * @deprecated Move to ResultController hierarchy.
+	 */
 	@Override
 	protected SearchWorker<CollectableGenericObjectWithDependants> getSearchWorker(List<Observer> lstObservers) {
 		ObservableSearchWorker observableSearchWorker = new ObservableSearchWorker();
@@ -2262,11 +2282,17 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		return observableSearchWorker;
 	}
 
+	/**
+	 * @deprecated Move to ResultController hierarchy.
+	 */
 	@Override
 	protected void search() throws CommonBusinessException {
 		this.search(false);
 	}
 
+	/**
+	 * @deprecated Move to ResultController hierarchy.
+	 */
 	@Override
 	protected void search(boolean bRefreshOnly) throws CommonBusinessException {
 		log.debug("START search");
@@ -3122,6 +3148,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		lodelegate.remove(clctlo.getGenericObjectWithDependantsCVO(), false);
 	}
 
+	/**
+	 * @deprecated Move to ResultController hierarchy.
+	 */
 	protected void checkedDeleteCollectablePhysically(final CollectableGenericObjectWithDependants clctlo) throws CommonBusinessException {
 		if (!isPhysicallyDeleteAllowed(clctlo))
 			throw new CommonPermissionException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.41","Endg\u00fcltiges L\u00f6schen ist nicht erlaubt."));
@@ -3138,7 +3167,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		setHistoricalDate(null);
 
-		refreshResult();
+		getResultController().refreshResult();
 	}
 
 	protected void checkedRestoreCollectable(CollectableGenericObjectWithDependants clct) throws CommonBusinessException {
@@ -5285,6 +5314,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	/**
 	 * inner class ChangeStateForSelectedCollectablesController
+	 * 
+	 * @deprecated Move to ResultController hierarchy.
 	 */
 	private static class ChangeStateForSelectedCollectablesController
 	extends MultiCollectablesActionController<CollectableGenericObjectWithDependants, Object> {
@@ -5343,7 +5374,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				/** @todo this should be done by the search itself! */
 				ctl.getResultController().writeSelectedFieldsAndWidthsToPreferences();
 				// refresh search result in order to reflect changes made by state transitions:
-				ctl.refreshResult();
+				ctl.getResultController().refreshResult();
 				ctl.setCollectState(CollectState.OUTERSTATE_RESULT, CollectState.RESULTMODE_NOSELECTION);
 			}
 		}

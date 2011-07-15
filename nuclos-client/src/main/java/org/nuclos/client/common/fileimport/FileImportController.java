@@ -214,7 +214,7 @@ public class FileImportController<Clct extends Collectable> {
 									JOptionPane.showMessageDialog(clct.getFrame(), pnlResult, CommonLocaleDelegate.getMessage("FileImport.6", "Import"), JOptionPane.INFORMATION_MESSAGE);
 									//JOptionPane.showMessageDialog(parent, "Import erfolgreich abgeschlossen. Es wurden " + fileImport.getCountCreated() + " Datens\u00e4tze erstellt und " + fileImport.getCountUpdated() + " Datens\u00e4tze aktualisiert.\n" + fileImport.getCountError() + " Datens\u00e4tze konnten nicht importiert werden.", "Import", JOptionPane.INFORMATION_MESSAGE);
 								}
-								clct.cmdRefreshResult();
+								clct.getResultController().cmdRefreshResult();
 							}
 							
 							@Override

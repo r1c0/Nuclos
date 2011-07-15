@@ -266,6 +266,9 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 		this.subformctlUsage.getSubForm().removeChangeListener(this.changelistenerDetailsChanged);
 	}
 
+	/**
+	 * @deprecated Move to ResultController hierarchy.
+	 */
 	@Override
 	protected void search() {
 		try {

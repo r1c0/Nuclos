@@ -166,6 +166,9 @@ public class ProcessMonitorCollectController extends NuclosCollectController<Col
 		return new CollectableProcessMonitorModel(ProcessMonitorDelegate.getInstance().getStateGraph(iInsertedModelId));
 	}
 
+	/**
+	 * @deprecated Move to ResultController hierarchy.
+	 */
 	@Override
 	protected void search() throws CommonBusinessException {
 		try {

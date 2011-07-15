@@ -87,7 +87,7 @@ public class NucletCollectController extends MasterDataCollectController {
 	}
 
 	/**
-	 * 
+	 * @deprecated Move to ResultController hierarchy.
 	 */
 	private void setupDetailsToolBar() {
 		//final JToolBar toolbarCustomDetails = UIUtils.createNonFloatableToolBar();
@@ -127,7 +127,7 @@ public class NucletCollectController extends MasterDataCollectController {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						try {
-							NucletCollectController.this.refreshResult();
+							getResultController().refreshResult();
 							NucletCollectController.this.getNewAction().setEnabled(NucletCollectController.this.isNewAllowed());
 						}
 						catch(CommonBusinessException e1) {}
@@ -150,7 +150,7 @@ public class NucletCollectController extends MasterDataCollectController {
 				
 				new DBTransferExport(oNucletId==null?null:((Integer)oNucletId).longValue()).showWizard(Main.getMainFrame().getHomePane());
 				try {
-					NucletCollectController.this.refreshResult();
+					getResultController().refreshResult();
 				}
 				catch(CommonBusinessException e1) {}
 			}

@@ -2,6 +2,8 @@ package org.nuclos.client.ui.collect;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -15,16 +17,24 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JViewport;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import org.apache.commons.lang.NullArgumentException;
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosResultPanel;
+import org.nuclos.client.ui.CommonClientWorkerAdapter;
+import org.nuclos.client.ui.CommonMultiThreader;
+import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.UIUtils.CommandHandler;
+import org.nuclos.client.ui.collect.CollectController.SearchWorker;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
 import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableUtils;
@@ -36,6 +46,7 @@ import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.exception.PreferencesException;
 
 /**
@@ -47,6 +58,8 @@ import org.nuclos.common2.exception.PreferencesException;
  * @since Nuclos 3.1.01
  */
 public class NuclosResultController<Clct extends Collectable> extends ResultController<Clct> {
+	
+	private static final Logger LOG = Logger.getLogger(NuclosResultController.class);
 	
 	public NuclosResultController(CollectableEntity clcte) {
 		super(clcte);
@@ -174,7 +187,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 				};
 				List<Observer> lstObserver = new ArrayList<Observer>();
 				lstObserver.add(finishSearchObserver);
-				((NuclosCollectController<Clct>) clctctl).refreshResult(lstObserver);
+				NuclosResultController.this.refreshResult(lstObserver);
 			}
 		});
 	}
@@ -278,7 +291,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 					};
 					List<Observer> lstObserver = new ArrayList<Observer>();
 					lstObserver.add(finishSearchObserver);
-					((NuclosCollectController<Clct>) clctctl).refreshResult(lstObserver);
+					NuclosResultController.this.refreshResult(lstObserver);
 				}
 
 			});
@@ -301,7 +314,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		TableUtils.addMouseListenerForSortingToTableHeader(fixedTable, (SortableTableModel) tblmodel, new CommonRunnable() {
 	         @Override
 	       	public void run() {
-	             clctctl.cmdRefreshResult();
+	             cmdRefreshResult();
 	          }
 	       });
 
@@ -468,6 +481,21 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 
 	private NuclosResultPanel<Clct> getNuclosResultPanel() {
 		return (NuclosResultPanel<Clct>) getCollectController().getResultPanel();
+	}
+
+	// search stuff
+	
+	public void refreshResult(List<Observer> lstObserver) throws CommonBusinessException {
+		cmdRefreshResult(lstObserver);
+	}
+
+	/**
+	 * Make visible for ResultPanel
+	 */
+	@Override
+	public void refreshResult() throws CommonBusinessException {
+		//super.refreshResult();
+		cmdRefreshResult();
 	}
 
 }

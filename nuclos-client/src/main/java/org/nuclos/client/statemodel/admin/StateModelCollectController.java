@@ -251,6 +251,9 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 		this.subformctlUsages.getSubForm().removeChangeListener(this.changelistenerDetailsChanged);
 	}
 
+	/**
+	 * @deprecated Move to ResultController hierarchy.
+	 */
 	@Override
 	protected void search() {
 		try {

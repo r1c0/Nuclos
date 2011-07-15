@@ -524,9 +524,11 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 
 	/**
 	 * this method is called after the data was imported successfully
+	 * 
+	 * @deprecated Move to NuclosResultController.
 	 */
 	protected void postXMLImport(final CollectController<Clct> clctctl) {
-		clctctl.cmdRefreshResult();
+		clctctl.getResultController().cmdRefreshResult();
 	}
 
 	/**

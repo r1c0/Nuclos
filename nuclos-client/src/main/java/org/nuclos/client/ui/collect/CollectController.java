@@ -521,6 +521,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 		/**
 		 * action: Search
+		 * 
+		 * @deprecated Move to ResultController.
 		 */
 		private final Action actSearch = new CommonAbstractAction("Suchen", Icons.getInstance().getIconFind16(), CommonLocaleDelegate.getMessage("CollectController.30","Suche starten")) {
 			/**
@@ -531,7 +533,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				if(CollectController.this.getCollectPanel().getTabbedPaneSelectedIndex() == CollectPanel.TAB_SEARCH)
-					cmdSearch();
+					getResultController().cmdSearch();
 			}
 		};
 
@@ -2143,6 +2145,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * alternative entry point: view search result (in Results tab)
 	 * @precondition this.isSearchPanelAvailable()
+	 * 
+	 * @deprecated Move to ResultController.
 	 */
 	@SuppressWarnings("deprecation")
 	public final void runViewResults(final CollectableListOfValues clctlovSource) throws CommonBusinessException {
@@ -2183,7 +2187,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 		this.setCollectableSearchConditionInSearchPanel(clctlovSource.getCollectableSearchCondition());
 		this.showFrame();
-		this.cmdSearch();
+		getResultController().cmdSearch();
 		this.getCollectPanel().setTabbedPaneEnabledAt(CollectState.OUTERSTATE_DETAILS, false);
 		this.getCollectPanel().setTabbedPaneEnabledAt(CollectState.OUTERSTATE_SEARCH, false);
 	}
@@ -2263,6 +2267,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @return the search condition to be used for a search. This method returns <code>getCollectableSearchConditionFromSearchPanel()</code>.
 	 *         This condition can be refined by subclasses, by ANDing, ORing or whatever. May be <code>null</code>.
 	 * @postcondition result == null || result.isSyntacticallyCorrect()
+	 * 
+	 * @deprecated Move to ResultController.
 	 */
 	public CollectableSearchCondition getCollectableSearchCondition() throws CollectableFieldFormatException {
 		return this.getCollectableSearchConditionFromSearchPanel(false);
@@ -3823,7 +3829,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		this.deleteCollectable(clct);
 		this.getResultTableModel().remove(clct);
 		broadcastCollectableEvent(clct, MessageType.DELETE_DONE);
-		refreshResult();
+		getResultController().refreshResult();
 	}
 
 	/**
@@ -3905,110 +3911,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * @return Is multithreading enabled?
 	 * TODO remove this method when the transition to multithreading is done ;)
+	 * 
+	 * @deprecated Move to ResultController hierarchy.
 	 */
 	protected boolean isMultiThreadingEnabled() {
 		return false;
-	}
-
-	/**
-	 * Command: search.
-	 * Performs a search, according to the current search condition, if any.
-	 */
-	protected final void cmdSearch() {
-		this.cmdSearch(false);
-	}
-
-	/**
-	 * Command: refresh search result.
-	 * Repeats the current search.
-	 */
-	public final void cmdRefreshResult() {
-		this.cmdSearch(true);
-	}
-
-	/**
-	 * @deprecated Move to NuclosResultController.
-	 */
-	public final void cmdRefreshResult(List<Observer> lstObservers) {
-		this.cmdObservableMultiThreadingSearch(lstObservers);
-	}
-
-	private void saveSearchTerms() {
-		try {
-			CollectableSearchCondition cond = getCollectableSearchCondition();
-			Map<String, CollectableField> m = SearchConditionUtils.getAtomicFieldsMap(cond);
-
-			if(cond != null) {
-				if (cond instanceof AtomicCollectableSearchCondition) {
-	   			if (cond instanceof CollectableLikeCondition) {
-	   				m.put(((CollectableLikeCondition) cond).getFieldName(), new CollectableValueField(((CollectableLikeCondition)cond).getLikeComparand()));
-	   			}
-	   		}
-
-				for(String key : m.keySet()) {
-					ArrayList<String> l = PreferencesUtils.getStringList(getPreferences().node("fields"), key);
-					CollectableField field = m.get(key);
-
-					if(!field.isNull() && field.getValue() != null) {
-						String s = field.getValue().toString();
-						if(l.contains(s))
-							l.remove(s);
-
-						l.add(0, s);
-					}
-					while(l.size() > 10)
-						l.remove(l.size()-1);
-
-					PreferencesUtils.putStringList(getPreferences().node("fields"), key, l);
-
-					MessageExchange.send(
-						new Pair<String, String>(getEntityName(), key),
-						MessageExchangeListener.ObjectType.TEXTFIELD,
-						MessageExchangeListener.MessageType.REFRESH);
-				}
-			}
-		}
-		catch(CollectableFieldFormatException e1) {
-		}
-		catch(PreferencesException e) {
-		}
-	}
-
-	/**
-	 * Command: search.
-	 * Common implementation for cmdSearch() and cmdRefreshResult().
-	 * @param bRefreshOnly Refresh only? (false: perform a new search)
-	 */
-	@SuppressWarnings("deprecation")
-	private void cmdSearch(boolean bRefreshOnly) {
-		log.debug("START cmdSearch");
-		// save search search terms for autocompletion
-		saveSearchTerms();
-		// TODO call getSearchWorker(bRefreshOnly)
-		final SearchWorker<Clct> searchWorker = this.getSearchWorker();
-		if (isMultiThreadingEnabled() && (searchWorker != null)) {
-			this.cmdSearchMultiThreaded(searchWorker, bRefreshOnly);
-		}
-		else {
-			this.cmdSearchSingleThreaded(bRefreshOnly);
-		}
-		log.debug("FINISHED cmdSearch");
-	}
-
-	/**
-	 * Command: search.
-	 * Observable implementation for cmdSearch() and cmdRefreshResult().
-	 * @param lstObservers "search finished" Observers
-	 *
-	 * @deprecated Move to NuclosResultController.
-	 */
-	private void cmdObservableMultiThreadingSearch(List<Observer> lstObservers) {
-		log.debug("START cmdObservableMultiThreadingSearch");
-		final SearchWorker<Clct> searchWorker = this.getSearchWorker(lstObservers);
-		if (searchWorker != null) {
-			this.cmdSearchMultiThreaded(searchWorker, true);
-		}
-		log.debug("FINISHED cmdObservableMultiThreadingSearch");
 	}
 
 	/**
@@ -4046,12 +3953,17 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * This default implementation returns <code>null</code> indicating that single threaded search is used,
 	 * which calls the deprecated search() method.
 	 * TODO add parameter bRefreshOnly
+	 * 
+	 * @deprecated Move to ResultController hierarchy.
 	 */
 	protected SearchWorker<Clct> getSearchWorker() {
 		// leave implementation for derived class
 		return null;
 	}
 
+	/**
+	 * @deprecated Move to ResultController hierarchy.
+	 */
 	protected SearchWorker<Clct> getSearchWorker(List<Observer> lstObservers) {
 		// leave implementation for derived class
 		return null;
@@ -4062,20 +3974,13 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @deprecated Use multithreaded search for new applications.
 	 * TODO replace with search(boolean bRefreshOnly)
 	 * @see #getSearchWorker()
+	 * 
+	 * @deprecated Move to ResultController hierarchy.
 	 */
 	@Deprecated
 	protected void search() throws CommonBusinessException {
 		// leave implementation for derived class
 		throw new UnsupportedOperationException("search");
-	}
-
-	/**
-	 * refreshes the search result by repeating the recent
-	 * @throws CommonBusinessException
-	 */
-	@SuppressWarnings("deprecation")
-	protected void refreshResult() throws CommonBusinessException {
-		this.search(true);
 	}
 
 	/**
@@ -4086,132 +3991,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	@Deprecated
 	protected void search(boolean bRefreshOnly) throws CommonBusinessException {
 		this.search();
-	}
-
-	/**
-	 * Command: search.
-	 * Performs a search, according to the current search condition, if any.
-	 * @param bRefreshOnly Refresh only? (false: perform a new search)
-	 * @deprecated always search multi threaded
-	 */
-	@Deprecated
-	private void cmdSearchSingleThreaded(final boolean bRefreshOnly) {
-		UIUtils.runCommand(this.getFrame(), new Runnable() {
-			@Override
-            public void run() {
-				try {
-					if (!CollectController.this.stopEditingInSearch()) {
-						throw new CommonValidationException("Die eingegebene Suchbedingung ist ung\u00fcltig bzw. unvollst\u00e4ndig.");
-					}
-					else {
-						// update the status bar before performing the search:
-						UIUtils.paintImmediately(CollectController.this.getSearchPanel().tfStatusBar);
-
-						// Write the column widths to preferences, so they can be restored after searching is finished
-						getResultController().writeSelectedFieldsAndWidthsToPreferences();
-
-						adjustVerticalScrollBarForSearch(bRefreshOnly);
-
-						search(bRefreshOnly);
-
-						if (CollectController.this.isSearchPanelAvailable()) {
-							// TODO On refresh, it's "counter intuitive" to leave result mode here.
-							setCollectState(CollectState.OUTERSTATE_SEARCH, CollectState.SEARCHMODE_SYNCHED);
-						}
-						setCollectState(CollectState.OUTERSTATE_RESULT, CollectState.RESULTMODE_NOSELECTION);
-
-						// Searching is finished, the result columns have been replaced in the model, so retore the previous widths
-						getResultController().setColumnWidths(getResultTable());
-						if(CollectController.this.getResultPanel() != null){
-							CollectController.this.getResultPanel().requestFocusInWindow();
-						}
-					}
-				}
-				catch (CommonBusinessException ex) {
-					Errors.getInstance().showExceptionDialog(getFrame(), ex);
-				}
-			}
-		});
-	}
-
-	/**
-	 * @param searchworker
-	 * @precondition searchworker != null
-	 */
-	private void cmdSearchMultiThreaded(final SearchWorker<Clct> searchworker, final boolean bRefreshOnly) {
-		UIUtils.runShortCommand(getFrame(), new CommonRunnable() {
-			@Override
-            public void run() throws CommonValidationException {
-				if (searchworker == null) {
-					throw new NullArgumentException("searchworker");
-				}
-
-				if (!CollectController.this.stopEditingInSearch()) {
-					throw new CommonValidationException("Die eingegebene Suchbedingung ist ung\u00fcltig bzw. unvollst\u00e4ndig.");
-				}
-				else {
-					// TODO remove - painting isn't necessary here:
-					UIUtils.paintImmediately(CollectController.this.getSearchPanel().tfStatusBar);
-					getResultController().writeSelectedFieldsAndWidthsToPreferences();
-					final List<Clct> selected = CollectController.this.getSelectedCollectables();
-					CollectController.this.adjustVerticalScrollBarForSearch(bRefreshOnly);
-
-					CommonMultiThreader.getInstance().execute(new CommonClientWorkerAdapter<Clct>(CollectController.this) {
-						private volatile List<Clct> lstclctResult;
-
-						@Override
-						public void init() throws CommonBusinessException {
-							super.init();
-
-							searchworker.startSearch();
-						}
-
-						@Override
-						public void work() throws CommonBusinessException {
-							this.lstclctResult = searchworker.getResult();
-						}
-
-						@Override
-						public void paint() throws CommonBusinessException {
-							if (this.lstclctResult != null) {
-								searchworker.finishSearch(this.lstclctResult);
-
-								if (CollectController.this.isSearchPanelAvailable()) {
-									// TODO On refresh, it's "counter intuitive" to leave result mode here.
-									CollectController.this.setCollectState(CollectState.OUTERSTATE_SEARCH, CollectState.SEARCHMODE_SYNCHED);
-								}
-								if(selected != null && !selected.isEmpty()) {
-									selected.clear();
-								}
-								CollectController.this.setCollectState(CollectState.OUTERSTATE_RESULT, CollectState.RESULTMODE_NOSELECTION);
-							}
-
-							super.paint();
-							if(CollectController.this.getResultPanel() != null){
-								CollectController.this.getResultPanel().requestFocusInWindow();
-							}
-						}
-					});
-				}
-			}
-		});
-	}
-
-	private void adjustVerticalScrollBarForSearch(boolean bRefreshOnly) {
-		final JViewport viewport = getResultPanel().getResultTableScrollPane().getViewport();
-		if (bRefreshOnly) {
-			final Rectangle rect = getResultTable().getCellRect(0, 0, true);
-			final Rectangle viewRect = viewport.getViewRect();
-			// There seem to be different opinions about what scrollRectToVisible has to do at SUN and everywhere else...
-			rect.setLocation(viewRect.x, viewRect.y);//rect.x - viewRect.x, rect.y - viewRect.y);
-			viewport.scrollRectToVisible(rect);
-		}
-		else {
-			Point viewPosition = viewport.getViewPosition();
-			viewport.setViewPosition(new Point(viewPosition.x, 0));
-		}
-		final JScrollBar scrlbarVertical = getResultPanel().getResultTableScrollPane().getVerticalScrollBar();
-		scrlbarVertical.setValue(scrlbarVertical.getMinimum());
 	}
 
 	/**
@@ -4595,6 +4374,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	/**
 	 * TODO: add precondition this.isSearchPanelAvailable()
+	 * 
+	 * @deprecated move to ResultController hierarchy.
 	 */
 	public SearchPanel getSearchPanel() {
 		return this.getCollectPanel().getSearchPanel();
