@@ -84,13 +84,19 @@ public class ProcessMonitorCollectController extends NuclosCollectController<Col
 		// TODO Auto-generated constructor stub
 	}
 	
+	/**
+	 * @deprecated Move to DetailsController hierarchy and make protected again.
+	 */
 	@Override
-	protected void addAdditionalChangeListenersForDetails() {		
+	public void addAdditionalChangeListenersForDetails() {		
 		this.pnlEdit.getProcessMonitorEditor().addChangeListener(this.changelistenerDetailsChanged);
 	}
 
+	/**
+	 * @deprecated Move to DetailsController and make protected again.
+	 */
 	@Override
-	protected void removeAdditionalChangeListenersForDetails() {
+	public void removeAdditionalChangeListenersForDetails() {
 		this.pnlEdit.getProcessMonitorEditor().removeChangeListener(this.changelistenerDetailsChanged);
 	}
 

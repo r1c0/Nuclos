@@ -42,7 +42,7 @@ import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.client.ui.collect.ResultPanel;
+import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;

@@ -144,18 +144,18 @@ public class CodeCollectController extends MasterDataCollectController {
 	}
 
 	/**
-	 *
+	 * @deprecated Move to DetailsController hierarchy and make protected again.
 	 */
 	@Override
-	protected void addAdditionalChangeListenersForDetails() {
+	public void addAdditionalChangeListenersForDetails() {
 		pnlEdit.addChangeListener(this.changelistenerDetailsChanged);
 	}
 
 	/**
-	 *
+	 * @deprecated Move to DetailsController hierarchy and make protected again.
 	 */
 	@Override
-	protected void removeAdditionalChangeListenersForDetails() {
+	public void removeAdditionalChangeListenersForDetails() {
 		pnlEdit.removeChangeListener(this.changelistenerDetailsChanged);
 	}
 

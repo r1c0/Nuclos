@@ -28,6 +28,7 @@ import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
+import org.nuclos.client.ui.collect.result.GenericObjectResultController;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;

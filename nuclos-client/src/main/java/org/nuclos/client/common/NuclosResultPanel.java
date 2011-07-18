@@ -73,10 +73,10 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
-import org.nuclos.client.ui.collect.ResultPanel;
 import org.nuclos.client.ui.collect.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
+import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
@@ -562,8 +562,11 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 		return ClientPreferences.getUserPreferences().node("transfer");
 	}
 
+	/**
+	 * TODO: Make this protected again.
+	 */
 	@Override
-	protected void setColumnWidths(JTable tblResult, boolean bUseCustomColumnWidths, Preferences preferences) {
+	public void setColumnWidths(JTable tblResult, boolean bUseCustomColumnWidths, Preferences preferences) {
 		super.setColumnWidths(tblResult, bUseCustomColumnWidths, preferences);
 
 		final List<Integer> lstWidthsFromPreferences = getFixedTableColumnWidthsFromPreferences(preferences);
@@ -617,20 +620,29 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 		this.stFixedColumns = stFixedColumns;
 	}
 	
+	/**
+	 * TODO: Make this protected again.
+	 */
 	@Override
-	protected void addDoubleClickMouseListener(MouseListener mouselistener) {
+	public void addDoubleClickMouseListener(MouseListener mouselistener) {
 		super.addDoubleClickMouseListener(mouselistener);
 		tblFixedResult.addMouseListener(mouselistener);
 	}
 
+	/**
+	 * TODO: Make this protected again.
+	 */
 	@Override
-	protected void removeDoubleClickMouseListener(MouseListener mouselistener) {
+	public void removeDoubleClickMouseListener(MouseListener mouselistener) {
 		super.removeDoubleClickMouseListener(mouselistener);
 		tblFixedResult.removeMouseListener(mouselistener);
 	}
 	
+	/**
+	 * TODO: Make this protected again.
+	 */
 	@Override
-	protected void addPopupMenuListener() {
+	public void addPopupMenuListener() {
 		super.addPopupMenuListener();
 
 		// popup menu for rows:

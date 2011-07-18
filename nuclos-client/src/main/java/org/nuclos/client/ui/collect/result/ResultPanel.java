@@ -14,7 +14,7 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.client.ui.collect;
+package org.nuclos.client.ui.collect.result;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -58,6 +58,12 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.StatusBarTextField;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.CollectController;
+import org.nuclos.client.ui.collect.CollectPanel;
+import org.nuclos.client.ui.collect.CollectableEntityFieldBasedTableModel;
+import org.nuclos.client.ui.collect.CollectableTableHelper;
+import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
@@ -184,8 +190,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public final JMenuItem miPopupCopyRows = new JMenuItem(CommonLocaleDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen"));
 	public final JMenu miGenerations = new JMenu(CommonLocaleDelegate.getMessage("ResultPanel.12","Arbeitsschritte"));
 	
-	
-	TableHeaderColumnPopupListener tableHeaderColumnListener;
+	private TableHeaderColumnPopupListener tableHeaderColumnListener;
 	
 	public ResultPanel() {
 		super(new BorderLayout());
@@ -231,6 +236,20 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		this.miPopupEdit.setFont(this.miPopupEdit.getFont().deriveFont(Font.BOLD));
 		
 		init();
+	}
+	
+	/**
+	 * TODO: Make this package visible.
+	 */
+	public final TableHeaderColumnPopupListener getTableHeaderColumnPopupListener() {
+		return tableHeaderColumnListener;
+	}
+	
+	/**
+	 * TODO: Make this package visible.
+	 */
+	public final void setTableHeaderColumnPopupListener(TableHeaderColumnPopupListener tableHeaderColumnListener) {
+		this.tableHeaderColumnListener = tableHeaderColumnListener;
 	}
 	
 	/**
@@ -551,8 +570,10 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	/**
 	 * @param lstclctefSelected
 	 * @return field -> column width
+	 * 
+	 * TODO: Make protected again.
 	 */
-	protected Map<String, Integer> getVisibleColumnWidth(List<? extends CollectableEntityField> lstclctefSelected) {
+	public Map<String, Integer> getVisibleColumnWidth(List<? extends CollectableEntityField> lstclctefSelected) {
 		// remember the widths of the currently visible columns
 		final Map<String, Integer> result = new HashMap<String, Integer>();
 		for (CollectableEntityField clctef : lstclctefSelected) {
@@ -565,8 +586,10 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	/**
 	 * @param lstclctefColumns
 	 * @param mpWidths field name -> column width
+	 * 
+	 * TODO: Make this protected again.
 	 */
-	protected void restoreColumnWidths(List<? extends CollectableEntityField> lstclctefColumns, Map<String, Integer> mpWidths) {
+	public void restoreColumnWidths(List<? extends CollectableEntityField> lstclctefColumns, Map<String, Integer> mpWidths) {
 		// restore the widths of the still present columns
 		for (final CollectableEntityField clctef : lstclctefColumns) {
 			if (mpWidths.containsKey(clctef.getName())) {
@@ -583,8 +606,10 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 *
 	 * @param table for compatibility with old code the tabel is geven to this method
 	 * 			could be removed later
+	 * 
+	 * TODO: Make this protected again.
 	 */
-	protected void setupTableCellRenderers(JTable table) {
+	public void setupTableCellRenderers(JTable table) {
 		int iRowHeight = SubForm.MIN_ROWHEIGHT;
 		// setup a table cell renderer for each column:
 		for (Enumeration<TableColumn> enumeration = table.getColumnModel().getColumns(); enumeration.hasMoreElements();) {
@@ -604,8 +629,10 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 * sets all column widths to user prefs; set optimal width if no preferences yet saved
 	 * Copied from the SubFormController
 	 * @param tblResult
+	 * 
+	 * TODO: Make this protected again.
 	 */
-	protected void setColumnWidths(JTable tblResult, boolean bUseCustomColumnWidths, Preferences prefs) {
+	public void setColumnWidths(JTable tblResult, boolean bUseCustomColumnWidths, Preferences prefs) {
 		//log.debug("setColumnWidths");
 
 		final List<Integer> lstWidthsFromPreferences =  this.getTableColumnWidthsFromPreferences(prefs);
@@ -690,15 +717,24 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		}
 	}  // inner class PopupMenuRowsListener
 
-	protected void addDoubleClickMouseListener(MouseListener mouselistener) {
+	/**
+	 * TODO: Make this protected again.
+	 */
+	public void addDoubleClickMouseListener(MouseListener mouselistener) {
 		tblResult.addMouseListener(mouselistener);
 	}
 
-	protected void removeDoubleClickMouseListener(MouseListener mouselistener) {
+	/**
+	 * TODO: Make this protected again.
+	 */
+	public void removeDoubleClickMouseListener(MouseListener mouselistener) {
 		tblResult.removeMouseListener(mouselistener);
 	}
 
-	protected void addPopupMenuListener() {
+	/**
+	 * TODO: Make this protected again.
+	 */
+	public void addPopupMenuListener() {
 		// popup menu for rows:
 		tblResult.addMouseListener(new PopupMenuRowsListener(popupmenuRow, tblResult));
 	}
@@ -715,8 +751,10 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 	/**
 	 * Popup menu for the columns in the Result table.
+	 * 
+	 * TODO: Should be private or protected.
 	 */
-	protected static abstract class TableHeaderColumnPopupListener extends AbstractJPopupMenuListener {
+	public static abstract class TableHeaderColumnPopupListener extends AbstractJPopupMenuListener {
 
 		private Point ptLastOpened;
 		public JPopupMenu popupmenuColumn = new JPopupMenu();

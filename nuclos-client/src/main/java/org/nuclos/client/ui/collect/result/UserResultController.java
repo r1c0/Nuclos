@@ -14,7 +14,7 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.client.ui.collect;
+package org.nuclos.client.ui.collect.result;
 
 import java.util.Comparator;
 import java.util.SortedSet;

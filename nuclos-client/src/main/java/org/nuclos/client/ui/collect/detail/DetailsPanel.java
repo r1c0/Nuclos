@@ -14,7 +14,7 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.client.ui.collect;
+package org.nuclos.client.ui.collect.detail;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -56,6 +56,8 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.CollectPanel;
+import org.nuclos.client.ui.collect.SearchOrDetailsPanel;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
 import org.nuclos.client.ui.collect.component.model.DetailsEditModel;
 import org.nuclos.client.ui.collect.indicator.CollectPanelIndicator;
@@ -159,7 +161,7 @@ public class DetailsPanel extends SearchOrDetailsPanel {
 		//this.add(pnlToolBar, BorderLayout.NORTH);
 		
 		if (withScrollbar) {
-			this.scrlpnDetails = new JScrollPane(this.pnlCenter, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			this.scrlpnDetails = new JScrollPane(getCenteringPanel(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			this.scrlpnDetails.setBorder(BorderFactory.createEmptyBorder());
 			this.scrlpnDetails.getHorizontalScrollBar().setUnitIncrement(20);
 			this.scrlpnDetails.getVerticalScrollBar().setUnitIncrement(20);
@@ -170,7 +172,7 @@ public class DetailsPanel extends SearchOrDetailsPanel {
 			this.setCenterComponent(scrlpnDetails);
 		} else {
 			this.scrlpnDetails = null;
-			this.setCenterComponent(pnlCenter);
+			this.setCenterComponent(getCenteringPanel());
 		}
 		this.setSouthComponent(UIUtils.newStatusBar(this.btnFirst, this.btnPrevious, this.btnNext, this.btnLast, Box.createHorizontalStrut(10), this.tfStatusBar));
 		

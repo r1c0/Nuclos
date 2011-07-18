@@ -36,9 +36,9 @@ import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.PredicateUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.client.common.SearchConditionSubFormController;
-import org.nuclos.client.ui.collect.SearchPanel;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponent.CanDisplay;
+import org.nuclos.client.ui.collect.search.SearchPanel;
 
 /**
  * <code>SearchPanel</code> for <code>GenericObjectCollectController</code>.
@@ -94,9 +94,11 @@ public class GenericObjectSearchPanel extends SearchPanel {
 	/**
 	 * @param cond May be <code>null</code>.
 	 * @return Can the given search condition be displayed in the search fields?
+	 * 
+	 * TODO: Make this protected again.
 	 */
 	@Override
-	protected boolean canDisplayConditionInFields(CollectableSearchCondition cond) {
+	public boolean canDisplayConditionInFields(CollectableSearchCondition cond) {
 		return SearchConditionUtils.trueIfNull(cond).accept(new CanDisplayConditionInFieldsVisitor(this));
 	}
 

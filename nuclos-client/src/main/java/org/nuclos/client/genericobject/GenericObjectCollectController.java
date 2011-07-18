@@ -150,12 +150,6 @@ import org.nuclos.client.ui.collect.CollectableComponentsProvider;
 import org.nuclos.client.ui.collect.CollectableTableModel;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.DeleteSelectedCollectablesController;
-import org.nuclos.client.ui.collect.DetailsCollectableEventListener;
-import org.nuclos.client.ui.collect.DetailsPanel;
-import org.nuclos.client.ui.collect.GenericObjectResultController;
-import org.nuclos.client.ui.collect.ResultController;
-import org.nuclos.client.ui.collect.ResultPanel;
-import org.nuclos.client.ui.collect.SearchPanel;
 import org.nuclos.client.ui.collect.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.UpdateSelectedCollectablesController.UpdateAction;
@@ -181,6 +175,15 @@ import org.nuclos.client.ui.collect.component.model.EditModel;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModel;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchEditModel;
+import org.nuclos.client.ui.collect.detail.DetailsCollectableEventListener;
+import org.nuclos.client.ui.collect.detail.DetailsPanel;
+import org.nuclos.client.ui.collect.result.GenericObjectResultController;
+import org.nuclos.client.ui.collect.result.ResultController;
+import org.nuclos.client.ui.collect.result.ResultPanel;
+import org.nuclos.client.ui.collect.search.ObservableSearchWorker;
+import org.nuclos.client.ui.collect.search.SearchPanel;
+import org.nuclos.client.ui.collect.search.SearchWorker;
+import org.nuclos.client.ui.collect.strategy.CompleteCollectablesStrategy;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.client.ui.multiaction.MultiActionProgressPanel;
@@ -1247,8 +1250,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			this.iSearchDeleted = CollectableGenericObjectSearchExpression.SEARCH_UNDELETED;
 	}
 
+	/**
+	 * @deprecated Move to SearchController and make protected again.
+	 */
 	@Override
-	protected CollectableFieldsProviderFactory getCollectableFieldsProviderFactoryForSearchEditor() {
+	public CollectableFieldsProviderFactory getCollectableFieldsProviderFactoryForSearchEditor() {
 		return GenericObjectCollectableFieldsProviderFactory.newFactory(getCollectableEntity().getName(), valueListProviderCache);
 	}
 
@@ -1551,8 +1557,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	/**
 	 * @deprecated Move to ResultController hierarchy.
+	 * 
+	 * @deprecated Move to a specialization of DetailsController and make private again.
 	 */
-	private void cmdDeleteCurrentCollectableInDetails() {
+	public void cmdDeleteCurrentCollectableInDetails() {
 		assert getCollectStateModel().getCollectState().equals(new CollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_VIEW));
 
 		if (stopEditingInDetails()) {
@@ -1766,32 +1774,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	@Override
 	public void executeBusinessRules(List<RuleVO> lstRuleVO, boolean bSaveAfterRuleExecution) throws CommonBusinessException{
 		GenericObjectDelegate.getInstance().executeBusinessRules(lstRuleVO, getSelectedCollectable().getGenericObjectWithDependantsCVO(), bSaveAfterRuleExecution);
-	}
-
-	private final class ObservableSearchWorker extends Observable implements SearchWorker<CollectableGenericObjectWithDependants> {
-		@Override
-		public void startSearch() throws CommonBusinessException {
-			/** @todo maybe this could be done already in the CollectController? */
-			makeConsistent(true);
-
-			removePreviousChangeListenersForResultTableVerticalScrollBar();
-		}
-
-		@Override
-		public ProxyList<CollectableGenericObjectWithDependants> getResult() throws CommonBusinessException {
-			return getSearchResult();
-		}
-
-		@Override
-		public void finishSearch(List<CollectableGenericObjectWithDependants> lstclctResult) {
-			setCollectableProxyList((ProxyList<CollectableGenericObjectWithDependants>) lstclctResult);
-
-			fillResultPanel(lstclctResult, lstclctResult.size(), false);
-
-			setupChangeListenerForResultTableVerticalScrollBar();
-			super.setChanged();
-			super.notifyObservers("search finished");
-		}
 	}
 
 	public void setupAdditionalActions() {
@@ -2029,25 +2011,37 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			subformctl.getSubForm().removeChangeListener(getChangeListener(bSearchable));
 	}
 
+	/**
+	 * @deprecated Move to SearchController specialization.
+	 */
 	@Override
-	protected void addAdditionalChangeListenersForSearch() {
+	public void addAdditionalChangeListenersForSearch() {
 		super.addAdditionalChangeListenersForSearch();
 		clctSearchState.getSearchModel().addCollectableComponentModelListener(ccmlistenerSearchChanged);
 	}
 
+	/**
+	 * @deprecated Move to SearchController and make protected again.
+	 */
 	@Override
-	protected void removeAdditionalChangeListenersForSearch() {
+	public void removeAdditionalChangeListenersForSearch() {
 		removeAdditionalChangeListeners(true);
 		clctSearchState.getSearchModel().removeCollectableComponentModelListener(ccmlistenerSearchChanged);
 	}
 
+	/**
+	 * @deprecated Move to DetailsController hierarchy and make protected again.
+	 */
 	@Override
-	protected void addAdditionalChangeListenersForDetails() {
+	public void addAdditionalChangeListenersForDetails() {
 		addAdditionalChangeListeners(false);
 	}
 
+	/**
+	 * @deprecated Move to DetailsController and make protected again.
+	 */
 	@Override
-	protected void removeAdditionalChangeListenersForDetails() {
+	public void removeAdditionalChangeListenersForDetails() {
 		removeAdditionalChangeListeners(false);
 	}
 
@@ -2098,9 +2092,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @return the search condition contained in the search panel's fields (including the subforms' search fields).
 	 * @precondition this.isSearchPanelAvailable()
 	 * @postcondition result == null || result.isSyntacticallyCorrect()
+	 * 
+	 * @deprecated Move to SearchController or SearchPanel and make protected again. 
 	 */
 	@Override
-	protected CollectableSearchCondition getCollectableSearchConditionFromSearchFields(boolean bMakeConsistent) throws CollectableFieldFormatException {
+	public CollectableSearchCondition getCollectableSearchConditionFromSearchFields(boolean bMakeConsistent) throws CollectableFieldFormatException {
 		if (!isSearchPanelAvailable())
 			throw new IllegalStateException("!this.isSearchPanelAvailable()");
 		final CollectableSearchCondition cond = super.getCollectableSearchConditionFromSearchFields(bMakeConsistent);
@@ -2130,9 +2126,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/**
 	 * @return the search condition to display. Includes the currently selected global search filter's search condition (if any).
 	 * @throws CollectableFieldFormatException
+	 * 
+	 * @deprecated Move to SearchController and make protected again. 
 	 */
 	@Override
-	protected CollectableSearchCondition getCollectableSearchConditionToDisplay() throws CollectableFieldFormatException {
+	public CollectableSearchCondition getCollectableSearchConditionToDisplay() throws CollectableFieldFormatException {
 		final CompositeCollectableSearchCondition compositecond = new CompositeCollectableSearchCondition(LogicalOperator.AND);
 
 		final CollectableSearchCondition clctcond = super.getCollectableSearchConditionToDisplay();
@@ -2264,19 +2262,19 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	/**
-	 * @deprecated Move to ResultController hierarchy.
+	 * @deprecated Move to ResultController hierarchy and make protected again.
 	 */
 	@Override
-	protected SearchWorker<CollectableGenericObjectWithDependants> getSearchWorker() {
-		return new ObservableSearchWorker();
+	public SearchWorker<CollectableGenericObjectWithDependants> getSearchWorker() {
+		return new ObservableSearchWorker(this);
 	}
 
 	/**
-	 * @deprecated Move to ResultController hierarchy.
+	 * @deprecated Move to ResultController hierarchy and make protected again.
 	 */
 	@Override
-	protected SearchWorker<CollectableGenericObjectWithDependants> getSearchWorker(List<Observer> lstObservers) {
-		ObservableSearchWorker observableSearchWorker = new ObservableSearchWorker();
+	public SearchWorker<CollectableGenericObjectWithDependants> getSearchWorker(List<Observer> lstObservers) {
+		ObservableSearchWorker observableSearchWorker = new ObservableSearchWorker(this);
 		for(Observer observer : lstObservers)
 			observableSearchWorker.addObserver(observer);
 		return observableSearchWorker;
@@ -2291,10 +2289,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	/**
-	 * @deprecated Move to ResultController hierarchy.
+	 * @deprecated Move to ResultController hierarchy and make this protected again.
 	 */
 	@Override
-	protected void search(boolean bRefreshOnly) throws CommonBusinessException {
+	public void search(boolean bRefreshOnly) throws CommonBusinessException {
 		log.debug("START search");
 
 		/** @todo move to CollectController! */
@@ -2312,8 +2310,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @throws CollectableFieldFormatException
 	 * @postcondition result != null
 	 * @own-thread
+	 * 
+	 * TODO: Make this private again.
 	 */
-	private ProxyList<CollectableGenericObjectWithDependants> getSearchResult() throws CollectableFieldFormatException {
+	public ProxyList<CollectableGenericObjectWithDependants> getSearchResult() throws CollectableFieldFormatException {
 		final CollectableGenericObjectSearchExpression clctexprInternal = getInternalSearchExpression();
 		clctexprInternal.setValueListProviderDatasource(getValueListProviderDatasource());
 		clctexprInternal.setValueListProviderDatasourceParameter(getValueListProviderDatasourceParameter());
@@ -2359,8 +2359,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		return GenericObjectUtils.containsParentField(getSelectedFields(), this.getParentEntityName());
 	}
 
-	// @todo move to ResultController or ResultPanel?
-	protected void setCollectableProxyList(ProxyList<CollectableGenericObjectWithDependants> proxylstclct) {
+	/**
+	 * TODO: Make this protected again.
+	 * 
+	 * @deprecated Move to ObservableSearchWorker???
+	 */
+	public void setCollectableProxyList(ProxyList<CollectableGenericObjectWithDependants> proxylstclct) {
 		this.proxylstclct = proxylstclct;
 	}
 
@@ -2372,14 +2376,19 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/**
 	 * sets up the change listener for the vertical scrollbar of the result table,
 	 * only if the proxy list has been set (that is not before the first search).
+	 * 
+	 * TODO: Make this protected again.
 	 */
-	protected void setupChangeListenerForResultTableVerticalScrollBar() {
+	public void setupChangeListenerForResultTableVerticalScrollBar() {
 		final ProxyList<? extends Collectable> lstclct = getCollectableProxyList();
 		if (lstclct != null)
 			getResultPanel().setupChangeListenerForResultTableVerticalScrollBar(lstclct, getFrame());
 	}
 
-	protected void removePreviousChangeListenersForResultTableVerticalScrollBar() {
+	/**
+	 * TODO: Make this proteced again.
+	 */
+	public void removePreviousChangeListenersForResultTableVerticalScrollBar() {
 		final JScrollBar scrlbarVertical = getResultPanel().getResultTableScrollPane().getVerticalScrollBar();
 		final DefaultBoundedRangeModel model = (DefaultBoundedRangeModel) scrlbarVertical.getModel();
 		GenericObjectResultPanel.removePreviousChangeListenersForResultTableVerticalScrollBar(model);
@@ -2757,9 +2766,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/**
 	 * Get also changes in subforms
 	 * @todo move to DetailsPanel
+	 * 
+	 * TODO: Make this protected again.
 	 */
 	@Override
-	protected String getMultiEditChangeString() {
+	public String getMultiEditChangeString() {
 		final String sChangesSoFar = super.getMultiEditChangeString();
 		final StringBuilder sbResult = new StringBuilder(sChangesSoFar);
 
@@ -4362,9 +4373,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @param cond
 	 * @param bClearSearchFields
 	 * @throws CommonBusinessException
+	 * 
+	 * @deprecated Move to SearchController hierarchy and make protected again.
 	 */
 	@Override
-	protected void setSearchFieldsAccordingToSearchCondition(CollectableSearchCondition cond, boolean bClearSearchFields) throws CommonBusinessException {
+	public void setSearchFieldsAccordingToSearchCondition(CollectableSearchCondition cond, boolean bClearSearchFields) throws CommonBusinessException {
 		final boolean bUsageCriteriaFieldListenersWereAdded = getUsageCriteriaFieldListenersAdded(true);
 		this.removeUsageCriteriaFieldListeners(true);
 
@@ -4994,8 +5007,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		return result;
 	}
 
+	/**
+	 * TODO: Make this protected again.
+	 */
 	@Override
-	protected boolean stopEditingInSearch() {
+	public boolean stopEditingInSearch() {
 		boolean result = super.stopEditingInSearch();
 		if (result)
 			for (SubFormController subformctl : getSubFormControllersInSearch())
@@ -5740,9 +5756,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	/**
 	 * @return <code>MultiActionProgressPanel</code> for the MultiObjectsActionController.
+	 * 
+	 * TODO: Make protected again.
 	 */
 	@Override
-	protected MultiActionProgressPanel getMultiActionProgressPanel(int iCount) {
+	public MultiActionProgressPanel getMultiActionProgressPanel(int iCount) {
 		MultiActionProgressPanel multiActionProgressPanel = new MultiActionProgressPanel(iCount);
 		multiActionProgressPanel.setResultHandler(new MultiActionProgressResultHandler(this) {
 			@Override
@@ -5953,8 +5971,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 
+	/**
+	 * @deprecated Move to SearchController and make protected again.
+	 */
 	@Override
-	protected Collection<CollectableEntityField> getAdditionalSearchFields() {
+	public Collection<CollectableEntityField> getAdditionalSearchFields() {
 		Collection<CollectableEntityField> additionalFields = new HashSet<CollectableEntityField>();
 		if (super.getAdditionalSearchFields() != null)
 			additionalFields.addAll(super.getAdditionalSearchFields());

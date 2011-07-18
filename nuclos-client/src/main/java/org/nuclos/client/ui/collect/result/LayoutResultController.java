@@ -14,7 +14,7 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.client.ui.collect;
+package org.nuclos.client.ui.collect.result;
 
 import java.util.List;
 
@@ -23,6 +23,7 @@ import javax.swing.RowSorter.SortKey;
 import org.nuclos.client.layout.admin.LayoutCollectController;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.collect.SortableCollectableTableModel;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common2.CommonLocaleDelegate;

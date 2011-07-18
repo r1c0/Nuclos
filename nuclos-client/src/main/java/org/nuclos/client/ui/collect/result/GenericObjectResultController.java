@@ -14,7 +14,7 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.client.ui.collect;
+package org.nuclos.client.ui.collect.result;
 
 import java.awt.Component;
 import java.util.Comparator;
@@ -36,6 +36,11 @@ import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
+import org.nuclos.client.ui.collect.CollectController;
+import org.nuclos.client.ui.collect.PivotController;
+import org.nuclos.client.ui.collect.PivotPanel;
+import org.nuclos.client.ui.collect.SelectFixedColumnsController;
+import org.nuclos.client.ui.collect.SortableCollectableTableModel;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;

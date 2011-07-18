@@ -86,9 +86,9 @@ import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateConstants;
-import org.nuclos.client.ui.collect.DetailsPanel;
-import org.nuclos.client.ui.collect.NuclosResultController;
-import org.nuclos.client.ui.collect.ResultController;
+import org.nuclos.client.ui.collect.detail.DetailsPanel;
+import org.nuclos.client.ui.collect.result.NuclosResultController;
+import org.nuclos.client.ui.collect.result.ResultController;
 import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.Actions;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
@@ -414,8 +414,13 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		return false;
 	}
 
+	/**
+	 * @deprecated Move to ResultController hierarchy and make protected again.
+	 *   It would be far better, if the class (hierarchy) would known that search
+	 *   should be single- or multi-threaded.
+	 */
 	@Override
-	protected boolean isMultiThreadingEnabled() {
+	public boolean isMultiThreadingEnabled() {
 		// enable/disable multithreading here:
 //		return false;
 		return true;
@@ -1300,10 +1305,14 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		//override in MasterDataCollectController and GenericObjectCollectController
 	}
 
-	// is entity of this controller transferable, that means that collectables
-	// of this entity can be exported and imported.
+	/**
+	 * is entity of this controller transferable, that means that collectables
+	 * of this entity can be exported and imported.
+	 * 
+	 * TODO: Make this protected again.
+	 */
 	@Override
-	protected boolean isTransferable() {
+	public boolean isTransferable() {
 		Boolean bTransferable = false;
 		String sEntityName = getEntityName();
 

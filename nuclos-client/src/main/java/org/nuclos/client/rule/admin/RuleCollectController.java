@@ -62,12 +62,12 @@ import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.DefaultEditView;
-import org.nuclos.client.ui.collect.DetailsPanel;
 import org.nuclos.client.ui.collect.EditView;
-import org.nuclos.client.ui.collect.ResultPanel;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.SubForm.Column;
 import org.nuclos.client.ui.collect.component.CollectableComponentType;
+import org.nuclos.client.ui.collect.detail.DetailsPanel;
+import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
@@ -254,14 +254,20 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 		});
 	}
 
+	/**
+	 * @deprecated Move to DetailsController hierarchy and make protected again.
+	 */
 	@Override
-	protected void addAdditionalChangeListenersForDetails() {
+	public void addAdditionalChangeListenersForDetails() {
 		this.pnlEdit.addChangeListener(this.changelistenerDetailsChanged);
 		this.subformctlUsage.getSubForm().addChangeListener(this.changelistenerDetailsChanged);
 	}
 
+	/**
+	 * @deprecated Move to DetailsController hierarchy and make protected again.
+	 */
 	@Override
-	protected void removeAdditionalChangeListenersForDetails() {
+	public void removeAdditionalChangeListenersForDetails() {
 		this.pnlEdit.removeChangeListener(this.changelistenerDetailsChanged);
 		this.subformctlUsage.getSubForm().removeChangeListener(this.changelistenerDetailsChanged);
 	}

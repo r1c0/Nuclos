@@ -14,7 +14,7 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.client.ui.collect;
+package org.nuclos.client.ui.collect.result;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -61,9 +61,19 @@ import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.client.ui.collect.CollectController.SearchWorker;
-import org.nuclos.client.ui.collect.ResultPanel.TableHeaderColumnPopupListener;
+import org.nuclos.client.ui.collect.CollectController;
+import org.nuclos.client.ui.collect.CollectState;
+import org.nuclos.client.ui.collect.CollectStateModel;
+import org.nuclos.client.ui.collect.CollectableEntityFieldBasedTableModel;
+import org.nuclos.client.ui.collect.CollectableTableHelper;
+import org.nuclos.client.ui.collect.CollectableTableModel;
+import org.nuclos.client.ui.collect.DeleteSelectedCollectablesController;
+import org.nuclos.client.ui.collect.SelectColumnsController;
+import org.nuclos.client.ui.collect.SortableCollectableTableModel;
+import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
+import org.nuclos.client.ui.collect.result.ResultPanel.TableHeaderColumnPopupListener;
+import org.nuclos.client.ui.collect.search.SearchWorker;
 import org.nuclos.client.ui.message.MessageExchange;
 import org.nuclos.client.ui.message.MessageExchange.MessageExchangeListener;
 import org.nuclos.client.ui.table.TableUtils;
@@ -146,22 +156,15 @@ public class ResultController<Clct extends Collectable> {
 
 	/**
 	 * action: Edit selected Collectable (in Result panel)
-	 * 
-	 * TODO: make private
 	 */
-	Action actEditSelectedCollectables;
+	private Action actEditSelectedCollectables;
 
 	/**
 	 * action: Delete selected Collectable (in Result panel)
-	 * 
-	 * TODO: make private
 	 */
-	final Action actDeleteSelectedCollectables;
+	private final Action actDeleteSelectedCollectables;
 
-	/**
-	 * TODO: make private
-	 */
-	MouseListener mouselistenerTableDblClick;
+	private MouseListener mouselistenerTableDblClick;
 
 	/**
 	 * action: Define as new Search result
@@ -190,6 +193,18 @@ public class ResultController<Clct extends Collectable> {
 		setCollectController(clctctl);
 	}
 	
+	public Action getEditSelectedCollectablesAction() {
+		return actEditSelectedCollectables;
+	}
+	
+	public Action getDeleteSelectedCollectablesAction() {
+		return actDeleteSelectedCollectables;
+	}
+	
+	public MouseListener getTableDblClickML() {
+		return mouselistenerTableDblClick;
+	}
+	
 	public ResultController(CollectableEntity clcte) {
 		actDeleteSelectedCollectables = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultController.10","L\u00f6schen..."),
 				(clctctl instanceof GenericObjectCollectController)? // quick and dirty... I know
@@ -213,10 +228,7 @@ public class ResultController<Clct extends Collectable> {
 		this(NuclosCollectableEntityProvider.getInstance().getCollectableEntity(entityName));
 	}
 	
-	/**
-	 * Don't make this public!
-	 */
-	void setCollectController(CollectController<Clct> controller) {
+	public void setCollectController(CollectController<Clct> controller) {
 		this.clctctl = controller;
 	}
 	
@@ -224,7 +236,10 @@ public class ResultController<Clct extends Collectable> {
 		return clctctl;
 	}
 	
-	protected CollectableEntity getEntity() {
+	/**
+	 * TODO: Make protected again.
+	 */
+	public CollectableEntity getEntity() {
 		return clcte;
 	}
 
@@ -232,7 +247,10 @@ public class ResultController<Clct extends Collectable> {
 		return this.clctctl.getResultPanel();
 	}
 	
-	void setupResultPanel() {
+	/**
+	 * TODO: Make this package visible again.
+	 */
+	public void setupResultPanel() {
 		setupActions();
 
 		// add selection listener for Result table:
@@ -246,17 +264,17 @@ public class ResultController<Clct extends Collectable> {
 			@Override
 			public void mouseClicked(MouseEvent ev) {
 				if (SwingUtilities.isLeftMouseButton(ev) && ev.getClickCount() == 2) {
-					if (clctctl.getSelectedCollectable() != null) {
+					if (getSelectedCollectableFromTableModel() != null) {
 						clctctl.cmdViewSelectedCollectables();
 					}
 				}
 			}
 		};
-		this.getResultPanel().addDoubleClickMouseListener(this.mouselistenerTableDblClick);
+		getResultPanel().addDoubleClickMouseListener(this.mouselistenerTableDblClick);
 
 		// change column ordering in table model when table columns are reordered by dragging a column with the mouse:
-		this.getResultPanel().addColumnModelListener(newColumnModelListener());
-		this.getResultPanel().addPopupMenuListener();
+		getResultPanel().addColumnModelListener(newColumnModelListener());
+		getResultPanel().addPopupMenuListener();
 	}
 
 	private void setupActions() {
@@ -369,8 +387,10 @@ public class ResultController<Clct extends Collectable> {
 	 * </ul>
 	 * @param clcte
 	 * @param preferences
+	 * 
+	 * TODO: Make protected again.
 	 */
-	protected void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl, Preferences preferences) {
+	public void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl, Preferences preferences) {
 		assert clctctl == this.clctctl && clctctl.getFields() == fields && clctctl.getResultController() == this;
 		assert this.clcte.equals(clcte);
 		final Comparator<CollectableEntityField> comp = getCollectableEntityFieldComparator();
@@ -494,7 +514,7 @@ public class ResultController<Clct extends Collectable> {
 	/**
 	 * releases the resources (esp. listeners) for this controller.
 	 */
-	void close() {
+	public void close() {
 		final ResultPanel<Clct> pnlResult = getResultPanel();
 		pnlResult.btnRefresh.setAction(null);
 		pnlResult.btnNew.setAction(null);
@@ -522,8 +542,10 @@ public class ResultController<Clct extends Collectable> {
 	 * @param tblResult
 	 * @param bResultTruncated
 	 * @param iTotalNumberOfRecords
+	 * 
+	 * TODO: Make package visible again.
 	 */
-	void setStatusBar(JTable tblResult, boolean bResultTruncated, int iTotalNumberOfRecords) {
+	public void setStatusBar(JTable tblResult, boolean bResultTruncated, int iTotalNumberOfRecords) {
 		String sStatus;
 		if (iTotalNumberOfRecords == 0) {
 			sStatus = CommonLocaleDelegate.getMessage("ResultController.9","Keinen zur Suchanfrage passenden Datensatz gefunden.");
@@ -559,7 +581,7 @@ public class ResultController<Clct extends Collectable> {
 		else {
 			final String sMessagePattern = CommonLocaleDelegate.getMessage("ResultController.12","Soll der ausgew\u00e4hlte Datensatz ({0}) wirklich gel\u00f6scht werden?");
 			final String sMessage = MessageFormat.format(sMessagePattern,
-					clctctl.getSelectedCollectable().getIdentifierLabel());
+					getSelectedCollectableFromTableModel().getIdentifierLabel());
 			final int btn = JOptionPane.showConfirmDialog(clctctl.getFrame(), sMessage, CommonLocaleDelegate.getMessage("ResultController.8","Datensatz l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (btn == JOptionPane.YES_OPTION) {
@@ -692,7 +714,6 @@ public class ResultController<Clct extends Collectable> {
 	 * sets all column widths to user preferences; set optimal width if no preferences yet saved
 	 * Copied from the SubFormController
 	 * @param tbl
-	 * TODO move to ResultController or ResultPanel
 	 */
 	public void setColumnWidths(final JTable tbl) {
 		this.getResultPanel().setColumnWidths(tbl, this.bUseCustomColumnWidths, clctctl.getPreferences());
@@ -772,9 +793,10 @@ public class ResultController<Clct extends Collectable> {
 	 * as the given <code>Collectable</code>s, with those <code>Collectable</code>s.
 	 * @param collclct
 	 * @precondition collclct != null
-	 * TODO move to ResultController
+	 * 
+	 * TODO Make this protected again.
 	 */
-	protected final void replaceCollectablesInTableModel(Collection<Clct> collclct) {
+	public final void replaceCollectablesInTableModel(Collection<Clct> collclct) {
 		if (collclct == null) {
 			throw new NullArgumentException("collclct");
 		}
@@ -873,7 +895,10 @@ public class ResultController<Clct extends Collectable> {
 		((SortableCollectableTableModel<?>) getResultPanel().getResultTable().getModel()).setColumns(fields.getSelectedFields());
 	}
 
-	protected void setModel(CollectableTableModel<Clct> tblmodel, final CollectableEntity clcte, final CollectController<Clct> ctl) {
+	/**
+	 * TODO: Make this protected again.
+	 */
+	public void setModel(CollectableTableModel<Clct> tblmodel, final CollectableEntity clcte, final CollectController<Clct> ctl) {
 		assert ctl == this.clctctl && ctl.getFields() == fields && ctl.getResultController() == this;
 		assert this.clcte.equals(clcte);
 		final ResultPanel<Clct> panel = getResultPanel();
@@ -881,7 +906,7 @@ public class ResultController<Clct extends Collectable> {
 		resultTable.setModel(tblmodel);
 		((ToolTipsTableHeader) resultTable.getTableHeader()).setExternalModel(tblmodel);
 		
-		panel.tableHeaderColumnListener = new TableHeaderColumnPopupListener(resultTable.getTableHeader()) {
+		panel.setTableHeaderColumnPopupListener(new TableHeaderColumnPopupListener(resultTable.getTableHeader()) {
 
 			@Override
 			protected void removeColumnVisibility(TableColumn column) {
@@ -895,8 +920,8 @@ public class ResultController<Clct extends Collectable> {
 			public List<? extends CollectableEntityField> getSelectedFields() {
 				return ctl.getFields().getSelectedFields();
 			}
-		};
-		resultTable.getTableHeader().addMouseListener(panel.tableHeaderColumnListener);
+		});
+		resultTable.getTableHeader().addMouseListener(panel.getTableHeaderColumnPopupListener());
 	}
 
 	protected void toggleColumnVisibility(TableColumn columnBefore, final String sFieldName, final CollectController<Clct> ctl,  final CollectableEntity clcte)  {
@@ -972,6 +997,9 @@ public class ResultController<Clct extends Collectable> {
 	
 	// search stuff
 
+	/**
+	 * @deprecated Use multithreaded search for new applications.
+	 */
 	public void refreshResult() throws CommonBusinessException {
 		getCollectController().search(true);
 	}

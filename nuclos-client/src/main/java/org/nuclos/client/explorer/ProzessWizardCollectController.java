@@ -28,8 +28,8 @@ import org.nuclos.client.relation.EntityRelationshipModelEditPanel;
 import org.nuclos.client.statemodel.admin.CollectableStateModel;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.DefaultEditView;
-import org.nuclos.client.ui.collect.ResultPanel;
 import org.nuclos.client.ui.collect.component.CollectableTextField;
+import org.nuclos.client.ui.collect.result.ResultPanel;
 
 /**
  * Controller for collecting state models.

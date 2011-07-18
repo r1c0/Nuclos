@@ -53,8 +53,8 @@ import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.DefaultEditView;
-import org.nuclos.client.ui.collect.DetailsPanel;
-import org.nuclos.client.ui.collect.ResultPanel;
+import org.nuclos.client.ui.collect.detail.DetailsPanel;
+import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -225,18 +225,18 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 	}
 	
 	/**
-	 *
+	 * @deprecated Move to DetailsController hierarchy and make protected again.
 	 */
 	@Override
-	protected void addAdditionalChangeListenersForDetails() {
+	public void addAdditionalChangeListenersForDetails() {
 		this.pnlEdit.pnlQueryEditor.addChangeListener(this.changelistenerDetailsChanged);
 	}
 
 	/**
-	 *
+	 * @deprecated Move to DetailsController and make protected again.
 	 */
 	@Override
-	protected void removeAdditionalChangeListenersForDetails() {
+	public void removeAdditionalChangeListenersForDetails() {
 		this.pnlEdit.pnlQueryEditor.removeChangeListener(this.changelistenerDetailsChanged);
 	}
 	

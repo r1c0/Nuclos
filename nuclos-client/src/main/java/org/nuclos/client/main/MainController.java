@@ -131,7 +131,7 @@ import org.nuclos.client.ui.TopController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectStateModel;
-import org.nuclos.client.ui.collect.DetailsCollectableEventListener;
+import org.nuclos.client.ui.collect.detail.DetailsCollectableEventListener;
 import org.nuclos.client.wiki.WikiController;
 import org.nuclos.client.wizard.ShowNuclosWizard;
 import org.nuclos.common.Actions;

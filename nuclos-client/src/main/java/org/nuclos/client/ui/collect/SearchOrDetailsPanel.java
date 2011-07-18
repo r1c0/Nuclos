@@ -47,7 +47,7 @@ import org.nuclos.common2.StringUtils;
  * @version 01.00.00
  * @todo extends CollectPanel.TabComponent?
  */
-abstract class SearchOrDetailsPanel extends JPanel {
+public abstract class SearchOrDetailsPanel extends JPanel {
 
 	/**
 	 * 
@@ -66,7 +66,7 @@ abstract class SearchOrDetailsPanel extends JPanel {
 	/**
 	 * the center panel (between toolbar and status bar) containing the "edit component".
 	 */
-	final CenteringPanel pnlCenter = new CenteringPanel(true);
+	private final CenteringPanel pnlCenter = new CenteringPanel(true);
 
 	/**
 	 * @see EditView
@@ -80,13 +80,17 @@ abstract class SearchOrDetailsPanel extends JPanel {
 	 */
 	public final StatusBarTextField tfStatusBar = new StatusBarTextField(" ");
 
-	SearchOrDetailsPanel(boolean bForSearch) {
+	protected SearchOrDetailsPanel(boolean bForSearch) {
 		super(new BorderLayout());
 		
 		this.editview = new DefaultEditView(null, new DefaultCollectableComponentsProvider(), bForSearch, null);
 		
 		if (!bForSearch)
 			showToolbar(false);
+	}
+	
+	public final CenteringPanel getCenteringPanel() {
+		return pnlCenter;
 	}
 	
 	/**

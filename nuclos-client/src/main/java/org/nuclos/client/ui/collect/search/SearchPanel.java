@@ -14,7 +14,7 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.client.ui.collect;
+package org.nuclos.client.ui.collect.search;
 
 import java.awt.CardLayout;
 import java.awt.Component;
@@ -34,6 +34,9 @@ import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.SearchConditionSubFormController;
 import org.nuclos.client.ui.TransparentImagePanel;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.CollectPanel;
+import org.nuclos.client.ui.collect.EditView;
+import org.nuclos.client.ui.collect.SearchOrDetailsPanel;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponent.CanDisplay;
 import org.nuclos.client.ui.collect.component.model.SearchEditModel;
@@ -77,7 +80,7 @@ public class SearchPanel extends SearchOrDetailsPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	CollectPanelIndicator cpi = new CollectPanelIndicator(CollectPanel.TAB_SEARCH);
+	private CollectPanelIndicator cpi = new CollectPanelIndicator(CollectPanel.TAB_SEARCH);
 
 	/**
 	 * the transparency of the magnifier image.
@@ -136,7 +139,7 @@ public class SearchPanel extends SearchOrDetailsPanel {
 		super.init();
 
 		pnlTransparentImage = new TransparentImagePanel(NuclosIcons.getInstance().getSearchWatermarkIcon(), ALPHA_MAGNIFIER);
-		pnlCards.add(new OverlayPanel(pnlTransparentImage, pnlCenter), CONSTRAINT_EDITCOMPONENT);
+		pnlCards.add(new OverlayPanel(pnlTransparentImage, getCenteringPanel()), CONSTRAINT_EDITCOMPONENT);
 		pnlCards.add(pnlSearchEditor, CONSTRAINT_SEARCHEDITOR);
 
 		//this.add(pnlToolBar, BorderLayout.NORTH);
@@ -153,6 +156,10 @@ public class SearchPanel extends SearchOrDetailsPanel {
 		this.setSouthComponent(UIUtils.newStatusBar(tfStatusBar));
 		
 		this.setSearchEditorVisible(false);
+	}
+	
+	public final CollectPanelIndicator getCollectPanelIndicator() {
+		return cpi;
 	}
 	
 	public void setBackgroundImage(ImageIcon icon) {
@@ -231,8 +238,10 @@ public class SearchPanel extends SearchOrDetailsPanel {
 	/**
 	 * @param cond May be <code>null</code>.
 	 * @return Can the given search condition be displayed in the search fields?
+	 * 
+	 * TODO: Make this protected again.
 	 */
-	protected boolean canDisplayConditionInFields(CollectableSearchCondition cond) {
+	public boolean canDisplayConditionInFields(CollectableSearchCondition cond) {
 		return SearchConditionUtils.trueIfNull(cond).accept(new CanDisplayConditionInFieldsVisitor(this));
 	}
 

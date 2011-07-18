@@ -18,7 +18,6 @@ package org.nuclos.client.ui.collect;
 
 import java.awt.EventQueue;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
@@ -57,10 +56,8 @@ import javax.swing.JDialog;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollBar;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
@@ -119,15 +116,22 @@ import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModel;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
+import org.nuclos.client.ui.collect.detail.DetailsController;
+import org.nuclos.client.ui.collect.detail.DetailsPanel;
+import org.nuclos.client.ui.collect.result.ResultController;
+import org.nuclos.client.ui.collect.result.ResultPanel;
+import org.nuclos.client.ui.collect.search.SearchController;
+import org.nuclos.client.ui.collect.search.SearchPanel;
+import org.nuclos.client.ui.collect.search.SearchWorker;
 import org.nuclos.client.ui.collect.searcheditor.SearchEditorController;
 import org.nuclos.client.ui.collect.searcheditor.SearchEditorPanel;
+import org.nuclos.client.ui.collect.strategy.AlwaysLoadCompleteCollectablesStrategy;
+import org.nuclos.client.ui.collect.strategy.CompleteCollectablesStrategy;
 import org.nuclos.client.ui.labeled.LabeledComboBox;
 import org.nuclos.client.ui.labeled.LabeledDateChooser;
 import org.nuclos.client.ui.labeled.LabeledListOfValues;
 import org.nuclos.client.ui.labeled.LabeledTextArea;
 import org.nuclos.client.ui.labeled.LabeledTextField;
-import org.nuclos.client.ui.message.MessageExchange;
-import org.nuclos.client.ui.message.MessageExchange.MessageExchangeListener;
 import org.nuclos.client.ui.multiaction.MultiActionProgressPanel;
 import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableUtils;
@@ -141,11 +145,9 @@ import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
 import org.nuclos.common.collect.collectable.CollectableUtils;
-import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableLikeCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
@@ -159,7 +161,6 @@ import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -172,7 +173,6 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
-import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 
@@ -251,7 +251,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	private int iLockCount = 0;
 
-	private CompleteCollectablesStrategy<Clct> completecollectablesstrategy = new AlwaysLoadCompleteCollectablesStrategy();
+	private CompleteCollectablesStrategy<Clct> completecollectablesstrategy = new AlwaysLoadCompleteCollectablesStrategy<Clct>(this);
 
 	protected boolean bIsLastTabDetailsModeMultiViewOrEdit = false;
 
@@ -287,7 +287,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	private DatasourceVO valueListProviderDatasource;
 	private Map<String, Object> valueListProviderDatasourceParameter;
 
-	private final SearchController ctlSearch = new SearchController();
+	private final SearchController<Clct> ctlSearch = new SearchController<Clct>(this);
 
 	/**
 	 * TODO: Not every CollectController has a ResultController associated with it.
@@ -296,7 +296,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final ResultController<Clct> ctlResult;
 
-	private final DetailsController ctlDetails = new DetailsController();
+	private final DetailsController<Clct> ctlDetails = new DetailsController<Clct>(this);
 	
 	/**
 	 * Messages for Collectable events
@@ -347,503 +347,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			CollectController.this.setDefaultButton();
 		}
 	};
-
-	/**
-	 * common controller for the Search and Details panels.
-	 */
-	private abstract class CommonController {
-		private boolean bChangeListenersAdded;
-
-		protected abstract boolean isSearchPanel();
-
-		protected abstract Collection<? extends CollectableComponentModel> getCollectableComponentModels();
-
-		protected abstract CollectableComponentModelListener getCollectableComponentModelListener();
-
-		protected abstract void addAdditionalChangeListeners();
-
-		protected abstract void removeAdditionalChangeListeners();
-
-		/**
-		 * @return Have the change listeners for the Details tab been added?
-		 */
-		protected boolean getChangeListenersAdded() {
-			return this.bChangeListenersAdded;
-		}
-
-		/**
-		 * adds the change listeners
-		 * @precondition !this.getChangeListenersAdded()
-		 * @postcondition this.getChangeListenersAdded()
-		 */
-		protected void addChangeListeners() {
-			if (this.getChangeListenersAdded()) {
-				// TODO don\u00b4t throw an exception yet. CR has to fix another problem. then the exception is the right thing.
-				// But what problem?! Should we just try this? UA
-				return;//throw new IllegalStateException();
-			}
-			this.addCollectableComponentModelListeners();
-			this.addAdditionalChangeListeners();
-			this.bChangeListenersAdded = true;
-
-			assert this.getChangeListenersAdded();
-		}
-
-		/**
-		 * removes the change listeners for the details tab
-		 * @postcondition !this.getChangeListenersAdded()
-		 */
-		protected void removeChangeListeners() {
-			if (this.getChangeListenersAdded()) {
-				this.removeCollectableComponentModelListeners();
-				this.removeAdditionalChangeListeners();
-				this.bChangeListenersAdded = false;
-			}
-
-			assert !this.getChangeListenersAdded();
-		}
-
-		/**
-		 * adds the collectable component model listeners for the Details tab.
-		 */
-		protected final void addCollectableComponentModelListeners() {
-			for (CollectableComponentModel clctcompmodel : this.getCollectableComponentModels()) {
-				clctcompmodel.addCollectableComponentModelListener(this.getCollectableComponentModelListener());
-			}
-		}
-
-		/**
-		 * removes the collectable component model listeners for the Details tab.
-		 * If no listeners are installed, no listeners will be removed. That's all.
-		 */
-		protected final void removeCollectableComponentModelListeners() {
-			for (CollectableComponentModel clctcompmodel : this.getCollectableComponentModels()) {
-				clctcompmodel.removeCollectableComponentModelListener(this.getCollectableComponentModelListener());
-			}
-		}
-
-	}	// class CommonController
-
-	/**
-	 * Controller for the Search panel.
-	 */
-	private class SearchController extends CommonController {
-		/**
-		 * Action for showing/hiding the search editor.
-		 */
-		private class ToggleSearchEditorAction extends CommonAbstractAction {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-			/**
-			 * avoids recursion
-			 */
-			boolean bLocked;
-
-			ToggleSearchEditorAction() {
-				super(CommonLocaleDelegate.getMessage("CollectController.28","Sucheditor"), null, CommonLocaleDelegate.getMessage("CollectController.29","Sucheditor anzeigen/verbergen"));
-			}
-
-			@Override
-            public void actionPerformed(ActionEvent ev) {
-				if (!bLocked) {
-					try {
-						bLocked = true;
-						final SearchPanel pnlSearch = CollectController.this.getSearchPanel();
-						boolean bSelected = pnlSearch.btnSearchEditor.isSelected();
-						assert bSelected != getSearchPanel().isSearchEditorVisible();
-						try {
-							if (bSelected) {
-								// search fields -> SearchEditor:
-								CollectController.this.stopEditingInSearch();
-								/** TODO It would be better to call getCollectableSearchConditionFromSearchFields(true) here
-								 * so bad or inconsistent view is detected. In that case, the exception must be caught here. */
-								getSearchPanel().getSearchEditorPanel().setSortedSearchCondition(CollectController.this.getCollectableSearchConditionFromSearchFields(false));
-
-								actNewWithSearchValues.setEnabled(false);
-							}
-							else {
-								final CollectableSearchCondition cond = getSearchPanel().getSearchEditorPanel().getSearchCondition();
-								if (cond != null && !cond.isSyntacticallyCorrect()) {
-									bSelected = true;
-									throw new InvalidCollectableSearchConditionException(CommonLocaleDelegate.getMessage("CollectController.17","Die Suchbedingung ist unvollst\u00e4ndig."));
-								}
-								else if (!getSearchPanel().canDisplayConditionInFields(cond)) {
-									bSelected = true;
-									throw new InvalidCollectableSearchConditionException(CommonLocaleDelegate.getMessage("CollectController.18","Eine zusammengesetzte Suchbedingung kann nur im Sucheditor, nicht in der Suchmaske dargestellt werden."));
-								}
-								else {
-									// SearchEditor -> search fields:
-									CollectController.this.setSearchFieldsAccordingToSearchCondition(cond, true);
-								}
-							}
-						}
-						catch (InvalidCollectableSearchConditionException ex) {
-							// undo button press:
-							bSelected = !bSelected;
-							Errors.getInstance().showExceptionDialog(getFrame(), ex);
-						}
-						catch (Exception ex) {
-							// TODO don't catch and wrap RuntimeExceptions here!
-							final String sMessage = CommonLocaleDelegate.getMessage("CollectController.16","Diese Suchbedingung kann nur im Sucheditor, nicht in der Suchmaske dargestellt werden.") + "\n" + ex.getMessage();
-							// undo button press:
-							bSelected = !bSelected;
-							Errors.getInstance().showExceptionDialog(getFrame(), new InvalidCollectableSearchConditionException(sMessage, ex));
-						}
-						getSearchPanel().setSearchEditorVisible(bSelected);
-					}
-					finally {
-						bLocked = false;
-					}
-				}
-				assert !bLocked;
-			}
-		}
-
-		/**
-		 * action: New with search values
-		 */
-		private final Action actNewWithSearchValues = new CommonAbstractAction("Neu", Icons.getInstance().getIconNewWithSearchValues16(),
-			CommonLocaleDelegate.getMessage("CollectController.31","\u00dcbernahme der Suchkriterien in den neuen Datensatz")) {
-			/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-
-			@Override
-            public void actionPerformed(ActionEvent ev) {
-				if (askAndSaveIfNecessary()) {
-					cmdEnterNewModeWithSearchValues();
-				}
-			}
-		};
-
-		/**
-		 * action: Search
-		 * 
-		 * @deprecated Move to ResultController.
-		 */
-		private final Action actSearch = new CommonAbstractAction("Suchen", Icons.getInstance().getIconFind16(), CommonLocaleDelegate.getMessage("CollectController.30","Suche starten")) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-            public void actionPerformed(ActionEvent ev) {
-				if(CollectController.this.getCollectPanel().getTabbedPaneSelectedIndex() == CollectPanel.TAB_SEARCH)
-					getResultController().cmdSearch();
-			}
-		};
-
-		/**
-		 * action: Clear Search Condition
-		 */
-		private final AbstractAction actClearSearchCondition = new CommonAbstractAction(Icons.getInstance().getIconClearSearch16(),
-			CommonLocaleDelegate.getMessage("CollectController.27","Suchbedingung leeren")) {
-			/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-
-			@Override
-            public void actionPerformed(ActionEvent ev) {
-				cmdClearSearchCondition();
-			}
-		};
-
-		/**
-		 * Listener for searchcondition changes.
-		 */
-		private final CollectableComponentModelListener ccmlistener = new CollectableComponentModelAdapter() {
-			@Override
-			public void searchConditionChangedInModel(SearchComponentModelEvent ev) {
-				assert CollectController.this.getCollectStateModel().getOuterState() == CollectState.OUTERSTATE_SEARCH;
-
-				// Note that we want to call "searchChanged()" on every change, not only valid changes:
-				CollectController.this.searchChanged(ev.getSearchComponentModel());
-			}
-		};
-
-		private void setupSearchPanel() {
-			final SearchPanel pnlSearch = CollectController.this.getSearchPanel();
-			// action: Search
-			pnlSearch.btnSearch.setAction(this.actSearch);
-
-			// action: Clear Search Condition
-			pnlSearch.btnClearSearchCondition.setAction(this.actClearSearchCondition);
-
-			// action: New
-			pnlSearch.btnNew.setAction(CollectController.this.getNewAction());
-
-			// action: New with search values
-			pnlSearch.btnNewWithSearchValues.setAction(CollectController.this.getNewWithSearchValuesAction());
-			pnlSearch.btnNewWithSearchValues.getAction().setEnabled(false);
-
-			final Action actToggleSearchEditor = new ToggleSearchEditorAction();
-
-			pnlSearch.btnSearchEditor.setAction(actToggleSearchEditor);
-			// In order to enable the search editor, a CollectableFieldsProviderFactory needs to be defined.
-			actToggleSearchEditor.setEnabled(CollectController.this.getCollectableFieldsProviderFactoryForSearchEditor() != null);
-
-			UIUtils.readSplitPaneStateFromPrefs(CollectController.this.getPreferences(), pnlSearch);
-		}
-
-		@Override
-		protected boolean isSearchPanel() {
-			return true;
-		}
-
-		@Override
-		protected Collection<SearchComponentModel> getCollectableComponentModels() {
-			return getSearchPanel().getEditModel().getCollectableComponentModels();
-		}
-
-		@Override
-		protected CollectableComponentModelListener getCollectableComponentModelListener() {
-			return this.ccmlistener;
-		}
-
-		@Override
-		protected void addAdditionalChangeListeners() {
-			CollectController.this.addAdditionalChangeListenersForSearch();
-		}
-
-		@Override
-		protected void removeAdditionalChangeListeners() {
-			CollectController.this.removeAdditionalChangeListenersForSearch();
-		}
-
-		private void setupSearchEditor() {
-			final SearchEditorPanel pnlSearchEditor = getSearchPanel().getSearchEditorPanel();
-			new SearchEditorController(getFrame(), pnlSearchEditor, CollectController.this.getCollectableEntity(),
-					CollectController.this.getCollectableFieldsProviderFactoryForSearchEditor(),
-					CollectController.this.getAdditionalSearchFields()
-			);
-
-			pnlSearchEditor.getTreeModel().addTreeModelListener(new TreeModelListener() {
-				@Override
-                public void treeNodesChanged(TreeModelEvent ev) {
-					changed(ev);
-				}
-
-				@Override
-                public void treeNodesInserted(TreeModelEvent ev) {
-					changed(ev);
-				}
-
-				@Override
-                public void treeNodesRemoved(TreeModelEvent ev) {
-					changed(ev);
-				}
-
-				@Override
-                public void treeStructureChanged(TreeModelEvent ev) {
-					changed(ev);
-				}
-
-				private void changed(TreeModelEvent ev) {
-					this.adjustSearchEditorButton();
-					CollectController.this.searchChanged(ev.getPath());
-				}
-
-				private void adjustSearchEditorButton() {
-					getSearchPanel().btnSearchEditor.setEnabled(getSearchPanel().canDisplayConditionInFields(getSearchPanel().getSearchEditorPanel().getSearchCondition()));
-				}
-			});
-		}
-
-		/**
-		 * releases the resources (esp. listeners) for this controller.
-		 */
-		private void close() {
-			final SearchPanel pnlSearch = getSearchPanel();
-			pnlSearch.btnSearch.setAction(null);
-			pnlSearch.btnSearchEditor.setAction(null);
-			pnlSearch.btnClearSearchCondition.setAction(null);
-			pnlSearch.btnNew.setAction(null);
-
-			UIUtils.writeSplitPaneStateToPrefs(CollectController.this.getPreferences(), getSearchPanel());
-		}
-
-		/**
-		 * displays the current search condition in the Search panel's status bar.
-		 */
-		private void displayCurrentSearchConditionInSearchPanelStatusBar() {
-			String sSearchCondition;
-			String addStatusMsg = "";
-			try {
-				final CollectableSearchCondition searchcond = CollectController.this.getCollectableSearchConditionToDisplay();
-				if (searchcond == null) {
-					sSearchCondition = CommonLocaleDelegate.getMessage("CollectController.2","<Alle> (Keine Einschr\u00e4nkung)");
-				} else {
-					sSearchCondition = searchcond.accept(new ToHumanReadablePresentationVisitor());
-				}
-				if(displayMixedSearchCondition()){
-					addStatusMsg = CommonLocaleDelegate.getMessage("CollectController.22","Kombinierte ");
-				}
-			}
-			catch (CollectableFieldFormatException ex) {
-				sSearchCondition = CommonLocaleDelegate.getMessage("CollectController.3","<Ung\u00fcltig>");
-			}
-			getSearchPanel().setStatusBarText(addStatusMsg + CommonLocaleDelegate.getMessage("CollectController.26","Suchbedingung: ") + sSearchCondition);
-		}
-
-		private boolean displayMixedSearchCondition = false;
-
-		public boolean displayMixedSearchCondition() {
-			return displayMixedSearchCondition;
-		}
-
-		public void setDisplayMixedSearchCondition(boolean displayMixedSearchCondition) {
-			this.displayMixedSearchCondition = displayMixedSearchCondition;
-		}
-
-	}	// class SearchController
-
-	/**
-	 * Controller for the Details panel.
-	 */
-	private class DetailsController extends CommonController {
-		private final CollectableComponentModelListener ccmlistener = new CollectableComponentModelAdapter() {
-			@Override
-			public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
-				assert CollectController.this.getCollectStateModel().getOuterState() == CollectState.OUTERSTATE_DETAILS;
-
-				// Note that we don't check ev.collectableFieldHasChanged() here, as we want to set "details changed"
-				// on every change, not only valid changes, esp. the case that the user starts typing a date
-				// in an empty date field.
-				CollectController.this.detailsChanged(ev.getCollectableComponentModel());
-			}
-
-			@Override
-			public void valueToBeChanged(DetailsComponentModelEvent ev) {
-				CollectController.this.detailsChanged(ev.getCollectableComponentModel());
-			}
-		};
-
-		private final Action actDeleteCurrentCollectable = new CommonAbstractAction("L\u00f6schen", Icons.getInstance().getIconRealDelete16(),
-			CommonLocaleDelegate.getMessage("CollectController.15","Diesen Datensatz l\u00f6schen")) {
-			/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-
-			@Override
-            public void actionPerformed(ActionEvent ev) {
-				CollectController.this.cmdDeleteCurrentCollectableInDetails();
-			}
-		};
-
-		/**
-		 * display the number of the current record and the total number of records in the details panel's status bar
-		 */
-		private void displayCurrentRecordNumberInDetailsPanelStatusBar(){
-			getDetailsPanel().setStatusBarText(CommonLocaleDelegate.getMessage("CollectController.8","Datensatz")+" "+(getResultTable().getSelectedRow()+1)+"/"+getResultTable().getRowCount());
-		}
-
-		@Override
-		protected boolean isSearchPanel() {
-			return false;
-		}
-
-		@Override
-		protected Collection<DetailsComponentModel> getCollectableComponentModels() {
-			return CollectController.this.getDetailsPanel().getEditModel().getCollectableComponentModels();
-		}
-
-		@Override
-		protected CollectableComponentModelListener getCollectableComponentModelListener() {
-			return this.ccmlistener;
-		}
-
-		@Override
-		protected void addAdditionalChangeListeners() {
-			CollectController.this.addAdditionalChangeListenersForDetails();
-		}
-
-		@Override
-		protected void removeAdditionalChangeListeners() {
-			CollectController.this.removeAdditionalChangeListenersForDetails();
-		}
-
-		private DetailsPanel getDetailsPanel() {
-			return CollectController.this.getDetailsPanel();
-		}
-
-		private void setupDetailsPanel() {
-			// Details panel:
-			// action: Save
-			final DetailsPanel pnlDetails = this.getDetailsPanel();
-			pnlDetails.btnSave.setAction(getSaveAction());
-
-			// action: Refresh
-			pnlDetails.btnRefreshCurrentCollectable.setAction(getRefreshCurrentCollectableAction());
-
-			// action: Delete
-			pnlDetails.btnDelete.setAction(this.actDeleteCurrentCollectable);
-
-			// action: New
-			pnlDetails.btnNew.setAction(CollectController.this.getNewAction());
-
-			// action: Clone
-			pnlDetails.btnClone.setAction(CollectController.this.getCloneAction());
-
-			// action: Open in new tab
-			pnlDetails.btnOpenInNewTab.setAction(CollectController.this.getOpenInNewTabAction());
-
-			// action: Bookmark
-			pnlDetails.btnBookmark.setAction(CollectController.this.getBookmarkAction());
-
-			// navigation actions:
-			pnlDetails.btnFirst.setAction(CollectController.this.getFirstAction());
-			pnlDetails.btnLast.setAction(CollectController.this.getLastAction());
-			pnlDetails.btnPrevious.setAction(CollectController.this.getPreviousAction());
-			pnlDetails.btnNext.setAction(CollectController.this.getNextAction());
-
-			UIUtils.readSplitPaneStateFromPrefs(CollectController.this.getPreferences(), getDetailsPanel());
-		}
-
-		private void close() {
-			final DetailsPanel pnlDetails = this.getDetailsPanel();
-			pnlDetails.btnSave.setAction(null);
-			pnlDetails.btnRefreshCurrentCollectable.setAction(null);
-			pnlDetails.btnDelete.setAction(null);
-			pnlDetails.btnNew.setAction(null);
-			pnlDetails.btnClone.setAction(null);
-			pnlDetails.btnOpenInNewTab.setAction(null);
-			pnlDetails.btnBookmark.setAction(null);
-
-			pnlDetails.btnFirst.setAction(null);
-			pnlDetails.btnLast.setAction(null);
-			pnlDetails.btnPrevious.setAction(null);
-			pnlDetails.btnNext.setAction(null);
-
-			UIUtils.writeSplitPaneStateToPrefs(CollectController.this.getPreferences(), getDetailsPanel());
-		}
-
-		private void updateStatusBarIfNecessary() {
-			//log.debug("CollectController.updateStatusBarIfNecessary");
-			if (CollectController.this.getCollectState().isDetailsModeMultiViewOrEdit()) {
-				this.showMultiEditChangeInStatusBar();
-			}
-		}
-
-		/**
-		 * @precondition CollectController.this.getCollectState().isDetailsModeMultiViewOrEdit()
-		 */
-		private void showMultiEditChangeInStatusBar() {
-			if (!CollectController.this.getCollectState().isDetailsModeMultiViewOrEdit()) {
-				throw new IllegalStateException();
-			}
-
-			final String sChange = CollectController.this.getMultiEditChangeString();
-			final String sStatus = CommonLocaleDelegate.getMessage("CollectController.5","\u00c4nderung")+ ": " + (StringUtils.looksEmpty(sChange) ? "<" + CommonLocaleDelegate.getMessage("CollectController.21","keine") + ">" : sChange);
-			this.getDetailsPanel().setStatusBarText(sStatus);
-		}
-
-	}	// class DetailsController
 
 	/**
 	 * action: New
@@ -1117,9 +620,13 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		this(parent, clcte, new ResultController<Clct>(clcte));
 	}
 	
-	// is entity of this controller transferable, that means that collectables
-	// of this entity can be exported and imported. Default is NOT transferable!
-	protected boolean isTransferable() {
+	/** 
+	 * is entity of this controller transferable, that means that collectables
+	 * of this entity can be exported and imported. Default is NOT transferable!
+	 * 
+	 * TODO: Make this protected again.
+	 */
+	public boolean isTransferable() {
 		return false;
 	}
 
@@ -1141,12 +648,15 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		return ctlResult.getFields();
 	}
 
+	/**
+	 * @deprecated Move to SearchController.
+	 */
 	public Collection<SearchComponentModel> getSearchCollectableComponentModels() {
 		return this.ctlSearch.getCollectableComponentModels();
 	}
 
 	public List<CollectableComponent> getDetailCollectableComponentsFor(String sFieldName) {
-		return (List<CollectableComponent>)this.ctlDetails.getDetailsPanel().getEditView().getCollectableComponentsFor(sFieldName);
+		return (List<CollectableComponent>) getDetailsPanel().getEditView().getCollectableComponentsFor(sFieldName);
 	}
 
 	/**
@@ -1204,93 +714,124 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	/**
 	 * @return the "New" action
+	 * 
+	 * TODO: Move to ResultPanel and make protected again.
 	 */
-	protected final Action getNewAction() {
+	public final Action getNewAction() {
 		return this.actNew;
 	}
 
 	/**
 	 * @return the "New with search values" action
+	 * 
+	 * @deprecated Move to SearchController and make protected again.
 	 */
-	protected final Action getNewWithSearchValuesAction() {
-		return this.ctlSearch.actNewWithSearchValues;
+	public final Action getNewWithSearchValuesAction() {
+		return ctlSearch.getNewWithSearchValuesAction();
 	}
 
 	/**
 	 * @return the "Save" action
+	 * 
+	 * TODO: Make protected again.
 	 */
-	protected final Action getSaveAction() {
+	public final Action getSaveAction() {
 		return this.actSave;
 	}
 
 	/**
 	 * @return the "Refresh current collectable" action
+	 * 
+	 * TODO: Move to DetailsController???
+	 * TODO: Make protected again.
 	 */
-	protected final Action getRefreshCurrentCollectableAction() {
+	public final Action getRefreshCurrentCollectableAction() {
 		return this.actRefreshCurrentCollectable;
 	}
 
 	/**
 	 * @return the "Search" action
+	 * 
+	 * @deprecated Move to SearchController.
 	 */
 	protected final Action getSearchAction() {
-		return this.ctlSearch.actSearch;
+		return ctlSearch.getSearchAction();
 	}
 
 	/**
 	 * @return the "Open in new tab" action
+	 * 
+	 * TODO: Make protected again.
 	 */
-	protected final Action getOpenInNewTabAction() {
+	public final Action getOpenInNewTabAction() {
 		return this.actOpenInNewTab;
 	}
 	
-	protected final Action getCopyCellsAction() {
+	/**
+	 * TODO: Make protected again.
+	 */
+	public final Action getCopyCellsAction() {
 		return this.actCopyCells;
 	}
 	
-	protected final Action getCopyRowsAction() {
+	/**
+	 * TODO: Make protected again.
+	 */
+	public final Action getCopyRowsAction() {
 		return this.actCopyRows;
 	}
 
 	/**
 	 * @return the "Bookmark" action
+	 * 
+	 * TODO: Move to ResultPanel and make protected again.
 	 */
-	protected final Action getBookmarkAction() {
+	public final Action getBookmarkAction() {
 		return this.actBookmark;
 	}
 
 	/**
 	 * @return the "Clone" action
+	 * 
+	 * TODO: Move to ResultPanel and make protected again.
 	 */
-	protected final Action getCloneAction() {
+	public final Action getCloneAction() {
 		return this.actClone;
 	}
 
 	/**
 	 * @return the "First" action
+	 * 
+	 * TODO: Make protected again.
 	 */
-	protected final Action getFirstAction() {
+	public final Action getFirstAction() {
 		return this.actFirst;
 	}
 
 	/**
 	 * @return the "Last" action
+	 * 
+	 * TODO: Make protected again.
 	 */
-	protected final Action getLastAction() {
+	public final Action getLastAction() {
 		return this.actLast;
 	}
 
 	/**
 	 * @return the "Previous" action
+	 * 
+	 * TODO: Make protected again.
 	 */
-	protected final Action getPreviousAction() {
+	public final Action getPreviousAction() {
 		return this.actPrevious;
 	}
 
 	/**
 	 * @return the "Next" action
+	 * 
+	 * TODO: Make protected again.
 	 */
-	protected final Action getNextAction() {
+	public final Action getNextAction() {
 		return this.actNext;
 	}
 
@@ -1309,12 +850,14 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	/**
 	 * displays the current search condition in the Search panel's status bar.
+	 * 
+	 * @deprecated Move to SearchController.
 	 */
 	protected final void cmdDisplayCurrentSearchConditionInSearchPanelStatusBar() {
 		UIUtils.runShortCommand(this.getFrame(), new CommonRunnable() {
 			@Override
             public void run() {
-				CollectController.this.ctlSearch.displayCurrentSearchConditionInSearchPanelStatusBar();
+				ctlSearch.displayCurrentSearchConditionInSearchPanelStatusBar();
 			}
 		});
 	}
@@ -1324,24 +867,26 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 *         display the list of possible values in the dropdown for atomic search nodes.
 	 *         The default implementation returns null. To enable the search editor, a subclass must return
 	 *         a valid factory here.
-	 * TODO move to SearchController or SearchPanel
+	 *         
+	 * @deprecated Move to SearchController and make protected again.
 	 */
-	protected CollectableFieldsProviderFactory getCollectableFieldsProviderFactoryForSearchEditor() {
+	public CollectableFieldsProviderFactory getCollectableFieldsProviderFactoryForSearchEditor() {
 		return null;
 	}
 
 	/**
-	 *
-	 * @return
+	 * @deprecated Move to SearchController and make protected again.
 	 */
-	protected Collection<CollectableEntityField> getAdditionalSearchFields() {
+	public Collection<CollectableEntityField> getAdditionalSearchFields() {
 		return null;
 	}
 
 	/**
 	 * @return <code>MultiActionProgressPanel</code> for the MultiObjectsActionController.
+	 * 
+	 * TODO: Make protected again.
 	 */
-	protected MultiActionProgressPanel getMultiActionProgressPanel(int iCount) {
+	public MultiActionProgressPanel getMultiActionProgressPanel(int iCount) {
 		return new MultiActionProgressPanel(iCount);
 	}
 
@@ -1428,7 +973,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * Command: view the selected Collectable(s).
 	 */
-	protected void cmdViewSelectedCollectables() {
+	public void cmdViewSelectedCollectables() {
 		if (this.multipleCollectablesSelected()) {
 			this.cmdEnterMultiViewMode();
 		}
@@ -1439,9 +984,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	/**
 	 * @return Is more than one Collectable (row) selected in the Result table?
-	 * TODO move to navigation model?
+	 * 
+	 * TODO: move to navigation model? Or ResultController?
+	 * TODO: Make this protected again.
 	 */
-	protected final boolean multipleCollectablesSelected() {
+	public final boolean multipleCollectablesSelected() {
 		return this.getResultTable().getSelectedRowCount() > 1;
 	}
 
@@ -1600,9 +1147,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * Notification: the details have changed
 	 * @param oSource the source that caused the change
-	 * TODO move to DetailsController
+	 * 
+	 * @deprecated Move to DetailsController and make protected again.
 	 */
-	protected final void detailsChanged(final Object oSource) {
+	public final void detailsChanged(final Object oSource) {
 		if (!isDetailsChangedIgnored()) {
 			CollectController.this.ctlDetails.updateStatusBarIfNecessary();
 
@@ -1636,9 +1184,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	/**
-	 *
-	 * @param sFieldName
-	 * @return
+	 * @deprecated Move to DetailsController.
 	 */
 	protected final DetailsComponentModel getDetailsComponentModel(String sFieldName){
 		for (DetailsComponentModel componentModel : CollectController.this.ctlDetails.getCollectableComponentModels()){
@@ -1673,9 +1219,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * Notification: the search have changed
 	 * @param oSource the source that caused the change
-	 * TODO move to SearchController
+	 * 
+	 * @deprecated Move to SearchController and make protected again.
 	 */
-	protected final void searchChanged(Object oSource) {
+	public final void searchChanged(Object oSource) {
 		if (!isSearchChangedIgnored()) {
 			// set status bar in Search panel according to the current search condition:
 			CollectController.this.cmdDisplayCurrentSearchConditionInSearchPanelStatusBar();
@@ -1767,9 +1314,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * Default implementation: do nothing.
 	 * Derived classes may override this method to add change listeners for additional
 	 * (non-collectable) components.
-	 * TODO move to DetailsController
+	 * 
+	 * @deprecated Move to DetailsController and make protected again.
 	 */
-	protected void addAdditionalChangeListenersForDetails() {
+	public void addAdditionalChangeListenersForDetails() {
 		// optional - do nothing here
 	}
 
@@ -1778,15 +1326,17 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * Default implementation: do nothing.
 	 * Derived classes may override this method to remove change listeners for additional
 	 * (non-collectable) components.
-	 * TODO move to DetailsController
+	 * 
+	 * @deprecated Move to DetailsController and make protected again.
 	 */
-	protected void removeAdditionalChangeListenersForDetails() {
+	public void removeAdditionalChangeListenersForDetails() {
 		// optional - do nothing here
 	}
 
 	/**
 	 * @return Have the change listeners for the Search tab been added?
-	 * TODO move to SearchController
+	 * 
+	 * @deprecated Move to SearchController.
 	 */
 	protected final boolean changeListenersForSearchAdded() {
 		return this.ctlSearch.getChangeListenersAdded();
@@ -1796,7 +1346,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * adds the change listeners for the Search tab
 	 * @precondition !this.changeListenersForSearchAdded()
 	 * @postcondition this.changeListenersForSearchAdded()
-	 * TODO move to SearchController
+	 * @deprecated Move to SearchController.
 	 */
 	protected final void addChangeListenersForSearch() {
 		this.ctlSearch.addChangeListeners();
@@ -1807,7 +1357,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * removes the change listeners for the search tab
 	 * @postcondition !this.changeListenersForSearchAdded()
-	 * TODO move to SearchController
+	 * 
+	 * @deprecated Move to SearchController.
 	 */
 	protected final void removeChangeListenersForSearch() {
 		this.ctlSearch.removeChangeListeners();
@@ -1820,9 +1371,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * Default implementation: do nothing.
 	 * Derived classes may override this method to add change listeners for additional
 	 * (non-collectable) components.
-	 * TODO move to SearchController
+	 * 
+	 *  @deprecated Move to SearchController
 	 */
-	protected void addAdditionalChangeListenersForSearch() {
+	public void addAdditionalChangeListenersForSearch() {
 		// optional - do nothing here
 	}
 
@@ -1831,9 +1383,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * Default implementation: do nothing.
 	 * Derived classes may override this method to remove change listeners for additional
 	 * (non-collectable) components.
-	 * TODO move to SearchController
+	 * 
+	 * @deprecated Move to SearchController and make protected again. 
 	 */
-	protected void removeAdditionalChangeListenersForSearch() {
+	public void removeAdditionalChangeListenersForSearch() {
 		// optional - do nothing here
 	}
 
@@ -2259,6 +1812,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 	}
 
+	/**
+	 * @deprecated Move to SearchController.
+	 */
 	public void setDisplayMixedSearchConditionForSearchEditor(boolean isMixedSearchCondition){
 		this.ctlSearch.setDisplayMixedSearchCondition(isMixedSearchCondition);
 	}
@@ -2268,7 +1824,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 *         This condition can be refined by subclasses, by ANDing, ORing or whatever. May be <code>null</code>.
 	 * @postcondition result == null || result.isSyntacticallyCorrect()
 	 * 
-	 * @deprecated Move to ResultController.
+	 * @deprecated Move to SearchController.
 	 */
 	public CollectableSearchCondition getCollectableSearchCondition() throws CollectableFieldFormatException {
 		return this.getCollectableSearchConditionFromSearchPanel(false);
@@ -2278,8 +1834,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @return the search condition to display (in the status bar). By default, this is the search condition given by
 	 * getCollectableSearchCondition(), with labels sorted in ascending order. May be <code>null</code>.
 	 * @throws CollectableFieldFormatException
+	 * 
+	 * @deprecated Move to SearchController and make protected again. 
 	 */
-	protected CollectableSearchCondition getCollectableSearchConditionToDisplay() throws CollectableFieldFormatException {
+	public CollectableSearchCondition getCollectableSearchConditionToDisplay() throws CollectableFieldFormatException {
 		return SearchConditionUtils.sortedByLabels(this.getCollectableSearchCondition());
 	}
 
@@ -2350,9 +1908,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * Subclasses may include non-collectable components and/or subforms here.
 	 * @precondition this.isSearchPanelAvailable()
 	 * @postcondition result == null || result.isSyntacticallyCorrect()
-	 * TODO move to SearchPanel
+	 * 
+	 * @deprecated Move to SearchController or SearchPanel and make protected again. 
 	 */
-	protected CollectableSearchCondition getCollectableSearchConditionFromSearchFields(boolean bMakeConsistent) throws CollectableFieldFormatException {
+	public CollectableSearchCondition getCollectableSearchConditionFromSearchFields(boolean bMakeConsistent) throws CollectableFieldFormatException {
 		if (!this.isSearchPanelAvailable()) {
 			throw new IllegalStateException("!this.isSearchPanelAvailable()");
 		}
@@ -2385,8 +1944,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * sets the search fields (as opposed to the search editor) according to the given search condition.
 	 * @param cond
 	 * @param bClearSearchFields Clear all search fields before setting the search condition?
+	 * 
+	 * @deprecated Move to SearchController and make protected again.
 	 */
-	protected void setSearchFieldsAccordingToSearchCondition(CollectableSearchCondition cond,
+	public void setSearchFieldsAccordingToSearchCondition(CollectableSearchCondition cond,
 			boolean bClearSearchFields) throws CommonBusinessException {
 		this._setSearchFieldsAccordingToSearchCondition(cond, bClearSearchFields);
 	}
@@ -2621,8 +2182,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	/**
 	 * command: switch to New mode with search values
+	 * 
+	 * @deprecated Move to SearchController and make protected again.
 	 */
-	protected void cmdEnterNewModeWithSearchValues() {
+	public void cmdEnterNewModeWithSearchValues() {
 		UIUtils.runCommand(this.getFrame(), new Runnable() {
 			@Override
             public void run() {
@@ -2908,118 +2471,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	/**
-	 * interface CompleteCollectablesStrategy
-	 */
-	protected interface CompleteCollectablesStrategy<Clct extends Collectable> {
-		/**
-		 * defines what it means for a <code>Collectable</code> to be complete in the context of the used <code>CollectController</code>.
-		 * In general, <code>isCollectableComplete(Collectable)</code> means: The given <code>Collectable</code> is ready for display in the Details panel.
-		 * (see the preconditions used in viewSingleCollectable() etc.)
-		 * The default definition is given by <code>Collectable.isComplete()</code>: All fields of the Collectable have been loaded.
-		 * There are alternative (more restrictive) definitions, though, when it comes to subforms.
-		 * @param clct
-		 * @return Is the given <code>Collectable</code> complete?
-		 */
-		boolean isComplete(Clct clct);
-
-		/**
-		 * @return Are <code>Collectable</code>s in the Result tab always complete, that means are all of their fields loaded
-		 * when searching?
-		 */
-		boolean getCollectablesInResultAreAlwaysComplete();
-
-		/**
-		 * @return Set<String> the names of the required fields for the search result. It is merged with the names of the fields (columns)
-		 * that the user has selected to be displayed, so these don't need to be given here.
-		 * Successors should specify the names of the columns here that must always be loaded for the result set, eg. the name
-		 * of the column(s) to build the identifier or to calculate the right to edit/delete etc.
-		 * This method isn't actually needed in the CollectController currently. It's more like a reminder that you have to
-		 * take care of required field names if you implement your own strategy.
-		 */
-		Set<String> getRequiredFieldNamesForResult();
-
-		/**
-		 * makes a bunch of <code>Collectable</code>s complete, by reading them from the database, if necessary.
-		 * @param collclct Collection<Collectable> These are not changed.
-		 * @return Collection<Collectable> contains the complete <code>Collectable</code>s.
-		 * @throws CommonBusinessException
-		 * @precondition collclct != null
-		 * @postcondition result != null
-		 * @postcondition result.size() == collclct.size()
-		 */
-		Collection<Clct> getCompleteCollectables(Collection<Clct> collclct) throws CommonBusinessException;
-
-	}	// interface CompleteCollectablesStrategy
-
-	/**
-	 * inner class AbstractCompleteCollectablesStrategy: provides default implementations for some <code>CompleteCollectablesStrategy</code> methods.
-	 */
-	protected abstract class AbstractCompleteCollectablesStrategy implements CompleteCollectablesStrategy<Clct> {
-
-		/**
-		 * @param clct
-		 * @return <code>clct.isComplete()</code>: Have all fields of the given Collectable been loaded?
-		 */
-		@Override
-        public boolean isComplete(Clct clct) {
-			return clct.isComplete();
-		}
-
-		/**
-		 * reads a bunch of <code>Collectable</code>s from the database.
-		 * This default implementation reads them one by one. Successors may implement a more efficient version here.
-		 * @param collclct Collection<Collectable>
-		 * @return Collection<Collectable> contains the read <code>Collectable</code>s.
-		 * @throws CommonBusinessException
-		 * @precondition collclct != null
-		 * @postcondition result != null
-		 * @postcondition result.size() == collclct.size()
-		 */
-		@Override
-        public Collection<Clct> getCompleteCollectables(Collection<Clct> collclct) throws CommonBusinessException {
-			if (collclct == null) {
-				throw new NullArgumentException("collclct");
-			}
-			final Collection<Clct> result = new ArrayList<Clct>();
-			for (Clct clct : collclct) {
-				final Clct clctComplete = this.isComplete(clct) ? clct : CollectController.this.readCollectable(clct);
-				result.add(clctComplete);
-			}
-			assert result != null;
-			assert result.size() == collclct.size();
-			return result;
-		}
-
-	}	// inner class AbstractCompleteCollectablesStrategy
-
-	/**
-	 * Default strategy: Always load complete <code>Collectable</code>s.
-	 */
-	protected class AlwaysLoadCompleteCollectablesStrategy extends AbstractCompleteCollectablesStrategy {
-
-		/**
-		 * @return true
-		 */
-		@Override
-        public boolean getCollectablesInResultAreAlwaysComplete() {
-			return true;
-		}
-
-		/**
-		 * @return Set<String> the names of the required fields for the search result. It is merged with the names of the fields (columns)
-		 * that the user has selected to be displayed, so these don't need to be given here.
-		 * Successors should specify the names of the columns here that must always be loaded for the result set, eg. the name
-		 * of the column(s) to build the identifier or to calculate the right to edit/delete etc.
-		 * This default implementation returns an empty set.
-		 */
-		@Override
-        public Set<String> getRequiredFieldNamesForResult() {
-			return Collections.emptySet();
-		}
-
-	}	// inner class AlwaysLoadCompleteCollectablesStrategy
-
-	/**
 	 * @return the strategy used by this CollectController to complete <code>Collectable</code>s when necessary.
 	 */
 	protected final CompleteCollectablesStrategy<Clct> getCompleteCollectablesStrategy() {
@@ -3266,7 +2717,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		return findCollectableById(sEntity, oId).getVersion();
 	}
 
-	protected void setCollectState(int iTab, int iMode) throws CommonBusinessException {
+	/**
+	 * TODO: Make protected again.
+	 */
+	public void setCollectState(int iTab, int iMode) throws CommonBusinessException {
 		this.statemodel.setCollectState(iTab, iMode);
 	}
 
@@ -3278,7 +2732,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @see #getCollectableEntityForDetails()
 	 * TODO add postcondition result != null
 	 */
-	protected CollectableEntity getCollectableEntity() {
+	public CollectableEntity getCollectableEntity() {
 		return this.clcte;
 	}
 
@@ -3621,8 +3075,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * stops editing in the Search panel.
 	 * Derived classes may stop editing on fields, TableCellEditors etc. here
 	 * @return Has the editing been stopped?
+	 * 
+	 * TODO: Make this protected again.
 	 */
-	protected boolean stopEditingInSearch() {
+	public boolean stopEditingInSearch() {
 		// do nothing here
 		return true;
 	}
@@ -3835,8 +3291,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * deletes the selected <code>Collectable</code>.
 	 * @throws CommonPermissionException if deletion of the selected <code>Collectable</code> is not allowed for the current user.
+	 * 
+	 * TODO: Make this protected again.
 	 */
-	protected final void checkedDeleteSelectedCollectable() throws CommonBusinessException {
+	public final void checkedDeleteSelectedCollectable() throws CommonBusinessException {
 		Clct collectable = this.getCompleteSelectedCollectable();
 		this.checkedDeleteCollectable(collectable);
 	}
@@ -3844,8 +3302,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * command: delete current collectable in details<br>
 	 * Deletes the current collectable in Details mode.
+	 * 
+	 * @deprecated Move to DetailsController and make private again.
 	 */
-	private void cmdDeleteCurrentCollectableInDetails() {
+	public void cmdDeleteCurrentCollectableInDetails() {
 		assert this.getCollectStateModel().getCollectState().equals(new CollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_VIEW));
 
 		if (this.stopEditingInDetails()) {
@@ -3912,40 +3372,12 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @return Is multithreading enabled?
 	 * TODO remove this method when the transition to multithreading is done ;)
 	 * 
-	 * @deprecated Move to ResultController hierarchy.
+	 * @deprecated Move to ResultController hierarchy and make protected again.
+	 *   It would be far better, if the class (hierarchy) would known that search
+	 *   should be single- or multi-threaded.
 	 */
-	protected boolean isMultiThreadingEnabled() {
+	public boolean isMultiThreadingEnabled() {
 		return false;
-	}
-
-	/**
-	 * interface for multithreaded search.
-	 */
-	protected static interface SearchWorker<Clct extends Collectable> {
-		/**
-		 * performs some initial actions, if necessary, before executing the actual search.
-		 * @throws CommonBusinessException
-		 * @event-dispatch-thread
-		 */
-		void startSearch() throws CommonBusinessException;
-
-		/**
-		 * performs the actual search.
-		 * @return List<Collectable> the search result
-		 * @postcondition result != null
-		 * @throws CommonBusinessException
-		 * @own-thread
-		 */
-		List<Clct> getResult() throws CommonBusinessException;
-
-		/**
-		 * performs some actions, if necessary, after the actual search was executed.
-		 * @param lstclctResult
-		 * @throws CommonBusinessException
-		 * @precondition lstclctResult != null
-		 * @event-dispatch-thread
-		 */
-		void finishSearch(List<Clct> lstclctResult) throws CommonBusinessException;
 	}
 
 	/**
@@ -3954,17 +3386,17 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * which calls the deprecated search() method.
 	 * TODO add parameter bRefreshOnly
 	 * 
-	 * @deprecated Move to ResultController hierarchy.
+	 * @deprecated Move to ResultController hierarchy and make protected again.
 	 */
-	protected SearchWorker<Clct> getSearchWorker() {
+	public SearchWorker<Clct> getSearchWorker() {
 		// leave implementation for derived class
 		return null;
 	}
 
 	/**
-	 * @deprecated Move to ResultController hierarchy.
+	 * @deprecated Move to ResultController hierarchy and make protected again.
 	 */
-	protected SearchWorker<Clct> getSearchWorker(List<Observer> lstObservers) {
+	public SearchWorker<Clct> getSearchWorker(List<Observer> lstObservers) {
 		// leave implementation for derived class
 		return null;
 	}
@@ -3985,11 +3417,14 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	/**
 	 * @param bRefreshOnly
-	 * @deprecated Use multithreaded search for new applications.
 	 * @throws CommonBusinessException
+	 * 
+	 * @deprecated Use multithreaded search for new applications.
+	 *   Move to SearchController.
+	 * TODO: Make this protected again.
 	 */
 	@Deprecated
-	protected void search(boolean bRefreshOnly) throws CommonBusinessException {
+	public void search(boolean bRefreshOnly) throws CommonBusinessException {
 		this.search();
 	}
 
@@ -4002,8 +3437,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		return this.getResultPanel().getResultTable();
 	}
 
+	/**
+	 * @deprecated Move this to ResultController.
+	 */
 	protected final MouseListener getMouseListenerForTableDoubleClick() {
-		return this.ctlResult.mouselistenerTableDblClick;
+		return getResultController().getTableDblClickML();
 	}
 
 	protected final MouseListener getForeignKeyMouseListenerForTableDoubleClick() {
@@ -4013,10 +3451,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * @return the table model containing the results of the last search.
 	 * 
-	 * @deprecated Move this to ResultController.
+	 * @deprecated Move this to ResultController and make protected again.
 	 */
 	@SuppressWarnings("unchecked")
-	protected final SortableCollectableTableModel<Clct> getResultTableModel() {
+	public final SortableCollectableTableModel<Clct> getResultTableModel() {
 		return (SortableCollectableTableModel<Clct>) this.getResultTable().getModel();
 	}
 
@@ -4059,8 +3497,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @param iTotalNumberOfRecords The total number of records found. If the result was truncated, this is higher
 	 * than lstclct.size().
 	 * @precondition iTotalNumberOfRecords >= lstclct.size()
+	 * 
+	 * TODO: Make this protected again.
 	 */
-	protected final void fillResultPanel(List<Clct> lstclct, int iTotalNumberOfRecords, boolean bSortInitially) {
+	public final void fillResultPanel(List<Clct> lstclct, int iTotalNumberOfRecords, boolean bSortInitially) {
 		if (iTotalNumberOfRecords < lstclct.size()) {
 			throw new IllegalArgumentException("iTotalNumberOfRecords");
 		}
@@ -4085,8 +3525,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		ctlResult.setStatusBar(tblResult, bResultTruncated, iTotalNumberOfRecords);
 	}
 
-
-	protected void writeColumnOrderToPreferences(){
+	/**
+	 * TODO: Make this protected again.
+	 */
+	public void writeColumnOrderToPreferences(){
 		TableModel resultTableModel = this.getResultTable().getModel();
 		// NUCLEUSINT-1045
 		if (resultTableModel instanceof SortableTableModel) {
@@ -4282,8 +3724,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	/**
 	 * @return the CollectStateModel used internally.
+	 * 
+	 * TODO: Can this be protected? Can this move to SearchController?
 	 */
-	protected final CollectStateModel<Clct> getCollectStateModel() {
+	public final CollectStateModel<Clct> getCollectStateModel() {
 		return this.statemodel;
 	}
 
@@ -4338,15 +3782,17 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	/**
 	 * Command: clear search condition
+	 * 
+	 * @deprecated Move to SearchController and make private again.
 	 */
-	private void cmdClearSearchCondition() {
+	public void cmdClearSearchCondition() {
 		try {
 			this.stopEditingInSearch();
 
 			this.removeImportedSearchConditionWithStatus();
 			this.clearSearchCondition();
 
-			this.ctlSearch.actNewWithSearchValues.setEnabled(false);
+			ctlSearch.getNewWithSearchValuesAction().setEnabled(false);
 
 			// set to unsynched state even if no value was changed:
 			this.setCollectState(CollectState.OUTERSTATE_SEARCH, CollectState.SEARCHMODE_UNSYNCHED);
@@ -4388,6 +3834,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		return this.getCollectPanel().getResultPanel();
 	}
 
+	/**
+	 * @deprecated Move this to DetailsController.
+	 */
 	public DetailsPanel getDetailsPanel() {
 		return this.getCollectPanel().getDetailsPanel();
 	}
@@ -4471,9 +3920,12 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * @return the message to display in the status bar when changes im multi edit mode have occured.
 	 * @precondition this.getCollectStateModel().getCollectState().isDetailsModeMultiViewOrEdit()
-	 * TODO inline - after refactoring LOCC.getMultiEditChangeString()
+	 * 
+	 * TODO: inline - after refactoring LOCC.getMultiEditChangeString()
+	 * 
+	 * TODO: Make this protected again.
 	 */
-	protected String getMultiEditChangeString() {
+	public String getMultiEditChangeString() {
 		if (!this.getCollectStateModel().getCollectState().isDetailsModeMultiViewOrEdit()) {
 			throw new IllegalStateException();
 		}
@@ -4494,12 +3946,14 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @param currclct
 	 * @return the current collectable filled with the values which are set in the search panel
 	 * @throws CommonBusinessException
+	 * 
+	 * @deprecated Move to SearchController.
 	 */
 	protected Clct newCollectableWithSearchValues(Clct currclct) throws CommonBusinessException {
-		Collection<SearchComponentModel> collscm = CollectController.this.ctlSearch.getCollectableComponentModels();
+		Collection<SearchComponentModel> collscm = ctlSearch.getCollectableComponentModels();
 
 		for (SearchComponentModel scm : collscm) {
-			List<CollectableComponent> lsclctcomp = (List<CollectableComponent>)CollectController.this.ctlDetails.getDetailsPanel().getEditView().getCollectableComponentsFor(scm.getFieldName());
+			List<CollectableComponent> lsclctcomp = (List<CollectableComponent>) getDetailsPanel().getEditView().getCollectableComponentsFor(scm.getFieldName());
 
 			if (lsclctcomp.isEmpty()) {
 				continue;
@@ -4621,8 +4075,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @precondition clcte != null
 	 * @precondition lstclctefSelected != null
 	 * @postcondition !lstclctefSelected.isEmpty()
+	 * 
+	 * TODO: Make this protected again.
 	 */
-	protected void makeSureSelectedFieldsAreNonEmpty(CollectableEntity clcte, List<CollectableEntityField> lstclctefSelected) {
+	public void makeSureSelectedFieldsAreNonEmpty(CollectableEntity clcte, List<CollectableEntityField> lstclctefSelected) {
 		if (lstclctefSelected.isEmpty()) {
 			// 1: show identifier (if any), as defined in CollectableEntity.
 			final String sIdentifierFieldName = clcte.getIdentifierFieldName();
@@ -4701,16 +4157,16 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 					boolean bMoreThanOneRowsSelected = (iResultMode == CollectState.RESULTMODE_MULTISELECTION);
 					boolean bRowsSelected = bOneRowSelected || bMoreThanOneRowsSelected;
 
-					CollectController.this.ctlResult.actEditSelectedCollectables.setEnabled(bOneRowSelected || (bMoreThanOneRowsSelected && isMultiEditAllowed()));
-					CollectController.this.getCloneAction().setEnabled(bOneRowSelected && isCloneAllowed());
-					CollectController.this.ctlResult.actDeleteSelectedCollectables.setEnabled(bRowsSelected && CollectController.this.isDeleteSelectedCollectableAllowed());
+					getResultController().getEditSelectedCollectablesAction().setEnabled(bOneRowSelected || (bMoreThanOneRowsSelected && isMultiEditAllowed()));
+					getCloneAction().setEnabled(bOneRowSelected && isCloneAllowed());
+					getResultController().getDeleteSelectedCollectablesAction().setEnabled(bRowsSelected && isDeleteSelectedCollectableAllowed());
 
 					// If the selection changes and we are in the result tab, the details panel is no longer in sync:
 					// TODO alternative: sync details panel when details tab is pressed (let the customer decide).
-					CollectController.this.getCollectPanel().setTabbedPaneEnabledAt(CollectState.OUTERSTATE_DETAILS, false);
+					getCollectPanel().setTabbedPaneEnabledAt(CollectState.OUTERSTATE_DETAILS, false);
 
 					// Give the result table the focus so the user can start scrolling with the arrow keys:
-					CollectController.this.getResultTable().requestFocusInWindow();
+					getResultTable().requestFocusInWindow();
 				}
 			});
 		}
@@ -4821,21 +4277,23 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			});
 		}
 
+		/**
+		 * @deprecated Move to DetailsController and make protected again.
+		 */
 		public void performDetailsModeEntered() {
+			DetailsPanel dp = getDetailsPanel();
+			dp.setStatusBarText(" ");
+			ctlDetails.updateStatusBarIfNecessary();
+			addChangeListenersForDetails();
 
-			CollectController.this.getDetailsPanel().setStatusBarText(" ");
-			CollectController.this.ctlDetails.updateStatusBarIfNecessary();
-
-			CollectController.this.addChangeListenersForDetails();
-
-			if(CollectController.this.getCollectState().isDetailsModeMultiViewOrEdit()) {
-				CollectController.this.bIsLastTabDetailsModeMultiViewOrEdit = true;
+			if(getCollectState().isDetailsModeMultiViewOrEdit()) {
+				bIsLastTabDetailsModeMultiViewOrEdit = true;
 			}
 			else {
-				CollectController.this.bIsLastTabDetailsModeMultiViewOrEdit = false;
+				bIsLastTabDetailsModeMultiViewOrEdit = false;
 			}
 
-			CollectController.this.ctlDetails.displayCurrentRecordNumberInDetailsPanelStatusBar();
+			ctlDetails.displayCurrentRecordNumberInDetailsPanelStatusBar();
 
 		}
 
@@ -4993,12 +4451,12 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		//this.getPreviousAction().setEnabled(false);
 		//this.getNextAction().setEnabled(false);
 		this.getCloneAction().setEnabled(false);
-		this.ctlDetails.actDeleteCurrentCollectable.setEnabled(false);
+		this.ctlDetails.getDeleteCurrentCollectableAction().setEnabled(false);
 		this.getRefreshCurrentCollectableAction().setEnabled(false);
 	}
 
 	protected void setDeleteActionEnabled(boolean enabled) {
-		this.ctlDetails.actDeleteCurrentCollectable.setEnabled(enabled);
+		this.ctlDetails.getDeleteCurrentCollectableAction().setEnabled(enabled);
 	}
 
 	private void acceptLookedUpCollectable(final ICollectableListOfValues clctlovSource) {

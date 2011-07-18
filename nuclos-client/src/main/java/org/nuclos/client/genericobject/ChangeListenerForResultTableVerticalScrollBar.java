@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.client.ui.collect.ResultPanel;
+import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.server.genericobject.ProxyList;

@@ -60,11 +60,11 @@ import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.EditView;
-import org.nuclos.client.ui.collect.ResultController;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.collect.component.model.SearchEditModel;
+import org.nuclos.client.ui.collect.result.ResultController;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.common.PointerCollection;
 import org.nuclos.common.PointerException;
@@ -420,11 +420,17 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 
 	// =============== Additional ChangeListeners for search ===============
 
+	/**
+	 * @deprecated Move to SearchController specialization.
+	 */
 	@Override
-	protected void addAdditionalChangeListenersForSearch() {
+	public void addAdditionalChangeListenersForSearch() {
 		this.addAdditionalChangeListeners(true);
 	}
 
+	/**
+	 * @deprecated Move to SearchController specialization.
+	 */
 	protected void addAdditionalChangeListeners(boolean bSearchable) {
 		for (SubFormController subformctl : getSubFormControllers(bSearchable)) {
 			subformctl.getSubForm().addChangeListener(getChangeListener(bSearchable));

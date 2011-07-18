@@ -31,7 +31,10 @@ import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.nuclos.client.ui.collect.detail.DetailsPanel;
 import org.nuclos.client.ui.collect.indicator.CollectPanelIndicator;
+import org.nuclos.client.ui.collect.result.ResultPanel;
+import org.nuclos.client.ui.collect.search.SearchPanel;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.CommonLocaleDelegate;
 
@@ -128,15 +131,16 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 		optionsEnabled.put(1, true);
 		optionsEnabled.put(2, true);
 		
+		final CollectPanelIndicator cpi = pnlSearch.getCollectPanelIndicator();
 		if (!bSearchPanelAvailable) {
-			this.pnlSearch.cpi.hideSearchOption();
-			this.pnlResult.cpi.hideSearchOption();
-			this.pnlDetails.cpi.hideSearchOption();
+			cpi.hideSearchOption();
+			cpi.hideSearchOption();
+			cpi.hideSearchOption();
 		}
 		
-		this.pnlSearch.cpi.addSelectionListener(selectionListener);
-		this.pnlResult.cpi.addSelectionListener(selectionListener);
-		this.pnlDetails.cpi.addSelectionListener(selectionListener);
+		cpi.addSelectionListener(selectionListener);
+		cpi.addSelectionListener(selectionListener);
+		cpi.addSelectionListener(selectionListener);
 		
 		this.setupLayout();
 		
@@ -318,9 +322,10 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 		}*/
 		
 		optionsEnabled.put(iExternalIndex, bEnabled);
-		pnlSearch.cpi.updateOption(iExternalIndex, bEnabled);
-		pnlResult.cpi.updateOption(iExternalIndex, bEnabled);
-		pnlDetails.cpi.updateOption(iExternalIndex, bEnabled);
+		final CollectPanelIndicator cpi = pnlSearch.getCollectPanelIndicator();
+		cpi.updateOption(iExternalIndex, bEnabled);
+		cpi.updateOption(iExternalIndex, bEnabled);
+		cpi.updateOption(iExternalIndex, bEnabled);
 	}
 
 	/**
@@ -334,9 +339,10 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 			this.tabpn.setToolTipTextAt(iIndex, sToolTipText);
 		}*/
 		
-		pnlSearch.cpi.setToolTip(iExternalIndex, sToolTipText);
-		pnlResult.cpi.setToolTip(iExternalIndex, sToolTipText);
-		pnlDetails.cpi.setToolTip(iExternalIndex, sToolTipText);
+		final CollectPanelIndicator cpi = pnlSearch.getCollectPanelIndicator();
+		cpi.setToolTip(iExternalIndex, sToolTipText);
+		cpi.setToolTip(iExternalIndex, sToolTipText);
+		cpi.setToolTip(iExternalIndex, sToolTipText);
 	}
 
 	/**

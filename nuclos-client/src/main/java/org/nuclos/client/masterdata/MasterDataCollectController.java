@@ -78,11 +78,7 @@ import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.DefaultEditView;
-import org.nuclos.client.ui.collect.DetailsPanel;
 import org.nuclos.client.ui.collect.EditView;
-import org.nuclos.client.ui.collect.ResultController;
-import org.nuclos.client.ui.collect.ResultPanel;
-import org.nuclos.client.ui.collect.SearchPanel;
 import org.nuclos.client.ui.collect.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
@@ -92,6 +88,12 @@ import org.nuclos.client.ui.collect.component.ICollectableListOfValues;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.collect.component.model.DetailsEditModel;
+import org.nuclos.client.ui.collect.detail.DetailsPanel;
+import org.nuclos.client.ui.collect.result.ResultController;
+import org.nuclos.client.ui.collect.result.ResultPanel;
+import org.nuclos.client.ui.collect.search.SearchPanel;
+import org.nuclos.client.ui.collect.search.SearchWorker;
+import org.nuclos.client.ui.collect.strategy.CompleteCollectableMasterDataStrategy;
 import org.nuclos.client.ui.layoutml.LayoutMLEditView;
 import org.nuclos.client.ui.layoutml.LayoutMLParser;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
@@ -237,7 +239,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		   boolean detailsWithScrollbar, ResultController<CollectableMasterDataWithDependants> rc) {
       super(parent, sEntityName, rc);
       ifrm = tabIfAny != null ? tabIfAny : newInternalFrame();
-      this.setCompleteCollectablesStrategy(new CompleteCollectableMasterDataStrategy());
+      this.setCompleteCollectablesStrategy(new CompleteCollectableMasterDataStrategy(this));
       final boolean bSearchPanelAvailable = this.mddelegate.getMetaData(sEntityName).isSearchable();
       this.detailsWithScrollbar = detailsWithScrollbar;
       final CollectPanel<CollectableMasterDataWithDependants> pnlCollect = new MasterDataCollectPanel(bSearchPanelAvailable);
@@ -577,14 +579,19 @@ protected void setupSearchToolBar() {
 
    /**
     * @return the collectable (master data) entity for this controller.
+    * 
+    * TODO: Make this protected again.
     */
    @Override
-   protected CollectableMasterDataEntity getCollectableEntity() {
+   public CollectableMasterDataEntity getCollectableEntity() {
       return (CollectableMasterDataEntity) super.getCollectableEntity();
    }
 
+	/**
+	 * @deprecated Move to SearchController and make protected again.
+	 */
    @Override
-   protected CollectableFieldsProviderFactory getCollectableFieldsProviderFactoryForSearchEditor() {
+   public CollectableFieldsProviderFactory getCollectableFieldsProviderFactoryForSearchEditor() {
       return valueListProviderCache.makeCachingFieldsProviderFactory(
           new MasterDataCollectableFieldsProviderFactory(this.getCollectableEntity().getName()));
    }
@@ -777,15 +784,21 @@ protected void setupSearchToolBar() {
       return this.getMapOfSubFormControllersInDetails().get(sEntityName);
    }
 
+	/**
+	 * @deprecated Move to DetailsController hierarchy and make protected again.
+	 */
    @Override
-   protected void addAdditionalChangeListenersForDetails() {
+   public void addAdditionalChangeListenersForDetails() {
       for (DetailsSubFormController<CollectableEntityObject> subformctl : this.getSubFormControllersInDetails()) {
          subformctl.getSubForm().addChangeListener(this.changelistenerDetailsChanged);
       }
    }
 
+	/**
+	 * @deprecated Move to DetailsController and make protected again.
+	 */
    @Override
-   protected void removeAdditionalChangeListenersForDetails() {
+   public void removeAdditionalChangeListenersForDetails() {
       for (DetailsSubFormController<CollectableEntityObject> subformctl : this.getSubFormControllersInDetails()) {
          subformctl.getSubForm().removeChangeListener(this.changelistenerDetailsChanged);
       }
@@ -1124,18 +1137,18 @@ protected void setupSearchToolBar() {
    }
 
    /**
-	 * @deprecated Move to ResultController hierarchy.
+	 * @deprecated Move to ResultController hierarchy and make protected again.
     */
    @Override
-   protected SearchWorker<CollectableMasterDataWithDependants> getSearchWorker() {
+   public SearchWorker<CollectableMasterDataWithDependants> getSearchWorker() {
       return new ObservableSearchWorker();
    }
 
    /**
-	 * @deprecated Move to ResultController hierarchy.
+	 * @deprecated Move to ResultController hierarchy and make protected again.
     */
    @Override
-   protected SearchWorker<CollectableMasterDataWithDependants> getSearchWorker(List<Observer> lstObservers) {
+   public SearchWorker<CollectableMasterDataWithDependants> getSearchWorker(List<Observer> lstObservers) {
       ObservableSearchWorker observableSearchWorker = new ObservableSearchWorker();
       for(Observer observer : lstObservers){
          observableSearchWorker.addObserver(observer);
@@ -1416,29 +1429,6 @@ protected void setupSearchToolBar() {
       }
    }
 
-   /**
-    * The strategy for completing master data. The search result always contains all fields, but never contains
-    * dependants. Those must be loaded when entering Details mode.
-    */
-   private class CompleteCollectableMasterDataStrategy extends AbstractCompleteCollectablesStrategy {
-
-	  @Override
-      public boolean getCollectablesInResultAreAlwaysComplete() {
-         return false;
-      }
-
-      @Override
-      public boolean isComplete(CollectableMasterDataWithDependants clct) {
-         return super.isComplete(clct);
-      }
-
-   	  @Override
-      public Set<String> getRequiredFieldNamesForResult() {
-         return MasterDataCollectController.this.getCollectableEntity().getFieldNames();
-      }
-
-   }	// inner class CompleteCollectableMasterDataStrategy
-
    class MasterDataCollectPanel extends CollectPanel<CollectableMasterDataWithDependants> {
       
       /**
@@ -1693,9 +1683,11 @@ protected void setupSearchToolBar() {
 	 * @return the search condition contained in the search panel's fields (including the subforms' search fields).
 	 * @precondition this.isSearchPanelAvailable()
 	 * @postcondition result == null || result.isSyntacticallyCorrect()
+	 * 
+	 * @deprecated Move to SearchController or SearchPanel and make protected again. 
 	 */
 	@Override
-	protected CollectableSearchCondition getCollectableSearchConditionFromSearchFields(boolean bMakeConsistent) throws CollectableFieldFormatException {
+	public CollectableSearchCondition getCollectableSearchConditionFromSearchFields(boolean bMakeConsistent) throws CollectableFieldFormatException {
 		if (!isSearchPanelAvailable())
 			throw new IllegalStateException("!this.isSearchPanelAvailable()");
 		final CollectableSearchCondition cond = super.getCollectableSearchConditionFromSearchFields(bMakeConsistent);
@@ -1748,9 +1740,11 @@ protected void setupSearchToolBar() {
 	 * stops editing in the Search panel.
 	 * Derived classes may stop editing on fields, TableCellEditors etc. here
 	 * @return Has the editing been stopped?
+	 * 
+	 * TODO: Make this protected again.
 	 */
 	@Override
-	protected boolean stopEditingInSearch() {
+	public boolean stopEditingInSearch() {
 		if (getMapOfSubFormControllersInSearch() != null) {
 			for (SearchConditionSubFormController subformctl : getMapOfSubFormControllersInSearch().values()) {
 				subformctl.stopEditing();

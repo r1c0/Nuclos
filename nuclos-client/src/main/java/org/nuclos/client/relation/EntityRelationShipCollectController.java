@@ -42,8 +42,8 @@ import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.DefaultEditView;
-import org.nuclos.client.ui.collect.ResultPanel;
 import org.nuclos.client.ui.collect.component.CollectableTextField;
+import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
@@ -150,13 +150,19 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 		pnlEdit.showDataModel(lstEntites, true);
 	}
 
+	/**
+	 * @deprecated Move to DetailsController hierarchy and make protected again.
+	 */
 	@Override
-	protected void addAdditionalChangeListenersForDetails() {
+	public void addAdditionalChangeListenersForDetails() {
 		this.pnlEdit.addChangeListener(this.changelistenerDetailsChanged);		
 	}
 
+	/**
+	 * @deprecated Move to DetailsController hierarchy and make protected again.
+	 */
 	@Override
-	protected void removeAdditionalChangeListenersForDetails() {
+	public void removeAdditionalChangeListenersForDetails() {
 		this.pnlEdit.removeChangeListener(this.changelistenerDetailsChanged);
 	}
 

@@ -1,9 +1,23 @@
-package org.nuclos.client.ui.collect;
+//Copyright (C) 2011  Novabit Informationssysteme GmbH
+//
+//This file is part of Nuclos.
+//
+//Nuclos is free software: you can redistribute it and/or modify
+//it under the terms of the GNU Affero General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+//Nuclos is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU Affero General Public License for more details.
+//
+//You should have received a copy of the GNU Affero General Public License
+//along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
+package org.nuclos.client.ui.collect.result;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -17,24 +31,24 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JViewport;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosResultPanel;
-import org.nuclos.client.ui.CommonClientWorkerAdapter;
-import org.nuclos.client.ui.CommonMultiThreader;
-import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.UIUtils.CommandHandler;
-import org.nuclos.client.ui.collect.CollectController.SearchWorker;
+import org.nuclos.client.ui.collect.CollectController;
+import org.nuclos.client.ui.collect.CollectableTableHelper;
+import org.nuclos.client.ui.collect.CollectableTableModel;
+import org.nuclos.client.ui.collect.SelectFixedColumnsController;
+import org.nuclos.client.ui.collect.SelectFixedColumnsPanel;
+import org.nuclos.client.ui.collect.SortableCollectableTableModel;
+import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
 import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableUtils;
@@ -46,7 +60,6 @@ import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.exception.PreferencesException;
 
 /**
@@ -90,9 +103,11 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	 *   <li>(re-)set the fixed column set by reading the preferences. The set will only contain fixed columns that
 	 *     have been <em>selected</em>.</li>
 	 * </ul>
+	 * 
+	 * TODO: Make protected again.
 	 */
 	@Override
-	protected void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl, Preferences preferences) {
+	public void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl, Preferences preferences) {
 		assert clctctl == getCollectController() && clctctl.getFields() == getFields() && clctctl.getResultController() == this;
 		assert getEntity().equals(clcte);
 		super.initializeFields(clcte, clctctl, preferences);
@@ -297,8 +312,11 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 			});
 	}
 
+	/**
+	 * TODO: Make this protected again.
+	 */
 	@Override
-	protected void setModel(CollectableTableModel<Clct> tblmodel, final CollectableEntity clcte, final CollectController<Clct> clctctl) {
+	public void setModel(CollectableTableModel<Clct> tblmodel, final CollectableEntity clcte, final CollectController<Clct> clctctl) {
 		assert getEntity().equals(clcte);
 		super.setModel(tblmodel, clcte, clctctl);
 		

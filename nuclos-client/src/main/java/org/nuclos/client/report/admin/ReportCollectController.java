@@ -836,8 +836,11 @@ public class ReportCollectController extends MasterDataCollectController {
 		return reportdelegate.isSaveAllowed((Integer) clct.getId());
 	}
 
+	/**
+	 * @deprecated Move to SearchController and make protected again. 
+	 */
 	@Override
-	protected CollectableSearchCondition getCollectableSearchConditionToDisplay() throws CollectableFieldFormatException {
+	public CollectableSearchCondition getCollectableSearchConditionToDisplay() throws CollectableFieldFormatException {
 		return super.getCollectableSearchCondition();
 	}
 

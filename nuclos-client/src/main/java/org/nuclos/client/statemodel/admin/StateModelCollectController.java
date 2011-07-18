@@ -63,14 +63,17 @@ import org.nuclos.client.statemodel.StateModelEditor;
 import org.nuclos.client.statemodel.panels.StateModelEditorPropertiesPanel;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.DefaultEditView;
-import org.nuclos.client.ui.collect.DetailsPanel;
-import org.nuclos.client.ui.collect.ResultPanel;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.SubForm.RefreshValueListAction;
+import org.nuclos.client.ui.collect.detail.DetailsPanel;
+import org.nuclos.client.ui.collect.result.ResultPanel;
+import org.nuclos.client.ui.collect.strategy.AbstractCompleteCollectablesStrategy;
+import org.nuclos.client.ui.collect.strategy.CompleteCollectableStateModelsStrategy;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.client.valuelistprovider.EntityCollectableIdFieldsProvider;
 import org.nuclos.common.Actions;
@@ -140,7 +143,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 		super(parent, CollectableStateModel.clcte);
 
 		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame(CommonLocaleDelegate.getMessage("StateModelCollectController.4","Statusmodelle verwalten"));
-		this.setCompleteCollectablesStrategy(new CompleteCollectableStateModelsStrategy());
+		this.setCompleteCollectablesStrategy(new CompleteCollectableStateModelsStrategy(this));
 
 		this.initialize(this.pnlCollect);
 
@@ -239,14 +242,20 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 
 	}
 
+	/**
+	 * @deprecated Move to DetailsController hierarchy and make protected again.
+	 */
 	@Override
-	protected void addAdditionalChangeListenersForDetails() {
+	public void addAdditionalChangeListenersForDetails() {
 		this.pnlEdit.getStateModelEditor().addChangeListener(this.changelistenerDetailsChanged);
 		this.subformctlUsages.getSubForm().addChangeListener(this.changelistenerDetailsChanged);
 	}
 
+	/**
+	 * @deprecated Move to DetailsController hierarchy and make protected again.
+	 */
 	@Override
-	protected void removeAdditionalChangeListenersForDetails() {
+	public void removeAdditionalChangeListenersForDetails() {
 		this.pnlEdit.getStateModelEditor().removeChangeListener(this.changelistenerDetailsChanged);
 		this.subformctlUsages.getSubForm().removeChangeListener(this.changelistenerDetailsChanged);
 	}
@@ -514,23 +523,6 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 		setDetailsChangedIgnored(bWasDetailsChangedIgnored);
 
 	}
-
-	/**
-	 * Strategy for loading collectables: Just the necessary data for the Result panel,
-	 * everything for the Details panel.
-	 */
-	private class CompleteCollectableStateModelsStrategy extends AbstractCompleteCollectablesStrategy {
-		@Override
-        public boolean getCollectablesInResultAreAlwaysComplete() {
-			return false;
-		}
-
-		@Override
-        public Set<String> getRequiredFieldNamesForResult() {
-			return null;
-		}
-
-	}	// class CompleteCollectableStateModelsStrategy
 
 	private class StateModelCollectPanel extends CollectPanel<CollectableStateModel> {
 		/**
