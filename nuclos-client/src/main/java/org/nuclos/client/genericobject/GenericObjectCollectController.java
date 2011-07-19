@@ -3902,7 +3902,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 			final int iBtn = confirmGenerationType(bMulti, sSourceModuleName, sTargetModuleName, generatoractionvo);
 
-			if (iBtn != JOptionPane.CANCEL_OPTION) {
+			if (iBtn != JOptionPane.CANCEL_OPTION && iBtn != JOptionPane.CLOSED_OPTION) {
 				final AtomicReference<Integer> parameterObjectIdRef = new AtomicReference<Integer>();
 				final CommonRunnable generateRunnable = new CommonRunnable() {
 					@Override
