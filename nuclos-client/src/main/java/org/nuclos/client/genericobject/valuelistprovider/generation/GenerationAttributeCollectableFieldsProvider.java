@@ -68,6 +68,9 @@ public class GenerationAttributeCollectableFieldsProvider implements Collectable
 	@Override
 	public void setParameter(String sName, Object oValue) {
 		log.debug("setParameter - sName = " + sName + " - oValue = " + oValue);
+		if(oValue instanceof Long) {
+			oValue = ((Long)oValue).intValue();
+		}
 		if (sName.equals("column")) {
 			this.column = (String) oValue;
 		}
@@ -78,7 +81,12 @@ public class GenerationAttributeCollectableFieldsProvider implements Collectable
 			this.iTargetModuleId = (Integer) oValue;
 		}
 		else if (sName.equals("sourceattribute")) {
-			this.iSourceAttributeId = (Integer) oValue;
+			if(oValue instanceof Long) {
+				this.iSourceAttributeId = ((Long) oValue).intValue();
+			}
+			else {
+				this.iSourceAttributeId = (Integer) oValue;
+			}
 		}
 		else if (sName.equals("targetattribute")) {
 			if(oValue instanceof Long) {
