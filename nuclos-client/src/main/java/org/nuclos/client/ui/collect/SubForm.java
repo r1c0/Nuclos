@@ -690,24 +690,26 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	}
 	
 	public void fireFocusGained() {		
-		if(getJTable().getModel().getRowCount() > 0) {			
-			getJTable().editCellAt(0, 0);				
-			getSubformTable().changeSelection(0, 0, false, false);			
-		}
-		else if(getJTable().getModel().getRowCount() == 0) {
-			for(FocusActionListener fal : getFocusActionLister()) {
-				fal.focusAction(new EventObject(this));
-				if (getJTable().editCellAt(0, 0)) {
-					SwingUtilities.invokeLater(new Runnable() {
-						
-						@Override
-						public void run() {
-							Component editor = getJTable().getEditorComponent();
-							editor.requestFocusInWindow();
+		AWTEvent event = EventQueue.getCurrentEvent();
+		if(event instanceof KeyEvent) {
+			if(getJTable().getModel().getRowCount() > 0) {			
+				getJTable().editCellAt(0, 0);				
+				getSubformTable().changeSelection(0, 0, false, false);			
+			}
+			else if(getJTable().getModel().getRowCount() == 0) {
+				for(FocusActionListener fal : getFocusActionLister()) {
+					fal.focusAction(new EventObject(this));
+					if (getJTable().editCellAt(0, 0)) {
+						SwingUtilities.invokeLater(new Runnable() {
 							
-						}
-					});
-					
+							@Override
+							public void run() {
+								Component editor = getJTable().getEditorComponent();
+								editor.requestFocusInWindow();								
+							}
+						});
+						
+					}
 				}
 			}
 		}
@@ -1479,44 +1481,48 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
 			super.changeSelection(rowIndex, columnIndex, toggle, extend);
 			
-			if(newRowOnNext) {
-				if(getRowCount() == 1) {
-					for(FocusActionListener fal : subform.getFocusActionLister()) {
-						fal.focusAction(new EventObject(this));
-						if (editCellAt(++rowIndex, columnIndex)) {
-							SwingUtilities.invokeLater(new Runnable() {
-								
-								@Override
-								public void run() {
-									Component editor = getEditorComponent();
-									editor.requestFocusInWindow();
+			AWTEvent event = EventQueue.getCurrentEvent();
+			if(event instanceof KeyEvent) {
+				if(newRowOnNext) {
+					if(getRowCount() == 1) {
+						for(FocusActionListener fal : subform.getFocusActionLister()) {
+							fal.focusAction(new EventObject(this));
+							if (editCellAt(++rowIndex, columnIndex)) {
+								SwingUtilities.invokeLater(new Runnable() {
 									
-								}
-							});
-							
+									@Override
+									public void run() {
+										Component editor = getEditorComponent();
+										if(editor != null)
+											editor.requestFocusInWindow();										
+									}
+								});
+								
+							}
 						}
 					}
+					newRowOnNext = false;
 				}
-				newRowOnNext = false;
-			}
-			int colCount = getColumnCount();
-			if(columnIndex == colCount-1) {
-				newRowOnNext = true;							
-			}
-			
-			if (editCellAt(rowIndex, columnIndex)) {
-				SwingUtilities.invokeLater(new Runnable() {
-					
-					@Override
-					public void run() {
-						Component editor = getEditorComponent();
-						editor.requestFocusInWindow();						
-					}
-				});				
-			}
-			else {
-				// TODO 
-				// do not jump onto disabled cells
+				int colCount = getColumnCount();
+				if(columnIndex == colCount-1) {
+					newRowOnNext = true;							
+				}
+				
+				if (editCellAt(rowIndex, columnIndex)) {
+					SwingUtilities.invokeLater(new Runnable() {
+						
+						@Override
+						public void run() {
+							Component editor = getEditorComponent();
+							if(editor != null)
+								editor.requestFocusInWindow();						
+						}
+					});				
+				}
+				else {
+					// TODO 
+					// do not jump onto disabled cells
+				}
 			}
 			
 		}
