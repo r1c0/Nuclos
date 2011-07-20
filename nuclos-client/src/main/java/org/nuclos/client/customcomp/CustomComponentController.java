@@ -72,6 +72,11 @@ public abstract class CustomComponentController extends TopController {
 	public final String getCustomComponentName() {
 		return componentName;
 	}
+	
+	@Override
+	public void writePreferencesWhileClosing() {
+		
+	}
 
 	/**
 	 * This method is one of the entry points. The component is initialized for presentation

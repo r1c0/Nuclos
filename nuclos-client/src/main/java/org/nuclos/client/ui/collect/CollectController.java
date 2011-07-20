@@ -1071,6 +1071,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		// Details panel:
 		this.ctlDetails.close();
 	}
+	
+	@Override
+	public void writePreferencesWhileClosing() {
+		this.close();
+	}
 
 	/**
 	 * sets the default window state (position, size, minimized/maximized) for the given frame.

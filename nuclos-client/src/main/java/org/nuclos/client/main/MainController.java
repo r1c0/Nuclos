@@ -1469,7 +1469,32 @@ public class MainController {
 			final TopController ctl = iter.next();
 			result = ctl.askAndSaveIfNecessary();
 		}
+		for(CollectController<Collectable> ctl : getControllerForWritingPreferences()) {
+			ctl.writePreferencesWhileClosing();
+		}
 		return result;
+	}
+	
+	private Collection<CollectController<Collectable>> getControllerForWritingPreferences() {
+		Map<String, CollectController<Collectable>> mp = new HashMap<String, CollectController<Collectable>>();
+		for(MainFrameTab tab : mpActiveControllers.keySet()) {
+			TopController tp = mpActiveControllers.get(tab);
+			if(tp instanceof CollectController<?>) {
+				@SuppressWarnings("unchecked")
+				CollectController<Collectable> ctrl = (CollectController<Collectable>)tp;
+				String sEntity = ctrl.getEntityName();
+				if(mp.containsKey(sEntity)) {
+					CollectController<Collectable> ctrl1 = mp.get(sEntity);
+					if(ctrl1.getFrame().isShowing()) {
+						mp.put(sEntity, ctrl1);
+					}
+				}
+				else {
+					mp.put(sEntity, ctrl);
+				}
+			}
+		}		
+		return mp.values();
 	}
 
 	/**

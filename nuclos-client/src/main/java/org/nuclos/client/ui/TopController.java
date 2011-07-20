@@ -38,4 +38,10 @@ public abstract class TopController extends Controller {
 	 * @return can the action be performed?
 	 */
 	public abstract boolean askAndSaveIfNecessary();
+	
+	/**
+	 * Writes the preferences of the controller
+	 */
+	public abstract void writePreferencesWhileClosing();
+	
 }
