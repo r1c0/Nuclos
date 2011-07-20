@@ -80,7 +80,7 @@ public class SearchPanel extends SearchOrDetailsPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private CollectPanelIndicator cpi = new CollectPanelIndicator(CollectPanel.TAB_SEARCH);
+	private final CollectPanelIndicator cpi = new CollectPanelIndicator(CollectPanel.TAB_SEARCH);
 
 	/**
 	 * the transparency of the magnifier image.

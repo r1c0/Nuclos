@@ -121,26 +121,26 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 
 		// Note that the search panel is always created, even if it isn't visible.
 		// @todo That is for compatibility reasons, but shouldn't be.
-		this.pnlSearch = newSearchPanel();
-
-		this.pnlResult = newResultPanel();
-
-		this.pnlDetails = newDetailsPanel();
+		pnlSearch = newSearchPanel();
+		pnlResult = newResultPanel();
+		pnlDetails = newDetailsPanel();
 		
 		optionsEnabled.put(0, true);
 		optionsEnabled.put(1, true);
 		optionsEnabled.put(2, true);
 		
-		final CollectPanelIndicator cpi = pnlSearch.getCollectPanelIndicator();
+		final CollectPanelIndicator cpi1 = pnlSearch.getCollectPanelIndicator();
+		final CollectPanelIndicator cpi2 = pnlResult.getCollectPanelIndicator();
+		final CollectPanelIndicator cpi3 = pnlDetails.getCollectPanelIndicator();
 		if (!bSearchPanelAvailable) {
-			cpi.hideSearchOption();
-			cpi.hideSearchOption();
-			cpi.hideSearchOption();
+			cpi1.hideSearchOption();
+			cpi2.hideSearchOption();
+			cpi3.hideSearchOption();
 		}
 		
-		cpi.addSelectionListener(selectionListener);
-		cpi.addSelectionListener(selectionListener);
-		cpi.addSelectionListener(selectionListener);
+		cpi1.addSelectionListener(selectionListener);
+		cpi2.addSelectionListener(selectionListener);
+		cpi3.addSelectionListener(selectionListener);
 		
 		this.setupLayout();
 		

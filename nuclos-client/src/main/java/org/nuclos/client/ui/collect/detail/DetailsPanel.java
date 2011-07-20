@@ -82,7 +82,7 @@ public class DetailsPanel extends SearchOrDetailsPanel {
 
 	protected static final Logger log = Logger.getLogger(SearchOrDetailsPanel.class);
 	
-	CollectPanelIndicator cpi = new CollectPanelIndicator(CollectPanel.TAB_DETAILS);
+	private final CollectPanelIndicator cpi = new CollectPanelIndicator(CollectPanel.TAB_DETAILS);
 
 	/**
 	 * Button: "Save"
@@ -205,6 +205,10 @@ public class DetailsPanel extends SearchOrDetailsPanel {
 		this.btnLast.setUI(new BasicButtonUI());
 	}
 
+	public final CollectPanelIndicator getCollectPanelIndicator() {
+		return cpi;
+	}
+	
 	@Override
 	protected void setupDefaultToolBarActions( JToolBar toolBar) {
 		

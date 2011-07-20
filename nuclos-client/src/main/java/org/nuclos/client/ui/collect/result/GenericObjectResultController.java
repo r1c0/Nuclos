@@ -41,6 +41,7 @@ import org.nuclos.client.ui.collect.PivotController;
 import org.nuclos.client.ui.collect.PivotPanel;
 import org.nuclos.client.ui.collect.SelectFixedColumnsController;
 import org.nuclos.client.ui.collect.SortableCollectableTableModel;
+import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -102,18 +103,23 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	 */
 	@Override
 	public SelectFixedColumnsController newSelectColumnsController(Component parent) {
-		// retrieve sub form fields
-		final Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields = new HashMap<String, Map<String,EntityFieldMetaDataVO>>();
-		final String entityName = getEntity().getName();
-		final EntityMetaDataVO entityMd = MetaDataClientProvider.getInstance().getEntity(entityName);
-		final Set<String> subforms = GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(
-				IdUtils.unsafeToId(entityMd.getId()));
-		for (String subform: subforms) {
-			final Map<String, EntityFieldMetaDataVO> map = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(subform);
-			subFormFields.put(subform, map);
+		if (ApplicationProperties.getInstance().isFunctionBlockDev()) {
+			// retrieve sub form fields
+			final Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields = new HashMap<String, Map<String,EntityFieldMetaDataVO>>();
+			final String entityName = getEntity().getName();
+			final EntityMetaDataVO entityMd = MetaDataClientProvider.getInstance().getEntity(entityName);
+			final Set<String> subforms = GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(
+					IdUtils.unsafeToId(entityMd.getId()));
+			for (String subform: subforms) {
+				final Map<String, EntityFieldMetaDataVO> map = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(subform);
+				subFormFields.put(subform, map);
+			}
+			
+			return new PivotController(parent, new PivotPanel(subFormFields), this);
 		}
-		
-		return new PivotController(parent, new PivotPanel(subFormFields), this);
+		else {
+			return super.newSelectColumnsController(parent);
+		}
 	}
 	
 	private final class GetCollectableEntityFieldForResult implements Transformer<String, CollectableEntityField> {

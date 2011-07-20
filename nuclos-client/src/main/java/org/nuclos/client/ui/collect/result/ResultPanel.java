@@ -95,7 +95,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	CollectPanelIndicator cpi = new CollectPanelIndicator(CollectPanel.TAB_RESULT);
+	private final CollectPanelIndicator cpi = new CollectPanelIndicator(CollectPanel.TAB_RESULT);
 
 	/**
 	 * the toolbar.
@@ -236,6 +236,10 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		this.miPopupEdit.setFont(this.miPopupEdit.getFont().deriveFont(Font.BOLD));
 		
 		init();
+	}
+	
+	public final CollectPanelIndicator getCollectPanelIndicator() {
+		return cpi;
 	}
 	
 	/**
