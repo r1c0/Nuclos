@@ -726,7 +726,8 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				setSystemValuesAndParent(lstFields, updatedMDEntity);
 				insertOrUpdateEntityFieldMetaData(toFields);
 				for(EntityFieldMetaDataTO toField : toFields) {
-					createResourceIdForEntityField("T_MD_ENTITY_FIELD", toField, LangUtils.convertId(toField.getEntityFieldMeta().getId()));
+					if(!toField.getEntityFieldMeta().isFlagRemoved())
+						createResourceIdForEntityField("T_MD_ENTITY_FIELD", toField, LangUtils.convertId(toField.getEntityFieldMeta().getId()));
 				}
 				MetaDataServerProvider.getInstance().revalidate();
 				updatedMDEntity = MetaDataServerProvider.getInstance().getEntity(updatedMDEntity.getEntity());
@@ -957,7 +958,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		for(EntityFieldMetaDataTO vo : lstFields) {
 			EntityFieldMetaDataVO v = vo.getEntityFieldMeta();
 			DalUtils.updateVersionInformation(v, getCurrentUserName());
-			if(v.isFlagRemoved()) {
+			if(v.isFlagRemoved() && v.getId() != null) {
 				// NUCLOSINT-714: remove dependants generation attributes
 				DataBaseHelper.getDbAccess().execute(DbStatementUtils.deleteFrom("T_MD_GENERATION_ATTRIBUTE", 
 					"INTID_T_MD_ATTRIBUTE_SOURCE", v.getId()));
