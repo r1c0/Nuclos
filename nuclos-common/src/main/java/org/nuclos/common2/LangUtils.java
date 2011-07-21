@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common2;
 
+import java.net.URI;
 import java.text.Collator;
 import java.util.Arrays;
 import java.util.Collections;
@@ -51,6 +52,19 @@ public class LangUtils {
 	 */
 	public static boolean implies(boolean bPremise, boolean bConclusion) {
 		return !bPremise || bConclusion;
+	}
+	
+	public static boolean isValidURI(String sUri) {
+		try {
+			URI uri = new URI(sUri);
+			uri.toURL();
+		}
+		catch(Exception ex) {
+			// no valid URI Format
+			return false;
+		}
+		String str = org.nuclos.common2.StringUtils.emptyIfNull(sUri).toLowerCase();
+		return str.startsWith("http://") || str.startsWith("file://");
 	}
 
 	/**

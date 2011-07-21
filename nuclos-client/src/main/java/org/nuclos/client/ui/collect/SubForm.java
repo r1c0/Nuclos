@@ -90,6 +90,7 @@ import org.nuclos.client.common.Utils;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.URIMouseAdapter;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
@@ -321,8 +322,9 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 
 		this.listeners = new ArrayList<SubFormToolListener>();
 		subformtbl = new SubFormTable(this);
-		subformtbl.addMouseListener(contextmenulistener);
-
+		subformtbl.addMouseListener(contextmenulistener);		
+		subformtbl.addMouseMotionListener(new URIMouseAdapter());
+		subformtbl.addMouseListener(new URIMouseAdapter());
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 
 		if (entityName == null) {

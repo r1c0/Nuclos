@@ -28,6 +28,7 @@ import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.CommonJTextField;
 import org.nuclos.client.ui.ToolTipTextProvider;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.URIMouseAdapter;
 import org.nuclos.common2.StringUtils;
 
 /**
@@ -41,7 +42,7 @@ import org.nuclos.common2.StringUtils;
  */
 
 public class LabeledTextField extends LabeledTextComponent {
-
+		
 	/**
 	 * 
 	 */
@@ -79,6 +80,13 @@ public class LabeledTextField extends LabeledTextComponent {
 			this.addControl(this.tf);
 		}
 		this.getJLabel().setLabelFor(this.tf);
+		setMouseListenerOnComponent();
+	}
+	
+	protected void setMouseListenerOnComponent() {
+		if(getTextField() != null) {
+			getTextField().addMouseListener(new URIMouseAdapter());
+		}
 	}
 	
 	@Override

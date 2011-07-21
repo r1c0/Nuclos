@@ -77,6 +77,7 @@ import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.collect.collectable.AbstractCollectableField;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -112,6 +113,7 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 public class MasterDataSubFormController extends DetailsSubFormController<CollectableEntityObject> {
 	
 	private JMenuItem miDetails = new JMenuItem(CommonLocaleDelegate.getMessage("AbstractCollectableComponent.7","Details anzeigen..."));
+	private JMenuItem miEdit = new JMenuItem(CommonLocaleDelegate.getMessage("AbstractCollectableComponent.21","Zelle bearbeiten"));
 	
 	protected static final String TB_CLONE = "Toolbar.CLONE";
 	
@@ -120,6 +122,8 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	private CollectableMasterData clctParent;
 	private TransferHandler subFormTransferHandler;
 	private EntityCollectController<CollectableEntityObject> parentController;
+	
+	int selectedColumn;
 	
 	/**
 	 * @param parent
@@ -202,6 +206,15 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 					}
 				});
 				result.add(miDetails);
+				
+				miEdit.addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						cmdEditCell();
+					}
+				});
+				result.add(miEdit);
 
 				return result;
 			}
@@ -211,6 +224,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			public void mousePressed(MouseEvent ev) {
 				if (ev.getClickCount() == 1 && SwingUtilities.isRightMouseButton(ev)) {					
 					if (ev.getSource() instanceof JTable) {
+						JTable table = (JTable)ev.getSource();
 						final int iRow = ((JTable)ev.getSource()).rowAtPoint(ev.getPoint());
 						if (iRow >= 0) {
 							if (!((JTable)ev.getSource()).getSelectionModel().isSelectedIndex(iRow)) {
@@ -234,6 +248,22 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 							catch(Exception e) {
 								miDetails.setEnabled(false);
 							}
+							try {
+								int col = table.columnAtPoint(ev.getPoint());
+								Object obj = table.getValueAt(iRow, col);
+								if(obj instanceof AbstractCollectableField) {
+									AbstractCollectableField field = (AbstractCollectableField)obj;									
+									miEdit.setVisible(LangUtils.isValidURI(field.toString()));
+									selectedColumn = col;
+								}
+								else {
+									miEdit.setVisible(false);
+									selectedColumn = -1;
+								}
+							}
+							catch(Exception e) {
+								miEdit.setVisible(false);
+							}
 						}
 						
 					}
@@ -243,6 +273,14 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		};
 		
 		this.getSubForm().getJTable().addMouseListener(popupMenuListener);
+	}
+	
+	private void cmdEditCell() {
+		int row = this.getSubForm().getJTable().getSelectedRow();
+		this.getSubForm().getJTable().editCellAt(row, selectedColumn);
+		Component comp = this.getSubForm().getJTable().getEditorComponent();
+		if(comp != null)
+			comp.requestFocusInWindow();
 	}
 	
 	private void cmdShowDetails() throws CommonBusinessException {
@@ -286,7 +324,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			ctlGenericObject.runViewSingleCollectable(CollectableGenericObjectWithDependants.newCollectableGenericObject(govo));
 		}
 		catch(CommonFatalException ex){
-			throw new CommonFatalException(CommonLocaleDelegate.getMessage("DynamicEntitySubFormController.2", "Der Datensatz kann nicht angezeigt werden. Bitte tragen Sie in der Datenquelle für die dynamische Entität, die Entität ein, die angezeigt werden soll!"));
+			throw new CommonFatalException(CommonLocaleDelegate.getMessage("DynamicEntitySubFormController.2", "Der Datensatz kann nicht angezeigt werden. Bitte tragen Sie in der Datenquelle fï¿½r die dynamische Entitï¿½t, die Entitï¿½t ein, die angezeigt werden soll!"));
 		}
 	}
 	
@@ -441,15 +479,15 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	                if (noReferenceFound) {
 	                	new Bubble(
 	                		getSubForm().getJTable(),
-	                		CommonLocaleDelegate.getMessage("MasterDataSubFormController.4", "Dieses Unterformular enthält keine Referenzspalte zur Entität ${entity}.", entityLabel),
+	                		CommonLocaleDelegate.getMessage("MasterDataSubFormController.4", "Dieses Unterformular enthï¿½lt keine Referenzspalte zur Entitï¿½t ${entity}.", entityLabel),
 							10,
 							Bubble.Position.NO_ARROW_CENTER)
 						.setVisible(true);
 	                } else {
-	                	String sNotImported = CommonLocaleDelegate.getMessage("MasterDataSubFormController.5", "Der Valuelist Provider verhindert das Anlegen von ${count} Unterformular Datensätzen.", countNotImported);
+	                	String sNotImported = CommonLocaleDelegate.getMessage("MasterDataSubFormController.5", "Der Valuelist Provider verhindert das Anlegen von ${count} Unterformular Datensï¿½tzen.", countNotImported);
 		                
 		                getCollectController().getDetailsPanel().setStatusBarText(
-		                	CommonLocaleDelegate.getMessage("MasterDataSubFormController.6", "${count} Unterformular Datensätze angelegt.", countImported)
+		                	CommonLocaleDelegate.getMessage("MasterDataSubFormController.6", "${count} Unterformular Datensï¿½tze angelegt.", countImported)
 		                	+ (countNotImported==0?"": " " + sNotImported));
 		                if (countNotImported!=0)
 		                	new Bubble(

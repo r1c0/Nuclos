@@ -31280,6 +31280,36 @@
     "text": "Parameter:"
   },
   {
+    "resourceID": "AbstractCollectableComponent.21",
+    "locale": "i-default",
+    "text": "edit cell"
+  },
+  {
+    "resourceID": "AbstractCollectableComponent.21",
+    "locale": "en",
+    "text": "edit cell"
+  },
+  {
+    "resourceID": "AbstractCollectableComponent.21",
+    "locale": "de",
+    "text": "Zelle bearbeiten"
+  },
+  {
+    "resourceID": "URIMouseAdapter.1",
+    "locale": "i-default",
+    "text": "The link could not be opened! Please check your spelling!"
+  },
+  {
+    "resourceID": "URIMouseAdapter.1",
+    "locale": "en",
+    "text": "The link could not be opened! Please check your spelling!"
+  },
+  {
+    "resourceID": "URIMouseAdapter.1",
+    "locale": "de",
+    "text": "Der Link konnte nicht geöffnet werden! Bitte überprüfen Sie die Schreibweise!"
+  },
+  {
     "resourceID": "GlobalSearchFilter.1",
     "locale": "i-default",
     "text": "<All>"
