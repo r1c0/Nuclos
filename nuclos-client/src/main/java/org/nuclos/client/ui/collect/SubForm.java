@@ -1482,7 +1482,6 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		@Override
 		public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
 			super.changeSelection(rowIndex, columnIndex, toggle, extend);
-			
 			AWTEvent event = EventQueue.getCurrentEvent();
 			if(event instanceof KeyEvent) {
 				if(newRowOnNext) {
@@ -1510,23 +1509,89 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 					newRowOnNext = true;							
 				}
 				
-				if (editCellAt(rowIndex, columnIndex)) {
-					SwingUtilities.invokeLater(new Runnable() {
-						
-						@Override
-						public void run() {
-							Component editor = getEditorComponent();
-							if(editor != null)
-								editor.requestFocusInWindow();						
-						}
-					});				
+				if(isCellEditable(rowIndex, columnIndex)) {
+					if (editCellAt(rowIndex, columnIndex)) {
+						SwingUtilities.invokeLater(new Runnable() {
+							
+							@Override
+							public void run() {
+								Component editor = getEditorComponent();
+								if(editor != null)
+									editor.requestFocusInWindow();			
+							}
+						});				
+					}
 				}
 				else {
-					// TODO 
-					// do not jump onto disabled cells
+					final int rowCol[] = getNextEditableCell(this, rowIndex, columnIndex);
+					
+					if (editCellAt(rowCol[0], rowCol[1])) {
+						SwingUtilities.invokeLater(new Runnable() {
+							
+							@Override
+							public void run() {
+								Component editor = getEditorComponent();
+								if(editor != null) {									
+									editor.requestFocusInWindow();
+									if(rowCol[0] < getRowCount())
+										changeSelection(rowCol[0], rowCol[1], false, false);
+								}
+							}
+						});				
+					}
+					else {
+						if(newRowOnNext) {
+							for(FocusActionListener fal : subform.getFocusActionLister()) {
+								fal.focusAction(new EventObject(this));
+								final int col[] = getNextEditableCell(this, rowIndex, 0);
+								if (editCellAt(++rowIndex, col[1])) {
+									final int rowI = rowIndex;
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											Component editor = getEditorComponent();
+											if(editor != null)
+												editor.requestFocusInWindow();				
+											changeSelection(rowI, col[1], false, false);
+										}
+									});
+									
+								}
+							}
+							newRowOnNext = false;
+						}
+					}
 				}
 			}
 			
+		}
+		
+		private int[] getNextEditableCell(JTable table, int row, int col) {
+			int rowCol[] = {row,col};
+			int colCount = getColumnCount();
+			boolean colFound = false;
+			for(int i = col; i < colCount; i++) {
+				if(table.isCellEditable(row, i)) {
+					colFound = true;
+					rowCol[1] = i;
+					break;
+				}
+			}
+			
+			if(!colFound) {
+				row++;
+				if(row >= getRowCount())
+					return rowCol;
+				for(int i = 0; i < col; i++) {
+					if(table.isCellEditable(row, i)) {
+						rowCol[0] = row;
+						rowCol[1] = i;
+						break;
+					}
+				}
+			}
+			
+			return rowCol;
 		}
 
 		@Override
