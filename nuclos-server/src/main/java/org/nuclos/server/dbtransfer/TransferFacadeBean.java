@@ -134,6 +134,7 @@ import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.nuclos.server.ruleengine.NuclosCompileException.ErrorMessage;
 import org.nuclos.server.statemodel.valueobject.StateModelUsagesCache;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -433,6 +434,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	@Override
 	public Transfer prepareTransfer(boolean isNuclon, byte[] bytes) throws NuclosBusinessException
 	{
+		cleanupUIDs();
 		info("PREPARE Transfer (isNuclon=" + isNuclon + ")");
 		LockedTabProgressNotifier jmsNotifier = new LockedTabProgressNotifier(Transfer.TOPIC_CORRELATIONID_PREPARE);
 		NucletContentUID.Map uidImportMap = new NucletContentUID.HashMap();
@@ -456,7 +458,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		info("get new user count");
 		int newUserCount = getNewUserCount(importData.get(NuclosEntity.USER.getEntityName()));
 		List<PreviewPart> previewParts = new ArrayList<PreviewPart>();
-
+		NucletContentUID.Map uidLocalizedMap;
 
 		Transfer t = new Transfer(isNuclon, bytes, newUserCount, parameter, root.exportOptions, previewParts);
 
@@ -469,19 +471,34 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			}
 		}
 
-		info("delete content");
-		deleteContent(existingNucletIds, uidExistingMap, uidImportMap, importContentMap, contentTypes, t, true,
-			new TransferNotifierHelper(jmsNotifier, "prepare delete obsolete content", 30, 50));
-		info("localize content");
-		NucletContentUID.Map uidLocalizedMap = localizeContent(uidExistingMap, uidImportMap, importContentMap, contentTypes, t,
-			new TransferNotifierHelper(jmsNotifier, "prepare localize content", 50, 55));
-		info("localize new content for insert");
-		localizeNewContentForInsert(importContentMap, uidLocalizedMap, contentTypes, true,
-			new TransferNotifierHelper(jmsNotifier, "prepare localize new content for insert", 55, 60));
-		info("insert or update content");
-		insertOrUpdateContent(existingNucletIds, uidLocalizedMap, importContentMap, contentTypes, t, true,
-			new TransferNotifierHelper(jmsNotifier, "prepare insert or update content", 60, 80));
-
+		DbAccess dbAccess = DataBaseHelper.getDbAccess();
+		info("get all foreign key contraints and drop");
+		final List<DbForeignKeyConstraint> fkConstraints = getForeignKeyConstraints(getEntities(contentTypes), new EntityObjectMetaDbHelper(dbAccess, MetaDataServerProvider.getInstance()));
+		try {
+			dbAccess.execute(SchemaUtils.drop(fkConstraints));
+			Object savepoint = TransactionAspectSupport.currentTransactionStatus().createSavepoint();
+			info("delete content");
+			deleteContent(existingNucletIds, uidExistingMap, uidImportMap, importContentMap, contentTypes, t, false,
+				new TransferNotifierHelper(jmsNotifier, "prepare delete obsolete content", 30, 50));
+			info("localize content");
+			uidLocalizedMap = localizeContent(uidExistingMap, uidImportMap, importContentMap, contentTypes, t,
+				new TransferNotifierHelper(jmsNotifier, "prepare localize content", 50, 55));
+			info("localize new content for insert");
+			localizeNewContentForInsert(importContentMap, uidLocalizedMap, contentTypes, true,
+				new TransferNotifierHelper(jmsNotifier, "prepare localize new content for insert", 55, 60));
+			info("insert or update content");
+			insertOrUpdateContent(existingNucletIds, uidLocalizedMap, importContentMap, contentTypes, t, false,
+				new TransferNotifierHelper(jmsNotifier, "prepare insert or update content", 60, 80));
+			TransactionAspectSupport.currentTransactionStatus().rollbackToSavepoint(savepoint);
+		} catch (Exception ex) {
+			if (ex instanceof NuclosBusinessException)
+				throw (NuclosBusinessException)ex;
+			throw new NuclosFatalException(ex);
+		} finally {
+			info("recreate foreign key contraints");
+			dbAccess.execute(SchemaUtils.create(fkConstraints));
+		}
+		
 		try {
 			info("preview changes");
 			final String notifyPreviewString = "creating preview of db changes";
@@ -814,7 +831,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	@Override
 	public synchronized Transfer.Result runTransfer(final Transfer t) throws NuclosBusinessException {
 		t.result = new Transfer.Result();
-		cleanupUIDs();
 
 		info("RUN Transfer (isNuclon=" + t.isNuclon() + ")");
 		LockedTabProgressNotifier jmsNotifier = new LockedTabProgressNotifier(Transfer.TOPIC_CORRELATIONID_RUN);
@@ -1252,16 +1268,16 @@ public class TransferFacadeBean extends NuclosFacadeBean
 									contentSkipped.addAll(getDependencies(importContentMap, contentTypes, nc, importEO));
 									continue;
 								}
-								if (!LangUtils.equals(uid.version, importEO.getVersion())) {
+//								if (!LangUtils.equals(uid.version, importEO.getVersion())) {
 									ncp.updateUIDRecord(uid);
 									info("--> add to processor");
 									contentProcessors.add(ncp);
-								} else {
-									info("no version update --> adding to skipped content (dependencies also)");
-									contentSkipped.add(importEO);
-									contentSkipped.addAll(getDependencies(importContentMap, contentTypes, nc, importEO));
-									continue;
-								}
+//								} else {
+//									info("no version update --> adding to skipped content (dependencies also)");
+//									contentSkipped.add(importEO);
+//									contentSkipped.addAll(getDependencies(importContentMap, contentTypes, nc, importEO));
+//									continue;
+//								}
 							} else {
 								info("update of nuclet content is not allowed --> adding to skipped content (dependencies also)");
 								contentSkipped.add(importEO);
@@ -1296,8 +1312,8 @@ public class TransferFacadeBean extends NuclosFacadeBean
 
 					Integer existingEOversion = getProcessor(ncp.getEntity()).getVersion(ncp.getNcObject().getId());
 					if (!LangUtils.equals(ncp.getUID().version, existingEOversion)) {
-						info("uid version \"" + ncp.getUID().version + "\" differs from existing object version \"" + existingEOversion + "\" --> add overrite information for user");
-						t.result.newWarningLine("Overriting " + ncp.getEntity().getEntityName() + ": " + getIdentifier(ncp.getNC(), ncp.getNcObject()));
+						info("uid version \"" + ncp.getUID().version + "\" differs from existing object version \"" + existingEOversion + "\" --> add overwrite information for user");
+						t.result.newWarningLine("Overwriting " + ncp.getEntity().getEntityName() + ": " + getIdentifier(ncp.getNC(), ncp.getNcObject()));
 					}
 				}
 
@@ -1353,18 +1369,20 @@ public class TransferFacadeBean extends NuclosFacadeBean
 					NucletContentUID existingUID = uidExistingMap.getUID(existingEO);
 					info("existing uid: " + existingUID);
 
-					if (existingUID == null && t.getTransferOptions().containsKey(TransferOption.IS_NUCLOS_INSTANCE)) {
-						info("existing uid does not exists and is nuclos instance import --> check if in use and validate");
+					if (t.getTransferOptions().containsKey(TransferOption.IS_NUCLOS_INSTANCE)) {
+						if (existingUID == null) {
+							info("existing uid does not exists and is nuclos instance import --> check if in use and validate");
+						} else {
+							contentUntouched.add(existingEO);
+							continue;
+						}
 					} else {
-						contentUntouched.add(existingEO);
-						continue;
-					}
-
-					if ((existingUID != null && !uidImportMap.containsUID(existingUID, nc.getEntity()))) {
-						info("existing uid exists but is not in uid import map --> check if in use and validate");
-					} else {
-						contentUntouched.add(existingEO);
-						continue;
+						if ((existingUID != null && !uidImportMap.containsUID(existingUID, nc.getEntity()))) {
+							info("existing uid exists but is not in uid import map --> check if in use and validate");
+						} else {
+							contentUntouched.add(existingEO);
+							continue;
+						}
 					}
 
 					boolean isInUse = false;
@@ -1389,14 +1407,14 @@ public class TransferFacadeBean extends NuclosFacadeBean
 								isInUse = true;
 							}
 						}
-
-						if (isInUse || !checkValidity(nc, existingEO, ValidityType.DELETE, importContentMap, existingNucletIds, t.getTransferOptions(), t.result)) {
-							info("is in use or validation is false --> add to untouched content");
-							contentUntouched.add(existingEO);
-						} else {
-							info("not in use");
-							delete = true;
-						}
+					}
+					
+					if (isInUse || !checkValidity(nc, existingEO, ValidityType.DELETE, importContentMap, existingNucletIds, t.getTransferOptions(), t.result)) {
+						info("is in use or validation is false --> add to untouched content");
+						contentUntouched.add(existingEO);
+					} else {
+						info("not in use");
+						delete = true;
 					}
 
 					if (delete) {
@@ -1406,6 +1424,8 @@ public class TransferFacadeBean extends NuclosFacadeBean
 						if (existingUID != null) {
 							ncp.deleteUIDRecord(existingUID);
 						}
+					} else {
+						info("--> do not delete");
 					}
 				}
 			}
@@ -1415,6 +1435,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		int oldUntouchedContentSize;
 		do {
 			oldUntouchedContentSize = contentUntouched.getAllValues().size();
+			NucletContentMap tmpMap = new NucletContentHashMap();
 
 			// check if untouched content is referencing on
 			for (NucletContentProcessor ncp : contentProcessors) {
@@ -1426,14 +1447,19 @@ public class TransferFacadeBean extends NuclosFacadeBean
 
 				Collection<EntityFieldMetaDataVO> fieldDependencies = ncp.getNC().getFieldDependencies();
 				for (NuclosEntity untouchedContentEntity : contentUntouched.keySet()) {
-					if (entityFieldMetaContainsNuclosEntity(fieldDependencies, untouchedContentEntity)) {
-						if (getIds(contentUntouched.getValues(untouchedContentEntity)).contains(ncp.getNcObject().getId())) {
-							info("untouched content references on existing eo --> add existing eo to untouched content");
-							contentUntouched.add(ncp.getNcObject());
+					for (EntityFieldMetaDataVO efMeta : fieldDependencies) {
+						if (LangUtils.equals(untouchedContentEntity.getEntityName(), MetaDataServerProvider.getInstance().getEntity(efMeta.getEntityId()).getEntity())) {
+							for (EntityObjectVO untouchedContent : contentUntouched.getValues(untouchedContentEntity)) {
+								if (LangUtils.equals(untouchedContent.getFieldId(efMeta.getField()), ncp.getNcObject().getId())) {
+									info("untouched content references on existing eo --> add existing eo to untouched content");
+									tmpMap.add(ncp.getNcObject());
+								}
+							}
 						}
 					}
 				}
 			}
+			contentUntouched.addAll(tmpMap);
 
 		} while (oldUntouchedContentSize != contentUntouched.getAllValues().size());
 

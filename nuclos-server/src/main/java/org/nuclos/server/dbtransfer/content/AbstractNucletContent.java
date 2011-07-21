@@ -34,6 +34,7 @@ import java.util.Set;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
+import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
@@ -237,8 +238,8 @@ public abstract class AbstractNucletContent implements INucletContent {
 			case INSERT:
 			case UPDATE:
 				boolean result = true;
-				if (transferOptions.containsKey(TransferOption.IS_NUCLOS_INSTANCE))
-					return result;
+//				if (transferOptions.containsKey(TransferOption.IS_NUCLOS_INSTANCE))
+//					return result;
 
 				Collection<Set<String>> uniqueFieldCombinations = TransferUtils.getAllUniqueFieldCombinations(entity.getEntityName());
 
@@ -258,8 +259,13 @@ public abstract class AbstractNucletContent implements INucletContent {
 						for (String field : uniqueCombination) {
 							EntityFieldMetaDataVO efMeta = MetaDataServerProvider.getInstance().getEntityField(entity.getEntityName(), field);
 							if (efMeta.getForeignEntity() == null) {
-								if (LangUtils.equals(eo.getFields().get(field), ncObject.getFields().get(field)))
-									countUnique++;
+								if (NuclosEOField.CREATEDBY.getName().equals(field)) {
+									if (LangUtils.equals(eo.getCreatedBy(), ncObject.getCreatedBy()))
+										countUnique++;
+								} else {
+									if (LangUtils.equals(eo.getFields().get(field), ncObject.getFields().get(field)))
+										countUnique++;
+								}
 							} else {
 								if (LangUtils.equals(eo.getFieldIds().get(field), ncObject.getFieldIds().get(field)))
 									countUnique++;
@@ -375,19 +381,33 @@ public abstract class AbstractNucletContent implements INucletContent {
 
 		@SuppressWarnings("unchecked")
 		Map<LocaleInfo, Map<String, String>> localeResources = (Map<LocaleInfo, Map<String, String>>) ncObject.getFields().get(LOCALE_RESOURCE_MAPPING_FIELD_NAME);
+		Map<String, String> newResourceIds = new HashMap<String, String>();
 		for (LocaleInfo localeInfo : localeResources.keySet()) {
 			for (String resourceField : localeResources.get(localeInfo).keySet()) {
 				String text = localeResources.get(localeInfo).get(resourceField);
 				if (text != null) {
 					if (ncObject.isFlagNew()) {
 						// create new resource
-						String resourceId = localeFacade.insert(null, localeInfo, text);
+						String resourceId = newResourceIds.get(resourceField);
+						resourceId = localeFacade.insert(resourceId, localeInfo, text);
+						newResourceIds.put(resourceField, resourceId);
 						ncObject.getFields().put(resourceField, resourceId);
 					} else if (ncObject.isFlagUpdated()) {
 						// read resourceid from existing object and update it
 						EntityObjectVO existingObject = NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getByPrimaryKey(ncObject.getId());
 						String resourceId = existingObject.getField(resourceField, String.class);
-						localeFacade.update(resourceId, localeInfo, text);
+						if (resourceId != null) {
+							if (localeFacade.getResourceById(localeInfo, resourceId) == null) {
+								localeFacade.insert(resourceId, localeInfo, text);
+							} else {
+								localeFacade.update(resourceId, localeInfo, text);
+							}
+							
+						} else {
+							resourceId = newResourceIds.get(resourceField);
+							resourceId = localeFacade.insert(resourceId, localeInfo, text);
+							newResourceIds.put(resourceField, resourceId);
+						}
 						ncObject.getFields().put(resourceField, resourceId);
 					}
 				}

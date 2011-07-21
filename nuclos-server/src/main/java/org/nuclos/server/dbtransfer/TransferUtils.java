@@ -461,11 +461,14 @@ public class TransferUtils {
 	private static class UserEntityFieldPredicate implements Predicate<EntityFieldMetaDataVO> {
 		@Override
 		public boolean evaluate(EntityFieldMetaDataVO t) {
+			final String entity = MetaDataServerProvider.getInstance().getEntity(t.getEntityId()).getEntity();
+			if (NuclosEntity.STATEHISTORY.getEntityName().equals(entity)) {
+				return true;
+			}
 			if (t.getEntityId() < 0) {
 				return false;
 			}
-			if (NuclosEntity.getByName(
-				MetaDataServerProvider.getInstance().getEntity(t.getEntityId()).getEntity()) != null) {
+			if (NuclosEntity.getByName(entity) != null) {
 				return false;
 			}
 			return true;
