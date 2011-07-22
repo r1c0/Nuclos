@@ -31,6 +31,7 @@ import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 
@@ -68,38 +69,26 @@ public class GenerationAttributeCollectableFieldsProvider implements Collectable
 	@Override
 	public void setParameter(String sName, Object oValue) {
 		log.debug("setParameter - sName = " + sName + " - oValue = " + oValue);
-		if(oValue instanceof Long) {
-			oValue = ((Long)oValue).intValue();
-		}
 		if (sName.equals("column")) {
 			this.column = (String) oValue;
 		}
 		else if (sName.equals("sourcemodule")) {
-			this.iSourceModuleId = (Integer) oValue;
+			this.iSourceModuleId = IdUtils.unsafeToId(oValue);
 		}
 		else if (sName.equals("targetmodule")) {
-			this.iTargetModuleId = (Integer) oValue;
+			this.iTargetModuleId = IdUtils.unsafeToId(oValue);
 		}
 		else if (sName.equals("sourceattribute")) {
-			if(oValue instanceof Long) {
-				this.iSourceAttributeId = ((Long) oValue).intValue();
-			}
-			else {
-				this.iSourceAttributeId = (Integer) oValue;
-			}
+			this.iSourceAttributeId = IdUtils.unsafeToId(oValue);
 		}
 		else if (sName.equals("targetattribute")) {
-			if(oValue instanceof Long) {
-				this.iTargetAttributeId = ((Long)oValue).intValue();
-			}
-			else 
-				this.iTargetAttributeId = (Integer) oValue;
+			this.iTargetAttributeId = IdUtils.unsafeToId(oValue);
 		}
 		else if (sName.equals("sourceType")) {
 			this.sourceType = (String) oValue;
 		}
 		else if (sName.equals("parameterEntity")) {
-			this.parameterEntityId = (Integer) oValue;
+			this.parameterEntityId = IdUtils.unsafeToId(oValue);
 		}
 		else {
 			// ignore

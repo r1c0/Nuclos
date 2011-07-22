@@ -45,6 +45,13 @@ public class IdUtils {
 		else throw new IllegalArgumentException("toLongId(" + o + ")");
 	}
 
+	public static Integer unsafeToId(Object o) {
+		if (o == null) return null;
+		if (o instanceof Integer) return (Integer) o;
+		else if (o instanceof Long) return unsafeToId((Long) o);
+		else throw new IllegalArgumentException("unsafeToId(" + o + ")");
+	}
+
 	public static Integer unsafeToId(Long id) {
 		if (id == null) return null;
 		return Integer.valueOf(id.intValue());
