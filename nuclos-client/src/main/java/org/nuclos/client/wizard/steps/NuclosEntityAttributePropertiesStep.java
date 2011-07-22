@@ -589,7 +589,7 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 				return;
 			}
 			if(!(dMin != null && dMax != null)) {
-				throw new CommonValidationException(getMessage("wizard.step.attributeproperties.24", "Mindest- und Maximalwert m�ssen gesetzt sein."));
+				throw new CommonValidationException(getMessage("wizard.step.attributeproperties.24", "Mindest- und Maximalwert müssen gesetzt sein."));
 			}
 			long l1 = dMin.getTime();
 			long l2 = dMax.getTime();
@@ -607,7 +607,7 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 			}
 				
 			if(!(s1.length() > 0 && s2.length() > 0)) {
-				throw new CommonValidationException(getMessage("wizard.step.attributeproperties.24", "Mindest- und Maximalwert m�ssen gesetzt sein."));
+				throw new CommonValidationException(getMessage("wizard.step.attributeproperties.24", "Mindest- und Maximalwert müssen gesetzt sein."));
 			}
 			if(model.getAttribute().getDatatyp().getJavaType().equals("java.lang.Integer")) {			
 				Integer i1 = Integer.parseInt(s1);

@@ -77,6 +77,6 @@ public class NuclosPassword implements Serializable, NuclosAttributeExternalValu
     }
 
 	
-// Anm. Base64 ist ein Message-Digest-Format zur Übertragung von Binärdaten über ASCII.
-// Es hat nicht das geringste mit einer Verschlüsselung zu tun.
+// Anm. Base64 ist ein Message-Digest-Format zur Ãœbertragung von BinÃ¤rdaten Ã¼ber ASCII.
+// Es hat nicht das geringste mit einer VerschlÃ¼sselung zu tun.
 }

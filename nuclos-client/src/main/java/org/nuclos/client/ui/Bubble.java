@@ -617,11 +617,11 @@ public class Bubble extends Window implements AncestorListener, WindowListener {
 	
 	public static void main(String[] args) {
 		final String text = "<html>"
-			+ "Das Hühnchenfleisch in ca. 2 cm große Würfel schneiden und zusammen<br>"
-			+ "mit Weißwein, Rosmarin, Salz und Pfeffer in eine Schüssel<br>"
+			+ "Das HÃ¤hnchenfleisch in ca. 2 cm groÃŸe WÃ¼rfel schneiden und zusammen<br>"
+			+ "mit WeiÃŸwein, Rosmarin, Salz und Pfeffer in eine SchÃ¼ssel<br>"
 			+ "geben. Abdecken und mindestens 1 Stunde marinieren.  Danach das<br>"
-			+ "Fleisch abtropfen lassen und auf 8 Spieße stecken, die Marinade<br>"
-			+ "aufheben. Die Spieße werden nun 10 min. auf dem Grill (falls keiner<br>"
+			+ "Fleisch abtropfen lassen und auf 8 SpieÃŸe stecken, die Marinade<br>"
+			+ "aufheben. Die SpieÃŸe werden nun 10 min. auf dem Grill (falls keiner<br>"
 			+ "vorhanden unter dem vorgeheizten Backofengrill) gegrillt.<br>"
 			+ "</html>";
 		

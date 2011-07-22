@@ -150,7 +150,7 @@ public class NuclosCollectControllerFactory {
 			if(sm == null) {
 				JOptionPane.showMessageDialog(
 					parent,
-					CommonLocaleDelegate.getMessage("NuclosCollectControllerFactory.2", "Es ist kein Statusmodell definiert. Das Modul kann nicht ge�ffnet werden.\nDie Statusmodellverwaltung finden Sie im Men� Administration."),
+					CommonLocaleDelegate.getMessage("NuclosCollectControllerFactory.2", "Es ist kein Statusmodell definiert. Das Modul kann nicht geöffnet werden.\nDie Statusmodellverwaltung finden Sie im Menü Administration."),
 					sEntityName,
 					JOptionPane.WARNING_MESSAGE);
 				return null;

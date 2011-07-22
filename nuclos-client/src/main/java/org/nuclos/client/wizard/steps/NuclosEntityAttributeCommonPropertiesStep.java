@@ -190,17 +190,17 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		
 		tfMandatory = new JTextField();
 		tfMandatory.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		tfMandatory.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
+		tfMandatory.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert fÃ¼r Pflichtfeld"));
 		
 		cbxMandatory = new JComboBox();
 		cbxMandatory.setVisible(false);
-		cbxMandatory.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
+		cbxMandatory.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert fÃ¼r Pflichtfeld"));
 		dateMandatory = new DateChooser();
 		dateMandatory.setVisible(false);
-		dateMandatory.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
+		dateMandatory.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert fÃ¼r Pflichtfeld"));
 		cbMandatoryValue = new JCheckBox();
 		cbMandatoryValue.setVisible(false);
-		cbMandatoryValue.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
+		cbMandatoryValue.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert fÃ¼r Pflichtfeld"));
 		
 		lbDBFieldName = new JLabel(getMessage("wizard.step.attributeproperties.12", "DB-Spaltename"));
 		tfDBFieldName = new JTextField();
@@ -949,7 +949,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 				throw new InvalidStateException("");
 			}
 			if(date == null) {
-				String sMessage = getMessage("wizard.step.attributeproperties.tooltip.29", "Sie haben keinen Wert für das Pflichtfeld angegeben!");
+				String sMessage = getMessage("wizard.step.attributeproperties.tooltip.29", "Sie haben keinen Wert fÃ¼r das Pflichtfeld angegeben!");
 				JLabel lb = new JLabel(sMessage);
 				JOptionPane.showMessageDialog(this, lb);
 				throw new InvalidStateException("");
@@ -961,7 +961,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		else if(this.getModel().getAttribute().getDatatyp().getJavaType().equals("java.lang.Integer") && this.parentWizardModel.isEditMode() && cbMandatory.isSelected()) {
 			int iScale = this.getModel().getAttribute().getDatatyp().getScale();
 			if(tfMandatory.getText().length() > iScale) {
-				String sMessage = getMessage("wizard.step.attributeproperties.27", "Der angegebene Defaultwert hat keinen gültigen Wert!");
+				String sMessage = getMessage("wizard.step.attributeproperties.27", "Der angegebene Defaultwert hat keinen gÃ¼ltigen Wert!");
 				JLabel lb = new JLabel(sMessage);
 				JOptionPane.showMessageDialog(this, lb);
 				throw new InvalidStateException("");
@@ -973,13 +973,13 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			String sValue = tfMandatory.getText().replace(',', '.');
 			String s[] = sValue.split("\\.");
 			if(s.length != 2) {
-				String sMessage = getMessage("wizard.step.attributeproperties.27", "Der angegebene Defaultwert hat keinen gültigen Wert!");
+				String sMessage = getMessage("wizard.step.attributeproperties.27", "Der angegebene Defaultwert hat keinen gÃ¼ltigen Wert!");
 				JLabel lb = new JLabel(sMessage);
 				JOptionPane.showMessageDialog(this, lb);
 				throw new InvalidStateException("");
 			}
 			if(s[0].length() > iScale-iPrecision || s[1].length() > iPrecision) {
-				String sMessage = getMessage("wizard.step.attributeproperties.27", "Der angegebene Defaultwert hat keinen gültigen Wert!");
+				String sMessage = getMessage("wizard.step.attributeproperties.27", "Der angegebene Defaultwert hat keinen gÃ¼ltigen Wert!");
 				JLabel lb = new JLabel(sMessage);
 				JOptionPane.showMessageDialog(this, lb);
 				throw new InvalidStateException("");
@@ -992,10 +992,10 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			if(obj != null && obj instanceof String) {
 				String s = (String)obj;
 				if(s.length() < 1)
-					sMessage = getMessage("wizard.step.attributeproperties.tooltip.29", "Sie haben keinen Wert für das Pflichtfeld angegeben!");
+					sMessage = getMessage("wizard.step.attributeproperties.tooltip.29", "Sie haben keinen Wert fÃ¼r das Pflichtfeld angegeben!");
 			}
 			else if(obj == null) {
-				sMessage = getMessage("wizard.step.attributeproperties.tooltip.29", "Sie haben keinen Wert für das Pflichtfeld angegeben!");
+				sMessage = getMessage("wizard.step.attributeproperties.tooltip.29", "Sie haben keinen Wert fÃ¼r das Pflichtfeld angegeben!");
 			}
 			
 			if(sMessage != null) {

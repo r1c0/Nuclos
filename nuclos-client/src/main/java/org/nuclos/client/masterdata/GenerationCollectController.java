@@ -142,12 +142,12 @@ public class GenerationCollectController extends MasterDataCollectController {
 			for(MasterDataVO voAttribute : mp.getAllValues()) {
 				if(voAttribute.getField("subentityAttributeGrouping") == null){
 					throw new CommonBusinessException(CommonLocaleDelegate.getMessage("GenerationCollectController.2",
-					"Sie m�ssen Gruppierungsfunktionen f�r die Unterformular Attribute angeben!"));
+					"Sie müssen Gruppierungsfunktionen für die Unterformular Attribute angeben!"));
 				}
 				String sGroup = (String)voAttribute.getField("subentityAttributeGrouping");
 				if(sGroup == null || sGroup.length() < 1){
 					throw new CommonBusinessException(CommonLocaleDelegate.getMessage("GenerationCollectController.2",
-						"Sie m�ssen Gruppierungsfunktionen f�r die Unterformular Attribute angeben!"));
+						"Sie müssen Gruppierungsfunktionen für die Unterformular Attribute angeben!"));
 				}
 			}
 		}

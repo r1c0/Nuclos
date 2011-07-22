@@ -51,7 +51,7 @@ public class SortableRuleTableModel extends DefaultTableModel {
 		}
 	}
 
-	public static final String[] asColumnNames = {CommonLocaleDelegate.getMessage("SortableRuleTableModel.2","Regel"), CommonLocaleDelegate.getMessage("SortableRuleTableModel.1","Beschreibung"), CommonLocaleDelegate.getMessage("SortableRuleTableModel.3","Ausführung im Anschluss")};
+	public static final String[] asColumnNames = {CommonLocaleDelegate.getMessage("SortableRuleTableModel.2","Regel"), CommonLocaleDelegate.getMessage("SortableRuleTableModel.1","Beschreibung"), CommonLocaleDelegate.getMessage("SortableRuleTableModel.3","AusfÃ¼hrung im Anschluss")};
 
 	private final List<SortedRuleVO> lstRules = new ArrayList<SortedRuleVO>();
 	

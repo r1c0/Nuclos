@@ -155,7 +155,7 @@ public class TableRowResizer extends MouseInputAdapter {
 	public void mouseClicked(MouseEvent e) {
 		if(SwingUtilities.isRightMouseButton(e)) {
 			JPopupMenu pop = new JPopupMenu();
-			JMenuItem mi = new JMenuItem(getMessage("TableRowResizer.1", "zurück setzen"));
+			JMenuItem mi = new JMenuItem(getMessage("TableRowResizer.1", "zurÃ¼ck setzen"));
 			mi.addActionListener(new ActionListener() {
 				
 				@Override

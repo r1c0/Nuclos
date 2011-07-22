@@ -320,7 +320,7 @@ public class DBTransferImport {
 							ifrm.unlockLayer();
 						}
 						if(blnTransferWithWarnings) {
-							JOptionPane.showMessageDialog(jpnPreviewContent, getMessage("dbtransfer.import.step1.19", "Nicht alle Statements können durchgeführt werden!\nBitte kontrollieren Sie die mit rot markierten Einträge!", "Warning", JOptionPane.WARNING_MESSAGE));									
+							JOptionPane.showMessageDialog(jpnPreviewContent, getMessage("dbtransfer.import.step1.19", "Nicht alle Statements kÃ¶nnen durchgefÃ¼hrt werden!\nBitte kontrollieren Sie die mit rot markierten EintrÃ¤ge!", "Warning", JOptionPane.WARNING_MESSAGE));									
 						}
 					}
 					

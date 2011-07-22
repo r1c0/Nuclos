@@ -232,7 +232,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 		private static final long serialVersionUID = 1L;
 
 		PasteStateRightsAction() {
-			super(CommonLocaleDelegate.getMessage("StateModelEditor.18","Rechte & Pflichten einfügen"), Icons.getInstance().getIconPaste16());
+			super(CommonLocaleDelegate.getMessage("StateModelEditor.18","Rechte & Pflichten einfÃ¼gen"), Icons.getInstance().getIconPaste16());
 		}
 		
 		@Override

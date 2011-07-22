@@ -545,7 +545,7 @@ public class RestoreUtils {
 										} else {
 											tab.setTabIcon(Icons.getInstance().getIconTabNotRestored());
 											tab.setTitle(wdTab.getLabel());
-											// TODO TABS Show nice message in content "Tab konnte nicht wiederhergestellt werden. Möglicherweise existiert der Datensatz oder die Funktion nicht länger, oder Ihnen wurde die Berechtigung entzogen."
+											// TODO TABS Show nice message in content "Tab konnte nicht wiederhergestellt werden. MÃ¶glicherweise existiert der Datensatz oder die Funktion nicht lÃ¤nger, oder Ihnen wurde die Berechtigung entzogen."
 										}
 									}
 								});

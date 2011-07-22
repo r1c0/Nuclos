@@ -227,7 +227,7 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 					ctlGenericObject.runViewSingleCollectable(CollectableGenericObjectWithDependants.newCollectableGenericObject(govo));
 				}
 				catch(CommonFatalException ex){
-					throw new CommonFatalException(CommonLocaleDelegate.getMessage("DynamicEntitySubFormController.2", "Der Datensatz kann nicht angezeigt werden. Bitte tragen Sie in der Datenquelle f¸r die dynamische Entit‰t, die Entit‰t ein, die angezeigt werden soll!"));
+					throw new CommonFatalException(CommonLocaleDelegate.getMessage("DynamicEntitySubFormController.2", "Der Datensatz kann nicht angezeigt werden. Bitte tragen Sie in der Datenquelle f√ºr die dynamische Entit√§t, die Entit√§t ein, die angezeigt werden soll!"));
 				}
 			}
 			
@@ -277,7 +277,7 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 					ctlGenericObject.runViewResults(cond);
 				}
 				catch(CommonFatalException ex){
-					throw new CommonFatalException(CommonLocaleDelegate.getMessage("DynamicEntitySubFormController.2", "Der Datensatz kann nicht angezeigt werden. Bitte tragen Sie in der Datenquelle f¸r die dynamische Entit‰t, die Entit‰t ein, die angezeigt werden soll!"));
+					throw new CommonFatalException(CommonLocaleDelegate.getMessage("DynamicEntitySubFormController.2", "Der Datensatz kann nicht angezeigt werden. Bitte tragen Sie in der Datenquelle f√ºr die dynamische Entit√§t, die Entit√§t ein, die angezeigt werden soll!"));
 				}
 			}
 		});

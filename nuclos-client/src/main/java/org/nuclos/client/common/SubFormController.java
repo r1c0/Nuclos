@@ -671,7 +671,7 @@ public abstract class SubFormController extends Controller
 			throw new NuclosFieldNotInModelException();
 		}
 		else if(result == null) {
-			throw new CommonFatalException(CommonLocaleDelegate.getMessage("SubFormController.2", "Das Feld ({0}) ist nicht in der Entit�t ({1}) vorhanden!", sParentComponentEntityName, this.getParentEntityName()));
+			throw new CommonFatalException(CommonLocaleDelegate.getMessage("SubFormController.2", "Das Feld ({0}) ist nicht in der Entität ({1}) vorhanden!", sParentComponentEntityName, this.getParentEntityName()));
 		}
 		
 		return result;

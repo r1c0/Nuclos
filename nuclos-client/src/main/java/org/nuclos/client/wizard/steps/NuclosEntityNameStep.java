@@ -198,7 +198,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 							lbInfo.setVisible(false);
 						}
 						if(e.getDocument().getLength() > 25) {
-							lbInfo.setText(getMessage("wizard.step.entityname.13", "Der Tabellenname wird f�r interne Zwecke gek�rzt!"));
+							lbInfo.setText(getMessage("wizard.step.entityname.13", "Der Tabellenname wird für interne Zwecke gekürzt!"));
 							lbInfo.setVisible(true);
 						}
 						else {
@@ -328,13 +328,13 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 					StringBuffer sbMessage = new StringBuffer();
 					if(!dropEntityAllowed(((EntityWrapper)cmbEntity.getSelectedItem()).getWrappedEntity(), sbMessage)) {
 						JOptionPane.showMessageDialog(NuclosEntityNameStep.this, sbMessage, 
-							getMessage("wizard.step.inputattribute.12", "Entfernen nicht m�glich!"), JOptionPane.OK_OPTION);
+							getMessage("wizard.step.inputattribute.12", "Entfernen nicht möglich!"), JOptionPane.OK_OPTION);
 						return;
 					}
 					
 					boolean blnImportStructure = MetaDataDelegate.getInstance().hasEntityImportStructure(((EntityWrapper)cmbEntity.getSelectedItem()).getWrappedEntity().getId());
 					if(blnImportStructure) {
-						String sMessage = getMessage("wizard.step.entityname.14","Diese Entit�t besitzt Strukturdefinitionen f�r Objektimporte. Diese wird gel�scht! Sie k�nnen den Vorgang abbrechen!");
+						String sMessage = getMessage("wizard.step.entityname.14","Diese Entität besitzt Strukturdefinitionen für Objektimporte. Diese wird gelöscht! Sie können den Vorgang abbrechen!");
 						int abort = JOptionPane.showConfirmDialog(NuclosEntityNameStep.this, sMessage, 
 							getMessage("wizard.step.entityname.16", "Achtung!"), JOptionPane.OK_CANCEL_OPTION);
 						if(abort != JOptionPane.OK_OPTION)
@@ -343,7 +343,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 					
 					boolean blnWorkflow = MetaDataDelegate.getInstance().hasEntityWorkflow(((EntityWrapper)cmbEntity.getSelectedItem()).getWrappedEntity().getId());
 					if(blnWorkflow) {
-						String sMessage = getMessage("wizard.step.entityname.15","Diese Entit�t ist in einem Arbeitsschritt integriert! Dieser wird gel�scht!");
+						String sMessage = getMessage("wizard.step.entityname.15","Diese Entität ist in einem Arbeitsschritt integriert! Dieser wird gelöscht!");
 						int abort = JOptionPane.showConfirmDialog(NuclosEntityNameStep.this, sMessage, 
 							getMessage("wizard.step.entityname.16", "Achtung!"), JOptionPane.OK_CANCEL_OPTION);
 						if(abort != JOptionPane.OK_OPTION)
@@ -358,7 +358,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 					case JOptionPane.YES_OPTION:
 						boolean bDropLayout = false;
 						if(MetaDataDelegate.getInstance().hasEntityLayout(((EntityWrapper)cmbEntity.getSelectedItem()).getWrappedEntity().getId())) {
-							int dropLayout = JOptionPane.showConfirmDialog(NuclosEntityNameStep.this, getMessage("wizard.step.entityname.11", "Soll das Layout der Entit�t gel�scht werden?"), sTitle, JOptionPane.YES_NO_OPTION);
+							int dropLayout = JOptionPane.showConfirmDialog(NuclosEntityNameStep.this, getMessage("wizard.step.entityname.11", "Soll das Layout der Entität gelöscht werden?"), sTitle, JOptionPane.YES_NO_OPTION);
 							bDropLayout = (dropLayout == JOptionPane.YES_OPTION);
 						}												
 						
@@ -430,7 +430,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 			}
 		}	
 		if(!blnAllowed) {			
-			sb.append(getMessage("wizard.step.entityname.7", "Die Entit�t wird referenziert von " + sbEntities.substring(0, sbEntities.length()-1) + ". Bitte entfernen Sie die Referenz vorher dort!", sbEntities));
+			sb.append(getMessage("wizard.step.entityname.7", "Die Entität wird referenziert von " + sbEntities.substring(0, sbEntities.length()-1) + ". Bitte entfernen Sie die Referenz vorher dort!", sbEntities));
 		}
 		
 		return blnAllowed;

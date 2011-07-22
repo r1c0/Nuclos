@@ -437,7 +437,7 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 			}
 		}
 		catch(PointerException e){
-			Bubble bubble = new Bubble(CollectableDocumentFileChooserBase.this.getControlComponent(), CommonLocaleDelegate.getMessage("details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstützt!"),5, Bubble.Position.NW);
+			Bubble bubble = new Bubble(CollectableDocumentFileChooserBase.this.getControlComponent(), CommonLocaleDelegate.getMessage("details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstÃ¼tzt!"),5, Bubble.Position.NW);
 			bubble.setVisible(true);
 		}
 		catch (Exception e) {

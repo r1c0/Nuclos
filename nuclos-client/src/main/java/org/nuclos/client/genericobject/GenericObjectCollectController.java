@@ -5942,7 +5942,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	                }
 
 	                if (noReferenceFound) {
-	                	throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.104", "Dieses Unterformular enth�lt keine Referenzspalte zur Entit�t {0}.", entityLabel));
+	                	throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.104", "Dieses Unterformular enthält keine Referenzspalte zur Entität {0}.", entityLabel));
 	                }
 				}
 			}

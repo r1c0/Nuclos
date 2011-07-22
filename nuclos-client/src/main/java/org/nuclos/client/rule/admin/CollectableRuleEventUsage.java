@@ -48,7 +48,7 @@ public class CollectableRuleEventUsage extends AbstractCollectableBean<RuleEvent
 		private Entity() {
 			super("eventusage", "Ereignis-Verwendung");
 
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_MODULE, String.class, "Entität", "Entität",
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_MODULE, String.class, "EntitÃ¤t", "EntitÃ¤t",
 					null, null, false, CollectableField.TYPE_VALUEIDFIELD, null, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_EVENT, String.class, "Ereignis",
 					"Ereignis", null, null, false, CollectableField.TYPE_VALUEIDFIELD, null, null));

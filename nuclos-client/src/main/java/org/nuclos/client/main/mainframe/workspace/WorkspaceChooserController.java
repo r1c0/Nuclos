@@ -110,7 +110,7 @@ public class WorkspaceChooserController {
 		}
 	});
 	private final JMenuItem miRemove = new JMenuItem(new AbstractAction(
-		CommonLocaleDelegate.getMessage("WorkspaceChooserController.7","Aktuellen Arbeitsbereich löschen") + "...", 
+		CommonLocaleDelegate.getMessage("WorkspaceChooserController.7","Aktuellen Arbeitsbereich lÃ¶schen") + "...", 
 		MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconRealDelete16(), ICON_SIZE)) {
 		/**
 			 * 
@@ -121,7 +121,7 @@ public class WorkspaceChooserController {
 		public void actionPerformed(ActionEvent e) {
 			if (JOptionPane.YES_OPTION == 
 				JOptionPane.showConfirmDialog(Main.getMainFrame(), 
-					CommonLocaleDelegate.getMessage("WorkspaceChooserController.8","Möchten Sie wirklich den aktuellen Arbeitsbereich \"{0}\" löschen?",getSelectedWorkspace()), 
+					CommonLocaleDelegate.getMessage("WorkspaceChooserController.8","MÃ¶chten Sie wirklich den aktuellen Arbeitsbereich \"{0}\" lÃ¶schen?",getSelectedWorkspace()), 
 					CommonLocaleDelegate.getMessage("WorkspaceChooserController.9","Sind Sie sicher?"), 
 					JOptionPane.YES_NO_OPTION)) {
 				

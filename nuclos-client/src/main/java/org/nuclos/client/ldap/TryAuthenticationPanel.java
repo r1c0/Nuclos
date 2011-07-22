@@ -49,7 +49,7 @@ public class TryAuthenticationPanel extends JPanel {
 		add(tfUsername, new GridBagConstraints(1, 0, 1, 1, 0.7, 0.5, GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		JLabel lblPassword = new JLabel(CommonLocaleDelegate.getMessage("TryAuthenticationPanel.password.label", "Passwort"));
-		String ttPassword = CommonLocaleDelegate.getMessage("TryAuthenticationPanel.password.description", "Das Passwort für die Authentisierung.");
+		String ttPassword = CommonLocaleDelegate.getMessage("TryAuthenticationPanel.password.description", "Das Passwort fÃ¼r die Authentisierung.");
 		lblPassword.setToolTipText(ttPassword);
 		add(lblPassword, new GridBagConstraints(0, 1, 1, 1, 0.3, 0.5, GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		pfPassword.setToolTipText(ttPassword);

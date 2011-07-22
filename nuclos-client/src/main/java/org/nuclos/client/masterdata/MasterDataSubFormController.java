@@ -324,7 +324,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			ctlGenericObject.runViewSingleCollectable(CollectableGenericObjectWithDependants.newCollectableGenericObject(govo));
 		}
 		catch(CommonFatalException ex){
-			throw new CommonFatalException(CommonLocaleDelegate.getMessage("DynamicEntitySubFormController.2", "Der Datensatz kann nicht angezeigt werden. Bitte tragen Sie in der Datenquelle f�r die dynamische Entit�t, die Entit�t ein, die angezeigt werden soll!"));
+			throw new CommonFatalException(CommonLocaleDelegate.getMessage("DynamicEntitySubFormController.2", "Der Datensatz kann nicht angezeigt werden. Bitte tragen Sie in der Datenquelle für die dynamische Entität, die Entität ein, die angezeigt werden soll!"));
 		}
 	}
 	
@@ -479,15 +479,15 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	                if (noReferenceFound) {
 	                	new Bubble(
 	                		getSubForm().getJTable(),
-	                		CommonLocaleDelegate.getMessage("MasterDataSubFormController.4", "Dieses Unterformular enth�lt keine Referenzspalte zur Entit�t ${entity}.", entityLabel),
+	                		CommonLocaleDelegate.getMessage("MasterDataSubFormController.4", "Dieses Unterformular enthält keine Referenzspalte zur Entität ${entity}.", entityLabel),
 							10,
 							Bubble.Position.NO_ARROW_CENTER)
 						.setVisible(true);
 	                } else {
-	                	String sNotImported = CommonLocaleDelegate.getMessage("MasterDataSubFormController.5", "Der Valuelist Provider verhindert das Anlegen von ${count} Unterformular Datens�tzen.", countNotImported);
+	                	String sNotImported = CommonLocaleDelegate.getMessage("MasterDataSubFormController.5", "Der Valuelist Provider verhindert das Anlegen von ${count} Unterformular Datensätzen.", countNotImported);
 		                
 		                getCollectController().getDetailsPanel().setStatusBarText(
-		                	CommonLocaleDelegate.getMessage("MasterDataSubFormController.6", "${count} Unterformular Datens�tze angelegt.", countImported)
+		                	CommonLocaleDelegate.getMessage("MasterDataSubFormController.6", "${count} Unterformular Datensätze angelegt.", countImported)
 		                	+ (countNotImported==0?"": " " + sNotImported));
 		                if (countNotImported!=0)
 		                	new Bubble(

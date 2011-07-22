@@ -2199,8 +2199,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 							try {
 								if (currentIndex == openQuestionCount && size >= openQuestionCount*2) {
 									int res = JOptionPane.showConfirmDialog(openInTabbed,
-										CommonLocaleDelegate.getMessage("CollectController.openInNewTab.1","Es wurden bereits {0} Tabs ge�ffnet. M�chten Sie die weiteren {1} Tabs auch noch �ffnen?", openQuestionCount, (size-openQuestionCount)),
-										CommonLocaleDelegate.getMessage("CollectController.openInNewTab.2","Wirklich alle selektierten Datens�tze in neuen Tabs �ffnen?"),
+										CommonLocaleDelegate.getMessage("CollectController.openInNewTab.1","Es wurden bereits {0} Tabs geöffnet. Möchten Sie die weiteren {1} Tabs auch noch öffnen?", openQuestionCount, (size-openQuestionCount)),
+										CommonLocaleDelegate.getMessage("CollectController.openInNewTab.2","Wirklich alle selektierten Datensätze in neuen Tabs öffnen?"),
 										JOptionPane.YES_NO_OPTION,
 										JOptionPane.QUESTION_MESSAGE);
 

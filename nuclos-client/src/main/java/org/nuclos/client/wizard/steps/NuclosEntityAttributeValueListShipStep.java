@@ -107,7 +107,7 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 		pnlName.add(lbName, BorderLayout.WEST);
 		pnlName.add(tfName, BorderLayout.CENTER);
 		
-		lbInfo = new JLabel(getMessage("wizard.step.attributevaluelist.1","Entität ist schon vorhanden. Bitte anderen Namen vergeben!"));
+		lbInfo = new JLabel(getMessage("wizard.step.attributevaluelist.1","EntitÃ¤t ist schon vorhanden. Bitte anderen Namen vergeben!"));
 		lbInfo.setForeground(Color.RED);
 		lbInfo.setVisible(false);
 		
@@ -245,9 +245,9 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
             case 2:
 	            return getMessage("wizard.step.attributevaluelist.4", "Beschreibung");
             case 3:
-	            return getMessage("wizard.step.attributevaluelist.5", "Gültig von");
+	            return getMessage("wizard.step.attributevaluelist.5", "GÃ¼ltig von");
             case 4:
-	            return getMessage("wizard.step.attributevaluelist.6", "Gültig bis");
+	            return getMessage("wizard.step.attributevaluelist.6", "GÃ¼ltig bis");
             default:
             	return super.getColumnName(column);
             }

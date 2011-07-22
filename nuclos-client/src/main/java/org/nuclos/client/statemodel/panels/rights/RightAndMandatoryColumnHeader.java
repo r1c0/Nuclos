@@ -108,7 +108,7 @@ public class RightAndMandatoryColumnHeader implements RightAndMandatoryConstants
 						}
 					});
 					menu.add(itemCopy);
-					JMenuItem itemPaste = new JMenuItem(CommonLocaleDelegate.getMessage("RightAndMandatory.5", "Einfügen"), Icons.getInstance().getIconPaste16());
+					JMenuItem itemPaste = new JMenuItem(CommonLocaleDelegate.getMessage("RightAndMandatory.5", "EinfÃ¼gen"), Icons.getInstance().getIconPaste16());
 					itemPaste.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {

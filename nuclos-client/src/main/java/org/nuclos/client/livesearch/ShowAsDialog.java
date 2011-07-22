@@ -102,7 +102,7 @@ public class ShowAsDialog extends JDialog {
 		}
 		checkPane.setBorder(new CompoundBorder(new EmptyBorder(10, 30, 10, 30), new LineBorder(Color.GRAY)));
 		
-		JLabel label = new JLabel(CommonLocaleDelegate.getResource("livesearch.showasdiag.text", "<html><br>Das Objekt repräsentiert einen Detaildatensatz, zu dem kein eindeutiges Layout bestimmt werden konnte.<br>In welchem Modul soll die Ansicht geöffnet werden?</html>"));
+		JLabel label = new JLabel(CommonLocaleDelegate.getResource("livesearch.showasdiag.text", "<html><br>Das Objekt reprÃ¤sentiert einen Detaildatensatz, zu dem kein eindeutiges Layout bestimmt werden konnte.<br>In welchem Modul soll die Ansicht geÃ¶ffnet werden?</html>"));
 		label.setBorder(new EmptyBorder(10, 10, 10, 10));
 		
 		add(label, BorderLayout.NORTH);

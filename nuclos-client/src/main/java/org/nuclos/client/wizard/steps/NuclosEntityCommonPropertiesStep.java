@@ -843,7 +843,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 	    	if(sTable.equalsIgnoreCase(vo.getDbEntity())) {
 	    		if(this.model.getEntityName().equalsIgnoreCase(vo.getEntity())) 
 	    			continue;
-	    		JOptionPane.showMessageDialog(this, getMessage("wizard.step.entitycommonproperties.18", "Der vergebene Tabellenname ist schon vorhanden. Bitte �ndern Sie ihn in den erweiterten Einstellungen!"), 
+	    		JOptionPane.showMessageDialog(this, getMessage("wizard.step.entitycommonproperties.18", "Der vergebene Tabellenname ist schon vorhanden. Bitte ändern Sie ihn in den erweiterten Einstellungen!"), 
 	    			getMessage("wizard.step.entitycommonproperties.19", "Achtung!"), JOptionPane.OK_OPTION);
 	 	        throw new InvalidStateException();
 	    	}

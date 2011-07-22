@@ -262,7 +262,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 			}
 		});
 		
-		result.add(new AbstractAction(getMessage("CollectableFileNameChooserBase.1", "zurücksetzen")) {
+		result.add(new AbstractAction(getMessage("CollectableFileNameChooserBase.1", "zurÃ¼cksetzen")) {
 			
 			/**
 			 * 

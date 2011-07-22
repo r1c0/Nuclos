@@ -248,7 +248,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		cbEditFields.setSelected(true);
 		cbEditFields.setToolTipText(getMessage("wizard.step.entitysqllayout.tooltip.7","Editierungsfelder mit in das Layout aufnehmen"));
 		
-		lbInfo = new JLabel(getMessage("wizard.step.entitysqllayout.9", "Achtung! Ihr bestehendes Layout wird überschrieben!"));
+		lbInfo = new JLabel(getMessage("wizard.step.entitysqllayout.9", "Achtung! Ihr bestehendes Layout wird Ã¼berschrieben!"));
 		lbInfo.setVisible(false);
 		lbInfo.setForeground(Color.RED);
 		
@@ -311,7 +311,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				JCheckBox cb = (JCheckBox)e.getItem();
 				NuclosEntitySQLLayoutStep.this.model.setCreateLayout(cb.isSelected());
 				if(cb.isSelected() && hasEntityLayout) {
-					(new Bubble(cbLayout, getMessage("wizard.step.entitysqllayout.9", "Achtung! Ihr bestehendes Layout wird überschrieben!"), 5, Position.UPPER)).setVisible(true);
+					(new Bubble(cbLayout, getMessage("wizard.step.entitysqllayout.9", "Achtung! Ihr bestehendes Layout wird Ã¼berschrieben!"), 5, Position.UPPER)).setVisible(true);
 				}		
 				enableLayoutOptions(cb.isSelected());
 			}
@@ -534,7 +534,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			for(String sField : model.getMultiEditEquation().split(",")) {
 				for(Attribute attr : this.model.getAttributeModel().getRemoveAttributes()) {
 					if(attr.getInternalName().equals(sField)) {
-						String sMessage = getMessage("wizard.step.entitysqllayout.10", "Das gelöschte Attribut " + attr.getInternalName() + " befindet sich in Ihren Angaben!\nBitte überprüfen Sie Ihre Eintragungen!", attr.getInternalName());
+						String sMessage = getMessage("wizard.step.entitysqllayout.10", "Das gelÃ¶schte Attribut " + attr.getInternalName() + " befindet sich in Ihren Angaben!\nBitte Ã¼berprÃ¼fen Sie Ihre Eintragungen!", attr.getInternalName());
 						throw new CommonValidationException(sMessage);
 					}
 				}
@@ -545,7 +545,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 					if(!attr.hasInternalNameChanged())
 						continue;
 					if(attr.getOldInternalName().equals(sField)) {
-						String sMessage = getMessage("wizard.step.entitysqllayout.11", "Das geänderte Attribut " + attr.getOldInternalName() + " befindet sich in Ihren Angaben!\nBitte überprüfen Sie Ihre Eintragungen!", attr.getOldInternalName());
+						String sMessage = getMessage("wizard.step.entitysqllayout.11", "Das geÃ¤nderte Attribut " + attr.getOldInternalName() + " befindet sich in Ihren Angaben!\nBitte Ã¼berprÃ¼fen Sie Ihre Eintragungen!", attr.getOldInternalName());
 						throw new CommonValidationException(sMessage);
 					}
 				}
@@ -593,7 +593,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			  if(!attr.hasInternalNameChanged())
 				  continue;
 			  if(attr.getOldInternalName().equals(sName)){
-				  String str = getMessage("wizard.step.entitysqllayout.11", "Das geänderte Attribut " + attr.getOldInternalName() + " befindet sich in Ihren Angaben!\nBitte überprüfen Sie Ihre Eintragungen!", attr.getOldInternalName());
+				  String str = getMessage("wizard.step.entitysqllayout.11", "Das geÃ¤nderte Attribut " + attr.getOldInternalName() + " befindet sich in Ihren Angaben!\nBitte Ã¼berprÃ¼fen Sie Ihre Eintragungen!", attr.getOldInternalName());
 				  sb.append(str);
 				  return true;
 			  }
@@ -617,7 +617,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		  String sName = value.toString();
 		  for(Attribute attr : this.model.getAttributeModel().getRemoveAttributes()) {
 			  if(attr.getInternalName().equals(sName)){
-				  String str = getMessage("wizard.step.entitysqllayout.10", "Das gelöschte Attribut " + attr.getInternalName() + " befindet sich in Ihren Angaben!\nBitte überprüfen Sie Ihre Eintragungen!", attr.getInternalName());
+				  String str = getMessage("wizard.step.entitysqllayout.10", "Das gelÃ¶schte Attribut " + attr.getInternalName() + " befindet sich in Ihren Angaben!\nBitte Ã¼berprÃ¼fen Sie Ihre Eintragungen!", attr.getInternalName());
 				  sb.append(str);
 				  return true;
 			  }

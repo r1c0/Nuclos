@@ -580,7 +580,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 					public void run() {
 						if (!RestoreUtils.isRestoreRunning()) {
 							if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(MainFrame.this, 
-								CommonLocaleDelegate.getMessage("MainFrame.restoreDefaultWorkspace.2","Möchten Sie wirklich die Fenstereinteilung auf den Standard zurücksetzen?\nTabs werden nicht geschlossen, aber Fenstereinteilungen und Erweiterungsfenster werden zurückgesetzt.\nMöchten Sie fortfahren?"), 
+								CommonLocaleDelegate.getMessage("MainFrame.restoreDefaultWorkspace.2","MÃ¶chten Sie wirklich die Fenstereinteilung auf den Standard zurÃ¼cksetzen?\nTabs werden nicht geschlossen, aber Fenstereinteilungen und Erweiterungsfenster werden zurÃ¼ckgesetzt.\nMÃ¶chten Sie fortfahren?"), 
 								CommonLocaleDelegate.getMessage("MainFrame.restoreDefaultWorkspace.1","Arbeitsbereich wiederherstellen"), 
 								JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE)) {
 								RestoreUtils.restoreToDefaultWorkspace(getWorkspace());

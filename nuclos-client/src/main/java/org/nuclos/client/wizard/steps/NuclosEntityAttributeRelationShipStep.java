@@ -296,7 +296,7 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 		
 		if(parentWizardModel.hasRows() && model.isEditMode()) {
 			cbxEntity.setEnabled(false);
-			cbxEntity.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.5", "Verweis kann nicht geändert werden. Da bereits Datensätze vorhanden sind."));			
+			cbxEntity.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.5", "Verweis kann nicht geÃ¤ndert werden. Da bereits DatensÃ¤tze vorhanden sind."));			
 		}
 		else {
 			cbxEntity.setEnabled(true);
@@ -364,12 +364,12 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 			  invalid = false;
 		  }
 		  catch(Exception e){
-			  throw new InvalidStateException(getMessage("wizard.step.attributerelationship.7", "Es wurde ein ungültiger Eintrag gefunden: " + sName, sName));
+			  throw new InvalidStateException(getMessage("wizard.step.attributerelationship.7", "Es wurde ein ungÃ¼ltiger Eintrag gefunden: " + sName, sName));
 		  }		  
 		}	
 		
 		if(invalid){
-			throw new InvalidStateException(getMessage("wizard.step.attributerelationship.8", "Es wurde kein gültiger Referenzeintrag gefunden!"));
+			throw new InvalidStateException(getMessage("wizard.step.attributerelationship.8", "Es wurde kein gÃ¼ltiger Referenzeintrag gefunden!"));
 		}
 		
 	}

@@ -830,7 +830,7 @@ public class StatePropertiesPanel extends JPanel {
 			help.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					(new Bubble(help, CommonLocaleDelegate.getMessage("StatePropertiesPanel.18", "<html>grau=nicht sichtbar<br/>gelb=lesen<br/>gr�n=schreiben</html>"), 10, Bubble.Position.SE)).setVisible(true);
+					(new Bubble(help, CommonLocaleDelegate.getMessage("StatePropertiesPanel.18", "<html>grau=nicht sichtbar<br/>gelb=lesen<br/>grün=schreiben</html>"), 10, Bubble.Position.SE)).setVisible(true);
 				}
 			});
 			toolBar.add(help);

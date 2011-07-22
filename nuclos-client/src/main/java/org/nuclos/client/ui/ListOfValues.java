@@ -421,7 +421,7 @@ public class ListOfValues extends JPanel {
 		
 		private void handleUpdate() {
 			if (enabledAt+25 >= System.currentTimeMillis()) {
-				// verarbeite nur Events die 25 ms nach einer Tastatureingabe getätigt wurden.		
+				// verarbeite nur Events die 25 ms nach einer Tastatureingabe getÃ¤tigt wurden.		
 				
 				changesPending = true;
 				

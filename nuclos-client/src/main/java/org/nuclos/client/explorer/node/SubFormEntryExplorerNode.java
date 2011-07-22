@@ -251,7 +251,7 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 		final Integer id;
 
 		ShowReferenceAction(final String entityName, final Integer id, JTree tree, String action) {
-			super(action, CommonLocaleDelegate.getMessage("SubFormEntryExplorerNode.1", "{0} öffnen", CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(entityName))), tree);
+			super(action, CommonLocaleDelegate.getMessage("SubFormEntryExplorerNode.1", "{0} Ã¶ffnen", CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(entityName))), tree);
 			this.entityName = entityName;
 			this.id = id;
 		}

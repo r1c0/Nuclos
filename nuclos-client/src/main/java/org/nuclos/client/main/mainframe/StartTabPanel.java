@@ -301,7 +301,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				setShowAdministration(selected);
 			}
 		};
-		actionShowEntity = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.14","Entit‰ten")) {
+		actionShowEntity = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.14","Entit√§ten")) {
 			/**
 			 * 
 			 */

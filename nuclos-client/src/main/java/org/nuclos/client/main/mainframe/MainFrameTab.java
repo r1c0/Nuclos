@@ -171,7 +171,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			return MainFrame.isTabbedPaneMaximizable(tabbedPane) && MainFrame.isTabbedPaneMaximized(tabbedPane);
 		}
 	};
-	private final AbstractAction actNeverClose = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.7","Niemals Schlieﬂen")) {
+	private final AbstractAction actNeverClose = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.7","Niemals Schlie√üen")) {
 		/**
 		 * 
 		 */
@@ -192,7 +192,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			return _isClosable();
 		}
 	};
-	private final AbstractAction actClose = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.4","Schlieﬂen")) {
+	private final AbstractAction actClose = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.4","Schlie√üen")) {
 		/**
 		 * 
 		 */
@@ -206,7 +206,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			return isClosable();
 		}
 	};
-	private final AbstractAction actCloseAll = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.3","Alle Schlieﬂen")) {
+	private final AbstractAction actCloseAll = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.3","Alle Schlie√üen")) {
 		/**
 		 * 
 		 */
@@ -219,7 +219,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			tabbedPane.adjustTabs();
 		}
 	};
-	private final AbstractAction actCloseOthers = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.2","Andere Schlieﬂen")) {
+	private final AbstractAction actCloseOthers = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.2","Andere Schlie√üen")) {
 		/**
 		 * 
 		 */

@@ -748,7 +748,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 		}
 		catch(PointerException e) {
-			Bubble bubble = new Bubble(DetailsSubFormController.this.getJTable(), CommonLocaleDelegate.getMessage("details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstützt!"),5, Bubble.Position.NW);
+			Bubble bubble = new Bubble(DetailsSubFormController.this.getJTable(), CommonLocaleDelegate.getMessage("details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstÃ¼tzt!"),5, Bubble.Position.NW);
 			bubble.setVisible(true);
 		}
 		catch (Exception e) {

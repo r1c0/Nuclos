@@ -215,7 +215,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 				StringBuffer sMessage = new StringBuffer();
 				if(hasAttributeReferenz(attr, sMessage)) {					
 					JOptionPane.showMessageDialog(NuclosEntityAttributeInputStep.this, sMessage, 
-						getMessage("wizard.step.inputattribute.12", "Entfernen nicht möglich!"), JOptionPane.OK_OPTION);
+						getMessage("wizard.step.inputattribute.12", "Entfernen nicht mÃ¶glich!"), JOptionPane.OK_OPTION);
 					return;
 				}
 				
@@ -234,7 +234,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 						sMessageText += sImport + " ";
 					}					
 					
-					sMessageText += getMessage("wizard.step.inputattribute.16", "\nDie Referenz wird entfernt, wenn das Attribut gelöscht wird!\nSoll das Attribut trotzdem gelöscht werden?");
+					sMessageText += getMessage("wizard.step.inputattribute.16", "\nDie Referenz wird entfernt, wenn das Attribut gelÃ¶scht wird!\nSoll das Attribut trotzdem gelÃ¶scht werden?");
 					int option = JOptionPane.showConfirmDialog(NuclosEntityAttributeInputStep.this, sMessageText,getMessage("wizard.step.inputattribute.17", "Achtung"), JOptionPane.YES_NO_OPTION);
 					if(option != JOptionPane.YES_OPTION) {
 						return;
@@ -245,8 +245,8 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 					if(isSubformEntity(attr)){
 						if(NuclosEntityAttributeInputStep.this.getModel().hasRows()) {
 							String sText = getMessage("wizard.step.inputattribute.14",  
-								"Die Entität enthält bereits Daten. Wenn Sie dieses Attribut löschen,\n" +
-									"verliert die Hauptentität, die Datensätze dieser Entität.\n" +
+								"Die EntitÃ¤t enthÃ¤lt bereits Daten. Wenn Sie dieses Attribut lÃ¶schen,\n" +
+									"verliert die HauptentitÃ¤t, die DatensÃ¤tze dieser EntitÃ¤t.\n" +
 									"Das Unterformular wird ebenfalls aus der Maske herausgenommen.");
 							final JOptionPane pane = new JOptionPane(sText, JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);						
 							final JDialog dia = new JDialog(Main.getMainFrame(), true);
@@ -516,7 +516,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 				final String sForeignField = voField.getForeignEntityField();
 				if(sForeign.equals(this.model.getEntityName())) {
 					if(sForeignField.indexOf(attr.getInternalName()) >= 0) {
-						String sMessage = getMessage("wizard.step.inputattribute.11", "Die Entität " + vo.getEntity() + " verweist auf das Feld " + attr.getLabel() + "\n" +
+						String sMessage = getMessage("wizard.step.inputattribute.11", "Die EntitÃ¤t " + vo.getEntity() + " verweist auf das Feld " + attr.getLabel() + "\n" +
 							"Bitte entfernen Sie vorher das Feld dort!", vo.getEntity(), attr.getLabel());
 						message.append(sMessage);
 						return true;
