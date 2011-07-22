@@ -1291,6 +1291,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 							try {
 								executeBusinessRules(lstRuleToExecute, controller.getMySelectObjectsPanel().getSaveAfterExec().isSelected());
 							} catch (CommonBusinessException ex) {
+								controller.setBlnExceptionOnWork(true);
 								if (!handleSpecialException(ex))
 									throw ex;
 							}
@@ -1299,7 +1300,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 				}
 			});
 			//refresh the current object if it has been saved
-			if (controller.getMySelectObjectsPanel().getSaveAfterExec().isSelected() && !controller.getSelectedObjects().isEmpty()) {
+			if (controller.getMySelectObjectsPanel().getSaveAfterExec().isSelected() && !controller.getSelectedObjects().isEmpty() && !controller.isBlnExceptionOnWork()) {
 				this.cmdRefreshCurrentCollectable();
 			}
 		}
@@ -1355,6 +1356,8 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	 *  helper class for cmdExecuteRulesByUser
 	 */
 	private static class SelectController extends SelectObjectsController<RuleVO> {
+		
+		private boolean blnExceptionOnWork;
 
 		public SelectController(Component parent) {
 			super(parent, new MySelectObjectsPanel());
@@ -1363,7 +1366,22 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			panel.btnDown.setEnabled(true);
 			panel.btnUp.setVisible(true);
 			panel.btnDown.setVisible(true);
+			blnExceptionOnWork = false;
 		}
+		
+		
+
+		public boolean isBlnExceptionOnWork() {
+			return blnExceptionOnWork;
+		}
+
+
+
+		public void setBlnExceptionOnWork(boolean blnExceptionOnWork) {
+			this.blnExceptionOnWork = blnExceptionOnWork;
+		}
+
+
 
 		MySelectObjectsPanel getMySelectObjectsPanel() {
 			return (MySelectObjectsPanel) getPanel();
