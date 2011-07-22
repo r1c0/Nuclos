@@ -45,6 +45,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
 import org.nuclos.common.EntityTreeViewVO;
+import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
@@ -487,9 +488,9 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				
 			}
 		}
-		
-		EntityObjectMetaDbHelper helper = new EntityObjectMetaDbHelper(MetaDataServerProvider.getInstance());
-		DbTable table = helper.getDbTable(voEntity);
+		final MetaDataProvider mdProvider = MetaDataServerProvider.getInstance();
+		final EntityObjectMetaDbHelper helper = new EntityObjectMetaDbHelper(mdProvider);
+		final DbTable table = helper.getDbTable(voEntity);
 		
 		List<DbStructureChange> lstChanges = SchemaUtils.drop(table);
 		for(DbStructureChange db : lstChanges) {
@@ -542,6 +543,21 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		DbDeleteStatement delModule = new DbDeleteStatement("T_MD_ROLE_MODULE", mpDelRoleModule);
 		DataBaseHelper.getDbAccess().execute(delModule);
 		
+		// delete entity subnodes (NUCLOSINT-1127)
+		final NuclosEntity subnodes = NuclosEntity.ENTITYSUBNODES;
+		final EntityMetaDataVO subnodesVO = mdProvider.getEntity(subnodes);
+		final String subnodesTable = EntityObjectMetaDbHelper.getTableName(subnodesVO);
+		final Map<String, Object> snWhere = new HashMap<String, Object>();
+		// delete subnodes from entities which are deleted
+		snWhere.put(EntityTreeViewVO.ENTITY_COLUMN, voEntity.getId());
+		final DbDeleteStatement snDel1 = new DbDeleteStatement(subnodesTable, snWhere);
+		DataBaseHelper.getDbAccess().execute(snDel1);
+		// delete subnodes representation of entity embedded in other entities (as subform)
+		snWhere.clear();
+		snWhere.put(EntityTreeViewVO.SUBFORM_ENTITY_COLUMN, voEntity.getEntity());
+		final DbDeleteStatement snDel2 = new DbDeleteStatement(subnodesTable, snWhere);
+		DataBaseHelper.getDbAccess().execute(snDel2);
+
 		// delete layouts
 		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 		DbFrom from = query.from("T_MD_LAYOUTUSAGE").alias("t");		
