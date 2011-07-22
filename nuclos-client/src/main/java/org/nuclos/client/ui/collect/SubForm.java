@@ -1459,8 +1459,6 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		private SubForm subform;
 		private boolean calculateRowHeight;
 		
-		private final KeyStroke tabKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0); 
-
 		private SubformRowHeader rowheader;
 		
 		private boolean newRowOnNext = false;
