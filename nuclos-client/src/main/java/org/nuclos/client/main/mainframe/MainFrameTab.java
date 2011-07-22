@@ -86,6 +86,7 @@ import org.nuclos.client.ui.MainFrameTabListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.LockedTabProgressNotification;
+import org.nuclos.common.MutableBoolean;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -710,6 +711,8 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		private final TextPainter textMessage;
 		private final String correlationId;
 		
+		private final MutableBoolean mutLocked = new MutableBoolean(false);
+		
 		public TranslucentLockableWithProgressUI(Color busyColor, String correlationId) {
 			super(busyColor);
 			this.correlationId = correlationId;
@@ -724,7 +727,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 
 		@Override
 		public void setLocked(boolean locked) {
-			super.setLocked(locked);
+			mutLocked.setValue(locked);
 			if (locked) {
 				log.info("subscribe to " + JMSConstants.TOPICNAME_LOCKEDTABPROGRESSNOTIFICATION + " with correlationId=" + correlationId);
 				TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_LOCKEDTABPROGRESSNOTIFICATION, correlationId, TranslucentLockableWithProgressUI.this);
@@ -732,6 +735,14 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 				log.info("unsubscribe from " + JMSConstants.TOPICNAME_LOCKEDTABPROGRESSNOTIFICATION);
 				TopicNotificationReceiver.unsubscribe(TranslucentLockableWithProgressUI.this);
 			}
+			while (isDirty()) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					log.error(null, e);
+				}
+			}
+			super.setLocked(locked);
 		}
 		
 		@Override
@@ -752,7 +763,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 		
 		private void setText(String message, int percent) {
-			if (isLocked()) {
+			if (mutLocked.getValue() && isLocked()) {
 				percent = percent < 0 ? 0 : percent > 100 ? 100 : percent;
 				int progress = percent / 5;
 				StringBuffer sbProgress = new StringBuffer(27);
@@ -769,17 +780,17 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 				textProgress.setText(sbProgress.toString());
 				textMessage.setText(message);
 				// this will repaint the layer
-				if(isLocked()) setDirty(true);
+				setDirty(true);
 			}
 		}
 		
 		@Override
 		protected void paintLayer(Graphics2D g2, JXLayer<JComponent> l) {
 			super.paintLayer(g2, l);
-	        if (isLocked()) {
-	        	textProgress.paint(g2, l, l.getWidth(), l.getHeight());
-	        	textMessage.paint(g2, l, l.getWidth(), l.getHeight()+50);
-	        }
+			if (mutLocked.getValue()) {
+				textProgress.paint(g2, l, l.getWidth(), l.getHeight());
+				textMessage.paint(g2, l, l.getWidth(), l.getHeight()+50);
+			}
 		}
 
 	}
