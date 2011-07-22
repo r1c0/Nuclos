@@ -72,7 +72,7 @@ public class DeleteSelectedCollectablesPhysicallyController
 		@Override
 		public void executeFinalAction() throws CommonBusinessException {
 			// NUCLOSINT-884 refresh afterwards
-			ctl.search(true);
+			ctl.getSearchStrategy().search(true);
 		}
 	}
 

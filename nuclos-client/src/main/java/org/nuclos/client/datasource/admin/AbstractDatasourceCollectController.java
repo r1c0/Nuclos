@@ -87,6 +87,9 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 	/**
 	 * Don't make this public!
 	 *
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -97,6 +100,10 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 		super(parent, clcte);
 		ifrm = tabIfAny;
 		addTabToParent = tabIfAny==null;
+	}
+	
+	public final MainFrameTab getMainFrameTab() {
+		return ifrm;
 	}
 	
 	protected void initializeDatasourceCollectController(DatasourceEditPanel pnlEdit) {

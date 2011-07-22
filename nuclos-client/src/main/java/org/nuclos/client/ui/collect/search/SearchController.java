@@ -158,7 +158,7 @@ public class SearchController<Clct extends Collectable> extends CommonController
         public void actionPerformed(ActionEvent ev) {
 			final CollectController<Clct> cc = getCollectController();
 			if(cc.getCollectPanel().getTabbedPaneSelectedIndex() == CollectPanel.TAB_SEARCH)
-				cc.getResultController().cmdSearch();
+				cc.getResultController().getSearchResultStrategy().cmdSearch();
 		}
 	};
 

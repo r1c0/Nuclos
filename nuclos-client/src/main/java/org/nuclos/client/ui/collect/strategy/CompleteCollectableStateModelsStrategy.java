@@ -19,7 +19,7 @@ package org.nuclos.client.ui.collect.strategy;
 import java.util.Set;
 
 import org.nuclos.client.statemodel.admin.CollectableStateModel;
-import org.nuclos.client.ui.collect.CollectController;
+import org.nuclos.client.statemodel.admin.StateModelCollectController;
 
 /**
  * Strategy for loading collectables: Just the necessary data for the Result panel,
@@ -27,7 +27,7 @@ import org.nuclos.client.ui.collect.CollectController;
  */
 public class CompleteCollectableStateModelsStrategy extends AbstractCompleteCollectablesStrategy<CollectableStateModel> {
 	
-	public CompleteCollectableStateModelsStrategy(CollectController<CollectableStateModel> cc) {
+	public CompleteCollectableStateModelsStrategy(StateModelCollectController cc) {
 		super(cc);
 	}
 	

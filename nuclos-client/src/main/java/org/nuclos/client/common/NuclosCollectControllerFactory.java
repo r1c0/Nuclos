@@ -67,8 +67,10 @@ import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.statemodel.admin.StateModelCollectController;
 import org.nuclos.client.task.PersonalTaskCollectController;
 import org.nuclos.client.transfer.ExportImportCollectController;
+import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
+import org.nuclos.client.ui.collect.result.ISearchResultStrategy;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
 import org.nuclos.client.wizard.DataTypeCollectController;
 import org.nuclos.common.ApplicationProperties;
@@ -148,7 +150,7 @@ public class NuclosCollectControllerFactory {
 			if(sm == null) {
 				JOptionPane.showMessageDialog(
 					parent,
-					CommonLocaleDelegate.getMessage("NuclosCollectControllerFactory.2", "Es ist kein Statusmodell definiert. Das Modul kann nicht geöffnet werden.\nDie Statusmodellverwaltung finden Sie im Menü Administration."),
+					CommonLocaleDelegate.getMessage("NuclosCollectControllerFactory.2", "Es ist kein Statusmodell definiert. Das Modul kann nicht geï¿½ffnet werden.\nDie Statusmodellverwaltung finden Sie im Menï¿½ Administration."),
 					sEntityName,
 					JOptionPane.WARNING_MESSAGE);
 				return null;
@@ -161,45 +163,46 @@ public class NuclosCollectControllerFactory {
 
 				NuclosEntity systemEntity = NuclosEntity.getByName(sEntityName);
 				if (systemEntity != null) {
+					final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
 					switch (systemEntity) {
 					case DATASOURCE:
-						return new DatasourceCollectController(parent, tabIfAny);
+						return factory.newDatasourceCollectController(parent, tabIfAny);
 					case DYNAMICENTITY:
-						return new DynamicEntityCollectController(parent, tabIfAny);
+						return factory.newDynamicEntityCollectController(parent, tabIfAny);
 					case VALUELISTPROVIDER:
-						return new ValuelistProviderCollectController(parent, tabIfAny);
+						return factory.newValuelistProviderCollectController(parent, tabIfAny);
 					case RECORDGRANT:
-						return new RecordGrantCollectController(parent, tabIfAny);
+						return factory.newRecordGrantCollectController(parent, tabIfAny);
 					case STATEMODEL:
-						return new StateModelCollectController(parent, tabIfAny);
+						return factory.newStateModelCollectController(parent, tabIfAny);
 					case PROCESSMONITOR:
-						return new ProcessMonitorCollectController(parent, tabIfAny);
+						return factory.newProcessMonitorCollectController(parent, tabIfAny);
 					case INSTANCE:
-						return new InstanceCollectController(parent, sEntityName, tabIfAny);
+						return factory.newInstanceCollectController(parent, sEntityName, tabIfAny);
 					case RULE:
-						return new RuleCollectController(parent, tabIfAny);
+						return factory.newRuleCollectController(parent, tabIfAny);
 					case IMPORT:
-						return new GenericObjectImportStructureCollectController(parent, tabIfAny);
+						return factory.newGenericObjectImportStructureCollectController(parent, tabIfAny);
 					case IMPORTFILE:
-						return new GenericObjectImportCollectController(parent, tabIfAny);
+						return factory.newGenericObjectImportCollectController(parent, tabIfAny);
 					case TIMELIMITRULE:
-						return new TimelimitRuleCollectController(parent, tabIfAny);
+						return factory.newTimelimitRuleCollectController(parent, tabIfAny);
 					case JOBCONTROLLER:
-						return new JobControlCollectController(parent, tabIfAny);
+						return factory.newJobControlCollectController(parent, tabIfAny);
 					case LOCALE:
-						return new LocaleCollectController(parent, tabIfAny);
+						return factory.newLocaleCollectController(parent, tabIfAny);
 					case NUCLET:
-						return new NucletCollectController(parent, tabIfAny);
+						return factory.newNucletCollectController(parent, tabIfAny);
 					case DBOBJECT:
-						return new DbObjectCollectController(parent, tabIfAny);
+						return factory.newDbObjectCollectController(parent, tabIfAny);
 					case DBSOURCE:
-						return new DbSourceCollectController(parent, tabIfAny);
+						return factory.newDbSourceCollectController(parent, tabIfAny);
 					case ENTITYRELATION:
-						return new EntityRelationShipCollectController(parent, Main.getMainFrame(), tabIfAny);
+						return factory.newEntityRelationShipCollectController(parent, Main.getMainFrame(), tabIfAny);
 					case LDAPSERVER:
-						return new LdapServerCollectController(parent, tabIfAny);
+						return factory.newLdapServerCollectController(parent, tabIfAny);
 					case CODE:
-						return new CodeCollectController(parent, tabIfAny);
+						return factory.newCodeCollectController(parent, tabIfAny);
 					}
 				}
 
@@ -221,8 +224,8 @@ public class NuclosCollectControllerFactory {
 	 */
 	public GenericObjectCollectController newGenericObjectCollectController(JComponent parent, Integer iModuleId, MainFrameTab tabIfAny) {
 		final GenericObjectCollectController result;
-
-		result = new GenericObjectCollectController(parent, iModuleId, true, tabIfAny);
+		final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
+		result = factory.newGenericObjectCollectController(parent, iModuleId, true, tabIfAny);
 
 		assert result != null;
 		return result;
@@ -236,37 +239,38 @@ public class NuclosCollectControllerFactory {
 	 */
 	public MasterDataCollectController newMasterDataCollectController(JComponent parent, String sEntityName, MainFrameTab tabIfAny) {
 		final NuclosEntity systemEntity = NuclosEntity.getByName(sEntityName);
+		final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
 		if (systemEntity != null) {
 			switch (systemEntity) {
 			case GENERATION:
-				return new GenerationCollectController(parent, tabIfAny);
+				return factory.newGenerationCollectController(parent, tabIfAny);
 			case LAYOUT:
-				return new GenericObjectLayoutCollectController(parent, tabIfAny);
+				return factory.newGenericObjectLayoutCollectController(parent, tabIfAny);
 			case GROUP:
-				return new GroupCollectController(parent, tabIfAny);
+				return factory.newGroupCollectController(parent, tabIfAny);
 			case RELATIONTYPE:
-				return new RelationTypeCollectController(parent, tabIfAny);
+				return factory.newRelationTypeCollectController(parent, tabIfAny);
 			case REPORT:
-				return new ReportCollectController(parent, tabIfAny);
+				return factory.newReportCollectController(parent, tabIfAny);
 			case REPORTEXECUTION:
-				return new ReportExecutionCollectController(parent, tabIfAny);
+				return factory.newReportExecutionCollectController(parent, tabIfAny);
 			case USER:
-				return new UserCollectController(parent, tabIfAny);
+				return factory.newUserCollectController(parent, tabIfAny);
 			case RESOURCE:
-				return new ResourceCollectController(parent, tabIfAny);
+				return factory.newResourceCollectController(parent, tabIfAny);
 			case IMPORTEXPORT:
-				return new ExportImportCollectController(parent, tabIfAny);
+				return factory.newExportImportCollectController(parent, tabIfAny);
 			case SEARCHFILTER:
-				return new SearchFilterCollectController(parent, tabIfAny);
+				return factory.newSearchFilterCollectController(parent, tabIfAny);
 			case WIKI:
-				return new WikiCollectController(parent, tabIfAny);
+				return factory.newWikiCollectController(parent, tabIfAny);
 			case DATATYP:
-				return new DataTypeCollectController(parent, tabIfAny);
+				return factory.newDataTypeCollectController(parent, tabIfAny);
 			case TASKLIST:
-				return new PersonalTaskCollectController(parent, tabIfAny);
+				return factory.newPersonalTaskCollectController(parent, tabIfAny);
 			}
 		}
-		return new MasterDataCollectController(parent, sEntityName, tabIfAny);
+		return factory.newMasterDataCollectController(parent, sEntityName, tabIfAny);
 	}
 
 	/**

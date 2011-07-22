@@ -39,6 +39,8 @@ import org.nuclos.client.ui.collect.result.ResultPanel;
  *
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
+ * 
+ * @deprecated Probably not in use.
  */
 public class ProzessWizardCollectController extends NuclosCollectController<EntityRelationshipModel> {
 	
@@ -55,12 +57,15 @@ public class ProzessWizardCollectController extends NuclosCollectController<Enti
 	private MainFrame mf;
 	
 	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public ProzessWizardCollectController(JComponent parent, MainFrame mf) {
+	protected ProzessWizardCollectController(JComponent parent, MainFrame mf) {
 		super(parent, CollectableStateModel.clcte);
 		
 		this.initialize(this.pnlCollect);

@@ -64,6 +64,7 @@ import org.nuclos.client.statemodel.panels.StateModelEditorPropertiesPanel;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
+import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
@@ -134,6 +135,9 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 	}
 
 	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -143,7 +147,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 		super(parent, CollectableStateModel.clcte);
 
 		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame(CommonLocaleDelegate.getMessage("StateModelCollectController.4","Statusmodelle verwalten"));
-		this.setCompleteCollectablesStrategy(new CompleteCollectableStateModelsStrategy(this));
+		// getSearchStrategy().setCompleteCollectablesStrategy(new CompleteCollectableStateModelsStrategy(this));
 
 		this.initialize(this.pnlCollect);
 
@@ -192,6 +196,10 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 		pnlEdit.splitpn.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, dividerChangeListener);
 	}
 
+	public final MainFrameTab getMainFrameTab() {
+		return ifrm;
+	}
+	
 	@Override
 	protected void close() {
 		subformctlUsages.close();
@@ -235,7 +243,8 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 
 					}
 				}
-				LocaleCollectController cntr = new LocaleCollectController(parent, collres, null);
+				final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
+				LocaleCollectController cntr = factory.newLocaleCollectController(parent, collres, null);
 				cntr.runViewSingleCollectableWithId(LocaleDelegate.getInstance().getDefaultLocale());
 			}
 		});
@@ -258,24 +267,6 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 	public void removeAdditionalChangeListenersForDetails() {
 		this.pnlEdit.getStateModelEditor().removeChangeListener(this.changelistenerDetailsChanged);
 		this.subformctlUsages.getSubForm().removeChangeListener(this.changelistenerDetailsChanged);
-	}
-
-	/**
-	 * @deprecated Move to ResultController hierarchy.
-	 */
-	@Override
-	protected void search() {
-		try {
-			this.ifrm.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-			this.fillResultPanel(CollectionUtils.transform(StateDelegate.getInstance().getAllStateModels(), new CollectableStateModel.MakeCollectable()));
-		}
-		catch (Exception ex) {
-			Errors.getInstance().showExceptionDialog(this.ifrm, null, ex);
-		}
-		finally {
-			this.ifrm.setCursor(Cursor.getDefaultCursor());
-		}
 	}
 
 	@Override

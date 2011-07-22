@@ -61,6 +61,7 @@ import org.nuclos.server.ruleengine.NuclosCompileException;
  */
 
 public class TimelimitRuleCollectController extends MasterDataCollectController {
+	
 	private final TimelimitRuleDelegate timelimitDelegate = TimelimitRuleDelegate.getInstance();
 	// Note: pnlEdit cannot be initialized here resp. in this constructor because it is used
 	// by setupEditPanelForDetailsTab (which, sadly, is during super constructor evaluation)
@@ -79,15 +80,17 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 	};
 
 	/**
-	 *
-	 * @param parent
-	 * @param tabIfAny
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
 	 */
 	public TimelimitRuleCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, NuclosEntity.TIMELIMITRULE, tabIfAny, false);
-
 		this.setupDetailsToolBar();
-
 		this.getCollectStateModel().addCollectStateListener(new RuleCollectStateListener());
 	}
 

@@ -119,9 +119,13 @@ public class ReportCollectController extends MasterDataCollectController {
 	private TableColumn tablecolumnFormat = null;
 
 	/**
-	 * @param parent
-	 * @param tabIfAny 
-	 * @param sEntity
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
 	 */
 	public ReportCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, NuclosEntity.REPORT, tabIfAny);
@@ -841,12 +845,7 @@ public class ReportCollectController extends MasterDataCollectController {
 	 */
 	@Override
 	public CollectableSearchCondition getCollectableSearchConditionToDisplay() throws CollectableFieldFormatException {
-		return super.getCollectableSearchCondition();
+		return getSearchStrategy().getCollectableSearchCondition();
 	}
 
-	@Override
-	public CollectableSearchCondition getCollectableSearchCondition() throws CollectableFieldFormatException {
-		CollectableSearchCondition searchCondition = reportdelegate.getCollectableSearchCondition(getCollectableEntity(), super.getCollectableSearchCondition());
-		return searchCondition;
-	}
 }	// class ReportCollectController

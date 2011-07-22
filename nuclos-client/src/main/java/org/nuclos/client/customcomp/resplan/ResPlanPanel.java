@@ -506,7 +506,7 @@ public class ResPlanPanel extends JPanel {
 						public void run() throws CommonBusinessException {
 							try {
 								ctl.makeConsistent(true);
-								CollectableSearchCondition result = ctl.getCollectableSearchCondition();
+								CollectableSearchCondition result = ctl.getSearchStrategy().getCollectableSearchCondition();
 								setCustomSearchFilter(result);
 							} catch (CollectableFieldFormatException e) {
 								throw new NuclosFatalException(e);

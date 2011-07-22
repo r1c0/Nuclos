@@ -33,15 +33,15 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
  */
 public class UserResultController<Clct extends CollectableMasterDataWithDependants> extends NuclosResultController<Clct> {
 	
-	public UserResultController(CollectableEntity clcte) {
-		super(clcte);
+	public UserResultController(CollectableEntity clcte, ISearchResultStrategy<Clct> srs) {
+		super(clcte, srs);
 	}
 
 	/**
 	 * @deprecated You should really provide a CollectableEntity here.
 	 */
-	public UserResultController(String entityName) {
-		super(entityName);
+	public UserResultController(String entityName, ISearchResultStrategy<Clct> srs) {
+		super(entityName, srs);
 	}
 	
 	/**

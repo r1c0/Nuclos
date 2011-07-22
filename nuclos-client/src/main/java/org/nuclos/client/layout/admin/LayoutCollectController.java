@@ -49,7 +49,6 @@ import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor;
 import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor.WYSIWYGDetailsComponentModel;
 import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.masterdata.CollectableMasterDataProxyListAdapter;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.ui.CommonJTextField;
@@ -61,9 +60,8 @@ import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableTextArea;
 import org.nuclos.client.ui.collect.component.CollectableTextField;
 import org.nuclos.client.ui.collect.result.LayoutResultController;
-import org.nuclos.client.ui.collect.result.UserResultController;
+import org.nuclos.client.ui.collect.result.NuclosSearchResultStrategy;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
-import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosAttributeNotFoundException;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
@@ -81,9 +79,6 @@ import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.XMLUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.server.genericobject.ProxyList;
-import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
-import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 
 /**
  * Controller for collecting the layouts for LayoutML based dialogs. <br>
@@ -136,8 +131,9 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
      */
-	public LayoutCollectController(JComponent parent, NuclosEntity entity, MainFrameTab tabIfAny) {
-		super(parent, entity, tabIfAny, new LayoutResultController<CollectableMasterDataWithDependants>(entity.getEntityName()));
+	protected LayoutCollectController(JComponent parent, NuclosEntity entity, MainFrameTab tabIfAny) {
+		super(parent, entity, tabIfAny, new LayoutResultController<CollectableMasterDataWithDependants>(
+				entity.getEntityName(), new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()));
 
 		this.setupDetailsToolBar();
 
@@ -522,16 +518,5 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 	protected void cloneSelectedCollectable() throws CommonBusinessException {
 		super.cloneSelectedCollectable();
 	}
-	
-	/**
-	 * @deprecated Move this to LayoutResultController.
-	 */
-	@Override
-    protected CollectableMasterDataProxyListAdapter getSearchResult() throws CollectableFieldFormatException {
-      final CollectableSearchExpression clctexpr = new CollectableSearchExpression(this.getCollectableSearchCondition(), getResultController().getCollectableSortingSequence());
-      clctexpr.setIncludingSystemData(ApplicationProperties.getInstance().isFunctionBlockDev() == Boolean.TRUE);
-      final ProxyList<MasterDataWithDependantsVO> mdproxylst = mddelegate.getMasterDataProxyList(this.getEntityName(), clctexpr);
-      return new CollectableMasterDataProxyListAdapter(mdproxylst, this.getCollectableEntity());
-   }
 	
 }	// class LayoutCollectController

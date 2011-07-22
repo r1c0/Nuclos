@@ -52,10 +52,28 @@ public class LocaleCollectController extends MasterDataCollectController {
 	LocaleDelegate delegate = LocaleDelegate.getInstance();
 
 
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	public LocaleCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, NuclosEntity.LOCALE, tabIfAny);
 	}
 
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	public LocaleCollectController(JComponent parent, Collection<String> collresids, MainFrameTab tabIfAny) {
 		this(parent, tabIfAny);
 		this.collresid = collresids;

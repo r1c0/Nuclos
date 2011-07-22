@@ -25,16 +25,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Set;
 
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.JButton;
@@ -89,10 +84,11 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.collect.component.model.DetailsEditModel;
 import org.nuclos.client.ui.collect.detail.DetailsPanel;
+import org.nuclos.client.ui.collect.result.NuclosSearchResultStrategy;
 import org.nuclos.client.ui.collect.result.ResultController;
 import org.nuclos.client.ui.collect.result.ResultPanel;
+import org.nuclos.client.ui.collect.search.ISearchStrategy;
 import org.nuclos.client.ui.collect.search.SearchPanel;
-import org.nuclos.client.ui.collect.search.SearchWorker;
 import org.nuclos.client.ui.collect.strategy.CompleteCollectableMasterDataStrategy;
 import org.nuclos.client.ui.layoutml.LayoutMLEditView;
 import org.nuclos.client.ui.layoutml.LayoutMLParser;
@@ -106,12 +102,8 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
-import org.nuclos.common.collect.collectable.CollectableValueField;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableIsNullCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
-import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
@@ -131,7 +123,6 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.layoutml.exception.LayoutMLException;
 import org.nuclos.server.genericobject.ProxyList;
-import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -171,8 +162,6 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
    private Map<String, DetailsSubFormController<CollectableEntityObject>> mpsubformctlDetails;
 
-   private ProxyList<CollectableMasterDataWithDependants> proxylstclct;
-
    private MultiUpdateOfDependants multiupdateofdependants;
 
    /**
@@ -186,6 +175,9 @@ public class MasterDataCollectController extends EntityCollectController<Collect
     * @param parent
     * @param sEntityName
     * 
+	* You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	* to get an instance.
+	* 
 	* @deprecated You should normally do sth. like this:<code><pre>
 	* ResultController<~> rc = new ResultController<~>();
 	* *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -196,16 +188,22 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    }
    
    /**
+	* You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	* to get an instance.
+	* 
 	* @deprecated You should normally do sth. like this:<code><pre>
 	* ResultController<~> rc = new ResultController<~>();
 	* *CollectController<~> cc = new *CollectController<~>(.., rc);
 	* </code></pre>
     */
-   public MasterDataCollectController(JComponent parent, NuclosEntity systemEntity, MainFrameTab tabIfAny, boolean detailsWithScrollbar) {
+   protected MasterDataCollectController(JComponent parent, NuclosEntity systemEntity, MainFrameTab tabIfAny, boolean detailsWithScrollbar) {
 	   this(parent, systemEntity.getEntityName(), tabIfAny, detailsWithScrollbar);
    }
    
    /**
+	* You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	* to get an instance.
+	* 
 	* @deprecated You should normally do sth. like this:<code><pre>
 	* ResultController<~> rc = new ResultController<~>();
 	* *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -216,30 +214,47 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    }
 
    /**
+	* You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	* to get an instance.
+	* 
 	* @deprecated You should normally do sth. like this:<code><pre>
 	* ResultController<~> rc = new ResultController<~>();
 	* *CollectController<~> cc = new *CollectController<~>(.., rc);
 	* </code></pre>
     */
-   public MasterDataCollectController(JComponent parent, String sEntityName, MainFrameTab tabIfAny, boolean detailsWithScrollbar) {
-	   this(parent, sEntityName, tabIfAny, detailsWithScrollbar, new ResultController<CollectableMasterDataWithDependants>(sEntityName));
+   protected MasterDataCollectController(JComponent parent, String sEntityName, MainFrameTab tabIfAny, boolean detailsWithScrollbar) {
+	   this(parent, sEntityName, tabIfAny, detailsWithScrollbar, 
+			   new ResultController<CollectableMasterDataWithDependants>(sEntityName,
+					   new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()));
    }
    
    /**
+	* You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	* to get an instance.
+	* 
     * Use <code>newMasterDataCollectController()</code> to create an instance of this class.
     * @param parent
     * @param sEntityName
     */
-   public MasterDataCollectController(JComponent parent, NuclosEntity systemEntity, MainFrameTab tabIfAny,
+   protected MasterDataCollectController(JComponent parent, NuclosEntity systemEntity, MainFrameTab tabIfAny,
 		   ResultController<CollectableMasterDataWithDependants> rc) {
 	   this(parent, systemEntity.getEntityName(), tabIfAny, true, rc);
    }
    
-   public MasterDataCollectController(JComponent parent, String sEntityName, MainFrameTab tabIfAny, 
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
+   protected MasterDataCollectController(JComponent parent, String sEntityName, MainFrameTab tabIfAny, 
 		   boolean detailsWithScrollbar, ResultController<CollectableMasterDataWithDependants> rc) {
       super(parent, sEntityName, rc);
       ifrm = tabIfAny != null ? tabIfAny : newInternalFrame();
-      this.setCompleteCollectablesStrategy(new CompleteCollectableMasterDataStrategy(this));
+      // getSearchStrategy().setCompleteCollectablesStrategy(new CompleteCollectableMasterDataStrategy(this));
       final boolean bSearchPanelAvailable = this.mddelegate.getMetaData(sEntityName).isSearchable();
       this.detailsWithScrollbar = detailsWithScrollbar;
       final CollectPanel<CollectableMasterDataWithDependants> pnlCollect = new MasterDataCollectPanel(bSearchPanelAvailable);
@@ -285,16 +300,6 @@ public class MasterDataCollectController extends EntityCollectController<Collect
             respectRights(getDetailsPanel().getEditView().getCollectableComponents(), collsubform, ev.getNewCollectState());
          }
       });
-      if (this.isSearchPanelAvailable()) {
-    	  initSearchSubforms();
-         this.setupSearchToolBar();
-      }
-      this.setupResultToolBar();
-      this.setupDetailsToolBar();
-
-      // todo: quick and dirty workaround for window size vs. wait cursor problem (order of initialize() and setInternalFrame() in Controller constructors) / UA
-      UIUtils.ensureMinimumSize(ifrm);
-
       this.getCollectStateModel().addCollectStateListener(new CollectStateAdapter() {
       	@Override
       	public void detailsModeEntered(CollectStateEvent ev) throws CommonBusinessException {
@@ -311,29 +316,41 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       			clctcomp.setEnabled(true);
       		}
       	}
-      });
-
-
-      initSubFormsLoader();
-
-      setupDataTransfer();
-      
-      getDetailsPanel().getLayoutRoot().getRootComponent().setFocusCycleRoot(true);
-      getDetailsPanel().getLayoutRoot().getRootComponent().setFocusTraversalPolicyProvider(true);
-      getDetailsPanel().getLayoutRoot().getRootComponent().setFocusTraversalPolicy(new NuclosFocusTraversalPolicy(getDetailsPanel().getLayoutRoot().getRootComponent()));
-      
+      });      
    }
+   
+	/**
+	 * TODO: Make this protected.
+	 */
+	public void init() {
+		if (this.isSearchPanelAvailable()) {
+			initSearchSubforms();
+			this.setupSearchToolBar();
+		}
+		this.setupResultToolBar();
+		this.setupDetailsToolBar();
 
-   @Override
-protected void setupSearchToolBar() {
-      //final JToolBar result = newCustomSearchToolBar();
-	   super.setupSearchToolBar();
-      super.refreshFilterView();
+		// todo: quick and dirty workaround for window size vs. wait cursor problem (order of initialize() and setInternalFrame() in Controller constructors) / UA
+		UIUtils.ensureMinimumSize(ifrm);
 
-      //result.add(Box.createGlue());
+		initSubFormsLoader();
+		setupDataTransfer();
+		getDetailsPanel().getLayoutRoot().getRootComponent().setFocusCycleRoot(true);
+		getDetailsPanel().getLayoutRoot().getRootComponent().setFocusTraversalPolicyProvider(true);
+		getDetailsPanel().getLayoutRoot().getRootComponent().setFocusTraversalPolicy(
+						new NuclosFocusTraversalPolicy(getDetailsPanel().getLayoutRoot().getRootComponent()));
+	}
 
-      //this.getSearchPanel().setCustomToolBarArea(result);
-   }
+	@Override
+	protected void setupSearchToolBar() {
+		//final JToolBar result = newCustomSearchToolBar();
+		super.setupSearchToolBar();
+		super.refreshFilterView();
+
+		//result.add(Box.createGlue());
+
+		//this.getSearchPanel().setCustomToolBarArea(result);
+	}
 
    @Override
    protected String getTitle(int iTab, int iMode) {
@@ -558,12 +575,13 @@ protected void setupSearchToolBar() {
          public void run() throws CollectableFieldFormatException {
             final String sFilterName = getCollectableEntity().getLabel() + Integer.toString(++iFilter);
             final String sEntity = getCollectableEntity().getName();
+            final ISearchStrategy<CollectableMasterDataWithDependants> ss = getSearchStrategy();
             //final String sFilterName = "Gruppe " + Integer.toString(++iFilter);
             //@todo create a MasterdataTreeNodeFactory and get the node from the factory
             if(NuclosEntity.GROUP.checkEntityName(sEntity)) {
-              getExplorerController().showInOwnTab(new GroupSearchResultTreeNode(getCollectableSearchCondition(), sFilterName));
+              getExplorerController().showInOwnTab(new GroupSearchResultTreeNode(ss.getCollectableSearchCondition(), sFilterName));
             } else {
-               getExplorerController().showInOwnTab(new MasterDataSearchResultTreeNode(sEntity, getCollectableSearchCondition(), sFilterName));
+               getExplorerController().showInOwnTab(new MasterDataSearchResultTreeNode(sEntity, ss.getCollectableSearchCondition(), sFilterName));
             }
          }
       });
@@ -974,7 +992,7 @@ protected void setupSearchToolBar() {
       return this.hasActiveSign() || this.hasValidityDate();
    }
 
-   private boolean hasValidityDate() {
+   public boolean hasValidityDate() {
       final Collection<String> collFieldNames = this.getCollectableEntity().getFieldNames();
       return (collFieldNames.contains(FIELDNAME_VALIDFROM) && collFieldNames.contains(FIELDNAME_VALIDUNTIL));
    }
@@ -983,87 +1001,8 @@ protected void setupSearchToolBar() {
       return this.getCollectableEntity().getFieldNames().contains(FIELDNAME_ACTIVE);
    }
 
-   @Override
-   public CollectableSearchCondition getCollectableSearchCondition() throws CollectableFieldFormatException {
-      final CollectableSearchCondition result;
-      final CollectableSearchCondition cond = super.getCollectableSearchCondition();
-      if (this.isFilteringDesired()) {
-         if (cond == null) {
-            // If no other search conditions specified, the validity condition is the only search condition
-            result = this.getValiditySubCondition();
-         }
-         else {
-            // We have to add the validity condition by AND to the other condition(s)
-            final CollectableSearchCondition condValidity = this.getValiditySubCondition();
-            if (condValidity != null) {
-               final Collection<CollectableSearchCondition> collOperands = Arrays.asList(new CollectableSearchCondition[] {cond, condValidity});
-               result = new CompositeCollectableSearchCondition(LogicalOperator.AND, collOperands);
-            }
-            else {
-               result = cond;
-            }
-         }
-      }
-      else {
-         result = cond;
-      }
-      return result;
-   }
-
-   private boolean isFilteringDesired() {
+   public boolean isFilteringDesired() {
       return this.getSearchPanel().chkbxHideInvalid.isSelected() && isFilteringAppropriate();
-   }
-
-   /**
-    * @return the subcondition that checks for "activeness"/validity.
-    */
-   private CollectableSearchCondition getValiditySubCondition() {
-      final CollectableSearchCondition result;
-
-//		CollectableSearchCondition condActive = null;
-
-      // Create search condition to check if today is between validFrom and validUntil when they are not NULL:
-      if (this.hasValidityDate()) {
-         final CollectableSearchCondition condValidFromGreaterToday =
-               new CollectableComparison(getCollectableEntity().getEntityField(FIELDNAME_VALIDFROM),
-                     ComparisonOperator.LESS_OR_EQUAL, new CollectableValueField(new Date()));
-         final CollectableSearchCondition condValidFromIsNull =
-               new CollectableIsNullCondition(getCollectableEntity().getEntityField(FIELDNAME_VALIDFROM));
-         final CollectableSearchCondition condValidFrom = new CompositeCollectableSearchCondition(LogicalOperator.OR,
-               Arrays.asList(new CollectableSearchCondition[] {condValidFromIsNull, condValidFromGreaterToday}));
-
-         final CollectableSearchCondition condValidUntilLessThan =
-               new CollectableComparison(getCollectableEntity().getEntityField(FIELDNAME_VALIDUNTIL),
-                     ComparisonOperator.GREATER_OR_EQUAL, new CollectableValueField(new Date()));
-         final CollectableSearchCondition condValidUntilIsNull =
-               new CollectableIsNullCondition(getCollectableEntity().getEntityField(FIELDNAME_VALIDUNTIL));
-         final CollectableSearchCondition condValidUntil = new CompositeCollectableSearchCondition(LogicalOperator.OR,
-               Arrays.asList(new CollectableSearchCondition[] {condValidUntilIsNull, condValidUntilLessThan}));
-
-         result = new CompositeCollectableSearchCondition(LogicalOperator.AND,
-               Arrays.asList(new CollectableSearchCondition[] {condValidFrom, condValidUntil}));
-      }
-      else {
-         result = null;
-      }
-
-      // Create search condition to check if active sign is true
-/*
-      if (hasActiveSign()) {
-         condActive = new CollectableComparison(getCollectableEntity().getEntityField(FIELDNAME_ACTIVE),
-               ComparisonOperator.EQUAL, new CollectableValueField(new Boolean(true)));
-
-         result = condActive;
-      }
-
-
-      // If both of the abovemust be checked, create a combined search condition
-      if (condValid != null && condActive != null) {
-         final Collection collOperands = Arrays.asList(new CollectableSearchCondition[]{condActive, condValid});
-         result = new CompositeCollectableSearchCondition(LogicalOperator.AND, collOperands);
-      }
-*/
-      return result;
    }
 
    @Override
@@ -1129,7 +1068,7 @@ protected void setupSearchToolBar() {
       TableUtils.addMouseListenerForSortingToTableHeader(this.getResultTable(), result, new CommonRunnable() {
          @Override
       	public void run() {
-            getResultController().cmdRefreshResult();
+            getResultController().getSearchResultStrategy().cmdRefreshResult();
          }
       });
 
@@ -1137,76 +1076,17 @@ protected void setupSearchToolBar() {
    }
 
    /**
-	 * @deprecated Move to ResultController hierarchy and make protected again.
-    */
-   @Override
-   public SearchWorker<CollectableMasterDataWithDependants> getSearchWorker() {
-      return new ObservableSearchWorker();
-   }
-
-   /**
-	 * @deprecated Move to ResultController hierarchy and make protected again.
-    */
-   @Override
-   public SearchWorker<CollectableMasterDataWithDependants> getSearchWorker(List<Observer> lstObservers) {
-      ObservableSearchWorker observableSearchWorker = new ObservableSearchWorker();
-      for(Observer observer : lstObservers){
-         observableSearchWorker.addObserver(observer);
-      }
-      return observableSearchWorker;
-   }
-
-   protected CollectableMasterDataProxyListAdapter getSearchResult() throws CollectableFieldFormatException {
-      final CollectableSearchExpression clctexpr = new CollectableSearchExpression(getCollectableSearchCondition(), getResultController().getCollectableSortingSequence());
-      clctexpr.setValueListProviderDatasource(getValueListProviderDatasource());
-      clctexpr.setValueListProviderDatasourceParameter(getValueListProviderDatasourceParameter());
-      final ProxyList<MasterDataWithDependantsVO> mdproxylst = mddelegate.getMasterDataProxyList(this.getEntityName(), clctexpr);
-      return new CollectableMasterDataProxyListAdapter(mdproxylst, this.getCollectableEntity());
-   }
-
-   /**
-	 * @deprecated Move to ResultController hierarchy.
-    */
-   @Override
-   protected void search() throws CommonBusinessException {
-      /** @todo move to CollectController! */
-      this.makeConsistent(true);
-
-      this.removePreviousChangeListenersForResultTableVerticalScrollBar();
-
-      final ProxyList<CollectableMasterDataWithDependants> lstclctResult = getSearchResult();
-
-      this.setCollectableProxyList(lstclctResult);
-
-      this.fillResultPanel(lstclctResult, lstclctResult.size(), false);
-
-      this.setupChangeListenerForResultTableVerticalScrollBar();
-   }
-
-   // todo: can all (or at least most) of the methods concerning the search proxy list be factored out somehow, as they are doubled in GenericObjectCollectController?
-
-   // @todo move to ResultController or ResultPanel?
-   protected void setCollectableProxyList(ProxyList<CollectableMasterDataWithDependants> proxylstclct) {
-      this.proxylstclct = proxylstclct;
-   }
-
-   // @todo move to ResultController or ResultPanel?
-   protected ProxyList<CollectableMasterDataWithDependants> getCollectableProxyList() {
-      return this.proxylstclct;
-   }
-
-   /**
     * sets up the change listener for the vertical scrollbar of the result table,
     * only if the proxy list has been set (that is not before the first search).
     */
-   private void setupChangeListenerForResultTableVerticalScrollBar() {
-      final ProxyList<? extends Collectable> lstclct = this.getCollectableProxyList();
+   public void setupChangeListenerForResultTableVerticalScrollBar() {
+      final ProxyList<? extends Collectable> lstclct = getSearchStrategy().getCollectableProxyList();
       if (lstclct != null) {
          this.getResultPanel().setupChangeListenerForResultTableVerticalScrollBar(lstclct, this.getFrame());
       }
    }
 
-   private void removePreviousChangeListenersForResultTableVerticalScrollBar() {
+   public void removePreviousChangeListenersForResultTableVerticalScrollBar() {
       final JScrollBar scrlbarVertical = this.getResultPanel().getResultTableScrollPane().getVerticalScrollBar();
       final DefaultBoundedRangeModel model = (DefaultBoundedRangeModel) scrlbarVertical.getModel();
       NuclosResultPanel.removePreviousChangeListenersForResultTableVerticalScrollBar(model);
@@ -1237,7 +1117,7 @@ protected void setupSearchToolBar() {
 
       final MasterDataWithDependantsVO mdwdcvo = this.mddelegate.getWithDependants(sEntity, oId, this.getEntityAndForeignKeyFieldNamesFromSubForms());
       final CollectableMasterDataWithDependants result = new CollectableMasterDataWithDependants(this.getCollectableEntity(), mdwdcvo);
-      assert isCollectableComplete(result);
+      assert getSearchStrategy().isCollectableComplete(result);
       return result;
    }
 
@@ -1248,7 +1128,7 @@ protected void setupSearchToolBar() {
 
       final MasterDataVO mdcvo = this.mddelegate.get(sEntity, oId);
       final CollectableMasterDataWithDependants result = CollectableMasterDataWithDependants.newInstance(this.getCollectableEntity(), mdcvo);
-      assert isCollectableComplete(result);
+      assert getSearchStrategy().isCollectableComplete(result);
       return result;
 	}
 
@@ -1556,32 +1436,6 @@ protected void setupSearchToolBar() {
 		}
 
    }	// inner class MasterDataDetailsPanel
-
-   private final class ObservableSearchWorker extends Observable implements SearchWorker<CollectableMasterDataWithDependants> {
-   	@Override
-      public void startSearch() throws CommonBusinessException {
-         /** @todo maybe this could be done already in the CollectController? */
-         makeConsistent(true);
-
-         removePreviousChangeListenersForResultTableVerticalScrollBar();
-      }
-
-   	@Override
-      public ProxyList<CollectableMasterDataWithDependants> getResult() throws CommonBusinessException {
-         return getSearchResult();
-      }
-
-   	@Override
-      public void finishSearch(List<CollectableMasterDataWithDependants> lstclctResult) {
-         setCollectableProxyList((ProxyList<CollectableMasterDataWithDependants>) lstclctResult);
-
-         fillResultPanel(lstclctResult, lstclctResult.size(), false);
-
-         setupChangeListenerForResultTableVerticalScrollBar();
-         super.setChanged();
-         super.notifyObservers("search finished");
-      }
-   }
 
    private List<CollectableEntityFieldWithEntity> getSelectedFields() {
       List<CollectableEntityFieldWithEntity> lst = new ArrayList<CollectableEntityFieldWithEntity>();

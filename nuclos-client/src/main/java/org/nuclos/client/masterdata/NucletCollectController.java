@@ -55,6 +55,15 @@ public class NucletCollectController extends MasterDataCollectController {
 	private JButton btnImport;
 	private JButton btnShowDependences;
 	
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	public NucletCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, NuclosEntity.NUCLET.getEntityName(), tabIfAny);
 
@@ -87,7 +96,7 @@ public class NucletCollectController extends MasterDataCollectController {
 	}
 
 	/**
-	 * @deprecated Move to ResultController hierarchy.
+	 * @deprecated Move to DetailsController hierarchy.
 	 */
 	private void setupDetailsToolBar() {
 		//final JToolBar toolbarCustomDetails = UIUtils.createNonFloatableToolBar();
@@ -127,7 +136,7 @@ public class NucletCollectController extends MasterDataCollectController {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						try {
-							getResultController().refreshResult();
+							getResultController().getSearchResultStrategy().refreshResult();
 							NucletCollectController.this.getNewAction().setEnabled(NucletCollectController.this.isNewAllowed());
 						}
 						catch(CommonBusinessException e1) {}
@@ -150,7 +159,7 @@ public class NucletCollectController extends MasterDataCollectController {
 				
 				new DBTransferExport(oNucletId==null?null:((Integer)oNucletId).longValue()).showWizard(Main.getMainFrame().getHomePane());
 				try {
-					getResultController().refreshResult();
+					getResultController().getSearchResultStrategy().refreshResult();
 				}
 				catch(CommonBusinessException e1) {}
 			}

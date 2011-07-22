@@ -120,6 +120,15 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 
 	private ProgressNotification lastnotification;
 
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	public GenericObjectImportCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, NuclosEntity.IMPORTFILE.getEntityName(), tabIfAny);
 

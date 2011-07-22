@@ -48,7 +48,8 @@ import org.nuclos.common.NuclosBusinessException;
  *
  */
 public class ResetToTemplateUserActionListener implements ActionListener{
-	private GenericObjectCollectController goCon = null;
+	
+	private final GenericObjectCollectController goCon;
 	
 	public ResetToTemplateUserActionListener(GenericObjectCollectController goCon) {
 		this.goCon = goCon;
@@ -64,7 +65,7 @@ public class ResetToTemplateUserActionListener implements ActionListener{
 		if (choice == JOptionPane.YES_OPTION) {
 			try {
 				PreferencesUtils.resetToTemplateUser(goCon.getEntityName());
-				CollectableSearchCondition searchCondition = goCon.getCollectableSearchCondition();
+				CollectableSearchCondition searchCondition = goCon.getSearchStrategy().getCollectableSearchCondition();
 				NuclosCollectController<?> goConNew = NuclosCollectControllerFactory.getInstance().newCollectController(Main.getMainFrame().getHomePane(), goCon.getEntityName(), null);
 				goConNew.runViewResults(searchCondition);
 				Rectangle goConBounds = goCon.getFrame().getBounds();

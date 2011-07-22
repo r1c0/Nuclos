@@ -52,9 +52,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
-import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
-import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.PreferencesException;
 
@@ -81,8 +79,8 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	 */
 	private final Map<String,PivotInfo> pivots;
 	
-	public GenericObjectResultController(CollectableEntity clcte) {
-		super(clcte);
+	public GenericObjectResultController(CollectableEntity clcte, ISearchResultStrategy<Clct> srs) {
+		super(clcte, srs);
 		pivots = new HashMap<String, PivotInfo>();
 	}
 	
@@ -103,7 +101,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	 */
 	@Override
 	public SelectFixedColumnsController newSelectColumnsController(Component parent) {
-		if (ApplicationProperties.getInstance().isFunctionBlockDev()) {
+		if (ApplicationProperties.getInstance().isFunctionBlockDev()) { 
 			// retrieve sub form fields
 			final Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields = new HashMap<String, Map<String,EntityFieldMetaDataVO>>();
 			final String entityName = getEntity().getName();

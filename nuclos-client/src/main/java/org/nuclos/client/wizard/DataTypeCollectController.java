@@ -53,9 +53,7 @@ import org.nuclos.common2.exception.CommonValidationException;
 
 public class DataTypeCollectController extends MasterDataCollectController{
 	
-	List<ChangeListener> lstChangeListener;
-	
-	
+	private List<ChangeListener> lstChangeListener;
 	
 	protected class DataTypeCollectStateListener extends CollectStateAdapter {
 
@@ -80,16 +78,20 @@ public class DataTypeCollectController extends MasterDataCollectController{
 		}
 	}
 
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	public DataTypeCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, NuclosEntity.DATATYP, tabIfAny);
-		
-		this.init();
-		
-		
+		// this.init();
 		this.getCollectStateModel().addCollectStateListener(new DataTypeCollectStateListener());
-		
-		lstChangeListener = new ArrayList<ChangeListener>();
-		
+		lstChangeListener = new ArrayList<ChangeListener>();	
 	}
 	
 	public void addChangeListener(ChangeListener listener) {
@@ -134,7 +136,11 @@ public class DataTypeCollectController extends MasterDataCollectController{
 		}		
 	}
 
-	protected void init() {
+	/**
+	 * TODO: Make this protected.
+	 */
+	public void init() {
+		super.init();
 		this.getDetailsEditView().getModel().getCollectableComponentModelFor("javatyp").addCollectableComponentModelListener(new CollectableComponentModelListener() {
 			
 			@Override

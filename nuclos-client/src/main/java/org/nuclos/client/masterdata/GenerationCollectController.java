@@ -54,6 +54,15 @@ public class GenerationCollectController extends MasterDataCollectController {
 
 	private GenerationRulesController generationRulesController;
 
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	public GenerationCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, NuclosEntity.GENERATION, tabIfAny);
 	}
@@ -133,12 +142,12 @@ public class GenerationCollectController extends MasterDataCollectController {
 			for(MasterDataVO voAttribute : mp.getAllValues()) {
 				if(voAttribute.getField("subentityAttributeGrouping") == null){
 					throw new CommonBusinessException(CommonLocaleDelegate.getMessage("GenerationCollectController.2",
-					"Sie müssen Gruppierungsfunktionen für die Unterformular Attribute angeben!"));
+					"Sie mï¿½ssen Gruppierungsfunktionen fï¿½r die Unterformular Attribute angeben!"));
 				}
 				String sGroup = (String)voAttribute.getField("subentityAttributeGrouping");
 				if(sGroup == null || sGroup.length() < 1){
 					throw new CommonBusinessException(CommonLocaleDelegate.getMessage("GenerationCollectController.2",
-						"Sie müssen Gruppierungsfunktionen für die Unterformular Attribute angeben!"));
+						"Sie mï¿½ssen Gruppierungsfunktionen fï¿½r die Unterformular Attribute angeben!"));
 				}
 			}
 		}

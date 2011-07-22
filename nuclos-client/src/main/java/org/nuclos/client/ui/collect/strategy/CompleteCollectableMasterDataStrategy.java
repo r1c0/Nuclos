@@ -20,7 +20,6 @@ import java.util.Set;
 
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
-import org.nuclos.client.ui.collect.CollectController;
 
 /**
  * The strategy for completing master data. The search result always contains
@@ -30,7 +29,7 @@ import org.nuclos.client.ui.collect.CollectController;
 public class CompleteCollectableMasterDataStrategy extends
 		AbstractCompleteCollectablesStrategy<CollectableMasterDataWithDependants> {
 	
-	public CompleteCollectableMasterDataStrategy(CollectController<CollectableMasterDataWithDependants> cc) {
+	public CompleteCollectableMasterDataStrategy(MasterDataCollectController cc) {
 		super(cc);
 	}
 

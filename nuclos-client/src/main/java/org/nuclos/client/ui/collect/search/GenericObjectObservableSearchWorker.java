@@ -21,7 +21,6 @@ import java.util.Observable;
 
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
-import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.genericobject.ProxyList;
 
@@ -31,11 +30,11 @@ import org.nuclos.server.genericobject.ProxyList;
  * @since Nuclos 3.1.01 this is a top level class.
  * @author Thomas Pasch (refactoring)
  */
-public final class ObservableSearchWorker extends Observable implements SearchWorker<CollectableGenericObjectWithDependants> {
+public final class GenericObjectObservableSearchWorker extends Observable implements SearchWorker<CollectableGenericObjectWithDependants> {
 	
-	private final CollectController<CollectableGenericObjectWithDependants> cc;
+	private final GenericObjectCollectController cc;
 	
-	public ObservableSearchWorker(GenericObjectCollectController cc) {
+	public GenericObjectObservableSearchWorker(GenericObjectCollectController cc) {
 		this.cc = cc;
 	}
 	
@@ -50,13 +49,13 @@ public final class ObservableSearchWorker extends Observable implements SearchWo
 	@Override
 	public ProxyList<CollectableGenericObjectWithDependants> getResult() throws CommonBusinessException {
 		final GenericObjectCollectController cc = getGenericObjectCollectController();
-		return cc.getSearchResult();
+		return cc.getSearchStrategy().getSearchResult();
 	}
 
 	@Override
 	public void finishSearch(List<CollectableGenericObjectWithDependants> lstclctResult) {
 		final GenericObjectCollectController cc = getGenericObjectCollectController();
-		cc.setCollectableProxyList((ProxyList<CollectableGenericObjectWithDependants>) lstclctResult);
+		cc.getSearchStrategy().setCollectableProxyList((ProxyList<CollectableGenericObjectWithDependants>) lstclctResult);
 		cc.fillResultPanel(lstclctResult, lstclctResult.size(), false);
 		cc.setupChangeListenerForResultTableVerticalScrollBar();
 		super.setChanged();
@@ -64,7 +63,7 @@ public final class ObservableSearchWorker extends Observable implements SearchWo
 	}
 	
 	private GenericObjectCollectController getGenericObjectCollectController() {
-		return (GenericObjectCollectController) cc;
+		return cc;
 	}
 }
 

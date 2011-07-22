@@ -41,7 +41,6 @@ import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
-import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
@@ -51,14 +50,8 @@ import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.table.TableCellRendererProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
-import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
-import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
-import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -86,6 +79,15 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 	private final TaskDelegate delegate;
 	private JButton sSingletaskButton;
 
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	public PersonalTaskCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, NuclosEntity.TASKLIST, tabIfAny);
 		delegate = new TaskDelegate();
@@ -205,27 +207,4 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 		return new HashSet<Long>(userIds);
 	}
 
-   @Override
-   public CollectableSearchCondition getCollectableSearchCondition() throws CollectableFieldFormatException {
-	   String sUser = Main.getMainController().getUserName();
-	   Integer iUser = SecurityDelegate.getInstance().getUserId(sUser);
-	   CompositeCollectableSearchCondition taskCondition = new CompositeCollectableSearchCondition(LogicalOperator.OR);
-	   CollectableSearchCondition delegatorCondition = SearchConditionUtils.newMDReferenceComparison(MetaDataCache.getInstance().getMetaData(NuclosEntity.TASKLIST), "taskdelegator", iUser, sUser);
-	   CollectableSearchCondition ownerCondition = SearchConditionUtils.newMDReferenceComparison(MetaDataCache.getInstance().getMetaData(NuclosEntity.TASKOWNER), "user", iUser, sUser);
-	   CollectableSubCondition ownerSubCondition = new CollectableSubCondition(NuclosEntity.TASKOWNER.getEntityName(), "tasklist", ownerCondition);
-	   taskCondition.addOperand(delegatorCondition);
-	   taskCondition.addOperand(ownerSubCondition);
-	   if(super.getCollectableSearchCondition() != null){
-		   if(SecurityCache.getInstance().isSuperUser()) {
-			   return super.getCollectableSearchCondition();
-		   } else {
-			   CompositeCollectableSearchCondition combinedCondition = new CompositeCollectableSearchCondition(LogicalOperator.AND);
-			   combinedCondition.addOperand(taskCondition);
-			   combinedCondition.addOperand(super.getCollectableSearchCondition());
-			   return combinedCondition;
-		   }
-	   } else {
-		   return taskCondition;
-	   }
-   }
 }

@@ -19,20 +19,14 @@
  */
 package org.nuclos.client.processmonitor;
 
-import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collection;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 
-import org.nuclos.common.collect.collectable.CollectableValueField;
-import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.DateTime;
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -44,6 +38,9 @@ import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.collect.collectable.CollectableValueField;
+import org.nuclos.common2.DateTime;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.processmonitor.valueobject.InstanceVO;
 import org.nuclos.server.processmonitor.valueobject.ProcessMonitorGraphVO;
@@ -67,10 +64,13 @@ public class InstanceCollectController extends NuclosCollectController<Collectab
 	private JButton btnSetPlanStart;
 	
 	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
 	 * 
-	 * @param parent
-	 * @param entityName
-	 * @param tabIfAny 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
 	 */
 	public InstanceCollectController(JComponent parent, String entityName, MainFrameTab tabIfAny) {
 		super(parent, entityName);
@@ -90,25 +90,8 @@ public class InstanceCollectController extends NuclosCollectController<Collectab
 		this.getCollectStateModel().addCollectStateListener(new InstanceCollectStateListener());
 	}
 	
-	/**
-	 * @deprecated Move to ResultController hierarchy.
-	 */
-	@Override
-	protected void search() throws CommonBusinessException {
-		try {
-			this.ifrm.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			
-			Collection<MasterDataVO> col = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.INSTANCE.getEntityName());
-			
-			this.fillResultPanel(CollectionUtils.transform(col, new CollectableInstanceModel.MakeCollectable()));
-		}
-		catch (Exception ex) {
-			Errors.getInstance().showExceptionDialog(this.ifrm, null, ex);
-		}
-		finally {
-			this.ifrm.setCursor(Cursor.getDefaultCursor());
-		}
-		
+	public final MainFrameTab getMainFrameTab() {
+		return ifrm;
 	}
 	
 	/**

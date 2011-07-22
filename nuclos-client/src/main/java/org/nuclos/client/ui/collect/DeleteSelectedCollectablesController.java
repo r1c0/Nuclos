@@ -45,7 +45,7 @@ public class DeleteSelectedCollectablesController <Clct extends Collectable>
 
 		@Override
 		public Object perform(Clct clct) throws CommonBusinessException {
-			if (!ctl.isCollectableComplete(clct))
+			if (!ctl.getSearchStrategy().isCollectableComplete(clct))
 				clct = ctl.readCollectable(clct, false);
 
 			if (!ctl.isDeleteAllowed(clct)) {
@@ -79,7 +79,7 @@ public class DeleteSelectedCollectablesController <Clct extends Collectable>
 		@Override
 		public void executeFinalAction() throws CommonBusinessException {
 			// NUCLOSINT-884 refresh afterwards
-			ctl.getResultController().refreshResult();
+			ctl.getResultController().getSearchResultStrategy().refreshResult();
 		}
 	}
 

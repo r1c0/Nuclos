@@ -43,7 +43,7 @@ public class RestoreSelectedCollectablesController
 		@Override
 		public Object perform(CollectableGenericObjectWithDependants clct) throws CommonBusinessException {
 			ctl.checkedRestoreCollectable(clct);
-			ctl.search();
+			ctl.getSearchStrategy().search();
 			return null;
 		}
 

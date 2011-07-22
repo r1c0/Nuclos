@@ -50,6 +50,7 @@ import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
 import org.nuclos.client.wizard.DataTypeCollectController;
 import org.nuclos.client.wizard.NuclosEntityWizardStaticModel;
 import org.nuclos.client.wizard.model.Attribute;
@@ -349,9 +350,9 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				MainFrameTab tabDataType = new MainFrameTab(getMessage("wizard.step.attributeproperties.23", "Datentypen verwalten"));
-				DataTypeCollectController dtcc = new DataTypeCollectController(parent, tabDataType);
+				final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
+				final MainFrameTab tabDataType = new MainFrameTab(getMessage("wizard.step.attributeproperties.23", "Datentypen verwalten"));
+				final DataTypeCollectController dtcc = factory.newDataTypeCollectController(parent, tabDataType);
 				dtcc.addChangeListener(NuclosEntityAttributePropertiesStep.this);
 				parent.add(tabDataType);
 				
@@ -588,7 +589,7 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 				return;
 			}
 			if(!(dMin != null && dMax != null)) {
-				throw new CommonValidationException(getMessage("wizard.step.attributeproperties.24", "Mindest- und Maximalwert müssen gesetzt sein."));
+				throw new CommonValidationException(getMessage("wizard.step.attributeproperties.24", "Mindest- und Maximalwert mï¿½ssen gesetzt sein."));
 			}
 			long l1 = dMin.getTime();
 			long l2 = dMax.getTime();
@@ -606,7 +607,7 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 			}
 				
 			if(!(s1.length() > 0 && s2.length() > 0)) {
-				throw new CommonValidationException(getMessage("wizard.step.attributeproperties.24", "Mindest- und Maximalwert müssen gesetzt sein."));
+				throw new CommonValidationException(getMessage("wizard.step.attributeproperties.24", "Mindest- und Maximalwert mï¿½ssen gesetzt sein."));
 			}
 			if(model.getAttribute().getDatatyp().getJavaType().equals("java.lang.Integer")) {			
 				Integer i1 = Integer.parseInt(s1);

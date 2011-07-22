@@ -35,6 +35,7 @@ import org.nuclos.client.statemodel.admin.CollectableStateModel;
 import org.nuclos.client.statemodel.admin.StateModelCollectController;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;
@@ -129,8 +130,9 @@ public class RuleStateModelExplorerNode extends AbstractRuleExplorerNode {
 			UIUtils.runCommand(getExplorerController().getParent(), new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
+					final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
 					final StateModelVO statemodelvo = ((StateModelNode) explorerNode.getTreeNode()).getStateModelVo();
-					final StateModelCollectController ctl = new StateModelCollectController(MainFrame.getPredefinedEntityOpenLocation(NuclosEntity.STATEMODEL.getEntityName()), null);
+					final StateModelCollectController ctl = factory.newStateModelCollectController(MainFrame.getPredefinedEntityOpenLocation(NuclosEntity.STATEMODEL.getEntityName()), null);
 					ctl.runViewSingleCollectable(ctl.readCollectable(new CollectableStateModel(statemodelvo)));
 				}
 			});

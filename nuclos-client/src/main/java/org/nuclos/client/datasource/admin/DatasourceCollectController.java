@@ -17,7 +17,6 @@
 package org.nuclos.client.datasource.admin;
 
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -33,10 +32,6 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
-import org.nuclos.common2.CommonLocaleDelegate;
-import org.nuclos.common2.IOUtils;
-import org.nuclos.common2.ServiceLocator;
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.datasource.querybuilder.QueryBuilderEditor;
@@ -51,11 +46,15 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.NuclosBusinessException;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.database.query.definition.QueryTable;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
+import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.IOUtils;
+import org.nuclos.common2.ServiceLocator;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.report.ejb3.DatasourceFacadeRemote;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.ResultVO;
@@ -70,6 +69,15 @@ import org.nuclos.server.report.valueobject.ResultVO;
  */
 public class DatasourceCollectController extends AbstractDatasourceCollectController implements DatasourceEditController {
 
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	public DatasourceCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, new CollectableMasterDataEntity(
 			MetaDataCache.getInstance().getMetaData(NuclosEntity.DATASOURCE)), tabIfAny);
@@ -149,25 +157,6 @@ public class DatasourceCollectController extends AbstractDatasourceCollectContro
 	@Override
 	protected boolean isDeleteSelectedCollectableAllowed(){
 		return SecurityCache.getInstance().isDeleteAllowedForMasterData(sEntity);
-	}
-
-	/**
-	 * @deprecated Move to ResultController hierarchy.
-	 */
-	@Override
-	protected void search() {
-		try {
-			this.ifrm.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-			this.fillResultPanel(CollectionUtils.transform(this.datasourcedelegate.getAllDatasources(),
-					new CollectableDataSource.MakeCollectable()));
-		}
-		catch (Exception ex) {
-			Errors.getInstance().showExceptionDialog(this.ifrm, null, ex);
-		}
-		finally {
-			this.ifrm.setCursor(Cursor.getDefaultCursor());
-		}
 	}
 
 	@Override

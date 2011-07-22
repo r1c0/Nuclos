@@ -55,6 +55,7 @@ import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.resource.admin.CollectableResouceSaveListener;
 import org.nuclos.client.resource.admin.ResourceCollectController;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
 import org.nuclos.client.ui.resource.ResourceIconChooser;
 import org.nuclos.client.wizard.util.ModifierMap;
 import org.nuclos.client.wizard.util.MoreOptionPanel;
@@ -746,10 +747,10 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					 ResourceCollectController rcc = new ResourceCollectController(parent, null);
+					 final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
+					 ResourceCollectController rcc = factory.newResourceCollectController(parent, null);
 					 rcc.addResouceSaveListener(NuclosEntityCommonPropertiesStep.this);
 					 rcc.runNew();				
-					
 				}
 				catch(NuclosBusinessException ex) {
 					Errors.getInstance().showExceptionDialog(NuclosEntityCommonPropertiesStep.this, ex);
@@ -842,7 +843,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 	    	if(sTable.equalsIgnoreCase(vo.getDbEntity())) {
 	    		if(this.model.getEntityName().equalsIgnoreCase(vo.getEntity())) 
 	    			continue;
-	    		JOptionPane.showMessageDialog(this, getMessage("wizard.step.entitycommonproperties.18", "Der vergebene Tabellenname ist schon vorhanden. Bitte ändern Sie ihn in den erweiterten Einstellungen!"), 
+	    		JOptionPane.showMessageDialog(this, getMessage("wizard.step.entitycommonproperties.18", "Der vergebene Tabellenname ist schon vorhanden. Bitte ï¿½ndern Sie ihn in den erweiterten Einstellungen!"), 
 	    			getMessage("wizard.step.entitycommonproperties.19", "Achtung!"), JOptionPane.OK_OPTION);
 	 	        throw new InvalidStateException();
 	    	}

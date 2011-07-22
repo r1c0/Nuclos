@@ -88,7 +88,9 @@ import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateConstants;
 import org.nuclos.client.ui.collect.detail.DetailsPanel;
 import org.nuclos.client.ui.collect.result.NuclosResultController;
+import org.nuclos.client.ui.collect.result.NuclosSearchResultStrategy;
 import org.nuclos.client.ui.collect.result.ResultController;
+import org.nuclos.client.ui.collect.search.ISearchStrategy;
 import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.Actions;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
@@ -160,6 +162,9 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	/**
 	 * Don't make this public!
 	 *
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -179,10 +184,19 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	 * </code></pre>
 	 */
 	protected NuclosCollectController(JComponent parent, CollectableEntity clcte) {
-		super(parent, clcte, new NuclosResultController<Clct>(clcte));
+		super(parent, clcte, new NuclosResultController<Clct>(clcte, new NuclosSearchResultStrategy<Clct>()));
 		this.sEntity = clcte.getName();
 	}
 
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	protected NuclosCollectController(JComponent parent, String sEntityName, ResultController<Clct> rc) {
 		this(parent, NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName), rc);
 		this.sEntity = sEntityName;
@@ -716,7 +730,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		this.setCollectableSearchConditionInSearchPanel(NuclosSearchConditionUtils.restorePlainSubConditions(cond));
 
 		try {
-			log.debug("restored searchcondition from prefs: " + LangUtils.toString(this.getCollectableSearchCondition()));
+			log.debug("restored searchcondition from prefs: " + LangUtils.toString(getSearchStrategy().getCollectableSearchCondition()));
 		}
 		catch (CollectableFieldFormatException ex) {
 			log.debug("Exception thrown in log statement", ex);
@@ -783,9 +797,10 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	 * @todo pull down to CollectController?
 	 */
 	protected final Clct getCompleteCollectable(Clct clct) throws CommonBusinessException {
-		final Clct result = isCollectableComplete(clct) ? clct : this.readCollectable(clct);
-		assert isCollectableComplete(result);
-		assert !isCollectableComplete(clct) || result == clct;
+		final ISearchStrategy<Clct> ss = getSearchStrategy();
+		final Clct result = ss.isCollectableComplete(clct) ? clct : this.readCollectable(clct);
+		assert ss.isCollectableComplete(result);
+		assert !ss.isCollectableComplete(clct) || result == clct;
 		return result;
 	}
 
@@ -847,24 +862,13 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	}
 
 	/**
-	 * Make visible for ResultPanel
-	 * 
-	 * @deprecated Move to ResultController hierarchy.
-	 */
-	@SuppressWarnings("deprecation")
-	@Override
-	protected void search() throws CommonBusinessException {
-		super.search();
-	}
-
-	/**
 	 * @todo refactor viewAll()!
 	 * 
 	 * @deprecated Move to ResultController hierarchy.
 	 */
 	@Override
 	protected void viewAll() throws CommonBusinessException {
-		getResultController().refreshResult();
+		getResultController().getSearchResultStrategy().refreshResult();
 	}
 
 	/**
@@ -881,7 +885,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		if (clctCurrent == null) {
 			throw new NullArgumentException("clctCurrent");
 		}
-		if (!isCollectableComplete(clctCurrent)) {
+		if (!getSearchStrategy().isCollectableComplete(clctCurrent)) {
 			throw new IllegalArgumentException("clctCurrent");
 		}
 		if (clcteCurrent == null) {

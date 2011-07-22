@@ -19,9 +19,6 @@
  */
 package org.nuclos.client.processmonitor;
 
-import java.awt.Cursor;
-import java.util.Collection;
-
 import javax.swing.JComponent;
 import javax.swing.JToolBar;
 
@@ -29,13 +26,11 @@ import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.console.NuclosConsole;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
-import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableEntity;
-import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.processmonitor.valueobject.ProcessMonitorGraphVO;
 import org.nuclos.server.processmonitor.valueobject.ProcessMonitorVO;
@@ -53,17 +48,29 @@ public class ProcessMonitorCollectController extends NuclosCollectController<Col
 	private final MasterDataSubFormController subformctlUsages;	
 	private final ProcessMonitorEditPanel pnlEdit;
 	
-	public ProcessMonitorCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		this(parent, CollectableProcessMonitorModel.clcte, tabIfAny);
-	}
-
 	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public ProcessMonitorCollectController(JComponent parent,
+	public ProcessMonitorCollectController(JComponent parent, MainFrameTab tabIfAny) {
+		this(parent, CollectableProcessMonitorModel.clcte, tabIfAny);
+	}
+
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
+	protected ProcessMonitorCollectController(JComponent parent,
 			CollectableEntity clcte, MainFrameTab tabIfAny) {
 		super(parent, clcte);
 		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame("Prozesse designen");
@@ -82,6 +89,10 @@ public class ProcessMonitorCollectController extends NuclosCollectController<Col
 		ifrm.setLayeredComponent(pnlCollect);
 		this.setInternalFrame(ifrm, tabIfAny==null);
 		// TODO Auto-generated constructor stub
+	}
+	
+	public final MainFrameTab getMainFrameTab() {
+		return ifrm;
 	}
 	
 	/**
@@ -170,27 +181,6 @@ public class ProcessMonitorCollectController extends NuclosCollectController<Col
 		Integer iInsertedModelId = saveProcessModelAndUsages(this.pnlEdit.getProcessMonitorEditor(), clctCurrent.getProcessMonitorModel());
 		
 		return new CollectableProcessMonitorModel(ProcessMonitorDelegate.getInstance().getStateGraph(iInsertedModelId));
-	}
-
-	/**
-	 * @deprecated Move to ResultController hierarchy.
-	 */
-	@Override
-	protected void search() throws CommonBusinessException {
-		try {
-			this.ifrm.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-			Collection<ProcessMonitorVO> col = ProcessMonitorDelegate.getInstance().getProcessModels();
-			
-			this.fillResultPanel(CollectionUtils.transform(col, new CollectableProcessMonitorModel.MakeCollectable()));
-		}
-		catch (Exception ex) {
-			Errors.getInstance().showExceptionDialog(this.ifrm, null, ex);
-		}
-		finally {
-			this.ifrm.setCursor(Cursor.getDefaultCursor());
-		}
-		
 	}
 
 	@Override

@@ -31,7 +31,7 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-class CollectableGenericObjectProxyListAdapter
+public class CollectableGenericObjectProxyListAdapter
 		extends CollectableListAdapter<GenericObjectWithDependantsVO, CollectableGenericObjectWithDependants>
 		implements ProxyList<CollectableGenericObjectWithDependants> {
 
@@ -43,7 +43,7 @@ class CollectableGenericObjectProxyListAdapter
 	/**
 	 * @param lstlowdcvoAdaptee ProxyList<GenericObjectWithDependantsVO>
 	 */
-	CollectableGenericObjectProxyListAdapter(ProxyList<GenericObjectWithDependantsVO> lstlowdcvoAdaptee) {
+	public CollectableGenericObjectProxyListAdapter(ProxyList<GenericObjectWithDependantsVO> lstlowdcvoAdaptee) {
 		super(lstlowdcvoAdaptee);
 	}
 

@@ -34,6 +34,15 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 public class DbObjectCollectController extends MasterDataCollectController {
 		
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	public DbObjectCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, NuclosEntity.DBOBJECT.getEntityName(), tabIfAny);
 		this.getCollectStateModel().addCollectStateListener(new CollectStateListener() {

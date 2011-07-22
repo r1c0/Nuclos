@@ -42,8 +42,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Observer;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
@@ -68,8 +66,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
 import javax.swing.table.TableModel;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -108,25 +104,16 @@ import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableListOfValues;
 import org.nuclos.client.ui.collect.component.ICollectableListOfValues;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
-import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
-import org.nuclos.client.ui.collect.component.model.CollectableComponentModelAdapter;
-import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
-import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
-import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModel;
-import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.collect.detail.DetailsController;
 import org.nuclos.client.ui.collect.detail.DetailsPanel;
 import org.nuclos.client.ui.collect.result.ResultController;
 import org.nuclos.client.ui.collect.result.ResultPanel;
+import org.nuclos.client.ui.collect.result.SearchResultStrategy;
+import org.nuclos.client.ui.collect.search.ISearchStrategy;
 import org.nuclos.client.ui.collect.search.SearchController;
 import org.nuclos.client.ui.collect.search.SearchPanel;
-import org.nuclos.client.ui.collect.search.SearchWorker;
-import org.nuclos.client.ui.collect.searcheditor.SearchEditorController;
-import org.nuclos.client.ui.collect.searcheditor.SearchEditorPanel;
-import org.nuclos.client.ui.collect.strategy.AlwaysLoadCompleteCollectablesStrategy;
-import org.nuclos.client.ui.collect.strategy.CompleteCollectablesStrategy;
 import org.nuclos.client.ui.labeled.LabeledComboBox;
 import org.nuclos.client.ui.labeled.LabeledDateChooser;
 import org.nuclos.client.ui.labeled.LabeledListOfValues;
@@ -151,12 +138,10 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCo
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
-import org.nuclos.common.collect.collectable.searchcondition.InvalidCollectableSearchConditionException;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.PlainSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
-import org.nuclos.common.collect.collectable.searchcondition.ToHumanReadablePresentationVisitor;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collect.exception.CollectableValidationException;
@@ -174,7 +159,6 @@ import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.PreferencesException;
-import org.nuclos.server.report.valueobject.DatasourceVO;
 
 
 /**
@@ -251,8 +235,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	private int iLockCount = 0;
 
-	private CompleteCollectablesStrategy<Clct> completecollectablesstrategy = new AlwaysLoadCompleteCollectablesStrategy<Clct>(this);
-
 	protected boolean bIsLastTabDetailsModeMultiViewOrEdit = false;
 
 	protected MouseListener foreignKeyMouseListenerForTableDoubleClick;
@@ -281,12 +263,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	private List<CollectableEventListener> collectableListeners = new LinkedList<CollectableEventListener>();
 
-	/**
-	 * Valuelist provider datasource for additional search condition
-	 */
-	private DatasourceVO valueListProviderDatasource;
-	private Map<String, Object> valueListProviderDatasourceParameter;
-
 	private final SearchController<Clct> ctlSearch = new SearchController<Clct>(this);
 
 	/**
@@ -297,6 +273,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	private final ResultController<Clct> ctlResult;
 
 	private final DetailsController<Clct> ctlDetails = new DetailsController<Clct>(this);
+	
+	private ISearchStrategy<Clct> ss;
 	
 	/**
 	 * Messages for Collectable events
@@ -617,7 +595,15 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * </code></pre>
 	 */
 	protected CollectController(JComponent parent, CollectableEntity clcte) {
-		this(parent, clcte, new ResultController<Clct>(clcte));
+		this(parent, clcte, new ResultController<Clct>(clcte, new SearchResultStrategy<Clct>()));
+	}
+	
+	public final ISearchStrategy<Clct> getSearchStrategy() {
+		return ss;
+	}
+	
+	protected final void setSearchStrategy(ISearchStrategy<Clct> ss) {
+		this.ss = ss;
 	}
 	
 	/** 
@@ -644,7 +630,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * 		Not every CollectController has a ResultController associated with it.
 	 * 		Hence, this field should appear more 'upward' in the hierarchy.
 	 */
-	public ChoiceEntityFieldList getFields() {
+	public final ChoiceEntityFieldList getFields() {
 		return ctlResult.getFields();
 	}
 
@@ -671,17 +657,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 
 		this.setCollectPanel(pnlCollect);
-
 		getResultController().initializeFields(clcte, this, getPreferences());
-
 		getResultController().setModel(newResultTableModel(), clcte, this);
-
 		this.getCollectStateModel().addCollectStateListener(new DefaultCollectStateListener());
-
 		this.getResultPanel().setupTableCellRenderers(getResultTable());
-
 		getResultController().setColumnWidths(getResultTable());
-
 		this.addCollectableEventListener(mandatoryResetEventListener);
 
 		if (this.isSearchPanelAvailable()) {
@@ -1398,7 +1378,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * the regular entry point: start in Search tab
 	 */
-	@SuppressWarnings("deprecation")
 	public final void runSearch() throws CommonBusinessException {
 		this.runSearch(true);
 	}
@@ -1406,25 +1385,12 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * the regular entry point: start in Search tab
 	 */
-	@SuppressWarnings("deprecation")
 	public final void runSearch(boolean selectTab) throws CommonBusinessException {
 		this.setCollectState(CollectState.OUTERSTATE_SEARCH, CollectState.SEARCHMODE_UNSYNCHED);
 
 		if (selectTab) {
 			this.showFrame();
 		}
-	}
-
-	/**
-	 *
-	 * @return Valuelist provider datasource for additional search condition
-	 */
-	protected final DatasourceVO getValueListProviderDatasource() {
-		return valueListProviderDatasource;
-	}
-
-	protected final Map<String, Object> getValueListProviderDatasourceParameter() {
-		return valueListProviderDatasourceParameter;
 	}
 
 	/**
@@ -1440,18 +1406,18 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		if (!clctlovSource.isSearchComponent()) {
 			final CollectableListOfValues clov = (CollectableListOfValues) clctlovSource; 
 			if (clov.getValueListProvider() instanceof DatasourceBasedCollectableFieldsProvider) {
-				valueListProviderDatasource = ((DatasourceBasedCollectableFieldsProvider) clov.getValueListProvider()).getDatasourceVO();
-				valueListProviderDatasourceParameter = ((DatasourceBasedCollectableFieldsProvider) clov.getValueListProvider()).getValueListParameter();
+				ss.setValueListProviderDatasource(((DatasourceBasedCollectableFieldsProvider) clov.getValueListProvider()).getDatasourceVO());
+				ss.setValueListProviderDatasourceParameter(((DatasourceBasedCollectableFieldsProvider) clov.getValueListProvider()).getValueListParameter());
 			} else if (clov.getValueListProvider() instanceof CollectableFieldsProviderCache.CachingCollectableFieldsProvider) {
 				CollectableFieldsProvider delegate = ((CollectableFieldsProviderCache.CachingCollectableFieldsProvider) clov.getValueListProvider()).getDelegate();
 				if (delegate instanceof DatasourceBasedCollectableFieldsProvider) {
-					valueListProviderDatasource = ((DatasourceBasedCollectableFieldsProvider)delegate).getDatasourceVO();
-					valueListProviderDatasourceParameter = ((DatasourceBasedCollectableFieldsProvider)delegate).getValueListParameter();
+					ss.setValueListProviderDatasource(((DatasourceBasedCollectableFieldsProvider)delegate).getDatasourceVO());
+					ss.setValueListProviderDatasourceParameter(((DatasourceBasedCollectableFieldsProvider)delegate).getValueListParameter());
 				}
 			}
 
-			final JMenuItem miPopupApplySelection = new JMenuItem(CommonLocaleDelegate.getMessage("CollectController.41","Auswahl �bernehmen"));
-			miPopupApplySelection.setToolTipText(CommonLocaleDelegate.getMessage("CollectController.42","Findet die �bernahme in einem Unterformular statt werden mittels Mehrfachauswahl zus�tzliche Datens�tze im Unterformular erzeugt."));
+			final JMenuItem miPopupApplySelection = new JMenuItem(CommonLocaleDelegate.getMessage("CollectController.41","Auswahl übernehmen"));
+			miPopupApplySelection.setToolTipText(CommonLocaleDelegate.getMessage("CollectController.42","Findet die Übernahme in einem Unterformular statt werden mittels Mehrfachauswahl zusätzliche Datensätze im Unterformular erzeugt."));
 			getResultPanel().popupmenuRow.addSeparator();
 			getResultPanel().popupmenuRow.add(miPopupApplySelection);
 			miPopupApplySelection.addActionListener(new ActionListener() {
@@ -1505,7 +1471,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		});
 
 		if (this.isSearchPanelAvailable()) {
-			if (valueListProviderDatasource != null) {
+			if (ss.getValueListProviderDatasource() != null) {
 				this.runViewAll();
 			} else {
 				this.runSearch();
@@ -1577,7 +1543,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		if (clct == null) {
 			throw new NullArgumentException("clct");
 		}
-		if (!isCollectableComplete(clct)) {
+		if (!ss.isCollectableComplete(clct)) {
 			throw new IllegalArgumentException("clct");
 		}
 		this.viewSingleCollectable(clct);
@@ -1623,7 +1589,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		if (clct == null) {
 			throw new NullArgumentException("clct");
 		}
-		if (!isCollectableComplete(clct)) {
+		if (!ss.isCollectableComplete(clct)) {
 			throw new IllegalArgumentException("clct");
 		}
 		// fill result table:
@@ -1665,16 +1631,14 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * views all records in the Results tab. Calls search() with initial (or missing) search condition.
 	 * TODO refactor
 	 */
-	@SuppressWarnings("deprecation")
 	protected void viewAll() throws CommonBusinessException {
-		this.search();
+		ss.search();
 	}
 
 	/**
 	 * alternative entry point: view all (in Results tab)
 	 * @precondition this.isSearchPanelAvailable()
 	 */
-	@SuppressWarnings("deprecation")
 	public final void runViewResults(List<Object> oIds) throws CommonBusinessException {
 		this.runViewResults(new CollectableIdListCondition(oIds));
 	}
@@ -1688,15 +1652,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		if (!this.isSearchPanelAvailable()) {
 			throw new IllegalStateException("this.isSearchPanelAvailable()");
 		}
-
 		this.getCollectPanel().setTabbedPaneEnabledAt(CollectState.OUTERSTATE_DETAILS, false);
-
 		this.setCollectableSearchConditionInSearchPanel(cond);
-
-		this.search();
-
+		ss.search();
 		this.setCollectState(CollectState.OUTERSTATE_RESULT, CollectState.RESULTMODE_NOSELECTION);
-
 		this.showFrame();
 	}
 
@@ -1745,7 +1704,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 		this.setCollectableSearchConditionInSearchPanel(clctlovSource.getCollectableSearchCondition());
 		this.showFrame();
-		getResultController().cmdSearch();
+		getResultController().getSearchResultStrategy().cmdSearch();
 		this.getCollectPanel().setTabbedPaneEnabledAt(CollectState.OUTERSTATE_DETAILS, false);
 		this.getCollectPanel().setTabbedPaneEnabledAt(CollectState.OUTERSTATE_SEARCH, false);
 	}
@@ -1758,9 +1717,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @postcondition result == null || result.isSyntacticallyCorrect()
 	 * @throws CollectableFieldFormatException if the search condition is not syntactically correct.
 	 * TODO this.isSearchPanelAvailable() should be a precondition here
-	 * TODO move to SearchPanel
+	 * 
+	 * @deprecated Move to SearchController and make protected again.
 	 */
-	protected final CollectableSearchCondition getCollectableSearchConditionFromSearchPanel(boolean bMakeConsistent) throws CollectableFieldFormatException {
+	public final CollectableSearchCondition getCollectableSearchConditionFromSearchPanel(boolean bMakeConsistent) throws CollectableFieldFormatException {
 		final CollectableSearchCondition result = !this.isSearchPanelAvailable() ? null :
 				(getSearchPanel().isSearchEditorVisible() || this.getImportedSearchCondition() != null ? getMixedSearchCondition(bMakeConsistent) : this.getCollectableSearchConditionFromSearchFields(bMakeConsistent));
 
@@ -1825,17 +1785,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	/**
-	 * @return the search condition to be used for a search. This method returns <code>getCollectableSearchConditionFromSearchPanel()</code>.
-	 *         This condition can be refined by subclasses, by ANDing, ORing or whatever. May be <code>null</code>.
-	 * @postcondition result == null || result.isSyntacticallyCorrect()
-	 * 
-	 * @deprecated Move to SearchController.
-	 */
-	public CollectableSearchCondition getCollectableSearchCondition() throws CollectableFieldFormatException {
-		return this.getCollectableSearchConditionFromSearchPanel(false);
-	}
-
-	/**
 	 * @return the search condition to display (in the status bar). By default, this is the search condition given by
 	 * getCollectableSearchCondition(), with labels sorted in ascending order. May be <code>null</code>.
 	 * @throws CollectableFieldFormatException
@@ -1843,7 +1792,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @deprecated Move to SearchController and make protected again. 
 	 */
 	public CollectableSearchCondition getCollectableSearchConditionToDisplay() throws CollectableFieldFormatException {
-		return SearchConditionUtils.sortedByLabels(this.getCollectableSearchCondition());
+		return SearchConditionUtils.sortedByLabels(ss.getCollectableSearchCondition());
 	}
 
 	/**
@@ -2424,25 +2373,17 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	protected final Clct getCompleteSelectedCollectable(boolean blnWithoutDependants) throws CommonBusinessException {
 		final Clct clct = getResultController().getSelectedCollectableFromTableModel();
 		final Clct result;
-		if (clct == null || isCollectableComplete(clct)) {
+		if (clct == null || ss.isCollectableComplete(clct)) {
 			result = clct;
 		}
 		else {
 			result = this.readCollectable(clct, blnWithoutDependants);
 			getResultController().replaceSelectedCollectableInTableModel(result);
 		}
-		assert !(result != null) || isCollectableComplete(result);
+		assert !(result != null) || ss.isCollectableComplete(result);
 		// Note that the postcondition "result == this.getSelectedCollectableFromTableModel()" is not possible for some
 		// implementations of the CollectController that use an UnmodifiableListAdapter around a ProxyList for the TableModel.
 		return result;
-	}
-
-	/**
-	 * @param clct
-	 * @return Is the given Collectable complete? That is: Does it contain all data necessary for display in the Details panel?
-	 */
-	protected final boolean isCollectableComplete(Clct clct) {
-		return this.getCompleteCollectablesStrategy().isComplete(clct);
 	}
 
 	/**
@@ -2468,40 +2409,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @see #isCollectableComplete(Collectable)
 	 */
 	public final List<Clct> getCompleteSelectedCollectables() throws CommonBusinessException {
-		final List<Clct> result = new ArrayList<Clct>(this.getCompleteCollectablesStrategy().getCompleteCollectables(this.getSelectedCollectables()));
+		final List<Clct> result = new ArrayList<Clct>(getSearchStrategy().getCompleteCollectablesStrategy().getCompleteCollectables(this.getSelectedCollectables()));
 		getResultController().replaceCollectablesInTableModel(result);
 
 		assert result != null;
 		return result;
-	}
-
-	/**
-	 * @return the strategy used by this CollectController to complete <code>Collectable</code>s when necessary.
-	 */
-	protected final CompleteCollectablesStrategy<Clct> getCompleteCollectablesStrategy() {
-		return this.completecollectablesstrategy;
-	}
-
-	/**
-	 * @param strategy
-	 */
-	protected final void setCompleteCollectablesStrategy(CompleteCollectablesStrategy<Clct> strategy) {
-		this.completecollectablesstrategy = strategy;
-	}
-
-	/**
-	 * @return Are <code>Collectable</code>s in the ResultTable always complete in this <code>CollectController</code>?
-	 */
-	public final boolean getCollectablesInResultAreAlwaysComplete() {
-		return this.getCompleteCollectablesStrategy().getCollectablesInResultAreAlwaysComplete();
-	}
-
-	/**
-	 * @return Set<String> the names of the required fields for the search result. It is merged with the names of the fields (columns)
-	 * that the user has selected to be displayed, so these don't need to be given here.
-	 */
-	protected final Set<String> getRequiredFieldNamesForResult() {
-		return this.getCompleteCollectablesStrategy().getRequiredFieldNamesForResult();
 	}
 
 	/**
@@ -2656,7 +2568,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 		final Clct result = this.readCollectable(clct);
 		assert result != null;
-		assert isCollectableComplete(result);
+		assert ss.isCollectableComplete(result);
 		return result;
 	}
 
@@ -2763,7 +2675,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		if (clct == null) {
 			throw new NullArgumentException("clct");
 		}
-		if (!isCollectableComplete(clct)) {
+		if (!ss.isCollectableComplete(clct)) {
 			throw new IllegalArgumentException("clct");
 		}
 		final boolean bWasDetailsChangedIgnored = this.isDetailsChangedIgnored();
@@ -2803,7 +2715,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		if (clct == null) {
 			throw new NullArgumentException("clct");
 		}
-		if (!isCollectableComplete(clct)) {
+		if (!ss.isCollectableComplete(clct)) {
 			throw new IllegalArgumentException("clct");
 		}
 		for (DetailsComponentModel clctcompmodel : getDetailsPanel().getEditModel().getCollectableComponentModels()) {
@@ -2954,7 +2866,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			this.validate(clctCurrent);
 			final Clct result = dbUpdate? this.updateCurrentCollectable(clctCurrent) : clctCurrent;
 			assert result != null;
-			assert isCollectableComplete(result);
+			assert ss.isCollectableComplete(result);
 			return result;
 		}
 		finally {
@@ -2974,7 +2886,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	protected Clct updateCurrentCollectable(Clct clctCurrent) throws CommonBusinessException {
 		final Clct result = this.updateCollectable(clctCurrent, null);
 		assert result != null;
-		assert isCollectableComplete(result);
+		assert ss.isCollectableComplete(result);
 		return result;
 	}
 
@@ -3024,7 +2936,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			this.validate(clctNew);
 			final Clct result = this.insertCollectable(clctNew);
 			assert result != null;
-			assert isCollectableComplete(result);
+			assert ss.isCollectableComplete(result);
 			return result;
 		}
 		finally {
@@ -3060,7 +2972,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		if (clct == null) {
 			throw new NullArgumentException("clct");
 		}
-		if (!isCollectableComplete(clct)) {
+		if (!ss.isCollectableComplete(clct)) {
 			throw new IllegalArgumentException("clct");
 		}
 		clct.validate(this.getCollectableEntityForDetails());
@@ -3290,7 +3202,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		this.deleteCollectable(clct);
 		this.getResultTableModel().remove(clct);
 		broadcastCollectableEvent(clct, MessageType.DELETE_DONE);
-		getResultController().refreshResult();
+		getResultController().getSearchResultStrategy().refreshResult();
 	}
 
 	/**
@@ -3386,54 +3298,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	/**
-	 * performs a search, according to the current search condition, if any.
-	 * This default implementation returns <code>null</code> indicating that single threaded search is used,
-	 * which calls the deprecated search() method.
-	 * TODO add parameter bRefreshOnly
-	 * 
-	 * @deprecated Move to ResultController hierarchy and make protected again.
-	 */
-	public SearchWorker<Clct> getSearchWorker() {
-		// leave implementation for derived class
-		return null;
-	}
-
-	/**
-	 * @deprecated Move to ResultController hierarchy and make protected again.
-	 */
-	public SearchWorker<Clct> getSearchWorker(List<Observer> lstObservers) {
-		// leave implementation for derived class
-		return null;
-	}
-
-	/**
-	 * performs a single-threaded search, according to the current search condition, if any.
-	 * @deprecated Use multithreaded search for new applications.
-	 * TODO replace with search(boolean bRefreshOnly)
-	 * @see #getSearchWorker()
-	 * 
-	 * @deprecated Move to ResultController hierarchy.
-	 */
-	@Deprecated
-	protected void search() throws CommonBusinessException {
-		// leave implementation for derived class
-		throw new UnsupportedOperationException("search");
-	}
-
-	/**
-	 * @param bRefreshOnly
-	 * @throws CommonBusinessException
-	 * 
-	 * @deprecated Use multithreaded search for new applications.
-	 *   Move to SearchController.
-	 * TODO: Make this protected again.
-	 */
-	@Deprecated
-	public void search(boolean bRefreshOnly) throws CommonBusinessException {
-		this.search();
-	}
-
-	/**
 	 * shortcut for <code>this.getCollectPanel().getResultPanel().getResultTable()</code>.
 	 * 
 	 * @deprecated Move this to ResultController.
@@ -3492,7 +3356,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * fills the result panel with the results from the current search.
 	 * @param lstclct List<Collectable>: the results from the current search.
 	 */
-	protected final void fillResultPanel(List<Clct> lstclct) {
+	public final void fillResultPanel(List<Clct> lstclct) {
 		this.fillResultPanel(lstclct, lstclct.size(), true);
 	}
 
@@ -4051,7 +3915,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		final Clct result = CollectController.this.newCollectable();
 		CollectableUtils.setDefaultValues(result, CollectController.this.getCollectableEntity());
 		assert result != null;
-		assert isCollectableComplete(result);
+		assert ss.isCollectableComplete(result);
 		return result;
 	}
 

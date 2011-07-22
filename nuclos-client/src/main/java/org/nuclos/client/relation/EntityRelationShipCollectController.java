@@ -18,11 +18,8 @@ package org.nuclos.client.relation;
 
 import info.clearthought.layout.TableLayout;
 
-import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -39,7 +36,6 @@ import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.resource.NuclosResourceCache;
-import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.component.CollectableTextField;
@@ -79,6 +75,9 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 	private final MainFrameTab ifrm; 
 	
 	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -121,6 +120,10 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 	
 		//this.getDetailsPanel().setCustomToolBarArea(pnlCustomToolBarAreaDetails);
 		this.getDetailsPanel().addToolBarComponent(bt);
+	}
+	
+	public final MainFrameTab getMainFrameTab() {
+		return ifrm;
 	}
 	
 	@Override
@@ -179,7 +182,7 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 	}
 
 	@Override
-	protected EntityRelationshipModel findCollectableById(String sEntity, Object oId) throws CommonBusinessException {
+	public EntityRelationshipModel findCollectableById(String sEntity, Object oId) throws CommonBusinessException {
 		
 		MasterDataVO vo = MasterDataDelegate.getInstance().get(NuclosEntity.ENTITYRELATION.getEntityName(), oId);
 		
@@ -252,32 +255,6 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 		pnlEdit.clearModel();
 		EntityRelationshipModel model = findCollectableById(NuclosEntity.ENTITYRELATION.getEntityName(), iId);
 		return model;
-	}
-	
-	/**
-	 * @deprecated Move to ResultController hierarchy.
-	 */
-	@Override
-	protected void search() {
-		try {
-			this.ifrm.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-			Collection<MasterDataVO> colVO = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.ENTITYRELATION.getEntityName());
-			
-			List<EntityRelationshipModel> lstModel = new ArrayList<EntityRelationshipModel>();
-			for(MasterDataVO vo : colVO) {
-				EntityRelationshipModel model = findCollectableById(NuclosEntity.ENTITYRELATION.getEntityName(), vo.getId());
-				lstModel.add(model);
-			}
-			
-			this.fillResultPanel(lstModel);
-		}
-		catch (Exception ex) {
-			Errors.getInstance().showExceptionDialog(this.ifrm, null, ex);
-		}
-		finally {
-			this.ifrm.setCursor(Cursor.getDefaultCursor());
-		}
 	}
 	
 	@Override

@@ -17,7 +17,6 @@
 package org.nuclos.client.datasource.admin;
 
 import java.awt.Component;
-import java.awt.Cursor;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,6 +65,15 @@ import org.nuclos.server.report.valueobject.ResultVO;
  */
 public class RecordGrantCollectController extends AbstractDatasourceCollectController implements DatasourceEditController {
 
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	public RecordGrantCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, new CollectableMasterDataEntity(
 			MetaDataCache.getInstance().getMetaData(NuclosEntity.RECORDGRANT)), tabIfAny);
@@ -97,25 +105,6 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 	@Override
 	protected boolean isDeleteSelectedCollectableAllowed(){
 		return SecurityCache.getInstance().isDeleteAllowedForMasterData(sEntity);
-	}
-
-	/**
-	 * @deprecated Move to ResultController hierarchy.
-	 */
-	@Override
-	protected void search() {
-		try {
-			this.ifrm.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-			this.fillResultPanel(CollectionUtils.transform(this.datasourcedelegate.getAllRecordGrant(),
-					new CollectableDataSource.MakeCollectable()));
-		}
-		catch (Exception ex) {
-			Errors.getInstance().showExceptionDialog(this.ifrm, null, ex);
-		}
-		finally {
-			this.ifrm.setCursor(Cursor.getDefaultCursor());
-		}
 	}
 
 	@Override

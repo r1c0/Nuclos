@@ -37,12 +37,10 @@ import javax.swing.SwingUtilities;
 
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.KeyBindingProvider;
-import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.genericobject.ReportSelectionPanel;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataCollectController;
-import org.nuclos.client.report.ReportDelegate;
 import org.nuclos.client.report.reportrunner.BackgroundProcessStatusController;
 import org.nuclos.client.report.reportrunner.ReportRunner;
 import org.nuclos.client.report.reportrunner.ReportThread;
@@ -52,10 +50,6 @@ import org.nuclos.client.ui.collect.CollectStateConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
-import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
-import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
-import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.ServiceLocator;
@@ -104,17 +98,18 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 
 
 	/**
-	 * @param parent
-	 * @param tabIfAny 
-	 * @param sEntity
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
 	 */
 	public ReportExecutionCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, NuclosEntity.REPORTEXECUTION, tabIfAny);
-
 		setupResultToolBar();
-
 		setExecuteState();
-
 	}
 
 	@Override
@@ -294,11 +289,4 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 		}
 	}
 
-	@Override
-	public CollectableSearchCondition getCollectableSearchCondition() throws CollectableFieldFormatException {
-		CollectableSearchCondition searchCondition = ReportDelegate.getInstance().getCollectableSearchCondition(getCollectableEntity(), super.getCollectableSearchCondition());
-		CollectableSearchCondition reportCond = org.nuclos.common.SearchConditionUtils.newEOComparison(NuclosEntity.REPORTEXECUTION.getEntityName(), "type", ComparisonOperator.EQUAL, ReportVO.ReportType.REPORT.getValue(), MetaDataClientProvider.getInstance());
-		reportCond.setConditionName("type = report");
-		return SearchConditionUtils.and(searchCondition, reportCond);
-	}
 }	// class ReportExecutionCollectController

@@ -56,6 +56,7 @@ import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.relation.EntityRelationShipCollectController;
 import org.nuclos.client.ui.MainFrameTabAdapter;
+import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
 import org.nuclos.client.wizard.ShowNuclosWizard;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collection.Pair;
@@ -1019,7 +1020,8 @@ public class NuclosStartupPanel extends JPanel implements ApplicationAssistantLi
 	protected void openRelationShipController() {
 		try {
 			setWaitCursor();
-			EntityRelationShipCollectController result = new EntityRelationShipCollectController(mainFrame.getHomePane(), mainFrame, null);
+			final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
+			EntityRelationShipCollectController result = factory.newEntityRelationShipCollectController(mainFrame.getHomePane(), mainFrame, null);
 			result.run();
 			
 		}

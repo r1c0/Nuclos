@@ -44,6 +44,7 @@ import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
+import org.nuclos.client.ui.collect.result.NuclosSearchResultStrategy;
 import org.nuclos.client.ui.collect.result.UserResultController;
 import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.Actions;
@@ -87,6 +88,9 @@ public class UserCollectController extends MasterDataCollectController {
 	private List<MasterDataWithDependantsVO> ldapRegisteredUsers = null;
 
 	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
  	 * @deprecated You should normally do sth. like this:<code><pre>
  	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -94,7 +98,8 @@ public class UserCollectController extends MasterDataCollectController {
      */
 	public UserCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, NuclosEntity.USER, tabIfAny, 
-				new UserResultController<CollectableMasterDataWithDependants>(NuclosEntity.USER.getEntityName()));
+				new UserResultController<CollectableMasterDataWithDependants>(NuclosEntity.USER.getEntityName(),
+						new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()));
 		this.setupDetailsToolBar();
 		if(this.useLDAP){
 			this.ldapdelegate = LDAPDataDelegate.getInstance();
@@ -210,7 +215,7 @@ public class UserCollectController extends MasterDataCollectController {
 
 					}
 					// refresh the result:
-					getResultController().refreshResult();
+					getResultController().getSearchResultStrategy().refreshResult();
 
 					// reselect the previously selected row (which gets lost be refreshing the model)
 					if (iSelectedRow != -1) {
@@ -245,7 +250,7 @@ public class UserCollectController extends MasterDataCollectController {
 	}
 
 	private void filterOutLDAPUsers(Collection<MasterDataWithDependantsVOWrapper> ldapusers) throws CommonBusinessException {
-		final CollectableSearchCondition currentcondition = getCollectableSearchCondition();
+		final CollectableSearchCondition currentcondition = getSearchStrategy().getCollectableSearchCondition();
 
 		if (currentcondition != null) {
 			final CollectableSearchCondition condition = SearchConditionUtils.not(currentcondition);

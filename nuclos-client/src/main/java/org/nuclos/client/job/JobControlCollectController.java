@@ -236,6 +236,15 @@ public class JobControlCollectController extends MasterDataCollectController {
 		}
 	};
 
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	public JobControlCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, NuclosEntity.JOBCONTROLLER, tabIfAny);
 

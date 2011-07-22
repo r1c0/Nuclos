@@ -103,6 +103,9 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	/**
 	 * Don't make this public!
 	 * 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -115,12 +118,15 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	/**
 	 * Don't make this public!
 	 * 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected EntityCollectController(JComponent parent, org.nuclos.common.collect.collectable.CollectableEntity clcte) {
+	protected EntityCollectController(JComponent parent, CollectableEntity clcte) {
 		super(parent, clcte);
 		this.loadingLabel = new JLabel(notLoadingLabelText);
 		this.loadingLabel.setName("loadingLabel");
@@ -134,10 +140,28 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		btnPointer.addMouseListener(getPointerContextListener());
 	}
 	
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	protected EntityCollectController(JComponent parent, String sEntityName, ResultController<Clct> rc) {
 		this(parent, NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName), rc);
 	}
 	
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	protected EntityCollectController(JComponent parent, CollectableEntity clcte, ResultController<Clct> rc) {
 		super(parent, clcte, rc);
 		this.loadingLabel = new JLabel(notLoadingLabelText);

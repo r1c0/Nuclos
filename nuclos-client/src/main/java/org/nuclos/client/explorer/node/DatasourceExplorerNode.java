@@ -39,6 +39,7 @@ import org.nuclos.client.masterdata.datatransfer.DatasourceVOTransferable;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
@@ -169,7 +170,9 @@ public class DatasourceExplorerNode extends AbstractDatasourceExplorerNode {
 							Errors.getInstance().showExceptionDialog(tree, new NuclosBusinessException(CommonLocaleDelegate.getMessage("DatasourceExplorerNode.3", "Sie haben keine Berechtigungen auf die Datenquelle {0}", datasourceVo.getName())));
 						}
 						else {
-							final DatasourceCollectController controller = new DatasourceCollectController(MainFrame.getPredefinedEntityOpenLocation(NuclosEntity.DATASOURCE.getEntityName()), null);
+							final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
+							final DatasourceCollectController controller = factory.newDatasourceCollectController(
+									MainFrame.getPredefinedEntityOpenLocation(NuclosEntity.DATASOURCE.getEntityName()), null);
 							controller.runViewSingleCollectable(new CollectableDataSource(datasourceVo));
 						}
 					}

@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.rule.admin;
 
-import java.awt.Cursor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -54,7 +53,6 @@ import org.nuclos.client.masterdata.valuelistprovider.MasterDataEntityCollectabl
 import org.nuclos.client.masterdata.valuelistprovider.RuleEventsCollectableFieldsProvider;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.ui.CommonAbstractAction;
-import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
@@ -121,9 +119,13 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	};
 
 	/**
-	 *
-	 * @param parent
-	 * @param tabIfAny
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
 	 */
 	public RuleCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, CollectableRule.clcte);
@@ -160,6 +162,10 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 
 		this.subformctlUsage = new MasterDataSubFormController(getFrame(), parent, this.getDetailsPanel().getEditModel(), getEntityName(),
 				subform, this.getPreferences(), valueListProviderCache);
+	}
+	
+	public final MainFrameTab getMainFrameTab() {
+		return ifrm;
 	}
 
 	@Override
@@ -270,24 +276,6 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	public void removeAdditionalChangeListenersForDetails() {
 		this.pnlEdit.removeChangeListener(this.changelistenerDetailsChanged);
 		this.subformctlUsage.getSubForm().removeChangeListener(this.changelistenerDetailsChanged);
-	}
-
-	/**
-	 * @deprecated Move to ResultController hierarchy.
-	 */
-	@Override
-	protected void search() {
-		try {
-			this.ifrm.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-			this.fillResultPanel(CollectionUtils.transform(this.ruledelegate.getAllRules(), new CollectableRule.MakeCollectable()));
-		}
-		catch (Exception ex) {
-			Errors.getInstance().showExceptionDialog(this.ifrm, null, ex);
-		}
-		finally {
-			this.ifrm.setCursor(Cursor.getDefaultCursor());
-		}
 	}
 
 	/**

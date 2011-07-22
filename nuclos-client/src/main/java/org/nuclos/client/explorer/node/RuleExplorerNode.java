@@ -39,6 +39,7 @@ import org.nuclos.client.rule.admin.RuleCollectController;
 import org.nuclos.client.rule.admin.TimelimitRuleCollectController;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
+import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -158,8 +159,9 @@ public class RuleExplorerNode extends AbstractRuleExplorerNode {
 			RuleNode ruleNode = (RuleNode) explorerNode.getTreeNode();
 			RuleVO rulevo = ruleNode.getRuleVo();
 			if (rulevo != null) {
+				final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
 				if(ruleNode.isTimeLimitRule) {
-					TimelimitRuleCollectController ctl = new TimelimitRuleCollectController(MainFrame.getPredefinedEntityOpenLocation(NuclosEntity.TIMELIMITRULE.getEntityName()), null);
+					TimelimitRuleCollectController ctl = factory.newTimelimitRuleCollectController(MainFrame.getPredefinedEntityOpenLocation(NuclosEntity.TIMELIMITRULE.getEntityName()), null);
 					try {
 						ctl.runViewSingleCollectableWithId(rulevo.getId());
 					}
@@ -168,7 +170,7 @@ public class RuleExplorerNode extends AbstractRuleExplorerNode {
 					}
 				}
 				else {
-					RuleCollectController ctl = new RuleCollectController(MainFrame.getPredefinedEntityOpenLocation(NuclosEntity.RULE.getEntityName()), null);
+					RuleCollectController ctl = factory.newRuleCollectController(MainFrame.getPredefinedEntityOpenLocation(NuclosEntity.RULE.getEntityName()), null);
 					ctl.runViewSingleCollectable(new CollectableRule(rulevo));
 				}
 			}

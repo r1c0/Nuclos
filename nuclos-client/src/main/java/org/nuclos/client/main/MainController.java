@@ -130,6 +130,7 @@ import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.TopController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
+import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
 import org.nuclos.client.ui.collect.CollectStateModel;
 import org.nuclos.client.ui.collect.detail.DetailsCollectableEventListener;
 import org.nuclos.client.wiki.WikiController;
@@ -589,9 +590,9 @@ public class MainController {
 					@Override
 					public void run() {
 						try {
-
+							final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
 							Collection<MasterDataVO> colRelation = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.ENTITYRELATION.getEntityName());
-							EntityRelationShipCollectController result = new EntityRelationShipCollectController(MainController.this.getFrame().getHomePane(), MainController.this.getFrame(), null);
+							EntityRelationShipCollectController result = factory.newEntityRelationShipCollectController(MainController.this.getFrame().getHomePane(), MainController.this.getFrame(), null);
 							if(colRelation.size() > 0) {
 								MasterDataVO vo = colRelation.iterator().next();
 								result.runViewSingleCollectableWithId(vo.getId());

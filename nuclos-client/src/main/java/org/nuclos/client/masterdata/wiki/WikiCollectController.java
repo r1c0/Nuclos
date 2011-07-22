@@ -45,8 +45,9 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
  *
  * @author	<a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version 01.00.00
+ * 
+ * @deprecated Probably not in use.
  */
-
 public class WikiCollectController extends MasterDataCollectController{
 
 	private final CollectableComponentModelListener ccmlistenerEntityField = new CollectableComponentModelAdapter() {
@@ -81,6 +82,15 @@ public class WikiCollectController extends MasterDataCollectController{
 			
 	};
 	
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	public WikiCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, NuclosEntity.WIKI, tabIfAny);
 		
@@ -145,7 +155,7 @@ public class WikiCollectController extends MasterDataCollectController{
 	
 	@Override
 	protected void prepareCollectableForSaving(CollectableMasterDataWithDependants clctCurrent, CollectableEntity clcte) {
-		if (!isCollectableComplete(clctCurrent)) {
+		if (!getSearchStrategy().isCollectableComplete(clctCurrent)) {
 			throw new IllegalArgumentException("clctCurrent");
 		}
 		super.prepareCollectableForSaving(clctCurrent, clcte);

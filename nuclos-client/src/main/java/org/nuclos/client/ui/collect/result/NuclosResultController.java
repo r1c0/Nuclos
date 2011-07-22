@@ -74,15 +74,15 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	
 	private static final Logger LOG = Logger.getLogger(NuclosResultController.class);
 	
-	public NuclosResultController(CollectableEntity clcte) {
-		super(clcte);
+	public NuclosResultController(CollectableEntity clcte, ISearchResultStrategy<Clct> srs) {
+		super(clcte, srs);
 	}
 
 	/**
 	 * @deprecated You should really provide a CollectableEntity here.
 	 */
-	public NuclosResultController(String entityName) {
-		super(entityName);
+	public NuclosResultController(String entityName, ISearchResultStrategy<Clct> srs) {
+		super(entityName, srs);
 	}
 	
 	/**
@@ -174,7 +174,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 				adjustColumnModels(lstSelectedNewAfterMove, variableColumnModel, fixedColumnModel);
 
 				final Collection<CollectableEntityField> collNewlySelected = CollectionUtils.subtract(lstSelectedNewAfterMove, lstSelected);
-				if (!collNewlySelected.isEmpty() && !elisaController.getCollectablesInResultAreAlwaysComplete()) {
+				if (!collNewlySelected.isEmpty() && !elisaController.getSearchStrategy().getCollectablesInResultAreAlwaysComplete()) {
 					// refresh the result:
 					refreshResult(clctctl);
 				} else {
@@ -202,7 +202,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 				};
 				List<Observer> lstObserver = new ArrayList<Observer>();
 				lstObserver.add(finishSearchObserver);
-				NuclosResultController.this.refreshResult(lstObserver);
+				getSearchResultStrategy().cmdRefreshResult(lstObserver);
 			}
 		});
 	}
@@ -274,7 +274,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 					adjustColumnModels(lstSelectedNew, variableColumnModel, fixedColumnModel);
 
 					final Collection<? extends CollectableEntityField> collNewlySelected = CollectionUtils.subtract(lstSelectedNew, lstSelectedOld);
-					if (!collNewlySelected.isEmpty() && !((NuclosCollectController<Clct>)clctctl).getCollectablesInResultAreAlwaysComplete()) {
+					if (!collNewlySelected.isEmpty() && !clctctl.getSearchStrategy().getCollectablesInResultAreAlwaysComplete()) {
 						// refresh the result:
 						refreshResult(clctctl);
 					} else {
@@ -306,7 +306,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 					};
 					List<Observer> lstObserver = new ArrayList<Observer>();
 					lstObserver.add(finishSearchObserver);
-					NuclosResultController.this.refreshResult(lstObserver);
+					getSearchResultStrategy().cmdRefreshResult(lstObserver);
 				}
 
 			});
@@ -332,7 +332,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		TableUtils.addMouseListenerForSortingToTableHeader(fixedTable, (SortableTableModel) tblmodel, new CommonRunnable() {
 	         @Override
 	       	public void run() {
-	             cmdRefreshResult();
+	             getSearchResultStrategy().cmdRefreshResult();
 	          }
 	       });
 
@@ -499,21 +499,6 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 
 	private NuclosResultPanel<Clct> getNuclosResultPanel() {
 		return (NuclosResultPanel<Clct>) getCollectController().getResultPanel();
-	}
-
-	// search stuff
-	
-	public void refreshResult(List<Observer> lstObserver) throws CommonBusinessException {
-		cmdRefreshResult(lstObserver);
-	}
-
-	/**
-	 * Make visible for ResultPanel
-	 */
-	@Override
-	public void refreshResult() throws CommonBusinessException {
-		//super.refreshResult();
-		cmdRefreshResult();
 	}
 
 }

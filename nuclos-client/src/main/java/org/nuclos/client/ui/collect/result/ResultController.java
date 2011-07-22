@@ -1,4 +1,4 @@
-//Copyright (C) 2010  Novabit Informationssysteme GmbH
+//Copyright (C) 2011  Novabit Informationssysteme GmbH
 //
 //This file is part of Nuclos.
 //
@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.result;
 
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -29,16 +28,13 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Observer;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
 import javax.swing.Action;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollBar;
 import javax.swing.JTable;
-import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
@@ -56,8 +52,6 @@ import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.ui.CommonAbstractAction;
-import org.nuclos.client.ui.CommonClientWorkerAdapter;
-import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
@@ -73,24 +67,13 @@ import org.nuclos.client.ui.collect.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
 import org.nuclos.client.ui.collect.result.ResultPanel.TableHeaderColumnPopupListener;
-import org.nuclos.client.ui.collect.search.SearchWorker;
-import org.nuclos.client.ui.message.MessageExchange;
-import org.nuclos.client.ui.message.MessageExchange.MessageExchangeListener;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.CollectableUtils;
-import org.nuclos.common.collect.collectable.CollectableValueField;
-import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableLikeCondition;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
-import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
-import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.PredicateUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
@@ -98,7 +81,6 @@ import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
-import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.exception.PreferencesException;
 
 /**
@@ -134,6 +116,14 @@ public class ResultController<Clct extends Collectable> {
 	 */
 	private final CollectableEntity clcte;
 	
+	/**
+	 * The SearchResultStrategy for the result displayed.
+	 * 
+	 * @since Nuclos 3.1.01
+	 * @author Thomas Pasch
+	 */
+	private final ISearchResultStrategy<Clct> srs;
+	
 	/** 
 	 * TODO: Try to avoid cyclic dependency: The ResultController shouldn't depend on the CollectController. 
 	 * 		While this would be desirable, it is - in real - completely unrealistic at present. Even
@@ -168,6 +158,8 @@ public class ResultController<Clct extends Collectable> {
 
 	/**
 	 * action: Define as new Search result
+	 * 
+	 * @deprecated Does nothing.
 	 */
 	private final Action actDefineAsNewSearchResult = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultController.3","Als neues Suchergebnis"),
 			Icons.getInstance().getIconEmpty16(), CommonLocaleDelegate.getMessage("ResultController.4","Ausgew\u00e4hlte Datens\u00e4tze als neues Suchergebnis anzeigen")) {
@@ -188,24 +180,21 @@ public class ResultController<Clct extends Collectable> {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	ResultController(CollectController<Clct> clctctl, CollectableEntity clcte) {
-		this(clcte);
+	ResultController(CollectController<Clct> clctctl, CollectableEntity clcte, ISearchResultStrategy<Clct> srs) {
+		this(clcte, srs);
 		setCollectController(clctctl);
 	}
 	
-	public Action getEditSelectedCollectablesAction() {
-		return actEditSelectedCollectables;
+	/**
+	 * @deprecated You should really provide a CollectableEntity here.
+	 */
+	public ResultController(String entityName, ISearchResultStrategy<Clct> srs) {
+		this(NuclosCollectableEntityProvider.getInstance().getCollectableEntity(entityName), srs);
 	}
 	
-	public Action getDeleteSelectedCollectablesAction() {
-		return actDeleteSelectedCollectables;
-	}
-	
-	public MouseListener getTableDblClickML() {
-		return mouselistenerTableDblClick;
-	}
-	
-	public ResultController(CollectableEntity clcte) {
+	public ResultController(CollectableEntity clcte, ISearchResultStrategy<Clct> srs) {
+		this.srs = srs;
+		srs.setResultController(this);
 		actDeleteSelectedCollectables = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultController.10","L\u00f6schen..."),
 				(clctctl instanceof GenericObjectCollectController)? // quick and dirty... I know
 				Icons.getInstance().getIconDelete16() : Icons.getInstance().getIconRealDelete16(), 
@@ -222,24 +211,36 @@ public class ResultController<Clct extends Collectable> {
 	}
 	
 	/**
-	 * @deprecated You should really provide a CollectableEntity here.
+	 * TODO: Could this be protected?
 	 */
-	public ResultController(String entityName) {
-		this(NuclosCollectableEntityProvider.getInstance().getCollectableEntity(entityName));
+	public final ISearchResultStrategy<Clct> getSearchResultStrategy() {
+		return srs;
 	}
 	
-	public void setCollectController(CollectController<Clct> controller) {
+	public final Action getEditSelectedCollectablesAction() {
+		return actEditSelectedCollectables;
+	}
+	
+	public final Action getDeleteSelectedCollectablesAction() {
+		return actDeleteSelectedCollectables;
+	}
+	
+	public final MouseListener getTableDblClickML() {
+		return mouselistenerTableDblClick;
+	}
+	
+	public final void setCollectController(CollectController<Clct> controller) {
 		this.clctctl = controller;
 	}
 	
-	protected CollectController<Clct> getCollectController() {
+	protected final CollectController<Clct> getCollectController() {
 		return clctctl;
 	}
 	
 	/**
 	 * TODO: Make protected again.
 	 */
-	public CollectableEntity getEntity() {
+	public final CollectableEntity getEntity() {
 		return clcte;
 	}
 
@@ -289,7 +290,7 @@ public class ResultController<Clct extends Collectable> {
 
 			@Override
             public void actionPerformed(ActionEvent ev) {
-				cmdRefreshResult();
+				srs.cmdRefreshResult();
 			}
 		};
 		pnlResult.btnRefresh.setAction(actRefresh);
@@ -635,32 +636,6 @@ public class ResultController<Clct extends Collectable> {
 	}
 
 	/**
-	 * writes the given list of selected fields to the preferences, so they can be restored later by calling <code>readSelectedFieldsFromPreferences</code>.
-	 * @param lstclctefSelected List<CollectableEntityField>
-	 * @throws PreferencesException
-	 * @see #readSelectedFieldsFromPreferences(CollectableEntity)
-	 * TODO make this private
-	 */
-	public void writeSelectedFieldsToPreferences(List<? extends CollectableEntityField> lstclctefSelected) throws PreferencesException {
-		PreferencesUtils.putStringList(clctctl.getPreferences(), CollectController.PREFS_NODE_SELECTEDFIELDS, CollectableUtils.getFieldNamesFromCollectableEntityFields(lstclctefSelected));
-	}
-
-	/**
-	 * writes the selected columns (fields) and their widths to the user preferences.
-	 * TODO make private again or refactor!
-	 */
-	public final void writeSelectedFieldsAndWidthsToPreferences() {
-		try {
-			writeSelectedFieldsToPreferences(getFields().getSelectedFields());
-			writeFieldWidthsToPreferences(clctctl.getPreferences());
-		}
-		catch (PreferencesException ex) {
-			LOG.error("Failed to write selected field names and widths (search result columns) to preferences.", ex);
-			// No exception is thrown here.
-		}
-	}
-
-	/**
 	 * @param clcte
 	 * @return List<CollectableEntityField> the fields that are available for the result. This default implementation
 	 * returns all fields of the given entity that are to be display in the table.
@@ -835,9 +810,9 @@ public class ResultController<Clct extends Collectable> {
 					Collection<CollectableEntityField> collNewlySelected = new ArrayList<CollectableEntityField>(lstSelectedNew);
 					collNewlySelected.removeAll(fields.getSelectedFields());
 					if (!collNewlySelected.isEmpty()) {
-						if (!clctctl.getCollectablesInResultAreAlwaysComplete()) {
+						if (!clctctl.getSearchStrategy().getCollectablesInResultAreAlwaysComplete()) {
 							// refresh the result:
-							clctctl.getResultController().refreshResult();
+							clctctl.getResultController().getSearchResultStrategy().refreshResult();
 						}
 					}
 
@@ -935,8 +910,8 @@ public class ResultController<Clct extends Collectable> {
 			final int iIndex = fields.getSelectedFields().indexOf(clctef);
 			if (iIndex == -1) {
 				cmdAddColumn(fields, columnBefore, sFieldName);
-				if (!ctl.getCollectablesInResultAreAlwaysComplete()) {
-					ctl.getResultController().refreshResult();
+				if (!ctl.getSearchStrategy().getCollectablesInResultAreAlwaysComplete()) {
+					ctl.getResultController().getSearchResultStrategy().refreshResult();
 				}
 			}
 			else {
@@ -960,6 +935,32 @@ public class ResultController<Clct extends Collectable> {
 		PreferencesUtils.putIntegerList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDWIDTHS, lstFieldWidths);
 	}
 	
+	/**
+	 * writes the selected columns (fields) and their widths to the user preferences.
+	 * TODO make private again or refactor!
+	 */
+	public final void writeSelectedFieldsAndWidthsToPreferences() {
+		try {
+			writeSelectedFieldsToPreferences(clctctl.getFields().getSelectedFields());
+			writeFieldWidthsToPreferences(clctctl.getPreferences());
+		}
+		catch (PreferencesException ex) {
+			LOG.error("Failed to write selected field names and widths (search result columns) to preferences.", ex);
+			// No exception is thrown here.
+		}
+	}
+
+	/**
+	 * writes the given list of selected fields to the preferences, so they can be restored later by calling <code>readSelectedFieldsFromPreferences</code>.
+	 * @param lstclctefSelected List<CollectableEntityField>
+	 * @throws PreferencesException
+	 * @see #readSelectedFieldsFromPreferences(CollectableEntity)
+	 * TODO make this private
+	 */
+	public void writeSelectedFieldsToPreferences(List<? extends CollectableEntityField> lstclctefSelected) throws PreferencesException {
+		PreferencesUtils.putStringList(clctctl.getPreferences(), CollectController.PREFS_NODE_SELECTEDFIELDS, CollectableUtils.getFieldNamesFromCollectableEntityFields(lstclctefSelected));
+	}
+
 	/**
 	 * Command: Define selected <code>Collectable</code>s as a new search result.
 	 * 
@@ -995,240 +996,4 @@ public class ResultController<Clct extends Collectable> {
 //		});
 	}
 	
-	// search stuff
-
-	/**
-	 * @deprecated Use multithreaded search for new applications.
-	 */
-	public void refreshResult() throws CommonBusinessException {
-		getCollectController().search(true);
-	}
-	
-	/**
-	 * Command: refresh search result.
-	 * Repeats the current search.
-	 */
-	public final void cmdRefreshResult() {
-		this.cmdSearch(true);
-	}
-
-	public final void cmdRefreshResult(List<Observer> lstObservers) {
-		this.cmdObservableMultiThreadingSearch(lstObservers);
-	}
-
-	/**
-	 * Command: search.
-	 * Common implementation for cmdSearch() and cmdRefreshResult().
-	 * @param bRefreshOnly Refresh only? (false: perform a new search)
-	 */
-	@SuppressWarnings("deprecation")
-	private void cmdSearch(boolean bRefreshOnly) {
-		final CollectController<Clct> cc = getCollectController();
-		LOG.debug("START cmdSearch");
-		// save search search terms for autocompletion
-		saveSearchTerms();
-		// TODO call getSearchWorker(bRefreshOnly)
-		final SearchWorker<Clct> searchWorker = cc.getSearchWorker();
-		if (cc.isMultiThreadingEnabled() && (searchWorker != null)) {
-			this.cmdSearchMultiThreaded(searchWorker, bRefreshOnly);
-		}
-		else {
-			this.cmdSearchSingleThreaded(bRefreshOnly);
-		}
-		LOG.debug("FINISHED cmdSearch");
-	}
-
-	/**
-	 * Command: search.
-	 * Observable implementation for cmdSearch() and cmdRefreshResult().
-	 * @param lstObservers "search finished" Observers
-	 */
-	private void cmdObservableMultiThreadingSearch(List<Observer> lstObservers) {
-		LOG.debug("START cmdObservableMultiThreadingSearch");
-		final SearchWorker<Clct> searchWorker = getCollectController().getSearchWorker(lstObservers);
-		if (searchWorker != null) {
-			this.cmdSearchMultiThreaded(searchWorker, true);
-		}
-		LOG.debug("FINISHED cmdObservableMultiThreadingSearch");
-	}
-
-	/**
-	 * Command: search.
-	 * Performs a search, according to the current search condition, if any.
-	 */
-	public final void cmdSearch() {
-		this.cmdSearch(false);
-	}
-
-	/**
-	 * @param searchworker
-	 * @precondition searchworker != null
-	 */
-	private void cmdSearchMultiThreaded(final SearchWorker<Clct> searchworker, final boolean bRefreshOnly) {
-		final CollectController<Clct> cc = getCollectController();
-		UIUtils.runShortCommand(cc.getFrame(), new CommonRunnable() {
-			@Override
-            public void run() throws CommonValidationException {
-				if (searchworker == null) {
-					throw new NullArgumentException("searchworker");
-				}
-
-				if (!cc.stopEditingInSearch()) {
-					throw new CommonValidationException("Die eingegebene Suchbedingung ist ung\u00fcltig bzw. unvollst\u00e4ndig.");
-				}
-				else {
-					// TODO remove - painting isn't necessary here:
-					UIUtils.paintImmediately(cc.getSearchPanel().tfStatusBar);
-					writeSelectedFieldsAndWidthsToPreferences();
-					final List<Clct> selected = cc.getSelectedCollectables();
-					adjustVerticalScrollBarForSearch(bRefreshOnly);
-
-					CommonMultiThreader.getInstance().execute(new CommonClientWorkerAdapter<Clct>(cc) {
-						private volatile List<Clct> lstclctResult;
-
-						@Override
-						public void init() throws CommonBusinessException {
-							super.init();
-
-							searchworker.startSearch();
-						}
-
-						@Override
-						public void work() throws CommonBusinessException {
-							this.lstclctResult = searchworker.getResult();
-						}
-
-						@Override
-						public void paint() throws CommonBusinessException {
-							if (this.lstclctResult != null) {
-								searchworker.finishSearch(this.lstclctResult);
-
-								if (cc.isSearchPanelAvailable()) {
-									// TODO On refresh, it's "counter intuitive" to leave result mode here.
-									cc.setCollectState(CollectState.OUTERSTATE_SEARCH, CollectState.SEARCHMODE_SYNCHED);
-								}
-								if(selected != null && !selected.isEmpty()) {
-									selected.clear();
-								}
-								cc.setCollectState(CollectState.OUTERSTATE_RESULT, CollectState.RESULTMODE_NOSELECTION);
-							}
-
-							super.paint();
-							if(cc.getResultPanel() != null){
-								cc.getResultPanel().requestFocusInWindow();
-							}
-						}
-					});
-				}
-			}
-		});
-	}
-
-	/**
-	 * Command: search.
-	 * Performs a search, according to the current search condition, if any.
-	 * @param bRefreshOnly Refresh only? (false: perform a new search)
-	 * @deprecated always search multi threaded
-	 */
-	@Deprecated
-	private void cmdSearchSingleThreaded(final boolean bRefreshOnly) {
-		final CollectController<Clct> cc = getCollectController();
-		UIUtils.runCommand(cc.getFrame(), new Runnable() {
-			@Override
-            public void run() {
-				try {
-					if (!cc.stopEditingInSearch()) {
-						throw new CommonValidationException("Die eingegebene Suchbedingung ist ung\u00fcltig bzw. unvollst\u00e4ndig.");
-					}
-					else {
-						// update the status bar before performing the search:
-						UIUtils.paintImmediately(cc.getSearchPanel().tfStatusBar);
-
-						// Write the column widths to preferences, so they can be restored after searching is finished
-						writeSelectedFieldsAndWidthsToPreferences();
-
-						adjustVerticalScrollBarForSearch(bRefreshOnly);
-
-						cc.search(bRefreshOnly);
-
-						if (cc.isSearchPanelAvailable()) {
-							// TODO On refresh, it's "counter intuitive" to leave result mode here.
-							cc.setCollectState(CollectState.OUTERSTATE_SEARCH, CollectState.SEARCHMODE_SYNCHED);
-						}
-						cc.setCollectState(CollectState.OUTERSTATE_RESULT, CollectState.RESULTMODE_NOSELECTION);
-
-						// Searching is finished, the result columns have been replaced in the model, so retore the previous widths
-						setColumnWidths(cc.getResultTable());
-						if(cc.getResultPanel() != null){
-							cc.getResultPanel().requestFocusInWindow();
-						}
-					}
-				}
-				catch (CommonBusinessException ex) {
-					Errors.getInstance().showExceptionDialog(cc.getFrame(), ex);
-				}
-			}
-		});
-	}
-
-	private void saveSearchTerms() {
-		final CollectController<Clct> cc = getCollectController();
-		try {
-			CollectableSearchCondition cond = cc.getCollectableSearchCondition();
-			Map<String, CollectableField> m = SearchConditionUtils.getAtomicFieldsMap(cond);
-
-			if(cond != null) {
-				if (cond instanceof AtomicCollectableSearchCondition) {
-	   			if (cond instanceof CollectableLikeCondition) {
-	   				m.put(((CollectableLikeCondition) cond).getFieldName(), new CollectableValueField(((CollectableLikeCondition)cond).getLikeComparand()));
-	   			}
-	   		}
-
-				for(String key : m.keySet()) {
-					ArrayList<String> l = PreferencesUtils.getStringList(cc.getPreferences().node("fields"), key);
-					CollectableField field = m.get(key);
-
-					if(!field.isNull() && field.getValue() != null) {
-						String s = field.getValue().toString();
-						if(l.contains(s))
-							l.remove(s);
-
-						l.add(0, s);
-					}
-					while(l.size() > 10)
-						l.remove(l.size()-1);
-
-					PreferencesUtils.putStringList(cc.getPreferences().node("fields"), key, l);
-
-					MessageExchange.send(
-						new Pair<String, String>(cc.getEntityName(), key),
-						MessageExchangeListener.ObjectType.TEXTFIELD,
-						MessageExchangeListener.MessageType.REFRESH);
-				}
-			}
-		}
-		catch(CollectableFieldFormatException e1) {
-		}
-		catch(PreferencesException e) {
-		}
-	}
-
-	private void adjustVerticalScrollBarForSearch(boolean bRefreshOnly) {
-		final CollectController<Clct> cc = getCollectController();
-		final JViewport viewport = cc.getResultPanel().getResultTableScrollPane().getViewport();
-		if (bRefreshOnly) {
-			final Rectangle rect = cc.getResultTable().getCellRect(0, 0, true);
-			final Rectangle viewRect = viewport.getViewRect();
-			// There seem to be different opinions about what scrollRectToVisible has to do at SUN and everywhere else...
-			rect.setLocation(viewRect.x, viewRect.y);//rect.x - viewRect.x, rect.y - viewRect.y);
-			viewport.scrollRectToVisible(rect);
-		}
-		else {
-			Point viewPosition = viewport.getViewPosition();
-			viewport.setViewPosition(new Point(viewPosition.x, 0));
-		}
-		final JScrollBar scrlbarVertical = cc.getResultPanel().getResultTableScrollPane().getVerticalScrollBar();
-		scrlbarVertical.setValue(scrlbarVertical.getMinimum());
-	}
-
 }	// class ResultController

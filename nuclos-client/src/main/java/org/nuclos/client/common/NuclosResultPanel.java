@@ -18,8 +18,6 @@ package org.nuclos.client.common;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Toolkit;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
@@ -528,7 +526,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	 * @deprecated Move to NuclosResultController.
 	 */
 	protected void postXMLImport(final CollectController<Clct> clctctl) {
-		clctctl.getResultController().cmdRefreshResult();
+		clctctl.getResultController().getSearchResultStrategy().cmdRefreshResult();
 	}
 
 	/**

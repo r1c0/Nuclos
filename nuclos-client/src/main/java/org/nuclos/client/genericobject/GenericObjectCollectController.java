@@ -43,8 +43,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicReference;
@@ -90,7 +88,6 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.nuclos.client.attribute.AttributeCache;
@@ -178,12 +175,12 @@ import org.nuclos.client.ui.collect.component.model.SearchEditModel;
 import org.nuclos.client.ui.collect.detail.DetailsCollectableEventListener;
 import org.nuclos.client.ui.collect.detail.DetailsPanel;
 import org.nuclos.client.ui.collect.result.GenericObjectResultController;
+import org.nuclos.client.ui.collect.result.NuclosSearchResultStrategy;
 import org.nuclos.client.ui.collect.result.ResultController;
 import org.nuclos.client.ui.collect.result.ResultPanel;
-import org.nuclos.client.ui.collect.search.ObservableSearchWorker;
+import org.nuclos.client.ui.collect.search.ISearchStrategy;
 import org.nuclos.client.ui.collect.search.SearchPanel;
-import org.nuclos.client.ui.collect.search.SearchWorker;
-import org.nuclos.client.ui.collect.strategy.CompleteCollectablesStrategy;
+import org.nuclos.client.ui.collect.strategy.CompleteGenericObjectsStrategy;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.client.ui.multiaction.MultiActionProgressPanel;
@@ -192,7 +189,6 @@ import org.nuclos.client.ui.multiaction.MultiCollectablesActionController;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.client.valuelistprovider.cache.ManagedCollectableFieldsProvider;
 import org.nuclos.common.Actions;
-import org.nuclos.common.AttributeProvider;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
@@ -274,11 +270,25 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  * @version 01.00.00
  */
 public class GenericObjectCollectController extends EntityCollectController<CollectableGenericObjectWithDependants> {
+	
 	protected static final Logger log = Logger.getLogger(GenericObjectCollectController.class);
 
+	private static final Collection<String> collUsageCriteriaFieldNames = Collections.unmodifiableCollection(UsageCriteria.getContainedAttributeNames());
+
+	/**
+	 * @return the names of the attributes contained in a quintuple. Note that "module" isn't an attribute, so it's not
+	 * part of the result.
+	 * 
+	 * @deprecated Move to a better place.
+	 */
+	public static Collection<String> getUsageCriteriaFieldNames() {
+		return collUsageCriteriaFieldNames;
+	}
+	
 	private final Logger logSecurity = Logger.getLogger(log.getName() + ".security");
 
 	private static final String PREFS_KEY_FILTERNAME = "filterName";
+
 	private static final String PREFS_KEY_SEARCHRESULTTEMPLATENAME = "searchResultTemplateName";
 
 	private static final String CALCULATED_ATTRS_WORKER_NAME = "calculatedAttrsWorker";
@@ -293,8 +303,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private final CollectableEntityField clctefSearchState = new DefaultCollectableEntityField("[status_num_plus_name]", String.class,
 		CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue())), null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null);
 	private final CollectableComboBox clctSearchState = new NuclosCollectableStateComboBox(clctefSearchState, true);
-
-	private static final Collection<String> collUsageCriteriaFieldNames = Collections.unmodifiableCollection(UsageCriteria.getContainedAttributeNames());
 
 	private final CollectableComponentModelListener ccmlistenerUsageCriteriaFieldsForDetails = new CollectableComponentModelAdapter() {
 		@Override
@@ -389,7 +397,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	private static int iFilter;
 
-	private Integer iSearchDeleted = CollectableGenericObjectSearchExpression.SEARCH_UNDELETED;
 	protected boolean bUseInvalidMasterData = false;
 
 	private final Integer iModuleId;
@@ -460,8 +467,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 	};
 
-	private ProxyList<CollectableGenericObjectWithDependants> proxylstclct;
-
 	/**
 	 * shortcut for performance. After update, the layout needn't be reloaded if the quintuple fields didn't change.
 	 */
@@ -486,6 +491,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private Boolean blnCurrentRecordWritable = null;
 
 	private Map<String, DetailsComponentModel> transferredDetailsData = new HashMap<String, DetailsComponentModel>();
+
+	private Integer iSearchDeleted = CollectableGenericObjectSearchExpression.SEARCH_UNDELETED;
 
 	/**
 	 * action: Delete selected Collectable (in Result panel)
@@ -567,6 +574,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/**
 	 * Use the static method <code>newGenericObjectCollectController</code> to create new instances.
 	 * 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
 	 * @param parent
 	 * @param iModuleId
 	 * @param bAutoInit TODO
@@ -575,13 +585,16 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
+	 * 
+	 * @deprecated bAutoInit is deprecated
 	 */
 	public GenericObjectCollectController(JComponent parent, Integer iModuleId, boolean bAutoInit, MainFrameTab tabIfAny) {
 		super(parent, CollectableGenericObjectEntity.getByModuleId(iModuleId), 
 				new GenericObjectResultController<CollectableGenericObjectWithDependants>(
-						CollectableGenericObjectEntity.getByModuleId(iModuleId)));
+						CollectableGenericObjectEntity.getByModuleId(iModuleId),
+						new NuclosSearchResultStrategy<CollectableGenericObjectWithDependants>()));
 		this.iModuleId = iModuleId;
-		setCompleteCollectablesStrategy(new CompleteGenericObjectsStrategy());
+		// getSearchStrategy().setCompleteCollectablesStrategy(new CompleteGenericObjectsStrategy());
 		final MainFrameTab frame = tabIfAny != null ? tabIfAny : newInternalFrame();
 		frame.setLayeredComponent(pnlCollect);
 		if (bAutoInit)
@@ -591,12 +604,21 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		setInternalFrame(frame, tabIfAny==null);
 	}
 
-	public GenericObjectCollectController(JComponent parent, Integer iModuleId, boolean bAutoInit, 
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
+	protected GenericObjectCollectController(JComponent parent, Integer iModuleId, boolean bAutoInit, 
 			MainFrameTab tabIfAny, ResultController<CollectableGenericObjectWithDependants> rc) 
 	{
 		super(parent, CollectableGenericObjectEntity.getByModuleId(iModuleId), rc);
 		this.iModuleId = iModuleId;
-		setCompleteCollectablesStrategy(new CompleteGenericObjectsStrategy());
+		// getSearchStrategy().setCompleteCollectablesStrategy(new CompleteGenericObjectsStrategy());
 		final MainFrameTab frame = tabIfAny != null ? tabIfAny : newInternalFrame();
 		frame.setLayeredComponent(pnlCollect);
 		if (bAutoInit)
@@ -606,10 +628,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		setInternalFrame(frame, tabIfAny==null);
 	}
 	
+	public final Integer getSearchDeleted() {
+		return iSearchDeleted;
+	}
+	
 	/**
 	 * @deprecated Move to GenericObjectResultController.
 	 */
-	public SearchResultTemplateController getSearchResultTemplateController() {
+	public final SearchResultTemplateController getSearchResultTemplateController() {
 		return searchResultTemplatesController;
 	}
 
@@ -617,8 +643,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * refactoring to avoid dirty use of SwingUtilities.invokeLater()
 	 * allows local variable initialization of extenders [FS]
 	 *
+	 * TODO: Make this protected again.
 	 */
-	protected void init() {
+	public void init() {
 		initialize(pnlCollect);
 
 		MainFrameTab frame = getFrame();
@@ -1442,11 +1469,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 	}
 
-	@Override
-	public CollectableSearchCondition getCollectableSearchCondition() throws CollectableFieldFormatException {
-		return super.getCollectableSearchCondition();
-	}
-
 	/**
 	 * @deprecated Move to ResultController hierarchy.
 	 */
@@ -1474,7 +1496,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					public void run() {
 						try {
 							checkedRestoreCollectable(getSelectedCollectable());
-							getResultController().refreshResult();
+							getResultController().getSearchResultStrategy().refreshResult();
 						}
 						catch (CommonPermissionException ex) {
 							final String sErrorMsg = CommonLocaleDelegate.getMessage("GenericObjectCollectController.66","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz wiederherzustellen.");
@@ -1529,12 +1551,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 							checkedRestoreCollectable(getSelectedCollectable());
 							getResultTableModel().remove(getSelectedCollectable());
-							search(true);
+							getSearchStrategy().search(true);
 
 							if (iNewSelectedRow == -1) {
 								tblResult.clearSelection();
 								// switch to new mode:
-								getResultController().refreshResult();
+								getResultController().getSearchResultStrategy().refreshResult();
 							}
 							else {
 								tblResult.setRowSelectionInterval(iNewSelectedRow, iNewSelectedRow);
@@ -1593,12 +1615,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							}
 
 							checkedDeleteCollectable(getSelectedCollectable());
-							search(true);
+							getSearchStrategy().search(true);
 
 							if (iNewSelectedRow == -1) {
 								tblResult.clearSelection();
 								// switch to new mode:
-								getResultController().refreshResult();
+								getResultController().getSearchResultStrategy().refreshResult();
 							}
 							else {
 								tblResult.getSelectionModel().setSelectionInterval(iNewSelectedRow, iNewSelectedRow);
@@ -2141,32 +2163,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	/**
-	 * @return the internal version of the collectable search condition, that is used for performing the actual search.
-	 *         Includes the selected global search filter's internal search condition (if any).
-	 * @throws CollectableFieldFormatException
-	 */
-	protected final CollectableSearchCondition getInternalSearchCondition() throws CollectableFieldFormatException {
-		final CompositeCollectableSearchCondition compositecond = new CompositeCollectableSearchCondition(LogicalOperator.AND);
-
-		final CollectableSearchCondition clctcond = GenericObjectClientUtils.getInternalSearchCondition(getModuleId(), getCollectableSearchCondition());
-		if (clctcond != null)
-			compositecond.addOperand(clctcond);
-
-		return SearchConditionUtils.simplified(compositecond);
-	}
-
-	/**
-	 * @return search expression containing the internal version of the collectable search condition,
-	 *         that is used for performing the actual search, and the sorting sequence.
-	 * @throws CollectableFieldFormatException
-	 */
-	protected CollectableGenericObjectSearchExpression getInternalSearchExpression() throws CollectableFieldFormatException {
-		CollectableGenericObjectSearchExpression clctGOSearchExpression = new CollectableGenericObjectSearchExpression(
-				getInternalSearchCondition(), getResultController().getCollectableSortingSequence(), iSearchDeleted);
-		return clctGOSearchExpression;
-	}
-
-	/**
 	 * @return a Comparator that compares the entity labels first, then the field labels.
 	 *         Fields of the main entity are sorted lower than all other fields.
 	 *         
@@ -2231,7 +2227,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				});
 				if (filteredSortKeys.size() == sortKeys.size()) {
 					//NUCLEUSINT-1039
-					getResultController().cmdSearch();
+					getResultController().getSearchResultStrategy().cmdSearch();
 				} else {
 					result.setSortKeys(Collections.<SortKey>emptyList(), false);
 					throw new CommonBusinessException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.19","Das Suchergebnis kann nicht nach Unterformularspalten bzw. Vaterspalten sortiert werden."));
@@ -2262,115 +2258,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	/**
-	 * @deprecated Move to ResultController hierarchy and make protected again.
+	 * TODO: Make private again.
 	 */
-	@Override
-	public SearchWorker<CollectableGenericObjectWithDependants> getSearchWorker() {
-		return new ObservableSearchWorker(this);
-	}
-
-	/**
-	 * @deprecated Move to ResultController hierarchy and make protected again.
-	 */
-	@Override
-	public SearchWorker<CollectableGenericObjectWithDependants> getSearchWorker(List<Observer> lstObservers) {
-		ObservableSearchWorker observableSearchWorker = new ObservableSearchWorker(this);
-		for(Observer observer : lstObservers)
-			observableSearchWorker.addObserver(observer);
-		return observableSearchWorker;
-	}
-
-	/**
-	 * @deprecated Move to ResultController hierarchy.
-	 */
-	@Override
-	protected void search() throws CommonBusinessException {
-		this.search(false);
-	}
-
-	/**
-	 * @deprecated Move to ResultController hierarchy and make this protected again.
-	 */
-	@Override
-	public void search(boolean bRefreshOnly) throws CommonBusinessException {
-		log.debug("START search");
-
-		/** @todo move to CollectController! */
-		this.makeConsistent(true);
-		removePreviousChangeListenersForResultTableVerticalScrollBar();
-		final ProxyList<CollectableGenericObjectWithDependants> lstclctResult = getSearchResult();
-		setCollectableProxyList(lstclctResult);
-		this.fillResultPanel(lstclctResult, lstclctResult.size(), false);
-		setupChangeListenerForResultTableVerticalScrollBar();
-		log.debug("FINISHED search");
-	}
-
-	/**
-	 * @return List<Collectable>
-	 * @throws CollectableFieldFormatException
-	 * @postcondition result != null
-	 * @own-thread
-	 * 
-	 * TODO: Make this private again.
-	 */
-	public ProxyList<CollectableGenericObjectWithDependants> getSearchResult() throws CollectableFieldFormatException {
-		final CollectableGenericObjectSearchExpression clctexprInternal = getInternalSearchExpression();
-		clctexprInternal.setValueListProviderDatasource(getValueListProviderDatasource());
-		clctexprInternal.setValueListProviderDatasourceParameter(getValueListProviderDatasourceParameter());
-		log.debug("Interne Suchbedingung: " + clctexprInternal.getSearchCondition());
-
-		// OPTIMIZATION: only selected and/or required attributes are loaded here:
-		final ProxyList<GenericObjectWithDependantsVO> proxylstlovwdvo =
-			lodelegate.getGenericObjectsWithDependants(getModuleId(), clctexprInternal,
-				getSelectedAndRequiredAttributeIds(), getSelectedSubEntityNames(), isParentFieldSelected(),
-				getIncludeSubModulesForSearch());
-
-		return new CollectableGenericObjectProxyListAdapter(proxylstlovwdvo);
-	}
-
-	private boolean getIncludeSubModulesForSearch() {
-		// Don't include submodules unless this controller is for a submodule.
-		// Don't include submodules for general search:
-		final Integer iModuleId = getModuleId();
-		return (iModuleId != null) && Modules.getInstance().isSubModule(iModuleId);
-	}
-
-	private List<CollectableEntityFieldWithEntity> getSelectedFields() {
+	public List<CollectableEntityFieldWithEntity> getSelectedFields() {
 		return CollectionUtils.typecheck(getFields().getSelectedFields(), CollectableEntityFieldWithEntity.class);
-	}
-
-	private Set<Integer> getSelectedAndRequiredAttributeIds() {
-		final Set<? extends CollectableEntityField> stSelectedAttributes = CollectionUtils.selectIntoSet(getSelectedFields(), new CollectableEntityFieldWithEntity.HasEntity(getCollectableEntity()));
-		final Set<String> stFieldNamesSelected = CollectionUtils.transformIntoSet(stSelectedAttributes, new CollectableEntityField.GetName());
-		final Set<String> stFieldNamesRequired = getRequiredFieldNamesForResult();
-		final Set<String> stFieldNamesSelectedOrRequired = CollectionUtils.union(stFieldNamesSelected, stFieldNamesRequired);
-		return CollectionUtils.transformIntoSet(stFieldNamesSelectedOrRequired, new AttributeProvider.GetAttributeIdByName(sEntity, AttributeCache.getInstance()));
-	}
-
-	/**
-	 * @return Set<String>
-	 * @postcondition result != null
-	 */
-	protected Set<String> getSelectedSubEntityNames() {
-		return GenericObjectUtils.getSubEntityNames(getSelectedFields(), getCollectableEntity().getName(), Modules.getInstance());
-	}
-
-	private boolean isParentFieldSelected() {
-		return GenericObjectUtils.containsParentField(getSelectedFields(), this.getParentEntityName());
-	}
-
-	/**
-	 * TODO: Make this protected again.
-	 * 
-	 * @deprecated Move to ObservableSearchWorker???
-	 */
-	public void setCollectableProxyList(ProxyList<CollectableGenericObjectWithDependants> proxylstclct) {
-		this.proxylstclct = proxylstclct;
-	}
-
-	// @todo move to ResultController or ResultPanel?
-	protected ProxyList<CollectableGenericObjectWithDependants> getCollectableProxyList() {
-		return proxylstclct;
 	}
 
 	/**
@@ -2380,13 +2271,15 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * TODO: Make this protected again.
 	 */
 	public void setupChangeListenerForResultTableVerticalScrollBar() {
-		final ProxyList<? extends Collectable> lstclct = getCollectableProxyList();
+		final ProxyList<? extends Collectable> lstclct = getSearchStrategy().getCollectableProxyList();
 		if (lstclct != null)
 			getResultPanel().setupChangeListenerForResultTableVerticalScrollBar(lstclct, getFrame());
 	}
 
 	/**
 	 * TODO: Make this proteced again.
+	 * 
+	 * @deprecated Move to ResultPanel???
 	 */
 	public void removePreviousChangeListenersForResultTableVerticalScrollBar() {
 		final JScrollBar scrlbarVertical = getResultPanel().getResultTableScrollPane().getVerticalScrollBar();
@@ -2864,7 +2757,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		final CollectableGenericObjectWithDependants result = new CollectableGenericObjectWithDependants(lodelegate.getWithDependants(iGenericObjectId));
 
-		assert isCollectableComplete(result);
+		assert getSearchStrategy().isCollectableComplete(result);
 		return result;
 	}
 
@@ -2883,7 +2776,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		final CollectableGenericObjectWithDependants result = CollectableGenericObjectWithDependants.newCollectableGenericObject(lodelegate.get(iGenericObjectId));
 
-		assert isCollectableComplete(result);
+		assert getSearchStrategy().isCollectableComplete(result);
 		return result;
 	}
 
@@ -2982,8 +2875,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	/**
 	 * @return the name of the parent entity, if any, of this <code>CollectController</code>'s entity.
+	 * 
+	 * TODO: Make private again.
 	 */
-	private String getParentEntityName() {
+	public String getParentEntityName() {
 		return getParentEntityName(this.getEntityName());
 	}
 
@@ -3138,7 +3033,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		assert iModuleId != null;
 		final CollectableGenericObjectWithDependants result = newCollectableGenericObject(new GenericObjectVO(iModuleId, null, null, null));
 		assert result != null;
-		assert isCollectableComplete(result);
+		assert getSearchStrategy().isCollectableComplete(result);
 		setSubsequentStatesVisible(false, false);
 		return result;
 	}
@@ -3178,7 +3073,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		setHistoricalDate(null);
 
-		getResultController().refreshResult();
+		getResultController().getSearchResultStrategy().refreshResult();
 	}
 
 	protected void checkedRestoreCollectable(CollectableGenericObjectWithDependants clct) throws CommonBusinessException {
@@ -3211,6 +3106,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	protected Integer getSelectedCollectableModuleId() {
 		final GenericObjectVO govo = getSelectedGenericObjectCVO();
 		return (govo == null) ? getModuleId() : Integer.valueOf(govo.getModuleId());
+	}
+
+	/**
+	 * @return Set<String>
+	 * @postcondition result != null
+	 */
+	public Set<String> getSelectedSubEntityNames() {
+		return GenericObjectUtils.getSubEntityNames(getSelectedFields(), getCollectableEntity().getName(), Modules.getInstance());
 	}
 
 	@Override
@@ -4287,14 +4190,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	/**
-	 * @return the names of the attributes contained in a quintuple. Note that "module" isn't an attribute, so it's not
-	 * part of the result.
-	 */
-	protected static Collection<String> getUsageCriteriaFieldNames() {
-		return collUsageCriteriaFieldNames;
-	}
-
-	/**
 	 * @param bSearchPanel
 	 * @return Have the quintuple field listeners for the given panel been added already?
 	 */
@@ -4463,8 +4358,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		UIUtils.runCommand(getFrame(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
-				final boolean bIncludeSubModules = getIncludeSubModulesForSearch();
-				new ReportController(getFrame()).export(getCollectableEntity(), getInternalSearchExpression(), getSelectedFields(),
+				final ISearchStrategy<CollectableGenericObjectWithDependants> ss = getSearchStrategy();
+				final boolean bIncludeSubModules = ss.getIncludeSubModulesForSearch();
+				new ReportController(getFrame()).export(getCollectableEntity(), ss.getInternalSearchExpression(), getSelectedFields(),
 					lstclctlo, usagecriteria, bIncludeSubModules, sDocumentEntityName);
 			}
 		});
@@ -4489,11 +4385,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		UIUtils.runCommand(getFrame(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
+				final ISearchStrategy<CollectableGenericObjectWithDependants> ss = getSearchStrategy();
 				String sFilterName = getEntityLabel() + " " + Integer.toString(++iFilter);
-				if (getSearchFilterComboBox().getSelectedIndex() != 0)
+				if (getSearchFilterComboBox().getSelectedIndex() != 0) {
 					sFilterName = sFilterName + ": " + getSearchFilterComboBox().getSelectedItem().toString();
+				}
 				getExplorerController().showInOwnTab(new EntitySearchResultTreeNode(
-					CommonLocaleDelegate.getMessage("GenericObjectCollectController.93","Suchergebnis ({0})", sFilterName), null, getInternalSearchExpression(), sFilterName, Main.getMainController().getUserName(), getEntityName()));
+					CommonLocaleDelegate.getMessage("GenericObjectCollectController.93","Suchergebnis ({0})", sFilterName), 
+					null, ss.getInternalSearchExpression(), sFilterName, Main.getMainController().getUserName(), getEntityName()));
 			}
 		});
 	}
@@ -5390,7 +5289,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				/** @todo this should be done by the search itself! */
 				ctl.getResultController().writeSelectedFieldsAndWidthsToPreferences();
 				// refresh search result in order to reflect changes made by state transitions:
-				ctl.getResultController().refreshResult();
+				ctl.getResultController().getSearchResultStrategy().refreshResult();
 				ctl.setCollectState(CollectState.OUTERSTATE_RESULT, CollectState.RESULTMODE_NOSELECTION);
 			}
 		}
@@ -5400,87 +5299,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 
 	}	// class ChangeStateForSelectedCollectablesController
-
-	/**
-	 * inner class <code>CompleteGenericObjectsStrategy</code>
-	 */
-	private static class CompleteGenericObjectsStrategy implements CompleteCollectablesStrategy<CollectableGenericObjectWithDependants> {
-
-		@Override
-		public boolean isComplete(CollectableGenericObjectWithDependants clct) {
-			/** @todo add "contains all required dependants */
-			return clct.isComplete();
-		}
-
-		@Override
-		public boolean getCollectablesInResultAreAlwaysComplete() {
-			return false;
-		}
-
-		/**
-		 * @return the identifier, status, status numeral and all quintuple fields.
-		 */
-		@Override
-		public Set<String> getRequiredFieldNamesForResult() {
-			final Set<String> result = new HashSet<String>();
-			result.add(NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getField());
-			result.add(NuclosEOField.STATE.getMetaData().getField());
-			result.add(NuclosEOField.STATENUMBER.getMetaData().getField());
-			result.addAll(getUsageCriteriaFieldNames());
-			return result;
-		}
-
-		/**
-		 * reads a bunch of <code>CollectableGenericObjectWithDependants</code> from the database.
-		 * @param collclctlo Collection<Collectable>
-		 * @return Collection<Collectable> contains the read <code>CollectableGenericObjectWithDependants</code>.
-		 * @throws CommonBusinessException
-		 * @precondition collclctlo != null
-		 * @postcondition result != null
-		 * @postcondition result.size() == collclct.size()
-		 */
-		@Override
-		public Collection<CollectableGenericObjectWithDependants> getCompleteCollectables(Collection<CollectableGenericObjectWithDependants> collclctlo) throws CommonBusinessException {
-			if (collclctlo == null)
-				throw new NullArgumentException("collclctlo");
-			final Collection<CollectableGenericObjectWithDependants> result = new ArrayList<CollectableGenericObjectWithDependants>();
-
-			final Collection<CollectableGenericObject> collclctIncomplete = new ArrayList<CollectableGenericObject>();
-			CollectionUtils.split(collclctlo, new Collectable.IsComplete(), result, collclctIncomplete);
-
-			if (!collclctIncomplete.isEmpty()) {
-				final Collection<Object> collIds = CollectionUtils.transform(collclctIncomplete, new Collectable.GetId());
-				final CollectableSearchCondition cond = SearchConditionUtils.getCollectableSearchConditionForIds(collIds);
-
-				final Integer iCommonModuleId = getCommonModuleId(collclctlo);
-
-				final Set<String> stRequiredSubEntityNames = (iCommonModuleId == null) ?
-					Collections.<String>emptySet() :
-						GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(iCommonModuleId);
-
-					final List<GenericObjectWithDependantsVO> lstlowdcvo = GenericObjectDelegate.getInstance().getCompleteGenericObjectsWithDependants(iCommonModuleId, cond, stRequiredSubEntityNames);
-					result.addAll(CollectionUtils.transform(lstlowdcvo, new CollectableGenericObjectWithDependants.MakeCollectable()));
-			}
-
-			assert result != null;
-			assert result.size() == collclctlo.size();
-			return result;
-		}
-
-		/**
-		 * @param collclctlo Collection<CollectableGenericObject>
-		 * @return the common module id, if any, of the given leased objects.
-		 */
-		private static Integer getCommonModuleId(Collection<? extends CollectableGenericObject> collclctlo) {
-			return Utils.getCommonObject(CollectionUtils.transform(collclctlo, new Transformer<CollectableGenericObject, Integer>() {
-				@Override
-				public Integer transform(CollectableGenericObject clctlo) {
-					return clctlo.getGenericObjectCVO().getModuleId();
-				}
-			}));
-		}
-
-	}	// inner class CompleteGenericObjectsStrategy
 
 	/**
 	 * inner class GenericObjectCollectStateListener

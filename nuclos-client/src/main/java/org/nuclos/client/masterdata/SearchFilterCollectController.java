@@ -51,6 +51,7 @@ import org.nuclos.client.searchfilter.SearchFilterResultController;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
+import org.nuclos.client.ui.collect.result.NuclosSearchResultStrategy;
 import org.nuclos.client.ui.labeled.LabeledTextField;
 import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.common.NuclosBusinessException;
@@ -85,8 +86,19 @@ public class SearchFilterCollectController extends MasterDataCollectController {
 	private SearchFilterResourceTableModel tablemodel = new SearchFilterResourceTableModel();
 	private JTable table = new JTable(tablemodel);
 
+	/**
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * to get an instance.
+	 * 
+	 * @deprecated You should normally do sth. like this:<code><pre>
+	 * ResultController<~> rc = new ResultController<~>();
+	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
+	 * </code></pre>
+	 */
 	public SearchFilterCollectController(JComponent parent, MainFrameTab tabIfAny){
-		super(parent, NuclosEntity.SEARCHFILTER, tabIfAny, new SearchFilterResultController<CollectableMasterDataWithDependants>(NuclosEntity.SEARCHFILTER.getEntityName()));
+		super(parent, NuclosEntity.SEARCHFILTER, tabIfAny, 
+				new SearchFilterResultController<CollectableMasterDataWithDependants>(NuclosEntity.SEARCHFILTER.getEntityName(),
+						new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()));
 
 		// a searchfilter can only be created via a searchpanel of a collectcontroller
 		getNewAction().setEnabled(false);

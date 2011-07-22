@@ -37,15 +37,15 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 public class LayoutResultController<Clct extends CollectableMasterDataWithDependants> extends NuclosResultController<Clct> {
 	
-	public LayoutResultController(CollectableEntity clcte) {
-		super(clcte);
+	public LayoutResultController(CollectableEntity clcte, ISearchResultStrategy<Clct> srs) {
+		super(clcte, srs);
 	}
 	
 	/**
 	 * @deprecated You should really provide a CollectableEntity here.
 	 */
-	public LayoutResultController(String entityName) {
-		super(entityName);
+	public LayoutResultController(String entityName, ISearchResultStrategy<Clct> srs) {
+		super(entityName, srs);
 	}
 	
 	/**
