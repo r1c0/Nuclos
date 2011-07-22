@@ -115,7 +115,11 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 				}
 			}
 		}
-		return super.getComponentBefore(aContainer, aComponent);
+		Component comp = super.getComponentBefore(aContainer, aComponent);
+		if(UIUtils.isEditable(comp))
+			return comp;
+		else
+			return getComponentBefore(aContainer, comp);
 	}
 
 	@Override
