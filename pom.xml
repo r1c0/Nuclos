@@ -71,7 +71,7 @@
 		</repository>
 		<snapshotRepository>
 			<id>snapshots.maven.novabit.de</id>
-			<url>http://maven.nuclos.de/nexus/content/repositories/snapshots/</url>
+			<url>http://maven.nuclos.de/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
