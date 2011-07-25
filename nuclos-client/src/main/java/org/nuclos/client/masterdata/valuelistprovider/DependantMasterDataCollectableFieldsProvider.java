@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.nuclos.client.common.Utils;
-import org.nuclos.client.entityobject.EntityObjectDelegate;
+import org.nuclos.client.entityobject.EntityFacadeDelegate;
 import org.nuclos.client.valuelistprovider.cache.CacheableCollectableFieldsProvider;
 import org.nuclos.client.valuelistprovider.cache.ManagedCollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableEntityProvider;
@@ -109,7 +109,7 @@ public class DependantMasterDataCollectableFieldsProvider extends ManagedCollect
 		if (this.oRelatedId == null) {
 			return Collections.<CollectableField>emptyList();
 		} else {
-			final List<CollectableField> result = EntityObjectDelegate.getInstance().getCollectableFieldsByName(sEntityName, sForeignKeyFieldName, checkValidity);
+			final List<CollectableField> result = EntityFacadeDelegate.getInstance().getCollectableFieldsByName(sEntityName, sForeignKeyFieldName, checkValidity);
 			Collections.sort(result);
 			return result;
 		}

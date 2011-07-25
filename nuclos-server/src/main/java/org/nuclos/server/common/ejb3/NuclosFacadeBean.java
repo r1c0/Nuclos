@@ -77,7 +77,6 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 	}
 	
 	public NuclosFacadeBean() {
-
 	}
 
 	/**
@@ -90,9 +89,7 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 
 	@SuppressWarnings("unchecked")
 	public boolean isCalledRemotely() {
-		
 		return NuclosRemoteContextHolder.peek();
-
 	}
 	
 	public void setLocal(boolean bln) {

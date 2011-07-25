@@ -115,6 +115,8 @@
 
 	<bean id="entityService" class="org.nuclos.server.masterdata.ejb3.EntityFacadeBean"/>
 
+	<bean id="entityObjectService" class="org.nuclos.server.common.ejb3.EntityObjectFacadeBean"/>
+
 	<bean id="genericObjectGroupService" class="org.nuclos.server.genericobject.ejb3.GenericObjectGroupFacadeBean"/>
 
 	<bean id="reportService" class="org.nuclos.server.report.ejb3.ReportFacadeBean"/>

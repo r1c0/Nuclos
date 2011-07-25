@@ -27,19 +27,22 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 
 /**
- * A {@link CollectableEntityProvider} implementation which uses a given
+ * An abstract {@link CollectableEntityProvider} implementation which uses a given
  * {@link MetaDataProvider} as back end.
  */
-public class CollectableEOEntityProvider implements CollectableEntityProvider {
+public abstract class CollectableEOEntityProvider implements CollectableEntityProvider {
 
 	private final MetaDataProvider metaDataProvider;
 	private final Map<String, CollectableEOEntity> collectableEntities;
 
-	public CollectableEOEntityProvider(MetaDataProvider metaDataProvider) {
+	protected CollectableEOEntityProvider(MetaDataProvider metaDataProvider) {
 		this.metaDataProvider = metaDataProvider;
 		this.collectableEntities = new HashMap<String, CollectableEOEntity>();
 	}
 	
+	/**
+	 * This implementation is guaranteed to return a CollectableEOEntity.
+	 */
 	@Override
 	public CollectableEntity getCollectableEntity(String entityName) throws NoSuchElementException {
 		CollectableEOEntity clctEntity = collectableEntities.get(entityName);

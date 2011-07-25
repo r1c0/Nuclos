@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.MetaDataClientProvider;
-import org.nuclos.client.entityobject.EntityObjectDelegate;
+import org.nuclos.client.entityobject.EntityFacadeDelegate;
 import org.nuclos.client.genericobject.CollectableGenericObject;
 import org.nuclos.client.genericobject.CollectableGenericObjectAttributeField;
 import org.nuclos.client.genericobject.Modules;
@@ -177,7 +177,7 @@ public class GenericObjectCollectableFieldsProvider extends ManagedCollectableFi
 	}
 
 	private synchronized List<CollectableField> getCollectableFieldsByName(String sEntityName, String sAttributeName, boolean bValid) throws CommonBusinessException {
-		return EntityObjectDelegate.getInstance().getCollectableFieldsByName(sEntityName, sAttributeName, (!getIgnoreValidity() && bValid));
+		return EntityFacadeDelegate.getInstance().getCollectableFieldsByName(sEntityName, sAttributeName, (!getIgnoreValidity() && bValid));
 	}
 
 }	// class GenericObjectCollectableFieldsProvider

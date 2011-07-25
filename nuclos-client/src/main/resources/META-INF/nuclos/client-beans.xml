@@ -216,6 +216,11 @@
 	    <property name="serviceInterface" value="org.nuclos.server.masterdata.ejb3.EntityFacadeRemote"/>
 	</bean>
 
+	<bean id="entityObjectService" parent="httpInvokerProxyFactoryBean">
+	    <property name="serviceUrl" value="${url.remoting}/EntityObjectService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.common.ejb3.EntityObjectFacadeRemote"/>
+	</bean>
+
 	<bean id="genericObjectGroupService" parent="httpInvokerProxyFactoryBean">
 	    <property name="serviceUrl" value="${url.remoting}/GenericObjectGroupService"/>
 	    <property name="serviceInterface" value="org.nuclos.server.genericobject.ejb3.GenericObjectGroupFacadeRemote"/>

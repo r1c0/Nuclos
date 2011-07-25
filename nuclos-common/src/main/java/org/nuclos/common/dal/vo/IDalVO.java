@@ -18,8 +18,10 @@ package org.nuclos.common.dal.vo;
 
 import java.util.Map;
 
+import org.nuclos.common.HasId;
 
-public interface IDalVO {
+
+public interface IDalVO extends HasId<Long>{
 	
 	public static final int STATE_NEW = 1;
 	
@@ -27,35 +29,33 @@ public interface IDalVO {
 	
 	public static final int STATE_REMOVED = 3;
 	
-	
-	public Long getId();
-	
-	public void setId(Long id);
+		
+	void setId(Long id);
 	
 	
-	public void flagNew();
+	void flagNew();
 	
-	public void flagUpdate();
+	void flagUpdate();
 	
-	public void flagRemove();
+	void flagRemove();
 
-	public boolean isFlagNew();
+	boolean isFlagNew();
 
-	public boolean isFlagUpdated();
+	boolean isFlagUpdated();
 
-	public boolean isFlagRemoved();
+	boolean isFlagRemoved();
 	
 	
-	public boolean hasFields();
+	boolean hasFields();
 	
-	public void initFields(int maxFieldCount, int maxFieldIdCount);
+	void initFields(int maxFieldCount, int maxFieldIdCount);
 	
-	public Map<String, Object> getFields();
+	Map<String, Object> getFields();
 	
-	public Map<String, Long> getFieldIds();
+	Map<String, Long> getFieldIds();
 	
-	public String processor();
+	String processor();
 	
-	public void processor(String p);
+	void processor(String p);
 	
 }

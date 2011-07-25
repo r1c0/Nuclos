@@ -1,42 +1,28 @@
-//Copyright (C) 2010  Novabit Informationssysteme GmbH
-//
-//This file is part of Nuclos.
-//
-//Nuclos is free software: you can redistribute it and/or modify
-//it under the terms of the GNU Affero General Public License as published by
-//the Free Software Foundation, either version 3 of the License, or
-//(at your option) any later version.
-//
-//Nuclos is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU Affero General Public License for more details.
-//
-//You should have received a copy of the GNU Affero General Public License
-//along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.entityobject;
 
-import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common2.EntityAndFieldName;
+import org.nuclos.common.EntityObjectCommon;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
-import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
+import org.nuclos.server.common.ejb3.EntityObjectFacadeRemote;
+import org.nuclos.server.genericobject.ProxyList;
+import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 
-public class EntityObjectDelegate {
+public class EntityObjectDelegate implements EntityObjectCommon {
+
+	private final static Logger LOG = Logger.getLogger(EntityObjectDelegate.class);
 
 	private static EntityObjectDelegate singleton;
 
-	private final Logger log = Logger.getLogger(this.getClass());
+	private final EntityObjectFacadeRemote facade;
 
-	private final EntityFacadeRemote facade;
-
-	public EntityObjectDelegate() {
-		this.facade = ServiceLocator.getInstance().getFacade(EntityFacadeRemote.class);
+	private EntityObjectDelegate() {
+		this.facade = ServiceLocator.getInstance().getFacade(EntityObjectFacadeRemote.class);
 	}
 
 	public static synchronized EntityObjectDelegate getInstance() {
@@ -51,18 +37,23 @@ public class EntityObjectDelegate {
 		return singleton;
 	}
 
-	public List<CollectableField> getCollectableFieldsByName(
-		String sEntityName,
-		String sFieldName,
-		boolean bCheckValidity) {
-		return facade.getCollectableFieldsByName(sEntityName, sFieldName, bCheckValidity);
+	@Override
+	public List<Long> getEntityObjectIds(Long id, CollectableSearchExpression cse) {
+		return facade.getEntityObjectIds(id, cse);
 	}
 
-	public Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNames(
-		String sEntity, Integer ilaoyutId) throws RemoteException {
-		return facade.getSubFormEntityAndParentSubFormEntityNames(sEntity,
-			ilaoyutId);
+	@Override
+	public ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr,
+			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects,
+			boolean bIncludeSubModules) {
+		return facade.getEntityObjectProxyList(id, clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, 
+				bIncludeParentObjects, bIncludeSubModules);
 	}
 
+	@Override
+	public Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds,
+			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects) {
+		return facade.getEntityObjectsMore(id, lstIds, stRequiredAttributeIds, stRequiredSubEntityNames, bIncludeParentObjects);
+	}
 
 }

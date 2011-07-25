@@ -27,7 +27,7 @@ import javax.jms.TextMessage;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.TopicNotificationReceiver;
-import org.nuclos.client.entityobject.EntityObjectDelegate;
+import org.nuclos.client.entityobject.EntityFacadeDelegate;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -190,7 +190,7 @@ public class MasterDataCache {
 		
 		List<CollectableField> result = this.mpCollectableFieldsByName.get(cacheKey);
 		if (result == null) {
-			result = EntityObjectDelegate.getInstance().getCollectableFieldsByName(sEntityName, sFieldName, bCheckValidity);
+			result = EntityFacadeDelegate.getInstance().getCollectableFieldsByName(sEntityName, sFieldName, bCheckValidity);
 			if (Boolean.TRUE.equals(isCacheable(sEntityName))) {
 				this.mpCollectableFieldsByName.put(cacheKey, result);
 			}

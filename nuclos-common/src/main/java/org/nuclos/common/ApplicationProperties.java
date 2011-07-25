@@ -65,7 +65,7 @@ public class ApplicationProperties implements Serializable {
 	private final String sCollectableComparatorFactoryClassName;
 	private final String sCollectableFieldComparatorFactoryClassName;
 	private final String sConsoleClassName;
-	private final Boolean bFunctionBlockDev;
+	private final boolean bFunctionBlockDev;
 	private final long    loginPanelBgColor;
 	private final long    loginPanelLogoBgColor;
 	private final long    loginPanelTextColor;
@@ -79,6 +79,8 @@ public class ApplicationProperties implements Serializable {
 	private final long    splashProgressColor;
 	private final long    desktopPaneBackgroundColor;
 	private final String  desktopPaneBgImageFileName;
+	
+	private final boolean pivotSearch;
 
 	public static synchronized ApplicationProperties getInstance() {
 		if (singleton == null) {
@@ -129,10 +131,7 @@ public class ApplicationProperties implements Serializable {
 		this.sCollectableComparatorFactoryClassName = getOptional(props, "collectablecomparatorfactory");
 		this.sCollectableFieldComparatorFactoryClassName = getOptional(props, "collectablefieldcomparatorfactory");
 		this.sConsoleClassName = getOptional(props, "console");
-		String sFbDev = getOptional(props, "functionblock.dev");
-		if(sFbDev == null)
-			sFbDev = StringUtils.nullIfEmpty(System.getProperty("functionblock.dev"));
-		this.bFunctionBlockDev = Boolean.valueOf(sFbDev != null ? sFbDev : "false");
+		this.bFunctionBlockDev = Boolean.getBoolean("functionblock.dev");
 
 		this.loginPanelBgColor = parseColorHex(getOptional(props, "login.panel.color.background"));
 		this.loginPanelLogoBgColor = parseColorHex(getOptional(props, "login.panel.logo.background"));
@@ -149,6 +148,8 @@ public class ApplicationProperties implements Serializable {
 
 		this.desktopPaneBackgroundColor = parseColorHex(getOptional(props, "mainframe.desktoppane.background"));
 		this.desktopPaneBgImageFileName = getOptional(props, "mainframe.desktoppane.bgimage");
+		
+		this.pivotSearch = Boolean.getBoolean("pivot.dev");
 	}
 
 	private static String getOptional(Properties props, String key) {
@@ -364,6 +365,10 @@ public class ApplicationProperties implements Serializable {
 
 	public Boolean isFunctionBlockDev() {
 		return bFunctionBlockDev;
+	}
+	
+	public boolean isPivotSearch() {
+		return isFunctionBlockDev() && pivotSearch;
 	}
 
 	/**

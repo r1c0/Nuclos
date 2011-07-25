@@ -41,6 +41,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class DalSupportForMD {
+	
+	private DalSupportForMD() {
+		// Never invoked.
+	}
 
 	public static EntityObjectVO getEntityObjectVO(MasterDataVO md) {
 		final EntityObjectVO eo = new EntityObjectVO();

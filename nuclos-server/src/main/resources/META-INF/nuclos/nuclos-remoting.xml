@@ -108,6 +108,11 @@
 	    <property name="serviceInterface" value="org.nuclos.server.masterdata.ejb3.EntityFacadeRemote"/>
 	</bean>
 
+	<bean name="/EntityObjectService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="entityObjectService"/>
+	    <property name="serviceInterface" value="org.nuclos.server.common.ejb3.EntityObjectFacadeRemote"/>
+	</bean>
+
 	<bean name="/GenericObjectGroupService" parent="httpInvokerServiceExporter">
 	    <property name="service" ref="genericObjectGroupService"/>
 	    <property name="serviceInterface" value="org.nuclos.server.genericobject.ejb3.GenericObjectGroupFacadeRemote"/>

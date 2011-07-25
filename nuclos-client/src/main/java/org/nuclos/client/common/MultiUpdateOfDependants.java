@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.masterdata.CollectableWithDependants;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -207,7 +208,7 @@ public class MultiUpdateOfDependants {
 			final Collection<EntityObjectVO> collmdcvo = (clctWithDependants.getId() == null) ?
 				new ArrayList<EntityObjectVO>() :
 					MasterDataDelegate.getInstance().getDependantMasterData(sSubEntityName, sParentFieldName, clctWithDependants.getId());
-			CollectableEOEntityProvider provider = new CollectableEOEntityProvider(MetaDataClientProvider.getInstance());
+			CollectableEOEntityProvider provider = CollectableEOEntityClientProvider.getInstance();
 			CollectableEOEntity eo = (CollectableEOEntity) provider.getCollectableEntity(sSubEntityName);
 			List<CollectableEntityObject> list = CollectionUtils.transform(collmdcvo, new CollectableEntityObject.MakeCollectable(eo));
             if (dependants.isEmpty()) {

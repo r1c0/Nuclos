@@ -47,6 +47,7 @@ import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.EntityCollectController;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
+import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.genericobject.CollectableGenericObjectEntity;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
@@ -640,12 +641,12 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	protected CollectableEOEntity getCollectableMasterDataEntity() {
 		if(this.getCollectableEntity() instanceof CollectableGenericObjectEntity) {
 			CollectableGenericObjectEntity cgoe = (CollectableGenericObjectEntity)this.getCollectableEntity();
-			CollectableEOEntityProvider provider = new CollectableEOEntityProvider(MetaDataClientProvider.getInstance());
+			CollectableEOEntityProvider provider = CollectableEOEntityClientProvider.getInstance();
 			return (CollectableEOEntity)provider.getCollectableEntity(cgoe.getName());
 		}
 		else if(this.getCollectableEntity() instanceof CollectableMasterDataEntity) {
 			CollectableMasterDataEntity cmde = (CollectableMasterDataEntity)this.getCollectableEntity();
-			CollectableEOEntityProvider provider = new CollectableEOEntityProvider(MetaDataClientProvider.getInstance());
+			CollectableEOEntityProvider provider = CollectableEOEntityClientProvider.getInstance();
 			return (CollectableEOEntity)provider.getCollectableEntity(cmde.getName());
 		}
 		return (CollectableEOEntity) this.getCollectableEntity();

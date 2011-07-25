@@ -50,7 +50,7 @@ import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.security.SecurityCache;
-import org.nuclos.client.entityobject.EntityObjectDelegate;
+import org.nuclos.client.entityobject.EntityFacadeDelegate;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataLayoutHelper;
@@ -426,7 +426,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
     			try {
     				// Check, whether the layout contains the row's entity
 	                Map<EntityAndFieldName, String> subStuff
-	                = EntityObjectDelegate.getInstance().getSubFormEntityAndParentSubFormEntityNames(
+	                = EntityFacadeDelegate.getInstance().getSubFormEntityAndParentSubFormEntityNames(
 	                		fieldMeta.getForeignEntity(),
 	                		MasterDataDelegate.getInstance().getLayoutId(fieldMeta.getForeignEntity(), false));
 	                for(EntityAndFieldName ef : subStuff.keySet())

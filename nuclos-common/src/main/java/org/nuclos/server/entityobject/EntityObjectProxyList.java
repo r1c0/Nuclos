@@ -1,0 +1,90 @@
+//Copyright (C) 2011  Novabit Informationssysteme GmbH
+//
+//This file is part of Nuclos.
+//
+//Nuclos is free software: you can redistribute it and/or modify
+//it under the terms of the GNU Affero General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+//Nuclos is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU Affero General Public License for more details.
+//
+//You should have received a copy of the GNU Affero General Public License
+//along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
+package org.nuclos.server.entityobject;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.ServiceLocator;
+import org.nuclos.server.common.ejb3.EntityObjectFacadeRemote;
+import org.nuclos.server.genericobject.AbstractProxyList;
+import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
+
+/**
+ * Proxy list for entity object search results.
+ * <p>
+ * Created by Novabit Informationssysteme GmbH
+ * </p><p>
+ * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
+ * </p>
+ * @author Thomas Pasch
+ * @since Nuclos 3.1.01
+ */
+public class EntityObjectProxyList extends AbstractProxyList<Long, EntityObjectVO> {
+
+	private static EntityObjectFacadeRemote facade;
+
+	private final Long id;
+	private final CollectableSearchExpression clctexpr;
+	private final Set<Long> stRequiredAttributeIds;
+	private final Set<String> stRequiredSubEntities;
+	private final boolean bIncludeParentObjects;
+	
+	public EntityObjectProxyList(Long id, CollectableSearchExpression clctexpr, Set<Long> stRequiredAttributeIds, 
+			Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects) {
+		super();
+		this.id = id;
+		this.clctexpr = clctexpr;
+		this.stRequiredAttributeIds = stRequiredAttributeIds;
+		this.stRequiredSubEntities = stRequiredSubEntityNames;
+		this.bIncludeParentObjects = bIncludeParentObjects;
+
+		this.initialize();		
+	}
+	
+	@Override
+	protected Collection<EntityObjectVO> fetchNextChunk(List<Long> lstIntIds) throws RuntimeException {
+		return getEntityObjectFacade().getEntityObjectsMore(id, lstIntIds, stRequiredAttributeIds, stRequiredSubEntities, bIncludeParentObjects);
+	}
+
+	@Override
+	protected void fillListOfIds() {
+		try {
+			List<Long> lstIds = getEntityObjectFacade().getEntityObjectIds(id, clctexpr);
+			setListOfIds(lstIds);
+		}
+		catch(RuntimeException e) {
+			throw new NuclosFatalException(e);
+		}
+	}
+
+	private synchronized EntityObjectFacadeRemote getEntityObjectFacade() {
+		if (facade == null) {
+			try {
+				facade = ServiceLocator.getInstance().getFacade(EntityObjectFacadeRemote.class);
+			}
+			catch (RuntimeException ex) {
+				throw new NuclosFatalException(ex);
+			}
+		}
+		return facade;
+	}
+
+}

@@ -45,6 +45,7 @@ import org.nuclos.server.dblayer.query.DbColumnExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
+import org.nuclos.server.entityobject.CollectableEOEntityServerProvider;
 import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectSearchExpression;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.report.valueobject.RecordGrantVO;
@@ -347,7 +348,7 @@ public class RecordGrantUtils {
 			return null;
 
 		Preferences prefs = topPrefs.node(prefsPath);
-		CollectableEOEntityProvider provider = new CollectableEOEntityProvider(MetaDataServerProvider.getInstance());
+		CollectableEOEntityProvider provider = CollectableEOEntityServerProvider.getInstance();
 		CollectableSearchCondition csc = SearchConditionUtils.getSearchCondition(prefs.node("searchCondition"), entityName, provider);
 		return csc;
 	}

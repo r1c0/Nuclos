@@ -20,12 +20,14 @@ import java.util.Collection;
 
 import javax.swing.JComponent;
 
+import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.customcode.CodeCollectController;
 import org.nuclos.client.datasource.admin.CollectableDataSource;
 import org.nuclos.client.datasource.admin.DatasourceCollectController;
 import org.nuclos.client.datasource.admin.DynamicEntityCollectController;
 import org.nuclos.client.datasource.admin.RecordGrantCollectController;
 import org.nuclos.client.datasource.admin.ValuelistProviderCollectController;
+import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectImportCollectController;
@@ -41,6 +43,7 @@ import org.nuclos.client.masterdata.GenerationCollectController;
 import org.nuclos.client.masterdata.GenericObjectImportStructureCollectController;
 import org.nuclos.client.masterdata.GroupCollectController;
 import org.nuclos.client.masterdata.MasterDataCollectController;
+import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.masterdata.NucletCollectController;
 import org.nuclos.client.masterdata.RelationTypeCollectController;
 import org.nuclos.client.masterdata.SearchFilterCollectController;
@@ -67,6 +70,7 @@ import org.nuclos.client.ui.collect.search.DatasourceSearchStrategy;
 import org.nuclos.client.ui.collect.search.DynamicEntitySearchStrategy;
 import org.nuclos.client.ui.collect.search.EntityRelationShipSearchStrategy;
 import org.nuclos.client.ui.collect.search.GenericObjectSearchStrategy;
+import org.nuclos.client.ui.collect.search.GenericObjectViaEntityObjectSearchStrategy;
 import org.nuclos.client.ui.collect.search.ISearchStrategy;
 import org.nuclos.client.ui.collect.search.InstanceSearchStrategy;
 import org.nuclos.client.ui.collect.search.LayoutSearchStrategy;
@@ -83,7 +87,14 @@ import org.nuclos.client.ui.collect.strategy.CompleteCollectableMasterDataStrate
 import org.nuclos.client.ui.collect.strategy.CompleteCollectableStateModelsStrategy;
 import org.nuclos.client.ui.collect.strategy.CompleteGenericObjectsStrategy;
 import org.nuclos.client.wizard.DataTypeCollectController;
+import org.nuclos.common.ApplicationProperties;
+import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.collect.collectable.CollectableEntityProvider;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.entityobject.CollectableEOEntity;
+import org.nuclos.common.transport.vo.EntityMetaDataTO;
+import org.nuclos.common2.IdUtils;
 
 public class CollectControllerFactorySingleton {
 	
@@ -415,7 +426,16 @@ public class CollectControllerFactorySingleton {
 	 * @deprecated
 	 */
 	public GenericObjectCollectController newGenericObjectCollectController(JComponent parent, Integer iModuleId, boolean bAutoInit, MainFrameTab tabIfAny) {
-		final ISearchStrategy<CollectableGenericObjectWithDependants> ss = new GenericObjectSearchStrategy();
+		final ISearchStrategy<CollectableGenericObjectWithDependants> ss;
+		if (ApplicationProperties.getInstance().isPivotSearch()) {
+			final MetaDataDelegate md = MetaDataDelegate.getInstance();
+			final EntityMetaDataVO mdvo = md.getEntityById(IdUtils.toLongId(iModuleId));
+			final CollectableEntityProvider cep = CollectableEOEntityClientProvider.getInstance();
+			ss = new GenericObjectViaEntityObjectSearchStrategy((CollectableEOEntity) cep.getCollectableEntity(mdvo.getEntity()));
+		}
+		else {
+			ss = new GenericObjectSearchStrategy();
+		}
 		final GenericObjectCollectController result = new GenericObjectCollectController(parent, iModuleId, false, tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);

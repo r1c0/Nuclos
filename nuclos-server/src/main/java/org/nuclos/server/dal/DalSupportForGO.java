@@ -1,4 +1,4 @@
-//Copyright (C) 2010  Novabit Informationssysteme GmbH
+//Copyright (C) 2011  Novabit Informationssysteme GmbH
 //
 //This file is part of Nuclos.
 //
@@ -45,6 +45,9 @@ import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 
+/**
+ * Server-side functions to transform a GenericObjectVO into a EntityObjectVO and vice versa.
+ */
 public class DalSupportForGO {
 
 	private static GenericObjectFacadeLocal goFacade = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);

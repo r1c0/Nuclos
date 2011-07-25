@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common.valueobject;
 
+import org.nuclos.common.HasId;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import java.io.Serializable;
@@ -31,7 +32,7 @@ import java.util.Date;
  * @version 01.00.00
  * @param Id the type of this object's id.
  */
-public abstract class AbstractNuclosValueObject<Id> implements Serializable, Cloneable {
+public abstract class AbstractNuclosValueObject<Id> implements Serializable, Cloneable, HasId<Id> {
 
 	private static final long serialVersionUID = 1012920874365879641L;
 	private Date dateCreatedAt;

@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.genericobject;
 
+import org.nuclos.common.HasId;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.server.common.valueobject.AbstractNuclosValueObject;
@@ -38,7 +39,7 @@ import java.util.*;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public abstract class AbstractProxyList<T, E extends AbstractNuclosValueObject<T>> implements ProxyList<E>, Serializable {
+public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyList<E>, Serializable {
 
 	private static final long serialVersionUID = 815L;
 

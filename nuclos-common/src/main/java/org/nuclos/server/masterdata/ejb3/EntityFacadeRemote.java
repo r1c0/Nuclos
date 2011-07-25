@@ -37,7 +37,7 @@ public interface EntityFacadeRemote {
 	 * @throws RemoteException
 	 */
 	@RolesAllowed("Login")
-	public Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNames(String sEntity,Integer ilaoyutId) throws RemoteException;
+	Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNames(String sEntity,Integer ilaoyutId) throws RemoteException;
 
 	/**
 	 * @param sEntityName
@@ -47,7 +47,7 @@ public interface EntityFacadeRemote {
 	 * @todo this method should be used in CollectableFieldsProviders
 	 */
 	@RolesAllowed("Login")
-	public List<CollectableField> getCollectableFieldsByName(
+	List<CollectableField> getCollectableFieldsByName(
 		String sEntityName,
 		String sFieldName,
 		boolean bCheckValidity);
@@ -63,6 +63,7 @@ public interface EntityFacadeRemote {
 	 * @return
 	 */
 	@RolesAllowed("Login")
-	public List<CollectableValueIdField> getQuickSearchResult(String entity, String field, String search, Integer vlpId, Map<String, Object> vlpParameter, Integer iMaxRowCount);
+	List<CollectableValueIdField> getQuickSearchResult(String entity, String field, String search, Integer vlpId, 
+			Map<String, Object> vlpParameter, Integer iMaxRowCount);
 
 }

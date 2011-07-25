@@ -18,6 +18,7 @@ package org.nuclos.common;
 
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import java.util.Collection;
 
@@ -29,6 +30,8 @@ import java.util.Collection;
  *
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
+ * 
+ * @deprecated AttributeCVO is deprecated, hence this is deprecated, too.
  */
 public interface AttributeProvider {
 
@@ -60,11 +63,16 @@ public interface AttributeProvider {
 
 	/**
 	 * Transformer that gets an attribute by name.
+	 * 
+	 * @deprecated AttributeProvider is deprecated, hence this is deprecated, too.
 	 */
 	public static class GetAttributeByName implements Transformer<String, AttributeCVO> {
 		private final AttributeProvider attrprovider;
 		private final Integer iEntityId;
 
+		/**
+		 * @deprecated AttributeProvider is deprecated, hence this is deprecated, too.
+		 */
 		public GetAttributeByName(Integer iEntityId, AttributeProvider attrprovider) {
 			this.attrprovider = attrprovider;
 			this.iEntityId = iEntityId;
@@ -78,10 +86,15 @@ public interface AttributeProvider {
 
 	/**
 	 * Transformer that gets an attribute by id.
+	 * 
+	 * @deprecated AttributeProvider is deprecated, hence this is deprecated, too.
 	 */
 	public static class GetAttributeById implements Transformer<Integer, AttributeCVO> {
 		private final AttributeProvider attrprovider;
 
+		/**
+		 * @deprecated AttributeProvider is deprecated, hence this is deprecated, too.
+		 */
 		public GetAttributeById(AttributeProvider attrprovider) {
 			this.attrprovider = attrprovider;
 		}
@@ -94,11 +107,16 @@ public interface AttributeProvider {
 
 	/**
 	 * Transformer that gets an attribute id by name.
+	 * 
+	 * @deprecated AttributeProvider is deprecated, hence this is deprecated, too.
 	 */
 	public static class GetAttributeIdByName implements Transformer<String, Integer> {
 		private final AttributeProvider attrprovider;
 		private final String sEntity;
 
+		/**
+		 * @deprecated AttributeProvider is deprecated, hence this is deprecated, too.
+		 */
 		public GetAttributeIdByName(String sEntity, AttributeProvider attrprovider) {
 			this.attrprovider = attrprovider;
 			this.sEntity = sEntity;
@@ -107,6 +125,30 @@ public interface AttributeProvider {
 		@Override
 		public Integer transform(String sAttributeName) {
 			return this.attrprovider.getAttribute(sEntity, sAttributeName).getId();
+		}
+	}
+
+	/**
+	 * Transformer that gets an attribute id by name.
+	 * 
+	 * @deprecated AttributeProvider is deprecated, hence this is deprecated, too.
+	 */
+	public static class GetAttributeLongIdByName implements Transformer<String, Long> {
+		
+		private final AttributeProvider attrprovider;
+		private final String sEntity;
+
+		/**
+		 * @deprecated AttributeProvider is deprecated, hence this is deprecated, too.
+		 */
+		public GetAttributeLongIdByName(String sEntity, AttributeProvider attrprovider) {
+			this.attrprovider = attrprovider;
+			this.sEntity = sEntity;
+		}
+
+		@Override
+		public Long transform(String sAttributeName) {
+			return IdUtils.toLongId(attrprovider.getAttribute(sEntity, sAttributeName).getId());
 		}
 	}
 
