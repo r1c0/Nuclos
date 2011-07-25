@@ -23,7 +23,7 @@
 		<module>nuclos-client-synthetica</module>
 		<module>nuclos-war</module>
 		<module>nuclos-installer</module>
-		<module>nuclos-tools</module>
+		<!-- module>nuclos-tools</module-->
 	</modules>
 
 	<build>
@@ -31,11 +31,24 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
-					<encoding>ISO-8859-1</encoding>
+					<encoding>UTF-8</encoding>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.1.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
@@ -44,7 +57,7 @@
 		<repository>
 			<id>public.maven.novabit.de</id>
 			<name>Novabit Maven Repository</name>
-			<url>http://mucsvx103:8081/nexus/content/groups/public</url>
+			<url>http://maven.nuclos.de/content/groups/public</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -54,11 +67,11 @@
 	<distributionManagement>
 		<repository>
 			<id>releases.maven.novabit.de</id>
-			<url>http://mucsvx103:8081/nexus/content/repositories/releases/</url>
+			<url>http://maven.nuclos.de/content/repositories/releases/</url>
 		</repository>
 		<snapshotRepository>
 			<id>snapshots.maven.novabit.de</id>
-			<url>http://mucsvx103:8081/nexus/content/repositories/snapshots/</url>
+			<url>http://maven.nuclos.de/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
