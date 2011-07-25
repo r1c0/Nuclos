@@ -59,7 +59,7 @@ public abstract class CommonClientWorkerAdapter<T extends Collectable> implement
 	@Override
 	public void handleError(Exception ex) {
 		ctl.forceUnlockFrame();
-		if(ctl.getDetailsPanel() != null && ctl.getDetailsPanel().isShowing())
+		if(ctl.getCollectPanel() != null && ctl.getCollectPanel().isShowing())
 			Errors.getInstance().showExceptionDialog(getResultsComponent(), ex);
 	}
 	
