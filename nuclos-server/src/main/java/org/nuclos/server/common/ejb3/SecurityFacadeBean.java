@@ -354,4 +354,26 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 		res.put(SecurityFacadeRemote.MASTERDATA_PERMISSIONS, getMasterDataPermissions());
 		return res;
     }
+
+	@Override
+	public Boolean isLdapAuthenticationActive() {
+		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQuery<Long> query = builder.createQuery(Long.class);
+		DbFrom t = query.from("T_AD_LDAPSERVER").alias("t");
+		query.select(t.column("INTID", Long.class));
+		query.where(builder.and(builder.equal(t.column("BLNACTIVE", Boolean.class), true), builder.isNotNull(t.column("STRUSERFILTER", String.class))));
+
+		return DataBaseHelper.getDbAccess().executeQuery(query).size() > 0;
+	}
+
+	@Override
+	public Boolean isLdapSynchronizationActive() {
+		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQuery<Long> query = builder.createQuery(Long.class);
+		DbFrom t = query.from("T_AD_LDAPSERVER").alias("t");
+		query.select(t.column("INTID", Long.class));
+		query.where(builder.and(builder.equal(t.column("BLNACTIVE", Boolean.class), true), builder.isNotNull(t.column("SEARCHFILTER", String.class))));
+
+		return DataBaseHelper.getDbAccess().executeQuery(query).size() > 0;
+	}
 }

@@ -38,11 +38,17 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.LocalUserProperties;
+import org.nuclos.client.login.LoginController;
+import org.nuclos.client.main.Main;
+import org.nuclos.client.security.NuclosRemoteServerSession;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonRemoteException;
+import org.springframework.remoting.RemoteAccessException;
+import org.springframework.security.core.AuthenticationException;
 
 /**
  * Displays error messages (especially for <code>Exception</code>s) to the user.
@@ -128,6 +134,26 @@ public class Errors {
 			public void run() {
 				t.printStackTrace(System.err);
 				try {
+					// if the reason is a RemoteAccessException, check if user needs to re-authenticate
+					Throwable authexception = getCause(t, RemoteAccessException.class);
+					if (authexception != null) {
+						try {
+							NuclosRemoteServerSession.authenticate();
+						}
+						catch (AuthenticationException ex2) {
+							LoginController lc = new LoginController(Main.getMainFrame());
+
+							if (!lc.run(Main.getMainFrame())) {
+								String message = LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_EXIT);
+								JOptionPane.showMessageDialog(Main.getMainFrame(), message, "Nuclos", JOptionPane.ERROR_MESSAGE);
+								System.exit(1);
+							}
+							else {
+								return;
+							}
+						}
+					}
+
 					if (t instanceof RuntimeException || t instanceof Error || t instanceof LoginException) {
 						if (t.getCause() != null && t.getCause() instanceof NoSuchObjectException) {
 							/** @todo pass message to critical error handler */
@@ -426,4 +452,16 @@ public class Errors {
 		return cause.getMessage();
 	}
 
+	@SuppressWarnings("unchecked")
+	private <T> T getCause(Throwable t, Class<T> clazz) {
+		if (t == null) {
+			return null;
+		}
+		else if (clazz.isAssignableFrom(t.getClass())) {
+			return (T) t;
+		}
+		else {
+			return getCause(t.getCause(), clazz);
+		}
+	}
 }	// class Errors

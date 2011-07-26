@@ -16,9 +16,9 @@
 	    </property>
 	</bean>
 
-	 <bean name="/RemoteAuthenticationManager" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+	 <bean name="/RemoteAuthenticationManager" parent="httpInvokerServiceExporter">
         <property name="service" ref="remoteAuthenticationManager" />
-        <property name="serviceInterface" value="org.springframework.security.authentication.rcp.RemoteAuthenticationManager" />
+        <property name="serviceInterface" value="org.nuclos.common.security.RemoteAuthenticationManager" />
     </bean>
 
 
@@ -221,6 +221,11 @@
 	<bean name="/CodeService" parent="httpInvokerServiceExporter">
 	    <property name="service" ref="codeService"/>
 	    <property name="serviceInterface" value="org.nuclos.server.customcode.ejb3.CodeFacadeRemote"/>
+	</bean>
+
+	<bean name="/UserService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="userService"/>
+	    <property name="serviceInterface" value="org.nuclos.common.security.UserFacadeRemote"/>
 	</bean>
 </beans>
 

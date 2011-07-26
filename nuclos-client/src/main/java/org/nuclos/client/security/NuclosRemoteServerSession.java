@@ -16,19 +16,16 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.security;
 
-import javax.security.auth.login.LoginException;
-
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.common.SpringApplicationContextHolder;
-import org.nuclos.common.security.NuclosLoginException;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
 import org.springframework.remoting.RemoteAccessException;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.rcp.RemoteAuthenticationException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public abstract class NuclosRemoteServerSession {
@@ -37,27 +34,37 @@ public abstract class NuclosRemoteServerSession {
 
 	private static Integer sessionId;
 
-	public static void login(String username, String password) throws LoginException {
+	public static void login(String username, String password) throws AuthenticationException {
 		SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
-		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(username, new String(password)));
-		if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+		try {
 			AuthenticationManager am = (AuthenticationManager)SpringApplicationContextHolder.getBean("authenticationManager");
-			try {
-				Authentication auth = am.authenticate(SecurityContextHolder.getContext().getAuthentication());
-				SecurityContextHolder.getContext().setAuthentication(auth);
-				sessionId = ServiceLocator.getInstance().getFacade(SecurityFacadeRemote.class).login();
-				log.info("Logged in.");
-			}
-			catch (AccessDeniedException ex) {
-				throw new NuclosLoginException(ex.getMessage(), NuclosLoginException.AUTHORISATION_ERROR);
-			}
-			catch (RemoteAuthenticationException ex) {
-				throw new LoginException(ex.getMessage());
-			}
-			catch (RemoteAccessException ex) {
-				throw new LoginException(ex.getMessage());
-			}
+			SecurityContextHolder.getContext().setAuthentication(am.authenticate(new UsernamePasswordAuthenticationToken(username, new String(password))));
+			sessionId = ServiceLocator.getInstance().getFacade(SecurityFacadeRemote.class).login();
+			log.info("Logged in.");
+			SecurityCache.getInstance().revalidate();
 		}
+		catch (AuthenticationException ex) {
+			SecurityContextHolder.getContext().setAuthentication(null);
+			throw ex;
+		}
+	}
+
+	public static void relogin(String username, String password) throws AuthenticationException {
+		try {
+			AuthenticationManager am = (AuthenticationManager)SpringApplicationContextHolder.getBean("authenticationManager");
+			SecurityContextHolder.getContext().setAuthentication(am.authenticate(new UsernamePasswordAuthenticationToken(username, new String(password))));
+			log.info("Validated login.");
+			SecurityCache.getInstance().revalidate();
+		}
+		catch (AuthenticationException ex) {
+			SecurityContextHolder.getContext().setAuthentication(null);
+			throw ex;
+		}
+	}
+
+	public static Authentication authenticate() throws AuthenticationException, RemoteAccessException {
+		AuthenticationManager am = (AuthenticationManager)SpringApplicationContextHolder.getBean("authenticationManager");
+		return am.authenticate(SecurityContextHolder.getContext().getAuthentication());
 	}
 
 	public static void logout() {

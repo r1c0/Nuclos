@@ -93,7 +93,6 @@ import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.common.TopicNotificationReceiver;
 import org.nuclos.client.common.prefs.WebAccessPrefs;
 import org.nuclos.client.common.security.SecurityCache;
-import org.nuclos.client.common.security.SecurityDelegate;
 import org.nuclos.client.console.NuclosConsoleGui;
 import org.nuclos.client.customcomp.CustomComponentCache;
 import org.nuclos.client.customcomp.CustomComponentController;
@@ -121,6 +120,7 @@ import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.searchfilter.SearchFilterCache;
+import org.nuclos.client.security.NuclosRemoteServerSession;
 import org.nuclos.client.task.TaskController;
 import org.nuclos.client.ui.ClipboardUtils;
 import org.nuclos.client.ui.Controller;
@@ -140,16 +140,17 @@ import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.CommandInformationMessage;
 import org.nuclos.common.CommandMessage;
 import org.nuclos.common.JMSConstants;
-import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.Priority;
 import org.nuclos.common.RuleNotification;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.security.RemoteAuthenticationManager;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
@@ -503,22 +504,23 @@ public class MainController {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			ChangePasswordPanel panel = new ChangePasswordPanel();
-			if(JOptionPane.showConfirmDialog(getFrame(), panel,
-				CommonLocaleDelegate.getMessage("MainController.1","Benutzerpasswort \u00e4ndern"),
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
-			  try {
-				  MainController.this.prefs.flush();
-				  SecurityDelegate.getInstance().changePassword(panel.getOldPassword(), panel.getNewPassword());
-				  LocalUserProperties props = LocalUserProperties.getInstance();
-				  props.setUserPasswd("");
-				  props.store();
-				} catch (NuclosBusinessException e) {
-					Errors.getInstance().showExceptionDialog(panel, e);
-				} catch (BackingStoreException e) {
-					Errors.getInstance().showExceptionDialog(panel, e);
+			ChangePasswordPanel cpp = new ChangePasswordPanel(true, "", false);
+			boolean result = cpp.showInDialog(getFrame(), new ChangePasswordPanel.ChangePasswordDelegate() {
+				@Override
+				public void changePassword(String oldPw, String newPw) throws CommonBusinessException {
+					RemoteAuthenticationManager ram = SpringApplicationContextHolder.getBean(RemoteAuthenticationManager.class);
+					ram.changePassword(sUserName, oldPw, newPw);
+					NuclosRemoteServerSession.relogin(sUserName, newPw);
+					try {
+						MainController.this.prefs.flush();
+					} catch (BackingStoreException e) {
+						e.printStackTrace();
+					}
+					LocalUserProperties props = LocalUserProperties.getInstance();
+					props.setUserPasswd("");
+					props.store();
 				}
-			}
+			});
 		}};
 
 	private Action cmdOpenManagementConsole = new AbstractAction(
@@ -1475,7 +1477,7 @@ public class MainController {
 		}
 		return result;
 	}
-	
+
 	private Collection<CollectController<Collectable>> getControllerForWritingPreferences() {
 		Map<String, CollectController<Collectable>> mp = new HashMap<String, CollectController<Collectable>>();
 		for(MainFrameTab tab : mpActiveControllers.keySet()) {
@@ -1494,7 +1496,7 @@ public class MainController {
 					mp.put(sEntity, ctrl);
 				}
 			}
-		}		
+		}
 		return mp.values();
 	}
 

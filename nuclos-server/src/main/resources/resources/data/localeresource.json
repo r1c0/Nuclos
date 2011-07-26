@@ -53604,6 +53604,16 @@
     "text": "Geben Sie den Namen der Datenbankspalte ein."
   },
   {
+    "resourceID": "wizard.step.attributeproperties.17",
+    "locale": "en",
+    "text": "<html>The column name is too long.<br/>Please shorten the name or assign a name in the expert mode.</html>"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.17",
+    "locale": "de",
+    "text": "<html>Der Spaltenname ist zu lang.<br/>Bitte kürzen Sie den Namen oder vergeben einen im Expertenmodus selbst.</html>"
+  },
+  {
     "resourceID": "wizard.step.attributeproperties.18",
     "locale": "en",
     "text": "Qualified column name"
@@ -60117,6 +60127,486 @@
     "resourceID": "nuclos.entityfield.searchfilter.descriptionres.label",
     "locale": "de",
     "text": "Ressourcen-ID für Tooltip"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.locked.label",
+    "locale": "i-default",
+    "text": "Locked"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.locked.label",
+    "locale": "en",
+    "text": "Locked"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.locked.label",
+    "locale": "de",
+    "text": "Gesperrt"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.locked.description",
+    "locale": "i-default",
+    "text": "Account locked (login deactivated)"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.locked.description",
+    "locale": "en",
+    "text": "Account locked (login deactivated)"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.locked.description",
+    "locale": "de",
+    "text": "Konto gesperrt (Login deaktiviert)"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.passwordchanged.label",
+    "locale": "i-default",
+    "text": "Password changed"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.passwordchanged.label",
+    "locale": "en",
+    "text": "Password changed"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.passwordchanged.label",
+    "locale": "de",
+    "text": "Passwort geändert"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.passwordchanged.description",
+    "locale": "i-default",
+    "text": "Date of last password change"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.passwordchanged.description",
+    "locale": "en",
+    "text": "Date of last password change"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.passwordchanged.description",
+    "locale": "de",
+    "text": "Datum der letzten Passwortänderung"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.expirationdate.label",
+    "locale": "i-default",
+    "text": "Valid until"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.expirationdate.label",
+    "locale": "en",
+    "text": "Valid until"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.expirationdate.label",
+    "locale": "de",
+    "text": "Gültig bis"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.expirationdate.description",
+    "locale": "i-default",
+    "text": "Expiration date (empty if account never expires)"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.expirationdate.description",
+    "locale": "en",
+    "text": "Expiration date (empty if account never expires)"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.expirationdate.description",
+    "locale": "de",
+    "text": "Ablaufdatum (leer, falls Konto niemals abläuft)"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.requirepasswordchange.label",
+    "locale": "i-default",
+    "text": "Force password change"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.requirepasswordchange.label",
+    "locale": "en",
+    "text": "Force password change"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.requirepasswordchange.label",
+    "locale": "de",
+    "text": "Passwortänderung erzwingen"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.requirepasswordchange.label",
+    "locale": "i-default",
+    "text": "Force password change"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.requirepasswordchange.label",
+    "locale": "en",
+    "text": "Force password change"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.requirepasswordchange.label",
+    "locale": "de",
+    "text": "Passwortänderung erzwingen"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.requirepasswordchange.description",
+    "locale": "i-default",
+    "text": "User has to change the password on next login"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.requirepasswordchange.description",
+    "locale": "en",
+    "text": "User has to change the password on next login"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.requirepasswordchange.description",
+    "locale": "de",
+    "text": "Benutzer muss Passwort beim nächsten Login ändern"
+  },
+  {
+    "resourceID": "nuclos.entity.passwordhistory.label",
+    "locale": "i-default",
+    "text": "Password history"
+  },
+  {
+    "resourceID": "nuclos.entity.passwordhistory.label",
+    "locale": "en",
+    "text": "Password history"
+  },
+  {
+    "resourceID": "nuclos.entity.passwordhistory.label",
+    "locale": "de",
+    "text": "Passworthistorie"
+  },
+  {
+    "resourceID": "nuclos.entityfield.passwordhistory.user.label",
+    "locale": "i-default",
+    "text": "User"
+  },
+  {
+    "resourceID": "nuclos.entityfield.passwordhistory.user.label",
+    "locale": "en",
+    "text": "User"
+  },
+  {
+    "resourceID": "nuclos.entityfield.passwordhistory.user.label",
+    "locale": "de",
+    "text": "Benutzer"
+  },
+  {
+    "resourceID": "nuclos.entityfield.passwordhistory.password.label",
+    "locale": "i-default",
+    "text": "Password"
+  },
+  {
+    "resourceID": "nuclos.entityfield.passwordhistory.password.label",
+    "locale": "en",
+    "text": "Password"
+  },
+  {
+    "resourceID": "nuclos.entityfield.passwordhistory.password.label",
+    "locale": "de",
+    "text": "Passwort"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.lastlogin.label",
+    "locale": "i-default",
+    "text": "Last login"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.lastlogin.label",
+    "locale": "en",
+    "text": "Last login"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.lastlogin.label",
+    "locale": "de",
+    "text": "Letzte Anmeldung"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.lastlogin.description",
+    "locale": "i-default",
+    "text": "Date of last login"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.lastlogin.description",
+    "locale": "en",
+    "text": "Date of last login"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.lastlogin.description",
+    "locale": "de",
+    "text": "Datum der letzten Anmeldung"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.loginattempts.label",
+    "locale": "i-default",
+    "text": "Login attempts"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.loginattempts.label",
+    "locale": "en",
+    "text": "Login attempts"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.loginattempts.label",
+    "locale": "de",
+    "text": "Anmeldeversuche"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.loginattempts.description",
+    "locale": "i-default",
+    "text": "Number of invalid login attempts since last successful login"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.loginattempts.description",
+    "locale": "en",
+    "text": "Number of invalid login attempts since last successful login"
+  },
+  {
+    "resourceID": "nuclos.entityfield.user.loginattempts.description",
+    "locale": "de",
+    "text": "Anzahl der ungueltigen Anmeldeversuche seit dem letzten erfolgreichen Login"
+  },
+  {
+    "resourceID": "login.err.locked",
+    "locale": "i-default",
+    "text": "Your login has been locked.<br/>Please contant your system administrator."
+  },
+  {
+    "resourceID": "login.err.locked",
+    "locale": "en",
+    "text": "Your login has been locked.<br/>Please contant your system administrator."
+  },
+  {
+    "resourceID": "login.err.locked",
+    "locale": "de",
+    "text": "Ihr Login wurde gesperrt.<br/>Bitte wenden Sie sich an Ihren Systemadministrator."
+  },
+  {
+    "resourceID": "login.err.account.expired",
+    "locale": "i-default",
+    "text": "Your login has expired.<br/>Please contant your system administrator."
+  },
+  {
+    "resourceID": "login.err.account.expired",
+    "locale": "en",
+    "text": "Your login has expired.<br/>Please contant your system administrator."
+  },
+  {
+    "resourceID": "login.err.account.expired",
+    "locale": "de",
+    "text": "Ihr Login ist abgelaufen.<br/>Bitte wenden Sie sich an Ihren Systemadministrator."
+  },
+  {
+    "resourceID": "changepassword.title",
+    "locale": "i-default",
+    "text": "Change password"
+  },
+  {
+    "resourceID": "changepassword.title",
+    "locale": "en",
+    "text": "Change password"
+  },
+  {
+    "resourceID": "changepassword.title",
+    "locale": "de",
+    "text": "Passwort ändern"
+  },
+  {
+    "resourceID": "changepassword.expired",
+    "locale": "i-default",
+    "text": "Your password has expired. Please change your password."
+  },
+  {
+    "resourceID": "changepassword.expired",
+    "locale": "en",
+    "text": "Your password has expired. Please change your password."
+  },
+  {
+    "resourceID": "changepassword.expired",
+    "locale": "de",
+    "text": "Ihr Kennwort ist abgelaufen. Bitte ändern Sie Ihr Passwort."
+  },
+  {
+    "resourceID": "login.lab.oldpw",
+    "locale": "i-default",
+    "text": "Old password:"
+  },
+  {
+    "resourceID": "login.lab.oldpw",
+    "locale": "en",
+    "text": "Old password:"
+  },
+  {
+    "resourceID": "login.lab.oldpw",
+    "locale": "de",
+    "text": "Altes Passwort:"
+  },
+  {
+    "resourceID": "login.lab.newpw1",
+    "locale": "i-default",
+    "text": "New password:"
+  },
+  {
+    "resourceID": "login.lab.newpw1",
+    "locale": "en",
+    "text": "New password:"
+  },
+  {
+    "resourceID": "login.lab.newpw1",
+    "locale": "de",
+    "text": "Neues Passwort:"
+  },
+  {
+    "resourceID": "login.lab.newpw2",
+    "locale": "i-default",
+    "text": "Repeat new password:"
+  },
+  {
+    "resourceID": "login.lab.newpw2",
+    "locale": "en",
+    "text": "Repeat new password:"
+  },
+  {
+    "resourceID": "login.lab.newpw2",
+    "locale": "de",
+    "text": "Neues Passwort wiederholen:"
+  },
+  {
+    "resourceID": "changepassword.err.nomatch",
+    "locale": "i-default",
+    "text": "Passwords do not match."
+  },
+  {
+    "resourceID": "changepassword.err.nomatch",
+    "locale": "en",
+    "text": "Passwords do not match."
+  },
+  {
+    "resourceID": "changepassword.err.nomatch",
+    "locale": "de",
+    "text": "Passwörter stimmen nicht überein."
+  },
+  {
+    "resourceID": "exception.password.history",
+    "locale": "i-default",
+    "text": "The password does not meet the security guidelines concerning the password history."
+  },
+  {
+    "resourceID": "exception.password.history",
+    "locale": "en",
+    "text": "The password does not meet the security guidelines concerning the password history."
+  },
+  {
+    "resourceID": "exception.password.history",
+    "locale": "de",
+    "text": "Das Passwort genügt nicht den Sicherheitsrichtlinien in Bezug auf die Passworthistorie."
+  },
+  {
+    "resourceID": "exception.password.equals.previous",
+    "locale": "i-default",
+    "text": "The new password does not differ from the old password."
+  },
+  {
+    "resourceID": "exception.password.equals.previous",
+    "locale": "en",
+    "text": "The new password does not differ from the old password."
+  },
+  {
+    "resourceID": "exception.password.equals.previous",
+    "locale": "de",
+    "text": "Das neue Passwort unterscheidet sich nicht vom bisherigen Passwort."
+  },
+  {
+    "resourceID": "exception.password.empty",
+    "locale": "i-default",
+    "text": "The new password must not be empty."
+  },
+  {
+    "resourceID": "exception.password.empty",
+    "locale": "en",
+    "text": "The new password must not be empty."
+  },
+  {
+    "resourceID": "exception.password.empty",
+    "locale": "de",
+    "text": "Das neue Passwort darf nicht leer sein."
+  },
+  {
+    "resourceID": "exception.password.length",
+    "locale": "i-default",
+    "text": "The password does not meet the security guidelines concerning the password length."
+  },
+  {
+    "resourceID": "exception.password.length",
+    "locale": "en",
+    "text": "The password does not meet the security guidelines concerning the password length."
+  },
+  {
+    "resourceID": "exception.password.length",
+    "locale": "de",
+    "text": "Das Passwort genügt nicht den Sicherheitsrichtlinien in Bezug auf die Passwortlänge."
+  },
+  {
+    "resourceID": "exception.password.regexp",
+    "locale": "i-default",
+    "text": "The password does not meet the security guidelines concerning the password complexity."
+  },
+  {
+    "resourceID": "exception.password.regexp",
+    "locale": "en",
+    "text": "The password does not meet the security guidelines concerning the password complexity."
+  },
+  {
+    "resourceID": "exception.password.regexp",
+    "locale": "de",
+    "text": "Das Passwort genügt nicht den Sicherheitsrichtlinien in Bezug auf die Passwortkomplexität."
+  },
+  {
+    "resourceID": "exception.password.match",
+    "locale": "i-default",
+    "text": "The passwords do not match."
+  },
+  {
+    "resourceID": "exception.password.match",
+    "locale": "en",
+    "text": "The passwords do not match."
+  },
+  {
+    "resourceID": "exception.password.match",
+    "locale": "de",
+    "text": "Die Passwörter stimmen nicht überein."
+  },
+  {
+    "resourceID": "exception.user.email.empty",
+    "locale": "i-default",
+    "text": "A valid email address is required to send a password notification."
+  },
+  {
+    "resourceID": "exception.user.email.empty",
+    "locale": "en",
+    "text": "A valid email address is required to send a password notification."
+  },
+  {
+    "resourceID": "exception.user.email.empty",
+    "locale": "de",
+    "text": "Um eine Passwort-Benachrichtigung zu versenden, wird eine gültige Email-Adresse benötigt."
+  },
+  {
+    "resourceID": "exception.parameter.email.configuration",
+    "locale": "i-default",
+    "text": "There is no SMTP server configured in the system parameters."
+  },
+  {
+    "resourceID": "exception.parameter.email.configuration",
+    "locale": "en",
+    "text": "There is no SMTP server configured in the system parameters."
+  },
+  {
+    "resourceID": "exception.parameter.email.configuration",
+    "locale": "de",
+    "text": "Es ist kein SMTP Server in den Systemparametern konfiguriert."
   }
 ]
 

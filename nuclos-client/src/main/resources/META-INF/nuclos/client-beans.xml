@@ -19,8 +19,19 @@
 		</property>
 	</bean>
 
-	<!-- define this bean first as it sets HttpClient-settings that are also required for ActiveMQ connections -->
+	<!--
+		SecuredBasicAuthHttpInvokerRequestExecutor sets HttpClient-settings to accept self-signed certificated (https).
+		As these settings are also required for ActiveMQ connections, the bean has to be initialized first.
+		SecuredBasicAuthHttpInvokerRequestExecutor adds authentication information (Basic) to the request header.
+		TODO: add session support here
+	-->
 	<bean id="authHttpInvokerRequestExecutor" class="org.nuclos.client.SecuredBasicAuthHttpInvokerRequestExecutor" />
+
+	<!--
+		CommonsHttpInvokerRequestExecutor uses Commons HttpClient to execute remote calls (see bean authHttpInvokerRequestExecutor),
+		but does not include any authentication data. This bean is needed to receive proper exceptions from the remote authentication manager.
+	-->
+	<bean id="httpInvokerRequestExecutor" class="org.springframework.remoting.httpinvoker.CommonsHttpInvokerRequestExecutor" />
 
 	<!-- JMS start -->
 
@@ -95,7 +106,7 @@
     	<property name="destinationName" value="topic/progressNotification"></property>
     	<property name="pubSubDomain" value="true"></property>
     </bean-->
-    
+
     <bean id="topic.lockedTabProgressNotification" class="org.apache.activemq.command.ActiveMQTopic">
     	<constructor-arg value="topic/lockedTabProgressNotification"/>
     </bean>
@@ -113,15 +124,14 @@
     	<sec:authentication-provider ref="remoteAuthenticationProvider" />
     </sec:authentication-manager>
 
-    <bean id="remoteAuthenticationProvider"
-          class="org.springframework.security.authentication.rcp.RemoteAuthenticationProvider">
+    <bean id="remoteAuthenticationProvider" class="org.springframework.security.authentication.rcp.RemoteAuthenticationProvider">
         <property name="remoteAuthenticationManager" ref="remoteAuthenticationManager" />
     </bean>
 
     <bean id="remoteAuthenticationManager" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
         <property name="serviceUrl" value="${url.remoting}/RemoteAuthenticationManager"/>
-        <property name="serviceInterface" value="org.springframework.security.authentication.rcp.RemoteAuthenticationManager"/>
-        <property name="httpInvokerRequestExecutor" ref="authHttpInvokerRequestExecutor" />
+        <property name="serviceInterface" value="org.nuclos.common.security.RemoteAuthenticationManager"/>
+        <property name="httpInvokerRequestExecutor" ref="httpInvokerRequestExecutor" />
     </bean>
 
 	<!-- Security end -->
@@ -329,6 +339,11 @@
 	<bean id="codeService" parent="httpInvokerProxyFactoryBean">
 	    <property name="serviceUrl" value="${url.remoting}/CodeService"/>
 	    <property name="serviceInterface" value="org.nuclos.server.customcode.ejb3.CodeFacadeRemote"/>
+	</bean>
+
+	<bean id="userService" parent="httpInvokerProxyFactoryBean">
+	    <property name="serviceUrl" value="${url.remoting}/UserService"/>
+	    <property name="serviceInterface" value="org.nuclos.common.security.UserFacadeRemote"/>
 	</bean>
 
 	<bean id="lookupService" class="org.nuclos.client.common.LocaleDelegate">

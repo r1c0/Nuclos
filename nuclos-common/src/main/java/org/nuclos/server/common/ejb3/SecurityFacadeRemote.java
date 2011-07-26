@@ -36,7 +36,7 @@ public interface SecurityFacadeRemote {
 	public static final String ALLOWED_ACTIONS = "ALLOWED_ACTIONS";
 	public static final String MODULE_PERMISSIONS = "MODULE_PERMISSIONS";
 	public static final String MASTERDATA_PERMISSIONS = "MASTERDATA_PERMISSIONS";
-	
+
 	/**
 	 * logs the current user in.
 	 * @return session id for the current user
@@ -132,14 +132,17 @@ public interface SecurityFacadeRemote {
 
 	@RolesAllowed("Login")
 	public abstract void invalidateCache();
-	
+
 	@RolesAllowed("Login")
 	public Boolean isSuperUser();
-	
+
 	@RolesAllowed("Login")
 	public Map<String, Object> getInitialSecurityData();
-	
+
 	@RolesAllowed("Login")
 	public Integer getUserId(final String sUserName) throws CommonFatalException;
 
+	public Boolean isLdapAuthenticationActive();
+
+	public Boolean isLdapSynchronizationActive();
 }

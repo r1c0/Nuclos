@@ -19,7 +19,10 @@ package org.nuclos.client;
 import java.io.IOException;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethodRetryHandler;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.log4j.Logger;
 import org.nuclos.common.ApplicationProperties;
@@ -31,6 +34,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class SecuredBasicAuthHttpInvokerRequestExecutor extends CommonsHttpInvokerRequestExecutor {
 
 	private static final Logger log = Logger.getLogger(SecuredBasicAuthHttpInvokerRequestExecutor.class);
+
+	private HttpMethodRetryHandler retryHandler;
 
 	@SuppressWarnings("deprecation")
 	public SecuredBasicAuthHttpInvokerRequestExecutor() {
@@ -54,4 +59,18 @@ public class SecuredBasicAuthHttpInvokerRequestExecutor extends CommonsHttpInvok
 		return postMethod;
 	}
 
+	@Override
+	public void setHttpClient(HttpClient httpClient) {
+		if (this.retryHandler != null) {
+			httpClient.getParams().getDefaults().setParameter(HttpMethodParams.RETRY_HANDLER, retryHandler);
+		}
+		super.setHttpClient(httpClient);
+	}
+
+	public void setRetryHandler(HttpMethodRetryHandler retryHandler) {
+		this.retryHandler = retryHandler;
+		if (getHttpClient() != null) {
+			getHttpClient().getParams().getDefaults().setParameter(HttpMethodParams.RETRY_HANDLER, retryHandler);
+		}
+	}
 }

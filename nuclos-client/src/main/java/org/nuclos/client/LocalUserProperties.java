@@ -48,9 +48,7 @@ import org.nuclos.common2.LocaleInfo;
  * @version 01.00.00
  */
 public class LocalUserProperties extends java.util.Properties {
-    /**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 
 	private static LocalUserProperties singleton;
@@ -75,6 +73,20 @@ public class LocalUserProperties extends java.util.Properties {
     public static final String KEY_LANG_REGION = "login.lang.region";
     public static final String KEY_PLOGIN_LOCALE_ID = "login.locale.id";
 
+    public static final String KEY_ERR_LOCKED = "login.err.locked";
+    public static final String KEY_ERR_ACCOUNT_EXPIRED = "login.err.account.expired";
+
+    public static final String KEY_CHANGEPASSWORD_TITLE = "changepassword.title";
+    public static final String KEY_CHANGEPASSWORD_EXPIRED = "changepassword.expired";
+
+    public static final String KEY_LAB_OLDPW = "login.lab.oldpw";
+    public static final String KEY_LAB_NEWPW1 = "login.lab.newpw1";
+    public static final String KEY_LAB_NEWPW2 = "login.lab.newpw2";
+
+    public static final String KEY_ERR_PASSWORD_MATCH = "changepassword.err.nomatch";
+
+    public static final String KEY_ERR_EXIT = "login.err.exit";
+
     private static final Map<String, String> defaults;
     static {
     	HashMap<String, String> t = new HashMap<String, String>();
@@ -91,6 +103,23 @@ public class LocalUserProperties extends java.util.Properties {
     	t.put(KEY_ERR_ADMIN, "At the moment, only administrators can log in");
     	t.put(KEY_ERR_SERVER, "Could not connect to server. \nPlease contact your system administrator.");
     	t.put(KEY_LANG_SELECT, "Your {0} client does not have a valid \ndefault region and language setting at the moment.\n\n Please select one below.");
+    	t.put(KEY_ERR_LOCKED, "Your login has been locked.<br/>Please contant your system administrator.");
+    	t.put(KEY_ERR_ACCOUNT_EXPIRED, "Your login has expired.<br/>Please contant your system administrator.");
+    	t.put(KEY_CHANGEPASSWORD_TITLE, "Change password");
+    	t.put(KEY_CHANGEPASSWORD_EXPIRED, "Your password has expired. Please change your password.");
+    	t.put(KEY_LAB_OLDPW, "Old password");
+    	t.put(KEY_LAB_NEWPW1, "New password");
+    	t.put(KEY_LAB_NEWPW2, "Repeat new password");
+    	t.put(KEY_ERR_PASSWORD_MATCH, "Passwords do not match");
+    	t.put(KEY_ERR_EXIT, "Authentication not possible. Client will shut down.");
+
+    	t.put("invalid.login.exception", "Wrong password.");
+    	t.put("exception.password.history", "The password does not meet the security guidelines concerning the password history.");
+    	t.put("exception.password.equals.previous", "The new password does not differ from the old password.");
+    	t.put("exception.password.empty", "The new password must not be empty.");
+    	t.put("exception.password.length", "The password does not meet the security guidelines concerning the password length.");
+    	t.put("exception.password.regexp", "The password does not meet the security guidelines concerning the password complexity.");
+
     	defaults = Collections.unmodifiableMap(t);
     };
 
@@ -183,6 +212,10 @@ public class LocalUserProperties extends java.util.Properties {
 
     public void setServerName(String sServerName) {
         setProperty(KEY_SERVERNAME, sServerName);
+    }
+
+    public boolean containsLoginResource(String key) {
+    	return defaults.containsKey(key);
     }
 
     public String getLoginResource(String key) {

@@ -133,7 +133,7 @@ public class SecurityDelegate {
 	/**
 	 * read attribute permissions for all attributes of a given entity in a
 	 * given state
-	 * 
+	 *
 	 * @param entity  the entity
 	 * @param stateId the state id
 	 * @return a map from attribute names to permission objects
@@ -146,7 +146,7 @@ public class SecurityDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	public void invalidateCache() {
 		try {
 			facade.invalidateCache();
@@ -154,9 +154,9 @@ public class SecurityDelegate {
 			throw new CommonFatalException(e);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Boolean isSuperUser() {
@@ -167,8 +167,8 @@ public class SecurityDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
-	
+
+
 	public Map<String, Object> getInitialSecurityData() {
 		try {
 			return getSecurityFacade().getInitialSecurityData();
@@ -186,5 +186,13 @@ public class SecurityDelegate {
 			throw new CommonFatalException(e);
 		}
 	}
-	
+
+	public Boolean isLdapAuthenticationActive() {
+		return facade.isLdapAuthenticationActive();
+	}
+
+	public Boolean isLdapSynchronizationActive() {
+		return facade.isLdapSynchronizationActive();
+	}
+
 }	// class SecurityDelegate

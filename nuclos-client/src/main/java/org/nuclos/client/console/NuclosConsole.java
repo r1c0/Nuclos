@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.ejb.CreateException;
 import javax.security.auth.login.LoginException;
@@ -38,7 +37,6 @@ import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.attribute.AttributeDelegate;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.client.layout.LayoutDelegate;
-import org.nuclos.client.login.ServerConfiguration;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.report.ReportDelegate;
 import org.nuclos.client.rule.RuleDelegate;
@@ -133,16 +131,9 @@ public class NuclosConsole extends ConsoleConstants {
 	protected NuclosConsole() {
 	}
 
-	private static void login(String sUser, String sPassword, String sServer) throws LoginException {
+	private static void login(String sUser, String sPassword) throws LoginException {
 		sUserName = sUser;
-		final Map<String, ServerConfiguration> mpConfigurations = ServerConfiguration.getServerConfigurations();
-		if (mpConfigurations.containsKey(sServer)) {	
-			NuclosRemoteServerSession.login(sUser, sPassword);
-		}
-		else {
-			System.out.println("Configuration not found. Available configurations are: " + CollectionUtils.getSeparatedList(mpConfigurations.keySet(), ", "));
-			System.exit(-1);
-		}
+		NuclosRemoteServerSession.login(sUser, sPassword);
 	}
 
 	private static void logout() throws LoginException {
@@ -1070,7 +1061,7 @@ public class NuclosConsole extends ConsoleConstants {
 				System.exit(-1);
 			}
 
-			login(asArgs[0], asArgs[1], asArgs[2]);
+			login(asArgs[0], asArgs[1]);
 			try {
 				final String[] asParamsWithoutLoginInfo = new String[asArgs.length - 3];
 				for (int i = 3; i < asArgs.length; i++) {

@@ -47,11 +47,11 @@ public interface ParameterProvider {
 	public static final String KEY_INTERNAL_INFORMATION_FILE_PATH = "Internal information file path";
 
 	public static final String KEY_REPORT_MAXROWCOUNT = "Report Max Row Count";
-	
+
 	public static final String KEY_FOCUSSED_ITEM_BACKGROUND_COLOR = "Focussed item background color";
 	public static final String KEY_MANDATORY_ITEM_BACKGROUND_COLOR = "Mandatory item background color";
 	public static final String KEY_MANDATORY_ADDED_ITEM_BACKGROUND_COLOR = "Mandatory added item background color";
-	
+
 	public static final String KEY_NOTIFICATION_SENDER = "Notification Sender";
 	public static final String KEY_HISTORICAL_STATE_CHANGED_COLOR = "Historical state changed color";
 	public static final String KEY_HISTORICAL_STATE_NOT_TRACKED_COLOR = "Historical state not tracked color";
@@ -102,16 +102,26 @@ public interface ParameterProvider {
 	public static final String KEY_WSDL_RULECOMPILE_PATH = "WSDL_RULECOMPILE_PATH";
 	public static final String KEY_WSDL_GENERATOR_COMPILED_CLASSES_PATH = "WSDL_GENERATOR_COMPILED_CLASSES_PATH";
 	public static final String KEY_WSDL_IMPORT_PATH = "WSDL_IMPORT_PATH";
-	
+
 	public static final String KEY_CIPHER = "server.cryptfield.cipher";
-	
+
 	public static final String KEY_RESPLAN_RESOURCE_LIMIT = "ResPlan Resource Limit";
 
 	public static final String KEY_THUMBAIL_SIZE = "THUMBNAIL_SIZE";
-	
+
 	public static final String KEY_TIMELIMIT_RULE_USER = "Timelimit Rule User";
-	
+
 	public static final String KEY_DRAG_CURSOR_HOLDING_TIME = "DRAG_CURSOR_HOLDING_TIME";
+
+	public static final String KEY_SECURITY_LOCK_DAYS = "SECURITY_LOCK_USER_PERIOD";
+	public static final String KEY_SECURITY_LOCK_ATTEMPTS = "SECURITY_LOCK_ATTEMPTS";
+	public static final String KEY_SECURITY_PASSWORD_INTERVAL = "SECURITY_PASSWORD_INTERVAL";
+	public static final String KEY_SECURITY_PASSWORD_HISTORY_NUMBER = "SECURITY_PASSWORD_HISTORY_NUMBER";
+	public static final String KEY_SECURITY_PASSWORD_HISTORY_DAYS = "SECURITY_PASSWORD_HISTORY_DAYS";
+	public static final String KEY_SECURITY_PASSWORD_STRENGTH_LENGTH = "SECURITY_PASSWORD_STRENGTH_LENGTH";
+	public static final String KEY_SECURITY_PASSWORD_STRENGTH_REGEXP = "SECURITY_PASSWORD_STRENGTH_REGEXP";
+	public static final String KEY_SECURITY_PASSWORD_NOTIFICATION_SUBJECT = "SECURITY_PASSWORD_NOTIFICATION_SUBJECT";
+	public static final String KEY_SECURITY_PASSWORD_NOTIFICATION_BODY = "SECURITY_PASSWORD_NOTIFICATION_BODY";
 
 	/**
 	 * @param sParameterName

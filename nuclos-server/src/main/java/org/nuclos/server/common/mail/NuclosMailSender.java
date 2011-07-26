@@ -31,6 +31,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 import org.nuclos.common.NuclosFile;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.mail.NuclosMail;
@@ -39,6 +41,8 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.ServerParameterProvider;
 
 public class NuclosMailSender {
+
+	private final static Logger LOG = Logger.getLogger(NuclosMailSender.class);
 
 	/**
 	 *
@@ -58,6 +62,7 @@ public class NuclosMailSender {
 			if (smtpPort != null)
 				iSmtpPort = new Integer(smtpPort.trim());
 		} catch (Exception e) {
+			Log.error("Parsing smtp port failed.", e);
 			throw new CommonBusinessException(StringUtils.getParameterizedExceptionMessage("mailsender.error.2", smtpPort.trim()));
 		}
 
@@ -158,6 +163,7 @@ public class NuclosMailSender {
 
 			Transport.send(msg);
 		} catch (Exception e) {
+			Log.error("Sending email failed.", e);
 			throw new CommonBusinessException(StringUtils.getParameterizedExceptionMessage("mailsender.error.1", e.getMessage()));
 		}
 	}

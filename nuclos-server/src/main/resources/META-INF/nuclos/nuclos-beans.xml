@@ -78,7 +78,6 @@
 		<property name="transactionAttributeSource" ref="attrSource"></property>
 	</bean>
 
-
 	<bean id="masterDataService" class="org.nuclos.server.masterdata.ejb3.MasterDataFacadeBean"/>
 
 	<bean id="parameterService" class="org.nuclos.server.common.ejb3.ParameterFacadeBean"/>
@@ -169,6 +168,8 @@
 		<property name="service" ref="localeService" />
 	</bean>
 
+	<bean id="userService" class="org.nuclos.server.security.UserFacadeBean"/>
+
 	<bean id="parameterProvider" class="org.nuclos.server.common.ServerParameterProvider" />
 
 	<bean id="attributeProvider" class="org.nuclos.server.common.AttributeCache" />
@@ -206,22 +207,29 @@
     <sec:authentication-provider ref='nuclosAuthenticationProvider'/>
   </sec:authentication-manager>
 
-  <bean id="remoteAuthenticationManager" class="org.springframework.security.authentication.rcp.RemoteAuthenticationManagerImpl">
+  <bean id="remoteAuthenticationManager" class="org.nuclos.server.security.RemoteAuthenticationManager">
     <property name="authenticationManager" ref="authenticationManager" />
+    <property name="userDetailsService" ref="userDetailsService" />
   </bean>
 
   <bean id="nuclosAuthenticationProvider" class="org.nuclos.server.security.NuclosAuthenticationProvider">
     <property name="userDetailsService" ref="userDetailsService" />
   </bean>
 
-  <bean id="userDetailsService" class="org.nuclos.server.security.NuclosUserDetailsService"></bean>
+  <bean id="userDetailsService" class="org.nuclos.server.security.NuclosUserDetailsService">
+  	<property name="parameterProvider" ref="parameterProvider" />
+  </bean>
+
+  <bean id="sessionInvalidationFilter" class="org.nuclos.server.security.SessionInvalidationFilter" />
 
   <sec:global-method-security jsr250-annotations="enabled" secured-annotations="enabled" />
 
-  <sec:http create-session="never">
+  <!-- sec:http create-session="never"-->
+  <sec:http create-session="always">
 	<sec:http-basic/>
 	<sec:intercept-url pattern="/*"/>
+	<sec:session-management/>
+	<sec:custom-filter ref="sessionInvalidationFilter" before="SECURITY_CONTEXT_FILTER"/>
   </sec:http>
-
 
 </beans>

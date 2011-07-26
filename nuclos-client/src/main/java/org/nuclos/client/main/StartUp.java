@@ -49,7 +49,6 @@ import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.login.LoginController;
 import org.nuclos.client.login.LoginEvent;
 import org.nuclos.client.login.LoginListener;
-import org.nuclos.client.login.ServerConfiguration;
 import org.nuclos.client.synthetica.NuclosSyntheticaUtils;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
@@ -191,10 +190,8 @@ public class StartUp  {
 		this.setupLookAndFeel();
 
 		try {
-			ServerConfiguration serverConfig = ServerConfiguration.getDefaultServerConfiguration();
-
 			// perform login:
-			final LoginController ctlLogin = new LoginController(null, serverConfig, this.args);
+			final LoginController ctlLogin = new LoginController(null, this.args);
 
 			ctlLogin.addLoginListener(new LoginListener() {
 				@Override

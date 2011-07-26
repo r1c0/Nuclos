@@ -41,6 +41,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -54,6 +55,7 @@ import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.ShutdownActions;
+import org.nuclos.client.main.ChangePasswordPanel;
 import org.nuclos.client.main.SwingLocaleSwitcher;
 import org.nuclos.client.security.NuclosRemoteServerSession;
 import org.nuclos.client.ui.Controller;
@@ -62,13 +64,20 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.CryptUtil;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.security.NuclosLoginException;
+import org.nuclos.common.SpringApplicationContextHolder;
+import org.nuclos.common.security.RemoteAuthenticationManager;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
-import org.nuclos.common2.security.FatalLoginException;
 import org.nuclos.server.servermeta.ejb3.ServerMetaFacadeRemote;
+import org.springframework.remoting.RemoteAccessException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.AuthenticationException;
 
 /**
  * Performs the login process.
@@ -94,17 +103,15 @@ public class LoginController extends Controller {
 	 * the default username that is taken if none has ever been entered before.
 	 */
 	private final String	          USERNAME_DEFAULT	= "";
-	private final ServerConfiguration serverConfig;
 	private boolean	                  passwordSaveAllowed;
 	private LoginPanel	              loginPanel;
 	private List<LoginListener>	      loginListeners	= new LinkedList<LoginListener>();
 	private double                    shakeStepSize	    = 0;
 	private final String[] args;
 
-	public LoginController(Component parent, ServerConfiguration serverConfig, String[] args) {
+	public LoginController(Component parent, String[] args) {
 		super(parent);
 
-		this.serverConfig = serverConfig;
 		this.args = args;
 
 		try {
@@ -119,7 +126,7 @@ public class LoginController extends Controller {
         	e.printStackTrace();
 	        JOptionPane.showMessageDialog(
 	        	null,
-	        	"The server at " + serverConfig.getUrl() + " cannot be reached.\n\n"
+	        	"The server at " + System.getProperty("url.remoting") + " cannot be reached.\n\n"
 	        	+ "Please contact your system administrator.",
 	        	"Fatal Error",
 	        	JOptionPane.ERROR_MESSAGE);
@@ -140,6 +147,11 @@ public class LoginController extends Controller {
 				if(localeInfo.get(i).localeId == preselectId)
 					this.loginPanel.cmbbxLanguage.setSelectedIndex(i);
 		}
+	}
+
+	public LoginController(Component parent) {
+		super(parent);
+		this.args = new String[]{};
 	}
 
 	public void run() {
@@ -265,6 +277,58 @@ public class LoginController extends Controller {
 		}
 	}
 
+	public boolean run(JFrame frame) {
+		final LocalUserProperties props = LocalUserProperties.getInstance();
+
+		loginPanel = new LoginPanel(false);
+		loginPanel.hideLanguageSelection();
+
+		final JOptionPane optpn = new JOptionPane(loginPanel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+		optpn.setInitialValue(null);
+		optpn.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+
+		String sTitle = MessageFormat.format(
+			props.getLoginResource(LocalUserProperties.KEY_LOGIN_TITLE),
+			ApplicationProperties.getInstance().getCurrentVersion().getShortName());
+		final JDialog dialog = optpn.createDialog(frame, sTitle);
+		dialog.setName("dlgLogin");
+		dialog.setIconImage(NuclosIcons.getInstance().getDefaultFrameIcon().getImage());
+		dialog.pack();
+		dialog.setResizable(false);
+		dialog.setLocationRelativeTo(frame);
+
+		loginPanel.tfUserName.setText(props.getUserName());
+		loginPanel.tfUserName.setEnabled(false);
+		loginPanel.tfUserName.addFocusListener(new SelectAllFocusAdapter());
+		loginPanel.tfPassword.addFocusListener(new SelectAllFocusAdapter());
+
+		while (true) {
+			dialog.setVisible(true);
+			Object result = optpn.getValue();
+			if (result instanceof Integer) {
+				Integer iValue = (Integer) result;
+				switch (iValue) {
+					case JOptionPane.OK_OPTION:
+						if(cmdPerformLogin(frame, optpn, iValue, props)) {
+							dialog.dispose();
+							return true;
+						}
+						else {
+							optpn.setValue(optpn.getInitialValue());
+						}
+						break;
+					case JOptionPane.CANCEL_OPTION:
+					case JOptionPane.CLOSED_OPTION:
+						dialog.dispose();
+						return false;
+					default:
+						throw new NuclosFatalException();
+				}
+			}
+			return false;
+		}
+	}
+
 	private void postProcessLogin() {
 		List<LocaleInfo> clientCachedLocaleInfo
 		= LocalUserProperties.getInstance().getLoginLocaleSelection();
@@ -303,7 +367,7 @@ public class LoginController extends Controller {
 		LocaleDelegate.getInstance().selectLocale(localeInfo, selLocale);
 	}
 
-	private boolean cmdPerformLogin(JFrame frame, JOptionPane optpn, int selectedOption, LocalUserProperties props) {
+	private boolean cmdPerformLogin(final JFrame frame, final JOptionPane optpn, final int selectedOption, final LocalUserProperties props) {
 		shakeStepSize += 6;
 		loginPanel.setProgressVisible(true);
 
@@ -327,7 +391,6 @@ public class LoginController extends Controller {
 				try {
 					performLogin(sUserName, acPassword);
 					props.setUserName(sUserName);
-					props.setServerName(serverConfig.getName());
 
 					props.setUserPasswd(
 						loginPanel.rememberPass.isSelected()
@@ -337,40 +400,49 @@ public class LoginController extends Controller {
 					props.store();
 					result = true;
 				}
-				catch (LoginException ex) {
+				catch (LockedException ex) {
 					loginPanel.setProgressVisible(result);
-					if(ex instanceof FatalLoginException){
-						Errors.getInstance().showExceptionDialog(frame, ex);
-					} else {
-						if(ex instanceof NuclosLoginException){
-							switch(((NuclosLoginException)ex).getErrorCode()){
-								case 3: {
-									Errors.getInstance().showExceptionDialog(frame, new LoginException(LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_SERVER)));
-									optpn.firePropertyChange("value", 0, JOptionPane.CLOSED_OPTION);
-									break;
-								}
-								case 2: {
-									Errors.getInstance().showExceptionDialog(frame, new LoginException(LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_UPERM)));
-									optpn.firePropertyChange("value", 0, JOptionPane.CLOSED_OPTION);
-									break;
-								}
-								case 1:
-								default: {
-									loginPanel.shake(shakeStepSize);
-									loginPanel.setPasswordError(LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_UPASS));
-									break;
-								}
-							}
-						} else {
-							loginPanel.shake(shakeStepSize);
-							loginPanel.setPasswordError(LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_UPASS));
-						}
-					}
+					loginPanel.shake(shakeStepSize);
+					loginPanel.setPasswordError(LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_LOCKED));
 				}
-//				catch (Exception ex) {
-//					loginPanel.setProgressVisible(result);
-//					Errors.getInstance().showExceptionDialog(frame, ex);
-//				}
+				catch (AccountExpiredException ex) {
+					loginPanel.setProgressVisible(result);
+					loginPanel.shake(shakeStepSize);
+					loginPanel.setPasswordError(LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_ACCOUNT_EXPIRED));
+				}
+				catch (CredentialsExpiredException ex) {
+					// Display change credentials panel
+					ChangePasswordPanel cpp = new ChangePasswordPanel(false, new String(acPassword), true);
+					result = cpp.showInDialog(frame, new ChangePasswordPanel.ChangePasswordDelegate() {
+						@Override
+						public void changePassword(String oldPw, String newPw) throws CommonBusinessException {
+							RemoteAuthenticationManager ram = SpringApplicationContextHolder.getBean(RemoteAuthenticationManager.class);
+							ram.changePassword(sUserName, new String(acPassword), newPw);
+							loginPanel.tfPassword.setText(newPw);
+							cmdPerformLogin(frame, optpn, selectedOption, props);
+						}
+					});
+					loginPanel.setProgressVisible(result);
+				}
+				catch (AuthenticationException ex) {
+					loginPanel.setProgressVisible(result);
+					loginPanel.shake(shakeStepSize);
+					loginPanel.setPasswordError(LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_UPASS));
+				}
+				catch (AccessDeniedException ex) {
+					loginPanel.setProgressVisible(result);
+					loginPanel.shake(shakeStepSize);
+					loginPanel.setPasswordError(LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_UPERM));
+				}
+				catch (RemoteAccessException ex) {
+					loginPanel.setProgressVisible(result);
+					loginPanel.shake(shakeStepSize);
+					loginPanel.setPasswordError(LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_SERVER));
+				}
+				catch (Exception ex) {
+					loginPanel.setProgressVisible(result);
+					Errors.getInstance().showExceptionDialog(frame, ex);
+				}
 				finally {
 					StringUtils.clear(acPassword);
 				}
@@ -439,7 +511,9 @@ public class LoginController extends Controller {
 
 	private void performLogin(String sUserName, char[] acPassword) throws LoginException {
 		NuclosRemoteServerSession.login(sUserName, new String(acPassword));
-		ShutdownActions.getInstance().registerShutdownAction(ShutdownActions.SHUTDOWNORDER_LOGOUT, new Logout());
+		if (!ShutdownActions.getInstance().isRegistered(ShutdownActions.SHUTDOWNORDER_LOGOUT)) {
+			ShutdownActions.getInstance().registerShutdownAction(ShutdownActions.SHUTDOWNORDER_LOGOUT, new Logout());
+		}
 	}
 
 	public synchronized void addLoginListener(LoginListener loginlistener) {
@@ -451,7 +525,7 @@ public class LoginController extends Controller {
 	}
 
 	public void fireLoginSuccessful() {
-		LoginEvent ev = new LoginEvent(this, this.loginPanel.tfUserName.getText(), serverConfig.getName());
+		LoginEvent ev = new LoginEvent(this, this.loginPanel.tfUserName.getText(), "default");
 		for (LoginListener loginlistener : loginListeners) {
 			loginlistener.loginSuccessful(ev);
 		}

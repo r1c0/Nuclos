@@ -87,6 +87,7 @@ public enum NuclosEntity {
 	NUCLETDEPENDENCE("nucletDependence"),
 	NUCLETCONTENTUID("nucletContentUID"),
 	PARAMETER("parameter"),
+	PASSWORDHISTORY("passwordhistory"),
 	PROCESS("process"),
 	PROCESSSTATEMODEL("processStateModel"),
 	PROCESSTRANSITION("processTransition"),
@@ -155,7 +156,7 @@ public enum NuclosEntity {
 	public boolean checkEntityName(String entityName) {
 		return (entityName != null) && entityName.equals(getEntityName());
 	}
-	
+
 	public static boolean isNuclosEntity(String entityName) {
 		return getByName(entityName)!=null;
 	}

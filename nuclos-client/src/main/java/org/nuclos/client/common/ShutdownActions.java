@@ -105,4 +105,8 @@ public class ShutdownActions {
 		Runtime.getRuntime().addShutdownHook(new Thread(runnableHook));
 	}
 
+	public synchronized boolean isRegistered(int iOrder) {
+		return this.mpShutdownActions.containsKey(iOrder);
+	}
+
 }	// class ShutdownActions

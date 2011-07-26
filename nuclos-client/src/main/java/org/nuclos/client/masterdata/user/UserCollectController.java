@@ -16,7 +16,12 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.masterdata.user;
 
+import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
+
+import java.awt.Container;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,12 +30,15 @@ import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 
+import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.SelectUserController;
 import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.common.security.SecurityDelegate;
 import org.nuclos.client.ldap.LDAPDataDelegate;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
@@ -44,13 +52,25 @@ import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
+import org.nuclos.client.ui.collect.component.CollectableCheckBox;
+import org.nuclos.client.ui.collect.component.CollectableComponent;
+import org.nuclos.client.ui.collect.component.CollectablePasswordField;
+import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
+import org.nuclos.client.ui.collect.component.model.CollectableComponentModelAdapter;
+import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
+import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
 import org.nuclos.client.ui.collect.result.NuclosSearchResultStrategy;
 import org.nuclos.client.ui.collect.result.UserResultController;
 import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collect.collectable.CollectableValueField;
+import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
@@ -58,13 +78,17 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.security.UserVO;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.TruncatableCollection;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
+import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVOWrapper;
@@ -83,25 +107,65 @@ public class UserCollectController extends MasterDataCollectController {
 	public final static String FIELD_PREFERENCES = "preferences";
 	public final static String FIELD_PASSWORD = "password";
 
-	protected final boolean useLDAP = useLDAP();
+	private static final String PLACEHOLDER_SETPASSWORD = "PlaceholderSetPassword";
+	private static final String PLACEHOLDER_SENDEMAIL = "PlaceholderSendEmail";
+	private static final String PLACEHOLDER_PASSWORD = "PlaceholderPassword";
+	private static final String PLACEHOLDER_PASSWORDREPEAT = "PlaceholderPasswordRepeat";
+
+	private CollectableEntityField clctefSetPassword;
+	private CollectableEntityField clctefSendPassword;
+	private CollectableEntityField clctefNewPassword;
+	private CollectableEntityField clctefNewPasswordRepeat;
+
+	private CollectableCheckBox chkSetPassword;
+	private CollectableCheckBox chkSendPassword;
+	private CollectablePasswordField pwdPassword;
+	private CollectablePasswordField pwdPasswordRepeat;
+
+	protected final boolean ldapAuthentication = isLdapAuthenticationEnabled();
+	protected final boolean ldapSynchronization = isLdapSynchronizationEnabled();
+
 	protected LDAPDataDelegate ldapdelegate = null;
 	private List<MasterDataWithDependantsVO> ldapRegisteredUsers = null;
 
+	CollectableComponentModelListener ccml_superuser = new CollectableComponentModelAdapter() {
+		@Override
+		public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
+			Boolean superuser = LangUtils.defaultIfNull((Boolean)ev.getCollectableComponentModel().getField().getValue(), Boolean.FALSE);
+			if (ldapAuthentication && !isMultiEdit()) {
+				chkSetPassword.setEnabled(superuser);
+				chkSetPassword.setField(new CollectableValueField(isNew()));
+				setDependantControlStates();
+			}
+		}
+	};
+
+	CollectableComponentModelListener ccml_locked = new CollectableComponentModelAdapter() {
+		@Override
+		public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
+			Boolean locked = LangUtils.defaultIfNull((Boolean)ev.getOldValue().getValue(), Boolean.FALSE);
+			Integer attempts = LangUtils.defaultIfNull((Integer)getDetailsComponentModel("loginattempts").getField().getValue(), new Integer(0));
+			if (locked && attempts > 0) {
+				getDetailsComponentModel("loginattempts").setField(new CollectableValueField(new Integer(0)));
+			}
+		}
+	};
+
 	/**
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
  	 * @deprecated You should normally do sth. like this:<code><pre>
  	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
      */
 	public UserCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.USER, tabIfAny, 
+		super(parent, NuclosEntity.USER, tabIfAny,
 				new UserResultController<CollectableMasterDataWithDependants>(NuclosEntity.USER.getEntityName(),
-						new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()));
+				new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()));
 		this.setupDetailsToolBar();
-		if(this.useLDAP){
+		if(this.ldapSynchronization){
 			this.ldapdelegate = LDAPDataDelegate.getInstance();
 		}
 	}
@@ -109,23 +173,140 @@ public class UserCollectController extends MasterDataCollectController {
 	@Override
 	protected void initialize(CollectPanel<CollectableMasterDataWithDependants> pnlCollect) {
 		super.initialize(pnlCollect);
+
+		clctefSetPassword = new DefaultCollectableEntityField(UserVO.FIELD_SETPASSWORD, Boolean.class, "lblSetPassword", "tltSetPassword", null, null, true, CollectableField.TYPE_VALUEFIELD, null, null);
+		clctefSendPassword = new DefaultCollectableEntityField(UserVO.FIELD_NOTIFYUSER, Boolean.class, "lblSendPassword", "tltSendPassword", null, null, true, CollectableField.TYPE_VALUEFIELD, null, null);
+		clctefNewPassword = new DefaultCollectableEntityField(UserVO.FIELD_NEWPASSWORD, String.class, "lblNewPassword", "tltNewPassword", 255, null, true, CollectableField.TYPE_VALUEFIELD, null, null);
+		clctefNewPasswordRepeat = new DefaultCollectableEntityField(UserVO.FIELD_NEWPASSWORD, String.class, "lblNewPasswordRepeat", "tltNewPasswordRepeat", 255, null, true, CollectableField.TYPE_VALUEFIELD, null, null);
+
+		chkSetPassword = new CollectableCheckBox(clctefSetPassword);
+		chkSendPassword = new CollectableCheckBox(clctefSendPassword);
+		pwdPassword = new CollectablePasswordField(clctefNewPassword);
+		pwdPasswordRepeat = new CollectablePasswordField(clctefNewPasswordRepeat);
+
+		((JCheckBox)chkSetPassword.getControlComponent()).addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setDependantControlStates();
+				boolean isSelected = false;
+				try {
+					isSelected = LangUtils.defaultIfNull((Boolean)chkSetPassword.getField().getValue(), Boolean.FALSE);
+				} catch (CollectableFieldFormatException ex) {
+					throw new NuclosFatalException(ex);
+				}
+				CollectableComponentModel model = getDetailsEditView().getModel().getCollectableComponentModelFor("requirepasswordchange");
+				if (!isNew() && model.getField() != null && !LangUtils.defaultIfNull(model.getField().getValue(), Boolean.FALSE).equals(Boolean.valueOf(isSelected))) {
+					getDetailsEditView().getModel().getCollectableComponentModelFor("requirepasswordchange").setField(new CollectableValueField(isSelected));
+				}
+			}
+		});
+
 		this.getCollectStateModel().addCollectStateListener(new CollectStateAdapter() {
+
 			@Override
 			public void resultModeEntered(CollectStateEvent ev) throws CommonBusinessException {
 				int resultMode = ev.getNewCollectState().getInnerState();
 				copyPrefsAction.setEnabled((resultMode == CollectState.RESULTMODE_SINGLESELECTION)
 					|| (resultMode == CollectState.RESULTMODE_MULTISELECTION));
 			}
+
+			@Override
+			public void detailsModeEntered(CollectStateEvent ev) throws CommonBusinessException {
+				// replace components
+				replace(PLACEHOLDER_SETPASSWORD, chkSetPassword.getControlComponent());
+				replace(PLACEHOLDER_SENDEMAIL, chkSendPassword.getControlComponent());
+				replace(PLACEHOLDER_PASSWORD, pwdPassword.getControlComponent());
+				replace(PLACEHOLDER_PASSWORDREPEAT, pwdPasswordRepeat.getControlComponent());
+
+				// setup component values
+				if (!CollectState.isDetailsModeChangesPending(ev.getNewCollectState().getInnerState())) {
+					// enable components (depending on collect state)
+					chkSetPassword.setEnabled(!ev.getNewCollectState().isDetailsModeNew() && !ev.getNewCollectState().isDetailsModeMultiViewOrEdit() && (!ldapAuthentication || isSuperuser()));
+					chkSetPassword.setField(new CollectableValueField(!chkSetPassword.getControlComponent().isEnabled() && ev.getNewCollectState().isDetailsModeNew()));
+					setDependantControlStates();
+				}
+
+				if (getDetailsEditView().getModel().getCollectableComponentModelFor("superuser") != null) {
+					getDetailsEditView().getModel().getCollectableComponentModelFor("superuser").addCollectableComponentModelListener(ccml_superuser);
+				}
+
+				if (getDetailsEditView().getModel().getCollectableComponentModelFor("locked") != null) {
+					getDetailsEditView().getModel().getCollectableComponentModelFor("locked").addCollectableComponentModelListener(ccml_locked);
+				}
+			}
+
+			@Override
+			public void detailsModeLeft(CollectStateEvent ev) throws CommonBusinessException {
+				if (getDetailsEditView().getModel().getCollectableComponentModelFor("superuser") != null) {
+					getDetailsEditView().getModel().getCollectableComponentModelFor("superuser").removeCollectableComponentModelListener(ccml_superuser);
+				}
+
+				if (getDetailsEditView().getModel().getCollectableComponentModelFor("locked") != null) {
+					getDetailsEditView().getModel().getCollectableComponentModelFor("locked").removeCollectableComponentModelListener(ccml_locked);
+				}
+			}
 		});
 	}
 
-	/**
-	 *
-	 */
-	protected void setupDetailsToolBar() {
-		//final JToolBar toolbarCustomResult = UIUtils.createNonFloatableToolBar();
+	@Override
+	public CollectableMasterDataWithDependants newCollectable() {
+		CollectableMasterDataWithDependants clctNew = super.newCollectable();
+		clctNew.setField(UserVO.FIELD_REQUIREPASSWORDCHANGE, new CollectableValueField(true));
+		return clctNew;
+	}
 
-		if(this.useLDAP){
+	@Override
+	protected CollectableMasterDataWithDependants insertCollectable(CollectableMasterDataWithDependants clctNew) throws CommonBusinessException {
+		if (clctNew.getId() != null) {
+			throw new IllegalArgumentException("clctNew");
+		}
+
+		final DependantMasterDataMap mpmdvoDependants = org.nuclos.common.Utils.clearIds(this.getAllSubFormData(null).toDependantMasterDataMap());
+
+		UserVO user = new UserVO(clctNew.getMasterDataCVO());
+		getAdditionalDataFromView(user);
+
+		final MasterDataVO mdvoInserted = UserDelegate.getInstance().create(user, mpmdvoDependants).toMasterDataVO();
+
+		fireApplicationObserverEvent();
+		return new CollectableMasterDataWithDependants(clctNew.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoInserted, this.readDependants(mdvoInserted.getId())));
+	}
+
+	@Override
+	protected CollectableMasterDataWithDependants updateCollectable(CollectableMasterDataWithDependants clct, Object oAdditionalData) throws CommonBusinessException {
+		final DependantCollectableMasterDataMap mpclctDependants = (DependantCollectableMasterDataMap) oAdditionalData;
+
+		UserVO user = new UserVO(clct.getMasterDataCVO());
+		getAdditionalDataFromView(user);
+
+		final MasterDataVO mdvoUpdated = UserDelegate.getInstance().modify(user, mpclctDependants.toDependantMasterDataMap()).toMasterDataVO();
+
+		fireApplicationObserverEvent();
+		return new CollectableMasterDataWithDependants(clct.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoUpdated, this.readDependants(mdvoUpdated.getId())));
+	}
+
+	@Override
+	protected void deleteCollectable(CollectableMasterDataWithDependants clct) throws CommonBusinessException {
+		UserDelegate.getInstance().remove(new UserVO(clct.getMasterDataCVO()));
+		fireApplicationObserverEvent();
+	}
+
+	private void getAdditionalDataFromView(UserVO user) throws CommonBusinessException {
+		user.setSetPassword((Boolean)chkSetPassword.getFieldFromView().getValue());
+		user.setNotifyUser((Boolean)chkSendPassword.getFieldFromView().getValue());
+		if (user.getSetPassword()) {
+			String passwd1 = (String)pwdPassword.getFieldFromView().getValue();
+			String passwd2 = (String)pwdPasswordRepeat.getFieldFromView().getValue();
+
+			if (!LangUtils.equals(passwd1, passwd2)) {
+				throw new CommonValidationException("exception.password.match");
+			}
+			user.setNewPassword(passwd1);
+		}
+	}
+
+	protected void setupDetailsToolBar() {
+		if(this.ldapSynchronization){
 			final JButton btnSynchronizeWithLDAP = new JButton();
 			btnSynchronizeWithLDAP.setName("btnSynchronizeWithLDAP");
 			btnSynchronizeWithLDAP.setIcon(Icons.getInstance().getIconLDAP());
@@ -134,9 +315,7 @@ public class UserCollectController extends MasterDataCollectController {
 			final UserCollectController uctl = this;
 			// action: Select Columns
 			btnSynchronizeWithLDAP.setAction(new CommonAbstractAction(btnSynchronizeWithLDAP) {
-				/**
-				 * 
-				 */
+
 				private static final long serialVersionUID = 1L;
 
 				@Override
@@ -145,16 +324,12 @@ public class UserCollectController extends MasterDataCollectController {
 				}
 			});
 
-			//toolbarCustomResult.add(btnSynchronizeWithLDAP);
 			this.getDetailsPanel().addToolBarComponent(btnSynchronizeWithLDAP);
 		}
 
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_MANAGEMENT_CONSOLE)) {
-			//toolbarCustomResult.add(copyPrefsAction);
 			this.getDetailsPanel().addToolBarComponent(new JButton(copyPrefsAction));
 		}
-
-		//this.getResultPanel().setCustomToolBarArea(toolbarCustomResult);
 	}
 
 	/**
@@ -274,8 +449,12 @@ public class UserCollectController extends MasterDataCollectController {
 		this.ldapRegisteredUsers = new ArrayList<MasterDataWithDependantsVO>(ldapusers);
 	}
 
-	private boolean useLDAP(){
-	 	return true;
+	private static boolean isLdapAuthenticationEnabled() {
+		return SecurityDelegate.getInstance().isLdapAuthenticationActive();
+	}
+
+	private static boolean isLdapSynchronizationEnabled() {
+	 	return SecurityDelegate.getInstance().isLdapSynchronizationActive();
 	}
 
 	@Override
@@ -303,14 +482,13 @@ public class UserCollectController extends MasterDataCollectController {
 	}
 
 	final Action copyPrefsAction = new AbstractAction() {
-		/**
-		 * 
-		 */
+
 		private static final long serialVersionUID = 1L;
 		{
 			putValue(Action.SHORT_DESCRIPTION, CommonLocaleDelegate.getMessage("nuclos.preferences.transfer", null));
 			putValue(Action.SMALL_ICON, Icons.getInstance().getIconPrefsCopy());
 		}
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			List<CollectableMasterDataWithDependants> selectedUsers = getSelectedCollectables();
@@ -334,4 +512,49 @@ public class UserCollectController extends MasterDataCollectController {
 		}
 	};
 
+	private void replace(String placeholdername, JComponent component) {
+		JComponent placeholder = UIUtils.findJComponent(getDetailsPanel(), placeholdername);
+		if (placeholder != null) {
+			Container container = placeholder.getParent();
+			TableLayout layoutManager = (TableLayout) container.getLayout();
+			TableLayoutConstraints constraints = layoutManager.getConstraints(placeholder);
+
+			container.remove(placeholder);
+			container.add(component, constraints);
+		}
+	}
+
+	private void setDependantControlStates() {
+		boolean isSelected = false;
+		try {
+			isSelected = LangUtils.defaultIfNull((Boolean)chkSetPassword.getField().getValue(), Boolean.FALSE);
+		} catch (CollectableFieldFormatException e) {
+			throw new NuclosFatalException(e);
+		}
+		chkSendPassword.setEnabled(isSelected);
+		chkSendPassword.setField(new CollectableValueField(isSelected));
+		pwdPassword.setEnabled(isSelected);
+		pwdPasswordRepeat.setEnabled(isSelected);
+		pwdPassword.setField(new CollectableValueField(null));
+		pwdPasswordRepeat.setField(new CollectableValueField(null));
+		for (CollectableComponent cc : getDetailsEditView().getCollectableComponentsFor("requirepasswordchange")) {
+			cc.getControlComponent().setEnabled(!ldapAuthentication || isSuperuser());
+		}
+	}
+
+	private boolean isMultiEdit() {
+		return getCollectState().isDetailsModeMultiViewOrEdit();
+	}
+
+	private boolean isNew() {
+		return getCollectState().isDetailsModeNew();
+	}
+
+	private boolean isSuperuser() {
+		CollectableField cf = getDetailsEditView().getModel().getCollectableComponentModelFor("superuser").getField();
+		if (cf != null) {
+			return LangUtils.defaultIfNull((Boolean) cf.getValue(), Boolean.FALSE);
+		}
+		return Boolean.FALSE;
+	}
 }	// class UserCollectController

@@ -36,22 +36,14 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.Window;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.image.BufferedImage;
-import java.awt.image.RescaleOp;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -59,12 +51,12 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.NuclosIcons;
+import org.nuclos.client.ui.BackgroundPanel;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.ApplicationProperties;
@@ -74,14 +66,12 @@ import org.nuclos.common.ApplicationProperties;
  * <br>
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- * 
+ *
  * @author <a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class LoginPanel extends JPanel {
-	/**
-	 * 
-	 */
+public class LoginPanel extends BackgroundPanel {
+
 	private static final long serialVersionUID = 1L;
 	private final JPanel	   pnlLogin	     = new JPanel();
 	private final JPanel	   pnlLogo	     = new JPanel();
@@ -90,7 +80,7 @@ public class LoginPanel extends JPanel {
 	private final JLabel	   labPassword;
 	private final JLabel	   labMsgSpacer;
 	private final JLabel	   labLanguage;
-	
+
 	private Bubble bubble;
 
 	final JTextField	       tfUserName	 = new JTextField();
@@ -99,10 +89,6 @@ public class LoginPanel extends JPanel {
 	final JCheckBox	           rememberPass	 = new JCheckBox();
 
 	private final JProgressBar	progressbar	 = new JProgressBar();
-	
-	private final Color bg = ApplicationProperties.getInstance().getLoginPanelBgColor(
-	    Color.WHITE);
-	private final ImageIcon bgImg = new ImageIcon(NuclosIcons.getInstance().getBigTransparentApplicationIcon512().getImage().getScaledInstance(250, -1, java.awt.Image.SCALE_SMOOTH));
 
 	public LoginPanel(boolean withRememberCheckbox) {
 		Icon iconCustomer = NuclosIcons.getInstance().getIconCustomer();
@@ -134,10 +120,10 @@ public class LoginPanel extends JPanel {
 		    labLanguage })
 			lab.setForeground(tx);
 
-		Color bhi = ApplicationProperties.getInstance().getLoginPanelBorderHiColor(
-		    null);
-		Color bsh = ApplicationProperties.getInstance().getLoginPanelBorderShadeColor(
-		    null);
+//		Color bhi = ApplicationProperties.getInstance().getLoginPanelBorderHiColor(
+//		    null);
+//		Color bsh = ApplicationProperties.getInstance().getLoginPanelBorderShadeColor(
+//		    null);
 
 		this.setName("pnlLogin");
 		this.setLayout(new BorderLayout());
@@ -237,7 +223,7 @@ public class LoginPanel extends JPanel {
 			validate();
 		}
 	}
-	
+
 	public void increaseProgress(int iProgress) {
 		setProgressVisible(true);
 		progressbar.setValue(progressbar.getValue() + iProgress);
@@ -248,49 +234,12 @@ public class LoginPanel extends JPanel {
 		cmbbxLanguage.setVisible(false);
 		labLanguage.setVisible(false);
 	}
-	
+
 	public void setPasswordError(String msg) {
 		if(bubble == null || !bubble.isVisible()) {
 			bubble = new Bubble(tfPassword, "<html>" + msg + "</html>", 20);
 			bubble.setVisible(true);
 		}
-	}
-
-	public void shake(final double initstep) {
-		final Window w = SwingUtilities.getWindowAncestor(this);
-		final Point point = w.getLocation();
-		final int delay = 10;
-		final double duration = 20;
-		
-		Runnable r = new Runnable() {
-			@Override
-            public void run() {
-				for(int i = 0; i < duration; i++) {
-					try {
-						double step = initstep - ((initstep / duration) * i);
-						move(w, new Point((int)(point.x - step), point.y));
-						Thread.sleep(delay);
-						move(w, point);
-						Thread.sleep(delay);
-						move(w, new Point((int)(point.x + step), point.y));
-						Thread.sleep(delay);
-						move(w, point);
-						Thread.sleep(delay);
-					} catch(InterruptedException ex) {}
-				}
-			}
-		};
-		Thread t = new Thread(r);
-		t.start();
-	}
-
-	private void move(final Window w, final Point p) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-            public void run() {
-				w.setLocation(p);
-			}
-		});
 	}
 
 	private class BackgroundListener implements FocusListener {
@@ -313,34 +262,4 @@ public class LoginPanel extends JPanel {
         }
 	}
 
-	@Override
-	public void paint(Graphics g) {
-		Graphics2D g2 = (Graphics2D) g;
-		
-		RenderingHints oldRH = g2.getRenderingHints();
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		
-		g2.setColor(bg);
-		g2.fillRect(0, 0, getWidth(), getHeight());
-		
-		final int wIco = bgImg.getIconWidth();
-		final int hIco = bgImg.getIconHeight();
-        
-		BufferedImage bi = new BufferedImage(wIco, hIco, BufferedImage.TYPE_INT_ARGB);
-		Graphics gbi = bi.getGraphics();
-		gbi.drawImage(bgImg.getImage(), 0, 0, null);
-		gbi.dispose();
-
-		// 50% opaque
-		float[] scales = { 1f, 1f, 1f, 0.5f };
-		float[] offsets = new float[4];
-		RescaleOp rop = new RescaleOp(scales, offsets, null);
-	   	g2.drawImage(bi, rop, getWidth()-wIco/2, -(hIco*1/4));
-		
-		g2.setRenderingHints(oldRH);
-		super.paint(g);
-	}
-	
-	
 } // class LoginPanel

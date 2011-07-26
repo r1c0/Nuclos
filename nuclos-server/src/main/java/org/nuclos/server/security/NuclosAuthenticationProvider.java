@@ -34,14 +34,16 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
  * AuthenticationProvider for Nuclos.
@@ -71,12 +73,20 @@ public class NuclosAuthenticationProvider implements AuthenticationProvider, Mes
 		}
 
 		boolean authenticated = false;
-		
+
 		String username = authentication.getPrincipal().toString();
 		String password = authentication.getCredentials().toString();
 		log.debug("NuclosAuthenticationProvider.authenticate(" + username + "), locale:" + LocaleContextHolder.getLocale().toString());
 
 		UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
+
+		if (!userDetails.isAccountNonLocked()) {
+			throw new LockedException("nuclos.security.authentication.locked");
+		}
+
+		if (!userDetails.isAccountNonExpired()) {
+			throw new AccountExpiredException("nuclos.security.authentication.accountexpired");
+		}
 
 		try	{
 			for (NuclosLdapBindAuthenticator authenticator : getLdapBindAuthenticators()) {
@@ -108,6 +118,10 @@ public class NuclosAuthenticationProvider implements AuthenticationProvider, Mes
 			final String sPasswordFromUser = StringUtils.encryptBase64(username + ((password == null) ? "" : new String(password)));
 			if(sPasswordFromUser.equals(userDetails.getPassword())) {
 				authenticated = true;
+			}
+
+			if (authenticated && !userDetails.isCredentialsNonExpired()) {
+				throw new CredentialsExpiredException("nuclos.security.authentication.credentialsexpired");
 			}
 		}
 
