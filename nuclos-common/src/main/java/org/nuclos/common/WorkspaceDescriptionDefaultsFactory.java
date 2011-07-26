@@ -33,7 +33,11 @@ public class WorkspaceDescriptionDefaultsFactory {
 		WorkspaceDescription.Tabbed wdTabbedTask = new WorkspaceDescription.Tabbed();
 		WorkspaceDescription.Tabbed wdTabbedHome = new WorkspaceDescription.Tabbed();
 		wdTabbedExplorer.setHomeTree(true);
+		wdTabbedExplorer.setAlwaysHideHistory(true);
+		wdTabbedExplorer.setAlwaysHideBookmark(true);
 		wdTabbedTask.setAlwaysHideStartmenu(true);
+		wdTabbedTask.setAlwaysHideHistory(true);
+		wdTabbedTask.setAlwaysHideBookmark(true);
 		wdTabbedHome.setHome(true);
 		wdTabbedHome.setAlwaysHideStartmenu(true);
 		

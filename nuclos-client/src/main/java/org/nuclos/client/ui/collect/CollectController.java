@@ -602,7 +602,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		return ss;
 	}
 	
-	protected final void setSearchStrategy(ISearchStrategy<Clct> ss) {
+	public final void setSearchStrategy(ISearchStrategy<Clct> ss) {
 		this.ss = ss;
 	}
 	
