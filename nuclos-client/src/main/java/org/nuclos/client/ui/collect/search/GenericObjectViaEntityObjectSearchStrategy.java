@@ -27,6 +27,7 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.attribute.AttributeCache;
+import org.nuclos.client.dal.DalSupportForGO;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.entityobject.CollectableEntityObjectProxyListAdapter;
 import org.nuclos.client.entityobject.EntityObjectDelegate;
@@ -43,7 +44,6 @@ import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common.dal.DalSupportForGO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common.genericobject.GenericObjectUtils;
@@ -399,11 +399,13 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 	}
 	
 	private CollectableEntityObject go2Eo(CollectableGenericObjectWithDependants go) {
-		return new CollectableEntityObject(meta, DalSupportForGO.govo2Eovo(go.getGenericObjectCVO(), meta.getName()));
+		return new CollectableEntityObject(meta, 
+				DalSupportForGO.wrapGenericObjectVO(go.getGenericObjectCVO(), meta));
 	}
 	
 	private CollectableGenericObjectWithDependants eo2Go(CollectableEntityObject eo) {
-		return CollectableGenericObjectWithDependants.newCollectableGenericObject(DalSupportForGO.eovo2Govo(eo.getEntityObjectVO()));
+		return CollectableGenericObjectWithDependants.newCollectableGenericObject(
+				DalSupportForGO.getGenericObjectWithDependantsVO(eo.getEntityObjectVO(), meta));
 	}
 	
 	/**

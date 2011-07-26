@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-public class AbstractDalVOWithFields extends AbstractDalVOWithVersion {
+public class AbstractDalVOWithFields<T> extends AbstractDalVOWithVersion<T> {
 
 	/**
 	 * 
@@ -32,11 +32,11 @@ public class AbstractDalVOWithFields extends AbstractDalVOWithVersion {
 
 	private Map<String, Long> mapFieldId;
 	
-	private Map<String, Object> mapField;
+	private Map<String, T> mapField;
 	
 	@Override
 	public void initFields(int maxFieldCount, int maxFieldIdCount) {
-		mapField = new HashMap<String, Object>(maxFieldCount);
+		mapField = new HashMap<String, T>(maxFieldCount);
 		mapFieldId = new HashMap<String, Long>(maxFieldIdCount);
 	}
 	
@@ -54,7 +54,7 @@ public class AbstractDalVOWithFields extends AbstractDalVOWithVersion {
 	}
 
 	@Override
-	public Map<String, Object> getFields() {
+	public Map<String, T> getFields() {
 		if (this.mapField == null) {
 			throw new IllegalArgumentException("init fields first.");
 		}
@@ -65,8 +65,8 @@ public class AbstractDalVOWithFields extends AbstractDalVOWithVersion {
 		return this.getFieldIds().get(sFieldName);
 	}
 
-	public <T> T getField(String sFieldName, Class<T> cls) {
-		final Object value = getFields().get(sFieldName);
+	public <S> S getField(String sFieldName, Class<S> cls) {
+		final T value = getFields().get(sFieldName);
 		try {
 			return cls.cast(value);
 		}

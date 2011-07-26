@@ -56,4 +56,10 @@ public class EntityObjectDelegate implements EntityObjectCommon {
 		return facade.getEntityObjectsMore(id, lstIds, stRequiredAttributeIds, stRequiredSubEntityNames, bIncludeParentObjects);
 	}
 
+	@Override
+	public Collection<EntityObjectVO> getDependantEntityObjects(String sEntityName, String sForeignKeyField,
+			Long oRelatedId) {
+		return facade.getDependantEntityObjects(sEntityName, sForeignKeyField, oRelatedId);
+	}
+
 }

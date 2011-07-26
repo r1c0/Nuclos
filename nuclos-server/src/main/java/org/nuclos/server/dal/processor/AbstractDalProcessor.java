@@ -104,7 +104,7 @@ public abstract class AbstractDalProcessor<DalVO extends IDalVO> {
 			while (!(genericSuperClass instanceof ParameterizedType) && genericSuperClass instanceof Class<?>) {
 				genericSuperClass = ((Class<?>)genericSuperClass).getGenericSuperclass();
 			}
-			Type actualType = ((ParameterizedType)genericSuperClass).getActualTypeArguments()[0];
+			Type actualType = ((ParameterizedType)genericSuperClass).getActualTypeArguments()[1];
 			if(actualType instanceof ParameterizedType) {
 				dalVOClzz = (Class<?>) ((ParameterizedType) actualType).getRawType();
 			}

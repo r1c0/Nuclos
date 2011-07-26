@@ -16,7 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.dal.vo;
 
-public class EOGenericObjectVO extends AbstractDalVOWithVersion {
+public class EOGenericObjectVO extends AbstractDalVOWithVersion<Object> {
 	
 	/**
 	 * 

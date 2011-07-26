@@ -31,7 +31,7 @@ import org.apache.commons.lang.StringUtils;
  * @author	<a href="mailto:maik.stueker@novabit.de">Maik.Stueker</a>
  * @version 01.00.00
  */
-public class EntityMetaDataVO extends AbstractDalVOWithVersion {
+public class EntityMetaDataVO extends AbstractDalVOWithVersion<EntityFieldMetaDataVO> {
 
 	/**
 	 * 
@@ -76,7 +76,7 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
     }
 	
 	public EntityMetaDataVO(EntityObjectVO eo) {
-	    super(eo);
+	    // super(eo);
 	    this.setId(eo.getId());
 	    this.setEntity(eo.getField("entity", String.class));
 	    this.setDbEntity(eo.getField("dbentity", String.class));

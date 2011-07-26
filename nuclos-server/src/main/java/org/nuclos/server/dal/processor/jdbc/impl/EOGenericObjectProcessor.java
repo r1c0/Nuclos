@@ -24,7 +24,7 @@ import org.nuclos.common.dal.vo.EOGenericObjectVO;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.IEOGenericObjectProcessor;
 
-public class EOGenericObjectProcessor extends AbstractJdbcDalProcessor<EOGenericObjectVO>
+public class EOGenericObjectProcessor extends AbstractJdbcDalProcessor<Object,EOGenericObjectVO>
 	implements IEOGenericObjectProcessor {
 	
 	private ColumnToVOMapping<Long> idColumn; 

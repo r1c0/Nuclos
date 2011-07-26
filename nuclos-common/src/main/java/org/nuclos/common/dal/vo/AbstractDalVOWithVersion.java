@@ -18,7 +18,7 @@ package org.nuclos.common.dal.vo;
 
 import org.nuclos.common2.InternalTimestamp;
 
-public abstract class AbstractDalVOWithVersion extends AbstractDalVOBasic {
+public abstract class AbstractDalVOWithVersion<T> extends AbstractDalVOBasic<T> {
 	
 	/**
 	 * 
@@ -34,7 +34,7 @@ public abstract class AbstractDalVOWithVersion extends AbstractDalVOBasic {
 		super();
 	}
 	
-	public AbstractDalVOWithVersion(AbstractDalVOWithVersion dalVO) {
+	public AbstractDalVOWithVersion(AbstractDalVOWithVersion<T> dalVO) {
 		super(dalVO);
 		this.setChangedAt(dalVO.getChangedAt());
 		this.setChangedBy(dalVO.getChangedBy());

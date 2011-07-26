@@ -72,9 +72,16 @@ public class CollectableEOEntity implements CollectableEntity {
 		return null;
 	}
 
+	/**
+	 * @deprecated use {@link #getMeta()}.getEntity().
+	 */
 	@Override
 	public String getName() {
 		return eMeta.getEntity();
+	}
+	
+	public EntityMetaDataVO getMeta() {
+		return eMeta;
 	}
 
 }

@@ -59,7 +59,7 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.nuclos.server.report.ByteArrayCarrier;
 import org.nuclos.server.resource.valueobject.ResourceFile;
 
-public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends AbstractDalProcessor<DalVO> {
+public abstract class AbstractJdbcDalProcessor<T, DalVO extends IDalVO<T>> extends AbstractDalProcessor<DalVO> {
 
    protected final List<ColumnToVOMapping<?>> allColumns = new ArrayList<ColumnToVOMapping<?>>();
 
@@ -345,7 +345,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
                      if (column.isFieldId) {
                         dalVO.getFieldIds().put(column.field, (Long) convertFromDbValue(value, column.column, DT_LONG, dalVO.getId()));
                      } else {
-                        dalVO.getFields().put(column.field, convertFromDbValue(value, column.column, column.dataType, dalVO.getId()));
+                        dalVO.getFields().put(column.field, (T) convertFromDbValue(value, column.column, column.dataType, dalVO.getId()));
                      }
                   } else {
                      column.setMethod.invoke(dalVO, convertFromDbValue(value, column.column, column.dataType, dalVO.getId()));
@@ -400,26 +400,26 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
     * @param dataType
     * @return
     */
-   private Object convertFromDbValue(Object value, String column, final Class<?> dataType, final Long recordId) {
+   private <S> S convertFromDbValue(Object value, String column, final Class<S> dataType, final Long recordId) {
       if (dataType == ByteArrayCarrier.class) {
-         return value==null? null : new ByteArrayCarrier((byte[]) value);
+         return value==null? null : (S) new ByteArrayCarrier((byte[]) value);
       } else if (dataType == NuclosImage.class) {
           NuclosImage ni = new NuclosImage("", (byte[]) value, null, false);
-          return ni;
+          return (S) ni;
       } else if (dataType == ResourceFile.class) {
-      	return new ResourceFile((String) value, LangUtils.convertId(recordId));
+      	return (S) new ResourceFile((String) value, LangUtils.convertId(recordId));
       } else if (dataType == GenericObjectDocumentFile.class) {
       	if(value == null){
       		return null;
       	}
-      	return new GenericObjectDocumentFile((String) value, LangUtils.convertId(recordId));
+      	return (S) new GenericObjectDocumentFile((String) value, LangUtils.convertId(recordId));
       } else if (dataType == DateTime.class) {
-      	return new DateTime((java.util.Date) value);
+      	return (S) new DateTime((java.util.Date) value);
       } else if (dataType == NuclosPassword.class) {
     	  if(value instanceof NuclosPassword)
-    		  return value;
+    		  return (S) value;
       	try {
-	        return new NuclosPassword(StandardSqlDBAccess.decrypt((String) value));
+	        return (S) new NuclosPassword(StandardSqlDBAccess.decrypt((String) value));
         }
         catch(SQLException e) {
 	        throw new CommonFatalException(e);
@@ -507,14 +507,14 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
     */
    protected <T> ColumnToVOMapping<T> createSimpleStaticMapping(final String column, final String field, final Class<T> dataType, boolean isReadonly) {
       final String xetterSuffix = field.substring(0,1).toUpperCase() + field.substring(1);
+      final Class<?> clazz = getDalVOClass();
       try {
          return new ColumnToVOMapping<T>(column,
-            getDalVOClass().getMethod("set"+xetterSuffix, dataType),
-            getDalVOClass().getMethod((DT_BOOLEAN.equals(dataType)?"is":"get")+xetterSuffix),
-            dataType, isReadonly);
+            clazz.getMethod("set"+xetterSuffix, dataType),
+            clazz.getMethod((DT_BOOLEAN.equals(dataType)?"is":"get")+xetterSuffix), dataType, isReadonly);
       }
       catch(Exception e) {
-         throw new CommonFatalException(e);
+         throw new CommonFatalException("On " + clazz + ": " + e);
       }
    }
 

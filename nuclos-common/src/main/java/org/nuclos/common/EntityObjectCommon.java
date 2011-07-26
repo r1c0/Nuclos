@@ -77,4 +77,17 @@ public interface EntityObjectCommon {
 			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects);
 
 
+	/**
+	 * gets the dependant master data records for the given entity, using the given foreign key field and the given id as foreign key.
+	 * @param sEntityName name of the entity to get all dependant master data records for
+	 * @param sForeignKeyField name of the field relating to the foreign entity
+	 * @param oRelatedId id by which sEntityName and sParentEntity are related
+	 * @return
+	 * @precondition oRelatedId != null
+	 * @todo restrict permissions by entity name
+	 */
+	@RolesAllowed("Login")
+	Collection<EntityObjectVO> getDependantEntityObjects(
+		String sEntityName, String sForeignKeyField, Long oRelatedId);
+
 }

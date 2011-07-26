@@ -27,7 +27,7 @@ import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 
-public class EntityFieldMetaDataProcessor extends AbstractJdbcDalProcessor<EntityFieldMetaDataVO> 
+public class EntityFieldMetaDataProcessor extends AbstractJdbcDalProcessor<Object,EntityFieldMetaDataVO> 
 implements JdbcEntityFieldMetaDataProcessor{
 	
 	private final ColumnToVOMapping<Long> idColumn;

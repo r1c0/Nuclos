@@ -31,7 +31,7 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
  * @author	<a href="mailto:maik.stueker@novabit.de">Maik.Stueker</a>
  * @version 01.00.00
  */
-public class EntityObjectVO extends AbstractDalVOWithFields {
+public class EntityObjectVO extends AbstractDalVOWithFields<Object> {
 	
 	/**
 	 * 

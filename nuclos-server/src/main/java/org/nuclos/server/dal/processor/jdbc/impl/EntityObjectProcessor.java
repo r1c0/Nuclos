@@ -58,7 +58,7 @@ import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectSearchExpression;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 
-public class EntityObjectProcessor extends AbstractJdbcDalProcessor<EntityObjectVO>
+public class EntityObjectProcessor extends AbstractJdbcDalProcessor<Object,EntityObjectVO>
 implements JdbcEntityObjectProcessor {
 
 	private final EntityMetaDataVO eMeta;

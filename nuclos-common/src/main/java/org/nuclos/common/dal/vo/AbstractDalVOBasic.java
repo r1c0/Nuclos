@@ -17,9 +17,10 @@
 package org.nuclos.common.dal.vo;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 
-public abstract class AbstractDalVOBasic implements IDalVO, Serializable{
+public abstract class AbstractDalVOBasic<T> implements IDalVO<T>, Serializable {
 	private static final long serialVersionUID = 1012920874365879641L;
 	
 	private String processor;
@@ -31,7 +32,7 @@ public abstract class AbstractDalVOBasic implements IDalVO, Serializable{
 		super();
 	}
 	
-	public AbstractDalVOBasic(AbstractDalVOBasic dalVO) {
+	public AbstractDalVOBasic(AbstractDalVOBasic<T> dalVO) {
 		super();
 		this.id = dalVO.getId();
 	}
@@ -86,8 +87,6 @@ public abstract class AbstractDalVOBasic implements IDalVO, Serializable{
 		return this.state == STATE_REMOVED;
 	}	
 	
-	
-	
 	@Override
 	public boolean hasFields() {
 		return false;
@@ -100,12 +99,14 @@ public abstract class AbstractDalVOBasic implements IDalVO, Serializable{
 
 	@Override
 	public Map<String, Long> getFieldIds() {
-		throw new IllegalArgumentException("getFieldIds()");
+		// throw new IllegalArgumentException("getFieldIds()");
+		return Collections.emptyMap();
 	}
 
 	@Override
-	public Map<String, Object> getFields() {
-		throw new IllegalArgumentException("getFields()");
+	public Map<String, T> getFields() {
+		// throw new IllegalArgumentException("getFields()");
+		return Collections.emptyMap();
 	}
 	
 }

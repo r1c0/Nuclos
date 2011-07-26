@@ -348,7 +348,7 @@ public class ImportUtils {
 		EntityObjectVO result = new EntityObjectVO();
 		result.initFields(1, 1);
 		result.setEntity(entity);
-		result.getFields().put(NuclosEOField.LOGGICALDELETED.getMetaData().getField(), false);
+		result.getFields().put(NuclosEOField.LOGGICALDELETED.getMetaData().getField(), Boolean.FALSE);
 		return result;
 	}
 
