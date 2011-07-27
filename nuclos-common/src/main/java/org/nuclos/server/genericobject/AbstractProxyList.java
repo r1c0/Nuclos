@@ -28,7 +28,13 @@ import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 /**
  * Abstract implementation of a <code>ProxyList</code>.
@@ -41,6 +47,9 @@ import java.util.*;
  */
 public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyList<E>, Serializable {
 
+	/** @todo tune the PAGESIZE, better: make it configurable in users advanced settings dialogue */
+	public static final int PAGESIZE = 100;
+
 	private static final long serialVersionUID = 815L;
 
 	/**
@@ -49,13 +58,14 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 	private volatile int iLastIndexRead = 0;
 
 	/**
-	 * The real data containers
+	 * The real data containers: all ids
 	 */
 	private ArrayList<T> lstIds;
-	private final HashMap<T, E> mpObjects;
-
-	/** @todo tune the PAGESIZE, better: make it configurable in users advanced settings dialogue */
-	public static final int PAGESIZE = 100;
+	
+	/**
+	 * The real data containers: id -> values
+	 */
+	protected final HashMap<T, E> mpObjects;
 
 	public AbstractProxyList() {
 		mpObjects = new HashMap<T, E>();
@@ -75,7 +85,7 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 	/**
 	 * read ids of all displayable objects in advance
 	 */
-	abstract protected void fillListOfIds() ;
+	protected abstract void fillListOfIds() ;
 
 	protected final void setListOfIds(List<T> lstIds) {
 		this.lstIds = new ArrayList<T>(lstIds);
@@ -208,16 +218,12 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 		for(E element : coll) {
 			add(element);
 		}
-
 		return true;
 	}
 
-
-
 	@Override
 	public boolean addAll(int index, Collection<? extends E> c) {
-		// TODO Auto-generated method stub
-		return false;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -243,26 +249,22 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 
 	@Override
 	public int indexOf(Object o) {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public int lastIndexOf(Object o) {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public ListIterator<E> listIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public ListIterator<E> listIterator(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -290,14 +292,12 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -314,20 +314,17 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 
 	@Override
 	public List<E> subList(int fromIndex, int toIndex) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Object[] toArray() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public <X> X[] toArray(X[] a) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -389,6 +386,26 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 				AbstractProxyList.this.remove(this.iIndex);
 			}
 		};
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		final int size = size();
+		result.append(getClass().getName()).append("[");
+		result.append("size=").append(size);
+		mapDescription(result, mpObjects, 5);
+		result.append("]");
+		return result.toString();
+	}
+	
+	protected void mapDescription(StringBuilder result, Map<T,E> map, int max) {
+		int i = 0;
+		for (T id: mpObjects.keySet()) {
+			final E vo = mpObjects.get(id);
+			result.append(", id:").append(id).append(" -> ").append(vo);
+			if (++i > max) break; 
+		}
 	}
 
 }  // class AbstractProxyList

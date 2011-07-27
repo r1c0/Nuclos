@@ -39,11 +39,6 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
  */
 public class MasterDataProxyList extends AbstractProxyList<Object, MasterDataWithDependantsVO> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private static MasterDataFacadeRemote mdfacade;
 
 	protected final String sEntityName;
@@ -77,18 +72,6 @@ public class MasterDataProxyList extends AbstractProxyList<Object, MasterDataWit
 		setListOfIds(lstIds);
 	}
 	
-//	private synchronized MasterDataFacadeLocal getMasterDataFacade() {
-//		if (mdfacade == null) {
-//			try {
-//				mdfacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
-//			}
-//			catch (RuntimeException ex) {
-//				throw new NuclosFatalException(ex);
-//			}
-//		}
-//		return mdfacade;
-//	}
-
 	private synchronized MasterDataFacadeRemote getMasterDataFacade() {
 		if (mdfacade == null) {
 			try {
@@ -101,4 +84,18 @@ public class MasterDataProxyList extends AbstractProxyList<Object, MasterDataWit
 		return mdfacade;
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		final int size = size();
+		result.append("GenericObjectProxyList[");
+		result.append("size=").append(size);
+		result.append(",entity=").append(sEntityName);
+		result.append(",reqSubforms=").append(lstRequiredSubEntities);
+		result.append(",search=").append(clctexpr);
+		mapDescription(result, mpObjects, 5);
+		result.append("]");
+		return result.toString();
+	}
+	
 }	// class MasterDataProxyList

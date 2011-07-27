@@ -33,15 +33,14 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
  */
 public class EntityObjectVO extends AbstractDalVOWithFields<Object> {
 	
-	public EntityObjectVO() {
-		
-	}
-
 	private String entity;
 	
 	// map for dependant child subform data
 	private DependantMasterDataMap mpDependants = new DependantMasterDataMap();
 	
+	public EntityObjectVO() {	
+	}
+
 	public String getEntity() {
 		return entity;
 	}
@@ -121,6 +120,20 @@ public class EntityObjectVO extends AbstractDalVOWithFields<Object> {
 		}
 		sb.append("}");
 		return sb.toString();
+	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("entity=").append(getEntity());
+		result.append(",fields=").append(getFields());
+		result.append(",fieldIds=").append(getFieldIds());
+		result.append(",depEntities=").append(getDependants().getEntityNames());
+		result.append(",id=").append(getId());
+		result.append(",version=").append(getVersion());
+		result.append("]");
+		return result.toString();
 	}
 	
 }

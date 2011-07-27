@@ -28,4 +28,15 @@ public class EOGenericObjectVO extends AbstractDalVOWithVersion {
 		this.moduleId = moduleId;
 	}
 	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append("EOGenericObjectVO[");
+		result.append("id=").append(getId());
+		result.append(",moduleId=").append(getModuleId());
+		result.append(",version=").append(getVersion());
+		result.append("]");
+		return result.toString();
+	}
+	
 }

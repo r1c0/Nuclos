@@ -186,4 +186,16 @@ public abstract class AbstractCollectableEntityField implements CollectableEntit
     public boolean isRemovable() {
 		return getSecurityAgent().isRemovable();
 	}
+	
+	public String toDescription() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("name=").append(getName());
+		result.append(",label=").append(getLabel());
+		result.append(",refField=").append(getReferencedEntityFieldName());
+		result.append(",refEntity=").append(getReferencedEntityName());
+		result.append("]");
+		return result.toString();
+	}
+
 }	// class AbstractCollectableEntityField

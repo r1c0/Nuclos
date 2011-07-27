@@ -178,4 +178,14 @@ public class CollectableMasterDataEntity implements CollectableEntity {
 		return mdmetavo.hashCode() + 1871;
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("entity=").append(mdmetavo);
+		result.append(",fields=").append(mpclctef);
+		result.append("]");
+		return result.toString();
+	}
+
 }	// class CollectableMasterDataEntity

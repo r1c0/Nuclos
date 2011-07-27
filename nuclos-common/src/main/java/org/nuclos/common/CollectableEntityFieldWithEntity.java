@@ -327,4 +327,5 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	public void setCollectableEntity(CollectableEntity clent) {
 		clcte = clent;
 	}
+	
 }	// class CollectableEntityFieldWithEntity

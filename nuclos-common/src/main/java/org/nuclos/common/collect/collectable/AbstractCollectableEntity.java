@@ -34,6 +34,7 @@ import org.nuclos.common2.exception.CommonFatalException;
  */
 
 public abstract class AbstractCollectableEntity implements CollectableEntity {
+	
 	private final String sName;
 	private final String sLabel;
 	private final Map<String, CollectableEntityField> mpclctef = new HashMap<String, CollectableEntityField>();
@@ -84,6 +85,17 @@ public abstract class AbstractCollectableEntity implements CollectableEntity {
 		}
 		assert result != null;
 		return result;
+	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("name=").append(sName);
+		result.append(",label=").append(sLabel);
+		result.append(", fields=").append(mpclctef);
+		result.append("]");
+		return result.toString();
 	}
 
 }  // class AbstractCollectableEntity

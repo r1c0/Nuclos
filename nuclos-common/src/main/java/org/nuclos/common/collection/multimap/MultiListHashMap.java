@@ -41,10 +41,6 @@ import org.nuclos.common.collection.CollectionUtils;
  */
 public class MultiListHashMap<K,V> implements MultiListMap<K, V>, Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final Map<K, List<V>> mp;
 
 	/**
@@ -183,6 +179,18 @@ public class MultiListHashMap<K,V> implements MultiListMap<K, V>, Serializable {
 				this.asMap().remove(entry.getKey());
 			}
 		}
+	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[\n");
+		for (K k: keySet()) {
+			final List<V> l = getValues(k);
+			result.append("\t").append(k).append(" => ").append(l);
+		}
+		result.append("]");
+		return result.toString();
 	}
 
 }	// class MultiHashMap

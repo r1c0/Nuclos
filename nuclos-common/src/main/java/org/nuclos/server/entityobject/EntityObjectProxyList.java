@@ -86,5 +86,20 @@ public class EntityObjectProxyList extends AbstractProxyList<Long, EntityObjectV
 		}
 		return facade;
 	}
-
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		final int size = size();
+		result.append("EntityObjectProxyList[");
+		result.append("size=").append(size);
+		result.append(",reqFields=").append(stRequiredAttributeIds);
+		result.append(",reqSubforms=").append(stRequiredSubEntities);
+		result.append(",inclParent=").append(bIncludeParentObjects);
+		result.append(",search=").append(clctexpr);
+		mapDescription(result, mpObjects, 5);
+		result.append("]");
+		return result.toString();
+	}
+	
 }

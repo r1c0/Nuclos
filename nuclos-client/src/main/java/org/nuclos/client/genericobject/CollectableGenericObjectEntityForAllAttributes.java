@@ -227,4 +227,15 @@ public class CollectableGenericObjectEntityForAllAttributes implements Collectab
 		return getFieldNames().size();
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("name=").append(sEntityName);
+		result.append(",label=").append(sEntityLabel);
+		// result.append(",fields=").append(mpclctef);
+		result.append("]");
+		return result.toString();
+	}
+
 }	// class CollectableGenericObjectEntityForAllAttributes

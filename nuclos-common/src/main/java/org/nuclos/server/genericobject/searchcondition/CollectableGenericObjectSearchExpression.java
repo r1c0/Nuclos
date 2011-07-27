@@ -74,4 +74,17 @@ public class CollectableGenericObjectSearchExpression extends CollectableSearchE
 		return searchDeleted;
 	}
 
+    @Override
+    public String toString() {
+    	final StringBuilder result = new StringBuilder();
+    	result.append(getClass().getName()).append("[");
+    	result.append("search=").append(getSearchCondition());
+    	result.append(",inclSystem=").append(isIncludingSystemData());
+    	result.append(",sort=").append(getSortingOrder());
+    	result.append(",del=").append(searchDeleted);
+    	result.append(",ds=").append(getValueListProviderDatasource());
+    	result.append("]");
+    	return result.toString();
+    }
+    
 }	// class CollectableGenericObjectSearchExpression

@@ -197,4 +197,15 @@ public class CollectableGenericObjectEntity implements CollectableEntity {
 		return GenericObjectUtils.getParentObjectFieldName(sSubEntityName);
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("name=").append(sName);
+		result.append(",label=").append(sLabel);
+		result.append(",fieldNames=").append(stFieldNames);
+		result.append("]");
+		return result.toString();
+	}
+
 }	// class CollectableGenericObjectEntity

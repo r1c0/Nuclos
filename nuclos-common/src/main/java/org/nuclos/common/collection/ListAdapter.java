@@ -272,6 +272,15 @@ public abstract class ListAdapter<W, E> implements List<E> {
 			return unwrap(e);
 		}
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append(lstAdaptee);
+		result.append("]");
+		return result.toString();
+	}
 
 	/**
 	 * ListIterator for this list adapter.

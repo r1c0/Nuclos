@@ -44,12 +44,7 @@ import org.nuclos.server.common.ModuleConstants;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class DependantMasterDataMap implements Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public final class DependantMasterDataMap implements Serializable {
 
 	private static final Logger log = Logger.getLogger(DependantMasterDataMap.class);
 
@@ -275,10 +270,16 @@ public class DependantMasterDataMap implements Serializable {
 				break;
 			}
 		}
-
 		return foreignKeyField;
 	}
 
-
-
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append("DependantMasterDataMap[");
+		result.append(getEntityNames());
+		result.append("]");
+		return result.toString();
+	}
+	
 }	// class DependantMasterDataMap

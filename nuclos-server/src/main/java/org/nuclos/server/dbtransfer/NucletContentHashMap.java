@@ -24,13 +24,6 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 
 public class NucletContentHashMap extends MultiListHashMap<NuclosEntity, EntityObjectVO> implements NucletContentMap {
 	
-	
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	@Override
 	public void addAll(NucletContentMap map) {
 		for (NuclosEntity entity : map.keySet()) {

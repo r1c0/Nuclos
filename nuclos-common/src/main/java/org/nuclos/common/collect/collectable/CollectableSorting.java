@@ -59,5 +59,21 @@ public class CollectableSorting implements Serializable {
 	public boolean isAscending() {
 		return this.bAscending;
 	}
+	
+    @Override
+    public String toString() {
+    	final StringBuilder result = new StringBuilder();
+    	result.append("CollectableSorting[");
+    	result.append("field=").append(sFieldName);
+    	result.append(",");
+    	if (bAscending) {
+    		result.append("ASC");
+    	}
+    	else {
+    		result.append("DSC");
+    	}
+    	result.append("]");
+    	return result.toString();
+    }	
 
 }  // class CollectableSorting

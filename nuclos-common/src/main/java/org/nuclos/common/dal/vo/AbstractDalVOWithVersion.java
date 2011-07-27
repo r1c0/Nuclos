@@ -79,4 +79,14 @@ public abstract class AbstractDalVOWithVersion extends AbstractDalVOBasic {
 		this.version = version;
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",version=").append(getVersion());
+		result.append("]");
+		return result.toString();
+	}
+	
 }

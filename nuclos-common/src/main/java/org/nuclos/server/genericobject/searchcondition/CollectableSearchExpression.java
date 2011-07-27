@@ -136,11 +136,17 @@ public class CollectableSearchExpression implements Serializable {
     public Map<String, Object> getValueListProviderDatasourceParameter() {
 	    return valueListProviderDatasourceParameter;
     }
-	
-	
-//	@Override
-//	public String toString() {
-//		return "CollectableSearchExpression(cnd = " + clctcond + ", cust-where = " + sCustomizedWhereCondition + ")";
-//	}
+
+    @Override
+    public String toString() {
+    	final StringBuilder result = new StringBuilder();
+    	result.append(getClass().getName()).append("[");
+    	result.append("search=").append(getSearchCondition());
+    	result.append(",inclSystem=").append(isIncludingSystemData());
+    	result.append(",sort=").append(getSortingOrder());
+    	result.append(",ds=").append(getValueListProviderDatasource());
+    	result.append("]");
+    	return result.toString();
+    }
 	
 }	// class CollectableSearchExpression

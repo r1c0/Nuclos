@@ -324,11 +324,6 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 		this.reportFilename = reportFilename;
 	}
 
-	@Override
-	public String toString() {
-		return getEntity();
-	}
-	
 	public boolean isDynamic() {
     	return dynamic;
     }
@@ -352,6 +347,15 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 		return false;
 	}
 	
-	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("entity=").append(getEntity());
+		result.append(",id=").append(getId());
+		result.append(",version=").append(getVersion());
+		result.append("]");
+		return result.toString();
+	}	
 	
 }

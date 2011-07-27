@@ -34,10 +34,6 @@ import java.io.Serializable;
  */
 public class EntityAndFieldName implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final String sEntityName;
 	private final String sFieldName;
 
@@ -62,6 +58,14 @@ public class EntityAndFieldName implements Serializable {
 	 */
 	public String getFieldName() {
 		return this.sFieldName;
+	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append("EntityAndFieldName:").append(sEntityName);
+		result.append(":").append(sFieldName);
+		return result.toString();
 	}
 
 	public static class GetEntityName implements Transformer<EntityAndFieldName, String> {

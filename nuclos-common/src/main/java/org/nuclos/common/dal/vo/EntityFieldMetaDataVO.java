@@ -347,11 +347,6 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 	}
 
 	@Override
-	public String toString() {
-		return field;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof EntityFieldMetaDataVO) {
 			EntityFieldMetaDataVO that = (EntityFieldMetaDataVO)obj;
@@ -413,4 +408,20 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
     public int hashCode() {	    
 	    return getField().hashCode();
     }
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("field=").append(getField());
+		result.append(",column=").append(getDbColumn());
+		result.append(",entityId=").append(getEntityId());
+		result.append(",foreign=").append(getForeignEntity());
+		result.append(",ffield=").append(getForeignEntityField());
+		result.append(",id=").append(getId());
+		result.append(",version=").append(getVersion());
+		result.append("]");
+		return result.toString();
+	}	
+	
 }

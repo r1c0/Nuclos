@@ -84,4 +84,14 @@ public class CollectableEOEntity implements CollectableEntity {
 		return eMeta;
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("meta=").append(eMeta);
+		result.append(", fields=").append(mapEfMeta);
+		result.append("]");
+		return result.toString();
+	}
+
 }
