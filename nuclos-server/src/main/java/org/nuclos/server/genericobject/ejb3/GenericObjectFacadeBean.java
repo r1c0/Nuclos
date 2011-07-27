@@ -736,7 +736,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			}
 		}
 
-		final GenericObjectVO result;
+		GenericObjectVO result;
 
 		if (Modules.getInstance().getUsesStateModel(iModuleId)) {
 			// create first state entry of generic object:
@@ -771,6 +771,11 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		if(useRuleEngine){
 			fireSaveEvent(Event.CREATE_AFTER, result, mpDependants, true);
+			try {
+				result = get(id);
+			} catch (CommonFinderException ex) {
+				throw new CommonFatalException(ex);
+			}
 		}
 
 		debug("Leaving create(GenericObjectWithDependantsVO)");
@@ -920,11 +925,12 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		}
 
 		this.debug("Modifying (Start read)");
-		final GenericObjectVO result = get(dbGoVO.getId());
+		GenericObjectVO result = get(dbGoVO.getId());
 
 		if (bFireSaveEvent) {
 			this.debug("Modifying (Start rules after save)");
 			this.fireSaveEvent(Event.MODIFY_AFTER, result, mpDependants, true);
+			result = get(dbGoVO.getId());
 		}
 
 		this.debug("Leaving modify(GenericObjectVO govo, DependantMasterDataMap mpDependants)");
