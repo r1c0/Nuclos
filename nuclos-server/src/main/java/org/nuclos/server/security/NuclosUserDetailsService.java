@@ -119,7 +119,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 				Calendar c = Calendar.getInstance();
 				c.setTime(lastlogin);
 				c.add(Calendar.DAY_OF_MONTH, days);
-				if (Calendar.getInstance().before(c)) {
+				if (Calendar.getInstance().after(c)) {
 					lockUser(intid);
 					locked = true;
 				}
@@ -236,7 +236,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 		Map<String, Object> values = new HashMap<String, Object>(1);
 		values.put("BLNLOCKED", Boolean.TRUE);
 		Map<String, Object> conditions = new HashMap<String, Object>(1);
-		values.put("INTID", user);
+		conditions.put("INTID", user);
 		DataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_MD_USER", values, conditions));
 	}
 }
