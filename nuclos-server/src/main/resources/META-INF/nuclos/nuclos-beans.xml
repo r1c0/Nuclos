@@ -170,20 +170,20 @@
 
 	<bean id="userService" class="org.nuclos.server.security.UserFacadeBean"/>
 
-	<bean id="parameterProvider" class="org.nuclos.server.common.ServerParameterProvider" />
+	<bean id="parameterProvider" class="org.nuclos.server.common.ServerParameterProvider" depends-on="appContext"/>
 
-	<bean id="attributeProvider" class="org.nuclos.server.common.AttributeCache" />
+	<bean id="attributeProvider" class="org.nuclos.server.common.AttributeCache" depends-on="appContext"/>
 
-	<bean id="masterdataMetaProvider" class="org.nuclos.server.common.MasterDataMetaCache" />
+	<bean id="masterdataMetaProvider" class="org.nuclos.server.common.MasterDataMetaCache" depends-on="appContext"/>
 
-	<bean id="moduleProvider" class="org.nuclos.server.genericobject.Modules" />
+	<bean id="moduleProvider" class="org.nuclos.server.genericobject.Modules" depends-on="appContext"/>
 
-	<bean id="metaDataProvider" class="org.nuclos.server.common.MetaDataServerProvider" />
+	<bean id="metaDataProvider" class="org.nuclos.server.common.MetaDataServerProvider" depends-on="appContext"/>
 
-	<bean id="serviceLocator" class="org.nuclos.server.common.ServerServiceLocator" />
+	<bean id="serviceLocator" class="org.nuclos.server.common.ServerServiceLocator" depends-on="appContext"/>
 
 	<!-- Caching init on startup -->
-	<bean id="nuclosCacheService" class="org.nuclos.server.mbean.NuclosCacheService"></bean>
+	<bean id="nuclosCacheService" class="org.nuclos.server.mbean.NuclosCacheService" depends-on="appContext"/>
 
 
 	<!-- quartz scheduler instance start -->
