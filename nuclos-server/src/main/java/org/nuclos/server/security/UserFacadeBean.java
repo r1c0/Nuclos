@@ -45,7 +45,6 @@ import org.nuclos.server.common.mail.NuclosMailSender;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
-import org.nuclos.server.dblayer.query.DbCondition;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
@@ -190,23 +189,36 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 		}
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
-		DbQuery<String> query = builder.createQuery(String.class);
+		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_PASSWORDHISTORY").alias("t");
-		query.select(t.column("STRPASSWORD", String.class));
-		DbCondition cond = builder.equal(t.column("INTID_T_MD_USER", Long.class), user);
-		if (days != null && days > 0) {
-			Calendar c = Calendar.getInstance();
-			c.add(Calendar.DAY_OF_MONTH, -1 * days);
-			cond = builder.and(cond, builder.greaterThanOrEqualTo(t.column("DATCREATED", Date.class), builder.literal(c.getTime()) ));
+		query.multiselect(t.column("INTID", Long.class), t.column("DATCREATED", Date.class), t.column("STRPASSWORD", String.class));
+		query.where(builder.equal(t.column("INTID_T_MD_USER", Long.class), user));
+		query.orderBy(builder.desc(t.column("DATCREATED", Date.class)), builder.desc(t.column("INTID", Long.class)));
+		List<DbTuple> result = DataBaseHelper.getDbAccess().executeQuery(query);
+
+		Calendar c = Calendar.getInstance();
+		c.add(Calendar.DAY_OF_MONTH, -1 * days);
+		int counter = 0;
+
+		List<String> history = new ArrayList<String>();
+
+		for (DbTuple tuple : result) {
+			Date created = tuple.get(1, Date.class);
+			boolean relevant = false;
+			if (days != 0 && created.after(c.getTime())) {
+				relevant = true;
+			}
+
+			if (number != 0 && counter < number ) {
+				relevant = true;
+			}
+
+			if (relevant) {
+				history.add(tuple.get(2, String.class));
+			}
+			counter++;
 		}
-		query.orderBy(builder.desc(t.column("DATCREATED", Date.class)));
-		List<String> result = DataBaseHelper.getDbAccess().executeQuery(query);
-		if (number != 0 && result.size() > number) {
-			return result.subList(0, number - 1);
-		}
-		else {
-			return result;
-		}
+		return history;
 	}
 
 	private String getEncryptedPassword(Long user) {
@@ -240,7 +252,7 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 		DbFrom t = query.from("T_MD_PASSWORDHISTORY").alias("t");
 		query.multiselect(t.column("INTID", Long.class), t.column("DATCREATED", Date.class));
 		query.where(builder.equal(t.column("INTID_T_MD_USER", Long.class), user));
-		query.orderBy(builder.desc(t.column("DATCREATED", Date.class)));
+		query.orderBy(builder.desc(t.column("DATCREATED", Date.class)), builder.desc(t.column("INTID", Long.class)));
 		List<DbTuple> result = DataBaseHelper.getDbAccess().executeQuery(query);
 
 		Calendar c = Calendar.getInstance();
@@ -249,13 +261,13 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 
 		for (DbTuple tuple : result) {
 			Date created = tuple.get(1, Date.class);
-			boolean remove = false;
-			if (days != 0 && created.before(c.getTime())) {
-				remove = true;
+			boolean remove = true;
+			if (days != 0 && created.after(c.getTime())) {
+				remove = false;
 			}
 
-			if (number != 0 && counter >= number) {
-				remove = true;
+			if (number != 0 && counter < number) {
+				remove = false;
 			}
 
 			if (remove) {
