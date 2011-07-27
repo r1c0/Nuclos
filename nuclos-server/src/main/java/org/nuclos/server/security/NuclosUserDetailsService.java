@@ -169,7 +169,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 	}
 
 	@Override
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	@Transactional(propagation=Propagation.REQUIRED)
 	public void logAttempt(String username, boolean authenticated) {
 		Integer maxattempts = 0;
 		String sMaxattempts = paramprovider.getValue(ParameterProvider.KEY_SECURITY_LOCK_ATTEMPTS);

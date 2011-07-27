@@ -35,6 +35,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
@@ -44,7 +46,7 @@ import org.springframework.util.Assert;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@TransactionAttribute(TransactionAttributeType.REQUIRED)
+@Transactional(propagation=Propagation.REQUIRES_NEW)
 public class RemoteAuthenticationManager implements org.nuclos.common.security.RemoteAuthenticationManager, InitializingBean {
 
 	private AuthenticationManager authenticationManager;
