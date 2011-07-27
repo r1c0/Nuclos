@@ -21,7 +21,7 @@ import java.util.Collection;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.IDalVO;
 
-public interface IDalWriteSpecification<DalVO extends IDalVO>{
+public interface IDalWriteSpecification<DalVO extends IDalVO> {
 	
 	public DalCallResult insertOrUpdate(DalVO dalVO);
 	

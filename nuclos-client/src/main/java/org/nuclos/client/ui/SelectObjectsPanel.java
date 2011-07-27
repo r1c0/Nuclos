@@ -24,9 +24,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.nuclos.client.ui.model.FixedTableModel;
 import org.nuclos.client.ui.model.MutableListModel;
-import org.nuclos.common.collect.collectable.CollectableEntityField;
 
 /**
  * Base class for panels, in which data can be moved from one list to another to choose from a selection

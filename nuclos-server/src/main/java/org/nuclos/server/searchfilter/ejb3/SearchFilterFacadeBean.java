@@ -50,7 +50,6 @@ import org.nuclos.server.common.LocaleUtils;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
-import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.jms.NuclosJMSUtils;

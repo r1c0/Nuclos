@@ -59,7 +59,6 @@ import org.nuclos.client.ui.collect.SubForm.SubFormTableModel;
 import org.nuclos.client.ui.collect.SubForm.ToolbarFunction;
 import org.nuclos.client.ui.collect.SubFormParameterProvider;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
-import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.table.TableCellEditorProvider;

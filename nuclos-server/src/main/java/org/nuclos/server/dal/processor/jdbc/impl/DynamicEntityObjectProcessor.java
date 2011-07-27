@@ -29,7 +29,7 @@ public class DynamicEntityObjectProcessor extends EntityObjectProcessor {
     }
 	
 	@Override
-	public Class<?> getDalVOClass() {
+	public Class<EntityObjectVO> getDalVOClass() {
 		return EntityObjectVO.class;
 	}	
 }

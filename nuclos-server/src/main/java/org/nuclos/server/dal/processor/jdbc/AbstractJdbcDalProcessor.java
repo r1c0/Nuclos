@@ -34,6 +34,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.exception.DalBusinessException;
 import org.nuclos.common.dal.vo.IDalVO;
+import org.nuclos.common.dal.vo.IDalWithFieldsVO;
 import org.nuclos.common2.DateTime;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
@@ -59,16 +60,12 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.nuclos.server.report.ByteArrayCarrier;
 import org.nuclos.server.resource.valueobject.ResourceFile;
 
-public abstract class AbstractJdbcDalProcessor<T, DalVO extends IDalVO<T>> extends AbstractDalProcessor<DalVO> {
+public abstract class AbstractJdbcDalProcessor<T, DalVO extends IDalVO> extends AbstractDalProcessor<DalVO> {
 
    protected final List<ColumnToVOMapping<?>> allColumns = new ArrayList<ColumnToVOMapping<?>>();
 
    public AbstractJdbcDalProcessor() {
       super();
-   }
-
-   public AbstractJdbcDalProcessor(int maxFieldCount, int maxFieldIdCount) {
-      super(maxFieldCount, maxFieldIdCount);
    }
 
    /**
@@ -277,13 +274,13 @@ public abstract class AbstractJdbcDalProcessor<T, DalVO extends IDalVO<T>> exten
       return query;
    }
 
-	protected <T> DbQuery<T> createSingleColumnQuery(ColumnToVOMapping<T> column, boolean overrideDbSourceUseDML) {
-      DbQuery<T> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(column.dataType);
-		DbFrom from = query.from(overrideDbSourceUseDML?getDbSourceForDML():getDbSourceForSQL()).alias("t");
-      DbExpression<T> dbColumn = this.<T>getDbColumn(from, column);
-      query.select(dbColumn);
-      return query;
-   }
+	protected <S> DbQuery<S> createSingleColumnQuery(ColumnToVOMapping<S> column, boolean overrideDbSourceUseDML) {
+		DbQuery<S> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(column.dataType);
+		DbFrom from = query.from(overrideDbSourceUseDML ? getDbSourceForDML() : getDbSourceForSQL()).alias("t");
+		DbExpression<S> dbColumn = getDbColumn(from, column);
+		query.select(dbColumn);
+		return query;
+	}
 
    protected DbQuery<Long> createCountQuery(ColumnToVOMapping<Long> column) {
       DbQuery<Long> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(column.dataType);
@@ -300,29 +297,34 @@ public abstract class AbstractJdbcDalProcessor<T, DalVO extends IDalVO<T>> exten
       return map;
    }
 
-   protected Map<ColumnToVOMapping<?>, Object> getColumnValuesMapWithMapping(List<ColumnToVOMapping<?>> columns, DalVO dalVO, boolean withReadonly) {
-      Map<ColumnToVOMapping<?>, Object> map = new LinkedHashMap<ColumnToVOMapping<?>, Object>();
-      for (ColumnToVOMapping<?> column : columns) {
-         if (!withReadonly && column.isReadonly)
-            continue;
 
-         if (column.isField) {
-            if (column.isFieldId) {
-               // @TODO GOREF: is this correct? (column.dataType but field is id)
-               map.put(column, convertToDbValue(column.dataType, dalVO.getFieldIds().get(column.field)));
-            } else {
-               map.put(column, convertToDbValue(column.dataType, dalVO.getFields().get(column.field)));
-            }
-         } else {
-            try {
-               map.put(column, convertToDbValue(column.dataType, column.getMethod.invoke(dalVO)));
-            } catch(Exception e) {
-               throw new CommonFatalException(e);
-            }
-         }
-      }
-      return map;
-   }
+    /**
+     * TODO: Move up in class hierarchy?
+     */
+    protected Map<ColumnToVOMapping<?>, Object> getColumnValuesMapWithMapping(List<ColumnToVOMapping<?>> columns,
+			DalVO dalVO, boolean withReadonly) {
+		Map<ColumnToVOMapping<?>, Object> map = new LinkedHashMap<ColumnToVOMapping<?>, Object>();
+		for (ColumnToVOMapping<?> column : columns) {
+			if (!withReadonly && column.isReadonly) continue;
+
+			if (column.isField) {
+				final IDalWithFieldsVO<T> field = (IDalWithFieldsVO<T>) dalVO;
+				if (column.isFieldId) {
+					// @TODO GOREF: is this correct? (column.dataType but field is id)
+					map.put(column, convertToDbValue(column.dataType, field.getFieldIds().get(column.field)));
+				} else {
+					map.put(column, convertToDbValue(column.dataType, field.getFields().get(column.field)));
+				}
+			} else {
+				try {
+					map.put(column, convertToDbValue(column.dataType, column.getMethod.invoke(dalVO)));
+				} catch (Exception e) {
+					throw new CommonFatalException(e);
+				}
+			}
+		}
+		return map;
+	}
 
    private Map<String, Object> getPrimaryKeyMap(Long id) {
       return Collections.<String, Object>singletonMap(getPrimaryKeyColumn().column, id);
@@ -331,34 +333,41 @@ public abstract class AbstractJdbcDalProcessor<T, DalVO extends IDalVO<T>> exten
    protected Transformer<Object[], DalVO> createResultTransformer(List<ColumnToVOMapping<?>> columns) {
       return getResultTransformer(columns.toArray(new ColumnToVOMapping[columns.size()]));
    }
-
-   protected Transformer<Object[], DalVO> getResultTransformer(final ColumnToVOMapping<?> ... columns) {
-      return new Transformer<Object[], DalVO>() {
-         @Override
-         public DalVO transform(Object[] result) {
-            try {
-               DalVO dalVO = newDalVOInstance();
-               for (int i = 0, n = columns.length; i < n; i++) {
-                  ColumnToVOMapping<?> column = columns[i];
-                  Object value = result[i];
-                  if (column.isField) {
-                     if (column.isFieldId) {
-                        dalVO.getFieldIds().put(column.field, (Long) convertFromDbValue(value, column.column, DT_LONG, dalVO.getId()));
-                     } else {
-                        dalVO.getFields().put(column.field, (T) convertFromDbValue(value, column.column, column.dataType, dalVO.getId()));
-                     }
-                  } else {
-                     column.setMethod.invoke(dalVO, convertFromDbValue(value, column.column, column.dataType, dalVO.getId()));
-                  }
-               }
-               dalVO.processor(getProcessor());
-               return dalVO;
-            } catch (Exception e) {
-               throw new CommonFatalException(e);
-            }
-         }
-      };
-   }
+   
+   /**
+    * TODO: Move up in class hierarchy?
+    */
+   protected Transformer<Object[], DalVO> getResultTransformer(final ColumnToVOMapping<?>... columns) {
+		return new Transformer<Object[], DalVO>() {
+			@Override
+			public DalVO transform(Object[] result) {
+				try {
+					DalVO dalVO = newDalVOInstance();
+					for (int i = 0, n = columns.length; i < n; i++) {
+						ColumnToVOMapping<?> column = columns[i];
+						Object value = result[i];
+						if (column.isField) {
+							final IDalWithFieldsVO<T> field = (IDalWithFieldsVO<T>) dalVO;
+							if (column.isFieldId) {
+								field.getFieldIds().put(column.field,
+										(Long) convertFromDbValue(value, column.column, DT_LONG, dalVO.getId()));
+							} else {
+								field.getFields().put(column.field,
+										(T) convertFromDbValue(value, column.column, column.dataType, dalVO.getId()));
+							}
+						} else {
+							column.setMethod.invoke(dalVO,
+									convertFromDbValue(value, column.column, column.dataType, dalVO.getId()));
+						}
+					}
+					dalVO.processor(getProcessor());
+					return dalVO;
+				} catch (Exception e) {
+					throw new CommonFatalException(e);
+				}
+			}
+		};
+	}
 
    protected DalBusinessException checkLogicalUniqueConstraint(final Map<ColumnToVOMapping<?>, Object> values, final Long id) {
       DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
@@ -479,11 +488,11 @@ public abstract class AbstractJdbcDalProcessor<T, DalVO extends IDalVO<T>> exten
    }
 
    @SuppressWarnings("unchecked")
-   protected <T> DbExpression<T> getDbColumn(DbFrom table, ColumnToVOMapping<?> mapping) {
+   protected <S> DbExpression<S> getDbColumn(DbFrom table, ColumnToVOMapping<?> mapping) {
 	   if(mapping.caseSensitive)
-		   return table.columnCaseSensitive(mapping.column, (Class<T>) DalUtils.getDbType(mapping.dataType));
+		   return table.columnCaseSensitive(mapping.column, (Class<S>) DalUtils.getDbType(mapping.dataType));
 	   else
-		   return table.column(mapping.column, (Class<T>) DalUtils.getDbType(mapping.dataType));
+		   return table.column(mapping.column, (Class<S>) DalUtils.getDbType(mapping.dataType));
    }
 
    /**
@@ -493,7 +502,7 @@ public abstract class AbstractJdbcDalProcessor<T, DalVO extends IDalVO<T>> exten
     * @param dataType
     * @return
     */
-   protected <T> ColumnToVOMapping<T> createSimpleStaticMapping(final String column, final String field, final Class<T> dataType) {
+   protected <S> ColumnToVOMapping<S> createSimpleStaticMapping(final String column, final String field, final Class<S> dataType) {
       return this.createSimpleStaticMapping(column, field, dataType, false);
    }
 
@@ -505,11 +514,11 @@ public abstract class AbstractJdbcDalProcessor<T, DalVO extends IDalVO<T>> exten
     * @param isReadonly;
     * @return
     */
-   protected <T> ColumnToVOMapping<T> createSimpleStaticMapping(final String column, final String field, final Class<T> dataType, boolean isReadonly) {
+   protected <S> ColumnToVOMapping<S> createSimpleStaticMapping(final String column, final String field, final Class<S> dataType, boolean isReadonly) {
       final String xetterSuffix = field.substring(0,1).toUpperCase() + field.substring(1);
       final Class<?> clazz = getDalVOClass();
       try {
-         return new ColumnToVOMapping<T>(column,
+         return new ColumnToVOMapping<S>(column,
             clazz.getMethod("set"+xetterSuffix, dataType),
             clazz.getMethod((DT_BOOLEAN.equals(dataType)?"is":"get")+xetterSuffix), dataType, isReadonly);
       }

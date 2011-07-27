@@ -16,12 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.dal.vo;
 
-public class EOGenericObjectVO extends AbstractDalVOWithVersion<Object> {
+public class EOGenericObjectVO extends AbstractDalVOWithVersion {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private Long moduleId;
 
 	public Long getModuleId() {

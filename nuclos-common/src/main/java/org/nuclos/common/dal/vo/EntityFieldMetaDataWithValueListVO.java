@@ -32,13 +32,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @version 01.00.00
  */
 public class EntityFieldMetaDataWithValueListVO extends EntityFieldMetaDataVO {
-
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	Set<MasterDataVO> setValueList;
+	private Set<MasterDataVO> setValueList;
 	
 	public EntityFieldMetaDataWithValueListVO() {
 		super();

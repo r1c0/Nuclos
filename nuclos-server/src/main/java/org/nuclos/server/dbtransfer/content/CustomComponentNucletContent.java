@@ -19,12 +19,10 @@ package org.nuclos.server.dbtransfer.content;
 import java.util.List;
 import java.util.Set;
 
-import org.nuclos.common.EntityTreeViewVO;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dbtransfer.TransferOption;
-import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 
 public class CustomComponentNucletContent extends DefaultNucletContent {
 

@@ -89,7 +89,6 @@ import org.nuclos.client.ui.collect.result.ResultController;
 import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.client.ui.collect.search.ISearchStrategy;
 import org.nuclos.client.ui.collect.search.SearchPanel;
-import org.nuclos.client.ui.collect.strategy.CompleteCollectableMasterDataStrategy;
 import org.nuclos.client.ui.layoutml.LayoutMLEditView;
 import org.nuclos.client.ui.layoutml.LayoutMLParser;
 import org.nuclos.client.ui.layoutml.LayoutRoot;

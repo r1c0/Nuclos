@@ -20,7 +20,6 @@ import java.util.Collection;
 
 import javax.swing.JComponent;
 
-import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.customcode.CodeCollectController;
 import org.nuclos.client.datasource.admin.CollectableDataSource;
 import org.nuclos.client.datasource.admin.DatasourceCollectController;
@@ -88,12 +87,10 @@ import org.nuclos.client.ui.collect.strategy.CompleteCollectableStateModelsStrat
 import org.nuclos.client.ui.collect.strategy.CompleteGenericObjectsStrategy;
 import org.nuclos.client.wizard.DataTypeCollectController;
 import org.nuclos.common.ApplicationProperties;
-import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityProvider;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
-import org.nuclos.common.transport.vo.EntityMetaDataTO;
 import org.nuclos.common2.IdUtils;
 
 public class CollectControllerFactorySingleton {

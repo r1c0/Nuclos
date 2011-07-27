@@ -50,7 +50,6 @@ import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SelectObjectsController;
-import org.nuclos.client.ui.SelectObjectsPanel;
 import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;

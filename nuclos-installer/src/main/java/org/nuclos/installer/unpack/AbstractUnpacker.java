@@ -33,8 +33,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.installer.ConfigContext;
 import org.nuclos.installer.Constants;
 import org.nuclos.installer.InstallException;
-import org.nuclos.installer.Main;
-import org.nuclos.installer.VersionInformation;
 import org.nuclos.installer.database.DbSetup;
 import org.nuclos.installer.database.DbSetup.SetupAction;
 import org.nuclos.installer.database.PostgresDbSetup;

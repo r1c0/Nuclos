@@ -19,6 +19,7 @@ package org.nuclos.server.dal.processor.json;
 import org.nuclos.common.dal.vo.IDalVO;
 import org.nuclos.server.dal.processor.AbstractDalProcessor;
 
+@Deprecated
 public class AbstractJsonDalProcessor<DalVO extends IDalVO> extends AbstractDalProcessor<DalVO> {
 	// TODO fuelle mit Leben... ;-)
 }

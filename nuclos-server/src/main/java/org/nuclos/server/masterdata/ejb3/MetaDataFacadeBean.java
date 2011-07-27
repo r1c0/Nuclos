@@ -275,12 +275,9 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				DalUtils.updateVersionInformation(metaFieldVO, getCurrentUserName());
 				NucletDalProvider.getInstance().getEntityFieldMetaDataProcessor().insertOrUpdate(metaFieldVO);
 				createResourceIdForEntityField("T_MD_ENTITY_FIELD", metaFieldTO, LangUtils.convertId(metaFieldTO.getEntityFieldMeta().getId()));
-			}
-			
+			}	
 		}
-		
 		MetaDataServerProvider.getInstance().revalidate();
-		
 		return null;
 	}
 	

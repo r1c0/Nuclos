@@ -24,6 +24,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 import org.nuclos.common.dal.vo.IDalVO;
+import org.nuclos.common.dal.vo.IDalWithFieldsVO;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.exception.CommonFatalException;
 
@@ -32,10 +33,6 @@ public abstract class AbstractDalProcessor<DalVO extends IDalVO> {
 	private Logger log;
 
 	private Class<?> dalVOClzz;
-
-	private int maxFieldCount = 20;
-
-	private int maxFieldIdCount = 5;
 
 	/**
 	 * Data Types
@@ -56,17 +53,6 @@ public abstract class AbstractDalProcessor<DalVO extends IDalVO> {
 
 	/**
 	 *
-	 * @param maxFieldCount
-	 * @param maxFieldIdCount
-	 */
-	protected AbstractDalProcessor(int maxFieldCount, int maxFieldIdCount) {
-		this();
-		this.maxFieldCount = maxFieldCount;
-		this.maxFieldIdCount = maxFieldIdCount;
-	}
-
-	/**
-	 *
 	 * @return
 	 */
 	public final String getProcessor() {
@@ -76,17 +62,9 @@ public abstract class AbstractDalProcessor<DalVO extends IDalVO> {
 		return interfaces[0].getName();
 	}
 
-	/**
-	 *
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
 	protected DalVO newDalVOInstance(){
 		try {
 			DalVO newInstance = (DalVO) getDalVOClass().newInstance();
-			if (newInstance.hasFields()) {
-				newInstance.initFields(maxFieldCount, maxFieldIdCount);
-			}
 			return newInstance;
 		}
 		catch(Exception e) {
@@ -98,7 +76,7 @@ public abstract class AbstractDalProcessor<DalVO extends IDalVO> {
 	 *
 	 * @return
 	 */
-	public Class<?> getDalVOClass() {
+	public Class<DalVO> getDalVOClass() {
 		if (dalVOClzz == null) {
 			Type genericSuperClass = getClass().getGenericSuperclass();
 			while (!(genericSuperClass instanceof ParameterizedType) && genericSuperClass instanceof Class<?>) {
@@ -112,7 +90,7 @@ public abstract class AbstractDalProcessor<DalVO extends IDalVO> {
 				dalVOClzz = (Class<?>) actualType;
 			}
 		}
-		return dalVOClzz;
+		return (Class<DalVO>) dalVOClzz;
 	}
 
 	protected void initLogger() {

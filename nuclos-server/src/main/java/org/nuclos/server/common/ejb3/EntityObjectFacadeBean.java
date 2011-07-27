@@ -18,6 +18,7 @@ package org.nuclos.server.common.ejb3;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.NullArgumentException;
@@ -32,9 +33,6 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.dal.provider.NucletDalProvider;
-import org.nuclos.server.dblayer.DbTuple;
-import org.nuclos.server.dblayer.query.DbFrom;
-import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.entityobject.EntityObjectProxyList;
 import org.nuclos.server.genericobject.ProxyList;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
@@ -117,42 +115,6 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 			final Collection<EntityObjectVO> col = getDependantEntityObjects(s, refField, base.getId());
 			dmdm.addAllData(s, col);
 		}
-		
-		// load the system attribute nuclosProcess for this genericobject (if not already loaded);
-		// this is necessary for getting the dependant subforms in the next step
-		
-//		Integer iAttributeId = NuclosEOField.PROCESS.getMetaData().getId().intValue();
-//		if(!lowdcvo.wasAttributeIdLoaded(iAttributeId)) {
-//			lowdcvo.addAttribute(iAttributeId);
-//
-//			Set<Integer> stAttributeId = new HashSet<Integer>();
-//			stAttributeId.add(iAttributeId);
-//
-//			CollectableSearchExpression clctSearchExpression = new CollectableSearchExpression(new CollectableIdCondition(lowdcvo.getId()));
-//			List<GenericObjectWithDependantsVO> lsgowdvo = getGenericObjects(lowdcvo.getModuleId(), clctSearchExpression, Collections.<String>emptySet(), username);
-//			if (lsgowdvo.size() == 1 && lsgowdvo.get(0).getAttribute(iAttributeId) != null) {
-//				lowdcvo.setAttribute(lsgowdvo.get(0).getAttribute(iAttributeId));
-//			}
-//		}
-//
-//		final Map<EntityAndFieldName, String> collSubEntities = getLayoutFacade().getSubFormEntityAndParentSubFormEntityNames(
-//				Modules.getInstance().getEntityNameByModuleId(lowdcvo.getModuleId()),lowdcvo.getId(),false);
-//
-//
-//		for (EntityAndFieldName eafn : collSubEntities.keySet()) {
-//			String sSubEntityName = eafn.getEntityName();
-//			// care only about subforms which are on the highest level and in the given set of entity names
-//			if (collSubEntities.get(eafn) == null && stRequiredSubEntityNames.contains(sSubEntityName)) {
-//				String sForeignKeyField = eafn.getFieldName();
-//				if (sForeignKeyField == null) {
-//					sForeignKeyField = ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME;
-//				}
-//				final Collection<EntityObjectVO> collmdvo = MasterDataFacadeHelper.getDependantMasterData(sSubEntityName, sForeignKeyField, lowdcvo.getId(), username);
-//				if (CollectionUtils.isNonEmpty(collmdvo)) {
-//					lowdcvo.getDependants().addAllData(sSubEntityName, collmdvo);
-//				}
-//			}
-//		}
 	}
 	
 	/**
@@ -160,52 +122,21 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 	 */
 	private String findRefField(EntityObjectVO base, String subform) {
 		final MetaDataServerProvider mdProv = MetaDataServerProvider.getInstance();
-		final EntityMetaDataVO mdVo = mdProv.getEntity(subform);
-		if (mdVo.hasFields()) {
-			for (String f: mdVo.getFieldIds().keySet()) {
-				// final Long id = mdVo.getFieldIds().get(f);
-				final EntityFieldMetaDataVO mdField = mdProv.getEntityField(subform, f);
-				if (base.getEntity().equals(mdField.getForeignEntity())) return f;
-			}
+		final Map<String, EntityFieldMetaDataVO> fields = mdProv.getAllEntityFieldsByEntity(subform);
+		for (String f: fields.keySet()) {
+			final EntityFieldMetaDataVO mdField = fields.get(f);
+			if (base.getEntity().equals(mdField.getForeignEntity())) return f;
 		}
 		return null;
 	}
 
 	@Override
 	public Collection<EntityObjectVO> getDependantEntityObjects(String subform, String field, Long relatedId) {
-		/*
-		final MetaDataServerProvider mdProv = MetaDataServerProvider.getInstance();
-		final EntityMetaDataVO mdVo = mdProv.getEntity(subform);
-		final DbAccess dbAccess = DataBaseHelper.getDbAccess();
-		final DbQueryBuilder builder = dbAccess.getQueryBuilder();
-		final String dbView = EntityObjectMetaDbHelper.getViewName(mdVo);
-		// final DbTable mdTable = dbAccess.getTableMetaData(dbView);
-		
-		final DbQuery<DbTuple> query = builder.createQuery(DbTuple.class);
-		final DbFrom t = query.from(dbView).alias("t");
-		query.multiselect(
-			t.column("INTID_T_MD_STATE", Integer.class),
-			t.column("BLNREADWRITE", Boolean.class));
-		query.where(builder.and(
-			t.column("INTID_T_MD_ROLE", Integer.class).in(getRoleIds()),
-			builder.equal(t.column("INTID_T_MD_ATTRIBUTEGROUP", Integer.class), iAttributeGroupId)));
-		 */
 		final MetaDataServerProvider mdProv = MetaDataServerProvider.getInstance();
 		final CollectableComparison cond = SearchConditionUtils.newEOidComparison(
 				subform, field, ComparisonOperator.EQUAL, relatedId, mdProv);
 		return NucletDalProvider.getInstance().getEntityObjectProcessor(subform).getBySearchExpression(
 				new CollectableSearchExpression(cond));
-	}
-	
-	private void selectAll(DbQuery<DbTuple> query, DbFrom from, EntityMetaDataVO meta) {
-		/*
-		final Map<String,EntityFieldMetaDataVO> columns = (Map<String,EntityFieldMetaDataVO>) meta.getFields();
-		final List<DbSelection<?>> selection = new ArrayList<DbSelection<?>>(columns.size());
-		for (String c: columns.keySet()) {
-			final EntityFieldMetaDataVO mdField = columns.get(c);
-			selection.add(from.column(c, mdField.getDataType()));
-		}
-		 */
 	}
 	
 }

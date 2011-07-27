@@ -23,10 +23,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.SelectObjectsController;
-import org.nuclos.client.ui.SelectObjectsPanel;
 import org.nuclos.client.ui.collect.CollectableTableModel;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;

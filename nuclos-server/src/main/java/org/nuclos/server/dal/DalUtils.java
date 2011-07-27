@@ -103,7 +103,7 @@ public class DalUtils {
 		vo.flagUpdate();
 	}
 
-	public static void updateVersionInformation(AbstractDalVOWithVersion vo, String user) {
+	public static <T> void updateVersionInformation(AbstractDalVOWithVersion vo, String user) {
 		Date sysdate = new Date();
 		if (vo.getCreatedBy() == null) {
 			vo.setCreatedBy(user);
@@ -121,7 +121,7 @@ public class DalUtils {
 		vo.setChangedAt(InternalTimestamp.toInternalTimestamp(sysdate));
 	}
 
-	public static boolean isNuclosProcessor(AbstractDalVOWithVersion dalVO) {
+	public static <T> boolean isNuclosProcessor(AbstractDalVOWithVersion dalVO) {
 		return dalVO.processor() != null && isNuclosProcessor(dalVO.processor());
 	}
 	

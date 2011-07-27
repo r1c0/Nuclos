@@ -19,12 +19,10 @@ package org.nuclos.client.dbtransfer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 
 public class ParameterComparison extends EntityObjectVO {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private final boolean isNew, isDeleted;
 	private final String currentValue;
+	
 	protected ParameterComparison(EntityObjectVO eovo, boolean isNew, boolean isDeleted, String currentValue) {
 		this.initFields(eovo.getFields().size(), 0);
 		this.getFields().putAll(eovo.getFields());
@@ -32,15 +30,19 @@ public class ParameterComparison extends EntityObjectVO {
 		this.isDeleted = isDeleted;
 		this.currentValue = currentValue;
 	}
+	
 	public boolean isNew() {
 		return isNew;
 	}
+	
 	public boolean isDeleted() {
 		return isDeleted;
 	}
+	
 	public String getCurrentValue() {
 		return currentValue;
 	}
+	
 	public boolean isValueChanged() {
 		return isNew() || isDeleted() || (super.getField("value", String.class) != null && !super.getField("value", String.class).equals(getCurrentValue())) 
 		|| (super.getField("value", String.class) == null && getCurrentValue() != null);

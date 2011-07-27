@@ -31,12 +31,8 @@ import org.apache.commons.lang.StringUtils;
  * @author	<a href="mailto:maik.stueker@novabit.de">Maik.Stueker</a>
  * @version 01.00.00
  */
-public class EntityMetaDataVO extends AbstractDalVOWithVersion<EntityFieldMetaDataVO> {
+public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private String entity;
 	private String dbEntity;
 	

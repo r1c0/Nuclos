@@ -118,7 +118,6 @@ import org.nuclos.server.statemodel.NuclosNoAdequateStatemodelException;
 import org.nuclos.server.statemodel.NuclosSubsequentStateNotLegalException;
 import org.nuclos.server.statemodel.ejb3.StateFacadeLocal;
 import org.nuclos.server.statemodel.valueobject.StateHistoryVO;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -532,27 +531,9 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	@Override
 	public List<Integer> getGenericObjectIds(Integer iModuleId, CollectableSearchExpression cse) {
 		EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId));
-		//List<Long> ids = NucletDalProvider.getInstance().getEntityObjectProcessor(eMeta.getEntity()).getIdsBySearchExpression(cse);
 		List<Long> ids = NucletDalProvider.getInstance().getEntityObjectProcessor(eMeta.getEntity()).getIdsBySearchExprUserGroups(
 			appendRecordGrants(cse, eMeta.getEntity()),	LangUtils.convertId(iModuleId), getCurrentUserName());
-
 		return DalUtils.convertLongIdList(ids);
-
-//		final String sSql = helper.getUnparser(this.getCurrentUserName()).unparseExpression(iModuleId, cse, 0);
-//		Date startDate = new Date();
-//		List<Integer> result = GenericObjectFacadeHelper.getGenericObjectIdsBySQL(iModuleId, this.getCurrentUserName(), sSql);
-//		Date endDate = new Date();
-//		NuclosPerformanceLogger.performanceLog(
-//				startDate.getTime(),
-//				endDate.getTime(),
-//				this.getCurrentUserName(),
-//				null,
-//				iModuleId,
-//				"Reading the IDs for module objects of type "+iModuleId + " - " + Modules.getInstance().getEntityLabelByModuleId(iModuleId),
-//				sSql,
-//				"",
-//				true);
-//		return result;
 	}
 
 	/**
@@ -563,28 +544,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 */
 	@Override
 	public List<Integer> getGenericObjectIds(Integer iModuleId, CollectableSearchCondition cond) {
-
 		return this.getGenericObjectIds(iModuleId, new CollectableSearchExpression(cond));
-
-//		final String sSql = helper.getUnparser(this.getCurrentUserName()).unparseExpression(iModuleId, new CollectableSearchExpression(cond), 0);
-//
-//		Date startDate = new Date();
-//
-//		List<Integer> lstGenericObjectIds = GenericObjectFacadeHelper.getGenericObjectIdsBySQL(iModuleId, this.getCurrentUserName(), sSql);
-//
-//		Date endDate = new Date();
-//		NuclosPerformanceLogger.performanceLog(
-//				startDate.getTime(),
-//				endDate.getTime(),
-//				this.getCurrentUserName(),
-//				null,
-//				iModuleId,
-//				"Reading the IDs for module objects of type "+iModuleId + " - " + Modules.getInstance().getEntityLabelByModuleId(iModuleId),
-//				sSql,
-//				"",
-//				true);
-//
-//		return lstGenericObjectIds;
 	}
 
 	/**
@@ -1304,183 +1264,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	}
 
 	/**
-	 * @TODO Remove after merge
-	 *
-	 * iterates over all generic objects in the database, checking the consistency of all attribute values with their attribute's data type.
-	 * Writes the result as a CSV file. For each bad attribute value, one row is written to the output file.
-	 * The transaction type is "not supported" here in order to avoid a transaction timeout, as the whole operation may
-	 * take some time.
-	 * @param sOutputFileName name of the output file (on the server side)
-	 * @return number of inconsistent attribute values
-	 */
-	@Override
-	@Deprecated
-	@RolesAllowed("UseManagementConsole")
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-
-	public int checkAttributeValues(String sOutputFileName) {
-		int iBadAttributeCount = 0;
-//		int iBadRecordCount = 0;
-//		int iTotalRecordCount = 0;
-//		int iTotalAttributeCount = 0;
-//		long lStartTime = 0;
-//		PrintStream ps = null;
-//
-//		try {
-//			this.info("START checkAttributeValues");
-//			lStartTime = new Date().getTime();
-//			ps = new PrintStream(new BufferedOutputStream(new FileOutputStream(sOutputFileName)), true);
-//			ps.println("GenericObject Id; System ID; Attribute Id; Attribute Name; INTID_T_UD_GO_ATTRIBUTE; Value; Attribute Type; Error Message");
-//
-//			final Integer iModuleId = null;
-//			final String sSql = helper.getUnparser(null).unparseExpression(iModuleId, new CollectableSearchExpression(),0);
-//			final Iterator<? extends GenericObjectVO> itergovo = helper.getGenericObjectsIteratorBySQL(iModuleId, this.getCurrentUserName(), sSql, helper.DEFAULT_PAGESIZE, null, Collections.<String>emptySet(), false);
-//			while (itergovo.hasNext()) {
-//				final GenericObjectVO govo = itergovo.next();
-//				try {
-//					govo.validate(AttributeCache.getInstance());
-//					iTotalAttributeCount += govo.getAttributes().size();
-//				}
-//				catch (BadGenericObjectException ex) {
-//					for (BadAttributeValueException bavex : ex.getBadAttributeValueExceptions()) {
-//						final String sAttributeName = bavex.sAttributeName.replaceAll("\"", "\"\"");
-//						final String sValue = bavex.sValue.replaceAll("\"", "\"\"");
-//						ps.println(bavex.iGenericObjectId + ";" + govo.getSystemIdentifier(AttributeCache.getInstance()) + ";" + bavex.iAttributeId + ";" + "\"" + sAttributeName + "\"" + ";" + bavex.iGenericObjectAttributeId + ";" + "\"" + sValue + "\"" + ";"
-//								+ bavex.cls.getName() + ";" + bavex.sCause);
-//					}
-//					++iBadRecordCount;
-//					iBadAttributeCount += ex.getBadAttributeValueExceptions().size();
-//					iTotalAttributeCount += ex.getTotalAttributeCount();
-//				}
-//				finally {
-//					++iTotalRecordCount;
-//				}
-//			}
-//		}
-//		catch (FileNotFoundException ex) {
-//			throw new NuclosFatalException(ex);
-//		}
-//		finally {
-//			if (ps != null) {
-//				ps.close();
-//			}
-//			if (ps != null && ps.checkError()) {
-//				throw new NuclosFatalException("Failed to close PrintStream.");
-//			}
-//		}
-//
-//		this.info("Generic objects total: " + iTotalRecordCount);
-//		this.info("Attributes total: " + iTotalAttributeCount);
-//		this.info("Invalid generic objects: " + iBadRecordCount);
-//		this.info("Invalid attributes: " + iBadAttributeCount);
-//		this.info("total time = " + (new Date().getTime() - lStartTime));
-
-		return iBadAttributeCount;
-	}
-
-	/**
-	 * @TODO remove after merge
-	 *
-	 * iterates over all generic objects in the database, checking the assignment of all attributes and compare it with the GenericObjectMetaDataCache.
-	 * Writes the result as a CSV file. For each bad attribute assignment, one row is written to the output file.
-	 * The transaction type is "not supported" here in order to avoid a transaction timeout, as the whole operation may
-	 * take some time.
-	 * @param sOutputFileName name of the output file (on the server side)
-	 * @param bDeleteMode delete invalid attribute assignments? If not, just write them to the output file.
-	 * @return number of bad attribute assignments
-	 */
-	@Override
-	@Deprecated
-	@RolesAllowed("UseManagementConsole")
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public int checkAttributeAssignment(String sOutputFileName, boolean bDeleteMode) {
-		int iBadAttributeCount = 0;
-
-//		PrintStream ps = null;
-//
-//		try {
-//			ps = new PrintStream(new BufferedOutputStream(new FileOutputStream(sOutputFileName)), true);
-//			ps.println("GenericObject Id; GenericObject nuclosSystemId; Attribute Id; Attribute Name; Attribute Value; Message");
-//
-//			final GenericObjectMetaDataCache lometacache = GenericObjectMetaDataCache.getInstance();
-//			final Integer iModuleId = null;
-//			final String sSql = helper.getUnparser(null).unparseExpression(iModuleId, new CollectableSearchExpression(), 0);
-//			final Iterator<? extends GenericObjectWithDependantsVO> iterlowdcvo = helper.getGenericObjectsIteratorBySQL(
-//					iModuleId, this.getCurrentUserName(), sSql, helper.DEFAULT_PAGESIZE, null, Collections.<String>emptySet(), false);
-//
-//			final AttributeProvider attrprovider = AttributeCache.getInstance();
-//			int iTotalAttributeCount = 0;
-//			int iTotalGenericObjectCount = 0;
-//			try {
-//				while (iterlowdcvo.hasNext()) {
-//					iTotalGenericObjectCount++;
-//					final GenericObjectWithDependantsVO lowdcvo = iterlowdcvo.next();
-//					try {
-//						final Collection<String> collAttributeNames = lometacache.getBestMatchingLayoutAttributeNames(lowdcvo.getUsageCriteria(attrprovider));
-//						final Collection<DynamicAttributeVO> collattrvo = lowdcvo.getAttributes();
-//						boolean bSaveCVO = false;
-//						for (DynamicAttributeVO attrvo : collattrvo) {
-//							iTotalAttributeCount++;
-//
-//							final Integer iAttributeId = attrvo.getAttributeId();
-//							final String sAttributeName = attrprovider.getAttribute(iAttributeId).getName();
-//
-//							if (!collAttributeNames.contains(sAttributeName)) {
-//								final Integer iGenericObjectId = lowdcvo.getId();
-//								final Object oSystemId = lowdcvo.getSystemIdentifier(attrprovider);
-//								final Object oValue = lowdcvo.getAttribute(iAttributeId).getValue();
-//
-//								if (bDeleteMode) {
-//									lowdcvo.getAttribute(iAttributeId).remove();
-//									bSaveCVO = true;
-//								}
-//								String sValue = null;
-//								if (oValue instanceof String) {
-//									if (((String) oValue).contains("\"")) {
-//										sValue = (String) oValue;
-//										sValue = sValue.replaceAll("\"", "\"\"");
-//									}
-//									if (((String) oValue).contains(";") || sValue != null) {
-//										sValue = "\"" + oValue + "\"";
-//									}
-//								}
-//								ps.println(iGenericObjectId + ";" + oSystemId + ";" + iAttributeId + ";" + sAttributeName + ";" + (sValue != null ? sValue : oValue) + ";" + (bDeleteMode ? "deleted" : "not deleted"));
-//								iBadAttributeCount++;
-//							}
-//						}
-//						if (bSaveCVO) {
-//							this.modify(lowdcvo.getModuleId(), lowdcvo);
-//						}
-//					}
-//					catch (NuclosFatalException ex) {
-//						this.getLogger().error("UsageCriteria are not comparable!", ex);
-//					}
-//				}
-//			}
-//			catch (CommonBusinessException ex) {
-//				throw new NuclosFatalException(ex);
-//			}
-//			finally {
-//				this.info("iTotalAttributeCount = " + iTotalAttributeCount);
-//				this.info("iBadAttributeCount = " + iBadAttributeCount);
-//				this.info("iTotalGenericObjectCount = " + iTotalGenericObjectCount);
-//			}
-//		}
-//		catch (FileNotFoundException ex) {
-//			throw new NuclosFatalException(ex);
-//		}
-//		finally {
-//			if (ps != null) {
-//				ps.close();
-//			}
-//			if (ps != null && ps.checkError()) {
-//				throw new NuclosFatalException("Failed to close PrintStream.");
-//			}
-//		}
-		return iBadAttributeCount;
-	}
-
-	/**
 	 * adds the generic object with the given id to the group with the given id.
 	 * @param iGenericObjectId generic object id to be grouped.  Must be a main module object.
 	 * @param iGroupId id of group to add generic object to
@@ -1771,58 +1554,10 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		// @todo Replace with LOFB.modify(..., false)?
 
 		final AttributeCache attrcache = AttributeCache.getInstance();
-//		final AttributeCVO attrcvo = attrcache.getAttribute(sAttribute);
-//		final Integer iAttributeId = attrcvo.getId();
-		final Integer iAttributeId = attrcache.getAttribute(DalSupportForGO.getGenericObject(iGenericObjectId).getModuleId(), sAttribute).getId();
-
-//		assert iAttributeId != null;
-//		try {
-//			final GenericObjectAttribute goa = findAttributeByGoAndAttributeId(iGenericObjectId, iAttributeId);
-//			if (oValue != null) {
-				final DynamicAttributeVO attrvo = new DynamicAttributeVO(iAttributeId, iValueId, oValue);
-//				updateGenericObjectAttribute(goa, attrvo, iGenericObjectId, true);
-
-				updateGenericObjectAttribute(attrvo, iGenericObjectId, true);
-
-//			}
-//			else {
-//				// No null values allowed for T_UD_GO_ATTRIBUTE.STRVALUE
-//				try {
-//					getDboFacade().delete(goa);
-//					createLogbookEntry(iGenericObjectId, iAttributeId, null, null, null, null, goa.getInternalValueId(), goa.getExternalValueId(),
-//						goa.getCanonicalValue(), null, null, null);
-//				}
-//				catch (SQLException ex) {
-//					throw new NuclosFatalException("Attribut kann nicht gel\u00f6scht werden: " + iAttributeId, ex);
-//				}
-//				catch (CommonStaleVersionException ex) {
-//					throw new NuclosBusinessException("Attribut kann nicht gel\u00f6scht werden: " + iAttributeId, ex);
-//				}
-//			}
-//		}
-//		catch (CommonFinderException ex) {
-//			try {
-//				// No null values allowed for T_UD_GO_ATTRIBUTE.STRVALUE
-//				if (oValue != null) {
-//					if (this.getLogger().isDebugEnabled()) {
-//						this.debug("GenericObjectFacadeBean.setAttribute: iGenericObjectId = " + iGenericObjectId + " - iAttributeId = " + iAttributeId +
-//								" - iValueId = " + iValueId + " - oValue = " + oValue);
-//					}
-//					final String sCanonicalValue = DynamicAttributeVO.getCanonicalFormat(attrcvo).format(oValue);
-//					// @todo bLogbookTracking must be false if the generic object is created!
-//					final boolean bLogbookTracking = true;
-//					createGenericObjectAttribute(iGenericObjectId, iAttributeId, iValueId, sCanonicalValue, bLogbookTracking);
-//				}
-//			}
-//			catch (CreateException ex2) {
-//				if (ex2.getCause() instanceof BadAttributeValueException) {
-//					throw (BadAttributeValueException) ex2.getCause();
-//				}
-//				else {
-//					throw new NuclosFatalException(ex2);
-//				}
-//			}
-//		}
+		final Integer iAttributeId = attrcache.getAttribute(
+				DalSupportForGO.getGenericObject(iGenericObjectId).getModuleId(), sAttribute).getId();
+		final DynamicAttributeVO attrvo = new DynamicAttributeVO(iAttributeId, iValueId, oValue);
+		updateGenericObjectAttribute(attrvo, iGenericObjectId, true);
 	}
 
 	/**
@@ -1837,43 +1572,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	}
 
 	/**
-	 * used for fulltextsearch
-	 * @param collTextSamples user entered textsamples
-	 * @return list of generic object value objects
-	 * @throws CommonBusinessException
-	 */
-	@Override
-	@RolesAllowed("PerformFullTextSearch")
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public List<GenericObjectWithDependantsVO> getGenericObjectsByMatchingAttributeValues(Collection<String> collTextSamples,
-			Collection<Integer> collModuleIds, int iMaxRowCount, boolean bSearchSubforms, boolean bSearchModuleAttributes,
-			Integer iSearchDeleted, String sOperator) throws CommonBusinessException {
-		//@todo respect subform/attribute booleans
-
-		// @TODO GOREF
-		throw new NuclosFatalException("Full text search not supported in Nuclos 2.5");
-		/*
-		final FullTextSearchHelper ftsHelper = new FullTextSearchHelper(collTextSamples, collModuleIds, iMaxRowCount, iSearchDeleted, sOperator);
-
-		if (bSearchModuleAttributes) {
-			ftsHelper.performFullTextSearchForAttributes();
-		}
-
-		if (bSearchSubforms && ftsHelper.getResultCount() < iMaxRowCount) {
-			ftsHelper.performFullTextSearchForSubForms(this.getCurrentUserName());
-		}
-
-		// get GenericObjectWithDependantsVO for all search results
-		//@todo: do not get the object with all attributes here
-		final List<GenericObjectWithDependantsVO> lstResult = new ArrayList<GenericObjectWithDependantsVO>();
-		for (Integer iGenericObjectId : ftsHelper.getSearchResults().keySet()) {
-			lstResult.add(getWithDependants(iGenericObjectId, Collections.<String>emptySet()));
-		}
-		return lstResult;
-		*/
-	}
-
-	/**
 	 * @param iGenericObjectId
 	 * @return the id of the module containing the generic object with the given id.
 	 * @throws CommonFinderException if there is no generic object with the given id.
@@ -1881,20 +1579,15 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	@Override
 	@RolesAllowed("Login")
 	public int getModuleContainingGenericObject(int iGenericObjectId) throws CommonFinderException {
-//		try {
-//			return (Integer) getMasterDataFacade().get(ENTITY_NAME_GENERICOBJECT, iGenericObjectId).getField("moduleId");
-			final EOGenericObjectVO eogo = NucletDalProvider.getInstance().getEOGenericObjectProcessor().getByPrimaryKey(LangUtils.convertId(iGenericObjectId));
-			if (eogo == null) {
-				throw new CommonFinderException();
-			}
-			if (eogo.getModuleId() == null) {
-				throw new CommonFatalException("moduleId is null");
-			}
-			return LangUtils.convertId(eogo.getModuleId());
-//		}
-//		catch(CommonPermissionException e) {
-//			throw new CommonFatalException(e);
-//		}
+		final EOGenericObjectVO eogo = NucletDalProvider.getInstance().getEOGenericObjectProcessor()
+				.getByPrimaryKey(LangUtils.convertId(iGenericObjectId));
+		if (eogo == null) {
+			throw new CommonFinderException();
+		}
+		if (eogo.getModuleId() == null) {
+			throw new CommonFatalException("moduleId is null");
+		}
+		return LangUtils.convertId(eogo.getModuleId());
 	}
 
 	/**
@@ -2035,41 +1728,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	}
 
 	/**
-	 * @param usagecriteria
-	 * @return the collection of calculated attributes for leased object with the given usagecriteria
-	 * @throws CommonFinderException if no such object was found.
-	 * @throws CommonPermissionException if the user doesn't have the permission to view the leased object.
-	 * @throws IllegalArgumentException if the given module id doesn't match the leased object's module id.
-	 * @postcondition result != null
-	 * @postcondition result.isComplete()
-	 */
-//	public Collection<DynamicAttributeVO> getCalculatedAttributeValuesForGenericObject(UsageCriteria usagecriteria, Integer iGenericObjectId)
-//			throws CommonFinderException, CommonPermissionException {
-//		this.debug("Entering getCalculatedAttributeValuesForGenericObject(UsageCriteria usagecriteria, Integer iGenericObjectId)");
-//
-//			final Collection<DynamicAttributeVO> result;
-//			final String sUserName = getCurrentUserName();
-//			final Integer iModuleId = usagecriteria.getModuleId();
-//
-//			if (!SecurityCache.getInstance().getReadableModuleIds(sUserName).contains(iModuleId)) {
-//				throw new CommonPermissionException("Der Benutzer " + sUserName + " darf im Modul " + Modules.getInstance().getEntityLabelByModuleId(iModuleId) + " nicht lesen.");
-//			}
-//
-//			final GenericObjectVO goVO = get(iGenericObjectId);
-//
-//			if (goVO.getModuleId() != usagecriteria.getModuleId()) {
-//				throw new IllegalArgumentException("iModuleId");
-//			}
-//
-//			result = helper.getCalculatedAttributeValues(goVO,getCurrentUserName());
-//
-//			assert result != null;
-//			this.debug("Leaving getCalculatedAttributeValuesForGenericObject(UsageCriteria usagecriteria, Integer iGenericObjectId)");
-//
-//			return result;
-//	}
-
-	/**
 	 * creates a LogbookEntry
 	 */
 	@Override
@@ -2116,11 +1774,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	@Override
 	public Collection<BadAttributeValueException> createGenericObjectAttribute(Integer genericObjectId, Integer attributeId, Integer valueId, String canonicalValue, boolean logbookTracking) throws CreateException {
 		final Collection<BadAttributeValueException> badAttributes = new ArrayList<BadAttributeValueException>();
-
-//		try {
-//			GenericObjectAttribute goa = new GenericObjectAttribute(genericObjectId, attributeId, valueId, canonicalValue);
-//			getDboFacade().save(goa);
-
 		final String field = DalSupportForGO.getEntityFieldFromAttribute(attributeId);
 		final EntityObjectVO eo = DalSupportForGO.getEntityObject(genericObjectId);
 		eo.getFieldIds().put(field, LangUtils.convertId(valueId));
@@ -2134,31 +1787,12 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			}
 		}
 
-//			if (logbookTracking) {
-//				createLogbookEntry( genericObjectId, attributeId, null, null, null, null, null, null, null,
-//					goa.getInternalValueId(), goa.getExternalValueId(), goa.getCanonicalValue());
-//			}
-
 		if (logbookTracking) {
 			createLogbookEntry( genericObjectId, attributeId, null, null, null, null, null, null, null,
 				DalSupportForGO.isEntityFieldForeign(attributeId)?null:valueId,
 				DalSupportForGO.isEntityFieldForeign(attributeId)?valueId:null,
 				canonicalValue);
 		}
-
-//		}
-//		catch (CreateException ex) {
-//			if (ex.getCause() instanceof BadAttributeValueException) {
-//				badAttributes.add((BadAttributeValueException) ex.getCause());
-//			}
-//			else {
-//				throw ex;
-//			}
-//		}
-//		catch (SQLException ex) {
-//			throw new NuclosFatalException(ex);
-//		}
-
 		return badAttributes;
 	}
 
@@ -2168,92 +1802,19 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 */
 	@Override
 	public void updateGenericObjectAttribute(DynamicAttributeVO vo, Integer genericObjectId, boolean logbookTracking) throws NuclosBusinessException {
-//		Integer oldInternalValueId = goa.getInternalValueId();
-//		Integer oldExternalValueId = goa.getExternalValueId();
-//		String oldCanonicalValue = goa.getCanonicalValue() != null ? goa.getCanonicalValue() : "";
-
 		final EntityObjectVO eo = DalSupportForGO.getEntityObjectProcesserForGenericObject(genericObjectId).getByPrimaryKey(LangUtils.convertId(genericObjectId));
 		final String field = DalSupportForGO.getEntityFieldFromAttribute(vo.getAttributeId());
 
 		if (logbookTracking) {
 			helper.createLogBookEntryIfNecessary(eo, null, vo);
 		}
-
-//
-//		try {
-//			goa.setValueObject(genericObjectId, vo);
-//			getDboFacade().update(goa);
-
 		eo.getFieldIds().put(field, LangUtils.convertId(vo.getValueId()));
 		eo.getFields().put(field, vo.getValue());
 		eo.flagUpdate();
 
 		DalCallResult dcr = NucletDalProvider.getInstance().getEntityObjectProcessor(eo.getEntity()).insertOrUpdate(eo);
 		dcr.throwFirstBusinessExceptionIfAny();
-
-//
-//			if (logbookTracking) {
-//				String newCanonicalValue = goa.getCanonicalValue() != null ? goa.getCanonicalValue() : "";
-//
-//				if (!oldCanonicalValue.equals(newCanonicalValue)) {
-//					createLogbookEntry( goa.getGenericObjectId(), goa.getAttributeId(), null, null, null, null, oldInternalValueId,
-//						oldExternalValueId, oldCanonicalValue, goa.getInternalValueId(), goa.getExternalValueId(), newCanonicalValue);
-//				}
-//			}
-
-
-
-//
-//			// make attributes consistent which have a reference to this attribute
-//			try {
-//				Integer iModuleId = getModuleContainingGenericObject(genericObjectId);
-//				String sModuleName = Modules.getInstance().getEntityNameByModuleId(iModuleId);
-//
-//				AttributeFacadeLocal attributeFacade = ServiceLocator.getInstance().getFacade(AttributeFacadeLocal.class);
-//				attributeFacade.makeConsistent(sModuleName, genericObjectId,
-//					new Pair<String, String>(AttributeCache.getInstance().getAttribute(goa.getAttributeId()).getName(),goa.getCanonicalValue()));
-//			}
-//			catch (CreateException ex) {
-//				throw new NuclosFatalException(ex);
-//			}
-//			catch (CommonFinderException ex) {
-//				// nothing found, do nothing
-//			}
-//		}
-//		catch (SQLException ex) {
-//			throw new NuclosFatalException(ex);
-//		}
-//		catch (CommonFinderException ex) {
-//			throw new NuclosBusinessException(ex);
-//		}
-//		catch (CommonStaleVersionException ex) {
-//			throw new NuclosBusinessException(ex);
-//		}
-
-//		return goa;
 	}
-
-	/**
-	 * returns a collection of GenericObjectAttributes with the given genericObjectId
-	 * @param genericObjectId
-	 * @return a collection of GenericObjectAttributes with the given genericObjectId
-	 */
-//	public Collection<GenericObjectAttribute> findAttributesByGenericObjectId(Integer genericObjectId) throws CommonFinderException {
-//
-//		Collection<GenericObjectAttribute> result = new ArrayList<GenericObjectAttribute>();
-//
-//		Map<String,Object> keys = new HashMap<String,Object>();
-//		keys.put("INTID_T_UD_GENERICOBJECT", genericObjectId);
-//
-//		List<NucleusDbo> dboList = getDboFacade().findByKey(new GenericObjectAttribute(), keys);
-//
-//		assert dboList != null;
-//
-//		for (NucleusDbo dbo : dboList)
-//			result.add((GenericObjectAttribute)dbo);
-//
-//		return result;
-//	}
 
 	/**
 	 * returns the GenericObjectAttribute matching the given genericObjectId and attributeId
@@ -2268,55 +1829,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		String field = DalSupportForGO.getEntityFieldFromAttribute(attributeId);
 
 		return DalSupportForGO.getDynamicAttributeVO(eo, field);
-
-//		Map<String,Object> keys = new HashMap<String,Object>();
-//		keys.put("INTID_T_UD_GENERICOBJECT", genericObjectId);
-//		keys.put("INTID_T_MD_ATTRIBUTE", attributeId);
-//
-//		List<NucleusDbo> dboList = getDboFacade().findByKey(new GenericObjectAttribute(), keys);
-//
-//		//assert dboList != null;
-//		//assert dboList.size() > 0;
-//
-//		/*
-//		 * ub, 10/2009: preliminary fix for bug in GO creation -
-//		 * GenericObjectFacadeHelper.storeAttributeValue() relies on NovabitFinderExceptions.
-//		 *
-//		 * TODO: ???
-//		 */
-//		if (dboList == null || dboList.size() == 0)
-//			throw new CommonFinderException();
-//
-//		return (GenericObjectAttribute)dboList.iterator().next();
 	}
-
-	/**
-	 * returns a collection of GenericObjectAttributes matching the given genericObjectId and externalValueId
-	 * @param genericObjectId
-	 * @param attributeId
-	 * @return a collection of GenericObjectAttributes matching the given genericObjectId and externalValueId
-	 */
-//	public Collection<GenericObjectAttribute> findAttributesByGoAndExternalValueId(Integer genericObjectId, Integer externalValueId) throws CommonFinderException {
-//
-//		Collection<GenericObjectAttribute> result = new ArrayList<GenericObjectAttribute>();
-//
-//		Map<String,Object> keys = new HashMap<String,Object>();
-//		keys.put("INTID_T_MD_ATTRIBUTE", genericObjectId);
-//		keys.put("INTID_EXTERNAL", externalValueId);
-//
-//		List<NucleusDbo> dboList = getDboFacade().findByKey(new GenericObjectAttribute(), keys);
-//
-//		assert dboList != null;
-//
-//		for (NucleusDbo dbo : dboList)
-//			result.add((GenericObjectAttribute)dbo);
-//
-//		return result;
-//	}
-
-//	public void setValueObject(GenericObjectVO govo) throws CommonPermissionException, CommonValidationException, NuclosBusinessException {
-//		helper.setValueObject(govo);
-//	}
 
 	private boolean getUsesRuleEngine(String sEntityName, boolean userEvent) {
 

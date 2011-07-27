@@ -1,7 +1,6 @@
 package org.nuclos.installer.unpack;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import org.nuclos.installer.ConfigContext;
@@ -9,7 +8,6 @@ import org.nuclos.installer.Constants;
 import org.nuclos.installer.InstallException;
 import org.nuclos.installer.database.PostgresService;
 import org.nuclos.installer.mode.Installer;
-import org.nuclos.installer.util.FileUtils;
 
 public class DevUnpacker implements Unpacker, Constants {
 

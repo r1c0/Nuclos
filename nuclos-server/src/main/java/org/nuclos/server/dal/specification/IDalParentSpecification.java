@@ -22,5 +22,6 @@ import org.nuclos.common.dal.vo.IDalVO;
 
 public interface IDalParentSpecification<DalVO extends IDalVO> {
 	
-	public List<DalVO> getByParent(Long parentId);
+	List<DalVO> getByParent(Long parentId);
+	
 }

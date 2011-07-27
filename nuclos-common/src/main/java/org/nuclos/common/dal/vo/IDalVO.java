@@ -16,12 +16,10 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.dal.vo;
 
-import java.util.Map;
-
 import org.nuclos.common.HasId;
 
 
-public interface IDalVO<T> extends HasId<Long> {
+public interface IDalVO extends HasId<Long> {
 	
 	public static final int STATE_NEW = 1;
 	
@@ -45,14 +43,6 @@ public interface IDalVO<T> extends HasId<Long> {
 
 	boolean isFlagRemoved();
 	
-	
-	boolean hasFields();
-	
-	void initFields(int maxFieldCount, int maxFieldIdCount);
-	
-	Map<String, T> getFields();
-	
-	Map<String, Long> getFieldIds();
 	
 	String processor();
 	

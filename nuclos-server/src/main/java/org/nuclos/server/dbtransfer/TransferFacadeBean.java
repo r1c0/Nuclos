@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dbtransfer;
 import static org.nuclos.server.dbtransfer.TransferUtils.checkValidity;
-import static org.nuclos.server.dbtransfer.TransferUtils.entityFieldMetaContainsNuclosEntity;
 import static org.nuclos.server.dbtransfer.TransferUtils.getDependencies;
 import static org.nuclos.server.dbtransfer.TransferUtils.getEntities;
 import static org.nuclos.server.dbtransfer.TransferUtils.getEntity;

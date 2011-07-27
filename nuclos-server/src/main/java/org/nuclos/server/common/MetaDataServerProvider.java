@@ -45,7 +45,6 @@ import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
-import org.nuclos.server.dblayer.query.DbSelection;
 import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.jms.NuclosJMSUtils;

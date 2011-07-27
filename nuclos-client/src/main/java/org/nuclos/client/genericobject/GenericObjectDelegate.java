@@ -94,17 +94,6 @@ public class GenericObjectDelegate {
 		return singleton;
 	}
 
-	public List<GenericObjectWithDependantsVO> getGenericObjectsByMatchingAttributeValues(Collection<String> samples, Collection<Integer> moduleIds,
-			int maxRowcount, boolean bSearchSubforms, boolean bSearchModuleAttributes, Integer iSearchDeleted, String sOperator) throws CommonBusinessException {
-		try {
-			return getGenericObjectFacade().getGenericObjectsByMatchingAttributeValues(samples, moduleIds, maxRowcount,
-					bSearchSubforms, bSearchModuleAttributes, iSearchDeleted, sOperator);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-
 	protected GenericObjectFacadeRemote getGenericObjectFacade() {
 		return this.gofacade;
 	}
@@ -115,6 +104,8 @@ public class GenericObjectDelegate {
 
 	/**
 	 * @return the leased object meta data
+	 * 
+	 * @deprecated As GenericObjectMetaDataVO is deprecated.
 	 */
 	public synchronized GenericObjectMetaDataVO getMetaDataCVO() {
 		try {
@@ -649,46 +640,8 @@ public class GenericObjectDelegate {
 	}
 
 	/**
-	 * iterates over all generic objects in the database, checking the consistency of all attribute values with their attribute's data type.
-	 * Writes the result as a CSV file. For each bad attribute value, one row is written to the output file.
-	 * @param sOutputFileName name of the output file (on the server side)
-	 * @return the number of inconsistent attribute values
-	 */
-	public int checkAttributeValues(String sOutputFileName) {
-		try {
-			return this.getGenericObjectFacade().checkAttributeValues(sOutputFileName);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-
-	/**
-	 * iterates over all generic objects in the database, checking the assignment of all attributes against the GenericObjectMetaDataCache.
-	 * Writes the result as a CSV file. For each bad attribute assignment, one row is written to the output file.
-	 * @param sOutputFileName name of the output file (on the server side)
-	 * @param bDeleteMode delete invalid attribute assignments? If not, just write them to the output file.
-	 * @return the number of bad attribute assignments
-	 */
-	public int checkAttributeAssignment(String sOutputFileName, boolean bDeleteMode) {
-		try {
-			return this.getGenericObjectFacade().checkAttributeAssignment(sOutputFileName, bDeleteMode);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-
-//	private static class CloseInsaPerformanceLoggerFactory implements Runnable {
-//		public void run() {
-//			InsaPerformanceLoggerFactory.close();
-//		}
-//	}
-
-	/**
 	 * attach a document to a generic object
-	 *
-	*/
+ 	 */
 	public void attachDocumentToObject(MasterDataVO mdvoDocument) throws CommonBusinessException {
 		try {
 			this.getGenericObjectFacade().attachDocumentToObject(mdvoDocument);

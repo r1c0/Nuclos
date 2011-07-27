@@ -23,7 +23,7 @@ import org.nuclos.common.dal.vo.IDalVO;
 public class DalTransformations {
 	private DalTransformations() {}
 
-	public static <S extends IDalVO<?>> Transformer<S, Long> getId() {
+	public static <S extends IDalVO> Transformer<S, Long> getId() {
 		return new Transformer<S, Long>() {
 			@Override
 			public Long transform(S d) {

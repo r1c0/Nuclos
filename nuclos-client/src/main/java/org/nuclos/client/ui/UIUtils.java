@@ -67,7 +67,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
@@ -84,21 +83,12 @@ import javax.swing.text.View;
 import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.common.NuclosResultPanel;
-import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.ui.collect.SortableCollectableTableModel;
 import org.nuclos.client.ui.labeled.LabeledComponent;
-import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
-import org.nuclos.common.NuclosEOField;
-import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common.security.Permission;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.CommonRunnableAdapter;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
-import org.nuclos.common2.exception.CommonFatalException;
 
 /**
  * UI utility methods.

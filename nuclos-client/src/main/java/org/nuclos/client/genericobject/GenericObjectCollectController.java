@@ -180,7 +180,6 @@ import org.nuclos.client.ui.collect.result.ResultController;
 import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.client.ui.collect.search.ISearchStrategy;
 import org.nuclos.client.ui.collect.search.SearchPanel;
-import org.nuclos.client.ui.collect.strategy.CompleteGenericObjectsStrategy;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.client.ui.multiaction.MultiActionProgressPanel;

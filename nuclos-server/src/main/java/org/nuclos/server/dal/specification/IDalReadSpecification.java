@@ -22,12 +22,12 @@ import org.nuclos.common.dal.vo.IDalVO;
 
 public interface IDalReadSpecification<DalVO extends IDalVO> {
 
-	public List<DalVO> getAll();
+	List<DalVO> getAll();
 	
-	public List<Long> getAllIds();
+	List<Long> getAllIds();
 	
-	public DalVO getByPrimaryKey(Long id);
+	DalVO getByPrimaryKey(Long id);
 	
-	public List<DalVO> getByPrimaryKeys(List<Long> ids);
+	List<DalVO> getByPrimaryKeys(List<Long> ids);
 	
 }

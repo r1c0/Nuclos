@@ -47,8 +47,6 @@ import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode.RelationDirection;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Remote
 public interface GenericObjectFacadeRemote {
@@ -321,32 +319,6 @@ public interface GenericObjectFacadeRemote {
 		CommonPermissionException;
 
 	/**
-	 * iterates over all generic objects in the database, checking the consistency of all attribute values with their attribute's data type.
-	 * Writes the result as a CSV file. For each bad attribute value, one row is written to the output file.
-	 * The transaction type is "not supported" here in order to avoid a transaction timeout, as the whole operation may
-	 * take some time.
-	 * @param sOutputFileName name of the output file (on the server side)
-	 * @return number of inconsistent attribute values
-	 */
-	@RolesAllowed("UseManagementConsole")
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public abstract int checkAttributeValues(String sOutputFileName);
-
-	/**
-	 * iterates over all generic objects in the database, checking the assignment of all attributes and compare it with the GenericObjectMetaDataCache.
-	 * Writes the result as a CSV file. For each bad attribute assignment, one row is written to the output file.
-	 * The transaction type is "not supported" here in order to avoid a transaction timeout, as the whole operation may
-	 * take some time.
-	 * @param sOutputFileName name of the output file (on the server side)
-	 * @param bDeleteMode delete invalid attribute assignments? If not, just write them to the output file.
-	 * @return number of bad attribute assignments
-	 */
-	@RolesAllowed("UseManagementConsole")
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public abstract int checkAttributeAssignment(String sOutputFileName,
-		boolean bDeleteMode);
-
-	/**
 	 * adds the generic object with the given id to the group with the given id.
 	 * @param iGenericObjectId generic object id to be grouped.  Must be a main module object.
 	 * @param iGroupId id of group to add generic object to
@@ -467,20 +439,6 @@ public interface GenericObjectFacadeRemote {
 		Integer iGenericObjectIdTarget, Integer iModuleIdTarget)
 		throws CommonRemoveException, CommonFinderException,
 		CommonBusinessException;
-
-	/**
-	 * used for fulltextsearch
-	 * @param collTextSamples user entered textsamples
-	 * @return list of generic object value objects
-	 * @throws CommonBusinessException
-	 */
-	@RolesAllowed("PerformFullTextSearch")
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public abstract List<GenericObjectWithDependantsVO> getGenericObjectsByMatchingAttributeValues(
-		Collection<String> collTextSamples, Collection<Integer> collModuleIds,
-		int iMaxRowCount, boolean bSearchSubforms,
-		boolean bSearchModuleAttributes, Integer iSearchDeleted, String sOperator)
-		throws CommonBusinessException;
 
 	/**
 	 * @param iGenericObjectId

@@ -20,7 +20,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 
-public abstract class AbstractDalVOBasic<T> implements IDalVO<T>, Serializable {
+public abstract class AbstractDalVOBasic implements IDalVO, Serializable {
 	private static final long serialVersionUID = 1012920874365879641L;
 	
 	private String processor;
@@ -32,7 +32,7 @@ public abstract class AbstractDalVOBasic<T> implements IDalVO<T>, Serializable {
 		super();
 	}
 	
-	public AbstractDalVOBasic(AbstractDalVOBasic<T> dalVO) {
+	public AbstractDalVOBasic(AbstractDalVOBasic dalVO) {
 		super();
 		this.id = dalVO.getId();
 	}
@@ -86,27 +86,5 @@ public abstract class AbstractDalVOBasic<T> implements IDalVO<T>, Serializable {
 	public final boolean isFlagRemoved() {
 		return this.state == STATE_REMOVED;
 	}	
-	
-	@Override
-	public boolean hasFields() {
-		return false;
-	}
-	
-	@Override
-	public void initFields(int maxFieldCount, int maxFieldIdCount) {
-		// do nothing
-	}
-
-	@Override
-	public Map<String, Long> getFieldIds() {
-		// throw new IllegalArgumentException("getFieldIds()");
-		return Collections.emptyMap();
-	}
-
-	@Override
-	public Map<String, T> getFields() {
-		// throw new IllegalArgumentException("getFields()");
-		return Collections.emptyMap();
-	}
 	
 }

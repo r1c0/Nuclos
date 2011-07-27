@@ -21,12 +21,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-public class AbstractDalVOWithFields<T> extends AbstractDalVOWithVersion<T> {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class AbstractDalVOWithFields<T> extends AbstractDalVOWithVersion implements IDalWithFieldsVO<T> {
 
 	private static final Logger LOG = Logger.getLogger(AbstractDalVOWithFields.class);
 
