@@ -20,8 +20,12 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -61,37 +65,47 @@ public class JnlpServlet extends HttpServlet {
 
 	private static final Logger log = Logger.getLogger(JnlpServlet.class);
 
-	private boolean enabled = false;
 	private boolean singleinstance = false;
 	private File appDir = null;
 
 	private boolean hasExtensions = false;
 	private File extensionDir = null;
+	private String extensionlastmodified;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 
-
 		try {
-			Properties props = ServerProperties.loadProperties(ServerProperties.JNDI_SERVER_PROPERTIES);//new Properties();
-			//props.load(config.getServletContext().getResourceAsStream("/WEB-INF/jnlp/jnlp.properties"));
-			enabled = true;//Boolean.parseBoolean(props.getProperty("webstart.enabled"));
+			Properties props = ServerProperties.loadProperties(ServerProperties.JNDI_SERVER_PROPERTIES);
 			singleinstance = Boolean.parseBoolean(props.getProperty("client.singleinstance"));
 			appDir = new File(config.getServletContext().getRealPath(""), "app");
 
 			extensionDir = new File(appDir, "extensions");
 			if (extensionDir.isDirectory()) {
-				if (extensionDir.list(new FilenameFilter() {
-						@Override
-						public boolean accept(File dir, String name) {
-							if (name.endsWith(".jar")) {
-								return true;
-							}
-							return false;
+				String[] files = extensionDir.list(new FilenameFilter() {
+					@Override
+					public boolean accept(File dir, String name) {
+						if (name.endsWith(".jar")) {
+							return true;
 						}
-					}).length > 0) {
+						return false;
+					}
+				});
+				if (files.length > 0) {
 					hasExtensions = true;
+					DateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+					Long l = 0L;
+					for (String filename : files) {
+						File f = new File(extensionDir, filename);
+						if (f.isFile()) {
+							log.info("Found client extension jar: " + filename + "; LastModified: " + df.format(new Date(f.lastModified())));
+							if (l < f.lastModified()) {
+								l = f.lastModified();
+							}
+						}
+					}
+					extensionlastmodified = df.format(new Date(l));
 				}
 			}
 		}
@@ -102,12 +116,7 @@ public class JnlpServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (!enabled) {
-			response.sendError(response.SC_NOT_FOUND, "Webstart is disabled.");
-			return;
-		}
-
-		boolean isExtensionRequest = request.getRequestURI().endsWith("extension.jnlp");
+		boolean isExtensionRequest = Pattern.matches(".*extension[^/]*\\.jnlp", request.getRequestURI());
 
 		String urlPrefix = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
 
@@ -118,8 +127,14 @@ public class JnlpServlet extends HttpServlet {
 		props.put("singleinstance", Boolean.toString(singleinstance));
 		props.put("nuclos.version", ApplicationProperties.getInstance().getNuclosVersion().getVersionNumber());
 		props.put("extensions", Boolean.toString(hasExtensions));
+		if (hasExtensions) {
+			props.put("extension-lastmodified", extensionlastmodified);
+		}
+		else {
+			props.put("extension-lastmodified", "");
+		}
 
-		String attachment = "inline; filename=\"" + (isExtensionRequest ? "extension.jnlp" : "nuclos.jnlp") + "\"";
+		String attachment = "inline; filename=\"" + (isExtensionRequest ? request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/") + 1) : "nuclos.jnlp") + "\"";
 		response.setContentType("application/x-java-jnlp-file");
 		response.setHeader("Cache-Control", "max-age=30");
 		response.setHeader("Content-disposition", attachment);

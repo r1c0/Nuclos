@@ -9,6 +9,7 @@
 	<xsl:param name="singleinstance" />
 	<xsl:param name="nuclos.version" />
 	<xsl:param name="extensions" />
+	<xsl:param name="extension-lastmodified" />
 
 	<xsl:template match="/">
 		<!-- JNLP File for webstart client -->
@@ -36,7 +37,7 @@
 				<property name="nuclos.server.name" value="Webstart" />
 				<property name="nuclos.client.singleinstance" value="{$singleinstance}" />
 				<xsl:if test="$extensions='true'">
-					<extension name="extension" href="extensions/extension.jnlp" />
+					<extension name="extension" href="extensions/extension-{$extension-lastmodified}.jnlp" />
 				</xsl:if>
 			</resources>
 			<application-desc main-class="org.nuclos.client.main.Main">
