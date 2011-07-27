@@ -131,16 +131,21 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 
 		Boolean credentialsExpired = false;
 		String passwordInterval = ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_SECURITY_PASSWORD_INTERVAL);
-		if (!StringUtils.isNullOrEmpty(passwordInterval) && passwordchanged != null) {
-			try {
-				Integer days = Integer.parseInt(passwordInterval);
-				Calendar c = Calendar.getInstance();
-				c.setTime(passwordchanged);
-				c.add(Calendar.DAY_OF_MONTH, days);
-				credentialsExpired = c.before(Calendar.getInstance());
+		if (!StringUtils.isNullOrEmpty(passwordInterval)) {
+			if (passwordchanged != null) {
+				try {
+					Integer days = Integer.parseInt(passwordInterval);
+					Calendar c = Calendar.getInstance();
+					c.setTime(passwordchanged);
+					c.add(Calendar.DAY_OF_MONTH, days);
+					credentialsExpired = c.before(Calendar.getInstance());
+				}
+				catch (NumberFormatException ex) {
+					log.error("Cannot parse parameter value for key " + ParameterProvider.KEY_SECURITY_PASSWORD_INTERVAL, ex);
+				}
 			}
-			catch (NumberFormatException ex) {
-				log.error("Cannot parse parameter value for key " + ParameterProvider.KEY_SECURITY_PASSWORD_INTERVAL, ex);
+			else {
+				setPasswordChanged(intid);
 			}
 		}
 
@@ -235,6 +240,14 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 	private void lockUser(Long user) {
 		Map<String, Object> values = new HashMap<String, Object>(1);
 		values.put("BLNLOCKED", Boolean.TRUE);
+		Map<String, Object> conditions = new HashMap<String, Object>(1);
+		conditions.put("INTID", user);
+		DataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_MD_USER", values, conditions));
+	}
+
+	private void setPasswordChanged(Long user) {
+		Map<String, Object> values = new HashMap<String, Object>(1);
+		values.put("DATPASSWORDCHANGED", Calendar.getInstance().getTime());
 		Map<String, Object> conditions = new HashMap<String, Object>(1);
 		conditions.put("INTID", user);
 		DataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_MD_USER", values, conditions));
