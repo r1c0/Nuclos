@@ -151,24 +151,6 @@
 			<version>9.0-801.jdbc4</version>
 		</dependency>
 		<dependency>
-			<groupId>de.novabit</groupId>
-			<artifactId>ojdbc</artifactId>
-			<version>6</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.novabit</groupId>
-			<artifactId>sqljdbc</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.novabit</groupId>
-			<artifactId>jconn</artifactId>
-			<version>3</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.xbean</groupId>
 			<artifactId>xbean-spring</artifactId>
 			<version>3.7</version>

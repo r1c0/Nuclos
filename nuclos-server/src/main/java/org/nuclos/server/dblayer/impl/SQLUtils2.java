@@ -30,7 +30,7 @@ public class SQLUtils2 {
 			try {
 				method = obj.getClass().getMethod("getInnermostDelegate");
 				method.setAccessible(true);
-				
+
 				return unwrap(method.invoke(obj), iface);
 			}
 			catch(Exception e) {
@@ -46,11 +46,11 @@ public class SQLUtils2 {
 				if (wrapper.isWrapperFor(iface)) {
 					obj = wrapper.unwrap(iface);
 				}
-			
+
 			} catch (AbstractMethodError e) {
 				// this class didn't implement the interface completely (pre JDBC 4.0 implementation)
 			}
-		}		
+		}
 		return null;
 	}
 
@@ -78,5 +78,5 @@ public class SQLUtils2 {
 			}
 		}
 		return sb.toString();
-	}	
+	}
 }

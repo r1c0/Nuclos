@@ -18,6 +18,8 @@ package org.nuclos.server.dblayer.impl.oracle;
 
 import static org.nuclos.common2.StringUtils.join;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,6 +40,7 @@ import java.util.regex.Pattern;
 
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbNotNullableException;
 import org.nuclos.server.dblayer.DbNotUniqueException;
@@ -131,31 +134,31 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 
 	@Override
 	protected List<String> getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) {
-		
+
 		List<String> lstSQL = new ArrayList<String>();
 		lstSQL.add(String.format("ALTER TABLE %s MODIFY (%s)",
 			getQualifiedName(column2.getTableName()),
 			getColumnSpecForAlterTableColumn(column2, column1)));
-		
+
 		if(column2.getDefaultValue() != null && column2.getNullable().equals(DbNullable.NOT_NULL)) {
 			String sPlainUpdate = getSqlForUpdateNotNullColumn(column2);
 
 			lstSQL.add(0, sPlainUpdate);
 		}
-		
+
 		return lstSQL;
 	}
-	
-	
+
+
 
 	@Override
 	protected List<String> getSqlForAlterTableNotNullColumn(final DbColumn column) {
 		String columnSpec = String.format("%s %s NOT NULL", column.getColumnName(), getDataType(column.getColumnType()));
-		
+
 		return Collections.singletonList(String.format("ALTER TABLE %s MODIFY (%s)",
 			getQualifiedName(column.getTableName()), columnSpec));
 	}
-	
+
 	@Override
 	protected String getSqlForUpdateNotNullColumn(final DbColumn column) {
 		DbUpdateStatement stmt = DbStatementUtils.getDbUpdateStatementWhereFieldIsNull(getQualifiedName(column.getTableName()), column.getColumnName(), column.getDefaultValue());
@@ -194,14 +197,14 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 			}
 
 			@Override
-			public String visitUpdate(DbUpdateStatement update) {				
+			public String visitUpdate(DbUpdateStatement update) {
 				String updateString = new String(sUpdate);
 				for(Object obj : update.getColumnValues().values()) {
 					if(column.getColumnType().getGenericType().equals(DbGenericType.DATE) || column.getColumnType().getGenericType().equals(DbGenericType.DATETIME)){
 						String dateSql = new String("to_date('" + obj + "', 'yyyy.mm.dd')");
 						updateString = org.apache.commons.lang.StringUtils.replace(updateString, "?", dateSql);
 					}
-					else if(column.getColumnType().getGenericType().equals(DbGenericType.BOOLEAN)){						
+					else if(column.getColumnType().getGenericType().equals(DbGenericType.BOOLEAN)){
 						Boolean bTrue = new Boolean((String)obj);
 						updateString = org.apache.commons.lang.StringUtils.replace(updateString, "?", bTrue ? "1" : "0");
 					}
@@ -215,8 +218,8 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 				}
 				return updateString;
 			}
-			
-			
+
+
 		});
 		return sPlainUpdate;
 	}
@@ -224,7 +227,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 	@Override
 	protected List<String> getSqlForAlterSequence(DbSequence sequence1, DbSequence sequence2) {
 		long restartWith = Math.max(sequence1.getStartWith(), sequence2.getStartWith());
-		// Oracle doesn't support sequence restarting, so drop and then (re-)create it 
+		// Oracle doesn't support sequence restarting, so drop and then (re-)create it
 		List<String> sql = new ArrayList<String>();
 		sql.addAll(getSqlForDropSequence(sequence1));
 		sql.addAll(getSqlForCreateSequence(new DbSequence(sequence2.getSequenceName(), restartWith)));
@@ -293,7 +296,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 	class OracleQueryBuilder extends QueryBuilder {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -306,7 +309,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 		public DbExpression<Date> convertInternalTimestampToDate(DbExpression<InternalTimestamp> x) {
 			return buildExpressionSql(Date.class, "TRUNC(", x, ")");
 		}
-		
+
 		@Override
 		protected PreparedStringBuilder buildPreparedString(DbQuery<?> query) {
 			PreparedStringBuilder ps = super.buildPreparedString(query);
@@ -322,13 +325,25 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 
 		@Override
 		protected void initMetaData() throws SQLException {
-			oracle.jdbc.OracleConnection oracleConn = SQLUtils2.unwrap(connection, oracle.jdbc.OracleConnection.class);
-			if (oracleConn != null) {
-				oracleConn.setRemarksReporting(true);
+			try {
+				Class<?> clazz = Class.forName("oracle.jdbc.OracleConnection");
+				Object oracleConnection = SQLUtils2.unwrap(connection, clazz);
+
+				Method m = clazz.getMethod("setRemarksReporting", boolean.class);
+				m.invoke(oracleConnection, true);
 			}
-			//   		if (connection.isWrapperFor(oracle.jdbc.OracleConnection.class)) {
-			//   			connection.unwrap(oracle.jdbc.OracleConnection.class).setRemarksReporting(true);
-			//   		}
+			catch (ClassNotFoundException ex) {
+				throw new CommonFatalException("oracle.jdbc.OracleConnection not found in classpath.", ex);
+			}
+			catch (NoSuchMethodException ex) {
+				throw new CommonFatalException("Error in reflection call.", ex);
+			}
+			catch (InvocationTargetException ex) {
+				throw new SQLException(ex.getTargetException());
+			}
+			catch (Exception ex) {
+				throw new SQLException(ex);
+			}
 			super.initMetaData();
 		}
 
@@ -420,8 +435,8 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 	@Override
 	protected String makeIdent(String name) {
 		int len = name.length();
-		if (len == 0) 
-			throw new IllegalArgumentException();		
+		if (len == 0)
+			throw new IllegalArgumentException();
 		if (name.charAt(0) == '"' && name.charAt(len-1) == '"') {
 			return name.substring(1, len-1);
 		} else {
@@ -612,5 +627,5 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 				return triggers;
 			}
 		});
-	}		
+	}
 }
