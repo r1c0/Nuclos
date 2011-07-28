@@ -119,6 +119,7 @@ public class LocalUserProperties extends java.util.Properties {
     	t.put("exception.password.empty", "The new password must not be empty.");
     	t.put("exception.password.length", "The password does not meet the security guidelines concerning the password length.");
     	t.put("exception.password.regexp", "The password does not meet the security guidelines concerning the password complexity.");
+    	t.put("login.question.password.change", "Your password will expire in {0} days.\nDo you want to change it now?");
 
     	defaults = Collections.unmodifiableMap(t);
     };

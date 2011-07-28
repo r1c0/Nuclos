@@ -30,12 +30,13 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.naming.NamingException;
-import javax.security.auth.login.LoginException;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -55,6 +56,7 @@ import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.ShutdownActions;
+import org.nuclos.client.common.security.SecurityDelegate;
 import org.nuclos.client.main.ChangePasswordPanel;
 import org.nuclos.client.main.SwingLocaleSwitcher;
 import org.nuclos.client.security.NuclosRemoteServerSession;
@@ -389,58 +391,79 @@ public class LoginController extends Controller {
 				final String sUserName = loginPanel.tfUserName.getText().trim();
 				final char[] acPassword = loginPanel.tfPassword.getPassword();
 				try {
-					performLogin(sUserName, acPassword);
-					props.setUserName(sUserName);
+					try {
+						performLogin(sUserName, acPassword);
+						result = true;
+					}
+					catch (CredentialsExpiredException ex) {
+						ChangePasswordPanel cpp = new ChangePasswordPanel(false, new String(acPassword), true);
+						result = cpp.showInDialog(frame, new ChangePasswordPanel.ChangePasswordDelegate() {
+							@Override
+							public void changePassword(String oldPw, String newPw) throws CommonBusinessException {
+								RemoteAuthenticationManager ram = SpringApplicationContextHolder.getBean(RemoteAuthenticationManager.class);
+								ram.changePassword(sUserName, new String(acPassword), newPw);
+								performLogin(sUserName, acPassword);
+							}
+						});
+						if (!result) {
+							return result;
+						}
+					}
 
-					props.setUserPasswd(
-						loginPanel.rememberPass.isSelected()
-						? CryptUtil.encryptAESHex(new String(acPassword), CRYPT)
-					    : "");
+					// check for credential expiration date
+					Date expirationdate = SecurityDelegate.getInstance().getPasswordExpiration();
+					if (expirationdate != null) {
+						long difference = expirationdate.getTime() - Calendar.getInstance().getTimeInMillis();
+						difference = (difference / (1000 * 60 * 60 * 24)) + 1L;
+						if (difference <= 3) {
+							String message = MessageFormat.format(LocalUserProperties.getInstance().getLoginResource("login.question.password.change"), difference);
+							int i = JOptionPane.showConfirmDialog(frame, message, ApplicationProperties.getInstance().getName(), JOptionPane.YES_NO_OPTION);
+							if (i == JOptionPane.YES_OPTION) {
+								ChangePasswordPanel cpp = new ChangePasswordPanel(false, new String(acPassword), true);
+								result = cpp.showInDialog(frame, new ChangePasswordPanel.ChangePasswordDelegate() {
+									@Override
+									public void changePassword(String oldPw, String newPw) throws CommonBusinessException {
+										RemoteAuthenticationManager ram = SpringApplicationContextHolder.getBean(RemoteAuthenticationManager.class);
+										ram.changePassword(sUserName, new String(acPassword), newPw);
+										NuclosRemoteServerSession.relogin(sUserName, newPw);
+									}
+								});
+							}
+						}
+					}
 
-					props.store();
-					result = true;
+					if (result) {
+						props.setUserName(sUserName);
+
+						props.setUserPasswd(
+							loginPanel.rememberPass.isSelected()
+							? CryptUtil.encryptAESHex(new String(acPassword), CRYPT)
+						    : "");
+
+						props.store();
+					}
 				}
 				catch (LockedException ex) {
-					loginPanel.setProgressVisible(result);
 					loginPanel.shake(shakeStepSize);
 					loginPanel.setPasswordError(LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_LOCKED));
 				}
 				catch (AccountExpiredException ex) {
-					loginPanel.setProgressVisible(result);
 					loginPanel.shake(shakeStepSize);
 					loginPanel.setPasswordError(LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_ACCOUNT_EXPIRED));
 				}
-				catch (CredentialsExpiredException ex) {
-					// Display change credentials panel
-					ChangePasswordPanel cpp = new ChangePasswordPanel(false, new String(acPassword), true);
-					result = cpp.showInDialog(frame, new ChangePasswordPanel.ChangePasswordDelegate() {
-						@Override
-						public void changePassword(String oldPw, String newPw) throws CommonBusinessException {
-							RemoteAuthenticationManager ram = SpringApplicationContextHolder.getBean(RemoteAuthenticationManager.class);
-							ram.changePassword(sUserName, new String(acPassword), newPw);
-							loginPanel.tfPassword.setText(newPw);
-							cmdPerformLogin(frame, optpn, selectedOption, props);
-						}
-					});
-					loginPanel.setProgressVisible(result);
-				}
 				catch (AuthenticationException ex) {
-					loginPanel.setProgressVisible(result);
 					loginPanel.shake(shakeStepSize);
 					loginPanel.setPasswordError(LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_UPASS));
 				}
 				catch (AccessDeniedException ex) {
-					loginPanel.setProgressVisible(result);
 					loginPanel.shake(shakeStepSize);
 					loginPanel.setPasswordError(LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_UPERM));
 				}
 				catch (RemoteAccessException ex) {
-					loginPanel.setProgressVisible(result);
 					loginPanel.shake(shakeStepSize);
 					loginPanel.setPasswordError(LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_SERVER));
 				}
 				catch (Exception ex) {
-					loginPanel.setProgressVisible(result);
 					Errors.getInstance().showExceptionDialog(frame, ex);
 				}
 				finally {
@@ -449,7 +472,6 @@ public class LoginController extends Controller {
 			}
 		}
 		catch (CommonFatalException ex) {
-			loginPanel.setProgressVisible(result);
 			try {
 				final Throwable tCause = ex.getCause();
 				if (tCause instanceof Exception) {
@@ -472,13 +494,13 @@ public class LoginController extends Controller {
 			}
 		}
 		catch (Exception ex) {
-			loginPanel.setProgressVisible(result);
 			Errors.getInstance().showExceptionDialog(frame, ex);
 		}
 		finally {
 			frame.setEnabled(true);
 			frame.requestFocus();
 			setSubComponentsEnabled(optpn, acls, true);
+			loginPanel.setProgressVisible(result);
 			loginPanel.tfPassword.setText("");
 			loginPanel.tfPassword.requestFocusInWindow();
 			frame.setCursor(null);
@@ -509,7 +531,7 @@ public class LoginController extends Controller {
 		}
 	}
 
-	private void performLogin(String sUserName, char[] acPassword) throws LoginException {
+	private void performLogin(String sUserName, char[] acPassword) {
 		NuclosRemoteServerSession.login(sUserName, new String(acPassword));
 		if (!ShutdownActions.getInstance().isRegistered(ShutdownActions.SHUTDOWNORDER_LOGOUT)) {
 			ShutdownActions.getInstance().registerShutdownAction(ShutdownActions.SHUTDOWNORDER_LOGOUT, new Logout());

@@ -45,7 +45,6 @@ import org.nuclos.client.security.NuclosRemoteServerSession;
 import org.nuclos.client.updatejobs.MigrateSearchFilterPreferences;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.ConsoleConstants;
-import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.Priority;
@@ -63,7 +62,6 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoteException;
 import org.nuclos.server.attribute.valueobject.LayoutVO;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
-import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
 import org.nuclos.server.common.valueobject.PreferencesVO;
 import org.nuclos.server.console.ejb3.ConsoleFacadeRemote;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote;
@@ -102,7 +100,7 @@ public class NuclosConsole extends ConsoleConstants {
 			CMD_SCHEDULE_TIMELIMIT_JOB, CMD_SETUSERPREFERENCES,
 			CMD_RESETUSERPREFERENCES, CMD_VALIDATEOBJECTGENERATIONS,
 			CMD_CHECKMASTERDATAVALUES, CMD_COMPILEDBOBJECTS,
-			CMD_SENDMESSAGE, CMD_KILLSESSION, CMD_CHANGEPASSWORD,
+			CMD_SENDMESSAGE, CMD_KILLSESSION,
 			CMD_IMPORTTIMELIMITRULES, CMD_EXPORTTIMELIMITRULES, CMD_EXECUTE_TIMELIMITRULE_NOW
 	);
 
@@ -877,22 +875,6 @@ public class NuclosConsole extends ConsoleConstants {
 		} else if (sCommandLowerCase.equals(CMD_INVALIDATEALLCACHES)) {
 			invalidatAllCaches();
 		}
-		else if (sCommandLowerCase.equals(CMD_CHANGEPASSWORD)) {
-			String sUser = null;
-			String sPassword = null;
-			if (asArgs.length >= 2) {
-				for (int i = 1; i < asArgs.length; i++) {
-					if (asArgs[i].equalsIgnoreCase("-user") && i + 1 < asArgs.length) {
-						sUser = asArgs[i + 1];
-					} else if (asArgs[i].equalsIgnoreCase("-password") && i + 1 < asArgs.length) {
-						sPassword = asArgs[i + 1];
-					}
-				}
-			} else {
-				throw new CommonBusinessException("Missing arguments for changePassword\n" + getUsage());
-			}
-			changePassword(sUser, sPassword);
-		}
 		else if (sCommandLowerCase.equals(CMD_MIGRATESEARCHFILTER)) {
 			MigrateSearchFilterPreferences.migrate(sUserName);
 		}
@@ -904,14 +886,6 @@ public class NuclosConsole extends ConsoleConstants {
 
 	private static void invalidatAllCaches() throws CommonRemoteException, RemoteException, CommonFatalException, CreateException {
 		System.out.println(getConsoleFacade().invalidateAllCaches());
-	}
-
-	private static void changePassword(String sUser, String sPassword) throws NuclosBusinessException {
-		try {
-			ServiceLocator.getInstance().getFacade(SecurityFacadeRemote.class).changeUserPassword(sUser, sPassword);
-		} catch (RuntimeException e) {
-			throw new CommonFatalException(e);
-		}
 	}
 
 	private static void killSession(String user) throws RemoteException {

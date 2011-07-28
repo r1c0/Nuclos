@@ -60622,6 +60622,21 @@
     "resourceID": "R00011618",
     "locale": "de",
     "text": "Vorlage"
+  },
+  {
+    "resourceID": "login.question.password.change",
+    "locale": "i-default",
+    "text": "Your password will expire in {0} days.\nDo you want to change it now?"
+  },
+  {
+    "resourceID": "login.question.password.change",
+    "locale": "en",
+    "text": "Your password will expire in {0} days.\nDo you want to change it now?"
+  },
+  {
+    "resourceID": "login.question.password.change",
+    "locale": "de",
+    "text": "Ihr Passwort wird in {0} Tagen ablaufen.\nMöchten Sie es jetzt ändern?"
   }
 ]
 

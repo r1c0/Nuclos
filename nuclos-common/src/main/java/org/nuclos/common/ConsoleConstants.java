@@ -42,7 +42,6 @@ public class ConsoleConstants {
 	public static final String CMD_COMPILEDBOBJECTS = "-compiledbobjects";
 	public static final String CMD_SENDMESSAGE = "-sendmessage";
 	public static final String CMD_KILLSESSION = "-killsession";
-	public static final String CMD_CHANGEPASSWORD = "-changepassword";
 	public static final String CMD_INVALIDATEALLCACHES = "-invalidateallcaches";
 	public static final String CMD_MIGRATESEARCHFILTER = "-migratesearchfilter";
 	public static final String CMD_MIGRATE_METADATA_AND_GO_TO_NUC_2_5 = "-migrateMetaAndGOtoNuclos2.5";

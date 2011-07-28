@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common.ejb3;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,7 +25,6 @@ import javax.ejb.Remote;
 import javax.security.auth.login.LoginException;
 
 import org.nuclos.common.ApplicationProperties;
-import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.MasterDataPermissions;
@@ -50,6 +50,12 @@ public interface SecurityFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	public abstract void logout(Integer iSessionId) throws LoginException;
+
+	/**
+	 * get the date of password expiration (or null if password never expires)
+	 */
+	@RolesAllowed("Login")
+	public abstract Date getPasswordExpiration();
 
 	/**
 	 * @return information about the current version of the application installed on the server.
@@ -87,28 +93,6 @@ public interface SecurityFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	public abstract String getSessionContextAsString();
-
-	/**
-	 * change the password of the logged in user after validating the old password
-	 * @param sOldPassword
-	 * @param sNewPassword
-	 * @throws NuclosBusinessException
-	 */
-	@RolesAllowed("Login")
-	public abstract void changePassword(String sOldPassword, String sNewPassword)
-		throws NuclosBusinessException;
-
-	/**
-	 * change the password of the given user without validating the old password used in the management console.
-	 * The encrypted password is build with the username and the given password
-	 * @param sOldPassword
-	 * @param sNewPassword
-	 * @return
-	 * @throws NuclosBusinessException
-	 */
-	@RolesAllowed("UseManagementConsole")
-	public abstract void changeUserPassword(String sUserName, String sNewPassword)
-		throws NuclosBusinessException;
 
 	/**
 	 * @return the readable subforms

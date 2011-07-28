@@ -16,15 +16,16 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.common.security;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
 import org.nuclos.common.ApplicationProperties;
-import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.common.MasterDataPermissions;
 import org.nuclos.server.common.ModulePermissions;
 import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
@@ -101,15 +102,6 @@ public class SecurityDelegate {
 	public MasterDataPermissions getMasterDataPermissions() {
 		try {
 			return this.getSecurityFacade().getMasterDataPermissions();
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-
-	public void changePassword(String sOldPassword, String sNewPassword) throws NuclosBusinessException {
-		try {
-			this.getSecurityFacade().changePassword(sOldPassword, sNewPassword);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -193,6 +185,10 @@ public class SecurityDelegate {
 
 	public Boolean isLdapSynchronizationActive() {
 		return facade.isLdapSynchronizationActive();
+	}
+
+	public Date getPasswordExpiration() throws CommonPermissionException {
+		return facade.getPasswordExpiration();
 	}
 
 }	// class SecurityDelegate

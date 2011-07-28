@@ -318,7 +318,7 @@ public class MasterDataFacadeHelper {
 		if (nuclosEntity != null) {
 			switch (nuclosEntity) {
 			case ROLE:
-			case USER:
+			//case USER: the user's attributes are not relevant for the SecurityCache.
 			case ACTION:
 			case REPORT:
 				SecurityCache.getInstance().invalidate();
