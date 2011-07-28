@@ -402,7 +402,7 @@ public class LoginController extends Controller {
 							public void changePassword(String oldPw, String newPw) throws CommonBusinessException {
 								RemoteAuthenticationManager ram = SpringApplicationContextHolder.getBean(RemoteAuthenticationManager.class);
 								ram.changePassword(sUserName, new String(acPassword), newPw);
-								performLogin(sUserName, acPassword);
+								performLogin(sUserName, newPw.toCharArray());
 							}
 						});
 						if (!result) {

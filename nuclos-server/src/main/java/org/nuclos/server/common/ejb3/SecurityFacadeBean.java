@@ -46,6 +46,7 @@ import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
 import org.nuclos.server.dblayer.DbStatementUtils;
+import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.expression.DbId;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -310,15 +311,20 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 		String username = getCurrentUserName();
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
-		DbQuery<Date> query = builder.createQuery(Date.class);
+		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_USER").alias("t");
-		query.select(t.column("DATPASSWORDCHANGED", Date.class));
+		query.multiselect(t.column("DATPASSWORDCHANGED", Date.class), t.column("BLNSUPERUSER", Boolean.class));
 		query.where(builder.equal(builder.upper(t.column("STRUSER", String.class)), builder.upper(builder.literal(username))));
-		Date passwordChanged = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+		DbTuple tuple = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 
-		Calendar c = Calendar.getInstance();
-		c.setTime(passwordChanged);
-		c.add(Calendar.DAY_OF_MONTH, interval);
-		return c.getTime();
+		Date d = tuple.get(0, Date.class);
+		Boolean isSuperUser = Boolean.TRUE.equals(tuple.get(1, Boolean.class));
+		if (d != null && (!isLdapAuthenticationActive() || isSuperUser)) {
+			Calendar c = Calendar.getInstance();
+			c.setTime(d);
+			c.add(Calendar.DAY_OF_MONTH, interval);
+			return c.getTime();
+		}
+		return null;
 	}
 }

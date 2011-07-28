@@ -93,6 +93,7 @@ import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.common.TopicNotificationReceiver;
 import org.nuclos.client.common.prefs.WebAccessPrefs;
 import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.common.security.SecurityDelegate;
 import org.nuclos.client.console.NuclosConsoleGui;
 import org.nuclos.client.customcomp.CustomComponentCache;
 import org.nuclos.client.customcomp.CustomComponentController;
@@ -155,6 +156,7 @@ import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.IOUtils;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
@@ -497,10 +499,10 @@ public class MainController {
 	};
 
 	private Action cmdChangePassword = new AbstractAction() {
-		/**
-		 *
-		 */
+
 		private static final long serialVersionUID = 1L;
+
+		private Boolean enabled;
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
@@ -521,7 +523,16 @@ public class MainController {
 					props.store();
 				}
 			});
-		}};
+		}
+
+		@Override
+		public synchronized boolean isEnabled() {
+			if (enabled == null) {
+				enabled = !SecurityDelegate.getInstance().isLdapAuthenticationActive() || SecurityDelegate.getInstance().isSuperUser();
+			}
+			return LangUtils.defaultIfNull(enabled, Boolean.FALSE);
+		}
+	};
 
 	private Action cmdOpenManagementConsole = new AbstractAction(
 		CommonLocaleDelegate.getMessage("miManagementConsole", "Management Console"),
