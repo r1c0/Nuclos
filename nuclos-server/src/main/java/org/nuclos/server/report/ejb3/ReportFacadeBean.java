@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -66,6 +67,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableComparis
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.ServiceLocator;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.XMLUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
@@ -390,7 +392,7 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
 @RolesAllowed("Login")
    public Collection<ReportVO> findReportsByUsage(UsageCriteria usagecriteria) {
 
-      Collection<ReportVO> reports = new ArrayList<ReportVO>();
+      List<ReportVO> reports = new ArrayList<ReportVO>();
 
       DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
       DbQuery<Integer> query = builder.createQuery(Integer.class);
@@ -423,6 +425,14 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
             }
          }
       }
+      
+      Collections.sort(reports, new Comparator<ReportVO>(){
+
+			@Override
+			public int compare(ReportVO o1, ReportVO o2) {
+				return StringUtils.emptyIfNull(o1.getName()).compareToIgnoreCase(StringUtils.emptyIfNull(o2.getName()));
+			}});
+      
 
       return reports;
    }

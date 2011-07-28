@@ -60607,6 +60607,21 @@
     "resourceID": "exception.parameter.email.configuration",
     "locale": "de",
     "text": "Es ist kein SMTP Server in den Systemparametern konfiguriert."
+  },
+  {
+    "resourceID": "R00011618",
+    "locale": "i-default",
+    "text": "Template"
+  },
+  {
+    "resourceID": "R00011618",
+    "locale": "en",
+    "text": "Template"
+  },
+  {
+    "resourceID": "R00011618",
+    "locale": "de",
+    "text": "Vorlage"
   }
 ]
 
