@@ -496,15 +496,15 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 			final MasterDataVO mdvo = new MasterDataVO(MasterDataDelegate.getInstance().getMetaData(attachmentInfo.getDocumentEntityName()), false);
 			mdvo.setField("genericObject", attachmentInfo.getGenericObjectId());
 			mdvo.setField("entity", attachmentInfo.getDocumentEntityName());
-			mdvo.setField("comment", CommonLocaleDelegate.getMessage("ReportController.2", "Automatisch angef\u00fcgtes Dokument"));
-			mdvo.setField("createdDate", new Date());
-			mdvo.setField("createdUser", Main.getMainController().getUserName());
+			mdvo.setField(attachmentInfo.getDocumentFieldNames()[0], CommonLocaleDelegate.getMessage("ReportController.2", "Automatisch angef\u00fcgtes Dokument"));
+			mdvo.setField(attachmentInfo.getDocumentFieldNames()[1], new Date());
+			mdvo.setField(attachmentInfo.getDocumentFieldNames()[2], Main.getMainController().getUserName());
 			if(NuclosEntity.GENERALSEARCHDOCUMENT.getEntityName().equals(attachmentInfo.getDocumentEntityName())) {
 				mdvo.setField("file", loFile);
 				mdvo.setField("path", attachmentInfo.getDirectory());
 			}
 			else {
-				mdvo.setField("filename", loFile);
+				mdvo.setField(attachmentInfo.getDocumentFieldNames()[3], loFile);
 			}
 
 			GenericObjectDelegate.getInstance().attachDocumentToObject(mdvo);

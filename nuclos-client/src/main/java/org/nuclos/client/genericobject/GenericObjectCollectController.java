@@ -4083,7 +4083,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		try {
 			final ReportController reportController = new ReportController(getFrame());
 			final List<? extends CollectableGenericObject> lstclctlo = getSelectedCollectables();
-			reportController.exportForm(lstclctlo, getGreatestCommonUsageCriteriaFromCollectables(lstclctlo), getDocumentSubformEntityName());
+			reportController.exportForm(lstclctlo, getGreatestCommonUsageCriteriaFromCollectables(lstclctlo), getDocumentSubformEntityName(), getDocumentSubformColumns());
 		}
 		catch (Exception ex) {
 			Errors.getInstance().showExceptionDialog(getFrame(), ex);
@@ -4101,6 +4101,17 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			return sEntity;
 
 		return NuclosEntity.GENERALSEARCHDOCUMENT.getEntityName();
+	}
+	
+	/**
+	 * 
+	 * @return the 4 column names of the document subform (comment, createdDate, createdUser, filename).
+	 * used for exporting a form.
+	 */
+	protected String[] getDocumentSubformColumns() {
+		return new String[]{
+				"comment", "createdDate", "createdUser", "filename"
+		};
 	}
 
 	/**
@@ -4353,6 +4364,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final List<CollectableGenericObjectWithDependants> lstclctlo = getSelectedCollectables();
 		final UsageCriteria usagecriteria = (lstclctlo.isEmpty() ? null : getGreatestCommonUsageCriteriaFromCollectables(lstclctlo));
 		final String sDocumentEntityName = this.getEntityName() + "document";
+		final String[] documentFieldNames = this.getDocumentSubformColumns();
 
 		UIUtils.runCommand(getFrame(), new CommonRunnable() {
 			@Override
@@ -4360,7 +4372,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				final ISearchStrategy<CollectableGenericObjectWithDependants> ss = getSearchStrategy();
 				final boolean bIncludeSubModules = ss.getIncludeSubModulesForSearch();
 				new ReportController(getFrame()).export(getCollectableEntity(), ss.getInternalSearchExpression(), getSelectedFields(),
-					lstclctlo, usagecriteria, bIncludeSubModules, sDocumentEntityName);
+					lstclctlo, usagecriteria, bIncludeSubModules, sDocumentEntityName, documentFieldNames);
 			}
 		});
 	}

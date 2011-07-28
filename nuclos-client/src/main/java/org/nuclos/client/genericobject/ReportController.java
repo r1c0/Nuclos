@@ -115,10 +115,11 @@ public class ReportController extends Controller {
 	 * shows dialog to choose export form for a list of selected leased objects, using only common forms of selection
 	 * @param lstclctlo
 	 * @param usagecriteria
+	 * @param documentFieldNames 
 	 * @throws NuclosFatalException
 	 * @throws NuclosReportException
 	 */
-	public void exportForm(final List<? extends CollectableGenericObject> lstclctlo, UsageCriteria usagecriteria, String sDocumentEntityName)
+	public void exportForm(final List<? extends CollectableGenericObject> lstclctlo, UsageCriteria usagecriteria, String sDocumentEntityName, String[] documentFieldNames)
 			throws NuclosFatalException, NuclosReportException {
 		try {
 			final ReportSelectionPanel pnlSelection = prepareReportSelectionPanel(usagecriteria, lstclctlo.size());
@@ -131,7 +132,7 @@ public class ReportController extends Controller {
 	        dialog.setVisible(true);
 			if ((pane.getValue() == null? -1: (Integer)pane.getValue()) == JOptionPane.OK_OPTION)
 			{
-				executeForm(pnlSelection, lstclctlo, sDocumentEntityName);
+				executeForm(pnlSelection, lstclctlo, sDocumentEntityName, documentFieldNames);
 			}
 		}
 		catch (RuntimeException ex) {
@@ -181,10 +182,11 @@ public class ReportController extends Controller {
 	 * executes the selected form for each single leased object, one after the other
 	 * @param pnlSelection
 	 * @param lstclctlo
+	 * @param documentFieldNames 
 	 * @param facade
 	 * @throws RemoteException
 	 */
-	private void executeForm(final ReportSelectionPanel pnlSelection, final List<? extends CollectableGenericObject> lstclctlo, final String sDocumentEntityName) {
+	private void executeForm(final ReportSelectionPanel pnlSelection, final List<? extends CollectableGenericObject> lstclctlo, final String sDocumentEntityName, final String[] documentFieldNames) {
 
 		final ReportSelectionPanel.ReportEntry entry = pnlSelection.getSelectedReport();
 		/** @todo this is a precondition */
@@ -224,7 +226,7 @@ public class ReportController extends Controller {
 
 								ReportAttachmentInfo info = null;
 								if (bFilesBeAttached) {
-									info = new ReportAttachmentInfo(clctlo.getId(), sGenericObjectIdentifier, sDocumentEntityName, sDirectory);
+									info = new ReportAttachmentInfo(clctlo.getId(), sGenericObjectIdentifier, sDocumentEntityName, documentFieldNames, sDirectory);
 								}
 
 								final Map<String, Object> params = CollectionUtils.newHashMap();
@@ -291,7 +293,7 @@ public class ReportController extends Controller {
 
 								ReportAttachmentInfo info = null;
 								if (bFilesBeAttached) {
-									info = new ReportAttachmentInfo(clctlo.getId(), sGenericObjectIdentifier, sDocumentEntityName, sDirectory);
+									info = new ReportAttachmentInfo(clctlo.getId(), sGenericObjectIdentifier, sDocumentEntityName, documentFieldNames, sDirectory);
 								}
 
 								final Map<String, Object> mpParams = CollectionUtils.newHashMap();
@@ -446,7 +448,7 @@ public class ReportController extends Controller {
 	public void export(CollectableEntity clcteMain, CollectableSearchExpression searchexpr,
 			List<CollectableEntityFieldWithEntity> lstclctefweSelected,
 			List<? extends CollectableGenericObject> lstclctlo, UsageCriteria usagecriteria, boolean bIncludeSubModules,
-			String sDocumentEntityName)
+			String sDocumentEntityName, String[] documentFieldNames)
 			throws NuclosBusinessException {
 		final ReportFormatController formatController;
 		if (lstclctlo.isEmpty()) {
@@ -461,7 +463,7 @@ public class ReportController extends Controller {
 			final ChoiceListOrReportExportPanel pnlChoiceExport = ((ChoiceListOrReportExportController) formatController).pnlChoiceExport;
 			if (bSearchDialog && pnlChoiceExport.rbReport.isSelected()) {
 				try {
-					executeForm(pnlChoiceExport.pnlReport, lstclctlo, sDocumentEntityName);
+					executeForm(pnlChoiceExport.pnlReport, lstclctlo, sDocumentEntityName, documentFieldNames);
 				}
 				catch (RuntimeException ex) {
 					throw new NuclosBusinessException("RemoteException: Collection of report outputs couldn't be created.", ex);

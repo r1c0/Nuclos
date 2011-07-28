@@ -30,13 +30,15 @@ public class ReportAttachmentInfo {
 	private final Integer genericObjectId;
 	private final String genericObjectIdentifier;
 	private final String documentEntityName;
+	private final String[] documentFieldNames;
 	private final String directory;
 
-	public ReportAttachmentInfo(Integer genericObjectId, String genericObjectIdentifier, String documentEntityName, String directory) {
+	public ReportAttachmentInfo(Integer genericObjectId, String genericObjectIdentifier, String documentEntityName, String[] documentFieldNames, String directory) {
 		super();
 		this.genericObjectId = genericObjectId;
 		this.genericObjectIdentifier = genericObjectIdentifier;
 		this.documentEntityName = documentEntityName;
+		this.documentFieldNames = documentFieldNames;
 		this.directory = directory;
 	}
 
@@ -50,6 +52,10 @@ public class ReportAttachmentInfo {
 
 	public String getDocumentEntityName() {
 		return documentEntityName;
+	}
+	
+	public String[] getDocumentFieldNames() {
+		return documentFieldNames;
 	}
 
 	public String getDirectory() {
