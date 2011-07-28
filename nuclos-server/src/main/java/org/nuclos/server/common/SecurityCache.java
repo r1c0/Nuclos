@@ -902,39 +902,14 @@ public class SecurityCache implements SecurityCacheMBean {
 
 		this.mpAttributePermission.clear();
 
-		// flushing authentication cache of security domain
-		// this is recommended, because the authentication cache will normally be reloaded every
-		// 30 minutes (see jboss-service.xml, DefaultCacheTimeout and DefaultCacheResolution parameter)
-		// if user change group rights within the GUI it is recommended to reload the authentication cache immediately
-		/*try {
-			MBeanServer server = (MBeanServer) MBeanServerFactory.findMBeanServer(null).iterator().next();
-
-			String jaasMgrName = "jboss.security:service=JaasSecurityManager";
-			ObjectName jaasMgr = new ObjectName(jaasMgrName);
-
-			// @todo: security domain should not be hard coded
-			Object[] params = {"NuclosSecurityDomain"};
-			String[] signature = {"java.lang.String"};
-
-			server.invoke(jaasMgr, "flushAuthenticationCache", params, signature);
-		}
-		catch (MalformedObjectNameException e) {
-			throw new NuclosFatalException("Error while trying to flush authentication cache.", e);
-		}
-		catch (NullPointerException e) {
-			throw new NuclosFatalException("Error while trying to flush authentication cache.", e);
-		}
-		catch (InstanceNotFoundException e) {
-			throw new NuclosFatalException("Error while trying to flush authentication cache.", e);
-		}
-		catch (MBeanException e) {
-			throw new NuclosFatalException("Error while trying to flush authentication cache.", e);
-		}
-		catch (ReflectionException e) {
-			throw new NuclosFatalException("Error while trying to flush authentication cache.", e);
-		}*/
-
 		this.notifyClients();
+	}
+
+	public synchronized void invalidate(String username) {
+		if (mpUserRights.containsKey(username)) {
+			mpUserRights.remove(username);
+		}
+		notifyUser(username);
 	}
 
 	public boolean hasUserRight(String sActioName) {
@@ -1002,5 +977,10 @@ public class SecurityCache implements SecurityCacheMBean {
 	private void notifyClients() {
 		NuclosJMSUtils.sendMessage(null, JMSConstants.TOPICNAME_SECURITYCACHE);
 		log.debug("Notified clients that leased object meta data changed.");
+	}
+
+	private void notifyUser(String username) {
+		NuclosJMSUtils.sendMessage(username, JMSConstants.TOPICNAME_SECURITYCACHE);
+		log.debug("Notified user " + username + " that security data has changed.");
 	}
 }	// class SecurityCache

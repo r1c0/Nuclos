@@ -32,6 +32,7 @@ import org.nuclos.server.common.ModulePermissions;
 
 @Remote
 public interface SecurityFacadeRemote {
+	public static final String USERNAME = "USERNAME";
 	public static final String IS_SUPER_USER = "IS_SUPER_USER";
 	public static final String ALLOWED_ACTIONS = "ALLOWED_ACTIONS";
 	public static final String MODULE_PERMISSIONS = "MODULE_PERMISSIONS";

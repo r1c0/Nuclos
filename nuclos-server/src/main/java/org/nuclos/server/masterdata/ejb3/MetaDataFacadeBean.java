@@ -138,7 +138,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	private final MasterDataFacadeHelper helper = new MasterDataFacadeHelper();
 
 	//LocaleFacadeLocal localefacade = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class, "localServiceLocal", true);
-	
+
 	private final static String ENTITYFIELD_TABLE = "t_ad_masterdata_field";
 
 	@PostConstruct
@@ -159,40 +159,40 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	public Collection<EntityMetaDataVO> getAllEntities() {
 		return MetaDataServerProvider.getInstance().getAllEntities();
 	}
-	
+
 	@Override
     @RolesAllowed("Login")
 	public Map<String, EntityFieldMetaDataVO> getAllEntityFieldsByEntity(String entity) {
 		return MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(entity);
 	}
-	
+
 	@Override
 	public Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info) {
 		return MetaDataServerProvider.getInstance().getAllPivotEntityFields(info);
 	}
-	
+
 	@Override
     @RolesAllowed("Login")
 	public Map<String, Map<String, EntityFieldMetaDataVO>> getAllEntityFieldsByEntitiesGz(Collection<String> entities) {
 		return MetaDataServerProvider.getInstance().getAllEntityFieldsByEntitiesGz(entities);
 	}
-	
+
 	@Override
     @RolesAllowed("Login")
 	public Collection<EntityMetaDataVO> getNucletEntities() {
 		return MetaDataServerProvider.getInstance().getAllEntities();
 	}
-	
+
 	@Override
     public Object modifyEntityMetaData(EntityMetaDataVO metaVO, List<EntityFieldMetaDataTO> lstFields) {
-		
+
 		metaVO = MetaDataServerProvider.getInstance().getEntity(metaVO.getEntity());
-		
+
 		EntityMetaDataVO voIst = MetaDataServerProvider.getInstance().getEntity(metaVO.getEntity());
-		
+
 		EntityObjectMetaDbHelper dbHelperIst = new EntityObjectMetaDbHelper(DataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
 		DbTable tableIst = dbHelperIst.getDbTable(metaVO);
-		
+
 		StaticMetaDataProvider staticMetaData = new StaticMetaDataProvider();
 		staticMetaData.addEntity(MetaDataServerProvider.getInstance().getEntity(metaVO.getEntity()));
 
@@ -240,21 +240,21 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		}
 		EntityObjectMetaDbHelper dbHelperSoll = new EntityObjectMetaDbHelper(DataBaseHelper.getDbAccess(), staticMetaData);
 		DbTable tableSoll = dbHelperSoll.getDbTable(metaVO);
-		
+
 		List<DbStructureChange> lstStructureChanges = null;
-		
+
 		if(voIst.getId() != null) {
 			lstStructureChanges = SchemaUtils.modify(tableIst, tableSoll);
 		}
 		else {
 			lstStructureChanges = SchemaUtils.create(tableSoll);
 		}
-		
-		
+
+
 		for(DbStructureChange ds : lstStructureChanges) {
 			DataBaseHelper.getDbAccess().execute(ds);
 		}
-		
+
 		for(EntityFieldMetaDataTO metaFieldTO : lstFields) {
 			EntityFieldMetaDataVO metaFieldVO = metaFieldTO.getEntityFieldMeta();
 			if(metaFieldVO.getId() == null) {
@@ -267,7 +267,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 					metaFieldVO.flagUpdate();
 					metaFieldVO.setEntityId(voIst.getId());
 				}
-			}		
+			}
 			if(metaFieldVO.isFlagRemoved()) {
 				NucletDalProvider.getInstance().getEntityFieldMetaDataProcessor().delete(metaFieldVO.getId());
 			}
@@ -275,12 +275,12 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				DalUtils.updateVersionInformation(metaFieldVO, getCurrentUserName());
 				NucletDalProvider.getInstance().getEntityFieldMetaDataProcessor().insertOrUpdate(metaFieldVO);
 				createResourceIdForEntityField("T_MD_ENTITY_FIELD", metaFieldTO, LangUtils.convertId(metaFieldTO.getEntityFieldMeta().getId()));
-			}	
+			}
 		}
 		MetaDataServerProvider.getInstance().revalidate();
 		return null;
 	}
-	
+
 
 	@Override
     public String getResourceSIdForEntityFieldLabel(Integer iId) {
@@ -293,19 +293,19 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	}
 
 	private void createResourceIdForEntity(String table, EntityMetaDataTO mdvo, Integer id) {
-		
-		Map<String, String> mp = new HashMap<String, String>();		
-		
+
+		Map<String, String> mp = new HashMap<String, String>();
+
 		mp.put(TranslationVO.labelsEntity[0], LocaleUtils.FIELD_LABEL);
 		mp.put(TranslationVO.labelsEntity[1], LocaleUtils.FIELD_MENUPATH);
 		mp.put(TranslationVO.labelsEntity[2], LocaleUtils.FIELD_TREEVIEW);
 		mp.put(TranslationVO.labelsEntity[3], LocaleUtils.FIELD_TREEVIEWDESCRIPTION);
-		
-		for(String key : mp.keySet()) {			
+
+		for(String key : mp.keySet()) {
 			String sResId = null;
 			Collection<LocaleInfo> colLocaleInfo = getLocaleFacade().getAllLocales(false);
-			for(LocaleInfo li : colLocaleInfo) {				
-				for(TranslationVO vo : mdvo.getTranslation()) {					
+			for(LocaleInfo li : colLocaleInfo) {
+				for(TranslationVO vo : mdvo.getTranslation()) {
 					if(vo.getLanguage().equals(li.language)) {
 						if(vo.getLabels().get(key) != null && vo.getLabels().get(key).length() > 0) {
 							if(sResId == null)
@@ -319,23 +319,23 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			}
 		}
 		getLocaleFacade().flushInternalCaches();
-		
+
 	}
-	
+
 	private void createResourceIdForEntityField(String table, EntityFieldMetaDataTO mdvo, Integer id) {
-		
+
 		Map<String, String> mp = new HashMap<String, String>();
-		
+
 		mp.put(TranslationVO.labelsField[0], LocaleUtils.FIELD_LABEL);
 		mp.put(TranslationVO.labelsField[1], LocaleUtils.FIELD_DESCRIPTION);
-		
-		for(String key : mp.keySet()) {			
+
+		for(String key : mp.keySet()) {
 			String sResId = null;
 			Collection<LocaleInfo> colLocaleInfo = getLocaleFacade().getAllLocales(false);
-			for(LocaleInfo li : colLocaleInfo) {				
+			for(LocaleInfo li : colLocaleInfo) {
 				if(mdvo.getTranslation() == null)
 					continue;
-				for(TranslationVO vo : mdvo.getTranslation()) {					
+				for(TranslationVO vo : mdvo.getTranslation()) {
 					if(vo.getLanguage().equals(li.language)) {
 						if(vo.getLabels().get(key) != null && vo.getLabels().get(key).length() > 0) {
 							if(sResId == null)
@@ -349,10 +349,10 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			}
 		}
 		getLocaleFacade().flushInternalCaches();
-		
+
 	}
 
-	
+
 	private static String getResourceIdFromMetaDataVO(EntityFieldMetaDataVO metavo, String resFieldName) {
 		if (resFieldName.equals(LocaleUtils.FIELD_LABEL)) {
 			return metavo.getLocaleResourceIdForLabel();
@@ -361,7 +361,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		}
 		return null;
 	}
-	
+
 	private static String getResourceIdFromMetaDataVO(EntityMetaDataVO metavo, String resFieldName) {
 		if (resFieldName.equals(LocaleUtils.FIELD_LABEL)) {
 			return metavo.getLocaleResourceIdForLabel();
@@ -406,54 +406,54 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 		this.getMasterDataFacade().remove(sEntityName, mdvo, bRemoveDependants);
 
-		MasterDataFacadeHelper.invalidateCaches(sEntityName);
+		MasterDataFacadeHelper.invalidateCaches(sEntityName, mdvo);
 	}
-	
+
 	@RolesAllowed("Login")
 	@Override
 	public boolean hasEntityImportStructure(Long id) throws CommonBusinessException {
 		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
-		DbFrom from = query.from("T_MD_IMPORT").alias("t");		
+		DbFrom from = query.from("T_MD_IMPORT").alias("t");
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
-		
-		columns.add(from.column("INTID", Integer.class).alias("INTID"));		
+
+		columns.add(from.column("INTID", Integer.class).alias("INTID"));
 		columns.add(from.column("INTID_T_AD_MASTERDATA", Integer.class).alias("INTID_T_AD_MASTERDATA"));
 		query.multiselect(columns);
-		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("INTID_T_AD_MASTERDATA", Integer.class), 
+		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("INTID_T_AD_MASTERDATA", Integer.class),
 			DataBaseHelper.getDbAccess().getQueryBuilder().literal(id)));
-		
+
 		List<DbTuple> count = DataBaseHelper.getDbAccess().executeQuery(query);
-		
+
 		return count.size() > 0;
 	}
-	
+
 	@Override
 	@RolesAllowed("Login")
 	public boolean hasEntityWorkflow(Long id) throws CommonBusinessException {
 		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
-		DbFrom from = query.from("T_MD_GENERATION").alias("t");		
+		DbFrom from = query.from("T_MD_GENERATION").alias("t");
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
-		
-		columns.add(from.column("INTID", Integer.class).alias("INTID"));		
+
+		columns.add(from.column("INTID", Integer.class).alias("INTID"));
 		columns.add(from.column("INTID_T_MD_MODULE_TARGET", Integer.class).alias("INTID_T_MD_MODULE_TARGET"));
 		columns.add(from.column("INTID_T_MD_MODULE_SOURCE", Integer.class).alias("INTID_T_MD_MODULE_SOURCE"));
 		query.multiselect(columns);
-		
-		DbCondition cond1 = DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("INTID_T_MD_MODULE_TARGET", Integer.class), 
+
+		DbCondition cond1 = DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("INTID_T_MD_MODULE_TARGET", Integer.class),
 			DataBaseHelper.getDbAccess().getQueryBuilder().literal(id));
-		DbCondition cond2 = DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("INTID_T_MD_MODULE_SOURCE", Integer.class), 
+		DbCondition cond2 = DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("INTID_T_MD_MODULE_SOURCE", Integer.class),
 			DataBaseHelper.getDbAccess().getQueryBuilder().literal(id));
-		
+
 		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().or(cond1, cond2));
-		
+
 		List<DbTuple> count = DataBaseHelper.getDbAccess().executeQuery(query);
-		
+
 		return count.size() > 0;
 	}
-	
+
 	@Override
     public void removeEntity(EntityMetaDataVO voEntity, boolean dropLayout) throws CommonBusinessException {
-		
+
 		if(hasEntityRows(voEntity)) {
 			if(voEntity.isStateModel()) {
 				GenericObjectFacadeLocal local = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
@@ -467,7 +467,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 						throw new NuclosFatalException(e);
 					}
 				}
-				
+
 			}
 			else {
 				MasterDataFacadeLocal local = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
@@ -482,18 +482,18 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 						throw new NuclosFatalException(e);
 					}
 				}
-				
+
 			}
 		}
 		final MetaDataProvider mdProvider = MetaDataServerProvider.getInstance();
 		final EntityObjectMetaDbHelper helper = new EntityObjectMetaDbHelper(mdProvider);
 		final DbTable table = helper.getDbTable(voEntity);
-		
+
 		List<DbStructureChange> lstChanges = SchemaUtils.drop(table);
 		for(DbStructureChange db : lstChanges) {
 			DataBaseHelper.getDbAccess().execute(db);
 		}
-		
+
 		// delete workflow subentity
 		CollectableComparison compWorkflowSubEntity1 = SearchConditionUtils.newEOComparison("nuclos_generationSubentity", "entitySource", ComparisonOperator.EQUAL, voEntity.getEntity(), MetaDataServerProvider.getInstance());
 		CollectableComparison compWorkflowSubEntity2 = SearchConditionUtils.newEOComparison("nuclos_generationSubentity", "entityTarget", ComparisonOperator.EQUAL, voEntity.getEntity(), MetaDataServerProvider.getInstance());
@@ -502,7 +502,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		for(MasterDataVO voWorkflowSubEntity : colWorkflowSubEntity) {
 			getMasterDataFacade().remove("nuclos_generationSubentity", voWorkflowSubEntity, true);
 		}
-		
+
 		// delete workflow
 		CollectableComparison compWorkflow1 = SearchConditionUtils.newEOComparison("nuclos_generation", "sourceModule", ComparisonOperator.EQUAL, voEntity.getEntity(), MetaDataServerProvider.getInstance());
 		CollectableComparison compWorkflow2 = SearchConditionUtils.newEOComparison("nuclos_generation", "targetModule", ComparisonOperator.EQUAL, voEntity.getEntity(), MetaDataServerProvider.getInstance());
@@ -515,31 +515,31 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			}
 			getMasterDataFacade().remove("nuclos_generation", voWorkflow, true);
 		}
-		
-		// delete import structure		
+
+		// delete import structure
 		CollectableComparison comp = SearchConditionUtils.newEOComparison("nuclos_import", "entity", ComparisonOperator.EQUAL, voEntity.getEntity(), MetaDataServerProvider.getInstance());
 		Collection<MasterDataVO> colImportStructure = getMasterDataFacade().getMasterData("nuclos_import", comp, true);
 		for(MasterDataVO voImportStructure : colImportStructure) {
 			getMasterDataFacade().remove("nuclos_import", voImportStructure, true);
 		}
-		
+
 		// delete statemodel
 		Map<String, Object> mpDelStatemodel = new HashMap<String, Object>();
 		mpDelStatemodel.put("INTID_T_MD_MODULE", voEntity.getId());
 		DbDeleteStatement delStatemodel = new DbDeleteStatement("T_MD_STATEMODELUSAGE", mpDelStatemodel);
 		DataBaseHelper.getDbAccess().execute(delStatemodel);
-		
+
 		// delete userrights
 		Map<String, Object> mpDelRoleMasterdata = new HashMap<String, Object>();
 		mpDelRoleMasterdata.put("STRMASTERDATA", voEntity.getEntity());
 		DbDeleteStatement delMasterdata = new DbDeleteStatement("T_MD_ROLE_MASTERDATA", mpDelRoleMasterdata);
 		DataBaseHelper.getDbAccess().execute(delMasterdata);
-		
+
 		Map<String, Object> mpDelRoleModule = new HashMap<String, Object>();
 		mpDelRoleModule.put("INTID_T_MD_MODULE", voEntity.getId());
 		DbDeleteStatement delModule = new DbDeleteStatement("T_MD_ROLE_MODULE", mpDelRoleModule);
 		DataBaseHelper.getDbAccess().execute(delModule);
-		
+
 		// delete entity subnodes (NUCLOSINT-1127)
 		final NuclosEntity subnodes = NuclosEntity.ENTITYSUBNODES;
 		final EntityMetaDataVO subnodesVO = mdProvider.getEntity(subnodes);
@@ -557,30 +557,30 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 		// delete layouts
 		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
-		DbFrom from = query.from("T_MD_LAYOUTUSAGE").alias("t");		
+		DbFrom from = query.from("T_MD_LAYOUTUSAGE").alias("t");
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
-		
+
 		columns.add(from.column("STRENTITY", String.class).alias("STRENTITY"));
-		columns.add(from.column("INTID", Integer.class).alias("INTID"));		
+		columns.add(from.column("INTID", Integer.class).alias("INTID"));
 		columns.add(from.column("INTID_T_MD_LAYOUT", Integer.class).alias("INTID_T_MD_LAYOUT"));
 		query.multiselect(columns);
-		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("STRENTITY", String.class), 
+		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("STRENTITY", String.class),
 			DataBaseHelper.getDbAccess().getQueryBuilder().literal(voEntity.getEntity())));
-		
+
 		List<Integer> lstDeleteIds = new ArrayList<Integer>();
 		List<DbTuple> usages = DataBaseHelper.getDbAccess().executeQuery(query);
-		
+
 		for(DbTuple tuple : usages) {
 		   Integer idLayout = tuple.get("INTID_T_MD_LAYOUT", Integer.class);
 		   Integer id = tuple.get("INTID", Integer.class);
-		   
+
 		   lstDeleteIds.add(idLayout);
 		   Map<String, Object> mpDelLayout = new HashMap<String, Object>();
 			mpDelLayout.put("INTID", id);
 			DbDeleteStatement delLayout = new DbDeleteStatement("T_MD_LAYOUTUSAGE", mpDelLayout);
 			DataBaseHelper.getDbAccess().execute(delLayout);
 		}
-		
+
 		if(dropLayout) {
 			for(Integer idLayout : lstDeleteIds) {
 				Map<String, Object> mpDelLayout = new HashMap<String, Object>();
@@ -589,62 +589,62 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				DataBaseHelper.getDbAccess().execute(delLayout);
 			}
 		}
-		
+
 		// delete fields
 		for(EntityFieldMetaDataVO voField : MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(voEntity.getEntity()).values()) {
 			NucletDalProvider.getInstance().getEntityFieldMetaDataProcessor().delete(voField.getId());
 	    }
 		// delete entity
 		NucletDalProvider.getInstance().getEntityMetaDataProcessor().delete(voEntity.getId());
-		
+
 		MetaDataServerProvider.getInstance().revalidate();
-		
+
 	}
-	
-	
+
+
 	@Override
     @RolesAllowed("Login")
 	public boolean hasEntityRows(EntityMetaDataVO voEntity) {
-		
+
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
 		DbFrom t = query.from(voEntity.getDbEntity()).alias("t");
 		query.select(builder.count(t.column("INTID", Integer.class)));
-		
+
 		return DataBaseHelper.getDbAccess().executeQuerySingleResult(query) > 0L;
 	}
-	
+
 	@Override
     public String createOrModifyEntity(EntityMetaDataVO oldMDEntity, EntityMetaDataTO updatedTOEntity, MasterDataVO voEntity, List<EntityFieldMetaDataTO> toFields, boolean blnExecute, String user, String password) throws NuclosBusinessException {
 		String resultMessage = null;
 		EntityMetaDataVO updatedMDEntity = updatedTOEntity.getEntityMetaVO();
-		
+
 		String sOldPath = "";
-		
+
 		if(updatedMDEntity.getId() != null) {
 			sOldPath = MetaDataServerProvider.getInstance().getEntity(updatedMDEntity.getEntity()).getDocumentPath();
 			sOldPath = StringUtils.emptyIfNull(sOldPath);
 		}
-		
-		
+
+
 // eine Entit\u00e4t
 		EntityObjectMetaDbHelper dbHelperIst = new EntityObjectMetaDbHelper(DataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
 		DbTable tableIst = dbHelperIst.getDbTable(updatedMDEntity);
-		
+
 		StaticMetaDataProvider staticMetaData = new StaticMetaDataProvider();
 		staticMetaData.addEntity(updatedMDEntity);
 		List<EntityFieldMetaDataVO> lstFields = new ArrayList<EntityFieldMetaDataVO>();
 
-		List<EntityFieldMetaDataVO> lstSystemFields = new ArrayList<EntityFieldMetaDataVO>();		
+		List<EntityFieldMetaDataVO> lstSystemFields = new ArrayList<EntityFieldMetaDataVO>();
 		DalUtils.addNucletEOSystemFields(lstSystemFields, updatedMDEntity);
-		
+
 		for(EntityFieldMetaDataTO to : toFields) {
 			if(!to.getEntityFieldMeta().isFlagRemoved()) {
-				lstFields.add(to.getEntityFieldMeta());			
+				lstFields.add(to.getEntityFieldMeta());
 				staticMetaData.addEntityField(updatedMDEntity.getEntity(), to.getEntityFieldMeta());
 				if(updatedMDEntity.getEntity().equals(to.getEntityFieldMeta().getForeignEntity())) {
 					continue;
-					// NUCLOSINT-697 
+					// NUCLOSINT-697
 				}
 				if(to.getEntityFieldMeta().getForeignEntity() != null) {
 					staticMetaData.addEntity(MetaDataServerProvider.getInstance().getEntity(to.getEntityFieldMeta().getForeignEntity()));
@@ -665,22 +665,22 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		}
 		EntityObjectMetaDbHelper dbHelperSoll = new EntityObjectMetaDbHelper(DataBaseHelper.getDbAccess(), staticMetaData);
 		DbTable tableSoll = dbHelperSoll.getDbTable(updatedMDEntity);
-		
+
 		List<DbStructureChange> lstStructureChanges = null;
-		
+
 		if(updatedMDEntity.getId() != null) {
 			lstStructureChanges = SchemaUtils.modify(tableIst, tableSoll);
 		}
-		else {			
+		else {
 			lstStructureChanges = SchemaUtils.create(tableSoll);
 		}
-		
+
 		List<DbStructureChange> lstDbChangesOkay = new ArrayList<DbStructureChange>();
 		List<DbStructureChange> lstDbChangesNotOkay = new ArrayList<DbStructureChange>();
 		boolean dbchangeOkay = true;
 		for(DbStructureChange ds : lstStructureChanges) {
 			try {
-				DataBaseHelper.getDbAccess().execute(ds);				
+				DataBaseHelper.getDbAccess().execute(ds);
 				lstDbChangesOkay.add(ds);
 			}
 			catch(DbException ex) {
@@ -688,7 +688,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				lstDbChangesNotOkay.add(ds);
 			}
 		}
-		
+
 		if(!dbchangeOkay) {
 			if(updatedMDEntity.getId() != null) {
 				rollBackDBChanges(updatedTOEntity, toFields);
@@ -697,13 +697,13 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				sb.append("Entit\u00e4t " + updatedMDEntity.getEntity() + " konnte nicht ver\u00e4ndert werden.\n");
 				sb.append("Grund:\n");
 				sb.append(lstStrings.get(0));
-				
+
 				resultMessage = sb.toString();
 			}
 			else {
 				EntityObjectMetaDbHelper helper = new EntityObjectMetaDbHelper(MetaDataServerProvider.getInstance());
 				DbTable table = helper.getDbTable(updatedMDEntity);
-				
+
 				List<DbStructureChange> lstChanges = SchemaUtils.drop(table);
 				for(DbStructureChange db : lstChanges) {
 					try {
@@ -718,22 +718,22 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				sb.append("Entit\u00e4t " + updatedMDEntity.getEntity() + " konnte nicht angelegt werden.\n");
 				sb.append("Grund:\n");
 				sb.append(lstStrings.get(0));
-				
+
 				resultMessage = sb.toString();
-				
+
 			}
-			
+
 			return resultMessage;
 		}
-		
-		
+
+
 		try {
-			 
+
 			DalUtils.updateVersionInformation(updatedMDEntity, getCurrentUserName());
-			
+
 			if(updatedMDEntity.getId() != null) {
-				updatedMDEntity.flagUpdate();		
-				
+				updatedMDEntity.flagUpdate();
+
 				insertOrUpdateEntityMetaData(updatedMDEntity);
 				createResourceIdForEntity("T_MD_ENTITY", updatedTOEntity, LangUtils.convertId(updatedMDEntity.getId()));
 				setSystemValuesAndParent(lstFields, updatedMDEntity);
@@ -754,31 +754,31 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				insertOrUpdateEntityFieldMetaData(toFields);
 				for(EntityFieldMetaDataTO toField : toFields) {
 					createResourceIdForEntityField("T_MD_ENTITY_FIELD", toField, LangUtils.convertId(toField.getEntityFieldMeta().getId()));
-				}			
+				}
 				MetaDataServerProvider.getInstance().revalidate();
 			}
-			
+
 			for(EntityTreeViewVO voTreeView : updatedTOEntity.getTreeView()) {
-				
+
 				if(voTreeView.getField() == null){
 					continue;
 				}
-				 
+
 				Map<String, Object> conditionMap = new HashMap<String, Object>();
 				conditionMap.put(EntityTreeViewVO.SUBFORM_ENTITY_COLUMN, voTreeView.getEntity());
-				conditionMap.put(EntityTreeViewVO.ENTITY_COLUMN, voTreeView.getOriginentityid());	
+				conditionMap.put(EntityTreeViewVO.ENTITY_COLUMN, voTreeView.getOriginentityid());
 				DataBaseHelper.getDbAccess().execute(new DbDeleteStatement(EntityTreeViewVO.SUBNODES_TABLE, conditionMap));
-		
-				Map<String, Object> m = new HashMap<String, Object>();		
+
+				Map<String, Object> m = new HashMap<String, Object>();
 				// EntityTreeViewVO specific fields
-				m.put(EntityTreeViewVO.SUBFORM2ENTITY_REF_COLUMN, voTreeView.getField());				
+				m.put(EntityTreeViewVO.SUBFORM2ENTITY_REF_COLUMN, voTreeView.getField());
 				m.put(EntityTreeViewVO.SUBFORM_ENTITY_COLUMN, voTreeView.getEntity());
 				m.put(EntityTreeViewVO.ENTITY_COLUMN, voTreeView.getOriginentityid());
 				// if(voTreeView.getFoldername() != null)
 				m.put(EntityTreeViewVO.FOLDERNAME_COLUMN, voTreeView.getFoldername());
 				m.put(EntityTreeViewVO.ACTIVE_COLUMN, voTreeView.isActive());
 				m.put(EntityTreeViewVO.SORTORDER_COLUMN, voTreeView.getSortOrder());
-				
+
 				// Standard nuclos fields
 				m.put("INTID", DalUtils.getNextId());
 				m.put("DATCREATED", new Date(System.currentTimeMillis()));
@@ -786,43 +786,43 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				m.put("DATCHANGED", new Date(System.currentTimeMillis()));
 				m.put("STRCHANGED", getCurrentUserName());
 				m.put("INTVERSION", 1);
-				
+
 				DataBaseHelper.getDbAccess().execute(new DbInsertStatement(EntityTreeViewVO.SUBNODES_TABLE, DbNull.escapeNull(m)));
 			}
-			
+
 			changeModuleDirectory(sOldPath, updatedMDEntity.getDocumentPath(), updatedMDEntity);
-			
+
 		}
 		catch (Exception e) {
-			throw new CommonFatalException(e);	
+			throw new CommonFatalException(e);
 		}
-		
+
 		return resultMessage;
 	}
-	
+
 	private void changeModuleDirectory(String sOldPath, String sNewPath, EntityMetaDataVO mdvo) throws CommonPermissionException, CommonFinderException, CommonCreateException, CommonRemoveException, CommonStaleVersionException, CommonValidationException, NuclosBusinessException, IOException {
-		if(!mdvo.isStateModel())		
+		if(!mdvo.isStateModel())
 			return;
-		
+
 		sOldPath = StringUtils.emptyIfNull(sOldPath);
 		sNewPath = StringUtils.emptyIfNull(sNewPath);
-		
+
 		if(org.apache.commons.lang.StringUtils.equals(sOldPath, sNewPath)) {
 			return;
 		}
-		
+
 		Integer iModuleId = LangUtils.convertId(mdvo.getId());
 		CollectableSearchExpression exp = new CollectableSearchExpression();
-		
+
 		for(Integer iId : getGenericObjectFacade().getGenericObjectIds(iModuleId, exp)) {
 			GenericObjectWithDependantsVO vo = getGenericObjectFacade().getWithDependants(iId, Collections.singleton("nuclos_generalsearchdocument"));
 			if(vo.getDependants().getAllData().size() == 0)
 				continue;
-			boolean bModify = false;			
-			
+			boolean bModify = false;
+
 			String oldPath = getPath(StringUtils.emptyIfNull(sOldPath), vo);
 			String newPath = getPath(StringUtils.emptyIfNull(sNewPath), vo);
-			
+
 			DependantMasterDataMap mp = vo.getDependants();
 			for(EntityObjectVO voDocument : mp.getData("nuclos_generalsearchdocument")) {
 				voDocument.getFields().put("path", newPath);
@@ -831,7 +831,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 				GenericObjectDocumentFile docFile = (GenericObjectDocumentFile)voDocument.getField("file", GenericObjectDocumentFile.class);
 				String sFilename = voDocument.getId() + "." + docFile.getFilename();
-				
+
 				File file = new File(sBaseDir +"/" + oldPath + "/" + sFilename);
 				File newDir = new File(sBaseDir +"/" + newPath);
 				newDir.mkdirs();
@@ -851,20 +851,20 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			}
 
 		}
-		
+
 	}
 
 	private String getPath(String path, GenericObjectWithDependantsVO oParent) {
-		
+
 		String rPath = new String(path);
 		if (rPath.contains("${")){
 			Pattern referencedEntityPattern = Pattern.compile ("[$][{][\\w\\[\\]]+[}]");
 		    Matcher referencedEntityMatcher = referencedEntityPattern.matcher (rPath);
 		    StringBuffer sb = new StringBuffer();
-		    
+
 		      while (referencedEntityMatcher.find()) {
 		    	  	Object value = referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1);
-		    	  	
+
 		    	   String sName = value.toString();
 		    	   Object fieldValue = oParent.getAttribute(sName, AttributeCache.getInstance()).getValue();
 		    	  	referencedEntityMatcher.appendReplacement (sb, fieldValue.toString());
@@ -873,9 +873,9 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		      // complete the transfer to the StringBuffer
 		      referencedEntityMatcher.appendTail (sb);
 		      rPath = sb.toString();
-		    
+
 		}
-		
+
 		return rPath;
 
 	}
@@ -884,16 +884,16 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	private void rollBackDBChanges(EntityMetaDataTO updatedTOEntity,
 		List<EntityFieldMetaDataTO> toFields) {
 		EntityMetaDataVO updatedMDEntity = updatedTOEntity.getEntityMetaVO();
-		
+
 		EntityObjectMetaDbHelper dbHelperIst = new EntityObjectMetaDbHelper(DataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
 		DbTable tableIst = dbHelperIst.getDbTable(updatedMDEntity);
-		
+
 		StaticMetaDataProvider staticMetaData = new StaticMetaDataProvider();
 		staticMetaData.addEntity(updatedMDEntity);
 		List<EntityFieldMetaDataVO> lstFields = new ArrayList<EntityFieldMetaDataVO>();
 
 		List<EntityFieldMetaDataVO> lst = new ArrayList<EntityFieldMetaDataVO>();
-		
+
 		for(EntityFieldMetaDataVO field : lst) {
 			staticMetaData.addEntityField(updatedMDEntity.getEntity(), field);
 			if(field.getForeignEntity() != null) {
@@ -903,10 +903,10 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				}
 			}
 		}
-		List<EntityFieldMetaDataVO> lstSystemFields = new ArrayList<EntityFieldMetaDataVO>();		
+		List<EntityFieldMetaDataVO> lstSystemFields = new ArrayList<EntityFieldMetaDataVO>();
 		DalUtils.addNucletEOSystemFields(lstSystemFields, updatedMDEntity);
 		for(EntityFieldMetaDataTO to : toFields) {
-			lstFields.add(to.getEntityFieldMeta());			
+			lstFields.add(to.getEntityFieldMeta());
 			staticMetaData.addEntityField(updatedMDEntity.getEntity(), to.getEntityFieldMeta());
 			if(to.getEntityFieldMeta().getForeignEntity() != null) {
 				staticMetaData.addEntity(MetaDataServerProvider.getInstance().getEntity(to.getEntityFieldMeta().getForeignEntity()));
@@ -926,17 +926,17 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		}
 		EntityObjectMetaDbHelper dbHelperSoll = new EntityObjectMetaDbHelper(DataBaseHelper.getDbAccess(), staticMetaData);
 		DbTable tableSoll = dbHelperSoll.getDbTable(updatedMDEntity);
-		
+
 		List<DbStructureChange> lstStructureChanges = null;
-		
+
 		if(updatedMDEntity.getId() != null) {
 			lstStructureChanges = SchemaUtils.modify(tableSoll, tableIst);
 		}
-		else {			
+		else {
 			lstStructureChanges = new ArrayList<DbStructureChange>();
 		}
-		
-		
+
+
 		for(DbStructureChange ds : lstStructureChanges) {
 			try {
 				DataBaseHelper.getDbAccess().execute(ds);
@@ -946,47 +946,47 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			}
 		}
 	}
-	
+
 	private void setSystemValuesAndParent(List<EntityFieldMetaDataVO> lstFields, EntityMetaDataVO voParent) {
 		for(EntityFieldMetaDataVO voField : lstFields) {
 			voField.setEntityId(voParent.getId());
-			if(voField.isFlagNew()) {	
+			if(voField.isFlagNew()) {
 				DalUtils.updateVersionInformation(voField,getCurrentUserName());
 				voField.setId(new Long(DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE)));
 			}
-			else if(voField.isFlagUpdated()){				
+			else if(voField.isFlagUpdated()){
 				DalUtils.updateVersionInformation(voField, getCurrentUserName());
 			}
 		}
 	}
-	
-	
-	private DalCallResult insertOrUpdateEntityMetaData(EntityMetaDataVO vo) {		
-		return NucletDalProvider.getInstance().getEntityMetaDataProcessor().insertOrUpdate(vo);		
+
+
+	private DalCallResult insertOrUpdateEntityMetaData(EntityMetaDataVO vo) {
+		return NucletDalProvider.getInstance().getEntityMetaDataProcessor().insertOrUpdate(vo);
 	}
-	
+
 	private DalCallResult insertOrUpdateEntityFieldMetaData(List<EntityFieldMetaDataTO> lstFields) {
-		
+
 		// first remove fields
 		for(EntityFieldMetaDataTO vo : lstFields) {
 			EntityFieldMetaDataVO v = vo.getEntityFieldMeta();
 			DalUtils.updateVersionInformation(v, getCurrentUserName());
 			if(v.isFlagRemoved() && v.getId() != null) {
 				// NUCLOSINT-714: remove dependants generation attributes
-				DataBaseHelper.getDbAccess().execute(DbStatementUtils.deleteFrom("T_MD_GENERATION_ATTRIBUTE", 
+				DataBaseHelper.getDbAccess().execute(DbStatementUtils.deleteFrom("T_MD_GENERATION_ATTRIBUTE",
 					"INTID_T_MD_ATTRIBUTE_SOURCE", v.getId()));
-				DataBaseHelper.getDbAccess().execute(DbStatementUtils.deleteFrom("T_MD_GENERATION_ATTRIBUTE", 
-					"INTID_T_MD_ATTRIBUTE_TARGET", v.getId()));				
-				DataBaseHelper.getDbAccess().execute(DbStatementUtils.deleteFrom("T_MD_IMPORTATTRIBUTE", 
-					"STRATTRIBUTE", v.getField()));								
-				DataBaseHelper.getDbAccess().execute(DbStatementUtils.deleteFrom("T_MD_IMPORTIDENTIFIER", 
+				DataBaseHelper.getDbAccess().execute(DbStatementUtils.deleteFrom("T_MD_GENERATION_ATTRIBUTE",
+					"INTID_T_MD_ATTRIBUTE_TARGET", v.getId()));
+				DataBaseHelper.getDbAccess().execute(DbStatementUtils.deleteFrom("T_MD_IMPORTATTRIBUTE",
+					"STRATTRIBUTE", v.getField()));
+				DataBaseHelper.getDbAccess().execute(DbStatementUtils.deleteFrom("T_MD_IMPORTIDENTIFIER",
 					"STRATTRIBUTE", v.getField()));
 				NucletDalProvider.getInstance().getEntityFieldMetaDataProcessor().delete(v.getId());
 			}
-			else 
+			else
 				continue;
 		}
-		
+
 		for(EntityFieldMetaDataTO vo : lstFields) {
 			EntityFieldMetaDataVO v = vo.getEntityFieldMeta();
 			DalUtils.updateVersionInformation(v, getCurrentUserName());
@@ -997,15 +997,15 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				NucletDalProvider.getInstance().getEntityFieldMetaDataProcessor().insertOrUpdate(v);
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
     public List<String> getDBTables() {
 		return new ArrayList<String>(DataBaseHelper.getDbAccess().getTableNames(DbTableType.TABLE));
 	}
-	
+
 	/**
 	 * @return Script (with results if selected)
 	 */
@@ -1041,9 +1041,9 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 					name = "Text";
 					scale = (type.getLength() != null ? type.getLength() : 0);
 					break;
-				case DATE:					
+				case DATE:
 				case DATETIME:
-					name = "Datum";					
+					name = "Datum";
 					break;
 				default:
 					// Column type nuclos don't supported
@@ -1056,13 +1056,13 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				vo.setField("javatyp", javatyp);
 				vo.setField("scale", scale);
 				vo.setField("precision", precision);
-				
+
 				mp.put(column.getColumnName(), vo);
 			}
 		}
 		return mp;
 	}
-	
+
 	/**
 	 * @return Script (with results if selected)
 	 */
@@ -1092,19 +1092,19 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 					// do noting here
 				}
 		}
-		
+
 		return lstTables;
 	}
-	
+
 	/**
 	 * @return Script (with results if selected)
 	 */
 	@Override
     @RolesAllowed("Login")
 	public List<MasterDataVO> transformTable(String url, String user, String password, String schema, String table) {
-		
+
 		List<MasterDataVO> lstFields = new ArrayList<MasterDataVO>();
-		
+
 		try {
 			Connection connect = DriverManager.getConnection(url, user, password);
 			DatabaseMetaData dbmeta = connect.getMetaData();
@@ -1117,10 +1117,10 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				String sJavaType = getBestJavaType(columsType);
 				if(postsize > 0)
 					sJavaType = "java.lang.Double";
-				
+
 				MasterDataMetaVO metaFieldVO = getMasterDataFacade().getMetaData(NuclosEntity.ENTITYFIELD.getEntityName());
 				MasterDataVO mdFieldVO = new MasterDataVO(metaFieldVO, false);
-				
+
 				mdFieldVO.setField("foreignentityfield", null);
 				mdFieldVO.setField("unique", Boolean.FALSE);
 				mdFieldVO.setField("logbook", Boolean.FALSE);
@@ -1129,7 +1129,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				mdFieldVO.setField("entityId", null);
 				mdFieldVO.setField("datascale", colsize);
 				mdFieldVO.setField("label", org.apache.commons.lang.StringUtils.capitalize(colName.toLowerCase()));
-				mdFieldVO.setField("nullable", Boolean.TRUE);			
+				mdFieldVO.setField("nullable", Boolean.TRUE);
 				mdFieldVO.setField("dataprecision", postsize);
 				mdFieldVO.setField("dbfield", colName.toLowerCase());
 				mdFieldVO.setField("description", org.apache.commons.lang.StringUtils.capitalize(colName.toLowerCase()));
@@ -1138,31 +1138,31 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				mdFieldVO.setField("foreignentity", null);
 				mdFieldVO.setField("formatoutput", null);
 				mdFieldVO.setField("datatype", sJavaType);
-				mdFieldVO.setField("searchable", Boolean.FALSE);			
+				mdFieldVO.setField("searchable", Boolean.FALSE);
 				mdFieldVO.setField("foreignentity", null);
 				mdFieldVO.setField("foreignentityfield", null);
 				lstFields.add(mdFieldVO);
 			}
-			
+
 			rsCols.close();
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return lstFields;
 
 	}
-	
+
 	/**
 	 * @return Script (with results if selected)
 	 */
 	@Override
     @RolesAllowed("Login")
 	public MasterDataMetaVO transferTable(String url, String user, String password, String schema, String table, String sEntity) {
-		
+
 		MasterDataMetaVO metaNew = null;
-		
+
 		Connection connect = null;
 		try {
 			DependantMasterDataMap dependMap = new DependantMasterDataMap();
@@ -1178,10 +1178,10 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				String sJavaType = getBestJavaType(columsType);
 				if(postsize > 0)
 					sJavaType = "java.lang.Double";
-				
+
 				MasterDataMetaVO metaFieldVO = getMasterDataFacade().getMetaData(NuclosEntity.ENTITYFIELD.getEntityName());
 				MasterDataVO mdFieldVO = new MasterDataVO(metaFieldVO, false);
-				
+
 				mdFieldVO.setField("foreignentityfield", null);
 				mdFieldVO.setField("unique", Boolean.FALSE);
 				mdFieldVO.setField("logbook", Boolean.FALSE);
@@ -1190,7 +1190,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				mdFieldVO.setField("entityId", null);
 				mdFieldVO.setField("datascale", colsize);
 				mdFieldVO.setField("label", org.apache.commons.lang.StringUtils.capitalize(colName.toLowerCase()));
-				mdFieldVO.setField("nullable", Boolean.TRUE);			
+				mdFieldVO.setField("nullable", Boolean.TRUE);
 				mdFieldVO.setField("dataprecision", postsize);
 				mdFieldVO.setField("dbfield", colName.toLowerCase());
 				mdFieldVO.setField("description", org.apache.commons.lang.StringUtils.capitalize(colName.toLowerCase()));
@@ -1199,18 +1199,18 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				mdFieldVO.setField("foreignentity", null);
 				mdFieldVO.setField("formatoutput", null);
 				mdFieldVO.setField("datatype", sJavaType);
-				mdFieldVO.setField("searchable", Boolean.FALSE);			
+				mdFieldVO.setField("searchable", Boolean.FALSE);
 				mdFieldVO.setField("foreignentity", null);
 				mdFieldVO.setField("foreignentityfield", null);
 
 				dependMap.addData(NuclosEntity.ENTITYFIELD.getEntityName(), DalSupportForMD.getEntityObjectVO(mdFieldVO));
 				lstFields.add(colName);
 			}
-			
+
 			rsCols.close();
-			
+
 			metaNew = getMasterDataFacade().getMetaData(sEntity);
-			
+
 			String sqlSelect = "select * from " + schema + "." + table;
 			Statement stmt = connect.createStatement();
 			ResultSet rsSelect =  stmt.executeQuery(sqlSelect);
@@ -1219,7 +1219,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				for(String sColname : lstFields) {
 					lstValues.add(rsSelect.getObject(sColname));
 				}
-				
+
 				StringBuffer sb = new StringBuffer();
 				sb.append("insert into " + metaNew.getDBEntity());
 				sb.append(" values(?");
@@ -1227,7 +1227,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 					sb.append(",?");
 				}
 				sb.append(",?,?,?,?,?)");
-				
+
 				int col = 1;
 				PreparedStatement pst = NuclosDataSources.getDefaultDS().getConnection().prepareStatement(sb.toString());
 				pst.setInt(col++, DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
@@ -1239,14 +1239,14 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				pst.setDate(col++, new java.sql.Date(System.currentTimeMillis()));
 				pst.setString(col++, "Wizard");
 				pst.setInt(col++, 1);
-				
+
 				pst.executeUpdate();
 				pst.close();
-				
+
 			}
 			rsSelect.close();
 			stmt.close();
-			
+
 		}
 		catch(SQLException e) {
 			e.printStackTrace();
@@ -1262,7 +1262,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		}
 		return metaNew;
 	}
-	
+
 	private String getBestJavaType(int colType) {
 		String sType = "java.lang.String";
 		switch(colType) {
@@ -1294,7 +1294,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			return "java.util.Date";
 
 		default:
-			
+
 			return sType;
 		}
 	}
@@ -1316,7 +1316,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	public EntityRelationshipModelVO getEntityRelationshipModelVO(MasterDataVO vo) {
 		return MasterDataWrapper.getEntityRelationshipModelVO(vo);
 	}
-	
+
 	/**
 	 * force to change internal entity name
 	 */
@@ -1335,13 +1335,13 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			DbColumnExpression<?> c = t.column(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
 			query.select(builder.countRows());
 			query.where(c.isNull());
-			
+
 			Long count = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 			return count == 0L;
 		}
 		catch(Exception ex) {
 				return false;
-		} 
+		}
 	}
 
 	/**
@@ -1364,15 +1364,15 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			query.groupBy(c);
 			query.having(builder.greaterThan(builder.countRows(), builder.literal(1L)));
 			query.maxResults(2);
-			
+
 			List<Long> result = DataBaseHelper.getDbAccess().executeQuery(query);
 			return result.isEmpty();
 		}
 		catch(Exception ex) {
 				return false;
-		} 
+		}
 	}
-	
+
 	@Override
 	@RolesAllowed("Login")
 	public Collection<MasterDataVO> hasEntityFieldInImportStructure(String sEntity, String sField) {
@@ -1387,41 +1387,41 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			if(colImportAttribute.size() > 0)
 				return colImportStructure;
 		}
-		
+
 		return new ArrayList<MasterDataVO>();
 	}
-	
+
 	@Override
 	@RolesAllowed("Login")
 	public boolean hasEntityLayout(Long id) {
 		final String sEntity = MetaDataServerProvider.getInstance().getEntity(id).getEntity();
 		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
-		DbFrom from = query.from("T_MD_LAYOUTUSAGE").alias("t");		
+		DbFrom from = query.from("T_MD_LAYOUTUSAGE").alias("t");
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
-		
-		columns.add(from.column("INTID", Integer.class).alias("INTID"));		
+
+		columns.add(from.column("INTID", Integer.class).alias("INTID"));
 		columns.add(from.column("STRENTITY", String.class).alias("STRENTITY"));
 		query.multiselect(columns);
-		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("STRENTITY", String.class), 
+		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("STRENTITY", String.class),
 			DataBaseHelper.getDbAccess().getQueryBuilder().literal(sEntity)));
-		
+
 		List<DbTuple> count = DataBaseHelper.getDbAccess().executeQuery(query);
-		
-		return count.size() > 0;		
+
+		return count.size() > 0;
 	}
-	
+
 	@Override
     @RolesAllowed("Login")
 	public Long getEntityIdByName(String sEntity) {
 		return MetaDataServerProvider.getInstance().getEntity(sEntity).getId();
 	}
-	
+
 	@Override
     @RolesAllowed("Login")
 	public EntityMetaDataVO getEntityByName(String sEntity) {
 		return MetaDataServerProvider.getInstance().getEntity(sEntity);
 	}
-	
+
 	@Override
     @RolesAllowed("Login")
 	public EntityMetaDataVO getEntityById(Long id) {
@@ -1430,6 +1430,6 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 	@Override
     public void invalidateServerMetadata() {
-	    MetaDataServerProvider.getInstance().revalidate();	    
+	    MetaDataServerProvider.getInstance().revalidate();
     }
 }

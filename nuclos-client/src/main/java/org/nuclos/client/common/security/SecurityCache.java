@@ -20,8 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.TextMessage;
 
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.TopicNotificationReceiver;
@@ -33,6 +35,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common.security.PermissionKey;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.MasterDataPermission;
 import org.nuclos.server.common.MasterDataPermissions;
@@ -53,33 +56,47 @@ import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
 public class SecurityCache {
 	private static SecurityCache singleton;
 
+	private String username;
 	private Boolean superUser;
 	private Set<String> stAllowedActions;
 
 	private ModulePermissions modulepermissions;
 	private MasterDataPermissions masterdatapermissions;
-	
+
 	private Map<PermissionKey.AttributePermissionKey, Permission> mpAttributePermission = new HashMap<PermissionKey.AttributePermissionKey, Permission>();
 	private Map<PermissionKey.SubFormPermissionKey, Map<Integer, Permission>> mpSubFormPermission = new HashMap<PermissionKey.SubFormPermissionKey, Map<Integer, Permission>>();
-	
+
 	private Map<PermissionKey.ModulePermissionKey, ModulePermission> modulePermissionsCache = new HashMap<PermissionKey.ModulePermissionKey, ModulePermission>();
 	private Map<PermissionKey.MasterDataPermissionKey, MasterDataPermission> masterDataPermissionsCache = new HashMap<PermissionKey.MasterDataPermissionKey, MasterDataPermission>();
 
 	private final MessageListener listener = new MessageListener() {
 		@Override
         public void onMessage(Message msg) {
-			SecurityCache.this.revalidate();
-			AttributeCache.getInstance().revalidate();
-			UIUtils.runCommandLater(Main.getMainFrame(), new CommonRunnable() {			
-				@Override
-                public void run() throws CommonBusinessException {
-					Main.getMainController().refreshMenus();
+			boolean clearcache = false;
+			if (msg instanceof TextMessage) {
+				TextMessage tm = (TextMessage) msg;
+				try {
+					if (StringUtils.isNullOrEmpty(tm.getText()) || tm.getText().equals(username)) {
+						clearcache = true;
+					}
+				} catch (JMSException e) {
+					clearcache = true;
 				}
-			});					
+			}
+			if (clearcache) {
+				SecurityCache.this.revalidate();
+				AttributeCache.getInstance().revalidate();
+				UIUtils.runCommandLater(Main.getMainFrame(), new CommonRunnable() {
+					@Override
+	                public void run() throws CommonBusinessException {
+						Main.getMainController().refreshMenus();
+					}
+				});
+			}
 		}
 	};
 
-	
+
 	/**
 	 * May optionally be called to explicitly initialize the cache. The cache is implicitly initialized by
 	 * the first call to <code>getInstance()</code> anyway.
@@ -103,7 +120,7 @@ public class SecurityCache {
 	 */
 	private SecurityCache() {
 		TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_SECURITYCACHE, listener);
-		
+
 		this.validate();
 	}
 
@@ -119,7 +136,7 @@ public class SecurityCache {
 		}
 		return modulePermissionsCache.get(modulePermissionKey);
 	}
-	
+
 	private MasterDataPermission getMasterDataPermission(String sEntityName) {
 		PermissionKey.MasterDataPermissionKey masterDataPermissionKey = new PermissionKey.MasterDataPermissionKey(sEntityName);
 		if (!masterDataPermissionsCache.containsKey(masterDataPermissionKey)) {
@@ -132,11 +149,11 @@ public class SecurityCache {
 	public synchronized boolean isReadAllowedForModule(String sModuleEntity, Integer iGenericObjectId) {
 		return ModulePermission.includesReading(this.getModulePermission(sModuleEntity, iGenericObjectId));
 	}
-	
+
 	public synchronized boolean isReadAllowedForMasterData(String sEntity) {
 		return MasterDataPermission.includesReading(this.getMasterDataPermission(sEntity));
 	}
-	
+
 	/**
 	 * Check, whether reading is allowed for any type of entity
 	 * @param entityName  the name
@@ -146,43 +163,43 @@ public class SecurityCache {
 		return isReadAllowedForMasterData(entityName)
 		   ||  isReadAllowedForModule(entityName, null);
 	}
-	
+
 	public synchronized boolean isReadAllowedForMasterData(NuclosEntity entity) {
 		return isReadAllowedForMasterData(entity.getEntityName());
 	}
-	
+
 	public synchronized boolean isNewAllowedForModule(String sModuleEntity) {
 		return this.modulepermissions.getNewAllowedByEntityName().get(sModuleEntity);
 	}
-	
+
 	public synchronized boolean isNewAllowedForModuleAndProcess(Integer iModuleId, Integer iProcessId) {
-		return this.modulepermissions.getNewAllowedProcessesByModuleId().containsKey(iModuleId) && 
+		return this.modulepermissions.getNewAllowedProcessesByModuleId().containsKey(iModuleId) &&
 			this.modulepermissions.getNewAllowedProcessesByModuleId().get(iModuleId).contains(iProcessId);
 	}
 
 	public synchronized boolean isWriteAllowedForModule(String sModuleEntity, Integer iGenericObjectId) {
 		return ModulePermission.includesWriting(this.getModulePermission(sModuleEntity, iGenericObjectId));
 	}
-	
+
 	public synchronized boolean isWriteAllowedForMasterData(String sEntity) {
 		return MasterDataPermission.includesWriting(this.getMasterDataPermission(sEntity));
 	}
-	
+
 	public synchronized boolean isWriteAllowedForMasterData(NuclosEntity entity) {
 		return isWriteAllowedForMasterData(entity.getEntityName());
 	}
 
 	public synchronized boolean isDeleteAllowedForModule(String sModuleEntity, Integer iGenericObjectId, boolean physically) {
 		ModulePermission modulePermission = this.getModulePermission(sModuleEntity, iGenericObjectId);
-		return physically 
+		return physically
 			? ModulePermission.includesDeletingPhysically(modulePermission)
 			: ModulePermission.includesDeletingLogically(modulePermission);
 	}
-	
+
 	public synchronized boolean isDeleteAllowedForMasterData(String sEntity) {
 		return MasterDataPermission.includesDeleting(this.getMasterDataPermission(sEntity));
 	}
-	
+
 	/**
 	 * revalidates this cache: clears it, then fills in all the attributes from the server again.
 	 */
@@ -197,7 +214,7 @@ public class SecurityCache {
 		masterDataPermissionsCache.clear();
 		validate();
 	}
-	
+
 	/**
 	 * fills this cache.
 	 * @throws NuclosFatalException
@@ -205,12 +222,13 @@ public class SecurityCache {
 	@SuppressWarnings("unchecked")
     private void validate() throws NuclosFatalException {
 		Map<String, Object> iniData = SecurityDelegate.getInstance().getInitialSecurityData();
+		this.username = (String) iniData.get(SecurityFacadeRemote.USERNAME);
 		this.superUser = (Boolean) iniData.get(SecurityFacadeRemote.IS_SUPER_USER);
 		this.stAllowedActions = (Set<String>) iniData.get(SecurityFacadeRemote.ALLOWED_ACTIONS);
 		this.modulepermissions = (ModulePermissions) iniData.get(SecurityFacadeRemote.MODULE_PERMISSIONS);
 		this.masterdatapermissions = (MasterDataPermissions) iniData.get(SecurityFacadeRemote.MASTERDATA_PERMISSIONS);
 	}
-	
+
 	/**
 	 * get permissions for a subform
 	 * NOTE: this method makes only sense for subforms placed in modules
@@ -226,7 +244,7 @@ public class SecurityCache {
 		}
 		return mpSubFormPermission.get(subFormPermissionKey);
 	}
-	
+
 	/**
 	 * get the permission for a subform within the given state id
 	 * NOTE: this method makes only sense for subforms placed in modules
@@ -238,7 +256,7 @@ public class SecurityCache {
 	public synchronized Permission getSubFormPermission(String sEntityName, Integer iState) {
 		return getSubFormPermission(sEntityName).get(iState);
 	}
-	
+
 	/**
 	 * get the permission for an attribute within the given stateId
 	 * @param entity         the entity
@@ -258,8 +276,8 @@ public class SecurityCache {
 		}
 		return mpAttributePermission.get(key);
 	}
-	
-	
+
+
 	public Boolean isSuperUser() {
 		return superUser;
 	}

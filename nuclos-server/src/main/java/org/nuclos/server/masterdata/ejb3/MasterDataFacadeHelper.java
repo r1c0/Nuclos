@@ -313,15 +313,17 @@ public class MasterDataFacadeHelper {
 		return result;
 	}
 
-	static void invalidateCaches(String sEntityName) {
+	static void invalidateCaches(String sEntityName, MasterDataVO mdvo) {
 		NuclosEntity nuclosEntity = NuclosEntity.getByName(sEntityName);
 		if (nuclosEntity != null) {
 			switch (nuclosEntity) {
 			case ROLE:
-			//case USER: the user's attributes are not relevant for the SecurityCache.
 			case ACTION:
 			case REPORT:
 				SecurityCache.getInstance().invalidate();
+				break;
+			case USER:
+				SecurityCache.getInstance().invalidate(mdvo.getField("name", String.class));
 				break;
 			case LAYOUT:
 				MetaDataServerProvider.getInstance().revalidate();

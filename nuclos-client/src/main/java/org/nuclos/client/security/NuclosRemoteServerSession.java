@@ -41,7 +41,6 @@ public abstract class NuclosRemoteServerSession {
 			SecurityContextHolder.getContext().setAuthentication(am.authenticate(new UsernamePasswordAuthenticationToken(username, new String(password))));
 			sessionId = ServiceLocator.getInstance().getFacade(SecurityFacadeRemote.class).login();
 			log.info("Logged in.");
-			SecurityCache.getInstance().revalidate();
 		}
 		catch (AuthenticationException ex) {
 			SecurityContextHolder.getContext().setAuthentication(null);

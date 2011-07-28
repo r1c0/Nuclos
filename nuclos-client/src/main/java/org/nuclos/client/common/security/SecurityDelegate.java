@@ -180,15 +180,15 @@ public class SecurityDelegate {
 	}
 
 	public Boolean isLdapAuthenticationActive() {
-		return facade.isLdapAuthenticationActive();
+		return getSecurityFacade().isLdapAuthenticationActive();
 	}
 
 	public Boolean isLdapSynchronizationActive() {
-		return facade.isLdapSynchronizationActive();
+		return getSecurityFacade().isLdapSynchronizationActive();
 	}
 
 	public Date getPasswordExpiration() throws CommonPermissionException {
-		return facade.getPasswordExpiration();
+		return getSecurityFacade().getPasswordExpiration();
 	}
 
 }	// class SecurityDelegate

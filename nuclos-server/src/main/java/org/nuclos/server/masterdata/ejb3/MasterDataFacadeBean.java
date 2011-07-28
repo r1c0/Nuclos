@@ -579,7 +579,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			sForeignKeyField, oRelatedId, this.getCurrentUserName()), new EntityObjectToMasterDataTransformer());
 		return result;
 	}
-	
+
 
 	@Override
 	@RolesAllowed("Login")
@@ -729,7 +729,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			if(useRuleEngine)
 				fireSaveEvent(Event.CREATE_AFTER, sEntityName, result, mpDependants, true);
 
-			MasterDataFacadeHelper.invalidateCaches(sEntityName);
+			MasterDataFacadeHelper.invalidateCaches(sEntityName, mdvo);
 			if (nuclosEntity == NuclosEntity.DYNAMICENTITY || nuclosEntity == NuclosEntity.ROLE)
 				notifyClients(nuclosEntity);
 
@@ -835,7 +835,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			this.fireSaveEvent(Event.MODIFY_AFTER, sEntityName, mdvo, mpDependants, true);
 		}
 
-		MasterDataFacadeHelper.invalidateCaches(sEntityName);
+		MasterDataFacadeHelper.invalidateCaches(sEntityName, mdvo);
 		if (nuclosEntity == NuclosEntity.DYNAMICENTITY || nuclosEntity == NuclosEntity.ROLE)
 			notifyClients(nuclosEntity);
 
@@ -927,7 +927,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 
 		this.fireDeleteEvent(sEntityName, mdvo, mdvo.getDependants(), true);
 
-		MasterDataFacadeHelper.invalidateCaches(sEntityName);
+		MasterDataFacadeHelper.invalidateCaches(sEntityName, mdvo);
 		if (nuclosEntity == NuclosEntity.DYNAMICENTITY || nuclosEntity == NuclosEntity.ROLE)
 			notifyClients(nuclosEntity);
 

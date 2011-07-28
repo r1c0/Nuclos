@@ -268,6 +268,7 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	@Override
     public Map<String, Object> getInitialSecurityData() {
 		GzipMap<String, Object> res = new GzipMap<String, Object>();
+		res.put(SecurityFacadeRemote.USERNAME, getCurrentUserName());
 		res.put(SecurityFacadeRemote.IS_SUPER_USER, isSuperUser());
 		res.put(SecurityFacadeRemote.ALLOWED_ACTIONS, getAllowedActions());
 		res.put(SecurityFacadeRemote.MODULE_PERMISSIONS, getModulePermissions());
