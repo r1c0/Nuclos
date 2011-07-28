@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.TranslationVO;
@@ -34,6 +35,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.server.common.ejb3.LocaleFacadeBean;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
@@ -44,21 +46,37 @@ import org.nuclos.server.dblayer.expression.DbNull;
 import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-@Stateless
-@Remote(CustomComponentFacadeRemote.class)
-//@TransactionAttribute(TransactionAttributeType.REQUIRED)
 @Transactional
 public final class CustomComponentFacadeBean extends NuclosFacadeBean implements CustomComponentFacadeRemote {
 
+	private static final Logger LOG = Logger.getLogger(CustomComponentFacadeBean.class);
 
-	//private final ClientNotifier clientnotifier = new ClientNotifier(JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
+	private static final TransactionSynchronization ts = new TransactionSynchronizationAdapter() {
+		@Override
+		public void afterCommit() {
+			NuclosJMSUtils.sendMessage(null, JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
+		}
+	};
+
+	private void notifyClients() {
+		try {
+			List<TransactionSynchronization> list = TransactionSynchronizationManager.getSynchronizations();
+			if (!list.contains(ts)) {
+				TransactionSynchronizationManager.registerSynchronization(ts);
+			}
+		}
+		catch (IllegalStateException ex) {
+			LOG.warn("Error on transaction synchronization registration.", ex);
+		}
+	}
 
 	@Override
 	public List<CustomComponentVO> getAll() {
 		Collection<MasterDataVO> mdvos = getMasterDataFacade().getMasterData(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), null, true);
-//		Collection<MasterDataVO> mdvos = MasterDataDelegate.getInstance().getMasterData(
-//			NuclosEntity.CUSTOMCOMPONENT.getEntityName());
 		List<CustomComponentVO> vos = new ArrayList<CustomComponentVO>(mdvos.size());
 		for (MasterDataVO mdvo : mdvos) {
 			vos.add(getCustomComponentVO(mdvo));
@@ -68,30 +86,29 @@ public final class CustomComponentFacadeBean extends NuclosFacadeBean implements
 
 	@Override
 	public void create(CustomComponentVO vo, List<TranslationVO> translations) throws CommonBusinessException {
-		getMasterDataFacade().create(NuclosEntity.CUSTOMCOMPONENT.getEntityName(),
-			wrapVO(vo), null);
-		NuclosJMSUtils.sendMessage(null, JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
-		//clientnotifier.notifyClients(null);
+		checkWriteAllowed(NuclosEntity.CUSTOMCOMPONENT);
+		getMasterDataFacade().create(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), wrapVO(vo), null);
 
 		setResources(vo, translations);
+
+		notifyClients();
 	}
 
 	@Override
 	public void modify(CustomComponentVO vo, List<TranslationVO> translations) throws CommonBusinessException {
-		getMasterDataFacade().modify(NuclosEntity.CUSTOMCOMPONENT.getEntityName(),
-			wrapVO(vo), null);
-		NuclosJMSUtils.sendMessage(null, JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
-		//clientnotifier.notifyClients(null);
+		checkWriteAllowed(NuclosEntity.CUSTOMCOMPONENT);
+		getMasterDataFacade().modify(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), wrapVO(vo), null);
 
 		setResources(vo, translations);
+
+		notifyClients();
 	}
 
 	@Override
 	public void remove(CustomComponentVO vo) throws CommonBusinessException {
-		getMasterDataFacade().remove(NuclosEntity.CUSTOMCOMPONENT.getEntityName(),
-			wrapVO(vo), true);
-		NuclosJMSUtils.sendMessage(null, JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
-		//clientnotifier.notifyClients(null);
+		getMasterDataFacade().remove(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), wrapVO(vo), true);
+
+		notifyClients();
 	}
 
 	private static MasterDataVO wrapVO(CustomComponentVO vo) {

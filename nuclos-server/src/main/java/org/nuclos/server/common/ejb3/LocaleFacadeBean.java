@@ -28,10 +28,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.HashResourceBundle;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
@@ -72,6 +70,9 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * Facade bean for all locale *client* functionality (i.e. consumption of locale
@@ -80,17 +81,23 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Local(LocaleFacadeLocal.class)
-@Remote(LocaleFacadeRemote.class)
 @Transactional
 public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLocal, LocaleFacadeRemote {
+
+	private static final Logger LOG = Logger.getLogger(LocaleFacadeBean.class);
 
 	private static final String R_PARENT = "parent";
 
 	private static final String F_RESOURCEID = "resourceID";
 	private static final String F_TEXT = "text";
 	private static final String F_LOCALE = "locale";
+
+	private static final TransactionSynchronization ts = new TransactionSynchronizationAdapter() {
+		@Override
+		public void afterCommit() {
+			NuclosJMSUtils.sendMessage("flush", JMSConstants.TOPICNAME_LOCALE, JMSConstants.BROADCAST_MESSAGE);
+		}
+	};
 
 	@Override
 	public void flushInternalCaches() {
@@ -99,42 +106,15 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 
 	@Transactional
 	private void internalFlush() {
-		//NuclosJMSUtils.sendMessage("flush", JMSConstants.TOPICNAME_LOCALE, JMSConstants.BROADCAST_MESSAGE);
-		final Runnable act = new Runnable() {
-			@Override
-			public void run() {
-				NuclosJMSUtils.sendMessage("flush", JMSConstants.TOPICNAME_LOCALE, JMSConstants.BROADCAST_MESSAGE);
-			}
-		};
 		try {
-			act.run();
+			List<TransactionSynchronization> list = TransactionSynchronizationManager.getSynchronizations();
+			if (!list.contains(ts)) {
+				TransactionSynchronizationManager.registerSynchronization(ts);
+			}
 		}
-		catch(Exception e) {
-
+		catch (IllegalStateException ex) {
+			LOG.warn("Error on transaction synchronization registration.", ex);
 		}
-//		try {
-//			Transaction tx = org.jboss.tm.TransactionManagerLocator.getInstance().locate().getTransaction();
-//			tx.registerSynchronization(new Synchronization() {
-//				@Override
-//				public void beforeCompletion() {
-//					act.run();
-//				}
-//
-//				@Override
-//				public void afterCompletion(int arg0) {
-//					act.run();
-//				}
-//			});
-//		}
-//		catch(SystemException e) {
-//			e.printStackTrace();
-//			act.run();
-//		}
-//		catch(RollbackException e) {
-//			// Auch nicht schlimm
-//			e.printStackTrace();
-//			act.run();
-//		}
 	}
 
 	@Override
