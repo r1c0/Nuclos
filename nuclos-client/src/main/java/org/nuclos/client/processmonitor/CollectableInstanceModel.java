@@ -137,6 +137,26 @@ public class CollectableInstanceModel extends AbstractCollectableBean<InstanceVO
 		// TODO Auto-generated method stub
 		return super.getBean().getVersion();
 	}
+
+	public MasterDataVO getMasterDataVO() {
+		return getBean().getMasterDataVO();
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("entity=").append(getCollectableEntity());
+		result.append(",vo=").append(getBean());
+		result.append(",mdVo=").append(getMasterDataVO());
+		result.append(",pmVo=").append(getProcessMonitorModel());
+		result.append(",pmGraphVo=").append(getProcessMonitorGraphVO());
+		result.append(",id=").append(getId());
+		result.append(",label=").append(getIdentifierLabel());
+		result.append(",complete=").append(isComplete());
+		result.append("]");
+		return result.toString();
+	}
 	
 	public static class MakeCollectable implements Transformer<MasterDataVO, CollectableInstanceModel> {
 		@Override
@@ -144,9 +164,5 @@ public class CollectableInstanceModel extends AbstractCollectableBean<InstanceVO
 			return new CollectableInstanceModel(mdVO);
 		}
 	}
-
-	public MasterDataVO getMasterDataVO() {
-		return getBean().getMasterDataVO();
-	}
-
+	
 }

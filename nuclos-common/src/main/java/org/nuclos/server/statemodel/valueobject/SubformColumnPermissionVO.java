@@ -108,5 +108,15 @@ public class SubformColumnPermissionVO extends NuclosValueObject {
 	    return column;
     }
 	
-}
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",column=").append(getColumn());
+		result.append(",roleId=").append(getRoleSubformId());
+		result.append("]");
+		return result.toString();
+	}
 
+}

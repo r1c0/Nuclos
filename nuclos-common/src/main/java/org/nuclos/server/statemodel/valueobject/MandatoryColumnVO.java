@@ -107,4 +107,17 @@ public class MandatoryColumnVO extends NuclosValueObject {
     public String getEntity() {
 	    return entity;
     }
+    
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",entity=").append(getEntity());
+		result.append(",column=").append(getColumn());
+		result.append(",stateId=").append(getStateId());
+		result.append("]");
+		return result.toString();
+	}
+
 }

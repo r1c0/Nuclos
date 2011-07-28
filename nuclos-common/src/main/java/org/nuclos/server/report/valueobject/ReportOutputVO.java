@@ -233,4 +233,16 @@ public class ReportOutputVO extends NuclosValueObject {
 		this.sDescription = sDescription;
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",srcFile=").append(getSourceFile());
+		result.append(",ds=").append(getDatasource());
+		result.append(",format=").append(getFormat());
+		result.append("]");
+		return result.toString();
+	}
+
 }	// class ReportOutputVO

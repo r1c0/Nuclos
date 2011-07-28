@@ -86,6 +86,15 @@ public class GeneratorRuleVO extends NuclosValueObject {
 		this.bRunAfterwards = bRunAfterwards;
 	}
 	
-	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",name=").append(getName());
+		result.append(",order=").append(getOrder());
+		result.append("]");
+		return result.toString();
+	}
 
 }

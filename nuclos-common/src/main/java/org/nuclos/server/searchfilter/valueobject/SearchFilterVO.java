@@ -237,4 +237,18 @@ public class SearchFilterVO extends NuclosValueObject {
 
 		return mdVO;
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",name=").append(getFilterName());
+		result.append(",entity=").append(getEntity());
+		result.append(",owner=").append(getOwner());
+		result.append(",forced=").append(isForced());
+		result.append("]");
+		return result.toString();
+	}
+
 }

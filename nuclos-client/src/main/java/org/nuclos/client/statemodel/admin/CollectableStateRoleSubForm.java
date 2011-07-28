@@ -132,6 +132,19 @@ public class CollectableStateRoleSubForm extends AbstractCollectable{
 		assert this.getField(sFieldName).equals(clctfValue);
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("entity=").append(getCollectableEntity());
+		result.append(",subformPermVo=").append(getSubformPermissionVO());
+		result.append(",id=").append(getId());
+		result.append(",label=").append(getIdentifierLabel());
+		result.append(",complete=").append(isComplete());
+		result.append("]");
+		return result.toString();
+	}
+	
 	public static class MakeCollectable implements Transformer<SubformPermissionVO, CollectableStateRoleSubForm> {
 		private final CollectableField clctfRole;
 

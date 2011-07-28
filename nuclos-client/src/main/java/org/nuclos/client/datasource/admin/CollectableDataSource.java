@@ -108,6 +108,19 @@ public class CollectableDataSource extends AbstractCollectableBean<DatasourceVO>
 		return getDatasourceVO().getVersion();
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("entity=").append(getCollectableEntity());
+		result.append(",vo=").append(getBean());
+		result.append(",id=").append(getId());
+		result.append(",label=").append(getIdentifierLabel());
+		result.append(",complete=").append(isComplete());
+		result.append("]");
+		return result.toString();
+	}
+
 	public static class MakeCollectable implements Transformer<DatasourceVO, CollectableDataSource> {
 		@Override
 		public CollectableDataSource transform(DatasourceVO datasourcevo) {

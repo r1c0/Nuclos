@@ -88,4 +88,17 @@ public class TaskObjectVO extends NuclosValueObject {
 		this.sEntityName = sEntityName;
 	}
 	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",identifier=").append(getIdentifier());
+		result.append(",goId=").append(getGenericObjectId());
+		result.append(",moduleId=").append(getModuleId());
+		result.append(",taskId=").append(getTaskId());
+		result.append("]");
+		return result.toString();
+	}
+
 }	// class TaskObjectVO

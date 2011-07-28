@@ -85,4 +85,14 @@ public class LayoutVO extends NuclosValueObject {
 		}
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",name=").append(getName());
+		result.append("]");
+		return result.toString();
+	}
+
 }	// class LayoutVO

@@ -149,6 +149,15 @@ public class DependantCollectableMasterDataMap {
 		this.mmp.clear();
 	}
 	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("keys=").append(mmp.keySet());
+		result.append("]");
+		return result.toString();
+	}
+	
 	public static class ExtractEntityObjectVO implements Transformer<CollectableEntityObject, EntityObjectVO> {
 		@Override
 		public EntityObjectVO transform(CollectableEntityObject clctmd) {

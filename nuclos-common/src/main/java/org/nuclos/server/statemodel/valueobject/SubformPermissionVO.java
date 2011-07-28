@@ -209,5 +209,18 @@ public class SubformPermissionVO extends NuclosValueObject {
 	public void setWriteable(boolean writeable) {
 		this.writeable = writeable;
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",role=").append(getRole());
+		result.append(",state=").append(getState());
+		result.append(",subform=").append(getSubform());
+		result.append("]");
+		return result.toString();
+	}
+
 }
 

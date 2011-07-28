@@ -260,4 +260,16 @@ public class SubProcessVO extends NuclosValueObject{
 		this.iProcessMonitorId = iProcessMonitorId;
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",supervisor=").append(getSupervisor());
+		result.append(",state=").append(getStatename());
+		result.append(",workingId=").append(getWorkingId());
+		result.append("]");
+		return result.toString();
+	}
+
 }

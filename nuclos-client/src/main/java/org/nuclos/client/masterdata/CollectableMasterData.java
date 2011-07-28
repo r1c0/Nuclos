@@ -139,6 +139,33 @@ public class CollectableMasterData extends AbstractCollectable implements Remova
 		assert this.getField(sFieldName).equals(clctfValue);
 	}
 
+	public DependantCollectableMasterDataMap getDependantCollectableMasterDataMap() {
+		return this.depclctmd;
+	}
+
+	public DependantMasterDataMap getDependantMasterDataMap() {
+		return this.depmd;
+	}
+
+	public void setDependantMasterDataMap(DependantMasterDataMap depmd) {
+		this.depmd = depmd;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("entity=").append(getCollectableEntity());
+		result.append(",vo=").append(getMasterDataCVO());
+		result.append(",dep=").append(getDependantMasterDataMap());
+		result.append(",cdep=").append(getDependantCollectableMasterDataMap());
+		result.append(",id=").append(getId());
+		result.append(",label=").append(getIdentifierLabel());
+		result.append(",complete=").append(isComplete());
+		result.append("]");
+		return result.toString();
+	}
+	
 	/**
 	 * inner class MakeCollectable: makes a <code>MasterDataVO</code> <code>Collectable</code>.
 	 */
@@ -173,15 +200,4 @@ public class CollectableMasterData extends AbstractCollectable implements Remova
 		}
 	}
 
-	public DependantCollectableMasterDataMap getDependantCollectableMasterDataMap() {
-		return this.depclctmd;
-	}
-
-	public DependantMasterDataMap getDependantMasterDataMap() {
-		return this.depmd;
-	}
-
-	public void setDependantMasterDataMap(DependantMasterDataMap depmd) {
-		this.depmd = depmd;
-	}
 }	// class CollectableMasterData

@@ -152,6 +152,20 @@ public class CollectableTask extends AbstractCollectableBean<TaskVO> {
 		return this.getTaskVO().getVersion();
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("entity=").append(getCollectableEntity());
+		result.append(",vo=").append(getBean());
+		result.append(",taskVo=").append(getTaskVO());
+		result.append(",id=").append(getId());
+		result.append(",label=").append(getIdentifierLabel());
+		result.append(",complete=").append(isComplete());
+		result.append("]");
+		return result.toString();
+	}
+	
 	public static class MakeCollectable implements Transformer<TaskVO, CollectableTask> {
 		@Override
 		public CollectableTask transform(TaskVO taskvo) {

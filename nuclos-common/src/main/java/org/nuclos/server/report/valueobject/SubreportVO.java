@@ -119,4 +119,15 @@ public class SubreportVO extends NuclosValueObject {
 		}
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",srcFile=").append(getSourcefileName());
+		result.append(",param=").append(getParameter());
+		result.append("]");
+		return result.toString();
+	}
+
 }	// class ReportVO

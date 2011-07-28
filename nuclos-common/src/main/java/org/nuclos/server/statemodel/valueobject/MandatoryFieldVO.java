@@ -88,4 +88,16 @@ public class MandatoryFieldVO extends NuclosValueObject {
 	public void setStateId(Integer stateId) {
 		this.stateId = stateId;
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",fieldId=").append(getFieldId());
+		result.append(",stateId=").append(getStateId());
+		result.append("]");
+		return result.toString();
+	}
+
 }

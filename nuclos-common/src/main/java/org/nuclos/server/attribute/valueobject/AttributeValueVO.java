@@ -165,4 +165,15 @@ public class AttributeValueVO extends NuclosValueObject {
 		}
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",value=").append(getValue());
+		result.append(",mnemonic=").append(getMnemonic());
+		result.append("]");
+		return result.toString();
+	}
+
 }	// class AttributeValueVO

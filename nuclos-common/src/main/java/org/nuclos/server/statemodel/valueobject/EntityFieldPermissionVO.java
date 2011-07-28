@@ -151,4 +151,17 @@ public class EntityFieldPermissionVO extends NuclosValueObject {
 	public void setWriteable(boolean writeable) {
 		this.writeable = writeable;
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",fieldId=").append(getFieldId());
+		result.append(",roleId=").append(getRoleId());
+		result.append(",stateId=").append(getStateId());
+		result.append("]");
+		return result.toString();
+	}
+
 }

@@ -197,4 +197,20 @@ public class AttributegroupPermissionVO extends NuclosValueObject {
 	public void setWritable(boolean writeable) {
 		this.writeable = writeable;
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",role=").append(getRole());
+		result.append(",roleId=").append(getRoleId());
+		result.append(",state=").append(getState());
+		result.append(",stateId=").append(getStateId());
+		result.append(",agroup=").append(getAttributegroup());
+		result.append(",agroupId=").append(getAttributegroupId());
+		result.append("]");
+		return result.toString();
+	}
+
 }

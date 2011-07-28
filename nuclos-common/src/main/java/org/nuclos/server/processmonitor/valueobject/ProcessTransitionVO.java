@@ -221,4 +221,17 @@ public class ProcessTransitionVO extends NuclosValueObject {
 		this.iProcessMonitorId = iProcessMonitorId;
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",stateSrcId=").append(getStateSource());
+		result.append(",stateTargetId=").append(getStateTarget());
+		result.append(",stateId=").append(getState());
+		result.append(",generationId=").append(getGenerationId());
+		result.append("]");
+		return result.toString();
+	}
+
 }	// class StateTransitionVO

@@ -35,10 +35,11 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class CollectableEntityObject extends CollectableMasterData implements Removable {
 
-	CollectableEOEntity ceoe;
+	private CollectableEOEntity ceoe;
+	
 	private final Map<String, CollectableField> mpFields = CollectionUtils.newHashMap();
 
-	EntityObjectVO vo;
+	private EntityObjectVO vo;
 
 	public CollectableEntityObject(CollectableMasterDataEntity clcte, MasterDataVO mdvo) {
 		super(clcte, mdvo);
@@ -116,6 +117,23 @@ public class CollectableEntityObject extends CollectableMasterData implements Re
 		return this.vo;
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("entity=").append(getCollectableEntity());
+		result.append(",vo=").append(getEntityObjectVO());
+		result.append(",meta=").append(getCollectableEOEntity());
+		result.append(",mdVo=").append(getMasterDataCVO());
+		result.append(",dep=").append(getDependantMasterDataMap());
+		result.append(",cdep=").append(getDependantCollectableMasterDataMap());
+		result.append(",id=").append(getId());
+		result.append(",label=").append(getIdentifierLabel());
+		result.append(",complete=").append(isComplete());
+		result.append("]");
+		return result.toString();
+	}
+	
 	/**
 	 * inner class MakeCollectable: makes a <code>MasterDataVO</code> <code>Collectable</code>.
 	 */

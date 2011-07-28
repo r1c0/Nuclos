@@ -117,6 +117,15 @@ public class NuclosValueObject extends AbstractNuclosValueObject<Integer> {
 	 */
 	public void validate() throws CommonValidationException {
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append("]");
+		return result.toString();
+	}
 
 	/**
 	 * inner class <code>GetId</code>: transforms an <code>NuclosValueObject</code> into its id.

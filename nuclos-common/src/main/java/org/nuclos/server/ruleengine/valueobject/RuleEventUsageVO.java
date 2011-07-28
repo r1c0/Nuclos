@@ -186,4 +186,18 @@ public class RuleEventUsageVO extends NuclosValueObject {
 			throw new CommonValidationException("ruleengine.error.validation.event.order");
 		}
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",entity=").append(getEntity());
+		result.append(",event=").append(getEntity());
+		result.append(",rule=").append(getRule());
+		result.append(",order=").append(getOrder());
+		result.append("]");
+		return result.toString();
+	}
+
 }

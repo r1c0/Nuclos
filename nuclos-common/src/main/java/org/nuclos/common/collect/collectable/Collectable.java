@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.collect.collectable;
 
+import org.nuclos.common.HasId;
 import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
@@ -34,7 +35,7 @@ import org.nuclos.common2.exception.CommonFatalException;
  * getCollectableEntity(), maybe it's time to pull that method down. Even a getEntityName() would be very nice.
  * @see org.nuclos.client.ui.collect.CollectController#readCollectable(Collectable)
  */
-public interface Collectable {
+public interface Collectable extends HasId<Object> {
 
 	/**
 	 * @return the identifier of this <code>Collectable</code>. In database applications, this is the primary key.

@@ -138,4 +138,17 @@ public class InstanceVO extends NuclosValueObject{
 		this.mdVO.setField("realend", this.getRealend());
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",name=").append(getName());
+		result.append(",mdVo=").append(getMasterDataVO());
+		result.append(",pm=").append(getProcessmonitor());
+		result.append(",pmId=").append(getProcessmonitorId());
+		result.append("]");
+		return result.toString();
+	}
+
 }

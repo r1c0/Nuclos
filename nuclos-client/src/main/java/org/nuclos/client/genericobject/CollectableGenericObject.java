@@ -211,4 +211,17 @@ public class CollectableGenericObject extends AbstractCollectable implements Rem
 //						this.getField(sFieldName) + " (erwartet: " + clctfValue + ")";
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("entity=").append(getCollectableEntity());
+		result.append(",vo=").append(getGenericObjectCVO());
+		result.append(",id=").append(getId());
+		result.append(",label=").append(getIdentifierLabel());
+		result.append(",complete=").append(isComplete());
+		result.append("]");
+		return result.toString();
+	}
+	
 }	// class CollectableGenericObject

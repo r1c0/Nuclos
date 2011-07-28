@@ -236,4 +236,18 @@ public class LogbookVO extends NuclosValueObject {
 	public boolean isMigrated() {
 		return isMigrated;
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",label=").append(getLabel());
+		result.append(",fieldId=").append(getAttribute());
+		result.append(",mdAction=").append(getMasterDataAction());
+		result.append(",goId=").append(getGenericObject());
+		result.append("]");
+		return result.toString();
+	}
+
 }

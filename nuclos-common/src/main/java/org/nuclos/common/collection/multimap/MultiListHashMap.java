@@ -184,12 +184,15 @@ public class MultiListHashMap<K,V> implements MultiListMap<K, V>, Serializable {
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
-		result.append(getClass().getName()).append("[\n");
+		result.append(getClass().getName()).append("[");
 		for (K k: keySet()) {
-			final List<V> l = getValues(k);
-			result.append("\t").append(k).append(" => ").append(l);
+			final List<V> list = getValues(k);
+			result.append("\n\t").append(k).append(" => ");
+			for (V v: list) {
+				result.append("\n\t\t").append(v);
+			}
 		}
-		result.append("]");
+		result.append("\n]");
 		return result.toString();
 	}
 

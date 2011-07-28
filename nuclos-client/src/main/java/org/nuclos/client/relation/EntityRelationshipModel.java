@@ -116,8 +116,7 @@ public class EntityRelationshipModel extends AbstractCollectableBean<EntityRelat
 		this.xmlModel = xml;
 	}
 	
-	public MasterDataVO getMasterDataVO() {
-		
+	public MasterDataVO getMasterDataVO() {	
 		Map<String, Object> mpFields = new HashMap<String, Object>();
 		mpFields.put("name", this.getValue("name"));
 		mpFields.put("description", this.getValue("description"));
@@ -125,11 +124,21 @@ public class EntityRelationshipModel extends AbstractCollectableBean<EntityRelat
 		MasterDataVO mdvo = new MasterDataVO(this.getId(), this.getBean().getCreatedAt(), this.getBean().getCreatedBy(),
 			this.getBean().getChangedAt(), this.getBean().getChangedBy(), this.getVersion(), mpFields);
 		
-		
 		return mdvo;
-		
 	}
 
-	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("entity=").append(getCollectableEntity());
+		result.append(",vo=").append(getBean());
+		result.append(",mdVo=").append(getMasterDataVO());
+		result.append(",id=").append(getId());
+		result.append(",label=").append(getIdentifierLabel());
+		result.append(",complete=").append(isComplete());
+		result.append("]");
+		return result.toString();
+	}	
 
 }	// class CollectableStateModel

@@ -159,4 +159,17 @@ public class SearchFilterUserVO extends NuclosValueObject {
 		
 		return mdVO;
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",user=").append(getUser());
+		result.append(",forced=").append(isForced());
+		result.append(",filterId=").append(getSearchFilter());
+		result.append("]");
+		return result.toString();
+	}
+
 }

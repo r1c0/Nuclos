@@ -91,4 +91,17 @@ public class GenericObjectRelationVO extends NuclosValueObject {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",relType=").append(getRelationType());
+		result.append(",destId=").append(getDestinationGOId());
+		result.append(",srcId=").append(getSourceGOId());
+		result.append("]");
+		return result.toString();
+	}
+
 }

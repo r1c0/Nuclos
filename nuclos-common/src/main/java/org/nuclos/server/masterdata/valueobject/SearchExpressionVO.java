@@ -43,29 +43,48 @@ public class SearchExpressionVO extends NuclosValueObject {
 		this.sFieldValueId = sFieldValueId;
 	}
 	
-	
 	public String getFieldName() {
 		return sFieldName;
 	}
+	
 	public void setFieldName(String fieldName) {
 		sFieldName = fieldName;
 	}
+	
 	public String getOperator() {
 		return sOperator;
 	}
+	
 	public void setOperator(String operator) {
 		sOperator = operator;
 	}
+	
 	public String getFieldValue() {
 		return sFieldValue;
 	}
+	
 	public void setFieldValue(String fieldValue) {
 		sFieldValue = fieldValue;
 	}
+	
 	public String getFieldValueId() {
 		return sFieldValueId;
 	}
+	
 	public void setFieldValueId(String fieldValueId) {
 		sFieldValueId = fieldValueId;
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",fieldName=").append(getFieldName());
+		result.append(",fieldValue=").append(getFieldValue());
+		result.append(",op=").append(getOperator());
+		result.append("]");
+		return result.toString();
+	}
+
 }

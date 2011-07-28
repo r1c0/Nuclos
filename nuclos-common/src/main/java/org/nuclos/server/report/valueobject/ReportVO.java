@@ -224,4 +224,15 @@ public class ReportVO extends NuclosValueObject {
 		}
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",name=").append(getName());
+		result.append(",dsId=").append(getDatasourceId());
+		result.append("]");
+		return result.toString();
+	}
+
 }	// class ReportVO

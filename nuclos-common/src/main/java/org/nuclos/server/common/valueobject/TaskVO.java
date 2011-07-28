@@ -297,4 +297,18 @@ public class TaskVO extends NuclosValueObject {
 	public int hashCode() {
 		return (this.getId() != null ? this.getId().hashCode() : 0);
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",name=").append(getName());
+		result.append(",identifier=").append(getIdentifier());
+		result.append(",prio=").append(getPriority());
+		result.append(",status=").append(getTaskstatus());
+		result.append("]");
+		return result.toString();
+	}
+
 }

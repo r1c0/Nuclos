@@ -66,6 +66,9 @@ public class CollectableEOEntity implements CollectableEntity {
 		return mapEfMeta.containsKey("name")? mapEfMeta.get("name").getField(): null;
 	}
 
+	/**
+	 * @deprecated Sollte nicht mehr verwendet werden da dies \u00fcber die Locale gesteuert wird!
+	 */
 	@Override
 	public String getLabel() {
 		// sollte nicht mehr verwendet werden da dies \u00fcber die Locale gesteuert wird!

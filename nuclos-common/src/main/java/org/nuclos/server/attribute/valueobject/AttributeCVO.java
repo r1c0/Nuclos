@@ -889,6 +889,18 @@ public class AttributeCVO extends NuclosValueObject implements Cloneable {
 		return result;
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",name=").append(getName());
+		result.append(",label=").append(getLabel());
+		result.append(",type=").append(getJavaClass().getName());
+		result.append("]");
+		return result.toString();
+	}
+
 	/**
 	 * Predicate IsCalculated
 	 */

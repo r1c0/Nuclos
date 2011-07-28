@@ -205,9 +205,14 @@ public class StateTransitionVO extends NuclosValueObject {
 
 	@Override
 	public String toString() {
-		return "";
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",stateSrc=").append(getStateSource());
+		result.append(",stateTarget=").append(getStateTarget());
+		result.append(",clientId=").append(getClientId());
+		result.append("]");
+		return result.toString();
 	}
-	
-	
 
 }	// class StateTransitionVO

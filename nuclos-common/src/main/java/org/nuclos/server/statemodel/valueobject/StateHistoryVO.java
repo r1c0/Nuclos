@@ -114,4 +114,16 @@ public class StateHistoryVO extends NuclosValueObject {
 	public void setStateName(String sStateName) {
 		this.sStateName = sStateName;
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",state=").append(getStateName());
+		result.append(",goId=").append(getGenericObjectId());
+		result.append("]");
+		return result.toString();
+	}
+
 }

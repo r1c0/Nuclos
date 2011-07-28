@@ -95,4 +95,18 @@ public class GenericObjectWithDependantsVO extends GenericObjectVO {
 		this.govoParent = govoParent;
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append("GenericObjectWithDependantsVO[");
+		result.append("id=").append(getId());
+		result.append(",moduleId=").append(getModuleId());
+		result.append(",instanceId=").append(getInstanceId());
+		result.append(",parent=").append(govoParent);
+		result.append(",statusId=").append(getStatusId());
+		result.append(",dependants=").append(mpDependants);
+		result.append("]");
+		return result.toString();
+	}
+	
 }	// class GenericObjectWithDependantsVO

@@ -231,4 +231,18 @@ public class TimelimitTaskVO extends NuclosValueObject {
 
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",identifier=").append(getIdentifier());
+		result.append(",process=").append(getProcess());
+		result.append(",status=").append(getStatus());
+		result.append(",goId=").append(getGenericObjectId());
+		result.append(",moduleId=").append(getModuleId());
+		result.append("]");
+		return result.toString();
+	}
+
 }	// class TimelimitTaskVO

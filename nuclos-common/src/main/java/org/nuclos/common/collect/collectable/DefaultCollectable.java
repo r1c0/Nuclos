@@ -93,4 +93,16 @@ public class DefaultCollectable extends AbstractCollectable {
 		this.getCollectableEntity().getEntityField(sFieldName);
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("entity=").append(getCollectableEntity());
+		result.append(",id=").append(getId());
+		result.append(",label=").append(getIdentifierLabel());
+		result.append(",complete=").append(isComplete());
+		result.append("]");
+		return result.toString();
+	}
+	
 }  // class DefaultCollectable

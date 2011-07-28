@@ -301,4 +301,18 @@ public class MasterDataMetaFieldVO extends NuclosValueObject {
 	public boolean isIndexed() {
 		return bIndexed;
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("id=").append(getId());
+		result.append(",field=").append(getFieldName());
+		result.append(",type=").append(getJavaClass().getName());
+		result.append(",refField=").append(getForeignEntityField());
+		result.append(",refEntity=").append(getForeignEntity());
+		result.append("]");
+		return result.toString();
+	}
+
 }	// class MasterDataMetaFieldVO
