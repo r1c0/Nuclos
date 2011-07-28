@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
-import org.nuclos.client.ui.table.AbstractListTableModel;
+import org.nuclos.client.ui.model.AbstractListTableModel;
 import org.nuclos.common2.CommonLocaleDelegate;
 
 

@@ -16,7 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.timelimit;
 
-import org.nuclos.client.ui.collect.SortableCollectableTableModelImpl;
+import org.nuclos.client.ui.collect.model.SortableCollectableTableModelImpl;
 import org.nuclos.server.common.valueobject.TimelimitTaskVO;
 
 /**

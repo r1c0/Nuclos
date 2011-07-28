@@ -45,7 +45,7 @@ import org.jdesktop.swingx.JXTable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.nuclos.client.ui.table.AbstractListTableModel;
+import org.nuclos.client.ui.model.AbstractListTableModel;
 import org.nuclos.common2.StringUtils;
 
 public class L10nTool extends JXFrame{

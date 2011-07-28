@@ -24,7 +24,6 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,8 +42,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
-import javax.swing.SortOrder;
 import javax.swing.RowSorter.SortKey;
+import javax.swing.SortOrder;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.ClientParameterProvider;
@@ -56,7 +55,6 @@ import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
-import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
 import org.nuclos.client.ui.Errors;
@@ -65,9 +63,10 @@ import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.StatusBarTextField;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
-import org.nuclos.client.ui.collect.CollectableTableModel;
-import org.nuclos.client.ui.collect.SortableCollectableTableModel;
-import org.nuclos.client.ui.collect.SortableCollectableTableModelImpl;
+import org.nuclos.client.ui.collect.model.CollectableTableModel;
+import org.nuclos.client.ui.collect.model.GenericObjectsResultTableModel;
+import org.nuclos.client.ui.collect.model.MasterDataResultTableModel;
+import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
@@ -76,20 +75,15 @@ import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableUtils;
-import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
-import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common.genericobject.GenericObjectUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
-import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 
 /**
  * View on a list of leased objects.
@@ -207,10 +201,10 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 		final CollectableEntity clcteMain = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(filter.getEntityName());//CollectableGenericObjectEntity.getByModuleId(filter.getModuleId());
 		final SortableCollectableTableModel<Collectable> result;
 		if (Modules.getInstance().isModuleEntity(filter.getEntityName())) {
-			result = GenericObjectClientUtils.newGenericObjectsResultTableModel(clcteMain, getColumnOrderFromPreferences());
+			result = new GenericObjectsResultTableModel<Collectable>(clcteMain, getColumnOrderFromPreferences());
 		}
 		else {
-			result = newMasterDataResultTableModel(clcteMain, getColumnOrderFromPreferences());
+			result = new MasterDataResultTableModel<Collectable>(clcteMain, getColumnOrderFromPreferences());
 
 		}
 		result.setCollectables(new ArrayList<Collectable>(collclct));
@@ -337,61 +331,6 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 
 	private Preferences getPreferences() {
 		return org.nuclos.common2.ClientPreferences.getUserPreferences().node("taskPanel").node(getFilter().getId().toString());
-	}
-
-	private SortableCollectableTableModel<Collectable> newMasterDataResultTableModel(final CollectableEntity clcteMain, final List<? extends CollectableEntityField> lstclctefSelected) {
-		final SortableCollectableTableModel<Collectable> result = new SortableCollectableTableModelImpl<Collectable>(clcteMain.getName()) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public CollectableField getValueAt(int iRow, int iColumn) {
-				final Collectable clct = this.getCollectable(iRow);
-				final CollectableEntityFieldWithEntity clctefwe = (CollectableEntityFieldWithEntity) this.getCollectableEntityField(iColumn);
-				final String sFieldName = clctefwe.getName();
-
-				final String sFieldEntityName = clctefwe.getCollectableEntityName();
-				final String sMainEntityName = clcteMain.getName();
-
-				CollectableField result;
-				if (sFieldEntityName.equals(sMainEntityName)) {
-					result = clct.getField(sFieldName);
-				}
-				else {
-					final MasterDataWithDependantsVO mdwdvo = ((CollectableMasterDataWithDependants) clct).getMasterDataWithDependantsCVO();
-					if (sFieldEntityName.equals(Modules.getInstance().getParentEntityName(sMainEntityName))) {
-
-						/** @todo assert govoParent != null */
-						if (mdwdvo == null) {
-							result = clctefwe.getNullField();
-						}
-						else {
-							result = new CollectableMasterData(((CollectableMasterDataWithDependants) clct).getCollectableEntity(), mdwdvo).getField(sFieldName);
-						}
-					}
-					else {
-						final Collection<EntityObjectVO> collmdvo = mdwdvo.getDependants().getData(sFieldEntityName);
-						result = new CollectableValueField(GenericObjectUtils.getConcatenatedValue(collmdvo, sFieldName));
-					}
-				}
-
-				// set output format
-				final Class<?> cls = clctefwe.getJavaClass();
-				if (Number.class.isAssignableFrom(cls)) {
-					String sFormatOutput = clctefwe.getField().getFormatOutput();
-					if (result.getValue() != null && sFormatOutput != null && !sFormatOutput.equals("")) {
-						final DecimalFormat df =   new DecimalFormat(sFormatOutput);
-						result = new CollectableValueField(df.format(result.getValue()));
-					}
-				}
-
-				return result;
-			}
-		};
-		result.setColumns(lstclctefSelected);
-		return result;
 	}
 
 	@Override

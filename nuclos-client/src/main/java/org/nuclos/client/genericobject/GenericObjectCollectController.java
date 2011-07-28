@@ -144,10 +144,8 @@ import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateConstants;
 import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.CollectableComponentsProvider;
-import org.nuclos.client.ui.collect.CollectableTableModel;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.DeleteSelectedCollectablesController;
-import org.nuclos.client.ui.collect.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.UpdateSelectedCollectablesController.UpdateAction;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
@@ -174,6 +172,9 @@ import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchEditModel;
 import org.nuclos.client.ui.collect.detail.DetailsCollectableEventListener;
 import org.nuclos.client.ui.collect.detail.DetailsPanel;
+import org.nuclos.client.ui.collect.model.CollectableTableModel;
+import org.nuclos.client.ui.collect.model.GenericObjectsResultTableModel;
+import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.result.GenericObjectResultController;
 import org.nuclos.client.ui.collect.result.NuclosSearchResultStrategy;
 import org.nuclos.client.ui.collect.result.ResultController;
@@ -2197,8 +2198,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	@Override
 	protected SortableCollectableTableModel<CollectableGenericObjectWithDependants> newResultTableModel() {
 		final SortableCollectableTableModel<CollectableGenericObjectWithDependants> result = 
-			GenericObjectClientUtils.<CollectableGenericObjectWithDependants>newGenericObjectsResultTableModel(
-					getCollectableEntity(), getFields().getSelectedFields());
+				new GenericObjectsResultTableModel<CollectableGenericObjectWithDependants>(
+							getCollectableEntity(), getFields().getSelectedFields());
 
 		// setup sorted fields and sorting order from preferences
 		List<SortKey> sortKeys = readColumnOrderFromPreferences();

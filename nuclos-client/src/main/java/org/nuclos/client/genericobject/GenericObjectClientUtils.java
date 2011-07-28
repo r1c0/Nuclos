@@ -32,8 +32,8 @@ import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.collect.CollectController;
-import org.nuclos.client.ui.collect.SortableCollectableTableModel;
-import org.nuclos.client.ui.collect.SortableCollectableTableModelImpl;
+import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
+import org.nuclos.client.ui.collect.model.SortableCollectableTableModelImpl;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.NuclosEOField;
@@ -184,75 +184,6 @@ public class GenericObjectClientUtils {
 			}
 		});
 		return clctefwefe;
-	}
-
-	/**
-	 * @param clcteMain
-	 * @param lstclctefSelected
-	 * @return a <code>SortableCollectableTableModel</code> that can be used in the leased object results and in the leasedo bject task views.
-	 * Each row in the model is a <code>CollectableGenericObjectWithDependants</code>.
-	 * @todo this is not the right place for this method
-	 */
-	public static <Clct extends Collectable> SortableCollectableTableModel<Clct> newGenericObjectsResultTableModel(final CollectableEntity clcteMain, final List<? extends CollectableEntityField> lstclctefSelected) {
-		final SortableCollectableTableModel<Clct> result = new SortableCollectableTableModelImpl<Clct>(clcteMain.getName()) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public CollectableField getValueAt(int iRow, int iColumn) {
-				/* @todo How shall we handle exceptions here?!
-				 * (a) pass thru: BAD IDEA! - painting fails, and the GUI looks really weird.
-				 * (b) catch and return null: BAD IDEA!!! - We ignore the error and deliberately return a false value - DON'T!!!
-				 * (c) catch and return "#ERROR#":  Now this is stupid.
-				 * (d) catch, remember exception and let anybody (WHO/WHEN?!) check if an exception was thrown here
-				 * Good ideas, anyone???
-				 */
-				final Collectable clct = this.getCollectable(iRow);
-				final CollectableEntityFieldWithEntity clctefwe = (CollectableEntityFieldWithEntity) this.getCollectableEntityField(iColumn);
-				final String sFieldName = clctefwe.getName();
-
-				final String sFieldEntityName = clctefwe.getCollectableEntityName();
-				final String sMainEntityName = clcteMain.getName();
-
-				CollectableField result;
-				if (sFieldEntityName.equals(sMainEntityName)) {
-					result = clct.getField(sFieldName);
-				}
-				else {
-					final GenericObjectWithDependantsVO lowdcvo = ((CollectableGenericObjectWithDependants) clct).getGenericObjectWithDependantsCVO();
-					if (sFieldEntityName.equals(Modules.getInstance().getParentEntityName(sMainEntityName))) {
-						final GenericObjectVO govoParent = lowdcvo.getParent();
-						/** @todo assert govoParent != null */
-						if (govoParent == null) {
-							result = clctefwe.getNullField();
-						}
-						else {
-							result = new CollectableGenericObject(govoParent).getField(sFieldName);
-						}
-					}
-					else {
-						final Collection<EntityObjectVO> collmdvo = lowdcvo.getDependants().getData(sFieldEntityName);
-						result = new CollectableValueField(GenericObjectUtils.getConcatenatedValue(collmdvo, sFieldName));
-					}
-				}
-				
-				// set output format
-				final Class<?> cls = clctefwe.getJavaClass();
-				if (Number.class.isAssignableFrom(cls)) {
-					String sFormatOutput = clctefwe.getField().getFormatOutput();
-					if (result.getValue() != null && sFormatOutput != null && !sFormatOutput.equals("")) {
-						final DecimalFormat df =   new DecimalFormat(sFormatOutput);
-						result = new CollectableValueField(df.format(result.getValue()));
-					}			
-				}
-				
-				return result;
-			}
-		};
-		result.setColumns(lstclctefSelected);
-		return result;
 	}
 
 	/**

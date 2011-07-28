@@ -101,7 +101,7 @@ import org.nuclos.client.scripting.GroovySupport;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.client.ui.table.AbstractListTableModel;
+import org.nuclos.client.ui.model.AbstractListTableModel;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.client.ui.util.TableLayoutBuilder;
 import org.nuclos.client.wizard.util.NuclosWizardUtils;

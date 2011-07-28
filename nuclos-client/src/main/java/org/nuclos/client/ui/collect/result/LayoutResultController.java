@@ -23,7 +23,7 @@ import javax.swing.RowSorter.SortKey;
 import org.nuclos.client.layout.admin.LayoutCollectController;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.ui.Errors;
-import org.nuclos.client.ui.collect.SortableCollectableTableModel;
+import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common2.CommonLocaleDelegate;

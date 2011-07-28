@@ -14,7 +14,7 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.client.ui.collect;
+package org.nuclos.client.ui.collect.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +25,7 @@ import java.util.NoSuchElementException;
 import javax.swing.event.TableModelEvent;
 
 import org.apache.commons.lang.NullArgumentException;
-import org.nuclos.client.ui.table.AbstractListTableModel;
+import org.nuclos.client.ui.model.AbstractListTableModel;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;

@@ -103,6 +103,7 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEve
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
+import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
 import org.nuclos.client.ui.event.PopupMenuMouseAdapter;
 import org.nuclos.client.ui.event.TableColumnModelAdapter;
 import org.nuclos.client.ui.labeled.LabeledComponent;

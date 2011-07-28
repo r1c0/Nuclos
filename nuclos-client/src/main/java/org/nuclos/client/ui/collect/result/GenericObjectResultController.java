@@ -40,7 +40,7 @@ import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.PivotController;
 import org.nuclos.client.ui.collect.PivotPanel;
 import org.nuclos.client.ui.collect.SelectFixedColumnsController;
-import org.nuclos.client.ui.collect.SortableCollectableTableModel;
+import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.collect.collectable.CollectableEntity;

@@ -48,9 +48,9 @@ import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
-import org.nuclos.client.ui.collect.CollectableEntityFieldBasedTableModel;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
+import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.server.console.ejb3.ConsoleFacadeRemote;
 

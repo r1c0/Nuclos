@@ -55,7 +55,7 @@ public class CollectableGenericObject extends AbstractCollectable implements Rem
 	 * @param govo
 	 * @precondition govo != null
 	 */
-	protected CollectableGenericObject(GenericObjectVO govo) {
+	public CollectableGenericObject(GenericObjectVO govo) {
 		if (govo == null) {
 			throw new NullArgumentException("govo");
 		}

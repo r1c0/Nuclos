@@ -24,7 +24,7 @@ import java.util.Comparator;
 import java.util.Date;
 
 import org.nuclos.client.attribute.AttributeCache;
-import org.nuclos.client.ui.table.AbstractListTableModel;
+import org.nuclos.client.ui.model.AbstractListTableModel;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.nuclos.server.genericobject.valueobject.LogbookVO;

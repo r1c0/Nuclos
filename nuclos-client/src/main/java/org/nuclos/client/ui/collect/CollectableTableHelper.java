@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 
+import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collection.CollectionUtils;
 
