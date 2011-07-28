@@ -86,6 +86,7 @@ public class LocalUserProperties extends java.util.Properties {
     public static final String KEY_ERR_PASSWORD_MATCH = "changepassword.err.nomatch";
 
     public static final String KEY_ERR_EXIT = "login.err.exit";
+    public static final String KEY_ERR_ACCESS_DENIED = "access.denied.exit";
 
     private static final Map<String, String> defaults;
     static {
@@ -112,6 +113,7 @@ public class LocalUserProperties extends java.util.Properties {
     	t.put(KEY_LAB_NEWPW2, "Repeat new password");
     	t.put(KEY_ERR_PASSWORD_MATCH, "Passwords do not match");
     	t.put(KEY_ERR_EXIT, "Authentication not possible. Client will shut down.");
+    	t.put(KEY_ERR_ACCESS_DENIED, "Access denied. Client will shut down.");
 
     	t.put("invalid.login.exception", "Wrong password.");
     	t.put("exception.password.history", "The password does not meet the security guidelines concerning the password history.");

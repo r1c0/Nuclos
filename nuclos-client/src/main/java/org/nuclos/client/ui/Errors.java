@@ -28,12 +28,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.rmi.NoSuchObjectException;
-import java.rmi.ServerException;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 
-import javax.security.auth.login.LoginException;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
@@ -48,6 +45,7 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonRemoteException;
 import org.springframework.remoting.RemoteAccessException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 
 /**
@@ -137,63 +135,35 @@ public class Errors {
 					// if the reason is a RemoteAccessException, check if user needs to re-authenticate
 					Throwable authexception = getCause(t, RemoteAccessException.class);
 					if (authexception != null) {
-						try {
-							NuclosRemoteServerSession.authenticate();
-						}
-						catch (AuthenticationException ex2) {
-							LoginController lc = new LoginController(Main.getMainFrame());
-
-							if (!lc.run(Main.getMainFrame())) {
-								String message = LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_EXIT);
-								JOptionPane.showMessageDialog(Main.getMainFrame(), message, "Nuclos", JOptionPane.ERROR_MESSAGE);
-								System.exit(1);
+						synchronized (singleton) {
+							try {
+								NuclosRemoteServerSession.authenticate();
 							}
-							else {
-								return;
+							catch (AuthenticationException ex2) {
+								LoginController lc = new LoginController(Main.getMainFrame());
+
+								if (!lc.run(Main.getMainFrame())) {
+									String message = LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_EXIT);
+									JOptionPane.showMessageDialog(Main.getMainFrame(), message, ApplicationProperties.getInstance().getName(), JOptionPane.ERROR_MESSAGE);
+									System.exit(1);
+								}
+								else {
+									return;
+								}
 							}
 						}
 					}
 
-					if (t instanceof RuntimeException || t instanceof Error || t instanceof LoginException) {
-						if (t.getCause() != null && t.getCause() instanceof NoSuchObjectException) {
-							/** @todo pass message to critical error handler */
-							getCriticalErrorHandler().handleCriticalError(parent, new Error(t));
-							return;
-						} else if (t.getCause() instanceof java.rmi.ConnectException) {
-							if (forceDetailDialog)
-								Errors.this.showDetailedExceptionDialog(parent, failsafeGetMessage("Errors.2","The connection to the server has dropped.\nPlease restart the application."), t, Errors.this.getAppName(), JOptionPane.ERROR_MESSAGE);
-							else
-								Errors.this.showNiceExceptionDialog(parent, failsafeGetMessage("Errors.2","The connection to the server has dropped.\nPlease restart the application."), Errors.this.getAppName(), (Exception) t, JOptionPane.ERROR_MESSAGE);
-							return;
-						}
-						else
-						/** @todo refactor. try to find an generic way... */
-							if (t.getCause() != null && t.getCause() instanceof ServerException) {
-								Throwable tDetail = ((ServerException) t.getCause()).detail;
-								tDetail = tDetail != null && tDetail instanceof RuntimeException ? tDetail : ((ServerException) tDetail).detail;
-								if (tDetail != null && tDetail.getCause() != null && tDetail.getCause() instanceof SQLException) {
-									if (((SQLException) tDetail.getCause()).getErrorCode() == 17002)
-									{// this E/A-Exception Code is only for Oracle
-										getCriticalErrorHandler().handleCriticalError(parent, new Error(tDetail));
-										return;
-									}
-								}
-							}
-							if (t.getCause() != null && t.getCause().getCause() instanceof LoginException) {
-								if (forceDetailDialog)
-									Errors.this.showDetailedExceptionDialog(parent, failsafeGetMessage("Errors.1","The password has been changed. Please re-login."), t, Errors.this.getAppName(), JOptionPane.ERROR_MESSAGE);
-								else
-									Errors.this.showNiceExceptionDialog(parent, failsafeGetMessage("Errors.1","The password has been changed. Please re-login."), Errors.this.getAppName(), (Exception) t, JOptionPane.ERROR_MESSAGE);
-								return;
-							}
-							if (t instanceof LoginException) {
-								if (forceDetailDialog)
-									Errors.this.showDetailedExceptionDialog(parent, sErrorMsg, t, Errors.this.getAppName(), JOptionPane.ERROR_MESSAGE);
-								else
-									Errors.this.showNiceExceptionDialog(parent, sErrorMsg, Errors.this.getAppName(), (Exception) t, JOptionPane.ERROR_MESSAGE);
-								return;
-							}
-							Errors.this.showDetailedExceptionDialog(parent, sErrorMsg, t, Errors.this.getAppName(), JOptionPane.ERROR_MESSAGE);
+					// if the reason is a AccessDeniedException, exit client
+					Throwable accessexception = getCause(t, AccessDeniedException.class);
+					if (accessexception != null) {
+						String message = LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_ACCESS_DENIED);
+						JOptionPane.showMessageDialog(Main.getMainFrame(), message, ApplicationProperties.getInstance().getName(), JOptionPane.ERROR_MESSAGE);
+						System.exit(1);
+					}
+
+					if (t instanceof RuntimeException || t instanceof Error) {
+						Errors.this.showDetailedExceptionDialog(parent, sErrorMsg, t, Errors.this.getAppName(), JOptionPane.ERROR_MESSAGE);
 					}
 					else {
 						if (forceDetailDialog) {

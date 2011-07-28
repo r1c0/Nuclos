@@ -65,6 +65,8 @@ import org.nuclos.server.security.NuclosLocalServerSession;
 import org.nuclos.server.statemodel.valueobject.StateModelUsages.StateModelUsage;
 import org.nuclos.server.statemodel.valueobject.StateModelUsagesCache;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * Singleton class for getting permissions.
@@ -894,22 +896,48 @@ public class SecurityCache implements SecurityCacheMBean {
 
 	@Override
 	public synchronized void invalidate() {
-		log.debug("Invalidating security cache...");
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+			@Override
+			public void afterCommit() {
+				log.debug("Invalidating security cache...");
 
-		this.mpUserRights.clear();
-		this.mpAttributeGroups.clear();
-		this.mpSubForms.clear();
+				mpUserRights.clear();
+				mpAttributeGroups.clear();
+				mpSubForms.clear();
 
-		this.mpAttributePermission.clear();
+				mpAttributePermission.clear();
 
-		this.notifyClients();
+				notifyClients();
+			}
+		});
 	}
 
-	public synchronized void invalidate(String username) {
-		if (mpUserRights.containsKey(username)) {
-			mpUserRights.remove(username);
+	public synchronized void invalidate(final String username) {
+		if (username != null) {
+			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+				@Override
+				public void afterCommit() {
+					log.debug("Invalidating security cache for user " + username + "...");
+					if (mpUserRights.containsKey(username)) {
+						mpUserRights.remove(username);
+					}
+					for (UserSubForm usf : new ArrayList<UserSubForm>(mpSubForms.keySet())) {
+						if (username.equals(usf.sUserName)) {
+							mpSubForms.remove(usf);
+						}
+					}
+					for (UserAttributeGroup uag : new ArrayList<UserAttributeGroup>(mpAttributeGroups.keySet())) {
+						if (username.equals(uag.sUserName)) {
+							mpAttributeGroups.remove(uag);
+						}
+					}
+					notifyUser(username);
+				}
+			});
 		}
-		notifyUser(username);
+		else {
+			invalidate();
+		}
 	}
 
 	public boolean hasUserRight(String sActioName) {

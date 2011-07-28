@@ -60637,6 +60637,21 @@
     "resourceID": "login.question.password.change",
     "locale": "de",
     "text": "Ihr Passwort wird in {0} Tagen ablaufen.\nMöchten Sie es jetzt ändern?"
+  },
+  {
+    "resourceID": "access.denied.exit",
+    "locale": "i-default",
+    "text": "Access denied. Client will shut down."
+  },
+  {
+    "resourceID": "access.denied.exit",
+    "locale": "en",
+    "text": "Access denied. Client will shut down."
+  },
+  {
+    "resourceID": "access.denied.exit",
+    "locale": "de",
+    "text": "Zugriff verweigert. Client wird beendet."
   }
 ]
 

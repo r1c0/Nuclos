@@ -16,10 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.security;
 
+import java.util.ArrayList;
 import java.util.Collection;
-
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
@@ -33,6 +31,7 @@ import org.springframework.security.authentication.rcp.RemoteAuthenticationExcep
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Propagation;
@@ -93,7 +92,9 @@ public class RemoteAuthenticationManager implements org.nuclos.common.security.R
 			authenticated = true;
 		}
 
-		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, ud.getPassword(), ud.getAuthorities());
+		ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+		authorities.add(new GrantedAuthorityImpl("Login"));
+		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, ud.getPassword(), authorities);
 		SecurityContextHolder.getContext().setAuthentication(auth);
 
 		if (authenticated) {

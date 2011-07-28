@@ -397,16 +397,20 @@ public class LoginController extends Controller {
 					}
 					catch (CredentialsExpiredException ex) {
 						ChangePasswordPanel cpp = new ChangePasswordPanel(false, new String(acPassword), true);
-						result = cpp.showInDialog(frame, new ChangePasswordPanel.ChangePasswordDelegate() {
+						boolean ok = cpp.showInDialog(frame, new ChangePasswordPanel.ChangePasswordDelegate() {
 							@Override
 							public void changePassword(String oldPw, String newPw) throws CommonBusinessException {
 								RemoteAuthenticationManager ram = SpringApplicationContextHolder.getBean(RemoteAuthenticationManager.class);
 								ram.changePassword(sUserName, new String(acPassword), newPw);
-								performLogin(sUserName, newPw.toCharArray());
+								loginPanel.tfPassword.setText(newPw);
 							}
 						});
-						if (!result) {
+						if (!ok) {
 							return result;
+						}
+						else {
+							performLogin(sUserName, loginPanel.tfPassword.getPassword());
+							result = true;
 						}
 					}
 
@@ -437,7 +441,7 @@ public class LoginController extends Controller {
 
 						props.setUserPasswd(
 							loginPanel.rememberPass.isSelected()
-							? CryptUtil.encryptAESHex(new String(acPassword), CRYPT)
+							? CryptUtil.encryptAESHex(new String(loginPanel.tfPassword.getPassword()), CRYPT)
 						    : "");
 
 						props.store();

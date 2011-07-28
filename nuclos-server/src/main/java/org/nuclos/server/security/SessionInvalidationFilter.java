@@ -60,7 +60,8 @@ public class SessionInvalidationFilter implements Filter {
 			try {
 				DateFormat format = DateFormat.getDateTimeInstance();
 				// invalidate session every 10 minutes, to force a re-authentication
-				if (session.getCreationTime() + (1000 * 60 * 10) < Calendar.getInstance().getTimeInMillis()) {
+				System.out.println(format.format(new Date(session.getCreationTime())));
+				if (session.getCreationTime() + (1000 * 60 * 5) < Calendar.getInstance().getTimeInMillis()) {
 					LOG.debug(MessageFormat.format("Invalidating HttpSession (CreationTime: {0})", format.format(new Date(session.getCreationTime()))));
 					session.invalidate();
 					session = request.getSession(true);

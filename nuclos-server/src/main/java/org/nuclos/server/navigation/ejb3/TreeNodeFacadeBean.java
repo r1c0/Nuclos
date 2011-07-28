@@ -30,9 +30,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
+import javax.annotation.security.RolesAllowed;
 
 import org.nuclos.common.AttributeProvider;
 import org.nuclos.common.EntityTreeViewVO;
@@ -116,10 +114,8 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @todo restrict
 */
-@Stateless
-@Local(TreeNodeFacadeLocal.class)
-@Remote(TreeNodeFacadeRemote.class)
 @Transactional
+@RolesAllowed("Login")
 public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFacadeLocal, TreeNodeFacadeRemote {
 
 	private static final int DEFAULT_ROWCOUNT_FOR_SEARCHRESULT = 500;
@@ -259,14 +255,14 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 
 		final String base = (String)mdcvoModule.getField("entity");
 		final Collection<MasterDataVO> mds = Modules.getInstance().getSubnodesMD(base);
-		final Collection<EntityTreeViewVO> etvs = Modules.getInstance().getSubnodesETV(base);		
+		final Collection<EntityTreeViewVO> etvs = Modules.getInstance().getSubnodesETV(base);
 		subformSubnodes(result, node, mds, etvs);
 		return result;
 	}
-	
-	private void subformSubnodes(final List<TreeNode> result, TreeNode node, 
-		Collection<MasterDataVO> mds, Collection<EntityTreeViewVO> etvs) 
-	{	
+
+	private void subformSubnodes(final List<TreeNode> result, TreeNode node,
+		Collection<MasterDataVO> mds, Collection<EntityTreeViewVO> etvs)
+	{
 		final Iterator<MasterDataVO> it1 = mds.iterator();
 		final Iterator<EntityTreeViewVO> it2 = etvs.iterator();
 		final NavigableMap<Integer,List<? extends TreeNode>> subforms = new TreeMap<Integer,List<? extends TreeNode>>();
@@ -274,10 +270,10 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		while (it1.hasNext()) {
 			final MasterDataVO mdvoSub = it1.next();
 			final EntityTreeViewVO etv = it2.next();
-			assert etv.getEntity().equals(mdvoSub.getField(EntityTreeViewVO.SUBFORM_ENTITY_FIELD)) 
+			assert etv.getEntity().equals(mdvoSub.getField(EntityTreeViewVO.SUBFORM_ENTITY_FIELD))
 				&& etv.getField().equals(mdvoSub.getField(EntityTreeViewVO.SUBFORM2ENTITY_REF_FIELD))
 				&& etv.getOriginentityid().equals(mdvoSub.getField(EntityTreeViewVO.ENTITY_FIELD));
-			
+
 			final String entity = etv.getEntity();
 			final String field = etv.getField();
 			final String foldername = etv.getFoldername();
@@ -490,7 +486,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	}
 
 	@Override
-	public NucletTreeNode getNucletTreeNode(Integer iId) throws CommonFinderException {		
+	public NucletTreeNode getNucletTreeNode(Integer iId) throws CommonFinderException {
 		try {
 			EntityObjectVO eovo = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLET).getByPrimaryKey(iId.longValue());
 			return new NucletTreeNode(eovo, false);
@@ -562,22 +558,22 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		Collections.sort(result);
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public List<TreeNode> getSubNodes(NucletTreeNode node) {
 		List<TreeNode> result = new ArrayList<TreeNode>();
 		if (node.isShowDependeces()) {
-		
+
 			CollectableSearchCondition cond = org.nuclos.common.SearchConditionUtils.newEOidComparison(
-				NuclosEntity.NUCLETDEPENDENCE.getEntityName(), 
-				"nuclet", 
-				ComparisonOperator.EQUAL, 
-				LangUtils.convertId(node.getId()), 
-				MetaDataServerProvider.getInstance());	
-			
+				NuclosEntity.NUCLETDEPENDENCE.getEntityName(),
+				"nuclet",
+				ComparisonOperator.EQUAL,
+				LangUtils.convertId(node.getId()),
+				MetaDataServerProvider.getInstance());
+
 			List<NucletTreeNode> nucletNodes = new ArrayList<NucletTreeNode>();
 			for (EntityObjectVO eoDependence : NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLETDEPENDENCE).getBySearchExpression(new CollectableSearchExpression(cond))) {
 				EntityObjectVO eoNuclet = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLET).getByPrimaryKey(eoDependence.getFieldId("nucletDependence"));
@@ -593,12 +589,12 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		}
 		return result;
 	}
-	
+
 	private List<NucletContentTreeNode> getNucletContentTypes(Long nucletId) {
 		List<NucletContentTreeNode> result = new ArrayList<NucletContentTreeNode>();
 		for (NuclosEntity ne : AbstractNucletContentEntryTreeNode.getNucletContentEntities()) {
 			result.add(new NucletContentTreeNode(nucletId, ne));
-		}		
+		}
 		return result;
 	}
 
@@ -616,17 +612,17 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 			node.getEntityName(), mdMeta.getId());
 		final Collection<EntityTreeViewVO> subnodes = MasterDataMetaCache.getInstance().getSubnodesETV(
 			node.getEntityName(), mdMeta.getId());
-		
+
 		/*
 		final Iterator<MasterDataVO> it1 = colSubNodes.iterator();
 		final Iterator<EntityTreeViewVO> it2 = subnodes.iterator();
 		while(it1.hasNext()) {
 			final MasterDataVO mdvoSub = it1.next();
 			final EntityTreeViewVO vo = it2.next();
-			assert vo.getEntity().equals(mdvoSub.getField(EntityTreeViewVO.SUBFORM_ENTITY_FIELD)) 
+			assert vo.getEntity().equals(mdvoSub.getField(EntityTreeViewVO.SUBFORM_ENTITY_FIELD))
 				&& vo.getField().equals(mdvoSub.getField(EntityTreeViewVO.SUBFORM2ENTITY_REF_FIELD))
 				&& vo.getOriginentityid().equals(mdvoSub.getField(EntityTreeViewVO.ENTITY_FIELD));
-			
+
 			DynamicTreeNode treenode = new SubFormTreeNode<Integer>(null, node, mdvoSub);
 			treenode.getSubNodes();
 			result.add(treenode);
@@ -634,7 +630,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 
 		assert result != null;
 		 */
-		
+
 		subformSubnodes(result, node, colSubNodes, subnodes);
 		return result;
 	}
@@ -647,77 +643,77 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	@Override
 	public List<AbstractNucletContentEntryTreeNode> getSubNodes(NucletContentTreeNode node) {
 		final List<AbstractNucletContentEntryTreeNode> result = new ArrayList<AbstractNucletContentEntryTreeNode>();
-		
+
 		EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(node.getEntity());
 		EntityFieldMetaDataVO efMetaNuclet = MetaDataServerProvider.getInstance().getEntityField(eMeta.getEntity(), AbstractNucletContentEntryTreeNode.FOREIGN_FIELD_TO_NUCLET);
-		
+
 		CollectableSearchCondition cond = org.nuclos.common.SearchConditionUtils.newEOidComparison(
-			eMeta.getEntity(), 
-			efMetaNuclet.getField(), 
-			ComparisonOperator.EQUAL, 
-			node.getNucletId(), 
+			eMeta.getEntity(),
+			efMetaNuclet.getField(),
+			ComparisonOperator.EQUAL,
+			node.getNucletId(),
 			MetaDataServerProvider.getInstance());
-				
+
 		for (EntityObjectVO eo : NucletDalProvider.getInstance().getEntityObjectProcessor(node.getEntity()).getBySearchExpression(new CollectableSearchExpression(cond))) {
 			result.add(getNucletContentEntryNode(eo));
 		}
-		
+
 		return sortAbstractNucletContentEntryTreeNodes(result);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param node
 	 * @return
 	 */
 	@Override
 	public List<AbstractNucletContentEntryTreeNode> getNucletContent(NucletTreeNode node) {
 		final List<AbstractNucletContentEntryTreeNode> result = new ArrayList<AbstractNucletContentEntryTreeNode>();
-		
+
 		for (NucletContentTreeNode contentTypeNode : getNucletContentTypes(LangUtils.convertId(node.getId()))) {
 			result.addAll(getSubNodes(contentTypeNode));
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param node
 	 * @return
 	 */
 	@Override
 	public List<NucletTreeNode> getSubNodes(NuclosInstanceTreeNode node) {
 		final Collection<NucletTreeNode> result = new ArrayList<NucletTreeNode>();
-		
+
 		EntityMetaDataVO eMetaDependence = MetaDataServerProvider.getInstance().getEntity(NuclosEntity.NUCLETDEPENDENCE);
 		EntityFieldMetaDataVO efMetaDependence = MetaDataServerProvider.getInstance().getEntityField(eMetaDependence.getEntity(), "nucletDependence");
-		
+
 		for (EntityObjectVO eoNuclet : NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLET).getAll()) {
-			
+
 			CollectableSearchCondition cond = org.nuclos.common.SearchConditionUtils.newEOidComparison(
-				eMetaDependence.getEntity(), 
-				efMetaDependence.getField(), 
-				ComparisonOperator.EQUAL, 
-				eoNuclet.getId(), 
+				eMetaDependence.getEntity(),
+				efMetaDependence.getField(),
+				ComparisonOperator.EQUAL,
+				eoNuclet.getId(),
 				MetaDataServerProvider.getInstance());
-			
+
 			if (NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLETDEPENDENCE)
 				.count(new CollectableSearchExpression(cond)) == 0) {
 				// is root Nuclet
 				result.add(new NucletTreeNode(eoNuclet, true));
 			}
 		}
-		
+
 		return CollectionUtils.sorted(result, new Comparator<NucletTreeNode>() {
 			@Override
 			public int compare(NucletTreeNode o1, NucletTreeNode o2) {
 				return LangUtils.compare(o1.getLabel(), o2.getLabel());
 			}});
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return the available nodes.
 	 * @postcondition result != null
 	 */
@@ -727,13 +723,13 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		for (NuclosEntity ne : AbstractNucletContentEntryTreeNode.getNucletContentEntities()) {
 			EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(ne);
 			EntityFieldMetaDataVO efMetaNuclet = MetaDataServerProvider.getInstance().getEntityField(eMeta.getEntity(), AbstractNucletContentEntryTreeNode.FOREIGN_FIELD_TO_NUCLET);
-			
+
 			CollectableSearchCondition cond = org.nuclos.common.SearchConditionUtils.newEOIsNullComparison(
-				eMeta.getEntity(), 
+				eMeta.getEntity(),
 				efMetaNuclet.getField(),
-				ComparisonOperator.IS_NULL,  
+				ComparisonOperator.IS_NULL,
 				MetaDataServerProvider.getInstance());
-			
+
 			List<AbstractNucletContentEntryTreeNode> nodes = new ArrayList<AbstractNucletContentEntryTreeNode>();
 			for (EntityObjectVO eo : NucletDalProvider.getInstance().getEntityObjectProcessor(ne).getBySearchExpression(new CollectableSearchExpression(cond))) {
 				nodes.add(getNucletContentEntryNode(eo));
@@ -742,9 +738,9 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		}
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param nucletId
 	 * @param contents
 	 * @throws NuclosBusinessException
@@ -752,11 +748,11 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	@Override
 	public void addNucletContents(Long nucletId, Set<AbstractNucletContentEntryTreeNode> contents) throws NuclosBusinessException {
 		CacheInvalidator ci = new CacheInvalidator();
-		
+
 		for (AbstractNucletContentEntryTreeNode node : contents) {
 			final JdbcEntityObjectProcessor processor = NucletDalProvider.getInstance().getEntityObjectProcessor(node.getEntity());
 			final EntityObjectVO eo = processor.getByPrimaryKey(node.getId()); //reload the content, no version check here!
-			
+
 			if (eo.getFieldIds().get(AbstractNucletContentEntryTreeNode.FOREIGN_FIELD_TO_NUCLET) != null) {
 				if (LangUtils.equals(nucletId, eo.getFieldIds().get(AbstractNucletContentEntryTreeNode.FOREIGN_FIELD_TO_NUCLET))) {
 					continue;
@@ -764,20 +760,20 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 					throw new NuclosBusinessException("treenode.facade.businessexception.1");
 				}
 			}
-			
+
 			eo.getFieldIds().put(AbstractNucletContentEntryTreeNode.FOREIGN_FIELD_TO_NUCLET, nucletId);
 			eo.flagUpdate();
 			DalUtils.updateVersionInformation(eo, getCurrentUserName());
 			processor.insertOrUpdate(eo);
-			
+
 			ci.handleNode(node);
 		}
-		
+
 		ci.run();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param contents
 	 * @return true if at least one content is removed from nuclet
 	 */
@@ -785,11 +781,11 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	public boolean removeNucletContents(Set<AbstractNucletContentEntryTreeNode> contents) {
 		boolean result = false;
 		CacheInvalidator ci = new CacheInvalidator();
-		
+
 		for (AbstractNucletContentEntryTreeNode node : contents) {
 			final JdbcEntityObjectProcessor processor = NucletDalProvider.getInstance().getEntityObjectProcessor(node.getEntity());
 			final EntityObjectVO eo = processor.getByPrimaryKey(node.getId()); //reload the content, no version check here!
-			
+
 			if (eo.getFieldIds().containsKey(AbstractNucletContentEntryTreeNode.FOREIGN_FIELD_TO_NUCLET)) {
 				result = true;
 				eo.getFieldIds().put(AbstractNucletContentEntryTreeNode.FOREIGN_FIELD_TO_NUCLET, null);
@@ -797,15 +793,15 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 				DalUtils.updateVersionInformation(eo, getCurrentUserName());
 				processor.insertOrUpdate(eo);
 			}
-			
+
 			if (result)
 				ci.handleNode(node);
 		}
-		
+
 		ci.run();
 		return result;
 	}
-	
+
 	private class CacheInvalidator {
 		boolean invalidateRuleCache = false;
 		boolean invalidateDatasourceCache = false;
@@ -827,18 +823,18 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 			if (invalidateDatasourceCache) DatasourceCache.getInstance().invalidate();
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param nodes
 	 * @return
 	 */
 	private List<AbstractNucletContentEntryTreeNode> sortAbstractNucletContentEntryTreeNodes(List<AbstractNucletContentEntryTreeNode> nodes) {
 		return CollectionUtils.sorted(nodes, new AbstractNucletContentEntryTreeNode.Comparator());
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param entity
 	 * @param eoId
 	 * @return
@@ -847,9 +843,9 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	public AbstractNucletContentEntryTreeNode getNucletContentEntryNode(NuclosEntity entity, Long eoId) {
 		return getNucletContentEntryNode(NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getByPrimaryKey(eoId));
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param ne
 	 * @param eo
 	 * @param eMeta
