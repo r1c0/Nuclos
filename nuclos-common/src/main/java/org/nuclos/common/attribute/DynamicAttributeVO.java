@@ -48,10 +48,10 @@ import org.nuclos.server.genericobject.valueobject.CanonicalAttributeFormat;
 public class DynamicAttributeVO implements Serializable, Cloneable {
 
 	/**
-	 * 
+	 * @deprecated As table t_go_attribue does not exist any more, this is always unset (null). 
 	 */
-	private static final long serialVersionUID = 1L;
 	private int iId;
+	
 	private boolean bRemoved = false;
 	private int iAttributeId;
 	private int iValueId;
@@ -239,6 +239,8 @@ public class DynamicAttributeVO implements Serializable, Cloneable {
 	/**
 	 * get primary key (intid) of underlying database record
 	 * @return primary key of underlying database record
+	 * 
+	 * @deprecated As table t_go_attribue does not exist any more, this is always unset (null). 
 	 */
 	public Integer getId() {
 		return LangUtils.nullIfZero(iId);

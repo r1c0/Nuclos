@@ -196,9 +196,8 @@ public class DalSupportForGO {
 	}
 
 	/**
-	 *
-	 * @param go
-	 * @return
+	 * @deprecated Does not honour dependant objects. Consider reimplementation along the lines of
+	 * 		wrapGenericObjectVO of client.
 	 */
 	public static EntityObjectVO wrapGenericObjectVO(GenericObjectVO go) {
 		EntityObjectVO eo = new EntityObjectVO();
@@ -231,9 +230,8 @@ public class DalSupportForGO {
 	}
 
 	/**
-	 *
-	 * @param eo
-	 * @return
+	 * @deprecated Does not honour dependant objects. Consider reimplementation along the lines of
+	 * 		getGenericObjectWithDependantsVO of client.
 	 */
 	public static GenericObjectVO getGenericObjectVO(EntityObjectVO eo) {
 

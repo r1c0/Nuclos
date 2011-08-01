@@ -109,11 +109,9 @@ public class DalSupportForGO {
 
 		eo.initFields(go.getAttributes().size(), go.getAttributes().size());
 		for (DynamicAttributeVO attr : go.getAttributes()) {
-			final Long fieldId = IdUtils.toLongId(attr.getId());
-			LOG.info("fieldId " + fieldId + " for " + attr + " (id=" + attr.getId() + ", attrId=" 
+			final Long fieldId = IdUtils.toLongId(attr.getAttributeId());
+			LOG.info("fieldId " + fieldId + " for " + attr + " (attrId=" 
 					+ attr.getAttributeId() + ") in " + meta.getMeta().getEntity());
-			// TODO: ???
-			if (fieldId == null) continue;
 			final String field = MetaDataClientProvider.getInstance().getEntityField(
 					metaVo.getEntity(), fieldId).getField();
 			if (attr.isRemoved()) {
@@ -127,6 +125,12 @@ public class DalSupportForGO {
 			}
 		}
 		eo.getFields().put(NuclosEOField.LOGGICALDELETED.getMetaData().getField(), go.isDeleted());
+		
+		if (go instanceof GenericObjectWithDependantsVO) {
+			final GenericObjectWithDependantsVO gowd = (GenericObjectWithDependantsVO) go;
+			eo.setDependants(gowd.getDependants());
+		}
+		
 		return eo;
 	}
 	

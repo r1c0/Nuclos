@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
@@ -126,7 +127,10 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		final Map<String, EntityFieldMetaDataVO> fields = mdProv.getAllEntityFieldsByEntity(subform);
 		for (String f: fields.keySet()) {
 			final EntityFieldMetaDataVO mdField = fields.get(f);
-			if (base.getEntity().equals(mdField.getForeignEntity())) return f;
+			final String fEntity = mdField.getForeignEntity();
+			if (base.getEntity().equals(fEntity) || NuclosEntity.GENERICOBJECT.getEntityName().equals(fEntity)) {
+				return f;
+			}
 		}
 		return null;
 	}
