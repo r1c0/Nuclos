@@ -45,7 +45,6 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.DatasourceServerUtils;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.dal.DalUtils;
-import org.nuclos.server.dal.processor.jdbc.AbstractJdbcDalProcessor;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcWithFieldsDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.database.DataBaseHelper;

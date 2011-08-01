@@ -115,6 +115,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 			final Collection<EntityObjectVO> col = getDependantEntityObjects(s, refField, base.getId());
 			dmdm.addAllData(s, col);
 		}
+		base.setDependants(dmdm);
 	}
 	
 	/**

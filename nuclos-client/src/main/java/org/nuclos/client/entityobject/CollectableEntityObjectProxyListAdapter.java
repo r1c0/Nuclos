@@ -24,6 +24,7 @@ import org.nuclos.client.ui.collect.CollectableListAdapter;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.server.genericobject.ProxyList;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 
 /**
  * Makes a <code>List&lt;EntityObjectVO&gt;</code> look like a <code>List&lt;CollectableEntityObject&gt;</code>.
@@ -55,11 +56,29 @@ public class CollectableEntityObjectProxyListAdapter extends
 
 	@Override
 	protected CollectableEntityObject makeCollectable(EntityObjectVO vo) {
-		return new CollectableEntityObject(meta, vo);
+		final CollectableEntityObject result = new CollectableEntityObject(meta, vo);
+		final DependantMasterDataMap deps = vo.getDependants();
+		result.setDependantMasterDataMap(deps);
+		// TODO: ???
+		/*
+		final CollectableEntityProvider cep = CollectableEOEntityClientProvider.getInstance();
+		for (String s: deps.getEntityNames()) {
+			final Collection<EntityObjectVO> vos = deps.getData(s);
+			final CollectableEOEntity sMeta = (CollectableEOEntity) cep.getCollectableEntity(s);
+			final Collection<CollectableEntityObject> col = new ArrayList<CollectableEntityObject>();
+			for (EntityObjectVO eo: vos) {
+				col.add(new CollectableEntityObject(sMeta, eo));
+			}
+			result.getDependantCollectableMasterDataMap().addValues(s, col);
+		}
+		 */
+		return result;
 	}
 
 	@Override
 	protected EntityObjectVO extractAdaptee(CollectableEntityObject clct) {
+		final EntityObjectVO result = clct.getEntityObjectVO();
+		// TODO: what todo with the dependants stuff???
 		return clct.getEntityObjectVO();
 	}
 

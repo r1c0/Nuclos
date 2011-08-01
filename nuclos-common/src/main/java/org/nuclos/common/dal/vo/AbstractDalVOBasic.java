@@ -17,8 +17,6 @@
 package org.nuclos.common.dal.vo;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Map;
 
 public abstract class AbstractDalVOBasic implements IDalVO, Serializable {
 	private static final long serialVersionUID = 1012920874365879641L;

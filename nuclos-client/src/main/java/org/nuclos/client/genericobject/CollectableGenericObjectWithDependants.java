@@ -48,9 +48,28 @@ public class CollectableGenericObjectWithDependants extends CollectableGenericOb
 	 * @param govo
 	 * @return
 	 * @precondition govo != null
+	 * @deprecated Does not honour dependant objects, use {@link #newCollectableGenericObjectWithDependants}.
 	 */
 	public static CollectableGenericObjectWithDependants newCollectableGenericObject(GenericObjectVO govo) {
 		return new CollectableGenericObjectWithDependants(new GenericObjectWithDependantsVO(govo, new DependantMasterDataMap()));
+	}
+
+	/**
+	 * @author Thomas Pasch
+	 * @since Nuclos 3.1.01
+	 */
+	public static CollectableGenericObjectWithDependants newCollectableGenericObjectWithDependants(GenericObjectVO govo) {
+		final DependantMasterDataMap dep;
+		if (govo instanceof GenericObjectWithDependantsVO) {
+			final GenericObjectWithDependantsVO gowd = (GenericObjectWithDependantsVO) govo;
+			dep = gowd.getDependants();
+		}
+		else {
+			dep = new DependantMasterDataMap();
+		}
+		final CollectableGenericObjectWithDependants result = new CollectableGenericObjectWithDependants(
+				new GenericObjectWithDependantsVO(govo, dep));
+		return result;
 	}
 
 	public CollectableGenericObjectWithDependants(GenericObjectWithDependantsVO lowdcvo) {

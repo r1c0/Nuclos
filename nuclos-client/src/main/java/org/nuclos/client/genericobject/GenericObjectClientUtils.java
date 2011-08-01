@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.genericobject;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,20 +31,17 @@ import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.collect.CollectController;
-import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
-import org.nuclos.client.ui.collect.model.SortableCollectableTableModelImpl;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableEntityField.CollectableEntityFieldSecurityAgent;
 import org.nuclos.common.collect.collectable.CollectableEntityProvider;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableUtils;
-import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
-import org.nuclos.common.collect.collectable.CollectableEntityField.CollectableEntityFieldSecurityAgent;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
@@ -59,8 +55,6 @@ import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common.genericobject.GenericObjectUtils;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;
@@ -68,8 +62,6 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.common.ModuleConstants;
-import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
-import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 
 /**
  * Utility methods for leased objects, client specific.

@@ -24,7 +24,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 import org.nuclos.common.dal.vo.IDalVO;
-import org.nuclos.common.dal.vo.IDalWithFieldsVO;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.exception.CommonFatalException;
 

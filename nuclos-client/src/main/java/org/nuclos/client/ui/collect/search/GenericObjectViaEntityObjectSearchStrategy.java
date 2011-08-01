@@ -404,7 +404,7 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 	}
 	
 	private CollectableGenericObjectWithDependants eo2Go(CollectableEntityObject eo) {
-		return CollectableGenericObjectWithDependants.newCollectableGenericObject(
+		return CollectableGenericObjectWithDependants.newCollectableGenericObjectWithDependants(
 				DalSupportForGO.getGenericObjectWithDependantsVO(eo.getEntityObjectVO(), meta));
 	}
 	
