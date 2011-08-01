@@ -28,10 +28,7 @@ import org.nuclos.common.collect.collectable.*;
  * @version 01.00.00
  */
 public class CollectableEntityFieldWithEntityForExternal extends CollectableEntityFieldWithEntity {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private final boolean bFieldBelongsToSubEntity;
 	private final boolean bFieldBelongsToMainEntity;
 

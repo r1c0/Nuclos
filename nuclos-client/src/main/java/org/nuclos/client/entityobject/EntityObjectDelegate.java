@@ -7,6 +7,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.nuclos.common.EntityObjectCommon;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.ejb3.EntityObjectFacadeRemote;
@@ -44,22 +45,28 @@ public class EntityObjectDelegate implements EntityObjectCommon {
 
 	@Override
 	public ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr,
-			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects,
-			boolean bIncludeSubModules) {
+			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Set<PivotInfo> pivots, 
+			boolean includeDependents) {
 		return facade.getEntityObjectProxyList(id, clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, 
-				bIncludeParentObjects, bIncludeSubModules);
+				pivots, includeDependents);
 	}
 
 	@Override
 	public Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds,
-			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects) {
-		return facade.getEntityObjectsMore(id, lstIds, stRequiredAttributeIds, stRequiredSubEntityNames, bIncludeParentObjects);
+			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Set<PivotInfo> pivots, boolean includeDependents) {
+		return facade.getEntityObjectsMore(id, lstIds, stRequiredAttributeIds, stRequiredSubEntityNames, pivots, includeDependents);
 	}
 
 	@Override
-	public Collection<EntityObjectVO> getDependantEntityObjects(String sEntityName, String sForeignKeyField,
+	public Collection<EntityObjectVO> getDependentEntityObjects(String sEntityName, String sForeignKeyField,
 			Long oRelatedId) {
-		return facade.getDependantEntityObjects(sEntityName, sForeignKeyField, oRelatedId);
+		return facade.getDependentEntityObjects(sEntityName, sForeignKeyField, oRelatedId);
+	}
+
+	@Override
+	public Collection<EntityObjectVO> getDependentPivotEntityObjects(PivotInfo pivot, String sForeignKeyField,
+			Long oRelatedId) {
+		return facade.getDependentPivotEntityObjects(pivot, sForeignKeyField, oRelatedId);
 	}
 
 }

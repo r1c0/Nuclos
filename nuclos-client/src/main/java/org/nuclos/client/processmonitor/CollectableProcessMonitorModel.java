@@ -47,11 +47,11 @@ public class CollectableProcessMonitorModel extends AbstractCollectableBean<Proc
 
 		private Entity() {
 			super(NuclosEntity.PROCESSMONITOR.getEntityName(), "Prozessmonitor");
-
+			final String entity = NuclosEntity.PROCESSMONITOR.getEntityName();
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NAME, String.class, "Name",
-					"Name des Prozessmodells", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null));
+					"Name des Prozessmodells", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DESCRIPTION, String.class,
-					"Beschreibung", "Beschreibung des Prozessmodells", null, null, true, CollectableField.TYPE_VALUEFIELD, null, null));
+					"Beschreibung", "Beschreibung des Prozessmodells", null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 		}
 
 	}	// inner class Entity

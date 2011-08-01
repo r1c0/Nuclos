@@ -69,7 +69,12 @@ implements JdbcEntityObjectProcessor {
 	private final ColumnToVOMapping<Long> idColumn;
 	private final ColumnToVOMapping<Integer> versionColumn;
 
-	private static final CollectableEntityField clctEOEFdeleted = new CollectableEOEntityField(NuclosEOField.LOGGICALDELETED.getMetaData());
+	/**
+	 * TODO: Is null for entity name ok?
+	 * 
+	 * @deprecated This is not really a field of an entity - avoid this!
+	 */
+	private static final CollectableEntityField clctEOEFdeleted = new CollectableEOEntityField(NuclosEOField.LOGGICALDELETED.getMetaData(), "<dummy>");
 
 	private final Collection<List<ColumnToVOMapping<?>>> logicalUniqueConstraintCombinations = new ArrayList<List<ColumnToVOMapping<?>>>();
 

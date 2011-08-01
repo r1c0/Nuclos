@@ -81,10 +81,6 @@ public class CollectableGenericObjectEntityForAllAttributes implements Collectab
 				final String sFieldName = CollectableGenericObjectEntity.getParentObjectFieldName(sEntityName);
 				final String sReferencedEntityName = Modules.getParentModuleName(mdvoModule);
 				this.mpVirtualFields.put(sFieldName, new AbstractCollectableEntityField() {
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
 
 					@Override
 					public String getDescription() {
@@ -154,6 +150,11 @@ public class CollectableGenericObjectEntityForAllAttributes implements Collectab
 					@Override
 					public void setCollectableEntity(CollectableEntity clent) {
 					}
+
+					@Override
+					public String getEntityName() {
+						return sEntityName;
+					}
 				});
 			}
 		}
@@ -193,8 +194,8 @@ public class CollectableGenericObjectEntityForAllAttributes implements Collectab
 				this.mpVirtualFields.get(sFieldName) :
 				new CollectableGenericObjectEntityField(
 					getAttributeCVO(sFieldName),
-					MetaDataClientProvider.getInstance().getEntityField(sEntityName, sFieldName)
-					);
+					MetaDataClientProvider.getInstance().getEntityField(sEntityName, sFieldName),
+					sEntityName);
 		result.setCollectableEntity(this);
 		return result;
 	}

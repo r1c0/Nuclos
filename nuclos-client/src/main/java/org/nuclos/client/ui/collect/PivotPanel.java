@@ -37,6 +37,7 @@ import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.model.SimpleCollectionComboBoxModel;
+import org.nuclos.client.ui.renderer.EntityFieldMetaDataListCellRenderer;
 import org.nuclos.common.CloneUtils;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
@@ -214,6 +215,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 		private static JComboBox mkCombo(Map<String, EntityFieldMetaDataVO> fields) {
 			final ComboBoxModel model = new SimpleCollectionComboBoxModel<EntityFieldMetaDataVO>(new ArrayList<EntityFieldMetaDataVO>(fields.values()));
 			final JComboBox result = new JComboBox(model);
+			result.setRenderer(new EntityFieldMetaDataListCellRenderer(model));
 			result.setVisible(true);
 			result.setEnabled(false);
 			result.setSelectedIndex(0);

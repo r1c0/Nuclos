@@ -38,8 +38,21 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 
 	private static final long serialVersionUID = 6352766708611387488L;
 
+	private final String entityName;
+	
+	/**
+	 * @deprecated Why is this transient? How is a value after serialization enforced?
+	 */
 	private transient CollectableEntity clcte;
+	
+	/**
+	 * @deprecated Why is this transient? How is a value after serialization enforced?
+	 */
 	private transient CollectableEntityField clctef;
+	
+	/**
+	 * @deprecated Why is this transient? How is a value after serialization enforced?
+	 */
 	private transient CollectableEntityFieldSecurityAgent securityAgent = new CollectableEntityFieldSecurityAgent();
 
 	/**
@@ -51,6 +64,7 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	public CollectableEntityFieldWithEntity(CollectableEntity clcte, String sFieldName) {
 		this.clcte = clcte;
 		this.clctef = clcte.getEntityField(sFieldName);
+		this.entityName = clcte.getName();
 	}
 
 	/**
@@ -241,6 +255,8 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 
 	/**
 	 * Transformer: GetEntityName
+	 * 
+	 * @deprecated Use CollectableEntityField.GetEntityName
 	 */
 	public static class GetEntityName implements Transformer<CollectableEntityFieldWithEntity, String> {
 		@Override
@@ -262,7 +278,7 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	private void writeObject(ObjectOutputStream oos) throws IOException {
 		oos.defaultWriteObject();
 		// CollectableEntityField generally is not serializable, but DefaultCollectableEntityField is:
-		oos.writeObject(new DefaultCollectableEntityField(this.clctef));
+		oos.writeObject(new DefaultCollectableEntityField(this.clctef, entityName));
 
 		oos.writeObject(clcte != null ? clcte.getName() : "");
 		oos.writeObject(clcte != null ? clcte.getLabel() : "");
@@ -326,6 +342,11 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	@Override
 	public void setCollectableEntity(CollectableEntity clent) {
 		clcte = clent;
+	}
+
+	@Override
+	public String getEntityName() {
+		return clcte.getName();
 	}
 	
 }	// class CollectableEntityFieldWithEntity

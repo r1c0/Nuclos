@@ -42,10 +42,10 @@ public class GenericObjectsResultTableModel<Clct extends Collectable> extends So
 		 * Good ideas, anyone???
 		 */
 		final Collectable clct = this.getCollectable(iRow);
-		final CollectableEntityFieldWithEntity clctefwe = (CollectableEntityFieldWithEntity) this.getCollectableEntityField(iColumn);
+		final CollectableEntityField clctefwe = (CollectableEntityField) this.getCollectableEntityField(iColumn);
 		final String sFieldName = clctefwe.getName();
 
-		final String sFieldEntityName = clctefwe.getCollectableEntityName();
+		final String sFieldEntityName = clctefwe.getEntityName();
 		final String sMainEntityName = getEntityName();
 
 		CollectableField result;
@@ -73,7 +73,7 @@ public class GenericObjectsResultTableModel<Clct extends Collectable> extends So
 		// set output format
 		final Class<?> cls = clctefwe.getJavaClass();
 		if (Number.class.isAssignableFrom(cls)) {
-			String sFormatOutput = clctefwe.getField().getFormatOutput();
+			String sFormatOutput = clctefwe.getFormatOutput();
 			if (result.getValue() != null && sFormatOutput != null && !sFormatOutput.equals("")) {
 				final DecimalFormat df =   new DecimalFormat(sFormatOutput);
 				result = new CollectableValueField(df.format(result.getValue()));

@@ -40,6 +40,8 @@ public class GenericObjectWithDependantsVO extends GenericObjectVO {
 
 	/**
 	 * the parent object, if any, for this object.
+	 * 
+	 * @deprecated Parent is no longer part of the entity model.
 	 */
 	private GenericObjectVO govoParent;
 
@@ -87,10 +89,16 @@ public class GenericObjectWithDependantsVO extends GenericObjectVO {
 		return this.mpDependants;
 	}
 
+	/**
+	 * @deprecated Parent is no longer part of the entity model.
+	 */
 	public GenericObjectVO getParent() {
 		return this.govoParent;
 	}
 
+	/**
+	 * @deprecated Parent is no longer part of the entity model.
+	 */
 	public void setParent(GenericObjectVO govoParent) {
 		this.govoParent = govoParent;
 	}

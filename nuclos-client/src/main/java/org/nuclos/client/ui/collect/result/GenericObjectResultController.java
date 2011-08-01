@@ -186,7 +186,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 		final Map<String, EntityFieldMetaDataVO> fields = MetaDataClientProvider.getInstance().getAllPivotEntityFields(info);
 		for (String fn: fields.keySet()) {
 			final EntityFieldMetaDataVO md = fields.get(fn);
-			result.add(new CollectableEOEntityField(md));
+			result.add(new CollectableEOEntityField(md, sSubEntityName));
 		}
 	}
 	
@@ -214,7 +214,8 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	public void writeSelectedFieldsToPreferences(List<? extends CollectableEntityField> lstclctefweSelected) throws PreferencesException {
 		GenericObjectClientUtils.writeCollectableEntityFieldsToPreferences(
 				getGenericObjectCollectController().getPreferences(), 
-				CollectionUtils.typecheck(lstclctefweSelected, CollectableEntityFieldWithEntity.class), 
+				// CollectionUtils.typecheck(lstclctefweSelected, CollectableEntityFieldWithEntity.class), 
+				CollectionUtils.typecheck(lstclctefweSelected, CollectableEntityField.class), 
 				CollectController.PREFS_NODE_SELECTEDFIELDS, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES);
 		super.writeSelectedFieldsToPreferences(lstclctefweSelected);
 	}

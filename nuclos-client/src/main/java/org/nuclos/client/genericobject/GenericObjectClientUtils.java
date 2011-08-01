@@ -125,10 +125,10 @@ public class GenericObjectClientUtils {
 	}
 
 	/** @todo comment */
-	public static void writeCollectableEntityFieldsToPreferences(Preferences prefs, List<CollectableEntityFieldWithEntity> lstclctefweSelected, String sPrefsNodeFields, String sPrefsNodeEntities) throws PreferencesException {
+	public static void writeCollectableEntityFieldsToPreferences(Preferences prefs, List<CollectableEntityField> lstclctefweSelected, String sPrefsNodeFields, String sPrefsNodeEntities) throws PreferencesException {
 		PreferencesUtils.putStringList(prefs, sPrefsNodeFields, CollectableUtils.getFieldNamesFromCollectableEntityFields(lstclctefweSelected));
 
-		final List<String> lstEntityNames = CollectionUtils.transform(lstclctefweSelected, new CollectableEntityFieldWithEntity.GetEntityName());
+		final List<String> lstEntityNames = CollectionUtils.transform(lstclctefweSelected, new CollectableEntityField.GetEntityName());
 		PreferencesUtils.putStringList(prefs, sPrefsNodeEntities, lstEntityNames);
 	}
 

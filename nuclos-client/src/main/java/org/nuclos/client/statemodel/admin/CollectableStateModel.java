@@ -54,11 +54,15 @@ public class CollectableStateModel extends AbstractCollectableBean<StateModelVO>
 
 		private Entity() {
 			super(NuclosEntity.STATEMODEL.getEntityName(), "Statusmodell");
-
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NAME, String.class, CommonLocaleDelegate.getMessage("CollectableStateModel.3","Name"),
-				CommonLocaleDelegate.getMessage("CollectableStateModel.4","Name des Statusmodells"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null));
+			final String entity = NuclosEntity.STATEMODEL.getEntityName();
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NAME, String.class, 
+					CommonLocaleDelegate.getMessage("CollectableStateModel.3","Name"),
+					CommonLocaleDelegate.getMessage("CollectableStateModel.4","Name des Statusmodells"), 
+					null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DESCRIPTION, String.class,
-				CommonLocaleDelegate.getMessage("CollectableStateModel.1","Beschreibung"), CommonLocaleDelegate.getMessage("CollectableStateModel.2","Beschreibung des Statusmodells"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null));
+					CommonLocaleDelegate.getMessage("CollectableStateModel.1","Beschreibung"), 
+					CommonLocaleDelegate.getMessage("CollectableStateModel.2","Beschreibung des Statusmodells"), 
+					null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 		}
 
 	}	// inner class Entity

@@ -156,8 +156,8 @@ public class CollectableGenericObjectEntity implements CollectableEntity {
 		
 		CollectableEntityField result = new CollectableGenericObjectEntityField(
 			AttributeCache.getInstance().getAttribute(this.getName(), sFieldName),
-			MetaDataClientProvider.getInstance().getEntityField(getName(), sFieldName)
-			);
+			MetaDataClientProvider.getInstance().getEntityField(getName(), sFieldName),
+			getName());
 		result.setCollectableEntity(this);
 		return result;
 	}
@@ -192,6 +192,8 @@ public class CollectableGenericObjectEntity implements CollectableEntity {
 	 * @return the name of the "virtual" parent object field for the subentity with the given name.
 	 * The "parentObject" property of <code>GenericObjectVO</code> is mapped to a corresponding
 	 * <code>CollectableEntityField</code> with the name returned by this method.
+	 * 
+	 * @deprecated Parent is no longer part of the entity model.
 	 */
 	public static String getParentObjectFieldName(String sSubEntityName) {
 		return GenericObjectUtils.getParentObjectFieldName(sSubEntityName);

@@ -49,15 +49,21 @@ public class CollectableStateRoleAttributeGroup extends AbstractCollectable {
 	public static class Entity extends AbstractCollectableEntity {
 		public Entity() {
 			super("stateroleattributegroup", CommonLocaleDelegate.getMessage("CollectableStateRoleAttributeGroup.3","Attributgruppe f\u00fcr statusabh\u00e4ngige Rechte"));
-
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ROLE, String.class, CommonLocaleDelegate.getMessage("CollectableStateRoleAttributeGroup.4","Benutzergruppe"),
-				CommonLocaleDelegate.getMessage("CollectableStateRoleAttributeGroup.9","\u00dcbergeordnete Benutzergruppe (Rolle)"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, "staterole",
-					CollectableValueIdField.NULL, null, null));
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ATTRIBUTEGROUP,
-					String.class, CommonLocaleDelegate.getMessage("CollectableStateRoleAttributeGroup.1","Attributgruppe"), CommonLocaleDelegate.getMessage("CollectableStateRoleAttributeGroup.2","Attributgruppe"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.ENTITYFIELDGROUP.getEntityName(),
-					CollectableValueIdField.NULL, null, null));
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_WRITEABLE,
-					Boolean.class, CommonLocaleDelegate.getMessage("CollectableStateRoleAttributeGroup.8","Schreibrecht?"), CommonLocaleDelegate.getMessage("CollectableStateRoleAttributeGroup.7","Schreiben erlaubt?"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null));
+			final String entity = "stateroleattributegroup";
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ROLE, String.class, 
+					CommonLocaleDelegate.getMessage("CollectableStateRoleAttributeGroup.4","Benutzergruppe"),
+					CommonLocaleDelegate.getMessage("CollectableStateRoleAttributeGroup.9","\u00dcbergeordnete Benutzergruppe (Rolle)"), 
+					null, null, false, CollectableField.TYPE_VALUEIDFIELD, "staterole",
+					CollectableValueIdField.NULL, null, null, entity));
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ATTRIBUTEGROUP, String.class, 
+					CommonLocaleDelegate.getMessage("CollectableStateRoleAttributeGroup.1","Attributgruppe"), 
+					CommonLocaleDelegate.getMessage("CollectableStateRoleAttributeGroup.2","Attributgruppe"), 
+					null, null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.ENTITYFIELDGROUP.getEntityName(),
+					CollectableValueIdField.NULL, null, null, entity));
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_WRITEABLE, Boolean.class, 
+					CommonLocaleDelegate.getMessage("CollectableStateRoleAttributeGroup.8","Schreibrecht?"), 
+					CommonLocaleDelegate.getMessage("CollectableStateRoleAttributeGroup.7","Schreiben erlaubt?"), 
+					null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 		}
 	}
 

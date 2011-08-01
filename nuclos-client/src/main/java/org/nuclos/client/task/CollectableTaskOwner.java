@@ -26,8 +26,9 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 
 
-public class CollectableTaskOwner extends DefaultCollectable{
+public class CollectableTaskOwner extends DefaultCollectable {
 	
+	public static final String TASKOWNER_ENTITY = "TaskOwner";
 	public static final String FIELDNAME_TASK = "task";
 	public static final String FIELDNAME_USER = "user";
 	
@@ -40,11 +41,11 @@ public class CollectableTaskOwner extends DefaultCollectable{
 			super("taskowner", "Bearbeiter");
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_TASK, String.class, CommonLocaleDelegate.getMessage("CollectableTaskOwner.1","Aufgabe"),
 				CommonLocaleDelegate.getMessage("CollectableTaskOwner.2","Aufgabe"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, "__task",
-					CollectableValueIdField.NULL, null, null));
+					CollectableValueIdField.NULL, null, null, TASKOWNER_ENTITY));
 
 			this.addCollectableEntityField(new TaskOwnerCollectableEntityField(FIELDNAME_USER, String.class, CommonLocaleDelegate.getMessage("CollectableTaskOwner.4","Zust\u00e4ndig"), 
 				CommonLocaleDelegate.getMessage("CollectableTaskOwner.3","Bearbeiter der Aufgabe"), null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.USER.getEntityName(),
-					CollectableValueIdField.NULL, null, null));
+					CollectableValueIdField.NULL, null, null, TASKOWNER_ENTITY));
 		}
 	}
 	
@@ -53,14 +54,11 @@ public class CollectableTaskOwner extends DefaultCollectable{
 	
 	private static class TaskOwnerCollectableEntityField extends DefaultCollectableEntityField {
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		public TaskOwnerCollectableEntityField(String sName, Class<?> cls, String sLabel, String sDescription, Integer iMaxLength,
-				boolean bNullable, int iFieldType, String sReferencedEntityName, CollectableField clctfDefault, String sFormatInput, String sFormatOutput) {
-			super(sName, cls, sLabel, sDescription, iMaxLength, null, bNullable, iFieldType, sReferencedEntityName, clctfDefault, sFormatInput, sFormatOutput);
+				boolean bNullable, int iFieldType, String sReferencedEntityName, CollectableField clctfDefault, String sFormatInput, 
+				String sFormatOutput, String entityName) {
+			super(sName, cls, sLabel, sDescription, iMaxLength, null, bNullable, iFieldType, sReferencedEntityName, clctfDefault, 
+					sFormatInput, sFormatOutput, entityName);
 		}
 		
 		@Override

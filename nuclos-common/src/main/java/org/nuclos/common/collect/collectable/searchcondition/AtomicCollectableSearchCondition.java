@@ -35,10 +35,13 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
 public abstract class AtomicCollectableSearchCondition extends AbstractCollectableSearchCondition {
 
 	/**
-	 * 
+	 * @deprecated Why is this transient? How is a value after serialization enforced?
 	 */
-	private static final long serialVersionUID = 1L;
 	private transient CollectableEntityField clctef;
+	
+	/**
+	 * @deprecated Why is this transient? How is a value after serialization enforced?
+	 */
 	private transient ComparisonOperator compop;
 
 	AtomicCollectableSearchCondition(CollectableEntityField clctef, ComparisonOperator compop) {
@@ -147,16 +150,15 @@ public abstract class AtomicCollectableSearchCondition extends AbstractCollectab
 
 	}  // interface AtomicVisitor
 
-	@SuppressWarnings("deprecation")
 	private void writeObject(ObjectOutputStream oos) throws IOException {
 		oos.defaultWriteObject();
+		// TODO: Entity name null ok?
 		// CollectableEntityField generally is not serializable, but DefaultCollectableEntityField is:
-		oos.writeObject(new DefaultCollectableEntityField(clctef));
+		oos.writeObject(new DefaultCollectableEntityField(clctef, null));
 		// ComparisonOperator is not serializable:
 		oos.writeInt(getComparisonOperator().getIntValue());
 	}
 
-	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
 		// CollectableEntityField is not serializable:

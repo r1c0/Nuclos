@@ -28,17 +28,16 @@ import org.nuclos.common2.exception.CommonFatalException;
 
 public class CollectableEOEntityField extends AbstractCollectableEntityField {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private final String entityName;
+	
 	private final EntityFieldMetaDataVO efMeta;
 	
-	public CollectableEOEntityField(EntityFieldMetaDataVO efMeta) {
-		if (efMeta == null) {
+	public CollectableEOEntityField(EntityFieldMetaDataVO efMeta, String entityName) {
+		if (efMeta == null || entityName == null) {
 			throw new NullArgumentException("efMeta");
 		}
-		this.efMeta = efMeta; 
+		this.efMeta = efMeta;
+		this.entityName = entityName;
 	}
 	
 	@Override
@@ -136,6 +135,11 @@ public class CollectableEOEntityField extends AbstractCollectableEntityField {
 	@Override
 	public boolean isReferencing() {
 		return efMeta.getForeignEntity() != null;
+	}
+
+	@Override
+	public String getEntityName() {
+		return entityName;
 	}
 
 }

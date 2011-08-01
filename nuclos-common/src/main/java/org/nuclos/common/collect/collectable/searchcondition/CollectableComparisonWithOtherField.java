@@ -38,11 +38,9 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
 public final class CollectableComparisonWithOtherField extends AtomicCollectableSearchCondition {
 
 	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	/**
 	 * @invariant clctefOther != null
+	 * 
+	 * @deprecated Why is this transient? How is a value after serialization enforced?
 	 */
 	private transient CollectableEntityField clctefOther;
 
@@ -119,8 +117,9 @@ public final class CollectableComparisonWithOtherField extends AtomicCollectable
 
 	private void writeObject(ObjectOutputStream oos) throws IOException {
 		oos.defaultWriteObject();
+		// TODO: Entity name null ok?
 		// CollectableEntityField generally is not serializable, but DefaultCollectableEntityField is:
-		oos.writeObject(new DefaultCollectableEntityField(this.clctefOther));
+		oos.writeObject(new DefaultCollectableEntityField(this.clctefOther, null));
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {

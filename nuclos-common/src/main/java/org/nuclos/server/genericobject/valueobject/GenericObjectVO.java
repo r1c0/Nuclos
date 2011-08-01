@@ -70,6 +70,8 @@ public class GenericObjectVO extends NuclosValueObject implements Cloneable {
 
 	/**
 	 * the id of the parent object (if any).
+	 * 
+	 * @deprecated Parent is no longer part of the entity model.
 	 */
 	private Integer iParentId;
 
@@ -221,6 +223,8 @@ public class GenericObjectVO extends NuclosValueObject implements Cloneable {
 
 	/**
 	 * @return the parent id, if any. null for main module objects, non-null for submodule objects.
+	 * 
+	 * @deprecated Parent is no longer part of the entity model.
 	 */
 	public Integer getParentId() {
 		return this.iParentId;
@@ -228,6 +232,8 @@ public class GenericObjectVO extends NuclosValueObject implements Cloneable {
 
 	/**
 	 * sets the parent id for submodule objects.
+	 * 
+	 * @deprecated Parent is no longer part of the entity model.
 	 */
 	public void setParentId(Integer iParentId) {
 		this.iParentId = iParentId;

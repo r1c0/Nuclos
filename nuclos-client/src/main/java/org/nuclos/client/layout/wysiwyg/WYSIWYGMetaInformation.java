@@ -554,7 +554,8 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 		else if (Modules.getInstance().isModuleEntity(entityname)) {
 			return new CollectableGenericObjectEntityField(
 				AttributeCache.getInstance().getAttribute(entityname, fieldname),
-				MetaDataClientProvider.getInstance().getEntityField(entityname, fieldname));
+				MetaDataClientProvider.getInstance().getEntityField(entityname, fieldname),
+				entityname);
 		}
 		else {
 			return provider.getCollectableEntity(entityname).getEntityField(fieldname);

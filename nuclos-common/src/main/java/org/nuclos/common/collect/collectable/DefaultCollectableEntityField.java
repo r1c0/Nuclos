@@ -39,10 +39,7 @@ import org.nuclos.common2.RelativeDate;
  */
 public class DefaultCollectableEntityField extends AbstractCollectableEntityField implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private final String entityName;	
 	private final String sName;
 	private final Class<?> cls;
 	private final String sLabel;
@@ -68,9 +65,10 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
      * @param sOutputFormat
 	 */
 	public DefaultCollectableEntityField(String sName, Class<?> cls, String sLabel, String sDescription,
-			Integer iMaxLength, Integer iPrecision, boolean bNullable, int iFieldType, String sFormatInput, String sFormatOutput) {
+			Integer iMaxLength, Integer iPrecision, boolean bNullable, int iFieldType, String sFormatInput, 
+			String sFormatOutput, String entityName) {
 		this(sName, cls, sLabel, sDescription, iMaxLength, iPrecision, bNullable, iFieldType, null,
-				CollectableUtils.getNullField(iFieldType), sFormatInput, sFormatOutput);
+				CollectableUtils.getNullField(iFieldType), sFormatInput, sFormatOutput, entityName);
 	}
 
 	/**
@@ -87,11 +85,13 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 	 * @precondition clctfDefault != null
 	 * @todo add precondition (sReferencedEntityName != null) --> (iFieldType == IDFIELD)
 	 */
-	public DefaultCollectableEntityField(String sName, Class<?> cls, String sLabel, String sDescription, Integer iMaxLength, Integer iPrecision,
-			boolean bNullable, int iFieldType, String sReferencedEntityName, CollectableField clctfDefault, String sFormatInput, String sFormatOutput) {
+	public DefaultCollectableEntityField(String sName, Class<?> cls, String sLabel, String sDescription, Integer iMaxLength, 
+			Integer iPrecision, boolean bNullable, int iFieldType, String sReferencedEntityName, CollectableField clctfDefault, 
+			String sFormatInput, String sFormatOutput, String entityName) {
 		if (clctfDefault == null) {
 			throw new NullArgumentException("clctfDefault");
 		}
+		this.entityName = entityName;
 		this.sName = sName;
 		this.cls = cls;
 		this.sLabel = sLabel;
@@ -123,9 +123,10 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 	 * @param clctef
 	 * @postcondition this.equals(clctef)
 	 */
-	public DefaultCollectableEntityField(CollectableEntityField clctef) {
-		this(clctef.getName(), clctef.getJavaClass(), clctef.getLabel(), clctef.getDescription(), clctef.getMaxLength(), clctef.getPrecision(),
-				clctef.isNullable(), clctef.getFieldType(), clctef.getReferencedEntityName(), clctef.getDefault(), clctef.getFormatInput(), clctef.getFormatOutput());
+	public DefaultCollectableEntityField(CollectableEntityField clctef, String entityName) {
+		this(clctef.getName(), clctef.getJavaClass(), clctef.getLabel(), clctef.getDescription(), clctef.getMaxLength(), 
+				clctef.getPrecision(), clctef.isNullable(), clctef.getFieldType(), clctef.getReferencedEntityName(), 
+				clctef.getDefault(), clctef.getFormatInput(), clctef.getFormatOutput(), entityName);
 	}
 
 	@Override
@@ -198,4 +199,10 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 			assert LangUtils.isInstanceOf(result.getValue(), this.getJavaClass());
 		return result;
 	}
+
+	@Override
+	public String getEntityName() {
+		return entityName;
+	}
+	
 }	// class DefaultCollectableEntityField

@@ -46,16 +46,16 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class CollectableGenericObjectEntityField extends AbstractCollectableEntityField {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private final String entityName;
+	
 	private final AttributeCVO attrcvo;
+	
 	private final EntityFieldMetaDataVO  entityFieldMeta;
 	
-	public CollectableGenericObjectEntityField(AttributeCVO attrcvo, EntityFieldMetaDataVO entityFieldMeta) {
+	public CollectableGenericObjectEntityField(AttributeCVO attrcvo, EntityFieldMetaDataVO entityFieldMeta, String entityName) {
 		this.attrcvo = attrcvo;
 		this.entityFieldMeta = entityFieldMeta;
+		this.entityName = entityName;
 	}
 
 	public AttributeCVO getAttributeCVO() {
@@ -197,6 +197,11 @@ public class CollectableGenericObjectEntityField extends AbstractCollectableEnti
 					//"Es gibt keinen passenden Komponenten-Typ f\u00fcr diese Kombination.");
 		}
 		return result;
+	}
+
+	@Override
+	public String getEntityName() {
+		return entityName;
 	}
 
 }	// class CollectableGenericObjectEntityField

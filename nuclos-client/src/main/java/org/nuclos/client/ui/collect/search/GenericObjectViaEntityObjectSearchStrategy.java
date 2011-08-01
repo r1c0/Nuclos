@@ -298,11 +298,11 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 		clctexprInternal.setValueListProviderDatasourceParameter(getValueListProviderDatasourceParameter());
 		LOG.debug("Interne Suchbedingung: " + clctexprInternal.getSearchCondition());
 
-		// OPTIMIZATION: only selected and/or required attributes are loaded here:
+		// TODO: OPTIMIZATION: only selected and/or required attributes should be loaded here!
 		final ProxyList<EntityObjectVO> proxylstlovwdvo = lodelegate.getEntityObjectProxyList(
 				IdUtils.toLongId(getGenericObjectController().getModuleId()), 
 				clctexprInternal, getSelectedAndRequiredAttributeIds(),
-				getGenericObjectController().getSelectedSubEntityNames(), isParentFieldSelected(),
+				getGenericObjectController().getSelectedSubEntityNames(), null,
 				getIncludeSubModulesForSearch());
 
 		return new MyProxyListAdapter(new CollectableEntityObjectProxyListAdapter(proxylstlovwdvo, meta));
@@ -385,14 +385,20 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 				new AttributeProvider.GetAttributeLongIdByName(cc.getEntity(), AttributeCache.getInstance()));
 	}
 
+	/**
+	 * @deprecated I guess this should always return 'true'.
+	 */
 	@Override
 	public boolean getIncludeSubModulesForSearch() {
 		// Don't include submodules unless this controller is for a submodule.
 		// Don't include submodules for general search:
 		final Integer iModuleId = getGenericObjectController().getModuleId();
-		return (iModuleId != null) && Modules.getInstance().isSubModule(iModuleId);
+		return (iModuleId != null) /* && Modules.getInstance().isSubModule(iModuleId) */; 
 	}
 
+	/**
+	 * @deprecated Parent is no longer part of the entity model.
+	 */
 	private boolean isParentFieldSelected() {
 		final GenericObjectCollectController cc = getGenericObjectController();
 		return GenericObjectUtils.containsParentField(cc.getSelectedFields(), cc.getParentEntityName());

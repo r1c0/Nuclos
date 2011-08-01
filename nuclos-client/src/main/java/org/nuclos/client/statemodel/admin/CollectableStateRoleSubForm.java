@@ -39,8 +39,6 @@ import org.nuclos.server.statemodel.valueobject.SubformPermissionVO;
  * @author	<a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version 01.00.00
  */
-
-
 public class CollectableStateRoleSubForm extends AbstractCollectable{
 
 	public static final String FIELDNAME_ROLE = "role";
@@ -50,15 +48,17 @@ public class CollectableStateRoleSubForm extends AbstractCollectable{
 	public static class Entity extends AbstractCollectableEntity {
 		public Entity() {
 			super("stateroleentity", CommonLocaleDelegate.getMessage("CollectableStateRoleSubForm.9","Unterformulare f\u00fcr statusabh\u00e4ngige Rechte"));
-
+			final String entity = "stateroleentity";
+			
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ROLE, String.class, CommonLocaleDelegate.getMessage("CollectableStateRoleSubForm.1","Benutzergruppe"),
 				CommonLocaleDelegate.getMessage("CollectableStateRoleSubForm.6","\u00dcbergeordnete Benutzergruppe (Rolle)"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, "staterole",
-					CollectableValueIdField.NULL, null, null));
+					CollectableValueIdField.NULL, null, null, entity));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_SUBFORM,	String.class, CommonLocaleDelegate.getMessage("CollectableStateRoleSubForm.7","Unterformular"), 
 				CommonLocaleDelegate.getMessage("CollectableStateRoleSubForm.8","Unterformular"), null, null, false, CollectableField.TYPE_VALUEFIELD, "entity",
-					CollectableValueField.NULL, null, null));
+					CollectableValueField.NULL, null, null, entity));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_WRITEABLE,
-					Boolean.class, CommonLocaleDelegate.getMessage("CollectableStateRoleSubForm.5","Schreibrecht?"), CommonLocaleDelegate.getMessage("CollectableStateRoleSubForm.4","Schreiben erlaubt?"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null));
+					Boolean.class, CommonLocaleDelegate.getMessage("CollectableStateRoleSubForm.5","Schreibrecht?"), CommonLocaleDelegate.getMessage("CollectableStateRoleSubForm.4","Schreiben erlaubt?"), 
+					null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 		}
 	}
 

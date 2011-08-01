@@ -38,10 +38,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class CollectableMasterDataForeignKeyEntityField extends AbstractCollectableEntityField {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private final String entityName;
+	
 	private final MasterDataMetaFieldVO mdmetafield;
 
 	/**
@@ -49,14 +47,12 @@ public class CollectableMasterDataForeignKeyEntityField extends AbstractCollecta
 	 * The collection of enumerated fields is built lazily.
 	 * @param mdmetafield
 	 */
-	public CollectableMasterDataForeignKeyEntityField(MasterDataMetaFieldVO mdmetafield) {
+	public CollectableMasterDataForeignKeyEntityField(MasterDataMetaFieldVO mdmetafield, String entityName) {
 		this.mdmetafield = mdmetafield;
-
+		this.entityName = entityName;
 		final String sForeignEntity = mdmetafield.getForeignEntity();
-
 		if (sForeignEntity == null) {
 			throw new NuclosFatalException(StringUtils.getParameterizedExceptionMessage("clctmdfkef.missing.foreignentity.error", mdmetafield.getFieldName()));
-				//"Foreign entity ist leer f\u00fcr das Feld " + mdmetafield.getFieldName());
 		}
 	}
 
@@ -171,6 +167,9 @@ public class CollectableMasterDataForeignKeyEntityField extends AbstractCollecta
 		return super.getDefault();
 	}
 
-
+	@Override
+	public String getEntityName() {
+		return entityName;
+	}
 
 }	// class CollectableMasterDataForeignKeyEntityField

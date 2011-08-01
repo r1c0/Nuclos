@@ -125,7 +125,7 @@ public class CollectableMasterDataEntity implements CollectableEntity {
 			boolean bEnumerated = (getMetaFieldVO(sFieldName).getForeignEntity() != null);
 
 			if (bEnumerated)
-				result = new CollectableMasterDataForeignKeyEntityField(mdmetavo.getField(sFieldName));
+				result = new CollectableMasterDataForeignKeyEntityField(mdmetavo.getField(sFieldName), getName());
 			else {
 				MasterDataMetaFieldVO mdmetafieldvo = getMetaFieldVO(sFieldName);
 
@@ -157,7 +157,8 @@ public class CollectableMasterDataEntity implements CollectableEntity {
 							null,
 							cfDefault,
 							mdmetafieldvo.getInputFormat(),
-							mdmetafieldvo.getOutputFormat());
+							mdmetafieldvo.getOutputFormat(),
+							getName());
 			}
 			mpclctef.put(sFieldName, result);
 		}

@@ -173,6 +173,9 @@ public class GenericObjectSearchStrategy extends CollectSearchStrategy<Collectab
 		return (iModuleId != null) && Modules.getInstance().isSubModule(iModuleId);
 	}
 
+	/**
+	 * @deprecated Parent is no longer part of the entity model.
+	 */
 	private boolean isParentFieldSelected() {
 		final GenericObjectCollectController cc = getGenericObjectController();
 		return GenericObjectUtils.containsParentField(cc.getSelectedFields(), cc.getParentEntityName());

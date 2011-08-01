@@ -128,6 +128,7 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
@@ -1093,7 +1094,8 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 						clctefTarget.isNullable(),
 						clctefTarget.getFieldType(),
 						clctefTarget.getFormatInput(),
-						clctefTarget.getFormatOutput());
+						clctefTarget.getFormatOutput(),
+						clcte.getName());
 
 				CollectableComponentType type = getTypeFromClassField(subformtblmdl, "datatype", iRow);
 				CollectableComponent clctcomp = DefaultCollectableComponentFactory.getInstance().newCollectableComponent(newEntityField, type, bSearchable);
@@ -1448,10 +1450,6 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	 */
 	public static class SubFormTable extends CommonJTable {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private TableCellEditorProvider celleditorprovider;
 		private TableCellRendererProvider cellrendererprovider;
 		private SubForm subform;
@@ -1690,10 +1688,8 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 
 					if (!StringUtils.isNullOrEmpty(datatype) ) {
 						try {
-
-							Class<?> clazz = Class.forName(getSubFormModel().getValueAt(iRow, getSubFormModel().findColumnByFieldName("datatype")).toString());
-
-							CollectableEntityField newEntityField =
+							final Class<?> clazz = Class.forName(getSubFormModel().getValueAt(iRow, getSubFormModel().findColumnByFieldName("datatype")).toString());
+							final CollectableEntityField newEntityField =
 								new DefaultCollectableEntityField(
 									clctefTarget.getName(),
 									clazz,
@@ -1704,7 +1700,8 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 									clctefTarget.isNullable(),
 									clctefTarget.getFieldType(),
 									clctefTarget.getFormatInput(),
-									clctefTarget.getFormatOutput());
+									clctefTarget.getFormatOutput(),
+									subform.entityName);
 
 							return getCellRendererFromClassField(newEntityField, "datatype", iRow);
 						}

@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.common.ejb3.EntityObjectFacadeRemote;
 import org.nuclos.server.genericobject.AbstractProxyList;
@@ -45,23 +46,25 @@ public class EntityObjectProxyList extends AbstractProxyList<Long, EntityObjectV
 	private final CollectableSearchExpression clctexpr;
 	private final Set<Long> stRequiredAttributeIds;
 	private final Set<String> stRequiredSubEntities;
-	private final boolean bIncludeParentObjects;
+	private final Set<PivotInfo> pivots;
+	private final boolean includeDependents;
 	
 	public EntityObjectProxyList(Long id, CollectableSearchExpression clctexpr, Set<Long> stRequiredAttributeIds, 
-			Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects) {
+			Set<String> stRequiredSubEntityNames, Set<PivotInfo> pivots, boolean includeDependents) {
 		super();
 		this.id = id;
 		this.clctexpr = clctexpr;
 		this.stRequiredAttributeIds = stRequiredAttributeIds;
 		this.stRequiredSubEntities = stRequiredSubEntityNames;
-		this.bIncludeParentObjects = bIncludeParentObjects;
+		this.pivots = pivots;
+		this.includeDependents = includeDependents;
 
 		this.initialize();		
 	}
 	
 	@Override
 	protected Collection<EntityObjectVO> fetchNextChunk(List<Long> lstIntIds) throws RuntimeException {
-		return getEntityObjectFacade().getEntityObjectsMore(id, lstIntIds, stRequiredAttributeIds, stRequiredSubEntities, bIncludeParentObjects);
+		return getEntityObjectFacade().getEntityObjectsMore(id, lstIntIds, stRequiredAttributeIds, stRequiredSubEntities, pivots, includeDependents);
 	}
 
 	@Override
@@ -95,7 +98,7 @@ public class EntityObjectProxyList extends AbstractProxyList<Long, EntityObjectV
 		result.append("size=").append(size);
 		result.append(",reqFields=").append(stRequiredAttributeIds);
 		result.append(",reqSubforms=").append(stRequiredSubEntities);
-		result.append(",inclParent=").append(bIncludeParentObjects);
+		result.append(",pivots=").append(pivots);
 		result.append(",search=").append(clctexpr);
 		mapDescription(result, mpObjects, 5);
 		result.append("]");

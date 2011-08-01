@@ -45,7 +45,7 @@ public class CollectableEOEntity implements CollectableEntity {
 	@Override
 	public CollectableEntityField getEntityField(String field) {
 		
-		CollectableEntityField result = new CollectableEOEntityField(mapEfMeta.get(field));
+		CollectableEntityField result = new CollectableEOEntityField(mapEfMeta.get(field), eMeta.getEntity());
 		result.setCollectableEntity(this);
 		
 		return result;

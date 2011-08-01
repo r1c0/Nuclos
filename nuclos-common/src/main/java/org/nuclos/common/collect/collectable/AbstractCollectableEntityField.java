@@ -36,7 +36,14 @@ public abstract class AbstractCollectableEntityField implements CollectableEntit
 
 	private static final long serialVersionUID = -6972777641358799942L;
 
+	/**
+	 * @deprecated Not always present. Why is this transient? How is a value after serialization enforced?
+	 */
 	private transient CollectableEntity clcte;
+	
+	/**
+	 * @deprecated Why is this transient? How is a value after serialization enforced?
+	 */
 	private transient CollectableEntityFieldSecurityAgent securityAgent = new CollectableEntityFieldSecurityAgent();
 
 	@Override
@@ -192,6 +199,7 @@ public abstract class AbstractCollectableEntityField implements CollectableEntit
 		result.append(getClass().getName()).append("[");
 		result.append("name=").append(getName());
 		result.append(",label=").append(getLabel());
+		result.append(",entity=").append(getEntityName());
 		result.append(",refField=").append(getReferencedEntityFieldName());
 		result.append(",refEntity=").append(getReferencedEntityName());
 		result.append("]");

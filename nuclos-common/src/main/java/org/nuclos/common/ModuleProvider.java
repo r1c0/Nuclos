@@ -268,6 +268,8 @@ public abstract class ModuleProvider {
 	/**
 	 * @param mdvoModule
 	 * @return the name of the given module's parent module, if any.
+	 * 
+	 * @deprecated Parent is no longer part of the entity model.
 	 */
 	public static String getParentModuleName(MasterDataVO mdvoModule) {
 		return mdvoModule.getField("parentModule", String.class);
@@ -280,6 +282,8 @@ public abstract class ModuleProvider {
 	/**
 	 * @param sEntityName
 	 * @return the name of the parent entity, if any, of the given entity.
+	 * 
+	 * @deprecated Parent is no longer part of the entity model.
 	 */
 	public String getParentEntityName(String sEntityName) {
 		return getParentModuleName(getModuleByEntityName(sEntityName));

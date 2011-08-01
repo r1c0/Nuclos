@@ -17,6 +17,7 @@
 package org.nuclos.server.common.ejb3;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +32,7 @@ import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.dal.provider.NucletDalProvider;
@@ -69,24 +71,27 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 
 	@Override
 	public ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr,
-			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects,
-			boolean bIncludeSubModules) {
-		return new EntityObjectProxyList(id, clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, bIncludeParentObjects);
+			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Set<PivotInfo> pivots, 
+			boolean includeDependents) {
+		return new EntityObjectProxyList(id, clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, 
+				pivots, includeDependents);
 	}
 
 	@Override
 	public Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds,
-			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects) {
+			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Set<PivotInfo> pivots, boolean includeDependents) {
 		final EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(id);
 		final List<EntityObjectVO> eos = NucletDalProvider.getInstance().getEntityObjectProcessor(
 				eMeta.getEntity()).getBySearchExpressionAndPrimaryKeys(
 						appendRecordGrants(new CollectableSearchExpression(), eMeta), lstIds);
-		for (EntityObjectVO eo : eos) {
-			try {
-				fillDependants(eo, stRequiredSubEntityNames);
-			}
-			catch(CommonFinderException e) {
-				throw new NuclosFatalException(e);
+		if (includeDependents) {
+			for (EntityObjectVO eo : eos) {
+				try {
+					fillDependants(eo, stRequiredSubEntityNames);
+				}
+				catch(CommonFinderException e) {
+					throw new NuclosFatalException(e);
+				}
 			}
 		}
 		return eos;
@@ -113,7 +118,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 				LOG.warn("Can't find ref field from " + s + " to " + base.getEntity());
 				continue;
 			}
-			final Collection<EntityObjectVO> col = getDependantEntityObjects(s, refField, base.getId());
+			final Collection<EntityObjectVO> col = getDependentEntityObjects(s, refField, base.getId());
 			dmdm.addAllData(s, col);
 		}
 		base.setDependants(dmdm);
@@ -136,12 +141,19 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 	}
 
 	@Override
-	public Collection<EntityObjectVO> getDependantEntityObjects(String subform, String field, Long relatedId) {
+	public Collection<EntityObjectVO> getDependentEntityObjects(String subform, String field, Long relatedId) {
 		final MetaDataServerProvider mdProv = MetaDataServerProvider.getInstance();
 		final CollectableComparison cond = SearchConditionUtils.newEOidComparison(
 				subform, field, ComparisonOperator.EQUAL, relatedId, mdProv);
 		return NucletDalProvider.getInstance().getEntityObjectProcessor(subform).getBySearchExpression(
 				new CollectableSearchExpression(cond));
+	}
+
+	@Override
+	public Collection<EntityObjectVO> getDependentPivotEntityObjects(PivotInfo pivot, String sForeignKeyField,
+			Long oRelatedId) {
+		// TODO Auto-generated method stub
+		return Collections.emptyList();
 	}
 	
 }

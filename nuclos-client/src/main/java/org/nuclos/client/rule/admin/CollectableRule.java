@@ -38,6 +38,8 @@ import org.nuclos.server.ruleengine.valueobject.RuleVO;
  */
 public class CollectableRule extends AbstractCollectableBean<RuleVO> {
 
+	public static final String TASK_ENTITY = "Rule";
+	
 	public static final String FIELDNAME_NAME = "name";
 	public static final String FIELDNAME_DESCRIPTION = "description";
 	public static final String FIELDNAME_RULESOURCE = "ruleSource";
@@ -54,15 +56,15 @@ public class CollectableRule extends AbstractCollectableBean<RuleVO> {
 			super(NuclosEntity.RULE.getEntityName(), "Regel");
 
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NAME, String.class, "Name",
-					"Name der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null));
+					"Name der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DESCRIPTION, String.class,
-					"Beschreibung", "Beschreibung der Regel", null, null, true, CollectableField.TYPE_VALUEFIELD, null, null));
+					"Beschreibung", "Beschreibung der Regel", null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_RULESOURCE, String.class, "Code",
-					"Quellcode der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null));
+					"Quellcode der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ACTIVE, Boolean.class,
-					"Aktiv?", "Aktivkennzeichen der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null));
+					"Aktiv?", "Aktivkennzeichen der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DEBUG, Boolean.class,
-					"Debug?", "Debug-Flag der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null));
+					"Debug?", "Debug-Flag der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 		}
 	}	// inner class Entity
 

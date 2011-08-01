@@ -96,8 +96,8 @@ public class SearchConditionUtils extends org.nuclos.common.collect.collectable.
 	private static CollectableEntityField newGenericObjectEntityField(AttributeProvider attrprovider, String sEntity, String sAttributeName) {
 		return new CollectableGenericObjectEntityField(
 			attrprovider.getAttribute(sEntity, sAttributeName),
-			attrprovider.getEntityField(sEntity, sAttributeName)
-			);
+			attrprovider.getEntityField(sEntity, sAttributeName),
+			sEntity);
 	}
 
 	public static CollectableEntityField newMasterDataEntityField(MasterDataMetaVO mdmetavo, String sFieldName) {

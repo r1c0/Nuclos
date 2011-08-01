@@ -19,6 +19,7 @@ package org.nuclos.common.collect.collectable;
 import java.text.Collator;
 import java.util.Comparator;
 
+import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.LangUtils;
 
@@ -33,6 +34,16 @@ import org.nuclos.common2.LangUtils;
  * @version 01.00.00
  */
 public interface CollectableEntityField {
+
+	/**
+	 * Transformer: GetEntityName
+	 */
+	public static class GetEntityName implements Transformer<CollectableEntityField, String> {
+		@Override
+		public String transform(CollectableEntityField clctefwe) {
+			return clctefwe.getEntityName();
+		}
+	}
 
 	/**
 	 * field type: undefined. This is needed for reading from the preferences.
@@ -53,6 +64,14 @@ public interface CollectableEntityField {
 	 * @return the name of this field
 	 */
 	String getName();
+	
+	/**
+	 * @return the name of the entity this field belongs to.
+	 * 
+	 * @author Thomas Pasch
+	 * @since Nuclos 3.1.01
+	 */
+	String getEntityName();
 	
 	/**
 	 * @return the input format of this field
@@ -129,27 +148,34 @@ public interface CollectableEntityField {
 	
 	/**
 	 * @return the parent <code>CollectableEntity</code>, if any.
+	 * 
+	 * @deprecated Not always present.
 	 */
 	CollectableEntity getCollectableEntity();
 	
 	/**
 	 * sets the parent <code>CollectableEntity</code>
 	 * @param the parent <code>CollectableEntity</code>
+	 * 
+	 * @deprecated Not always present.
 	 */
 	void setCollectableEntity(CollectableEntity clent);
 
 	/**
 	 * @return the name of the referenced <code>CollectableEntity</code>, if any.
+	 * 
+	 * @deprecated There is no such thing like a "referenced field" - only a whole Collectable can be referenced.
 	 */
 	String getReferencedEntityName();
 
 	/**
 	 * @return the name of the field in the referenced <code>CollectableEntity</code>, if any. That is the field
 	 * that this field is a foreign key of. Defaults to <code>"name"</code>.
-	 * @deprecated There is no such thing like a "referenced field" - only a whole Collectable can be referenced.
 	 * The field name returned by this method is used for lookups and for displaying the identifier of a referenced Collectable (entity).
 	 * In lookups, the field to transfer must be specified as it isn't always the same. For displaying the identifier,
 	 * {@link Collectable#getIdentifierLabel()} should be used.
+	 * 
+	 * @deprecated There is no such thing like a "referenced field" - only a whole Collectable can be referenced.
 	 */
 	@Deprecated
 	String getReferencedEntityFieldName();
@@ -295,4 +321,5 @@ public interface CollectableEntityField {
 	 * checks whether delete permission is granted to this field or not
 	 */
 	boolean isRemovable();
+	
 }	// interface CollectableEntityField

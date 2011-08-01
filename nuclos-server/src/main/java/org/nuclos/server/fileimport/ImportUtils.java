@@ -290,8 +290,8 @@ public class ImportUtils {
 			if (isModule) {
 				cef = new CollectableGenericObjectEntityField(
 					AttributeCache.getInstance().getAttribute(entity, attribute),
-					MetaDataServerProvider.getInstance().getEntityField(entity, attribute)
-					);
+					MetaDataServerProvider.getInstance().getEntityField(entity, attribute),
+					entity);
 			}
 			else {
 				cef = (new CollectableMasterDataEntity(MasterDataMetaCache.getInstance().getMetaData(entity))).getEntityField(attribute);

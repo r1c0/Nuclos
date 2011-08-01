@@ -110,8 +110,10 @@ public class DalSupportForGO {
 		eo.initFields(go.getAttributes().size(), go.getAttributes().size());
 		for (DynamicAttributeVO attr : go.getAttributes()) {
 			final Long fieldId = IdUtils.toLongId(attr.getAttributeId());
-			LOG.info("fieldId " + fieldId + " for " + attr + " (attrId=" 
-					+ attr.getAttributeId() + ") in " + meta.getMeta().getEntity());
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("fieldId " + fieldId + " for " + attr + " (attrId=" 
+						+ attr.getAttributeId() + ") in " + meta.getMeta().getEntity());
+			}
 			final String field = MetaDataClientProvider.getInstance().getEntityField(
 					metaVo.getEntity(), fieldId).getField();
 			if (attr.isRemoved()) {

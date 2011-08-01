@@ -113,6 +113,8 @@ public class GenericObjectUtils {
 	 * @return Does the given list contain a field of the parent entity?
 	 * @precondition clctefweSelected != null
 	 * @postcondition (sParentEntityName == null) --> !result
+	 * 
+	 * @deprecated Parent is no longer part of the entity model.
 	 */
 	public static boolean containsParentField(List<CollectableEntityFieldWithEntity> clctefweSelected, String sParentEntityName) {
 		return (sParentEntityName != null) && CollectionUtils.exists(clctefweSelected, new CollectableEntityFieldWithEntity.HasEntity(sParentEntityName));
@@ -123,6 +125,8 @@ public class GenericObjectUtils {
 	 * @return the name of the "virtual" parent object field for the subentity with the given name.
 	 * The "parentObject" property of <code>GenericObjectVO</code> is mapped to a corresponding
 	 * <code>CollectableEntityField</code> with the name returned by this method.
+	 * 
+	 * @deprecated Parent is no longer part of the entity model.
 	 */
 	public static String getParentObjectFieldName(String sSubEntityName) {
 		return sSubEntityName + FIELDNAMESUFFIX_PARENTOBJECT;

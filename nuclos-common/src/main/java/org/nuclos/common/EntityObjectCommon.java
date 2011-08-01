@@ -23,6 +23,7 @@ import java.util.Set;
 import javax.annotation.security.RolesAllowed;
 
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.server.genericobject.ProxyList;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 
@@ -44,7 +45,7 @@ public interface EntityObjectCommon {
 	List<Long> getEntityObjectIds(Long id, CollectableSearchExpression cse);
 	
 	/**
-	 * gets all generic objects along with its dependants, that match a given search condition
+	 * gets all generic objects along with its dependents, that match a given search condition
 	 * @param iModuleId id of module to search for generic objects in
 	 * @param clctexpr value object containing search expression
 	 * @param stRequiredAttributeIds may be <code>null</code>, which means all attributes are required
@@ -57,7 +58,7 @@ public interface EntityObjectCommon {
 	 */
 	@RolesAllowed("Login")
 	ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr,
-			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects, boolean bIncludeSubModules);
+			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Set<PivotInfo> pivots, boolean includeDependents);
 	
 	/**
 	 * gets more leased objects that match a given search condition
@@ -74,12 +75,12 @@ public interface EntityObjectCommon {
 	 */
 	@RolesAllowed("Login")
 	Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds,
-			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects);
+			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Set<PivotInfo> pivots, boolean includeDependents);
 
 
 	/**
-	 * gets the dependant master data records for the given entity, using the given foreign key field and the given id as foreign key.
-	 * @param sEntityName name of the entity to get all dependant master data records for
+	 * gets the dependent master data records for the given entity, using the given foreign key field and the given id as foreign key.
+	 * @param sEntityName name of the entity to get all dependent master data records for
 	 * @param sForeignKeyField name of the field relating to the foreign entity
 	 * @param oRelatedId id by which sEntityName and sParentEntity are related
 	 * @return
@@ -87,7 +88,11 @@ public interface EntityObjectCommon {
 	 * @todo restrict permissions by entity name
 	 */
 	@RolesAllowed("Login")
-	Collection<EntityObjectVO> getDependantEntityObjects(
+	Collection<EntityObjectVO> getDependentEntityObjects(
 		String sEntityName, String sForeignKeyField, Long oRelatedId);
+	
+	@RolesAllowed("Login")
+	Collection<EntityObjectVO> getDependentPivotEntityObjects(
+		PivotInfo pivot, String sForeignKeyField, Long oRelatedId);	
 
 }

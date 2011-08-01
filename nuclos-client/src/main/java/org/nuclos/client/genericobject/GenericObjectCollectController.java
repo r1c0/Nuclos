@@ -296,12 +296,21 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private static final String TABSELECTED = "tabselected";
 
 
+	// TODO: Entity name null ok?
 	public static final CollectableEntityField clctefStatus = new DefaultCollectableEntityField(NuclosEOField.STATE.getMetaData().getField(), String.class,
-		CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue())), null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null);
+		CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue())), 
+		null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, null);
+
+	// TODO: Entity name null ok?
 	public static final CollectableEntityField clctefStatusnumeral = new DefaultCollectableEntityField(NuclosEOField.STATENUMBER.getMetaData().getField(), Integer.class,
-		CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATENUMBER.getMetaData().getId().intValue())), null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null);
+		CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATENUMBER.getMetaData().getId().intValue())), 
+		null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, null);
+
+	// TODO: Entity name null ok?
 	private final CollectableEntityField clctefSearchState = new DefaultCollectableEntityField("[status_num_plus_name]", String.class,
-		CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue())), null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null);
+		CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue())), 
+		null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, null);
+
 	private final CollectableComboBox clctSearchState = new NuclosCollectableStateComboBox(clctefSearchState, true);
 
 	private final CollectableComponentModelListener ccmlistenerUsageCriteriaFieldsForDetails = new CollectableComponentModelAdapter() {
@@ -456,7 +465,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	//private boolean bEnteringHistoricalMode = false;
 
 	private final CollectableEntityField clctefHistoricalDate = new DefaultCollectableEntityField("historicalDate", Date.class,
-		null, null, null, null, true, CollectableField.TYPE_VALUEFIELD, null, null);
+		null, null, null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, "historicalDate");
 
 	private final CollectableDateChooser clctdatechooserHistorical = new CollectableDateChooser(clctefHistoricalDate, false);
 
@@ -2877,6 +2886,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @return the name of the parent entity, if any, of this <code>CollectController</code>'s entity.
 	 * 
 	 * TODO: Make private again.
+	 * 
+	 * @deprecated Parent is no longer part of the entity model.
 	 */
 	public String getParentEntityName() {
 		return getParentEntityName(this.getEntityName());
@@ -2885,6 +2896,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/**
 	 * @param sEntityName
 	 * @return the name of the given entity's parent entity, if any.
+	 * 
+	 * @deprecated Parent is no longer part of the entity model.
 	 */
 	private static String getParentEntityName(String sEntityName) {
 		return Modules.getInstance().getParentEntityName(sEntityName);

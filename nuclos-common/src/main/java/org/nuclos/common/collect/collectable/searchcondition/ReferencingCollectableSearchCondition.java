@@ -40,10 +40,10 @@ import org.nuclos.common2.LangUtils;
 public final class ReferencingCollectableSearchCondition extends AbstractCollectableSearchCondition {
 
 	/**
-	 * 
+	 * @deprecated Why is this transient? How is a value after serialization enforced?
 	 */
-	private static final long serialVersionUID = 1L;
 	private transient CollectableEntityField clctefReferencing;
+	
 	private final CollectableSearchCondition condSub;
 
 	/**
@@ -131,8 +131,9 @@ public final class ReferencingCollectableSearchCondition extends AbstractCollect
 
 	private void writeObject(ObjectOutputStream oos) throws IOException {
 		oos.defaultWriteObject();
+		// TODO: Entity name null ok?
 		// CollectableEntityField generally is not serializable, but DefaultCollectableEntityField is:
-		oos.writeObject(new DefaultCollectableEntityField(this.clctefReferencing));
+		oos.writeObject(new DefaultCollectableEntityField(this.clctefReferencing, null));
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
