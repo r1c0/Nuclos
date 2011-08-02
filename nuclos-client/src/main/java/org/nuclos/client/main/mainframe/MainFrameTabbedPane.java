@@ -1149,6 +1149,32 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		else
 			addTab(nuclosTab.getName(), nuclosTab.getTabIcon(), nuclosTab, nuclosTab.getToolTipText());
 	}
+	
+	/**
+	 * 
+	 * @param nuclosTab
+	 * @param index
+	 */
+	public void addTab(MainFrameTab nuclosTab, int index) {
+		if (index <= 0)
+			index = 1;
+		
+		if (index >= getTabCount())
+			addTab(nuclosTab, false);
+		else
+			insertTab(nuclosTab.getName(), nuclosTab.getTabIcon(), nuclosTab, nuclosTab.getToolTipText(), index);
+	}
+	
+	/**
+	 * 
+	 * @param nuclosTab
+	 * @return index of tab (could by <0 if tab is hidden)
+	 */
+	public int getTabIndex(MainFrameTab nuclosTab) {
+		final int index = indexOfComponent(nuclosTab);
+		
+		return index;
+	}
 
 	/**
 	 * 

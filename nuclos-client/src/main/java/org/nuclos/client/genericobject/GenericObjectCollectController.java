@@ -117,8 +117,10 @@ import org.nuclos.client.genericobject.resulttemplate.SearchResultTemplate;
 import org.nuclos.client.genericobject.statehistory.StateHistoryController;
 import org.nuclos.client.genericobject.valuelistprovider.GenericObjectCollectableFieldsProviderFactory;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
@@ -4021,13 +4023,21 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 			String entity = Modules.getInstance().getEntityNameByModuleId(iModuleId);
 			JTabbedPane openInTabbed;
+			MainFrameTab tabIfAny = null;
 			if (MainFrame.isPredefinedEntityOpenLocationSet(entity))
 				openInTabbed = MainFrame.getPredefinedEntityOpenLocation(entity);
-			else
-				openInTabbed = MainFrame.getTabbedPane(GenericObjectCollectController.this.getFrame());
+			else {
+				final MainFrameTabbedPane mfTabbedPane = MainFrame.getTabbedPane(GenericObjectCollectController.this.getFrame());
+				openInTabbed = mfTabbedPane;
+				tabIfAny = new MainFrameTab();
+				final int indexSource = mfTabbedPane.getTabIndex(GenericObjectCollectController.this.getFrame());
+				final int indexTarget = indexSource -1;
+				mfTabbedPane.addTab(tabIfAny, indexTarget);
+			}
 
 			GenericObjectCollectController newController = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(
-				openInTabbed, iModuleId, null);
+				openInTabbed, iModuleId, tabIfAny);
+			if (tabIfAny != null) MainController.initMainFrameTab(newController, tabIfAny);
 			if(this.getCollectState().getOuterState() == CollectState.OUTERSTATE_DETAILS && !multiEdit)
 				newController.addCollectableEventListener(new DetailsCollectableEventListener(ctl, newController));
 			newController.runViewSingleCollectable(newCollectableGenericObject(govo));
@@ -4041,18 +4051,25 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	GenericObjectCollectController showIncompleteGenericObject(Integer sourceId, GenericObjectVO generatedGo) throws CommonBusinessException {
 		String entity = Modules.getInstance().getEntityNameByModuleId(generatedGo.getModuleId());
 		JTabbedPane openInTabbed;
+		MainFrameTab tabIfAny = null;
 		if (MainFrame.isPredefinedEntityOpenLocationSet(entity))
 			openInTabbed = MainFrame.getPredefinedEntityOpenLocation(entity);
-		else
-			openInTabbed = MainFrame.getTabbedPane(GenericObjectCollectController.this.getFrame());
-
+		else {
+			final MainFrameTabbedPane mfTabbedPane = MainFrame.getTabbedPane(GenericObjectCollectController.this.getFrame());
+			openInTabbed = mfTabbedPane;
+			tabIfAny = new MainFrameTab();
+			final int indexSource = mfTabbedPane.getTabIndex(GenericObjectCollectController.this.getFrame());
+			final int indexTarget = indexSource -1;
+			mfTabbedPane.addTab(tabIfAny, indexTarget);
+		}
 		GenericObjectCollectController goclct = NuclosCollectControllerFactory.getInstance().
-		newGenericObjectCollectController(openInTabbed, generatedGo.getModuleId(), null);
+				newGenericObjectCollectController(openInTabbed, generatedGo.getModuleId(), tabIfAny);
 		goclct.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW_CHANGED);
 		goclct.bGenerated = true;
 		goclct.iGenericObjectIdSource = sourceId;
 		goclct.unsafeFillDetailsPanel(new CollectableGenericObjectWithDependants((GenericObjectWithDependantsVO) generatedGo));
 		goclct.addCollectableEventListener(new DetailsCollectableEventListener(GenericObjectCollectController.this, goclct));
+		if (tabIfAny != null) MainController.initMainFrameTab(goclct, tabIfAny);
 		goclct.showFrame();
 		return goclct;
 	}
