@@ -31,6 +31,7 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
@@ -223,7 +224,7 @@ public class ReportDelegate {
 	}
 
 	public JasperPrint prepareSearchResult(CollectableSearchExpression clctexpr,
-		List<CollectableEntityFieldWithEntity> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules) throws NuclosReportException {
+		List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules) throws NuclosReportException {
 		try {
 			return getReportFacade().prepareSearchResult(clctexpr, lstclctefweSelected, iModuleId, bIncludeSubModules);
 		}

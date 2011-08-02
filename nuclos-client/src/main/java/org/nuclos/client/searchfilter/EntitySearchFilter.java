@@ -30,6 +30,7 @@ import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.collect.collectable.CollectableEntity;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableEntityProvider;
 import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.CollectableUtils;
@@ -58,7 +59,7 @@ public class EntitySearchFilter extends SearchFilter {
 	/**
 	 * list of visible columns
 	 */
-	private List<CollectableEntityFieldWithEntity> lstclctefweVisible;
+	private List<? extends CollectableEntityField> lstclctefweVisible;
 
 	/**
 	 * @todo This should be replaced by a List<CollectableSorting>, as the direction (ascending/descending) is missing here.
@@ -118,14 +119,14 @@ public class EntitySearchFilter extends SearchFilter {
 	/**
 	 * @return the columns to be shown in the search result.
 	 */
-	public List<CollectableEntityFieldWithEntity> getVisibleColumns() {
+	public List<? extends CollectableEntityField> getVisibleColumns() {
 		return this.lstclctefweVisible;
 	}
 
 	/**
 	 * @param lstclctefweVisible the columns to be shown in the search result.
 	 */
-	public void setVisibleColumns(List<CollectableEntityFieldWithEntity> lstclctefweVisible) {
+	public void setVisibleColumns(List<? extends CollectableEntityField> lstclctefweVisible) {
 		this.lstclctefweVisible = lstclctefweVisible;
 	}
 
@@ -194,15 +195,15 @@ public class EntitySearchFilter extends SearchFilter {
 		super.put();
 	}
 	
-	public static void writeCollectableEntityFieldsToPreferences(Preferences prefs, List<CollectableEntityFieldWithEntity> lstclctefweSelected, String sPrefsNodeFields, String sPrefsNodeEntities) throws PreferencesException {
+	public static void writeCollectableEntityFieldsToPreferences(Preferences prefs, List<? extends CollectableEntityField> lstclctefweSelected, String sPrefsNodeFields, String sPrefsNodeEntities) throws PreferencesException {
 		PreferencesUtils.putStringList(prefs, sPrefsNodeFields, CollectableUtils.getFieldNamesFromCollectableEntityFields(lstclctefweSelected));
 
-		final List<String> lstEntityNames = CollectionUtils.transform(lstclctefweSelected, new CollectableEntityFieldWithEntity.GetEntityName());
+		final List<String> lstEntityNames = CollectionUtils.transform(lstclctefweSelected, new CollectableEntityField.GetEntityName());
 		PreferencesUtils.putStringList(prefs, sPrefsNodeEntities, lstEntityNames);
 	}
 	
 	/** @todo comment */
-	public static List<CollectableEntityFieldWithEntity> readCollectableEntityFieldsFromPreferences(Preferences prefs, CollectableEntity clcte, String sPrefsNodeFields, String sPrefsNodeEntities) {
+	public static List<CollectableEntityField> readCollectableEntityFieldsFromPreferences(Preferences prefs, CollectableEntity clcte, String sPrefsNodeFields, String sPrefsNodeEntities) {
 		List<String> lstSelectedFieldNames;
 		List<String> lstSelectedEntityNames;
 		try {
@@ -228,7 +229,7 @@ public class EntitySearchFilter extends SearchFilter {
 			lstSelectedEntityNames = new ArrayList<String>();
 		}
 
-		final List<CollectableEntityFieldWithEntity> result = new ArrayList<CollectableEntityFieldWithEntity>();
+		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
 		final CollectableEntityProvider clcteprovider = DefaultCollectableEntityProvider.getInstance();
 		for (int i = 0; i < lstSelectedFieldNames.size(); i++) {
 			final String sFieldName = lstSelectedFieldNames.get(i);

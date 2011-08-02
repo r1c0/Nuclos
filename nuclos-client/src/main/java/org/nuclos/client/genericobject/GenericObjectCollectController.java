@@ -2271,8 +2271,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/**
 	 * TODO: Make private again.
 	 */
-	public List<CollectableEntityFieldWithEntity> getSelectedFields() {
-		return CollectionUtils.typecheck(getFields().getSelectedFields(), CollectableEntityFieldWithEntity.class);
+	public List<CollectableEntityField> getSelectedFields() {
+		// TODO: avoid unnecessary check.
+		return CollectionUtils.typecheck(getFields().getSelectedFields(), CollectableEntityField.class);
 	}
 
 	/**
@@ -5681,7 +5682,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		//List<String> sFieldsNames = CollectableUtils.getFieldNamesFromCollectableEntityFields(this.getSelectedFields());
 		//result.setVisibleColumns(sFieldsNames);
 		final List<String> lstQualifiedEntityFieldNames = CollectionUtils.transform(getSelectedFields(),
-			new CollectableEntityFieldWithEntity.GetQualifiedEntityFieldName());
+			new CollectableEntityField.GetQualifiedEntityFieldName());
 		result.setVisibleColumns(lstQualifiedEntityFieldNames);
 		// TODO set sorting column names
 		List<String> lstSortingColumnNames = Collections.emptyList();
@@ -5690,7 +5691,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		result.setListColumnsWidths(currentFieldWiths);
 		//result.setListColumnsFixed(CollectableUtils.getFieldNamesFromCollectableEntityFields(((NuclosResultPanel) this.getResultPanel()).getFixedColumns()));
 		final List<String> fixedColumnsNames = CollectableUtils.getFieldNamesFromCollectableEntityFields(getResultPanel().getFixedColumns());
-		final List<CollectableEntityFieldWithEntity> filteredFixedColumns = CollectionUtils.select(
+		final List<CollectableEntityField> filteredFixedColumns = CollectionUtils.select(
 			getSelectedFields(),
 			PredicateUtils.transformedInputPredicate(new CollectableEntityFieldWithEntity.GetName(),
 				PredicateUtils.valuesCollection(fixedColumnsNames)
@@ -5698,7 +5699,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		);
 
 		final List<String> lstQualifiedEntityFieldNamesFixed = CollectionUtils.transform(filteredFixedColumns,
-			new CollectableEntityFieldWithEntity.GetQualifiedEntityFieldName());
+			new CollectableEntityField.GetQualifiedEntityFieldName());
 		result.setListColumnsFixed(lstQualifiedEntityFieldNamesFixed);
 		return result;
 	}

@@ -30,6 +30,7 @@ import net.sf.jasperreports.engine.JRField;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.PDFHelper;
 import org.nuclos.common.attribute.DynamicAttributeVO;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
@@ -57,7 +58,7 @@ public class SearchResultDataSource implements JRDataSource {
 	private final Iterator<GenericObjectWithDependantsVO> iterator;
 	private final String sMainEntityName;
 	private final String sParentEntityName;
-	private final List<CollectableEntityFieldWithEntity> lstclctefweSelected;
+	private final List<? extends CollectableEntityField> lstclctefweSelected;
 
 	/**
 	 * @param clctexpr search expression
@@ -66,7 +67,7 @@ public class SearchResultDataSource implements JRDataSource {
 	 * @param bIncludeSubModules
 	 */
 	public SearchResultDataSource(CollectableSearchExpression clctexpr,
-			List<CollectableEntityFieldWithEntity> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules) {
+			List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules) {
 
 		final GenericObjectFacadeLocal goFacade = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
 
@@ -79,15 +80,15 @@ public class SearchResultDataSource implements JRDataSource {
 		final Set<String> stRequiredSubEntityNames = GenericObjectUtils.getSubEntityNames(lstclctefweSelected, sMainEntityName, Modules.getInstance());
 		final boolean bIncludeParentObjects = iModuleId != null && GenericObjectUtils.containsParentField(lstclctefweSelected, sParentEntityName);
 
-		this.mpTypes = CollectionUtils.transformIntoMap(lstclctefweSelected, new Transformer<CollectableEntityFieldWithEntity, String>() {
+		this.mpTypes = CollectionUtils.transformIntoMap(lstclctefweSelected, new Transformer<CollectableEntityField, String>() {
 				@Override
-				public String transform(CollectableEntityFieldWithEntity i) {
+				public String transform(CollectableEntityField i) {
 					return PDFHelper.getFieldName(i);
 				}
 			},
-			new Transformer<CollectableEntityFieldWithEntity, Class<?>>() {
+			new Transformer<CollectableEntityField, Class<?>>() {
 				@Override
-				public Class<?> transform(CollectableEntityFieldWithEntity i) {
+				public Class<?> transform(CollectableEntityField i) {
 					return i.getJavaClass();
 				}
 			});
@@ -107,7 +108,7 @@ public class SearchResultDataSource implements JRDataSource {
 		final boolean result = iterator.hasNext();
 		if (result) {
 			final GenericObjectWithDependantsVO lowdcvo = iterator.next();
-			for (CollectableEntityFieldWithEntity clctefwe : lstclctefweSelected) {
+			for (CollectableEntityField clctefwe : lstclctefweSelected) {
 				final Object oData = getData(lowdcvo, clctefwe);
 				final String sPdfFieldName = PDFHelper.getFieldName(clctefwe);
 				mpRows.put(sPdfFieldName, oData);
@@ -116,9 +117,9 @@ public class SearchResultDataSource implements JRDataSource {
 		return result;
 	}
 
-	private Object getData(GenericObjectWithDependantsVO lowdcvo, CollectableEntityFieldWithEntity clctefwe) {
+	private Object getData(GenericObjectWithDependantsVO lowdcvo, CollectableEntityField clctefwe) {
 		final String sFieldName = clctefwe.getName();
-		final String sFieldEntityName = clctefwe.getCollectableEntityName();
+		final String sFieldEntityName = clctefwe.getEntityName();
 
 		final Object result;
 		if (sFieldEntityName.equals(this.sMainEntityName)) {

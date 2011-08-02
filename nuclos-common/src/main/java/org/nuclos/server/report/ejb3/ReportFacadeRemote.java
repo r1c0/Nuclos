@@ -31,6 +31,7 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.UsageCriteria;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -144,7 +145,7 @@ public interface ReportFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	public abstract JasperPrint prepareSearchResult(CollectableSearchExpression clctexpr,
-		List<CollectableEntityFieldWithEntity> lstclctefweSelected,
+		List<? extends CollectableEntityField> lstclctefweSelected,
 		Integer iModuleId, boolean bIncludeSubModules)
 		throws NuclosReportException;
 

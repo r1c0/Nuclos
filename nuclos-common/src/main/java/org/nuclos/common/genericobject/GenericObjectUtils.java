@@ -76,9 +76,11 @@ public class GenericObjectUtils {
 	 * @param sMainEntityName name of the main entity
 	 * @return the attribute ids of the selected fields that belong to the main entity
 	 * @postcondition result != null
+	 * 
+	 * @deprecated As AttributeProvider is deprecated, this is deprecated as well.
 	 */
-	public static List<Integer> getAttributeIds(List<CollectableEntityFieldWithEntity> lstclctefwe, String sMainEntityName, AttributeProvider ap) {
-		final List<? extends CollectableEntityField> lstclctefMain = CollectionUtils.select(lstclctefwe, new CollectableEntityFieldWithEntity.HasEntity(sMainEntityName));
+	public static List<Integer> getAttributeIds(List<? extends CollectableEntityField> lstclctefwe, String sMainEntityName, AttributeProvider ap) {
+		final List<? extends CollectableEntityField> lstclctefMain = CollectionUtils.select(lstclctefwe, new CollectableEntityField.HasEntity(sMainEntityName));
 		return CollectionUtils.transform(lstclctefMain, TransformerUtils.chained(new CollectableEntityField.GetName(), new AttributeProvider.GetAttributeIdByName(sMainEntityName, ap)));
 	}
 
@@ -98,8 +100,8 @@ public class GenericObjectUtils {
 	 * @return the names of subentities contained in the given collection
 	 * @postcondition result != null
 	 */
-	public static Set<String> getSubEntityNames(Collection<CollectableEntityFieldWithEntity> collclctefwe, String sMainEntityName, ModuleProvider mp) {
-		final Set<String> result = new HashSet<String>(CollectionUtils.transform(collclctefwe, new CollectableEntityFieldWithEntity.GetEntityName()));
+	public static Set<String> getSubEntityNames(Collection<? extends CollectableEntityField> collclctefwe, String sMainEntityName, ModuleProvider mp) {
+		final Set<String> result = new HashSet<String>(CollectionUtils.transform(collclctefwe, new CollectableEntityField.GetEntityName()));
 		// remove the names of the main entity and the parent entity, if any:
 		result.remove(sMainEntityName);
 		result.remove(mp.getParentEntityName(sMainEntityName));
@@ -116,8 +118,8 @@ public class GenericObjectUtils {
 	 * 
 	 * @deprecated Parent is no longer part of the entity model.
 	 */
-	public static boolean containsParentField(List<CollectableEntityFieldWithEntity> clctefweSelected, String sParentEntityName) {
-		return (sParentEntityName != null) && CollectionUtils.exists(clctefweSelected, new CollectableEntityFieldWithEntity.HasEntity(sParentEntityName));
+	public static boolean containsParentField(List<? extends CollectableEntityField> clctefweSelected, String sParentEntityName) {
+		return (sParentEntityName != null) && CollectionUtils.exists(clctefweSelected, new CollectableEntityField.HasEntity(sParentEntityName));
 	}
 
 	/**

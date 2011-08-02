@@ -33,6 +33,8 @@ import java.io.*;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  * @todo Even CollectableEntityField should probably know to which entity it belongs. Try to eliminate this class.
+ * 
+ * @deprecated CollectableEntityField now knows the entity name.
  */
 public class CollectableEntityFieldWithEntity implements CollectableEntityField, Serializable {
 
@@ -70,8 +72,10 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	/**
 	 * @return the name of the <code>CollectableEntity</code> this field belongs to.
 	 * @postcondition result != null
+	 * 
+	 * @deprecated Not always set. Use {@link #getEntityName()} instead.
 	 */
-	public String getCollectableEntityName() {
+	public final String getCollectableEntityName() {
 		return clcte.getName();
 	}
 
@@ -203,6 +207,8 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 
 	/**
 	 * Predicate: HasEntity
+	 * 
+	 * @deprecated Use CollectableEntityField.HasEntity
 	 */
 	public static class HasEntity implements Predicate<CollectableEntityFieldWithEntity> {
 		private final String sEntityName;
@@ -223,6 +229,8 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 
 	/**
 	 * Qualified field name. Format: EntityName.FieldName
+	 * 
+	 * @deprecated Use CollectableEntityField.QualifiedEntityFieldName
 	 */
 	public static class QualifiedEntityFieldName {
 		private final String sEntityName;
@@ -267,6 +275,8 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 
 	/**
 	 * Transformer: GetQualifiedEntityFieldName
+	 * 
+	 * @deprecated Use CollectableEntityField.GetQualifiedEntityFieldName
 	 */
 	public static class GetQualifiedEntityFieldName implements Transformer<CollectableEntityFieldWithEntity, String> {
 		@Override
@@ -334,6 +344,9 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 		return getSecurityAgent().isRemovable();
 	}
 
+	/**
+	 * @deprecated Not always set. Better use {@link #getEntityName()}.
+	 */
 	@Override
 	public CollectableEntity getCollectableEntity() {
 		return clcte;

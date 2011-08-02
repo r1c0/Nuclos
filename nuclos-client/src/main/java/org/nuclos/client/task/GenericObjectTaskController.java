@@ -153,23 +153,20 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 	
 	@SuppressWarnings("deprecation")
     private void checkFilter(EntitySearchFilter filter) {
-		List<CollectableEntityFieldWithEntity> lstRemovedFields = new ArrayList<CollectableEntityFieldWithEntity>();
-		List<CollectableEntityFieldWithEntity> visibleColumns = filter.getVisibleColumns();
-		for (CollectableEntityFieldWithEntity column : visibleColumns) {
-			if (Modules.getInstance().isModuleEntity(column.getCollectableEntityName())) {
+		List<CollectableEntityField> lstRemovedFields = new ArrayList<CollectableEntityField>();
+		List<? extends CollectableEntityField> visibleColumns = filter.getVisibleColumns();
+		for (CollectableEntityField column : visibleColumns) {
+			final String entity = column.getEntityName();
+			if (Modules.getInstance().isModuleEntity(entity)) {
 				try {
-					MetaDataClientProvider.getInstance().getEntityField(column.getCollectableEntityName(), column.getName());
+					MetaDataClientProvider.getInstance().getEntityField(entity, column.getName());
 				} catch (Exception e) {
 					lstRemovedFields.add(column);
 					System.err.println(column.getName());
 				}
-//				if (!AttributeCache.getInstance().getNames().contains((column.getName()))) {
-//					lstRemovedFields.add(column);
-//					System.err.println(column.getName());
-//				}
 			}
 			else {
-				if (MasterDataDelegate.getInstance().getMetaData(column.getCollectableEntityName()).getField(column.getName()) == null)
+				if (MasterDataDelegate.getInstance().getMetaData(entity).getField(column.getName()) == null)
 					lstRemovedFields.add(column);
 			}
 		}

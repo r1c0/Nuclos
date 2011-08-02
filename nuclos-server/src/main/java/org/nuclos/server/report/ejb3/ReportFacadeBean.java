@@ -63,6 +63,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.PDFHelper;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.UsageCriteria;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.IOUtils;
@@ -586,9 +587,9 @@ public JasperPrint prepareEmptyReport(Integer iReportOutputId) throws CommonFind
     * @return search result report filled with data
     */
    @Override
-@RolesAllowed("Login")
+   @RolesAllowed("Login")
    public JasperPrint prepareSearchResult(CollectableSearchExpression clctexpr,
-         List<CollectableEntityFieldWithEntity> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules) throws NuclosReportException {
+         List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules) throws NuclosReportException {
       try {
     	 final JasperDesign jrdesign = getJrDesignForSearchResult();
     	 PDFHelper.createFields(jrdesign, lstclctefweSelected);

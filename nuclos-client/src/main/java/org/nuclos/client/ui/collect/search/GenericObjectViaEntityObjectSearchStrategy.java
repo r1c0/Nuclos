@@ -375,7 +375,7 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 	private Set<Long> getSelectedAndRequiredAttributeIds() {
 		final GenericObjectCollectController cc = getGenericObjectController();
 		final Set<? extends CollectableEntityField> stSelectedAttributes = CollectionUtils.selectIntoSet(
-				cc.getSelectedFields(), new CollectableEntityFieldWithEntity.HasEntity(cc.getCollectableEntity()));
+				cc.getSelectedFields(), new CollectableEntityField.HasEntity(cc.getCollectableEntity()));
 		final Set<String> stFieldNamesSelected = CollectionUtils.transformIntoSet(stSelectedAttributes,
 				new CollectableEntityField.GetName());
 		final Set<String> stFieldNamesRequired = getRequiredFieldNamesForResult();

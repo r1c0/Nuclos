@@ -36,6 +36,7 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.transport.GzipMap;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.jdbc.impl.DynamicMetaDataProcessor;
@@ -45,6 +46,7 @@ import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
+import org.nuclos.server.dblayer.query.DbSelection;
 import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.jms.NuclosJMSUtils;
@@ -158,11 +160,25 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		
 		Map<String, EntityFieldMetaDataVO> result = dataCache.getMapPivotMetaData().get(info);
 		if (result == null) {
+			// get 'real' meta data
+			final EntityFieldMetaDataVO mdKeyField = getEntityField(info.getSubform(), info.getKeyField());
+			final String keyType = mdKeyField.getDataType();
+			final EntityFieldMetaDataVO mdValueField = getEntityField(info.getSubform(), info.getValueField());
+			final String valueType = mdValueField.getDataType();
+			final Class<? extends Object> keyTypeClass;
+			final Class<? extends Object> valueTypeClass;
+			try {
+				keyTypeClass = Class.forName(keyType);
+				valueTypeClass = Class.forName(valueType);
+			} catch (ClassNotFoundException e) {
+				throw new CommonFatalException(e);
+			}
+			
 			// select distinct p.<keyfield> from <subform> p 
-			DbQuery<String> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(String.class);
-			DbFrom from = query.distinct(true).from(subformTable).alias("p");
-			query.select(from.column(keyField.getDbColumn(), String.class)).maxResults(40);
-			List<String> columns = DataBaseHelper.getDbAccess().executeQuery(query);
+			final DbQuery<? extends Object> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(valueTypeClass);
+			final DbFrom from = query.distinct(true).from(subformTable).alias("p");
+			query.selectLiberate(from.column(keyField.getDbColumn(), keyTypeClass)).maxResults(40);
+			final List<? extends Object> columns = DataBaseHelper.getDbAccess().executeQuery(query);
 			//
 			final EntityObjectVO vo = new EntityObjectVO();
 			vo.initFields(columns.size(), 1);
@@ -170,7 +186,9 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 			// vo.setDependants(mpDependants);
 			
 			result = new HashMap<String, EntityFieldMetaDataVO>(columns.size());
-			for (String c: columns) {
+			for (Object o: columns) {
+				if (o == null) continue;
+				final String c = o.toString();
 				if (StringUtils.isBlank(c)) continue;
 				final EntityFieldMetaDataVO md = new EntityFieldMetaDataVO(vo);
 				md.setDynamic(true);
@@ -178,6 +196,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 				md.setField(c);
 				md.setFallbacklabel(info.getSubform() + ":" + info.getKeyField() + ":" + c);
 				md.setNullable(Boolean.TRUE);
+				md.setDataType(valueType);
 				
 				result.put(c, md);
 			}

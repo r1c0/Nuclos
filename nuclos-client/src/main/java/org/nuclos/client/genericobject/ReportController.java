@@ -58,6 +58,7 @@ import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.CollectableEntity;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityObjectVO;
@@ -446,7 +447,7 @@ public class ReportController extends Controller {
 	 * @throws NuclosBusinessException
 	 */
 	public void export(CollectableEntity clcteMain, CollectableSearchExpression searchexpr,
-			List<CollectableEntityFieldWithEntity> lstclctefweSelected,
+			List<? extends CollectableEntityField> lstclctefweSelected,
 			List<? extends CollectableGenericObject> lstclctlo, UsageCriteria usagecriteria, boolean bIncludeSubModules,
 			String sDocumentEntityName, String[] documentFieldNames)
 			throws NuclosBusinessException {
@@ -483,7 +484,7 @@ public class ReportController extends Controller {
 	 * @param format
 	 * @throws NuclosBusinessException
 	 */
-	private void export(CollectableEntity clcteMain, CollectableSearchExpression searchexpr, List<CollectableEntityFieldWithEntity> lstclctefweSelected,
+	private void export(CollectableEntity clcteMain, CollectableSearchExpression searchexpr, List<? extends CollectableEntityField> lstclctefweSelected,
 			boolean bIncludeSubModules, ReportOutputVO.Format format) throws NuclosBusinessException {
 		try {
 			this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -523,13 +524,13 @@ public class ReportController extends Controller {
 	 * @param lstlowdcvo List<GenericObjectWithDependantsVO> the data contained in the selected fields
 	 */
 	private ResultVO convertGenericObjectListToResultVO(CollectableEntity clcteMain,
-			List<CollectableEntityFieldWithEntity> lstclctefweSelected,
+			List<? extends CollectableEntityField> lstclctefweSelected,
 			List<GenericObjectWithDependantsVO> lstlowdcvo) {
 
 		final ResultVO result = new ResultVO();
 
 		// fill the columns:
-		for (CollectableEntityFieldWithEntity clctefwe : lstclctefweSelected) {
+		for (CollectableEntityField clctefwe : lstclctefweSelected) {
 			final ResultColumnVO resultcolumnvo = new ResultColumnVO();
 			resultcolumnvo.setColumnLabel(clctefwe.getLabel());
 			resultcolumnvo.setColumnClassName(clctefwe.getJavaClass().getName());
@@ -543,9 +544,9 @@ public class ReportController extends Controller {
 			final Object[] aoData = new Object[lstclctefweSelected.size()];
 
 			int iColumn = 0;
-			for (CollectableEntityFieldWithEntity clctefwe : lstclctefweSelected) {
+			for (CollectableEntityField clctefwe : lstclctefweSelected) {
 				final String sFieldName = clctefwe.getName();
-				final String sFieldEntityName = clctefwe.getCollectableEntityName();
+				final String sFieldEntityName = clctefwe.getEntityName();
 
 				if (sFieldEntityName.equals(sMainEntityName)) {
 					// own attribute:

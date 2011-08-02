@@ -1032,6 +1032,9 @@ public class CollectionUtils {
     * @param l      the input list
     * @param tClass T's class
     * @return l as a parameterized type
+    * 
+    * @deprecated In the most common use case this is unnecessary. In the second
+    * 		common use case this is a sign that you have not understood generics.
     */
    @SuppressWarnings("unchecked")
    public static <T> List<T> typecheck(List<?> l, Class<T> tClass) {
@@ -1051,6 +1054,9 @@ public class CollectionUtils {
     * @param l         the input collection
     * @param tClass    T's class
     * @return a new array list with all items of l cast into T
+    * 
+    * @deprecated In the most common use case this is unnecessary. In the second
+    * 		common use case this is a sign that you have not understood generics.
     */
    @SuppressWarnings("unchecked")
    public static <T> List<T> typecheck(Collection<?> l, Class<T> tClass) {
@@ -1073,6 +1079,9 @@ public class CollectionUtils {
     * @param m      the map to check
     * @param vClass the value type's class
     * @return m, accordingly cast, if no classCastException is thrown
+    * 
+    * @deprecated In the most common use case this is unnecessary. In the second
+    * 		common use case this is a sign that you have not understood generics.
     */
    @SuppressWarnings("unchecked")
    public static <K, V> Map<K, V> typecheck(Map<K, ?> m, Class<V> vClass) {

@@ -37,6 +37,7 @@ import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SearchConditionUtils;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
@@ -105,7 +106,7 @@ public class WorkflowWizardPanel extends JPanel {
 					
 					f.setSearchCondition(SearchConditionUtils.newComparison(sModule, NuclosEOField.STATENUMBER.getMetaData().getField(), ComparisonOperator.EQUAL, voState.getNumeral()));
 					
-					List<CollectableEntityFieldWithEntity> lst = new ArrayList<CollectableEntityFieldWithEntity>();
+					List<CollectableEntityField> lst = new ArrayList<CollectableEntityField>();
 					
 					for(String sAttr : AttributeDelegate.getInstance().getAttributeForModule(sModule)) {
 						CollectableEntityFieldWithEntity fe = new CollectableEntityFieldWithEntity(CollectableGenericObjectEntity.getByModuleId(iModule), sAttr);	

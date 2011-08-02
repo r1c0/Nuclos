@@ -28,7 +28,7 @@ import java.util.TreeMap;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.server.dblayer.DbTuple;
 
-public class DbQuery<T> {
+public class DbQuery<T extends Object> {
 
 	private final DbQueryBuilder builder;
 	private final Class<T> resultType;
@@ -67,6 +67,11 @@ public class DbQuery<T> {
 	
 	@SuppressWarnings("unchecked")
 	public DbQuery<T> select(DbSelection<? extends T> selection) {
+		this.selection = (DbExpression<T>) selection;
+		return this;
+	}
+	
+	public DbQuery<T> selectLiberate(DbSelection<?> selection) {
 		this.selection = (DbExpression<T>) selection;
 		return this;
 	}

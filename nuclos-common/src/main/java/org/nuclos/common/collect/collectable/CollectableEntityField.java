@@ -20,6 +20,7 @@ import java.text.Collator;
 import java.util.Comparator;
 
 import org.nuclos.common.CollectableEntityFieldWithEntity;
+import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.LangUtils;
 
@@ -42,6 +43,36 @@ public interface CollectableEntityField {
 		@Override
 		public String transform(CollectableEntityField clctefwe) {
 			return clctefwe.getEntityName();
+		}
+	}
+
+	/**
+	 * Transformer: GetQualifiedEntityFieldName
+	 */
+	public static class GetQualifiedEntityFieldName implements Transformer<CollectableEntityField, String> {
+		@Override
+		public String transform(CollectableEntityField clctefwe) {
+			return clctefwe.getEntityName() + "." + clctefwe.getName();
+		}
+	}
+
+	/**
+	 * Predicate: HasEntity
+	 */
+	public static class HasEntity implements Predicate<CollectableEntityField> {
+		private final String sEntityName;
+
+		public HasEntity(CollectableEntity clcte) {
+			this(clcte.getName());
+		}
+
+		public HasEntity(String sEntityName) {
+			this.sEntityName = sEntityName;
+		}
+
+		@Override
+		public boolean evaluate(CollectableEntityField clctefwe) {
+			return this.sEntityName.equals(clctefwe.getEntityName());
 		}
 	}
 

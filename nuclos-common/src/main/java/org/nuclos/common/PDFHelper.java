@@ -37,6 +37,7 @@ import net.sf.jasperreports.engine.design.JRDesignStaticText;
 import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
+import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 
@@ -50,8 +51,8 @@ import org.nuclos.common2.exception.CommonFatalException;
  */
 public class PDFHelper {
 
-	public static String getFieldName(CollectableEntityFieldWithEntity field) {
-		return getFieldName(field.getCollectableEntity().getName() + "." + field.getName());
+	public static String getFieldName(CollectableEntityField field) {
+		return getFieldName(field.getEntityName() + "." + field.getName());
 	}
 
 	public static String getFieldName(String nuclosfieldname) {
@@ -64,9 +65,9 @@ public class PDFHelper {
 		PDFHelper.createFieldsInternal(jrdesign, fields);
 	}
 
-	public static void createFields(JasperDesign jrdesign, List<CollectableEntityFieldWithEntity> lstclctefweSelected) {
+	public static void createFields(JasperDesign jrdesign, List<? extends CollectableEntityField> lstclctefweSelected) {
 		List<FieldDefinition> fields = new ArrayList<PDFHelper.FieldDefinition>();
-		for (CollectableEntityFieldWithEntity f : lstclctefweSelected) {
+		for (CollectableEntityField f : lstclctefweSelected) {
 			fields.add(new PDFHelper.FieldDefinition(getFieldName(f), f.getJavaClass(), f.getMaxLength() != null ? f.getMaxLength() : 0, f.getLabel()));
 		}
 		PDFHelper.createFieldsInternal(jrdesign, fields);
