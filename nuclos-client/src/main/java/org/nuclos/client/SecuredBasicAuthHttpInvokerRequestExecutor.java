@@ -42,7 +42,8 @@ public class SecuredBasicAuthHttpInvokerRequestExecutor extends CommonsHttpInvok
 		log.info("Register CustomSecureProtocolSocketFactory for HTTPS");
 		Protocol.registerProtocol("https", new Protocol("https", new CustomSecureProtocolSocketFactory(), 443));
 
-		super.setReadTimeout(ApplicationProperties.getInstance().isFunctionBlockDev() ? 0 : 1000 * 60 * 3);
+		// timeout 30 minutes (requested for entity transfer)
+		super.setReadTimeout(ApplicationProperties.getInstance().isFunctionBlockDev() ? 0 : 1000 * 60 * 30);
 	}
 
 	@Override
