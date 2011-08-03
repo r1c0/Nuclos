@@ -2046,6 +2046,7 @@
         "logbook": false,
         "foreignentityfield": "name",
         "unique": true,
+        "ondeletecascade": true,
         "labelres": "nuclos.entityfield.searchfilteruser.user.label",
         "descriptionres": "nuclos.entityfield.searchfilteruser.user.description"
       },
@@ -6794,6 +6795,7 @@
         "searchable": false,
         "logbook": false,
         "unique": true,
+        "ondeletecascade": true,
         "labelres": "nuclos.entityfield.roleuser.user.label",
         "descriptionres": "nuclos.entityfield.roleuser.user.description"
       }
@@ -9310,6 +9312,7 @@
         "logbook": false,
         "foreignentityfield": "name",
         "unique": true,
+        "ondeletecascade": true,
         "labelres": "nuclos.entityfield.workspace.user.label",
         "descriptionres": "nuclos.entityfield.workspace.user.description"
       }
