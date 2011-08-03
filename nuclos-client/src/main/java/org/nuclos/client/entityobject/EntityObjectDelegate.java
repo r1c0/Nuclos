@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.EntityObjectCommon;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common2.ServiceLocator;
@@ -45,7 +46,7 @@ public class EntityObjectDelegate implements EntityObjectCommon {
 
 	@Override
 	public ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr,
-			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Set<PivotInfo> pivots, 
+			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Collection<EntityFieldMetaDataVO> pivots, 
 			boolean includeDependents) {
 		return facade.getEntityObjectProxyList(id, clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, 
 				pivots, includeDependents);
@@ -53,7 +54,7 @@ public class EntityObjectDelegate implements EntityObjectCommon {
 
 	@Override
 	public Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds,
-			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Set<PivotInfo> pivots, boolean includeDependents) {
+			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Collection<EntityFieldMetaDataVO> pivots, boolean includeDependents) {
 		return facade.getEntityObjectsMore(id, lstIds, stRequiredAttributeIds, stRequiredSubEntityNames, pivots, includeDependents);
 	}
 
@@ -64,7 +65,7 @@ public class EntityObjectDelegate implements EntityObjectCommon {
 	}
 
 	@Override
-	public Collection<EntityObjectVO> getDependentPivotEntityObjects(PivotInfo pivot, String sForeignKeyField,
+	public Collection<EntityObjectVO> getDependentPivotEntityObjects(EntityFieldMetaDataVO pivot, String sForeignKeyField,
 			Long oRelatedId) {
 		return facade.getDependentPivotEntityObjects(pivot, sForeignKeyField, oRelatedId);
 	}

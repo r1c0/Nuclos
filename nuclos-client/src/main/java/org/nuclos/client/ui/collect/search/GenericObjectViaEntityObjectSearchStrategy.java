@@ -34,9 +34,7 @@ import org.nuclos.client.entityobject.EntityObjectDelegate;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
-import org.nuclos.client.genericobject.Modules;
 import org.nuclos.common.AttributeProvider;
-import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
@@ -302,7 +300,7 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 		final ProxyList<EntityObjectVO> proxylstlovwdvo = lodelegate.getEntityObjectProxyList(
 				IdUtils.toLongId(getGenericObjectController().getModuleId()), 
 				clctexprInternal, getSelectedAndRequiredAttributeIds(),
-				getGenericObjectController().getSelectedSubEntityNames(), null,
+				getGenericObjectController().getSelectedSubEntityNames(), getGenericObjectController().getSelectedPivotFields(),
 				getIncludeSubModulesForSearch());
 
 		return new MyProxyListAdapter(new CollectableEntityObjectProxyListAdapter(proxylstlovwdvo, meta));

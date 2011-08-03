@@ -95,7 +95,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	public void removePivotInfo(String subformName) {
 		pivots.remove(subformName);
 	}
-
+	
 	/**
 	 * Adds the ability to select subforms as pivot columns in the result list view.
 	 */
@@ -138,8 +138,6 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	 * 
 	 * @param clcte
 	 * @return the fields of the given entity, plus the fields of all subentities for that entity.
-	 * 
-	 * @deprecated Remove this.
 	 */
 	@Override
 	public SortedSet<CollectableEntityField> getFieldsAvailableForResult(CollectableEntity clcte, Comparator<CollectableEntityField> comp) {

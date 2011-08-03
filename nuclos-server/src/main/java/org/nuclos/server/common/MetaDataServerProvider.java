@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.StringUtils;
 import org.nuclos.common.AbstractProvider;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.MetaDataProvider;
@@ -36,7 +35,6 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.transport.GzipMap;
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.jdbc.impl.DynamicMetaDataProcessor;
@@ -46,7 +44,6 @@ import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
-import org.nuclos.server.dblayer.query.DbSelection;
 import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.jms.NuclosJMSUtils;
@@ -156,53 +153,64 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		final EntityMetaDataVO subform = getEntity(info.getSubform());
 		final String subformTable = EntityObjectMetaDbHelper.getTableName(subform);
 		final EntityFieldMetaDataVO keyField = getEntityField(info.getSubform(), info.getKeyField());
-		// final EntityFieldMetaDataVO valueField = getEntityField(info.getSubform(), info.getValueField());
 		
 		Map<String, EntityFieldMetaDataVO> result = dataCache.getMapPivotMetaData().get(info);
 		if (result == null) {
 			// get 'real' meta data
 			final EntityFieldMetaDataVO mdKeyField = getEntityField(info.getSubform(), info.getKeyField());
-			final String keyType = mdKeyField.getDataType();
-			final EntityFieldMetaDataVO mdValueField = getEntityField(info.getSubform(), info.getValueField());
-			final String valueType = mdValueField.getDataType();
-			final Class<? extends Object> keyTypeClass;
-			final Class<? extends Object> valueTypeClass;
-			try {
-				keyTypeClass = Class.forName(keyType);
-				valueTypeClass = Class.forName(valueType);
-			} catch (ClassNotFoundException e) {
-				throw new CommonFatalException(e);
+			// The key column must contain a String.
+			if (!mdKeyField.getDataType().equals("java.lang.String")) {
+				result = Collections.emptyMap();
 			}
-			
-			// select distinct p.<keyfield> from <subform> p 
-			final DbQuery<? extends Object> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(valueTypeClass);
-			final DbFrom from = query.distinct(true).from(subformTable).alias("p");
-			query.selectLiberate(from.column(keyField.getDbColumn(), keyTypeClass)).maxResults(40);
-			final List<? extends Object> columns = DataBaseHelper.getDbAccess().executeQuery(query);
-			//
-			final EntityObjectVO vo = new EntityObjectVO();
-			vo.initFields(columns.size(), 1);
-			vo.setEntity(info.getSubform());
-			// vo.setDependants(mpDependants);
-			
-			result = new HashMap<String, EntityFieldMetaDataVO>(columns.size());
-			for (Object o: columns) {
-				if (o == null) continue;
-				final String c = o.toString();
-				if (StringUtils.isBlank(c)) continue;
-				final EntityFieldMetaDataVO md = new EntityFieldMetaDataVO(vo);
-				md.setDynamic(true);
-				md.setDbColumn(keyField.getDbColumn());
-				md.setField(c);
-				md.setFallbacklabel(info.getSubform() + ":" + info.getKeyField() + ":" + c);
-				md.setNullable(Boolean.TRUE);
-				md.setDataType(valueType);
+			else {
+				final String keyType = mdKeyField.getDataType();
+				final Class<? extends Object> keyTypeClass;
+				try {
+					keyTypeClass = Class.forName(keyType);
+				} catch (ClassNotFoundException e) {
+					throw new CommonFatalException(e);
+				}
 				
-				result.put(c, md);
+				// select distinct p.<keyfield> from <subform> p 
+				final DbQuery<? extends Object> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Object.class);
+				final DbFrom from = query.distinct(true).from(subformTable).alias("p");
+				query.selectLiberate(from.column(keyField.getDbColumn(), keyTypeClass)).maxResults(40);
+				final List<? extends Object> columns = DataBaseHelper.getDbAccess().executeQuery(query);
+				//
+				final EntityObjectVO vo = new EntityObjectVO();
+				vo.initFields(columns.size(), 1);
+				vo.setEntity(info.getSubform());
+				// vo.setDependants(mpDependants);
+				
+				result = new HashMap<String, EntityFieldMetaDataVO>(columns.size());
+				for (Object c: columns) {
+					if (isBlank(c)) continue;
+					final EntityFieldMetaDataVO md = new EntityFieldMetaDataVO(vo);
+					final String pseudoFieldName = c.toString();
+					md.setDynamic(true);
+					md.setDbColumn(keyField.getDbColumn());
+					md.setField(pseudoFieldName);
+					md.setFallbacklabel(info.getSubform() + ":" + info.getKeyField() + ":" + c);
+					md.setNullable(Boolean.TRUE);
+					md.setDataType(c.getClass().getName());
+					final PivotInfo pi = new PivotInfo(info.getSubform(), info.getKeyField(), c);
+					md.setPivotInfo(pi);
+					md.setEntityId(subform.getId());
+					
+					result.put(pseudoFieldName, md);
+				}
 			}
 			dataCache.getMapPivotMetaData().put(info, result);
 		}
 		return result;
+	}
+	
+	private static boolean isBlank(Object o) {
+		if (o == null) return true;
+		if (o instanceof String) {
+			return "".equals(o);
+		}
+		return false;
 	}
 	
 	public Map<String, Map<String, EntityFieldMetaDataVO>> getAllEntityFieldsByEntitiesGz(Collection<String> entities) {

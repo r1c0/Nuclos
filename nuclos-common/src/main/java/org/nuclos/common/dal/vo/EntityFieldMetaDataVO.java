@@ -38,6 +38,13 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 	private String entityIdAsString;
 
 	private String field;
+
+	/**
+	 * @author Thomas Pasch
+	 * @since Nuclos 3.1.01
+	 */
+	private PivotInfo pivot;
+	
 	private String dbColumn;
 
 	private String foreignEntity;
@@ -76,6 +83,9 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 	
 	private String defaultMandatory;
 
+	/**
+	 * @deprecated Only for serialization, should be protected.
+	 */
 	public EntityFieldMetaDataVO() {
 		super();
 	}
@@ -131,6 +141,10 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 
 	public void setField(String field) {
 		this.field = field;
+	}
+	
+	public void setPivotInfo(PivotInfo pivot) {
+		this.pivot = pivot;
 	}
 
 	public void setDbColumn(String dbColumn) {
@@ -228,6 +242,16 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 
 	public String getField() {
 		return field;
+	}
+	
+	/**
+	 * @return Get the associated PivotInfo if this is a pivot field.
+	 * 
+	 * @author Thomas Pasch
+	 * @since Nuclos 3.1.01
+	 */
+	public PivotInfo getPivotInfo() {
+		return pivot;
 	}
 
 	public String getDbColumn() {

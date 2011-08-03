@@ -196,13 +196,24 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 
 	@Override
 	public boolean equals(Object o) {
-		final CollectableEntityFieldWithEntity that = (CollectableEntityFieldWithEntity) o;
-		return this.getCollectableEntityName().equals(that.getCollectableEntityName()) && this.getField().equals(that.getField());
+		if (this == o) return true;
+		if (!(o instanceof CollectableEntityField)) return false;
+		final CollectableEntityField that = (CollectableEntityField) o;
+		final boolean result;
+		if (that instanceof CollectableEntityFieldWithEntity)  {
+			result = getEntityName().equals(that.getEntityName()) && 
+					getField().equals(((CollectableEntityFieldWithEntity) that).getField());
+		}
+		else {
+			result = getEntityName().equals(that.getEntityName()) &&
+					getField().equals(that);
+		}
+		return result;
 	}
 
 	@Override
 	public int hashCode() {
-		return this.getCollectableEntityName().hashCode() ^ this.getField().hashCode();
+		return getField().hashCode();
 	}
 
 	/**

@@ -228,6 +228,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.genericobject.GenericObjectUtils;
 import org.nuclos.common.security.Permission;
@@ -2232,8 +2233,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				List<SortKey> filteredSortKeys = CollectionUtils.applyFilter(sortKeys, new Predicate<SortKey>() {
 					@Override
 					public boolean evaluate(SortKey k) {
-						final CollectableEntityFieldWithEntity clctefSorted = (CollectableEntityFieldWithEntity) result.getCollectableEntityField(k.getColumn());
-						return (clctefSorted.getCollectableEntityName().equals(getCollectableEntity().getName()));
+						final CollectableEntityField clctefSorted = result.getCollectableEntityField(k.getColumn());
+						return (clctefSorted.getEntityName().equals(getCollectableEntity().getName()));
 					}
 				});
 				if (filteredSortKeys.size() == sortKeys.size()) {
@@ -3064,6 +3065,22 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private GenericObjectVO getSelectedGenericObjectCVO() {
 		final CollectableGenericObject clctlo = getSelectedCollectable();
 		return (clctlo == null) ? null : clctlo.getGenericObjectCVO();
+	}
+	
+	public Collection<EntityFieldMetaDataVO> getSelectedPivotFields() {
+		// TODO: ???
+		final Collection<EntityFieldMetaDataVO> result = new ArrayList<EntityFieldMetaDataVO>();
+		for (CollectableEntityField f: getResultController().getFields().getSelectedFields()) {
+			// At present this could also be a CollectableEntityFieldWithEntityForExternal.
+			if (f instanceof CollectableEOEntityField) {
+				final CollectableEOEntityField field = (CollectableEOEntityField) f;
+				final EntityFieldMetaDataVO meta = field.getMeta();
+				if (meta.getPivotInfo() != null) {
+					result.add(meta);
+				}
+			}
+		}
+		return result;
 	}
 
 	private void markCollectableAsDeleted(CollectableGenericObjectWithDependants clctlo) throws CommonBusinessException {

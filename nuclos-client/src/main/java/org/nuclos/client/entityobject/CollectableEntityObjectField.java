@@ -7,14 +7,13 @@ import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 
 public class CollectableEntityObjectField extends AbstractCollectableField {
 	
-	String sFieldName;
-	CollectableEntityObject ceo;
+	private String sFieldName;
+	private CollectableEntityObject ceo;
 	
-	Object oValue;
-	Object oValueId;
+	private Object oValue;
+	private Object oValueId;
 	
-	int fieldType;
-	
+	private int fieldType;
 	
 	public CollectableEntityObjectField(String sFieldName, CollectableEntityObject ceo) {
 		super();

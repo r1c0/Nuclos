@@ -22,8 +22,8 @@ import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
 
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.server.genericobject.ProxyList;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 
@@ -58,7 +58,7 @@ public interface EntityObjectCommon {
 	 */
 	@RolesAllowed("Login")
 	ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr,
-			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Set<PivotInfo> pivots, boolean includeDependents);
+			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Collection<EntityFieldMetaDataVO> pivots, boolean includeDependents);
 	
 	/**
 	 * gets more leased objects that match a given search condition
@@ -75,7 +75,7 @@ public interface EntityObjectCommon {
 	 */
 	@RolesAllowed("Login")
 	Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds,
-			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Set<PivotInfo> pivots, boolean includeDependents);
+			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Collection<EntityFieldMetaDataVO> pivots, boolean includeDependents);
 
 
 	/**
@@ -93,6 +93,6 @@ public interface EntityObjectCommon {
 	
 	@RolesAllowed("Login")
 	Collection<EntityObjectVO> getDependentPivotEntityObjects(
-		PivotInfo pivot, String sForeignKeyField, Long oRelatedId);	
+		EntityFieldMetaDataVO pivot, String sForeignKeyField, Long oRelatedId);	
 
 }

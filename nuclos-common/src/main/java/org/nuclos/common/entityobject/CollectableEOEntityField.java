@@ -142,4 +142,8 @@ public class CollectableEOEntityField extends AbstractCollectableEntityField {
 		return entityName;
 	}
 
+	public EntityFieldMetaDataVO getMeta() {
+		return efMeta;
+	}
+
 }

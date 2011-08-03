@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.common.ejb3.EntityObjectFacadeRemote;
 import org.nuclos.server.genericobject.AbstractProxyList;
@@ -46,11 +46,11 @@ public class EntityObjectProxyList extends AbstractProxyList<Long, EntityObjectV
 	private final CollectableSearchExpression clctexpr;
 	private final Set<Long> stRequiredAttributeIds;
 	private final Set<String> stRequiredSubEntities;
-	private final Set<PivotInfo> pivots;
+	private final Collection<EntityFieldMetaDataVO> pivots;
 	private final boolean includeDependents;
 	
 	public EntityObjectProxyList(Long id, CollectableSearchExpression clctexpr, Set<Long> stRequiredAttributeIds, 
-			Set<String> stRequiredSubEntityNames, Set<PivotInfo> pivots, boolean includeDependents) {
+			Set<String> stRequiredSubEntityNames, Collection<EntityFieldMetaDataVO> pivots, boolean includeDependents) {
 		super();
 		this.id = id;
 		this.clctexpr = clctexpr;

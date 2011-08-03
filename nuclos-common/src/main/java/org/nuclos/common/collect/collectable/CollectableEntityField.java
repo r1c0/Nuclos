@@ -103,7 +103,7 @@ public interface CollectableEntityField {
 	 * @since Nuclos 3.1.01
 	 */
 	String getEntityName();
-	
+		
 	/**
 	 * @return the input format of this field
 	 */
