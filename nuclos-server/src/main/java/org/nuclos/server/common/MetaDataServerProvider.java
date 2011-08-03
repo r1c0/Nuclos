@@ -193,8 +193,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 					md.setFallbacklabel(info.getSubform() + ":" + info.getKeyField() + ":" + c);
 					md.setNullable(Boolean.TRUE);
 					md.setDataType(c.getClass().getName());
-					final PivotInfo pi = new PivotInfo(info.getSubform(), info.getKeyField(), c);
-					md.setPivotInfo(pi);
+					md.setPivotInfo(info);
 					md.setEntityId(subform.getId());
 					
 					result.put(pseudoFieldName, md);

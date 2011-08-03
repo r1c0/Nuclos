@@ -31,13 +31,16 @@ public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 	
 	private final String keyField;
 	
-	private final Object valueField;
+	private final String valueField;
 	
-	public PivotInfo(String subform, String keyField, Object valueField) {
+	private final Class<?> valueType;
+	
+	public PivotInfo(String subform, String keyField, String valueField, Class<?> valueType) {
 		if (subform == null) throw new NullPointerException();
 		this.subform = subform;
 		this.keyField = keyField;
 		this.valueField = valueField;
+		this.valueType = valueType;
 	}
 
 	public String getSubform() {
@@ -48,8 +51,12 @@ public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 		return keyField;
 	}
 
-	public Object getValueField() {
+	public String getValueField() {
 		return valueField;
+	}
+	
+	public Class<?> getValueType() {
+		return valueType;
 	}
 	
 	@Override

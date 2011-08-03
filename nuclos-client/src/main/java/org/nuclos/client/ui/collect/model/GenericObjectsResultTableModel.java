@@ -1,6 +1,7 @@
 package org.nuclos.client.ui.collect.model;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -13,6 +14,8 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.PivotInfo;
+import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.genericobject.GenericObjectUtils;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
@@ -40,20 +43,42 @@ public class GenericObjectsResultTableModel<Clct extends Collectable> extends So
 		 * (d) catch, remember exception and let anybody (WHO/WHEN?!) check if an exception was thrown here
 		 * Good ideas, anyone???
 		 */
-		final Collectable clct = this.getCollectable(iRow);
-		final CollectableEntityField clctefwe = (CollectableEntityField) this.getCollectableEntityField(iColumn);
+		final CollectableGenericObjectWithDependants clct = (CollectableGenericObjectWithDependants) getCollectable(iRow);
+		final GenericObjectWithDependantsVO lowdcvo = clct.getGenericObjectWithDependantsCVO();
+		final CollectableEntityField clctefwe = getCollectableEntityField(iColumn);
+		final PivotInfo pinfo;
+		if (clctefwe instanceof CollectableEOEntityField) {
+			pinfo = ((CollectableEOEntityField) clctefwe).getMeta().getPivotInfo();
+		}
+		else {
+			pinfo = null;
+		}
 		final String sFieldName = clctefwe.getName();
 
 		final String sFieldEntityName = clctefwe.getEntityName();
 		final String sMainEntityName = getEntityName();
 
 		CollectableField result;
+		// field of base entity
 		if (sFieldEntityName.equals(sMainEntityName)) {
 			result = clct.getField(sFieldName);
 		}
+		// pivot field
+		else if (pinfo != null) {
+			final List<Object> values = new ArrayList<Object>(1);
+			final Collection<EntityObjectVO> items = lowdcvo.getDependants().getData(sFieldEntityName);
+			for (EntityObjectVO k: items) {
+				if (sFieldName.equals(k.getField(pinfo.getKeyField(), String.class))) {
+					values.add(k.getField(pinfo.getValueField(), pinfo.getValueType()));
+				}
+			}
+			result = new CollectableValueField(values);
+		}
+		// field of subform entity
 		else {
-			final GenericObjectWithDependantsVO lowdcvo = ((CollectableGenericObjectWithDependants) clct).getGenericObjectWithDependantsCVO();
 			if (sFieldEntityName.equals(Modules.getInstance().getParentEntityName(sMainEntityName))) {
+				// dead code here
+				assert false;
 				final GenericObjectVO govoParent = lowdcvo.getParent();
 				/** @todo assert govoParent != null */
 				if (govoParent == null) {

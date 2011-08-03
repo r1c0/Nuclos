@@ -77,6 +77,10 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 	public ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr,
 			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Collection<EntityFieldMetaDataVO> pivots, 
 			boolean includeDependents) {
+		// remove subentities that are also pivots
+		for (EntityFieldMetaDataVO p: pivots) {
+			stRequiredSubEntityNames.remove(p.getPivotInfo().getSubform());
+		}
 		return new EntityObjectProxyList(id, clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, 
 				pivots, includeDependents);
 	}
@@ -188,7 +192,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		final CollectableSearchCondition condKey = new CollectableComparison(
 				new CollectableEOEntityField(mdProv.getEntityField(subform, info.getKeyField()), subform), 
 				ComparisonOperator.EQUAL, 
-				new CollectableValueField(info.getValueField()));
+				new CollectableValueField(pivot.getField()));
 		final CompositeCollectableSearchCondition composite = new CompositeCollectableSearchCondition(LogicalOperator.AND);
 		composite.addOperand(condJoin);
 		composite.addOperand(condKey);

@@ -193,7 +193,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				cb.setSelected(false);				
 				
 				final Changer changer = new Changer(index);
-				JComboBox combo = mkCombo(fields);
+				JComboBox combo = mkComboForStringFields(fields);
 				combo.addItemListener(changer);
 				keyCombos.add(combo);
 				c.gridx = 1;
@@ -212,6 +212,22 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			}
 		}
 		
+		private static JComboBox mkComboForStringFields(Map<String, EntityFieldMetaDataVO> fields) {
+			final List<EntityFieldMetaDataVO> strFields = new ArrayList<EntityFieldMetaDataVO>();
+			for (EntityFieldMetaDataVO f: fields.values()) {
+				if ("java.lang.String".equals(f.getDataType())) {
+					strFields.add(f);
+				}
+			}
+			final ComboBoxModel model = new SimpleCollectionComboBoxModel<EntityFieldMetaDataVO>(strFields);
+			final JComboBox result = new JComboBox(model);
+			result.setRenderer(new EntityFieldMetaDataListCellRenderer(model));
+			result.setVisible(true);
+			result.setEnabled(false);
+			result.setSelectedIndex(0);
+			return result;
+		}
+		
 		private static JComboBox mkCombo(Map<String, EntityFieldMetaDataVO> fields) {
 			final ComboBoxModel model = new SimpleCollectionComboBoxModel<EntityFieldMetaDataVO>(new ArrayList<EntityFieldMetaDataVO>(fields.values()));
 			final JComboBox result = new JComboBox(model);
@@ -226,7 +242,13 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			// set state
 			final String subform = subformNames.get(index);
 			if (selected) {
-				state.put(subform, new PivotInfo(subform, keyItem.getField(), valueItem.getField()));
+				final Class<?> type;
+				try {
+					type = Class.forName(valueItem.getDataType());
+				} catch (ClassNotFoundException e) {
+					throw new IllegalStateException(e);
+				}
+				state.put(subform, new PivotInfo(subform, keyItem.getField(), valueItem.getField(), type));
 			}
 			else {
 				state.put(subform, null);
