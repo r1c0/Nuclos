@@ -507,6 +507,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private Map<String, DetailsComponentModel> transferredDetailsData = new HashMap<String, DetailsComponentModel>();
 
 	private Integer iSearchDeleted = CollectableGenericObjectSearchExpression.SEARCH_UNDELETED;
+	
+	private final boolean noTabFromContructor;
 
 	/**
 	 * action: Delete selected Collectable (in Result panel)
@@ -609,13 +611,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						new NuclosSearchResultStrategy<CollectableGenericObjectWithDependants>()));
 		this.iModuleId = iModuleId;
 		// getSearchStrategy().setCompleteCollectablesStrategy(new CompleteGenericObjectsStrategy());
-		final MainFrameTab frame = tabIfAny != null ? tabIfAny : newInternalFrame();
-		frame.setLayeredComponent(pnlCollect);
+		this.noTabFromContructor = (tabIfAny == null);
 		if (bAutoInit)
 			init();
-
-		addCollectableEventListener(collectableEventListener);
-		setInternalFrame(frame, tabIfAny==null);
 	}
 
 	/**
@@ -633,13 +631,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		super(parent, CollectableGenericObjectEntity.getByModuleId(iModuleId), rc);
 		this.iModuleId = iModuleId;
 		// getSearchStrategy().setCompleteCollectablesStrategy(new CompleteGenericObjectsStrategy());
-		final MainFrameTab frame = tabIfAny != null ? tabIfAny : newInternalFrame();
-		frame.setLayeredComponent(pnlCollect);
+		this.noTabFromContructor = (tabIfAny == null);
 		if (bAutoInit)
 			init();
-
-		addCollectableEventListener(collectableEventListener);
-		setInternalFrame(frame, tabIfAny==null);
 	}
 
 	public final Integer getSearchDeleted() {
@@ -662,7 +656,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	public void init() {
 		initialize(pnlCollect);
 
-		MainFrameTab frame = getFrame();
+		final MainFrameTab frame = !noTabFromContructor ? getFrame() : newInternalFrame();
+		frame.setLayeredComponent(pnlCollect);
+		
 		setupEditPanels();
 		setupKeyActionsForResultPanelVerticalScrollBar();
 		setupShortcutsForTabs(frame);
@@ -673,6 +669,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		setupDataTransfer();
 		getCollectStateModel().addCollectStateListener(new GenericObjectCollectStateListener());
 
+		addCollectableEventListener(collectableEventListener);
+		setInternalFrame(frame, noTabFromContructor);
+		
 		this.getResultPanel().popupmenuRow.addPopupMenuListener(new PopupMenuListener() {
 
 			@Override
@@ -735,7 +734,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 
 		});
-
 	}
 
 	private void setupToolbars() {
