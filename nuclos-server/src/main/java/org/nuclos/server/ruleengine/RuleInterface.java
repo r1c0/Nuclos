@@ -1387,13 +1387,17 @@ public class RuleInterface extends CustomCodeInterface {
 		else {
 			final GenericObjectVO govo = this.getRuleInterface().changeState(this.getGenericObject(), iGenericObjectId, iNumeral);
 			this.getRuleObjectContainerCVO().setGenericObject(govo);
-			/* reload the dependant data - this is necessary, because the version id
-			 * of the dependant data was changed while changing the status
-			 */
-			DependantMasterDataMap mpDependants = this.getRuleObjectContainerCVO().getDependants();
-			getGenericObjectFacade().reloadDependants(new GenericObjectWithDependantsVO(this.getRuleObjectContainerCVO()), mpDependants, false);
-			for(String sEntity : mpDependants.getEntityNames()) {
-				this.getRuleObjectContainerCVO().setDependants(sEntity, mpDependants.getValues(sEntity));
+			if (LangUtils.equals(iGenericObjectId, this.getGenericObject().getId())) {
+				/*
+				 * reload the dependant data - this is necessary, because the version id
+				 * of the dependant data was changed while changing the status
+				 * (but only if the affected object is the containers object)
+				 */
+				DependantMasterDataMap mpDependants = this.getRuleObjectContainerCVO().getDependants();
+				getGenericObjectFacade().reloadDependants(new GenericObjectWithDependantsVO(this.getRuleObjectContainerCVO()), mpDependants, false);
+				for(String sEntity : mpDependants.getEntityNames()) {
+					this.getRuleObjectContainerCVO().setDependants(sEntity, mpDependants.getValues(sEntity));
+				}
 			}
 		}
 	}
