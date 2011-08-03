@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.Collator;
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -122,6 +123,7 @@ import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterData;
+import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
@@ -273,7 +275,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  * @version 01.00.00
  */
 public class GenericObjectCollectController extends EntityCollectController<CollectableGenericObjectWithDependants> {
-	
+
 	protected static final Logger log = Logger.getLogger(GenericObjectCollectController.class);
 
 	private static final Collection<String> collUsageCriteriaFieldNames = Collections.unmodifiableCollection(UsageCriteria.getContainedAttributeNames());
@@ -281,13 +283,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/**
 	 * @return the names of the attributes contained in a quintuple. Note that "module" isn't an attribute, so it's not
 	 * part of the result.
-	 * 
+	 *
 	 * @deprecated Move to a better place.
 	 */
 	public static Collection<String> getUsageCriteriaFieldNames() {
 		return collUsageCriteriaFieldNames;
 	}
-	
+
 	private final Logger logSecurity = Logger.getLogger(log.getName() + ".security");
 
 	private static final String PREFS_KEY_FILTERNAME = "filterName";
@@ -301,17 +303,17 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	// TODO: Entity name null ok?
 	public static final CollectableEntityField clctefStatus = new DefaultCollectableEntityField(NuclosEOField.STATE.getMetaData().getField(), String.class,
-		CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue())), 
+		CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue())),
 		null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, null);
 
 	// TODO: Entity name null ok?
 	public static final CollectableEntityField clctefStatusnumeral = new DefaultCollectableEntityField(NuclosEOField.STATENUMBER.getMetaData().getField(), Integer.class,
-		CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATENUMBER.getMetaData().getId().intValue())), 
+		CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATENUMBER.getMetaData().getId().intValue())),
 		null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, null);
 
 	// TODO: Entity name null ok?
 	private final CollectableEntityField clctefSearchState = new DefaultCollectableEntityField("[status_num_plus_name]", String.class,
-		CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue())), 
+		CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue())),
 		null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, null);
 
 	private final CollectableComboBox clctSearchState = new NuclosCollectableStateComboBox(clctefSearchState, true);
@@ -512,7 +514,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	final Action actDeleteSelectedCollectablesPhysically = new CommonAbstractAction(CommonLocaleDelegate.getMessage("GenericObjectCollectController.11","Ausgew\u00e4hlte Datens\u00e4tze endg\u00fcltig l\u00f6schen"),
 		Icons.getInstance().getIconRealDelete16(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.11","Ausgew\u00e4hlte Datens\u00e4tze endg\u00fcltig l\u00f6schen")) {
 		/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -525,7 +527,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	final Action actDeleteSelectedCollectables = new CommonAbstractAction(CommonLocaleDelegate.getMessage("GenericObjectCollectController.52","L\u00f6schen..."),
 		Icons.getInstance().getIconDelete16(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.12","Ausgew\u00e4hlte Datens\u00e4tze l\u00f6schen")) {
 		/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -538,7 +540,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	final Action actDeleteCurrentCollectableInDetails = new CommonAbstractAction(CommonLocaleDelegate.getMessage("GenericObjectCollectController.53","L\u00f6schen..."),
 		Icons.getInstance().getIconDelete16(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.37","Diesen Datensatz l\u00f6schen")) {
 		/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -551,7 +553,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	final Action actRestoreSelectedCollectables = new CommonAbstractAction(CommonLocaleDelegate.getMessage("GenericObjectCollectController.98","Wiederherstellen..."),
 		Icons.getInstance().getIconDelete16(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.13","Ausgew\u00e4hlte Datens\u00e4tze wiederherstellen")) {
 		/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -564,7 +566,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	final Action actRestoreCurrentCollectableInDetails = new CommonAbstractAction(CommonLocaleDelegate.getMessage("GenericObjectCollectController.99","Wiederherstellen"),
 		Icons.getInstance().getIconDelete16(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.38","Diesen Datensatz wiederherstellen")) {
 		/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -578,30 +580,30 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	/**
 	 * controller for search result templates
-	 * 
+	 *
 	 * @deprecated Move to GenericObjectResultController.
 	 */
 	private SearchResultTemplateController searchResultTemplatesController;
 
 	/**
 	 * Use the static method <code>newGenericObjectCollectController</code> to create new instances.
-	 * 
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 *
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @param parent
 	 * @param iModuleId
 	 * @param bAutoInit TODO
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
-	 * 
+	 *
 	 * @deprecated bAutoInit is deprecated
 	 */
 	public GenericObjectCollectController(JComponent parent, Integer iModuleId, boolean bAutoInit, MainFrameTab tabIfAny) {
-		super(parent, CollectableGenericObjectEntity.getByModuleId(iModuleId), 
+		super(parent, CollectableGenericObjectEntity.getByModuleId(iModuleId),
 				new GenericObjectResultController<CollectableGenericObjectWithDependants>(
 						CollectableGenericObjectEntity.getByModuleId(iModuleId),
 						new NuclosSearchResultStrategy<CollectableGenericObjectWithDependants>()));
@@ -617,16 +619,16 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	/**
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected GenericObjectCollectController(JComponent parent, Integer iModuleId, boolean bAutoInit, 
-			MainFrameTab tabIfAny, ResultController<CollectableGenericObjectWithDependants> rc) 
+	protected GenericObjectCollectController(JComponent parent, Integer iModuleId, boolean bAutoInit,
+			MainFrameTab tabIfAny, ResultController<CollectableGenericObjectWithDependants> rc)
 	{
 		super(parent, CollectableGenericObjectEntity.getByModuleId(iModuleId), rc);
 		this.iModuleId = iModuleId;
@@ -639,11 +641,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		addCollectableEventListener(collectableEventListener);
 		setInternalFrame(frame, tabIfAny==null);
 	}
-	
+
 	public final Integer getSearchDeleted() {
 		return iSearchDeleted;
 	}
-	
+
 	/**
 	 * @deprecated Move to GenericObjectResultController.
 	 */
@@ -687,7 +689,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						JMenuItem action = new JMenuItem(new AbstractAction(actionVO.toString()) {
 
 							/**
-							 * 
+							 *
 							 */
 							private static final long serialVersionUID = 1L;
 
@@ -867,7 +869,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		getResultTable().getActionMap().put("last", new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -884,7 +886,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		getResultTable().getActionMap().put("nextrow", new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -913,7 +915,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		getResultTable().getActionMap().put("nextpage", new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -934,7 +936,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		final Action actShowLogBook = new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -948,7 +950,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		final Action actShowStateHistory = new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -962,7 +964,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		final Action actPrintCurrentGenericObject = new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -988,7 +990,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		tbl.setDragEnabled(true);
 		tbl.setTransferHandler(new TransferHandler() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -1591,7 +1593,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	/**
 	 * @deprecated Move to ResultController hierarchy.
-	 * 
+	 *
 	 * @deprecated Move to a specialization of DetailsController and make private again.
 	 */
 	public void cmdDeleteCurrentCollectableInDetails() {
@@ -2126,8 +2128,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @return the search condition contained in the search panel's fields (including the subforms' search fields).
 	 * @precondition this.isSearchPanelAvailable()
 	 * @postcondition result == null || result.isSyntacticallyCorrect()
-	 * 
-	 * @deprecated Move to SearchController or SearchPanel and make protected again. 
+	 *
+	 * @deprecated Move to SearchController or SearchPanel and make protected again.
 	 */
 	@Override
 	public CollectableSearchCondition getCollectableSearchConditionFromSearchFields(boolean bMakeConsistent) throws CollectableFieldFormatException {
@@ -2160,8 +2162,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/**
 	 * @return the search condition to display. Includes the currently selected global search filter's search condition (if any).
 	 * @throws CollectableFieldFormatException
-	 * 
-	 * @deprecated Move to SearchController and make protected again. 
+	 *
+	 * @deprecated Move to SearchController and make protected again.
 	 */
 	@Override
 	public CollectableSearchCondition getCollectableSearchConditionToDisplay() throws CollectableFieldFormatException {
@@ -2177,7 +2179,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/**
 	 * @return a Comparator that compares the entity labels first, then the field labels.
 	 *         Fields of the main entity are sorted lower than all other fields.
-	 *         
+	 *
 	 * @deprecated Remove this.
 	 */
 	private Comparator<CollectableEntityField> getCollectableEntityFieldComparator() {
@@ -2204,12 +2206,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	/**
 	 * @return a specific table model with an overridden getValueAt method, providing access to subform entries.
-	 * 
+	 *
 	 * @deprecated Move to ResultController hierarchy.
 	 */
 	@Override
 	protected SortableCollectableTableModel<CollectableGenericObjectWithDependants> newResultTableModel() {
-		final SortableCollectableTableModel<CollectableGenericObjectWithDependants> result = 
+		final SortableCollectableTableModel<CollectableGenericObjectWithDependants> result =
 				new GenericObjectsResultTableModel<CollectableGenericObjectWithDependants>(
 							getCollectableEntity(), getFields().getSelectedFields());
 
@@ -2280,7 +2282,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/**
 	 * sets up the change listener for the vertical scrollbar of the result table,
 	 * only if the proxy list has been set (that is not before the first search).
-	 * 
+	 *
 	 * TODO: Make this protected again.
 	 */
 	public void setupChangeListenerForResultTableVerticalScrollBar() {
@@ -2291,7 +2293,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	/**
 	 * TODO: Make this proteced again.
-	 * 
+	 *
 	 * @deprecated Move to ResultPanel???
 	 */
 	public void removePreviousChangeListenersForResultTableVerticalScrollBar() {
@@ -2615,7 +2617,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						CollectableComboBox clctcmbx = (CollectableComboBox) clctcomp;
 						clctcmbx.getJComboBox().setRenderer(clctcmbx.new CollectableFieldRenderer() {
 							/**
-							 * 
+							 *
 							 */
 							private static final long serialVersionUID = 1L;
 
@@ -2672,7 +2674,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/**
 	 * Get also changes in subforms
 	 * @todo move to DetailsPanel
-	 * 
+	 *
 	 * TODO: Make this protected again.
 	 */
 	@Override
@@ -2888,9 +2890,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	/**
 	 * @return the name of the parent entity, if any, of this <code>CollectController</code>'s entity.
-	 * 
+	 *
 	 * TODO: Make private again.
-	 * 
+	 *
 	 * @deprecated Parent is no longer part of the entity model.
 	 */
 	public String getParentEntityName() {
@@ -2900,7 +2902,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/**
 	 * @param sEntityName
 	 * @return the name of the given entity's parent entity, if any.
-	 * 
+	 *
 	 * @deprecated Parent is no longer part of the entity model.
 	 */
 	private static String getParentEntityName(String sEntityName) {
@@ -3569,7 +3571,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private static class NoSuchElementException extends NuclosBusinessException {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 	}
@@ -3659,7 +3661,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			final ListCellRenderer originalRenderer = cmbbxActions.getRenderer();
 			cmbbxActions.setRenderer(new DefaultListCellRenderer() {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -3854,14 +3856,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					UIUtils.runShortCommand(getFrame(), new CommonRunnable() {
 						@Override
 						public void run() throws CommonBusinessException {
-							final EntityMetaDataVO parameterEntity = 
+							final EntityMetaDataVO parameterEntity =
 								MetaDataClientProvider.getInstance().getEntity(generatoractionvo.getParameterEntityId().longValue());
 							final String pEntityStr = parameterEntity.getEntity();
 							/*
-							final CollectableEntity pEntitiy = 
+							final CollectableEntity pEntitiy =
 								DefaultCollectableEntityProvider.getInstance().getCollectableEntity(pEntityStr);
 							 */
-							
+
 							final MainFrameTab tab = GenericObjectCollectController.this.getFrame();
 							final ICollectableListOfValues lov = new EntityListOfValues(tab);
 							final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(
@@ -4103,6 +4105,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	private int confirmGenerationType(boolean bMulti, String sSourceModuleName, String sTargetModuleName, GeneratorActionVO generatoractionvo) {
 		final int iBtn;
+		if (generatoractionvo.getTargetProcessId() != null) {
+			try {
+				sTargetModuleName = MessageFormat.format("{0} ({1})", sTargetModuleName, MasterDataCache.getInstance().get(NuclosEntity.PROCESS.getEntityName(), generatoractionvo.getTargetProcessId()).getField("name", String.class));
+			} catch (CommonFinderException e) {
+				log.error("Unable to determine target process name.", e);
+			}
+		}
 		if (bMulti) {
 			if(generatoractionvo.isGroupAttributes()) {
 				final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.71a","Soll aus den aktuellen {0} mehrere {1} erzeugt werden?", sSourceModuleName, sTargetModuleName);
@@ -4117,6 +4126,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 		}
 		else {
+			CollectableField cf = getSelectedCollectable().getField(NuclosEOField.PROCESS.getName());
+			if (cf != null && cf.getValue() != null) {
+				sSourceModuleName = MessageFormat.format("{0} ({1})", sSourceModuleName, getSelectedCollectable().getField(NuclosEOField.PROCESS.getName()).getValue());
+			}
 			final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.71","Soll aus dem/der aktuellen {0} ein(e) {1} erzeugt werden?", sSourceModuleName, sTargetModuleName);
 			iBtn = JOptionPane.showConfirmDialog(getFrame(), sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName),
 				JOptionPane.OK_CANCEL_OPTION);
@@ -4151,9 +4164,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		return NuclosEntity.GENERALSEARCHDOCUMENT.getEntityName();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return the 4 column names of the document subform (comment, createdDate, createdUser, filename).
 	 * used for exporting a form.
 	 */
@@ -4327,7 +4340,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @param cond
 	 * @param bClearSearchFields
 	 * @throws CommonBusinessException
-	 * 
+	 *
 	 * @deprecated Move to SearchController hierarchy and make protected again.
 	 */
 	@Override
@@ -4451,7 +4464,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					sFilterName = sFilterName + ": " + getSearchFilterComboBox().getSelectedItem().toString();
 				}
 				getExplorerController().showInOwnTab(new EntitySearchResultTreeNode(
-					CommonLocaleDelegate.getMessage("GenericObjectCollectController.93","Suchergebnis ({0})", sFilterName), 
+					CommonLocaleDelegate.getMessage("GenericObjectCollectController.93","Suchergebnis ({0})", sFilterName),
 					null, ss.getInternalSearchExpression(), sFilterName, Main.getMainController().getUserName(), getEntityName()));
 			}
 		});
@@ -4749,12 +4762,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				comp.getControlComponent().addFocusListener(collectableComponentSearchFocusListener);
 			}
 		}
-		
+
 		result.getRootComponent().setFocusCycleRoot(true);
 		result.getRootComponent().setFocusTraversalPolicyProvider(true);
 		result.getRootComponent().setFocusTraversalPolicy(new NuclosFocusTraversalPolicy(result.getRootComponent()));
-		
-		
+
+
 		customizeLayout(result, usagecriteria, collectstate);
 
 		return result;
@@ -5289,7 +5302,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	/**
 	 * inner class ChangeStateForSelectedCollectablesController
-	 * 
+	 *
 	 * @deprecated Move to ResultController hierarchy.
 	 */
 	private static class ChangeStateForSelectedCollectablesController
@@ -5570,7 +5583,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	protected static class GenericObjectDetailsPanel extends DetailsPanel {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -5593,20 +5606,20 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	protected static class GenericObjectResultPanel extends NuclosResultPanel<CollectableGenericObjectWithDependants> {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		@Override
 		protected AbstractButton getDeleteButton() {
 			return new JToggleButton();
 		}
-		
+
 	}
 
 	protected class GenericObjectCollectPanel extends CollectPanel<CollectableGenericObjectWithDependants> {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -5634,7 +5647,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	/**
 	 * @return <code>MultiActionProgressPanel</code> for the MultiObjectsActionController.
-	 * 
+	 *
 	 * TODO: Make protected again.
 	 */
 	@Override
@@ -5672,7 +5685,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/**
 	 * sets search result format accordng to selected SearchResultTemplate
 	 * @param templateSelected
-	 * 
+	 *
 	 * @deprecated Remove if possible.
 	 */
 	protected void setSearchResultFormatAccordingToTemplate(SearchResultTemplate templateSelected) {

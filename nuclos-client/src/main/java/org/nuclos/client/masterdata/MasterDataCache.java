@@ -61,7 +61,7 @@ public class MasterDataCache {
 	 * maps an entity name to the contents of the entity.
 	 */
 	private final Map<String, List<MasterDataVO>> mp = CollectionUtils.newHashMap();
-	
+
 	private final Map<CollectableFieldsByNameKey, List<CollectableField>> mpCollectableFieldsByName = CollectionUtils.newHashMap();
 
 	private final MessageListener messagelistener = new MessageListener() {
@@ -118,6 +118,24 @@ public class MasterDataCache {
 	}
 
 	/**
+	 * fetch data with the given id from the entity with the given name from the cache.
+	 * If the entity is known not to be cacheable, ignores the cache.
+	 * @param sEntityName
+	 * @param id
+	 * @return the data (if found)
+	 * @throws CommonFinderException
+	 */
+	public synchronized MasterDataVO get(String sEntityName, Integer id) throws CommonFinderException {
+		List<MasterDataVO> result = get(sEntityName);
+		for (MasterDataVO md : result) {
+			if (LangUtils.equals(id,  md.getIntId())) {
+				return md;
+			}
+		}
+		throw new CommonFinderException();
+	}
+
+	/**
 	 * @param sEntityName
 	 * @return Ist the entity with the given name cacheable? <code>null</code> means unknown.
 	 * @todo Whether an entity is cacheable or not should be known for each entity, not only for master data entities.
@@ -144,7 +162,7 @@ public class MasterDataCache {
 		else {
 			log.debug("Removing entity " + sEntityName + " from masterdata cache.");
 			this.mp.remove(sEntityName);
-			
+
 			for (CollectableFieldsByNameKey key : mpCollectableFieldsByName.keySet()) {
 				if (sEntityName.equals(key.sEntityName)) {
 					mpCollectableFieldsByName.remove(key);
@@ -187,7 +205,7 @@ public class MasterDataCache {
 		cacheKey.sEntityName = sEntityName;
 		cacheKey.sFieldName = sFieldName;
 		cacheKey.bCheckValidity = bCheckValidity;
-		
+
 		List<CollectableField> result = this.mpCollectableFieldsByName.get(cacheKey);
 		if (result == null) {
 			result = EntityFacadeDelegate.getInstance().getCollectableFieldsByName(sEntityName, sFieldName, bCheckValidity);
@@ -197,26 +215,26 @@ public class MasterDataCache {
 		}
 		return result;
 	}
-	
+
 	private class CollectableFieldsByNameKey {
-		String sEntityName; 
+		String sEntityName;
 		String sFieldName;
 		boolean bCheckValidity;
-		
+
 		@Override
 		public boolean equals(Object obj) {
-			
+
 			if (obj instanceof CollectableFieldsByNameKey) {
 				CollectableFieldsByNameKey other = (CollectableFieldsByNameKey) obj;
 				return LangUtils.equals(this.sEntityName, other.sEntityName)
 				    && LangUtils.equals(this.sFieldName, other.sFieldName)
 				    && LangUtils.equals(this.bCheckValidity, other.bCheckValidity);
 			}
-			
+
 			return super.equals(obj);
 		}
-		
-		
+
+
 	}
 
 }	// class MasterDataCache
