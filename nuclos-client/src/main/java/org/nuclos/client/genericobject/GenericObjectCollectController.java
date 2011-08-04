@@ -609,6 +609,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				new GenericObjectResultController<CollectableGenericObjectWithDependants>(
 						CollectableGenericObjectEntity.getByModuleId(iModuleId),
 						new NuclosSearchResultStrategy<CollectableGenericObjectWithDependants>()));
+		setFrame(tabIfAny);
 		this.iModuleId = iModuleId;
 		// getSearchStrategy().setCompleteCollectablesStrategy(new CompleteGenericObjectsStrategy());
 		this.noTabFromContructor = (tabIfAny == null);
@@ -629,6 +630,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			MainFrameTab tabIfAny, ResultController<CollectableGenericObjectWithDependants> rc)
 	{
 		super(parent, CollectableGenericObjectEntity.getByModuleId(iModuleId), rc);
+		setFrame(tabIfAny);
 		this.iModuleId = iModuleId;
 		// getSearchStrategy().setCompleteCollectablesStrategy(new CompleteGenericObjectsStrategy());
 		this.noTabFromContructor = (tabIfAny == null);

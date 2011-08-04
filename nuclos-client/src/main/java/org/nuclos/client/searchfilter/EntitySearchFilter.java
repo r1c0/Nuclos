@@ -202,7 +202,11 @@ public class EntitySearchFilter extends SearchFilter {
 		PreferencesUtils.putStringList(prefs, sPrefsNodeEntities, lstEntityNames);
 	}
 	
-	/** @todo comment */
+	/**
+	 * @deprecated This is an evil copy of 
+	 * 		org.nuclos.client.genericobject.GenericObjectClientUtils.readCollectableEntityFieldsFromPreferences(Preferences, CollectableEntity)
+	 * 		But it also works on MasterData. Thus it is difficult to get rid of it!
+	 */
 	public static List<CollectableEntityField> readCollectableEntityFieldsFromPreferences(Preferences prefs, CollectableEntity clcte, String sPrefsNodeFields, String sPrefsNodeEntities) {
 		List<String> lstSelectedFieldNames;
 		List<String> lstSelectedEntityNames;
@@ -241,8 +245,7 @@ public class EntitySearchFilter extends SearchFilter {
 				}
 				else {
 					result.add(new CollectableEntityFieldWithEntityForExternal(clcteForField, sFieldName, false, true));
-				}
-				
+				}		
 			}
 			catch (Exception ex) {
 				// ignore unknown fields

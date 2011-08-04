@@ -20,12 +20,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.JComponent;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
@@ -74,19 +76,44 @@ import org.nuclos.server.common.ModuleConstants;
  */
 public class GenericObjectClientUtils {
 
+	private static final Logger LOG = Logger.getLogger(GenericObjectCollectController.class);
+
 	private GenericObjectClientUtils() {
 	}
 
-	/** @todo comment */
-	public static List<CollectableEntityFieldWithEntity> readCollectableEntityFieldsFromPreferences(Preferences prefs, CollectableEntity clcte, String sPrefsNodeFields, String sPrefsNodeEntities) {
+	public static List<? extends CollectableEntityField> readCollectableEntityFieldsFromPreferences(Preferences prefs, CollectableEntity clcte) {
+		// new implementation
+		List<CollectableEntityField> result = null;
+		try {
+			result = (List<CollectableEntityField>) 
+					PreferencesUtils.getSerializableListXML(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS);
+		} catch (PreferencesException e) {
+			// do nothing
+			LOG.error("XMLEncoder/XMLDecoder Fehler", e);
+		}
+		if (result != null) {
+			for (Iterator<CollectableEntityField> it = result.iterator(); it.hasNext();) {
+				final CollectableEntityField f = it.next();
+				// TODO: ???
+				if (f != null) {
+					setSecurityAgent(clcte, f, !(clcte.getName().equals(f.getEntityName())));
+				}
+				else {
+					it.remove();
+				}
+			}
+			return result;
+		}
+		
+		// old implementation
 		List<String> lstSelectedFieldNames;
 		List<String> lstSelectedEntityNames;
 		try {
-			lstSelectedFieldNames = PreferencesUtils.getStringList(prefs, sPrefsNodeFields);
-			lstSelectedEntityNames = PreferencesUtils.getStringList(prefs, sPrefsNodeEntities);
+			lstSelectedFieldNames = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS);
+			lstSelectedEntityNames = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES);
 		}
 		catch (PreferencesException ex) {
-			GenericObjectCollectController.log.error("Die selektierten Felder konnten nicht aus den Preferences geladen werden.", ex);
+			LOG.error("Die selektierten Felder konnten nicht aus den Preferences geladen werden.", ex);
 			lstSelectedFieldNames = new ArrayList<String>();
 			lstSelectedEntityNames = new ArrayList<String>();
 			// no exception is thrown here.
@@ -101,12 +128,12 @@ public class GenericObjectClientUtils {
 		}
 
 		if (lstSelectedFieldNames.size() != lstSelectedEntityNames.size()) {
-			GenericObjectCollectController.log.warn("Die Listen der selektierten Felder und ihrer Entit\u00e4ten stimmen nicht \u00fcberein.");
+			LOG.warn("Die Listen der selektierten Felder und ihrer Entit\u00e4ten stimmen nicht \u00fcberein.");
 			lstSelectedFieldNames = new ArrayList<String>();
 			lstSelectedEntityNames = new ArrayList<String>();
 		}
 
-		final List<CollectableEntityFieldWithEntity> result = new ArrayList<CollectableEntityFieldWithEntity>();
+		result = new ArrayList<CollectableEntityField>();
 		final CollectableEntityProvider clcteprovider = DefaultCollectableEntityProvider.getInstance();
 		for (int i = 0; i < lstSelectedFieldNames.size(); i++) {
 			final String sFieldName = lstSelectedFieldNames.get(i);
@@ -117,19 +144,25 @@ public class GenericObjectClientUtils {
 			}
 			catch (Exception ex) {
 				// ignore unknown fields
-				GenericObjectCollectController.log.warn("Ein Feld mit dem Namen \"" + sFieldName + "\" ist nicht in der Entit\u00e4t " + clcte.getName() + " enthalten.", ex);
+				LOG.warn("Ein Feld mit dem Namen \"" + sFieldName + "\" ist nicht in der Entit\u00e4t " + clcte.getName() + " enthalten.", ex);
 			}
 		}
 
 		return result;
 	}
 
-	/** @todo comment */
-	public static void writeCollectableEntityFieldsToPreferences(Preferences prefs, List<CollectableEntityField> lstclctefweSelected, String sPrefsNodeFields, String sPrefsNodeEntities) throws PreferencesException {
-		PreferencesUtils.putStringList(prefs, sPrefsNodeFields, CollectableUtils.getFieldNamesFromCollectableEntityFields(lstclctefweSelected));
-
-		final List<String> lstEntityNames = CollectionUtils.transform(lstclctefweSelected, new CollectableEntityField.GetEntityName());
-		PreferencesUtils.putStringList(prefs, sPrefsNodeEntities, lstEntityNames);
+	public static void writeCollectableEntityFieldsToPreferences(Preferences prefs, List<CollectableEntityField> selectedFields) throws PreferencesException {
+		final int size = selectedFields.size();
+		final List<String> fieldNames = new ArrayList<String>(size);
+		final List<String> entityNames = new ArrayList<String>(size);
+		for (CollectableEntityField f: selectedFields) {
+			fieldNames.add(f.getName());
+			entityNames.add(f.getEntityName());
+		}
+		
+		PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS, fieldNames);
+		PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES, entityNames);
+		PreferencesUtils.putSerializableListXML(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS, selectedFields);
 	}
 
 	/**
@@ -137,8 +170,10 @@ public class GenericObjectClientUtils {
 	 * @param sFieldName the name of the field
 	 * @param clcteMain the main entity
 	 * @return a <code>CollectableEntityField</code> for the Result tab with the given entity and field name.
+	 * 
+	 * @deprecated Should be private!
 	 */
-	public static CollectableEntityFieldWithEntity getCollectableEntityFieldForResult(final CollectableEntity clcte, String sFieldName, CollectableEntity clcteMain) {
+	public static CollectableEntityField getCollectableEntityFieldForResult(final CollectableEntity clcte, String sFieldName, CollectableEntity clcteMain) {
 		final String sMainEntityName = clcteMain.getName();
 		final boolean bFieldBelongsToMainEntity = clcte.getName().equals(sMainEntityName);
 		final String sParentEntityName = Modules.getInstance().getParentEntityName(sMainEntityName);
@@ -147,7 +182,19 @@ public class GenericObjectClientUtils {
 		final CollectableEntityFieldWithEntityForExternal clctefwefe = new CollectableEntityFieldWithEntityForExternal(clcte, sFieldName, bFieldBelongsToSubEntity, bFieldBelongsToMainEntity);
 		
 		// set security agent, to check whether the user has the right to see the data in the result panel
-		clctefwefe.setSecurityAgent(new CollectableEntityFieldSecurityAgent() {
+		setSecurityAgent(clcte, clctefwefe, bFieldBelongsToSubEntity);
+		return clctefwefe;
+	}
+	
+	/**
+	 * TODO: For me, it is complete miracle why this is needed... (tp)
+	 * 
+	 * @param entity Could be another entity than the entity the fields belongs to, because it is a subform field display in the result panel.
+	 * @param field to set the SecurityAgent on
+	 * @param bFieldBelongsToSubEntity true if fields belongs to a subform
+	 */
+	private static void setSecurityAgent(final CollectableEntity entity, final CollectableEntityField field, final boolean bFieldBelongsToSubEntity) {
+		field.setSecurityAgent(new CollectableEntityFieldSecurityAgent() {
 			@Override
 			public boolean isReadable() {
 				Permission permission = null;
@@ -163,19 +210,18 @@ public class GenericObjectClientUtils {
 
 					// check subform data
 					if (bFieldBelongsToSubEntity) {
-						String sEntityName = clctefwefe.getCollectableEntityName();
+						String sEntityName = field.getEntityName();
 
 						permission = SecurityCache.getInstance().getSubFormPermission(sEntityName, iStatusId);
 					}
 					// check attribute data
 					else {
-						permission = SecurityCache.getInstance().getAttributePermission(clcte.getName(), clctefwefe.getName(), iStatusId);
+						permission = SecurityCache.getInstance().getAttributePermission(entity.getName(), field.getName(), iStatusId);
 					}
 				}
 				return (permission == null) ? false : permission.includesReading();
 			}
-		});
-		return clctefwefe;
+		});		
 	}
 
 	/**

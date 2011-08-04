@@ -192,14 +192,12 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	 * reads the selected fields and their entities from the user preferences.
 	 * @param clcte
 	 * @return the list of previously selected fields
-	 * @deprecated Remove this.
 	 */
 	@Override
-	protected List<CollectableEntityFieldWithEntity> readSelectedFieldsFromPreferences(CollectableEntity clcte) {
+	protected List<? extends CollectableEntityField> readSelectedFieldsFromPreferences(CollectableEntity clcte) {
 		assert getEntity().equals(clcte);
 		return GenericObjectClientUtils.readCollectableEntityFieldsFromPreferences(
-				getGenericObjectCollectController().getPreferences(), clcte, 
-				CollectController.PREFS_NODE_SELECTEDFIELDS, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES);
+				getGenericObjectCollectController().getPreferences(), clcte);
 	}
 
 	/**
@@ -213,33 +211,28 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 		GenericObjectClientUtils.writeCollectableEntityFieldsToPreferences(
 				getGenericObjectCollectController().getPreferences(), 
 				// CollectionUtils.typecheck(lstclctefweSelected, CollectableEntityFieldWithEntity.class), 
-				CollectionUtils.typecheck(lstclctefweSelected, CollectableEntityField.class), 
-				CollectController.PREFS_NODE_SELECTEDFIELDS, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES);
+				CollectionUtils.typecheck(lstclctefweSelected, CollectableEntityField.class));
+		// TODO: Is this call to super really needed?
 		super.writeSelectedFieldsToPreferences(lstclctefweSelected);
 	}
 
 	/**
-	 * We need to return a <code>CollectableEntityFieldWithEntity</code> here so we can filter by entity.
-	 * @param clcte
-	 * @param sFieldName
-	 * @return a <code>CollectableEntityField</code> of the given entity with the given field name, to be used in the Result metadata.
-	 * 
-	 * @deprecated Remove this.
+	 * @deprecated We *must* get rid of this!
 	 */
 	@Override
 	public CollectableEntityField getCollectableEntityFieldForResult(CollectableEntity sClcte, String sFieldName) {
 		// TODO: Find out why the following condition does *not* hold:
+		// (Perhaps because sClcte is a subform and sFieldName is a field of the subform???)
 		// assert getEntity().equals(sClcte);
 		final GenericObjectCollectController controller = getGenericObjectCollectController();
 		final CollectableEntity ce = controller.getCollectableEntity();
-		CollectableEntity clcte = sClcte;
 		CollectableEntityFieldWithEntity.QualifiedEntityFieldName qFieldName = new CollectableEntityFieldWithEntity.QualifiedEntityFieldName(sFieldName);
 		if(qFieldName.isQualifiedEntityFieldName()){
 			String clcteName = qFieldName.getEntityName();
 			if(clcteName != null && !clcteName.equals(ce.getName()))
-				clcte = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(clcteName);
+				sClcte = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(clcteName);
 		}
-		return GenericObjectClientUtils.getCollectableEntityFieldForResult(clcte, qFieldName.getFieldName(), ce);
+		return GenericObjectClientUtils.getCollectableEntityFieldForResult(sClcte, qFieldName.getFieldName(), ce);
 	}
 	
 	/**

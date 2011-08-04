@@ -37,7 +37,7 @@ public class CollectableEntityFieldWithEntityForExternal extends CollectableEnti
 		this.bFieldBelongsToSubEntity = bFieldBelongsToSubEntity;
 		this.bFieldBelongsToMainEntity = bFieldBelongsToMainEntity;
 	}
-
+	
 	// As the values of subentity fields must be concatenatable,
 	// we have to pretend they're plain String fields without maximum lengths:
 	@Override

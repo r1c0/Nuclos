@@ -1542,6 +1542,9 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		}
 	}
 
+	/**
+	 * TODO: Tidy this up (together with {@link #setFrame(MainFrameTab)}.
+	 */
 	@Override
 	protected final void setInternalFrame(MainFrameTab ifrm, boolean addToParent) {
 		super.setInternalFrame(ifrm, addToParent);

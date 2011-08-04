@@ -126,6 +126,7 @@ import org.nuclos.client.ui.multiaction.MultiActionProgressPanel;
 import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
+import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -196,11 +197,34 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	protected static final Logger log = Logger.getLogger(CollectController.class);
 
+	/**
+	 * Key within user preferences under which the List of field names of an entity is stored.
+	 * 
+	 * This is e.g. used to remember the fields/columns in the result panel of an entity.  
+	 */
 	public static final String PREFS_NODE_SELECTEDFIELDS = "selectedFields";
+	
+	/**
+	 * Key within user preferences under which the List of field entities of an entity is stored.
+	 * 
+	 * This is e.g. used to remember the fields/columns in the result panel of an entity. The entity 
+	 * could be different for fields from subforms and pivot subforms.
+	 */
+	public static final String PREFS_NODE_SELECTEDFIELDENTITIES = "selectedFieldEntities";
+	
+	/**
+	 * Key within user preferences under which the List of XML representations of a field of an entity is stored.
+	 * 
+	 * The sequence is the same as for PREFS_NODE_SELECTEDFIELDENTITIES. For backward compatibility, if this 
+	 * list is missing, CollectableEntityFieldWithEntityForExternal is assumed for all field entities. 
+	 * 
+	 * @see org.nuclos.client.genericobject.GenericObjectClientUtils.getCollectableEntityFieldForResult(CollectableEntity, String, CollectableEntity)
+	 */
+	public static final String PREFS_NODE_SELECTEDFIELDBEANS = "selectedFieldBeans";
+	
 	public static final String PREFS_NODE_SELECTEDFIELDWIDTHS = "selectedFieldWidths";
 	public static final String PREFS_NODE_ORDERBYSELECTEDFIELD = "orderBySelectedField";
 	public static final String PREFS_NODE_ORDERASCENDING = "orderAscending";
-	public static final String PREFS_NODE_SELECTEDFIELDENTITIES = "selectedFieldEntities";
 
 	/**
 	 * the parent component for this controller
@@ -3674,8 +3698,15 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 	}
 
-	public MainFrameTab getFrame() {
-		return this.ifrm;
+	public final MainFrameTab getFrame() {
+		return ifrm;
+	}
+	
+	/**
+	 * TODO: Tidy this up (together with {@link #setInternalFrame(MainFrameTab, boolean)}.
+	 */
+	protected final void setFrame(MainFrameTab ifrm) {
+		this.ifrm = ifrm;
 	}
 
 	@Override

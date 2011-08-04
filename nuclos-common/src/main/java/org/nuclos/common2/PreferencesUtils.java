@@ -21,6 +21,8 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.beans.PropertyVetoException;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -79,6 +81,8 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 public class PreferencesUtils {
 
 	private static final Logger log = Logger.getLogger(PreferencesUtils.class);
+	
+	private static final String ENCODING = "UTF-8";
 
 	/**
 	 * the preferences key to store the size of the array (number of elements)
@@ -627,7 +631,7 @@ public class PreferencesUtils {
 	 * @return
 	 * @throws PreferencesException
 	 * @postcondition result != null
-	 * deprecated Don't serialize objects to the preferences!
+	 * @deprecated Don't serialize objects to the preferences!
 	 */
 	public static List<?> getSerializableList(Preferences prefs, String sNode) throws PreferencesException {
 		return getGenericList(prefs, sNode, new SerializablePreferencesIO());
@@ -642,8 +646,19 @@ public class PreferencesUtils {
 	 * @param list   the list to put
 	 * @throws PreferencesException
 	 */
-	public static void putSerializableListXML(Preferences prefs, String key, List<?> list) throws PreferencesException {
-		new XMLSerializationIO(key).put(prefs, list);
+	public static <T> void putSerializableListXML(Preferences prefs, String key, List<? extends T> list) throws PreferencesException {
+		// new XMLSerializationIO(key).put(prefs, list);
+		if (list == null) {
+			throw new NullPointerException("list");
+		}
+		final int length = list.size();
+		prefs = getEmptyNode(prefs, key);
+		prefs.putInt(PREFS_KEY_LIST_SIZE, length);
+		final Iterator<? extends T> it = list.iterator();
+		for (int i = 0; i < length; ++i) {
+			// use a separate node for each element:
+			putSerializableObjectXML(prefs, String.valueOf(i), it.next());
+		}
 	}
 
 	public static Object getSerializableObject(Preferences prefs, String key) throws PreferencesException {
@@ -654,6 +669,10 @@ public class PreferencesUtils {
 		new XMLSerializationIO(key).put(prefs, o);
 	}
 
+	public static <T> T getSerializableObjectXML(Preferences prefs, String key) throws PreferencesException {
+		return (T) new XMLSerializationIO(key).get(prefs);
+	}
+
 	/**
 	 * Matching reader method for putSerializableListXML above.
 	 * @param prefs   the prefs object
@@ -662,11 +681,28 @@ public class PreferencesUtils {
 	 *
 	 * @throws PreferencesException
 	 */
-	public static List<?> getSerializableListXML(Preferences prefs, String key) throws PreferencesException {
+	public static <T> List<? extends T> getSerializableListXML(Preferences prefs, String key) throws PreferencesException {
+		/*
 		Object o = new XMLSerializationIO(key).get(prefs);
-		if(o != null && o instanceof List<?>)
-			return (List<?>) o;
+		if(o != null && o instanceof List)
+			return (List<T>) o;
 		return null;
+		 */
+		final ArrayList<T> result = new ArrayList<T>();
+
+		if (nodeExists(prefs, key)) {
+			prefs = prefs.node(key);
+			final int iSize = prefs.getInt(PREFS_KEY_LIST_SIZE, -1);
+			if (iSize >= 0) {
+				result.ensureCapacity(iSize);
+				for (int i = 0; i < iSize; ++i) {
+					// use a separate node for each element:
+					result.add((T) getSerializableObjectXML(prefs, String.valueOf(i)));
+				}
+			}
+		}
+
+		return result;		
 	}
 
 
@@ -929,5 +965,84 @@ public class PreferencesUtils {
 		splitpn.setDividerLocation(prefs.getInt(PREFS_KEY_DIVIDER_LOCATION, splitpn.getDividerLocation()));
 		splitpn.setLastDividerLocation(prefs.getInt(PREFS_KEY_LAST_DIVIDER_LOCATION, splitpn.getLastDividerLocation()));
 	}
+	
+	public static void putBean(Preferences pref, String node, Object o) throws PreferencesException {
+		pref = getEmptyNode(pref, node);
+		final ByteArrayOutputStream out = new ByteArrayOutputStream();
+		final XMLEncoder enc = new XMLEncoder(out);
+		try {
+			enc.writeObject(o);
+		}
+		finally {
+			try {
+				out.close();
+			} catch (IOException e) {
+				throw new PreferencesException(e.toString());
+			}
+		}
+		try {
+			pref.put(node, out.toString(ENCODING));
+		} catch (UnsupportedEncodingException e) {
+			throw new PreferencesException(e.toString());
+		}
+	}
+	
+	public static <T> T getBean(Preferences pref, String node) throws PreferencesException {
+		T result = null;
+		if (nodeExists(pref, node)) {
+			final String s = pref.get(node, null);
+			if (s != null) {
+				ByteArrayInputStream in = null;
+				try {
+					in = new ByteArrayInputStream(s.getBytes(ENCODING));
+					final XMLDecoder dec = new XMLDecoder(in);
+					result = (T) dec.readObject();
+				} catch (UnsupportedEncodingException e) {
+					throw new PreferencesException(e.toString());
+				} finally {
+					if (in != null) {
+						try {
+							in.close();
+						} catch (IOException e) {
+							throw new PreferencesException(e.toString());
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+		
+	public static <T> void putBeanList(Preferences prefs, String sNode, List<? extends T> lst) throws PreferencesException {
+		if (lst == null) {
+			throw new IllegalArgumentException("lst");
+		}
+		final int length = lst.size();
+		prefs = getEmptyNode(prefs, sNode);
+		prefs.putInt(PREFS_KEY_LIST_SIZE, length);
+		final Iterator<? extends T> it = lst.iterator();
+		for (int i = 0; i < length; ++i) {
+			// use a separate node for each element:
+			putBean(prefs, String.valueOf(i), it.next());
+		}
+	}
 
+	public static <T> List<T> getBeanList(Preferences prefs, String sNode) throws PreferencesException {
+		final ArrayList<T> result = new ArrayList<T>();
+
+		if (nodeExists(prefs, sNode)) {
+			prefs = prefs.node(sNode);
+			final int iSize = prefs.getInt(PREFS_KEY_LIST_SIZE, -1);
+			if (iSize >= 0) {
+				result.ensureCapacity(iSize);
+				for (int i = 0; i < iSize; ++i) {
+					// use a separate node for each element:
+					result.add((T) getBean(prefs, String.valueOf(i)));
+				}
+			}
+		}
+
+		return result;
+	}
+	
 }  // class PreferencesUtils

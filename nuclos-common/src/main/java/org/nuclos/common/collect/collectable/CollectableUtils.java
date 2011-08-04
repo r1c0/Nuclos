@@ -225,6 +225,8 @@ public class CollectableUtils {
 	/**
 	 * @param collclctef Collection<CollectableEntityField>
 	 * @return List<String> the field names from the <code>CollectableEntityField</code>s.
+	 * 
+	 * @deprecated Not really usefull. Use transform directly.
 	 */
 	public static List<String> getFieldNamesFromCollectableEntityFields(Collection<? extends CollectableEntityField> collclctef) {
 		return CollectionUtils.transform(collclctef, new CollectableEntityField.GetName());
