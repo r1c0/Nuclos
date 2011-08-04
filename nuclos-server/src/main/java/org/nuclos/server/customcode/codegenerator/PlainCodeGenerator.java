@@ -49,7 +49,7 @@ public class PlainCodeGenerator implements CodeGenerator {
 	@Override
 	public int hashCode() {
 		HashCodeBuilder builder = new HashCodeBuilder(17, 37);
-		builder.append(valueobject.getName());
+		builder.append(valueobject.getId());
 		builder.append(valueobject.getVersion());
 		return builder.toHashCode();
 	}
@@ -61,7 +61,7 @@ public class PlainCodeGenerator implements CodeGenerator {
 		}
 		else {
 			PlainCodeGenerator other = (PlainCodeGenerator) obj;
-			if (LangUtils.compare(this.valueobject.getName(), other.valueobject.getName()) == 0) {
+			if (LangUtils.compare(this.valueobject.getId(), other.valueobject.getId()) == 0) {
 				return LangUtils.compare(this.valueobject.getVersion(), other.valueobject.getVersion()) == 0;
 			}
 			else {

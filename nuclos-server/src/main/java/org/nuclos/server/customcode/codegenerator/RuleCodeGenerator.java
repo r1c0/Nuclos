@@ -114,7 +114,8 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 	@Override
 	public int hashCode() {
 		HashCodeBuilder builder = new HashCodeBuilder(17, 37);
-		builder.append(ruleVO.getName());
+		builder.append(type.qualifier);
+		builder.append(ruleVO.getId());
 		builder.append(ruleVO.getVersion());
 		return builder.toHashCode();
 	}
@@ -126,12 +127,12 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 		}
 		else {
 			RuleCodeGenerator<?> other = (RuleCodeGenerator<?>) obj;
-			if (LangUtils.compare(this.ruleVO.getName(), other.ruleVO.getName()) == 0) {
-				return LangUtils.compare(this.ruleVO.getVersion(), other.ruleVO.getVersion()) == 0;
+			if (LangUtils.compare(this.type.qualifier, other.type.qualifier) == 0) {
+				if (LangUtils.compare(this.ruleVO.getId(), other.ruleVO.getId()) == 0) {
+					return LangUtils.compare(this.ruleVO.getVersion(), other.ruleVO.getVersion()) == 0;
+				}
 			}
-			else {
-				return false;
-			}
+			return false;
 		}
 	}
 

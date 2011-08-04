@@ -48,7 +48,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 	public static final String DEFAULT_PACKAGE_WEBSERVICES = "org.nuclos.webservices";
 
 	private final MasterDataVO webservice;
-	
+
 	private List<JavaSourceAsString> sourcefiles;
 
 	public WsdlCodeGenerator(MasterDataVO webservice) {
@@ -60,7 +60,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 		if (sourcefiles == null) {
 			try {
 				ClassLoader classloader = new AxisCodeGenerationClassLoader(WsdlCodeGenerator.class.getClassLoader());
-	
+
 				GenericObjectDocumentFile gofile = this.webservice.getField("wsdl", GenericObjectDocumentFile.class);
 				File wsdl = new File(getWsdlDir(), gofile.getFilename());
 				if (wsdl.exists()) {
@@ -70,9 +70,9 @@ public class WsdlCodeGenerator implements CodeGenerator {
 				FileOutputStream outstream = new FileOutputStream(wsdl);
 				outstream.write(gofile.getContents());
 				outstream.close();
-	
+
 				String packagename = DEFAULT_PACKAGE_WEBSERVICES + "." +  WsdlCodeGenerator.getServiceName(webservice.getField("name", String.class));
-	
+
 				File generatedSourceFolder =  new File(NuclosJavaCompiler.getOutputPath(), "src/" + packagename.replaceAll("\\.", "/"));
 				// cleanup
 				if (generatedSourceFolder.exists()) {
@@ -88,18 +88,18 @@ public class WsdlCodeGenerator implements CodeGenerator {
 					for (File generatedSourcefile : generatedSourcefiles)
 						generatedSourcefile.delete();
 				}
-	
+
 				Class<?> clzzOptionParser = classloader.loadClass("org.apache.axis2.util.CommandLineOptionParser");
 				Class<?> clzzEngine = classloader.loadClass("org.apache.axis2.wsdl.codegen.CodeGenerationEngine");
 				String[] args = new String[]{"-uri", wsdl.getAbsolutePath(),
 					"-o", NuclosJavaCompiler.getOutputPath().getAbsolutePath(),
 					"-p", packagename,
 					};
-	
+
 				Object optionParser = clzzOptionParser.getConstructor(new Class[]{String[].class}).newInstance(new Object[]{args});
 				Object engine = clzzEngine.getConstructor(clzzOptionParser).newInstance(optionParser);
 				clzzEngine.getMethod("generate").invoke(engine);
-	
+
 				File[] sourceFiles = generatedSourceFolder.listFiles(new FileFilter() {
 					@Override
 					public boolean accept(File arg0) {
@@ -109,7 +109,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 							return false;
 					}
 				});
-	
+
 				List<JavaSourceAsString> result = new ArrayList<JavaSourceAsString>();
 				for (File sourcefile : sourceFiles) {
 					String name = packagename + "." + sourcefile.getName().substring(0, sourcefile.getName().lastIndexOf('.'));
@@ -150,7 +150,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 	@Override
 	public int hashCode() {
 		HashCodeBuilder builder = new HashCodeBuilder(17, 37);
-		builder.append(webservice.getField("name", String.class));
+		builder.append(webservice.getId());
 		builder.append(webservice.getVersion());
 		return builder.toHashCode();
 	}
@@ -162,7 +162,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 		}
 		else {
 			WsdlCodeGenerator other = (WsdlCodeGenerator) obj;
-			if (LangUtils.compare(this.webservice.getField("name", String.class), other.webservice.getField("name", String.class)) == 0) {
+			if (LangUtils.compare(this.webservice.getId(), other.webservice.getId()) == 0) {
 				return LangUtils.compare(this.webservice.getVersion(), other.webservice.getVersion()) == 0;
 			}
 			else {
