@@ -1728,7 +1728,7 @@ public class MainController {
 							getNotificationDialog().addMessage(new RuleNotification(Priority.HIGH, CommonLocaleDelegate.getMessage("MainController.19","Der Client wird auf Anweisung des Administrators in 10 Sekunden beendet."), "Administrator"));
 							getNotificationDialog().setVisible(true);
 
-							new Thread(new Runnable() {
+							SwingUtilities.invokeLater(new Runnable() {
 								@Override
 								public void run() {
 									try {
@@ -1741,7 +1741,7 @@ public class MainController {
 										MainController.this.cmdExit();
 									}
 								}
-							}).run();
+							});
 							break;
 					}
 				} else if(objMessage.getClass().equals(CommandInformationMessage.class)) {

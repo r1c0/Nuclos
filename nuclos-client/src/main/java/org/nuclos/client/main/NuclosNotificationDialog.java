@@ -72,7 +72,7 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 public class NuclosNotificationDialog extends JDialog {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final String COL_PRIORITY = CommonLocaleDelegate.getMessage("NuclosNotificationDialog.6","Priorit\u00e4t");
@@ -105,7 +105,7 @@ public class NuclosNotificationDialog extends JDialog {
 
 	private final DefaultTableModel tblmodel = new DefaultTableModel(asHeaders, 0) {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -362,7 +362,7 @@ public class NuclosNotificationDialog extends JDialog {
 
 	@Override
 	public void setVisible(boolean b) {
-		//setLocationRelativeTo(parentMdi);
+		setLocationRelativeTo(parentMdi);
 		super.setVisible(b);
 	}
 }	// class NuclosNotificationDialog

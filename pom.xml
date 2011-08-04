@@ -8,8 +8,14 @@
 	<version>3.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>nuclos</name>
+	<name>Nuclos</name>
 	<url>http://www.nuclos.de/</url>
+	<description>Nuclos ERP-Baukasten.</description>
+
+	<issueManagement>
+		<system>Jira</system>
+		<url>http://support.novabit.de/browse/NUCLOS</url>
+	</issueManagement>
 
 	<properties>
 		<nuclos.version.date>15.06.2011</nuclos.version.date>
@@ -23,7 +29,6 @@
 		<module>nuclos-client-synthetica</module>
 		<module>nuclos-war</module>
 		<module>nuclos-installer</module>
-		<!-- module>nuclos-tools</module-->
 	</modules>
 
 	<build>
@@ -53,6 +58,39 @@
 		</plugins>
 	</build>
 
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.8</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>2.3</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-changes-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<onlyCurrentVersion>true</onlyCurrentVersion>
+					<sortColumnNames>Id DESC</sortColumnNames>
+					<jiraUser></jiraUser>
+					<jiraPassword></jiraPassword>
+				</configuration>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>jira-report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
+
 	<repositories>
 		<repository>
 			<id>public.maven.novabit.de</id>
@@ -65,6 +103,10 @@
 	</repositories>
 
 	<distributionManagement>
+		<site>
+			<id>www.nuclos.de</id>
+			<url>scp://www.nuclos.de/www/docs/project/</url>
+		</site>
 		<repository>
 			<id>releases.maven.novabit.de</id>
 			<url>http://maven.nuclos.de/content/repositories/releases/</url>
