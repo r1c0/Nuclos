@@ -225,7 +225,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				add(combo, c);
 				
 				subformNames.add(subform);
-				state.put(subform, null);
+				// state.put(subform, null);
 				
 				++index;
 			}
@@ -284,9 +284,6 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			}
 		}
 		
-		public JCheckBox getCheckbox() {
-			return checkbox;
-		}
 	}
 	
 	public PivotPanel(Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields, Map<String,PivotInfo> state) {

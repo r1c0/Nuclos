@@ -198,16 +198,6 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	}
 
 	/**
-	 * @deprecated Move this to ResultController or remove it.
-	 */
-	@SuppressWarnings("unchecked")
-	protected void writeSelectedFieldsToPreferences(List<? extends CollectableEntityField> lstclctefweSelected) throws PreferencesException {
-		getResultController().writeSelectedFieldsToPreferences(lstclctefweSelected);
-		NuclosResultPanel<Collectable> r = (NuclosResultPanel<Collectable>) getResultPanel();
-		PreferencesUtils.putStringList(getPreferences(), NuclosResultPanel.PREFS_NODE_FIXEDFIELDS, CollectableUtils.getFieldNamesFromCollectableEntityFields(r.getFixedColumns()));
-	}
-
-	/**
 	 * creates a searchable subform ctl for each subform. If the subform is disabled, the controller will be disabled.
 	 * @param mpSubForms
 	 */

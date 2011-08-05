@@ -610,11 +610,11 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 		return result;
 	}
 
-	public Set<CollectableEntityField> getFixedColumns() {
+	public final Set<CollectableEntityField> getFixedColumns() {
 		return stFixedColumns;
 	}
 
-	public void setFixedColumns(Set<CollectableEntityField> stFixedColumns) {
+	public final void setFixedColumns(Set<CollectableEntityField> stFixedColumns) {
 		this.stFixedColumns = stFixedColumns;
 	}
 	

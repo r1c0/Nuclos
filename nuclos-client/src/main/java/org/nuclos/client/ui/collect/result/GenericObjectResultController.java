@@ -225,7 +225,6 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 				getGenericObjectCollectController().getPreferences(), 
 				// CollectionUtils.typecheck(lstclctefweSelected, CollectableEntityFieldWithEntity.class), 
 				CollectionUtils.typecheck(lstclctefweSelected, CollectableEntityField.class));
-		// TODO: Is this call to super really needed?
 		super.writeSelectedFieldsToPreferences(lstclctefweSelected);
 	}
 

@@ -55,6 +55,7 @@ import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
@@ -497,6 +498,13 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 				CollectableTableHelper.getColumnWidths(panel.getFixedResultTable()));
 	}
 
+	@Override
+	public void writeSelectedFieldsToPreferences(List<? extends CollectableEntityField> lstclctefweSelected) throws PreferencesException {
+		super.writeSelectedFieldsToPreferences(lstclctefweSelected);
+		PreferencesUtils.putStringList(getCollectController().getPreferences(), NuclosResultPanel.PREFS_NODE_FIXEDFIELDS, 
+				CollectableUtils.getFieldNamesFromCollectableEntityFields(getNuclosResultPanel().getFixedColumns()));
+	}
+	
 	private NuclosResultPanel<Clct> getNuclosResultPanel() {
 		return (NuclosResultPanel<Clct>) getCollectController().getResultPanel();
 	}
