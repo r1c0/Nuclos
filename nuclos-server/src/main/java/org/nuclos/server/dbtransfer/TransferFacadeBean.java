@@ -171,12 +171,12 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		INucletContent importFileNC = new ImportFileNucletContent(contents);
 		INucletContent importUsageNC = new DefaultNucletContent(NuclosEntity.IMPORTUSAGE, NuclosEntity.IMPORTFILE, contents, true);
 		if (transferOptions.containsKey(TransferOption.IS_NUCLOS_INSTANCE)) {
-			userNC.setEnabled(transferOptions.containsKey(TransferOption.IMPORT_USER));
-			workspaceNC.setEnabled(transferOptions.containsKey(TransferOption.IMPORT_USER));
-			ldapServerNC.setEnabled(transferOptions.containsKey(TransferOption.IMPORT_LDAP));
-			ldapMappingNC.setEnabled(transferOptions.containsKey(TransferOption.IMPORT_LDAP));
-			importFileNC.setEnabled(transferOptions.containsKey(TransferOption.IMPORT_IMPORTFILE));
-			importUsageNC.setEnabled(transferOptions.containsKey(TransferOption.IMPORT_IMPORTFILE));
+			userNC.setEnabled(transferOptions.containsKey(TransferOption.INCLUDES_USER));
+			workspaceNC.setEnabled(transferOptions.containsKey(TransferOption.INCLUDES_USER));
+			ldapServerNC.setEnabled(transferOptions.containsKey(TransferOption.INCLUDES_LDAP));
+			ldapMappingNC.setEnabled(transferOptions.containsKey(TransferOption.INCLUDES_LDAP));
+			importFileNC.setEnabled(transferOptions.containsKey(TransferOption.INCLUDES_IMPORTFILE));
+			importUsageNC.setEnabled(transferOptions.containsKey(TransferOption.INCLUDES_IMPORTFILE));
 		} else {
 			userNC.setEnabled(false);
 			workspaceNC.setEnabled(false);

@@ -381,37 +381,39 @@ public abstract class AbstractNucletContent implements INucletContent {
 
 		@SuppressWarnings("unchecked")
 		Map<LocaleInfo, Map<String, String>> localeResources = (Map<LocaleInfo, Map<String, String>>) ncObject.getFields().get(LOCALE_RESOURCE_MAPPING_FIELD_NAME);
-		Map<String, String> newResourceIds = new HashMap<String, String>();
-		for (LocaleInfo localeInfo : localeResources.keySet()) {
-			for (String resourceField : localeResources.get(localeInfo).keySet()) {
-				String text = localeResources.get(localeInfo).get(resourceField);
-				if (text != null) {
-					if (ncObject.isFlagNew()) {
-						// create new resource
-						String resourceId = newResourceIds.get(resourceField);
-						resourceId = localeFacade.insert(resourceId, localeInfo, text);
-						newResourceIds.put(resourceField, resourceId);
-						ncObject.getFields().put(resourceField, resourceId);
-					} else if (ncObject.isFlagUpdated()) {
-						// read resourceid from existing object and update it
-						EntityObjectVO existingObject = NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getByPrimaryKey(ncObject.getId());
-						String resourceId = existingObject.getField(resourceField, String.class);
-						if (resourceId != null) {
-							if (localeFacade.getResourceById(localeInfo, resourceId) == null) {
-								localeFacade.insert(resourceId, localeInfo, text);
-							} else {
-								localeFacade.update(resourceId, localeInfo, text);
-							}
-							
-						} else {
-							resourceId = newResourceIds.get(resourceField);
+		if (localeResources != null) {
+			Map<String, String> newResourceIds = new HashMap<String, String>();
+			for (LocaleInfo localeInfo : localeResources.keySet()) {
+				for (String resourceField : localeResources.get(localeInfo).keySet()) {
+					String text = localeResources.get(localeInfo).get(resourceField);
+					if (text != null) {
+						if (ncObject.isFlagNew()) {
+							// create new resource
+							String resourceId = newResourceIds.get(resourceField);
 							resourceId = localeFacade.insert(resourceId, localeInfo, text);
 							newResourceIds.put(resourceField, resourceId);
+							ncObject.getFields().put(resourceField, resourceId);
+						} else if (ncObject.isFlagUpdated()) {
+							// read resourceid from existing object and update it
+							EntityObjectVO existingObject = NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getByPrimaryKey(ncObject.getId());
+							String resourceId = existingObject.getField(resourceField, String.class);
+							if (resourceId != null) {
+								if (localeFacade.getResourceById(localeInfo, resourceId) == null) {
+									localeFacade.insert(resourceId, localeInfo, text);
+								} else {
+									localeFacade.update(resourceId, localeInfo, text);
+								}
+								
+							} else {
+								resourceId = newResourceIds.get(resourceField);
+								resourceId = localeFacade.insert(resourceId, localeInfo, text);
+								newResourceIds.put(resourceField, resourceId);
+							}
+							ncObject.getFields().put(resourceField, resourceId);
 						}
-						ncObject.getFields().put(resourceField, resourceId);
 					}
 				}
-			}
+		}
 		}
 	}
 
