@@ -113,7 +113,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 				subFormFields.put(subform, map);
 			}
 			
-			return new PivotController(parent, new PivotPanel(subFormFields), this);
+			return new PivotController(parent, new PivotPanel(subFormFields, pivots), this);
 		}
 		else {
 			return super.newSelectColumnsController(parent);
@@ -196,8 +196,21 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	@Override
 	protected List<? extends CollectableEntityField> readSelectedFieldsFromPreferences(CollectableEntity clcte) {
 		assert getEntity().equals(clcte);
-		return GenericObjectClientUtils.readCollectableEntityFieldsFromPreferences(
+		final List<? extends CollectableEntityField>  result = GenericObjectClientUtils.readCollectableEntityFieldsFromPreferences(
 				getGenericObjectCollectController().getPreferences(), clcte);
+		
+		// recover pivots state
+		for (CollectableEntityField f: result) {
+			if (f instanceof CollectableEOEntityField) {
+				final CollectableEOEntityField field = (CollectableEOEntityField) f;
+				final PivotInfo pinfo = field.getMeta().getPivotInfo();
+				if (pinfo != null) {
+					pivots.put(pinfo.getSubform(), pinfo);
+				}
+			}
+		}
+			
+		return result;
 	}
 
 	/**

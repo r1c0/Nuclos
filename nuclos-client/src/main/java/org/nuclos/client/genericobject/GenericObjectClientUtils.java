@@ -100,52 +100,51 @@ public class GenericObjectClientUtils {
 					it.remove();
 				}
 			}
-			return result;
 		}
-		
-		// old implementation
-		List<String> lstSelectedFieldNames;
-		List<String> lstSelectedEntityNames;
-		try {
-			lstSelectedFieldNames = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS);
-			lstSelectedEntityNames = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES);
-		}
-		catch (PreferencesException ex) {
-			LOG.error("Die selektierten Felder konnten nicht aus den Preferences geladen werden.", ex);
-			lstSelectedFieldNames = new ArrayList<String>();
-			lstSelectedEntityNames = new ArrayList<String>();
-			// no exception is thrown here.
-		}
-		assert lstSelectedFieldNames != null;
-		assert lstSelectedEntityNames != null;
-
-		// ensure backwards compatibility:
-		if (lstSelectedEntityNames.isEmpty() && !lstSelectedFieldNames.isEmpty()) {
-			lstSelectedEntityNames = Arrays.asList(new String[lstSelectedFieldNames.size()]);
-			assert lstSelectedEntityNames.size() == lstSelectedFieldNames.size();
-		}
-
-		if (lstSelectedFieldNames.size() != lstSelectedEntityNames.size()) {
-			LOG.warn("Die Listen der selektierten Felder und ihrer Entit\u00e4ten stimmen nicht \u00fcberein.");
-			lstSelectedFieldNames = new ArrayList<String>();
-			lstSelectedEntityNames = new ArrayList<String>();
-		}
-
-		result = new ArrayList<CollectableEntityField>();
-		final CollectableEntityProvider clcteprovider = DefaultCollectableEntityProvider.getInstance();
-		for (int i = 0; i < lstSelectedFieldNames.size(); i++) {
-			final String sFieldName = lstSelectedFieldNames.get(i);
-			final String sEntityName = lstSelectedEntityNames.get(i);
+		// old implementation (for backward compatibility)
+		else {
+			List<String> lstSelectedFieldNames;
+			List<String> lstSelectedEntityNames;
 			try {
-				final CollectableEntity clcteForField = (sEntityName == null) ? clcte : clcteprovider.getCollectableEntity(sEntityName);
-				result.add(getCollectableEntityFieldForResult(clcteForField, sFieldName, clcte));
+				lstSelectedFieldNames = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS);
+				lstSelectedEntityNames = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES);
 			}
-			catch (Exception ex) {
-				// ignore unknown fields
-				LOG.warn("Ein Feld mit dem Namen \"" + sFieldName + "\" ist nicht in der Entit\u00e4t " + clcte.getName() + " enthalten.", ex);
+			catch (PreferencesException ex) {
+				LOG.error("Die selektierten Felder konnten nicht aus den Preferences geladen werden.", ex);
+				lstSelectedFieldNames = new ArrayList<String>();
+				lstSelectedEntityNames = new ArrayList<String>();
+				// no exception is thrown here.
+			}
+			assert lstSelectedFieldNames != null;
+			assert lstSelectedEntityNames != null;
+	
+			// ensure backwards compatibility:
+			if (lstSelectedEntityNames.isEmpty() && !lstSelectedFieldNames.isEmpty()) {
+				lstSelectedEntityNames = Arrays.asList(new String[lstSelectedFieldNames.size()]);
+				assert lstSelectedEntityNames.size() == lstSelectedFieldNames.size();
+			}
+	
+			if (lstSelectedFieldNames.size() != lstSelectedEntityNames.size()) {
+				LOG.warn("Die Listen der selektierten Felder und ihrer Entit\u00e4ten stimmen nicht \u00fcberein.");
+				lstSelectedFieldNames = new ArrayList<String>();
+				lstSelectedEntityNames = new ArrayList<String>();
+			}
+	
+			result = new ArrayList<CollectableEntityField>();
+			final CollectableEntityProvider clcteprovider = DefaultCollectableEntityProvider.getInstance();
+			for (int i = 0; i < lstSelectedFieldNames.size(); i++) {
+				final String sFieldName = lstSelectedFieldNames.get(i);
+				final String sEntityName = lstSelectedEntityNames.get(i);
+				try {
+					final CollectableEntity clcteForField = (sEntityName == null) ? clcte : clcteprovider.getCollectableEntity(sEntityName);
+					result.add(getCollectableEntityFieldForResult(clcteForField, sFieldName, clcte));
+				}
+				catch (Exception ex) {
+					// ignore unknown fields
+					LOG.warn("Ein Feld mit dem Namen \"" + sFieldName + "\" ist nicht in der Entit\u00e4t " + clcte.getName() + " enthalten.", ex);
+				}
 			}
 		}
-
 		return result;
 	}
 

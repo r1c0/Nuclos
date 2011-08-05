@@ -113,14 +113,17 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 		
 		private final List<JComboBox> valueCombos = new ArrayList<JComboBox>();
 		
-		private final LinkedHashMap<String, PivotInfo> state = new LinkedHashMap<String, PivotInfo>();
+		private final LinkedHashMap<String, PivotInfo> state;
 		
 		private final List<String> subformNames = new ArrayList<String>();
 		
 		private final List<ItemListener> listener = new LinkedList<ItemListener>();
 		
-		private Header(Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields) {
-			super(new GridBagLayout());			
+		private Header(Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields, Map<String,PivotInfo> state) {
+			super(new GridBagLayout());
+			// copy state: see below
+			this.state = new LinkedHashMap<String, PivotInfo>();
+			
 			// setPreferredSize(new Dimension(400, 200));
 			final GridBagConstraints c = new GridBagConstraints();
 			c.fill = GridBagConstraints.HORIZONTAL;
@@ -156,7 +159,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			setVisible(true);
 			checkbox.setVisible(true);
 			checkbox.setEnabled(true);
-			checkbox.setSelected(false);
+			checkbox.setSelected(!state.isEmpty());
 			
 			// label
 			JLabel label = new JLabel("pivot entity");
@@ -179,27 +182,43 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			c.ipadx = 3;
 			c.ipady = 1;
 			// c.weightx = 0.0;
+			
 			for (String subform: subFormFields.keySet()) {
 				final Map<String, EntityFieldMetaDataVO> fields = subFormFields.get(subform);
 				
+				// copy state
+				PivotInfo pinfo = state.get(subform);
+				if (pinfo != null) {
+					this.state.put(subform, pinfo);
+				}
+				final boolean enabled = this.state.containsKey(subform);
+								
 				final JCheckBox cb = new JCheckBox(subform);
+				cb.setSelected(enabled);
 				cb.addItemListener(new Enabler(index));
 				subformCbs.add(cb);
 				c.gridy = index + 2;
 				c.gridx = 0;
 				add(cb, c);
 				cb.setVisible(true);
-				cb.setEnabled(false);
-				cb.setSelected(false);				
+				cb.setEnabled(checkbox.isSelected() && enabled);
 				
 				final Changer changer = new Changer(index);
 				JComboBox combo = mkComboForStringFields(fields);
+				combo.setEnabled(enabled);
+				if (pinfo != null) {
+					combo.setSelectedItem(fields.get(pinfo.getKeyField()));
+				}
 				combo.addItemListener(changer);
 				keyCombos.add(combo);
 				c.gridx = 1;
 				add(combo, c);
 				
 				combo = mkCombo(fields);
+				combo.setEnabled(enabled);
+				if (pinfo != null) {
+					combo.setSelectedItem(fields.get(pinfo.getValueField()));
+				}
 				combo.addItemListener(changer);
 				valueCombos.add(combo);
 				c.gridx = 2;
@@ -223,7 +242,6 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			final JComboBox result = new JComboBox(model);
 			result.setRenderer(new EntityFieldMetaDataListCellRenderer(model));
 			result.setVisible(true);
-			result.setEnabled(false);
 			result.setSelectedIndex(0);
 			return result;
 		}
@@ -233,7 +251,6 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			final JComboBox result = new JComboBox(model);
 			result.setRenderer(new EntityFieldMetaDataListCellRenderer(model));
 			result.setVisible(true);
-			result.setEnabled(false);
 			result.setSelectedIndex(0);
 			return result;
 		}
@@ -272,8 +289,8 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 		}
 	}
 	
-	public PivotPanel(Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields) {
-		super(new Header(subFormFields));		
+	public PivotPanel(Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields, Map<String,PivotInfo> state) {
+		super(new Header(subFormFields, state));		
 	}
 	
 	public void addPivotItemListener(ItemListener l) {
