@@ -36,11 +36,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.ui.model.SimpleCollectionComboBoxModel;
 import org.nuclos.client.ui.renderer.EntityFieldMetaDataListCellRenderer;
 import org.nuclos.common.CloneUtils;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
+import org.nuclos.common2.CommonLocaleDelegate;
 
 
 /**
@@ -128,7 +131,8 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			final GridBagConstraints c = new GridBagConstraints();
 			c.fill = GridBagConstraints.HORIZONTAL;
 			
-			checkbox = new JCheckBox("use some subforms as pivot tables in result list");
+			checkbox = new JCheckBox(
+					CommonLocaleDelegate.getMessageFromResource("pivot.panel.enable.pivot"));
 			checkbox.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -162,16 +166,19 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			checkbox.setSelected(!state.isEmpty());
 			
 			// label
-			JLabel label = new JLabel("pivot entity");
+			JLabel label = new JLabel(
+					CommonLocaleDelegate.getMessageFromResource("pivot.panel.pivot.entity"));
 			c.gridy = 1;
 			c.gridx = 0;
 			c.weightx = 0.2;
 			add(label, c);
-			label = new JLabel("key column");
+			label = new JLabel(
+					CommonLocaleDelegate.getMessageFromResource("pivot.panel.key.field"));
 			c.gridx = 1;
 			c.weightx = 0.2;
 			add(label, c);
-			label = new JLabel("value column");
+			label = new JLabel(
+					CommonLocaleDelegate.getMessageFromResource("pivot.panel.value.field"));
 			c.gridx = 2;
 			c.weightx = 0.2;
 			add(label, c);			
@@ -183,6 +190,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			c.ipady = 1;
 			// c.weightx = 0.0;
 			
+			final MetaDataClientProvider mdProv = MetaDataClientProvider.getInstance();
 			for (String subform: subFormFields.keySet()) {
 				final Map<String, EntityFieldMetaDataVO> fields = subFormFields.get(subform);
 				
@@ -192,8 +200,9 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 					this.state.put(subform, pinfo);
 				}
 				final boolean enabled = this.state.containsKey(subform);
-								
-				final JCheckBox cb = new JCheckBox(subform);
+					
+				final EntityMetaDataVO mdSubform = mdProv.getEntity(subform);
+				final JCheckBox cb = new JCheckBox(CommonLocaleDelegate.getLabelFromMetaDataVO(mdSubform));
 				cb.setSelected(enabled);
 				cb.addItemListener(new Enabler(index));
 				subformCbs.add(cb);
@@ -201,7 +210,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				c.gridx = 0;
 				add(cb, c);
 				cb.setVisible(true);
-				cb.setEnabled(checkbox.isSelected() && enabled);
+				cb.setEnabled(checkbox.isSelected());
 				
 				final Changer changer = new Changer(index);
 				JComboBox combo = mkComboForStringFields(fields);

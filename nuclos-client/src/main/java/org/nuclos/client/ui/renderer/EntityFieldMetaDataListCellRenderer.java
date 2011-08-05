@@ -24,6 +24,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common2.CommonLocaleDelegate;
 
 /**
  * This avoids toString rendering for EntityFieldMetaDataVO lists.
@@ -45,7 +46,7 @@ public class EntityFieldMetaDataListCellRenderer extends JLabel implements ListC
 
 		if (index >= 0 && index < model.getSize()) {
 			final EntityFieldMetaDataVO fieldVo = (EntityFieldMetaDataVO) model.getElementAt(index);
-			setText(fieldVo.getField());
+			setText(CommonLocaleDelegate.getLabelFromMetaFieldDataVO(fieldVo));
 		}
         return this;
 	}

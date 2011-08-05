@@ -60682,6 +60682,66 @@
     "resourceID": "treenode.rules.library.description",
     "locale": "de",
     "text": "Bibliotheksregeln"
+  },
+  {
+    "resourceID": "pivot.panel.enable.pivot",
+    "locale": "i-default",
+    "text": "Use some subforms as pivot tables in result list"
+  },
+  {
+    "resourceID": "pivot.panel.enable.pivot",
+    "locale": "en",
+    "text": "Use some subforms as pivot tables in result list"
+  },
+  {
+    "resourceID": "pivot.panel.enable.pivot",
+    "locale": "de",
+    "text": "Stelle Ergebnisfelder aus (Sub-)Pivottabellen dar"
+  },
+  {
+    "resourceID": "pivot.panel.pivot.entity",
+    "locale": "i-default",
+    "text": "Pivot entity"
+  },
+  {
+    "resourceID": "pivot.panel.pivot.entity",
+    "locale": "en",
+    "text": "Pivot entity"
+  },
+  {
+    "resourceID": "pivot.panel.pivot.entity",
+    "locale": "de",
+    "text": "Pivottabelle"
+  },
+  {
+    "resourceID": "pivot.panel.key.field",
+    "locale": "i-default",
+    "text": "Key column"
+  },
+  {
+    "resourceID": "pivot.panel.key.field",
+    "locale": "en",
+    "text": "Key column"
+  },
+  {
+    "resourceID": "pivot.panel.key.field",
+    "locale": "de",
+    "text": "Schlüssel Spalte"
+  },
+  {
+    "resourceID": "pivot.panel.value.field",
+    "locale": "i-default",
+    "text": "Value column"
+  },
+  {
+    "resourceID": "pivot.panel.value.field",
+    "locale": "en",
+    "text": "Value column"
+  },
+  {
+    "resourceID": "pivot.panel.value.field",
+    "locale": "de",
+    "text": "Werte Spalte"
   }
 ]
 
