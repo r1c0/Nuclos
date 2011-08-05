@@ -153,6 +153,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		final EntityMetaDataVO subform = getEntity(info.getSubform());
 		final String subformTable = EntityObjectMetaDbHelper.getTableName(subform);
 		final EntityFieldMetaDataVO keyField = getEntityField(info.getSubform(), info.getKeyField());
+		final EntityFieldMetaDataVO valueField = getEntityField(info.getSubform(), info.getValueField());
 		
 		Map<String, EntityFieldMetaDataVO> result = dataCache.getMapPivotMetaData().get(info);
 		if (result == null) {
@@ -192,7 +193,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 					md.setField(pseudoFieldName);
 					md.setFallbacklabel(info.getSubform() + ":" + info.getKeyField() + ":" + c);
 					md.setNullable(Boolean.TRUE);
-					md.setDataType(c.getClass().getName());
+					md.setDataType(valueField.getDataType());
 					md.setPivotInfo(info);
 					md.setEntityId(subform.getId());
 					

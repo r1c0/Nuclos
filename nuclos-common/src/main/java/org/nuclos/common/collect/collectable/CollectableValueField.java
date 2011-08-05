@@ -36,14 +36,10 @@ import org.nuclos.common.collect.exception.CollectableFieldValidationException;
  */
 
 public class CollectableValueField extends AbstractCollectableField implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	protected final Object oValue;
 
 	public static final CollectableValueField NULL = new CollectableValueField(null);
+
+	protected final Object oValue;
 
 	/**
 	 * @param oValue must be immutable.

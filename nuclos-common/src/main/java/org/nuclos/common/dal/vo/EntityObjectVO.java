@@ -16,8 +16,12 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.dal.vo;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 
@@ -33,6 +37,8 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
  */
 public class EntityObjectVO extends AbstractDalVOWithFields<Object> {
 	
+	private static final Logger LOG = Logger.getLogger(EntityObjectVO.class);
+
 	private String entity;
 	
 	// map for dependant child subform data
@@ -63,6 +69,57 @@ public class EntityObjectVO extends AbstractDalVOWithFields<Object> {
 		vo.getFields().putAll(this.getFields());
 		vo.getFieldIds().putAll(this.getFieldIds());
 		return vo;
+	}
+	
+	@Override
+	public <S> S getRealField(String fieldName) {
+		final S result;
+		if (SystemFields.FIELDS2TYPES_MAP.containsKey(fieldName)) {
+			result = (S) getSystemField(fieldName);
+		}
+		else {
+			result = getField(fieldName);
+		}
+		return result;
+	}
+	
+	@Override
+	public <S> S getRealField(String fieldName, Class<S> cls) {
+		final S value = getRealField(fieldName);
+		try {
+			return cls.cast(value);
+		}
+		catch (ClassCastException e) {
+			LOG.error("On " + this + " field " + fieldName + " value " + value + " expected type " + cls, e);
+			throw e;
+		}
+	}
+	
+	private Object getSystemField(String f) {
+		final Object result;
+		if (SystemFields.CHANCHED_AT.equals(f)) {
+			result = getChangedAt();
+		}
+		else if (SystemFields.CHANCHED_BY.equals(f)) {
+			result = getChangedBy();
+		}
+		else if (SystemFields.CREATED_AT.equals(f)) {
+			result = getCreatedAt();
+		}
+		else if (SystemFields.CREATED_BY.equals(f)) {
+			result = getCreatedBy();
+		}
+		else if (SystemFields.ID.equals(f)) {
+			result = getId();
+		}
+		else if (SystemFields.VERSION.equals(f)) {
+			result = getVersion();
+		}
+		else {
+			throw new IllegalArgumentException(f);
+		}
+		
+		return result;
 	}
 	
 	public static class GetId implements Transformer<EntityObjectVO, Object> {

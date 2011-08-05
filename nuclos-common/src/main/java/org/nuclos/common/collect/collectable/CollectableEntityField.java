@@ -246,6 +246,14 @@ public interface CollectableEntityField {
 	CollectableField getDefault();
 
 	/**
+	 * Formats the value according to the formatOutput value.
+	 * 
+	 * @author Thomas Pasch
+	 * @since Nuclos 3.1.01
+	 */
+	String formatOutput(Object value);
+
+	/**
 	 * @return <code>this.getLabel()</code>
 	 */
 	@Override

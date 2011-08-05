@@ -188,6 +188,11 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	public CollectableField getDefault() {
 		return this.getField().getDefault();
 	}
+	
+	@Override
+	public String formatOutput(Object value) {
+		return getField().formatOutput(value);
+	}
 
 	@Override
 	public String toString() {

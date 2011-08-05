@@ -356,22 +356,6 @@ public class MainController {
 			Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 		}
 
-		Thread theadExplorerController = new Thread() {
-			@Override
-			public void run() {
-				try {
-					log.debug(">>> restore explorer views (for migration only)");
-					ctlExplorer.restoreExplorerViewsFromPreferences();
-				}
-				catch (Exception ex) {
-					final String sMessage = CommonLocaleDelegate.getMessage("MainController.2","Die Fenster der Explorerleiste konnten nicht wiederhergestellt werden.");
-					log.error(sMessage, ex);
-					Errors.getInstance().showExceptionDialog(null, sMessage, ex);
-				}
-			}
-		};
-		theadExplorerController.start();
-
 		Thread theadTaskController = new Thread() {
 			@Override
 			public void run() {

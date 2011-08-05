@@ -1277,11 +1277,26 @@ public class CollectionUtils {
    	return false;
    }
    
+   
+   
    public static <T> List<T> indexedSelection(List<T> in, int ... indices) {
 	   ArrayList<T> res = new ArrayList<T>();
 	   for(int i : indices)
 		   res.add(in.get(i));
 	   return res;
+   }
+   
+   public static StringBuilder join(CharSequence separator, Collection<?> col) {
+	   final StringBuilder result = new StringBuilder();
+	   if (col != null) {
+		   for (Iterator<?> it = col.iterator(); it.hasNext();) {
+			   result.append(it.next());
+			   if (it.hasNext()) {
+				   result.append(separator);
+			   }
+		   }
+	   }
+	   return result;
    }
    
 }	// class CollectionUtils

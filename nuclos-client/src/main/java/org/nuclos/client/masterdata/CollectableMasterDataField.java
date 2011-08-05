@@ -47,6 +47,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 
 public class CollectableMasterDataField extends AbstractCollectableField {
+	
 	private final Object oValue;
 	private final Object oValueId;
 	private final int iFieldType;

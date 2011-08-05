@@ -19,6 +19,7 @@ package org.nuclos.common.collect.collectable;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.nuclos.common2.FormatOutputUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.RelativeDate;
 
@@ -194,6 +195,11 @@ public abstract class AbstractCollectableEntityField implements CollectableEntit
 		return getSecurityAgent().isRemovable();
 	}
 	
+	@Override
+	public String formatOutput(Object value) {
+		return FormatOutputUtils.formatOutput(getFormatOutput(), value);
+	}
+
 	public String toDescription() {
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");

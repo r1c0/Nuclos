@@ -16,7 +16,11 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.dal.vo;
 
+import java.text.DecimalFormat;
+
 import org.apache.commons.lang.StringUtils;
+import org.nuclos.common.collect.collectable.CollectableValueField;
+import org.nuclos.common2.FormatOutputUtils;
 
 
 /**
@@ -370,16 +374,6 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 		this.unreferencedForeignEntityField = unreferencedForeignEntityField;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if(obj instanceof EntityFieldMetaDataVO) {
-			EntityFieldMetaDataVO that = (EntityFieldMetaDataVO)obj;
-			return StringUtils.equals(getField(), that.getField());
-		}
-		else
-			return false;
-	}
-
 	public String getEntityIdAsString() {
 		return entityIdAsString;
 	}
@@ -426,6 +420,20 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 
 	public void setDefaultMandatory(String defaultMandatory) {
 		this.defaultMandatory = defaultMandatory;
+	}
+	
+	public String formatOutput(Object value) {
+		return FormatOutputUtils.formatOutput(getFormatOutput(), value);
+	}
+		
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof EntityFieldMetaDataVO) {
+			EntityFieldMetaDataVO that = (EntityFieldMetaDataVO)obj;
+			return StringUtils.equals(getField(), that.getField());
+		}
+		else
+			return false;
 	}
 	
 	@Override

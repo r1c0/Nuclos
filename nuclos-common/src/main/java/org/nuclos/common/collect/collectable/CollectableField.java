@@ -133,10 +133,10 @@ public interface CollectableField extends Comparable<CollectableField> {
 	 * A representation of CollectableField suited for debugging only.
 	 * 
 	 * @author Thomas Pasch
-	 * @since 3.1.01
+	 * @since Nuclos 3.1.01
 	 */
 	String toDescription();
-
+	
 	/**
 	 * inner class GetValue: transforms a <code>CollectableField</code> into its value.
 	 */

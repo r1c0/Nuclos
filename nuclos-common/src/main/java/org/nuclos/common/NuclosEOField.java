@@ -18,6 +18,9 @@ package org.nuclos.common;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 
+/**
+ * @see org.nuclos.common.dal.vo.SystemFields
+ */
 public enum NuclosEOField implements NuclosEOFieldConstants{
 	STATE(getState(), true),
 	STATENUMBER(getStateNumber(), true),

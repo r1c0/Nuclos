@@ -683,38 +683,6 @@ public class ExplorerController extends Controller {
 	}
 	
 	/**
-	 * ONLY FOR MIGRATION
-	 * @throws PreferencesException
-	 * @throws BackingStoreException 
-	 */
-	@Deprecated
-	public void restoreExplorerViewsFromPreferences() throws PreferencesException, BackingStoreException {
-		List<TreeNode> lstTreeNodeRoot = CollectionUtils.typecheck(PreferencesUtils.getSerializableListXML(prefs, PREFS_NODE_EXPLORERVIEWS_XML), TreeNode.class);
-		if(lstTreeNodeRoot == null) {
-			// old an deprecated method as fallback
-			lstTreeNodeRoot = CollectionUtils.typecheck(PreferencesUtils.getSerializableList(this.prefs, PREFS_NODE_EXPLORERVIEWS), TreeNode.class);
-		}
-		ExplorerView lastView = null;
-		// create tabs:
-		for (TreeNode nodeRoot : lstTreeNodeRoot) {
-			if (nodeRoot.getId() == null && nodeRoot.getIdentifier() == null && nodeRoot.getSubNodes().isEmpty()) {
-				// nullNode stored in preferences
-				continue;
-			}
-			lastView = this.addOrReplaceExplorerViewFor(null, nodeRoot, false, false, true);
-		}
-		
-		if (lastView != null) {
-			MainFrame.setSelectedTab(getTabFor(lastView));
-		}
-		
-		List<String> lstExpandedPaths = PreferencesUtils.getStringList(prefs, PREFS_NODE_EXPLORER_EXPANDEDPATHS);
-		for (final JTree tree : this.getRootTreeNodesWithJTree().values()) {
-			ExplorerNode.expandTreeAsync(lstExpandedPaths, tree);
-		}
-	}
-
-	/**
 	 * creates a new JTree containing the given treenode as root
 	 * @param treenodeRoot
 	 * @return the newly created JTree

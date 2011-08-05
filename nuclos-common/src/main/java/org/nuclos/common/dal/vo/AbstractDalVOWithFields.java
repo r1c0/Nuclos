@@ -21,13 +21,17 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-public class AbstractDalVOWithFields<T> extends AbstractDalVOWithVersion implements IDalWithFieldsVO<T> {
+public abstract class AbstractDalVOWithFields<T> extends AbstractDalVOWithVersion implements IDalWithFieldsVO<T> {
 
 	private static final Logger LOG = Logger.getLogger(AbstractDalVOWithFields.class);
 
 	private Map<String, Long> mapFieldId;
 	
 	private Map<String, T> mapField;
+	
+	protected AbstractDalVOWithFields() {
+		super();
+	}
 	
 	@Override
 	public void initFields(int maxFieldCount, int maxFieldIdCount) {
@@ -56,12 +60,14 @@ public class AbstractDalVOWithFields<T> extends AbstractDalVOWithVersion impleme
 		return this.mapField;
 	}
 
+	@Override
 	public Long getFieldId(String sFieldName) {
 		return this.getFieldIds().get(sFieldName);
 	}
 
+	@Override
 	public <S> S getField(String sFieldName, Class<S> cls) {
-		final T value = getFields().get(sFieldName);
+		final S value = getField(sFieldName);
 		try {
 			return cls.cast(value);
 		}
@@ -70,5 +76,10 @@ public class AbstractDalVOWithFields<T> extends AbstractDalVOWithVersion impleme
 			throw e;
 		}
 	}
-	
+
+	@Override
+	public <S> S getField(String fieldName) {
+		return (S) getFields().get(fieldName);
+	}
+
 }

@@ -131,38 +131,6 @@ public class PreferencesUtils {
 
 	}  // inner interface PreferencesIO
 
-	/**
-	 * PreferencesIO for reading/writing a serializable object from/to the preferences.
-	 * @deprecated Don't serialize objects to the preferences!
-	 */
-	@Deprecated
-	public static class SerializablePreferencesIO implements PreferencesIO<Object> {
-		private final String sKey;
-
-		/**
-		 * This constructor can be used when the key doesn't matter.
-		 */
-		public SerializablePreferencesIO() {
-			this("serializedObject");
-		}
-
-		/**
-		 * @param sKey the key to store the serialized object.
-		 */
-		public SerializablePreferencesIO(String sKey) {
-			this.sKey = sKey;
-		}
-
-		@Override
-		public Object get(Preferences prefs) throws PreferencesException {
-			return PreferencesUtils.getSerializable(prefs, this.sKey);
-		}
-
-		@Override
-		public void put(Preferences prefs, Object o) throws PreferencesException {
-			PreferencesUtils.putSerializable(prefs, this.sKey, o);
-		}
-	}  // inner class SerializablePreferencesIO
 
 	private static class XMLSerializationIO implements PreferencesIO<Object> {
 		private String key;
@@ -173,21 +141,6 @@ public class PreferencesUtils {
 
 		@Override
 		public Object get(Preferences prefs) throws PreferencesException {
-			//         String s = prefs.get(key, null);
-			//         if(s == null)
-			//            return null;
-			//
-			//         try {
-			//            ByteArrayInputStream is = new ByteArrayInputStream(s.getBytes("ISO-8859-1"));
-			//            XMLDecoder x = new XMLDecoder(is);
-			//            Object res = x.readObject();
-			//            x.close();
-			//            return res;
-			//         }
-			//         catch(UnsupportedEncodingException e) {
-			//            throw new PreferencesException("XMLSerializationIO.get Error", e);
-			//         }
-
 			String s = prefs.get(key, null);
 			if(s == null)
 				return null;
@@ -197,24 +150,13 @@ public class PreferencesUtils {
 
 		@Override
 		public void put(Preferences prefs, Object t) throws PreferencesException {
-			//         try {
-			//            ByteArrayOutputStream os = new ByteArrayOutputStream();
-			//            XMLEncoder x = new XMLEncoder(os);
-			//            x.writeObject(t);
-			//            x.close();
-			//            String s = os.toString("ISO-8859-1");
-			//            prefs.put(key, s);
-			//         }
-			//         catch(UnsupportedEncodingException e) {
-			//            throw new PreferencesException("XMLSerializationIO.put Error", e);
-			//         }
 			XStream xstream = new XStream(new DomDriver());
 			String s = xstream.toXML(t);
 			prefs.put(key, s);
 		}
 	}
 
-	protected PreferencesUtils() {
+	private PreferencesUtils() {
 	}
 
 	public static void resetToTemplateUser(String nodeToReset) throws NuclosBusinessException {
@@ -579,6 +521,8 @@ public class PreferencesUtils {
 	 * @param prefs
 	 * @param sKey
 	 * @return null if the object can't be found in the preferences.
+	 * 
+	 * @deprecated Use {@link #getSerializableObjectXML(Preferences, String)}
 	 */
 	public static Object getSerializable(Preferences prefs, String sKey) throws PreferencesException {
 		Object result = null;
@@ -604,7 +548,8 @@ public class PreferencesUtils {
 	 * @param prefs
 	 * @param sKey
 	 * @param o must be serializable
-	 * @todo change type of o to Serializable
+	 * 
+	 * @deprecated Use {@link #putSerializableObjectXML(Preferences, String, Object)} 
 	 */
 	public static void putSerializable(Preferences prefs, String sKey, Object o) throws PreferencesException {
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -620,23 +565,6 @@ public class PreferencesUtils {
 			throw new PreferencesException(ex);
 		}
 	}
-
-	/**
-	 * Note: this is the matching reader for the deprecated method putSerializableList
-	 * above. Removed the deprecation tag as it may be needed as a fallback method
-	 * for old prefs settings even in non-deprecated code.
-	 *
-	 * @param prefs
-	 * @param sNode
-	 * @return
-	 * @throws PreferencesException
-	 * @postcondition result != null
-	 * @deprecated Don't serialize objects to the preferences!
-	 */
-	public static List<?> getSerializableList(Preferences prefs, String sNode) throws PreferencesException {
-		return getGenericList(prefs, sNode, new SerializablePreferencesIO());
-	}
-
 
 	/**
 	 * New version of putSerializableList using xml-encoding underneath the hood.
@@ -966,6 +894,12 @@ public class PreferencesUtils {
 		splitpn.setLastDividerLocation(prefs.getInt(PREFS_KEY_LAST_DIVIDER_LOCATION, splitpn.getLastDividerLocation()));
 	}
 	
+	/**
+	 * Alternative for {@link #putSerializableObjectXML(Preferences, String, Object)} but can only 
+	 * be used for real beans.
+	 * 
+	 * @see {@link http://java.sun.com/products/jfc/tsc/articles/persistence4/}
+	 */
 	public static void putBean(Preferences pref, String node, Object o) throws PreferencesException {
 		pref = getEmptyNode(pref, node);
 		final ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -987,6 +921,12 @@ public class PreferencesUtils {
 		}
 	}
 	
+	/**
+	 * Alternative for {@link #getSerializableObjectXML(Preferences, String, Object)} but can only 
+	 * be used for real beans.
+	 * 
+	 * @see {@link http://java.sun.com/products/jfc/tsc/articles/persistence4/}
+	 */
 	public static <T> T getBean(Preferences pref, String node) throws PreferencesException {
 		T result = null;
 		if (nodeExists(pref, node)) {

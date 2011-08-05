@@ -1,6 +1,5 @@
 package org.nuclos.client.ui.collect.model;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,7 +15,7 @@ import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
-import org.nuclos.common.genericobject.GenericObjectUtils;
+import org.nuclos.common2.FormatOutputUtils;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 
@@ -62,17 +61,24 @@ public class GenericObjectsResultTableModel<Clct extends Collectable> extends So
 		// field of base entity
 		if (sFieldEntityName.equals(sMainEntityName)) {
 			result = clct.getField(sFieldName);
+			// result = FormatOutputUtils.format(clctefwe, clct);
 		}
 		// pivot field
 		else if (pinfo != null) {
 			final List<Object> values = new ArrayList<Object>(1);
 			final Collection<EntityObjectVO> items = lowdcvo.getDependants().getData(sFieldEntityName);
 			for (EntityObjectVO k: items) {
-				if (sFieldName.equals(k.getField(pinfo.getKeyField(), String.class))) {
-					values.add(k.getField(pinfo.getValueField(), pinfo.getValueType()));
+				if (sFieldName.equals(k.getRealField(pinfo.getKeyField(), String.class))) {
+					values.add(k.getRealField(pinfo.getValueField(), pinfo.getValueType()));
 				}
 			}
-			result = new CollectableValueField(values);
+			// If there is more than one value (not supported in the pivot case), we loose the type... 
+			if (values.size() == 1) {
+				result = new CollectableValueField(values.iterator().next());
+			}
+			else {
+				result = new CollectableValueField(FormatOutputUtils.formatOutput(clctefwe.getFormatOutput(), values, " "));
+			}
 		}
 		// field of subform entity
 		else {
@@ -80,7 +86,6 @@ public class GenericObjectsResultTableModel<Clct extends Collectable> extends So
 				// dead code here
 				assert false;
 				final GenericObjectVO govoParent = lowdcvo.getParent();
-				/** @todo assert govoParent != null */
 				if (govoParent == null) {
 					result = clctefwe.getNullField();
 				}
@@ -90,9 +95,20 @@ public class GenericObjectsResultTableModel<Clct extends Collectable> extends So
 			}
 			else {
 				final Collection<EntityObjectVO> collmdvo = lowdcvo.getDependants().getData(sFieldEntityName);
-				result = new CollectableValueField(GenericObjectUtils.getConcatenatedValue(collmdvo, sFieldName));
+				// result = new CollectableValueField(GenericObjectUtils.getConcatenatedValue(collmdvo, sFieldName));
+				// If there is more than one value, we loose the type... 
+				if (collmdvo.size() == 1) {
+					result = new CollectableValueField(collmdvo.iterator().next());
+				}
+				else {
+					result = FormatOutputUtils.format(clctefwe, collmdvo, " ");
+				}
 			}
 		}
+		
+		/*
+		Since Nuclos 3.1.01 we do _not_ format number in the model. 
+		If needed it has to be done 'later'. (Thomas Pasch + Maik Stüker)
 		
 		// set output format
 		final Class<?> cls = clctefwe.getJavaClass();
@@ -103,8 +119,9 @@ public class GenericObjectsResultTableModel<Clct extends Collectable> extends So
 				result = new CollectableValueField(df.format(result.getValue()));
 			}			
 		}
+		 */
 		
 		return result;
-	}	
+	}
 
 }

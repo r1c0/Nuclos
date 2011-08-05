@@ -38,6 +38,7 @@ import org.nuclos.common2.exception.CommonFatalException;
  */
 
 public class BeanPropertyCollectableField extends AbstractCollectableField {
+	
 	private final Object oValue;
 	private final Object oValueId;
 	private final int iFieldType;

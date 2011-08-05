@@ -33,7 +33,6 @@ import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.collect.CollectController;
-import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -42,7 +41,6 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableEntityField.CollectableEntityFieldSecurityAgent;
 import org.nuclos.common.collect.collectable.CollectableEntityProvider;
 import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
@@ -309,13 +307,6 @@ public class GenericObjectClientUtils {
 
 	}	// inner class GetInternalSearchConditionVisitor
 
-//	private boolean isSubFormAttribute(CollectableEntityField clctef) {
-//		// todo
-//		return false;
-//		// todo: implement map
-//		//return clctef.getName().equals("[basisschluessel]");
-//	}
-
 	/**
 	 * Open a generic object of a certain module in the details view of a new GenericObjectCollectController
 	 * @param parent
@@ -387,5 +378,6 @@ public class GenericObjectClientUtils {
 		}
 
 		return cond;
-	}	
+	}
+	
 }	// class GenericObjectClientUtils
