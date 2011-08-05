@@ -141,14 +141,14 @@ public class ExplorerController extends Controller {
 	private final TransferHandler transferhandler;
 
 	public final Preferences prefs = ClientPreferences.getUserPreferences().node("explorer");
-	
+
 	private Thread workerThread;
-	
+
 	private final Map<ExplorerView, MainFrameTab> explorerTabs = new HashMap<ExplorerView, MainFrameTab>();
 
 	private final static AbstractTreeNode<Object> nullNode = new AbstractTreeNode<Object>(null, "(" + CommonLocaleDelegate.getMessage("ExplorerController.20","In Bearbeitung") + ")", CommonLocaleDelegate.getMessage("ExplorerController.21","Inhalt wird erstellt")) {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -156,7 +156,7 @@ public class ExplorerController extends Controller {
 		protected List<? extends TreeNode> getSubNodesImpl() {
 			return Collections.emptyList();
 		}
-		
+
 		@Override
         public TreeNode refreshed() {
 			return this;
@@ -192,7 +192,7 @@ public class ExplorerController extends Controller {
 	public boolean containsTreeNode(TreeNode treenodeRoot) {
 		return (getExplorerViewFor(treenodeRoot) != null);
 	}
-	
+
 	public ExplorerView getExplorerViewFor(MainFrameTab tab) {
 		ExplorerView result = null;
 		for (ExplorerView view : explorerTabs.keySet()) {
@@ -203,7 +203,7 @@ public class ExplorerController extends Controller {
 		}
 		return result;
 	}
-	
+
 	public ExplorerView getExplorerViewFor(TreeNode treenodeRoot) {
 		ExplorerView result = null;
 		for (ExplorerView view : explorerTabs.keySet()) {
@@ -215,16 +215,16 @@ public class ExplorerController extends Controller {
 		}
 		return result;
 	}
-	
+
 	public MainFrameTab getTabOfExplorerViewFor(TreeNode treenodeRoot) {
 		MainFrameTab result = null;
 		ExplorerView view = getExplorerViewFor(treenodeRoot);
 		if (view != null) {
 			result = getTabFor(view);
-		} 
+		}
 		return result;
 	}
-	
+
 	public MainFrameTab getTabFor(ExplorerView view) {
 		MainFrameTab result = explorerTabs.get(view);
 		if (result == null) {
@@ -232,7 +232,7 @@ public class ExplorerController extends Controller {
 		}
 		return result;
 	}
-	
+
 	private void setupMainFrameTab(MainFrameTab tab, final TreeNode treenodeRoot, final ExplorerView view, String sLabel) {
 		tab.addMainFrameTabListener(new MainFrameTabAdapter() {
 			@Override
@@ -245,20 +245,20 @@ public class ExplorerController extends Controller {
 				tab.removeMainFrameTabListener(this);
 			}
 		});
-		
+
 		tab.setTabIcon(Icons.getInstance().getIconTree16());
 		tab.setTitle(sLabel);
 		tab.setLayeredComponent(view);
 		tab.setTabStoreController(new ExplorerTabStoreController(treenodeRoot, view));
 	}
-	
+
 	private static class RestorePreferences implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
-		
+
 		TreeNode treenodeRoot;
 		List<String> lstExpandedPaths;
 	}
-	
+
 	private static String toXML(RestorePreferences rp) {
 		XStream xstream = new XStream(new DomDriver());
 		return xstream.toXML(rp);
@@ -268,15 +268,15 @@ public class ExplorerController extends Controller {
 		XStream xstream = new XStream(new DomDriver());
 		return (RestorePreferences) xstream.fromXML(xml);
 	}
-	
+
 	/**
 	 *
 	 *
 	 */
 	public static class ExplorerTabStoreController implements ITabStoreController {
-		final TreeNode treenodeRoot; 
+		final TreeNode treenodeRoot;
 		final ExplorerView view;
-		
+
 		public ExplorerTabStoreController(TreeNode treenodeRoot, ExplorerView view) {
 			super();
 			this.treenodeRoot = treenodeRoot;
@@ -291,20 +291,20 @@ public class ExplorerController extends Controller {
 		@Override
 		public String getPreferencesXML() {
 			ExplorerNode<?> explorernodeRoot = (ExplorerNode<?>) view.getJTree().getModel().getRoot();
-			List<String> lstExpandedPathsResult = new ArrayList<String>();		
-			
+			List<String> lstExpandedPathsResult = new ArrayList<String>();
+
 			ExplorerNode.createExpandendPathsForTree(new TreePath( explorernodeRoot), view.getJTree(), lstExpandedPathsResult);
-			
+
 			RestorePreferences rp = new RestorePreferences();
 			rp.treenodeRoot = treenodeRoot;
 			rp.lstExpandedPaths = lstExpandedPathsResult;
-			
+
 			return toXML(rp);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 *
 	 */
 	public static class ExplorerTabRestoreController extends TabRestoreController {
@@ -312,22 +312,22 @@ public class ExplorerController extends Controller {
 		@Override
 		public void restoreFromPreferences(String preferencesXML, final MainFrameTab tab) throws Exception {
 			RestorePreferences rp = fromXML(preferencesXML);
-			
+
 			if (rp.treenodeRoot.getId() == null && rp.treenodeRoot.getIdentifier() == null && rp.treenodeRoot.getSubNodes().isEmpty()) {
 				// nullNode stored in preferences
 				return;
 			}
-				
+
 			ExplorerView view = Main.getMainController().getExplorerController().addOrReplaceExplorerViewFor(tab, rp.treenodeRoot, false, false, true);
 			ExplorerNode.expandTreeAsync(rp.lstExpandedPaths, view.getJTree());
 		}
-		
+
 	}
 
 	private void removeExplorerView(ExplorerView view) {
 		explorerTabs.remove(view);
 	}
-	
+
 	public void closeExplorerView(ExplorerView view) {
 		final MainFrameTab tab = getTabFor(view);
 		try {
@@ -337,13 +337,13 @@ public class ExplorerController extends Controller {
 			Errors.getInstance().showExceptionDialog(view, e);
 		}
 	}
-	
+
 	private List<JComponent> getToolbarComponents(final ExplorerView view) {
 		List<JComponent> result = new ArrayList<JComponent>();
-		
+
 		result.add(new JButton(new AbstractAction("", Icons.getInstance().getIconRefresh16()) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -352,10 +352,10 @@ public class ExplorerController extends Controller {
 				cmdRefreshTab(view);
 			}
 		}));
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * adds a tab for the given treenode, if it is not contained already.
 	 * Otherwise, replaces the view containing the treenode, if it is not identical to the given treenode.
@@ -373,7 +373,7 @@ public class ExplorerController extends Controller {
 		if (newTab == null) {
 			newTab = new MainFrameTab();
 		}
-		
+
 		if (view == null) {
 			view = new ExplorerView(new JTree(new ExplorerNode<TreeNode>(nullNode)));
 			view.setToolBarComponents(getToolbarComponents(view));
@@ -388,24 +388,24 @@ public class ExplorerController extends Controller {
 				throw new NuclosFatalException("Only add explorer view, but view already exists: " + treenodeRoot.toString());
 			}
 		}
-		
+
 		final MainFrameTab tab = getTabFor(view);
 		tab.setTitle(sLabelWorking);
-		
+
 		//this.pnlExplorer.getTabbedPane().setSelectedIndex((selectedTabIndex >= 0 && iTab>=selectedTabIndex)? selectedTabIndex :iTab);
-		
+
 		// Workaraound...
 		//final int iFinalTab = iTab;
-		
+
 		final ExplorerView viewForWorker = view;
-		
+
 		if(withSearchWorker) {
 			CommonClientWorkerAdapter<Collectable> searchWorker = new CommonClientWorkerAdapter<Collectable>(null) {
 				@Override
 				public void init() {
 					UIUtils.setWaitCursor(viewForWorker);
 				}
-				
+
 				@Override
 				public void work() {
 					if (treenodeRoot != viewForWorker.getRootNode().getTreeNode()) {
@@ -417,7 +417,7 @@ public class ExplorerController extends Controller {
 						});
 					}
 				}
-				
+
 				@Override
 				public void paint() {
 					addAdditionalToolBarComponents(viewForWorker);
@@ -429,7 +429,7 @@ public class ExplorerController extends Controller {
 						// Do nothing; user may have closed the tab pane or similar
 					}
 				}
-				
+
 				@Override
 				public void handleError(Exception ex) {
 					log.error(ex);
@@ -444,23 +444,23 @@ public class ExplorerController extends Controller {
 					}
 				}
 			};
-			
+
 			workerThread = CommonMultiThreader.getInstance().execute(searchWorker);
 		}
 		else {
-			try {		
+			try {
 				UIUtils.setWaitCursor(view);
 				if (treenodeRoot != view.getRootNode().getTreeNode()) {
 					view.setJTree(newJTree(treenodeRoot));
 				}
 				addAdditionalToolBarComponents(view);
 				view.setCursor(null);
-				
+
 				tab.setTitle(sLabel);
 			}
 			catch(Exception ex) {
 				log.error(ex);
-	
+
 				if (ex instanceof ExplorerNodeRefreshException) {
 					String sMessage = ex.getMessage() + "\n\n" + CommonLocaleDelegate.getMessage("ExplorerController.13","Der Reiter des Knotens wird automatisch geschlossen.");
 					JOptionPane.showMessageDialog(null, sMessage, CommonLocaleDelegate.getMessage("ExplorerController.30","Wiederherstellen der Baumansicht"), JOptionPane.ERROR_MESSAGE);
@@ -471,13 +471,13 @@ public class ExplorerController extends Controller {
 				}
 			}
 		}
-		
+
 		if (selectTab)
 			MainFrame.setSelectedTab(tab);
-		
+
 		return view;
 	}
-	
+
 	private static void addAdditionalToolBarComponents(final ExplorerView view) {
 		List<JComponent> toolBarComponents = view.getRootNode().getToolBarComponents(view.getJTree());
 		if (toolBarComponents != null) {
@@ -577,8 +577,8 @@ public class ExplorerController extends Controller {
             public void run() throws CommonFinderException {
 				final DirectoryRuleNode treenodeRoot = new DirectoryRuleNode(true, CommonLocaleDelegate.getMessage("ExplorerController.24","Regelverwendungen"), CommonLocaleDelegate.getMessage("ExplorerController.25","Regelverwendungen"), null, false);
 				final ExplorerView view = ExplorerController.this.addOrReplaceExplorerViewFor(treenodeRoot, true);
-				
-				if (ruleIdToGoto != null) {				
+
+				if (ruleIdToGoto != null) {
 					final Runnable inAWT = new Runnable() {
 						@Override
 						public void run() {
@@ -588,6 +588,8 @@ public class ExplorerController extends Controller {
 									ruleExplorerNode.expandToRuleWithId(ruleIdToGoto, view.getJTree());
 								else if(sRuleLabel.equals(RuleTreeModel.FRIST_NODE_LABEL))
 									ruleExplorerNode.expandToTimelimitRuleWithId(ruleIdToGoto, view.getJTree());
+								else if(sRuleLabel.equals(RuleTreeModel.LIBRARY_LABEL))
+									ruleExplorerNode.expandToLibraryRuleWithId(ruleIdToGoto, view.getJTree());
 							}
 							catch(CommonFinderException e) {
 								Errors.getInstance().showExceptionDialog(getParent(), e);
@@ -597,8 +599,8 @@ public class ExplorerController extends Controller {
 
 					runInAwtAfterWorkerThreadHasFinished(inAWT);
 				}
-				
-				
+
+
 			}
 		});
 	}
@@ -612,8 +614,8 @@ public class ExplorerController extends Controller {
             public void run() throws CommonFinderException {
 				final DirectoryDatasourceNode treenodeRoot = new DirectoryDatasourceNode(true, CommonLocaleDelegate.getMessage("ExplorerController.10","Datenquellen"), CommonLocaleDelegate.getMessage("ExplorerController.11","Datenquellen"), null);
 				final ExplorerView view = ExplorerController.this.addOrReplaceExplorerViewFor(treenodeRoot, true);
-				
-				if (datasourceIdToGoto != null) {				
+
+				if (datasourceIdToGoto != null) {
 					final Runnable inAWT = new Runnable() {
 						@Override
 						public void run() {
@@ -629,13 +631,13 @@ public class ExplorerController extends Controller {
 
 					runInAwtAfterWorkerThreadHasFinished(inAWT);
 				}
-				
-				
+
+
 			}
 		});
 	}
-	
-	
+
+
 	private final void runInAwtAfterWorkerThreadHasFinished(final Runnable inAWT) {
 		final Thread tWorkerThread = ExplorerController.this.workerThread;
 		ExplorerController.this.workerThread = null;
@@ -656,13 +658,13 @@ public class ExplorerController extends Controller {
 		else
 			inAWT.run();
 	}
-	
+
 	/**
 	 * @return List<TreeNode>. The root tree nodes of all ExplorerViews.
 	 */
 	private List<TreeNode> getRootTreeNodes() {
 		final List<TreeNode> result = new LinkedList<TreeNode>();
-		
+
 		for (final ExplorerView view : explorerTabs.keySet()) {
 			final ExplorerNode<?> explorernodeRoot = (ExplorerNode<?>) view.getJTree().getModel().getRoot();
 			final TreeNode treenodeRoot = explorernodeRoot.getTreeNode();
@@ -670,18 +672,18 @@ public class ExplorerController extends Controller {
 		}
 		return result;
 	}
-	
+
 	private Map<ExplorerNode<?>, JTree> getRootTreeNodesWithJTree() {
 		Map<ExplorerNode<?>, JTree> result = new HashMap<ExplorerNode<?>, JTree>();
 
 		for (final ExplorerView view : explorerTabs.keySet()) {
 			final ExplorerNode<?> explorernodeRoot = (ExplorerNode<?>) view.getJTree().getModel().getRoot();
-			
+
 			result.put(explorernodeRoot, view.getJTree());
 		}
 		return result;
 	}
-	
+
 	/**
 	 * creates a new JTree containing the given treenode as root
 	 * @param treenodeRoot
@@ -708,7 +710,7 @@ public class ExplorerController extends Controller {
 
 		// enable tool tips:
 		ToolTipManager.sharedInstance().registerComponent(result);
-		
+
 		/**
 		 * inner class Renderer. Shows a tooltip for each node.
 		 * Note that the label and thus the tooltip is reused for each node (it's amazing ;-)).
@@ -716,7 +718,7 @@ public class ExplorerController extends Controller {
 		 */
 		class Renderer extends DefaultTreeCellRenderer {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -737,14 +739,14 @@ public class ExplorerController extends Controller {
 				final Icon icon = explorernode.getIcon();
 				//if (icon != null) {
 					lbl.setIcon(icon);
-				//} 
+				//}
 
 				JComponent result = lbl;
 				if (explorernode instanceof GenericObjectExplorerNode) {
 					final Icon iconRelation = ((GenericObjectExplorerNode) explorernode).getRelationIcon();
 					if (iconRelation != null) {
 						lbl.setIcon(new CompositeIcon(iconRelation,icon));
-						
+
 						//result = new JPanel(new FlowLayout(FlowLayout.LEFT, 1, 0));
 						//result.add(new JLabel(iconRelation));
 						//result.add(lbl);
@@ -775,11 +777,11 @@ public class ExplorerController extends Controller {
 						//NUCLEUSINT-1129
 						//final TreeNode treenode = explorernode.getTreeNode();
 						final boolean bSubNodesHaventBeenLoaded = !(explorernode.getChildCount() > 0); //(treenode.hasSubNodes() == null);
-						
+
 						if (bSubNodesHaventBeenLoaded) {
 							//explorernode.unloadChildren();
 							explorernode.loadChildren(true);
-							
+
 							for (int i = 0; i < explorernode.getChildCount(); i++) {
 								final ExplorerNode<?> explorernodeChild = (ExplorerNode<?>) explorernode.getChildAt(i);
 								expandAllLoadedNodes(result, ev.getPath().pathByAddingChild(explorernodeChild));
@@ -839,7 +841,7 @@ public class ExplorerController extends Controller {
 		}
 		return result;
 	}
-	
+
 	private void addKeyListenerTo(final JTree tree) {
 		tree.addKeyListener(new KeyAdapter() {
 
@@ -850,10 +852,10 @@ public class ExplorerController extends Controller {
 					ExplorerController.this.keyEventOnNode(treepath, ev);
 				}
             }
-			
+
 		});
 	}
-	
+
 	private void keyEventOnNode(TreePath pathEvent, KeyEvent ev) {
 		final ExplorerNode<? extends TreeNode> node = (ExplorerNode<?>) pathEvent.getLastPathComponent();
 		final JTree tree = (JTree) ev.getComponent();
@@ -863,7 +865,7 @@ public class ExplorerController extends Controller {
 			// select it (and unselect all others):
 			tree.setSelectionPath(pathEvent);
 		}
-		
+
 		assert tree.getSelectionCount() >= 1;
 		if (tree.getSelectionCount() == 1) {
 			node.handleKeyEvent(tree, ev);
@@ -922,7 +924,7 @@ public class ExplorerController extends Controller {
 			// select it (and unselect all others):
 			tree.setSelectionPath(pathEvent);
 		}
-		
+
 		if (ev.isPopupTrigger()) {
 //			// if the node isn't selected already:
 //			final TreePath[] aSelectionPaths = tree.getSelectionPaths();
@@ -999,7 +1001,7 @@ public class ExplorerController extends Controller {
 
 			final Action actShowInList = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ExplorerController.22","In Liste anzeigen"), null, CommonLocaleDelegate.getMessage("ExplorerController.4","Ausgew\u00e4hlte Objekte in Ergebnisliste anzeigen")) {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -1017,29 +1019,29 @@ public class ExplorerController extends Controller {
 					});
 				}
 			};
-	
+
 			result.add(actShowInList);
-			
+
 			/* remove relation action */
 			boolean bShowRemoveRelationAction = true;
-			
+
 			for(GenericObjectExplorerNode goexplorernode :collloexplorernodeSelected) {
 				if (!goexplorernode.isRelated()) {
 					bShowRemoveRelationAction = false;
-					break;	
+					break;
 				}
 			}
-			
+
 			if (bShowRemoveRelationAction) {
 				final Action actRemoveRelation = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ExplorerController.5","Beziehungen entfernen"), null, CommonLocaleDelegate.getMessage("ExplorerController.9","Beziehung von ausgew\u00e4hlten Objekten zu \u00fcbergordnetem Object entfernen")) {
 					/**
-					 * 
+					 *
 					 */
 					private static final long serialVersionUID = 1L;
 
 					@Override
                     public void actionPerformed(ActionEvent ev) {
-						
+
 						final String sMessage = CommonLocaleDelegate.getMessage("ExplorerController.28","Sollen die Beziehungen von den ausgew\u00e4hlten Objekten zu dem \u00fcbergeordneten Object entfernt werden")+ "?";
 
 						final int iBtn = JOptionPane.showConfirmDialog(tree, sMessage, CommonLocaleDelegate.getMessage("ExplorerController.6","Beziehung entfernen"), JOptionPane.OK_CANCEL_OPTION);
@@ -1049,13 +1051,13 @@ public class ExplorerController extends Controller {
 								public void init() {
 									UIUtils.setWaitCursor(tree);
 								}
-								
+
 								@SuppressWarnings("unchecked")
 								@Override
 								public void work() throws CommonBusinessException {
 									Map<Integer, GenericObjectTreeNode> mpGOTreeNodeRelation = new HashMap<Integer, GenericObjectTreeNode>();
 									Set<ExplorerNode<GenericObjectTreeNode>> stGOExplorerNodeParent = new HashSet<ExplorerNode<GenericObjectTreeNode>>();
-									
+
 									for(GenericObjectExplorerNode goexplorernode : collloexplorernodeSelected) {
 										final GenericObjectTreeNode gotreenode = goexplorernode.getTreeNode();
 										final ExplorerNode<GenericObjectTreeNode> explorernodeParent = (ExplorerNode<GenericObjectTreeNode>) goexplorernode.getParent();
@@ -1063,11 +1065,11 @@ public class ExplorerController extends Controller {
 										final GenericObjectTreeNode gotreenodeParent = explorernodeParent.getTreeNode();
 										final GenericObjectTreeNode gotreenodeTarget = bForward ? gotreenode : gotreenodeParent;
 										final Integer iRelationId = gotreenode.getRelationId();
-										
+
 										if (!stGOExplorerNodeParent.contains(explorernodeParent)) {
 											stGOExplorerNodeParent.add(explorernodeParent);
 										}
-										
+
 										if (iRelationId == null) {
 											// for backwards compatibility only: this might happen for old deserialized nodes that don't have a relation id yet.
 											throw new CommonBusinessException(CommonLocaleDelegate.getMessage("ExplorerController.14","Die Beziehung kann nicht entfernt werden, da die Beziehungs-Id mindestens eines Objektes fehlt. Bitte aktualisieren Sie die Baumansicht und versuchen Sie es erneut."));
@@ -1077,51 +1079,51 @@ public class ExplorerController extends Controller {
 										}
 									}
 									GenericObjectDelegate.getInstance().removeRelation(mpGOTreeNodeRelation);
-									
+
 									for (ExplorerNode<GenericObjectTreeNode> explorernodeParent : stGOExplorerNodeParent) {
 										explorernodeParent.refresh(tree);
 									}
 								}
-								
+
 								@Override
 								public void paint() {
 									tree.setCursor(null);
 								}
-								
+
 								@Override
 								public void handleError(Exception ex) {
 									log.error(ex);
 									Errors.getInstance().showExceptionDialog(null, CommonLocaleDelegate.getMessage("ExplorerController.18","Fehler beim entfernen der Beziehungen"), ex);
 								}
 							};
-							
+
 							workerThread = CommonMultiThreader.getInstance().execute(removeWorker);
 						}
 					}
 				};
-				
+
 				result.add(actRemoveRelation);
 			}
-			
+
 			/* remove from parent group action */
 			boolean bShowRemoveFromParentGroupAction = true;
-			
+
 			for(GenericObjectExplorerNode goexplorernode :collloexplorernodeSelected) {
 				if (goexplorernode.getParent() == null || (goexplorernode.getParent() != null && !(goexplorernode.getParent() instanceof GroupExplorerNode))) {
 					bShowRemoveFromParentGroupAction = false;
 				}
 			}
-			
+
 			if (bShowRemoveFromParentGroupAction) {
 				final Action actRemoveRelation = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ExplorerController.3","Aus der Gruppe entfernen"), null, CommonLocaleDelegate.getMessage("ExplorerController.8","Beziehung von ausgew\u00e4hlten Objekten zur Objektgruppe entfernen")) {
 					/**
-					 * 
+					 *
 					 */
 					private static final long serialVersionUID = 1L;
 
 					@Override
                     public void actionPerformed(ActionEvent ev) {
-						
+
 						final String sMessage = CommonLocaleDelegate.getMessage("ExplorerController.29","Sollen die Beziehungen von den ausgew\u00e4hlten Objekten zur Objektgruppe entfernt werden") + "?";
 
 						final int iBtn = JOptionPane.showConfirmDialog(tree, sMessage, CommonLocaleDelegate.getMessage("ExplorerController.7","Beziehung entfernen"), JOptionPane.OK_CANCEL_OPTION);
@@ -1131,26 +1133,26 @@ public class ExplorerController extends Controller {
 								public void init() {
 									UIUtils.setWaitCursor(tree);
 								}
-								
+
 								@Override
 								public void work() throws CommonBusinessException {
 									Integer iGroupId = null;
 									Map<Integer, Integer> mpGOGroupRelation = new HashMap<Integer, Integer>();
 									Set<GroupExplorerNode> stGroupExplorerNode = new HashSet<GroupExplorerNode>();
-									
+
 									for(GenericObjectExplorerNode goexplorernode :collloexplorernodeSelected) {
 										assert goexplorernode.getParent() instanceof GroupExplorerNode;
 										if (!stGroupExplorerNode.contains(goexplorernode.getParent())) {
 											stGroupExplorerNode.add((GroupExplorerNode)goexplorernode.getParent());
 										}
-										
+
 										iGroupId = ((GroupExplorerNode) goexplorernode.getParent()).getTreeNode().getId();
 										mpGOGroupRelation.put(goexplorernode.getTreeNode().getId(), iGroupId);
 									}
 
 									try {
 										GenericObjectDelegate.getInstance().removeFromGroup(mpGOGroupRelation);
-										
+
 										for (GroupExplorerNode explorernodeParent : stGroupExplorerNode) {
 											explorernodeParent.refresh(tree);
 										}
@@ -1159,24 +1161,24 @@ public class ExplorerController extends Controller {
 										Errors.getInstance().showExceptionDialog(tree, ex);
 									}
 								}
-								
+
 								@Override
 								public void paint() {
 									tree.setCursor(null);
 								}
-								
+
 								@Override
 								public void handleError(Exception ex) {
 									log.error(ex);
 									Errors.getInstance().showExceptionDialog(null, CommonLocaleDelegate.getMessage("ExplorerController.19","Fehler beim entfernen der Beziehungen"), ex);
 								}
 							};
-							
+
 							workerThread = CommonMultiThreader.getInstance().execute(removeWorker);
 						}
 					}
 				};
-				
+
 				result.add(actRemoveRelation);
 			}
 		}
@@ -1231,7 +1233,7 @@ public class ExplorerController extends Controller {
 	 */
 	private class TransferHandler extends javax.swing.TransferHandler {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		private final Component parent;
@@ -1320,24 +1322,24 @@ public class ExplorerController extends Controller {
 					public void init() {
 						UIUtils.setWaitCursor(tree);
 					}
-					
+
 					@Override
 					public void work() {
 						TransferHandler.this.importTransferData(tree, dl, transferable);
 					}
-					
+
 					@Override
 					public void paint() {
 						tree.setCursor(null);
 					}
-					
+
 					@Override
 					public void handleError(Exception ex) {
 						log.error(ex);
 					}
 				};
-				
-				CommonMultiThreader.getInstance().execute(importDataWorker);	
+
+				CommonMultiThreader.getInstance().execute(importDataWorker);
 			}
 
 			return result;
@@ -1357,7 +1359,7 @@ public class ExplorerController extends Controller {
 					result = targetNode.importTransferData(parent, transferable, tree);
 				}
 				catch (UnsupportedFlavorException ex) {
-					UIUtils.invokeOnDispatchThread(new Runnable() {						
+					UIUtils.invokeOnDispatchThread(new Runnable() {
 						@Override
 						public void run() {
 							JOptionPane.showMessageDialog(parent, CommonLocaleDelegate.getMessage("ExplorerController.16","Dieser Datentransfer wird von dem ausgew\u00e4hlten Objekt nicht unterst\u00fctzt."));
@@ -1374,19 +1376,19 @@ public class ExplorerController extends Controller {
 			return (treePath == null) ? null : (ExplorerNode<?>) treePath.getLastPathComponent();
 		}
 	}	// inner class TransferHandler
-	
+
 	/**
-	 * 
+	 *
 	 * @param tab
 	 * @return
 	 */
 	public boolean isExplorerTab(MainFrameTab tab) {
 		if (explorerTabs.values().contains(tab))
 			return true;
-		
+
 		if (tab.getContent() instanceof ExplorerView)
 			return true;
-			
+
 		return false;
 	}
 

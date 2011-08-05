@@ -173,10 +173,10 @@ public class MasterDataCollectController extends EntityCollectController<Collect
     * Use <code>newMasterDataCollectController()</code> to create an instance of this class.
     * @param parent
     * @param sEntityName
-    * 
-	* You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+    *
+	* You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	* to get an instance.
-	* 
+	*
 	* @deprecated You should normally do sth. like this:<code><pre>
 	* ResultController<~> rc = new ResultController<~>();
 	* *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -185,11 +185,11 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    public MasterDataCollectController(JComponent parent, NuclosEntity systemEntity, MainFrameTab tabIfAny) {
       this(parent, systemEntity.getEntityName(), tabIfAny);
    }
-   
+
    /**
-	* You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	* You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	* to get an instance.
-	* 
+	*
 	* @deprecated You should normally do sth. like this:<code><pre>
 	* ResultController<~> rc = new ResultController<~>();
 	* *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -198,11 +198,11 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    protected MasterDataCollectController(JComponent parent, NuclosEntity systemEntity, MainFrameTab tabIfAny, boolean detailsWithScrollbar) {
 	   this(parent, systemEntity.getEntityName(), tabIfAny, detailsWithScrollbar);
    }
-   
+
    /**
-	* You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	* You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	* to get an instance.
-	* 
+	*
 	* @deprecated You should normally do sth. like this:<code><pre>
 	* ResultController<~> rc = new ResultController<~>();
 	* *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -213,24 +213,24 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    }
 
    /**
-	* You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	* You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	* to get an instance.
-	* 
+	*
 	* @deprecated You should normally do sth. like this:<code><pre>
 	* ResultController<~> rc = new ResultController<~>();
 	* *CollectController<~> cc = new *CollectController<~>(.., rc);
 	* </code></pre>
     */
    protected MasterDataCollectController(JComponent parent, String sEntityName, MainFrameTab tabIfAny, boolean detailsWithScrollbar) {
-	   this(parent, sEntityName, tabIfAny, detailsWithScrollbar, 
+	   this(parent, sEntityName, tabIfAny, detailsWithScrollbar,
 			   new ResultController<CollectableMasterDataWithDependants>(sEntityName,
 					   new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()));
    }
-   
+
    /**
-	* You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	* You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	* to get an instance.
-	* 
+	*
     * Use <code>newMasterDataCollectController()</code> to create an instance of this class.
     * @param parent
     * @param sEntityName
@@ -239,17 +239,17 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		   ResultController<CollectableMasterDataWithDependants> rc) {
 	   this(parent, systemEntity.getEntityName(), tabIfAny, true, rc);
    }
-   
+
 	/**
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-   protected MasterDataCollectController(JComponent parent, String sEntityName, MainFrameTab tabIfAny, 
+   protected MasterDataCollectController(JComponent parent, String sEntityName, MainFrameTab tabIfAny,
 		   boolean detailsWithScrollbar, ResultController<CollectableMasterDataWithDependants> rc) {
       super(parent, sEntityName, rc);
       ifrm = tabIfAny != null ? tabIfAny : newInternalFrame();
@@ -315,9 +315,9 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       			clctcomp.setEnabled(true);
       		}
       	}
-      });      
+      });
    }
-   
+
 	/**
 	 * TODO: Make this protected.
 	 */
@@ -391,11 +391,11 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
       return sPrefix + (sPrefix.length()>0?" - ":"") + sMode + sSuffix;
    }
-   
+
    @Override
    protected String getLabelForStartTab() {
 		String result = null;
-		
+
 		boolean buildTreeView = false;
 		switch (getCollectState().getOuterState()) {
 			case CollectState.OUTERSTATE_DETAILS:
@@ -405,14 +405,14 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 				buildTreeView = this.getSelectedCollectables().size() == 1;
 				break;
 		}
-		
+
 		if (buildTreeView) {
             String sDescription = CommonLocaleDelegate.getTreeViewFromMetaDataVO(MasterDataDelegate.getInstance().getMetaData(this.getEntityName()));
             if (sDescription != null) {
             		result = StringUtils.replaceParameters(sDescription, new ParameterTransformer(this.getSelectedCollectable().getMasterDataCVO()));
             }
 		}
-		
+
 		if (result == null) {
 			return super.getLabelForStartTab();
 		} else {
@@ -469,7 +469,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       this.getResultPanel().addPopupExtraSeparator();
       this.getResultPanel().addPopupExtraMenuItem(btnShowResultInExplorer);
       this.getResultPanel().addToolBarComponent(btnPrintResults);
-      
+
       this.btnPrintResults.setIcon(Icons.getInstance().getIconPrintReport16());
 
       if(SecurityCache.getInstance().isActionAllowed(Actions.ACTION_PRINT_SEARCHRESULT)){
@@ -542,7 +542,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       return result;
    }
 
-   private void cmdJumpToTree() {
+   protected void cmdJumpToTree() {
       UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
       	@Override
          public void run() throws CommonFinderException, CommonPermissionException {
@@ -568,7 +568,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       return Main.getMainController().getExplorerController();
    }
 
-   private void cmdShowResultInExplorer() {
+   protected void cmdShowResultInExplorer() {
       UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
       	@Override
          public void run() throws CollectableFieldFormatException {
@@ -596,7 +596,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
    /**
     * @return the collectable (master data) entity for this controller.
-    * 
+    *
     * TODO: Make this protected again.
     */
    @Override
@@ -647,7 +647,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       for (String sSubFormEntityName : mpsubformctlDetails.keySet()) {
          DetailsSubFormController<CollectableEntityObject> subformcontroller = mpsubformctlDetails.get(sSubFormEntityName);
          SubForm subform = subformcontroller.getSubForm();
-         if (subformcontroller instanceof MasterDataSubFormController) { 
+         if (subformcontroller instanceof MasterDataSubFormController) {
             subformcontroller.setCollectController(MasterDataCollectController.this);
             mpSubFormController.put(subform, (MasterDataSubFormController)subformcontroller);
          }
@@ -684,7 +684,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	         result = parser.getResult(isrc, clcte, bSearch, getLayoutMLButtonsActionListener(),
 	               MasterDataCollectableFieldsProviderFactory.newFactory(sEntityName, valueListProviderCache),
 	               CollectableComponentFactory.getInstance());
-	         
+
 	         if (bSearch) {
 	 			for (CollectableComponent comp : result.getCollectableComponents()) {
 	 				comp.getControlComponent().addFocusListener(collectableComponentSearchFocusListener);
@@ -1055,7 +1055,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
    /**
     * @return a specific table model, with support for chunkwise reading.
-    * 
+    *
     * @deprecated Move to ResultController hierarchy.
     */
    @Override
@@ -1213,7 +1213,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       tbl.setDragEnabled(true);
       tbl.setTransferHandler(new TransferHandler() {
          /**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -1309,9 +1309,9 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    }
 
    class MasterDataCollectPanel extends CollectPanel<CollectableMasterDataWithDependants> {
-      
+
       /**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -1339,7 +1339,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    protected class MasterDataSearchPanel extends SearchPanel {
 
       /**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private final JCheckBoxMenuItem chkbxHideInvalid = new JCheckBoxMenuItem();
@@ -1392,12 +1392,12 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    protected class MasterDataDetailsPanel extends DetailsPanel {
 
       /**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	@Deprecated
       private final LayoutRoot layoutroot;
-      
+
       public MasterDataDetailsPanel() {
          this(newLayoutRoot(false));
        }
@@ -1405,7 +1405,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       public MasterDataDetailsPanel(boolean withScrollbar) {
          this(newLayoutRoot(false), withScrollbar);
       }
-      
+
       @Deprecated
       private MasterDataDetailsPanel(LayoutRoot layoutroot) {
     	  this(layoutroot, true);
@@ -1536,8 +1536,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	 * @return the search condition contained in the search panel's fields (including the subforms' search fields).
 	 * @precondition this.isSearchPanelAvailable()
 	 * @postcondition result == null || result.isSyntacticallyCorrect()
-	 * 
-	 * @deprecated Move to SearchController or SearchPanel and make protected again. 
+	 *
+	 * @deprecated Move to SearchController or SearchPanel and make protected again.
 	 */
 	@Override
 	public CollectableSearchCondition getCollectableSearchConditionFromSearchFields(boolean bMakeConsistent) throws CollectableFieldFormatException {
@@ -1593,7 +1593,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	 * stops editing in the Search panel.
 	 * Derived classes may stop editing on fields, TableCellEditors etc. here
 	 * @return Has the editing been stopped?
-	 * 
+	 *
 	 * TODO: Make this protected again.
 	 */
 	@Override
@@ -1605,7 +1605,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		}
 		return true;
 	}
-	
+
 	@Override
 	public Map<String, DetailsSubFormController<CollectableEntityObject>> getDetailsSubforms() {
 		return this.mpsubformctlDetails;

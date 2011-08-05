@@ -21,12 +21,16 @@ import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
 
 import java.io.ByteArrayInputStream;
+import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.RuleCache;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
@@ -36,8 +40,10 @@ import org.nuclos.server.customcode.valueobject.CodeVO;
 import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosCompileException;
+import org.springframework.transaction.annotation.Transactional;
 
 @RolesAllowed("Login")
+@Transactional
 public class CodeFacadeBean extends NuclosFacadeBean implements CodeFacadeRemote {
 
 	@Override
@@ -126,5 +132,16 @@ public class CodeFacadeBean extends NuclosFacadeBean implements CodeFacadeRemote
 			// if compiler does not throw an exception:
 			throw new CommonValidationException("CodeFacadeBean.exception.extractname");
 		}
+	}
+
+	@Override
+	public List<CodeVO> getAll() throws CommonPermissionException {
+		checkReadAllowed(NuclosEntity.CODE);
+		return CollectionUtils.transform(getMasterDataFacade().getMasterData(NuclosEntity.CODE.getEntityName(), null, true), new Transformer<MasterDataVO, CodeVO>() {
+			@Override
+			public CodeVO transform(MasterDataVO i) {
+				return MasterDataWrapper.getCodeVO(i);
+			}
+		});
 	}
 }

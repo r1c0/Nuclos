@@ -26,6 +26,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.explorer.node.rule.RuleTreeModel;
+import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
@@ -59,7 +61,7 @@ public class CodeCollectController extends MasterDataCollectController {
 
 	private final Action actCheckRuleSource = new CommonAbstractAction(Icons.getInstance().getIconValidate16(), CommonLocaleDelegate.getMessage("RuleCollectController.2", "Quelltext pr\u00fcfen")) {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -70,9 +72,9 @@ public class CodeCollectController extends MasterDataCollectController {
 	};
 
 	/**
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -285,6 +287,27 @@ public class CodeCollectController extends MasterDataCollectController {
 		CollectableMasterDataWithDependants result = super.newCollectable();
 		result.setField("name", new CollectableValueField(CommonLocaleDelegate.getText("CodeCollectController.fieldvalue.name.temp", " ")));
 		return result;
+	}
+
+	@Override
+	protected void cmdJumpToTree() {
+		UIUtils.runCommand(this.getFrame(), new Runnable() {
+			@Override
+			public void run() {
+				final Integer id = (Integer) getSelectedCollectableId();
+				Main.getMainController().getExplorerController().cmdShowRuleUsage(id, RuleTreeModel.LIBRARY_LABEL);
+			}
+		});
+	}
+
+	@Override
+	protected void cmdShowResultInExplorer() {
+		UIUtils.runCommand(this.getFrame(), new Runnable() {
+			@Override
+			public void run() {
+				Main.getMainController().getExplorerController().cmdShowRuleUsage(null, null);
+			}
+		});
 	}
 
 	private class RuleCollectStateListener extends CollectStateAdapter {

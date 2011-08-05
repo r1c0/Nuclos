@@ -61,16 +61,14 @@ import org.nuclos.server.ruleengine.NuclosCompileException;
  */
 
 public class TimelimitRuleCollectController extends MasterDataCollectController {
-	
+
 	private final TimelimitRuleDelegate timelimitDelegate = TimelimitRuleDelegate.getInstance();
 	// Note: pnlEdit cannot be initialized here resp. in this constructor because it is used
 	// by setupEditPanelForDetailsTab (which, sadly, is during super constructor evaluation)
 	private RuleEditPanel pnlEdit;
 
 	private final Action actCheckRuleSource = new CommonAbstractAction(Icons.getInstance().getIconValidate16(), CommonLocaleDelegate.getMessage("RuleCollectController.2", "Quelltext pr\u00fcfen")) {
-		/**
-		 * 
-		 */
+
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -80,9 +78,9 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 	};
 
 	/**
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -100,40 +98,29 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 	}
 
 	private void setupDetailsToolBar() {
-		// additional functionality in Details panel:
-		//final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
-
 		final JButton btnCheckRuleSource = new JButton(this.actCheckRuleSource);
 		btnCheckRuleSource.setName("btnCheckRuleSource");
-		//toolbar.add(btnCheckRuleSource);
 		this.getDetailsPanel().addToolBarComponent(btnCheckRuleSource);
-
-		final JButton btnMakeTreeRoot = new JButton();
-		btnMakeTreeRoot.setIcon(Icons.getInstance().getIconMakeTreeRoot16());
-		btnMakeTreeRoot.setToolTipText(CommonLocaleDelegate.getMessage("DatasourceCollectController.14", "In Explorer anzeigen"));
-		btnMakeTreeRoot.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent ev) {
-				cmdJumpToTree();
-			}
-		});
-		//toolbar.add(btnMakeTreeRoot);
-		this.getDetailsPanel().addToolBarComponent(btnMakeTreeRoot);
-
-		//this.getDetailsPanel().setCustomToolBarArea(toolbar);
-		// add pointer components
-		//toolbar.add(Box.createHorizontalGlue());
-        //toolbar.add(loadingLabel);
-        //toolbar.add(btnPointer);
 		this.getDetailsPanel().addToolBarComponent(btnPointer);
 	}
 
-	private void cmdJumpToTree() {
+	@Override
+	protected void cmdJumpToTree() {
 		UIUtils.runCommand(this.getFrame(), new Runnable() {
 			@Override
 			public void run() {
 				final Integer iRuleId = (Integer) getSelectedCollectableId();
 				getExplorerController().cmdShowRuleUsage(iRuleId, RuleTreeModel.FRIST_NODE_LABEL);
+			}
+		});
+	}
+
+	@Override
+	protected void cmdShowResultInExplorer() {
+		UIUtils.runCommand(this.getFrame(), new Runnable() {
+			@Override
+			public void run() {
+				Main.getMainController().getExplorerController().cmdShowRuleUsage(null, null);
 			}
 		});
 	}

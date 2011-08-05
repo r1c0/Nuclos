@@ -29,7 +29,9 @@ import javax.swing.tree.TreePath;
 
 import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.explorer.node.rule.AbstractRuleTreeNode;
+import org.nuclos.client.explorer.node.rule.CodeTreeNode;
 import org.nuclos.client.explorer.node.rule.DirectoryRuleNode;
+import org.nuclos.client.explorer.node.rule.LibraryTreeNode;
 import org.nuclos.client.explorer.node.rule.RuleTreeModel;
 import org.nuclos.client.explorer.node.rule.TimelimitNode;
 import org.nuclos.client.masterdata.datatransfer.RuleAndRuleUsageEntity;
@@ -55,7 +57,7 @@ import org.nuclos.server.navigation.treenode.TreeNode;
 public abstract class AbstractRuleExplorerNode extends ExplorerNode<AbstractRuleTreeNode> {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -246,6 +248,41 @@ public abstract class AbstractRuleExplorerNode extends ExplorerNode<AbstractRule
 					if (childNode.getTreeNode().getRuleEntity().getRuleVo() != null &&
 							childNode.getTreeNode().getRuleEntity().getRuleVo().getId().equals(ruleIdToGoto)) {
 						childNode.expandToTimelimitRuleWithId(ruleIdToGoto, jTree);
+					}
+				}
+			}
+		}
+	}
+
+	public void expandToLibraryRuleWithId(Integer ruleIdToGoto, JTree jTree) throws CommonFinderException {
+		if (getTreeNode() instanceof CodeTreeNode) {
+			CodeTreeNode ctn = (CodeTreeNode) getTreeNode();
+			if (ctn.getCodeVO().getId().equals(ruleIdToGoto)) {
+				jTree.setSelectionPath(new TreePath(this.getPath()));
+				jTree.scrollPathToVisible(new TreePath(this.getPath()));
+			}
+		}
+		else if (getTreeNode() instanceof DirectoryRuleNode) {
+			if (((DirectoryRuleNode) getTreeNode()).isRoot()) {
+				this.refresh(jTree);
+				for (int i = 0; i < getChildCount(); i++) {
+					final AbstractRuleExplorerNode childNode = (AbstractRuleExplorerNode) getChildAt(i);
+					if (childNode.getLabel().equals(RuleTreeModel.LIBRARY_LABEL)) {
+						childNode.expandToLibraryRuleWithId(ruleIdToGoto, jTree);
+					}
+				}
+			}
+		}
+		else if (getTreeNode() instanceof LibraryTreeNode) {
+			if (getTreeNode().getLabel().equals(RuleTreeModel.LIBRARY_LABEL)) {
+				this.refresh(jTree);
+				for (int i = 0; i < getChildCount(); i++) {
+					final AbstractRuleExplorerNode childNode = (AbstractRuleExplorerNode) getChildAt(i);
+					if (childNode.getTreeNode() instanceof CodeTreeNode) {
+						CodeTreeNode ctn = (CodeTreeNode) childNode.getTreeNode();
+						if (ctn.getCodeVO().getId().equals(ruleIdToGoto)) {
+							childNode.expandToLibraryRuleWithId(ruleIdToGoto, jTree);
+						}
 					}
 				}
 			}

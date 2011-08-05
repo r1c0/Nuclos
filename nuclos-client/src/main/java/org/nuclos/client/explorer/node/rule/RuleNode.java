@@ -19,8 +19,10 @@ package org.nuclos.client.explorer.node.rule;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
 
+import org.nuclos.client.customcode.CodeDelegate;
 import org.nuclos.client.masterdata.datatransfer.RuleAndRuleUsageEntity;
 import org.nuclos.client.rule.RuleDelegate;
+import org.nuclos.server.customcode.valueobject.CodeVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.ruleengine.valueobject.*;
@@ -33,9 +35,6 @@ import java.util.*;
  */
 public class RuleNode extends AbstractRuleTreeNode {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private RuleVO ruleVo;
 	private String entity;
@@ -66,7 +65,7 @@ public class RuleNode extends AbstractRuleTreeNode {
 		this(aRuleVo, aRuleVo.getId(), aRuleVo.getName(), aRuleVo.getDescription(), new ArrayList<AbstractRuleTreeNode>(), RuleNodeType.RULE, false, isTimeLimitRule);
 		this.eventName = aEventName;
 	}
-	
+
 	public RuleNode(RuleVO aRuleVo, RuleEngineGenerationVO generationVO, boolean aIsAllRuleSubnodeFlag) {
 		this(aRuleVo, aRuleVo.getId(), aRuleVo.getName() // + " (" +generationVO.getOrder() + ")"
 				, aRuleVo.getDescription(), new ArrayList<AbstractRuleTreeNode>(), RuleNodeType.RULE, aIsAllRuleSubnodeFlag, false);
@@ -95,7 +94,7 @@ public class RuleNode extends AbstractRuleTreeNode {
 			if (saveEntityNodes != null && saveEntityNodes.size() > 0) {
 				subNodeList.add(new DirectoryRuleNode(false, CommonLocaleDelegate.getMessage("RuleNode.9","Speichern pro Entit\u00e4t"), CommonLocaleDelegate.getMessage("RuleNode.10","Speichern pro Entit\u00e4t"), saveEntityNodes, true));
 			}
-			
+
 			final List<EntityRuleNode> deleteEntityNodes = createEventEntityRulesNode(RuleTreeModel.DELETE_EVENT_NAME);
 			if (deleteEntityNodes != null && deleteEntityNodes.size() > 0) {
 				subNodeList.add(new DirectoryRuleNode(false, CommonLocaleDelegate.getMessage("RuleNode.4","L\u00f6schen pro Entit\u00e4t"), CommonLocaleDelegate.getMessage("RuleNode.5","L\u00f6schen pro Entit\u00e4t"), deleteEntityNodes, true));
@@ -109,6 +108,11 @@ public class RuleNode extends AbstractRuleTreeNode {
 			final Collection<RuleEventUsageVO> collTimelimit = RuleDelegate.getInstance().getByEventAndRule(RuleTreeModel.FRIST_EVENT_NAME, this.ruleVo.getId());
 			if (collTimelimit != null && collTimelimit.size() > 0) {
 				subNodeList.add(new TimelimitNode(CommonLocaleDelegate.getMessage("RuleNode.3","Fristen"), CommonLocaleDelegate.getMessage("RuleNode.8","Regeln die t\u00e4glich vom System ausgef\u00fchrt werden"), false));
+			}
+
+			final List<CodeVO> codes = CodeDelegate.getInstance().getAll();
+			if (codes != null && codes.size() > 0) {
+				subNodeList.add(new LibraryTreeNode(CommonLocaleDelegate.getText("treenode.rules.library.label"), CommonLocaleDelegate.getText("treenode.rules.library.description")));
 			}
 			setSubNodes(subNodeList);
 		}
@@ -129,7 +133,7 @@ public class RuleNode extends AbstractRuleTreeNode {
 		return result;
 	}
 
-	
+
 	private List<RuleGenerationNode> createGenerationNodes() {
 		final Map<Integer, RuleEngineGenerationVO> generationIdId2RuleGenerationVo = CollectionUtils.newHashMap();
 		for (RuleEngineGenerationVO generationVO : RuleDelegate.getInstance().getAllRuleGenerationsForRuleId(this.ruleVo.getId()))

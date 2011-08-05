@@ -14,24 +14,34 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.server.customcode.ejb3;
+package org.nuclos.client.explorer.node.rule;
 
-import java.util.List;
-
-import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.customcode.valueobject.CodeVO;
-import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
-public interface CodeFacadeRemote {
+public class CodeTreeNode extends AbstractRuleTreeNode {
 
-	public MasterDataVO create(MasterDataVO vo) throws CommonBusinessException;
+	private static final long serialVersionUID = 1L;
 
-	public MasterDataVO modify(MasterDataVO vo) throws CommonBusinessException;
+	private final CodeVO obj;
 
-	public void remove(MasterDataVO vo) throws CommonBusinessException;
+	public CodeTreeNode(CodeVO obj) {
+		super(obj.getId(), obj.getName(), obj.getDescription(), null, RuleNodeType.LIBRARY);
+		this.obj = obj;
+	}
 
-	public void check(MasterDataVO vo) throws CommonBusinessException;
+	@Override
+	public void refresh() { }
 
-	public List<CodeVO> getAll() throws CommonPermissionException;
+	@Override
+	public boolean isInsertRuleAllowd() {
+		return false;
+	}
+
+	public boolean isActive() {
+		return obj.isActive();
+	}
+
+	public CodeVO getCodeVO() {
+		return obj;
+	}
 }

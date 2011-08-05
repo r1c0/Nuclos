@@ -29,6 +29,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
@@ -108,7 +109,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 
 	private final Action actCheckRuleSource = new CommonAbstractAction(Icons.getInstance().getIconValidate16(), CommonLocaleDelegate.getMessage("RuleCollectController.2", "Quelltext pr\u00fcfen")) {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -119,9 +120,9 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	};
 
 	/**
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -163,7 +164,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 		this.subformctlUsage = new MasterDataSubFormController(getFrame(), parent, this.getDetailsPanel().getEditModel(), getEntityName(),
 				subform, this.getPreferences(), valueListProviderCache);
 	}
-	
+
 	public final MainFrameTab getMainFrameTab() {
 		return ifrm;
 	}
@@ -175,12 +176,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	}
 
 	private void setupResultToolBar() {
-		this.getResultPanel().addToolBarComponent(new JButton(new AbstractAction("", Icons.getInstance().getIconTree16()) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
+		this.getResultPanel().addPopupExtraMenuItem(new JMenuItem(new AbstractAction(CommonLocaleDelegate.getMessage("MasterDataCollectController.6","Ergebnis in Explorer anzeigen"), Icons.getInstance().getIconTree16()) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Main.getMainController().getExplorerController().cmdShowRuleUsage(null, null);
@@ -189,15 +185,9 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	}
 
 	private void setupDetailsToolBar() {
-		// additional functionality in Details panel:
-		//final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
-
-		final JButton btnCheckRuleSource = new JButton(this.actCheckRuleSource);
-		btnCheckRuleSource.setName("btnCheckRuleSource");
-		this.getDetailsPanel().addToolBarComponent(btnCheckRuleSource);
-
-		final JButton btnMakeTreeRoot = new JButton();
+		final JMenuItem btnMakeTreeRoot = new JMenuItem();
 		btnMakeTreeRoot.setIcon(Icons.getInstance().getIconMakeTreeRoot16());
+		btnMakeTreeRoot.setText(CommonLocaleDelegate.getMessage("MasterDataCollectController.9","In Explorer anzeigen"));
 		btnMakeTreeRoot.setToolTipText(CommonLocaleDelegate.getMessage("DatasourceCollectController.14", "In Explorer anzeigen"));
 		btnMakeTreeRoot.addActionListener(new ActionListener() {
 			@Override
@@ -205,14 +195,12 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 				cmdJumpToTree();
 			}
 		});
-		//toolbar.add(btnMakeTreeRoot);
-		this.getDetailsPanel().addToolBarComponent(btnMakeTreeRoot);
 
-		//this.getDetailsPanel().setCustomToolBarArea(toolbar);
-		// add pointer components
-		//toolbar.add(Box.createHorizontalGlue());
-        //toolbar.add(loadingLabel);
-        //toolbar.add(btnPointer);
+		this.getDetailsPanel().addPopupExtraMenuItem(btnMakeTreeRoot);
+
+		final JButton btnCheckRuleSource = new JButton(this.actCheckRuleSource);
+		btnCheckRuleSource.setName("btnCheckRuleSource");
+		this.getDetailsPanel().addToolBarComponent(btnCheckRuleSource);
 		this.getDetailsPanel().addToolBarComponent(btnPointer);
 	}
 
@@ -450,7 +438,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 		tbl.setDragEnabled(true);
 		tbl.setTransferHandler(new TransferHandler() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -584,7 +572,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 
 	private class RuleCollectPanel extends CollectPanel<CollectableRule> {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -596,7 +584,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 		public ResultPanel<CollectableRule> newResultPanel() {
 			return new NuclosResultPanel<CollectableRule>() {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 

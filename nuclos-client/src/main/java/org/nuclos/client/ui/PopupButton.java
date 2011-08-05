@@ -20,131 +20,134 @@ import javax.swing.SwingConstants;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-public class PopupButton extends JToggleButton implements PopupMenuListener, ActionListener{
+public class PopupButton extends JToggleButton implements PopupMenuListener, ActionListener {
 
-		/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
-		public final JPopupMenu popupMenu;
-		
-		private long hideTime = 0l;
-		
-		private final MouseListener itemMouseListener = new MouseAdapter() {
+	public final JPopupMenu popupMenu;
+
+	private long hideTime = 0l;
+
+	private final MouseListener itemMouseListener = new MouseAdapter() {
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			popupMenu.setVisible(false);
+		}
+	};
+
+	public PopupButton(String text) {
+		super(text);
+		setSelected(false);
+		setHorizontalAlignment(SwingConstants.LEFT);
+
+		popupMenu = new JPopupMenu() {
+			/**
+				 *
+				 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
-			public void mouseReleased(MouseEvent e) {
-				popupMenu.setVisible(false);
+			protected JMenuItem createActionComponent(Action a) {
+				JMenuItem result = super.createActionComponent(a);
+				result.addMouseListener(itemMouseListener);
+				return result;
 			}
 		};
-		
-		public PopupButton(String text) {
-			super(text);
-			setSelected(false);
-			setHorizontalAlignment(SwingConstants.LEFT);
-			
-			popupMenu = new JPopupMenu() {
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
 
-				@Override
-				protected JMenuItem createActionComponent(Action a) {
-					JMenuItem result = super.createActionComponent(a);
-					result.addMouseListener(itemMouseListener);
-					return result;
-				}
-			};
-			
-			popupMenu.addPopupMenuListener(this);
-			addActionListener(this);
-		}
-		
-		public void addSeparator() {
-			popupMenu.addSeparator();
-		}
-		
-		public JMenuItem add(JMenuItem menuItem) {
-			menuItem.addMouseListener(itemMouseListener);
-			return popupMenu.add(menuItem);
-		}
+		popupMenu.addPopupMenuListener(this);
+		addActionListener(this);
+	}
 
-		@Override
-		public Component add(Component comp) {
-			comp.addMouseListener(itemMouseListener);
-			return popupMenu.add(comp);
-		}
-		
-		@Override
-		public Dimension getPreferredSize() {
-			Dimension defaultPrefSize = super.getPreferredSize();
-			return new Dimension(defaultPrefSize.width + Icons.getInstance().getArrowButtonX().getIconWidth() + 1, defaultPrefSize.height);
-		}
-		
-		@Override
-		public Dimension getMaximumSize() {
-			Dimension defaultMaxSize = super.getMaximumSize();
-			return new Dimension(defaultMaxSize.width + Icons.getInstance().getArrowButtonX().getIconWidth() + 1, defaultMaxSize.height);
-		}
+	public void addSeparator() {
+		popupMenu.addSeparator();
+	}
 
-		@Override
-		public Dimension getMinimumSize() {
-			Dimension defaultMinSize = super.getMinimumSize();
-			return new Dimension(defaultMinSize.width + Icons.getInstance().getArrowButtonX().getIconWidth() + 1, defaultMinSize.height);
-		}
+	public JMenuItem add(JMenuItem menuItem) {
+		menuItem.addMouseListener(itemMouseListener);
+		return popupMenu.add(menuItem);
+	}
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (!popupMenu.isShowing()) {
-				if (hideTime + 200l < System.currentTimeMillis()) {
-					popupMenu.show(PopupButton.this, 0, PopupButton.this.getHeight());
-				} else {
-					PopupButton.this.setSelected(false);
-				}
-			} else
-				popupMenu.setVisible(false);
+	@Override
+	public Component add(Component comp) {
+		comp.addMouseListener(itemMouseListener);
+		return popupMenu.add(comp);
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		Dimension defaultPrefSize = super.getPreferredSize();
+		return new Dimension(defaultPrefSize.width + Icons.getInstance().getArrowButtonX().getIconWidth() + 1, defaultPrefSize.height);
+	}
+
+	@Override
+	public Dimension getMaximumSize() {
+		Dimension defaultMaxSize = super.getMaximumSize();
+		return new Dimension(defaultMaxSize.width + Icons.getInstance().getArrowButtonX().getIconWidth() + 1, defaultMaxSize.height);
+	}
+
+	@Override
+	public Dimension getMinimumSize() {
+		Dimension defaultMinSize = super.getMinimumSize();
+		return new Dimension(defaultMinSize.width + Icons.getInstance().getArrowButtonX().getIconWidth() + 1, defaultMinSize.height);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (!popupMenu.isShowing()) {
+			if (hideTime + 200l < System.currentTimeMillis()) {
+				popupMenu.show(PopupButton.this, 0, PopupButton.this.getHeight());
+			} else {
+				PopupButton.this.setSelected(false);
+			}
 		}
-		
-		@Override
-		public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-			setSelected(false);
-			hideTime = System.currentTimeMillis();
+		else {
+			popupMenu.setVisible(false);
 		}
-		
-		@Override
-		public void popupMenuCanceled(PopupMenuEvent e) {
-		}
-		
-		@Override
-		public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-			for (int i = 0; i < popupMenu.getComponentCount(); i++) {
-				Component c = popupMenu.getComponent(i);
-				if (c instanceof AbstractButton) {
-					AbstractButton btn = (AbstractButton) c;
-					if (btn.getAction() != null) {
-						btn.setEnabled(btn.getAction().isEnabled());
-					}
+	}
+
+	@Override
+	public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+		setSelected(false);
+		hideTime = System.currentTimeMillis();
+	}
+
+	@Override
+	public void popupMenuCanceled(PopupMenuEvent e) {
+	}
+
+	@Override
+	public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+		for (int i = 0; i < popupMenu.getComponentCount(); i++) {
+			Component c = popupMenu.getComponent(i);
+			if (c instanceof AbstractButton) {
+				AbstractButton btn = (AbstractButton) c;
+				if (btn.getAction() != null) {
+					btn.setEnabled(btn.getAction().isEnabled());
 				}
 			}
 		}
+	}
 
-		@Override
-		public void paint(Graphics g) {
-			super.paint(g);
-			
-			Graphics2D g2 = (Graphics2D) g;
-			
-			ImageIcon bg = Icons.getInstance().getArrowButtonX();
-			ImageIcon ar = Icons.getInstance().getArrowButtonDown();
-			
-			int xBg = getWidth()-2-bg.getIconWidth();
-			int yBg = 3;
-			int xAr = xBg+(bg.getIconWidth()-ar.getIconWidth())/2;
-			int yAr = yBg+(bg.getIconHeight()-ar.getIconHeight())/2;
-			
-			g2.drawImage(bg.getImage(), xBg, yBg, null);
-			g2.drawImage(ar.getImage(), xAr, yAr, null);
-		}
-		
+	@Override
+	public void paint(Graphics g) {
+		super.paint(g);
+
+		Graphics2D g2 = (Graphics2D) g;
+
+		ImageIcon bg = Icons.getInstance().getArrowButtonX();
+		ImageIcon ar = Icons.getInstance().getArrowButtonDown();
+
+		int xBg = getWidth() - 2 - bg.getIconWidth();
+		int yBg = 3;
+		int xAr = xBg + (bg.getIconWidth() - ar.getIconWidth()) / 2;
+		int yAr = yBg + (bg.getIconHeight() - ar.getIconHeight()) / 2;
+
+		g2.drawImage(bg.getImage(), xBg, yBg, null);
+		g2.drawImage(ar.getImage(), xAr, yAr, null);
+	}
+
+
+	public int getItemCount() {
+		return popupMenu.getComponentCount();
+	}
 }

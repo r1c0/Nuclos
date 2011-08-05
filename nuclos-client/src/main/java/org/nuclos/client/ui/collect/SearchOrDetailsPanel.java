@@ -50,7 +50,7 @@ import org.nuclos.common2.StringUtils;
 public abstract class SearchOrDetailsPanel extends JPanel {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -58,9 +58,9 @@ public abstract class SearchOrDetailsPanel extends JPanel {
 	 * the toolbar.
 	 */
 	private final JToolBar toolBar = UIUtils.createNonFloatableToolBar();
-	
+
 	private int popbtnExtraIndex = -1;
-	
+
 	private final PopupButton popbtnExtra = new PopupButton(CommonLocaleDelegate.getMessage("PopupButton.Extras","Extras"));
 
 	/**
@@ -82,17 +82,17 @@ public abstract class SearchOrDetailsPanel extends JPanel {
 
 	protected SearchOrDetailsPanel(boolean bForSearch) {
 		super(new BorderLayout());
-		
+
 		this.editview = new DefaultEditView(null, new DefaultCollectableComponentsProvider(), bForSearch, null);
-		
+
 		if (!bForSearch)
 			showToolbar(false);
 	}
-	
+
 	public final CenteringPanel getCenteringPanel() {
 		return pnlCenter;
 	}
-	
+
 	/**
 	 * init after construct...
 	 */
@@ -100,48 +100,48 @@ public abstract class SearchOrDetailsPanel extends JPanel {
 		setupDefaultToolBarActions(toolBar);
 		setNorthComponent(toolBar);
 		popbtnExtraIndex = getToolBarNextIndex();
-		if (popbtnExtra.getComponentCount() > 0)
+		if (popbtnExtra.getItemCount() > 0)
 			toolBar.add(popbtnExtra);
 	}
-	
+
 	public void updatePopupExtraVisibility() {
 		if (popbtnExtraIndex != -1 && toolBar.getComponentIndex(popbtnExtra) < 0) {
 			toolBar.add(popbtnExtra, popbtnExtraIndex);
 		}
 	}
-	
+
 	private void setNorthComponent(JComponent comp) {
 		add(comp, BorderLayout.NORTH);
 	}
-	
+
 	protected void setCenterComponent(JComponent comp) {
 		add(comp, BorderLayout.CENTER);
 	}
-	
+
 	protected void setSouthComponent(JComponent comp) {
 		add(comp, BorderLayout.SOUTH);
 	}
 
 	protected abstract void setupDefaultToolBarActions( JToolBar toolBar);
-	
+
 	public void showToolbar(boolean show) {
 		toolBar.setVisible(show);
 	}
-	
+
 	public void addPopupExtraSeparator() {
 		updatePopupExtraVisibility();
 		popbtnExtra.addSeparator();
 	}
-	
+
 	public Component addPopupExtraComponent(Component comp) {
 		updatePopupExtraVisibility();
 		return popbtnExtra.add(comp);
 	}
-	
+
 	public void removePopupExtraComponent(Component comp) {
 		popbtnExtra.remove(comp);
 	}
-	
+
 	public JMenuItem addPopupExtraMenuItem(JMenuItem mi) {
 		updatePopupExtraVisibility();
 		return popbtnExtra.add(mi);
@@ -150,9 +150,9 @@ public abstract class SearchOrDetailsPanel extends JPanel {
 	public void removePopupExtrasMenuItem(JMenuItem mi) {
 		popbtnExtra.remove(mi);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param comp
 	 * @return index of comp in toolbar
 	 */
@@ -161,26 +161,26 @@ public abstract class SearchOrDetailsPanel extends JPanel {
 		toolBar.validate();
 		return toolBar.getComponentIndex(comp);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param comps
 	 * @return index of comp in toolbar
 	 */
 	public int addToolBarComponents(List<Component> comps) {
 		if (comps.size() == 0)
 			return -1;
-		
+
 		for (Component comp : comps)
 			toolBar.add(comp);
 		toolBar.validate();
 		return toolBar.getComponentIndex(comps.get(0));
 	}
-	
+
 	public void addToolBarComponents(List<Component> comps, int index) {
 		if (comps.size() == 0)
 			return;
-		
+
 		// add last list entry first to toolbar
 		List<Component> reversedComps = new ArrayList<Component>(comps);
 		Collections.reverse(reversedComps);
@@ -188,30 +188,30 @@ public abstract class SearchOrDetailsPanel extends JPanel {
 			toolBar.add(comp, index);
 		toolBar.validate();
 	}
-	
+
 	public int getToolBarNextIndex() {
 		return toolBar.getComponentCount();
 	}
-	
+
 	public int addToolBarSeparator() {
 		toolBar.addSeparator();
 		return toolBar.getComponentCount()-1;
 	}
-	
+
 	public void addToolBarComponent(Component comp, int index) {
 		toolBar.add(comp, index);
 		toolBar.validate();
 	}
-	
+
 	public void addToolBarHorizontalStruct(int width) {
 		toolBar.add(Box.createHorizontalStrut(width));
 	}
-	
+
 	public void removeToolBarComponent(Component comp) {
 		toolBar.remove(comp);
 		toolBar.revalidate();
 	}
-	
+
 	public void removeToolBarComponents(List<Component> comps) {
 		for (Component comp : comps)
 			toolBar.remove(comp);

@@ -20,12 +20,14 @@ import java.lang.reflect.Constructor;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.explorer.node.CodeExplorerNode;
 import org.nuclos.client.explorer.node.DatasourceDirectoryExplorerNode;
 import org.nuclos.client.explorer.node.DatasourceExplorerNode;
 import org.nuclos.client.explorer.node.DatasourceReportExplorerNode;
 import org.nuclos.client.explorer.node.GenericObjectExplorerNode;
 import org.nuclos.client.explorer.node.GenericObjectSearchResultExplorerNode;
 import org.nuclos.client.explorer.node.GroupExplorerNode;
+import org.nuclos.client.explorer.node.LibraryExplorerNode;
 import org.nuclos.client.explorer.node.MasterDataExplorerNode;
 import org.nuclos.client.explorer.node.NucletContentCustomComponentExplorerNode;
 import org.nuclos.client.explorer.node.NucletContentEntityExplorerNode;
@@ -46,8 +48,10 @@ import org.nuclos.client.explorer.node.datasource.DatasourceReportFormularNode;
 import org.nuclos.client.explorer.node.datasource.DatasourceUsageNode;
 import org.nuclos.client.explorer.node.datasource.DirectoryDatasourceNode;
 import org.nuclos.client.explorer.node.datasource.OwnDatasourceNode;
+import org.nuclos.client.explorer.node.rule.CodeTreeNode;
 import org.nuclos.client.explorer.node.rule.DirectoryRuleNode;
 import org.nuclos.client.explorer.node.rule.EntityRuleNode;
+import org.nuclos.client.explorer.node.rule.LibraryTreeNode;
 import org.nuclos.client.explorer.node.rule.RuleGenerationNode;
 import org.nuclos.client.explorer.node.rule.RuleNode;
 import org.nuclos.client.explorer.node.rule.StateModelNode;
@@ -132,13 +136,15 @@ public class ExplorerNodeFactory {
 		this.putConstructor(EntityRuleNode.class, RuleEntityExplorerNode.class);
 		this.putConstructor(TimelimitNode.class, RuleEntityExplorerNode.class);
 		this.putConstructor(DirectoryRuleNode.class, RuleEntityExplorerNode.class);
+		this.putConstructor(CodeTreeNode.class, CodeExplorerNode.class);
+		this.putConstructor(LibraryTreeNode.class, LibraryExplorerNode.class);
 		this.putConstructor(DatasourceNode.class, DatasourceExplorerNode.class);
 		this.putConstructor(DatasourceReportFormularNode.class, DatasourceReportExplorerNode.class);
 		this.putConstructor(DirectoryDatasourceNode.class, DatasourceDirectoryExplorerNode.class);
 		this.putConstructor(AllDatasourceNode.class, DatasourceDirectoryExplorerNode.class);
 		this.putConstructor(DatasourceUsageNode.class, DatasourceDirectoryExplorerNode.class);
 		this.putConstructor(OwnDatasourceNode.class, DatasourceDirectoryExplorerNode.class);
-		
+
 		this.putConstructor(NucletTreeNode.class, NucletExplorerNode.class);
 		this.putConstructor(NucletContentTreeNode.class, NucletContentExplorerNode.class);
 		this.putConstructor(DefaultNucletContentEntryTreeNode.class, NucletContentEntryExplorerNode.class);
@@ -174,7 +180,7 @@ public class ExplorerNodeFactory {
 				throw new ExplorerNodeRefreshException("Der Knoten "+treenode.getLabel()+" in der Baumansicht konnte nicht wiederhergestellt werden.\n" + e.getMessage());
 			}
 		}
-		
+
 		final Class<? extends TreeNode> clsTreeNode = treenode.getClass();
 		final Constructor<? extends ExplorerNode> ctorExplorerNode = this.mp.get(clsTreeNode);
 		if (ctorExplorerNode == null) {

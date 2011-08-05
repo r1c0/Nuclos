@@ -14,16 +14,23 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-/**
- *
- */
-package org.nuclos.client.explorer.node.rule;
+package org.nuclos.client.explorer.node;
+
+import org.nuclos.server.navigation.treenode.TreeNode;
 
 /**
- * type of an rule tree node
- * @author <a href="mailto:rainer.schneider@novabit.de">rainer.schneider</a>
- *
+ * <code>ExplorerNode</code> representing folder for library rules.
  */
-public enum RuleNodeType {
-	DIRECTORY, RULE, STATEMODEL, TRANSITION, AD_GENERATION, ENTITY, LIBRARY
+public class LibraryExplorerNode extends AbstractRuleExplorerNode {
+
+	private static final long serialVersionUID = 1L;
+
+	public LibraryExplorerNode(TreeNode treenode) {
+		super(treenode);
+	}
+
+	@Override
+	protected boolean isRefreshAvailable() {
+		return true;
+	}
 }

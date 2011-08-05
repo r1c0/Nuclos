@@ -16,9 +16,14 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.customcode;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.customcode.ejb3.CodeFacadeRemote;
+import org.nuclos.server.customcode.valueobject.CodeVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 /**
@@ -58,4 +63,12 @@ public class CodeDelegate {
 		facade.check(vo);
 	}
 
+	public List<CodeVO> getAll() {
+		try {
+			return facade.getAll();
+		}
+		catch (CommonPermissionException ex) {
+			return Collections.emptyList();
+		}
+	}
 }

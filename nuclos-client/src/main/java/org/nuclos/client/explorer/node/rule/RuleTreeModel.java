@@ -27,6 +27,7 @@ public class RuleTreeModel {
 	public static final String FRIST_EVENT_NAME = CommonLocaleDelegate.getMessage("RuleTreeModel.3","Frist");
 	public static final String ALL_RULES_NODE_LABEL = CommonLocaleDelegate.getMessage("RuleTreeModel.1","Alle Regeln");
 	public static final String FRIST_NODE_LABEL = CommonLocaleDelegate.getMessage("RuleTreeModel.4","Fristen");
+	public static final String LIBRARY_LABEL = CommonLocaleDelegate.getText("treenode.rules.library.label");
 
 	public RuleTreeModel() {
 		super();

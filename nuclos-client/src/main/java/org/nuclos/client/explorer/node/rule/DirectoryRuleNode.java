@@ -150,15 +150,15 @@ public class DirectoryRuleNode extends AbstractRuleTreeNode {
 		/*for (MasterDataMetaVO mdmetaVO : MasterDataDelegate.getInstance().getMetaData()) {
 			if (MasterDataDelegate.getInstance().getUsesRuleEngine(mdmetaVO.getEntityName())) {
 				result.add(new EntityRuleNode(sEventName, mdmetaVO.getEntityName(), CommonLocaleDelegate.getLabelFromMetaDataVO(mdmetaVO), null, false));//mdmetaVO.getLabel(), null, false));
-			}			
+			}
 		}*/
 		Collection<String> ruleUsageEntitiesByEvent = RuleDelegate.getInstance().getRuleUsageEntityNamesByEvent(sEventName);
 		for (String entityName : ruleUsageEntitiesByEvent) {
-			result.add(new EntityRuleNode(sEventName, entityName, 
-				CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(entityName)), 
+			result.add(new EntityRuleNode(sEventName, entityName,
+				CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(entityName)),
 				null, false));
 		}
-		
+
 		Collections.sort(result, new Comparator<EntityRuleNode>() {
 			@Override
 			public int compare(EntityRuleNode o1, EntityRuleNode o2) {
@@ -238,6 +238,7 @@ public class DirectoryRuleNode extends AbstractRuleTreeNode {
 		result.add(new DirectoryRuleNode(false, DirectoryRuleNode.MainDirectory.STATE_TRANSITION, null, false));
 		result.add(new DirectoryRuleNode(false, DirectoryRuleNode.MainDirectory.OBJECT_GENERATION, null, false));
 		result.add(new TimelimitNode(CommonLocaleDelegate.getMessage("DirectoryRuleNode.6","Fristen"), CommonLocaleDelegate.getMessage("DirectoryRuleNode.14","Regeln die t\u00e4glich vom System ausgef\u00fchrt werden"), true));
+		result.add(new LibraryTreeNode(CommonLocaleDelegate.getText("treenode.rules.library.label"), CommonLocaleDelegate.getText("treenode.rules.library.description")));
 
 		return result;
 	}
@@ -249,7 +250,8 @@ public class DirectoryRuleNode extends AbstractRuleTreeNode {
 		DELETE_ENTITY(CommonLocaleDelegate.getMessage("DirectoryRuleNode.8","L\u00f6schen pro Entit\u00e4t"), CommonLocaleDelegate.getMessage("DirectoryRuleNode.11","Regeln die automatisch beim L\u00f6schen einer Entit\u00e4t ausgef\u00fchrt werden")),
 		USEREVENT_ENTITY(CommonLocaleDelegate.getMessage("DirectoryRuleNode.3","Benutzeraktion pro Entit\u00e4t"), CommonLocaleDelegate.getMessage("DirectoryRuleNode.13","Regeln die manuell durch den Benutzer gestartet werden k\u00f6nnen")),
 		ALL_RULES(CommonLocaleDelegate.getMessage("DirectoryRuleNode.1","Alle Regeln"), CommonLocaleDelegate.getMessage("DirectoryRuleNode.2","Alle Regeln")),
-		TIMELIMIT(CommonLocaleDelegate.getMessage("DirectoryRuleNode.7","Fristen"), CommonLocaleDelegate.getMessage("DirectoryRuleNode.15","Regeln die t\u00e4glich vom System ausgef\u00fchrt werden"));
+		TIMELIMIT(CommonLocaleDelegate.getMessage("DirectoryRuleNode.7","Fristen"), CommonLocaleDelegate.getMessage("DirectoryRuleNode.15","Regeln die t\u00e4glich vom System ausgef\u00fchrt werden")),
+		LIBRARY(CommonLocaleDelegate.getText("treenode.rules.library.label"), CommonLocaleDelegate.getText("treenode.rules.library.description"));
 
 		private final String label;
 		private final String descripton;

@@ -60652,6 +60652,36 @@
     "resourceID": "access.denied.exit",
     "locale": "de",
     "text": "Zugriff verweigert. Client wird beendet."
+  },
+  {
+    "resourceID": "treenode.rules.library.label",
+    "locale": "i-default",
+    "text": "Library rules"
+  },
+  {
+    "resourceID": "treenode.rules.library.label",
+    "locale": "en",
+    "text": "Library rules"
+  },
+  {
+    "resourceID": "treenode.rules.library.label",
+    "locale": "de",
+    "text": "Bibliotheksregeln"
+  },
+  {
+    "resourceID": "treenode.rules.library.description",
+    "locale": "i-default",
+    "text": "Library rules"
+  },
+  {
+    "resourceID": "treenode.rules.library.description",
+    "locale": "en",
+    "text": "Library rules"
+  },
+  {
+    "resourceID": "treenode.rules.library.description",
+    "locale": "de",
+    "text": "Bibliotheksregeln"
   }
 ]
 
