@@ -20,6 +20,9 @@
 package org.nuclos.server.common;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -75,6 +78,17 @@ public class ServerLocaleDelegate implements CommonLocaleDelegate.LookupService 
 		}
 		catch (MissingResourceException ex) {
 			return key;
+		}
+	}
+
+	@Override
+	public NumberFormat getNumberFormat() {
+		if (getLocaleInfo() != null) {
+			MasterDataVO lmd = localeFacade.getLocaleVO(getLocaleInfo());
+			return new DecimalFormat(lmd.getField("numberformat", String.class), new DecimalFormatSymbols(getLocaleInfo().toLocale()));
+		}
+		else {
+			return NumberFormat.getNumberInstance();
 		}
 	}
 

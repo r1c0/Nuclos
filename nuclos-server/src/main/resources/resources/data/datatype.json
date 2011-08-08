@@ -24,7 +24,7 @@
     "name": "Text (Large Object)",
     "javatyp": "java.lang.String",
     "databasetyp": "clob"
-  },  
+  },
   {
     "name": "Binär (Large Object)",
     "javatyp": "[B",
@@ -46,21 +46,24 @@
     "scale": 9,
     "precision": 0,
     "javatyp": "java.lang.Integer",
-    "databasetyp": "number"
+    "databasetyp": "number",
+    "outputformat": "#,###"
   },
   {
     "name": "Kommazahl",
     "scale": 9,
     "precision": 4,
     "javatyp": "java.lang.Double",
-    "databasetyp": "number"
+    "databasetyp": "number",
+    "outputformat": "#,##0.0000"
   },
   {
     "name": "Kommazahl 2-stellig",
     "scale": 9,
     "precision": 2,
     "javatyp": "java.lang.Double",
-    "databasetyp": "number"
+    "databasetyp": "number",
+    "outputformat": "#,##0.00"
   },
   {
     "name": "Ja\/Nein",
@@ -70,20 +73,13 @@
     "databasetyp": "number"
   },
   {
-    "name": "Postleitzahl (D)",
-    "scale": 5,
-    "precision": 0,
-    "javatyp": "java.lang.Integer",
-    "databasetyp": "number"
-  },
-  {
     "name": "Verschlüsselter Text",
     "scale": 255,
     "precision": 0,
     "javatyp": "org.nuclos.common.NuclosPassword",
     "databasetyp": "varchar"
   },
-    {
+  {
     "name": "Bild",
     "scale": 255,
     "precision": 0,

@@ -30,7 +30,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-
+import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.DateTime;
@@ -38,8 +39,6 @@ import org.nuclos.common2.ExtendedRelativeDate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.RelativeDate;
 import org.nuclos.common2.StringUtils;
-import org.nuclos.common.NuclosPassword;
-import org.nuclos.common.NuclosFatalException;
 
 /**
  * Defines formatting and parsing of <code>CollectableField</code>s. This may be used to get the
@@ -72,6 +71,7 @@ public abstract class CollectableFieldFormat {
 
 	/**
 	 * parses the given text according to the given input format.
+	 * @param sOutputFormat
 	 * @param sInputFormat
 	 * @param sText
 	 * @return the parsed object
@@ -135,7 +135,7 @@ public abstract class CollectableFieldFormat {
 			return sText;
 		}
 	}	// class CollectableStringFormat
-	
+
 	private static class CollectablePasswordFormat extends CollectableFieldFormat {
 		@Override
 		public String format(String outputFormat, Object value) {
@@ -149,13 +149,14 @@ public abstract class CollectableFieldFormat {
 	}
 
 	private static class CollectableDateTimeFormat extends CollectableFieldFormat {
+
 		private static java.text.DateFormat getDateFormat() {
 			// Note that a new DateFormat must be created each time as SimpleDateFormat is not thread safe!
 			final SimpleDateFormat result = new SimpleDateFormat(DateTime.DATE_FORMAT_STRING, Locale.GERMANY);
 			result.setLenient(false);
 			return result;
 		}
-		
+
 		@Override
 		public String format(String sOutputFormat, Object oValue) {
 			if (oValue == null) {
@@ -189,7 +190,6 @@ public abstract class CollectableFieldFormat {
 				return null;
 			}
 			else if (oValue.toString().equalsIgnoreCase(RelativeDate.today().toString())) {
-				
 				return CommonLocaleDelegate.getMessage("datechooser.today.label", "Heute");
 			}
 			else if (oValue instanceof ExtendedRelativeDate) {
@@ -280,13 +280,14 @@ public abstract class CollectableFieldFormat {
 				try {
 					SimpleDateFormat sdf = new SimpleDateFormat(sInputFormat);
 					result = sdf.parse(sText);
+					return result;
 				}
 				catch (ParseException ex) {
 					throw new CollectableFieldFormatException(CommonLocaleDelegate.getMessage("CollectableFieldFormat.6","Invalid date: {0}", sText), ex);
 				}
 			}
 			else {
-				try {					
+				try {
 					result = CommonLocaleDelegate.parseDate(sText);
 				}
 				catch (ParseException ex) {
@@ -298,15 +299,20 @@ public abstract class CollectableFieldFormat {
 	}	// class CollectableDateFormat
 
 	private static class CollectableIntegerFormat extends CollectableFieldFormat {
+
 		@Override
 		public String format(String sOutputFormat, Object oValue) {
 			if (oValue == null) {
 				return null;
 			}
+			NumberFormat nf;
 			if (sOutputFormat == null) {
-				return oValue.toString();
+				nf = CommonLocaleDelegate.getNumberFormat();
 			}
-			return new DecimalFormat(sOutputFormat).format(oValue);
+			else {
+				nf = new DecimalFormat(sOutputFormat);
+			}
+			return nf.format(oValue);
 		}
 
 		@Override
@@ -319,10 +325,11 @@ public abstract class CollectableFieldFormat {
 						NumberFormat.getIntegerInstance() :
 						new DecimalFormat(sInputFormat);
 
-				if (new BigInteger(sText).compareTo(new BigInteger(new Integer(Integer.MAX_VALUE).toString())) > 0) {
+				final Number result = format.parse(sText);
+				if (new BigInteger(result.toString()).compareTo(new BigInteger(new Integer(Integer.MAX_VALUE).toString())) > 0) {
 					throw new CollectableFieldFormatException(CommonLocaleDelegate.getMessage("CollectableFieldFormat.13","Number too big: {0}", sText));
 				}
-				return format.parse(sText).intValue();
+				return result.intValue();
 			}
 			catch (ParseException ex) {
 				throw new CollectableFieldFormatException(CommonLocaleDelegate.getMessage("CollectableFieldFormat.11","Invalid integer number: {0}", sText), ex);
@@ -334,6 +341,7 @@ public abstract class CollectableFieldFormat {
 	}	// class CollectableIntegerFormat
 
 	private static class CollectableDoubleFormat extends CollectableFieldFormat {
+
 		@Override
 		public String format(String sOutputFormat, Object oValue) {
 			if (oValue == null) {
@@ -357,30 +365,15 @@ public abstract class CollectableFieldFormat {
 				return null;
 			}
 
-			String sText1 = sText;
 			try {
 				final NumberFormat numberformat;
 				if (sInputFormat == null) {
 					numberformat = NumberFormat.getNumberInstance();
-					// WORKAROUND for buggy NumberFormat: In the German Locale, "1.0" is interpreted as "10.0",
-					// but should be invalid. So we check the format ourselves:
-					if (Locale.getDefault().getLanguage().equals(Locale.GERMAN.getLanguage())) {
-						// For the German date format, whitespace is not significant. We don't know about
-						// other Locales, so we do this only for the German Locale:
-						sText1 = org.apache.commons.lang.StringUtils.deleteWhitespace(sText);
-						// check the desired format:
-						if (!sText1.matches("-?\\d+(\\.\\d{3})*(,\\d+)?")) {   // TODO-I18N
-							throw new CollectableFieldFormatException(CommonLocaleDelegate.getMessage("CollectableFieldFormat.7","Invalid decimal number: {0}", sText));
-						}
-					}
-					else
-						numberformat.setGroupingUsed(false);
 				}
 				else {
 					numberformat = new DecimalFormat(sInputFormat);
-					numberformat.setGroupingUsed(false);
 				}
-				return numberformat.parse(sText1).doubleValue();
+				return numberformat.parse(sText).doubleValue();
 			}
 			catch (ParseException ex) {
 				throw new CollectableFieldFormatException(CommonLocaleDelegate.getMessage("CollectableFieldFormat.8","Invalid decimal number: {0}", sText), ex);
@@ -388,20 +381,26 @@ public abstract class CollectableFieldFormat {
 		}
 	}	// class CollectableDoubleFormat
 
-	/**
-	 * @todo make this Locale dependent
-	 */
 	private static class CollectableBooleanFormat extends CollectableFieldFormat {
+
+		private final String labelYes;
+		private final String labelNo;
+
+		public CollectableBooleanFormat() {
+			this.labelYes = LangUtils.defaultIfNull(CommonLocaleDelegate.getText("CollectableBooleanFormat.yes"), "yes") ;
+			this.labelNo = LangUtils.defaultIfNull(CommonLocaleDelegate.getText("CollectableBooleanFormat.no"), "no") ;
+		}
+
 		@Override
 		public String format(String sOutputFormat, Object oValue) {
 			if (oValue == null) {
 				return null;
 			}
 			else if (oValue.equals(Boolean.TRUE)) {
-				return "ja";
+				return labelYes;
 			}
 			else {
-				return "nein";
+				return labelNo;
 			}
 		}
 
@@ -410,22 +409,19 @@ public abstract class CollectableFieldFormat {
 			if (sText == null) {
 				return null;
 			}
-			else if (sText.equals("ja") || sText.equals("true")) { // TODO-I18N
+			else if (sText.equalsIgnoreCase(labelYes) || sText.equals("true")) {
 				return Boolean.TRUE;
 			}
-			else if (sText.equals("nein") || sText.equals("false")) { // TODO-I18N
+			else if (sText.equalsIgnoreCase(labelNo) || sText.equals("false")) {
 				return Boolean.FALSE;
 			}
 			else {
 				throw new CollectableFieldFormatException(
-					CommonLocaleDelegate.getMessage("CollectableFieldFormat.2","Invalid boolean: {0} (expected \"yes\" or \"no\").", sText));
+					CommonLocaleDelegate.getMessage("CollectableFieldFormat.2","Invalid boolean: {0} (expected \"{1}\" or \"{2}\").", sText, labelYes, labelNo));
 			}
 		}
 	}	// class CollectableBooleanFormat
 
-	/**
-	 * @todo this is copied from DoubleFormat - refactor!
-	 */
 	private static class CollectableBigDecimalFormat extends CollectableFieldFormat {
 		@Override
 		public String format(String sOutputFormat, Object oValue) {
@@ -448,27 +444,18 @@ public abstract class CollectableFieldFormat {
 			if (StringUtils.looksEmpty(sText)) {
 				return null;
 			}
-			String sText1 = sText;
+
 			try {
-				final NumberFormat numberformat;
+				final DecimalFormat numberformat;
 				if (sInputFormat == null) {
-					numberformat = NumberFormat.getNumberInstance();
-					// WORKAROUND for buggy NumberFormat: In the German Locale, "1.0" is interpreted as "10.0",
-					// but should be invalid. So we check the format ourselves:
-					if (Locale.getDefault().getLanguage().equals(Locale.GERMAN.getLanguage())) {
-						// For the German date format, whitespace is not significant. We don't know about
-						// other Locales, so we do this only for the German Locale:
-						sText1 = org.apache.commons.lang.StringUtils.deleteWhitespace(sText1);
-						// check the desired format:
-						if (!sText1.matches("-?\\d+(\\.\\d{3})*(,\\d+)?")) {  // TODO-I18N
-							throw new CollectableFieldFormatException(CommonLocaleDelegate.getMessage("CollectableFieldFormat.9","Invalid decimal number: {0}", sText));
-						}
-					}
+					// getNumberInstance returns DecimalFormat
+					numberformat = (DecimalFormat) NumberFormat.getNumberInstance();
 				}
 				else {
 					numberformat = new DecimalFormat(sInputFormat);
 				}
-				return new BigDecimal(numberformat.parse(sText1).doubleValue());
+				numberformat.setParseBigDecimal(true);
+				return (BigDecimal)numberformat.parse(sText);
 			}
 			catch (ParseException ex) {
 				throw new CollectableFieldFormatException(CommonLocaleDelegate.getMessage("CollectableFieldFormat.10","Invalid decimal number: {0}", sText), ex);

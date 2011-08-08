@@ -17,6 +17,9 @@
 package org.nuclos.client.common;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
@@ -58,6 +61,7 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 	private static Date date;
 
 	// SimpleDateFormat is not Thread-safe, therefore: one per thread
+	private static ThreadLocal<NumberFormat> numberFormat;
 	private static ThreadLocal<DateFormat> dateFormat;
 	private static ThreadLocal<DateFormat> timeFormat;
 	private static ThreadLocal<DateFormat> dateTimeFormat;
@@ -98,6 +102,14 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 		synchronized (rbLock) {
 			resourceBundle = null;
 		}
+	}
+
+	@Override
+	public NumberFormat getNumberFormat() {
+		if (numberFormat == null) {
+			return NumberFormat.getNumberInstance();
+		}
+		return numberFormat.get();
 	}
 
 	@Override
@@ -270,10 +282,18 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 		// Get additional info from the locale's master data entry, and also set
 		// it in the client
 		MasterDataVO lmd = getLocaleVO(this.localeInfo);
+		final String numberformat = lmd.getField("numberformat", String.class);
 		final String dateformat = lmd.getField("dateformat", String.class);
 		final String timeformat = lmd.getField("timeformat", String.class);
 
 		parentchain = remoteInterface.getParentChain(localeInfo);
+
+		numberFormat = new ThreadLocal<NumberFormat>() {
+			@Override
+			protected NumberFormat initialValue() {
+				return new DecimalFormat(numberformat, new DecimalFormatSymbols(locale));
+			}
+		};
 
 		dateFormat = new ThreadLocal<DateFormat>() {
 			@Override

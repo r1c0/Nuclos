@@ -27872,17 +27872,17 @@
   {
     "resourceID": "CollectableFieldFormat.2",
     "locale": "i-default",
-    "text": "Invalid boolean: {0} (expected \"yes\" or \"no\")."
+    "text": "Invalid boolean: {0} (expected \"{1}\" or \"{2}\")."
   },
   {
     "resourceID": "CollectableFieldFormat.2",
     "locale": "en",
-    "text": "Invalid boolean: {0} (expected \"yes\" or \"no\")."
+    "text": "Invalid boolean: {0} (expected \"{1}\" or \"{2}\")."
   },
   {
     "resourceID": "CollectableFieldFormat.2",
     "locale": "de",
-    "text": "Ungültiger Wahrheitswert: {0} (\"ja\" oder \"nein\" erwartet)."
+    "text": "Ungültiger Wahrheitswert: {0} (\"{1}\" oder \"{2}\" erwartet)."
   },
   {
     "resourceID": "CollectableFieldFormat.7",
@@ -60742,6 +60742,36 @@
     "resourceID": "pivot.panel.value.field",
     "locale": "de",
     "text": "Werte Spalte"
+  },
+  {
+    "resourceID": "CollectableBooleanFormat.yes",
+    "locale": "i-default",
+    "text": "yes"
+  },
+  {
+    "resourceID": "CollectableBooleanFormat.yes",
+    "locale": "en",
+    "text": "yes"
+  },
+  {
+    "resourceID": "CollectableBooleanFormat.yes",
+    "locale": "de",
+    "text": "ja"
+  },
+  {
+    "resourceID": "CollectableBooleanFormat.no",
+    "locale": "i-default",
+    "text": "no"
+  },
+  {
+    "resourceID": "CollectableBooleanFormat.no",
+    "locale": "en",
+    "text": "no"
+  },
+  {
+    "resourceID": "CollectableBooleanFormat.no",
+    "locale": "de",
+    "text": "nein"
   }
 ]
 

@@ -112,7 +112,7 @@ public abstract class AbstractCollectableComponent
 		implements CollectableComponent, CollectableComponentModelListener, JPopupMenuFactory, ToolTipTextProvider {
 
 	private static final Logger LOG = Logger.getLogger(AbstractCollectableComponent.class);
-	
+
 	/**
 	 * the color to be used as background for multi editable components that don't share a common value.
 	 */
@@ -123,7 +123,7 @@ public abstract class AbstractCollectableComponent
 	private CollectableComponentModel clctcompmodel;
 	private final boolean bSearchable;
 	private boolean bViewLocked;
-	
+
 	private String sNextFocusComponent;
 
 	private ReferencingListener reflistener;
@@ -150,7 +150,7 @@ public abstract class AbstractCollectableComponent
 	 * the parameter, used for comparison.
 	 */
 	private ComparisonParameter compParameter;
-	
+
 	/**
 	 * used to display the possible entity fields for comparison with other field.
 	 */
@@ -319,7 +319,7 @@ public abstract class AbstractCollectableComponent
 		// It seems to be quiet common to <em>not</em> execute the Runnable...
 		/*
 		else if (LOG.isDebugEnabled()) {
-			LOG.debug("runLocked(" + runnable + ") not executed: view is already locked: " + 
+			LOG.debug("runLocked(" + runnable + ") not executed: view is already locked: " +
 				this + " field: " + getFieldName() + " -> " + getModel().getField().getValue());
 		}
 		 */
@@ -328,7 +328,7 @@ public abstract class AbstractCollectableComponent
 	protected final CollectableEntityField getComparisonOtherField() {
 		return clctefOtherField;
 	}
-	
+
 	protected final ComparisonParameter getComparisonParameter() {
 		return compParameter;
 	}
@@ -398,13 +398,13 @@ public abstract class AbstractCollectableComponent
 	 */
 	@Override
     public void makeConsistent() throws CollectableFieldFormatException {
-		// NUCLOSINT-839: If the view is locked and isConsistent() is false, 
+		// NUCLOSINT-839: If the view is locked and isConsistent() is false,
 		// viewToModel() does nothing. This seems to be a problem for search
 		// ComboBoxes. As a quick fix, we simply return, doing nothing as before
 		// but avoiding the assert. (Thomas Pasch)
-		// 
+		//
 		if (isSearchComponent() && isViewLocked()) return;
-		
+
 		if (!isConsistent()) {
 			viewToModel();
 		}
@@ -559,7 +559,7 @@ public abstract class AbstractCollectableComponent
 	/**
 	 * A convenient method for '<code>makeConsistent(); getModel().getField()</code>', i.e.
 	 * <em>different</em> from '<code>getModel().getField()</code>'.
-	 * 
+	 *
 	 * @return CollectableField
 	 * @throws CollectableFieldFormatException
 	 */
@@ -670,14 +670,14 @@ public abstract class AbstractCollectableComponent
 	public void setScalable(boolean bln) {
 		// only for special components
 	}
-	
+
 	/**
 	 * @param sNextFocusComponent
 	 */
 	@Override
 	public void setNextFocusComponent(String sNextFocusComponent) {
 		this.sNextFocusComponent = sNextFocusComponent;
-	}	
+	}
 
 	/**
 	 * @param bEnabled
@@ -1115,7 +1115,7 @@ public abstract class AbstractCollectableComponent
 			}
 		});
 
-		
+
 		final JRadioButtonMenuItem miOtherField = new JRadioButtonMenuItem(CommonLocaleDelegate.getMessage("AbstractCollectableComponent.12","Feldvergleich..."));
 		miOtherField.setToolTipText(CommonLocaleDelegate.getMessage("AbstractCollectableComponent.9","Dieses Feld mit dem Inhalt eines anderen Felds vergleichen"));
 		result.add(miOtherField);
@@ -1164,7 +1164,7 @@ public abstract class AbstractCollectableComponent
 				}
 			}
 		});
-		
+
 		final List<ComparisonParameter> compatibleParameters = ComparisonParameter.getCompatibleParameters(clctcomp.getEntityField());
 		final JRadioButtonMenuItem miParameterField = new JRadioButtonMenuItem(CommonLocaleDelegate.getMessage("AbstractCollectableComponent.18", null));
 		miParameterField.setToolTipText(CommonLocaleDelegate.getMessage("AbstractCollectableComponent.19", null));
@@ -1178,11 +1178,11 @@ public abstract class AbstractCollectableComponent
 					JComboBox cmbbx = new JComboBox(CollectionUtils.sorted(compatibleParameters, mapper).toArray());
 					cmbbx.setRenderer(new DefaultListRenderer(mapper));
 					cmbbx.setSelectedItem(clctcomp.getComparisonParameter());
-					
+
 					final int opt = JOptionPane.showConfirmDialog(clctcomp.getJComponent(),
 						new Object[] { CommonLocaleDelegate.getMessage("AbstractCollectableComponent.20", null), cmbbx },
 						CommonLocaleDelegate.getMessage("AbstractCollectableComponent.19", null), JOptionPane.OK_CANCEL_OPTION);
-					
+
 					if (opt == JOptionPane.OK_OPTION) {
 						clctcomp.setWithComparison((ComparisonParameter) cmbbx.getSelectedItem());
 						if (clctcomp.getComparisonParameter() != null) {
@@ -1201,7 +1201,7 @@ public abstract class AbstractCollectableComponent
 				}
 			});
 		}
-		
+
 		result.addPopupMenuListener(new PopupMenuListener() {
 			@Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent ev) {
@@ -1320,7 +1320,7 @@ public abstract class AbstractCollectableComponent
 		}
 		else {
 			boolean hasValue = !getModel().getField().isNull();
-			
+
 			if (isDetailsComponent() && getDetailsModel().isMandatoryAdded()) {
 				result = hasValue || hasFocus() ? null : ClientParameterProvider.getInstance().getColorValue(ParameterProvider.KEY_MANDATORY_ADDED_ITEM_BACKGROUND_COLOR, new Color(255,255,200));
 			} else if (isDetailsComponent() && getDetailsModel().isMandatory()) {
@@ -1330,7 +1330,7 @@ public abstract class AbstractCollectableComponent
 			}
 		}
 
-		Logger.getLogger(AbstractCollectableComponent.class).debug("getBackgroundColor: result = " + result);
+		//Logger.getLogger(AbstractCollectableComponent.class).debug("getBackgroundColor: result = " + result);
 		return result;
 	}
 
@@ -1591,7 +1591,7 @@ public abstract class AbstractCollectableComponent
 	protected static class CollectableComponentDetailTableCellRenderer extends javax.swing.table.DefaultTableCellRenderer implements TableCellRenderer {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		// blurfilter to hide data on which the user has no read permission

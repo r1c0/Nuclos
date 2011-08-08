@@ -2,28 +2,25 @@
   {
     "name": "Null",
     "language": "i-default",
-    "numberformat": "#.##",
+    "numberformat": "#,##0.##",
     "dateformat": "yyyy-MM-dd",
     "timeformat": "hh:mm:ss",
-    "decimalpoint": ".",
     "description": "Null Locale"
   },
   {
     "name": "English",
     "language": "en",
-    "numberformat": "#,##",
+    "numberformat": "#,##0.##",
     "dateformat": "MM\/dd\/yyyy",
     "timeformat": "hh:mm:ss",
-    "decimalpoint": ",",
     "description": "British English"
   },
   {
     "name": "German",
     "language": "de",
-    "numberformat": "#,##",
+    "numberformat": "#,##0.##",
     "dateformat": "dd.MM.yyyy",
     "timeformat": "hh:mm:ss",
-    "decimalpoint": ",",
     "description": "Deutsch"
   }
 ]

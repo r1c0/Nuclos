@@ -20,6 +20,7 @@
 package org.nuclos.common2;
 
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,6 +80,8 @@ public class CommonLocaleDelegate {
 		 */
 		public String getResourceById(LocaleInfo li, String key);
 
+		public NumberFormat getNumberFormat();
+
 		public DateFormat getDateFormat();
 
 		public DateFormat getTimeFormat();
@@ -113,6 +116,10 @@ public class CommonLocaleDelegate {
 
 	public static LocaleInfo getUserLocaleInfo()  {
 		return getKeyLookup().getLocaleInfo();
+	}
+
+	public static NumberFormat getNumberFormat() {
+		return getKeyLookup().getNumberFormat();
 	}
 
 	public static DateFormat getDateFormat() {
