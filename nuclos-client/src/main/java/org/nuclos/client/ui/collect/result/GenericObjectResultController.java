@@ -101,23 +101,21 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	 */
 	@Override
 	public SelectFixedColumnsController newSelectColumnsController(Component parent) {
-		if (ApplicationProperties.getInstance().isFunctionBlockDev()) { 
-			// retrieve sub form fields
-			final Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields = new HashMap<String, Map<String,EntityFieldMetaDataVO>>();
-			final String entityName = getEntity().getName();
-			final EntityMetaDataVO entityMd = MetaDataClientProvider.getInstance().getEntity(entityName);
-			final Set<String> subforms = GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(
-					IdUtils.unsafeToId(entityMd.getId()));
-			for (String subform: subforms) {
-				final Map<String, EntityFieldMetaDataVO> map = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(subform);
-				subFormFields.put(subform, map);
-			}
-			
-			return new PivotController(parent, new PivotPanel(subFormFields, pivots), this);
+		// retrieve sub form fields
+		final Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields = new HashMap<String, Map<String,EntityFieldMetaDataVO>>();
+		final String entityName = getEntity().getName();
+		final EntityMetaDataVO entityMd = MetaDataClientProvider.getInstance().getEntity(entityName);
+		final Set<String> subforms = GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(
+				IdUtils.unsafeToId(entityMd.getId()));
+		for (String subform: subforms) {
+			final Map<String, EntityFieldMetaDataVO> map = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(subform);
+			subFormFields.put(subform, map);
 		}
-		else {
-			return super.newSelectColumnsController(parent);
-		}
+		
+		return new PivotController(parent, new PivotPanel(subFormFields, pivots), this);
+		
+		// Old (pre-pivot) columns controller.
+		// return super.newSelectColumnsController(parent);
 	}
 	
 	private final class GetCollectableEntityFieldForResult implements Transformer<String, CollectableEntityField> {

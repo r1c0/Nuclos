@@ -424,15 +424,12 @@ public class CollectControllerFactorySingleton {
 	 */
 	public GenericObjectCollectController newGenericObjectCollectController(JComponent parent, Integer iModuleId, boolean bAutoInit, MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableGenericObjectWithDependants> ss;
-		if (ApplicationProperties.getInstance().isPivotSearch()) {
-			final MetaDataDelegate md = MetaDataDelegate.getInstance();
-			final EntityMetaDataVO mdvo = md.getEntityById(IdUtils.toLongId(iModuleId));
-			final CollectableEntityProvider cep = CollectableEOEntityClientProvider.getInstance();
-			ss = new GenericObjectViaEntityObjectSearchStrategy((CollectableEOEntity) cep.getCollectableEntity(mdvo.getEntity()));
-		}
-		else {
-			ss = new GenericObjectSearchStrategy();
-		}
+		final MetaDataDelegate md = MetaDataDelegate.getInstance();
+		final EntityMetaDataVO mdvo = md.getEntityById(IdUtils.toLongId(iModuleId));
+		final CollectableEntityProvider cep = CollectableEOEntityClientProvider.getInstance();
+		ss = new GenericObjectViaEntityObjectSearchStrategy((CollectableEOEntity) cep.getCollectableEntity(mdvo.getEntity()));
+		// Old (pre-pivot) search strategy
+		// ss = new GenericObjectSearchStrategy();
 		final GenericObjectCollectController result = new GenericObjectCollectController(parent, iModuleId, false, tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);

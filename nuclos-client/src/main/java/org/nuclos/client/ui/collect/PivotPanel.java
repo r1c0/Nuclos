@@ -233,9 +233,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				c.gridx = 2;
 				add(combo, c);
 				
-				subformNames.add(subform);
-				// state.put(subform, null);
-				
+				subformNames.add(subform);				
 				++index;
 			}
 		}
@@ -249,7 +247,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			}
 			final ComboBoxModel model = new SimpleCollectionComboBoxModel<EntityFieldMetaDataVO>(strFields);
 			final JComboBox result = new JComboBox(model);
-			result.setRenderer(new EntityFieldMetaDataListCellRenderer(model));
+			result.setRenderer(EntityFieldMetaDataListCellRenderer.getInstance());
 			result.setVisible(true);
 			result.setSelectedIndex(0);
 			return result;
@@ -258,7 +256,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 		private static JComboBox mkCombo(Map<String, EntityFieldMetaDataVO> fields) {
 			final ComboBoxModel model = new SimpleCollectionComboBoxModel<EntityFieldMetaDataVO>(new ArrayList<EntityFieldMetaDataVO>(fields.values()));
 			final JComboBox result = new JComboBox(model);
-			result.setRenderer(new EntityFieldMetaDataListCellRenderer(model));
+			result.setRenderer(EntityFieldMetaDataListCellRenderer.getInstance());
 			result.setVisible(true);
 			result.setSelectedIndex(0);
 			return result;

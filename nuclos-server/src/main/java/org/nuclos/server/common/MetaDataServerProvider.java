@@ -191,7 +191,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 					md.setDynamic(true);
 					md.setDbColumn(keyField.getDbColumn());
 					md.setField(pseudoFieldName);
-					md.setFallbacklabel(info.getSubform() + ":" + info.getKeyField() + ":" + c);
+					md.setFallbacklabel(info.getSubform() + ":" + info.getKeyField() + ":" + c + ":" + info.getValueField());
 					md.setNullable(Boolean.TRUE);
 					md.setDataType(valueField.getDataType());
 					md.setPivotInfo(info);

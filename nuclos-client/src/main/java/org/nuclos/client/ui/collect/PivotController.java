@@ -48,14 +48,6 @@ public class PivotController extends SelectFixedColumnsController {
 			final EntityFieldMetaDataVO item = (EntityFieldMetaDataVO) e.getItem();
 			LOG.info("index: " + index + " subform: " + subform + " newState: " + newState + " md: " + item);
 			if (newState != null) {
-				/* get subforms
-				final String entityName = resultController.getEntity().getName();
-				final EntityMetaDataVO entityMd = MetaDataClientProvider.getInstance().getEntity(entityName);
-				final Set<String> subforms = GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(
-						IdUtils.unsafeToId(entityMd.getId()));
-
-					final Map<String, EntityFieldMetaDataVO> map = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(subform);
-				 */
 				resultController.putPivotInfo(newState);
 			}
 			else {
@@ -78,14 +70,6 @@ public class PivotController extends SelectFixedColumnsController {
 			}
 			
 			getModel().set(available, selected, comp);
-			/*
-			resultController.initializeFields(
-					resultController.getFields(),
-					resultController.getCollectController(), 
-					getSelectedObjects(), getFixedObjects(), 
-					// resultController.getGenericObjectCollectController().getSearchResultTemplateController().getSelectedSearchResultTemplate().getListColumnsWidths()
-					null);
-			 */
 			// TODO: ???
 			setModel(getModel());
 		}
@@ -94,14 +78,6 @@ public class PivotController extends SelectFixedColumnsController {
 	
 	private final GenericObjectResultController<? extends CollectableGenericObjectWithDependants> resultController;
 
-	/**
-	 * @deprecated This would be far better. But is completely unrealistic at present. (Thomas Pasch)
-	 */
-	public PivotController(Component parent, PivotPanel panel, List<? extends CollectableEntityField> base, List<? extends CollectableEntityField> subforms) {
-		super(parent, panel);
-		resultController = null;
-	}
-	
 	public PivotController(Component parent, final PivotPanel panel, GenericObjectResultController<? extends CollectableGenericObjectWithDependants> resultController) {
 		super(parent, panel);
 		this.resultController = resultController;

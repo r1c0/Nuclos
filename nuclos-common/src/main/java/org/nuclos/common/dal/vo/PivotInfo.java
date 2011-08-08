@@ -82,7 +82,7 @@ public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 		if (result == 0) {
 			result = keyField.compareTo(o.keyField);
 			if (result == 0 && valueField instanceof Comparable) {
-				result = ((Comparable) valueField).compareTo(o.valueField);
+				result = ((Comparable<String>) valueField).compareTo(o.valueField);
 			}
 		}
 		return result;

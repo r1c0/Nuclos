@@ -16,11 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.dal.vo;
 
-import java.text.DecimalFormat;
-
-import org.apache.commons.lang.StringUtils;
-import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common2.FormatOutputUtils;
+import org.nuclos.common2.LangUtils;
 
 
 /**
@@ -428,17 +425,27 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 		
 	@Override
 	public boolean equals(Object obj) {
-		if(obj instanceof EntityFieldMetaDataVO) {
-			EntityFieldMetaDataVO that = (EntityFieldMetaDataVO)obj;
-			return StringUtils.equals(getField(), that.getField());
-		}
-		else
-			return false;
+		if (this == obj) return true;
+		if (!(obj instanceof EntityFieldMetaDataVO)) return false;
+		
+		final EntityFieldMetaDataVO that = (EntityFieldMetaDataVO) obj;
+		return LangUtils.equals(getField(), that.getField())
+			&& LangUtils.equals(getId(), that.getId())
+			&& LangUtils.equals(getPivotInfo(), that.getPivotInfo());
 	}
 	
 	@Override
-    public int hashCode() {	    
-	    return getField().hashCode();
+    public int hashCode() {
+		int result = getField().hashCode();
+		final Long id = getId();
+		if (id != null) {
+			result += 3 * id.hashCode();
+		}
+		final PivotInfo pinfo = getPivotInfo();
+		if (pinfo != null) {
+			result += 7 * pinfo.hashCode();
+		}
+	    return result;
     }
 	
 	@Override
@@ -448,8 +455,15 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 		result.append("field=").append(getField());
 		result.append(",column=").append(getDbColumn());
 		result.append(",entityId=").append(getEntityId());
-		result.append(",foreign=").append(getForeignEntity());
-		result.append(",ffield=").append(getForeignEntityField());
+		if (getPivotInfo() != null) {
+			result.append(",pivot=").append(getPivotInfo());			
+		}
+		if (getForeignEntity() != null) {
+			result.append(",foreign=").append(getForeignEntity());
+		}
+		if (getForeignEntityField() != null) {
+			result.append(",ffield=").append(getForeignEntityField());
+		}
 		result.append(",id=").append(getId());
 		result.append(",version=").append(getVersion());
 		result.append("]");

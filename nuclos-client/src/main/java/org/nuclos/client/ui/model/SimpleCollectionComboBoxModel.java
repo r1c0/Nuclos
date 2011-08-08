@@ -25,6 +25,8 @@ import javax.swing.ComboBoxModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
+import org.nuclos.common.CloneUtils;
+
 /**
  * A simple implementation of {@link ComboBoxModel} based on a <em>immutable</em>
  * Collection.

@@ -34,20 +34,20 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 public class EntityFieldMetaDataListCellRenderer extends JLabel implements ListCellRenderer {
 	
-	private final ListModel model;
+	private static final EntityFieldMetaDataListCellRenderer INSTANCE = new EntityFieldMetaDataListCellRenderer();
 	
-	public EntityFieldMetaDataListCellRenderer(ListModel model) {
-		this.model = model;
+	private EntityFieldMetaDataListCellRenderer() {
+	}
+	
+	public static final EntityFieldMetaDataListCellRenderer getInstance() {
+		return INSTANCE;
 	}
 
 	@Override
 	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
 			boolean cellHasFocus) {
 
-		if (index >= 0 && index < model.getSize()) {
-			final EntityFieldMetaDataVO fieldVo = (EntityFieldMetaDataVO) model.getElementAt(index);
-			setText(CommonLocaleDelegate.getLabelFromMetaFieldDataVO(fieldVo));
-		}
+		setText(CommonLocaleDelegate.getLabelFromMetaFieldDataVO((EntityFieldMetaDataVO) value));
         return this;
 	}
 

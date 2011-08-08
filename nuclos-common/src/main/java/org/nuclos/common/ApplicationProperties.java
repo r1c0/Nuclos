@@ -80,8 +80,6 @@ public class ApplicationProperties implements Serializable {
 	private final long    desktopPaneBackgroundColor;
 	private final String  desktopPaneBgImageFileName;
 	
-	private final boolean pivotSearch;
-
 	public static synchronized ApplicationProperties getInstance() {
 		if (singleton == null) {
 			singleton = new ApplicationProperties();
@@ -147,9 +145,7 @@ public class ApplicationProperties implements Serializable {
 		this.splashProgressColor = parseColorHex(getOptional(props, "splashscreen.color.progress"));
 
 		this.desktopPaneBackgroundColor = parseColorHex(getOptional(props, "mainframe.desktoppane.background"));
-		this.desktopPaneBgImageFileName = getOptional(props, "mainframe.desktoppane.bgimage");
-		
-		this.pivotSearch = Boolean.getBoolean("pivot.dev");
+		this.desktopPaneBgImageFileName = getOptional(props, "mainframe.desktoppane.bgimage");		
 	}
 
 	private static String getOptional(Properties props, String key) {
@@ -367,10 +363,6 @@ public class ApplicationProperties implements Serializable {
 		return bFunctionBlockDev;
 	}
 	
-	public boolean isPivotSearch() {
-		return isFunctionBlockDev() && pivotSearch;
-	}
-
 	/**
 	 * inner class Version
 	 */
