@@ -16,13 +16,16 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common.ejb3;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
+import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SearchConditionUtils;
@@ -45,7 +48,6 @@ import org.nuclos.server.genericobject.ProxyList;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.springframework.transaction.annotation.Transactional;
-
 
 /**
  * Server implementation of the EntityObjectFacadeRemote interface.
@@ -74,33 +76,37 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 	}
 
 	@Override
-	public ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr,
-			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Collection<EntityFieldMetaDataVO> pivots, 
-			boolean includeDependents) {
-		// remove subentities that are also pivots
-		for (EntityFieldMetaDataVO p: pivots) {
-			stRequiredSubEntityNames.remove(p.getPivotInfo().getSubform());
-		}
-		return new EntityObjectProxyList(id, clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, 
-				pivots, includeDependents);
+	public ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr, Collection<EntityFieldMetaDataVO> fields) {
+		return new EntityObjectProxyList(id, clctexpr, fields);
 	}
 
 	@Override
-	public Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds,
-			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Collection<EntityFieldMetaDataVO> pivots, boolean includeDependents) {
-		final EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(id);
+	public Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds, Collection<EntityFieldMetaDataVO> fields) {
+		final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
+		final EntityMetaDataVO eMeta = mdProv.getEntity(id);
 		final List<EntityObjectVO> eos = NucletDalProvider.getInstance().getEntityObjectProcessor(
 				eMeta.getEntity()).getBySearchExpressionAndPrimaryKeys(
 						appendRecordGrants(new CollectableSearchExpression(), eMeta), lstIds);
-		if (includeDependents) {
-			for (EntityObjectVO eo : eos) {
-				try {
-					fillDependants(eo, stRequiredSubEntityNames);
-					fillPivots(eo, pivots);
-				}
-				catch(CommonFinderException e) {
-					throw new NuclosFatalException(e);
-				}
+		// TODO: join table...
+		final Set<String> subforms = new HashSet<String>();
+		final Collection<EntityFieldMetaDataVO> pivots = new ArrayList<EntityFieldMetaDataVO>();
+		for (EntityFieldMetaDataVO f: fields) {
+			final PivotInfo pinfo = f.getPivotInfo();
+			if (pinfo != null) {
+				pivots.add(f);
+			}
+			else {
+				final String subform = mdProv.getEntity(f.getEntityId()).getEntity();
+				subforms.add(subform);
+			}
+		}
+		for (EntityObjectVO eo : eos) {
+			try {
+				fillDependants(eo, subforms);
+				fillPivots(eo, pivots);
+			}
+			catch(CommonFinderException e) {
+				throw new NuclosFatalException(e);
 			}
 		}
 		return eos;

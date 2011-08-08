@@ -230,7 +230,6 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.genericobject.GenericObjectUtils;
 import org.nuclos.common.security.Permission;
@@ -3069,22 +3068,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		return (clctlo == null) ? null : clctlo.getGenericObjectCVO();
 	}
 	
-	public Collection<EntityFieldMetaDataVO> getSelectedPivotFields() {
-		// TODO: ???
-		final Collection<EntityFieldMetaDataVO> result = new ArrayList<EntityFieldMetaDataVO>();
-		for (CollectableEntityField f: getResultController().getFields().getSelectedFields()) {
-			// At present this could also be a CollectableEntityFieldWithEntityForExternal.
-			if (f instanceof CollectableEOEntityField) {
-				final CollectableEOEntityField field = (CollectableEOEntityField) f;
-				final EntityFieldMetaDataVO meta = field.getMeta();
-				if (meta.getPivotInfo() != null) {
-					result.add(meta);
-				}
-			}
-		}
-		return result;
-	}
-
 	private void markCollectableAsDeleted(CollectableGenericObjectWithDependants clctlo) throws CommonBusinessException {
 		lodelegate.remove(clctlo.getGenericObjectWithDependantsCVO(), false);
 	}
@@ -3144,10 +3127,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	/**
-	 * @return Set<String>
-	 * @postcondition result != null
+	 * @deprecated Not in use - remove it.
 	 */
-	public Set<String> getSelectedSubEntityNames() {
+	private Set<String> getSelectedSubEntityNames() {
 		return GenericObjectUtils.getSubEntityNames(getSelectedFields(), getCollectableEntity().getName(), Modules.getInstance());
 	}
 

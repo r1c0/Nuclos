@@ -68,7 +68,6 @@ import org.nuclos.client.transfer.ExportImportCollectController;
 import org.nuclos.client.ui.collect.search.DatasourceSearchStrategy;
 import org.nuclos.client.ui.collect.search.DynamicEntitySearchStrategy;
 import org.nuclos.client.ui.collect.search.EntityRelationShipSearchStrategy;
-import org.nuclos.client.ui.collect.search.GenericObjectSearchStrategy;
 import org.nuclos.client.ui.collect.search.GenericObjectViaEntityObjectSearchStrategy;
 import org.nuclos.client.ui.collect.search.ISearchStrategy;
 import org.nuclos.client.ui.collect.search.InstanceSearchStrategy;
@@ -86,7 +85,6 @@ import org.nuclos.client.ui.collect.strategy.CompleteCollectableMasterDataStrate
 import org.nuclos.client.ui.collect.strategy.CompleteCollectableStateModelsStrategy;
 import org.nuclos.client.ui.collect.strategy.CompleteGenericObjectsStrategy;
 import org.nuclos.client.wizard.DataTypeCollectController;
-import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityProvider;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;

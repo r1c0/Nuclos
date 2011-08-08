@@ -57,8 +57,8 @@ public interface EntityObjectCommon {
 	 * @todo rename to getGenericObjectProxyList?
 	 */
 	@RolesAllowed("Login")
-	ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr,
-			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Collection<EntityFieldMetaDataVO> pivots, boolean includeDependents);
+	ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr, 
+			Collection<EntityFieldMetaDataVO> fields);
 	
 	/**
 	 * gets more leased objects that match a given search condition
@@ -74,8 +74,7 @@ public interface EntityObjectCommon {
 	 * @precondition stRequiredSubEntityNames != null
 	 */
 	@RolesAllowed("Login")
-	Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds,
-			Set<Long> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, Collection<EntityFieldMetaDataVO> pivots, boolean includeDependents);
+	Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds, Collection<EntityFieldMetaDataVO> fields);
 
 
 	/**

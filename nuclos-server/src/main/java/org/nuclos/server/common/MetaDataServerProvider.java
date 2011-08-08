@@ -151,7 +151,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 	@Override
 	public Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info) {
 		final EntityMetaDataVO subform = getEntity(info.getSubform());
-		final String subformTable = EntityObjectMetaDbHelper.getTableName(subform);
+		final String subformTable = EntityObjectMetaDbHelper.getViewName(subform);
 		final EntityFieldMetaDataVO keyField = getEntityField(info.getSubform(), info.getKeyField());
 		final EntityFieldMetaDataVO valueField = getEntityField(info.getSubform(), info.getValueField());
 		

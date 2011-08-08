@@ -44,27 +44,20 @@ public class EntityObjectProxyList extends AbstractProxyList<Long, EntityObjectV
 
 	private final Long id;
 	private final CollectableSearchExpression clctexpr;
-	private final Set<Long> stRequiredAttributeIds;
-	private final Set<String> stRequiredSubEntities;
-	private final Collection<EntityFieldMetaDataVO> pivots;
-	private final boolean includeDependents;
+	private final Collection<EntityFieldMetaDataVO> fields;
 	
-	public EntityObjectProxyList(Long id, CollectableSearchExpression clctexpr, Set<Long> stRequiredAttributeIds, 
-			Set<String> stRequiredSubEntityNames, Collection<EntityFieldMetaDataVO> pivots, boolean includeDependents) {
+	public EntityObjectProxyList(Long id, CollectableSearchExpression clctexpr, Collection<EntityFieldMetaDataVO> fields) {
 		super();
 		this.id = id;
 		this.clctexpr = clctexpr;
-		this.stRequiredAttributeIds = stRequiredAttributeIds;
-		this.stRequiredSubEntities = stRequiredSubEntityNames;
-		this.pivots = pivots;
-		this.includeDependents = includeDependents;
+		this.fields = fields;
 
 		this.initialize();		
 	}
 	
 	@Override
 	protected Collection<EntityObjectVO> fetchNextChunk(List<Long> lstIntIds) throws RuntimeException {
-		return getEntityObjectFacade().getEntityObjectsMore(id, lstIntIds, stRequiredAttributeIds, stRequiredSubEntities, pivots, includeDependents);
+		return getEntityObjectFacade().getEntityObjectsMore(id, lstIntIds, fields);
 	}
 
 	@Override
@@ -96,9 +89,7 @@ public class EntityObjectProxyList extends AbstractProxyList<Long, EntityObjectV
 		final int size = size();
 		result.append("EntityObjectProxyList[");
 		result.append("size=").append(size);
-		result.append(",reqFields=").append(stRequiredAttributeIds);
-		result.append(",reqSubforms=").append(stRequiredSubEntities);
-		result.append(",pivots=").append(pivots);
+		result.append(",reqFields=").append(fields);
 		result.append(",search=").append(clctexpr);
 		mapDescription(result, mpObjects, 5);
 		result.append("]");

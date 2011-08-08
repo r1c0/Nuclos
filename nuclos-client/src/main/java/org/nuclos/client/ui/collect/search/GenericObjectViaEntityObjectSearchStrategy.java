@@ -16,17 +16,17 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.search;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Observer;
-import java.util.Set;
 
 import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.attribute.AttributeCache;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.dal.DalSupportForGO;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.entityobject.CollectableEntityObjectProxyListAdapter;
@@ -34,17 +34,18 @@ import org.nuclos.client.entityobject.EntityObjectDelegate;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
-import org.nuclos.common.AttributeProvider;
+import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
+import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
-import org.nuclos.common.genericobject.GenericObjectUtils;
+import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.genericobject.ProxyList;
@@ -296,12 +297,30 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 		clctexprInternal.setValueListProviderDatasourceParameter(getValueListProviderDatasourceParameter());
 		LOG.debug("Interne Suchbedingung: " + clctexprInternal.getSearchCondition());
 
+		final Collection<EntityFieldMetaDataVO> fields = new ArrayList<EntityFieldMetaDataVO>();
+		for (CollectableEntityField f: getCollectController().getResultController().getFields().getSelectedFields()) {
+			// We need a EntityFieldMetaDataVO from the CollectableEntityField.
+			
+			// Case 0: Wrapped CollectableEntityField: unwrap.
+			if (f instanceof CollectableEntityFieldWithEntityForExternal) {
+				f = ((CollectableEntityFieldWithEntityForExternal) f).getField();
+			}
+			// Case 1: CollectableEOEntityField: already there!
+			if (f instanceof CollectableEOEntityField) {
+				final CollectableEOEntityField field = (CollectableEOEntityField) f;
+				fields.add(field.getMeta());
+			}
+			// Case 2: Use MetaDataProv
+			else {
+				final MetaDataProvider mdProv = MetaDataClientProvider.getInstance();
+				fields.add(mdProv.getEntityField(f.getEntityName(), f.getName()));
+			}
+		}
+		
 		// TODO: OPTIMIZATION: only selected and/or required attributes should be loaded here!
 		final ProxyList<EntityObjectVO> proxylstlovwdvo = lodelegate.getEntityObjectProxyList(
 				IdUtils.toLongId(getGenericObjectController().getModuleId()), 
-				clctexprInternal, getSelectedAndRequiredAttributeIds(),
-				getGenericObjectController().getSelectedSubEntityNames(), getGenericObjectController().getSelectedPivotFields(),
-				getIncludeSubModulesForSearch());
+				clctexprInternal, fields);
 
 		return new MyProxyListAdapter(new CollectableEntityObjectProxyListAdapter(proxylstlovwdvo, meta));
 	}
@@ -370,38 +389,6 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 		return clctGOSearchExpression;
 	}
 
-	private Set<Long> getSelectedAndRequiredAttributeIds() {
-		final GenericObjectCollectController cc = getGenericObjectController();
-		final Set<? extends CollectableEntityField> stSelectedAttributes = CollectionUtils.selectIntoSet(
-				cc.getSelectedFields(), new CollectableEntityField.HasEntity(cc.getCollectableEntity()));
-		final Set<String> stFieldNamesSelected = CollectionUtils.transformIntoSet(stSelectedAttributes,
-				new CollectableEntityField.GetName());
-		final Set<String> stFieldNamesRequired = getRequiredFieldNamesForResult();
-		final Set<String> stFieldNamesSelectedOrRequired = CollectionUtils.union(stFieldNamesSelected,
-				stFieldNamesRequired);
-		return CollectionUtils.transformIntoSet(stFieldNamesSelectedOrRequired,
-				new AttributeProvider.GetAttributeLongIdByName(cc.getEntity(), AttributeCache.getInstance()));
-	}
-
-	/**
-	 * @deprecated I guess this should always return 'true'.
-	 */
-	@Override
-	public boolean getIncludeSubModulesForSearch() {
-		// Don't include submodules unless this controller is for a submodule.
-		// Don't include submodules for general search:
-		final Integer iModuleId = getGenericObjectController().getModuleId();
-		return (iModuleId != null) /* && Modules.getInstance().isSubModule(iModuleId) */; 
-	}
-
-	/**
-	 * @deprecated Parent is no longer part of the entity model.
-	 */
-	private boolean isParentFieldSelected() {
-		final GenericObjectCollectController cc = getGenericObjectController();
-		return GenericObjectUtils.containsParentField(cc.getSelectedFields(), cc.getParentEntityName());
-	}
-	
 	private CollectableEntityObject go2Eo(CollectableGenericObjectWithDependants go) {
 		return new CollectableEntityObject(meta, 
 				DalSupportForGO.wrapGenericObjectVO(go.getGenericObjectCVO(), meta));
