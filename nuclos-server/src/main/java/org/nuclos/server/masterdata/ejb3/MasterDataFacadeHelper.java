@@ -88,6 +88,7 @@ import org.nuclos.server.dblayer.DbObjectHelper;
 import org.nuclos.server.dblayer.DbObjectHelper.DbObjectType;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.DbTuple;
+import org.nuclos.server.dblayer.DbType;
 import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;
 import org.nuclos.server.dblayer.impl.SchemaUtils;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
@@ -1075,9 +1076,18 @@ public class MasterDataFacadeHelper {
 			throw new NuclosFatalException("oldSource and newSource must not be null.");
 		} else if (oldSource != null && newSource != null && !oldSource.getField("dbobject", String.class).equals(newSource.getField("dbobject", String.class))) {
 			throw new NuclosFatalException("oldSource and newSource not from same object.");
+		} else if (oldSource != null && newSource != null && !oldSource.getField("dbtype", String.class).equals(newSource.getField("dbtype", String.class))) {
+			throw new NuclosFatalException("Dbtype of oldSource and dbtype of newSource have to be equal.");
 		}
 
+		String dbtype = (oldSource != null) ? oldSource.getField("dbtype", String.class) : newSource.getField("dbtype", String.class);
+
 		final DbAccess dbAccess = DataBaseHelper.getDbAccess();
+
+		if (!dbAccess.getDbType().equals(DbType.getFromName(dbtype))) {
+			return;
+		}
+
 		final DbObjectHelper dboHelper = new DbObjectHelper(dbAccess);
 
 		boolean isUsedAsCalculatedAttribute = false;
@@ -1148,7 +1158,9 @@ public class MasterDataFacadeHelper {
 					/**
 					 * back to previous version
 					 */
-					this.updateDbObject(null, oldSource, true);
+					if (oldSource != null) {
+						this.updateDbObject(null, oldSource, true);
+					}
 				}
 			} else {
 				if (isEntityView) {
