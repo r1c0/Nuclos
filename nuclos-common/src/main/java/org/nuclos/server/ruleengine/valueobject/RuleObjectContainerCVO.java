@@ -44,14 +44,14 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 public class RuleObjectContainerCVO implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private GenericObjectVO govo;
 	private MasterDataVO mdvo;
 
 	private final DependantMasterDataMapForRule mpDependants;
-	
+
 	public static enum Event {
 		CREATE_BEFORE("create_before"),
 		CREATE_AFTER("create_after"),
@@ -66,26 +66,26 @@ public class RuleObjectContainerCVO implements Serializable {
 		USER("user"),
 		INTERFACE("interface"),
 		UNDEFINED("undefined");
-		
+
 		private String name;
-		
+
 		private Event(String name) {
 			this.name = name;
 		}
-		
+
 		public String getName() {
 			return this.name;
 		}
 	}
-	
+
 	private Integer iTargetStateId;
 	private Integer iTargetStateNum;
 	private String sTargetStateName;
-	
+
 	private Integer iSourceStateId;
 	private Integer iSourceStateNum;
 	private String sSourceStateName;
-	
+
 	private final Event event;
 
 	/**
@@ -110,7 +110,7 @@ public class RuleObjectContainerCVO implements Serializable {
 		this.mpDependants = convert(mpDependants);
 		this.event = event;
 	}
-	
+
 	/**
 	 * @param mdvo
 	 * @param mpDependants
@@ -141,7 +141,7 @@ public class RuleObjectContainerCVO implements Serializable {
 	public GenericObjectVO getGenericObject() {
 		return govo;
 	}
-	
+
 	/**
 	 * @return the contained master data
 	 * @postcondition result != null
@@ -159,16 +159,16 @@ public class RuleObjectContainerCVO implements Serializable {
 	public void setMasterData(MasterDataVO mdvo) {
 		this.mdvo = mdvo;
 	}
-	
+
 	/**
 	 * @return the contained map of dependant masterdata records.
 	 * @postcondition result != null
 	 */
 	public DependantMasterDataMap getDependants() {
-		/** @todo make unmodifiable */		
+		/** @todo make unmodifiable */
 		return convert(getDependantsWithoutDeletedVOs(this.mpDependants));
 	}
-	
+
 	public DependantMasterDataMap getDependants(boolean withDeleted) {
 		if(withDeleted)
 			return getDependants();
@@ -178,7 +178,7 @@ public class RuleObjectContainerCVO implements Serializable {
 	public void addDependant(String sDependantEntity, MasterDataVO entry) {
 		mpDependants.addValue(sDependantEntity, entry);
 	}
-	
+
 	/**
 	 * @param sEntityName
 	 * @return Collection<MasterDataVO> the leased object's dependants of the given entity. This Collection is not modifiable.
@@ -190,31 +190,25 @@ public class RuleObjectContainerCVO implements Serializable {
 			result = this.getDependants(sEntityName, ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME);
 		}
 		else {
-			result = CollectionUtils.transform(this.getMasterData().getDependants().getData(sEntityName), 
+			result = CollectionUtils.transform(this.getMasterData().getDependants().getData(sEntityName),
 					new EntityObjectToMasterDataTransformer());
-				
+
 		}
 		return getDependantsWithoutDeletedVOs(result);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param sEntityName
 	 * @return
 	 */
 	public Collection<MasterDataVO> getDependantsWithDeleted(String sEntityName) {
-		Collection<MasterDataVO> result;
-		if (this.getGenericObject() != null) {
-			Collection<MasterDataVO> col = CollectionUtils.transform(this.getDependants().getData(sEntityName), 
-				new EntityObjectToMasterDataTransformer());
-			result = Collections.unmodifiableCollection(col);		
+		if (this.mpDependants != null) {
+			return Collections.unmodifiableCollection(this.mpDependants.getValues(sEntityName));
 		}
 		else {
-			Collection<MasterDataVO> col = CollectionUtils.transform(this.getMasterData().getDependants().getData(sEntityName), 
-					new EntityObjectToMasterDataTransformer());
-			result = col;
+			return null;
 		}
-		return result;
 	}
 
 	/**
@@ -224,7 +218,7 @@ public class RuleObjectContainerCVO implements Serializable {
 	 * @postcondition result != null
 	 */
 	public void setDependants(String sEntityName, Collection<MasterDataVO> collmdvo) {
-				
+
 		this.mpDependants.setValues(sEntityName, collmdvo);
 	}
 
@@ -239,10 +233,10 @@ public class RuleObjectContainerCVO implements Serializable {
 	public Collection<MasterDataVO> getDependants(String sEntityName, String sForeignKeyFieldName) {
 		return Collections.unmodifiableCollection(getDependantsWithoutDeletedVOs(this.mpDependants.getValues(sEntityName)));
 	}
-	
+
 	private DependantMasterDataMapForRule getDependantsWithoutDeletedVOs(DependantMasterDataMapForRule mpDependants) {
 		DependantMasterDataMapForRule result = new DependantMasterDataMapForRule();
-		
+
 		for (String entity : mpDependants.getEntityNames()) {
 			for (MasterDataVO mdvo : mpDependants.getValues(entity)) {
 				if (!mdvo.isRemoved()) {
@@ -250,19 +244,19 @@ public class RuleObjectContainerCVO implements Serializable {
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	private Collection<MasterDataVO> getDependantsWithoutDeletedVOs(Collection<MasterDataVO> colldependants) {
 		Collection<MasterDataVO> result = new ArrayList<MasterDataVO>();
-		
+
 		for (MasterDataVO mdvo : colldependants) {
 			if (!mdvo.isRemoved()) {
 				result.add(mdvo);
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -356,16 +350,16 @@ public class RuleObjectContainerCVO implements Serializable {
 	public Event getEvent() {
 		return event;
 	}
-	
+
 	private static DependantMasterDataMap convert(DependantMasterDataMapForRule dep) {
 		DependantMasterDataMap map = new DependantMasterDataMap();
 		for(String key : dep.getEntityNames()) {
-			map.setData(key, CollectionUtils.transform(dep.getValues(key), new MasterDataToEntityObjectTransformer()));			
+			map.setData(key, CollectionUtils.transform(dep.getValues(key), new MasterDataToEntityObjectTransformer()));
 		}
-		
+
 		return map;
 	}
-	
+
 	private static DependantMasterDataMapForRule convert(DependantMasterDataMap dep) {
 		DependantMasterDataMapForRule map = new DependantMasterDataMapForRule();
 		for(String key : dep.getEntityNames()) {
@@ -373,6 +367,6 @@ public class RuleObjectContainerCVO implements Serializable {
 		}
 		return map;
 	}
-	
+
 
 }	// class RuleObjectContainerCVO
