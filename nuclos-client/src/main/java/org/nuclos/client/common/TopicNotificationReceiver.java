@@ -31,6 +31,7 @@ import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
 import javax.naming.Context;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.jms.MultiMessageListenerContainer;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
@@ -48,6 +49,8 @@ import org.springframework.jms.listener.SimpleMessageListenerContainer;
  */
 
 public class TopicNotificationReceiver {
+
+	private static final Logger LOG = Logger.getLogger(TopicNotificationReceiver.class);
 
 	private static Context ctx;
 	private static TopicConnection topicconn;
@@ -214,6 +217,7 @@ public class TopicNotificationReceiver {
 
 		@Override
 		public void onMessage(Message msg) {
+			LOG.debug(MessageFormat.format("Received message from topic {0}: {1}", topicname, msg));
 			MessageListener delegate = reference.get();
 			if(delegate != null) {
 				delegate.onMessage(msg);

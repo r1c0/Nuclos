@@ -29,7 +29,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.net.URL;
 import java.util.Locale;
 
 import javax.jnlp.ServiceManager;
@@ -40,7 +39,6 @@ import javax.swing.UIManager;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectableComponentFactory;
 import org.nuclos.client.common.prefs.NuclosPreferencesFactory;
@@ -57,9 +55,11 @@ import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.util.Log4jConfigurer;
 
 /**
  * Controller responsible for starting up the Nucleus client.
@@ -89,7 +89,7 @@ public class StartUp  {
 	 * log4j category
 	 * @todo this shouldn't be a member probably
 	 */
-	private Logger log;
+	private static Logger log;
 
 	private final String[] args;
 
@@ -97,7 +97,7 @@ public class StartUp  {
 		this.args = asArgs;
 
 		// setup client side logging:
-		this.setupClientLogging();
+		setupClientLogging();
 
 		new ClassPathXmlApplicationContext("classpath*:META-INF/nuclos/**/*-beans.xml");
 
@@ -146,16 +146,16 @@ public class StartUp  {
 		}
 	}
 
-	private void setupClientLogging() {
+	private static void setupClientLogging() {
 		LogLog.setInternalDebugging(true);
 		String sLog4jUrl = System.getProperty("log4j.url");
-		if (sLog4jUrl != null) {
+		if (!StringUtils.isNullOrEmpty(sLog4jUrl)) {
 			try {
-				System.out.println("Try to configure loggging from " + sLog4jUrl + ".");
-				DOMConfigurator.configure(new URL(sLog4jUrl));
-				log = Logger.getLogger(this.getClass().getName());
+				LogLog.debug("Try to configure loggging from " + sLog4jUrl + ".");
+				Log4jConfigurer.initLogging(sLog4jUrl);
+				log = Logger.getLogger(StartUp.class);
 				log.info("Logging configured from " + sLog4jUrl);
-				LogLog.setInternalDebugging(true);
+				LogLog.setInternalDebugging(false);
 				return;
 			}
 			catch(Throwable e) {
@@ -164,17 +164,17 @@ public class StartUp  {
 		}
 
 		try {
-			System.out.println("Try to configure loggging from default configuration file.");
-			DOMConfigurator.configure(this.getClass().getClassLoader().getResource("log4j.xml"));
-			log = Logger.getLogger(this.getClass().getName());
+			String configurationfile = ApplicationProperties.getInstance().isFunctionBlockDev() ? "log4j-dev.properties" : "log4j.properties";
+			LogLog.debug("Try to configure loggging from default configuration file: " + configurationfile);
+			Log4jConfigurer.initLogging("classpath:" + configurationfile);
+			log = Logger.getLogger(StartUp.class);
 			log.info("Logging configured from default log4j configuration.");
-			return;
 		}
 		catch (Throwable t) {
 			throw new NuclosFatalException("The client-side logging could not be initialized, because the configuration file log4j.xml was not found in the Classpath.", t);
 		}
 		finally {
-			LogLog.setInternalDebugging(true);
+			LogLog.setInternalDebugging(false);
 		}
 	}
 
