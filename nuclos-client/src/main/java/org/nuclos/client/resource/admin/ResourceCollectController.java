@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.main.mainframe.MainFrameTab;
@@ -27,7 +28,6 @@ import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.resource.ResourceDelegate;
-import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
@@ -44,13 +44,13 @@ import org.nuclos.server.resource.valueobject.ResourceVO;
 public class ResourceCollectController extends MasterDataCollectController{
 
 	private static final ResourceDelegate delegate = ResourceDelegate.getInstance();
-	
-	protected List<CollectableResouceSaveListener> listResourceSaveListener;
-	
+
+	protected List<CollectableResouceSaveListener> listResourceSaveListener = new ArrayList<CollectableResouceSaveListener>();
+
 	/**
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -58,7 +58,7 @@ public class ResourceCollectController extends MasterDataCollectController{
 	 */
 	public ResourceCollectController(JComponent parent, MainFrameTab tabIfAny){
 		super(parent, NuclosEntity.RESOURCE, tabIfAny);
-		
+
 		this.getCollectStateModel().addCollectStateListener(new CollectStateAdapter() {
 			@Override
 			public void detailsModeEntered(CollectStateEvent ev) {
@@ -77,34 +77,21 @@ public class ResourceCollectController extends MasterDataCollectController{
 				else {
 					setComponentsEnabled(true);
 				}
-				
-			}
-		});	
-		
-		listResourceSaveListener = new ArrayList<CollectableResouceSaveListener>();		
-	}
-	
-	public void addResouceSaveListener(CollectableResouceSaveListener saveListener) {
-		listResourceSaveListener.add(saveListener);
-		this.getFrame().addMainFrameTabListener(new MainFrameTabAdapter() {
-			@Override
-			public boolean tabClosing(MainFrameTab tab) {
-				fireResourceSaveEvent(null);
-				return true;
-			}
-			@Override
-			public void tabClosed(MainFrameTab tab) {
-				tab.removeMainFrameTabListener(this);
+
 			}
 		});
 	}
-	
+
+	public void addResouceSaveListener(CollectableResouceSaveListener saveListener) {
+		listResourceSaveListener.add(saveListener);
+	}
+
 	private void fireResourceSaveEvent(Collectable clt) {
 		for(CollectableResouceSaveListener listener : listResourceSaveListener) {
 			listener.fireSaveEvent(clt, this);
 		}
 	}
-	
+
 	private void setComponentsEnabled(boolean bEnabled) {
 		for (CollectableComponent clct : getDetailsPanel().getEditView().getCollectableComponents()) {
 			if (clct.getFieldName().equals("name")) {
@@ -112,7 +99,7 @@ public class ResourceCollectController extends MasterDataCollectController{
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	@Override
 	protected CollectableMasterDataWithDependants insertCollectable(CollectableMasterDataWithDependants clctNew) throws CommonBusinessException {
@@ -122,34 +109,38 @@ public class ResourceCollectController extends MasterDataCollectController{
 		final DependantMasterDataMap mpmdvoDependants = org.nuclos.common.Utils.clearIds(this.getAllSubFormData(null).toDependantMasterDataMap());
 
 		validateResource(clctNew);
-				
+
 		final MasterDataVO mdvoInserted = delegate.create(this.getEntityName(), clctNew.getMasterDataCVO(), mpmdvoDependants);
 
-		CollectableMasterDataWithDependants cmdwd = new CollectableMasterDataWithDependants(clctNew.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoInserted, this.readDependants(mdvoInserted.getId()))); 
-		
-		fireResourceSaveEvent(cmdwd);
-		
-		return cmdwd; 
+		final CollectableMasterDataWithDependants cmdwd = new CollectableMasterDataWithDependants(clctNew.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoInserted, this.readDependants(mdvoInserted.getId())));
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				fireResourceSaveEvent(cmdwd);
+			}
+		});
+
+		return cmdwd;
 	}
-	
+
 	@Override
 	protected CollectableMasterDataWithDependants updateCollectable(CollectableMasterDataWithDependants clct, Object oAdditionalData) throws CommonBusinessException {
 		final DependantCollectableMasterDataMap mpclctDependants = (DependantCollectableMasterDataMap) oAdditionalData;
 
 		validateResource(clct);
-		
+
 		final Object oId = delegate.modify(this.getEntityName(), clct.getMasterDataCVO(), mpclctDependants.toDependantMasterDataMap());
 
 		final MasterDataVO mdvoUpdated = this.mddelegate.get(this.getEntityName(), oId);
 
 		return new CollectableMasterDataWithDependants(clct.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoUpdated, this.readDependants(mdvoUpdated.getId())));
 	}
-	
+
 	@Override
 	protected void deleteCollectable(CollectableMasterDataWithDependants clct) throws CommonBusinessException {
 		delegate.remove(this.getEntityName(), clct.getMasterDataCVO());
 	}
-	
+
    private void validateResource(CollectableMasterDataWithDependants clct) throws CollectableFieldValidationException{
 //		final ResourceFile resourceFile = (ResourceFile)clct.getField("file").getValue();
 //		if (resourceFile != null) {
@@ -158,6 +149,6 @@ public class ResourceCollectController extends MasterDataCollectController{
 //					!sExtension.equals("jpg") && !sExtension.equals("bmp") && !sExtension.equals("jpeg") && !sExtension.equals("gif"))) {
 //				throw new CollectableFieldValidationException(CommonLocaleDelegate.getMessage("ResourceCollectController.1", "Die Datei {0} ist kein Bild.", resourceFile.getFilename()));
 //			}
-//		}		
+//		}
     }
 }

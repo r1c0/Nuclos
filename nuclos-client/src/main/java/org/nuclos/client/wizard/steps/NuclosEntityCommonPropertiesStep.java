@@ -76,7 +76,7 @@ import org.pietschy.wizard.InvalidStateException;
 * <br>
 * Created by Novabit Informationssysteme GmbH <br>
 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
-* 
+*
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
@@ -84,11 +84,11 @@ import org.pietschy.wizard.InvalidStateException;
 public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep implements CollectableResouceSaveListener {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	JLabel lbLabelSingular;
-	JTextField tfLabelSingular;	
+	JTextField tfLabelSingular;
 	JLabel lbMenupath;
 	JComboBox cbMenupath;
 	JButton btMenupath;
@@ -97,47 +97,47 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 	JLabel lbIconCustom;
 	JComboBox cbxIcon;
 	JButton btNewIcon;
-	
+
 	JLabel lbAccelerator;
 	JComboBox cbxModifier;
 	JTextField tfMnemonic;
-	
+
 	JLabel lbLogbook;
 	JCheckBox cbLogbook;
 	JLabel lbSearchable;
 	JCheckBox cbSearchable;
 	JLabel lbEditable;
 	JCheckBox cbEditable;
-		
+
 	JLabel lbShowRelation;
-	JCheckBox cbShowRelation;	
+	JCheckBox cbShowRelation;
 	JLabel lbShowGroups;
 	JCheckBox cbShowGroups;
-	
+
 	JLabel lbStateModel;
 	JCheckBox cbStateModel;
-	
+
 	JLabel lbCache;
 	JCheckBox cbCache;
 	JLabel lbTableName;
 	JTextField tfTableName;
 	JLabel lbInternalEntityName;
 	JTextField tfInternalEntityName;
-	
+
 	JLabel lbIcon;
 	ResourceIconChooser nuclosIconChooser;
-	
+
 	JPanel pnlMoreOptions;
-	
+
 	boolean blnSingular;
 	boolean blnSingularModified;
 	boolean blnMenuPathModified;
 	boolean blnIconModified;
 	boolean blnSystemId;
 
-	
-	public NuclosEntityCommonPropertiesStep() {	
-		initComponents();		
+
+	public NuclosEntityCommonPropertiesStep() {
+		initComponents();
 	}
 
 	public NuclosEntityCommonPropertiesStep(String name, String summary) {
@@ -169,11 +169,11 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 			tfTableName.setText(NuclosWizardUtils.replace(model.getTableOrViewName()));
 			tfSystemIdPrefix.setText(model.getSystemIdPrefix());
 			tfMnemonic.setText(model.getAccelerator());
-			cbxModifier.setSelectedItem(model.getModifierAsString());			
+			cbxModifier.setSelectedItem(model.getModifierAsString());
 			cbStateModel.setSelected(false);
 		}
-		else {						
-			cbStateModel.setEnabled(!model.hasRows());			
+		else {
+			cbStateModel.setEnabled(!model.hasRows());
 			tfLabelSingular.setText(model.getLabelSingular());
 			this.model.setIcon(ResourceCache.getResourceByName("NCL_MAINFRAME_TITLE"));
 			JTextField field = (JTextField)cbMenupath.getEditor().getEditorComponent();
@@ -187,19 +187,19 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 			cbShowRelation.setSelected(model.isShowRelation());
 			cbShowGroups.setSelected(model.isShowGroups());
 			cbLogbook.setSelected(model.isLogbook());
-			tfInternalEntityName.setText(model.getEntityName());	
+			tfInternalEntityName.setText(model.getEntityName());
 			tfInternalEntityName.setEnabled(false);
 			tfSystemIdPrefix.setText(model.getSystemIdPrefix());
 			cbShowGroups.setSelected(model.isShowGroups());
 			cbShowRelation.setSelected(model.isShowRelation());
 			cbStateModel.setSelected(model.isStateModel());
-			if(!model.isStateModel()){				
+			if(!model.isStateModel()){
 				lbSystemIdPrefix.setText(getMessage("wizard.step.entitycommonproperties.12", "K\u00fcrzel f\u00fcr Identifizierer:"));
 			}
 			else {
 				lbSystemIdPrefix.setText(getMessage("wizard.step.entitycommonproperties.13", "K\u00fcrzel f\u00fcr Identifizierer *:"));
 			}
-			
+
 			tfMnemonic.setText(model.getAccelerator());
 
 			cbxModifier.setSelectedItem(model.getModifierAsString());
@@ -216,9 +216,9 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 			catch(CommonPermissionException e) {
 				// do nothing here
 			}
-			
+
 			nuclosIconChooser.setSelected(model.getNuclosResourceName());
-			
+
 			if(hasDocumentType()) {
 				cbStateModel.setEnabled(false);
 			}
@@ -232,34 +232,34 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		model.setShowGroups(cbShowGroups.isSelected());
 		model.setShowRelation(cbShowRelation.isSelected());
 		model.setLogbook(cbLogbook.isSelected());
-		
+
 		lbSystemIdPrefix.setEnabled(model.isStateModel());
 		tfSystemIdPrefix.setEnabled(model.isStateModel());
 		lbShowGroups.setEnabled(model.isStateModel());
 		cbShowGroups.setEnabled(model.isStateModel());
 		lbShowRelation.setEnabled(model.isStateModel());
 		cbShowRelation.setEnabled(model.isStateModel());
-		
-		
+
+
 		SwingUtilities.invokeLater(new Runnable() {
-			
+
 			@Override
 			public void run() {
-				setComplete(true);		
+				setComplete(true);
 			}
 		});
-		
-		
+
+
 	}
 
 	private void initMenupathElement() {
 		cbMenupath.removeAllItems();
 		cbMenupath.addItem("");
-		for(String sMenu : NuclosWizardUtils.getExistingMenuPaths()) {			
+		for(String sMenu : NuclosWizardUtils.getExistingMenuPaths()) {
 			cbMenupath.addItem(sMenu);
 		}
 	}
-	
+
 	private boolean hasDocumentType() {
 		for(EntityFieldMetaDataVO voField : MetaDataDelegate.getInstance().getAllEntityFieldsByEntity(model.getEntityName()).values()) {
 			if(voField.getDataType().equals("org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile"))
@@ -267,14 +267,14 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		}
 		return false;
 	}
-	
-	
+
+
 
 	@Override
 	protected void initComponents() {
-		
+
 		double size [][] = {{170,200,20, TableLayout.FILL, 20}, {20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20, TableLayout.FILL}};
-		
+
 		TableLayout layout = new TableLayout(size);
 		layout.setVGap(3);
 		layout.setHGap(5);
@@ -284,13 +284,13 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		tfLabelSingular.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.1", "Beschriftung Fenstertitel"));
 		tfLabelSingular.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 		lbMenupath = new JLabel(getMessage("wizard.step.entitycommonproperties.2", "Pfad im Men\u00fc")+": ");
-		
+
 		cbMenupath = new JComboBox();
 		cbMenupath.setEditable(true);
 		cbMenupath.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.2", "Pfad im Men\u00fc"));
 		cbMenupath.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		
-		lbSystemIdPrefix = new JLabel(getMessage("wizard.step.entitycommonproperties.12", "K\u00fcrzel f\u00fcr Identifizierer:"));		
+
+		lbSystemIdPrefix = new JLabel(getMessage("wizard.step.entitycommonproperties.12", "K\u00fcrzel f\u00fcr Identifizierer:"));
 		tfSystemIdPrefix = new JTextField();
 		tfSystemIdPrefix.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.12", "K\u00fcrzel f\u00fcr Identifizierer:"));
 		tfSystemIdPrefix.setDocument(new LimitDocument(3));
@@ -301,7 +301,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		cbxIcon.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.3", "Icon"));
 		btNewIcon = new JButton("...");
 		btNewIcon.setToolTipText(getMessage("wizard.step.entitycommonproperties.4", "Neues Icon erstellen"));
-		
+
 		lbAccelerator = new JLabel(getMessage("wizard.step.entitycommonproperties.5", "Tastenk\u00fcrzel"));
 		cbxModifier = new JComboBox();
 		cbxModifier.addItem("");
@@ -311,94 +311,94 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		tfMnemonic = new JTextField();
 		tfMnemonic.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.5", "Tastenk\u00fcrzel"));
 		tfMnemonic.setDocument(new LimitDocument(2));
-		
+
 		lbLogbook = new JLabel(getMessage("wizard.step.entitycommonproperties.14", "Logbuch:"));
 		cbLogbook = new JCheckBox();
 		cbLogbook.setSelected(true);
 		cbLogbook.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.14", "Logbuch:"));
-		
+
 		lbSearchable = new JLabel(getMessage("wizard.step.entitycommonproperties.6", "Wird eine Suchmaske ben\u00f6tigt")+":");
 		cbSearchable = new JCheckBox();
 		cbSearchable.setSelected(true);
 		cbSearchable.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.6", "Wird eine Suchmaske ben\u00f6tigt"));
-		
+
 		lbEditable = new JLabel(getMessage("wizard.step.entitycommonproperties.7", "Ist die Entit\u00e4t modifizierbar")+":");
 		cbEditable = new JCheckBox();
 		cbEditable.setSelected(true);
 		cbEditable.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.7", "Ist die Entit\u00e4t modifizierbar"));
-		
+
 		lbShowRelation = new JLabel(getMessage("wizard.step.entitycommonproperties.15", "Zeige Relationen:"));
 		cbShowRelation = new JCheckBox();
 		cbShowRelation.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.15", "Zeige Relationen:"));
-		
+
 		lbShowGroups = new JLabel(getMessage("wizard.step.entitycommonproperties.16", "Zeige Gruppen:"));
 		cbShowGroups = new JCheckBox();
 		cbShowGroups.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.16", "Zeige Gruppen:"));
-		
+
 		lbStateModel = new JLabel(getMessage("wizard.step.entitycommonproperties.17", "Statusmodell:"));
 		cbStateModel = new JCheckBox();
 		cbStateModel.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.17", "Statusmodell:"));
-		
-		lbCache = new JLabel(getMessage("wizard.step.entitycommonproperties.9", "Entit\u00e4t cachen")+":");		
-		cbCache = new JCheckBox();		
+
+		lbCache = new JLabel(getMessage("wizard.step.entitycommonproperties.9", "Entit\u00e4t cachen")+":");
+		cbCache = new JCheckBox();
 		cbCache.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.9", "Entit\u00e4t cachen"));
-		
+
 		lbTableName = new JLabel(getMessage("wizard.step.entitycommonproperties.10", "Tabellenname")+":");
 		tfTableName = new JTextField();
 		tfTableName.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.10", "Tabellenname"));
 		tfTableName.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		tfTableName.setDocument(new LimitDocument(31));		
-		
+		tfTableName.setDocument(new LimitDocument(31));
+
 		lbInternalEntityName = new JLabel(getMessage("wizard.step.entitycommonproperties.11", "Interner Entity-Name"));
 		tfInternalEntityName = new JTextField();
 		tfInternalEntityName.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.11", "Interner Entity-Name"));
-		
+
 		lbIcon = new JLabel(getMessage("wizard.step.entitycommonproperties.3", "Icon")+": ");
 		nuclosIconChooser = new ResourceIconChooser();
-		
+
 		this.add(lbLabelSingular, "0,0");
 		this.add(tfLabelSingular, "1,0");
-				
+
 		this.add(lbMenupath, "0,1");
 		this.add(cbMenupath, "1,1");
 		this.add(btMenupath, "2,1");
-		
+
 		this.add(lbIconCustom, "0,2");
-		this.add(cbxIcon, "1,2");		
+		this.add(cbxIcon, "1,2");
 		this.add(btNewIcon, "2,2");
-		
+
 		this.add(lbAccelerator, "0,3");
 		this.add(cbxModifier, "1,3");
 		this.add(tfMnemonic, "2,3");
-		
+
 		this.add(lbSearchable, "0,4");
 		this.add(cbSearchable, "1,4");
-		
+
 		this.add(lbEditable, "0,5");
 		this.add(cbEditable, "1,5");
-		
+
 		this.add(lbLogbook, "0,6");
 		this.add(cbLogbook, "1,6");
-		
+
 		this.add(lbStateModel, "0,7");
 		this.add(cbStateModel, "1,7");
-		
+
 		this.add(lbSystemIdPrefix, "0,8");
 		this.add(tfSystemIdPrefix, "1,8");
-		
+
 		this.add(lbShowRelation, "0,9");
 		this.add(cbShowRelation, "1,9");
-		
+
 		this.add(lbShowGroups, "0,10");
 		this.add(cbShowGroups, "1,10");
-		
+
 		this.add(lbIcon, "3,1");
 		this.add(nuclosIconChooser, "3,2 , 3,18");
-		
+
 		double sizeMoreOptions [][] = {{175, 200, 20}, {20,20,20, TableLayout.FILL}};
-		
+
 		pnlMoreOptions = new JPanel();
-		
+
 		pnlMoreOptions.setLayout(new TableLayout(sizeMoreOptions));
 		pnlMoreOptions.add(lbCache, "0,0");
 		pnlMoreOptions.add(cbCache, "1,0");
@@ -406,42 +406,42 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		pnlMoreOptions.add(tfTableName, "1,1");
 		pnlMoreOptions.add(lbInternalEntityName, "0,2");
 		pnlMoreOptions.add(tfInternalEntityName, "1,2");
-		
+
 		MoreOptionPanel optionPanel = new MoreOptionPanel(pnlMoreOptions);
-		
+
 		this.add(optionPanel, "0,12,2,15");
-		
-		fillIconCombobox();				
-		
+
+		fillIconCombobox();
+
 		cbLogbook.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cb = (JCheckBox)e.getItem();
 				NuclosEntityCommonPropertiesStep.this.model.setLogbook(cb.isSelected());
 			}
 		});
-				
+
 		cbSearchable.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cb = (JCheckBox)e.getItem();
 				NuclosEntityCommonPropertiesStep.this.model.setSearchable(cb.isSelected());
 			}
 		});
-		
+
 		cbEditable.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cb = (JCheckBox)e.getItem();
 				NuclosEntityCommonPropertiesStep.this.model.setEditable(cb.isSelected());
 			}
 		});
-		
+
 		cbStateModel.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cb = (JCheckBox)e.getItem();
@@ -468,9 +468,9 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				cbShowRelation.setEnabled(cb.isSelected());
 			}
 		});
-		
+
 		cbCache.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cb = (JCheckBox)e.getItem();
@@ -479,87 +479,87 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		});
 
 		cbShowRelation.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cb = (JCheckBox)e.getItem();
 				NuclosEntityCommonPropertiesStep.this.model.setShowRelation(cb.isSelected());
 			}
 		});
-		
+
 		cbShowGroups.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cb = (JCheckBox)e.getItem();
 				NuclosEntityCommonPropertiesStep.this.model.setShowGroups(cb.isSelected());
 			}
 		});
-		
+
 		cbStateModel.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cb = (JCheckBox)e.getItem();
 				NuclosEntityCommonPropertiesStep.this.model.setStateModel(cb.isSelected());
 			}
 		});
-		
+
 		tfLabelSingular.addKeyListener(new KeyListener() {
-			
+
 			@Override
 			public void keyTyped(KeyEvent e) {
 				doSomeWork();
 			}
-			
+
 			@Override
 			public void keyReleased(KeyEvent e) {
 				doSomeWork();
 			}
-			
+
 			@Override
 			public void keyPressed(KeyEvent e) {
-				doSomeWork();				
+				doSomeWork();
 			}
-			
+
 			protected void doSomeWork() {
 				blnSingularModified = true;
 			}
-			
+
 		});
-		
-		
+
+
 		tfLabelSingular.getDocument().addDocumentListener(new DocumentListener() {
-			
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
-			protected void doSomeWork(DocumentEvent e) {				
-				int size = e.getDocument().getLength();				
+
+			protected void doSomeWork(DocumentEvent e) {
+				int size = e.getDocument().getLength();
 				if(size > 0) {
-					blnSingular = true;					
+					blnSingular = true;
 				}
 				else  {
 					blnSingular = false;
-					
+
 				}
 				if(blnSingular && (blnSystemId || !model.isStateModel())) {
 					NuclosEntityCommonPropertiesStep.this.setComplete(true);
 				}
 				else {
-					NuclosEntityCommonPropertiesStep.this.setComplete(false);	
+					NuclosEntityCommonPropertiesStep.this.setComplete(false);
 				}
 				try {
 					NuclosEntityCommonPropertiesStep.this.model.setLabelSingular(e.getDocument().getText(0, e.getDocument().getLength()));
@@ -568,51 +568,51 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				}
 			}
 		});
-		
+
 		tfTableName.getDocument().addDocumentListener(new DocumentListener() {
-			
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
-			protected void doSomeWork(DocumentEvent e) {				
-				try {					
+
+			protected void doSomeWork(DocumentEvent e) {
+				try {
 					NuclosEntityCommonPropertiesStep.this.model.setTableOrViewName(e.getDocument().getText(0, e.getDocument().getLength()));
 				} catch (BadLocationException ex) {
 					Errors.getInstance().showExceptionDialog(NuclosEntityCommonPropertiesStep.this, ex);
 				}
 			}
 		});
-		
+
 		tfInternalEntityName.getDocument().addDocumentListener(new DocumentListener() {
-			
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
-			protected void doSomeWork(DocumentEvent e) {				
+
+			protected void doSomeWork(DocumentEvent e) {
 				try {
 					NuclosEntityCommonPropertiesStep.this.model.setModifiedEntityName(e.getDocument().getText(0, e.getDocument().getLength()));
 				} catch (BadLocationException ex) {
@@ -620,25 +620,25 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				}
 			}
 		});
-		
+
 		tfMnemonic.getDocument().addDocumentListener(new DocumentListener() {
-			
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				doSomeWork(e);				
+				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				doSomeWork(e);				
+				doSomeWork(e);
 			}
-			
-			protected void doSomeWork(DocumentEvent e) {				
+
+			protected void doSomeWork(DocumentEvent e) {
 				try {
 					NuclosEntityCommonPropertiesStep.this.model.setAccelerator(e.getDocument().getText(0, 1));
 				} catch (BadLocationException ex) {
@@ -646,9 +646,9 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				}
 			}
 		});
-				
+
 		cbxIcon.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(final ItemEvent e) {
 				if(e.getStateChange() == ItemEvent.SELECTED) {
@@ -658,7 +658,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 						setNotifyIconSelectionChange(true);
 					}
 					SwingUtilities.invokeLater(new Runnable() {
-						
+
 						@Override
 						public void run() {
 							final Object obj = e.getItem();
@@ -673,12 +673,12 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 								NuclosEntityCommonPropertiesStep.this.model.setResourceName(null);
 							}
 						}
-					});			
+					});
 				}
-				
+
 			}
 		});
-		
+
 		nuclosIconChooser.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(final ListSelectionEvent e) {
@@ -690,9 +690,9 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				NuclosEntityCommonPropertiesStep.this.model.setNuclosResourceName(nuclosIconChooser.getSelectedResourceIconName());
 			}
 		});
-		
+
 		cbxModifier.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange() == ItemEvent.SELECTED) {
@@ -702,36 +702,36 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				}
 			}
 		});
-		
+
 		((JTextField)cbMenupath.getEditor().getEditorComponent()).addKeyListener(new KeyListener() {
-			
+
 			@Override
 			public void keyTyped(KeyEvent e) {
 				doSomeWork();
 			}
-			
+
 			@Override
 			public void keyReleased(KeyEvent e) {
 				doSomeWork();
 			}
-			
+
 			@Override
 			public void keyPressed(KeyEvent e) {
-				doSomeWork();				
+				doSomeWork();
 			}
-			
+
 			protected void doSomeWork() {
 				blnMenuPathModified = true;
 				String str = ((JTextField)cbMenupath.getEditor().getEditorComponent()).getText();
 				lbSearchable.setEnabled(str.length() > 0);
 				cbSearchable.setEnabled(str.length() > 0);
-				
+
 			}
-			
+
 		});
-		
+
 		cbMenupath.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange() == ItemEvent.SELECTED) {
@@ -741,16 +741,16 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				}
 			}
 		});
-		
+
 		btNewIcon.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
 					 final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
 					 ResourceCollectController rcc = factory.newResourceCollectController(parent, null);
 					 rcc.addResouceSaveListener(NuclosEntityCommonPropertiesStep.this);
-					 rcc.runNew();				
+					 rcc.runNew();
 				}
 				catch(NuclosBusinessException ex) {
 					Errors.getInstance().showExceptionDialog(NuclosEntityCommonPropertiesStep.this, ex);
@@ -766,24 +766,24 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				}
 			}
 		});
-		
+
 		tfSystemIdPrefix.getDocument().addDocumentListener(new DocumentListener() {
-			
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				doSomeWork(e);			}
-			
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				doSomeWork(e);			}
-			
+
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				doSomeWork(e);				
+				doSomeWork(e);
 			}
-			
+
 			protected void doSomeWork(DocumentEvent e) {
-				
+
 				if(e.getDocument().getLength() < 1) {
 					if(model.isStateModel())
 						blnSystemId = false;
@@ -798,57 +798,57 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 					NuclosEntityCommonPropertiesStep.this.setComplete(true);
 				}
 				else {
-					NuclosEntityCommonPropertiesStep.this.setComplete(false);	
+					NuclosEntityCommonPropertiesStep.this.setComplete(false);
 				}
-				
+
 				try {
 					NuclosEntityCommonPropertiesStep.this.getModel().setSystemIdPrefix(e.getDocument().getText(0, e.getDocument().getLength()));
 				}
 				catch(BadLocationException e1) {
 				}
 			}
-			
+
 		});
-		
+
 	}
-	
-	protected void fillIconCombobox() {			
-		
+
+	protected void fillIconCombobox() {
+
 		List<MasterDataVO> lstIcon = new ArrayList<MasterDataVO>(MasterDataDelegate.getInstance().getMasterData(NuclosEntity.RESOURCE.getEntityName()));
 		Collections.sort(lstIcon, new Comparator<MasterDataVO>() {
 			@Override
             public int compare(MasterDataVO o1, MasterDataVO o2) {
 	            String sField1 = (String)o1.getField("name");
-	            String sField2 = (String)o2.getField("name");	            
+	            String sField2 = (String)o2.getField("name");
 	            return sField1.toUpperCase().compareTo(sField2.toUpperCase());
             }
 		});
-		
-		
+
+
 		cbxIcon.addItem(" ");
 		for(MasterDataVO vo : lstIcon) {
-			cbxIcon.addItem(vo);	
-		}		
-				
+			cbxIcon.addItem(vo);
+		}
+
 	}
-	
+
 	@Override
-    public void applyState() throws InvalidStateException {	    
+    public void applyState() throws InvalidStateException {
 	    super.applyState();
-	    
+
 	    model.setMenuPath((String)cbMenupath.getSelectedItem());
-	    
+
 	    String sTable = tfTableName.getText();
 	    for(EntityMetaDataVO vo : MetaDataClientProvider.getInstance().getAllEntities()) {
 	    	if(sTable.equalsIgnoreCase(vo.getDbEntity())) {
-	    		if(this.model.getEntityName().equalsIgnoreCase(vo.getEntity())) 
+	    		if(this.model.getEntityName().equalsIgnoreCase(vo.getEntity()))
 	    			continue;
-	    		JOptionPane.showMessageDialog(this, getMessage("wizard.step.entitycommonproperties.18", "Der vergebene Tabellenname ist schon vorhanden. Bitte ändern Sie ihn in den erweiterten Einstellungen!"), 
+	    		JOptionPane.showMessageDialog(this, getMessage("wizard.step.entitycommonproperties.18", "Der vergebene Tabellenname ist schon vorhanden. Bitte ändern Sie ihn in den erweiterten Einstellungen!"),
 	    			getMessage("wizard.step.entitycommonproperties.19", "Achtung!"), JOptionPane.OK_OPTION);
 	 	        throw new InvalidStateException();
 	    	}
 	    }
-	    
+
     }
 
 
@@ -858,25 +858,26 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 			CollectableMasterDataWithDependants mdwd = (CollectableMasterDataWithDependants)clt;
 			MasterDataVO vo = mdwd.getMasterDataCVO();
 			cbxIcon.addItem(vo);
+			cbxIcon.setSelectedItem(vo);
 		}
 		clct.getFrame().dispose();
 		this.requestFocus();
 	}
-	
+
 	private class LimitDocument extends PlainDocument {
-		
+
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		int max;
-		
+
 		public LimitDocument(int max) {
 	        this.max = max;
         }
 
 		@Override
-		public void insertString(int offs, String str, AttributeSet a)	throws BadLocationException {		
+		public void insertString(int offs, String str, AttributeSet a)	throws BadLocationException {
 			if(str == null)
 				return;
 			if(getLength() + str.length() < max) {
