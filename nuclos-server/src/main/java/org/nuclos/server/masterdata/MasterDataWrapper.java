@@ -145,7 +145,7 @@ public class MasterDataWrapper {
 			mdVO.getField("active") == null ? false : (Boolean)mdVO.getField("active"),
 			mdVO.getField("debug") == null ? false : (Boolean)mdVO.getField("debug"));
 
-		
+
 		return vo;
 	}
 
@@ -175,7 +175,7 @@ public class MasterDataWrapper {
 			usages);
 		if(mdVO.getField("groupattributes") != null)
 			vo.setGroupAttributes((Boolean)mdVO.getField("groupattributes"));
-		if(mdVO.getField("createRelation") != null) 
+		if(mdVO.getField("createRelation") != null)
 			vo.setCreateRelationBetweenObjects((Boolean)mdVO.getField("createRelation"));
 		return vo;
 	}
@@ -612,7 +612,7 @@ public class MasterDataWrapper {
 		mpFields.put("nucletId", vo.getNucletId());
 		if (vo instanceof RecordGrantVO)
 			mpFields.put("entity", ((RecordGrantVO) vo).getEntity());
-		else if(vo instanceof DynamicEntityVO) 
+		else if(vo instanceof DynamicEntityVO)
 			mpFields.put("entity", ((DynamicEntityVO) vo).getEntity());
 		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
@@ -759,7 +759,7 @@ public class MasterDataWrapper {
 			(String)mdVO.getField("description"),
 			(Date)mdVO.getField("expired"),
 			(Date)mdVO.getField("completed"),
-			(Integer)mdVO.getField("genericobject"),
+			(Integer)mdVO.getField("genericobjectId"),
 			(Integer)mdVO.getField("module"),
 			sIdentifier,
 			sStatus,
@@ -775,7 +775,7 @@ public class MasterDataWrapper {
 
 	public static MasterDataVO wrapTimelimitTaskVO(TimelimitTaskVO vo) {
 		Map<String, Object> mpFields = new HashMap<String,Object>();
-		mpFields.put("genericobject", vo.getGenericObjectId());
+		mpFields.put("genericobjectId", vo.getGenericObjectId());
 		mpFields.put("expired", vo.getExpired());
 		mpFields.put("completed", vo.getCompleted());
 

@@ -239,7 +239,9 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 				stOwners.add(userId);
 			}
 		}
-		taskvo.setDelegator(getCurrentUserName());
+		if (taskvo.getDelegatorId() == null) {
+			taskvo.setDelegator(getCurrentUserName());
+		}
 		try {
 			MasterDataWithDependantsVO mdvo = MasterDataWrapper.wrapTaskVO(taskvo);
 			MasterDataVO newMdvo = getMasterDataFacade().create(NuclosEntity.TASKLIST.getEntityName(), mdvo, mdvo.getDependants());
