@@ -17,13 +17,9 @@
 package org.nuclos.client.masterdata;
 
 import java.awt.Component;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,7 +32,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
-import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
@@ -53,12 +48,9 @@ import org.nuclos.client.genericobject.CollectableGenericObjectEntity;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
-import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess;
-import org.nuclos.client.genericobject.datatransfer.TransferableGenericObjects;
 import org.nuclos.client.layout.LayoutUtils;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
-import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SizeKnownEvent;
 import org.nuclos.client.ui.SizeKnownListener;
@@ -112,20 +104,20 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
  * @version 01.00.00
  */
 public class MasterDataSubFormController extends DetailsSubFormController<CollectableEntityObject> {
-	
+
 	private JMenuItem miDetails = new JMenuItem(CommonLocaleDelegate.getMessage("AbstractCollectableComponent.7","Details anzeigen..."));
 	private JMenuItem miEdit = new JMenuItem(CommonLocaleDelegate.getMessage("AbstractCollectableComponent.21","Zelle bearbeiten"));
-	
+
 	protected static final String TB_CLONE = "Toolbar.CLONE";
-	
+
 	private RowSelectionListener rowselectionlistener;
 	private List<MasterDataSubFormController> lstChildSubController = new ArrayList<MasterDataSubFormController>();
 	private CollectableMasterData clctParent;
 	private TransferHandler subFormTransferHandler;
 	private EntityCollectController<CollectableEntityObject> parentController;
-	
+
 	int selectedColumn;
-	
+
 	/**
 	 * @param parent
 	 * @param clctcompmodelproviderParent provides <code>CollectableComponentModel</code>s. This avoids handing
@@ -156,9 +148,9 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 				});
 			}
 		});
-		
+
 		getSubForm().setToolbarFunctionState(SubForm.ToolbarFunction.FILTER.name(), SubForm.ToolbarFunctionState.ACTIVE);
-		
+
 		UIUtils.invokeOnDispatchThread(new Runnable() {
 			@Override
 			public void run() {
@@ -170,20 +162,14 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			}
 		});
 		getSubForm().addSubFormToolListener(cloneListener);
-		
-		// add TransferHandler
-		subform.getJTable().setTransferHandler(getSubFormTransferHandler());
-		if (subform.getJTable().getParent() instanceof JViewport) {
-			((JViewport)subform.getJTable().getParent()).setTransferHandler(getSubFormTransferHandler());
-		}
-		
+
 		setupSubFormTableContextMenue();
-		
+
 	}
-	
-		
+
+
 	private void setupSubFormTableContextMenue() {
-		
+
 		// context menu:
 		final JPopupMenuFactory factory = new JPopupMenuFactory() {
 			@Override
@@ -207,9 +193,9 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 					}
 				});
 				result.add(miDetails);
-				
+
 				miEdit.addActionListener(new ActionListener() {
-					
+
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						cmdEditCell();
@@ -223,7 +209,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		JPopupMenuListener popupMenuListener = new DefaultJPopupMenuListener(factory, true) {
 			@Override
 			public void mousePressed(MouseEvent ev) {
-				if (ev.getClickCount() == 1 && SwingUtilities.isRightMouseButton(ev)) {					
+				if (ev.getClickCount() == 1 && SwingUtilities.isRightMouseButton(ev)) {
 					if (ev.getSource() instanceof JTable) {
 						JTable table = (JTable)ev.getSource();
 						final int iRow = ((JTable)ev.getSource()).rowAtPoint(ev.getPoint());
@@ -237,10 +223,10 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 								}
 							}  // if
 
-						
+
 							final int iSelectedRowCount = ((JTable)ev.getSource()).getSelectedRowCount();
 							String entityName = MasterDataSubFormController.this.getSelectedCollectable().getCollectableEOEntity().getName();
-							
+
 							try {
 								miDetails.setEnabled(iSelectedRowCount == 1
 									&& getSelectedCollectable().getId() != null
@@ -253,7 +239,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 								int col = table.columnAtPoint(ev.getPoint());
 								Object obj = table.getValueAt(iRow, col);
 								if(obj instanceof AbstractCollectableField) {
-									AbstractCollectableField field = (AbstractCollectableField)obj;									
+									AbstractCollectableField field = (AbstractCollectableField)obj;
 									miEdit.setVisible(LangUtils.isValidURI(field.toString()));
 									selectedColumn = col;
 								}
@@ -266,16 +252,16 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 								miEdit.setVisible(false);
 							}
 						}
-						
+
 					}
 				}
 				super.mousePressed(ev);
 			}
 		};
-		
+
 		this.getSubForm().getJTable().addMouseListener(popupMenuListener);
 	}
-	
+
 	private void cmdEditCell() {
 		int row = this.getSubForm().getJTable().getSelectedRow();
 		this.getSubForm().getJTable().editCellAt(row, selectedColumn);
@@ -283,14 +269,14 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		if(comp != null)
 			comp.requestFocusInWindow();
 	}
-	
+
 	private void cmdShowDetails() throws CommonBusinessException {
 		UIUtils.runCommand(getParent(), new CommonRunnable() {
 
 			@Override
 			public void run() throws CommonBusinessException {
 				String sEntity = MasterDataSubFormController.this.getSelectedCollectable().getCollectableEOEntity().getName();
-				
+
 				if(sEntity != null) {
 					if(MetaDataClientProvider.getInstance().getEntity(sEntity).isStateModel()) {
 						showGenericobject(MasterDataSubFormController.this.getSelectedCollectable().getId());
@@ -299,22 +285,22 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 						showMasterData(MasterDataSubFormController.this.getSelectedCollectable().getId(), sEntity);
 					}
 				}
-				else {				
+				else {
 					showGenericobject(MasterDataSubFormController.this.getSelectedCollectable().getId());
 				}
-			}			
-			
+			}
+
 		});
-		
+
 	}
-	
+
 	private void showMasterData(final Object iMasterdataId,	String entityName) throws CommonBusinessException {
 		if(LayoutUtils.isSubformEntity(entityName))
 			return;
 		MasterDataCollectController ctlMasterdata = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(MainFrame.getPredefinedEntityOpenLocation(entityName), entityName, null);
 		ctlMasterdata.runViewSingleCollectableWithId(iMasterdataId);
 	}
-	
+
 	private void showGenericobject(final Object iGenericObjectId) throws CommonFinderException, CommonPermissionException {
 		//final Object iGenericObjectId = clct.getId();
 		try {
@@ -328,45 +314,46 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			throw new CommonFatalException(CommonLocaleDelegate.getMessage("DynamicEntitySubFormController.2", "Der Datensatz kann nicht angezeigt werden. Bitte tragen Sie in der Datenquelle für die dynamische Entität, die Entität ein, die angezeigt werden soll!"));
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param referenceEntity
 	 * @param referenceId
 	 * @return true if new clct is inserted
 	 * @throws NuclosBusinessException is thrown if reference entity could not be found in columns
 	 */
-	public boolean insertNewWithReference(String referenceEntity, Collectable referenceClct, boolean validateWithVLP) throws NuclosBusinessException {
+	@Override
+	public boolean insertNewRowWithReference(String referenceEntity, Collectable referenceClct, boolean validateWithVLP) throws NuclosBusinessException {
 		if (getSubForm().getSubformTable().getCellEditor() != null)
 			getSubForm().getSubformTable().getCellEditor().stopCellEditing();
-		
+
 		boolean clctChanged = false;
-		
+
 		CollectableEntityObject clct = insertNewRow();
 		final int row = getCollectableTableModel().getRowCount()-1;
-		
+
 		boolean noReferenceFound = true;
-		
-		// find fields for copied entity objects                		
-		for (final String field : clct.getCollectableEntity().getFieldNames()) {
-			CollectableEntityField clctef = clct.getCollectableEntity().getEntityField(field);
+
+		// find fields for copied entity objects
+		for (final String field : clct.getCollectableEOEntity().getFieldNames()) {
+			CollectableEntityField clctef = clct.getCollectableEOEntity().getEntityField(field);
 			if (referenceEntity.equals(clctef.getReferencedEntityName())) {
-				
+
 				// for getting readable presentation and fire lookup use ListOfValues
-                CollectableListOfValues clctlov = new CollectableListOfValues(clct.getCollectableEntity().getEntityField(field));
+                CollectableListOfValues clctlov = new CollectableListOfValues(clct.getCollectableEOEntity().getEntityField(field));
                 try {
                 	boolean insert = false;
                 	//check provider if value exists in result
-                	
+
                 	CollectableComponentTableCellEditor cellEditor = ((CollectableComponentTableCellEditor)getTableCellEditor(getJTable(), row, clctef));
                 	if (cellEditor == null) {
                 		// could happen, column is foreign column.
                 		continue;
                 	}
                 	CollectableComponent clctcomp = cellEditor.getCollectableComponent();
-                	
+
                 	noReferenceFound = false;
-                	
+
                 	if (clctcomp instanceof LabeledCollectableComponentWithVLP) {
                 		CollectableFieldsProvider provider = ((LabeledCollectableComponentWithVLP)clctcomp).getValueListProvider();
                 		if (provider != null) {
@@ -389,7 +376,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
                 	} else {
                 		insert = true;
                 	}
-                    
+
                 	// set field
                     if (insert) {
                         clctlov.addLookupListener(new LookupListener() {
@@ -411,127 +398,35 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
                         catch(Exception e1) {
                             log.error(e1.getMessage(), e1);
                         }
-                    } 
+                    }
                 }
                 catch(CommonBusinessException e) {
                 	log.error(e.getMessage(), e);
                 }
 			}
 		}
-		
+
 		if (!clctChanged) {
 			getCollectableTableModel().remove(clct);
 		}
-		
+
 		if (noReferenceFound)
 			throw new NuclosBusinessException("Reference entity column " + referenceEntity + " not found.");
-		
+
 		return clctChanged;
 	}
-	
-	/**
-	 * 
-	 * @return TransferHandler for handling drop's and paste events
-	 */
-	protected TransferHandler getSubFormTransferHandler() {
-		if (subFormTransferHandler == null)
-			subFormTransferHandler = new TransferHandler(){
 
-			/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-
-			@Override
-            public boolean importData(JComponent comp, Transferable t) {
-				try {
-					if (!canImport(comp, t.getTransferDataFlavors())) 
-						return false;
-					
-					int countNotImported = 0;
-            		int countImported = 0;
-            		boolean noReferenceFound = false;
-            		String entityLabel = null;
-            		
-	                final List<?> lstloim = (List<?>) t.getTransferData(TransferableGenericObjects.dataFlavor);
-	                for (Object o : lstloim) {
-	                	if (o instanceof GenericObjectIdModuleProcess) {
-	                		GenericObjectIdModuleProcess goimp = (GenericObjectIdModuleProcess) o;
-	                		Integer entityId = goimp.getModuleId();
-	                		String entity = MetaDataClientProvider.getInstance().getEntity(LangUtils.convertId(entityId)).getEntity();
-	                		entityLabel = CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(LangUtils.convertId(entityId)));
-	                		
-                            try {
-                            	if (!insertNewWithReference(entity, new CollectableGenericObjectWithDependants(GenericObjectDelegate.getInstance().getWithDependants(goimp.getGenericObjectId())), true)) {
-    	                			countNotImported++;
-    	                		} else {
-    	                			countImported++;
-    	                		}
-                            }
-                            catch(NuclosBusinessException e2) {
-                            	noReferenceFound = true;
-                            }
-                            catch(CommonBusinessException e) {
-	                            log.error(e.getMessage(), e);
-                            }
-	                	}
-	                }
-	                
-	                if (noReferenceFound) {
-	                	new Bubble(
-	                		getSubForm().getJTable(),
-	                		CommonLocaleDelegate.getMessage("MasterDataSubFormController.4", "Dieses Unterformular enthält keine Referenzspalte zur Entität ${entity}.", entityLabel),
-							10,
-							Bubble.Position.NO_ARROW_CENTER)
-						.setVisible(true);
-	                } else {
-	                	String sNotImported = CommonLocaleDelegate.getMessage("MasterDataSubFormController.5", "Der Valuelist Provider verhindert das Anlegen von ${count} Unterformular Datensätzen.", countNotImported);
-		                
-		                getCollectController().getDetailsPanel().setStatusBarText(
-		                	CommonLocaleDelegate.getMessage("MasterDataSubFormController.6", "${count} Unterformular Datensätze angelegt.", countImported)
-		                	+ (countNotImported==0?"": " " + sNotImported));
-		                if (countNotImported!=0)
-		                	new Bubble(
-		                		getCollectController().getDetailsPanel().tfStatusBar,
-		                		sNotImported,
-								10,
-								Bubble.Position.UPPER)
-							.setVisible(true);
-	                }
-	                return true;
-                }
-                catch(UnsupportedFlavorException e) {
-                    log.error(e.getMessage(), e);
-	                return false;
-                }
-                catch(IOException e) {
-                    log.error(e.getMessage(), e);
-	                return false;
-                }
-            }
-
-			@Override
-            public boolean canImport(JComponent comp,
-                DataFlavor[] transferFlavors) {
-				return isEnabled() && transferFlavors.length > 0 && TransferableGenericObjects.dataFlavor.equals(transferFlavors[0]);
-            }
-			
-		};
-		
-		return subFormTransferHandler;
-	}
-	
 	private SubFormToolListener cloneListener = new SubFormToolListener() {
 		@Override
 		public void toolbarAction(String actionCommand) {
 			if(actionCommand.equals(TB_CLONE)) {
 				if (getJTable().getSelectedRow() != -1) {
 					stopEditing();
-					
+
 					// clone selected record
 					CollectableEntityObject original = getCollectableTableModel().getCollectable(getJTable().getSelectedRow());
 					CollectableEntityObject clone = new CollectableEntityObject(original.getCollectableEOEntity(), original.getEntityObjectVO().copy());
-					
+
 					// check whether the selected record has some dependant data
 					boolean hasDependantData = false;
 					if (hasChildSubForm()) {
@@ -542,19 +437,19 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 							}
 						}
 					}
-					
+
 					int result = JOptionPane.NO_OPTION;
 					if (hasDependantData) {
 						String sMessage = CommonLocaleDelegate.getMessage("MasterDataSubFormController.2", "Der zu klonende Datensatz besitzt abh\u00e4ngige Unterformulardaten. Sollen diese auch geklont werden?");
 						result = JOptionPane.showConfirmDialog(getParent(), sMessage, CommonLocaleDelegate.getMessage("MasterDataSubFormController.1", "Datensatz klonen"), JOptionPane.YES_NO_OPTION);
 					}
-		
+
 					try {
 						// add cloned data
 						CollectableEntityObject clctNew = insertNewRow(clone);
 						setParentId(clctNew, getParentId());
 						getCollectableTableModel().add(clctNew);
-						
+
 						// clone and add dependant data
 						if (result == JOptionPane.YES_OPTION) {
 							cloneDependantData(original, clone);
@@ -567,7 +462,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			}
 		}
 	};
-	
+
 	/**
 	 * clones the dependant data of the given original collectable recursively
 	 * @param clctmd_original original collectable masterdata
@@ -578,7 +473,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		for (MasterDataSubFormController mdsfctl : getChildSubFormController()) {
 			List<CollectableEntityObject> lsclctmd = mdsfctl.readDependants(clctmd_original);
 			mdsfctl.setCollectableParent(clctmd_clone);
-			
+
 			for (CollectableEntityObject clctmd : lsclctmd) {
 				if (!clctmd.isMarkedRemoved()) {
 					CollectableEntityObject clone = new CollectableEntityObject(clctmd.getCollectableEOEntity(), clctmd.getEntityObjectVO().copy());
@@ -592,7 +487,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	@Override
 	protected void postCreate() {
 		this.setupListSelectionListener();
-		
+
 		getSubForm().addLookupListener(new LookupListener() {
 			@Override
 			public void lookupSuccessful(LookupEvent ev) {
@@ -601,7 +496,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 						CollectableEntityField clctef = ev.getCollectableComponent().getEntityField();
 						clctef.getReferencedEntityName();
 						try {
-		                    insertNewWithReference(clctef.getReferencedEntityName(), clct, false);
+		                    insertNewRowWithReference(clctef.getReferencedEntityName(), clct, false);
 	                    }
 	                    catch(NuclosBusinessException e) {
 		                    log.error(e.getMessage(), e);
@@ -614,10 +509,10 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	            return 2;
             }
 		});
-		
+
 		super.postCreate();
 	}
-	
+
 	/**
 	 * releases resources, removes listeners.
 	 */
@@ -626,18 +521,18 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		this.removeListSelectionListener();
 		super.close();
 	}
-	
+
 	private void setCollectableParent(CollectableMasterData clctParent) {
 		this.clctParent = clctParent;
 		if (clctParent != null) {
 			this.setParentId(clctParent.getId());
 		}
 	}
-	
+
 	protected CollectableMasterData getCollectableParent() {
 		return this.clctParent;
 	}
-	
+
 	protected CollectableEOEntity getCollectableMasterDataEntity() {
 		if(this.getCollectableEntity() instanceof CollectableGenericObjectEntity) {
 			CollectableGenericObjectEntity cgoe = (CollectableGenericObjectEntity)this.getCollectableEntity();
@@ -657,7 +552,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	 */
 	@Override
 	public CollectableEntityObject newCollectable() {
-		final CollectableEOEntity clctmde = this.getCollectableMasterDataEntity();		
+		final CollectableEOEntity clctmde = this.getCollectableMasterDataEntity();
 		return new CollectableEntityObject(clctmde, EntityObjectVO.newObject(clctmde.getName()));
 	}
 
@@ -697,7 +592,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 					listener.actionPerformed(new SizeKnownEvent(getSubForm(), null));
 				}
 				final List<CollectableEntityObject> lst = CollectionUtils.transform(
-					collmdvo, 
+					collmdvo,
 					new CollectableEntityObject.MakeCollectable(MasterDataSubFormController.this.getCollectableMasterDataEntity()));
 				MasterDataSubFormController.this.updateTableModel(lst);
 				// Trigger the 'size' display...
@@ -707,15 +602,15 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			}
 		});
 	}
-	
+
 	protected class RowSelectionListener implements ListSelectionListener {
 
 		public RowSelectionListener() {
 		}
-		
+
 		@Override
         public void valueChanged(ListSelectionEvent event) {
-			if (!isMultiEdit()) {			
+			if (!isMultiEdit()) {
 				for (MasterDataSubFormController controller : getChildSubFormController()) {
 					CollectableEntityObject clct = getSelectedCollectable();
 					controller.fillAsSubFormChild(clct);
@@ -724,7 +619,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			}
 		}
 	}
-    
+
 	private void setupListSelectionListener() {
 		JTable tbl = getJTable();
 		// initialize listener for row selection in the table:
@@ -736,12 +631,12 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		getJTable().getSelectionModel().removeListSelectionListener(this.rowselectionlistener);
 		this.rowselectionlistener = null;
 	}
-	
+
 	// add child subform controller to this subform
 	public void addChildSubFormController(MasterDataSubFormController childSubFormController) {
 		this.lstChildSubController.add(childSubFormController);
 	}
-	
+
 	// get all child subform controller of this subform
 	public List<MasterDataSubFormController> getChildSubFormController() {
 		return this.lstChildSubController;
@@ -751,12 +646,12 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	 * fills the subform (child subform) depending on the selected parent data
 	 * @param clct
 	 */
-	private void fillAsSubFormChild(final CollectableEntityObject clct) {		
+	private void fillAsSubFormChild(final CollectableEntityObject clct) {
 		UIUtils.invokeOnDispatchThread(new Runnable() {
 			@Override
 			public void run() {
 				MasterDataSubFormController.this.setCollectableParent(clct);
-				
+
 				List<CollectableEntityObject> lstclctmd = readDependants(clct);
 				final boolean bWasDetailsChangedIgnored = getCollectController().isDetailsChangedIgnored();
 				getCollectController().setDetailsChangedIgnored(true);
@@ -772,14 +667,14 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 					for (MasterDataSubFormController subformcontroller : getChildSubFormController()) {
 						subformcontroller.fillAsSubFormChild(null);
 					}
-				}				
+				}
 			}
 		});
 	}
-	
+
 	/**
 	 * fills all dependant child subforms of the current controller recursively
-	 * @throws NuclosBusinessException 
+	 * @throws NuclosBusinessException
 	 */
 	public void fillAllChildSubForms() throws NuclosBusinessException {
 		for (MasterDataSubFormController child : getChildSubFormController()) {
@@ -789,7 +684,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			}
 		}
 	}
-	
+
 	/**
 	 * read all dependant data for the given clct
 	 * @param clct
@@ -799,20 +694,20 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		if (clct == null) {
 			return Collections.<CollectableEntityObject>emptyList();
 		}
-		
+
 		List<CollectableEntityObject> lstclctmd = (List<CollectableEntityObject>)clct.getDependantCollectableMasterDataMap().getValues(this.getEntityAndForeignKeyFieldName().getEntityName());
-		
+
 		if (lstclctmd.isEmpty() && clct.getId() != null) {
 			final Collection<EntityObjectVO> collmdvo = (clct == null) ?
 					new ArrayList<EntityObjectVO>() :
 						MasterDataDelegate.getInstance().getDependantMasterData(this.getCollectableEntity().getName(), this.getForeignKeyFieldName(), clct.getId());
-					
+
 					lstclctmd = CollectionUtils.transform(collmdvo, new CollectableEntityObject.MakeCollectable(this.getCollectableMasterDataEntity()));
 					clct.getDependantCollectableMasterDataMap().addValues(this.getEntityAndForeignKeyFieldName().getEntityName(), lstclctmd);
 		}
 		return lstclctmd;
 	}
-	
+
 	/**
 	 * inserts a new row. The foreign key field to the parent entity will be set accordingly.
 	 */
@@ -821,39 +716,39 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		CollectableEntityObject clct = super.insertNewRow();
 		return insertNewRow(clct);
 	}
-	
+
 	private CollectableEntityObject insertNewRow(CollectableEntityObject clct) throws NuclosBusinessException {
 		if (this.isChildSubForm() && this.getCollectableParent() == null) {
 			String sMessage = CommonLocaleDelegate.getMessage("MasterDataSubFormController.3", "Es kann kein Bezug zu einem \u00dcbergeordneten Datensatz hergestellt werden. "+
 			"Bitte w\u00e4hlen Sie zuerst einen Datensatz aus dem \u00fcbergeordneten Unterformular aus.");
 			throw new NuclosBusinessException(sMessage);
 		}
-		
+
 		if (this.isChildSubForm()) {
 			this.getCollectableParent().getDependantCollectableMasterDataMap().addValue(this.getEntityAndForeignKeyFieldName().getEntityName(), clct);
 		}
 		return clct;
 	}
-	
+
 	@Override
 	protected CollectableField getFieldFromParentSubform(String sFieldName) {
 		if(isChildSubForm()) {
 			DetailsSubFormController<CollectableEntityObject> subDetailsParent = parentController.getDetailsSubforms().get(getSubForm().getParentSubForm());
-			subDetailsParent.stopEditing();		
+			subDetailsParent.stopEditing();
 			CollectableMasterData md = subDetailsParent.getSelectedCollectable();
 			return md.getField(sFieldName);
 		}
 		return null;
 	}
 
-	
+
 	@Override
 	protected void removeSelectedRow() {
 		// this is necessary for rows that have been added and again removed before saving
 		this.getSelectedCollectable().markRemoved();
 		super.removeSelectedRow();
 	}
-	
+
 	/**
 	 * checks whether this subform is a child subform
 	 * @return true, if this subform data depends on parent subform data, otherwise false
@@ -861,7 +756,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	public boolean isChildSubForm() {
 		return (this.getSubForm().getParentSubForm() == null) ? false : true;
 	}
-	
+
 	/**
 	 * checks whether this subform has assigned one or more child subforms
 	 * @return true, if child(ren) is/are assigned, otherwise false
@@ -869,14 +764,14 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	public boolean hasChildSubForm() {
 		return !getChildSubFormController().isEmpty();
 	}
-	
+
 	@Override
 	public void selectFirstRow() {
 		if (hasChildSubForm() && getJTable().getRowCount() > 0) {
 			getJTable().setRowSelectionInterval(0,0);
 		}
 	}
-	
+
 	// clears all child subformcontroller of this controller recursively
 	public void clearChildSubFormController() {
 		for (MasterDataSubFormController subformcontroller : lstChildSubController) {
@@ -887,7 +782,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			}
 		}
 	}
-	
+
 	/**
 	 * removes all rows from this subform.
 	 */
@@ -905,6 +800,6 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	public void setParentController(EntityCollectController<CollectableEntityObject> parentController) {
 		this.parentController = parentController;
 	}
-	
-	
+
+
 }	// class MasterDataSubFormController

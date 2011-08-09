@@ -126,7 +126,7 @@ import org.nuclos.server.common.valueobject.TaskVO;
 public class PersonalTaskController extends RefreshableTaskController implements CollectableEventListener {
 
 	private static final Logger log = Logger.getLogger(PersonalTaskController.class);
-	
+
 	public static final int DEFAULT_MIN_WIDTH_FOR_DEFAULT_OPEN_IN_NEW_TAB = 450;
 	public static final int DEFAULT_MIN_HEIGHT_FOR_DEFAULT_OPEN_IN_NEW_TAB = 450;
 
@@ -139,9 +139,9 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	private final PersonalTasksPopupMenu popupPersonal;
 
 	private final PersonalTaskView personaltaskview;
-	
+
 	private boolean bOpenInNewTabIsDefault = false;
-	
+
 	private MainFrameTab tab;
 
 	private final TaskDelegate taskDelegate;
@@ -151,11 +151,11 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	private ExplorerController ctlExplorer;
 
 	private final Preferences prefs;
-	
+
 	private final Action actEditTaskInNewTab = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.29","In neuem Tab Bearbeiten..."),
 		Icons.getInstance().getIconEdit16(), CommonLocaleDelegate.getMessage("PersonalTaskController.8","Definition der ausgew\u00e4hlten Aufgabe bearbeiten / Aufgabe delegieren")) {
 	/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -167,7 +167,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 	private final Action actEditTask = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.7","Bearbeiten..."), Icons.getInstance().getIconEdit16(), CommonLocaleDelegate.getMessage("PersonalTaskController.8","Ausgew\u00e4hlte Aufgabe(n) bearbeiten")) {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -180,7 +180,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	private final Action actPerformTask = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.25","\u00D6ffne zugeordnete(s) Objekt(e)"), Icons.getInstance().getIconModule(),
 		CommonLocaleDelegate.getMessage("PersonalTaskController.27","Zugeordnetes Objekt anzeigen")) {
 		/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -189,11 +189,11 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			PersonalTaskController.this.cmdPerformPersonalTask(personaltaskview);
 		}
 	};
-	
+
 	private final Action actCopyCell = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen"), Icons.getInstance().getIconCopy16(),
 			CommonLocaleDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen")) {
 		/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -203,11 +203,11 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			UIUtils.copyCells(table);
 		}
 	};
-	
+
 	private final Action actCopyRows = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen"), Icons.getInstance().getIconCopy16(),
 			CommonLocaleDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen")) {
 	/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -216,14 +216,14 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			JTable table = personaltaskview.getTable();
 			UIUtils.copyRows(table);
 		}
-	
+
 	};
 
 
 
 	private final Action actRemoveTask = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.21","L\u00f6schen..."), Icons.getInstance().getIconRealDelete16(), CommonLocaleDelegate.getMessage("PersonalTaskController.6","Ausgew\u00e4hlte Aufgabe l\u00f6schen")) {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -235,7 +235,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 	private final Action actCompleteTask = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.16","Erledigt"), Icons.getInstance().getIconProperties16(), CommonLocaleDelegate.getMessage("PersonalTaskController.5","Ausgew\u00e4hlte Aufgabe(n) als erledigt/unerledigt markieren")) {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -269,25 +269,25 @@ public class PersonalTaskController extends RefreshableTaskController implements
  				setRowColorRendererInPersonalTaskTable();
 			}
         });
-		
+
 		this.personaltaskview.addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
 				Dimension personalTaskViewSize = PersonalTaskController.this.personaltaskview.getBounds().getSize();
-				PersonalTaskController.this.bOpenInNewTabIsDefault = 
-					personalTaskViewSize.height < DEFAULT_MIN_HEIGHT_FOR_DEFAULT_OPEN_IN_NEW_TAB || 
+				PersonalTaskController.this.bOpenInNewTabIsDefault =
+					personalTaskViewSize.height < DEFAULT_MIN_HEIGHT_FOR_DEFAULT_OPEN_IN_NEW_TAB ||
 					personalTaskViewSize.width < DEFAULT_MIN_WIDTH_FOR_DEFAULT_OPEN_IN_NEW_TAB;
-				
+
 				UIUtils.setFontStyleBold(PersonalTaskController.this.popupPersonal.miEditDefinition, !PersonalTaskController.this.bOpenInNewTabIsDefault);
 				UIUtils.setFontStyleBold(PersonalTaskController.this.popupPersonal.miEditDefinitionInNewTab, PersonalTaskController.this.bOpenInNewTabIsDefault);
 			}
 		});
-		
+
 		KeyBinding keybinding = KeyBindingProvider.REFRESH;
 		this.personaltaskview.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(keybinding.getKeystroke(), keybinding.getKey());
 		this.personaltaskview.getActionMap().put(keybinding.getKey(), new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -300,7 +300,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 	class RowColorRenderer extends DefaultTableCellRenderer {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -407,14 +407,14 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 	private void setupActions(final JTable table) {
 		super.addRefreshIntervalActionsToSingleScheduledRefreshable();
-		
+
 		table.addMouseListener(new PopupMenuListener(this.popupPersonal, table));
 		table.addMouseListener(new DoubleClickListener(personaltaskview));
 
 		final Action actRefresh = new CommonAbstractAction(Icons.getInstance().getIconRefresh16(),
 			CommonLocaleDelegate.getMessage("PersonalTaskController.3","Liste aktualisieren")) {
 			/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -426,7 +426,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 		final Action actNew = new CommonAbstractAction(Icons.getInstance().getIconNew16(), CommonLocaleDelegate.getMessage("PersonalTaskController.22","Neue Aufgabe erstellen")) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -436,10 +436,10 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			}
 		};
 
-		final Action actPrint = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.4","Liste drucken"), 
+		final Action actPrint = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.4","Liste drucken"),
 			Icons.getInstance().getIconPrintReport16(), null) {
 			/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -464,7 +464,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		personaltaskview.btnEdit.setAction(actEditTask);
 		personaltaskview.btnComplete.setAction(actCompleteTask);
 		personaltaskview.btnPerform.setAction(actPerformTask);
-		
+
 		personaltaskview.btnRemove.setAction(actRemoveTask);
 		personaltaskview.btnPrint.setAction(actPrint);
 
@@ -638,11 +638,11 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	private Preferences getPreferences() {
 		return org.nuclos.common2.ClientPreferences.getUserPreferences().node("taskPanel").node("personalTasks");
 	}
-	
+
 	private void removePersonalTaskTab() {
 		this.tab = null;
 	}
-	
+
 	public void cmdShowPersonalTasks() {
 		if (tab == null) {
 			UIUtils.runCommand(this.getParent(), new Runnable() {
@@ -653,11 +653,11 @@ public class PersonalTaskController extends RefreshableTaskController implements
 					MainFrame.setSelectedTab(tab);
 				}
 			});
-		} 
-		
+		}
+
 		MainFrame.setSelectedTab(tab);
 	}
-	
+
 	public void showPersonalTasks(MainFrameTab tab) {
 		if (this.tab != null) {
 			throw new IllegalArgumentException("Personal Tasks already shown");
@@ -673,7 +673,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 				tab.removeMainFrameTabListener(this);
 			}
 		});
-		
+
 		tab.setTitle(CommonLocaleDelegate.getMessage("tabMyTasks", "Meine Aufgaben"));
 		tab.setTabIcon(Icons.getInstance().getIconTabTask());
 		tab.setLayeredComponent(PersonalTaskController.this.personaltaskview);
@@ -867,12 +867,12 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			@Override
 			public void run() {
 				try {
-					PersonalTaskCollectController newCollectController = 
+					PersonalTaskCollectController newCollectController =
 						(PersonalTaskCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(
-							(tab != null && !bInNewTab) ? tab : MainFrame.getPredefinedEntityOpenLocation(NuclosEntity.TASKLIST.getEntityName()), 
+							(tab != null && !bInNewTab) ? tab : MainFrame.getPredefinedEntityOpenLocation(NuclosEntity.TASKLIST.getEntityName()),
 							NuclosEntity.TASKLIST.getEntityName(), null);
 					newCollectController.runNew();
-					
+
 				} catch (CommonBusinessException ex) {
 					Errors.getInstance().showExceptionDialog(getParent(), ex);
 				}
@@ -942,9 +942,9 @@ public class PersonalTaskController extends RefreshableTaskController implements
 								newGenericObjectCollectController(MainFrame.getPredefinedEntityOpenLocation(MetaDataClientProvider.getInstance().getEntity(new Long(iCommonModuleId)).getEntity()), iCommonModuleId, null);
 						ctlGenericObject.runViewResults(getSearchConditionForRelatedObjects(collGenericObjectIds));
 					}
-					
+
 					for(String entity : eObjectIds.keySet()){
-						MasterDataCollectController newCollectController = 
+						MasterDataCollectController newCollectController =
 								NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(MainFrame.getPredefinedEntityOpenLocation(entity), entity, null);
 						List<Object> oIds = eObjectIds.get(entity);
 						switch(oIds.size()){
@@ -1018,7 +1018,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 	private class PersonalTasksPopupMenu extends JPopupMenu {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		private final JMenuItem miPerform = new JMenuItem();
@@ -1101,7 +1101,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 	private class TransferHandler extends javax.swing.TransferHandler {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		private final Component parent;
@@ -1162,7 +1162,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 						if (transferData == null) {
 							try {
-								transferData = transferable.getTransferData(new MasterDataIdAndEntity.DataFlavor(null));
+								transferData = transferable.getTransferData(MasterDataIdAndEntity.dataFlavor);
 							  	final Collection<MasterDataIdAndEntity> collimp = (Collection<MasterDataIdAndEntity>)transferData;
 								for (MasterDataIdAndEntity mdimp : collimp) {
 									final Integer iMdId = (Integer)(mdimp.getId());
@@ -1213,9 +1213,9 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			default :
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public MainFrameTab getTab() {

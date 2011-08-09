@@ -43,7 +43,13 @@ import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 
+import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
+import org.nuclos.client.genericobject.GenericObjectDelegate;
+import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess;
+import org.nuclos.client.genericobject.datatransfer.TransferableGenericObjects;
 import org.nuclos.client.masterdata.CollectableMasterData;
+import org.nuclos.client.masterdata.MasterDataDelegate;
+import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader;
 import org.nuclos.client.ui.collect.SubForm;
@@ -69,9 +75,11 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.PredicateUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.collection.ValueObjectList;
+import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.exception.PreferencesException;
@@ -581,10 +589,17 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 	@Override
 	public void visitDragOver(DropTargetDragEvent dtde) {
+		// check for TransferableGenericObjects or MasterDataVO support
+		if (dtde.isDataFlavorSupported(TransferableGenericObjects.dataFlavor) || dtde.isDataFlavorSupported(MasterDataIdAndEntity.dataFlavor)) {
+        	dtde.acceptDrag(dtde.getDropAction());
+        	return;
+        }
+
+		// check for File support
 		boolean blnAcceptFileChosser = false;
 		boolean blnAcceptFileList = false;
 		boolean blnAcceptEmail = false;
-		// check if there is an DocumentFileBase in the subform, otherwise don't let the user drop anything
+		// check if there is an DocumentFileBase in the subform, otherwise don't let the user drop files
 		CollectableEntity entity = DetailsSubFormController.this.getCollectableEntity();
 		Set<String> setEntities = entity.getFieldNames();
 		for(String sEntity : setEntities) {
@@ -618,7 +633,6 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
         catch(Exception e) { }
 
         if(flavor.equals(Linux)) {
-        	blnAcceptFileChosser = true;
         	blnAcceptFileList = true;
         }
         else {
@@ -679,6 +693,79 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 			}
 			dtde.acceptDrop(dtde.getDropAction());
 			Transferable trans = dtde.getTransferable();
+
+			// check for TransferableGenericObjects or MasterDataVO support
+			boolean reference = false;
+
+			List<?> lstloim = null;
+			if (dtde.isDataFlavorSupported(TransferableGenericObjects.dataFlavor)) {
+				reference = true;
+				lstloim = (List<?>) trans.getTransferData(TransferableGenericObjects.dataFlavor);
+			}
+			else if (dtde.isDataFlavorSupported(MasterDataIdAndEntity.dataFlavor)){
+				reference = true;
+				lstloim = (List<?>) trans.getTransferData(MasterDataIdAndEntity.dataFlavor);
+			}
+
+			if (reference) {
+				int countNotImported = 0;
+	    		int countImported = 0;
+	    		boolean noReferenceFound = false;
+				String entityname = null;
+	    		String entityLabel = null;
+
+	            for (Object o : lstloim) {
+	            	Collectable clct = null;
+	            	if (o instanceof GenericObjectIdModuleProcess) {
+	            		GenericObjectIdModuleProcess goimp = (GenericObjectIdModuleProcess) o;
+	            		Integer entityId = goimp.getModuleId();
+	            		entityname = MetaDataClientProvider.getInstance().getEntity(LangUtils.convertId(entityId)).getEntity();
+	            		entityLabel = CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(LangUtils.convertId(entityId)));
+
+	            		try {
+	            			clct = new CollectableGenericObjectWithDependants(GenericObjectDelegate.getInstance().getWithDependants(goimp.getGenericObjectId()));
+	                    }
+	                    catch(Exception e) {
+	                        log.error(e.getMessage(), e);
+	                    }
+	            	}
+	            	else if (o instanceof MasterDataIdAndEntity) {
+	            		MasterDataIdAndEntity mdiae = (MasterDataIdAndEntity) o;
+	            		entityname = mdiae.getEntity();
+	            		try {
+	            			clct = new CollectableMasterData(new CollectableMasterDataEntity(MasterDataDelegate.getInstance().getMetaData(mdiae.getEntity())), MasterDataDelegate.getInstance().get(mdiae.getEntity(), mdiae.getId()));
+	            		}
+	                    catch(CommonBusinessException e) {
+	                        log.error(e.getMessage(), e);
+	                    }
+	            	}
+	            	if (clct != null) {
+	            		try {
+	            			if (!insertNewRowWithReference(entityname, clct, true)) {
+	                			countNotImported++;
+	                		} else {
+	                			countImported++;
+	                		}
+	                    }
+	                    catch(NuclosBusinessException e2) {
+	                    	noReferenceFound = true;
+	                    }
+	            	}
+	            }
+
+	            if (noReferenceFound) {
+	            	String bubbleInfo = CommonLocaleDelegate.getMessage("MasterDataSubFormController.4", "Dieses Unterformular enthält keine Referenzspalte zur Entität ${entity}.", entityLabel);
+	            	new Bubble(getSubForm().getJTable(), bubbleInfo, 10, Bubble.Position.NO_ARROW_CENTER).setVisible(true);
+	            } else {
+	            	String sNotImported = CommonLocaleDelegate.getMessage("MasterDataSubFormController.5", "Der Valuelist Provider verhindert das Anlegen von ${count} Unterformular Datensätzen.", countNotImported);
+
+	                getCollectController().getDetailsPanel().setStatusBarText(CommonLocaleDelegate.getMessage("MasterDataSubFormController.6", "${count} Unterformular Datensätze angelegt.", countImported) + (countNotImported == 0 ? "": " " + sNotImported));
+	                if (countNotImported != 0) {
+	                	new Bubble(getCollectController().getDetailsPanel().tfStatusBar, sNotImported, 10, Bubble.Position.UPPER) .setVisible(true);
+	                }
+	            }
+	        	return;
+	        }
 
 			DataFlavor flavors[] = trans.getTransferDataFlavors();
 
@@ -752,12 +839,13 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 			bubble.setVisible(true);
 		}
 		catch (Exception e) {
+			log.error(e.getMessage(), e);
 		}
 	}
 
 	@Override
 	public void visitDropActionChanged(DropTargetDragEvent dtde) {}
 
-
+	public abstract boolean insertNewRowWithReference(String entity, Collectable collectable, boolean b) throws NuclosBusinessException;
 
 }	// class DetailsSubFormController

@@ -58,7 +58,7 @@ import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentTreeNod
  */
 public class NucletContentExplorerNode extends ExplorerNode<NucletContentTreeNode> {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(NucletContentExplorerNode.class);
@@ -66,7 +66,7 @@ public class NucletContentExplorerNode extends ExplorerNode<NucletContentTreeNod
 	public NucletContentExplorerNode(TreeNode treenode) {
 		super(treenode);
 	}
-	
+
 	@Override
 	public String getDefaultTreeNodeActionCommand(JTree tree) {
 		final TreePath treePath = new TreePath(NucletContentExplorerNode.this);
@@ -77,16 +77,15 @@ public class NucletContentExplorerNode extends ExplorerNode<NucletContentTreeNod
 	@Override
 	public boolean importTransferData(Component parent,	Transferable transferable, JTree tree) throws IOException, UnsupportedFlavorException {
 
-		if (transferable.isDataFlavorSupported(new MasterDataIdAndEntity.DataFlavor(null)) ||
-			transferable.isDataFlavorSupported(new MasterDataIdAndEntity.DataFlavor(getTreeNode().getEntity().getEntityName()))) {
-			final Object transferData = transferable.getTransferData(new MasterDataIdAndEntity.DataFlavor(null));
+		if (transferable.isDataFlavorSupported(MasterDataIdAndEntity.dataFlavor)) {
+			final Object transferData = transferable.getTransferData(MasterDataIdAndEntity.dataFlavor);
 			final Collection<MasterDataIdAndEntity> collimp;
 			if (transferData instanceof Collection) {
 				collimp = (Collection<MasterDataIdAndEntity>)transferData;
 			} else {
 				collimp = Collections.singletonList((MasterDataIdAndEntity) transferData);
 			}
-			
+
 			Map<AbstractNucletContentEntryTreeNode, MasterDataIdAndEntity> contents = new HashMap<AbstractNucletContentEntryTreeNode, MasterDataIdAndEntity>();
 			for (MasterDataIdAndEntity mdiden : collimp) {
 				if (getTreeNode().getEntity().getEntityName().equals(mdiden.getEntity())) {
@@ -110,7 +109,7 @@ public class NucletContentExplorerNode extends ExplorerNode<NucletContentTreeNod
 					Errors.getInstance().showExceptionDialog(getExplorerController().getParent(), e);
 				}
 			}
-			
+
 			return true;
 		} else {
 			return super.importTransferData(parent, transferable, tree);
@@ -123,14 +122,14 @@ public class NucletContentExplorerNode extends ExplorerNode<NucletContentTreeNod
 		String nuclosResource = MetaDataClientProvider.getInstance().getEntity(getTreeNode().getEntity()).getNuclosResource();
 		if(resId != null) {
 			ImageIcon standardIcon = ResourceCache.getIconResource(resId);
-			return MainFrame.resizeAndCacheTabIcon(standardIcon);		
+			return MainFrame.resizeAndCacheTabIcon(standardIcon);
 		} else if (nuclosResource != null){
 			ImageIcon nuclosIcon = NuclosResourceCache.getNuclosResourceIcon(nuclosResource);
 			if (nuclosIcon != null) return MainFrame.resizeAndCacheTabIcon(nuclosIcon);
 		}
 		return Icons.getInstance().getIconGenericObject16();
 	}
-	
+
 	private TreeNodeFacadeRemote getTreeNodeFacade() throws NuclosFatalException {
 		return ServiceLocator.getInstance().getFacade(TreeNodeFacadeRemote.class);
 	}

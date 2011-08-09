@@ -73,28 +73,28 @@ import org.nuclos.server.navigation.treenode.nuclet.content.AbstractNucletConten
  */
 public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger log = Logger.getLogger(NucletExplorerNode.class);
-	
+
 	private static final String PREFS_NODE_NUCLET_EXPLORER = "nucletExplorer";
-	
+
 	private static final String PREFS_NODE_ADDREMOVE_DIALOG_SIZE = "addRemoveDialogSize";
-	
+
 	private final Preferences prefs = ClientPreferences.getUserPreferences().node(PREFS_NODE_NUCLET_EXPLORER);
-	
+
 	private final JButton btnAddContent = new JButton();
 	private final JButton btnRemoveContent = new JButton();
 
 	public NucletExplorerNode(TreeNode treenode) {
 		super(treenode);
-		
+
 		btnAddContent.setFocusable(false);
 		btnRemoveContent.setFocusable(false);
 	}
-	
+
 	@Override
 	public String getDefaultTreeNodeActionCommand(JTree tree) {
 		return ACTIONCOMMAND_EXPAND;
@@ -103,11 +103,11 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean importTransferData(Component parent, Transferable transferable, JTree tree) throws IOException, UnsupportedFlavorException {
-		
-		if (transferable.isDataFlavorSupported(new MasterDataIdAndEntity.DataFlavor(null))) {
-			final Object transferData = transferable.getTransferData(new MasterDataIdAndEntity.DataFlavor(null));
+
+		if (transferable.isDataFlavorSupported(MasterDataIdAndEntity.dataFlavor)) {
+			final Object transferData = transferable.getTransferData(MasterDataIdAndEntity.dataFlavor);
 			final Collection<MasterDataIdAndEntity> collimp = (Collection<MasterDataIdAndEntity>)transferData;
-			
+
 			Set<AbstractNucletContentEntryTreeNode> contents = new HashSet<AbstractNucletContentEntryTreeNode>();
 			for (MasterDataIdAndEntity mdiden : collimp) {
 				NuclosEntity entity = NuclosEntity.getByName(mdiden.getEntity());
@@ -127,7 +127,7 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 					Errors.getInstance().showExceptionDialog(getExplorerController().getParent(), e);
 				}
 			}
-			
+
 			return true;
 		} else {
 			return super.importTransferData(parent, transferable, tree);
@@ -135,13 +135,13 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public List<JComponent> getToolBarComponents(final JTree jTree) {
 		btnAddContent.setAction(new AbstractAction(null, Icons.getInstance().getIconPlus16()) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -152,7 +152,7 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 		});
 		btnRemoveContent.setAction(new AbstractAction(null, Icons.getInstance().getIconMinus16()) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -163,9 +163,9 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 		});
 		btnAddContent.setToolTipText(CommonLocaleDelegate.getText("NucletExplorerNode.1", "Hinzufuegen"));
 		btnRemoveContent.setToolTipText(CommonLocaleDelegate.getText("NucletExplorerNode.3", "Entfernen"));
-		
+
 		List<JComponent> result = new ArrayList<JComponent>();
-		
+
 //		JPanel jpnComponents = new JPanel(new FlowLayout());
 //		jpnComponents.add(btnAddContent);
 //		jpnComponents.add(btnRemoveContent);
@@ -173,25 +173,25 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 //		result.add(blComponents);
 		result.add(btnAddContent);
 		result.add(btnRemoveContent);
-		
+
 		return result;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void cmdShowAddDialog(final JTree jTree) {
-		SelectObjectsController<AbstractNucletContentEntryTreeNode> selectCtrl = 
+		SelectObjectsController<AbstractNucletContentEntryTreeNode> selectCtrl =
 			new SelectObjectsController<AbstractNucletContentEntryTreeNode>(null, new NucletContentSelectObjectPanel());
-		
+
 		ChoiceList<AbstractNucletContentEntryTreeNode> ro = new ChoiceList<AbstractNucletContentEntryTreeNode>();
 		ro.set(getTreeNodeFacade().getAvailableNucletContents(),
 				new AbstractNucletContentEntryTreeNode.Comparator());
-		
+
 		selectCtrl.setModel(ro);
 		final boolean userPressedOk = selectCtrl.run(
 				CommonLocaleDelegate.getText("NucletExplorerNode.2", "Zum Nuclet hinzufuegen") + "...");
 		final NucletContentSelectObjectPanel selectPanel = (NucletContentSelectObjectPanel) selectCtrl.getPanel();
 		PreferencesUtils.putRectangle(prefs, PREFS_NODE_ADDREMOVE_DIALOG_SIZE, selectPanel.getBounds());
-		
+
 		if (userPressedOk) {
 			try {
 				getTreeNodeFacade().addNucletContents(getTreeNode().getId().longValue(), new HashSet<AbstractNucletContentEntryTreeNode>((List<AbstractNucletContentEntryTreeNode>) selectCtrl.getSelectedObjects()));
@@ -201,22 +201,22 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void cmdShowRemoveDialog(final JTree jTree) {
-		SelectObjectsController<AbstractNucletContentEntryTreeNode> selectCtrl = 
+		SelectObjectsController<AbstractNucletContentEntryTreeNode> selectCtrl =
 				new SelectObjectsController<AbstractNucletContentEntryTreeNode>(null, new NucletContentSelectObjectPanel());
-		
+
 		final ChoiceList<AbstractNucletContentEntryTreeNode> ro = new ChoiceList<AbstractNucletContentEntryTreeNode>();
-		ro.set(getTreeNodeFacade().getNucletContent(getTreeNode()), 
+		ro.set(getTreeNodeFacade().getNucletContent(getTreeNode()),
 				new AbstractNucletContentEntryTreeNode.Comparator());
 		selectCtrl.setModel(ro);
-		final boolean userPressedOk = selectCtrl.run(  
+		final boolean userPressedOk = selectCtrl.run(
 				CommonLocaleDelegate.getText("NucletExplorerNode.4", "Vom Nuclet entfernen") + "...");
-		
+
 		NucletContentSelectObjectPanel selectPanel = (NucletContentSelectObjectPanel) selectCtrl.getPanel();
 		PreferencesUtils.putRectangle(prefs, PREFS_NODE_ADDREMOVE_DIALOG_SIZE, selectPanel.getBounds());
-		
+
 		if (userPressedOk) {
 			try {
 				getTreeNodeFacade().removeNucletContents(new HashSet<AbstractNucletContentEntryTreeNode>((List<AbstractNucletContentEntryTreeNode>) selectCtrl.getSelectedObjects()));
@@ -226,11 +226,11 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 			}
 		}
 	}
-	
+
 	private class NucletContentSelectObjectPanel extends DefaultSelectObjectsPanel {
-		
+
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -246,7 +246,7 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 			final JList result = super.newList();
 			result.setCellRenderer(new DefaultListCellRenderer() {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -269,28 +269,28 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 			return result;
 		}
 	}
-	
+
 	@Override
 	protected void cmdShowInOwnTabAction() {
 		NucletTreeNode node = getTreeNode();
 		getExplorerController().cmdShowInOwnTab(new NucletTreeNode(node.getId(), node.getLabel(), node.getDescription(), false));
 	}
-	
+
 	private static Icon getIcon(String entity) {
 		Integer resId = MetaDataClientProvider.getInstance().getEntity(entity).getResourceId();
 		String nuclosResource = MetaDataClientProvider.getInstance().getEntity(entity).getNuclosResource();
 		if(resId != null) {
 			ImageIcon standardIcon = ResourceCache.getIconResource(resId);
-			return MainFrame.resizeAndCacheTabIcon(standardIcon);		
+			return MainFrame.resizeAndCacheTabIcon(standardIcon);
 		} else if (nuclosResource != null){
 			ImageIcon nuclosIcon = NuclosResourceCache.getNuclosResourceIcon(nuclosResource);
 			if (nuclosIcon != null) return MainFrame.resizeAndCacheTabIcon(nuclosIcon);
 		}
 		return Icons.getInstance().getIconGenericObject16();
 	}
-	
+
 	private TreeNodeFacadeRemote getTreeNodeFacade() throws NuclosFatalException {
 		return ServiceLocator.getInstance().getFacade(TreeNodeFacadeRemote.class);
 	}
-	
+
 }

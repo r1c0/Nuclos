@@ -71,10 +71,10 @@ public class MasterDataVOTransferable implements Transferable {
 
 		this.aflavors = new DataFlavor[] {
 				new MasterDataVODataFlavor(sEntityName),
-				new MasterDataIdAndEntity.DataFlavor(sEntityName), DataFlavor.stringFlavor
+				MasterDataIdAndEntity.dataFlavor, DataFlavor.stringFlavor
 		};
 	}
-	
+
 	/**
 	 * creates a <code>Transferable</code> for a master data id / entity
 	 * @param oId
@@ -84,7 +84,7 @@ public class MasterDataVOTransferable implements Transferable {
 	public MasterDataVOTransferable(Object oId, String sEntity, String sText) {
 		this(oId, sEntity, sText, null);
 	}
-		
+
 	/**
 	 * creates a <code>Transferable</code> for a master data id / entity
 	 * @param oId
@@ -99,7 +99,7 @@ public class MasterDataVOTransferable implements Transferable {
 		this.lstimp = null;
 
 		final List<DataFlavor> lstFlavors = new LinkedList<DataFlavor>();
-		lstFlavors.add(new MasterDataIdAndEntity.DataFlavor(sEntity));
+		lstFlavors.add(MasterDataIdAndEntity.dataFlavor);
 		if (sText != null) {
 			lstFlavors.add(DataFlavor.stringFlavor);
 		}
@@ -112,16 +112,16 @@ public class MasterDataVOTransferable implements Transferable {
 		this.mdvo = null;
 		this.sText = null;
 		this.mdide = null;
-		
+
 		final List<DataFlavor> lstflavors = new ArrayList<DataFlavor>();
-		lstflavors.add(new MasterDataIdAndEntity.DataFlavor(sEntity));
+		lstflavors.add(new MasterDataIdAndEntity.DataFlavor());
 		if (this.lstimp.size() == 1) {
-			lstflavors.add(new MasterDataIdAndEntity.DataFlavor(sEntity));
+			lstflavors.add(new MasterDataIdAndEntity.DataFlavor());
 		}
 		lstflavors.add(DataFlavor.stringFlavor);
 		this.aflavors = lstflavors.toArray(new DataFlavor[0]);
 	}
-	
+
 	@Override
 	public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
 		Object result;

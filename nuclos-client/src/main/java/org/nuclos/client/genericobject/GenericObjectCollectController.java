@@ -506,7 +506,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private Map<String, DetailsComponentModel> transferredDetailsData = new HashMap<String, DetailsComponentModel>();
 
 	private Integer iSearchDeleted = CollectableGenericObjectSearchExpression.SEARCH_UNDELETED;
-	
+
 	private final boolean noTabFromContructor;
 
 	/**
@@ -659,7 +659,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		final MainFrameTab frame = !noTabFromContructor ? getFrame() : newInternalFrame();
 		frame.setLayeredComponent(pnlCollect);
-		
+
 		setupEditPanels();
 		setupKeyActionsForResultPanelVerticalScrollBar();
 		setupShortcutsForTabs(frame);
@@ -672,7 +672,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		addCollectableEventListener(collectableEventListener);
 		setInternalFrame(frame, noTabFromContructor);
-		
+
 		this.getResultPanel().popupmenuRow.addPopupMenuListener(new PopupMenuListener() {
 
 			@Override
@@ -3067,7 +3067,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final CollectableGenericObject clctlo = getSelectedCollectable();
 		return (clctlo == null) ? null : clctlo.getGenericObjectCVO();
 	}
-	
+
 	private void markCollectableAsDeleted(CollectableGenericObjectWithDependants clctlo) throws CommonBusinessException {
 		lodelegate.remove(clctlo.getGenericObjectWithDependantsCVO(), false);
 	}
@@ -5978,7 +5978,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	                		entityLabel = CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(LangUtils.convertId(entityId)));
 
 	                        try {
-	                        	if (!((MasterDataSubFormController)subFormCtrl).insertNewWithReference(
+	                        	if (!subFormCtrl.insertNewRowWithReference(
 	                        		entity, new CollectableGenericObjectWithDependants(
 	                        			GenericObjectDelegate.getInstance().getWithDependants(goimp.getGenericObjectId())),
 	                        		true)) {

@@ -33,12 +33,15 @@ import org.nuclos.common2.LangUtils;
  */
 
 public class MasterDataIdAndEntity {
+
+	public static final java.awt.datatransfer.DataFlavor dataFlavor = new DataFlavor();
+
 	private final Object oId;
 	private final String sEntity;
 	private final String sLabel;
-	
+
 	private final Action actRemove;
-	
+
 	/**
 	 * @param oId
 	 * @param sEntity
@@ -62,8 +65,9 @@ public class MasterDataIdAndEntity {
 	}
 
 	public static class DataFlavor extends java.awt.datatransfer.DataFlavor {
-		public DataFlavor(String sEntity) {
-			super(MasterDataIdAndEntity.class, sEntity);
+
+		public DataFlavor() {
+			super(MasterDataIdAndEntity.class, null);
 		}
 
 		/**
@@ -78,7 +82,7 @@ public class MasterDataIdAndEntity {
 				result = false;
 			}
 			else {
-				result = LangUtils.equals(this.getHumanPresentableName(), that.getHumanPresentableName());
+				result = LangUtils.equals(this.getDefaultRepresentationClass(), this.getDefaultRepresentationClass());
 			}
 			return result;
 		}
@@ -101,7 +105,7 @@ public class MasterDataIdAndEntity {
 	public String getLabel() {
 		return this.sLabel;
 	}
-	
+
 	public void removeFromSourceTree() {
 		if (actRemove != null)
 			actRemove.actionPerformed(new ActionEvent(this, -1, "removeFromSourceTree"));
