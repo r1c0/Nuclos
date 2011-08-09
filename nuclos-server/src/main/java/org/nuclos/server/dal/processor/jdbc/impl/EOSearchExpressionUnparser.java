@@ -27,13 +27,14 @@ import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
-import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition.AtomicVisitor;
+import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparisonWithOtherField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparisonWithParameter;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIsNullCondition;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableLikeCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSelfSubCondition;
@@ -43,6 +44,8 @@ import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectabl
 import org.nuclos.common.collect.collectable.searchcondition.PlainSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
+import org.nuclos.common.collect.collectable.searchcondition.visit.CompositeVisitor;
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
@@ -113,7 +116,8 @@ public class EOSearchExpressionUnparser {
 			return table.column(entityField.getDbColumn(), normalizeJavaType(entityField.getDataType()));
 	}
 
-	private class UnparseVisitor implements CollectableSearchCondition.Visitor<DbCondition, RuntimeException>, CollectableSearchCondition.CompositeVisitor<DbCondition, RuntimeException>, AtomicVisitor<DbCondition, RuntimeException> {
+	private class UnparseVisitor implements Visitor<DbCondition, RuntimeException>, CompositeVisitor<DbCondition, RuntimeException>, AtomicVisitor<DbCondition, RuntimeException> {
+
 		UnparseVisitor() {
 		}
 
@@ -170,6 +174,23 @@ public class EOSearchExpressionUnparser {
 				subQuery.select(subTable.column(DalUtils.getDbIdFieldName(MetaDataServerProvider.getInstance().getEntityField(subEntityMeta.getEntity(), subcond.getForeignKeyFieldName()).getDbColumn()), Integer.class));
 			EOSearchExpressionUnparser subUnparser = new EOSearchExpressionUnparser(subQuery, subEntityMeta);
 			subUnparser.unparseSearchCondition(subcond.getSubCondition());
+
+			return table.column("INTID", Integer.class).in(subQuery);
+		}
+
+		@Override
+		public DbCondition visitJoinCondition(CollectableJoinCondition joincond) {
+			EntityMetaDataVO subEntityMeta =  MetaDataServerProvider.getInstance().getEntity(joincond.getSubEntityName());
+
+			DbQuery<Integer> subQuery = query.subquery(Integer.class);
+			DbFrom subTable = subQuery.from(subEntityMeta.getDbEntity()).alias("sub");
+			subQuery.distinct(true);
+			if(subEntityMeta.isDynamic())
+				subQuery.select(subTable.columnCaseSensitive(DalUtils.getDbIdFieldName(MetaDataServerProvider.getInstance().getEntityField(subEntityMeta.getEntity(), joincond.getForeignKeyFieldName()).getDbColumn()), Integer.class));
+			else
+				subQuery.select(subTable.column(DalUtils.getDbIdFieldName(MetaDataServerProvider.getInstance().getEntityField(subEntityMeta.getEntity(), joincond.getForeignKeyFieldName()).getDbColumn()), Integer.class));
+			EOSearchExpressionUnparser subUnparser = new EOSearchExpressionUnparser(subQuery, subEntityMeta);
+			subUnparser.unparseSearchCondition(joincond.getSubCondition());
 
 			return table.column("INTID", Integer.class).in(subQuery);
 		}

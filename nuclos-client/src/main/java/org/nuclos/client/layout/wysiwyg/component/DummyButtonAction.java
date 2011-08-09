@@ -44,7 +44,6 @@ public class DummyButtonAction<Clct extends Collectable> implements CollectActio
 	 * Pops up a Optionpane displaying a DummyText
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public void run(CollectController controller, Properties probs) {
 		MainFrameTab overlayFrame = new MainFrameTab("Dummy Button Aktion");
 		overlayFrame.setLayeredComponent(new JLabel(DUMMYBUTTONACTION.MESSAGE));

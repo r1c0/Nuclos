@@ -66,7 +66,6 @@ public class LabeledImage extends LabeledMediaComponent {
 			 */
 			private static final long serialVersionUID = 1L;
 
-			@SuppressWarnings("unchecked")
 			@Override
 			public String getToolTipText() {
 				if(getIcon() == null) {

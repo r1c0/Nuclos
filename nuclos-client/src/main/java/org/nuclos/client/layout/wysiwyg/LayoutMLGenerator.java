@@ -973,7 +973,6 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 	 * @param attributeName
 	 * @return {@link StringBuffer} with the LayoutML
 	 */
-	@SuppressWarnings("unchecked")
 	private synchronized StringBuffer getLayoutMLAttributeFromProperty(PropertyValue property, String attributeName) {
 		StringBuffer sb = new StringBuffer();
 

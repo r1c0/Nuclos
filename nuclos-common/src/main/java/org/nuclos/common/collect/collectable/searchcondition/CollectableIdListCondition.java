@@ -19,6 +19,7 @@ package org.nuclos.common.collect.collectable.searchcondition;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.LangUtils;
 
@@ -33,10 +34,6 @@ import org.nuclos.common2.LangUtils;
  */
 public final class CollectableIdListCondition extends AbstractCollectableSearchCondition {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final List<Object> oIds;
 
 	public CollectableIdListCondition(List<Object> oIds) {

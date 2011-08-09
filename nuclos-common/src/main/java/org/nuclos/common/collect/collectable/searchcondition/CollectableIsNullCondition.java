@@ -17,6 +17,7 @@
 package org.nuclos.common.collect.collectable.searchcondition;
 
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
 
 /**
  * An "IS [NOT] NULL" condition as a <code>CollectableSearchCondition</code>.
@@ -29,11 +30,6 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
  * @version	01.00.00
  */
 public final class CollectableIsNullCondition extends AtomicCollectableSearchCondition {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @param clctef

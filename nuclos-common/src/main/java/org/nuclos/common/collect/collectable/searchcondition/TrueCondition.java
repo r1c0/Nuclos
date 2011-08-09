@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.collect.collectable.searchcondition;
 
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
+
 /**
  * <code>CollectableSearchCondition</code> that is always true.
  * <br>
@@ -28,10 +30,6 @@ package org.nuclos.common.collect.collectable.searchcondition;
  */
 public final class TrueCondition extends AbstractCollectableSearchCondition {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final TrueCondition TRUE = new TrueCondition();
 
 	private TrueCondition() {

@@ -1325,7 +1325,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private void deleteContent(
 		Set<Long> existingNucletIds,
 		NucletContentUID.Map uidExistingMap,

@@ -187,7 +187,6 @@ public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Se
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	public PropertyValue getDefaultPropertyValue(String p) {
 		if (p.equals(PROPERTY_LABEL)) {
 			return new PropertyValueString(field.getLabel());
@@ -238,7 +237,6 @@ public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Se
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#setProperty(java.lang.String, org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue, java.lang.Class)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public void setProperty(String property, PropertyValue value, Class<?> valueClass) throws CommonBusinessException {
 		properties.setProperty(property, value, valueClass);
 	}

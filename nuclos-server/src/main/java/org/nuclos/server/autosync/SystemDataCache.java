@@ -35,6 +35,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableComparis
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIsNullCondition;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableLikeCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSelfSubCondition;
@@ -44,7 +45,9 @@ import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectabl
 import org.nuclos.common.collect.collectable.searchcondition.PlainSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
-import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition.AtomicVisitor;
+import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
+import org.nuclos.common.collect.collectable.searchcondition.visit.CompositeVisitor;
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common.collection.BinaryPredicate;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
@@ -246,7 +249,7 @@ public class SystemDataCache {
 		}
 	}
 	
-	static class ConditionToPredicateVisitor implements CollectableSearchCondition.Visitor<Predicate<MasterDataVO>, RuntimeException>, CollectableSearchCondition.CompositeVisitor<Predicate<MasterDataVO>, RuntimeException>, Transformer<CollectableSearchCondition, Predicate<MasterDataVO>> {
+	static class ConditionToPredicateVisitor implements Visitor<Predicate<MasterDataVO>, RuntimeException>, CompositeVisitor<Predicate<MasterDataVO>, RuntimeException>, Transformer<CollectableSearchCondition, Predicate<MasterDataVO>> {
 		
 		ConditionToPredicateVisitor(MasterDataMetaVO mdmetavo) {
 			// parameter is used until now
@@ -291,6 +294,11 @@ public class SystemDataCache {
 		@Override
 		public Predicate<MasterDataVO> visitSubCondition(CollectableSubCondition subcond) {
 			throw new IllegalArgumentException("subcond");
+		}
+
+		@Override
+		public Predicate<MasterDataVO> visitJoinCondition(CollectableJoinCondition joincond) {
+			throw new IllegalArgumentException("joincond");
 		}
 
 		@Override

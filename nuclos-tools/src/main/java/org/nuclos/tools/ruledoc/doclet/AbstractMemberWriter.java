@@ -375,12 +375,10 @@ public abstract class AbstractMemberWriter {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void navDetailLink(List members) {
 		printNavDetailLink(members.size() > 0 ? true : false);
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void navSummaryLink(List members,
 			VisibleMemberMap visibleMemberMap) {
 		if (members.size() > 0) {

@@ -51,7 +51,7 @@ public enum LogicalOperator {
 	 * @param iIntValue
 	 * @return the logical operator for the given int value.
 	 */
-	static LogicalOperator getInstance(int iIntValue) {
+	public static LogicalOperator getInstance(int iIntValue) {
 		return values()[iIntValue];
 	}
 

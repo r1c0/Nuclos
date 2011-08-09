@@ -126,7 +126,6 @@ import org.nuclos.client.ui.multiaction.MultiActionProgressPanel;
 import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
-import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -139,6 +138,7 @@ import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
@@ -147,6 +147,7 @@ import org.nuclos.common.collect.collectable.searchcondition.PlainSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
@@ -1520,7 +1521,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * alternative entry point: enter new object
 	 */
-	@SuppressWarnings("deprecation")
 	public final void runNew() throws CommonBusinessException {
 		this.runNew(true);
 	}
@@ -1553,7 +1553,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @precondition isCollectableComplete(clct)
 	 * @see #readCollectable(Collectable)
 	 */
-	@SuppressWarnings("deprecation")
 	public final void runViewSingleCollectable(Clct clct) {
 		runViewSingleCollectable(clct, true);
 	}
@@ -1632,7 +1631,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * alternative entry point: view all (in Results tab)
 	 * TODO refactor using runViewResults
 	 */
-	@SuppressWarnings("deprecation")
 	public final void runViewAll() throws CommonBusinessException {
 		this.runViewAll(true);
 	}
@@ -1641,7 +1639,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * alternative entry point: view all (in Results tab)
 	 * TODO refactor using runViewResults
 	 */
-	@SuppressWarnings("deprecation")
 	public final void runViewAll(boolean selectTab) throws CommonBusinessException {
 		this.getCollectPanel().setTabbedPaneEnabledAt(CollectState.OUTERSTATE_DETAILS, false);
 
@@ -1692,7 +1689,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * 
 	 * @deprecated Move to ResultController.
 	 */
-	@SuppressWarnings("deprecation")
 	public final void runViewResults(final CollectableListOfValues clctlovSource) throws CommonBusinessException {
 		// remove mouse listener for double click in table:
 		final JTable tbl = this.getResultTable();
@@ -1973,7 +1969,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * inner class SetSearchFieldsVisitor
 	 */
-	private class SetSearchFieldsVisitor implements CollectableSearchCondition.Visitor<Void, CommonBusinessException> {
+	private class SetSearchFieldsVisitor implements Visitor<Void, CommonBusinessException> {
 
 		@Override
         public Void visitTrueCondition(TrueCondition truecond) throws CommonBusinessException {
@@ -2014,6 +2010,13 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		@Override
         public Void visitSubCondition(CollectableSubCondition subcond) throws CommonBusinessException {
 			CollectController.this._setSearchFieldsAccordingToSubCondition(subcond);
+			return null;
+		}
+
+		@Override
+        public Void visitJoinCondition(CollectableJoinCondition joincond) throws CommonBusinessException {
+			// TODO: fix
+			// CollectController.this._setSearchFieldsAccordingToSubCondition(joincond);
 			return null;
 		}
 

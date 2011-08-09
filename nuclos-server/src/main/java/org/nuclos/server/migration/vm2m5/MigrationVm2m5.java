@@ -90,7 +90,6 @@ public class MigrationVm2m5 extends AbstractMigration{
 	private final Class<?> DT_BOOLEAN = java.lang.Boolean.class;
 
 
-	@SuppressWarnings("unchecked")
 	private void migrateMasterdata() {
 		info("*** M I G R A T E   M A S T E R D A T A ***");
 
@@ -254,7 +253,6 @@ public class MigrationVm2m5 extends AbstractMigration{
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void migrateMasterdataFieldsForEntity(Integer iMasterdataId, Integer iNewMasterdataId) {
 		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 		DbFrom from = query.from("T_AD_MASTERDATA_FIELD");
@@ -360,7 +358,6 @@ public class MigrationVm2m5 extends AbstractMigration{
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void migrateModules() throws CommonValidationException, ClassNotFoundException {
 		info("*** M I G R A T E   M O D U L E S ***");
 
@@ -1301,7 +1298,6 @@ public class MigrationVm2m5 extends AbstractMigration{
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	private Set<String> getAttributesFromLayouts(Integer iModuleId, String entity) {
 		Set<String> result = new HashSet<String>();
 

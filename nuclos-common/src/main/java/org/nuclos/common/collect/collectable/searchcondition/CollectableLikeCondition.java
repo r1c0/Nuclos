@@ -20,6 +20,7 @@ import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
 import org.nuclos.common2.LangUtils;
 
 /**
@@ -35,10 +36,6 @@ import org.nuclos.common2.LangUtils;
  */
 public final class CollectableLikeCondition extends AtomicCollectableSearchCondition {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final String sLikeComparand;
 
 	/**

@@ -25,6 +25,7 @@ import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSelfSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
@@ -34,6 +35,8 @@ import org.nuclos.common.collect.collectable.searchcondition.PlainSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ToHumanReadablePresentationVisitor;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
+import org.nuclos.common.collect.collectable.searchcondition.visit.CompositeVisitor;
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common2.CommonLocaleDelegate;
 
 
@@ -354,7 +357,7 @@ public abstract class SearchConditionTreeNode extends DefaultMutableTreeNode {
 	/**
 	 * Visitor that creates a new <code>SearchConditionTreeNode</code> out of a <code>CollectableSearchCondition</code>.
 	 */
-	private static class NewSearchConditionTreeNodeVisitor implements CollectableSearchCondition.Visitor<SearchConditionTreeNode, RuntimeException>, CollectableSearchCondition.CompositeVisitor<SearchConditionTreeNode, RuntimeException> {
+	private static class NewSearchConditionTreeNodeVisitor implements Visitor<SearchConditionTreeNode, RuntimeException>, CompositeVisitor<SearchConditionTreeNode, RuntimeException> {
 		@Override
 		public AtomicSearchConditionTreeNode visitAtomicCondition(AtomicCollectableSearchCondition atomiccond) {
 			return new AtomicSearchConditionTreeNode(atomiccond);
@@ -378,6 +381,11 @@ public abstract class SearchConditionTreeNode extends DefaultMutableTreeNode {
 		@Override
 		public SubConditionTreeNode visitSubCondition(CollectableSubCondition subcond) {
 			return new SubConditionTreeNode(subcond);
+		}
+
+		@Override
+		public SubConditionTreeNode visitJoinCondition(CollectableJoinCondition subcond) {
+			throw new UnsupportedOperationException();
 		}
 
 		@Override

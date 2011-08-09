@@ -48,7 +48,6 @@ public class ExecuteRuleButtonAction<Clct extends Collectable> implements Collec
 	/**
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public void run(CollectController controller, Properties probs) {
 		try {
 			if (!controller.getDetailsPanel().isVisible()) {

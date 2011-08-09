@@ -124,7 +124,6 @@ public class NucletContentEntryExplorerNode extends ExplorerNode<AbstractNucletC
 			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			this.cmdShowDetails((NucletContentEntryExplorerNode) this.getJTree().getSelectionPath().getLastPathComponent());
@@ -155,7 +154,6 @@ public class NucletContentEntryExplorerNode extends ExplorerNode<AbstractNucletC
 			super(ACTIONCOMMAND_REMOVE, CommonLocaleDelegate.getMessage("NucletContentEntryExplorerNode.1","Vom Nuclet entfernen"), tree);
 		}
 		
-		@SuppressWarnings("unchecked")
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			this.cmdRemoveFromNuclet((NucletContentEntryExplorerNode) this.getJTree().getSelectionPath().getLastPathComponent());

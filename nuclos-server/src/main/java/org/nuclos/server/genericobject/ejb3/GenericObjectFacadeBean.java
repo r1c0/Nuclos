@@ -628,7 +628,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @nucleus.permission mayWrite(module)
 	 */
 	@Override
-	@SuppressWarnings("unused")
 	@RolesAllowed("Login")
 	public GenericObjectVO create(GenericObjectWithDependantsVO gowdvo)
 			throws CommonPermissionException, NuclosBusinessRuleException, CommonCreateException {

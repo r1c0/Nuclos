@@ -310,7 +310,6 @@ public void setProperties(ComponentProperties properties) {
     * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#setProperty(java.lang.String, org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue, java.lang.Class)
     */
    @Override
-@SuppressWarnings("unchecked")
    public void setProperty(String property, PropertyValue value, Class<?> valueClass) throws CommonBusinessException {
       properties.setProperty(property, value, valueClass);
    }

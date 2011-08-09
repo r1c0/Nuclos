@@ -107,7 +107,6 @@ public class LinkedProperties extends Properties {
 		throw new UnsupportedOperationException();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public synchronized void putAll(Map t) {
 		map.putAll(t);

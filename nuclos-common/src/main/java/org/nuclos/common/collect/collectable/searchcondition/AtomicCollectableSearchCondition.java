@@ -22,6 +22,8 @@ import java.io.ObjectOutputStream;
 
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
+import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 
 /**
  * Atomic collectable search condition. This class and its subclasses are immutable.
@@ -116,39 +118,6 @@ public abstract class AtomicCollectableSearchCondition extends AbstractCollectab
 	 * @precondition visitor != null
 	 */
 	public abstract <O, Ex extends Exception> O accept(AtomicVisitor<O, Ex> visitor) throws Ex;
-
-	/**
-	 * Visitor for <code>AtomicCollectableSearchCondition</code>s.
-	 * For a description of the Visitor pattern, see the "GoF" Patterns book.
-	 */
-	public static interface AtomicVisitor<O, Ex extends Exception> {
-
-		/**
-		 * @precondition comparison != null
-		 */
-		O visitComparison(CollectableComparison comparison) throws Ex;
-
-		/**
-		 * @precondition comparisonwf != null
-		 */
-		O visitComparisonWithOtherField(CollectableComparisonWithOtherField comparisonwf) throws Ex;
-
-		/**
-		 * @precondition comparisonwp != null
-		 */
-		O visitComparisonWithParameter(CollectableComparisonWithParameter comparisonwp) throws Ex;
-		
-		/**
-		 * @precondition likecond != null
-		 */
-		O visitLikeCondition(CollectableLikeCondition likecond) throws Ex;
-
-		/**
-		 * @precondition isnullcond != null
-		 */
-		O visitIsNullCondition(CollectableIsNullCondition isnullcond) throws Ex;
-
-	}  // interface AtomicVisitor
 
 	private void writeObject(ObjectOutputStream oos) throws IOException {
 		oos.defaultWriteObject();

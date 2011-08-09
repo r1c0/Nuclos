@@ -191,7 +191,6 @@ public class WebAccessPrefs {
 		}
    }
 
-   @SuppressWarnings("unchecked")
 	public Map<String, String> getPrefsMap(String id) throws CommonBusinessException {
 
 		getDoc();

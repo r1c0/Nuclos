@@ -19,6 +19,8 @@ package org.nuclos.common.collect.collectable.searchcondition;
 import java.awt.datatransfer.Transferable;
 import java.io.Serializable;
 
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
+
 /**
  * A search condition for <code>Collectable</code>s.
  * <strong>Warning:</strong> Serialized objects of this class will not be compatible with future releases.
@@ -119,72 +121,5 @@ public interface CollectableSearchCondition extends Transferable, Serializable {
 	 * @precondition visitor != null
 	 */
 	<O, Ex extends Exception> O accept(Visitor<O, Ex> visitor) throws Ex;
-
-	/**
-	 * Visitor for <code>CollectableSearchCondition</code>s.
-	 * For a description of the Visitor pattern, see the "GoF" Patterns book.
-	 */
-	public static interface Visitor<O, Ex extends Exception> {
-
-		/**
-		 * @precondition truecond != null
-		 */
-		O visitTrueCondition(TrueCondition truecond) throws Ex;
-
-		/**
-		 * @precondition atomiccond != null
-		 */
-		O visitAtomicCondition(AtomicCollectableSearchCondition atomiccond) throws Ex;
-
-		/**
-		 * @precondition compositecond != null
-		 */
-		O visitCompositeCondition(CompositeCollectableSearchCondition compositecond) throws Ex;
-
-		/**
-		 * @precondition idcond != null
-		 */
-		O visitIdCondition(CollectableIdCondition idcond) throws Ex;
-		
-		/**
-		 * @precondition idcond != null
-		 */
-		O visitIdListCondition(CollectableIdListCondition collectableIdListCondition) throws Ex;
-
-		/**
-		 * @precondition subcond != null
-		 */
-		O visitSubCondition(CollectableSubCondition subcond) throws Ex;
-		
-		/**
-		 * @precondition refcond != null
-		 */
-		O visitReferencingCondition(ReferencingCollectableSearchCondition refcond) throws Ex;
-
-	}	// interface Visitor
-
-	/**
-	 * CompositeVisitor for <code>CollectableSearchCondition</code>s.
-	 * For a description of the Visitor pattern, see the "GoF" Patterns book.
-	 * 
-	 * @author	<a href="mailto:Rostislav.Maksmovskyi@novabit.de">Rostislav Maksmovskyi</a>
-	 * @version 01.00.00
-	 *
-	 * @todo refactor: merge this interface to Visitor and extract an abstract super class 
-	 * with default implementations for some methods for all search conditions 
-	 * that implements Visitor interface. The goal: provide simple possibility to extend this Visitor 
-	 * interface without cganging all implementors.
-	 */
-	public static interface CompositeVisitor<O, Ex extends Exception> {
-		/**
-		 * @precondition subcond != null
-		 */
-		O visitSelfSubCondition(CollectableSelfSubCondition subcond) throws Ex;		
-
-		/**
-		 * @precondition subcond != null
-		 */
-		O visitPlainSubCondition(PlainSubCondition subcond) throws Ex;		
-	} // interface CompositeVisitor
 
 }	// interface CollectableSearchCondition

@@ -784,7 +784,6 @@ public class ResultController<Clct extends Collectable> {
 	 * command: select columns
 	 * Lets the user select the columns to show in the result list.
 	 */
-	@SuppressWarnings("unchecked")
 	public void cmdSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl) {
 		assert clctctl == this.clctctl && clctctl.getFields() == fields && clctctl.getResultController() == this;
 

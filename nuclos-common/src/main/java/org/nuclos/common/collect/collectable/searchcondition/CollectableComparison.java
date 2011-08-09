@@ -28,6 +28,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
+import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
 import org.nuclos.common.collection.CollectionUtils;
 
 /**
@@ -42,11 +43,6 @@ import org.nuclos.common.collection.CollectionUtils;
  * @todo consider renaming to CollectableComparisonWithValue
  */
 public final class CollectableComparison extends AtomicCollectableSearchCondition {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	private static final Set<ComparisonOperator> stValidOperators = CollectionUtils.asSet(
 			ComparisonOperator.EQUAL, ComparisonOperator.NOT_EQUAL,

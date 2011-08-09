@@ -702,7 +702,6 @@ public class UIUtils {
 				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stsel, stsel);
 			}
 
-			@SuppressWarnings("unchecked")
 			private StringBuffer getColumnData(final JTable table, final int iSelectedRow) {
 				final StringBuffer sb = new StringBuffer();
 				

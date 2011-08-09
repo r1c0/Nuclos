@@ -96,7 +96,6 @@ public class NucletContentEntityExplorerNode extends ExplorerNode<NucletContentE
 			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("NucletContentEntityExplorerNode.1","Entitaetenwizard starten"), tree);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			this.cmdShowDetails((NucletContentEntityExplorerNode) this.getJTree().getSelectionPath().getLastPathComponent());
@@ -129,7 +128,6 @@ public class NucletContentEntityExplorerNode extends ExplorerNode<NucletContentE
 			super(ACTIONCOMMAND_REMOVE, CommonLocaleDelegate.getMessage("NucletContentEntryExplorerNode.1","Vom Nuclet entfernen"), tree);
 		}
 		
-		@SuppressWarnings("unchecked")
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			this.cmdRemoveFromNuclet((NucletContentEntityExplorerNode) this.getJTree().getSelectionPath().getLastPathComponent());

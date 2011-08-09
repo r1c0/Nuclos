@@ -632,7 +632,6 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		UIUtils.runCommandLater(tabIfAny != null? tabIfAny : Main.getMainFrame().getHomePane(), new CommonRunnable() {
 			// This must be done later as reloading the layout in restoreStateFromPreferences is done later also:
 			@Override
-            @SuppressWarnings("unchecked")
 			public void run() throws CommonBusinessException {
 				switch (cs) {
 				case CollectState.OUTERSTATE_SEARCH:

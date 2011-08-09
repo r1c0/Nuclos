@@ -32,6 +32,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCo
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
+import org.nuclos.common.collect.collectable.searchcondition.visit.PutSearchConditionToPrefsVisitor;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.entityobject.CollectableEOEntityProvider;
@@ -349,7 +350,7 @@ public class RecordGrantUtils {
 
 		Preferences prefs = topPrefs.node(prefsPath);
 		CollectableEOEntityProvider provider = CollectableEOEntityServerProvider.getInstance();
-		CollectableSearchCondition csc = SearchConditionUtils.getSearchCondition(prefs.node("searchCondition"), entityName, provider);
+		CollectableSearchCondition csc = PutSearchConditionToPrefsVisitor.getSearchCondition(prefs.node("searchCondition"), entityName, provider);
 		return csc;
 	}
 }

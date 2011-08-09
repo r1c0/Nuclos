@@ -24,17 +24,13 @@ import java.util.List;
 import org.apache.commons.lang.NullArgumentException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
 import org.nuclos.common2.Localizable;
 
 /**
  * A comparison with a parameter.
  */
 public final class CollectableComparisonWithParameter extends AtomicCollectableSearchCondition {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	public static enum ComparisonParameter implements Localizable{
 		TODAY("TODAY", "nuclos.comparisonParameter.TODAY") {

@@ -256,7 +256,6 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 			this.id = id;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			this.cmdShowDetails(this.entityName, this.id);

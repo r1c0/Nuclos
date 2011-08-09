@@ -401,7 +401,6 @@ public class WYSIWYGLayoutEditorPanel extends JPanel implements WYSIWYGComponent
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#setProperty(java.lang.String, org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue, java.lang.Class)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public void setProperty(String property, PropertyValue value, Class<?> valueClass) throws CommonBusinessException {
 		properties.setProperty(property, value, valueClass);
 		this.tableLayoutPanel.getTableLayoutUtil().notifyThatSomethingChanged();
@@ -904,7 +903,6 @@ public class WYSIWYGLayoutEditorPanel extends JPanel implements WYSIWYGComponent
 	 * @param container
 	 * @param list
 	 */
-	@SuppressWarnings("unchecked")
 	public void getWYSIWYGComponentsWithValuelistProviders(Container container, List<Object> list) {
 		for (Component c : container.getComponents()) {
 			if (c instanceof WYSIWYGComponent) {

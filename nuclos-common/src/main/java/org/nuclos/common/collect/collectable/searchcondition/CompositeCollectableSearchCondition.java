@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
+
 /**
  * Composite collectable search condition. This class is not immutable.
  * @todo clearly state whether operands may be null or not!
@@ -35,11 +37,6 @@ import java.util.List;
  * @version	01.00.00
  */
 public final class CompositeCollectableSearchCondition extends AbstractCollectableSearchCondition {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	public static final int UNDEFINED = -1;
 

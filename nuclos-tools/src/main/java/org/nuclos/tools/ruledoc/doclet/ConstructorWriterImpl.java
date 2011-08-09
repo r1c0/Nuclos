@@ -241,7 +241,6 @@ public class ConstructorWriterImpl extends AbstractExecutableMemberWriter
 		// no such
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void navSummaryLink(List members) {
 		/*printNavSummaryLink(classdoc,
 										members.size() > 0? true: false);*/

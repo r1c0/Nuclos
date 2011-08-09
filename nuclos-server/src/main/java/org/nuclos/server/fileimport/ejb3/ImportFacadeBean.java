@@ -296,7 +296,6 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 	    return correlationId;
     }
 
-	@SuppressWarnings("unchecked")
 	@Override
     public String getImportCorrelationId(Integer importfileId) {
 		Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();

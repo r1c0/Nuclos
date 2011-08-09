@@ -45,6 +45,7 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
@@ -52,6 +53,7 @@ import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
@@ -243,7 +245,7 @@ public class GenericObjectClientUtils {
 	/**
 	 * inner class GetInternalSearchConditionVisitor
 	 */
-	private static class GetInternalSearchConditionVisitor implements CollectableSearchCondition.Visitor<CollectableSearchCondition, RuntimeException> {
+	private static class GetInternalSearchConditionVisitor implements Visitor<CollectableSearchCondition, RuntimeException> {
 
 		@Override
 		public CollectableSearchCondition visitTrueCondition(TrueCondition truecond) throws RuntimeException {
@@ -292,6 +294,11 @@ public class GenericObjectClientUtils {
 		@Override
 		public CollectableSearchCondition visitSubCondition(CollectableSubCondition subcond) throws RuntimeException {
 			return subcond;
+		}
+
+		@Override
+		public CollectableSearchCondition visitJoinCondition(CollectableJoinCondition joincond) throws RuntimeException {
+			return joincond;
 		}
 
 		@Override

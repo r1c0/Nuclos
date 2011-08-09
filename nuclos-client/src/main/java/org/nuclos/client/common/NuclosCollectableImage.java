@@ -473,7 +473,6 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		}
 
 		@Override
-		@SuppressWarnings("unchecked")
 		public void dragOver(DropTargetDragEvent dtde) {
 			Transferable trans = dtde.getTransferable();
 			DataFlavor flavor[] = trans.getTransferDataFlavors();
@@ -512,7 +511,6 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		}
 
 		@Override
-		@SuppressWarnings("unchecked")
 		public void drop(DropTargetDropEvent dtde) {
 			try {			
 				dtde.acceptDrop(dtde.getDropAction());

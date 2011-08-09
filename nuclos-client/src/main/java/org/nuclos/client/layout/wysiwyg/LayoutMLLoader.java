@@ -878,7 +878,6 @@ public class LayoutMLLoader implements LayoutMLConstants {
 		private class PreferredSizeElementProcessor implements ElementProcessor {
 
 			@Override
-			@SuppressWarnings("unchecked")
 			public void startElement(Attributes atts) throws SAXException {
 				try {
 					PropertyValue value = PropertyUtils.getPropertyValue(peekComponent(), WYSIWYGCollectableComponent.PROPERTY_PREFFEREDSIZE);
@@ -1182,7 +1181,6 @@ public class LayoutMLLoader implements LayoutMLConstants {
 		private class BackgroundElementProcessor implements ElementProcessor {
 
 			@Override
-			@SuppressWarnings("unchecked")
 			public void startElement(Attributes atts) throws SAXException {
 				try {
 					WYSIWYGComponent c = peekComponent();
@@ -1208,7 +1206,6 @@ public class LayoutMLLoader implements LayoutMLConstants {
 		private class ClearBorderElementProcessor implements ElementProcessor {
 
 			@Override
-			@SuppressWarnings("unchecked")
 			public void startElement(Attributes atts) throws SAXException {
 				WYSIWYGComponent c = peekComponent();
 				PropertyValue value;
@@ -1244,7 +1241,6 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			}
 
 			@Override
-			@SuppressWarnings("unchecked")
 			public void startElement(Attributes atts) throws SAXException {
 				WYSIWYGComponent c = peekComponent();
 				PropertyValue value;

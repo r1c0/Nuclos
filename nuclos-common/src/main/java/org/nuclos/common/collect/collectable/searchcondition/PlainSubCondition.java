@@ -20,8 +20,11 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
+import org.nuclos.common.collect.collectable.searchcondition.visit.CompositeVisitor;
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
+
 /**
- * <code>CollectableSearchCondition</code> that ontaines a sub select condition as a plain SQL text.
+ * <code>CollectableSearchCondition</code> that containes a sub select condition as a plain SQL text.
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
@@ -31,10 +34,6 @@ import java.io.IOException;
  */
 public class PlainSubCondition implements CollectableSearchCondition {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private String plainSQL;
 	private String conditionName;
 	

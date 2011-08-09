@@ -20,6 +20,7 @@ import org.apache.commons.lang.NullArgumentException;
 
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common2.LangUtils;
 
 /**
@@ -34,10 +35,6 @@ import org.nuclos.common2.LangUtils;
  */
 public final class CollectableSubCondition extends AbstractCollectableSearchCondition {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final String sSubEntityName;
 	private final String sForeignKeyFieldName;
 	private final CollectableSearchCondition condSub;

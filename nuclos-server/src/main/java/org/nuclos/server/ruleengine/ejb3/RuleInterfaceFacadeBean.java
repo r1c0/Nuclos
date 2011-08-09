@@ -635,7 +635,6 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 			throw new NuclosBusinessRuleException(e);
 		}
 
-		@SuppressWarnings("deprecation")
 		DataSourceExecutor executor = new DataSourceExecutor(db);
 		try {
 			return executor.executeQuery(selectStatement, new ResultSetRunner<Collection<MasterDataVO>>() {

@@ -236,7 +236,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 * @throws CommonPermissionException
 	 * @postcondition result != null
 	 */
-	@SuppressWarnings("rawtypes")
     @Override
 	public List<TreeNode> getSubNodesIgnoreUser(GenericObjectTreeNode node) {
 		final List<TreeNode> result = new ArrayList<TreeNode>();

@@ -94,7 +94,6 @@ public class NucletContentCustomComponentExplorerNode extends ExplorerNode<Nucle
 			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("NucletContentCustomComponentExplorerNode.1","Ressourcenplanung konfigurieren"), tree);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			this.cmdShowDetails((NucletContentCustomComponentExplorerNode) this.getJTree().getSelectionPath().getLastPathComponent());
@@ -126,7 +125,6 @@ public class NucletContentCustomComponentExplorerNode extends ExplorerNode<Nucle
 			super(ACTIONCOMMAND_REMOVE, CommonLocaleDelegate.getMessage("NucletContentEntryExplorerNode.1","Vom Nuclet entfernen"), tree);
 		}
 		
-		@SuppressWarnings("unchecked")
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			this.cmdRemoveFromNuclet((NucletContentCustomComponentExplorerNode) this.getJTree().getSelectionPath().getLastPathComponent());

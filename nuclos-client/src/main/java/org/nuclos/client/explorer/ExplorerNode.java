@@ -173,7 +173,6 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 * @param dtm the DefaultTreeModel to notify. Must contain this node.
 	 * @throws CommonFinderException if the object presented by this node no longer exists.
 	 */
-	@SuppressWarnings({ "unchecked", "deprecation" })
 	public void refresh(final JTree tree) throws CommonFinderException {
 		refresh(tree, false);
 	}

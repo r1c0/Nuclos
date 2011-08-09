@@ -436,7 +436,6 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	 * command: select columns
 	 * Lets the user select the columns to show in the result list.
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public final void cmdSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl) {
 		assert clctctl == getCollectController() && clctctl.getFields() == getFields() && clctctl.getResultController() == this;

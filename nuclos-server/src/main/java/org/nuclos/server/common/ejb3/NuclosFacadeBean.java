@@ -87,7 +87,6 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 		return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
 	}
 
-	@SuppressWarnings("unchecked")
 	public boolean isCalledRemotely() {
 		return NuclosRemoteContextHolder.peek();
 	}

@@ -321,11 +321,8 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 		return getControlType(this.properties.getProperty(PROPERTY_CONTROLTYPE));
 	}
 	
-	@SuppressWarnings("unchecked")
-	private int getControlType(PropertyValue property) {
-		
+	private int getControlType(PropertyValue property) {	
 		String sControlType = null;
-		
 		if (properties.getProperty(PROPERTY_CONTROLTYPE) != null){
 			//NUCLEUSINT-460
 			if (property != null){

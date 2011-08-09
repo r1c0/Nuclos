@@ -38,6 +38,7 @@ import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
@@ -45,6 +46,7 @@ import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -65,7 +67,7 @@ import org.nuclos.common2.exception.PreferencesException;
  */
 public class SearchConditionSubFormController extends SubFormController {
 	
-	static String[] sEditFields = {"createdBy", "createdAt", "changedBy", "changedAt" };
+	private static String[] sEditFields = {"createdBy", "createdAt", "changedBy", "changedAt" };
 
 	/**
 	 * A <code>TableModel</code> representing a <code>CollectableSearchCondition</code>.
@@ -334,7 +336,8 @@ public class SearchConditionSubFormController extends SubFormController {
 			return SearchConditionSubFormController.this.isColumnEnabled(sColumnName);
 		}
 
-		private class SetSearchConditionVisitor implements CollectableSearchCondition.Visitor<Void, CommonBusinessException> {
+		private class SetSearchConditionVisitor implements Visitor<Void, CommonBusinessException> {
+			
 			@Override
 			public Void visitTrueCondition(TrueCondition truecond) {
 				// do nothing
@@ -375,6 +378,11 @@ public class SearchConditionSubFormController extends SubFormController {
 			@Override
 			public Void visitSubCondition(CollectableSubCondition subcond) {
 				throw new IllegalArgumentException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.8", "Eine geschachtelte Unterbedingung kann in einem Unterformular nicht dargestellt werden."));
+			}
+
+			@Override
+			public Void visitJoinCondition(CollectableJoinCondition joincond) {
+				throw new IllegalArgumentException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.11", "Eine geschachtelte Joinbedingung kann in einem Unterformular nicht dargestellt werden."));
 			}
 
 			@Override
@@ -624,7 +632,7 @@ public class SearchConditionSubFormController extends SubFormController {
 		}
 	}
 
-	private static class CanSearchConditionBeDisplayedVisitor implements CollectableSearchCondition.Visitor<Boolean, RuntimeException> {
+	private static class CanSearchConditionBeDisplayedVisitor implements Visitor<Boolean, RuntimeException> {
 		private final int iLevel;
 
 		CanSearchConditionBeDisplayedVisitor(int iLevel) {
@@ -653,6 +661,11 @@ public class SearchConditionSubFormController extends SubFormController {
 
 		@Override
 		public Boolean visitSubCondition(CollectableSubCondition subcond) throws RuntimeException {
+			return false;
+		}
+
+		@Override
+		public Boolean visitJoinCondition(CollectableJoinCondition joincond) throws RuntimeException {
 			return false;
 		}
 

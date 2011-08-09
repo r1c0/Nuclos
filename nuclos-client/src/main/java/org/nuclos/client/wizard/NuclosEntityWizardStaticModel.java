@@ -580,7 +580,6 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 		this.systemIdPrefix = systemIdPrefix;
 	}
 
-	@SuppressWarnings("unchecked")
 	public void resetModel() {
 		setEntityName(null);
 		setLabelSingular(null);

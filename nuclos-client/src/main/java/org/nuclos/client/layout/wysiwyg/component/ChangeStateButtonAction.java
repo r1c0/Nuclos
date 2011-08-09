@@ -45,7 +45,6 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
 public class ChangeStateButtonAction<Clct extends Collectable> implements CollectActionAdapter<Clct> {
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void run(CollectController controller, Properties probs) {
 		if(controller instanceof GenericObjectCollectController) {
 			GenericObjectCollectController gController = (GenericObjectCollectController) controller;

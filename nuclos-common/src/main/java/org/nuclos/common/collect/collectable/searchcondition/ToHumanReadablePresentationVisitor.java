@@ -18,9 +18,9 @@ package org.nuclos.common.collect.collectable.searchcondition;
 
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
-import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition.AtomicVisitor;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition.CompositeVisitor;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition.Visitor;
+import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
+import org.nuclos.common.collect.collectable.searchcondition.visit.CompositeVisitor;
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common2.CommonLocaleDelegate;
 
 /**
@@ -124,6 +124,22 @@ public class ToHumanReadablePresentationVisitor implements Visitor<String, Runti
 
 	@Override
 	public String visitSubCondition(CollectableSubCondition cond) {
+		if(cond.getConditionName() != null)
+			return cond.getConditionName();
+		
+		String subEntityLabel = cond.getSubEntity().getLabel();
+		CollectableSearchCondition condSub = cond.getSubCondition();
+		if (condSub != null) {
+			return CommonLocaleDelegate.getMessage("searchCondition.existsWith", null, 
+				subEntityLabel, condSub.accept(this));
+		} else {
+			return CommonLocaleDelegate.getMessage("searchCondition.exists", null,
+				subEntityLabel);
+		}
+	}
+
+	@Override
+	public String visitJoinCondition(CollectableJoinCondition cond) {
 		if(cond.getConditionName() != null)
 			return cond.getConditionName();
 		

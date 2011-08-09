@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.collect.collectable.searchcondition;
 
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common2.LangUtils;
 
 /**
@@ -29,10 +30,6 @@ import org.nuclos.common2.LangUtils;
  */
 public final class CollectableIdCondition extends AbstractCollectableSearchCondition {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final Object oId;
 
 	public CollectableIdCondition(Object oId) {

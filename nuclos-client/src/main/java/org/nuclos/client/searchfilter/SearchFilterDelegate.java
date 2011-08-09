@@ -29,6 +29,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
+import org.nuclos.common.collect.collectable.searchcondition.visit.PutSearchConditionToPrefsVisitor;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.ServiceLocator;
@@ -154,7 +155,7 @@ public class SearchFilterDelegate {
 
 			prefs = prefs.node(filter.getName());
 
-			SearchConditionUtils.putSearchCondition(prefs.node(PREFS_NODE_SEARCHCONDITION), filter.getSearchCondition());
+			PutSearchConditionToPrefsVisitor.putSearchCondition(prefs.node(PREFS_NODE_SEARCHCONDITION), filter.getSearchCondition());
 
 			if (filter instanceof EntitySearchFilter) {
 				EntitySearchFilter.writeCollectableEntityFieldsToPreferences(prefs, ((EntitySearchFilter)filter).getVisibleColumns(), PREFS_NODE_VISIBLECOLUMNS, PREFS_NODE_VISIBLECOLUMNENTITIES);

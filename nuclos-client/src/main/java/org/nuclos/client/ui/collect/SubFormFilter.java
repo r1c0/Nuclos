@@ -373,7 +373,6 @@ public class SubFormFilter {
     * Removes filtering
     * NUCLEUSINT-789 f
     */
-   @SuppressWarnings("unchecked")
 	private void clearFilter() {
       Icon icon = Icons.getInstance().getIconFilter16();
       this.filterButton.setIcon(icon);

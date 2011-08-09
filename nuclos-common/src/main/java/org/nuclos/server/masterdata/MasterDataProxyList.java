@@ -60,7 +60,6 @@ public class MasterDataProxyList extends AbstractProxyList<Object, MasterDataWit
 		this.initialize();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected Collection<MasterDataWithDependantsVO> fetchNextChunk(List<Object> lstIntIds) throws RemoteException {
 		return this.getMasterDataFacade().getMasterDataMore(this.sEntityName, lstIntIds, lstRequiredSubEntities);

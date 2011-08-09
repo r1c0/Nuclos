@@ -45,7 +45,7 @@ public enum ComparisonOperator {
 	 * this value is not valid for any instance of this type. It is just used to specify an (illegal)
 	 * default value for reading from the preferences.
 	 */
-	static final int INT_UNDEFINED = -1;
+	public static final int INT_UNDEFINED = -1;
 
 	private final int iValue;
 	private final int iOperandCount;
@@ -67,7 +67,7 @@ public enum ComparisonOperator {
 	 * @deprecated Use symbolic names for persistence, at least
 	 */
 	@Deprecated
-	int getIntValue() {
+	public int getIntValue() {
 		return this.iValue;
 	}
 
@@ -78,7 +78,7 @@ public enum ComparisonOperator {
 	 * @deprecated Use symbolic names for persistence, at least
 	 */
 	@Deprecated
-	static ComparisonOperator getInstance(int iIntValue) {
+	public static ComparisonOperator getInstance(int iIntValue) {
 		switch(iIntValue) {
 			case 8: return IS_NULL;
 			case 9: return IS_NOT_NULL;

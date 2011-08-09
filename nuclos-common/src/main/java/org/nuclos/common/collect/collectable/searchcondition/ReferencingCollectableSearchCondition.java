@@ -24,6 +24,7 @@ import org.apache.commons.lang.NullArgumentException;
 
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common2.LangUtils;
 
 /**

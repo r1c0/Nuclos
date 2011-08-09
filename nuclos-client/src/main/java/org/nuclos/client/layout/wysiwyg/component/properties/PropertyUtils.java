@@ -469,7 +469,6 @@ public class PropertyUtils implements LayoutMLConstants {
 	 * @return the fitting {@link PropertyValue} class for the Property, 
 	 * @throws NuclosFatalException if there is no {@link PropertyValue} for this Property
 	 */
-	@SuppressWarnings("unchecked")
 	public static PropertyValue getPropertyValue(WYSIWYGComponent c, String property) throws NuclosFatalException{
 		Class<?> propertyClass = getValueClass(c, property);
 		

@@ -45,6 +45,7 @@ import org.nuclos.client.ui.collect.searcheditor.SearchEditorPanel;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSelfSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
@@ -55,6 +56,8 @@ import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollecta
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils.HasType;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
+import org.nuclos.common.collect.collectable.searchcondition.visit.CompositeVisitor;
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 
@@ -271,7 +274,7 @@ public class SearchPanel extends SearchOrDetailsPanel {
 	/**
 	 * Visitor: Can a given search condition be displayed in the SearchPanel's fields?
 	 */
-	protected static class CanDisplayConditionInFieldsVisitor implements CollectableSearchCondition.Visitor<Boolean, RuntimeException>, CollectableSearchCondition.CompositeVisitor<Boolean, RuntimeException> {
+	protected static class CanDisplayConditionInFieldsVisitor implements Visitor<Boolean, RuntimeException>, CompositeVisitor<Boolean, RuntimeException> {
 
 		protected final SearchPanel searchpanel;
 
@@ -313,6 +316,11 @@ public class SearchPanel extends SearchOrDetailsPanel {
 		@Override
 		public Boolean visitSubCondition(CollectableSubCondition subcond) throws RuntimeException {
 			return SearchConditionSubFormController.canSubConditionBeDisplayed(subcond);
+		}
+
+		@Override
+		public Boolean visitJoinCondition(CollectableJoinCondition joincond) throws RuntimeException {
+			return false;
 		}
 
 		@Override

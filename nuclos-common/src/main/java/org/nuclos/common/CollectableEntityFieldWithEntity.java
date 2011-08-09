@@ -162,7 +162,6 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public String getReferencedEntityFieldName() {
 		return this.getField().getReferencedEntityFieldName();
 	}

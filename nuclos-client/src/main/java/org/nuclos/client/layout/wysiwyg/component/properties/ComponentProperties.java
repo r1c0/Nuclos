@@ -48,7 +48,6 @@ public class ComponentProperties implements Serializable {
 
 	private static final long serialVersionUID = 8669223366017896044L;
 	
-	@SuppressWarnings("unchecked")
 	private Map<String, PropertyValue> properties;
 	private Map<String, String> labels;
 	private WYSIWYGComponent c;
@@ -74,7 +73,6 @@ public class ComponentProperties implements Serializable {
 	 * @param properties {@link Map} with the {@link PropertyValue}
 	 * @param c the {@link WYSIWYGComponent} for this {@link PropertyValue} {@link Map}
 	 */
-	@SuppressWarnings("unchecked")
 	public ComponentProperties(Map<String, PropertyValue> properties, WYSIWYGComponent c) {
 		this.properties = properties;
 		this.c = c;
@@ -87,7 +85,6 @@ public class ComponentProperties implements Serializable {
 	 * @param labels the {@link Map} with the Labels
 	 * @param metaInf the {@link WYSIWYGMetaInformation}
 	 */
-	@SuppressWarnings("unchecked")
 	public ComponentProperties(Map<String, PropertyValue> properties, WYSIWYGComponent c, Map<String, String> labels, WYSIWYGMetaInformation metaInf) {
 		this(properties, c);
 		this.labels = labels;
@@ -104,7 +101,6 @@ public class ComponentProperties implements Serializable {
 	/**
 	 * @return a {@link Map} with the Name of the Property and the {@link PropertyValue} Object
 	 */
-	@SuppressWarnings("unchecked")
 	public Map<String, PropertyValue> getProperties() {
 		return properties;
 	}
@@ -113,7 +109,6 @@ public class ComponentProperties implements Serializable {
 	 * Returns a filtered Set of {@link PropertyValue} depending on the {@link WYSIWYGEditorModes} currently in.
 	 * @return a {@link Map} with all the {@link PropertyValue}s allowed for the current {@link WYSIWYGEditorModes}
 	 */
-	@SuppressWarnings("unchecked")
 	public Map<String, PropertyValue> getFilteredProperties() {
 		Map<String, PropertyValue> result = getClonedProperties();
 		
@@ -176,7 +171,6 @@ public class ComponentProperties implements Serializable {
 	 * @param property the Property to get the {@link PropertyValue} for
 	 * @return the {@link PropertyValue} found for the Property
 	 */
-	@SuppressWarnings("unchecked")
 	public PropertyValue getProperty(String property) {
 		return properties.get(property);
 	}

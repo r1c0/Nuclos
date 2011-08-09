@@ -783,7 +783,6 @@ public class StatePropertiesPanel extends JPanel {
 							CommonLocaleDelegate.getMessage("StatePropertiesPanel.17", "Benutzergruppenauswahl"));
 					
 					if (changed) {
-						@SuppressWarnings("unchecked")
 						List<RightAndMandatoryColumnHeader> selectedColsChanged = (List<RightAndMandatoryColumnHeader>) roleSelectionCtrl.getSelectedObjects();
 						Set<Integer> selectedRolesNew = new HashSet<Integer>();
 						

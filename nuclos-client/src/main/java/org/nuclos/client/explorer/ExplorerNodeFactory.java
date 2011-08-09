@@ -96,7 +96,6 @@ public class ExplorerNodeFactory {
 	/**
 	 * maps TreeNodes (classes) to ExplorerNode constructors
 	 */
-	@SuppressWarnings("unchecked")
 	private final Map<Class<? extends TreeNode>, Constructor<? extends ExplorerNode>> mp = CollectionUtils.newHashMap();
 
 	public static synchronized ExplorerNodeFactory getInstance() {
@@ -153,7 +152,6 @@ public class ExplorerNodeFactory {
 		this.putConstructor(NucletContentRuleTreeNode.class, NucletContentEntryExplorerNode.class);
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void putConstructor(Class<? extends TreeNode> clsTreeNode, Class<? extends ExplorerNode> clsExplorerNode) {
 		try {
 			this.mp.put(clsTreeNode, clsExplorerNode.getDeclaredConstructor(TreeNode.class));
@@ -168,7 +166,6 @@ public class ExplorerNodeFactory {
 	 * @param doRefresh TODO
 	 * @return a new <code>ExplorerNode</code> that is appropriate to present the given <code>TreeNode</code>.
 	 */
-	@SuppressWarnings("unchecked")
 	public ExplorerNode<?> newExplorerNode(TreeNode treenode, boolean doRefresh) {
 		final ExplorerNode<?> result;
 

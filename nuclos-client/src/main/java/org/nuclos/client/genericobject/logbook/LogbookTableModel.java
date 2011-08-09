@@ -171,23 +171,6 @@ class LogbookTableModel extends AbstractListTableModel<LogbookVO> {
 		return result;
 	}
 	
-	// Every attribute is written with an own timestamp, so we cannot just test for equality
-	// We must implement a kind of fuzzy comparator; here we view dates within 30 seconds as equal
-	// Warning: This comparator is bogus because it is _not transitive_! 
-	private static enum FuzzyDateComparator implements Comparator<Date> {
-		INSTANCE;
-
-		@Override
-		public int compare(Date date1, Date date2) {
-			if (Math.abs(date1.getTime() - date2.getTime()) > 30000) {
-				return date1.compareTo(date2);
-			} else {
-				return 0;
-			}
-		}
-		
-	}
-	
 	private static class AttributeHeaderComparator implements Comparator<LogbookVO> {
 		
 		private final Integer attrHeaderId;

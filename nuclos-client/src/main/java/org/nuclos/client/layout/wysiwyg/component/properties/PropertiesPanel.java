@@ -343,7 +343,6 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 	 * @param values the {@link ListOrderedMap} for display
 	 * @param constraints the {@link TableLayoutConstraints}
 	 */
-	@SuppressWarnings("unchecked")
 	private void copyComponentPropertiesToValueList(ComponentProperties properties, ListOrderedMap values, TableLayoutConstraints constraints) {
 		Map<String, PropertyValue> propertyValues = properties.getFilteredProperties();
 		Set<String> keys = propertyValues.keySet();
@@ -659,7 +658,6 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 		 * (non-Javadoc)
 		 * @see javax.swing.JTable#getCellEditor(int, int)
 		 */
-		@SuppressWarnings("unchecked")
 		@Override
 		public TableCellEditor getCellEditor(int row, int column) {
 			TableCellEditor tableCellEditor = null;
@@ -684,11 +682,6 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 			return tableCellEditor;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.JTable#getCellRenderer(int, int)
-		 */
-		@SuppressWarnings("unchecked")
 		@Override
 		public TableCellRenderer getCellRenderer(int row, int column) {
 			if (getModel().getValueAt(row, column) instanceof PropertyValue) {

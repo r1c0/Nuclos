@@ -55,7 +55,6 @@ import org.nuclos.common.collect.collectable.CollectableFieldComparatorFactory;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.searchcondition.AbstractCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
-import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition.AtomicVisitor;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparisonWithOtherField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparisonWithParameter;
@@ -64,6 +63,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableLikeCond
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.collectable.searchcondition.ToHumanReadablePresentationVisitor;
+import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;

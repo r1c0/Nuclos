@@ -19,7 +19,6 @@ package org.nuclos.common.collect.collectable;
 import java.text.Collator;
 import java.util.Comparator;
 
-import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.LangUtils;

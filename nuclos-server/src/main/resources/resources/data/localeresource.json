@@ -36985,6 +36985,21 @@
     "text": "Unbekannter logischer Operator: {0}"
   },
   {
+    "resourceID": "SearchConditionSubFormController.11",
+    "locale": "i-default",
+    "text": "A nested join-condition cannot be represented in a subform."
+  },
+  {
+    "resourceID": "SearchConditionSubFormController.11",
+    "locale": "en",
+    "text": "A nested join-condition cannot be represented in a subform."
+  },
+  {
+    "resourceID": "SearchConditionSubFormController.11",
+    "locale": "de",
+    "text": "Eine geschachtelte Joinbedingung kann in einem Unterformular nicht dargestellt werden."
+  },
+  {
     "resourceID": "TopicNotificationReceiver.1",
     "locale": "i-default",
     "text": "The system parameter ''{0}'' must be set."

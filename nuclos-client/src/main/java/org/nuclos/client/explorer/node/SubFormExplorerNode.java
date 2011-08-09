@@ -88,7 +88,6 @@ public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends Ex
 	    return MetaDataClientProvider.getInstance().getEntity(getTreeNode().getGenericObjectTreeNode().getModuleId().longValue()).getEntity();
     }
 
-	@SuppressWarnings("unchecked")
 	@Override
     public boolean importTransferData(final Component parent, final Transferable transferable, final JTree tree) throws IOException, UnsupportedFlavorException {
 	    // Import like drop in subform
