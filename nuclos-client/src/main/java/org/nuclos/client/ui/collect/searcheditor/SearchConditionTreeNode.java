@@ -25,7 +25,7 @@ import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableJoinCondition;
+import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSelfSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
@@ -384,7 +384,7 @@ public abstract class SearchConditionTreeNode extends DefaultMutableTreeNode {
 		}
 
 		@Override
-		public SubConditionTreeNode visitJoinCondition(CollectableJoinCondition subcond) {
+		public SubConditionTreeNode visitPivotJoinCondition(PivotJoinCondition subcond) {
 			throw new UnsupportedOperationException();
 		}
 

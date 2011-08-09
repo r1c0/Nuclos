@@ -45,7 +45,7 @@ import org.nuclos.client.ui.collect.searcheditor.SearchEditorPanel;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableJoinCondition;
+import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSelfSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
@@ -319,7 +319,7 @@ public class SearchPanel extends SearchOrDetailsPanel {
 		}
 
 		@Override
-		public Boolean visitJoinCondition(CollectableJoinCondition joincond) throws RuntimeException {
+		public Boolean visitPivotJoinCondition(PivotJoinCondition joincond) throws RuntimeException {
 			return false;
 		}
 

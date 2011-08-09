@@ -344,11 +344,9 @@ public class SearchConditionUtils {
 		}
 
 		@Override
-		public CollectableSearchCondition visitJoinCondition(CollectableJoinCondition joincond) {
-			CollectableSubCondition res = new CollectableSubCondition(joincond.getSubEntityName(), joincond.getForeignKeyFieldName(),
-					sorted(joincond.getSubCondition(), bSortByLabels));
-			res.setConditionName(joincond.getConditionName());
-			return res;
+		public CollectableSearchCondition visitPivotJoinCondition(PivotJoinCondition joincond) {
+			// do noting
+			return joincond;
 		}
 
 		@Override

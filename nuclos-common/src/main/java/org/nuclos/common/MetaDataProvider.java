@@ -43,4 +43,7 @@ public interface MetaDataProvider extends CommonMetaDataProvider {
     EntityFieldMetaDataVO getEntityField(String entity, String field);
 	
 	EntityFieldMetaDataVO getEntityField(String entity, Long fieldId);
+	
+	EntityFieldMetaDataVO getRefField(String baseEntity, String subform);
+	
 }

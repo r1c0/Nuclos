@@ -41,54 +41,62 @@ public interface CollectableSearchCondition extends Transferable, Serializable {
 	 * @deprecated Don't use this constant in new applications.
 	 */
 	@Deprecated
-	public static final int TYPE_UNDEFINED = -1;
+	int TYPE_UNDEFINED = -1;
 
 	/**
 	 * atomic search condition. If these constants are changed, <code>sorted()</code> must be adjusted.
 	 * @deprecated Don't use this constant in new applications.
 	 */
 	@Deprecated
-	public static final int TYPE_ATOMIC = 0;
+	int TYPE_ATOMIC = 0;
 
 	/**
 	 * composite search condition. If these constants are changed, <code>sorted()</code> must be adjusted.
 	 * @deprecated Don't use this constant in new applications.
 	 */
 	@Deprecated
-	public static final int TYPE_COMPOSITE = 1;
+	int TYPE_COMPOSITE = 1;
 
 	/**
 	 * subcondition. If these constants are changed, <code>sorted()</code> must be adjusted.
 	 * @deprecated Don't use this constant in new applications.
 	 */
 	@Deprecated
-	public static final int TYPE_SUB = 2;
+	int TYPE_SUB = 2;
 
 	/**
 	 * id condition, that is a condition of kind "id = x".  If these constants are changed, <code>sorted()</code> must be adjusted.
 	 * @deprecated Don't use this constant in new applications.
 	 */
 	@Deprecated
-	public static final int TYPE_ID = 3;
+	int TYPE_ID = 3;
 
 	/**
 	 * condition on a referenced object.
 	 * @deprecated Don't use this constant in new applications.
 	 */
 	@Deprecated
-	public static final int TYPE_REFERENCING = 4;
+	int TYPE_REFERENCING = 4;
 
 	/**
 	 * "always true" condition.
 	 * @deprecated Don't use this constant in new applications.
 	 */
 	@Deprecated
-	public static final int TYPE_TRUE = 5;
+	int TYPE_TRUE = 5;
 
 	/**
-	 * Don't use "switch(getType()) {...} in your code"! Use Visitor pattern instead!
+	 * "pivot join" condition.
+	 * @deprecated Don't use this constant in new applications.
+	 */
+	@Deprecated
+	int TYPE_PIVOTJOIN = 5;
+
+	/**
 	 * @return the type of this node (TYPE_ATOMIC, TYPE_COMPOSITE, TYPE_SUB, TYPE_ID, TYPE_REFERENCING or TYPE_TRUE)
 	 * @see Visitor
+	 * 
+	 * @deprecated Don't use "switch(getType()) {...} in your code"! Use Visitor pattern instead!
 	 */
 	int getType();
 	
@@ -101,7 +109,7 @@ public interface CollectableSearchCondition extends Transferable, Serializable {
 	 * at least two operands, a NOT condition node must have exactly one operand.)
 	 * @todo replace with "void validate() throws InvalidCollectableSearchConditionException"
 	 */
-	abstract boolean isSyntacticallyCorrect();
+	boolean isSyntacticallyCorrect();
 
 	/**
 	 * @param o

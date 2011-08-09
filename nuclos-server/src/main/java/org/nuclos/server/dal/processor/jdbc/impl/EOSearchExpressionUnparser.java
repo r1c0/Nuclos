@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -34,7 +35,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableComparis
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIsNullCondition;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableJoinCondition;
+import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableLikeCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSelfSubCondition;
@@ -49,6 +50,8 @@ import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.PivotInfo;
+import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.RelativeDate;
 import org.nuclos.common2.StringUtils;
@@ -66,11 +69,11 @@ import org.nuclos.server.dblayer.query.DbQueryBuilder;
 
 public class EOSearchExpressionUnparser {
 
-	protected static final Logger log = Logger.getLogger(EOSearchExpressionUnparser.class);
+	private static final Logger LOG = Logger.getLogger(EOSearchExpressionUnparser.class);
 
 	private final DbQueryBuilder queryBuilder;
 	private final DbQuery<?> query;
-	private final DbFrom table;
+	private DbFrom table;
 	private final EntityMetaDataVO entity;
 
 	public EOSearchExpressionUnparser(DbQuery<?> query, EntityMetaDataVO entityMeta) {
@@ -179,20 +182,18 @@ public class EOSearchExpressionUnparser {
 		}
 
 		@Override
-		public DbCondition visitJoinCondition(CollectableJoinCondition joincond) {
-			EntityMetaDataVO subEntityMeta =  MetaDataServerProvider.getInstance().getEntity(joincond.getSubEntityName());
-
-			DbQuery<Integer> subQuery = query.subquery(Integer.class);
-			DbFrom subTable = subQuery.from(subEntityMeta.getDbEntity()).alias("sub");
-			subQuery.distinct(true);
-			if(subEntityMeta.isDynamic())
-				subQuery.select(subTable.columnCaseSensitive(DalUtils.getDbIdFieldName(MetaDataServerProvider.getInstance().getEntityField(subEntityMeta.getEntity(), joincond.getForeignKeyFieldName()).getDbColumn()), Integer.class));
-			else
-				subQuery.select(subTable.column(DalUtils.getDbIdFieldName(MetaDataServerProvider.getInstance().getEntityField(subEntityMeta.getEntity(), joincond.getForeignKeyFieldName()).getDbColumn()), Integer.class));
-			EOSearchExpressionUnparser subUnparser = new EOSearchExpressionUnparser(subQuery, subEntityMeta);
-			subUnparser.unparseSearchCondition(joincond.getSubCondition());
-
-			return table.column("INTID", Integer.class).in(subQuery);
+		public DbCondition visitPivotJoinCondition(PivotJoinCondition joincond) {
+			final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
+			
+			final EntityMetaDataVO mdSubEntity = joincond.getJoinEntity();
+			final String subEntity = mdSubEntity.getEntity();
+			final EntityFieldMetaDataVO field = joincond.getField();
+			final PivotInfo pinfo = field.getPivotInfo();
+			final String qualifiedSubField = subEntity + "." + pinfo.getKeyField();
+			
+			final EntityFieldMetaDataVO ref = mdProv.getRefField(entity.getEntity(), subEntity);			
+			table = table.join(subEntity, JoinType.LEFT).on(ref.getForeignEntityField(), ref.getField());
+			return queryBuilder.equal(table.column(qualifiedSubField, String.class), queryBuilder.literal(field.getField()));
 		}
 
 		@Override

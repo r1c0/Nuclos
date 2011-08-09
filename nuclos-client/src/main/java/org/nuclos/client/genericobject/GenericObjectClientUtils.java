@@ -45,7 +45,7 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableJoinCondition;
+import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
@@ -297,7 +297,7 @@ public class GenericObjectClientUtils {
 		}
 
 		@Override
-		public CollectableSearchCondition visitJoinCondition(CollectableJoinCondition joincond) throws RuntimeException {
+		public CollectableSearchCondition visitPivotJoinCondition(PivotJoinCondition joincond) throws RuntimeException {
 			return joincond;
 		}
 

@@ -53,9 +53,7 @@ import org.nuclos.server.report.SchemaCache;
  * An caching singleton for accessing the meta data information 
  * on the server side.
  */
-public class MetaDataServerProvider extends AbstractProvider implements MetaDataProvider{
-
-	//private final ClientNotifier clientnotifier = new ClientNotifier(JMSConstants.TOPICNAME_METADATACACHE);
+public class MetaDataServerProvider extends AbstractProvider implements MetaDataProvider {
 
 	private final DataCache dataCache = new DataCache();
 
@@ -201,6 +199,19 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 				}
 			}
 			dataCache.getMapPivotMetaData().put(info, result);
+		}
+		return result;
+	}
+	
+	public EntityFieldMetaDataVO getRefField(String baseEntity, String subform) {
+		// TODO: caching
+		final Map<String, EntityFieldMetaDataVO>  fields = getAllEntityFieldsByEntity(baseEntity);
+		EntityFieldMetaDataVO result = null;
+		for (EntityFieldMetaDataVO f: fields.values()) {
+			if (baseEntity.equals(f.getForeignEntity())) {
+				result = f;
+				break;
+			}
 		}
 		return result;
 	}

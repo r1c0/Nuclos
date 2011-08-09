@@ -139,19 +139,12 @@ public class ToHumanReadablePresentationVisitor implements Visitor<String, Runti
 	}
 
 	@Override
-	public String visitJoinCondition(CollectableJoinCondition cond) {
-		if(cond.getConditionName() != null)
-			return cond.getConditionName();
-		
-		String subEntityLabel = cond.getSubEntity().getLabel();
-		CollectableSearchCondition condSub = cond.getSubCondition();
-		if (condSub != null) {
-			return CommonLocaleDelegate.getMessage("searchCondition.existsWith", null, 
-				subEntityLabel, condSub.accept(this));
-		} else {
-			return CommonLocaleDelegate.getMessage("searchCondition.exists", null,
-				subEntityLabel);
-		}
+	public String visitPivotJoinCondition(PivotJoinCondition cond) {
+		final StringBuilder result = new StringBuilder();
+		result.append("[pivot join: subentity=").append(cond.getJoinEntity());
+		result.append(", pivot=").append(cond.getField());
+		result.append("]");
+		return result.toString();
 	}
 
 	@Override

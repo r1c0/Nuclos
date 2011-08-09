@@ -22,7 +22,7 @@ import java.util.List;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableJoinCondition;
+import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSelfSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
@@ -114,11 +114,9 @@ public class SimplifiedVisitor implements Visitor<CollectableSearchCondition, Ru
 	}
 
 	@Override
-	public CollectableSearchCondition visitJoinCondition(CollectableJoinCondition joincond) {
-		CollectableSubCondition res = new CollectableSubCondition(joincond.getSubEntityName(),
-				joincond.getForeignKeyFieldName(), SearchConditionUtils.simplified(joincond.getSubCondition()));
-		res.setConditionName(joincond.getConditionName());
-		return res;
+	public CollectableSearchCondition visitPivotJoinCondition(PivotJoinCondition joincond) {
+		// do nothing
+		return joincond;
 	}
 
 	@Override

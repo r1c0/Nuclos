@@ -17,6 +17,7 @@
 package org.nuclos.server.dblayer.query;
 
 import org.nuclos.common.collection.Pair;
+import org.nuclos.common.dblayer.JoinType;
 
 public class DbJoin extends DbFrom {
 
@@ -25,12 +26,6 @@ public class DbJoin extends DbFrom {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public static enum JoinType {
-		INNER,
-		LEFT,
-		RIGHT;
-	}
-	
 	private final DbFrom left;
 	private final JoinType joinType;
 	private Pair<String, String> on;

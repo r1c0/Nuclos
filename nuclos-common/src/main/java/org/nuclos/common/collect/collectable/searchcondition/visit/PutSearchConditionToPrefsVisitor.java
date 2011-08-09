@@ -33,7 +33,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableComparis
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIsNullCondition;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableJoinCondition;
+import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableLikeCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSelfSubCondition;
@@ -354,10 +354,8 @@ public class PutSearchConditionToPrefsVisitor implements Visitor<Void, Preferenc
 	}
 
 	@Override
-	public Void visitJoinCondition(CollectableJoinCondition joincond) throws PreferencesException {
-		prefs.put(PREFS_KEY_ENTITYNAME, joincond.getSubEntityName());
-		prefs.put(PREFS_KEY_FOREIGNKEYFIELDNAME, joincond.getForeignKeyFieldName());
-		putSearchCondition(prefs.node(PREFS_NODE_JOINCONDITION), joincond.getSubCondition());
+	public Void visitPivotJoinCondition(PivotJoinCondition joincond) throws PreferencesException {
+		PreferencesUtils.putSerializableObjectXML(prefs, PREFS_NODE_JOINCONDITION, joincond);
 		return null;
 	}
 

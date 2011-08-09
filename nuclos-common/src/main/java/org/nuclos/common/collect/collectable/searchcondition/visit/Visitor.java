@@ -19,7 +19,7 @@ package org.nuclos.common.collect.collectable.searchcondition.visit;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableJoinCondition;
+import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
@@ -43,7 +43,7 @@ public interface Visitor<O, Ex extends Exception> {
 
 	O visitSubCondition(CollectableSubCondition subcond) throws Ex;
 
-	O visitJoinCondition(CollectableJoinCondition joincond) throws Ex;
+	O visitPivotJoinCondition(PivotJoinCondition joincond) throws Ex;
 
 	O visitReferencingCondition(ReferencingCollectableSearchCondition refcond) throws Ex;
 

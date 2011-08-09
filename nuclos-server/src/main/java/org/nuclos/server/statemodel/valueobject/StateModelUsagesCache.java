@@ -17,13 +17,13 @@
 package org.nuclos.server.statemodel.valueobject;
 
 import org.nuclos.common.UsageCriteria;
+import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbJoin;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
-import org.nuclos.server.dblayer.query.DbJoin.JoinType;
 
 /**
  * Singleton class for getting initial states and state models by usage criteria.

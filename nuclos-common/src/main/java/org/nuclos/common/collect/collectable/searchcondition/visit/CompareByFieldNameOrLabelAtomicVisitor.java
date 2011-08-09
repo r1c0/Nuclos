@@ -19,7 +19,7 @@ package org.nuclos.common.collect.collectable.searchcondition.visit;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableJoinCondition;
+import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSelfSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
@@ -75,10 +75,9 @@ public class CompareByFieldNameOrLabelAtomicVisitor implements Visitor<Integer, 
 	}
 
 	@Override
-	public Integer visitJoinCondition(CollectableJoinCondition subcond1) throws RuntimeException {
-		final CollectableJoinCondition subcond2 = (CollectableJoinCondition) cond2;
-		/** @todo use label if bSortByLabels == true? */
-		return subcond1.getSubEntityName().compareTo(subcond2.getSubEntityName());
+	public Integer visitPivotJoinCondition(PivotJoinCondition subcond1) throws RuntimeException {
+		final PivotJoinCondition subcond2 = (PivotJoinCondition) cond2;
+		return subcond1.getField().getField().compareTo(subcond2.getField().getField());
 	}
 
 	@Override

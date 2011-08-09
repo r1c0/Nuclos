@@ -38,7 +38,7 @@ import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableJoinCondition;
+import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
@@ -381,7 +381,7 @@ public class SearchConditionSubFormController extends SubFormController {
 			}
 
 			@Override
-			public Void visitJoinCondition(CollectableJoinCondition joincond) {
+			public Void visitPivotJoinCondition(PivotJoinCondition joincond) {
 				throw new IllegalArgumentException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.11", "Eine geschachtelte Joinbedingung kann in einem Unterformular nicht dargestellt werden."));
 			}
 
@@ -665,7 +665,7 @@ public class SearchConditionSubFormController extends SubFormController {
 		}
 
 		@Override
-		public Boolean visitJoinCondition(CollectableJoinCondition joincond) throws RuntimeException {
+		public Boolean visitPivotJoinCondition(PivotJoinCondition joincond) throws RuntimeException {
 			return false;
 		}
 

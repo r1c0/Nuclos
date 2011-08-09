@@ -98,6 +98,19 @@ public class SystemMetaDataProvider implements MetaDataProvider {
 		throw new NotImplementedException();
 	}
 	
+	public EntityFieldMetaDataVO getRefField(String baseEntity, String subform) {
+		// TODO: caching
+		final Map<String, EntityFieldMetaDataVO>  fields = getAllEntityFieldsByEntity(baseEntity);
+		EntityFieldMetaDataVO result = null;
+		for (EntityFieldMetaDataVO f: fields.values()) {
+			if (baseEntity.equals(f.getForeignEntity())) {
+				result = f;
+				break;
+			}
+		}
+		return result;
+	}
+	
 	@Override
 	public EntityFieldMetaDataVO getEntityField(String entity, String field) {
 		SystemEntityFieldMetaDataVO result = getEntity(entity).getEntityFields().get(field);

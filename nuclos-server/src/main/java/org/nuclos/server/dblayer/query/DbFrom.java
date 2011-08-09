@@ -20,7 +20,7 @@ import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.nuclos.server.dblayer.query.DbJoin.JoinType;
+import org.nuclos.common.dblayer.JoinType;
 
 public class DbFrom implements Serializable {
 
@@ -57,7 +57,7 @@ public class DbFrom implements Serializable {
 		return joins;
 	}
 	
-	public DbJoin join(String tableName, DbJoin.JoinType joinType) {
+	public DbJoin join(String tableName, JoinType joinType) {
 		DbJoin join = new DbJoin(query, this, joinType, tableName);
 		joins.add(join);
 		return join;

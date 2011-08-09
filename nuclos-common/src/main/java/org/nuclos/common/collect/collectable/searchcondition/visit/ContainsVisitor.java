@@ -19,7 +19,7 @@ package org.nuclos.common.collect.collectable.searchcondition.visit;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableJoinCondition;
+import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
@@ -94,12 +94,8 @@ public class ContainsVisitor implements Visitor<Boolean, RuntimeException> {
 	}
 
 	@Override
-	public Boolean visitJoinCondition(CollectableJoinCondition joincond) {
+	public Boolean visitPivotJoinCondition(PivotJoinCondition joincond) {
 		boolean result = predicate.evaluate(joincond);
-		if (!result && bTraverseSubConditions) {
-			final CollectableSearchCondition condSub = joincond.getSubCondition();
-			result = (condSub != null) && SearchConditionUtils.contains(condSub, predicate, bTraverseSubConditions);
-		}
 		return result;
 	}
 
