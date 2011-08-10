@@ -33,14 +33,18 @@ import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -52,6 +56,8 @@ import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.table.TableCellRenderer;
 
+import org.jfree.util.Log;
+import org.nuclos.client.desktop.DesktopUtils;
 import org.nuclos.client.entityobject.CollectableEntityObjectField;
 import org.nuclos.client.genericobject.CollectableGenericObjectAttributeField;
 import org.nuclos.client.masterdata.CollectableMasterDataField;
@@ -95,7 +101,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
       MessageExchange.addListener(this);
       setupDragDrop();
    }
-   
+
 	protected void setupDragDrop() {
 		DropTarget target = new DropTarget(this.getImageLabel(), new ImageLabelDragDropListener());
 		target.setActive(true);
@@ -105,12 +111,12 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
    public JLabel getImageLabel() {
       return this.getMediaComponent();
    }
-   
+
    @Override
-	public CollectableField getFieldFromView() throws CollectableFieldFormatException {		
-		return new CollectableValueField(this.nuclosImage);		
+	public CollectableField getFieldFromView() throws CollectableFieldFormatException {
+		return new CollectableValueField(this.nuclosImage);
    }
-   
+
 	@Override
 	protected void updateView(CollectableField clctfValue) {
 		if(clctfValue.getValue() instanceof NuclosImage) {
@@ -124,7 +130,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 					//this.getMediaComponent().setIcon(ii);
 					int h = this.getLabeledComponent().getHeight();
 					int w = this.getLabeledComponent().getWidth();
-					
+
 					if(h == 0 || w == 0 || !bScalable) {
 						this.getMediaComponent().setIcon(ii);
 						this.getMediaComponent().setHorizontalAlignment(SwingConstants.CENTER);
@@ -132,7 +138,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 					}
 					else {
 						Image imageScaled = ii.getImage().getScaledInstance(w, h, Image.SCALE_DEFAULT);
-						this.getMediaComponent().setIcon(new ImageIcon(imageScaled));						
+						this.getMediaComponent().setIcon(new ImageIcon(imageScaled));
 					}
 					this.nuclosImage = ni;
 					JComponent comp = NuclosCollectableImage.this.getJComponent();
@@ -150,9 +156,9 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		else {
 			clearField();
 		}
-		
+
 		getImageLabel().setBorder(new LineBorder(Color.BLACK));
-		
+
 		// ensure the start of the text is visible (instead of the end) when the text is too long
 		// to be fully displayed:
 
@@ -168,23 +174,20 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 			LabeledImage li = (LabeledImage)this.getLabeledComponent();
 			li.setNuclosImage(nuclosImage);
 		}
-	}   
+	}
 
 	@Override
 	public JPopupMenu newJPopupMenu() {
 		final JPopupMenu result = new JPopupMenu();
 		result.add(new AbstractAction(getMessage("collectableimage.filechooser.1", "Bild \u00f6ffnen")) {
-			
-			/**
-			 * 
-			 */
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void actionPerformed(ActionEvent e) {					
+			public void actionPerformed(ActionEvent e) {
 				JFileChooser chosser = new JFileChooser();
 				chosser.setFileFilter(new ImageFileFilter());
-				
+
 				int choice = chosser.showOpenDialog(getLabeledComponent());
 				if(choice == JFileChooser.CANCEL_OPTION)
 					return;
@@ -193,14 +196,10 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 					loadImageFromFile(file);
 				}
 			}
-
-
 		});
+
 		result.add(new AbstractAction(getMessage("collectableimage.filechooser.2","Bild speichern")) {
-			
-			/**
-			 * 
-			 */
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -209,16 +208,17 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 				if(comp instanceof LabeledImage) {
 					LabeledImage li = (LabeledImage)comp;
 					NuclosImage ni = li.getNuclosImage();
-				
-					JFileChooser chosser = new JFileChooser();			
+					String formatname = getFormatName(ni, "JPG");
+
+					JFileChooser chosser = new JFileChooser();
+					chosser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 					chosser.setFileFilter(new ImageFileFilter());
-					File chosserFile = new File(ni.getFilename());
-					chosser.setSelectedFile(chosserFile);
+					chosser.setSelectedFile(new File("image." + formatname.toLowerCase()));
 					int choice = chosser.showSaveDialog(getLabeledComponent());
 					if(choice == JFileChooser.CANCEL_OPTION) {
 						return;
 					}
-					
+
 					File file = chosser.getSelectedFile();
 					try {
 						FileOutputStream fos = new FileOutputStream(file);
@@ -232,14 +232,12 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 						Errors.getInstance().showExceptionDialog(getControlComponent(), ex);
 					}
 				}
-				
+
 			}
 		});
+
 		result.add(new AbstractAction(getMessage("collectableimage.filechooser.3","Bild anzeigen")) {
-			
-			/**
-			 * 
-			 */
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -249,11 +247,12 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 					if(comp instanceof LabeledImage) {
 						LabeledImage li = (LabeledImage)comp;
 						NuclosImage ni = li.getNuclosImage();
-						final java.io.File file = new java.io.File(IOUtils.getDefaultTempDir(), ni.getFilename());
+						String formatname = getFormatName(ni, "JPG");
+
+						final java.io.File file = File.createTempFile("nuclos-image", "." + formatname.toLowerCase());
 						IOUtils.writeToBinaryFile(file, ni.getContent());
 						file.deleteOnExit();
-						final String sCommand = "cmd.exe /c \"\"" + file.getAbsolutePath() + "\"\"";
-						Runtime.getRuntime().exec(sCommand);
+						DesktopUtils.open(file);
 					}
 				}
 				catch(IOException ex ) {
@@ -261,12 +260,9 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 				}
 			}
 		});
-		
+
 		result.add(new AbstractAction(getMessage("CollectableFileNameChooserBase.1", "zurücksetzen")) {
-			
-			/**
-			 * 
-			 */
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -275,13 +271,26 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 				if(comp instanceof LabeledImage) {
 					LabeledImage li = (LabeledImage)comp;
 					li.setNuclosImage(null);
-					updateView(new CollectableValueField(null));	
+					updateView(new CollectableValueField(null));
 					viewToModel(new CollectableValueField(null));
-				}						
+				}
 			}
 		});
-		
+
 		return result;
+	}
+
+	private String getFormatName(NuclosImage ni, String defaultformat) {
+		try {
+			ImageInputStream iis = ImageIO.createImageInputStream(new ByteArrayInputStream(ni.getContent()));
+			Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+			if (readers.hasNext()) {
+				return readers.next().getFormatName();
+			}
+		} catch (IOException e1) {
+			Log.warn("Error determining image format name.", e1);
+		}
+		return defaultformat;
 	}
 
 	private void loadImageFromFile(File file) {
@@ -294,7 +303,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 				b[counter++] = (byte)c;
 			}
 			bis.close();
-			
+
 			nuclosImage = new NuclosImage(file.getName(), b, null, true);
 			JComponent comp = NuclosCollectableImage.this.getJComponent();
 			if(comp instanceof LabeledImage) {
@@ -303,7 +312,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 				Image scaledImageForLabeled = ii.getImage().getScaledInstance(li.getWidth(), li.getHeight(), Image.SCALE_DEFAULT);
 				li.getJMediaComponent().setIcon(new ImageIcon(scaledImageForLabeled));
 				li.setNuclosImage(nuclosImage);
-				
+
 				BufferedImage buff = ImageIO.read(file);
 				BufferedImage bdest = new BufferedImage(20, 20, BufferedImage.TYPE_INT_RGB);
 				Graphics2D g = bdest.createGraphics();
@@ -312,7 +321,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 			    File scaled = new File(IOUtils.getDefaultTempDir() + "tmp.jpg");
 			    scaled.deleteOnExit();
 			    ImageIO.write(bdest,"JPG", scaled);
-							
+
 				BufferedInputStream bisscaled = new BufferedInputStream(new FileInputStream(scaled));
 				byte bscaled[] = new byte[bisscaled.available()];
 				int cscaled = 0;
@@ -321,9 +330,9 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 					bscaled[counterscaled++] = (byte)cscaled;
 				}
 				bisscaled.close();
-				
+
 				nuclosImage.setThmubnail(bscaled);
-													
+
 			}
 			try {
 				viewToModel();
@@ -340,16 +349,16 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 			Errors.getInstance().showExceptionDialog(this.getControlComponent(), e1);
 		}
 	}
-   
+
 
 	@Override
    public void setColumns(int iColumns) {
-      
+
    }
-	
+
 	@Override
 	protected void viewToModel() throws CollectableFieldFormatException {
-		super.viewToModel();		
+		super.viewToModel();
 	}
 
 	@Override
@@ -358,11 +367,11 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 
    @Override
    public TableCellRenderer getTableCellRenderer() {
-	   
+
 	   return new TableCellRenderer() {
 	        @Override
 			public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
-	            
+
 	            JLabel lbComp = new JLabel();
 	            if(oValue instanceof CollectableMasterDataField) {
 	            	CollectableMasterDataField field = (CollectableMasterDataField)oValue;
@@ -379,8 +388,8 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		            	}
 		            	else {
 		            		lbComp.setText(ni.getFilename());
-		            	}	            	
-		            	
+		            	}
+
 	            	}
 	            }
 	            else if(oValue instanceof CollectableGenericObjectAttributeField) {
@@ -398,7 +407,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		            	}
 		            	else {
 		            		lbComp.setText(ni.getFilename());
-		            	}	         
+		            	}
 	            	}
 	            }
 	            else if(oValue instanceof CollectableEntityObjectField) {
@@ -416,32 +425,32 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		            	}
 		            	else {
 		            		lbComp.setText(ni.getFilename());
-		            	}	         
+		            	}
 	            	}
 	            }
-	        
+
 	            lbComp.setHorizontalAlignment(JLabel.CENTER);
-	            
+
 	            return lbComp;
 	         }
-	        
-	       
+
+
 	      };
    }
-   
-   
+
+
    @Override
 	public void setScalable(boolean bln) {
 		this.bScalable = bln;
 	}
-   
+
 
    @Override
    public void receive(Object id, ObjectType type, MessageType msg) {
-      
+
    }
-   
-   
+
+
    class ImageFileFilter extends javax.swing.filechooser.FileFilter  {
 
 		@Override
@@ -458,14 +467,14 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		public String getDescription() {
 			return "Bildformate";
 		}
-   	
+
    }
-   
+
 	class ImageLabelDragDropListener implements DropTargetListener {
-		
+
 		@Override
 		public void dragEnter(DropTargetDragEvent dtde) {
-			
+
 		}
 
 		@Override
@@ -512,12 +521,12 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 
 		@Override
 		public void drop(DropTargetDropEvent dtde) {
-			try {			
+			try {
 				dtde.acceptDrop(dtde.getDropAction());
 				Transferable trans = dtde.getTransferable();
-				
+
 				DataFlavor flavor[] = trans.getTransferDataFlavors();
-				
+
 				for(int i = 0; i < flavor.length; i++) {
 					Object obj = trans.getTransferData(flavor[i]);
 					if(obj instanceof List) {
@@ -532,7 +541,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 				}
 			} catch (Exception e) {
 				// ignore this
-			} 
+			}
 		}
 
 		@Override
@@ -540,6 +549,6 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		}
 
 	}
-	
+
 
 }	// class CollectableTextField

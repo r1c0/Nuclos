@@ -40,6 +40,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.desktop.DesktopUtils;
 import org.nuclos.client.genericobject.CollectableGenericObjectFileChooser;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.Errors;
@@ -117,7 +118,7 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 				cmdReset();
 			}
 		});
-		
+
 		popupmenu.addPopupMenuListener(new PopupMenuListener() {
 			@Override
 			public void popupMenuWillBecomeVisible(PopupMenuEvent ev) {
@@ -131,7 +132,7 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 				}
 				miOpen.setEnabled(bEnabled);
 				miSaveAs.setEnabled(bEnabled);
-				
+
 				if (!getJComponent().isEnabled()) {
 					miReset.setEnabled(false);
 				}
@@ -148,10 +149,10 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 			public void popupMenuCanceled(PopupMenuEvent ev) {
 			}
 		});
-		
+
 		return popupmenu;
 	}
-	
+
 	private void cmdOpenFile() {
 		UIUtils.runCommandLater(this.getJComponent(), new CommonRunnable() {
 			@Override
@@ -170,19 +171,7 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 						IOUtils.writeToBinaryFile(file, abContents);
 						log.debug("Schreiben der tempor\u00e4ren Datei war erfolgreich.");
 						file.deleteOnExit();
-						if (Desktop.isDesktopSupported()) {
-							log.debug("Open file via Desktop");
-							Desktop.getDesktop().open(file);
-						} else {
-							if (!System.getProperty("os.name").startsWith("Windows")) {
-								throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("CollectableDocumentFileChooserBase.4","Das Anzeigen der Dateien funktioniert nur unter Microsoft Windows."));
-							}
-							// note that double double quotes ("") are necessary for cmd.exe to copy with filenames containing spaces:
-							final String sCommand = "cmd.exe /c \"\"" + file.getAbsolutePath() + "\"\"";
-							log.debug("Starte externen Prozess: " + sCommand);
-							Runtime.getRuntime().exec(sCommand);
-							log.debug("Externen Prozess gestartet.");
-						}
+						DesktopUtils.open(file);
 					}
 				}
 				catch (IOException ex) {
@@ -238,14 +227,14 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 			}
 		});
 	}
-	
+
 	protected void setupDragDrop() {
 		DropTarget targetFileChooserControl = new DropTarget(this.getFileChooser().getFileNameComponent(), new NuclosDropTargetListener(this));
 		targetFileChooserControl.setActive(true);
 		DropTarget targetFileChooser = new DropTarget(this.getFileChooser(), new NuclosDropTargetListener(this));
 		targetFileChooser.setActive(true);
 	}
-	
+
 	protected void cmdBrowse() {
 		final Preferences prefs = this.getPreferences();
 		final String sLastDir = (prefs == null) ? null : prefs.node(PREFS_NODE_COLLECTABLEFILECHOOSER).get(PREFS_KEY_LAST_DIRECTORY, null);
@@ -268,7 +257,7 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 
 	@Override
 	protected abstract org.nuclos.common2.File newFile(String sFileName, byte[] abContents);
-	
+
 	//NUCLEUSINT-512
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -278,7 +267,7 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 	    	}
 	    }
 	}
-	
+
 	protected void loadFile(File file) {
 		if (file != null) {
 			final String sFileName = file.getName();
@@ -303,7 +292,7 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 	public void visitDragOver(DropTargetDragEvent dtde) {
 		Transferable trans = dtde.getTransferable();
 		DataFlavor flavors[] = trans.getTransferDataFlavors();
-		
+
 		flavors = (flavors.length == 0) ? dtde.getCurrentDataFlavors() : flavors;
 
         // Select best data flavor
@@ -319,11 +308,11 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
         	Linux = new DataFlavor("text/uri-list;class=java.io.Reader");
         }
         catch(Exception e) { }
-        
+
         if(flavor.equals(Linux)) {
-        	dtde.acceptDrag(dtde.getDropAction());	
+        	dtde.acceptDrag(dtde.getDropAction());
         }
-        else {		
+        else {
 			if(flavors != null && flavors.length > 0) {
 				try {
 					int index = DragAndDropUtils.getIndexOfFileList(flavors, trans);
@@ -364,9 +353,9 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 								}
 							}
 						}
-						if(blnAcceptEmail) 							
-							dtde.acceptDrag(dtde.getDropAction());		
-						else 
+						if(blnAcceptEmail)
+							dtde.acceptDrag(dtde.getDropAction());
+						else
 							dtde.rejectDrag();
 					}
 				}
@@ -382,9 +371,9 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 		try {
 			dtde.acceptDrop(dtde.getDropAction());
 			Transferable trans = dtde.getTransferable();
-			
+
 			DataFlavor flavors[] = trans.getTransferDataFlavors();
-			
+
 			flavors = (flavors.length == 0) ? dtde.getCurrentDataFlavors() : flavors;
 
 	        // Select best data flavor
@@ -396,8 +385,8 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 
 	        // Flavors to check
 	        DataFlavor Linux = new DataFlavor("text/uri-list;class=java.io.Reader");
-			
-						
+
+
 			if(flavor.equals(Linux)) {
 
                 BufferedReader read = new BufferedReader(flavor.getReaderForText(trans));
@@ -408,14 +397,14 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
                         fileName = fileName.substring(9);
                 }
                 read.close();
-                
+
                 if(fileName != null && fileName.length() > 0) {
                 	loadFile(new File(fileName));
                 }
-         
+
 			}
-			else {			
-			
+			else {
+
 				for(int i = 0; i < flavors.length; i++) {
 					Object obj = trans.getTransferData(flavors[i]);
 					if(obj instanceof List) {
@@ -427,12 +416,12 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 							}
 						}
 					}
-					else {			
+					else {
 						List<File> lstFile = DragAndDropUtils.mailHandling();
 						if(lstFile.size() == 1) {
 							loadFile(lstFile.get(0));
 						}
-					}			
+					}
 				}
 			}
 		}
@@ -447,7 +436,7 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 
 	@Override
 	public void visitDropActionChanged(DropTargetDragEvent dtde) {}
-	
-	
-	
+
+
+
 }
