@@ -31,10 +31,6 @@ import org.nuclos.server.dblayer.DbException;
 
 public class DbTable extends DbArtifact {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final List<DbTableArtifact> tableArtifacts;
 	
 	public DbTable(String tableName, DbTableArtifact...tableArtifacts) {
@@ -54,6 +50,16 @@ public class DbTable extends DbArtifact {
 		Collections.sort(this.tableArtifacts, DbArtifact.COMPARATOR);
 	}
 	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("table=").append(getTableName());
+		result.append(", artefacts=").append(tableArtifacts);
+		result.append("]");
+		return result.toString();
+	}
+
 	public String getTableName() {
 		return getSimpleName();
 	}

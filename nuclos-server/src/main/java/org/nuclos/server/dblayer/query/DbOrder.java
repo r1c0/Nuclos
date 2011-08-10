@@ -20,10 +20,6 @@ import java.io.Serializable;
 
 public class DbOrder implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final DbExpression<?> expression;
 	private final boolean ascending;
 
@@ -32,6 +28,21 @@ public class DbOrder implements Serializable {
 		this.ascending = ascending;
 	}
 	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("exp=").append(expression);
+		if (ascending) {
+			result.append(", ASC");
+		}
+		else {
+			result.append(", DSC=");
+		}
+		result.append("]");
+		return result.toString();
+	}
+
 	public DbExpression<?> getExpression() {
 		return expression;
 	}

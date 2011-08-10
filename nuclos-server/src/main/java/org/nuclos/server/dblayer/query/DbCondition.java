@@ -22,12 +22,8 @@ import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 
 public class DbCondition implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	final DbQueryBuilder parent;
-	final PreparedStringBuilder sqlString; 
+	private final DbQueryBuilder parent;
+	private final PreparedStringBuilder sqlString; 
 
 	DbCondition(DbQueryBuilder parent, PreparedStringBuilder sqlString) {
 		this.parent = parent;
@@ -37,4 +33,21 @@ public class DbCondition implements Serializable {
 	public DbCondition not() {
 		return parent.not(this);
 	}
+	
+	PreparedStringBuilder getSqlString() {
+		return sqlString;
+	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("sql=").append(sqlString);
+		if (sqlString != null) {
+			result.append(", frozen=").append(sqlString.isFrozen());
+		}
+		result.append("]");
+		return result.toString();
+	}
+
 }

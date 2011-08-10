@@ -35,11 +35,6 @@ import org.nuclos.server.dblayer.DbIdent;
  */
 public class DbSimpleView extends DbTableArtifact {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public static enum DbSimpleViewColumnType {
 		TABLE,
 		FOREIGN_REFERENCE,
@@ -48,10 +43,6 @@ public class DbSimpleView extends DbTableArtifact {
 	
 	public static class DbSimpleViewColumn implements Serializable {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private final DbSimpleViewColumnType type;
 		private final String columnName;
 		private final DbColumnType columnType;
@@ -92,6 +83,24 @@ public class DbSimpleView extends DbTableArtifact {
 			}
 		}
 		
+		@Override
+		public String toString() {
+			final StringBuilder result = new StringBuilder();
+			result.append(getClass().getName()).append("[");
+			result.append("type=").append(type);
+			result.append(", column=").append(columnName);
+			result.append(", ref=").append(reference);
+			result.append(", column=").append(columnName);
+			if (viewPattern != null)
+				result.append(", pattern=").append(viewPattern);
+			if (functionName != null)
+				result.append(", function=").append(functionName);
+			if (argColumns != null)
+				result.append(", args=").append(argColumns);
+			result.append("]");
+			return result.toString();
+		}
+
 		public DbSimpleViewColumnType getViewColumnType() {
 			return type;
 		}
@@ -158,6 +167,16 @@ public class DbSimpleView extends DbTableArtifact {
 		}
 	}
 	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("table=").append(getTableName());
+		result.append(", columns=").append(viewColumns);
+		result.append("]");
+		return result.toString();
+	}
+
 	public String getViewName() {
 		return getSimpleName();
 	}

@@ -35,6 +35,8 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCo
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
+import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
+import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
@@ -84,9 +86,11 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 	public Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds, Collection<EntityFieldMetaDataVO> fields) {
 		final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
 		final EntityMetaDataVO eMeta = mdProv.getEntity(id);
+				
 		final List<EntityObjectVO> eos = NucletDalProvider.getInstance().getEntityObjectProcessor(
 				eMeta.getEntity()).getBySearchExpressionAndPrimaryKeys(
-						appendRecordGrants(new CollectableSearchExpression(), eMeta), lstIds);
+						appendRecordGrants(getSearchExpression(fields), eMeta), lstIds);
+		/*
 		// TODO: join table...
 		final Set<String> subforms = new HashSet<String>();
 		final Collection<EntityFieldMetaDataVO> pivots = new ArrayList<EntityFieldMetaDataVO>();
@@ -109,7 +113,25 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 				throw new NuclosFatalException(e);
 			}
 		}
+		 */
 		return eos;
+	}
+	
+	private CollectableSearchExpression getSearchExpression(Collection<EntityFieldMetaDataVO> fields) {
+		final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
+		// TODO: more than one pivot...
+		CollectableSearchCondition join = null;
+		for (EntityFieldMetaDataVO f: fields) {
+			if (f.getPivotInfo() != null) {
+				final EntityMetaDataVO subEntity = mdProv.getEntity(f.getEntityId());
+				join = new PivotJoinCondition(subEntity, f);
+				break;
+			}
+		}
+		if (join == null) {
+			join = TrueCondition.TRUE;
+		}
+		return new CollectableSearchExpression(join);
 	}
 
 	/**

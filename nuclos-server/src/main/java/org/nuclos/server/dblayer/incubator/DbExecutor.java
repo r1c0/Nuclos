@@ -34,7 +34,7 @@ public interface DbExecutor {
 		 * by this method.
 		 * @throws SQLException
 		 */
-		public abstract T perform(Connection conn) throws SQLException;
+		T perform(Connection conn) throws SQLException;
 	}
 
 	public static interface ResultSetRunner<T> {
@@ -44,12 +44,12 @@ public interface DbExecutor {
 		 * this method. 
 		 * @throws SQLException
 		 */
-		public abstract T perform(ResultSet rs) throws SQLException;
+		T perform(ResultSet rs) throws SQLException;
 	}
 		
-	public abstract int executeUpdate(String sql) throws DbException;
+	int executeUpdate(String sql) throws DbException;
 	
-	public abstract <T> T executeQuery(String sql, ResultSetRunner<T> runner) throws DbException;
+	<T> T executeQuery(String sql, ResultSetRunner<T> runner) throws DbException;
 	
-	public abstract <T> T execute(ConnectionRunner<T> runner) throws DbException;
+	<T> T execute(ConnectionRunner<T> runner) throws DbException;
 }

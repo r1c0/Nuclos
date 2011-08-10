@@ -59,10 +59,12 @@ import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.SessionUtils;
 import org.nuclos.server.dal.DalUtils;
+import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
 import org.nuclos.server.dblayer.query.DbCondition;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
+import org.nuclos.server.dblayer.query.DbJoin;
 import org.nuclos.server.dblayer.query.DbOrder;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
@@ -189,11 +191,18 @@ public class EOSearchExpressionUnparser {
 			final String subEntity = mdSubEntity.getEntity();
 			final EntityFieldMetaDataVO field = joincond.getField();
 			final PivotInfo pinfo = field.getPivotInfo();
-			final String qualifiedSubField = subEntity + "." + pinfo.getKeyField();
 			
-			final EntityFieldMetaDataVO ref = mdProv.getRefField(entity.getEntity(), subEntity);			
-			table = table.join(subEntity, JoinType.LEFT).on(ref.getForeignEntityField(), ref.getField());
-			return queryBuilder.equal(table.column(qualifiedSubField, String.class), queryBuilder.literal(field.getField()));
+			final EntityFieldMetaDataVO ref = mdProv.getRefField(entity.getEntity(), subEntity);
+			String foreignEntityField = ref.getForeignEntityField();
+			// TODO: ???
+			if (foreignEntityField == null) {
+				foreignEntityField = "INTID";
+			}
+			
+			final String joinTable = EntityObjectMetaDbHelper.getViewName(mdSubEntity);
+			final String keyColumn = mdProv.getEntityField(subEntity, pinfo.getKeyField()).getDbColumn(); 
+			final DbJoin join = table.join(joinTable, JoinType.LEFT).alias(subEntity).on(foreignEntityField, ref.getDbColumn());
+			return queryBuilder.equal(join.column(keyColumn, String.class), queryBuilder.literal(field.getField()));
 		}
 
 		@Override

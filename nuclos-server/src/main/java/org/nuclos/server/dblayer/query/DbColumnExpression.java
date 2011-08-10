@@ -20,10 +20,6 @@ import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 
 public class DbColumnExpression<T> extends DbExpression<T> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final DbFrom fromTable;
 	private final String columnName;
 
@@ -32,9 +28,12 @@ public class DbColumnExpression<T> extends DbExpression<T> {
 	}
 	
 	DbColumnExpression(DbFrom fromTable, String columnName, Class<T> javaType, boolean caseSensitive) {
-		super(fromTable.query.getBuilder(), javaType, caseSensitive
+		super(fromTable.getQuery().getBuilder(), javaType, caseSensitive
 			? PreparedStringBuilder.concat(fromTable.getAlias(), ".", "\"", columnName, "\"")
 			: PreparedStringBuilder.concat(fromTable.getAlias(), ".", columnName));
+		if (fromTable.getAlias() == null) {
+			throw new IllegalArgumentException("Alias must not be null on table " + fromTable.getTableName());
+		}
 		this.fromTable = fromTable;
 		this.columnName = columnName;
 	}
@@ -46,4 +45,15 @@ public class DbColumnExpression<T> extends DbExpression<T> {
 	public String getColumnName() {
 		return columnName;
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("from=").append(fromTable);
+		result.append(", column=").append(columnName);
+		result.append("]");
+		return result.toString();
+	}
+
 }

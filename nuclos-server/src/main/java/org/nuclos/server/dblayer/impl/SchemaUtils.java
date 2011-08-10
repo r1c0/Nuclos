@@ -38,6 +38,10 @@ import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.dblayer.structure.DbTableColumnGroup;
 
 public class SchemaUtils {
+	
+	private SchemaUtils() {
+		// Never invoked.
+	}
 
 	public static List<DbStructureChange> create(DbArtifact artifact) {
 		return create(Collections.singleton(artifact));

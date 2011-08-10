@@ -23,11 +23,6 @@ import org.nuclos.server.dblayer.structure.DbArtifact;
  */
 public class DbStructureChange extends DbStatement {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public static enum Type {
 		DROP(1),
 		CREATE(2),
@@ -63,6 +58,17 @@ public class DbStructureChange extends DbStatement {
 		this.artifact2 = artifact2;
 	}
 	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("type=").append(type);
+		result.append(", 1=").append(artifact1);
+		result.append(", 2=").append(artifact2);
+		result.append("]");
+		return result.toString();
+	}
+
 	public DbArtifact getArtifact1() {
 		return artifact1;
 	}

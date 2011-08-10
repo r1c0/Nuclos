@@ -23,10 +23,6 @@ import org.nuclos.server.dblayer.DbException;
 
 public class DbIndex extends DbTableArtifact implements DbTableColumnGroup {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final List<String>	columns;
 
 	public DbIndex(String tableName, String constraintName, List<String> columns) {
@@ -34,6 +30,16 @@ public class DbIndex extends DbTableArtifact implements DbTableColumnGroup {
 		this.columns = new ArrayList<String>(columns);
 	}
 	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("columns=").append(columns);
+		result.append(", name=").append(getSimpleName());
+		result.append("]");
+		return result.toString();
+	}
+
 	public String getIndexName() {
 		return getSimpleName();
 	}	

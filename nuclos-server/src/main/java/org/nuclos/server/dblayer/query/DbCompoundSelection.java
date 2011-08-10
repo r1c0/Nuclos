@@ -38,4 +38,14 @@ public class DbCompoundSelection<T> extends DbSelection<T> {
 	public List<DbSelection<?>> getCompoundSelectionItems() {
 		return items;
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("items=").append(items);
+		result.append("]");
+		return result.toString();
+	}
+
 }

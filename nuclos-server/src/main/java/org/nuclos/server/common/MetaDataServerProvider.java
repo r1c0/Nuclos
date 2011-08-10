@@ -205,7 +205,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 	
 	public EntityFieldMetaDataVO getRefField(String baseEntity, String subform) {
 		// TODO: caching
-		final Map<String, EntityFieldMetaDataVO>  fields = getAllEntityFieldsByEntity(baseEntity);
+		final Map<String, EntityFieldMetaDataVO>  fields = getAllEntityFieldsByEntity(subform);
 		EntityFieldMetaDataVO result = null;
 		for (EntityFieldMetaDataVO f: fields.values()) {
 			if (baseEntity.equals(f.getForeignEntity())) {

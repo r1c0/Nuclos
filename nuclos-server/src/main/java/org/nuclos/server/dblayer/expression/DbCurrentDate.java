@@ -16,17 +16,13 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dblayer.expression;
 
-
+import java.util.Date;
 
 /**
  * A special value which represents the current date and time.
  */
-public class DbCurrentDate extends DbSpecialValue<java.util.Date> {
+public class DbCurrentDate implements DbSpecialValue<Date> {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final DbCurrentDate CURRENT_DATE = new DbCurrentDate();
 	
 	private DbCurrentDate() {

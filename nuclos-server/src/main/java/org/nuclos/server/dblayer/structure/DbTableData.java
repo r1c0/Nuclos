@@ -34,10 +34,6 @@ import org.nuclos.server.dblayer.structure.DbColumnType.DbGenericType;
  */
 public class DbTableData implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final String tableName;
 	private final List<Pair<String, DbGenericType>> columns;
 	private final List<List<Object>> data;
@@ -46,6 +42,16 @@ public class DbTableData implements Serializable {
 		this.tableName = tableName;
 		this.columns = columns;
 		this.data = data;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("table=").append(tableName);
+		result.append(", columns=").append(columns);
+		result.append("]");
+		return result.toString();
 	}
 
 	public String getTableName() {

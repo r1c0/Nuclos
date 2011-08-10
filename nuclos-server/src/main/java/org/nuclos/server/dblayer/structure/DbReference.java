@@ -25,16 +25,10 @@ import org.nuclos.common.collection.Pair;
  * another group of columns of table B.
  */
 public interface DbReference extends DbTableColumnGroup {
-	
-	@Override
-	public String getTableName();
-	
-	@Override
-	public List<String> getColumnNames();
+		
+	String getReferencedTableName();
 
-	public String getReferencedTableName();
-
-	public List<String> getReferencedColumnNames();
+	List<String> getReferencedColumnNames();
 	
-	public List<Pair<String, String>> getReferences();
+	List<Pair<String, String>> getReferences();
 }

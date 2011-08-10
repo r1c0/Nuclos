@@ -21,13 +21,23 @@ import java.util.List;
 
 public abstract class DbSelection<T> {
 
-	String alias;
-	DbQueryBuilder builder;
-	Class<? extends T> javaType;
+	private String alias;
+	private DbQueryBuilder builder;
+	private Class<? extends T> javaType;
 	
 	DbSelection(DbQueryBuilder builder, Class<? extends T> javaType) {
 		this.builder = builder;
 		this.javaType = javaType;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("alias=").append(alias);
+		result.append(", type=").append(javaType);
+		result.append("]");
+		return result.toString();
 	}
 
 	public Class<? extends T> getJavaType() {
@@ -51,5 +61,9 @@ public abstract class DbSelection<T> {
 	
 	public List<DbSelection<?>> getCompoundSelectionItems() {
 		throw new IllegalStateException();
-	}	
+	}
+	
+	DbQueryBuilder getBuilder() {
+		return builder;
+	}
 }

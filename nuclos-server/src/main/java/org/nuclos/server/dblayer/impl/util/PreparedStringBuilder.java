@@ -34,11 +34,6 @@ import org.nuclos.common.collection.Transformer;
  */
 public class PreparedStringBuilder implements Serializable {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public static PreparedStringBuilder valueOf(String s) {
 		return new PreparedStringBuilder().append(s);
 	}
@@ -172,12 +167,12 @@ public class PreparedStringBuilder implements Serializable {
 		}	
 	}
 	
+	public boolean isFrozen() {
+		return frozen;
+	}
+	
 	public static class Parameter implements Serializable {
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private Object value;
 		
 		public Parameter() {

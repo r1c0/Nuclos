@@ -24,6 +24,6 @@ import org.nuclos.server.dblayer.DbAccess;
  */
 public interface DbBuildableStatement {
 
-	public abstract DbStatement build();
+	DbStatement build();
 	
 }

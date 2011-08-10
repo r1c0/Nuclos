@@ -63,7 +63,18 @@ import org.nuclos.server.dblayer.structure.DbTableArtifact;
 
 public class EntityObjectMetaDbHelper {
 
-//	private Log log = LogFactory.getLog(EntityObjectMetaDbHelper.class);
+	private static Map<String, DbColumnType> SYSTEM_COLUMNS = new LinkedHashMap<String, DbColumnType>();
+
+	static DbColumnType ID_COLUMN_TYPE = new DbColumnType(NUMERIC, 20, 0);
+
+	static {
+		SYSTEM_COLUMNS.put("INTID",      ID_COLUMN_TYPE);
+		SYSTEM_COLUMNS.put("DATCREATED", new DbColumnType(DATETIME));
+		SYSTEM_COLUMNS.put("STRCREATED", new DbColumnType(VARCHAR, 30));
+		SYSTEM_COLUMNS.put("DATCHANGED", new DbColumnType(DATETIME));
+		SYSTEM_COLUMNS.put("STRCHANGED", new DbColumnType(VARCHAR, 30));
+		SYSTEM_COLUMNS.put("INTVERSION", new DbColumnType(NUMERIC, 9, 0));
+	}
 
 	private final MetaDataProvider provider;
 	private final DbAccess dbAccess;
@@ -75,6 +86,16 @@ public class EntityObjectMetaDbHelper {
 	public EntityObjectMetaDbHelper(DbAccess dbAccess, MetaDataProvider provider) {
 		this.dbAccess = dbAccess;
 		this.provider = provider;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("access=").append(dbAccess);
+		result.append(", mdProv=").append(provider);
+		result.append("]");
+		return result.toString();
 	}
 
 	public Map<String, DbTable> getSchema() {
@@ -318,19 +339,6 @@ public class EntityObjectMetaDbHelper {
 		if (tableName.startsWith("V_"))
 			return tableName;
 		return null;
-	}
-
-	private static Map<String, DbColumnType> SYSTEM_COLUMNS = new LinkedHashMap<String, DbColumnType>();
-
-	static DbColumnType ID_COLUMN_TYPE = new DbColumnType(NUMERIC, 20, 0);
-
-	static {
-		SYSTEM_COLUMNS.put("INTID",      ID_COLUMN_TYPE);
-		SYSTEM_COLUMNS.put("DATCREATED", new DbColumnType(DATETIME));
-		SYSTEM_COLUMNS.put("STRCREATED", new DbColumnType(VARCHAR, 30));
-		SYSTEM_COLUMNS.put("DATCHANGED", new DbColumnType(DATETIME));
-		SYSTEM_COLUMNS.put("STRCHANGED", new DbColumnType(VARCHAR, 30));
-		SYSTEM_COLUMNS.put("INTVERSION", new DbColumnType(NUMERIC, 9, 0));
 	}
 
 	public static DbColumnType createDbColumnType(EntityFieldMetaDataVO fieldMeta) {

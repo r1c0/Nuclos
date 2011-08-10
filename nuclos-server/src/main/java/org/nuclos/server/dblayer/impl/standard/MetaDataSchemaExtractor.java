@@ -78,6 +78,16 @@ public abstract class MetaDataSchemaExtractor {
 		this.metaData = connection.getMetaData();
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("catalog=").append(catalog);
+		result.append(", schema=").append(schema);
+		result.append("]");
+		return result.toString();
+	}
+
 	public Map<String, Object> getMetaDataInfo() throws SQLException {
 		Map<String, Object> map = new LinkedHashMap<String, Object>();
 		map.put("databaseProductName", metaData.getDatabaseProductName());

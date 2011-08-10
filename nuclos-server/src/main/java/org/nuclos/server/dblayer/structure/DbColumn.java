@@ -21,10 +21,6 @@ import org.nuclos.server.dblayer.DbException;
 
 public class DbColumn extends DbTableArtifact {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final DbColumnType	columnType;
 	private final DbNullable nullable;
 	private final Object defaultValue;
@@ -36,6 +32,18 @@ public class DbColumn extends DbTableArtifact {
 		this.defaultValue = defaultValue;
 	}
 	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("columnType=").append(columnType);
+		result.append(", name=").append(getSimpleName());
+		result.append(", nullable=").append(nullable);
+		result.append(", default=").append(defaultValue);
+		result.append("]");
+		return result.toString();
+	}
+
 	public String getColumnName() {
 		return getSimpleName();
 	}

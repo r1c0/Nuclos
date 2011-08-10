@@ -48,6 +48,16 @@ public class DataSourceExecutor implements DbExecutor {
 	}
 	
 	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("ds=").append(dataSource);
+		result.append(", user=").append(username);
+		result.append("]");
+		return result.toString();
+	}
+
+	@Override
 	public <T> T execute(ConnectionRunner<T> runner) throws DbException {
 		try {
 			Connection conn = getConnection();

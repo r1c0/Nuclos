@@ -23,6 +23,10 @@ import java.sql.Wrapper;
 import org.nuclos.common2.exception.CommonFatalException;
 
 public class SQLUtils2 {
+	
+	private SQLUtils2() {
+		// Never invoked.
+	}
 
 	public static <T> T unwrap(Object obj, Class<T> iface) throws SQLException {
 		if (obj.getClass().getName().equals("org.apache.commons.dbcp.PoolingDataSource$PoolGuardConnectionWrapper")) {

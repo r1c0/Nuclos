@@ -20,11 +20,6 @@ import java.io.Serializable;
 
 public final class DbIdent implements Serializable, Comparable<DbIdent> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public static DbIdent makeIdent(String name) {
 		return new DbIdent(name);
 	}

@@ -26,10 +26,6 @@ import org.nuclos.server.dblayer.DbException;
 
 public abstract class DbConstraint extends DbTableArtifact implements DbTableColumnGroup {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final List<String>	columns;
 
 	DbConstraint(String tableName, String constraintName, List<String> columns) {
@@ -37,6 +33,16 @@ public abstract class DbConstraint extends DbTableArtifact implements DbTableCol
 		this.columns = new ArrayList<String>(columns);
 	}
 	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("columns=").append(columns);
+		result.append(", name=").append(getSimpleName());
+		result.append("]");
+		return result.toString();
+	}
+
 	public String getConstraintName() {
 		return super.getSimpleName();
 	}
@@ -48,11 +54,6 @@ public abstract class DbConstraint extends DbTableArtifact implements DbTableCol
 	
 	public static class DbPrimaryKeyConstraint extends DbConstraint {
 	
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		public DbPrimaryKeyConstraint(String tableName, String constraintName, List<String> columns) {
 			super(tableName, constraintName, columns);
 		}
@@ -75,11 +76,6 @@ public abstract class DbConstraint extends DbTableArtifact implements DbTableCol
 
 	public static class DbUniqueConstraint extends DbConstraint {
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		public DbUniqueConstraint(String tableName, String constraintName, List<String> columns) {
 			super(tableName, constraintName, columns);
 		}
@@ -98,10 +94,6 @@ public abstract class DbConstraint extends DbTableArtifact implements DbTableCol
 	
 	public static class DbForeignKeyConstraint extends DbConstraint implements DbReference {
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private final String referencedTable;
 		private final String referencedConstraint;
 		private final List<String> referencedColumns;
@@ -118,6 +110,20 @@ public abstract class DbConstraint extends DbTableArtifact implements DbTableCol
 			this.onDeleteCascade = onDeleteCascade;
 		}
 		
+		@Override
+		public String toString() {
+			final StringBuilder result = new StringBuilder();
+			result.append(getClass().getName()).append("[");
+			result.append("columns=").append(getColumnNames());
+			result.append(", name=").append(getSimpleName());
+			result.append(", refTable=").append(referencedTable);
+			result.append(", refColumns=").append(referencedColumns);
+			result.append(", refConstr=").append(referencedConstraint);
+			result.append(", onDeleteCascade=").append(onDeleteCascade);
+			result.append("]");
+			return result.toString();
+		}
+
 		@Override
 		public String getReferencedTableName() {
 			return referencedTable;

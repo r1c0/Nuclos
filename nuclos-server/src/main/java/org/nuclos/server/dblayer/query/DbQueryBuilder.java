@@ -32,10 +32,6 @@ import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder.Parameter;
 
 public abstract class DbQueryBuilder implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final String DATE_PATTERN_GERMAN = "dd.mm.yyyy";
 	
 	protected DbQueryBuilder() {
@@ -235,7 +231,7 @@ public abstract class DbQueryBuilder implements Serializable {
 	}
 	
 	public DbCondition not(DbCondition condition) {
-		return buildConditionSql("NOT (", condition.sqlString, ")");
+		return buildConditionSql("NOT (", condition.getSqlString(), ")");
 	}
 
 	public DbCondition and(DbCondition...conditions) {
@@ -244,7 +240,7 @@ public abstract class DbQueryBuilder implements Serializable {
 		PreparedStringBuilder sqlString = PreparedStringBuilder.valueOf("(");
 		for (int i = 0; i < conditions.length; i++) {
 			if (i > 0) sqlString.append(" AND ");
-			sqlString.append(conditions[i].sqlString);
+			sqlString.append(conditions[i].getSqlString());
 		}
 		return new DbCondition(this, sqlString.append(")"));
 	}
@@ -255,7 +251,7 @@ public abstract class DbQueryBuilder implements Serializable {
 		PreparedStringBuilder sqlString = PreparedStringBuilder.valueOf("(");
 		for (int i = 0; i < conditions.length; i++) {
 			if (i > 0) sqlString.append(" OR ");
-			sqlString.append(conditions[i].sqlString);
+			sqlString.append(conditions[i].getSqlString());
 		}
 		return new DbCondition(this, sqlString.append(")"));
 	}
@@ -305,11 +301,11 @@ public abstract class DbQueryBuilder implements Serializable {
 	protected abstract PreparedStringBuilder buildPreparedString(DbQuery<?> query);
 	
 	protected PreparedStringBuilder getPreparedString(DbCondition condition) {
-		return condition.sqlString;
+		return condition.getSqlString();
 	}
 
 	protected PreparedStringBuilder getPreparedString(DbExpression<?> expression) {
-		return expression.sqlString;
+		return expression.getSqlString();
 	}
 	
 	protected PreparedStringBuilder buildSql(Object...args) {

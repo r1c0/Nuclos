@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.server.dblayer.DbTuple;
 
@@ -41,7 +42,6 @@ public class DbQuery<T extends Object> {
 	private List<DbExpression<?>> groupList;
 	private DbCondition groupRestriction;
 	private List<DbOrder> orderList;
-	// private Map<String, Object> parameters;
 	
 	DbQuery(DbQueryBuilder builder, Class<T> resultType) {
 		this.builder = builder;
@@ -112,9 +112,27 @@ public class DbQuery<T extends Object> {
 	}	
 	
 	public DbQuery<T> where(DbCondition condition) {
+		if (this.condition != null && !TrueCondition.TRUE.equals(this.condition)) {
+			throw new IllegalStateException("where condition already set, use addToWhere or replaceWhere if this is intended");
+		}
 		this.condition = condition;
 		return this;
 	}
+	
+	public DbQuery<T> replaceWhere(DbCondition condition) {
+		this.condition = condition;
+		return this;
+	}
+	
+	public DbQuery<T> addToWhereAsAnd(DbCondition condition) {
+		this.condition = builder.and(this.condition, condition);
+		return this;
+	}	
+	
+	public DbQuery<T> addToWhereAsOr(DbCondition condition) {
+		this.condition = builder.or(this.condition, condition);
+		return this;
+	}	
 	
 	public DbCondition getRestriction() {
 		return condition;

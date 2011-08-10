@@ -24,8 +24,6 @@ import java.util.Arrays;
  */
 public final class PreparedString implements CharSequence, Serializable {
  
-	private static final long	serialVersionUID	= 1L;
-
 	private static final Object[] EMPTY = new Object[0];
 	
 	public static PreparedString valueOf(CharSequence cs) {

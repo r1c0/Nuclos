@@ -23,8 +23,8 @@ import java.util.List;
  */
 public interface DbTableColumnGroup {
 
-	public String getTableName();
+	String getTableName();
 	
-	public List<String> getColumnNames();
+	List<String> getColumnNames();
 	
 }

@@ -20,18 +20,17 @@ import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dblayer.JoinType;
 
 public class DbFrom implements Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	final DbQuery<?> query;
+	
+	private final DbQuery<?> query;
 	private final String tableName;
 	private String alias;
 	private Set<DbJoin> joins;
+	
+	// private final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
 	
 	DbFrom(DbQuery<?> query, String tableName) {
 		this.query = query;
@@ -39,6 +38,18 @@ public class DbFrom implements Serializable {
 		this.joins = new LinkedHashSet<DbJoin>();
 	}
 	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("table=").append(tableName);
+		result.append(", alias=").append(alias);
+		result.append(", joins=").append(joins);
+		result.append(", query=").append(query);
+		result.append("]");
+		return result.toString();
+	}
+
 	public String getTableName() {
 		return tableName;
 	}
@@ -63,6 +74,23 @@ public class DbFrom implements Serializable {
 		return join;
 	}
 	
+	/**
+	 * An alternative to join().alias().on() for usability would be very nice...
+	public DbJoin join(EntityMetaDataVO joinEntity, JoinType joinType) {
+		DbJoin join = new DbJoin(query, this, joinType, joinEntity.getDbEntity());
+		joins.add(join);
+
+		final EntityFieldMetaDataVO ref = mdProv.getRefField(entity.getEntity(), joinEntity.getEntity());
+		String foreignEntityField = ref.getForeignEntityField();
+		// TODO: ???
+		if (foreignEntityField == null) {
+			foreignEntityField = "INTID";
+		}
+		
+		return join.alias(joinEntity.getEntity()).on(foreignEntityField, ref.getField());
+	}
+	 */
+	
 	public DbJoin innerJoin(String tableName) {
 		return join(tableName, JoinType.INNER);
 	}
@@ -73,6 +101,24 @@ public class DbFrom implements Serializable {
 	
 	public <T> DbColumnExpression<T> column(String columnName, Class<T> javaClass) {
 		return new DbColumnExpression<T>(this, columnName, javaClass);
+	}
+	
+	DbQuery<?> getQuery() {
+		return query;
+	}
+	
+	/**
+	 * An alternative to column() for usability.
+	 */
+	public <T> DbColumnExpression<T> field(EntityFieldMetaDataVO field) {
+		if (field.getPivotInfo() != null) {
+			throw new IllegalArgumentException(field.toString());
+		}
+		try {
+			return new DbColumnExpression<T>(this, field.getDbColumn(), (Class<T>) Class.forName(field.getDataType()));
+		} catch (ClassNotFoundException e) {
+			throw new IllegalArgumentException(e.toString());
+		}
 	}
 	
 	@Deprecated

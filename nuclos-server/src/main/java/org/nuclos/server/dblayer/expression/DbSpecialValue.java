@@ -21,14 +21,6 @@ import java.io.Serializable;
 /**
  * Marker interface for all classes which represents special values for the DB layer.
  */
-public class DbSpecialValue<T> implements Serializable {
+public interface DbSpecialValue<T> extends Serializable {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	DbSpecialValue() {
-	}
-
 }

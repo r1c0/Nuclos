@@ -22,10 +22,6 @@ package org.nuclos.server.dblayer.structure;
  */
 public abstract class DbTableArtifact extends DbArtifact {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private String tableName;
 	
 	DbTableArtifact(String tableName, String name) {

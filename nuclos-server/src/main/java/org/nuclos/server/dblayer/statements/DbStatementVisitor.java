@@ -18,15 +18,15 @@ package org.nuclos.server.dblayer.statements;
 
 public interface DbStatementVisitor<T> {
 
-	public abstract T visitStructureChange(DbStructureChange structureChange);
+	T visitStructureChange(DbStructureChange structureChange);
 
-	public abstract T visitInsert(DbInsertStatement insert);
+	T visitInsert(DbInsertStatement insert);
 
-	public abstract T visitUpdate(DbUpdateStatement update);
+	T visitUpdate(DbUpdateStatement update);
 
-	public abstract T visitDelete(DbDeleteStatement delete);
+	T visitDelete(DbDeleteStatement delete);
 
-	public abstract T visitPlain(DbPlainStatement command);
+	T visitPlain(DbPlainStatement command);
 
-	public abstract T visitBatch(DbBatchStatement batch);
+	T visitBatch(DbBatchStatement batch);
 }

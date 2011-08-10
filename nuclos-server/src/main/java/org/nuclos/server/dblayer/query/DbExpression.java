@@ -23,11 +23,7 @@ import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 
 public class DbExpression<T> extends DbSelection<T> implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	PreparedStringBuilder sqlString;
+	private PreparedStringBuilder sqlString;
 	
 	public DbExpression(DbQueryBuilder builder, Class<? extends T> javaType, PreparedStringBuilder sqlString) {
 		super(builder, javaType);
@@ -43,22 +39,39 @@ public class DbExpression<T> extends DbSelection<T> implements Serializable {
 	 * Changes the underlying java type, but does <b>not</b> perform any conversions.
 	 */
 	public <X> DbExpression<X> as(Class<X> javaType) {
-		return new DbExpression<X>(builder, javaType, sqlString);
+		return new DbExpression<X>(getBuilder(), javaType, sqlString);
 	}
 	
 	public DbCondition isNull() {
-		return builder.isNull(this);
+		return getBuilder().isNull(this);
 	}
 	
 	public DbCondition isNotNull() {
-		return builder.isNotNull(this);
+		return getBuilder().isNotNull(this);
 	}
 	
 	public DbCondition in(Collection<T> values) {
-		return builder.in(this, values);
+		return getBuilder().in(this, values);
 	}
 	
 	public DbCondition in(DbQuery<T> subquery) {
-		return builder.in(this, subquery);
+		return getBuilder().in(this, subquery);
 	}
+	
+	PreparedStringBuilder getSqlString() {
+		return sqlString;
+	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("sql=").append(sqlString);
+		if (sqlString != null) {
+			result.append(", frozen=").append(sqlString.isFrozen());
+		}
+		result.append("]");
+		return result.toString();
+	}
+
 }

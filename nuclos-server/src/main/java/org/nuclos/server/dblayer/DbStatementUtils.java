@@ -33,10 +33,15 @@ public class DbStatementUtils {
 
 	public static interface SpecifiyCondition {
 		
-		public DbBuildableStatement where(String column1, Object value1, Object...varargs);
+		DbBuildableStatement where(String column1, Object value1, Object...varargs);
+		
 	}
 	
 	// TODO: merge with SchemaUtils?
+	
+	private DbStatementUtils() {
+		// Never invoked.
+	}
 	
 	public static DbInsertStatement insertInto(String table, String column1, Object value1, Object...varargs) {
 		return new DbInsertStatement(table, makeMap(column1, value1, varargs));

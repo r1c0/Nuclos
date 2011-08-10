@@ -443,10 +443,6 @@ public class DbArtifactXmlReader {
 	
 	private static class DbReferenceImpl implements DbReference, Serializable {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private List<Pair<String, String>> references;
 		private String	tableName;
 		private String	foreignTableName;
@@ -457,6 +453,17 @@ public class DbArtifactXmlReader {
 			this.references = references;
 		}
 		
+		@Override
+		public String toString() {
+			final StringBuilder result = new StringBuilder();
+			result.append(getClass().getName()).append("[");
+			result.append("table=").append(tableName);
+			result.append(", refTable=").append(foreignTableName);
+			result.append(", refs=").append(references);
+			result.append("]");
+			return result.toString();
+		}
+
 		@Override
 		public String getTableName() {
 			return tableName;

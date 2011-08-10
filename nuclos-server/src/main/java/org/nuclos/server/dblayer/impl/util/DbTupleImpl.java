@@ -24,11 +24,6 @@ import org.nuclos.server.dblayer.DbTuple;
 
 public class DbTupleImpl implements DbTuple, Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public static class DbTupleElementImpl<T> implements DbTuple.DbTupleElement<T> {
 		
 		private final String alias;
@@ -48,6 +43,17 @@ public class DbTupleImpl implements DbTuple, Serializable {
 		public Class<T> getJavaType() {
 			return javaType;
 		}
+		
+		@Override
+		public String toString() {
+			final StringBuilder result = new StringBuilder();
+			result.append(getClass().getName()).append("[");
+			result.append("alias=").append(alias);
+			result.append(", type=").append(javaType);
+			result.append("]");
+			return result.toString();
+		}
+
 	}
 	
 	private final DbTupleElementImpl<?>[] elements;

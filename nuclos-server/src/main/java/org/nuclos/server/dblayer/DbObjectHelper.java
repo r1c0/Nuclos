@@ -44,7 +44,7 @@ import org.nuclos.server.dblayer.structure.DbSimpleView.DbSimpleViewColumn;
 
 public class DbObjectHelper {
 
-	public class DbObject{
+	public static class DbObject{
 		private String name;
 		private DbObjectType type;
 		public DbObject(String name, DbObjectType type) {
@@ -58,9 +58,18 @@ public class DbObjectHelper {
 		public DbObjectType getType() {
         	return type;
         }
+		@Override
+		public String toString() {
+			final StringBuilder result = new StringBuilder();
+			result.append(getClass().getName()).append("[");
+			result.append("name=").append(name);
+			result.append(", type=").append(type);
+			result.append("]");
+			return result.toString();
+		}
 	}
 
-	public enum DbObjectType{
+	public static enum DbObjectType{
 		VIEW("view"),
 		FUNCTION("function"),
 		PROCEDURE("procedure"),
@@ -94,6 +103,15 @@ public class DbObjectHelper {
 
 	public DbObjectHelper(DbAccess dbAccess) {
 		this.dbAccess = dbAccess;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("access=").append(dbAccess);
+		result.append("]");
+		return result.toString();
 	}
 
 	/**

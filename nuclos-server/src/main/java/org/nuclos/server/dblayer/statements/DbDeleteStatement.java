@@ -24,10 +24,6 @@ import java.util.Map;
  */
 public class DbDeleteStatement extends DbTableStatement {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final Map<String, Object> conditions;
 	
 	public DbDeleteStatement(String tableName, Map<String, Object> conditions) {
@@ -43,4 +39,15 @@ public class DbDeleteStatement extends DbTableStatement {
 	public <T> T accept(DbStatementVisitor<T> visitor) {
 		return visitor.visitDelete(this);
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("table=").append(getTableName());
+		result.append(", cond=").append(conditions);
+		result.append("]");
+		return result.toString();
+	}
+
 }

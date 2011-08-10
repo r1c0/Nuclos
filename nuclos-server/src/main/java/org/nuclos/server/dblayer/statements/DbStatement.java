@@ -20,11 +20,6 @@ import java.io.Serializable;
 
 public abstract class DbStatement implements DbBuildableStatement, Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public abstract <T> T accept(DbStatementVisitor<T> visitor);
 	
 	@Override

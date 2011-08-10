@@ -252,7 +252,7 @@ implements JdbcEntityObjectProcessor {
 		List<EntityObjectVO> result = new ArrayList<EntityObjectVO>(ids.size());
 		for(List<Long> idSubList : CollectionUtils.splitEvery(ids,
 		    query.getBuilder().getInLimit())) {
-			query.where(pkExpr.as(Long.class).in(idSubList));
+			query.addToWhereAsAnd(pkExpr.as(Long.class).in(idSubList));
 			result.addAll(DataBaseHelper.getDbAccess().executeQuery(query, transformer));
 		}
 		return result;

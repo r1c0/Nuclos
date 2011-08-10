@@ -24,10 +24,6 @@ import java.util.Map;
  */
 public class DbInsertStatement extends DbTableStatement {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final Map<String, Object> values;
 	
 	public DbInsertStatement(String tableName, Map<String, Object> values) {
@@ -43,4 +39,15 @@ public class DbInsertStatement extends DbTableStatement {
 	public <T> T accept(DbStatementVisitor<T> visitor) {
 		return visitor.visitInsert(this);
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("table=").append(getTableName());
+		result.append(", values=").append(values);
+		result.append("]");
+		return result.toString();
+	}
+
 }

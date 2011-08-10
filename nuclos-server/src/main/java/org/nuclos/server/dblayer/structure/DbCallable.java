@@ -20,10 +20,6 @@ import org.nuclos.server.dblayer.DbException;
 
 public class DbCallable extends DbArtifact {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private DbCallableType type;
 	private String code;
 	
@@ -33,6 +29,17 @@ public class DbCallable extends DbArtifact {
 		this.code = code;
 	}
 	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("type=").append(type);
+		result.append(", name=").append(getSimpleName());
+		result.append(", code=").append(code);
+		result.append("]");
+		return result.toString();
+	}
+
 	public DbCallableType getType() {
 		return type;
 	}

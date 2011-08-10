@@ -23,10 +23,6 @@ import org.nuclos.server.dblayer.DbException;
  */
 public class DbSequence extends DbArtifact {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final long startWith;
 	
 	public DbSequence(String name, Long startWith) {
@@ -34,6 +30,16 @@ public class DbSequence extends DbArtifact {
 		this.startWith = startWith;
 	}
 	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("start=").append(startWith);
+		result.append(", name=").append(getSimpleName());
+		result.append("]");
+		return result.toString();
+	}
+
 	public String getSequenceName() {
 		return getSimpleName();
 	}

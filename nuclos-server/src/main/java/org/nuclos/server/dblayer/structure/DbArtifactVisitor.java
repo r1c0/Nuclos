@@ -23,21 +23,21 @@ import org.nuclos.server.dblayer.structure.DbConstraint.DbUniqueConstraint;
 
 public interface DbArtifactVisitor<T> {
 
-	public T visitTable(DbTable table) throws DbException;
+	T visitTable(DbTable table) throws DbException;
 
-	public T visitColumn(DbColumn column) throws DbException;
+	T visitColumn(DbColumn column) throws DbException;
 
-	public T visitPrimaryKeyConstraint(DbPrimaryKeyConstraint constraint) throws DbException;
+	T visitPrimaryKeyConstraint(DbPrimaryKeyConstraint constraint) throws DbException;
 
-	public T visitUniqueConstraint(DbUniqueConstraint constraint) throws DbException;
+	T visitUniqueConstraint(DbUniqueConstraint constraint) throws DbException;
 
-	public T visitForeignKeyConstraint(DbForeignKeyConstraint constraint) throws DbException;
+	T visitForeignKeyConstraint(DbForeignKeyConstraint constraint) throws DbException;
 
-	public T visitIndex(DbIndex index) throws DbException;
+	T visitIndex(DbIndex index) throws DbException;
 
-	public T visitView(DbSimpleView view) throws DbException;
+	T visitView(DbSimpleView view) throws DbException;
 	
-	public T visitSequence(DbSequence sequence) throws DbException;
+	T visitSequence(DbSequence sequence) throws DbException;
 
-	public T visitCallable(DbCallable dbCallable) throws DbException;
+	T visitCallable(DbCallable dbCallable) throws DbException;
 }

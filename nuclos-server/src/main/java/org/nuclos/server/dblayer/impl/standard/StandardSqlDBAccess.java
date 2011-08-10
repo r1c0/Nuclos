@@ -16,6 +16,10 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dblayer.impl.standard;
 
+import static org.nuclos.common.collection.CollectionUtils.getFirst;
+import static org.nuclos.common.collection.CollectionUtils.transform;
+import static org.nuclos.common2.StringUtils.join;
+
 import java.math.BigDecimal;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -46,7 +50,6 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.collection.TransformerUtils;
-import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.StringUtils;
@@ -106,10 +109,6 @@ import org.nuclos.server.dblayer.structure.DbTableArtifact;
 import org.nuclos.server.dblayer.structure.DbTableType;
 import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;
-
-import static org.nuclos.common.collection.CollectionUtils.getFirst;
-import static org.nuclos.common.collection.CollectionUtils.transform;
-import static org.nuclos.common2.StringUtils.join;
 
 public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 

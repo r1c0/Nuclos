@@ -25,22 +25,22 @@ public interface DbTuple {
 
 	public static interface DbTupleElement<T> {
 		
-		public String getAlias();
+		String getAlias();
 		
-		public Class<T> getJavaType();
+		Class<T> getJavaType();
 	}
 	
-	public Object get(int index);
+	Object get(int index);
 	
-	public Object get(String alias);
+	Object get(String alias);
 	
-	public <T> T get(int index, Class<T> type);
+	<T> T get(int index, Class<T> type);
 	
-	public <T> T get(String alias, Class<T> type);
+	<T> T get(String alias, Class<T> type);
 
-	public <T> T get(DbTupleElement<T> element);
+	<T> T get(DbTupleElement<T> element);
 	
-	public List<DbTupleElement<?>> getElements();
+	List<DbTupleElement<?>> getElements();
 	
-	public Object[] toArray();
+	Object[] toArray();
 }

@@ -21,11 +21,6 @@ import org.nuclos.common.dblayer.JoinType;
 
 public class DbJoin extends DbFrom {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private final DbFrom left;
 	private final JoinType joinType;
 	private Pair<String, String> on;
@@ -36,6 +31,17 @@ public class DbJoin extends DbFrom {
 		this.joinType = joinType;
 	}
 	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("from=").append(left);
+		result.append(", type=").append(joinType);
+		result.append(", on=").append(on);
+		result.append("]");
+		return result.toString();
+	}
+
 	public DbFrom getParent() {
 		return left;
 	}

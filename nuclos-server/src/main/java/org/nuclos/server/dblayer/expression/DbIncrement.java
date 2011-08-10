@@ -21,12 +21,8 @@ package org.nuclos.server.dblayer.expression;
 /**
  * A special value which says that the current value should be increment.
  */
-public class DbIncrement extends DbSpecialValue<Integer> {
+public class DbIncrement implements DbSpecialValue<Integer> {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final DbIncrement INCREMENT = new DbIncrement();
 	
 	private DbIncrement() {

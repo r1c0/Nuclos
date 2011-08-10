@@ -76,6 +76,22 @@ public abstract class DbAccess {
 	protected DbExecutor executor;
 	protected Map<String, String> config;
 	protected File structureChangeLogDir;
+	
+	protected DbAccess() {	
+	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getName()).append("[");
+		result.append("type=").append(type);
+		result.append(", schema=").append(schema);
+		result.append(", catalog=").append(catalog);
+		result.append(", ds=").append(dataSource);
+		result.append(", ex=").append(executor);
+		result.append("]");
+		return result.toString();
+	}
 
 	public void init(DbType type, DataSource dataSource, Map<String, String> config) {
 		this.type = type;

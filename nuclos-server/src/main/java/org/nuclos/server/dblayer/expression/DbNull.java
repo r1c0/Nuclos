@@ -31,7 +31,7 @@ import org.nuclos.server.dblayer.structure.DbColumnType.DbGenericType;
  * our code more complicated.
  * </p>
  */
-public class DbNull<T> extends DbSpecialValue<T> {
+public class DbNull<T> implements DbSpecialValue<T> {
 
 	/**
 	 * A NULL value suited for normal cases, ignoring all the type stuff.
