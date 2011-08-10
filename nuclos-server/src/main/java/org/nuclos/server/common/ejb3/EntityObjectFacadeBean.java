@@ -16,9 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common.ejb3;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +25,6 @@ import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
@@ -44,6 +41,8 @@ import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.dal.processor.jdbc.impl.EntityObjectProcessor;
+import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.entityobject.EntityObjectProxyList;
 import org.nuclos.server.genericobject.ProxyList;
@@ -86,10 +85,19 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 	public Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds, Collection<EntityFieldMetaDataVO> fields) {
 		final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
 		final EntityMetaDataVO eMeta = mdProv.getEntity(id);
-				
-		final List<EntityObjectVO> eos = NucletDalProvider.getInstance().getEntityObjectProcessor(
-				eMeta.getEntity()).getBySearchExpressionAndPrimaryKeys(
-						appendRecordGrants(getSearchExpression(fields), eMeta), lstIds);
+			
+		JdbcEntityObjectProcessor eop = NucletDalProvider.getInstance().getEntityObjectProcessor(
+				eMeta.getEntity());
+		// 
+		eop = (JdbcEntityObjectProcessor) eop.clone();
+		for (EntityFieldMetaDataVO f: fields) {
+			if (f.getPivotInfo() != null) {
+				eop.addToColumns(f);
+			}
+		}
+		
+		final List<EntityObjectVO> eos = eop.getBySearchExpressionAndPrimaryKeys(
+				appendRecordGrants(getSearchExpression(fields), eMeta), lstIds);
 		/*
 		// TODO: join table...
 		final Set<String> subforms = new HashSet<String>();

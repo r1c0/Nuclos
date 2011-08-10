@@ -288,7 +288,8 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 	}
 
 	public Boolean isReadonly() {
-		return readonly;
+		// TODO: ???
+		return readonly == null ? Boolean.FALSE : readonly;
 	}
 
 	public Boolean isUnique() {

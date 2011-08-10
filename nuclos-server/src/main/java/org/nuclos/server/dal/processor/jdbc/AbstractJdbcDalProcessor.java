@@ -62,7 +62,8 @@ import org.nuclos.server.resource.valueobject.ResourceFile;
 
 public abstract class AbstractJdbcDalProcessor<T, DalVO extends IDalVO> extends AbstractDalProcessor<DalVO> {
 
-   protected final List<ColumnToVOMapping<?>> allColumns = new ArrayList<ColumnToVOMapping<?>>();
+   // This must be clone and hence cannot be final.
+   protected List<ColumnToVOMapping<?>> allColumns = new ArrayList<ColumnToVOMapping<?>>();
 
    public AbstractJdbcDalProcessor() {
       super();
@@ -538,7 +539,7 @@ public abstract class AbstractJdbcDalProcessor<T, DalVO extends IDalVO> extends 
     * @return
     */
    @SuppressWarnings("unchecked")
-   protected static <T> ColumnToVOMapping<T> createSimpleDynamicMapping(final String column, final String field, final String dataType, boolean isReadonly, boolean isFieldId, boolean caseSensitive) {
+   protected static <T> ColumnToVOMapping<T> createSimpleDynamicMapping(final String column, final String field, final String dataType, Boolean isReadonly, boolean isFieldId, boolean caseSensitive) {
       try {
          return new ColumnToVOMapping<T>(column, field, isFieldId, (Class<T>) Class.forName(dataType), isReadonly, caseSensitive);
       }
@@ -569,7 +570,7 @@ public abstract class AbstractJdbcDalProcessor<T, DalVO extends IDalVO> extends 
 
 
       /**
-       * Konstruktor f\u00fcr statische VO Werte (Aufruf von Methoden zum setzen und lesen von Werten)
+       * Konstruktor für statische VO Werte (Aufruf von Methoden zum setzen und lesen von Werten)
        * @param column
        * @param setMethod
        * @param getMethod
@@ -589,7 +590,7 @@ public abstract class AbstractJdbcDalProcessor<T, DalVO extends IDalVO> extends 
       }
 
       /**
-       * Konstruktor f\u00fcr dynamische VO Werte (Die Werte werden in einer "Field"-Liste gespeichert)
+       * Konstruktor für dynamische VO Werte (Die Werte werden in einer "Field"-Liste gespeichert)
        * @param column
        * @param field
        * @param dataType
@@ -610,7 +611,14 @@ public abstract class AbstractJdbcDalProcessor<T, DalVO extends IDalVO> extends 
 
       @Override
       public String toString() {
-    	  return column + " [" + dataType + "]";
+    	  final StringBuilder result = new StringBuilder();
+    	  result.append(getClass().getName()).append("[");
+    	  result.append("col=").append(column);
+    	  result.append(", field=").append(field);
+    	  if (dataType != null)
+    		  result.append(", type=").append(dataType.getName());
+    	  result.append("]");
+    	  return result.toString();
       }
    }
 }

@@ -18,11 +18,14 @@ package org.nuclos.server.dal.processor.jdbc.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.nuclos.common.CloneUtils;
+import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -39,10 +42,12 @@ import org.nuclos.common.dal.exception.DalBusinessException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.DatasourceServerUtils;
+import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcWithFieldsDalProcessor;
@@ -59,15 +64,9 @@ import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectS
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 
 public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<Object,EntityObjectVO>
-implements JdbcEntityObjectProcessor {
-
-	private final EntityMetaDataVO eMeta;
-
-	private final String dbSourceForSQL;
-	private final String dbSourceForDML;
-
-	private final ColumnToVOMapping<Long> idColumn;
-	private final ColumnToVOMapping<Integer> versionColumn;
+	implements JdbcEntityObjectProcessor {
+	
+	// static variables
 
 	/**
 	 * TODO: Is null for entity name ok?
@@ -78,13 +77,25 @@ implements JdbcEntityObjectProcessor {
 
 	private final Collection<List<ColumnToVOMapping<?>>> logicalUniqueConstraintCombinations = new ArrayList<List<ColumnToVOMapping<?>>>();
 
-	private static Set<String> staticSystemFields = new HashSet<String>();
+	private static final Set<String> staticSystemFields;
 	static {
-		staticSystemFields.add(NuclosEOField.CHANGEDAT.getMetaData().getField());
-		staticSystemFields.add(NuclosEOField.CHANGEDBY.getMetaData().getField());
-		staticSystemFields.add(NuclosEOField.CREATEDAT.getMetaData().getField());
-		staticSystemFields.add(NuclosEOField.CREATEDBY.getMetaData().getField());
+		final Set<String> set = new HashSet<String>();
+		set.add(NuclosEOField.CHANGEDAT.getMetaData().getField());
+		set.add(NuclosEOField.CHANGEDBY.getMetaData().getField());
+		set.add(NuclosEOField.CREATEDAT.getMetaData().getField());
+		set.add(NuclosEOField.CREATEDBY.getMetaData().getField());
+		staticSystemFields = Collections.unmodifiableSet(set);
 	}
+	
+	// instance variables
+
+	private final EntityMetaDataVO eMeta;
+
+	private final String dbSourceForSQL;
+	private final String dbSourceForDML;
+
+	private final ColumnToVOMapping<Long> idColumn;
+	private final ColumnToVOMapping<Integer> versionColumn;
 
 	public EntityObjectProcessor(EntityMetaDataVO eMeta, Collection<EntityFieldMetaDataVO> colEfMeta) {
 		this(eMeta, colEfMeta, true);
@@ -119,7 +130,7 @@ implements JdbcEntityObjectProcessor {
 				allColumns.add(createSimpleDynamicMapping(efMeta.getDbColumn(), efMeta.getField(), efMeta.getDataType(), efMeta.isReadonly(), false, efMeta.isDynamic()));
 			} else {
 				if (efMeta.getDbColumn().toUpperCase().startsWith("INTID_")) {
-					// kein join n\u00f6tig!
+					// kein join nötig!
 					if (!isIdColumnInList(allColumns, efMeta.getDbColumn()))
 						allColumns.add(createSimpleDynamicMapping(efMeta.getDbColumn(), efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), true, efMeta.isDynamic()));
 				} else {
@@ -160,6 +171,33 @@ implements JdbcEntityObjectProcessor {
 				logicalUniqueConstraintCombinations.add(ctovMappings);
 			}
 		}
+	}
+	
+	public Object clone() {
+		final EntityObjectProcessor clone;
+		try {
+			clone = (EntityObjectProcessor) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException(e.toString());
+		}
+		clone.allColumns = (List<ColumnToVOMapping<?>>) CloneUtils.cloneCollection(allColumns);
+		return clone;
+	}
+	
+	public void addToColumns(EntityFieldMetaDataVO field) {
+		final ColumnToVOMapping<?> mapping;
+		final PivotInfo pinfo = field.getPivotInfo();
+		if (pinfo == null) {
+			mapping = createSimpleDynamicMapping(
+					field.getDbColumn(), field.getField(), field.getDataType(), field.isReadonly(), false, false);
+		}
+		else {
+			final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
+			final EntityFieldMetaDataVO vField = mdProv.getEntityField(pinfo.getSubform(), pinfo.getValueField());
+			mapping = createSimpleDynamicMapping(
+					vField.getDbColumn(), vField.getField(), vField.getDataType(), vField.isReadonly(), false, false);
+		}
+		allColumns.add(mapping);
 	}
 
 	private boolean isIdColumnInList(List<ColumnToVOMapping<?>> list, String columnName) {

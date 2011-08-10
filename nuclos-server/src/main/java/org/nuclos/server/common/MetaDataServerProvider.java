@@ -194,6 +194,8 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 					md.setDataType(valueField.getDataType());
 					md.setPivotInfo(info);
 					md.setEntityId(subform.getId());
+					// ???
+					md.setReadonly(valueField.isReadonly() != null ? valueField.isReadonly() : Boolean.FALSE);
 					
 					result.put(pseudoFieldName, md);
 				}
