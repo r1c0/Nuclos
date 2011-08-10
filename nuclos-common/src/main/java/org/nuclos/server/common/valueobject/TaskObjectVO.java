@@ -28,22 +28,17 @@ import java.util.Date;
  */
 public class TaskObjectVO extends NuclosValueObject {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	private Integer iGenericObjectId;
-	private Integer iTaskId;
+	private Long iObjectId;
+	private Long iTaskId;
 	private String sIdentifier;
-	private Integer iModuleId;
 	private String sEntityName;
 
-	public TaskObjectVO(Integer iId, Integer iGenericObjectId, Integer iTaskId, Integer iModuleId, String sEntityName, String sIdentifier,
+	public TaskObjectVO(Integer iId, Long iObjectId, Long iTaskId, String sEntityName, String sIdentifier,
 			Date dateCreatedAt, String sCreatedBy, Date dateChangedAt, String sChangedBy, Integer iVersion) {
 		super(iId, dateCreatedAt, sCreatedBy, dateChangedAt, sChangedBy, iVersion);
-		this.iGenericObjectId = iGenericObjectId;
+		this.iObjectId = iObjectId;
 		this.iTaskId = iTaskId;
-		this.iModuleId = iModuleId;
 		this.sIdentifier = sIdentifier;
 		this.sEntityName = sEntityName;
 	}
@@ -56,28 +51,20 @@ public class TaskObjectVO extends NuclosValueObject {
 		this.sIdentifier = sIdentifier;
 	}
 
-	public Integer getGenericObjectId() {
-		return this.iGenericObjectId;
+	public Long getObjectId() {
+		return this.iObjectId;
 	}
 
-	public void setGenericObjectId(Integer iGenericObjectId) {
-		this.iGenericObjectId = iGenericObjectId;
+	public void setObjectId(Long iObjectId) {
+		this.iObjectId = iObjectId;
 	}
 
-	public Integer getTaskId() {
+	public Long getTaskId() {
 		return this.iTaskId;
 	}
 
-	public void setTaskId(Integer iTaskId) {
+	public void setTaskId(Long iTaskId) {
 		this.iTaskId = iTaskId;
-	}
-
-	public Integer getModuleId() {
-		return this.iModuleId;
-	}
-
-	public void setModuleId(Integer iModuleId) {
-		this.iModuleId = iModuleId;
 	}
 
 	public String getEntityName() {
@@ -87,15 +74,15 @@ public class TaskObjectVO extends NuclosValueObject {
 	public void setEntityName(String sEntityName) {
 		this.sEntityName = sEntityName;
 	}
-	
+
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");
 		result.append("id=").append(getId());
 		result.append(",identifier=").append(getIdentifier());
-		result.append(",goId=").append(getGenericObjectId());
-		result.append(",moduleId=").append(getModuleId());
+		result.append(",gobjectId=").append(getObjectId());
+		result.append(",entityName=").append(getEntityName());
 		result.append(",taskId=").append(getTaskId());
 		result.append("]");
 		return result.toString();

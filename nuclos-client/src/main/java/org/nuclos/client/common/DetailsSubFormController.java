@@ -720,7 +720,6 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	            		GenericObjectIdModuleProcess goimp = (GenericObjectIdModuleProcess) o;
 	            		Integer entityId = goimp.getModuleId();
 	            		entityname = MetaDataClientProvider.getInstance().getEntity(LangUtils.convertId(entityId)).getEntity();
-	            		entityLabel = CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(LangUtils.convertId(entityId)));
 
 	            		try {
 	            			clct = new CollectableGenericObjectWithDependants(GenericObjectDelegate.getInstance().getWithDependants(goimp.getGenericObjectId()));
@@ -739,6 +738,9 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	                        log.error(e.getMessage(), e);
 	                    }
 	            	}
+
+	            	entityLabel = CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(entityname));
+
 	            	if (clct != null) {
 	            		try {
 	            			if (!insertNewRowWithReference(entityname, clct, true)) {

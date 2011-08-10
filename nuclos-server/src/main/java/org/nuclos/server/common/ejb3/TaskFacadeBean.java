@@ -511,6 +511,8 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 			final Long iObjectId = IdUtils.toLongId(md.getField("entityId", Integer.class));
 			String entity = md.getField("entity", String.class);
 			if (entity == null) {
+				// backwards compatibility
+				// TODO implement migration that inserts entity names to task-object-table and remove this
 				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<DbTuple> queryOwner = builder.createTupleQuery();
 				DbFrom userOwner = queryOwner.from("T_UD_GENERICOBJECT").alias("t");
@@ -518,31 +520,33 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 				queryOwner.where(builder.equal(userOwner.column("INTID", Integer.class).alias("moduleId"), iObjectId));
 				List<DbTuple> resultsList = DataBaseHelper.getDbAccess().executeQuery(queryOwner.maxResults(2));
 				if (resultsList.size() == 1) {
-					Integer iModuleId = (Integer)resultsList.get(0).get("id");
+					Integer iModuleId = (Integer) resultsList.get(0).get("id");
 					entity = MetaDataServerProvider.getInstance().getEntity(iModuleId.longValue()).getEntity();
-				}	else {
+				}
+				else {
 					DataBaseHelper.execute(DbStatementUtils.deleteFrom("T_UD_TODO_OBJECT", "INTID_T_UD_GENERICOBJECT", iObjectId));
-	        }
-		}
-		EntityObjectVO eObject = null;
-		if (entity != null) {
-			eObject = NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getByPrimaryKey(iObjectId.longValue());
-		}
-		if (eObject != null) {
-			String identifier = (String) eObject.getFields().get(NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getField());
-			if (identifier == null) {
-				identifier = (String) eObject.getFields().get(MasterDataVO.FIELDNAME_NAME);
-				if (identifier == null) {
-					identifier = eObject.getEntity() + ": " + eObject.getId();
 				}
 			}
-			result.put(iObjectId, identifier);
-		} else {
-			result.put(iObjectId, null);
+
+			EntityObjectVO eObject = null;
+			if (entity != null) {
+				eObject = NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getByPrimaryKey(iObjectId.longValue());
+			}
+			if (eObject != null) {
+				String identifier = (String) eObject.getFields().get(NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getField());
+				if (identifier == null) {
+					identifier = (String) eObject.getFields().get(MasterDataVO.FIELDNAME_NAME);
+					if (identifier == null) {
+						identifier = eObject.getEntity() + ": " + eObject.getId();
+					}
+				}
+				result.put(iObjectId, identifier);
+			} else {
+				result.put(iObjectId, null);
+			}
 		}
+		return result;
 	}
-   	return result;
-   }
 
 	@Override
 	public Collection<TaskVO> create(MasterDataWithDependantsVO mdvo, Set<Long> stOwners,

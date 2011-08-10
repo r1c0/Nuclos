@@ -19,9 +19,11 @@ package org.nuclos.client.task;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -68,10 +70,13 @@ import org.nuclos.client.common.KeyBinding;
 import org.nuclos.client.common.KeyBindingProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
+import org.nuclos.client.common.NuclosDropTargetListener;
+import org.nuclos.client.common.NuclosDropTargetVisitor;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.explorer.ExplorerController;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
+import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.genericobject.ReportController;
 import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess;
 import org.nuclos.client.genericobject.datatransfer.TransferableGenericObjects;
@@ -123,7 +128,7 @@ import org.nuclos.server.common.valueobject.TaskVO;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class PersonalTaskController extends RefreshableTaskController implements CollectableEventListener {
+public class PersonalTaskController extends RefreshableTaskController implements CollectableEventListener, NuclosDropTargetVisitor {
 
 	private static final Logger log = Logger.getLogger(PersonalTaskController.class);
 
@@ -154,21 +159,17 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 	private final Action actEditTaskInNewTab = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.29","In neuem Tab Bearbeiten..."),
 		Icons.getInstance().getIconEdit16(), CommonLocaleDelegate.getMessage("PersonalTaskController.8","Definition der ausgew\u00e4hlten Aufgabe bearbeiten / Aufgabe delegieren")) {
-	/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
-	@Override
-	public void actionPerformed(ActionEvent ev) {
-		PersonalTaskController.this.cmdEditPersonalTaskDefinition(personaltaskview, true);
-	}
-};
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			PersonalTaskController.this.cmdEditPersonalTaskDefinition(personaltaskview, true);
+		}
+	};
 
 	private final Action actEditTask = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.7","Bearbeiten..."), Icons.getInstance().getIconEdit16(), CommonLocaleDelegate.getMessage("PersonalTaskController.8","Ausgew\u00e4hlte Aufgabe(n) bearbeiten")) {
-		/**
-		 *
-		 */
+
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -179,10 +180,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 	private final Action actPerformTask = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.25","\u00D6ffne zugeordnete(s) Objekt(e)"), Icons.getInstance().getIconModule(),
 		CommonLocaleDelegate.getMessage("PersonalTaskController.27","Zugeordnetes Objekt anzeigen")) {
-		/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
+
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -191,11 +190,9 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	};
 
 	private final Action actCopyCell = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen"), Icons.getInstance().getIconCopy16(),
-			CommonLocaleDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen")) {
-		/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
+		CommonLocaleDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen")) {
+
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -205,10 +202,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	};
 
 	private final Action actCopyRows = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen"), Icons.getInstance().getIconCopy16(),
-			CommonLocaleDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen")) {
-	/**
-		 *
-		 */
+		CommonLocaleDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen")) {
+
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -216,15 +211,12 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			JTable table = personaltaskview.getTable();
 			UIUtils.copyRows(table);
 		}
-
 	};
 
 
 
 	private final Action actRemoveTask = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.21","L\u00f6schen..."), Icons.getInstance().getIconRealDelete16(), CommonLocaleDelegate.getMessage("PersonalTaskController.6","Ausgew\u00e4hlte Aufgabe l\u00f6schen")) {
-		/**
-		 *
-		 */
+
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -234,9 +226,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	};
 
 	private final Action actCompleteTask = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.16","Erledigt"), Icons.getInstance().getIconProperties16(), CommonLocaleDelegate.getMessage("PersonalTaskController.5","Ausgew\u00e4hlte Aufgabe(n) als erledigt/unerledigt markieren")) {
-		/**
-		 *
-		 */
+
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -299,9 +289,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	}
 
 	class RowColorRenderer extends DefaultTableCellRenderer {
-		/**
-		 *
-		 */
+
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -413,10 +401,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 		final Action actRefresh = new CommonAbstractAction(Icons.getInstance().getIconRefresh16(),
 			CommonLocaleDelegate.getMessage("PersonalTaskController.3","Liste aktualisieren")) {
-			/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
+
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -425,9 +411,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		};
 
 		final Action actNew = new CommonAbstractAction(Icons.getInstance().getIconNew16(), CommonLocaleDelegate.getMessage("PersonalTaskController.22","Neue Aufgabe erstellen")) {
-			/**
-			 *
-			 */
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -438,10 +422,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 		final Action actPrint = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.4","Liste drucken"),
 			Icons.getInstance().getIconPrintReport16(), null) {
-			/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
+
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -526,7 +508,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	}
 
 	private void setupDataTransfer(JTable table) {
-		table.setTransferHandler(new TransferHandler(this.getParent()));
+		DropTarget dt = new DropTarget(table, new NuclosDropTargetListener(this));
+		dt.setActive(true);
 	}
 
 	private void setupTableModelSorting() {
@@ -914,8 +897,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 					for (TaskObjectVO tovo : collGenericObjects) {
 						String entityName = tovo.getEntityName();
 						if(entityName == null){
-							collGenericObjectIds.add(tovo.getGenericObjectId());
-							int moduleId = GenericObjectDelegate.getInstance().getModuleContainingGenericObject(tovo.getGenericObjectId());
+							collGenericObjectIds.add(tovo.getObjectId().intValue());
+							int moduleId = GenericObjectDelegate.getInstance().getModuleContainingGenericObject(tovo.getObjectId().intValue());
 							if (iCommonModuleId != null && !iCommonModuleId.equals(moduleId)) {
 								if (iCommonModuleId.equals(0)) {
 									iCommonModuleId = moduleId;
@@ -928,7 +911,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 								eObjectIds.put(entityName, new ArrayList<Object>());
 							}
 							List<Object> ids = eObjectIds.get(entityName);
-							ids.add(tovo.getGenericObjectId());
+							ids.add(tovo.getObjectId().intValue());
 							eObjectIds.put(entityName, ids);
 						}
 					}
@@ -1017,9 +1000,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	}
 
 	private class PersonalTasksPopupMenu extends JPopupMenu {
-		/**
-		 *
-		 */
+
 		private static final long serialVersionUID = 1L;
 		private final JMenuItem miPerform = new JMenuItem();
 		private final JCheckBoxMenuItem miComplete = new JCheckBoxMenuItem();
@@ -1099,101 +1080,6 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		}
 	}
 
-	private class TransferHandler extends javax.swing.TransferHandler {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-		private final Component parent;
-
-		public TransferHandler(Component parent) {
-			this.parent = parent;
-		}
-
-		@Override
-		public int getSourceActions(JComponent comp) {
-			return NONE;
-		}
-
-		@Override
-		public boolean canImport(JComponent comp, DataFlavor[] aflavors) {
-			// Unfortunately, this method is not called for each row, so we only can say yes or no
-			// for the whole table here. We must say yes to enable drop at all.
-			return true;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public boolean importData(JComponent comp, Transferable transferable) {
-			boolean result = false;
-			if (comp instanceof JTable) {
-				final JTable tbl = (JTable) comp;
-				try {
-					final int iSelectedRow = tbl.getSelectedRow();
-					if (iSelectedRow != -1) {
-						final PersonalTaskTableModel tblmdl = PersonalTaskController.this.personaltaskview.getPersonalTaskTableModel();
-						final CollectableTask clctTarget = tblmdl.getCollectable(iSelectedRow);
-						final TaskVO taskvoTarget = clctTarget.getTaskVO();
-
-						if (taskvoTarget.getCompleted() != null) {
-							final String sMessage = CommonLocaleDelegate.getMessage("PersonalTaskController.12","Erledigte Aufgaben k\u00F6nnen nicht mehr ver\u00e4ndert werden");
-							throw new NuclosBusinessException(sMessage);
-						}
-
-						Collection<Integer>collReleatedIds = CollectionUtils.transform(taskvoTarget.getRelatedObjects(), new Transformer<TaskObjectVO, Integer>() {
-							@Override
-							public Integer transform(TaskObjectVO in) {
-								return in.getGenericObjectId();
-							}
-						});
-
-						Object transferData = null;
-						try{
-							transferData = transferable.getTransferData(TransferableGenericObjects.dataFlavor);
-						  	final Collection<GenericObjectIdModuleProcess> collgoimp = (Collection<GenericObjectIdModuleProcess>)transferData;
-							for (GenericObjectIdModuleProcess goimp : collgoimp) {
-							  final Integer iGenericObjectId = new Integer(goimp.getGenericObjectId());
-							  if(!collReleatedIds.contains(iGenericObjectId)) {
-								  taskvoTarget.addRelatedObject(iGenericObjectId);
-							  }
-							}
-						} catch (UnsupportedFlavorException ex) { //ignore
-						}
-
-						if (transferData == null) {
-							try {
-								transferData = transferable.getTransferData(MasterDataIdAndEntity.dataFlavor);
-							  	final Collection<MasterDataIdAndEntity> collimp = (Collection<MasterDataIdAndEntity>)transferData;
-								for (MasterDataIdAndEntity mdimp : collimp) {
-									final Integer iMdId = (Integer)(mdimp.getId());
-									if(!collReleatedIds.contains(iMdId)) {
-										taskvoTarget.addRelatedObject(iMdId, mdimp.getEntity());
-									}
-								}
-							} catch (UnsupportedFlavorException ex) { //ignore
-							}
-						}
-
-						if (transferData == null) {
-							throw new UnsupportedFlavorException(transferable.getTransferDataFlavors()[0]);
-						}
-
-						final TaskVO taskvoUpdated = taskDelegate.update(taskvoTarget, null);
-						tblmdl.setCollectable(iSelectedRow, new CollectableTask(taskvoUpdated));
-						result = true;
-					}
-				} catch (UnsupportedFlavorException ex) {
-					JOptionPane.showMessageDialog(parent, CommonLocaleDelegate.getMessage("PersonalTaskController.14","Dieser Datentransfer wird von dem ausgew\u00e4hlten Objekt nicht unterst\u00fctzt"));
-				} catch (IOException ex) {
-					throw new NuclosFatalException(ex);
-				} catch (CommonBusinessException ex) {
-					Errors.getInstance().showExceptionDialog(parent, ex);
-				}
-			}
-			return result;
-		}
-	}
-
 	@Override
 	public ScheduledRefreshable getSingleScheduledRefreshableView(){
 		return this.personaltaskview;
@@ -1221,4 +1107,87 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	public MainFrameTab getTab() {
 		return tab;
 	}
+
+	@Override
+	public void visitDragEnter(DropTargetDragEvent dtde) { }
+
+	@Override
+	public void visitDragExit(DropTargetEvent dte) { }
+
+	@Override
+	public void visitDragOver(DropTargetDragEvent dtde) {
+		if (dtde.isDataFlavorSupported(TransferableGenericObjects.dataFlavor)
+				|| dtde.isDataFlavorSupported(MasterDataIdAndEntity.dataFlavor)) {
+			dtde.acceptDrag(dtde.getDropAction());
+		}
+		else {
+			dtde.rejectDrag();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void visitDrop(DropTargetDropEvent dtde) {
+		final JTable tbl = personaltaskview.getTable();
+		final PersonalTaskTableModel tblmdl = personaltaskview.getPersonalTaskTableModel();
+
+		try {
+			final int iSelectedRow = tbl.rowAtPoint(dtde.getLocation());
+			if (iSelectedRow != -1) {
+				final CollectableTask clctTarget = tblmdl.getCollectable(iSelectedRow);
+				final TaskVO taskvoTarget = clctTarget.getTaskVO();
+
+				if (taskvoTarget.getCompleted() != null) {
+					final String sMessage = CommonLocaleDelegate.getMessage("PersonalTaskController.12","Erledigte Aufgaben k\u00F6nnen nicht mehr ver\u00e4ndert werden");
+					throw new NuclosBusinessException(sMessage);
+				}
+
+				Collection<Long> collReleatedIds = CollectionUtils.transform(taskvoTarget.getRelatedObjects(), new Transformer<TaskObjectVO, Long>() {
+					@Override
+					public Long transform(TaskObjectVO in) {
+						return in.getObjectId();
+					}
+				});
+
+				if (dtde.isDataFlavorSupported(TransferableGenericObjects.dataFlavor)) {
+					Object transferData = dtde.getTransferable().getTransferData(TransferableGenericObjects.dataFlavor);
+					final Collection<GenericObjectIdModuleProcess> collgoimp = (Collection<GenericObjectIdModuleProcess>) transferData;
+					for (GenericObjectIdModuleProcess goimp : collgoimp) {
+						final Integer iGenericObjectId = new Integer(goimp.getGenericObjectId());
+						if (!collReleatedIds.contains(iGenericObjectId)) {
+							taskvoTarget.addRelatedObject(iGenericObjectId.longValue(), Modules.getInstance().getEntityNameByModuleId(goimp.getModuleId()));
+						}
+					}
+				}
+				else if (dtde.isDataFlavorSupported(MasterDataIdAndEntity.dataFlavor)) {
+					Object transferData = dtde.getTransferable().getTransferData(MasterDataIdAndEntity.dataFlavor);
+				  	final Collection<MasterDataIdAndEntity> collimp = (Collection<MasterDataIdAndEntity>)transferData;
+					for (MasterDataIdAndEntity mdimp : collimp) {
+						final Integer iMdId = (Integer)(mdimp.getId());
+						if(!collReleatedIds.contains(iMdId)) {
+							taskvoTarget.addRelatedObject(iMdId.longValue(), mdimp.getEntity());
+						}
+					}
+				}
+				else {
+					throw new UnsupportedFlavorException(dtde.getCurrentDataFlavors()[0]);
+				}
+
+				final TaskVO taskvoUpdated = taskDelegate.update(taskvoTarget, null);
+				tblmdl.setCollectable(iSelectedRow, new CollectableTask(taskvoUpdated));
+			}
+		}
+		catch (UnsupportedFlavorException ex) {
+			JOptionPane.showMessageDialog(getTab(), CommonLocaleDelegate.getMessage("PersonalTaskController.14","Dieser Datentransfer wird von dem ausgew\u00e4hlten Objekt nicht unterst\u00fctzt"));
+		}
+		catch (IOException ex) {
+			throw new NuclosFatalException(ex);
+		}
+		catch (CommonBusinessException ex) {
+			Errors.getInstance().showExceptionDialog(getTab(), ex);
+		}
+	}
+
+	@Override
+	public void visitDropActionChanged(DropTargetDragEvent dtde) {	}
 }

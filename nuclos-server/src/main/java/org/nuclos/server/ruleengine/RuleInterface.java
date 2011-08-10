@@ -1547,7 +1547,9 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @param dScheduled
 	 * @param dCompleted
 	 * @param collTaskObjects
+	 * @deprecated use addTask(String sTask, String sOwner, String sDelegator, java.util.Date dScheduled, java.util.Date dCompleted, Integer iPriority, Integer iVisibility, String description, Integer taskstatusId, String taskstatus, Collection<Pair<String, Long>> collTaskObjects)
 	 */
+	@Deprecated
 	public void addTask(String sTask, String sOwner, String sDelegator, java.util.Date dScheduled, java.util.Date dCompleted, Integer iPriority, Collection<Integer> collTaskObjects) {
 		addTask(sTask, sOwner, sDelegator, dScheduled, dCompleted, iPriority, TaskVO.TaskVisibility.PRIVATE.getValue(), collTaskObjects, null, null, null);
 	}
@@ -1560,14 +1562,30 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @param dScheduled
 	 * @param dCompleted
 	 * @param collTaskObjects
+	 * @deprecated use addTask(String sTask, String sOwner, String sDelegator, java.util.Date dScheduled, java.util.Date dCompleted, Integer iPriority, Integer iVisibility, String description, Integer taskstatusId, String taskstatus, Collection<Pair<String, Long>> collTaskObjects)
 	 */
+	@Deprecated
 	public void addTask(String sTask, String sOwner, String sDelegator, java.util.Date dScheduled, java.util.Date dCompleted, Integer iPriority, Integer iVisibility, Collection<Integer> collTaskObjects, String description, Integer taskstatusId, String taskstatus) {
+		ArrayList<Pair<String, Long>> objects = new ArrayList<Pair<String,Long>>();
+		for (Integer iGenericObject : collTaskObjects) {
+			try {
+				int entityId = getGenericObjectFacade().getModuleContainingGenericObject(iGenericObject);
+				objects.add(new Pair<String, Long>(Modules.getInstance().getEntityNameByModuleId(entityId), iGenericObject.longValue()));
+			}
+			catch (CommonFinderException ex) {
+				throw new NuclosFatalRuleException(ex);
+			}
+		}
+		addTask(sTask, sOwner, sDelegator, dScheduled, dCompleted, iPriority, iVisibility, description, taskstatusId, taskstatus, objects);
+	}
+
+	public void addTask(String sTask, String sOwner, String sDelegator, java.util.Date dScheduled, java.util.Date dCompleted, Integer iPriority, Integer iVisibility, String description, Integer taskstatusId, String taskstatus, Collection<Pair<String, Long>> collTaskObjects) {
 		try {
 			final TaskFacadeLocal taskfacadelocal = ServiceLocator.getInstance().getFacade(TaskFacadeLocal.class);
 			Set<Long> stOwnerId = new HashSet<Long>();
 			Long userId = taskfacadelocal.getUserId(sOwner);
 			if(userId == null){
-				throw new NuclosFatalRuleException("Owner/User with name "+sOwner+" is not available.");
+				throw new NuclosFatalRuleException("Owner/User with name " + sOwner + " is not available.");
 			}
 			stOwnerId.add(userId);
 			MasterDataVO delegator = getUserVO(sDelegator);
@@ -1575,8 +1593,8 @@ public class RuleInterface extends CustomCodeInterface {
 				throw new NuclosBusinessRuleException("no valid user found: "+sDelegator);
 			}
 			TaskVO task = taskfacadelocal.create(new TaskVO(sTask, iVisibility, iPriority, dScheduled, dCompleted, delegator.getIntId(), sDelegator, taskstatusId, taskstatus, description, null, Collections.<TaskObjectVO>emptyList()), stOwnerId);
-			for (Integer iGenericObject : collTaskObjects) {
-				task.addRelatedObject(iGenericObject);
+			for (Pair<String, Long> taskobject : collTaskObjects) {
+				task.addRelatedObject(taskobject.getY(), taskobject.getX());
 			}
 			taskfacadelocal.modify(task, stOwnerId);
 		}

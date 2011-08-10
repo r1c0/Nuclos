@@ -35,6 +35,7 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common.valueobject.EntityRelationshipModelVO;
 import org.nuclos.common2.IOUtils;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
@@ -679,8 +680,12 @@ public class MasterDataWrapper {
 
 	public static TaskVO getTaskVO(MasterDataWithDependantsVO mdVO, Map<Long, String> mapObjectIdentifier) {
 		Collection<EntityObjectVO> mdTaskObjects = mdVO.getDependants().getData(NuclosEntity.TASKOBJECT.getEntityName());
+
 		Collection<TaskObjectVO> taskObjects = new ArrayList<TaskObjectVO>();
-		for (EntityObjectVO md : mdTaskObjects) taskObjects.add(getTaskObjectVO(DalSupportForMD.wrapEntityObjectVO(md), mapObjectIdentifier.get(md.getField("entityId", Integer.class))));
+		for (EntityObjectVO md : mdTaskObjects) {
+			taskObjects.add(getTaskObjectVO(DalSupportForMD.wrapEntityObjectVO(md), mapObjectIdentifier != null ? mapObjectIdentifier.get(IdUtils.toLongId(md.getField("entityId"))) : null));
+		}
+
 		TaskVO vo = new TaskVO(
 			mdVO.getIntId(),
 			(String)mdVO.getField("name"),
@@ -729,9 +734,8 @@ public class MasterDataWrapper {
 	public static TaskObjectVO getTaskObjectVO(MasterDataVO mdVO, String sIdentifier) {
 		TaskObjectVO vo = new TaskObjectVO(
 			mdVO.getIntId(),
-			(Integer)mdVO.getField("entityId"),
-			(Integer)mdVO.getField("tasklistId"),
-			(Integer)mdVO.getField("module"),
+			IdUtils.toLongId(mdVO.getField("entityId")),
+			IdUtils.toLongId(mdVO.getField("tasklistId")),
 			(String)mdVO.getField("entity"),
 			sIdentifier,
 			mdVO.getCreatedAt(),
@@ -745,10 +749,9 @@ public class MasterDataWrapper {
 
 	public static MasterDataVO wrapTaskObjectVO(TaskObjectVO vo) {
 		Map<String, Object> mpFields = new HashMap<String,Object>();
-		mpFields.put("entityId", vo.getGenericObjectId());
-		mpFields.put("tasklistId", vo.getTaskId());
+		mpFields.put("entityId", vo.getObjectId().intValue());
+		mpFields.put("tasklistId", vo.getTaskId().intValue());
 		mpFields.put("entity", vo.getEntityName());
-
 
 		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}

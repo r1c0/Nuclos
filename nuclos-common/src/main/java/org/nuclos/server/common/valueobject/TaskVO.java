@@ -26,7 +26,7 @@ import org.nuclos.common2.exception.CommonValidationException;
  */
 public class TaskVO extends NuclosValueObject {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private String sName;
@@ -240,14 +240,8 @@ public class TaskVO extends NuclosValueObject {
 		this.colRelatedObjects = collTaskObjects;
 	}
 
-	/* @todo refactor to entities */
-	public void addRelatedObject(Integer iGenericObjectId) {
-		this.colRelatedObjects.add(new TaskObjectVO(null, iGenericObjectId, this.getId(), null, null, null, null, null, null, null, null));
-	}
-
-	/* @todo refactor to entities */
-	public void addRelatedObject(Integer iMasterDataId, String sEntityName) {
-		this.colRelatedObjects.add(new TaskObjectVO(null, iMasterDataId, this.getId(), null, sEntityName, null, null, null, null, null, null));
+	public void addRelatedObject(Long objectId, String sEntityName) {
+		this.colRelatedObjects.add(new TaskObjectVO(null, objectId, this.getId().longValue(), sEntityName, null, null, null, null, null, null));
 	}
 
 	/* @todo delete this */
@@ -297,7 +291,7 @@ public class TaskVO extends NuclosValueObject {
 	public int hashCode() {
 		return (this.getId() != null ? this.getId().hashCode() : 0);
 	}
-	
+
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
