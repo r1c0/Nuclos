@@ -16,9 +16,11 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.component.custom;
 
+import java.awt.Component;
 import java.util.prefs.Preferences;
 
 import javax.swing.JComponent;
+import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 import org.nuclos.client.ui.FileIcons;
@@ -109,6 +111,16 @@ public abstract class AbstractCollectableFileChooser extends AbstractCollectable
 	 */
 	@Override
 	public TableCellRenderer getTableCellRenderer() {
-		return new CollectableComponentDefaultTableCellRenderer();
+		return new AttachmentTableCellRenderer();
+	}
+
+	protected class AttachmentTableCellRenderer extends CollectableComponentDefaultTableCellRenderer {
+		@Override
+        public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
+
+			Component comp = super.getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
+
+			return comp;
+		}
 	}
 }  // class AbstractCollectableFileChooser

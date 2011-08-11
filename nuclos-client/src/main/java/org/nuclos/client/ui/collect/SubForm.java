@@ -152,7 +152,7 @@ import org.nuclos.common2.exception.CommonFinderException;
  */
 public class SubForm extends JPanel implements TableCellRendererProvider, ActionListener {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -254,9 +254,9 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	private final String         foreignKeyFieldToParent;
 
 	private final List<LookupListener>		lookupListener = new ArrayList<LookupListener>();
-	
+
 	protected List<FocusActionListener> lstFocusActionListener;
-	
+
 	/**
 	 * NUCLOSINT-63: To display the size of subform list in the corresponding tab.
 	 */
@@ -295,6 +295,8 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 
 	private List<SubFormToolListener> listeners;
 
+	private PopupMenuMouseAdapter popupMenuAdapter;
+
 	/**
 	 * @param entityName
 	 * @param iToolBarOrientation @see JToolbar#setOrientation
@@ -320,7 +322,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 
 		this.listeners = new ArrayList<SubFormToolListener>();
 		subformtbl = new SubFormTable(this);
-		subformtbl.addMouseListener(contextmenulistener);		
+		subformtbl.addMouseListener(new SubFormPopupMenuMouseAdapter(subformtbl));
 		subformtbl.addMouseMotionListener(new URIMouseAdapter());
 		subformtbl.addMouseListener(new URIMouseAdapter());
 		contentPane.add(scrollPane, BorderLayout.CENTER);
@@ -353,33 +355,6 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		assert this.getForeignKeyFieldToParent() == foreignKeyFieldToParent;
 	}
 
-	private PopupMenuMouseAdapter contextmenulistener
-	= new PopupMenuMouseAdapter() {
-		@Override
-		public void doPopup(MouseEvent e) {
-			JTable table = getJTable();
-			int col = table.columnAtPoint(e.getPoint());
-			int row = table.rowAtPoint(e.getPoint());
-			if(col != -1 && row != -1) {
-				TableCellEditor tce = table.getCellEditor(row, col);
-				if(tce instanceof CollectableComponentTableCellEditor) {
-					CollectableComponent clctcmp = ((CollectableComponentTableCellEditor) tce).getCollectableComponent();
-					if(clctcmp instanceof JPopupMenuFactory) {
-						Object value = table.getModel().getValueAt(row, table.convertColumnIndexToModel(col));
-						tce.getTableCellEditorComponent(table, value, false, row, col);	// contained field is set without triggering listeners
-						clctcmp.getJComponent().setEnabled(table.isCellEditable(row, col));
-						JPopupMenu popupmenu = ((JPopupMenuFactory) clctcmp).newJPopupMenu();
-						if(popupmenu != null) {
-							table.editCellAt(row, col, e);
-							popupmenu.show(table, e.getX(), e.getY());
-						}
-					}
-				}
-			}
-		}
-	};
-
-
 	public void addSubFormToolListener(SubFormToolListener l) {
 		listeners.add(l);
 	}
@@ -391,7 +366,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	public void removeAllSubFormToolListeners() {
 		listeners.clear();
 	}
-	
+
 	public JScrollPane getSubformScrollPane() {
 		return this.scrollPane;
 	}
@@ -455,7 +430,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	public Set<String> getToolbarFunctions() {
 		return toolbarButtons.keySet();
 	}
-	
+
 	public AbstractButton getToolbarButton(String function) {
 		return toolbarButtons.get(function);
 	}
@@ -688,27 +663,27 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 			}
 		}
 	}
-	
-	public void fireFocusGained() {		
+
+	public void fireFocusGained() {
 		AWTEvent event = EventQueue.getCurrentEvent();
 		if(event instanceof KeyEvent) {
-			if(getJTable().getModel().getRowCount() > 0) {			
-				getJTable().editCellAt(0, 0);				
-				getSubformTable().changeSelection(0, 0, false, false);			
+			if(getJTable().getModel().getRowCount() > 0) {
+				getJTable().editCellAt(0, 0);
+				getSubformTable().changeSelection(0, 0, false, false);
 			}
 			else if(getJTable().getModel().getRowCount() == 0) {
 				for(FocusActionListener fal : getFocusActionLister()) {
 					fal.focusAction(new EventObject(this));
 					if (getJTable().editCellAt(0, 0)) {
 						SwingUtilities.invokeLater(new Runnable() {
-							
+
 							@Override
 							public void run() {
 								Component editor = getJTable().getEditorComponent();
-								editor.requestFocusInWindow();								
+								editor.requestFocusInWindow();
 							}
 						});
-						
+
 					}
 				}
 			}
@@ -825,7 +800,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		final Column column = this.getColumn(sColumnName);
 		return (column != null) ? column.getValueListProvider() : null;
 	}
-	
+
 	public SizeKnownListener getSizeKnownListener() {
 		return sizeKnownListener;
 	}
@@ -893,6 +868,14 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 //	public JToolBar getToolBar() {
 //		return this.toolbar;
 //	}
+
+	public PopupMenuMouseAdapter getPopupMenuAdapter() {
+		return popupMenuAdapter;
+	}
+
+	public void setPopupMenuAdapter(PopupMenuMouseAdapter popupMenuAdapter) {
+		this.popupMenuAdapter = popupMenuAdapter;
+	}
 
 	@Override
     public final TableCellRenderer getTableCellRenderer(CollectableEntityField clctef) {
@@ -1444,6 +1427,8 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		return result;
 	}
 
+
+
 	/**
 	 * inner class SubForm.Table.
 	 */
@@ -1453,9 +1438,9 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		private TableCellRendererProvider cellrendererprovider;
 		private SubForm subform;
 		private boolean calculateRowHeight;
-		
+
 		private SubformRowHeader rowheader;
-		
+
 		private boolean newRowOnNext = false;
 
 		public SubFormTable() {
@@ -1470,7 +1455,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		public SubForm getSubForm() {
 			return subform;
 		}
-		
+
 
 		@Override
 		public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
@@ -1483,15 +1468,15 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 							fal.focusAction(new EventObject(this));
 							if (editCellAt(++rowIndex, columnIndex)) {
 								SwingUtilities.invokeLater(new Runnable() {
-									
+
 									@Override
 									public void run() {
 										Component editor = getEditorComponent();
 										if(editor != null)
-											editor.requestFocusInWindow();										
+											editor.requestFocusInWindow();
 									}
 								});
-								
+
 							}
 						}
 					}
@@ -1499,38 +1484,38 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 				}
 				int colCount = getColumnCount();
 				if(columnIndex == colCount-1) {
-					newRowOnNext = true;							
+					newRowOnNext = true;
 				}
-				
+
 				if(isCellEditable(rowIndex, columnIndex)) {
 					if (editCellAt(rowIndex, columnIndex)) {
 						SwingUtilities.invokeLater(new Runnable() {
-							
+
 							@Override
 							public void run() {
 								Component editor = getEditorComponent();
 								if(editor != null)
-									editor.requestFocusInWindow();			
+									editor.requestFocusInWindow();
 							}
-						});				
+						});
 					}
 				}
 				else {
 					final int rowCol[] = getNextEditableCell(this, rowIndex, columnIndex);
-					
+
 					if (editCellAt(rowCol[0], rowCol[1])) {
 						SwingUtilities.invokeLater(new Runnable() {
-							
+
 							@Override
 							public void run() {
 								Component editor = getEditorComponent();
-								if(editor != null) {									
+								if(editor != null) {
 									editor.requestFocusInWindow();
 									if(rowCol[0] < getRowCount())
 										changeSelection(rowCol[0], rowCol[1], false, false);
 								}
 							}
-						});				
+						});
 					}
 					else {
 						if(newRowOnNext) {
@@ -1544,11 +1529,11 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 										public void run() {
 											Component editor = getEditorComponent();
 											if(editor != null)
-												editor.requestFocusInWindow();				
+												editor.requestFocusInWindow();
 											changeSelection(rowI, col[1], false, false);
 										}
 									});
-									
+
 								}
 							}
 							newRowOnNext = false;
@@ -1556,9 +1541,9 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 					}
 				}
 			}
-			
+
 		}
-		
+
 		private int[] getNextEditableCell(JTable table, int row, int col) {
 			int rowCol[] = {row,col};
 			int colCount = getColumnCount();
@@ -1570,7 +1555,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 					break;
 				}
 			}
-			
+
 			if(!colFound) {
 				row++;
 				if(row >= getRowCount())
@@ -1583,7 +1568,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 					}
 				}
 			}
-			
+
 			return rowCol;
 		}
 
@@ -1591,7 +1576,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		protected TableColumnModel createDefaultColumnModel() {
 			return new DefaultTableColumnModel() {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -1855,7 +1840,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
     public void addLookupListener(LookupListener lookupListener) {
 	    this.lookupListener.add(lookupListener);
     }
-    
+
     public void addFocusActionListener(FocusActionListener fal) {
     	if(lstFocusActionListener == null) {
     		lstFocusActionListener = new ArrayList<FocusActionListener>();
@@ -1870,7 +1855,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
     	}
     	lstFocusActionListener.remove(fal);
     }
-    
+
     public List<FocusActionListener> getFocusActionLister() {
     	return lstFocusActionListener;
     }
@@ -2152,4 +2137,39 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 			return this.valuelistprovider;
 		}
 	}	// inner class Column
+
+	private class SubFormPopupMenuMouseAdapter extends PopupMenuMouseAdapter {
+
+		public SubFormPopupMenuMouseAdapter(JTable table) {
+			super(table);
+		}
+
+		@Override
+		public void doPopup(MouseEvent e) {
+			JTable table = getJTable();
+			int col = table.columnAtPoint(e.getPoint());
+			int row = table.rowAtPoint(e.getPoint());
+			if(col != -1 && row != -1) {
+				TableCellEditor tce = table.getCellEditor(row, col);
+				JPopupMenu menu = null;
+				if(tce instanceof CollectableComponentTableCellEditor) {
+					CollectableComponent clctcmp = ((CollectableComponentTableCellEditor) tce).getCollectableComponent();
+					if(clctcmp instanceof JPopupMenuFactory) {
+						Object value = table.getModel().getValueAt(row, table.convertColumnIndexToModel(col));
+						tce.getTableCellEditorComponent(table, value, false, row, col);	// contained field is set without triggering listeners
+						clctcmp.getJComponent().setEnabled(table.isCellEditable(row, col));
+						menu = ((JPopupMenuFactory) clctcmp).newJPopupMenu();
+					}
+				}
+				if (menu != null) {
+					table.editCellAt(row, col, e);
+					menu.show(table, e.getX(), e.getY());
+				}
+				else if (getPopupMenuAdapter() != null) {
+					getPopupMenuAdapter().doPopup(e);
+				}
+			}
+		}
+	};
+
 }	// class SubForm

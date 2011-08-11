@@ -33,7 +33,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -64,9 +63,7 @@ import org.nuclos.client.ui.collect.component.LabeledCollectableComponentWithVLP
 import org.nuclos.client.ui.collect.component.LookupEvent;
 import org.nuclos.client.ui.collect.component.LookupListener;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
-import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
-import org.nuclos.client.ui.popupmenu.JPopupMenuFactory;
-import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
+import org.nuclos.client.ui.event.PopupMenuMouseAdapter;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
@@ -104,9 +101,6 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
  * @version 01.00.00
  */
 public class MasterDataSubFormController extends DetailsSubFormController<CollectableEntityObject> {
-
-	private JMenuItem miDetails = new JMenuItem(CommonLocaleDelegate.getMessage("AbstractCollectableComponent.7","Details anzeigen..."));
-	private JMenuItem miEdit = new JMenuItem(CommonLocaleDelegate.getMessage("AbstractCollectableComponent.21","Zelle bearbeiten"));
 
 	protected static final String TB_CLONE = "Toolbar.CLONE";
 
@@ -164,17 +158,18 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		getSubForm().addSubFormToolListener(cloneListener);
 
 		setupSubFormTableContextMenue();
-
 	}
 
 
 	private void setupSubFormTableContextMenue() {
-
-		// context menu:
-		final JPopupMenuFactory factory = new JPopupMenuFactory() {
+		PopupMenuMouseAdapter popupMenuMouseAdapter = new PopupMenuMouseAdapter() {
 			@Override
-            public JPopupMenu newJPopupMenu() {
+			public void doPopup(MouseEvent e) {
 				final JPopupMenu result = new JPopupMenu();
+
+				JMenuItem miDetails = new JMenuItem(CommonLocaleDelegate.getMessage("AbstractCollectableComponent.7","Details anzeigen..."));
+				JMenuItem miEdit = new JMenuItem(CommonLocaleDelegate.getMessage("AbstractCollectableComponent.21","Zelle bearbeiten"));
+
 				miDetails.addActionListener(new ActionListener() {
 					@Override
                     public void actionPerformed(ActionEvent ev) {
@@ -194,80 +189,56 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 				});
 				result.add(miDetails);
 
-				miEdit.addActionListener(new ActionListener() {
+				final int iRow = getSubForm().getJTable().rowAtPoint(e.getPoint());
+				if (iRow >= 0) {
+					final int iSelectedRowCount = getSubForm().getJTable().getSelectedRowCount();
+					String entityName = MasterDataSubFormController.this.getSelectedCollectable().getCollectableEOEntity().getName();
 
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						cmdEditCell();
+					try {
+						miDetails.setEnabled(iSelectedRowCount == 1
+							&& getSelectedCollectable().getId() != null
+							&& (Integer)getSelectedCollectable().getId() > 0 && !LayoutUtils.isSubformEntity(entityName));
 					}
-				});
-				result.add(miEdit);
+					catch(Exception e1) {
+						miDetails.setEnabled(false);
+					}
 
-				return result;
-			}
-		};
-		JPopupMenuListener popupMenuListener = new DefaultJPopupMenuListener(factory, true) {
-			@Override
-			public void mousePressed(MouseEvent ev) {
-				if (ev.getClickCount() == 1 && SwingUtilities.isRightMouseButton(ev)) {
-					if (ev.getSource() instanceof JTable) {
-						JTable table = (JTable)ev.getSource();
-						final int iRow = ((JTable)ev.getSource()).rowAtPoint(ev.getPoint());
-						if (iRow >= 0) {
-							if (!((JTable)ev.getSource()).getSelectionModel().isSelectedIndex(iRow)) {
-								if ((ev.getModifiers() & MouseEvent.CTRL_MASK) != 0) {
-									((JTable)ev.getSource()).getSelectionModel().addSelectionInterval(iRow, iRow);
+					try {
+						final int row = getSubForm().getJTable().rowAtPoint(e.getPoint());
+						final int col = getSubForm().getJTable().columnAtPoint(e.getPoint());
+						Object obj = getSubForm().getJTable().getValueAt(iRow, col);
+						if(obj instanceof AbstractCollectableField) {
+							AbstractCollectableField field = (AbstractCollectableField)obj;
+							miEdit.setVisible(LangUtils.isValidURI(field.toString()));
+							miEdit.addActionListener(new ActionListener() {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									cmdEditCell(row, col);
 								}
-								else {
-									((JTable)ev.getSource()).getSelectionModel().setSelectionInterval(iRow, iRow);
-								}
-							}  // if
-
-
-							final int iSelectedRowCount = ((JTable)ev.getSource()).getSelectedRowCount();
-							String entityName = MasterDataSubFormController.this.getSelectedCollectable().getCollectableEOEntity().getName();
-
-							try {
-								miDetails.setEnabled(iSelectedRowCount == 1
-									&& getSelectedCollectable().getId() != null
-									&& (Integer)getSelectedCollectable().getId() > 0 && !LayoutUtils.isSubformEntity(entityName));
-							}
-							catch(Exception e) {
-								miDetails.setEnabled(false);
-							}
-							try {
-								int col = table.columnAtPoint(ev.getPoint());
-								Object obj = table.getValueAt(iRow, col);
-								if(obj instanceof AbstractCollectableField) {
-									AbstractCollectableField field = (AbstractCollectableField)obj;
-									miEdit.setVisible(LangUtils.isValidURI(field.toString()));
-									selectedColumn = col;
-								}
-								else {
-									miEdit.setVisible(false);
-									selectedColumn = -1;
-								}
-							}
-							catch(Exception e) {
-								miEdit.setVisible(false);
-							}
+							});
+							result.add(miEdit);
 						}
-
+						else {
+							miEdit.setVisible(false);
+						}
+					}
+					catch(Exception e1) {
+						miEdit.setVisible(false);
 					}
 				}
-				super.mousePressed(ev);
+				result.show(getSubForm().getJTable(), e.getX(), e.getY());
 			}
 		};
 
-		this.getSubForm().getJTable().addMouseListener(popupMenuListener);
+		this.getSubForm().setPopupMenuAdapter(popupMenuMouseAdapter);
 	}
 
-	private void cmdEditCell() {
-		int row = this.getSubForm().getJTable().getSelectedRow();
-		this.getSubForm().getJTable().editCellAt(row, selectedColumn);
+	private void cmdEditCell(int row, int col) {
+		this.getSubForm().getJTable().editCellAt(row, col);
 		Component comp = this.getSubForm().getJTable().getEditorComponent();
-		if(comp != null)
+		if(comp != null) {
 			comp.requestFocusInWindow();
+		}
 	}
 
 	private void cmdShowDetails() throws CommonBusinessException {

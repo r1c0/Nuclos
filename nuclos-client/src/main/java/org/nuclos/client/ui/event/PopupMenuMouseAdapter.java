@@ -25,31 +25,36 @@ import javax.swing.JTable;
 
 public abstract class PopupMenuMouseAdapter implements MouseListener {
 	private final JTable   table;
-	
+
 	public PopupMenuMouseAdapter(JTable table) {
 		this.table = table;
 	}
-	
+
 	public PopupMenuMouseAdapter() {
 		this(null);
 	}
-	
+
 	public abstract void doPopup(MouseEvent e);
 
 	private void checkAndDo(MouseEvent e) {
 		if(e.isPopupTrigger()) {
 			if(table != null) {
 				int clickRow = table.rowAtPoint(e.getPoint());
-				int clickCol = table.columnAtPoint(e.getPoint());
 				int[] selectedRows = table.getSelectedRows();
-				
-				if(clickRow >= 0 && clickCol >= 0 && Arrays.binarySearch(selectedRows, clickRow) < 0)
-					table.changeSelection(clickRow, clickCol, false, false);
+
+				if (Arrays.binarySearch(selectedRows, clickRow) < 0) {
+					if ((e.getModifiers() & MouseEvent.CTRL_MASK) != 0) {
+						table.getSelectionModel().addSelectionInterval(clickRow, clickRow);
+					}
+					else {
+						table.getSelectionModel().setSelectionInterval(clickRow, clickRow);
+					}
+				}
 			}
 			doPopup(e);
 		}
 	}
-	
+
 	@Override
     public void mouseClicked(MouseEvent e) {
 		checkAndDo(e);

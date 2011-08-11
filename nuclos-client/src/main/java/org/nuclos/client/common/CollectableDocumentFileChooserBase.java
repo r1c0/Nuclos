@@ -64,7 +64,7 @@ import org.nuclos.common2.exception.CommonBusinessException;
  * @author	<a href="mailto:uwe.allner@novabit.de">uwe.allner</a>
  * @version 01.00.00
  */
-public abstract class CollectableDocumentFileChooserBase extends AbstractCollectableFileChooser implements MouseListener, NuclosDropTargetVisitor{
+public abstract class CollectableDocumentFileChooserBase extends AbstractCollectableFileChooser implements MouseListener, NuclosDropTargetVisitor {
 	private static final Logger log = Logger.getLogger(CollectableGenericObjectFileChooser.class);
 	private static final String PREFS_KEY_LAST_DIRECTORY = "lastDirectory";
 	private static final String PREFS_NODE_COLLECTABLEFILECHOOSER = "CollectableFileChooser";

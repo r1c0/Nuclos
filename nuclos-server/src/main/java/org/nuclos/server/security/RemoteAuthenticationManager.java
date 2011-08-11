@@ -34,6 +34,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -60,21 +61,20 @@ public class RemoteAuthenticationManager implements org.nuclos.common.security.R
 	public Collection<GrantedAuthority> attemptAuthentication(String username, String password) throws RemoteAuthenticationException {
 		UsernamePasswordAuthenticationToken request = new UsernamePasswordAuthenticationToken(username, password);
 
-		boolean authenticated = false;
 		try {
 			Authentication auth = authenticationManager.authenticate(request);
-			authenticated = true;
 			return auth.getAuthorities();
 		}
+		catch (UsernameNotFoundException ex) {
+			throw ex;
+		}
 		catch (CredentialsExpiredException ex) {
-			authenticated = true;
+			userDetailsService.logAttempt(username, true);
 			throw ex;
 		}
 		catch (AuthenticationException ex) {
+			userDetailsService.logAttempt(username, false);
 			throw ex;
-		}
-		finally {
-			userDetailsService.logAttempt(username, authenticated);
 		}
 	}
 
