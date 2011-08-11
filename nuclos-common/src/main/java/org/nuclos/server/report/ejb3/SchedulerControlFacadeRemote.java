@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.report.ejb3;
 
-import java.util.Date;
-
 import javax.ejb.Remote;
 
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -25,22 +23,11 @@ import org.nuclos.common2.exception.CommonBusinessException;
 @Remote
 public interface SchedulerControlFacadeRemote {
 
-	public abstract Date scheduleReportJob(String reportName, int iHour,
-		int iMinute);
+	public abstract void deleteJob(String jobName) throws CommonBusinessException;
 
-	public abstract boolean unscheduleJob(String jobName) throws CommonBusinessException;
+	public abstract void unscheduleJob(String jobName) throws CommonBusinessException;
 
-	/**
-	 * schedules the TimelimitJob daily at the given time
-	 * @param iHour
-	 * @param iMinute
-	 * @return
-	 */
-	public abstract Date scheduleTimelimitJob(int iHour, int iMinute);
-
-	/**
-	 * @return the names of all scheduled jobs.
-	 */
 	public abstract String[] getJobNames();
 
+	public abstract String getSchedulerSummary();
 }

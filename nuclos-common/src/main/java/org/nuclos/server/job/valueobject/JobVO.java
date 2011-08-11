@@ -35,9 +35,6 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class JobVO extends NuclosValueObject {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private String sName;
 	private String sType;
@@ -59,6 +56,7 @@ public class JobVO extends NuclosValueObject {
 	private String sResult;
 	private String sResultDetails;
 	private Integer iSessionId;
+	private Integer nucletId;
 
 	// map for dependant child subform data
 	private DependantMasterDataMap mpDependants = new DependantMasterDataMap();
@@ -88,6 +86,7 @@ public class JobVO extends NuclosValueObject {
 		this.dLastFireTime = (String)mdVO.getField("lastfiretime");
 		this.sResult = (String)mdVO.getField("result");
 		this.sResultDetails = (String)mdVO.getField("resultdetails");
+		this.nucletId = (Integer)mdVO.getField("nucletId");
 		this.mpDependants = mpDependants;
 	}
 
@@ -256,7 +255,7 @@ public class JobVO extends NuclosValueObject {
 	public void setUser(String sUser) {
 		this.sUser = sUser;
 	}
-	
+
 	public Integer getUserId() {
 		return this.iUser;
 	}
@@ -354,6 +353,14 @@ public class JobVO extends NuclosValueObject {
     	this.sCronExpression = sCronExpression;
     }
 
+	public Integer getNucletId() {
+		return nucletId;
+	}
+
+	public void setNucletId(Integer nucletId) {
+		this.nucletId = nucletId;
+	}
+
 	@Override
 	public int hashCode() {
 		return (getName() != null ? getName().hashCode() : 0);
@@ -395,6 +402,7 @@ public class JobVO extends NuclosValueObject {
 		fields.put("lastfiretime", getLastFireTime());
 		fields.put("result", getResult());
 		fields.put("resultdetails", getResultDetails());
+		fields.put("nucletId", getNucletId());
 		return new MasterDataVO(getId(), getCreatedAt(), getCreatedBy(), getChangedAt(), getChangedBy(), getVersion(), fields);
 	}
 

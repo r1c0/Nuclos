@@ -163,7 +163,7 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 			GenericObjectDocumentFile logFile = new GenericObjectDocumentFile(file.getFilename().substring(0, file.getFilename().lastIndexOf(".")) + ".log", new byte[]{});
 			importfilevo.setField("log", logFile);
 			getMasterDataFacade().modify(NuclosEntity.IMPORTFILE.getEntityName(), importfilevo, importfilevo.getDependants());
-			
+
 	        // get path for log file
 	        java.io.File f = new java.io.File(NuclosSystemParameters.getDirectory(NuclosSystemParameters.DOCUMENT_PATH), importfilevo.getIntId() + "." + logFile.getFilename());
 
@@ -296,6 +296,7 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 	    return correlationId;
     }
 
+	@SuppressWarnings("rawtypes")
 	@Override
     public String getImportCorrelationId(Integer importfileId) {
 		Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();

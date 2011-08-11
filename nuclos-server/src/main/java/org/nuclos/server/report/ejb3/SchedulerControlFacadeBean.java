@@ -18,125 +18,86 @@ package org.nuclos.server.report.ejb3;
 
 import java.text.ParseException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
+import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.NuclosScheduler;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.job.SchedulableJob;
 import org.nuclos.server.job.valueobject.JobVO;
-import org.nuclos.server.report.NuclosReportJob;
-import org.nuclos.server.ruleengine.jobs.TimelimitJob;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
-import org.quartz.TriggerUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
-* SchedulerControlFacadeBean.
+* <tt>SchedulerControlFacadeBean</tt> provides functionality to control quartz job execution services.
+* All asynchronous tasks (i.e. tasks that do not return a result to the user) should be executed as a job.
+*
+* Currently known types are:
+* <ul>
+* 	<li>Jobs</li>
+* 	<li>Imports</li>
+* </ul>
+*
 * <br>
 * <br>Created by Novabit Informationssysteme GmbH
 * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-@Stateless
-@Local(SchedulerControlFacadeLocal.class)
-@Remote(SchedulerControlFacadeRemote.class)
 @Transactional
 @RolesAllowed("UseManagementConsole")
 public class SchedulerControlFacadeBean extends NuclosFacadeBean implements SchedulerControlFacadeLocal, SchedulerControlFacadeRemote {
 
-	@Override
-	public Date scheduleReportJob(String reportName, int iHour, int iMinute) {
+	public void addJob(JobVO job) throws CommonBusinessException {
 		final Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
-		final String sMinute = iMinute < 10 ? "0" + iMinute : String.valueOf(iMinute);
-
-		final JobDetail jobDetail = new JobDetail(reportName + " " + iHour + ":" + sMinute,
-				Scheduler.DEFAULT_GROUP, NuclosReportJob.class);
-
-		if (reportName != null && reportName.compareTo("") != 0) {
-			jobDetail.getJobDataMap().put("ReportName", reportName);
-		}
-		else {
-			jobDetail.getJobDataMap().put("ReportName", "Report");
-		}
-
-		final Trigger jobTrigger = TriggerUtils.makeDailyTrigger(iHour, iMinute);
-		TriggerUtils.setTriggerIdentity(jobTrigger, "trigger_" + reportName + " " + iHour + ":" + sMinute, Scheduler.DEFAULT_GROUP);
-		jobTrigger.setStartTime(DateUtils.now());
-		jobTrigger.setEndTime(null);
-
-		try {
-			scheduler.scheduleJob(jobDetail, jobTrigger);
-		}
-		catch (SchedulerException e) {
-			throw new NuclosFatalException("scheduler.error.scheduling");
-		}
-		debug("Successfully scheduled job for report " + reportName + ". Job will start at " + jobTrigger.getNextFireTime().toString());
-		return jobTrigger.getNextFireTime();
-	}
-
-	@Override
-	public boolean unscheduleJob(String jobName) throws CommonBusinessException {
-		if (!isScheduled(jobName)) {
-			throw new CommonBusinessException("scheduler.error.notscheduled");
-		}
-
-		boolean result = false;
-
-		final Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
-		try {
-			result = scheduler.deleteJob(jobName, Scheduler.DEFAULT_GROUP);
-			if (result) {
-				debug("Disabled scheduling of job: " + jobName);
-			}
-			else {
-				warn("Failed to delete job: " + jobName);
+		if (exists(job.getName())) {
+			try {
+				JobDetail jd = scheduler.getJobDetail(job.getName(), Scheduler.DEFAULT_GROUP);
+				if (!job.getId().equals(jd.getJobDataMap().getIntValue(job.getName()))) {
+					throw new NuclosBusinessException("scheduler.error.alreadyscheduled");
+				}
+			} catch (SchedulerException e) {
+				throw new NuclosFatalException("");
 			}
 		}
-		catch (SchedulerException ex) {
-			throw new NuclosFatalException("scheduler.error.unscheduling");
-		}
-		return result;
-	}
-
-	/**
-	 * schedules the TimelimitJob daily at the given time
-	 * @param iHour
-	 * @param iMinute
-	 * @return
-	 */
-	@Override
-	public Date scheduleTimelimitJob(int iHour, int iMinute) {
-		final Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
-		final String sMinute = iMinute < 10 ? "0" + iMinute : String.valueOf(iMinute);
-
-		final JobDetail jobDetail = new JobDetail("TimelimitJob " + iHour + ":" + sMinute,
-				Scheduler.DEFAULT_GROUP, TimelimitJob.class);
-
-		final Trigger jobTrigger = TriggerUtils.makeDailyTrigger(iHour, iMinute);
-		TriggerUtils.setTriggerIdentity(jobTrigger, "trigger_TimelimitJob " + iHour + ":" + sMinute, Scheduler.DEFAULT_GROUP);
-		jobTrigger.setStartTime(DateUtils.now());
-		jobTrigger.setEndTime(null);
+		final JobDetail jobDetail = new JobDetail(job.getName(), Scheduler.DEFAULT_GROUP, SchedulableJob.class);
+		jobDetail.getJobDataMap().put(job.getName(), job.getId());
+		jobDetail.setDurability(true);
 
 		try {
-			scheduler.scheduleJob(jobDetail, jobTrigger);
+			scheduler.addJob(jobDetail, true);
+		} catch (SchedulerException e) {
+			throw new NuclosFatalException("");
 		}
-		catch (SchedulerException ex) {
-			throw new NuclosFatalException("scheduler.error.scheduling");
+		info(getSchedulerSummary());
+	}
+
+	public void deleteJob(String jobname) throws CommonBusinessException {
+		if (exists(jobname)) {
+			final Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
+			try {
+				if (scheduler.deleteJob(jobname, Scheduler.DEFAULT_GROUP)) {
+					debug("Deleted job: " + jobname);
+				}
+				else {
+					warn("Failed to delete job: " + jobname);
+					throw new NuclosBusinessException("scheduler.error.delete");
+				}
+			}
+			catch (SchedulerException ex) {
+				error(ex);
+				throw new NuclosFatalException("scheduler.error.delete");
+			}
+			info(getSchedulerSummary());
 		}
-		debug("Successfully scheduled TimelimitJob. Job will start at " + jobTrigger.getNextFireTime().toString());
-		return jobTrigger.getNextFireTime();
 	}
 
 	/**
@@ -146,14 +107,24 @@ public class SchedulerControlFacadeBean extends NuclosFacadeBean implements Sche
 	 */
 	@Override
 	public Trigger scheduleJob(JobVO jobVO) throws CommonBusinessException {
-		if (isScheduled(jobVO.getName())) {
-			throw new CommonBusinessException("scheduler.error.alreadyscheduled");
-		}
 		final Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
 
-		final JobDetail jobDetail = new JobDetail(jobVO.getName(), Scheduler.DEFAULT_GROUP, SchedulableJob.class);
+		if (isScheduled(jobVO.getName())) {
+			// remove existing triggers
+			try {
+				for (Trigger t : scheduler.getTriggersOfJob(jobVO.getName(), Scheduler.DEFAULT_GROUP)) {
+					scheduler.unscheduleJob(t.getName(), t.getGroup());
+				}
+			}
+			catch (SchedulerException ex) {
+				throw new CommonBusinessException("scheduler.error.reschedule");
+			}
+		}
 
-		jobDetail.getJobDataMap().put(jobVO.getName(), jobVO.getId());
+		if (!exists(jobVO.getName())) {
+			addJob(jobVO);
+		}
+
 		int iHour = Integer.parseInt(jobVO.getStarttime().substring(0, 2));
 		int iMinute = Integer.parseInt(jobVO.getStarttime().substring(3));
 		Calendar startDate = new GregorianCalendar();
@@ -173,26 +144,105 @@ public class SchedulerControlFacadeBean extends NuclosFacadeBean implements Sche
 		jobTrigger.setName(jobVO.getName());
 		jobTrigger.setStartTime(startDate.getTime());
 		jobTrigger.setEndTime(null);
+		jobTrigger.setJobName(jobVO.getName());
+		jobTrigger.setJobGroup(Scheduler.DEFAULT_GROUP);
 
 		try {
-			scheduler.scheduleJob(jobDetail, jobTrigger);
+			scheduler.scheduleJob(jobTrigger);
 		}
 		catch (SchedulerException ex) {
 			throw new NuclosFatalException("scheduler.error.scheduling");
 		}
 		debug("Successfully scheduled Job. Job will start at " + jobTrigger.getNextFireTime().toString());
+		info(getSchedulerSummary());
 		return jobTrigger;
 	}
 
 	@Override
-	public boolean unscheduleJob(JobVO jobVO) throws CommonBusinessException {
-		return unscheduleJob(jobVO.getName());
+	public void unscheduleJob(JobVO jobVO) throws CommonBusinessException {
+		unscheduleJob(jobVO.getName());
 	}
 
-	private boolean isScheduled(String jobName) {
+	@Override
+	public void unscheduleJob(String jobName) throws CommonBusinessException {
+		if (!isScheduled(jobName)) {
+			throw new CommonBusinessException("scheduler.error.notscheduled");
+		}
+
+
+		final Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
+		try {
+			Trigger[] triggers = scheduler.getTriggersOfJob(jobName, Scheduler.DEFAULT_GROUP);
+			if (triggers != null && triggers.length > 0) {
+				for (Trigger t : triggers) {
+					if (!scheduler.unscheduleJob(t.getName(), t.getGroup())) {
+						throw new NuclosBusinessException("scheduler.error.unscheduling");
+					}
+				}
+			}
+		}
+		catch (SchedulerException ex) {
+			throw new NuclosFatalException("scheduler.error.unscheduling");
+		}
+		info(getSchedulerSummary());
+	}
+
+	/**
+	 * trigger immediate job execution
+	 * @param jobVO
+	 * @return
+	 */
+	@Override
+	@SuppressWarnings("rawtypes")
+	public void triggerJob(JobVO jobVO) throws CommonBusinessException {
+		final Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
+		if (!exists(jobVO.getName())) {
+			addJob(jobVO);
+		}
+
+		boolean running = false;
+		List executingJobs;
+		try {
+			executingJobs = scheduler.getCurrentlyExecutingJobs();
+			for (Object o : executingJobs) {
+				if (o instanceof JobExecutionContext) {
+					JobExecutionContext job = (JobExecutionContext) o;
+					if (Scheduler.DEFAULT_GROUP.equals(job.getJobDetail().getGroup()) && job.getJobDetail().getName().equals(jobVO.getName())) {
+						running = true;
+					}
+				}
+			}
+		}
+		catch (SchedulerException e) {
+			warn(e);
+		}
+
+		if (!running) {
+			try {
+				scheduler.triggerJob(jobVO.getName(), Scheduler.DEFAULT_GROUP);
+			} catch (SchedulerException e) {
+				throw new CommonBusinessException("scheduler.error.trigger.immediate");
+			}
+		}
+		else {
+			throw new CommonBusinessException("scheduler.error.running");
+		}
+	}
+
+	@Override
+	public boolean isScheduled(String jobName) {
 		for (String job : getJobNames()) {
 			if (job.equals(jobName)) {
-				return true;
+				final Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
+				try {
+					Trigger[] triggers = scheduler.getTriggersOfJob(jobName, Scheduler.DEFAULT_GROUP);
+					if (triggers != null && triggers.length > 0) {
+						return true;
+					}
+				}
+				catch (SchedulerException e) {
+					throw new NuclosFatalException("");
+				}
 			}
 		}
 		return false;
@@ -212,4 +262,40 @@ public class SchedulerControlFacadeBean extends NuclosFacadeBean implements Sche
 			return new String[0];
 		}
 	}
+
+	private boolean exists(String jobName) {
+		for (String job : getJobNames()) {
+			if (job.equals(jobName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public String getSchedulerSummary() {
+		try {
+			final Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
+			StringBuilder sb = new StringBuilder();
+			sb.append("Nuclos Scheduler Summary:");
+			for (String job : scheduler.getJobNames(Scheduler.DEFAULT_GROUP)) {
+				sb.append("\n  " + job + "(" + scheduler.getJobDetail(job, Scheduler.DEFAULT_GROUP) + "):");
+				Trigger[] triggers = scheduler.getTriggersOfJob(job, Scheduler.DEFAULT_GROUP);
+				if (triggers == null || triggers.length == 0) {
+					sb.append(" not scheduled;");
+				}
+				else {
+					for (Trigger t : triggers) {
+						sb.append("\n    " + t.toString());
+					}
+				}
+			}
+			return sb.toString();
+		}
+		catch (SchedulerException ex) {
+			return ex.toString();
+		}
+	}
+
+
 }

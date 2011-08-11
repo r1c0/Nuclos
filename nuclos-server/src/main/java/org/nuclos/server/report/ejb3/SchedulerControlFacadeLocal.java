@@ -26,23 +26,65 @@ import org.quartz.Trigger;
 public interface SchedulerControlFacadeLocal {
 
 	/**
-	 * schedules the Job at the given time
+	 * Create a quartz job.
 	 *
-	 * @param jobVO
-	 * @return
+	 * @param job Job to create
+	 * @throws CommonBusinessException
+	 */
+	public void addJob(JobVO job) throws CommonBusinessException;
+
+	/**
+	 * Delete a quartz job including all existing triggers.
+	 *
+	 * @param jobname The name of the job to delete.
+	 * @throws CommonBusinessException
+	 */
+	public void deleteJob(String jobname) throws CommonBusinessException;
+
+	/**
+	 * Schedule the job with a cron expression.
+	 *
+	 * @param jobVO The job object containing jobname, cron expression and start time.
+	 * @return Quartz trigger with calculated next fire time.
 	 */
 	public abstract Trigger scheduleJob(JobVO jobVO) throws CommonBusinessException;
 
 	/**
-	 * unschedules job by name
+	 * Unschedule a job (remove all triggers).
 	 *
 	 * @param jobVO
 	 * @return true if unscheduling was successful, otherwise false
+	 * @throws CommonBusinessException
 	 */
-	public abstract boolean unscheduleJob(JobVO jobVO) throws CommonBusinessException;
+	public abstract void unscheduleJob(JobVO jobVO) throws CommonBusinessException;
+
+	/**
+	 * Unschedule a job by name (remove all triggers).
+	 *
+	 * @param jobName
+	 * @return true if unscheduling was successful, otherwise false
+	 * @throws CommonBusinessException
+	 */
+	public abstract void unscheduleJob(String jobName) throws CommonBusinessException;
 
 	/**
 	 * @return the names of all scheduled jobs.
 	 */
 	public abstract String[] getJobNames();
+
+	/**
+	 * Check if job is scheduled
+	 *
+	 * @param jobName
+	 * @return
+	 */
+	public boolean isScheduled(String jobName);
+
+	/**
+	 * Trigger immediate job execution
+	 *
+	 * @param jobVO
+	 * @throws CommonBusinessException
+	 */
+	public void triggerJob(JobVO jobVO) throws CommonBusinessException;
 }

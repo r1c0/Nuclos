@@ -129,6 +129,7 @@ public class MasterDataWrapper {
 		mpFields.put("source", vo.getSource());
 		mpFields.put("active", vo.isActive());
 		mpFields.put("debug", vo.isDebug());
+		mpFields.put("nucletId", vo.getNucletId());
 
 		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
@@ -158,7 +159,8 @@ public class MasterDataWrapper {
 			(String)mdVO.getField("description"),
 			(String)mdVO.getField("source"),
 			mdVO.getField("active") == null ? false : (Boolean)mdVO.getField("active"),
-			mdVO.getField("debug") == null ? false : (Boolean)mdVO.getField("debug"));
+			mdVO.getField("debug") == null ? false : (Boolean)mdVO.getField("debug"),
+			(Integer)mdVO.getField("nucletId"));
 
 		return vo;
 	}

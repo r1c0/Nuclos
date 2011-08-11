@@ -24,9 +24,6 @@ import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.CreateException;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
@@ -60,7 +57,6 @@ import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
-import org.nuclos.server.job.SchedulableJob;
 import org.nuclos.server.job.valueobject.JobVO;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeBean;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
@@ -78,17 +74,15 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Local(JobControlFacadeLocal.class)
-@Remote(JobControlFacadeRemote.class)
 @Transactional
 public class JobControlFacadeBean extends MasterDataFacadeBean implements JobControlFacadeLocal, JobControlFacadeRemote {
 
 	private SchedulerControlFacadeLocal scheduler;
 
 	private SchedulerControlFacadeLocal getScheduler() {
-		if (scheduler == null)
+		if (scheduler == null) {
 			scheduler = ServiceLocator.getInstance().getFacade(SchedulerControlFacadeLocal.class);
+		}
 		return scheduler;
 	}
 
@@ -101,7 +95,9 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 		validate(job);
 
 		MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
-		return mdFacade.create(NuclosEntity.JOBCONTROLLER.getEntityName(), job.toMasterDataVO(), job.getDependants());
+		MasterDataVO result = mdFacade.create(NuclosEntity.JOBCONTROLLER.getEntityName(), job.toMasterDataVO(), job.getDependants());
+		getScheduler().addJob(new JobVO(result));
+		return result;
 	}
 
 	@Override
@@ -113,39 +109,34 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 		validate(job);
 
 		MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+
+		boolean isScheduled;
+
+		// check if name has changed. If it has changed, remove the quartz job with the old name.
+		MasterDataVO jobFromDb = mdFacade.get(NuclosEntity.JOBCONTROLLER.getEntityName(), job.getId());
+		isScheduled = getScheduler().isScheduled(jobFromDb.getField("name", String.class));
+		if (!job.getName().equals(jobFromDb.getField("name"))) {
+			getScheduler().deleteJob(jobFromDb.getField("name", String.class));
+		}
+
+		// update job
 		Object result = mdFacade.modify(NuclosEntity.JOBCONTROLLER.getEntityName(), job.toMasterDataVO(), job.getDependants());
 
-		for (String name : getScheduler().getJobNames()) {
-			if (name.equals(job.getName())) {
-				// job is scheduled with quartz, try to reschedule
-				try {
-					if (getScheduler().unscheduleJob(job)) {
-						Trigger trigger = getScheduler().scheduleJob(job);
+		if (isScheduled) {
+			Trigger trigger = getScheduler().scheduleJob(job);
 
-						Date nextFireTime = trigger.getFireTimeAfter(Calendar.getInstance().getTime());
-						if (nextFireTime != null) {
-							// refresh state
-							System.out.println("Scheduled Job for " + nextFireTime);
-							MasterDataVO mdvo = get(NuclosEntity.JOBCONTROLLER.getEntityName(), job.getId());
-							mdvo.setField("laststate", "Aktiviert");
-							mdvo.setField("nextfiretime", DateUtils.getDateAndTime(nextFireTime));
+			Date nextFireTime = trigger.getFireTimeAfter(Calendar.getInstance().getTime());
+			if (nextFireTime != null) {
+				MasterDataVO mdvo = get(NuclosEntity.JOBCONTROLLER.getEntityName(), job.getId());
+				mdvo.setField("laststate", "Aktiviert");
+				mdvo.setField("nextfiretime", DateUtils.getDateAndTime(nextFireTime));
 
-							mdFacade.modify(NuclosEntity.JOBCONTROLLER.getEntityName(), mdvo, null);
-						}
-					}
-					else {
-						throw new NuclosFatalException("scheduler.error.unscheduling");
-					}
-				}
-				catch (Exception ex) {
-					throw new NuclosFatalException("scheduler.error.rescheduling");
-				}
+				mdFacade.modify(NuclosEntity.JOBCONTROLLER.getEntityName(), mdvo, null);
 			}
 		}
 
 		return result;
 	}
-
 
 
 	@Override
@@ -156,9 +147,7 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 		for (String name : getScheduler().getJobNames()) {
 			if (name.equals(job.getName())) {
 				// job is scheduled with quartz, try to delete
-				if (!getScheduler().unscheduleJob(job)) {
-					throw new CommonRemoveException("scheduler.error.unscheduling");
-				}
+				getScheduler().deleteJob(name);
 			}
 		}
 
@@ -348,16 +337,12 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 		checkWriteAllowed(NuclosEntity.JOBCONTROLLER);
 
 		MasterDataVO mdVO = get(NuclosEntity.JOBCONTROLLER.getEntityName(), oId);
-		boolean result = getScheduler().unscheduleJob(new JobVO(mdVO));
-		if (result) {
-			mdVO.setField("laststate", "Deaktiviert");
-			mdVO.setField("running", false);
-			mdVO.setField("nextfiretime", null);
-			modify(NuclosEntity.JOBCONTROLLER.getEntityName(), mdVO, null);
-		}
-		else {
-			throw new NuclosFatalException("scheduler.error.unscheduling");
-		}
+
+		getScheduler().unscheduleJob(new JobVO(mdVO));
+		mdVO.setField("laststate", "Deaktiviert");
+		mdVO.setField("running", false);
+		mdVO.setField("nextfiretime", null);
+		modify(NuclosEntity.JOBCONTROLLER.getEntityName(), mdVO, null);
 	}
 
 	/**
@@ -366,10 +351,14 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 	@Override
 	@RolesAllowed("Login")
 	@Transactional(propagation=Propagation.NOT_SUPPORTED)
-	public void startJobImmediately(Object oId)  throws CommonPermissionException {
+	public void startJobImmediately(Object oId) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.JOBCONTROLLER);
-
-		SchedulableJob.process(oId, new Date(), null);
+		try {
+			JobVO job = new JobVO(get(NuclosEntity.JOBCONTROLLER.getEntityName(), oId));
+			getScheduler().triggerJob(job);
+		} catch (CommonFinderException e) {
+			throw new NuclosFatalException(e);
+		}
 	}
 
 	/**

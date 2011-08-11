@@ -50,15 +50,15 @@ import org.nuclos.server.navigation.treenode.nuclet.NuclosInstanceTreeNode;
  * @version 01.00.00
  */
 public class NucletCollectController extends MasterDataCollectController {
-	
+
 	private JButton btnExport;
 	private JButton btnImport;
 	private JButton btnShowDependences;
-	
+
 	/**
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -66,7 +66,11 @@ public class NucletCollectController extends MasterDataCollectController {
 	 */
 	public NucletCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, NuclosEntity.NUCLET.getEntityName(), tabIfAny);
+	}
 
+	@Override
+	public void init() {
+		super.init();
 		this.setupDetailsToolBar();
 		this.getResultTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			@Override
@@ -74,7 +78,7 @@ public class NucletCollectController extends MasterDataCollectController {
 				updateExportButtonState();
 			}
 		});
-		
+
 		btnExport.setFocusable(false);
 		btnImport.setFocusable(false);
 		btnShowDependences.setFocusable(false);
@@ -100,10 +104,11 @@ public class NucletCollectController extends MasterDataCollectController {
 	 */
 	private void setupDetailsToolBar() {
 		//final JToolBar toolbarCustomDetails = UIUtils.createNonFloatableToolBar();
-		
+
 		final JButton newMakeTreeRoot = new JButton(
-			CommonLocaleDelegate.getText("NucletCollectController.5", "Nuclet Bestandteile"), 
+			CommonLocaleDelegate.getText("NucletCollectController.5", "Nuclet Bestandteile"),
 				btnMakeTreeRoot.getIcon());
+
 		for (ActionListener al : btnMakeTreeRoot.getActionListeners())
 			newMakeTreeRoot.addActionListener(al);
 		btnMakeTreeRoot.addPropertyChangeListener("enabled", new PropertyChangeListener() {
@@ -112,7 +117,7 @@ public class NucletCollectController extends MasterDataCollectController {
 				newMakeTreeRoot.setEnabled((Boolean) evt.getNewValue());
 			}
 		});
-		
+
 		this.getDetailsPanel().addToolBarComponent(newMakeTreeRoot);
 
 		btnShowDependences = new JButton(Icons.getInstance().getIconTree16());
@@ -124,14 +129,14 @@ public class NucletCollectController extends MasterDataCollectController {
 			}
 		});
 		this.getResultPanel().addToolBarComponent(btnShowDependences);
-		
+
 		btnImport = new JButton(Icons.getInstance().getIconImport16());
 		btnImport.setToolTipText(CommonLocaleDelegate.getText("NucletCollectController.1", "Nuclet importieren..."));
 		btnImport.setText(CommonLocaleDelegate.getText("NucletCollectController.3", "Importieren"));
 		btnImport.addActionListener(new ActionListener() {
-			
+
 			@Override
-			public void actionPerformed(ActionEvent e) {							
+			public void actionPerformed(ActionEvent e) {
 				new DBTransferImport(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -147,16 +152,16 @@ public class NucletCollectController extends MasterDataCollectController {
 		btnImport.setEnabled(SecurityCache.getInstance().isSuperUser());
 		//toolbarCustomDetails.add(btnImport);
 		this.getResultPanel().addToolBarComponent(btnImport);
-		
+
 		btnExport = new JButton(Icons.getInstance().getIconExport16());
 		btnExport.setToolTipText(CommonLocaleDelegate.getText("NucletCollectController.2", "Nuclet exportieren..."));
 		btnExport.setText(CommonLocaleDelegate.getText("NucletCollectController.4", "Exportieren"));
 		btnExport.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Object oNucletId = NucletCollectController.this.getSelectedCollectableId();
-				
+
 				new DBTransferExport(oNucletId==null?null:((Integer)oNucletId).longValue()).showWizard(Main.getMainFrame().getHomePane());
 				try {
 					getResultController().getSearchResultStrategy().refreshResult();
@@ -167,17 +172,17 @@ public class NucletCollectController extends MasterDataCollectController {
 		updateExportButtonState();
 		//toolbarCustomDetails.add(btnExport);
 		this.getResultPanel().addToolBarComponent(btnExport);
-		
+
 		this.getResultPanel().btnExport.setVisible(false);
 		this.getResultPanel().btnImport.setVisible(false);
 		btnMakeTreeRoot.setVisible(false);
 		btnShowResultInExplorer.setVisible(false);
 	}
-	
+
 	private void updateExportButtonState() {
 		btnExport.setEnabled(SecurityCache.getInstance().isSuperUser());
 	}
-	
+
 	private void cmdShowNucletDependences() {
 		UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
 			@Override
@@ -186,5 +191,5 @@ public class NucletCollectController extends MasterDataCollectController {
 			}
 		});
 	}
-	
-}	 
+
+}

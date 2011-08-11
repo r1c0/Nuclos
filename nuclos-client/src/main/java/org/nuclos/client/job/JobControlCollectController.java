@@ -101,9 +101,7 @@ public class JobControlCollectController extends MasterDataCollectController {
 	final private JobControlDelegate delegate = JobControlDelegate.getInstance();
 
 	private final Action actSchedule = new CommonAbstractAction(Icons.getInstance().getIconPlay16(), CommonLocaleDelegate.getMessage("JobControlCollectController.1","Aktivieren")) {
-		/**
-		 * 
-		 */
+
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -118,9 +116,7 @@ public class JobControlCollectController extends MasterDataCollectController {
 	};
 
 	private final Action actUnschedule = new CommonAbstractAction(Icons.getInstance().getIconStop16(), CommonLocaleDelegate.getMessage("JobControlCollectController.3","Deaktivieren")) {
-		/**
-		 * 
-		 */
+
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -135,9 +131,7 @@ public class JobControlCollectController extends MasterDataCollectController {
 	};
 
 	private final Action actStartImmediately = new CommonAbstractAction(Icons.getInstance().getIconNext16(), CommonLocaleDelegate.getMessage("JobControlCollectController.2","Ausf\u00fchren")) {
-		/**
-		 * 
-		 */
+
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -237,9 +231,9 @@ public class JobControlCollectController extends MasterDataCollectController {
 	};
 
 	/**
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -524,6 +518,7 @@ public class JobControlCollectController extends MasterDataCollectController {
 
 	private void cmdStartJobImmediately() {
 		CommonMultiThreader.getInstance().execute(new CommonClientWorker() {
+
 			@Override
 			public void work() throws CommonBusinessException {
 				delegate.startJobImmediately(getSelectedCollectable().getMasterDataCVO().getId());
@@ -534,6 +529,9 @@ public class JobControlCollectController extends MasterDataCollectController {
 				UIUtils.runCommand(getFrame(), new CommonRunnable() {
 					@Override
 					public void run() throws CommonBusinessException {
+						try {
+							Thread.sleep(3 * 1000); //wait for quartz to start job
+						} catch (InterruptedException e) { }
 						refreshCurrentCollectable();
 					}
 				});
@@ -608,7 +606,7 @@ public class JobControlCollectController extends MasterDataCollectController {
 		class TrafficLightCellRenderer extends DefaultTableCellRenderer {
 
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 

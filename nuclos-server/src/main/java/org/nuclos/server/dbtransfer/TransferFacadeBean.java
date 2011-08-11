@@ -114,6 +114,7 @@ import org.nuclos.server.dbtransfer.content.EntitySubnodesNucletContent;
 import org.nuclos.server.dbtransfer.content.EventNucletContent;
 import org.nuclos.server.dbtransfer.content.INucletContent;
 import org.nuclos.server.dbtransfer.content.ImportFileNucletContent;
+import org.nuclos.server.dbtransfer.content.JobControllerNucletContent;
 import org.nuclos.server.dbtransfer.content.RelationTypenucletContent;
 import org.nuclos.server.dbtransfer.content.ResourceNucletContent;
 import org.nuclos.server.dbtransfer.content.RuleNucletContent;
@@ -239,7 +240,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		contents.add(ldapServerNC);
 		contents.add(ldapMappingNC);
 
-		contents.add(new DefaultNucletContent(NuclosEntity.JOBCONTROLLER, null, contents));
+		contents.add(new JobControllerNucletContent(contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.JOBDBOBJECT, NuclosEntity.JOBCONTROLLER, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.JOBRULE, NuclosEntity.JOBCONTROLLER, contents));
 
@@ -497,7 +498,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			info("recreate foreign key contraints");
 			dbAccess.execute(SchemaUtils.create(fkConstraints));
 		}
-		
+
 		try {
 			info("preview changes");
 			final String notifyPreviewString = "creating preview of db changes";
@@ -1406,7 +1407,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 							}
 						}
 					}
-					
+
 					if (isInUse || !checkValidity(nc, existingEO, ValidityType.DELETE, importContentMap, existingNucletIds, t.getTransferOptions(), t.result)) {
 						info("is in use or validation is false --> add to untouched content");
 						contentUntouched.add(existingEO);

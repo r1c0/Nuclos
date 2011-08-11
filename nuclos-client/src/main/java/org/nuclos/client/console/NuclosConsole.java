@@ -93,11 +93,11 @@ public class NuclosConsole extends ConsoleConstants {
 	 */
 	public static final List<String> LSTCOMMANDS = Arrays.asList(
 			CMD_INVALIDATE_ATTRIBUTECACHE, CMD_INVALIDATE_METADATACACHE, CMD_SHOWDEVELOPERCOMMANDS,
-			CMD_REFRESHVIEWS, CMD_SCHEDULE_REPORT_JOB, CMD_UNSCHEDULE_JOB, CMD_SHOWJOBS,
+			CMD_REFRESHVIEWS, CMD_UNSCHEDULE_JOB, CMD_SHOWJOBS,
 			CMD_SHOWREPORTS,
 			CMD_IMPORTLAYOUTS, CMD_EXPORTLAYOUTS,
 			CMD_IMPORTRULES, CMD_EXPORTRULES,
-			CMD_SCHEDULE_TIMELIMIT_JOB, CMD_SETUSERPREFERENCES,
+			CMD_SETUSERPREFERENCES,
 			CMD_RESETUSERPREFERENCES, CMD_VALIDATEOBJECTGENERATIONS,
 			CMD_CHECKMASTERDATAVALUES, CMD_COMPILEDBOBJECTS,
 			CMD_SENDMESSAGE, CMD_KILLSESSION,
@@ -166,56 +166,14 @@ public class NuclosConsole extends ConsoleConstants {
 	}
 
 	/**
-	 * schedule a report
-	 * @param sReportName
-	 * @throws CommonFatalException
-	 * @throws CommonPermissionException
-	 * @throws CommonRemoteException
-	 */
-	private static void scheduleReportJob(String sReportName, int iHour, int iMinute) throws RemoteException, CreateException, CommonRemoteException, CommonPermissionException, CommonFatalException {
-		// check if reportName is valid
-		if (reportExists(sReportName)) {
-			final SchedulerControlFacadeRemote schedulercontrol = ServiceLocator.getInstance().getFacade(SchedulerControlFacadeRemote.class);
-			final Date dateScheduledFor = schedulercontrol.scheduleReportJob(sReportName, iHour, iMinute);
-			if (dateScheduledFor != null) {
-				System.out.println("Scheduled report " + sReportName + " for " + dateScheduledFor.toString());
-			}
-			else {
-				System.out.println("Schedule report " + sReportName + " failed");
-			}
-		}
-		else {
-			System.out.println("Unable to schedule report \"" + sReportName + "\".\n" +
-					"There is no report with this name defined in the application or you have no right to access it.");
-		}
-	}
-
-	/**
 	 * delete a scheduled job
 	 * @param sJobName
 	 */
 	private static void unscheduleJob(String sJobName) throws CommonBusinessException, RemoteException, CreateException {
 		final SchedulerControlFacadeRemote schedulercontrol = ServiceLocator.getInstance().getFacade(SchedulerControlFacadeRemote.class);
-		if (schedulercontrol.unscheduleJob(sJobName)) {
-			System.out.println("Successfully unscheduled job: " + sJobName);
-		}
-		else {
-			System.out.println("Failed to unschedule job: " + sJobName);
-		}
-	}
-
-	/**
-	 * schedules TimeLimitJob
-	 */
-	private static void scheduleTimelimitJob(int iHour, int iMinute) throws RemoteException, CreateException {
-		final SchedulerControlFacadeRemote schedulercontrol = ServiceLocator.getInstance().getFacade(SchedulerControlFacadeRemote.class);
-		final Date dateScheduledFor = schedulercontrol.scheduleTimelimitJob(iHour, iMinute);
-		if (dateScheduledFor != null) {
-			System.out.println("Scheduled TimelimitJob for " + dateScheduledFor.toString());
-		}
-		else {
-			System.out.println("Scheduling TimelimitJob failed");
-		}
+		schedulercontrol.deleteJob(sJobName);
+		System.out.println("Successfully deleted job: " + sJobName);
+		System.out.println(schedulercontrol.getSchedulerSummary());
 	}
 
 	private static void executeTimelimitJobNow(String sRuleName) throws RemoteException, CreateException, CommonBusinessException {
@@ -233,15 +191,7 @@ public class NuclosConsole extends ConsoleConstants {
 	 */
 	private static void showJobs() throws RemoteException, CreateException {
 		final SchedulerControlFacadeRemote schedulercontrol = ServiceLocator.getInstance().getFacade(SchedulerControlFacadeRemote.class);
-		final String[] asJobs = schedulercontrol.getJobNames();
-		if (asJobs.length == 0) {
-			System.out.println("No jobs scheduled.");
-		}
-		else {
-			for (String sJob : asJobs) {
-				System.out.println("\"" + sJob + "\"");
-			}
-		}
+		System.out.println(schedulercontrol.getSchedulerSummary());
 	}
 
 	/**
@@ -645,39 +595,6 @@ public class NuclosConsole extends ConsoleConstants {
 		else if (sCommandLowerCase.equals(CMD_REFRESHVIEWS)) {
 			refreshViews();
 		}
-		else if (sCommandLowerCase.equals(CMD_SCHEDULE_REPORT_JOB)) {
-			if (asArgs.length < 2) {
-				System.out.println("Missing argument <ReportName> for command " + sCommand + "\n");
-				System.out.println(getUsage());
-				if (bCalledByConsole) {
-					System.exit(-1);
-				}
-				else {
-					return;
-				}
-			}
-			int iHour = -1;
-			int iMinute = -1;
-			for (int i = 2; i < asArgs.length; i++) {
-				if (asArgs[i].equalsIgnoreCase("-hour") && i + 1 < asArgs.length) {
-					iHour = Integer.parseInt(asArgs[i + 1]);
-				}
-				else if (asArgs[i].equalsIgnoreCase("-minute") && i + 1 < asArgs.length) {
-					iMinute = Integer.parseInt(asArgs[i + 1]);
-				}
-			}
-
-			if (iHour < 0) {
-				iHour = 16;
-				System.out.println("No hour specified. Using default: " + iHour);
-			}
-			if (iMinute < 0) {
-				iMinute = 0;
-				System.out.println("No minute specified. Using default: " + iMinute);
-			}
-
-			scheduleReportJob(asArgs[1], iHour, iMinute);
-		}
 		else if (sCommandLowerCase.equals(CMD_UNSCHEDULE_JOB)) {
 			if (asArgs.length < 2) {
 				System.out.println("Missing argument <ReportName> for command " + sCommand + "\n");
@@ -732,28 +649,6 @@ public class NuclosConsole extends ConsoleConstants {
 
 			final String sOutputDir = asArgs[1];
 			exportTimelimitRules(sOutputDir);
-		}
-		else if (sCommandLowerCase.equals(CMD_SCHEDULE_TIMELIMIT_JOB)) {
-			int iHour = -1;
-			int iMinute = -1;
-			for (int i = 1; i < asArgs.length; i++) {
-				if (asArgs[i].equalsIgnoreCase("-hour") && i + 1 < asArgs.length) {
-					iHour = Integer.parseInt(asArgs[i + 1]);
-				}
-				else if (asArgs[i].equalsIgnoreCase("-minute") && i + 1 < asArgs.length) {
-					iMinute = Integer.parseInt(asArgs[i + 1]);
-				}
-			}
-			if (iHour < 0) {
-				throw new CommonBusinessException("-hour is a necessary parameter for command \"" + sCommandLowerCase + "\"");
-			}
-			if (iMinute < 0) {
-				iMinute = 0;
-				System.out.println("no minute specified. Using default: " + iMinute);
-			}
-			if (sCommandLowerCase.equals(CMD_SCHEDULE_TIMELIMIT_JOB)) {
-				scheduleTimelimitJob(iHour, iMinute);
-			}
 		}
 		else if (sCommandLowerCase.equals(CMD_EXECUTE_TIMELIMITRULE_NOW)) {
 			if (asArgs.length < 2) {

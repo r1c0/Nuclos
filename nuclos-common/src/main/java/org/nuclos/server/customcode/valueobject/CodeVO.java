@@ -28,6 +28,7 @@ public class CodeVO extends NuclosValueObject {
 	private String sSource;
 	private boolean bActive;
 	private boolean bDebug;
+	private Integer nucletId;
 
 	/**
 	 * constructor to be called by server only
@@ -35,13 +36,14 @@ public class CodeVO extends NuclosValueObject {
 	 * @param sDescription rule description of underlying database record
 	 * @param sSource rule sourcecode of underlying database record
 	 */
-	public CodeVO(NuclosValueObject nvo, String sName, String sDescription, String sSource, boolean bActive, boolean bDebug) {
+	public CodeVO(NuclosValueObject nvo, String sName, String sDescription, String sSource, boolean bActive, boolean bDebug, Integer nucletId) {
 		super(nvo);
 		this.sName = sName;
 		this.sDescription = sDescription;
 		this.sSource = sSource;
 		this.bActive = bActive;
 		this.bDebug = bDebug;
+		this.nucletId = nucletId;
 	}
 
 	/**
@@ -128,6 +130,14 @@ public class CodeVO extends NuclosValueObject {
 	public void setDebug(boolean bDebug) {
     	this.bDebug = bDebug;
     }
+
+	public Integer getNucletId() {
+		return nucletId;
+	}
+
+	public void setNucletId(Integer nucletId) {
+		this.nucletId = nucletId;
+	}
 
 	/**
 	 * validity checker

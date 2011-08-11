@@ -68,7 +68,7 @@ public interface JobControlFacadeRemote {
 	/**
 	 * @param oId - id of job to execute
 	 */
-	public abstract void startJobImmediately(Object oId) throws CommonPermissionException;
+	public abstract void startJobImmediately(Object oId) throws CommonBusinessException;
 
 	/**
 	 * get job procedures/functions

@@ -23,8 +23,6 @@ public class ConsoleConstants {
 	public static final String CMD_INVALIDATE_RULECACHE = "-invalidaterulecache";
 	public static final String CMD_SHOWDEVELOPERCOMMANDS = "-developer";
 	public static final String CMD_REFRESHVIEWS = "-refreshviews";
-	public static final String CMD_SCHEDULE_REPORT_JOB = "-schedulereportjob";
-	public static final String CMD_SCHEDULE_TIMELIMIT_JOB = "-scheduletimelimitjob";
 	public static final String CMD_UNSCHEDULE_JOB = "-unschedulejob";
 	public static final String CMD_SHOWJOBS = "-showjobs";
 	public static final String CMD_SHOWREPORTS = "-showreports";

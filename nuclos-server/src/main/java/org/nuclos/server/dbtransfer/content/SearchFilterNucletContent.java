@@ -27,14 +27,14 @@ import org.nuclos.common.dbtransfer.TransferOption;
 public class SearchFilterNucletContent extends DefaultNucletContent {
 
 	public SearchFilterNucletContent(List<INucletContent> contentTypes) {
-		super(NuclosEntity.CUSTOMCOMPONENT, null, contentTypes);
+		super(NuclosEntity.SEARCHFILTER, null, contentTypes);
 	}
 
 	@Override
 	public List<EntityObjectVO> getNcObjects(Set<Long> nucletIds, TransferOption.Map transferOptions) {
 		List<EntityObjectVO> result = super.getNcObjects(nucletIds, transferOptions);
 		for (EntityObjectVO ncObject : result) {
-			storeLocaleResources(ncObject, "label", "menupath");
+			storeLocaleResources(ncObject, "labelres", "descriptionres");
 		}
 		return result;
 	}

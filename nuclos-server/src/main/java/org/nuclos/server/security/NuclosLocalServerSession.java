@@ -57,7 +57,7 @@ public abstract class NuclosLocalServerSession {
 	}
 
 	public static void loginAsUser(String username) {
-		NuclosUserDetailsService userDetailsService = (NuclosUserDetailsService) SpringApplicationContextHolder.getBean("userDetailsService");
+		UserDetailsService userDetailsService = (UserDetailsService) SpringApplicationContextHolder.getBean("userDetailsService");
 		UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 		loginAs(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
 	}
