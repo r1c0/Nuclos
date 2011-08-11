@@ -56,6 +56,24 @@ public final class ColumnToFieldIdVOMapping<T> extends AbstractColumnToVOMapping
 	}
 
 	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof ColumnToFieldIdVOMapping)) return false;
+		final ColumnToFieldIdVOMapping<T> other = (ColumnToFieldIdVOMapping<T>) o;
+		return getColumn().equals(other.getColumn()) && fieldId.equals(other.fieldId);
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = getColumn().hashCode();
+		result += 3 * fieldId.hashCode();
+		return result;
+	}
+
+	/**
+	 * @deprecated This is impossible in the general case, thus avoid it.
+	 */
+	@Override
 	public String getField() {
 		return fieldId;
 	}

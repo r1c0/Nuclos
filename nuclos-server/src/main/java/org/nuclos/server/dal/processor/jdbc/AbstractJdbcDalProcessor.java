@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dal.processor.jdbc;
 
-import java.lang.reflect.Method;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,28 +25,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.nuclos.common.NuclosImage;
-import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.exception.DalBusinessException;
 import org.nuclos.common.dal.vo.IDalVO;
-import org.nuclos.common.dal.vo.IDalWithFieldsVO;
-import org.nuclos.common2.DateTime;
-import org.nuclos.common2.InternalTimestamp;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.AbstractDalProcessor;
+import org.nuclos.server.dal.processor.ColumnToBeanVOMapping;
 import org.nuclos.server.dal.processor.ColumnToFieldIdVOMapping;
 import org.nuclos.server.dal.processor.ColumnToFieldVOMapping;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
-import org.nuclos.server.dal.processor.ColumnToBeanVOMapping;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.expression.DbNull;
-import org.nuclos.server.dblayer.impl.standard.StandardSqlDBAccess;
 import org.nuclos.server.dblayer.impl.util.PreparedString;
 import org.nuclos.server.dblayer.query.DbCondition;
 import org.nuclos.server.dblayer.query.DbExpression;
@@ -60,9 +51,6 @@ import org.nuclos.server.dblayer.statements.DbInsertStatement;
 import org.nuclos.server.dblayer.statements.DbStatement;
 import org.nuclos.server.dblayer.statements.DbTableStatement;
 import org.nuclos.server.dblayer.statements.DbUpdateStatement;
-import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
-import org.nuclos.server.report.ByteArrayCarrier;
-import org.nuclos.server.resource.valueobject.ResourceFile;
 
 public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends AbstractDalProcessor<DalVO> {
 

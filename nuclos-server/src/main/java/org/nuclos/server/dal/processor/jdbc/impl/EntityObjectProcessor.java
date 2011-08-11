@@ -130,17 +130,26 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 
 			if (efMeta.getForeignEntity() == null) {
 				allColumns.add(createFieldMapping(efMeta.getDbColumn(), efMeta.getField(), efMeta.getDataType(), efMeta.isReadonly(), efMeta.isDynamic()));
-			} else {
+			} 
+			// column is ref to foreign table
+			else {
+				// only an primary key ref to foreign table
 				if (efMeta.getDbColumn().toUpperCase().startsWith("INTID_")) {
 					// kein join nötig!
 					if (!isIdColumnInList(allColumns, efMeta.getDbColumn()))
 						allColumns.add(createFieldIdMapping(efMeta.getDbColumn(), efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), efMeta.isDynamic()));
-				} else {
+				} 
+				// normal case: key ref and 'stringified' ref to foreign table
+				else {
+					// add 'stringified' ref to column mapping
 					allColumns.add(createFieldMapping(efMeta.getDbColumn(), efMeta.getField(), efMeta.getDataType(), true, efMeta.isDynamic()));
 					String dbIdFieldName = DalUtils.getDbIdFieldName(efMeta.getDbColumn());
 					if (!isIdColumnInList(allColumns, dbIdFieldName)) {
 						allColumns.add(createFieldIdMapping(dbIdFieldName, efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), efMeta.isDynamic()));
 					}
+					// id column is already in allColumns:
+					// Replace the id column if the one present is read-only and the current is not read-only
+					// This in effect only switched the read-only flag to false.
 					else {
 						IColumnToVOMapping<?> col = getColumnFromList(allColumns, dbIdFieldName);
 						if (col.isReadonly() && !efMeta.isReadonly()) {

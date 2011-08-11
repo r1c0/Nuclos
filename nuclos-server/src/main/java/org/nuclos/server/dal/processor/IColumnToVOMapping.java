@@ -36,6 +36,9 @@ public interface IColumnToVOMapping<T> {
 	
 	void convertFromDbValueToDalField(IDalVO result, T o);
 	
+	/**
+	 * @deprecated This is impossible in the general case, thus avoid it.
+	 */
 	String getField();
 
 }

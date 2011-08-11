@@ -26,6 +26,9 @@ import org.nuclos.common2.exception.CommonFatalException;
  */
 public final class ColumnToBeanVOMapping<T> extends AbstractColumnToVOMapping<T> {
 
+	/**
+	 * @deprecated This is impossible in the general case, thus avoid it.
+	 */
 	private final String fieldName;
 	private final Method setMethod;
 	private final Method getMethod;
@@ -55,7 +58,25 @@ public final class ColumnToBeanVOMapping<T> extends AbstractColumnToVOMapping<T>
 		result.append("]");
 		return result.toString();
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof ColumnToBeanVOMapping)) return false;
+		final ColumnToBeanVOMapping<T> other = (ColumnToBeanVOMapping<T>) o;
+		return getColumn().equals(other.getColumn()) && getMethod.equals(other.getMethod);
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = getColumn().hashCode();
+		result += 3 * getMethod.hashCode();
+		return result;
+	}
 
+	/**
+	 * @deprecated This is impossible in the general case, thus avoid it.
+	 */
 	@Override
 	public String getField() {
 		return fieldName;
