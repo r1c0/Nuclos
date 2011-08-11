@@ -27,7 +27,6 @@ import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 
-import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.PDFHelper;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.CollectableEntityField;

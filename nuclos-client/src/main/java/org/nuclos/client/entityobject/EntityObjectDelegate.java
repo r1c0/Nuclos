@@ -2,13 +2,11 @@ package org.nuclos.client.entityobject;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.EntityObjectCommon;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.ejb3.EntityObjectFacadeRemote;

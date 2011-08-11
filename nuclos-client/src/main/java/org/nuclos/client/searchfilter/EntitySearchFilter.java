@@ -26,7 +26,6 @@ import java.util.prefs.Preferences;
 import org.nuclos.client.datasource.NuclosSearchConditionUtils;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.Modules;
-import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.collect.collectable.CollectableEntity;

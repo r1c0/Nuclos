@@ -31,6 +31,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.server.dal.DalUtils;
+import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
@@ -52,9 +53,9 @@ public class ImportObjectProcessor extends EntityObjectProcessor {
 
 	private final EntityMetaDataVO meta;
 	private final ImportStructure importStructure;
-	private final List<ColumnToVOMapping<?>> valueColumnsInsert = new ArrayList<ColumnToVOMapping<?>>();
-	private final List<ColumnToVOMapping<?>> valueColumnsUpdate = new ArrayList<ColumnToVOMapping<?>>();
-	private final List<ColumnToVOMapping<?>> conditionColumns = new ArrayList<ColumnToVOMapping<?>>();
+	private final List<IColumnToVOMapping<? extends Object>> valueColumnsInsert = new ArrayList<IColumnToVOMapping<? extends Object>>();
+	private final List<IColumnToVOMapping<? extends Object>> valueColumnsUpdate = new ArrayList<IColumnToVOMapping<? extends Object>>();
+	private final List<IColumnToVOMapping<? extends Object>> conditionColumns = new ArrayList<IColumnToVOMapping<? extends Object>>();
 
 	private static final Set<String> systemFieldsForUpdate = new HashSet<String>();
 	static {
@@ -70,23 +71,23 @@ public class ImportObjectProcessor extends EntityObjectProcessor {
 		super(eMeta, colEfMeta);
 		this.meta = eMeta;
 		this.importStructure = structure;
-		for(ColumnToVOMapping<?> column : allColumns) {
+		for(IColumnToVOMapping<? extends Object> column : allColumns) {
 			valueColumnsInsert.add(column);
-			if(structure.getItems().containsKey(column.field)) {
+			if(structure.getItems().containsKey(column.getField())) {
 				valueColumnsUpdate.add(column);
 			}
-			else if (systemFieldsForUpdate.contains(column.column)) {
+			else if (systemFieldsForUpdate.contains(column.getColumn())) {
 				valueColumnsUpdate.add(column);
 			}
 
-			if(structure.getIdentifiers().contains(column.field)) {
+			if(structure.getIdentifiers().contains(column.getField())) {
 				conditionColumns.add(column);
 			}
 		}
 	}
 
 	@Override
-	protected DalCallResult batchInsertOrUpdate(List<ColumnToVOMapping<?>> columns, Collection<EntityObjectVO> colDalVO) {
+	protected DalCallResult batchInsertOrUpdate(List<IColumnToVOMapping<? extends Object>> columns, Collection<EntityObjectVO> colDalVO) {
 		DalCallResult dcr = new DalCallResult();
 		for(EntityObjectVO dalVO : colDalVO) {
 			Map<String, Object> columnValueMap = getColumnValuesMap(valueColumnsUpdate, dalVO, false);

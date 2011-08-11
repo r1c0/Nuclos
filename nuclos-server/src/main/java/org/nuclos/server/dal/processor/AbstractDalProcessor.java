@@ -43,17 +43,10 @@ public abstract class AbstractDalProcessor<DalVO extends IDalVO> {
 	protected final static Class<InternalTimestamp>	DT_INTERNALTIMESTAMP = org.nuclos.common2.InternalTimestamp.class;
 	protected final static Class<Boolean>	        DT_BOOLEAN	         = java.lang.Boolean.class;
 
-	/**
-	 *
-	 */
 	protected AbstractDalProcessor() {
 		initLogger();
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	public final String getProcessor() {
 		Class<?>[] interfaces = getClass().getInterfaces();
 		if (interfaces.length == 0)
@@ -71,17 +64,13 @@ public abstract class AbstractDalProcessor<DalVO extends IDalVO> {
 		}
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	public Class<DalVO> getDalVOClass() {
 		if (dalVOClzz == null) {
 			Type genericSuperClass = getClass().getGenericSuperclass();
 			while (!(genericSuperClass instanceof ParameterizedType) && genericSuperClass instanceof Class<?>) {
 				genericSuperClass = ((Class<?>)genericSuperClass).getGenericSuperclass();
 			}
-			Type actualType = ((ParameterizedType)genericSuperClass).getActualTypeArguments()[1];
+			Type actualType = ((ParameterizedType)genericSuperClass).getActualTypeArguments()[0];
 			if(actualType instanceof ParameterizedType) {
 				dalVOClzz = (Class<?>) ((ParameterizedType) actualType).getRawType();
 			}

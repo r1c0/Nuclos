@@ -25,14 +25,12 @@ import java.util.NoSuchElementException;
 import java.util.prefs.Preferences;
 
 import org.apache.log4j.Logger;
-import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosImage;
 import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.InternalTimestamp;

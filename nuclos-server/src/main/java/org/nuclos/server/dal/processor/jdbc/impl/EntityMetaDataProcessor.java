@@ -20,14 +20,15 @@ import java.util.Collection;
 import java.util.List;
 
 import org.nuclos.common.dal.DalCallResult;
-import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityMetaDataProcessor;
 
-public class EntityMetaDataProcessor extends AbstractJdbcDalProcessor<EntityFieldMetaDataVO,EntityMetaDataVO> 
-implements JdbcEntityMetaDataProcessor {	
-	private final ColumnToVOMapping<Long> idColumn;
+public class EntityMetaDataProcessor extends AbstractJdbcDalProcessor<EntityMetaDataVO> 
+implements JdbcEntityMetaDataProcessor {
+	
+	private final IColumnToVOMapping<Long> idColumn;
 	
 	public EntityMetaDataProcessor() {
 		super();
@@ -82,7 +83,7 @@ implements JdbcEntityMetaDataProcessor {
 	}
 	
 	@Override
-	protected ColumnToVOMapping<Long> getPrimaryKeyColumn() {
+	protected IColumnToVOMapping<Long> getPrimaryKeyColumn() {
 		return idColumn;
 	}
 

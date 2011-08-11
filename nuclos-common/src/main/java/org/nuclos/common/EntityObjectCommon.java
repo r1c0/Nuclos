@@ -18,7 +18,6 @@ package org.nuclos.common;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
 

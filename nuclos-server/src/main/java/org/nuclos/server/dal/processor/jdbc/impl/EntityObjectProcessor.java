@@ -50,6 +50,7 @@ import org.nuclos.server.common.DatasourceServerUtils;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.dal.DalUtils;
+import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcWithFieldsDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.database.DataBaseHelper;
@@ -63,7 +64,7 @@ import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectSearchExpression;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 
-public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<Object,EntityObjectVO>
+public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<EntityObjectVO>
 	implements JdbcEntityObjectProcessor {
 	
 	// static variables
@@ -75,7 +76,8 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<Ob
 	 */
 	private static final CollectableEntityField clctEOEFdeleted = new CollectableEOEntityField(NuclosEOField.LOGGICALDELETED.getMetaData(), "<dummy>");
 
-	private final Collection<List<ColumnToVOMapping<?>>> logicalUniqueConstraintCombinations = new ArrayList<List<ColumnToVOMapping<?>>>();
+	private final Collection<List<IColumnToVOMapping<?>>> logicalUniqueConstraintCombinations = 
+		new ArrayList<List<IColumnToVOMapping<?>>>();
 
 	private static final Set<String> staticSystemFields;
 	static {
@@ -94,8 +96,8 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<Ob
 	private final String dbSourceForSQL;
 	private final String dbSourceForDML;
 
-	private final ColumnToVOMapping<Long> idColumn;
-	private final ColumnToVOMapping<Integer> versionColumn;
+	private final IColumnToVOMapping<Long> idColumn;
+	private final IColumnToVOMapping<Integer> versionColumn;
 
 	public EntityObjectProcessor(EntityMetaDataVO eMeta, Collection<EntityFieldMetaDataVO> colEfMeta) {
 		this(eMeta, colEfMeta, true);
@@ -127,23 +129,23 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<Ob
 			}
 
 			if (efMeta.getForeignEntity() == null) {
-				allColumns.add(createSimpleDynamicMapping(efMeta.getDbColumn(), efMeta.getField(), efMeta.getDataType(), efMeta.isReadonly(), false, efMeta.isDynamic()));
+				allColumns.add(createFieldMapping(efMeta.getDbColumn(), efMeta.getField(), efMeta.getDataType(), efMeta.isReadonly(), efMeta.isDynamic()));
 			} else {
 				if (efMeta.getDbColumn().toUpperCase().startsWith("INTID_")) {
 					// kein join nötig!
 					if (!isIdColumnInList(allColumns, efMeta.getDbColumn()))
-						allColumns.add(createSimpleDynamicMapping(efMeta.getDbColumn(), efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), true, efMeta.isDynamic()));
+						allColumns.add(createFieldIdMapping(efMeta.getDbColumn(), efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), efMeta.isDynamic()));
 				} else {
-					allColumns.add(createSimpleDynamicMapping(efMeta.getDbColumn(), efMeta.getField(), efMeta.getDataType(), true, false, efMeta.isDynamic()));
+					allColumns.add(createFieldMapping(efMeta.getDbColumn(), efMeta.getField(), efMeta.getDataType(), true, efMeta.isDynamic()));
 					String dbIdFieldName = DalUtils.getDbIdFieldName(efMeta.getDbColumn());
 					if (!isIdColumnInList(allColumns, dbIdFieldName)) {
-						allColumns.add(createSimpleDynamicMapping(dbIdFieldName, efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), true, efMeta.isDynamic()));
+						allColumns.add(createFieldIdMapping(dbIdFieldName, efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), efMeta.isDynamic()));
 					}
 					else {
-						ColumnToVOMapping<?> col = getColumnFromList(allColumns, dbIdFieldName);
-						if (col.isReadonly && !efMeta.isReadonly()) {
+						IColumnToVOMapping<?> col = getColumnFromList(allColumns, dbIdFieldName);
+						if (col.isReadonly() && !efMeta.isReadonly()) {
 							allColumns.remove(col);
-							allColumns.add(createSimpleDynamicMapping(dbIdFieldName, efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), true, efMeta.isDynamic()));
+							allColumns.add(createFieldIdMapping(dbIdFieldName, efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), efMeta.isDynamic()));
 						}
 					}
 				}
@@ -158,11 +160,12 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<Ob
 		 */
 		if (eMeta.getLogicalUniqueFieldCombinations() != null) {
 			for (Set<String> lufCombination : eMeta.getLogicalUniqueFieldCombinations()) {
-				List<ColumnToVOMapping<?>> ctovMappings = new ArrayList<ColumnToVOMapping<?>>(lufCombination.size());
+				List<IColumnToVOMapping<? extends Object>> ctovMappings = 
+					new ArrayList<IColumnToVOMapping<?>>(lufCombination.size());
 
 				for (String luField : lufCombination) {
-					for (ColumnToVOMapping<?> ctovMap : allColumns) {
-						if (!ctovMap.isReadonly && luField.equals(ctovMap.field)) {
+					for (IColumnToVOMapping<?> ctovMap : allColumns) {
+						if (!ctovMap.isReadonly() && luField.equals(ctovMap.getField())) {
 							ctovMappings.add(ctovMap);
 						}
 					}
@@ -180,33 +183,33 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<Ob
 		} catch (CloneNotSupportedException e) {
 			throw new IllegalStateException(e.toString());
 		}
-		clone.allColumns = (List<ColumnToVOMapping<?>>) CloneUtils.cloneCollection(allColumns);
+		clone.allColumns = (List<IColumnToVOMapping<? extends Object>>) CloneUtils.cloneCollection(allColumns);
 		return clone;
 	}
 	
 	public void addToColumns(EntityFieldMetaDataVO field) {
-		final ColumnToVOMapping<?> mapping;
+		final IColumnToVOMapping<?> mapping;
 		final PivotInfo pinfo = field.getPivotInfo();
 		if (pinfo == null) {
-			mapping = createSimpleDynamicMapping(
-					field.getDbColumn(), field.getField(), field.getDataType(), field.isReadonly(), false, false);
+			mapping = createFieldMapping(
+					field.getDbColumn(), field.getField(), field.getDataType(), field.isReadonly(), false);
 		}
 		else {
 			final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
 			final EntityFieldMetaDataVO vField = mdProv.getEntityField(pinfo.getSubform(), pinfo.getValueField());
-			mapping = createSimpleDynamicMapping(
-					vField.getDbColumn(), vField.getField(), vField.getDataType(), vField.isReadonly(), false, false);
+			mapping = createFieldMapping(
+					vField.getDbColumn(), vField.getField(), vField.getDataType(), vField.isReadonly(), false);
 		}
 		allColumns.add(mapping);
 	}
 
-	private boolean isIdColumnInList(List<ColumnToVOMapping<?>> list, String columnName) {
+	private boolean isIdColumnInList(List<IColumnToVOMapping<?>> list, String columnName) {
 		return getColumnFromList(list, columnName) != null;
 	}
 
-	private ColumnToVOMapping<?> getColumnFromList(List<ColumnToVOMapping<?>> list, String columnName) {
-		for (ColumnToVOMapping<?> column : list) {
-			if (column.column.equals(columnName)) {
+	private IColumnToVOMapping<?> getColumnFromList(List<IColumnToVOMapping<?>> list, String columnName) {
+		for (IColumnToVOMapping<?> column : list) {
+			if (column.getColumn().equals(columnName)) {
 				return column;
 			}
 		}
@@ -253,7 +256,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<Ob
 	}
 
 	@Override
-	protected ColumnToVOMapping<Long> getPrimaryKeyColumn() {
+	protected IColumnToVOMapping<Long> getPrimaryKeyColumn() {
 		return idColumn;
 	}
 
@@ -335,7 +338,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<Ob
 
 	@Override
 	public List<EntityObjectVO> getBySearchExpression(Collection<String> fields, CollectableSearchExpression clctexpr, Integer iMaxRowCount, boolean bSortResult, boolean bSearchInDMLSource) {
-		List<ColumnToVOMapping<?>> columns = fields == null ? allColumns : getColumns(fields, bSearchInDMLSource);
+		List<IColumnToVOMapping<? extends Object>> columns = fields == null ? allColumns : getColumns(fields, bSearchInDMLSource);
 
 		if (fields != null && !columns.contains(idColumn)) {
 			columns.add(idColumn);
@@ -366,7 +369,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<Ob
 		if(SecurityCache.getInstance().isSuperUser(user) || SecurityCache.getInstance().getModulePermissions(user).getMaxPermissionForObjectGroup(eMeta.getEntity(), null) != null) {
 			return getIdsBySearchExpression(searchExpression);
 		}
-        DbQuery<Long> query = DataBaseHelper.getDbAccess().getQueryBuilder().<Long>createQuery(getPrimaryKeyColumn().dataType);
+        DbQuery<Long> query = DataBaseHelper.getDbAccess().getQueryBuilder().<Long>createQuery(getPrimaryKeyColumn().getDataType());
 
 		DbFrom from = query.from(getDbSourceForSQL()).alias("t");
 
@@ -377,7 +380,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<Ob
 		unparser.unparseSortingOrder(searchExpression.getSortingOrder());
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
-		DbQuery<Long> groupsubquery = builder.createQuery(getPrimaryKeyColumn().dataType);
+		DbQuery<Long> groupsubquery = builder.createQuery(getPrimaryKeyColumn().getDataType());
 		DbFrom sqfrom = groupsubquery.from("t_ud_genericobject").alias("g");
 		sqfrom.innerJoin(getDbSourceForDML()).on("intid", "intid").alias("eo");
 		DbJoin role_mod = sqfrom.innerJoin("t_md_role_module").on("intid_t_md_module", "intid_t_md_module").alias("rm");
@@ -484,9 +487,9 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<Ob
 	 */
 	private DalCallResult checkLogicalUniqueConstraint(DalCallResult result, EntityObjectVO dalVO) {
 		if (!logicalUniqueConstraintCombinations.isEmpty()) {
-			for (List<ColumnToVOMapping<?>> columns : logicalUniqueConstraintCombinations) {
+			for (List<IColumnToVOMapping<?>> columns : logicalUniqueConstraintCombinations) {
 
-				final Map<ColumnToVOMapping<?>, Object> checkValues = super.getColumnValuesMapWithMapping(columns, dalVO, false);
+				final Map<IColumnToVOMapping<?>, Object> checkValues = super.getColumnValuesMapWithMapping(columns, dalVO, false);
 				final DalBusinessException checkResult = super.checkLogicalUniqueConstraint(checkValues, dalVO.getId());
 				if (checkResult != null)
 					result.addBusinessException(checkResult);
@@ -501,11 +504,11 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<Ob
 	 * @param bSearchInDMLSource
 	 * @return
 	 */
-	private List<ColumnToVOMapping<?>> getColumns(final Collection<String> fields, final boolean bSearchInDMLSource) {
-		return CollectionUtils.select(allColumns, new Predicate<ColumnToVOMapping<?>>() {
+	private List<IColumnToVOMapping<? extends Object>> getColumns(final Collection<String> fields, final boolean bSearchInDMLSource) {
+		return CollectionUtils.select(allColumns, new Predicate<IColumnToVOMapping<? extends Object>>() {
 			@Override
-			public boolean evaluate(ColumnToVOMapping<?> t) {
-				return fields.contains(t.field) && (!bSearchInDMLSource || (bSearchInDMLSource && !t.isReadonly));
+			public boolean evaluate(IColumnToVOMapping<? extends Object> column) {
+				return fields.contains(column.getField()) && (!bSearchInDMLSource || (bSearchInDMLSource && !column.isReadonly()));
 			}});
 	}
 

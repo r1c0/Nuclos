@@ -21,17 +21,18 @@ import java.util.List;
 
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityFieldMetaDataProcessor;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 
-public class EntityFieldMetaDataProcessor extends AbstractJdbcDalProcessor<Object,EntityFieldMetaDataVO> 
+public class EntityFieldMetaDataProcessor extends AbstractJdbcDalProcessor<EntityFieldMetaDataVO> 
 implements JdbcEntityFieldMetaDataProcessor{
 	
-	private final ColumnToVOMapping<Long> idColumn;
-	private final ColumnToVOMapping<Long> entityIdColumn;
+	private final IColumnToVOMapping<Long> idColumn;
+	private final IColumnToVOMapping<Long> entityIdColumn;
 	
 	public EntityFieldMetaDataProcessor() {
 		super();
@@ -93,7 +94,7 @@ implements JdbcEntityFieldMetaDataProcessor{
 	}
 	
 	@Override
-	protected ColumnToVOMapping<Long> getPrimaryKeyColumn() {
+	protected IColumnToVOMapping<Long> getPrimaryKeyColumn() {
 		return idColumn;
 	}
 

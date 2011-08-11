@@ -18,7 +18,6 @@ package org.nuclos.server.entityobject;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;

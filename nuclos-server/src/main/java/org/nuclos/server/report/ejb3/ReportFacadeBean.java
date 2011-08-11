@@ -56,7 +56,6 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 import org.apache.commons.lang.SerializationUtils;
-import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.MarshalledValue;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;

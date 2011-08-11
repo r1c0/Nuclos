@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.nuclos.common.AttributeProvider;
-import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.ModuleProvider;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.CollectableEntityField;

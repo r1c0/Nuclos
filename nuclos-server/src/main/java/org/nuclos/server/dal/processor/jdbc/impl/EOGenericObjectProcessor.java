@@ -21,14 +21,15 @@ import java.util.List;
 
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EOGenericObjectVO;
+import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.IEOGenericObjectProcessor;
 
-public class EOGenericObjectProcessor extends AbstractJdbcDalProcessor<Object,EOGenericObjectVO>
+public class EOGenericObjectProcessor extends AbstractJdbcDalProcessor<EOGenericObjectVO>
 	implements IEOGenericObjectProcessor {
 	
-	private ColumnToVOMapping<Long> idColumn; 
-	private ColumnToVOMapping<Long> moduleColumn;
+	private IColumnToVOMapping<Long> idColumn; 
+	private IColumnToVOMapping<Long> moduleColumn;
 	
 	public EOGenericObjectProcessor() {
 		super();
@@ -55,7 +56,7 @@ public class EOGenericObjectProcessor extends AbstractJdbcDalProcessor<Object,EO
 	}
 
 	@Override
-	protected ColumnToVOMapping<Long> getPrimaryKeyColumn() {
+	protected IColumnToVOMapping<Long> getPrimaryKeyColumn() {
 		return idColumn;
 	}
 

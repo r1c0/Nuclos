@@ -3,7 +3,7 @@ package org.nuclos.server.dal.processor.jdbc;
 import org.nuclos.common.dal.vo.IDalWithFieldsVO;
 import org.nuclos.common2.exception.CommonFatalException;
 
-public abstract class AbstractJdbcWithFieldsDalProcessor<T, DalVO extends IDalWithFieldsVO<T>> extends AbstractJdbcDalProcessor<T, DalVO> {
+public abstract class AbstractJdbcWithFieldsDalProcessor<DalVO extends IDalWithFieldsVO<?>> extends AbstractJdbcDalProcessor<DalVO> {
 
 	private int maxFieldCount = 20;
 
@@ -27,7 +27,7 @@ public abstract class AbstractJdbcWithFieldsDalProcessor<T, DalVO extends IDalWi
 	protected DalVO newDalVOInstance(){
 		try {
 			DalVO newInstance = (DalVO) getDalVOClass().newInstance();
-			((IDalWithFieldsVO<T>) newInstance).initFields(maxFieldCount, maxFieldIdCount);
+			((IDalWithFieldsVO<?>) newInstance).initFields(maxFieldCount, maxFieldIdCount);
 			return newInstance;
 		}
 		catch(Exception e) {
