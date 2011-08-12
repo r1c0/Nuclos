@@ -222,7 +222,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 		final Map<IColumnToVOMapping<?>, Object> map = new LinkedHashMap<IColumnToVOMapping<?>, Object>();
 		for (IColumnToVOMapping<?> column : columns) {
 			if (!withReadonly && column.isReadonly()) continue;
-			column.convertFromDalFieldToDbValue(dalVO);
+			map.put(column, column.convertFromDalFieldToDbValue(dalVO));
 		}
 		return map;
 	}
