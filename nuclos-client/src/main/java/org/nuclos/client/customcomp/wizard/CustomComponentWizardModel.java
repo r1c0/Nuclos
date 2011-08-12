@@ -538,12 +538,13 @@ public class CustomComponentWizardModel extends StaticModel {
 		private void configureResourceSortFieldComboBox() {
 			final String resEntity = (String) resEntityComboBox.getSelectedItem();
 			List<String> fieldNames = new ArrayList<String>();
-			fieldNames.add(null);
 			if (resEntity != null) {
 				for (EntityFieldMetaDataVO field : MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(resEntity).values()) {
 					fieldNames.add(field.getField());
 				}
 			}
+			Collections.sort(fieldNames);
+			fieldNames.add(0, null);
 			resSortFieldComboBox.setModel(new ListComboBoxModel<String>(fieldNames));
 		}
 
@@ -557,6 +558,7 @@ public class CustomComponentWizardModel extends StaticModel {
 						refFieldNames.add(field.getField());
 				}
 			}
+			Collections.sort(refFieldNames);
 			referenceFieldComboBox.setModel(new ListComboBoxModel<String>(refFieldNames));
 		}
 
