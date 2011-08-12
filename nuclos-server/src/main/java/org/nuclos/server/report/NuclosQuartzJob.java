@@ -20,6 +20,7 @@ import org.nuclos.common.ParameterProvider;
 import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.security.NuclosLocalServerSession;
 import org.quartz.Job;
+import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
@@ -50,26 +51,31 @@ public class NuclosQuartzJob implements Job {
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		try {
-			setUserNameAndPassword();		
-			NuclosLocalServerSession.loginAsUser(sUserName);
+			setUserNameAndPassword();
+			String realuser = sUserName;
+			JobDetail jd = context.getJobDetail();
+			if (jd != null && jd.getJobDataMap() != null && jd.getJobDataMap().get("User") != null) {
+				realuser = jd.getJobDataMap().getString("User");
+			}
+			NuclosLocalServerSession.loginAsUser(realuser);
 			try {
 				this.job.execute(context);
 			}
 			finally {
 				NuclosLocalServerSession.logout();
 			}
-		}		
+		}
 		catch (Exception ex) {
 			throw new JobExecutionException(ex);
-		}		
+		}
 	}
-	
+
 	protected void setUserNameAndPassword() {
 		sUserName = ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_TIMELIMIT_RULE_USER);
 	}
-	
+
 	protected static String getUserName() {
 		return sUserName;
 	}
-	
+
 }	// class NuclosQuartzJob

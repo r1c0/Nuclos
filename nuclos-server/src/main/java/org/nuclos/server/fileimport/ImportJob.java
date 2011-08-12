@@ -40,6 +40,8 @@ public class ImportJob extends NuclosInterruptableJob {
 	    super(new ImportJobImpl());
     }
 
+
+
 	private static class ImportJobImpl implements InterruptableJob {
 
 		private static final Logger log = Logger.getLogger(MasterDataFacadeHelper.class);
@@ -52,7 +54,7 @@ public class ImportJob extends NuclosInterruptableJob {
 			Integer importFileId = Integer.parseInt(sId);
 			String correlationId = context.getJobDetail().getJobDataMap().getString("ProcessId");
 			Integer localeId = context.getJobDetail().getJobDataMap().getInt("LocaleId");
-			String username = context.getJobDetail().getJobDataMap().getString("ProcessId");
+			String username = context.getJobDetail().getJobDataMap().getString("User");
 
 			try {
 				this.context = new ImportContext(importFileId, correlationId, localeId, username);
