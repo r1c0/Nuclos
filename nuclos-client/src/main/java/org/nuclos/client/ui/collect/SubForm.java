@@ -323,6 +323,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		this.listeners = new ArrayList<SubFormToolListener>();
 		subformtbl = new SubFormTable(this);
 		subformtbl.addMouseListener(new SubFormPopupMenuMouseAdapter(subformtbl));
+		subformtbl.addMouseListener(new DoubleClickMouseAdapter());
 		subformtbl.addMouseMotionListener(new URIMouseAdapter());
 		subformtbl.addMouseListener(new URIMouseAdapter());
 		contentPane.add(scrollPane, BorderLayout.CENTER);
@@ -2171,5 +2172,29 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 			}
 		}
 	};
+
+	private class DoubleClickMouseAdapter extends MouseAdapter {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			if (e.getButton() == MouseEvent.BUTTON1) {
+		    	if (e.getClickCount() == 2) {
+		    		JTable table = getJTable();
+		    		int col = table.columnAtPoint(e.getPoint());
+					int row = table.rowAtPoint(e.getPoint());
+					if (col != -1 && row != -1) {
+						TableCellEditor tce = table.getCellEditor(row, col);
+						if(tce instanceof CollectableComponentTableCellEditor) {
+							CollectableComponent clctcmp = ((CollectableComponentTableCellEditor) tce).getCollectableComponent();
+							if (clctcmp instanceof MouseListener) {
+								Object value = table.getModel().getValueAt(row, table.convertColumnIndexToModel(col));
+								tce.getTableCellEditorComponent(table, value, false, row, col);	// contained field is set without triggering listeners
+								((MouseListener) clctcmp).mouseClicked(e);
+							}
+						}
+					}
+		    	}
+		    }
+		}
+	}
 
 }	// class SubForm
