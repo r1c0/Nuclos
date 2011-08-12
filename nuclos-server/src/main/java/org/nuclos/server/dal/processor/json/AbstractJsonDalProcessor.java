@@ -22,4 +22,9 @@ import org.nuclos.server.dal.processor.AbstractDalProcessor;
 @Deprecated
 public class AbstractJsonDalProcessor<DalVO extends IDalVO> extends AbstractDalProcessor<DalVO> {
 	// TODO fuelle mit Leben... ;-)
+	
+	protected AbstractJsonDalProcessor(Class<DalVO> type) {
+		super(type);
+	}
+	
 }

@@ -30,6 +30,10 @@ import org.nuclos.server.dal.provider.SystemMetaDataProvider;
 public class EntityMetaDataProcessor extends AbstractJsonDalProcessor<EntityMetaDataVO> 
 implements JsonEntityMetaDataProcessor {
 
+	protected EntityMetaDataProcessor() {
+		super(EntityMetaDataVO.class);
+	}
+	
 	@Override
 	public List<EntityMetaDataVO> getAll() {
 		List<EntityMetaDataVO> result = new ArrayList<EntityMetaDataVO>();

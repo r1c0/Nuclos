@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dal.provider;
 
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
@@ -26,38 +27,67 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.processor.jdbc.impl.DynamicFieldMetaDataProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.DynamicMetaDataProcessor;
+import org.nuclos.server.dal.processor.json.impl.EntityObjectProcessor;
+import org.nuclos.server.dal.processor.nuclet.IEOGenericObjectProcessor;
+import org.nuclos.server.dal.processor.nuclet.JdbcEntityFieldMetaDataProcessor;
+import org.nuclos.server.dal.processor.nuclet.JdbcEntityMetaDataProcessor;
 import org.nuclos.server.dal.processor.nuclos.JsonEntityFieldMetaDataProcessor;
 import org.nuclos.server.dal.processor.nuclos.JsonEntityMetaDataProcessor;
 import org.nuclos.server.dal.processor.nuclos.JsonEntityObjectProcessor;
 
+/**
+ * @deprecated Replace with pure Spring solution.
+ */
 public class NuclosDalProvider extends AbstractDalProvider {
 	
 	/**
 	 * Singleton der auch in einer MultiThreading-Umgebung Threadsafe ist...
 	 */
-	private static NuclosDalProvider singleton = new NuclosDalProvider();
+	private static final NuclosDalProvider singleton = new NuclosDalProvider();
+	
+	// instance variables
+	
+	protected final Map<String, JsonEntityObjectProcessor> mapEntityObject = new ConcurrentHashMap<String, JsonEntityObjectProcessor>();
+	
+	protected JsonEntityMetaDataProcessor entityMetaDataProcessor;
+	protected JsonEntityFieldMetaDataProcessor entityFieldMetaDataProcessor;
+	private DynamicMetaDataProcessor dynMetaDataProcessor;
 	
 	public static NuclosDalProvider getInstance() {
 		return singleton;
 	}	
 	
-	protected JsonEntityMetaDataProcessor entityMetaData;
-	protected JsonEntityFieldMetaDataProcessor entityFieldMetaData;
-	protected final Map<String, JsonEntityObjectProcessor> mapEntityObject = new ConcurrentHashMap<String, JsonEntityObjectProcessor>();
-	private DynamicMetaDataProcessor dynMetaDataProc;
-	
 	private NuclosDalProvider(){
-		Properties dalProperties = getDalProperties();
-		
+	}
+	
+	/**
+	 * Spring property.
+	 */
+	public void setEntityMetaDataProcessor(JsonEntityMetaDataProcessor processor) {
+		this.entityMetaDataProcessor = processor;
+	}
+	
+	/**
+	 * Spring property.
+	 */
+	public void setEntityFieldMetaDataProcessor(JsonEntityFieldMetaDataProcessor processor) {
+		this.entityFieldMetaDataProcessor = processor;
+	}
+	
+	/**
+	 * Spring property.
+	 */
+	public void setDynamicMetaDataProcessor(DynamicMetaDataProcessor processor) {
+		this.dynMetaDataProcessor = processor;
+	}	
+	
+	public void buildEOProcessors() {
 		try {
-			entityMetaData = (JsonEntityMetaDataProcessor) Class.forName(dalProperties.getProperty("entity.meta.data.nuclos")).newInstance();
-			entityFieldMetaData = (JsonEntityFieldMetaDataProcessor) Class.forName(dalProperties.getProperty("entity.field.meta.data.nuclos")).newInstance();
-			
-			for (EntityMetaDataVO eMeta : entityMetaData.getAll()) {
-				mapEntityObject.put(eMeta.getEntity(), 
-					(JsonEntityObjectProcessor) Class.forName(dalProperties.getProperty("entity.object.nuclos")).getConstructor(
-						EntityMetaDataVO.class, 	Collection.class).newInstance(
-						eMeta, 							entityFieldMetaData.getByParent(eMeta.getEntity())));
+			final Class<? extends JsonEntityObjectProcessor> clazz = EntityObjectProcessor.class;
+			final Constructor<? extends JsonEntityObjectProcessor> constr = clazz.getConstructor(EntityMetaDataVO.class, Collection.class);
+			for (EntityMetaDataVO eMeta : entityMetaDataProcessor.getAll()) {
+				mapEntityObject.put(
+						eMeta.getEntity(), constr.newInstance(eMeta, entityFieldMetaDataProcessor.getByParent(eMeta.getEntity())));
 			}
 		} catch (Exception ex) {
 			throw new CommonFatalException(ex);
@@ -65,11 +95,11 @@ public class NuclosDalProvider extends AbstractDalProvider {
 	}
 	
 	public JsonEntityMetaDataProcessor getEntityMetaDataProcessor() {
-		return entityMetaData;
+		return entityMetaDataProcessor;
 	}
 	
 	public JsonEntityFieldMetaDataProcessor getEntityFieldMetaDataProcessor() {
-		return entityFieldMetaData;
+		return entityFieldMetaDataProcessor;
 	}
 	
 	public JsonEntityObjectProcessor getEntityObjectProcessor(NuclosEntity entity) {
@@ -85,9 +115,9 @@ public class NuclosDalProvider extends AbstractDalProvider {
 	}
 
 	public DynamicMetaDataProcessor getDynamicEntityMetaProcessor() {
-		if(dynMetaDataProc == null)
-			dynMetaDataProc = new DynamicMetaDataProcessor();
-	    return dynMetaDataProc;
+		if(dynMetaDataProcessor == null)
+			dynMetaDataProcessor = new DynamicMetaDataProcessor();
+	    return dynMetaDataProcessor;
     }
 	
 	public DynamicFieldMetaDataProcessor getDynamicFieldMetaDataProcessor(EntityMetaDataVO entity) {

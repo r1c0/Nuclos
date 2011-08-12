@@ -23,15 +23,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.exception.DalBusinessException;
 import org.nuclos.common.dal.vo.EOGenericObjectVO;
-import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
-import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
+import org.nuclos.server.dal.processor.ProcessorConfiguration;
+import org.nuclos.server.dal.processor.jdbc.AbstractJdbcDalProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
@@ -51,7 +52,9 @@ import org.nuclos.server.fileimport.ImportStructure;
  */
 public class ImportObjectProcessor extends EntityObjectProcessor {
 
-	private final EntityMetaDataVO meta;
+	private static final Logger LOG = Logger.getLogger(AbstractJdbcDalProcessor.class);
+
+	// private final EntityMetaDataVO meta;
 	private final ImportStructure importStructure;
 	private final List<IColumnToVOMapping<? extends Object>> valueColumnsInsert = new ArrayList<IColumnToVOMapping<? extends Object>>();
 	private final List<IColumnToVOMapping<? extends Object>> valueColumnsUpdate = new ArrayList<IColumnToVOMapping<? extends Object>>();
@@ -67,9 +70,8 @@ public class ImportObjectProcessor extends EntityObjectProcessor {
 	private int inserted = 0;
 	private int updated = 0;
 
-	public ImportObjectProcessor(EntityMetaDataVO eMeta, Collection<EntityFieldMetaDataVO> colEfMeta, ImportStructure structure) {
-		super(eMeta, colEfMeta);
-		this.meta = eMeta;
+	public ImportObjectProcessor(ProcessorConfiguration config, ImportStructure structure) {
+		super(config);
 		this.importStructure = structure;
 		for(IColumnToVOMapping<? extends Object> column : allColumns) {
 			valueColumnsInsert.add(column);
@@ -111,14 +113,14 @@ public class ImportObjectProcessor extends EntityObjectProcessor {
 					inserted++;
 				}
 
-				if(meta.isStateModel() && !updated) {
+				if(eMeta.isStateModel() && !updated) {
 					EOGenericObjectVO eogo = new EOGenericObjectVO();
 					eogo.setId(dalVO.getId());
 					eogo.setCreatedBy(dalVO.getCreatedBy());
 					eogo.setCreatedAt(dalVO.getCreatedAt());
 					eogo.setChangedBy(dalVO.getChangedBy());
 					eogo.setChangedAt(dalVO.getChangedAt());
-					eogo.setModuleId(meta.getId());
+					eogo.setModuleId(eMeta.getId());
 					eogo.setVersion(1);
 					eogo.flagNew();
 					NucletDalProvider.getInstance().getEOGenericObjectProcessor().insertOrUpdate(eogo);
@@ -129,7 +131,7 @@ public class ImportObjectProcessor extends EntityObjectProcessor {
 					dcr.addBusinessException(new DalBusinessException(dalVO.getId(), getReadableMessage(ex), ex));
 				}
 				catch(Exception e) {
-					error(e);
+					LOG.error(e);
 					dcr.addBusinessException(new DalBusinessException(dalVO.getId(), getReadableMessage(ex), ex));
 				}
 			}
@@ -144,4 +146,5 @@ public class ImportObjectProcessor extends EntityObjectProcessor {
 	public int getUpdated() {
 		return updated;
 	}
+	
 }

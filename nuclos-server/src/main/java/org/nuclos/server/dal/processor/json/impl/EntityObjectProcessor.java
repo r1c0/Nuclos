@@ -29,7 +29,7 @@ public class EntityObjectProcessor extends AbstractJsonDalProcessor<EntityObject
 implements JsonEntityObjectProcessor{
 	
 	public EntityObjectProcessor(EntityMetaDataVO eMeta, Collection<EntityFieldMetaDataVO> colEfMeta) {
-		
+		super(EntityObjectVO.class);
 	}
 
 	@Override

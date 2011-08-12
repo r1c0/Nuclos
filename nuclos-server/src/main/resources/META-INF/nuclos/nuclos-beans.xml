@@ -154,7 +154,7 @@
 
 	<bean id="xmlExportImportProtocolService" class="org.nuclos.server.transfer.ejb3.XmlExportImportProtocolFacadeBean"/>
 
-	<bean id="xmlExportService" class="org.nuclos.server.transfer.ejb3.XmlExportFacadeBean"/>
+	<bean id="xmlExportService" class="org.nuclos.server.transfer.ejb3.XmlExportFacadeBean" depends-on="nucletDalProvider"/>
 
 	<bean id="xmlImportService" class="org.nuclos.server.transfer.ejb3.XmlImportFacadeBean"/>
 
@@ -231,5 +231,41 @@
 	<sec:session-management/>
 	<sec:custom-filter ref="sessionInvalidationFilter" before="SECURITY_CONTEXT_FILTER"/>
   </sec:http>
+  
+  <!-- Initialize dal provider - since 3.1.01 -->
+  
+  <bean id="processorFactorySingleton" class="org.nuclos.server.dal.processor.ProcessorFactorySingleton" factory-method="getInstance">
+  </bean>
+  
+  <bean id="jdbcEntityMetaDataProcessor" factory-bean="processorFactorySingleton" factory-method="newEntityMetaDataProcessor">
+  </bean>
+  
+  <bean id="jdbcEntityFieldMetaDataProcessor" factory-bean="processorFactorySingleton" factory-method="newEntityFieldMetaDataProcessor">
+  </bean>
+  
+  <bean id="genericObjectProcessor" factory-bean="processorFactorySingleton" factory-method="newEOGenericObjectProcessor">
+  </bean>
+  
+  <bean id="jsonEntityMetaDataProcessor" class="org.nuclos.server.dal.processor.json.impl.EntityMetaDataProcessor">
+  </bean>
+  
+  <bean id="jsonEntityFieldMetaDataProcessor" class="org.nuclos.server.dal.processor.json.impl.EntityFieldMetaDataProcessor">
+  </bean>
+
+  <bean id="dynamicMetaDataProcessor" class="org.nuclos.server.dal.processor.jdbc.impl.DynamicMetaDataProcessor">
+  </bean>
+  
+  <bean id="nuclosDalProvider" class="org.nuclos.server.dal.provider.NuclosDalProvider" factory-method="getInstance" init-method="buildEOProcessors">
+  	<property name="entityMetaDataProcessor"><ref bean="jsonEntityMetaDataProcessor"/></property>
+  	<property name="entityFieldMetaDataProcessor"><ref bean="jsonEntityFieldMetaDataProcessor"/></property>
+  	<property name="dynamicMetaDataProcessor"><ref bean="dynamicMetaDataProcessor"/></property>
+  </bean>
+  
+  <bean id="nucletDalProvider" class="org.nuclos.server.dal.provider.NucletDalProvider" 
+  	factory-method="getInstance" init-method="buildEOProcessors" depends-on="nuclosDalProvider">
+  	<property name="entityMetaDataProcessor"><ref bean="jdbcEntityMetaDataProcessor"/></property>
+  	<property name="entityFieldMetaDataProcessor"><ref bean="jdbcEntityFieldMetaDataProcessor"/></property>
+  	<property name="genericObjectProcessor"><ref bean="genericObjectProcessor"/></property>
+  </bean>  
 
 </beans>

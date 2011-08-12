@@ -16,8 +16,10 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dal.processor.nuclet;
 
-import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import java.util.List;
+
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.specification.IDalCountSpecification;
 import org.nuclos.server.dal.specification.IDalReadSpecification;
 import org.nuclos.server.dal.specification.IDalSearchExpressionSpecification;
@@ -34,6 +36,8 @@ public interface JdbcEntityObjectProcessor extends
 	
 	Object clone();
 	
-	void addToColumns(EntityFieldMetaDataVO field);
-
+	void addToColumns(IColumnToVOMapping<? extends Object> column);
+	
+	void setAllColumns(List<IColumnToVOMapping<? extends Object>> columns);
+	
 }

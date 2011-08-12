@@ -41,8 +41,12 @@ import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.dblayer.structure.DbTableType;
 
 public class DynamicMetaDataProcessor implements IDalReadSpecification<EntityMetaDataVO> {
+	
 	public static final String DYNAMIC_ENTITY_VIEW_PREFIX = "V_DE_";//if you change this value, change the exception text <datasource.validation.dynamic.entity.name.1> too.
 	public static final String DYNAMIC_ENTITY_PREFIX = "dyn_";
+	
+	public DynamicMetaDataProcessor() {
+	}
 
 	@Override
     public List<EntityMetaDataVO> getAll() {

@@ -34,55 +34,13 @@ implements JdbcEntityFieldMetaDataProcessor{
 	private final IColumnToVOMapping<Long> idColumn;
 	private final IColumnToVOMapping<Long> entityIdColumn;
 	
-	public EntityFieldMetaDataProcessor() {
-		super();
-		
-		idColumn = createSimpleStaticMapping("INTID", "id", DT_LONG);
-		allColumns.add(idColumn);
-		allColumns.add(createSimpleStaticMapping("DATCREATED", "createdAt", DT_INTERNALTIMESTAMP));
-		allColumns.add(createSimpleStaticMapping("STRCREATED", "createdBy", DT_STRING));
-		allColumns.add(createSimpleStaticMapping("DATCHANGED", "changedAt", DT_INTERNALTIMESTAMP));
-		allColumns.add(createSimpleStaticMapping("STRCHANGED", "changedBy", DT_STRING));
-		allColumns.add(createSimpleStaticMapping("INTVERSION", "version", DT_INTEGER));
-		
-		entityIdColumn = createSimpleStaticMapping("INTID_T_MD_ENTITY", "entityId", DT_LONG);
-		allColumns.add(entityIdColumn);
-		allColumns.add(createSimpleStaticMapping("INTID_T_MD_ENTITY_FIELD_GROUP", "fieldGroupId", DT_LONG));
-		allColumns.add(createSimpleStaticMapping("STRFIELD", "field", DT_STRING));
-		allColumns.add(createSimpleStaticMapping("STRDBFIELD", "dbColumn", DT_STRING));
-		
-		allColumns.add(createSimpleStaticMapping("STRFOREIGNENTITY", "foreignEntity", DT_STRING));
-		allColumns.add(createSimpleStaticMapping("STRFOREIGNENTITYFIELD", "foreignEntityField", DT_STRING));
-		
-		allColumns.add(createSimpleStaticMapping("STRDATATYPE", "dataType", DT_STRING));
-		allColumns.add(createSimpleStaticMapping("INTDATASCALE", "scale", DT_INTEGER));
-		allColumns.add(createSimpleStaticMapping("INTDATAPRECISION", "precision", DT_INTEGER));
-		allColumns.add(createSimpleStaticMapping("STRFORMATINPUT", "formatInput", DT_STRING));
-		allColumns.add(createSimpleStaticMapping("STRFORMATOUTPUT", "formatOutput", DT_STRING));
-		
-		allColumns.add(createSimpleStaticMapping("INTID_FOREIGN_DEFAULT", "defaultForeignId", DT_LONG));
-		allColumns.add(createSimpleStaticMapping("STRVALUE_DEFAULT", "defaultValue", DT_STRING));
-		
-		allColumns.add(createSimpleStaticMapping("BLNREADONLY", "readonly", DT_BOOLEAN));
-		allColumns.add(createSimpleStaticMapping("BLNUNIQUE", "unique", DT_BOOLEAN));
-		allColumns.add(createSimpleStaticMapping("BLNNULLABLE", "nullable", DT_BOOLEAN));
-		allColumns.add(createSimpleStaticMapping("BLNINDEXED", "indexed", DT_BOOLEAN));
-		allColumns.add(createSimpleStaticMapping("BLNSEARCHABLE", "searchable", DT_BOOLEAN));
-		allColumns.add(createSimpleStaticMapping("BLNMODIFIABLE", "modifiable", DT_BOOLEAN));
-		allColumns.add(createSimpleStaticMapping("BLNINSERTABLE", "insertable", DT_BOOLEAN));
-		allColumns.add(createSimpleStaticMapping("BLNLOGBOOKTRACKING", "logBookTracking", DT_BOOLEAN));
-		allColumns.add(createSimpleStaticMapping("BLNSHOWMNEMONIC", "showMnemonic", DT_BOOLEAN));
-		
-		allColumns.add(createSimpleStaticMapping("STRCALCFUNCTION", "calcFunction", DT_STRING));
-		allColumns.add(createSimpleStaticMapping("STRSORTATIONASC", "sortorderASC", DT_STRING));
-		allColumns.add(createSimpleStaticMapping("STRSORTATIONDESC", "sortorderDESC", DT_STRING));
-		
-		allColumns.add(createSimpleStaticMapping("STR_LOCALERESOURCE_L", "localeResourceIdForLabel", DT_STRING));
-		allColumns.add(createSimpleStaticMapping("STR_LOCALERESOURCE_D", "localeResourceIdForDescription", DT_STRING));
-		
-		allColumns.add(createSimpleStaticMapping("STR_DEFAULT_MANDATORY", "defaultMandatory", DT_STRING));
+	public EntityFieldMetaDataProcessor(List<IColumnToVOMapping<? extends Object>> allColumns, 
+			IColumnToVOMapping<Long> entityIdColumn, IColumnToVOMapping<Long> idColumn) {
+		super(EntityFieldMetaDataVO.class, allColumns);
+		this.entityIdColumn = entityIdColumn;
+		this.idColumn = idColumn;
 	}
-
+	
 	@Override
 	public String getDbSourceForDML() {
 		return "T_MD_ENTITY_FIELD";

@@ -1,7 +1,10 @@
 package org.nuclos.server.dal.processor.jdbc;
 
+import java.util.List;
+
 import org.nuclos.common.dal.vo.IDalWithFieldsVO;
 import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.server.dal.processor.IColumnToVOMapping;
 
 public abstract class AbstractJdbcWithFieldsDalProcessor<DalVO extends IDalWithFieldsVO<?>> extends AbstractJdbcDalProcessor<DalVO> {
 
@@ -9,28 +12,19 @@ public abstract class AbstractJdbcWithFieldsDalProcessor<DalVO extends IDalWithF
 
 	private int maxFieldIdCount = 5;
 
-	/**
-	 *
-	 * @param maxFieldCount
-	 * @param maxFieldIdCount
-	 */
-	protected AbstractJdbcWithFieldsDalProcessor(int maxFieldCount, int maxFieldIdCount) {
-		this();
+	protected AbstractJdbcWithFieldsDalProcessor(Class<DalVO> type, List<IColumnToVOMapping<? extends Object>> allColumns, int maxFieldCount, int maxFieldIdCount) {
+		super(type, allColumns);
 		this.maxFieldCount = maxFieldCount;
 		this.maxFieldIdCount = maxFieldIdCount;
 	}
 	
-	protected AbstractJdbcWithFieldsDalProcessor() {
-	}
-
 	@Override
-	protected DalVO newDalVOInstance(){
+	protected DalVO newDalVOInstance() {
 		try {
-			DalVO newInstance = (DalVO) getDalVOClass().newInstance();
+			DalVO newInstance = getDalType().newInstance();
 			((IDalWithFieldsVO<?>) newInstance).initFields(maxFieldCount, maxFieldIdCount);
 			return newInstance;
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new CommonFatalException(e);
 		}
 	}

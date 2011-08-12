@@ -20,6 +20,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 
+/**
+ * @deprecated Remove this - no function.
+ */
 public class AbstractProvider {
 	
 	private Logger log;
@@ -69,12 +72,6 @@ public class AbstractProvider {
 
 	protected boolean isInfoEnabled() {
 		return log.isInfoEnabled();
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		log = null;
-		super.finalize();
 	}
 
 }

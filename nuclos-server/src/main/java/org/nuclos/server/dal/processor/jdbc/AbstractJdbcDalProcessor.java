@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.DalCallResult;
@@ -53,12 +54,15 @@ import org.nuclos.server.dblayer.statements.DbTableStatement;
 import org.nuclos.server.dblayer.statements.DbUpdateStatement;
 
 public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends AbstractDalProcessor<DalVO> {
+	
+	private static final Logger LOG = Logger.getLogger(AbstractJdbcDalProcessor.class);
 
    // This must be clone and hence cannot be final.
-   protected List<IColumnToVOMapping<? extends Object>> allColumns = new ArrayList<IColumnToVOMapping<? extends Object>>();
+   protected List<IColumnToVOMapping<? extends Object>> allColumns;
 
-   public AbstractJdbcDalProcessor() {
-      super();
+   public AbstractJdbcDalProcessor(Class<DalVO> type, List<IColumnToVOMapping<? extends Object>> allColumns) {
+      super(type);
+      this.allColumns = allColumns;
    }
 
    protected abstract String getDbSourceForDML();
@@ -147,7 +151,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 				try {
 					dcr.addBusinessException(new DalBusinessException(dalVO.getId(), getReadableMessage(ex), getLogStatements(DataBaseHelper.getDbAccess().getPreparedSqlFor(stmt)), ex));
 				} catch (Exception e) {
-					error(e);
+					LOG.error(e);
 					dcr.addBusinessException(new DalBusinessException(dalVO.getId(), getReadableMessage(ex), ex));
 				}
             }
@@ -167,7 +171,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 				try {
 					dcr.addBusinessException(new DalBusinessException(id, getReadableMessage(ex), getLogStatements(DataBaseHelper.getDbAccess().getPreparedSqlFor(stmt)), ex));
 				} catch (Exception e) {
-					error(e);
+					LOG.error(e);
 					dcr.addBusinessException(new DalBusinessException(id, getReadableMessage(ex), ex));
 				}
 			}
@@ -305,46 +309,18 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 		   return table.column(mapping.getColumn(), (Class<S>) DalUtils.getDbType(mapping.getDataType()));
    }
 
-   protected <S> IColumnToVOMapping<S> createSimpleStaticMapping(final String column, final String field, final Class<S> dataType) {
-      return this.createBeanMapping(column, field, dataType, false);
-   }
-
    // TODO:
    protected String getReadableMessage(DbException ex) {
       return ex.getMessage();
    }
 
-   protected <S> IColumnToVOMapping<S> createBeanMapping(final String column, final String field, final Class<S> dataType, boolean isReadonly) {
-      final String xetterSuffix = field.substring(0,1).toUpperCase() + field.substring(1);
-      final Class<?> clazz = getDalVOClass();
-      try {
-         return new ColumnToBeanVOMapping<S>(column, field,
-            clazz.getMethod("set"+xetterSuffix, dataType),
-            clazz.getMethod((DT_BOOLEAN.equals(dataType)?"is":"get")+xetterSuffix), dataType, isReadonly);
-      }
-      catch(Exception e) {
-         throw new CommonFatalException("On " + clazz + ": " + e);
-      }
-   }
-
-   protected <S extends Object> IColumnToVOMapping<S> createFieldMapping(final String column, final String field, final String dataType, Boolean isReadonly, boolean caseSensitive) {
-      try {
-         return (IColumnToVOMapping<S>) new ColumnToFieldVOMapping<S>(
-        		 column, field, (Class<S>) Class.forName(dataType), isReadonly, caseSensitive);
-      }
-      catch(ClassNotFoundException e) {
-         throw new CommonFatalException(e);
-      }
-   }
-
-	protected <S extends Object> IColumnToVOMapping<S> createFieldIdMapping(final String column, final String field,
-			final String dataType, Boolean isReadonly, boolean caseSensitive) {
-		try {
-	         return (IColumnToVOMapping<S>) new ColumnToFieldIdVOMapping<S>(
-	        		 column, field, (Class<S>) Class.forName(dataType), isReadonly, caseSensitive);
-		} catch (ClassNotFoundException e) {
-			throw new CommonFatalException(e);
-		}
+	public void addToColumns(IColumnToVOMapping<? extends Object> column) {
+		allColumns.add(column);
 	}
-
+	
+	public void setAllColumns(List<IColumnToVOMapping<? extends Object>> columns) {
+		allColumns.clear();
+		allColumns.addAll(columns);
+	}
+	
 }

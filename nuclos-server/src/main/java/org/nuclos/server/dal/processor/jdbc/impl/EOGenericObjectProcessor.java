@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EOGenericObjectVO;
+import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.IEOGenericObjectProcessor;
@@ -31,20 +32,13 @@ public class EOGenericObjectProcessor extends AbstractJdbcDalProcessor<EOGeneric
 	private IColumnToVOMapping<Long> idColumn; 
 	private IColumnToVOMapping<Long> moduleColumn;
 	
-	public EOGenericObjectProcessor() {
-		super();
-		
-		idColumn = createSimpleStaticMapping("INTID", "id", DT_LONG);
-		allColumns.add(idColumn);
-		moduleColumn = createSimpleStaticMapping("INTID_T_MD_MODULE", "moduleId", DT_LONG);
-		allColumns.add(createSimpleStaticMapping("DATCREATED", "createdAt", DT_INTERNALTIMESTAMP));
-		allColumns.add(createSimpleStaticMapping("STRCREATED", "createdBy", DT_STRING));
-		allColumns.add(createSimpleStaticMapping("DATCHANGED", "changedAt", DT_INTERNALTIMESTAMP));
-		allColumns.add(createSimpleStaticMapping("STRCHANGED", "changedBy", DT_STRING));
-		allColumns.add(createSimpleStaticMapping("INTVERSION", "version", DT_INTEGER));
-		allColumns.add(moduleColumn);
+	public EOGenericObjectProcessor(List<IColumnToVOMapping<? extends Object>> allColumns, 
+			IColumnToVOMapping<Long> moduleColumn, IColumnToVOMapping<Long> idColumn) {
+		super(EOGenericObjectVO.class, allColumns);
+		this.moduleColumn = moduleColumn;
+		this.idColumn = idColumn;
 	}
-	
+
 	@Override
 	protected String getDbSourceForDML() {
 		return "T_UD_GENERICOBJECT";

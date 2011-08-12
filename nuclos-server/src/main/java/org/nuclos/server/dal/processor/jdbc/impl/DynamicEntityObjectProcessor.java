@@ -16,20 +16,12 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dal.processor.jdbc.impl;
 
-import java.util.Collection;
-
-import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
-import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.server.dal.processor.ProcessorConfiguration;
 
 public class DynamicEntityObjectProcessor extends EntityObjectProcessor {
 
-	public DynamicEntityObjectProcessor(EntityMetaDataVO eMeta, Collection<EntityFieldMetaDataVO> colEfMeta) {
-		super(eMeta, colEfMeta, false);
+	public DynamicEntityObjectProcessor(ProcessorConfiguration config) {
+		super(config);
     }
 	
-	@Override
-	public Class<EntityObjectVO> getDalVOClass() {
-		return EntityObjectVO.class;
-	}	
 }

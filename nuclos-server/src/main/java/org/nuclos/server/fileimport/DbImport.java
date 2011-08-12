@@ -39,6 +39,7 @@ import org.nuclos.common2.fileimport.NuclosFileImportException;
 import org.nuclos.server.common.BusinessIDFactory;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.dal.DalUtils;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.processor.jdbc.impl.ImportObjectProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
@@ -88,6 +89,7 @@ public class DbImport extends AbstractImport {
         }
 
         try {
+    		final ProcessorFactorySingleton processorFac = ProcessorFactorySingleton.getInstance();
 	        Double step = (100D / Double.valueOf(getStructures().size()));
 
 	        int i = 0;
@@ -106,7 +108,7 @@ public class DbImport extends AbstractImport {
 				this.notifier.setNextStep(lineCount, ((Double)(i * step.intValue() + step)).intValue() );
 
 				if (!processors.containsKey(entityname)) {
-					processors.put(entityname, new ImportObjectProcessor(MetaDataServerProvider.getInstance().getEntity(importstructure.getEntityName()),
+					processors.put(entityname, processorFac.newImportObjectProcessor(MetaDataServerProvider.getInstance().getEntity(importstructure.getEntityName()),
 						MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(importstructure.getEntityName()).values(), importstructure));
 				}
 				ImportObjectProcessor processor = processors.get(entityname);

@@ -18,14 +18,11 @@ package org.nuclos.server.dal.processor.jdbc.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.nuclos.common.CloneUtils;
-import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -39,18 +36,15 @@ import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.exception.DalBusinessException;
-import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.DatasourceServerUtils;
-import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
-import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
+import org.nuclos.server.dal.processor.ProcessorConfiguration;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcWithFieldsDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.database.DataBaseHelper;
@@ -79,19 +73,9 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 	private final Collection<List<IColumnToVOMapping<?>>> logicalUniqueConstraintCombinations = 
 		new ArrayList<List<IColumnToVOMapping<?>>>();
 
-	private static final Set<String> staticSystemFields;
-	static {
-		final Set<String> set = new HashSet<String>();
-		set.add(NuclosEOField.CHANGEDAT.getMetaData().getField());
-		set.add(NuclosEOField.CHANGEDBY.getMetaData().getField());
-		set.add(NuclosEOField.CREATEDAT.getMetaData().getField());
-		set.add(NuclosEOField.CREATEDBY.getMetaData().getField());
-		staticSystemFields = Collections.unmodifiableSet(set);
-	}
-	
 	// instance variables
 
-	private final EntityMetaDataVO eMeta;
+	protected final EntityMetaDataVO eMeta;
 
 	private final String dbSourceForSQL;
 	private final String dbSourceForDML;
@@ -99,71 +83,16 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 	private final IColumnToVOMapping<Long> idColumn;
 	private final IColumnToVOMapping<Integer> versionColumn;
 
-	public EntityObjectProcessor(EntityMetaDataVO eMeta, Collection<EntityFieldMetaDataVO> colEfMeta) {
-		this(eMeta, colEfMeta, true);
-	}
-
-	protected EntityObjectProcessor(EntityMetaDataVO eMeta, Collection<EntityFieldMetaDataVO> colEfMeta, boolean addSystemColumns) {
-		super(countFieldsForInitiatingFieldMap(colEfMeta), countIdFieldsForInitiatingFieldMap(colEfMeta));
-
-		idColumn = createSimpleStaticMapping("INTID", "id", DT_LONG);
-		allColumns.add(idColumn);
-
-		if(addSystemColumns) {
-			allColumns.add(createSimpleStaticMapping("DATCREATED", "createdAt", DT_INTERNALTIMESTAMP));
-			allColumns.add(createSimpleStaticMapping("STRCREATED", "createdBy", DT_STRING));
-			allColumns.add(createSimpleStaticMapping("DATCHANGED", "changedAt", DT_INTERNALTIMESTAMP));
-			allColumns.add(createSimpleStaticMapping("STRCHANGED", "changedBy", DT_STRING));
-			versionColumn = createSimpleStaticMapping("INTVERSION", "version", DT_INTEGER);
-			allColumns.add(versionColumn);
-		} else {
-			versionColumn = null;
-		}
-
-		this.eMeta = eMeta;
-
-		for (EntityFieldMetaDataVO efMeta : colEfMeta) {
-			if (staticSystemFields.contains(efMeta.getField())) {
-				// hier nur dynamische Zuweisungen
-				continue;
-			}
-
-			if (efMeta.getForeignEntity() == null) {
-				allColumns.add(createFieldMapping(efMeta.getDbColumn(), efMeta.getField(), efMeta.getDataType(), efMeta.isReadonly(), efMeta.isDynamic()));
-			} 
-			// column is ref to foreign table
-			else {
-				// only an primary key ref to foreign table
-				if (efMeta.getDbColumn().toUpperCase().startsWith("INTID_")) {
-					// kein join nötig!
-					if (!isIdColumnInList(allColumns, efMeta.getDbColumn()))
-						allColumns.add(createFieldIdMapping(efMeta.getDbColumn(), efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), efMeta.isDynamic()));
-				} 
-				// normal case: key ref and 'stringified' ref to foreign table
-				else {
-					// add 'stringified' ref to column mapping
-					allColumns.add(createFieldMapping(efMeta.getDbColumn(), efMeta.getField(), efMeta.getDataType(), true, efMeta.isDynamic()));
-					String dbIdFieldName = DalUtils.getDbIdFieldName(efMeta.getDbColumn());
-					if (!isIdColumnInList(allColumns, dbIdFieldName)) {
-						allColumns.add(createFieldIdMapping(dbIdFieldName, efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), efMeta.isDynamic()));
-					}
-					// id column is already in allColumns:
-					// Replace the id column if the one present is read-only and the current is not read-only
-					// This in effect only switched the read-only flag to false.
-					else {
-						IColumnToVOMapping<?> col = getColumnFromList(allColumns, dbIdFieldName);
-						if (col.isReadonly() && !efMeta.isReadonly()) {
-							allColumns.remove(col);
-							allColumns.add(createFieldIdMapping(dbIdFieldName, efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), efMeta.isDynamic()));
-						}
-					}
-				}
-			}
-		}
-
+	public EntityObjectProcessor(ProcessorConfiguration config) 
+	{
+		super((Class<EntityObjectVO>) config.getDalType(), config.getAllColumns(), config.getMaxFieldCount(), config.getMaxFieldIdCount());
+		this.eMeta = config.geteMeta();
+		this.idColumn = config.getIdColumn();
+		this.versionColumn = config.getVersionColumn();
+		
 		dbSourceForSQL = this.eMeta.getDbEntity();
-		dbSourceForDML = "T_" + eMeta.getDbEntity().substring(2);
-
+		dbSourceForDML = "T_" + this.eMeta.getDbEntity().substring(2);
+		
 		/**
 		 * Logical Unique Constraints
 		 */
@@ -179,12 +108,22 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 						}
 					}
 				}
-
 				logicalUniqueConstraintCombinations.add(ctovMappings);
 			}
-		}
+		}		
 	}
 	
+	@Override
+	protected EntityObjectVO newDalVOInstance() {
+		try {
+			final EntityObjectVO newInstance = super.newDalVOInstance();
+			newInstance.setEntity(eMeta.getEntity());
+			return newInstance;
+		} catch (Exception e) {
+			throw new CommonFatalException(e);
+		}
+	}
+
 	public Object clone() {
 		final EntityObjectProcessor clone;
 		try {
@@ -196,64 +135,6 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		return clone;
 	}
 	
-	public void addToColumns(EntityFieldMetaDataVO field) {
-		final IColumnToVOMapping<?> mapping;
-		final PivotInfo pinfo = field.getPivotInfo();
-		if (pinfo == null) {
-			mapping = createFieldMapping(
-					field.getDbColumn(), field.getField(), field.getDataType(), field.isReadonly(), false);
-		}
-		else {
-			final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
-			final EntityFieldMetaDataVO vField = mdProv.getEntityField(pinfo.getSubform(), pinfo.getValueField());
-			mapping = createFieldMapping(
-					vField.getDbColumn(), vField.getField(), vField.getDataType(), vField.isReadonly(), false);
-		}
-		allColumns.add(mapping);
-	}
-
-	private boolean isIdColumnInList(List<IColumnToVOMapping<?>> list, String columnName) {
-		return getColumnFromList(list, columnName) != null;
-	}
-
-	private IColumnToVOMapping<?> getColumnFromList(List<IColumnToVOMapping<?>> list, String columnName) {
-		for (IColumnToVOMapping<?> column : list) {
-			if (column.getColumn().equals(columnName)) {
-				return column;
-			}
-		}
-		return null;
-	}
-
-	private static int countFieldsForInitiatingFieldMap(Collection<EntityFieldMetaDataVO> colEfMeta) {
-		int result = colEfMeta.size();
-		for (EntityFieldMetaDataVO efMeta : colEfMeta)  {
-			if (staticSystemFields.contains(efMeta.getField())) {
-				// only subtract a static system field if it exists in colEfMeta.
-				// static fields are not stored in field map.
-				result--;
-			}
-		}
-		return result;
-	}
-
-	private static int countIdFieldsForInitiatingFieldMap(Collection<EntityFieldMetaDataVO> colEfMeta) {
-		int result = 0;
-		for (EntityFieldMetaDataVO efMeta : colEfMeta)  {
-			if (efMeta.getForeignEntity() != null) {
-				result++;
-			}
-		}
-		return result;
-	}
-
-	@Override
-	protected EntityObjectVO newDalVOInstance() {
-		EntityObjectVO newDalVO = super.newDalVOInstance();
-		newDalVO.setEntity(eMeta.getEntity());
-		return newDalVO;
-	}
-
 	@Override
 	public String getDbSourceForDML() {
 		return dbSourceForDML;
@@ -488,16 +369,9 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		}
 	}
 
-	/**
-	 *
-	 * @param result
-	 * @param dalVO
-	 * @return
-	 */
 	private DalCallResult checkLogicalUniqueConstraint(DalCallResult result, EntityObjectVO dalVO) {
 		if (!logicalUniqueConstraintCombinations.isEmpty()) {
 			for (List<IColumnToVOMapping<?>> columns : logicalUniqueConstraintCombinations) {
-
 				final Map<IColumnToVOMapping<?>, Object> checkValues = super.getColumnValuesMapWithMapping(columns, dalVO, false);
 				final DalBusinessException checkResult = super.checkLogicalUniqueConstraint(checkValues, dalVO.getId());
 				if (checkResult != null)
@@ -507,12 +381,6 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		return result;
 	}
 
-	/**
-	 *
-	 * @param fields
-	 * @param bSearchInDMLSource
-	 * @return
-	 */
 	private List<IColumnToVOMapping<? extends Object>> getColumns(final Collection<String> fields, final boolean bSearchInDMLSource) {
 		return CollectionUtils.select(allColumns, new Predicate<IColumnToVOMapping<? extends Object>>() {
 			@Override

@@ -41,6 +41,7 @@ import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.entityobject.EntityObjectProxyList;
@@ -88,10 +89,11 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		JdbcEntityObjectProcessor eop = NucletDalProvider.getInstance().getEntityObjectProcessor(
 				eMeta.getEntity());
 		// 
+		final ProcessorFactorySingleton processorFac = ProcessorFactorySingleton.getInstance();
 		eop = (JdbcEntityObjectProcessor) eop.clone();
 		for (EntityFieldMetaDataVO f: fields) {
 			if (f.getPivotInfo() != null) {
-				eop.addToColumns(f);
+				processorFac.addToColumns(eop, f);
 			}
 		}
 		

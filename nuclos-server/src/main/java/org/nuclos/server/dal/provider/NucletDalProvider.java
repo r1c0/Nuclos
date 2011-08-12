@@ -28,67 +28,85 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
-import org.nuclos.server.dal.processor.jdbc.impl.DynamicEntityObjectProcessor;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.processor.nuclet.IEOGenericObjectProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityFieldMetaDataProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityMetaDataProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 
+/**
+ * @deprecated Replace with pure Spring solution.
+ */
 public class NucletDalProvider extends AbstractDalProvider {
 	
 	/**
 	 * Singleton der auch in einer MultiThreading-Umgebung Threadsafe ist...
 	 */
-	private static NucletDalProvider singleton = new NucletDalProvider();
+	private static final NucletDalProvider singleton = new NucletDalProvider();
+	
+	
+	// instance variables
+	
+	private final Map<String, JdbcEntityObjectProcessor> mapEntityObject = new HashMap<String, JdbcEntityObjectProcessor>();
+	
+	private JdbcEntityMetaDataProcessor entityMetaDataProcessor;
+	private JdbcEntityFieldMetaDataProcessor entityFieldMetaDataProcessor;
+	private IEOGenericObjectProcessor eoGenericObjectProcessor;
 	
 	public static NucletDalProvider getInstance() {
 		return singleton;
 	}	
 	
-	private final JdbcEntityMetaDataProcessor entityMetaData;
-	private final JdbcEntityFieldMetaDataProcessor entityFieldMetaData;
-	private final Map<String, JdbcEntityObjectProcessor> mapEntityObject = new HashMap<String, JdbcEntityObjectProcessor>();
-	private final IEOGenericObjectProcessor eoGenericObject;
-	
 	private NucletDalProvider(){
-		Properties dalProperties = getDalProperties();
-		
-		try {
-			entityMetaData = (JdbcEntityMetaDataProcessor) Class.forName(dalProperties.getProperty("entity.meta.data.nuclet")).newInstance();
-			entityFieldMetaData = (JdbcEntityFieldMetaDataProcessor) Class.forName(dalProperties.getProperty("entity.field.meta.data.nuclet")).newInstance();
-			eoGenericObject = (IEOGenericObjectProcessor) Class.forName(dalProperties.getProperty("eo.generic.object.nuclet")).newInstance();
-		} catch (Exception ex) {
-			throw new CommonFatalException(ex);
-		}
-		
-		buildEOProcessors();
 	}
 	
-	private void buildEOProcessors() {
+	/**
+	 * Spring property.
+	 */
+	public void setEntityMetaDataProcessor(JdbcEntityMetaDataProcessor processor) {
+		this.entityMetaDataProcessor = processor;
+	}
+	
+	/**
+	 * Spring property.
+	 */
+	public void setEntityFieldMetaDataProcessor(JdbcEntityFieldMetaDataProcessor processor) {
+		this.entityFieldMetaDataProcessor = processor;
+	}
+	
+	/**
+	 * Spring property.
+	 */
+	public void setGenericObjectProcessor(IEOGenericObjectProcessor processor) {
+		this.eoGenericObjectProcessor = processor;
+	}	
+	
+	public void buildEOProcessors() {
 		synchronized (mapEntityObject) {
 			mapEntityObject.clear();
 			
+			final ProcessorFactorySingleton processorFac = ProcessorFactorySingleton.getInstance();
 			try {
-				Constructor<?> entityObjectProcessorConstructor = Class.forName(getDalProperties().getProperty("entity.object.nuclet")).getConstructor(EntityMetaDataVO.class, Collection.class);
+				// Constructor<?> entityObjectProcessorConstructor = Class.forName(getDalProperties().getProperty("entity.object.nuclet")).getConstructor(EntityMetaDataVO.class, Collection.class);
 				
 				/**
-				 * Konfigurierte Entit\u00e4ten
+				 * Konfigurierte Entitäten
 				 */
-				for (EntityMetaDataVO eMeta : entityMetaData.getAll()) {
-					List<EntityFieldMetaDataVO> entityFields = entityFieldMetaData.getByParent(eMeta.getEntity());
+				for (EntityMetaDataVO eMeta : entityMetaDataProcessor.getAll()) {
+					List<EntityFieldMetaDataVO> entityFields = entityFieldMetaDataProcessor.getByParent(eMeta.getEntity());
 					DalUtils.addNucletEOSystemFields(entityFields, eMeta);
 					
-					mapEntityObject.put(eMeta.getEntity(), (JdbcEntityObjectProcessor) entityObjectProcessorConstructor.newInstance(eMeta, entityFields));
+					mapEntityObject.put(eMeta.getEntity(), processorFac.newEntityObjectProcessor(eMeta, entityFields, true));
 				}
 				
 				/**
-				 * Systementit\u00e4ten
+				 * Systementitäten
 				 */
 				for (EntityMetaDataVO eMeta : NuclosDalProvider.getInstance().getEntityMetaDataProcessor().getAll()) {
 					List<EntityFieldMetaDataVO> entityFields = NuclosDalProvider.getInstance().getEntityFieldMetaDataProcessor().getByParent(eMeta.getEntity());
 					DalUtils.addNucletEOSystemFields(entityFields, eMeta);
 					
-					mapEntityObject.put(eMeta.getEntity(), (JdbcEntityObjectProcessor) entityObjectProcessorConstructor.newInstance(eMeta, entityFields));
+					mapEntityObject.put(eMeta.getEntity(), (JdbcEntityObjectProcessor) processorFac.newEntityObjectProcessor(eMeta, entityFields, true));
 				}
 				
 				/**
@@ -97,7 +115,7 @@ public class NucletDalProvider extends AbstractDalProvider {
 				for(EntityMetaDataVO eMeta : NuclosDalProvider.getInstance().getDynamicEntityMetaProcessor().getAll()) {
 					List<EntityFieldMetaDataVO> entityFields = NuclosDalProvider.getInstance().getDynamicFieldMetaDataProcessor(eMeta).getAll();
 					
-					mapEntityObject.put(eMeta.getEntity(), new DynamicEntityObjectProcessor(eMeta, entityFields));
+					mapEntityObject.put(eMeta.getEntity(), processorFac.newDynamicEntityObjectProcessor(eMeta, entityFields));
 				}
 	
 			} catch (Exception ex) {
@@ -107,11 +125,11 @@ public class NucletDalProvider extends AbstractDalProvider {
 	}
 	
 	public JdbcEntityMetaDataProcessor getEntityMetaDataProcessor() {
-		return entityMetaData;
+		return entityMetaDataProcessor;
 	}
 	
 	public JdbcEntityFieldMetaDataProcessor getEntityFieldMetaDataProcessor() {
-		return entityFieldMetaData;
+		return entityFieldMetaDataProcessor;
 	}
 	
 	public JdbcEntityObjectProcessor getEntityObjectProcessor(NuclosEntity entity) {
@@ -130,7 +148,7 @@ public class NucletDalProvider extends AbstractDalProvider {
 	}
 	
 	public IEOGenericObjectProcessor getEOGenericObjectProcessor() {
-		return eoGenericObject;
+		return eoGenericObjectProcessor;
 	}
 
 	public void revalidate() {
