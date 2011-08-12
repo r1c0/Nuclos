@@ -17,26 +17,27 @@
 package org.nuclos.client.wizard.util;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 
-public class DefaultValue {
-	
+public class DefaultValue implements Comparable<DefaultValue> {
+
 	Integer iId;
 	String sValue;
-	
-		
+
+
 	public DefaultValue(Integer iId, String value) {
 		this.iId = iId;
 		this.sValue = value;
 	}
-	
+
 	public Integer getId() {
 		return iId;
 	}
 	public String getValue() {
 		return sValue;
-	}	
-	
+	}
+
 	@Override
 	public String toString() {
 		return StringUtils.emptyIfNull(this.sValue);
@@ -59,7 +60,9 @@ public class DefaultValue {
 		String str = this.iId + sValue;
 		return str.hashCode();
 	}
-	
-	
 
+	@Override
+	public int compareTo(DefaultValue o) {
+		return LangUtils.compare(this.getValue(), o.getValue());
+	}
 }
