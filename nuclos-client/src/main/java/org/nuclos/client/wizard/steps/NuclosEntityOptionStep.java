@@ -69,7 +69,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 * <br>
 * Created by Novabit Informationssysteme GmbH <br>
 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
-* 
+*
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
@@ -77,28 +77,28 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	JLabel lbName;
-	
+
 	ButtonGroup bGroup;
 	JRadioButton rbGatherAttributes;
 	JRadioButton rbCopyAttributes;
 	JRadioButton rbAssignAttributes;
 	JRadioButton rbTemplateAttributes;
 	JRadioButton rbImportTable;
-	
+
 	JLabel lbEntity;
 	JComboBox cbxEntity;
 	JScrollPane scrollFields;
 	JTable tblFields;
-	
+
 	JComboBox cbxTable;
-	
+
 	JPanel pnlImport;
-	
+
 	JLabel lbImportServer;
 	JTextField tfImportServer;
 	JLabel lbImportPort;
@@ -111,17 +111,17 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 	JTextField tfImportPassword;
 	JLabel lbImportSSID;
 	JTextField tfImportSSID;
-	
+
 	JLabel lbUrl;
 	JTextField tfUrl;
-	
+
 	JButton btConnect;
-	
+
 	JLabel lbImportTables;
 	JComboBox cbxImportTables;
-	
-	public NuclosEntityOptionStep() {	
-		initComponents();		
+
+	public NuclosEntityOptionStep() {
+		initComponents();
 	}
 
 	public NuclosEntityOptionStep(String name, String summary) {
@@ -133,17 +133,17 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 		super(name, summary, icon);
 		initComponents();
 	}
-	
+
 	protected void initPanel() {
 		double size [][] = {{TableLayout.PREFERRED, TableLayout.PREFERRED,TableLayout.PREFERRED,TableLayout.FILL}, {20,20,20,20,20,20,20,20,20,200, TableLayout.FILL}};
-		
+
 		TableLayout layout = new TableLayout(size);
 		layout.setVGap(3);
 		layout.setHGap(5);
-		
+
 		pnlImport = new JPanel();
 		pnlImport.setLayout(layout);
-		
+
 		lbImportServer = new JLabel(getMessage("wizard.step.entityoption.1", "Server")+":");
 		tfImportServer = new JTextField();
 		tfImportServer.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
@@ -169,14 +169,14 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 		tfUrl.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 		btConnect = new JButton(getMessage("wizard.step.entityoption.8", "Verbindung \u00f6ffnen"));
 		btConnect.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					String jdbcUrl = getJDBCUrl();				
+					String jdbcUrl = getJDBCUrl();
 					if(tfUrl.getText() != null && tfUrl.getText().length() > 0)
 						jdbcUrl = tfUrl.getText().trim();
-					List<String> lstTables = MetaDataDelegate.getInstance().getTablesFromSchema(jdbcUrl, tfImportUser.getText().trim(), 
+					List<String> lstTables = MetaDataDelegate.getInstance().getTablesFromSchema(jdbcUrl, tfImportUser.getText().trim(),
 						tfImportPassword.getText().trim(), tfImportUser.getText().trim());
 					cbxImportTables.removeAllItems();
 					for(String strTable : lstTables) {
@@ -189,24 +189,24 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 				}
 			}
 		});
-		
-		
+
+
 		lbImportTables = new JLabel(getMessage("wizard.step.entityoption.9", "Tabelle"));
 		cbxImportTables = new JComboBox();
-		
+
 
 		cbxImportTables.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				NuclosEntityOptionStep.this.setComplete(true);
 			}
 		});
-		
+
 		pnlImport.add(lbImportServer, "0,0");
 		pnlImport.add(tfImportServer, "1,0");
 		pnlImport.add(lbImportPort, "2,0");
-		pnlImport.add(tfImportPort, "3,0");		
+		pnlImport.add(tfImportPort, "3,0");
 		pnlImport.add(lbImportUser, "0,1");
 		pnlImport.add(tfImportUser, "1,1");
 		pnlImport.add(lbImportPassword, "2,1");
@@ -220,17 +220,17 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 		pnlImport.add(cbxImportTables, "3,3");
 		pnlImport.add(lbUrl, "0,4");
 		pnlImport.add(tfUrl, "1,4,3,4");
-		
-		
+
+
 		pnlImport.setVisible(false);
-		
+
 	}
-	
+
 	@Override
 	protected void initComponents() {
-		
-		double size [][] = {{TableLayout.PREFERRED, TableLayout.FILL}, {20,20,20,20,20,20,20,150, TableLayout.FILL}};
-		
+
+		double size [][] = {{TableLayout.PREFERRED, TableLayout.FILL}, {20,20,20,20,20,20,20, TableLayout.FILL}};
+
 		TableLayout layout = new TableLayout(size);
 		layout.setVGap(3);
 		layout.setHGap(5);
@@ -254,29 +254,29 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 		tblFields = new JTable(new EntityAttributeSelectTableModel());
 		tblFields.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		tblFields.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
+
 		cbxTable = new JComboBox();
 		cbxTable.setVisible(false);
-		
+
 		scrollFields = new JScrollPane(tblFields);
 		scrollFields.setVisible(false);
-		
+
 		bGroup = new ButtonGroup();
 		bGroup.add(rbGatherAttributes);
 		bGroup.add(rbCopyAttributes);
 		bGroup.add(rbAssignAttributes);
 		bGroup.add(rbTemplateAttributes);
 		bGroup.add(rbImportTable);
-		
+
 		rbGatherAttributes.setSelected(true);
 		NuclosEntityOptionStep.this.setComplete(true);
-		
+
 		rbGatherAttributes.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(final ItemEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						int state = e.getStateChange();
@@ -286,42 +286,42 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 							cbxTable.setVisible(false);
 							cbxEntity.setVisible(false);
 							scrollFields.setVisible(false);
-						}						
+						}
 					}
 				});
-				
+
 			}
 		});
-		
+
 		rbImportTable.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(final ItemEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						int state = e.getStateChange();
 						if (state == ItemEvent.SELECTED) {
 							pnlImport.setVisible(true);
 							NuclosEntityOptionStep.this.setComplete(false);
-						}						
+						}
 						else {
 							pnlImport.setVisible(false);
 							NuclosEntityOptionStep.this.setComplete(true);
 						}
 					}
 				});
-				
+
 			}
 		});
-		
+
 		rbCopyAttributes.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(final ItemEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						int state = e.getStateChange();
@@ -340,53 +340,53 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 							cbxTable.setVisible(false);
 							scrollFields.setVisible(false);
 						}
-						
+
 					}
 				});
-				
+
 			}
 		});
-		
+
 		rbAssignAttributes.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(final ItemEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						int state = e.getStateChange();
-						if (state == ItemEvent.SELECTED) {							
+						if (state == ItemEvent.SELECTED) {
 							NuclosEntityOptionStep.this.setComplete(true);
 							tblFields.setModel(new EntityAttributeSelectTableModel());
 							cbxTable.setSelectedIndex(0);
 							cbxTable.setVisible(true);
 							cbxEntity.setVisible(false);
 							scrollFields.setVisible(true);
-						}						
+						}
 					}
 				});
-				
+
 			}
 		});
-		
+
 		rbTemplateAttributes.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(final ItemEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						int state = e.getStateChange();
 						if (state == ItemEvent.SELECTED) {
 							lbEntity.setVisible(true);
 							cbxEntity.setSelectedIndex(0);
-							cbxEntity.setVisible(true);							
+							cbxEntity.setVisible(true);
 							cbxTable.setVisible(false);
 							pnlImport.setVisible(false);
 							scrollFields.setVisible(false);
-						}	
+						}
 						else {
 							lbEntity.setVisible(false);
 							cbxEntity.setVisible(false);
@@ -394,31 +394,31 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 						}
 					}
 				});
-				
+
 			}
 		});
-		
+
 		cbxEntity.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(final ItemEvent e) {
 				if(e.getStateChange() == ItemEvent.SELECTED) {
 					final Object obj = e.getItem();
 					try {
-						if(obj instanceof EntityMetaDataVO) {						
+						if(obj instanceof EntityMetaDataVO) {
 							final EntityAttributeSelectTableModel model = new EntityAttributeSelectTableModel();
 							EntityMetaDataVO vo = (EntityMetaDataVO)obj;
 							Collection<EntityFieldMetaDataVO> fields = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(vo.getEntity()).values();
-							
+
 							ArrayList<EntityFieldMetaDataVO> lstSorted = CollectionUtils.sorted(fields, new Comparator<EntityFieldMetaDataVO>() {
 
 								@Override
-								public int compare(EntityFieldMetaDataVO o1, EntityFieldMetaDataVO o2) {									
+								public int compare(EntityFieldMetaDataVO o1, EntityFieldMetaDataVO o2) {
 									return o1.getField().toLowerCase().compareTo(o2.getField().toLowerCase());
-								}							
-								
+								}
+
 							});
-							
+
 							for(EntityFieldMetaDataVO field: lstSorted) {
 								if(NuclosWizardUtils.isSystemField(field))
 									continue;
@@ -441,7 +441,7 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 								String sForeignEntity = field.getForeignEntity();
 								if(sForeignEntity != null) {
 									attr.setMetaVO(MetaDataClientProvider.getInstance().getEntity(sForeignEntity));
-									
+
 									attr.setField(field.getForeignEntityField());
 									attr.setDatatyp(DataTyp.getReferenzTyp());
 									if(!Modules.getInstance().isModuleEntity(sForeignEntity) && field.getForeignEntityField() != null) {
@@ -451,7 +451,7 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 										}
 										else {
 											EntityFieldMetaDataVO voField = MetaDataClientProvider.getInstance().getEntityField(sForeignEntity, field.getForeignEntityField());
-												
+
 											attr.getDatatyp().setJavaType(voField.getDataType());
 											if(voField.getPrecision() != null)
 												attr.getDatatyp().setPrecision(voField.getPrecision());
@@ -465,21 +465,21 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 									}
 								}
 								else {
-									attr.setDatatyp(NuclosWizardUtils.getDataTyp(field.getDataType(), 
-										field.getScale(), field.getPrecision(), field.getFormatInput(), 
+									attr.setDatatyp(NuclosWizardUtils.getDataTyp(field.getDataType(),
+										field.getScale(), field.getPrecision(), field.getFormatInput(),
 										field.getFormatOutput()));
 								}
-															
+
 								model.addAttribute(attr);
-								
-								
-								
+
+
+
 							}
 							SwingUtilities.invokeLater(new Runnable() {
-								
+
 								@Override
 								public void run() {
-									tblFields.setModel(model);		
+									tblFields.setModel(model);
 									TableUtils.setOptimalColumnWidths(tblFields);
 								}
 							});
@@ -490,27 +490,27 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 						}
 					}
 					catch(Exception ex) {
-						
+
 					}
 				}
-				
+
 			}
-		});		
-		
+		});
+
 		cbxTable.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange() == ItemEvent.SELECTED) {
 					final Object obj = e.getItem();
-					if(obj instanceof String) {		
+					if(obj instanceof String) {
 						String strTable = (String)obj;
 						final EntityAttributeSelectTableModel model = new EntityAttributeSelectTableModel();
 						if(strTable.length() == 0) {
 							tblFields.setModel(model);
 							return;
 						}
-						
+
 						Map<String, MasterDataVO> mp = MetaDataDelegate.getInstance().getColumnsFromTable(strTable);
 						for(String sCol : mp.keySet()) {
 							if(NuclosWizardUtils.isSystemField(sCol))
@@ -521,69 +521,69 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 							attr.setDescription(sCol);
 							attr.setInternalName(sCol);
 							MasterDataVO vo = mp.get(sCol);
-							
+
 							DataTyp typ = new DataTyp();
 							typ.setPrecision((Integer)vo.getField("precision"));
 							typ.setScale((Integer)vo.getField("scale"));
 							typ.setName((String)vo.getField("name"));
 							typ.setJavaType((String)vo.getField("javatyp"));
-							
+
 							attr.setDatatyp(typ);
 							setTranslationForAttribute(attr, NuclosEntityOptionStep.this.model.getAttributeModel());
-							
+
 							model.addAttribute(attr);
 						}
 						SwingUtilities.invokeLater(new Runnable() {
-							
+
 							@Override
 							public void run() {
-								tblFields.setModel(model);								
+								tblFields.setModel(model);
 							}
 						});
-						
-						
+
+
 					}
 				}
 			}
 		});
-		
+
 		initPanel();
-		
+
 		this.add(lbName, "0,0");
 		this.add(rbGatherAttributes, "1,0");
-		this.add(rbCopyAttributes, "1,1");		
+		this.add(rbCopyAttributes, "1,1");
 		this.add(rbTemplateAttributes, "1,2");
 		this.add(rbAssignAttributes, "1,3");
 		this.add(rbImportTable, "1,4");
-		this.add(lbEntity, "0,5");		
+		this.add(lbEntity, "0,5");
 		this.add(cbxEntity, "0,6");
 		this.add(cbxTable, "0,6");
 		this.add(pnlImport, "0,7, 1,7");
 		this.add(scrollFields, "0,7 ,1,7");
-		
-		fillEntityCombobox();	
+
+		fillEntityCombobox();
 		fillTableCombobox();
-				
+
 	}
 
 	@Override
 	public void applyState() throws InvalidStateException {
 		super.applyState();
-		
-		if(rbCopyAttributes.isSelected() || rbAssignAttributes.isSelected()) {		
+
+		if(rbCopyAttributes.isSelected() || rbAssignAttributes.isSelected()) {
 			EntityAttributeSelectTableModel model =  (EntityAttributeSelectTableModel)tblFields.getModel();
 			List<Attribute> lstAttribute = model.getAttributes();
 			EntityAttributeTableModel modelAttribute = new EntityAttributeTableModel();
 			for(Attribute attr : lstAttribute) {
 				if(attr.isForResume())
 					modelAttribute.addAttribute(attr);
-			}			
+			}
 			for(Attribute attr : modelAttribute.getAttributes()) {
 				if(!existAttribute(attr)) {
 					if(attr.getInternalId() == null)
 						attr.setInternalId(getHighestInternalId());
 					this.model.getAttributeModel().addAttribute(attr);
-					setTranslationForAttribute(attr, this.model.getAttributeModel());					
+					setTranslationForAttribute(attr, this.model.getAttributeModel());
 				}
 			}
 		}
@@ -595,7 +595,7 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 				modelAttribute.addAttribute(attr);
 				modelAttribute.addTranslation(attr, this.model.getAttributeModel().getTranslation().get(attr));
 			}
-			
+
 			for(Attribute attr : lstAttribute) {
 				if(!existAttribute(attr)) {
 					attr.setInternalId(getHighestInternalId());
@@ -604,16 +604,16 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 				}
 			}
 			this.model.setAttributeModel(modelAttribute);
-		}		
+		}
 		else if(rbImportTable.isSelected()) {
 			String jdbc = getJDBCUrl();
-			
+
 			this.model.setJdbcUrl(jdbc);
-			this.model.setExternalUser(tfImportUser.getText().trim()); 
+			this.model.setExternalUser(tfImportUser.getText().trim());
 			this.model.setExternalPassword(tfImportPassword.getText().trim());
 			this.model.setExternalTable((String)cbxImportTables.getSelectedItem());
 			this.model.setImportTable(true);
-			List<MasterDataVO> lstVO = MetaDataDelegate.getInstance().transformTable(jdbc, model.getExternalUser(), model.getExternalPassword(), 
+			List<MasterDataVO> lstVO = MetaDataDelegate.getInstance().transformTable(jdbc, model.getExternalUser(), model.getExternalPassword(),
 				model.getExternalUser().trim().toUpperCase(), model.getExternalTable());
 			EntityAttributeTableModel modelAttribute = new EntityAttributeTableModel();
 			for(MasterDataVO vo: lstVO) {
@@ -636,12 +636,12 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 			this.model.setAttributeModel(modelAttribute);
 		}
 	}
-	
+
 	private Long getHighestInternalId() {
 		Long l = new Long(0);
 		for(Attribute attr : model.getAttributeModel().getAttributes()) {
 			if(attr.getInternalId() != null) {
-				if(l.longValue() < attr.getInternalId()) {					
+				if(l.longValue() < attr.getInternalId()) {
 					l = attr.getInternalId();
 					l++;
 				}
@@ -664,18 +664,18 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 
 	private void setTranslationForAttribute(Attribute attr, EntityAttributeTableModel model) {
 	    List<TranslationVO> lstTranslation = new ArrayList<TranslationVO>();
-	    
+
 	    for(LocaleInfo info : LocaleDelegate.getInstance().getAllLocales(false)){
 	    	Map<String, String> mpValues = new HashMap<String, String>();
 	    	mpValues.put(TranslationVO.labelsField[0], attr.getLabel());
 	    	mpValues.put(TranslationVO.labelsField[1], attr.getDescription());
 	    	TranslationVO voTranslation = new TranslationVO(info.localeId, info.title, info.language, mpValues);
 	    	lstTranslation.add(voTranslation);
-	    }								
-	    
+	    }
+
 	   model.addTranslation(attr, lstTranslation);
     }
-	
+
 	private void fillTableCombobox() {
 		List<String> lstTables = MetaDataDelegate.getInstance().getDBTables();
 		cbxTable.addItem("");
@@ -683,25 +683,25 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 			cbxTable.addItem(str);
 		}
 	}
-	
+
 	private void fillEntityCombobox() {
 		Collection<EntityMetaDataVO> colMasterdata = MetaDataClientProvider.getInstance().getAllEntities();
 		List<EntityMetaDataVO> lstMasterdata = new ArrayList<EntityMetaDataVO>(colMasterdata);
 		Collections.sort(lstMasterdata, new Comparator<EntityMetaDataVO>() {
 
 			@Override
-			public int compare(EntityMetaDataVO o1, EntityMetaDataVO o2) {				
+			public int compare(EntityMetaDataVO o1, EntityMetaDataVO o2) {
 				return o1.toString().compareTo(o2.toString());
 			}
-			
+
 		});
 		cbxEntity.addItem("");
-		for(EntityMetaDataVO vo : lstMasterdata) {			
+		for(EntityMetaDataVO vo : lstMasterdata) {
 			if(!vo.getEntity().startsWith("general"))
 				cbxEntity.addItem(vo);
 		}
 	}
-	
+
 	protected String getJDBCUrl() {
 		String sDB = (String)cbxImportDatabase.getSelectedItem();
 		StringBuffer jdbcUrl = new StringBuffer();
@@ -719,9 +719,9 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 			jdbcUrl.append(":");
 			jdbcUrl.append(tfImportPort.getText().trim());
 			jdbcUrl.append(";DatabaseName=");
-			jdbcUrl.append(tfImportSSID.getText().trim());			
+			jdbcUrl.append(tfImportSSID.getText().trim());
 		}
-		
+
 		return jdbcUrl.toString();
 	}
 
