@@ -1017,7 +1017,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 				translations = new TranslationMap();
 				migrateLocaleResourceId(translations, atts);
 				tabbedPane.getTabTranslations().put(tabbedPane.getTabCount() - 1, translations);
-				
+
 				String sMnemonic = atts.getValue(ATTRIBUTE_MNEMONIC);
 				if(sMnemonic != null) {
 					Integer iMnemonic = Integer.parseInt(sMnemonic);
@@ -1545,10 +1545,13 @@ public class LayoutMLLoader implements LayoutMLConstants {
 
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
-				String attributeName = atts.getValue(ATTRIBUTE_NAME);
-				String attributeValue = atts.getValue(ATTRIBUTE_VALUE);
-				WYSIYWYGParameter parameter = new WYSIYWYGParameter(attributeName, attributeValue);
-				currentValuelistProvider.addWYSIYWYGParameter(parameter);
+				if (currentValuelistProvider != null) {
+					// currentValuelistProvider can be null, for instance if subform column has been deleted
+					String attributeName = atts.getValue(ATTRIBUTE_NAME);
+					String attributeValue = atts.getValue(ATTRIBUTE_VALUE);
+					WYSIYWYGParameter parameter = new WYSIYWYGParameter(attributeName, attributeValue);
+					currentValuelistProvider.addWYSIYWYGParameter(parameter);
+				}
 			}
 		}
 
