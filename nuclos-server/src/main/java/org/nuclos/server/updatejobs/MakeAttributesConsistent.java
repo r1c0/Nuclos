@@ -30,6 +30,7 @@ import org.nuclos.server.attribute.valueobject.AttributeValueVO;
 import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.UpdateJobs;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -83,7 +84,7 @@ public class MakeAttributesConsistent implements UpdateJobs{
 	private void makeAttributesConsistent() {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_UD_GO_ATTRIBUTE").alias("t");
+		DbFrom t = query.from("T_UD_GO_ATTRIBUTE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(t.column("INTID_EXTERNAL", Integer.class));
 		query.distinct(true);
 		

@@ -82,6 +82,7 @@ import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.DalUtils;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbStatementUtils;
@@ -1513,7 +1514,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	public Collection<GenericObjectRelationVO> findRelations(Integer iGenericObjectIdSource, String relationType, Integer iGenericObjectIdTarget) throws CommonFinderException, CommonPermissionException {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_UD_GO_RELATION").alias("t");
+		DbFrom t = query.from("T_UD_GO_RELATION").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(t.column("INTID", Integer.class));
 		query.where(builder.and(
 			builder.equal(t.column("INTID_T_UD_GO_1", Integer.class), iGenericObjectIdSource),
@@ -1526,7 +1527,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	public Collection<GenericObjectRelationVO> findRelationsByGenericObjectId(Integer iGenericObjectId) throws CommonFinderException, CommonPermissionException {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_UD_GO_RELATION").alias("t");
+		DbFrom t = query.from("T_UD_GO_RELATION").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(t.column("INTID", Integer.class));
 		query.where(builder.or(
 			builder.equal(t.column("INTID_T_UD_GO_1", Integer.class), iGenericObjectId),
@@ -1839,7 +1840,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	private boolean getUsesRuleEngine(String sEntityName, boolean userEvent) {
 
 		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
-		DbFrom from = query.from("T_MD_RULE_EVENT").alias("t");
+		DbFrom from = query.from("T_MD_RULE_EVENT").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 
 		columns.add(from.column("intid", Integer.class).alias("intid"));

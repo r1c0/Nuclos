@@ -79,6 +79,7 @@ import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.dal.DalSupportForGO;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -1163,7 +1164,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom s = query.from("T_MD_STATE").alias("s");
-		DbFrom t = s.join("T_MD_STATE_TRANSITION", JoinType.INNER).on("INTID", "INTID_T_MD_STATE_2").alias("t");
+		DbFrom t = s.join("T_MD_STATE_TRANSITION", JoinType.INNER).on("INTID", "INTID_T_MD_STATE_2").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		DbFrom rt = t.join("T_MD_RULE_TRANSITION", JoinType.INNER).on("INTID", "INTID_T_MD_STATE_TRANSITION").alias("rt");
 		query.select(s.column("INTID_T_MD_STATEMODEL", Integer.class));
 		query.where(builder.equal(rt.column("INTID_T_MD_RULE", Integer.class), 123));

@@ -47,6 +47,8 @@ import org.nuclos.server.fileimport.ImportStructure;
 
 public class ProcessorFactorySingleton {
 	
+	public static final String BASE_ALIAS = "t";
+	
 	private static final ProcessorFactorySingleton INSTANCE = new ProcessorFactorySingleton();
 	
 	private static final Set<String> staticSystemFields;
@@ -88,17 +90,17 @@ public class ProcessorFactorySingleton {
 		return result;
 	}
 
-	private static <S> IColumnToVOMapping<S> createBeanMapping(Class<? extends IDalVO> type, final String column, final String field,
-			final Class<S> dataType) {
-		return createBeanMapping(type, column, field, dataType, false);
+	private static <S> IColumnToVOMapping<S> createBeanMapping(String alias, Class<? extends IDalVO> type, String column, String field,
+			Class<S> dataType) {
+		return createBeanMapping(alias, type, column, field, dataType, false);
 	}
 
-	private static <S> IColumnToVOMapping<S> createBeanMapping(Class<? extends IDalVO> type, final String column, final String field,
-			final Class<S> dataType, boolean isReadonly) {
+	private static <S> IColumnToVOMapping<S> createBeanMapping(String alias, Class<? extends IDalVO> type, String column, String field,
+			Class<S> dataType, boolean isReadonly) {
 		final String xetterSuffix = field.substring(0, 1).toUpperCase() + field.substring(1);
 		// final Class<?> clazz = getDalVOClass();
 		try {
-			return new ColumnToBeanVOMapping<S>(column, field, type.getMethod("set" + xetterSuffix, dataType),
+			return new ColumnToBeanVOMapping<S>(alias, column, field, type.getMethod("set" + xetterSuffix, dataType),
 					type.getMethod((DT_BOOLEAN.equals(dataType) ? "is" : "get") + xetterSuffix), dataType, isReadonly);
 		} catch (Exception e) {
 			throw new CommonFatalException("On " + type + ": " + e);
@@ -118,20 +120,20 @@ public class ProcessorFactorySingleton {
 		return null;
 	}
 
-	protected static <S extends Object> IColumnToVOMapping<S> createFieldMapping(final String column,
-			final String field, final String dataType, Boolean isReadonly, boolean caseSensitive) {
+	protected static <S extends Object> IColumnToVOMapping<S> createFieldMapping(String alias, String column,
+			String field, String dataType, Boolean isReadonly, boolean caseSensitive) {
 		try {
-			return (IColumnToVOMapping<S>) new ColumnToFieldVOMapping<S>(column, field,
+			return (IColumnToVOMapping<S>) new ColumnToFieldVOMapping<S>(alias, column, field,
 					(Class<S>) Class.forName(dataType), isReadonly, caseSensitive);
 		} catch (ClassNotFoundException e) {
 			throw new CommonFatalException(e);
 		}
 	}
 
-	protected static <S extends Object> IColumnToVOMapping<S> createFieldIdMapping(final String column,
-			final String field, final String dataType, Boolean isReadonly, boolean caseSensitive) {
+	protected static <S extends Object> IColumnToVOMapping<S> createFieldIdMapping(String alias, String column,
+			String field, String dataType, Boolean isReadonly, boolean caseSensitive) {
 		try {
-			return (IColumnToVOMapping<S>) new ColumnToFieldIdVOMapping<S>(column, field,
+			return (IColumnToVOMapping<S>) new ColumnToFieldIdVOMapping<S>(alias, column, field,
 					(Class<S>) Class.forName(dataType), isReadonly, caseSensitive);
 		} catch (ClassNotFoundException e) {
 			throw new CommonFatalException(e);
@@ -149,16 +151,16 @@ public class ProcessorFactorySingleton {
 		final int maxFieldIdCount = countIdFieldsForInitiatingFieldMap(colEfMeta);
 		final List<IColumnToVOMapping<? extends Object>> allColumns = new ArrayList<IColumnToVOMapping<? extends Object>>();
 
-		final IColumnToVOMapping<Long> idColumn = createBeanMapping(type, "INTID", "id", DT_LONG);
+		final IColumnToVOMapping<Long> idColumn = createBeanMapping(BASE_ALIAS, type, "INTID", "id", DT_LONG);
 		allColumns.add(idColumn);
 		final IColumnToVOMapping<Integer> versionColumn;
 
 		if(addSystemColumns) {
-			allColumns.add(createBeanMapping(type, "DATCREATED", "createdAt", DT_INTERNALTIMESTAMP));
-			allColumns.add(createBeanMapping(type, "STRCREATED", "createdBy", DT_STRING));
-			allColumns.add(createBeanMapping(type, "DATCHANGED", "changedAt", DT_INTERNALTIMESTAMP));
-			allColumns.add(createBeanMapping(type, "STRCHANGED", "changedBy", DT_STRING));
-			versionColumn = createBeanMapping(type, "INTVERSION", "version", DT_INTEGER);
+			allColumns.add(createBeanMapping(BASE_ALIAS, type, "DATCREATED", "createdAt", DT_INTERNALTIMESTAMP));
+			allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRCREATED", "createdBy", DT_STRING));
+			allColumns.add(createBeanMapping(BASE_ALIAS, type, "DATCHANGED", "changedAt", DT_INTERNALTIMESTAMP));
+			allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRCHANGED", "changedBy", DT_STRING));
+			versionColumn = createBeanMapping(BASE_ALIAS, type, "INTVERSION", "version", DT_INTEGER);
 			allColumns.add(versionColumn);
 		} else {
 			versionColumn = null;
@@ -171,7 +173,7 @@ public class ProcessorFactorySingleton {
 			}
 
 			if (efMeta.getForeignEntity() == null) {
-				allColumns.add(createFieldMapping(efMeta.getDbColumn(), efMeta.getField(), efMeta.getDataType(), efMeta.isReadonly(), efMeta.isDynamic()));
+				allColumns.add(createFieldMapping(BASE_ALIAS, efMeta.getDbColumn(), efMeta.getField(), efMeta.getDataType(), efMeta.isReadonly(), efMeta.isDynamic()));
 			} 
 			// column is ref to foreign table
 			else {
@@ -179,15 +181,15 @@ public class ProcessorFactorySingleton {
 				if (efMeta.getDbColumn().toUpperCase().startsWith("INTID_")) {
 					// kein join nötig!
 					if (!isIdColumnInList(allColumns, efMeta.getDbColumn()))
-						allColumns.add(createFieldIdMapping(efMeta.getDbColumn(), efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), efMeta.isDynamic()));
+						allColumns.add(createFieldIdMapping(BASE_ALIAS, efMeta.getDbColumn(), efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), efMeta.isDynamic()));
 				} 
 				// normal case: key ref and 'stringified' ref to foreign table
 				else {
 					// add 'stringified' ref to column mapping
-					allColumns.add(createFieldMapping(efMeta.getDbColumn(), efMeta.getField(), efMeta.getDataType(), true, efMeta.isDynamic()));
+					allColumns.add(createFieldMapping(BASE_ALIAS, efMeta.getDbColumn(), efMeta.getField(), efMeta.getDataType(), true, efMeta.isDynamic()));
 					String dbIdFieldName = DalUtils.getDbIdFieldName(efMeta.getDbColumn());
 					if (!isIdColumnInList(allColumns, dbIdFieldName)) {
-						allColumns.add(createFieldIdMapping(dbIdFieldName, efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), efMeta.isDynamic()));
+						allColumns.add(createFieldIdMapping(BASE_ALIAS, dbIdFieldName, efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), efMeta.isDynamic()));
 					}
 					// id column is already in allColumns:
 					// Replace the id column if the one present is read-only and the current is not read-only
@@ -196,7 +198,7 @@ public class ProcessorFactorySingleton {
 						IColumnToVOMapping<?> col = getColumnFromList(allColumns, dbIdFieldName);
 						if (col.isReadonly() && !efMeta.isReadonly()) {
 							allColumns.remove(col);
-							allColumns.add(createFieldIdMapping(dbIdFieldName, efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), efMeta.isDynamic()));
+							allColumns.add(createFieldIdMapping(BASE_ALIAS, dbIdFieldName, efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), efMeta.isDynamic()));
 						}
 					}
 				}
@@ -210,50 +212,50 @@ public class ProcessorFactorySingleton {
 		final Class<? extends IDalVO> type = EntityFieldMetaDataVO.class;
 		final List<IColumnToVOMapping<? extends Object>> allColumns = new ArrayList<IColumnToVOMapping<? extends Object>>();
 		
-		final IColumnToVOMapping<Long> idColumn = createBeanMapping(type, "INTID", "id", DT_LONG);
+		final IColumnToVOMapping<Long> idColumn = createBeanMapping(BASE_ALIAS, type, "INTID", "id", DT_LONG);
 		allColumns.add(idColumn);
-		allColumns.add(createBeanMapping(type, "DATCREATED", "createdAt", DT_INTERNALTIMESTAMP));
-		allColumns.add(createBeanMapping(type, "STRCREATED", "createdBy", DT_STRING));
-		allColumns.add(createBeanMapping(type, "DATCHANGED", "changedAt", DT_INTERNALTIMESTAMP));
-		allColumns.add(createBeanMapping(type, "STRCHANGED", "changedBy", DT_STRING));
-		allColumns.add(createBeanMapping(type, "INTVERSION", "version", DT_INTEGER));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "DATCREATED", "createdAt", DT_INTERNALTIMESTAMP));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRCREATED", "createdBy", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "DATCHANGED", "changedAt", DT_INTERNALTIMESTAMP));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRCHANGED", "changedBy", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "INTVERSION", "version", DT_INTEGER));
 		
-		final IColumnToVOMapping<Long> entityIdColumn = createBeanMapping(type, "INTID_T_MD_ENTITY", "entityId", DT_LONG);
+		final IColumnToVOMapping<Long> entityIdColumn = createBeanMapping(BASE_ALIAS, type, "INTID_T_MD_ENTITY", "entityId", DT_LONG);
 		allColumns.add(entityIdColumn);
-		allColumns.add(createBeanMapping(type, "INTID_T_MD_ENTITY_FIELD_GROUP", "fieldGroupId", DT_LONG));
-		allColumns.add(createBeanMapping(type, "STRFIELD", "field", DT_STRING));
-		allColumns.add(createBeanMapping(type, "STRDBFIELD", "dbColumn", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "INTID_T_MD_ENTITY_FIELD_GROUP", "fieldGroupId", DT_LONG));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRFIELD", "field", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRDBFIELD", "dbColumn", DT_STRING));
 		
-		allColumns.add(createBeanMapping(type, "STRFOREIGNENTITY", "foreignEntity", DT_STRING));
-		allColumns.add(createBeanMapping(type, "STRFOREIGNENTITYFIELD", "foreignEntityField", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRFOREIGNENTITY", "foreignEntity", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRFOREIGNENTITYFIELD", "foreignEntityField", DT_STRING));
 		
-		allColumns.add(createBeanMapping(type, "STRDATATYPE", "dataType", DT_STRING));
-		allColumns.add(createBeanMapping(type, "INTDATASCALE", "scale", DT_INTEGER));
-		allColumns.add(createBeanMapping(type, "INTDATAPRECISION", "precision", DT_INTEGER));
-		allColumns.add(createBeanMapping(type, "STRFORMATINPUT", "formatInput", DT_STRING));
-		allColumns.add(createBeanMapping(type, "STRFORMATOUTPUT", "formatOutput", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRDATATYPE", "dataType", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "INTDATASCALE", "scale", DT_INTEGER));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "INTDATAPRECISION", "precision", DT_INTEGER));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRFORMATINPUT", "formatInput", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRFORMATOUTPUT", "formatOutput", DT_STRING));
 		
-		allColumns.add(createBeanMapping(type, "INTID_FOREIGN_DEFAULT", "defaultForeignId", DT_LONG));
-		allColumns.add(createBeanMapping(type, "STRVALUE_DEFAULT", "defaultValue", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "INTID_FOREIGN_DEFAULT", "defaultForeignId", DT_LONG));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRVALUE_DEFAULT", "defaultValue", DT_STRING));
 		
-		allColumns.add(createBeanMapping(type, "BLNREADONLY", "readonly", DT_BOOLEAN));
-		allColumns.add(createBeanMapping(type, "BLNUNIQUE", "unique", DT_BOOLEAN));
-		allColumns.add(createBeanMapping(type, "BLNNULLABLE", "nullable", DT_BOOLEAN));
-		allColumns.add(createBeanMapping(type, "BLNINDEXED", "indexed", DT_BOOLEAN));
-		allColumns.add(createBeanMapping(type, "BLNSEARCHABLE", "searchable", DT_BOOLEAN));
-		allColumns.add(createBeanMapping(type, "BLNMODIFIABLE", "modifiable", DT_BOOLEAN));
-		allColumns.add(createBeanMapping(type, "BLNINSERTABLE", "insertable", DT_BOOLEAN));
-		allColumns.add(createBeanMapping(type, "BLNLOGBOOKTRACKING", "logBookTracking", DT_BOOLEAN));
-		allColumns.add(createBeanMapping(type, "BLNSHOWMNEMONIC", "showMnemonic", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNREADONLY", "readonly", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNUNIQUE", "unique", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNNULLABLE", "nullable", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNINDEXED", "indexed", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNSEARCHABLE", "searchable", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNMODIFIABLE", "modifiable", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNINSERTABLE", "insertable", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNLOGBOOKTRACKING", "logBookTracking", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNSHOWMNEMONIC", "showMnemonic", DT_BOOLEAN));
 		
-		allColumns.add(createBeanMapping(type, "STRCALCFUNCTION", "calcFunction", DT_STRING));
-		allColumns.add(createBeanMapping(type, "STRSORTATIONASC", "sortorderASC", DT_STRING));
-		allColumns.add(createBeanMapping(type, "STRSORTATIONDESC", "sortorderDESC", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRCALCFUNCTION", "calcFunction", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRSORTATIONASC", "sortorderASC", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRSORTATIONDESC", "sortorderDESC", DT_STRING));
 		
-		allColumns.add(createBeanMapping(type, "STR_LOCALERESOURCE_L", "localeResourceIdForLabel", DT_STRING));
-		allColumns.add(createBeanMapping(type, "STR_LOCALERESOURCE_D", "localeResourceIdForDescription", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STR_LOCALERESOURCE_L", "localeResourceIdForLabel", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STR_LOCALERESOURCE_D", "localeResourceIdForDescription", DT_STRING));
 		
-		allColumns.add(createBeanMapping(type, "STR_DEFAULT_MANDATORY", "defaultMandatory", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STR_DEFAULT_MANDATORY", "defaultMandatory", DT_STRING));
 		
 		return new EntityFieldMetaDataProcessor(allColumns, entityIdColumn, idColumn);
 	}
@@ -261,44 +263,44 @@ public class ProcessorFactorySingleton {
 	public EntityMetaDataProcessor newEntityMetaDataProcessor() {
 		final Class<? extends IDalVO> type = EntityMetaDataVO.class;
 		final List<IColumnToVOMapping<? extends Object>> allColumns = new ArrayList<IColumnToVOMapping<? extends Object>>();
-		final IColumnToVOMapping<Long> idColumn = createBeanMapping(type, "INTID", "id", DT_LONG);
+		final IColumnToVOMapping<Long> idColumn = createBeanMapping(BASE_ALIAS, type, "INTID", "id", DT_LONG);
 		
 		allColumns.add(idColumn);
-		allColumns.add(createBeanMapping(type, "DATCREATED", "createdAt", DT_INTERNALTIMESTAMP));
-		allColumns.add(createBeanMapping(type, "STRCREATED", "createdBy", DT_STRING));
-		allColumns.add(createBeanMapping(type, "DATCHANGED", "changedAt", DT_INTERNALTIMESTAMP));
-		allColumns.add(createBeanMapping(type, "STRCHANGED", "changedBy", DT_STRING));
-		allColumns.add(createBeanMapping(type, "INTVERSION", "version", DT_INTEGER));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "DATCREATED", "createdAt", DT_INTERNALTIMESTAMP));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRCREATED", "createdBy", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "DATCHANGED", "changedAt", DT_INTERNALTIMESTAMP));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRCHANGED", "changedBy", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "INTVERSION", "version", DT_INTEGER));
 		
-		allColumns.add(createBeanMapping(type, "STRENTITY", "entity", DT_STRING));
-		allColumns.add(createBeanMapping(type, "STRDBENTITY", "dbEntity", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRENTITY", "entity", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRDBENTITY", "dbEntity", DT_STRING));
 		
-		allColumns.add(createBeanMapping(type, "STRSYSTEMIDPREFIX", "systemIdPrefix", DT_STRING));
-		allColumns.add(createBeanMapping(type, "STRMENUSHORTCUT", "menuShortcut", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRSYSTEMIDPREFIX", "systemIdPrefix", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRMENUSHORTCUT", "menuShortcut", DT_STRING));
 		
-		allColumns.add(createBeanMapping(type, "BLNEDITABLE", "editable", DT_BOOLEAN));
-		allColumns.add(createBeanMapping(type, "BLNUSESSTATEMODEL", "stateModel", DT_BOOLEAN));
-		allColumns.add(createBeanMapping(type, "BLNLOGBOOKTRACKING", "logBookTracking", DT_BOOLEAN));
-		allColumns.add(createBeanMapping(type, "BLNCACHEABLE", "cacheable", DT_BOOLEAN));
-		allColumns.add(createBeanMapping(type, "BLNSEARCHABLE", "searchable", DT_BOOLEAN));
-		allColumns.add(createBeanMapping(type, "BLNTREERELATION", "treeRelation", DT_BOOLEAN));
-		allColumns.add(createBeanMapping(type, "BLNTREEGROUP", "treeGroup", DT_BOOLEAN));
-		allColumns.add(createBeanMapping(type, "BLNIMPORTEXPORT", "importExport", DT_BOOLEAN));
-		allColumns.add(createBeanMapping(type, "BLNFIELDVALUEENTITY", "fieldValueEntity", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNEDITABLE", "editable", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNUSESSTATEMODEL", "stateModel", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNLOGBOOKTRACKING", "logBookTracking", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNCACHEABLE", "cacheable", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNSEARCHABLE", "searchable", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNTREERELATION", "treeRelation", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNTREEGROUP", "treeGroup", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNIMPORTEXPORT", "importExport", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "BLNFIELDVALUEENTITY", "fieldValueEntity", DT_BOOLEAN));
 		
-		allColumns.add(createBeanMapping(type, "STRACCELERATOR", "accelerator", DT_STRING));
-		allColumns.add(createBeanMapping(type, "INTACCELERATORMODIFIER", "acceleratorModifier", DT_INTEGER));
-		allColumns.add(createBeanMapping(type, "STRFIELDS_FOR_EQUALITY", "fieldsForEquality", DT_STRING));
-		allColumns.add(createBeanMapping(type, "INTID_T_MD_RESOURCE", "resourceId", DT_INTEGER));
-		allColumns.add(createBeanMapping(type, "STRNUCLOSRESOURCE", "nuclosResource", DT_STRING));
-		allColumns.add(createBeanMapping(type, "STR_LOCALERESOURCE_L", "localeResourceIdForLabel", DT_STRING));
-		allColumns.add(createBeanMapping(type, "STR_LOCALERESOURCE_M", "localeResourceIdForMenuPath", DT_STRING));
-		allColumns.add(createBeanMapping(type, "STR_LOCALERESOURCE_D", "localeResourceIdForDescription", DT_STRING));
-		allColumns.add(createBeanMapping(type, "STR_LOCALERESOURCE_TW", "localeResourceIdForTreeView", DT_STRING));
-		allColumns.add(createBeanMapping(type, "STR_LOCALERESOURCE_TT", "localeResourceIdForTreeViewDescription", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRACCELERATOR", "accelerator", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "INTACCELERATORMODIFIER", "acceleratorModifier", DT_INTEGER));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRFIELDS_FOR_EQUALITY", "fieldsForEquality", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "INTID_T_MD_RESOURCE", "resourceId", DT_INTEGER));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRNUCLOSRESOURCE", "nuclosResource", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STR_LOCALERESOURCE_L", "localeResourceIdForLabel", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STR_LOCALERESOURCE_M", "localeResourceIdForMenuPath", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STR_LOCALERESOURCE_D", "localeResourceIdForDescription", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STR_LOCALERESOURCE_TW", "localeResourceIdForTreeView", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STR_LOCALERESOURCE_TT", "localeResourceIdForTreeViewDescription", DT_STRING));
 		
-		allColumns.add(createBeanMapping(type, "STR_DOCUMENTPATH", "documentPath", DT_STRING));
-		allColumns.add(createBeanMapping(type, "STR_REPORTFILENAME", "reportFilename", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STR_DOCUMENTPATH", "documentPath", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STR_REPORTFILENAME", "reportFilename", DT_STRING));
 		
 		return new EntityMetaDataProcessor(allColumns, idColumn);
 	}
@@ -306,15 +308,15 @@ public class ProcessorFactorySingleton {
 	public EOGenericObjectProcessor newEOGenericObjectProcessor() {
 		final Class<? extends IDalVO> type = EOGenericObjectVO.class;
 		final List<IColumnToVOMapping<? extends Object>> allColumns = new ArrayList<IColumnToVOMapping<? extends Object>>();
-		final IColumnToVOMapping<Long> idColumn = createBeanMapping(type, "INTID", "id", DT_LONG);
+		final IColumnToVOMapping<Long> idColumn = createBeanMapping(BASE_ALIAS, type, "INTID", "id", DT_LONG);
 		
 		allColumns.add(idColumn);
-		final IColumnToVOMapping<Long> moduleColumn = createBeanMapping(type, "INTID_T_MD_MODULE", "moduleId", DT_LONG);
-		allColumns.add(createBeanMapping(type, "DATCREATED", "createdAt", DT_INTERNALTIMESTAMP));
-		allColumns.add(createBeanMapping(type, "STRCREATED", "createdBy", DT_STRING));
-		allColumns.add(createBeanMapping(type, "DATCHANGED", "changedAt", DT_INTERNALTIMESTAMP));
-		allColumns.add(createBeanMapping(type, "STRCHANGED", "changedBy", DT_STRING));
-		allColumns.add(createBeanMapping(type, "INTVERSION", "version", DT_INTEGER));
+		final IColumnToVOMapping<Long> moduleColumn = createBeanMapping(BASE_ALIAS, type, "INTID_T_MD_MODULE", "moduleId", DT_LONG);
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "DATCREATED", "createdAt", DT_INTERNALTIMESTAMP));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRCREATED", "createdBy", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "DATCHANGED", "changedAt", DT_INTERNALTIMESTAMP));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "STRCHANGED", "changedBy", DT_STRING));
+		allColumns.add(createBeanMapping(BASE_ALIAS, type, "INTVERSION", "version", DT_INTEGER));
 		allColumns.add(moduleColumn);
 		
 		return new EOGenericObjectProcessor(allColumns, moduleColumn, idColumn);
@@ -336,13 +338,13 @@ public class ProcessorFactorySingleton {
 		final IColumnToVOMapping<?> mapping;
 		final PivotInfo pinfo = field.getPivotInfo();
 		if (pinfo == null) {
-			mapping = createFieldMapping(
+			mapping = createFieldMapping(BASE_ALIAS, 
 					field.getDbColumn(), field.getField(), field.getDataType(), field.isReadonly(), false);
 		}
 		else {
 			final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
 			final EntityFieldMetaDataVO vField = mdProv.getEntityField(pinfo.getSubform(), pinfo.getValueField());
-			mapping = createFieldMapping(
+			mapping = createFieldMapping(BASE_ALIAS, 
 					vField.getDbColumn(), vField.getField(), vField.getDataType(), vField.isReadonly(), false);
 		}
 		processor.addToColumns(mapping);

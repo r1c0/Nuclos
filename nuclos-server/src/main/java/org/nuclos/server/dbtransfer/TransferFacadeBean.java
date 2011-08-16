@@ -82,6 +82,7 @@ import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
 import org.nuclos.server.dal.DalUtils;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbAccess;
@@ -677,7 +678,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			DbUniqueConstraint artifactConstraint = (DbUniqueConstraint)dbChangeStmt.getArtifact2();
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<Long> query = builder.createQuery(Long.class);
-			DbFrom t = query.from(artifactConstraint.getTableName()).alias("t");
+			DbFrom t = query.from(artifactConstraint.getTableName()).alias(ProcessorFactorySingleton.BASE_ALIAS);
 			List<DbExpression<?>> lstDBSelection = new ArrayList<DbExpression<?>>();
 			for(String sColumn : artifactConstraint.getColumnNames()) {
 				DbColumnExpression<?> c = t.column(sColumn, DalUtils.getDbType(artifactConstraint.getClass()));
@@ -1524,7 +1525,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	private static Boolean readConfigParameter() {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
-		DbFrom t = query.from("T_AD_PARAMETER").alias("t");
+		DbFrom t = query.from("T_AD_PARAMETER").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(t.column("STRVALUE", String.class));
 		query.where(builder.equal(t.column("STRPARAMETER", String.class), PARAM_NAME));
 		List<String> v = DataBaseHelper.getDbAccess().executeQuery(query);

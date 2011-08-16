@@ -52,6 +52,7 @@ import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
@@ -826,7 +827,7 @@ public void processChangingDynamicEntities(Collection<DynamicEntityVO> newDEs, C
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_UD_DATASOURCEUSAGE").alias("t");
+		DbFrom t = query.from("T_UD_DATASOURCEUSAGE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(
 			t.column("INTID", Integer.class),
 			t.column("INTID_T_UD_DATASOURCE", Integer.class),

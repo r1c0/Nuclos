@@ -37,17 +37,25 @@ import org.nuclos.server.resource.valueobject.ResourceFile;
  */
 abstract class AbstractColumnToVOMapping<T> implements IColumnToVOMapping<T> {
 
+	private final String alias;
 	private final String column;
 	private final Class<T> dataType;
 	private final boolean isReadonly;
 	private final boolean caseSensitive;
 
-	AbstractColumnToVOMapping(String column, Class<T> dataType, boolean isReadonly, boolean caseSensitive) {
+	AbstractColumnToVOMapping(String alias, String column, Class<T> dataType, boolean isReadonly, boolean caseSensitive) {
+		if (alias == null) throw new NullPointerException();
 		if (column == null) throw new NullPointerException();
+		this.alias = alias;
 		this.column = column;
 		this.dataType = dataType;
 		this.isReadonly = isReadonly;
 		this.caseSensitive = caseSensitive;
+	}
+
+	@Override
+	public final String getAlias() {
+		return alias;
 	}
 
 	@Override

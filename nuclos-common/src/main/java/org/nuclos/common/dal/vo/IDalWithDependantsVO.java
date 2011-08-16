@@ -1,4 +1,4 @@
-//Copyright (C) 2010  Novabit Informationssysteme GmbH
+//Copyright (C) 2011  Novabit Informationssysteme GmbH
 //
 //This file is part of Nuclos.
 //
@@ -16,41 +16,17 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.dal.vo;
 
-import org.nuclos.common.HasId;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 
 /**
- * Base interface for all value objects (VOs) transfered between client and server. 
- * <p>
- * On the server side, these VOs get persisted into the DB.
- * </p> 
+ * An IDalWithFieldsVO that in addition contains (some or all) of its
+ * dependent data (i.e. subforms or pivot subforms).
+ * 
+ * @since Nuclos 3.1.01
+ * @author Thomas Pasch 
  */
-public interface IDalVO extends HasId<Long> {
+public interface IDalWithDependantsVO<T> extends IDalWithFieldsVO<T> {
 	
-	int STATE_NEW = 1;
-	
-	int STATE_UPDATED = 2;
-	
-	int STATE_REMOVED = 3;
-	
-		
-	void setId(Long id);
-	
-	
-	void flagNew();
-	
-	void flagUpdate();
-	
-	void flagRemove();
+	DependantMasterDataMap getDependants();
 
-	boolean isFlagNew();
-
-	boolean isFlagUpdated();
-
-	boolean isFlagRemoved();
-	
-	
-	String processor();
-	
-	void processor(String p);
-	
 }

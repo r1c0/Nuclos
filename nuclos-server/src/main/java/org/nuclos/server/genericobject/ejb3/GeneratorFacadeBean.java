@@ -76,6 +76,7 @@ import org.nuclos.server.common.valueobject.GeneratorRuleVO;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.DalUtils;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.DbTuple.DbTupleElement;
@@ -800,7 +801,7 @@ public Integer generateGenericObject(RuleObjectContainerCVO loccvoSource, String
 		    String sTable = MetaDataServerProvider.getInstance().getEntity(subEntity).getDbEntity();
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();			
 			DbQuery<DbTuple> query = builder.createTupleQuery();
-			DbFrom t = query.from(sTable).alias("t");
+			DbFrom t = query.from(sTable).alias(ProcessorFactorySingleton.BASE_ALIAS);
 			List<DbExpression<?>> lstSelection = new ArrayList<DbExpression<?>>();
 			List<DbExpression<?>> lst = new ArrayList<DbExpression<?>>();
 			for(MasterDataVO vo : lstGroup){
@@ -1331,7 +1332,7 @@ public Collection<GeneratorRuleVO> getRuleUsages(Integer generatorId) throws Com
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_MD_RULE_GENERATION").alias("t");
+		DbFrom t = query.from("T_MD_RULE_GENERATION").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(t.column("INTID_T_MD_RULE", Integer.class), t.column("INTORDER", Integer.class), t.column("BLNRUNAFTERWARDS", Boolean.class));
 		query.where(builder.equal(t.column("INTID_T_MD_GENERATION", Integer.class), generatorId));
 		query.orderBy(builder.asc(t.column("INTORDER", Integer.class)));

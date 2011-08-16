@@ -36,9 +36,9 @@ public final class ColumnToFieldIdVOMapping<T> extends AbstractColumnToVOMapping
 	 * @param dataType
 	 * @param isReadonly
 	 */
-	public ColumnToFieldIdVOMapping(String column, String fieldId, Class<T> dataType,
+	public ColumnToFieldIdVOMapping(String alias, String column, String fieldId, Class<T> dataType,
 			boolean isReadonly, boolean isCaseSensitive) {
-		super(column, dataType, isReadonly, isCaseSensitive);
+		super(alias, column, dataType, isReadonly, isCaseSensitive);
 		if (fieldId == null) throw new NullPointerException();
 		this.fieldId = fieldId;
 	}

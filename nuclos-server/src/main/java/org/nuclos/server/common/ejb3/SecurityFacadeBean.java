@@ -43,6 +43,7 @@ import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ModulePermissions;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
 import org.nuclos.server.dblayer.DbStatementUtils;
@@ -189,7 +190,7 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	public Integer getUserId(final String sUserName) throws CommonFatalException {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_MD_USER").alias("t");
+		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(t.column("INTID", Integer.class));
 		query.where(builder.equal(builder.upper(t.column("STRUSER", String.class)), builder.upper(builder.literal(sUserName))));
 		Integer executeQuerySingleResult = null;
@@ -280,7 +281,7 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	public Boolean isLdapAuthenticationActive() {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
-		DbFrom t = query.from("T_AD_LDAPSERVER").alias("t");
+		DbFrom t = query.from("T_AD_LDAPSERVER").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(t.column("INTID", Long.class));
 		query.where(builder.and(builder.equal(t.column("BLNACTIVE", Boolean.class), true), builder.isNotNull(t.column("STRUSERFILTER", String.class))));
 
@@ -291,7 +292,7 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	public Boolean isLdapSynchronizationActive() {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
-		DbFrom t = query.from("T_AD_LDAPSERVER").alias("t");
+		DbFrom t = query.from("T_AD_LDAPSERVER").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(t.column("INTID", Long.class));
 		query.where(builder.and(builder.equal(t.column("BLNACTIVE", Boolean.class), true), builder.isNotNull(t.column("SEARCHFILTER", String.class))));
 
@@ -313,7 +314,7 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_MD_USER").alias("t");
+		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(t.column("DATPASSWORDCHANGED", Date.class), t.column("BLNSUPERUSER", Boolean.class));
 		query.where(builder.equal(builder.upper(t.column("STRUSER", String.class)), builder.upper(builder.literal(username))));
 		DbTuple tuple = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);

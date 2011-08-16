@@ -24,6 +24,8 @@ import org.nuclos.common.dal.vo.IDalVO;
  */
 public interface IColumnToVOMapping<T> {
 	
+	String getAlias();
+	
 	String getColumn();
 	
 	boolean isCaseSensitive();

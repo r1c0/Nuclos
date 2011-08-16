@@ -35,6 +35,7 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.customcode.valueobject.CodeVO;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -186,7 +187,7 @@ public class RuleCache implements RuleCacheMBean {
 			try {
 				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<Integer> query = builder.createQuery(Integer.class);
-				DbFrom t = query.from("V_MD_RULE_EVENT").alias("t");
+				DbFrom t = query.from("V_MD_RULE_EVENT").alias(ProcessorFactorySingleton.BASE_ALIAS);
 				query.select(t.column("INTID_T_MD_RULE", Integer.class));
 				query.where(builder.and(
 					builder.equal(t.column("STREVENT", String.class), pair.getX()),
@@ -228,7 +229,7 @@ public class RuleCache implements RuleCacheMBean {
 			try {
 				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<Integer> query = builder.createQuery(Integer.class);
-				DbFrom t = query.from("V_MD_RULE_EVENT").alias("t");
+				DbFrom t = query.from("V_MD_RULE_EVENT").alias(ProcessorFactorySingleton.BASE_ALIAS);
 				query.select(t.column("INTID_T_MD_RULE", Integer.class));
 				query.where(builder.equal(t.column("STREVENT", String.class), sEventName));
 				query.orderBy(builder.asc(t.column("INTORDER", Integer.class)));

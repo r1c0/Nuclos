@@ -44,6 +44,7 @@ import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.InstanceConstants;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.query.DbCondition;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -218,7 +219,7 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 	private Integer getProcessmodelFromInstance(Integer iInstanceId){
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_MD_INSTANCE").alias("t");
+		DbFrom t = query.from("T_MD_INSTANCE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(t.column("INTID_T_MD_CASE", Integer.class));
 		query.where(builder.equal(t.column("INTID", Integer.class), iInstanceId));
 		return CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
@@ -453,7 +454,7 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 	public Boolean isObjectGenerated(Integer iInstanceId, Integer iGenerationId){
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Boolean> query = builder.createQuery(Boolean.class);
-		DbFrom t = query.from("T_MD_INSTANCE_OBJGENERATION").alias("t");
+		DbFrom t = query.from("T_MD_INSTANCE_OBJGENERATION").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(t.column("BLNOBJECTGENERATED", Boolean.class));
 		query.where(builder.and(
 			builder.equal(t.column("INTID_T_MD_INSTANCE", Integer.class), iInstanceId),
@@ -471,7 +472,7 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 	public Boolean isProcessInstanceStarted(Integer iInstanceId){
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
-		DbFrom t = query.from("T_UD_GENERICOBJECT").alias("t");
+		DbFrom t = query.from("T_UD_GENERICOBJECT").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(builder.count(t.column("INTID", Integer.class)));
 		query.where(builder.equal(t.column("INTID_T_MD_INSTANCE", Integer.class), iInstanceId));
 		return DataBaseHelper.getDbAccess().executeQuerySingleResult(query) > 0L;

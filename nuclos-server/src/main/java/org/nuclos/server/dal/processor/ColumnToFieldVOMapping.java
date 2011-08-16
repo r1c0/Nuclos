@@ -31,9 +31,9 @@ public final class ColumnToFieldVOMapping<T extends Object> extends AbstractColu
 	/**
 	 * Konstruktor für dynamische VO Werte (Die Werte werden in einer "Fields"-Liste gespeichert).
 	 */
-	public ColumnToFieldVOMapping(String column, String field, Class<T> dataType,
+	public ColumnToFieldVOMapping(String alias, String column, String field, Class<T> dataType,
 			boolean isReadonly, boolean isCaseSensitive) {
-		super(column, dataType, isReadonly, isCaseSensitive);
+		super(alias, column, dataType, isReadonly, isCaseSensitive);
 		if (field == null) throw new NullPointerException();
 		this.field = field;
 	}

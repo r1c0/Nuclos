@@ -54,6 +54,7 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.autosync.XMLEntities;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.DbTuple;
@@ -266,7 +267,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
-		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias("t");
+		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(t.column("STRTEXT", String.class));
 		query.where(builder.and(
 			builder.equal(t.column("STRRESOURCEID", String.class), sresourceId),
@@ -282,7 +283,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		}
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias("t");
+		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(
 			t.column("STRLOCALE", String.class),
 			t.column("STRTEXT", String.class));
@@ -522,7 +523,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	private Integer getResourceIntId(String resId, LocaleInfo localeInfo) {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias("t");
+		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(t.column("INTID", Integer.class));
 		query.where(builder.and(
 			builder.equal(t.column("STRRESOURCEID", String.class), resId),
@@ -577,7 +578,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	public Date getLastChange() {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Date> query = builder.createQuery(Date.class);
-		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias("t");
+		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(builder.max(t.column("DATCHANGED", Date.class)));
 		return DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 	}
@@ -590,7 +591,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
-		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias("t");
+		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(t.column("INTID", Long.class)).where(builder.equal(builder.upper(t.column("STRRESOURCEID", String.class)), s.toUpperCase()));
 		return DataBaseHelper.getDbAccess().executeQuery(query).size() > 0;
 	}

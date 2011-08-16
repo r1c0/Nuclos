@@ -82,6 +82,7 @@ import org.nuclos.server.common.NuclosDataSources;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
@@ -396,7 +397,7 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
 
       DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
       DbQuery<Integer> query = builder.createQuery(Integer.class);
-      DbFrom t = query.from("T_UD_REPORTUSAGE").alias("t");
+      DbFrom t = query.from("T_UD_REPORTUSAGE").alias(ProcessorFactorySingleton.BASE_ALIAS);
       query.select(t.column("INTID_T_UD_REPORT", Integer.class));
       DbCondition cond = builder.equal(t.column("INTID_T_MD_MODULE", Integer.class), usagecriteria.getModuleId());
 

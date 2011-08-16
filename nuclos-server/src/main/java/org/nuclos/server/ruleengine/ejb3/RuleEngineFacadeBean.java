@@ -72,6 +72,7 @@ import org.nuclos.server.customcode.NuclosRule;
 import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
 import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator;
 import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator.AbstractRuleTemplateType;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
@@ -180,7 +181,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_MD_RULE_TRANSITION").alias("t");
+		DbFrom t = query.from("T_MD_RULE_TRANSITION").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(t.column("INTID_T_MD_RULE", Integer.class), t.column("BLNRUNAFTERWARDS", Boolean.class));
 		query.where(builder.equal(t.column("INTID_T_MD_STATE_TRANSITION", Integer.class), transitionId));
 		query.orderBy(builder.asc(t.column("INTORDER", Integer.class)));
@@ -654,7 +655,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_MD_RULE_GENERATION").alias("t");
+		DbFrom t = query.from("T_MD_RULE_GENERATION").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(t.column("INTID_T_MD_GENERATION", Integer.class));
 		if (iRuleId != null) {
 			query.where(builder.equal(t.column("INTID_T_MD_RULE", Integer.class), iRuleId));
@@ -812,7 +813,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_MD_RULE_GENERATION").alias("t");
+		DbFrom t = query.from("T_MD_RULE_GENERATION").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(t.column("INTID_T_MD_RULE", Integer.class), t.column("BLNRUNAFTERWARDS", Boolean.class));
 		query.where(builder.equal(t.column("INTID_T_MD_GENERATION", Integer.class), iGenerationId));
 		query.orderBy(builder.asc(t.column("INTORDER", Integer.class)));

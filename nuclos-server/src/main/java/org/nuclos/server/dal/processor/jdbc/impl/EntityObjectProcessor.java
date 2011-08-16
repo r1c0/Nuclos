@@ -45,6 +45,7 @@ import org.nuclos.server.common.DatasourceServerUtils;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.ProcessorConfiguration;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcWithFieldsDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.database.DataBaseHelper;
@@ -261,7 +262,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		}
         DbQuery<Long> query = DataBaseHelper.getDbAccess().getQueryBuilder().<Long>createQuery(getPrimaryKeyColumn().getDataType());
 
-		DbFrom from = query.from(getDbSourceForSQL()).alias("t");
+		DbFrom from = query.from(getDbSourceForSQL()).alias(ProcessorFactorySingleton.BASE_ALIAS);
 
 		query.select(this.<Long>getDbColumn(from, getPrimaryKeyColumn()));
 

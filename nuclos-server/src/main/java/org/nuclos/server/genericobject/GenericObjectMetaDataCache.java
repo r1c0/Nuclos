@@ -46,6 +46,7 @@ import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.nuclos.server.attribute.valueobject.LayoutUsageVO;
 import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
@@ -121,7 +122,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	public static Map<Integer, String> getLayoutMap() {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_MD_LAYOUT").alias("t");
+		DbFrom t = query.from("T_MD_LAYOUT").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(t.column("INTID", Integer.class), t.column("CLBLAYOUTML", String.class));
 
 		Map<Integer, String> result = new HashMap<Integer, String>();
@@ -139,7 +140,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 
 //		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 //		DbQuery<DbTuple> query = builder.createTupleQuery();
-//		DbFrom t = query.from("V_MD_MODULE").alias("t");
+//		DbFrom t = query.from("V_MD_MODULE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 //		query.multiselect(t.column("INTID", Integer.class), t.column("STRVALUE_T_MD_RESOURCE", String.class));
 //
 //		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
@@ -167,7 +168,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	public static String getLayoutName(Integer iLayoutId){
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
-		DbFrom t = query.from("T_MD_LAYOUT").alias("t");
+		DbFrom t = query.from("T_MD_LAYOUT").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(t.column("STRLAYOUT", String.class));
 		query.where(builder.equal(t.column("INTID", Integer.class), iLayoutId));
 		return CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
@@ -180,7 +181,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	private static Collection<LayoutUsageVO> getLayoutUsageVOs() {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_MD_LAYOUTUSAGE").alias("t");
+		DbFrom t = query.from("T_MD_LAYOUTUSAGE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(
 			t.column("INTID_T_MD_LAYOUT", Integer.class),
 			t.column("STRENTITY", String.class),

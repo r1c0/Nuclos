@@ -17,6 +17,7 @@
 package org.nuclos.server.common;
 
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.expression.DbNull;
@@ -65,7 +66,7 @@ public class LocaleUtils {
 		String sColumn = getColumnByFieldName(sFieldName);
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
-		DbFrom t = query.from(sEntityTable).alias("t");
+		DbFrom t = query.from(sEntityTable).alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(t.column(sColumn, String.class));
 		query.where(builder.equal(t.column("INTID", Integer.class), iId));
 		return CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));

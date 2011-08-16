@@ -33,6 +33,7 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.server.autosync.XMLEntities;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.expression.DbCurrentDateTime;
@@ -70,7 +71,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_MD_USER").alias("t");
+		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(
 			t.column("INTID", Long.class),
 			t.column("STRPASSWORD", String.class),
@@ -185,7 +186,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_MD_USER").alias("t");
+		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(t.column("INTID", Long.class), t.column("INTLOGINATTEMPTS", Integer.class));
 		query.where(builder.equal(builder.upper(t.column("STRUSER", String.class)), builder.upper(builder.literal(username))));
 		DbTuple tuple = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
@@ -226,7 +227,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		Set<String> actions = new HashSet<String>();
 		DbQuery<String> rolesQuery = builder.createQuery(String.class);
-		DbFrom action = rolesQuery.from("T_AD_ACTION").alias("t");
+		DbFrom action = rolesQuery.from("T_AD_ACTION").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		rolesQuery.select(action.column("STRACTION", String.class));
 		actions.addAll(DataBaseHelper.getDbAccess().executeQuery(rolesQuery));
 

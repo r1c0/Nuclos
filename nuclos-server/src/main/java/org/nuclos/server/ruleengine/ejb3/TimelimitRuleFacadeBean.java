@@ -61,6 +61,7 @@ import org.nuclos.server.customcode.NuclosTimelimitRule;
 import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
 import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator;
 import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator.AbstractRuleTemplateType;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -323,7 +324,7 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
     public Collection<String> getJobRules(Object oId) {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
-		DbFrom t = query.from("V_MD_JOBRULE").alias("t");
+		DbFrom t = query.from("V_MD_JOBRULE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(t.column("STRVALUE_T_MD_TIMELIMITRULE", String.class));
 		query.where(builder.equal(t.column("INTID_T_MD_JOBCONTROLLER", Integer.class), oId));
 		query.orderBy(builder.asc(t.column("INTORDER", Integer.class)));

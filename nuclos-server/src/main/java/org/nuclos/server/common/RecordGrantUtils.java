@@ -39,6 +39,7 @@ import org.nuclos.common.preferences.ReadOnlyPreferences;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.PreferencesException;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
@@ -306,7 +307,7 @@ public class RecordGrantUtils {
 		
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom table = query.from("T_UD_SEARCHFILTER").alias("t");
+		DbFrom table = query.from("T_UD_SEARCHFILTER").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		DbColumnExpression<Integer> intId = table.column("INTID", Integer.class);
 		DbColumnExpression<String> strName = table.column("STRNAME", String.class);
 		DbColumnExpression<String> strEntity = table.column("STRENTITY", String.class);

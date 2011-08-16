@@ -66,6 +66,7 @@ import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.dal.DalUtils;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
@@ -411,7 +412,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	private String getRelationTypeLabel(String relationType){
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
-		DbFrom t = query.from("T_MD_RELATIONTYPE").alias("t");
+		DbFrom t = query.from("T_MD_RELATIONTYPE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.select(t.column("STRLOCALERESOURCEID", String.class));
 		query.where(builder.equal(t.column("STRRELATIONTYPE", String.class), relationType));
 		String resourceId = CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
@@ -428,7 +429,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom l = query.from("T_UD_GO_GROUP").alias("l");
 		DbFrom g = l.join("T_UD_GROUP", JoinType.INNER).on("INTID_T_UD_GROUP", "INTID").alias("g");
-		DbFrom t = g.join("T_MD_GROUPTYPE", JoinType.INNER).on("INTID_T_MD_GROUPTYPE", "INTID").alias("t");
+		DbFrom t = g.join("T_MD_GROUPTYPE", JoinType.INNER).on("INTID_T_MD_GROUPTYPE", "INTID").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(
 			l.column("INTID_T_UD_GROUP", Integer.class),
 			g.column("STRGROUP", String.class),
@@ -460,7 +461,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	public GroupTreeNode getGroupTreeNode(final Integer iId, final boolean bLoadSubNodes) throws CommonFinderException {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_UD_GROUP").alias("t");
+		DbFrom t = query.from("T_UD_GROUP").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		DbFrom fk1 = t.join("T_MD_GROUPTYPE", JoinType.INNER).on("INTID_T_MD_GROUPTYPE", "INTID").alias("fk1");
 		query.multiselect(
 			t.column("STRGROUP", String.class),
