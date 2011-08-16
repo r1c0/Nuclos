@@ -166,8 +166,8 @@ public class XmlExportImportProtocolFacadeBean extends NuclosFacadeBean implemen
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<byte[]> query = builder.createQuery(byte[].class);
 			DbFrom t = query.from(mdmvo.getDBEntity()).alias(ProcessorFactorySingleton.BASE_ALIAS);			
-			query.select(t.column("BLBXMLFILE", byte[].class));
-			query.where(builder.equal(t.column("INTID", Integer.class), iParentId));
+			query.select(t.baseColumn("BLBXMLFILE", byte[].class));
+			query.where(builder.equal(t.baseColumn("INTID", Integer.class), iParentId));
 			
 			byte[] ba = null;
 			try {

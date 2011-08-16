@@ -396,8 +396,8 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("STREMAIL", String.class));
-		query.where(builder.equal(builder.upper(t.column("STRUSER", String.class)), builder.upper(builder.literal(sRecipient))));
+		query.select(t.baseColumn("STREMAIL", String.class));
+		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sRecipient))));
 
 		String sEmail = CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
 

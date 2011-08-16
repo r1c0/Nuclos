@@ -85,7 +85,7 @@ public class MakeAttributesConsistent implements UpdateJobs{
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_UD_GO_ATTRIBUTE").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("INTID_EXTERNAL", Integer.class));
+		query.select(t.baseColumn("INTID_EXTERNAL", Integer.class));
 		query.distinct(true);
 		
 		// get all masterdata entities
@@ -94,7 +94,7 @@ public class MakeAttributesConsistent implements UpdateJobs{
 			for (final AttributeCVO attrcvo : AttributeCache.getInstance().getReferencingAttributes(mdmvo.getEntityName())) {
 				// check whether attribute is used in a genericobject
 				try {
-					query.where(builder.equal(t.column("INTID_T_MD_ATTRIBUTE", Integer.class), attrcvo.getId()));
+					query.where(builder.equal(t.baseColumn("INTID_T_MD_ATTRIBUTE", Integer.class), attrcvo.getId()));
 					List<Integer> intidExternals = DataBaseHelper.getDbAccess().executeQuery(query);
 					
 					for (Integer intid_external : intidExternals) {
@@ -138,7 +138,7 @@ public class MakeAttributesConsistent implements UpdateJobs{
 			for (final AttributeCVO attrcvo : AttributeCache.getInstance().getReferencingAttributes(mdvo.getField("entity").toString())) {
 				// check whether attribute is used in a genericobject
 				try {
-					query.where(builder.equal(t.column("INTID_T_MD_ATTRIBUTE", Integer.class), attrcvo.getId()));
+					query.where(builder.equal(t.baseColumn("INTID_T_MD_ATTRIBUTE", Integer.class), attrcvo.getId()));
 					List<Integer> intidExternals = DataBaseHelper.getDbAccess().executeQuery(query);
 					
 					for (Integer intid_external : intidExternals) {

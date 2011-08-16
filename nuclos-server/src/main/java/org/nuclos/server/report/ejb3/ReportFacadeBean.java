@@ -188,10 +188,10 @@ public Collection<ReportVO> getReportsForDatasourceId(Integer iDataSourceId, fin
       DbQuery<Integer> query = builder.createQuery(Integer.class);
       DbFrom r = query.from("T_UD_REPORT").alias("r");
       DbFrom o = r.join("T_UD_REPORTOUTPUT", JoinType.INNER).on("INTID", "INTID_T_UD_REPORT").alias("o");
-      query.select(r.column("INTID", Integer.class));
+      query.select(r.baseColumn("INTID", Integer.class));
       query.where(builder.and(
-         builder.equal(r.column("INTTYPE", Integer.class), type.getValue()),
-         builder.equal(o.column("INTID_T_UD_DATASOURCE", String.class), iDataSourceId)));
+         builder.equal(r.baseColumn("INTTYPE", Integer.class), type.getValue()),
+         builder.equal(o.baseColumn("INTID_T_UD_DATASOURCE", String.class), iDataSourceId)));
 
       for (Integer intid : DataBaseHelper.getDbAccess().executeQuery(query)) {
          try {
@@ -398,10 +398,10 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
       DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
       DbQuery<Integer> query = builder.createQuery(Integer.class);
       DbFrom t = query.from("T_UD_REPORTUSAGE").alias(ProcessorFactorySingleton.BASE_ALIAS);
-      query.select(t.column("INTID_T_UD_REPORT", Integer.class));
-      DbCondition cond = builder.equal(t.column("INTID_T_MD_MODULE", Integer.class), usagecriteria.getModuleId());
+      query.select(t.baseColumn("INTID_T_UD_REPORT", Integer.class));
+      DbCondition cond = builder.equal(t.baseColumn("INTID_T_MD_MODULE", Integer.class), usagecriteria.getModuleId());
 
-      DbColumnExpression<Integer> c = t.column("INTID_T_MD_PROCESS", Integer.class);
+      DbColumnExpression<Integer> c = t.baseColumn("INTID_T_MD_PROCESS", Integer.class);
       final Integer iProcessId = usagecriteria.getProcessId();
       if (iProcessId == null) {
          query.where(builder.and(cond, c.isNull()));

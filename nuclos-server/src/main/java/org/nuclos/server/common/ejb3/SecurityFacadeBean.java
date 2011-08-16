@@ -191,8 +191,8 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("INTID", Integer.class));
-		query.where(builder.equal(builder.upper(t.column("STRUSER", String.class)), builder.upper(builder.literal(sUserName))));
+		query.select(t.baseColumn("INTID", Integer.class));
+		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sUserName))));
 		Integer executeQuerySingleResult = null;
 		try{
 			executeQuerySingleResult = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
@@ -282,8 +282,8 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
 		DbFrom t = query.from("T_AD_LDAPSERVER").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("INTID", Long.class));
-		query.where(builder.and(builder.equal(t.column("BLNACTIVE", Boolean.class), true), builder.isNotNull(t.column("STRUSERFILTER", String.class))));
+		query.select(t.baseColumn("INTID", Long.class));
+		query.where(builder.and(builder.equal(t.baseColumn("BLNACTIVE", Boolean.class), true), builder.isNotNull(t.baseColumn("STRUSERFILTER", String.class))));
 
 		return DataBaseHelper.getDbAccess().executeQuery(query).size() > 0;
 	}
@@ -293,8 +293,8 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
 		DbFrom t = query.from("T_AD_LDAPSERVER").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("INTID", Long.class));
-		query.where(builder.and(builder.equal(t.column("BLNACTIVE", Boolean.class), true), builder.isNotNull(t.column("SEARCHFILTER", String.class))));
+		query.select(t.baseColumn("INTID", Long.class));
+		query.where(builder.and(builder.equal(t.baseColumn("BLNACTIVE", Boolean.class), true), builder.isNotNull(t.baseColumn("SEARCHFILTER", String.class))));
 
 		return DataBaseHelper.getDbAccess().executeQuery(query).size() > 0;
 	}
@@ -315,8 +315,8 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.multiselect(t.column("DATPASSWORDCHANGED", Date.class), t.column("BLNSUPERUSER", Boolean.class));
-		query.where(builder.equal(builder.upper(t.column("STRUSER", String.class)), builder.upper(builder.literal(username))));
+		query.multiselect(t.baseColumn("DATPASSWORDCHANGED", Date.class), t.baseColumn("BLNSUPERUSER", Boolean.class));
+		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(username))));
 		DbTuple tuple = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 
 		Date d = tuple.get(0, Date.class);

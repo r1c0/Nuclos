@@ -234,9 +234,9 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		DbFrom p = mf.join("T_AD_MASTERDATA", JoinType.INNER).on("STRFOREIGNENTITY", "STRENTITY").alias("p");
 		// @TODO GOREF
 		DbFrom go = p.join("T_MD_MODULE", JoinType.INNER).on("STRENTITY", "STRENTITY").alias("go");
-		query.select(m.column("STRENTITY", String.class));
-		query.where(builder.equal(go.column("INTID", Integer.class), iModuleId));
-		query.orderBy(builder.asc(m.column("STRENTITY", String.class)));
+		query.select(m.baseColumn("STRENTITY", String.class));
+		query.where(builder.equal(go.baseColumn("INTID", Integer.class), iModuleId));
+		query.orderBy(builder.asc(m.baseColumn("STRENTITY", String.class)));
 
 		final MasterDataMetaCache mdmetacache = MasterDataMetaCache.getInstance();
 		return DataBaseHelper.getDbAccess().executeQuery(query, new Transformer<String, MasterDataMetaVO>() {
@@ -1001,23 +1001,24 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		DbFrom from = query.from("T_MD_RULE_EVENT").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 
-		columns.add(from.column("INTID", Integer.class).alias("intid"));
+		columns.add(from.baseColumn("INTID", Integer.class).alias("intid"));
 		query.multiselect(columns);
 
 		List<DbCondition> lstDbCondition = new ArrayList<DbCondition>();
-		lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("STRMASTERDATA", String.class),
+		lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("STRMASTERDATA", String.class),
 			DataBaseHelper.getDbAccess().getQueryBuilder().literal(sEntityName)));
 		if(userEvent) {
-			lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("STREVENT", String.class),
+			lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("STREVENT", String.class),
 				DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.USER_EVENT)));
 		} else {
-			DbCondition orCondition = DataBaseHelper.getDbAccess().getQueryBuilder().or(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("STREVENT", String.class),
+			DbCondition orCondition = DataBaseHelper.getDbAccess().getQueryBuilder().or(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
+					from.baseColumn("STREVENT", String.class),
 				DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.SAVE_EVENT)),
-				DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("STREVENT", String.class),
+				DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("STREVENT", String.class),
 					DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.DELETE_EVENT)),
-					DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("STREVENT", String.class),
+					DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("STREVENT", String.class),
 						DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.SAVE_AFTER_EVENT)),
-						DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("STREVENT", String.class),
+						DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("STREVENT", String.class),
 							DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.DELETE_AFTER_EVENT)));
 			lstDbCondition.add(orCondition);
 		}
@@ -1204,11 +1205,11 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom process = query.from("T_MD_PROCESS").alias("process");
-		query.multiselect(process.column("INTID", Integer.class), process.column("STRPROCESS", String.class));
-		DbCondition condition = builder.equal(process.column("INTID_T_MD_MODULE", Integer.class), iModuleId);
+		query.multiselect(process.baseColumn("INTID", Integer.class), process.baseColumn("STRPROCESS", String.class));
+		DbCondition condition = builder.equal(process.baseColumn("INTID_T_MD_MODULE", Integer.class), iModuleId);
 		if (!bSearchMode) {
-			DbColumnExpression<Date> datValidFrom = process.column("DATVALIDFROM", Date.class);
-			DbColumnExpression<Date> datValidUntil = process.column("DATVALIDUNTIL", Date.class);
+			DbColumnExpression<Date> datValidFrom = process.baseColumn("DATVALIDFROM", Date.class);
+			DbColumnExpression<Date> datValidUntil = process.baseColumn("DATVALIDUNTIL", Date.class);
 			condition = builder.and(
 				condition,
 				builder.or(builder.lessThanOrEqualTo(datValidFrom, builder.currentDate()), datValidFrom.isNull()),
@@ -1237,9 +1238,9 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		DbFrom m = query.from("T_MD_ENTITY").alias("m");
 		DbFrom mf = m.join("T_MD_ENTITY_FIELD", JoinType.INNER).on("INTID", "INTID_T_MD_ENTITY").alias("mf");
 		DbFrom p = mf.join("T_MD_ENTITY", JoinType.INNER).on("STRFOREIGNENTITY", "STRENTITY").alias("p");
-		query.multiselect(m.column("INTID", Integer.class),	m.column("STRENTITY", String.class));
-		query.where(builder.equal(p.column("INTID", Integer.class), iModuleId));
-		query.orderBy(builder.asc(m.column("STRENTITY", String.class)));
+		query.multiselect(m.baseColumn("INTID", Integer.class),	m.baseColumn("STRENTITY", String.class));
+		query.where(builder.equal(p.baseColumn("INTID", Integer.class), iModuleId));
+		query.orderBy(builder.asc(m.baseColumn("STRENTITY", String.class)));
 
 		return DataBaseHelper.getDbAccess().executeQuery(query, new Transformer<DbTuple, CollectableField>() {
 			@Override

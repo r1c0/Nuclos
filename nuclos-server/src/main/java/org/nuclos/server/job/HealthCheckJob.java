@@ -68,9 +68,9 @@ public class HealthCheckJob extends SchedulableJob implements NuclosJob{
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_JOBDBOBJECT").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.multiselect(t.column("STRNAME", String.class), t.column("STRTYPE", String.class));
-		query.where(builder.equal(t.column("INTID_T_MD_JOBCONTROLLER", Integer.class), oId));
-		query.orderBy(builder.asc(t.column("INTORDER", Integer.class)));
+		query.multiselect(t.baseColumn("STRNAME", String.class), t.baseColumn("STRTYPE", String.class));
+		query.where(builder.equal(t.baseColumn("INTID_T_MD_JOBCONTROLLER", Integer.class), oId));
+		query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
 
 		try {
 			return DataBaseHelper.getDbAccess().executeQuery(query, new Transformer<DbTuple, DataBaseObject>() {

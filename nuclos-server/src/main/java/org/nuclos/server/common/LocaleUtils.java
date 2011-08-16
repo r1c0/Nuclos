@@ -67,8 +67,8 @@ public class LocaleUtils {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from(sEntityTable).alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column(sColumn, String.class));
-		query.where(builder.equal(t.column("INTID", Integer.class), iId));
+		query.select(t.baseColumn(sColumn, String.class));
+		query.where(builder.equal(t.baseColumn("INTID", Integer.class), iId));
 		return CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
 	}
 

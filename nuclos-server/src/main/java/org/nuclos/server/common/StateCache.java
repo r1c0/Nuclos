@@ -182,10 +182,10 @@ public class StateCache {
 			DbQuery<Integer> query = builder.createQuery(Integer.class);
 			DbFrom s = query.from("T_MD_STATE").alias("s");
 			DbFrom st = s.join("T_MD_STATE_TRANSITION", JoinType.INNER).on("INTID", "INTID_T_MD_STATE_2").alias("st");
-			query.select(s.column("INTID", Integer.class));
+			query.select(s.baseColumn("INTID", Integer.class));
 			query.where(builder.and(
-				builder.equal(s.column("INTID_T_MD_STATEMODEL", Integer.class), iModelId),
-				st.column("INTID_T_MD_STATE_1", Integer.class).isNull()));
+				builder.equal(s.baseColumn("INTID_T_MD_STATEMODEL", Integer.class), iModelId),
+				st.baseColumn("INTID_T_MD_STATE_1", Integer.class).isNull()));
 
 			List<Integer> stateIds = DataBaseHelper.getDbAccess().executeQuery(query.distinct(true));
 

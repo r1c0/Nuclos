@@ -25,14 +25,17 @@ public class DbExpression<T> extends DbSelection<T> implements Serializable {
 
 	private PreparedStringBuilder sqlString;
 	
+	/**
+	 * @deprecated This should be package-private.
+	 */
 	public DbExpression(DbQueryBuilder builder, Class<? extends T> javaType, PreparedStringBuilder sqlString) {
 		super(builder, javaType);
 		this.sqlString = sqlString.freeze();
 	}
 	
-	@Override
-	public DbExpression<T> alias(String alias) {
-		return (DbExpression<T>) super.alias(alias);
+	DbExpression(DbQueryBuilder builder, Class<? extends T> javaType, String alias, PreparedStringBuilder sqlString) {
+		super(builder, javaType, alias);
+		this.sqlString = sqlString.freeze();
 	}
 	
 	/**
@@ -67,6 +70,8 @@ public class DbExpression<T> extends DbSelection<T> implements Serializable {
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");
 		result.append("sql=").append(sqlString);
+		result.append(", alias=").append(getAlias());
+		result.append(", type=").append(getJavaType());
 		if (sqlString != null) {
 			result.append(", frozen=").append(sqlString.isFrozen());
 		}

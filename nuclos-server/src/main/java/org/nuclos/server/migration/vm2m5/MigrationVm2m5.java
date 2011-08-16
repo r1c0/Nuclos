@@ -238,9 +238,9 @@ public class MigrationVm2m5 extends AbstractMigration{
 				/** update searchfilters */
 				DbQuery<Integer> queryModule = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Integer.class);
 				DbFrom module = queryModule.from("T_MD_MODULE").alias("module");
-				queryModule.select(module.column("INTID", Integer.class));
+				queryModule.select(module.baseColumn("INTID", Integer.class));
 				queryModule.where(
-					DataBaseHelper.getDbAccess().getQueryBuilder().equal(module.column("STRENTITY", Integer.class), sEntity));
+					DataBaseHelper.getDbAccess().getQueryBuilder().equal(module.baseColumn("STRENTITY", Integer.class), sEntity));
 				Integer moduleid = DataBaseHelper.getDbAccess().executeQuerySingleResult(queryModule);
 				/*Map<String, Object> columnValueMap = new HashMap<String, Object>();
 				Map<String, Object> conditionMap = new HashMap<String, Object>();
@@ -514,7 +514,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 			columns.add(getColumn(from, "STR_LOCALERESOURCE_D", DT_STRING));
 			query.multiselect(columns);
 			query.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
-				from.column("STRATTRIBUTE", DT_STRING),
+				from.baseColumn("STRATTRIBUTE", DT_STRING),
 				DataBaseHelper.getDbAccess().getQueryBuilder().literal(attribute)));
 
 			List<DbTuple> result = DataBaseHelper.getDbAccess().executeQuery(query);
@@ -561,10 +561,10 @@ public class MigrationVm2m5 extends AbstractMigration{
 				DbQuery<Integer> queryLB = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Integer.class);
 				DbFrom lb = queryLB.from("T_UD_LOGBOOK").alias("lb");
 				DbFrom go = lb.join("T_UD_GENERICOBJECT", JoinType.INNER).on("INTID_T_UD_GENERICOBJECT", "INTID").alias("go");
-				queryLB.select(lb.column("INTID", Integer.class));
+				queryLB.select(lb.baseColumn("INTID", Integer.class));
 				queryLB.where(DataBaseHelper.getDbAccess().getQueryBuilder().and(
-					DataBaseHelper.getDbAccess().getQueryBuilder().equal(go.column("INTID_T_MD_MODULE", Integer.class), iModuleId),
-					DataBaseHelper.getDbAccess().getQueryBuilder().equal(lb.column("INTID_T_MD_ATTRIBUTE", Integer.class), iAttrId)));
+					DataBaseHelper.getDbAccess().getQueryBuilder().equal(go.baseColumn("INTID_T_MD_MODULE", Integer.class), iModuleId),
+					DataBaseHelper.getDbAccess().getQueryBuilder().equal(lb.baseColumn("INTID_T_MD_ATTRIBUTE", Integer.class), iAttrId)));
 				for (Integer logbookEntryid : DataBaseHelper.getDbAccess().executeQuery(queryLB.distinct(true))) {
 					Map<String, Object> columnValueMap = new HashMap<String, Object>();
 					Map<String, Object> conditionMap = new HashMap<String, Object>();
@@ -598,7 +598,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 				columnsAttributeValues.add(getColumn(fromAttributeValues, "INTVERSION", DT_INTEGER));
 				queryAttributeValues.multiselect(columnsAttributeValues);
 				queryAttributeValues.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
-					fromAttributeValues.column("INTID_T_MD_ATTRIBUTE", DT_INTEGER),
+					fromAttributeValues.baseColumn("INTID_T_MD_ATTRIBUTE", DT_INTEGER),
 					DataBaseHelper.getDbAccess().getQueryBuilder().literal(iAttrId)));
 
 				String sFieldValueEntity = null;
@@ -706,10 +706,10 @@ public class MigrationVm2m5 extends AbstractMigration{
 					DbQuery<Integer> queryGENA = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Integer.class);
 					DbFrom gena = queryGENA.from("T_MD_GENERATION_ATTRIBUTE").alias("gena");
 					DbFrom gen = gena.join("T_MD_GENERATION", JoinType.INNER).on("INTID_T_MD_GENERATION", "INTID").alias("gen");
-					queryGENA.select(gena.column("INTID", Integer.class));
+					queryGENA.select(gena.baseColumn("INTID", Integer.class));
 					queryGENA.where(DataBaseHelper.getDbAccess().getQueryBuilder().and(
-						DataBaseHelper.getDbAccess().getQueryBuilder().equal(gen.column("INTID_T_MD_MODULE_SOURCE", Integer.class), iModuleId),
-						DataBaseHelper.getDbAccess().getQueryBuilder().equal(gena.column("INTID_T_MD_ATTRIBUTE_SOURCE", Integer.class), iAttrId)));
+						DataBaseHelper.getDbAccess().getQueryBuilder().equal(gen.baseColumn("INTID_T_MD_MODULE_SOURCE", Integer.class), iModuleId),
+						DataBaseHelper.getDbAccess().getQueryBuilder().equal(gena.baseColumn("INTID_T_MD_ATTRIBUTE_SOURCE", Integer.class), iAttrId)));
 					for (Integer genAttributeid : DataBaseHelper.getDbAccess().executeQuery(queryGENA.distinct(true))) {
 						Map<String, Object> columnValueMap = new HashMap<String, Object>();
 						Map<String, Object> conditionMap = new HashMap<String, Object>();
@@ -724,10 +724,10 @@ public class MigrationVm2m5 extends AbstractMigration{
 					DbQuery<Integer> queryGENA = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Integer.class);
 					DbFrom gena = queryGENA.from("T_MD_GENERATION_ATTRIBUTE").alias("gena");
 					DbFrom gen = gena.join("T_MD_GENERATION", JoinType.INNER).on("INTID_T_MD_GENERATION", "INTID").alias("gen");
-					queryGENA.select(gena.column("INTID", Integer.class));
+					queryGENA.select(gena.baseColumn("INTID", Integer.class));
 					queryGENA.where(DataBaseHelper.getDbAccess().getQueryBuilder().and(
-						DataBaseHelper.getDbAccess().getQueryBuilder().equal(gen.column("INTID_T_MD_MODULE_TARGET", Integer.class), iModuleId),
-						DataBaseHelper.getDbAccess().getQueryBuilder().equal(gena.column("INTID_T_MD_ATTRIBUTE_TARGET", Integer.class), iAttrId)));
+						DataBaseHelper.getDbAccess().getQueryBuilder().equal(gen.baseColumn("INTID_T_MD_MODULE_TARGET", Integer.class), iModuleId),
+						DataBaseHelper.getDbAccess().getQueryBuilder().equal(gena.baseColumn("INTID_T_MD_ATTRIBUTE_TARGET", Integer.class), iAttrId)));
 					for (Integer genAttributeid : DataBaseHelper.getDbAccess().executeQuery(queryGENA.distinct(true))) {
 						Map<String, Object> columnValueMap = new HashMap<String, Object>();
 						Map<String, Object> conditionMap = new HashMap<String, Object>();
@@ -1137,7 +1137,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 			columnsGOA.add(getColumn(fromGOA, "STRVALUE", DT_STRING));
 			queryGOA.multiselect(columnsGOA);
 			queryGOA.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
-				fromGOA.column("INTID_T_UD_GENERICOBJECT", DT_INTEGER),
+				fromGOA.baseColumn("INTID_T_UD_GENERICOBJECT", DT_INTEGER),
 				DataBaseHelper.getDbAccess().getQueryBuilder().literal(iObjectId)));
 
 			List<DbTuple> resultGOA = DataBaseHelper.getDbAccess().executeQuery(queryGOA);
@@ -1196,7 +1196,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 							fromForeign.alias("f");
 							queryForeign.select((DbSelection<? extends DbTuple>) getColumn(fromForeign, "INTID", DT_INTEGER));
 							queryForeign.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
-								fromForeign.column(efForeign.getDbColumn(), Class.forName(efForeign.getDataType())),
+								fromForeign.baseColumn(efForeign.getDbColumn(), Class.forName(efForeign.getDataType())),
 								DataBaseHelper.getDbAccess().getQueryBuilder().literal(sValue)));
 
 							try {
@@ -1292,7 +1292,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 	}
 
 	private <T> DbColumnExpression<T> getColumn(DbFrom from, String columnName, Class<T> javaClass) {
-		DbColumnExpression<T> result = from.column(columnName, javaClass);
+		DbColumnExpression<T> result = from.baseColumn(columnName, javaClass);
 		result.alias(columnName);
 
 		return result;
@@ -1309,7 +1309,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 		subquery.distinct(true);
 		subquery.multiselect(subcolumns);
 		subquery.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
-			subfrom.column("strentity", DT_STRING),
+			subfrom.baseColumn("strentity", DT_STRING),
 			DataBaseHelper.getDbAccess().getQueryBuilder().literal(entity)));
 
 		List<DbTuple> usages = DataBaseHelper.getDbAccess().executeQuery(subquery);
@@ -1324,7 +1324,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 			columns.add(getColumn(from, "clblayoutml", DT_STRING));
 			query.multiselect(columns);
 			query.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
-				from.column("intid", DT_INTEGER),
+				from.baseColumn("intid", DT_INTEGER),
 				DataBaseHelper.getDbAccess().getQueryBuilder().literal(iLauyoutId)));
 
 			List<DbTuple> layouts = DataBaseHelper.getDbAccess().executeQuery(query);

@@ -1166,8 +1166,8 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		DbFrom s = query.from("T_MD_STATE").alias("s");
 		DbFrom t = s.join("T_MD_STATE_TRANSITION", JoinType.INNER).on("INTID", "INTID_T_MD_STATE_2").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		DbFrom rt = t.join("T_MD_RULE_TRANSITION", JoinType.INNER).on("INTID", "INTID_T_MD_STATE_TRANSITION").alias("rt");
-		query.select(s.column("INTID_T_MD_STATEMODEL", Integer.class));
-		query.where(builder.equal(rt.column("INTID_T_MD_RULE", Integer.class), 123));
+		query.select(s.baseColumn("INTID_T_MD_STATEMODEL", Integer.class));
+		query.where(builder.equal(rt.baseColumn("INTID_T_MD_RULE", Integer.class), 123));
 
 		List<StateModelVO> statemodels = new ArrayList<StateModelVO>();
 

@@ -325,9 +325,9 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("V_MD_JOBRULE").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("STRVALUE_T_MD_TIMELIMITRULE", String.class));
-		query.where(builder.equal(t.column("INTID_T_MD_JOBCONTROLLER", Integer.class), oId));
-		query.orderBy(builder.asc(t.column("INTORDER", Integer.class)));
+		query.select(t.baseColumn("STRVALUE_T_MD_TIMELIMITRULE", String.class));
+		query.where(builder.equal(t.baseColumn("INTID_T_MD_JOBCONTROLLER", Integer.class), oId));
+		query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
 		try {
 			return DataBaseHelper.getDbAccess().executeQuery(query);
 		} catch (DbException ex) {

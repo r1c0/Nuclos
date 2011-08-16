@@ -127,8 +127,8 @@ public class AssignSubformRightToRole implements UpdateJobs{
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_MD_ROLE_ATTRIBUTEGROUP").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("INTID_T_MD_ROLE", Integer.class));
-		query.where(builder.equal(t.column("INTID_T_MD_STATE", Integer.class), statevo.getId()));
+		query.select(t.baseColumn("INTID_T_MD_ROLE", Integer.class));
+		query.where(builder.equal(t.baseColumn("INTID_T_MD_STATE", Integer.class), statevo.getId()));
 		return DataBaseHelper.getDbAccess().executeQuery(query);
 	}
 }

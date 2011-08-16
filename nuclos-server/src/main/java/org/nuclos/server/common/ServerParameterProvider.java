@@ -123,7 +123,7 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_AD_PARAMETER").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.multiselect(t.column("STRPARAMETER", String.class), t.column("STRVALUE", String.class));
+		query.multiselect(t.baseColumn("STRPARAMETER", String.class), t.baseColumn("STRVALUE", String.class));
 
 		Map<String, String> result = new HashMap<String, String>();
 		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {

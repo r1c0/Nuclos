@@ -67,8 +67,8 @@ implements JdbcEntityFieldMetaDataProcessor{
 		DbQuery<Long> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Long.class);
 		DbFrom from = query.from("T_MD_ENTITY");
 		from.alias("entity");
-		query.select(from.column("INTID", DT_LONG));
-		query.where(query.getBuilder().equal(from.column("STRENTITY", DT_STRING), entity));
+		query.select(from.baseColumn("INTID", DT_LONG));
+		query.where(query.getBuilder().equal(from.baseColumn("STRENTITY", DT_STRING), entity));
 		
 		return super.getByIdColumn(allColumns, entityIdColumn, DataBaseHelper.getDbAccess().executeQuerySingleResult(query));
 	}

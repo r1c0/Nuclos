@@ -91,13 +91,13 @@ public class StateModelUsagesCache {
 		DbJoin t = s.join("T_MD_STATE_TRANSITION", JoinType.INNER).on("INTID", "INTID_T_MD_STATE_2").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		DbJoin u = s.join("T_MD_STATEMODELUSAGE",	JoinType.INNER).on("INTID_T_MD_STATEMODEL", "INTID_T_MD_STATEMODEL").alias("u");
 		query.multiselect(
-			s.column("INTID_T_MD_STATEMODEL", Integer.class),
-		   s.column("INTID", Integer.class),
-		   u.column("INTID_T_MD_MODULE", Integer.class),
-		   u.column("INTID_T_MD_PROCESS", Integer.class));
-		query.where(t.column("INTID_T_MD_STATE_1", Integer.class).isNull());
-		query.orderBy(builder.asc(u.column("INTID_T_MD_MODULE", Integer.class)),
-		   builder.asc(u.column("INTID_T_MD_PROCESS", Integer.class)));
+		   s.baseColumn("INTID_T_MD_STATEMODEL", Integer.class),
+		   s.baseColumn("INTID", Integer.class),
+		   u.baseColumn("INTID_T_MD_MODULE", Integer.class),
+		   u.baseColumn("INTID_T_MD_PROCESS", Integer.class));
+		query.where(t.baseColumn("INTID_T_MD_STATE_1", Integer.class).isNull());
+		query.orderBy(builder.asc(u.baseColumn("INTID_T_MD_MODULE", Integer.class)),
+		   builder.asc(u.baseColumn("INTID_T_MD_PROCESS", Integer.class)));
 		
 		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
 			final UsageCriteria usagecriteria = new UsageCriteria(

@@ -52,8 +52,8 @@ public class WikiFacadeBean extends MasterDataFacadeBean implements WikiFacadeRe
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_MD_WIKI").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("INTID", Integer.class));
-		query.where(builder.equal(t.column("STRMASTERDATA", String.class), sEntityName));
+		query.select(t.baseColumn("INTID", Integer.class));
+		query.where(builder.equal(t.baseColumn("STRMASTERDATA", String.class), sEntityName));
 		
 		Collection<Integer> stWikiIds = DataBaseHelper.getDbAccess().executeQuery(query); 
 		

@@ -20,29 +20,28 @@ import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 
 public class DbColumnExpression<T> extends DbExpression<T> {
 
-	private final DbFrom fromTable;
 	private final String columnName;
 
-	DbColumnExpression(DbFrom fromTable, String columnName, Class<T> javaType) {
-		this(fromTable, columnName, javaType, false);
+	DbColumnExpression(String alias, DbFrom fromTable, String columnName, Class<T> javaType) {
+		this(alias, fromTable, columnName, javaType, false);
 	}
 	
-	DbColumnExpression(DbFrom fromTable, String columnName, Class<T> javaType, boolean caseSensitive) {
-		super(fromTable.getQuery().getBuilder(), javaType, caseSensitive
+	DbColumnExpression(String alias, DbFrom fromTable, String columnName, Class<T> javaType, boolean caseSensitive) {
+		super(fromTable.getQuery().getBuilder(), javaType, alias, caseSensitive
 			? PreparedStringBuilder.concat(fromTable.getAlias(), ".", "\"", columnName, "\"")
 			: PreparedStringBuilder.concat(fromTable.getAlias(), ".", columnName));
 		if (fromTable.getAlias() == null) {
 			throw new IllegalArgumentException("Alias must not be null on table " + fromTable.getTableName());
 		}
-		this.fromTable = fromTable;
 		this.columnName = columnName;
 	}
 	
-	public DbFrom getFrom() {
-		return fromTable;
+	@Override
+	public final DbExpression<T> alias(String alias) {
+		return (DbExpression<T>) super.replaceAlias(alias);
 	}
 	
-	public String getColumnName() {
+	public final String getColumnName() {
 		return columnName;
 	}
 	
@@ -50,7 +49,8 @@ public class DbColumnExpression<T> extends DbExpression<T> {
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");
-		result.append("from=").append(fromTable);
+		result.append("alias=").append(getAlias());
+		result.append(", type=").append(getJavaType());
 		result.append(", column=").append(columnName);
 		result.append("]");
 		return result.toString();

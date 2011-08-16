@@ -64,8 +64,8 @@ public class GenericObjectGroupFacadeBean extends NuclosFacadeBean implements Ge
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_UD_GO_GROUP").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("INTID_T_UD_GROUP", Integer.class));
-		query.where(builder.equal(t.column("INTID_T_UD_GENERICOBJECT", Integer.class), iGenericObjectId));
+		query.select(t.baseColumn("INTID_T_UD_GROUP", Integer.class));
+		query.where(builder.equal(t.baseColumn("INTID_T_UD_GENERICOBJECT", Integer.class), iGenericObjectId));
 		return new HashSet<Integer>(DataBaseHelper.getDbAccess().executeQuery(query.distinct(true)));
 	}
 
@@ -78,8 +78,8 @@ public class GenericObjectGroupFacadeBean extends NuclosFacadeBean implements Ge
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("T_UD_GROUP").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("STRGROUP", String.class));
-		query.where(builder.equal(t.column("INTID", Integer.class), iGenericObjectId));
+		query.select(t.baseColumn("STRGROUP", String.class));
+		query.where(builder.equal(t.baseColumn("INTID", Integer.class), iGenericObjectId));
 		return DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 	}
 
@@ -94,12 +94,12 @@ public class GenericObjectGroupFacadeBean extends NuclosFacadeBean implements Ge
 		
 		if (iGroupId == 0) {
 			DbFrom t = query.from("T_UD_GENERICOBJECT").alias(ProcessorFactorySingleton.BASE_ALIAS);
-			query.select(t.column("INTID", Integer.class));
-			query.where(builder.equal(t.column("INTID_T_MD_MODULE", Integer.class), iModuleId));
+			query.select(t.baseColumn("INTID", Integer.class));
+			query.where(builder.equal(t.baseColumn("INTID_T_MD_MODULE", Integer.class), iModuleId));
 		} else {
 			DbFrom t = query.from("T_UD_GO_GROUP").alias(ProcessorFactorySingleton.BASE_ALIAS);
-			query.select(t.column("INTID", Integer.class));
-			query.where(builder.equal(t.column("INTID_T_UD_GROUP", Integer.class), iGroupId));
+			query.select(t.baseColumn("INTID", Integer.class));
+			query.where(builder.equal(t.baseColumn("INTID_T_UD_GROUP", Integer.class), iGroupId));
 		}
 		
 		return new HashSet<Integer>(DataBaseHelper.getDbAccess().executeQuery(query.distinct(true)));
@@ -139,10 +139,10 @@ public class GenericObjectGroupFacadeBean extends NuclosFacadeBean implements Ge
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_UD_GO_GROUP").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("INTID", Integer.class));
+		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.and(
-			builder.equal(t.column("INTID_T_UD_GENERICOBJECT", Integer.class), genericObjectId),
-			builder.equal(t.column("INTID_T_UD_GROUP", Integer.class), groupId)));
+			builder.equal(t.baseColumn("INTID_T_UD_GENERICOBJECT", Integer.class), genericObjectId),
+			builder.equal(t.baseColumn("INTID_T_UD_GROUP", Integer.class), groupId)));
 		return DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 	}
 

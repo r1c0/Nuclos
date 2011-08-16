@@ -362,16 +362,16 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom r = query.from("T_UD_GO_RELATION").alias("r");
 		DbFrom l = query.from("T_UD_GENERICOBJECT").alias("l");
-		DbColumnExpression<Integer> genericObject1 = r.column(direction.isForward() ? "INTID_T_UD_GO_1" : "INTID_T_UD_GO_2", Integer.class);
-		DbColumnExpression<Integer> genericObject2 = r.column(direction.isForward() ? "INTID_T_UD_GO_2" : "INTID_T_UD_GO_1", Integer.class);
+		DbColumnExpression<Integer> genericObject1 = r.baseColumn(direction.isForward() ? "INTID_T_UD_GO_1" : "INTID_T_UD_GO_2", Integer.class);
+		DbColumnExpression<Integer> genericObject2 = r.baseColumn(direction.isForward() ? "INTID_T_UD_GO_2" : "INTID_T_UD_GO_1", Integer.class);
 		query.multiselect(
-			r.column("INTID", Integer.class),
+			r.baseColumn("INTID", Integer.class),
 			//genericObject2,
-			l.column("INTID", Integer.class),
-			r.column("STRRELATIONTYPE", String.class),
-			l.column("INTID_T_MD_MODULE", Integer.class));
+			l.baseColumn("INTID", Integer.class),
+			r.baseColumn("STRRELATIONTYPE", String.class),
+			l.baseColumn("INTID_T_MD_MODULE", Integer.class));
 		query.where(builder.and(
-			builder.equal(genericObject2, l.column("INTID", Integer.class)),
+			builder.equal(genericObject2, l.baseColumn("INTID", Integer.class)),
 			builder.equal(genericObject1, node.getId())//,
 		//	builder.equal(l.column("BLNDELETED", Boolean.class), false)));
 			));
@@ -413,8 +413,8 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("T_MD_RELATIONTYPE").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("STRLOCALERESOURCEID", String.class));
-		query.where(builder.equal(t.column("STRRELATIONTYPE", String.class), relationType));
+		query.select(t.baseColumn("STRLOCALERESOURCEID", String.class));
+		query.where(builder.equal(t.baseColumn("STRRELATIONTYPE", String.class), relationType));
 		String resourceId = CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
 		if (resourceId != null) {
 			CommonLocaleDelegate.getMessage(resourceId, relationType);
@@ -431,12 +431,12 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		DbFrom g = l.join("T_UD_GROUP", JoinType.INNER).on("INTID_T_UD_GROUP", "INTID").alias("g");
 		DbFrom t = g.join("T_MD_GROUPTYPE", JoinType.INNER).on("INTID_T_MD_GROUPTYPE", "INTID").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(
-			l.column("INTID_T_UD_GROUP", Integer.class),
-			g.column("STRGROUP", String.class),
-			g.column("STRDESCRIPTION", String.class),
-			t.column("STRNAME", String.class));
-		query.where(builder.equal(l.column("INTID_T_UD_GROUP", Integer.class), node.getId()));
-		query.orderBy(builder.asc(g.column("STRGROUP", String.class)), builder.desc(g.column("DATVALIDFROM", Date.class)));
+			l.baseColumn("INTID_T_UD_GROUP", Integer.class),
+			g.baseColumn("STRGROUP", String.class),
+			g.baseColumn("STRDESCRIPTION", String.class),
+			t.baseColumn("STRNAME", String.class));
+		query.where(builder.equal(l.baseColumn("INTID_T_UD_GROUP", Integer.class), node.getId()));
+		query.orderBy(builder.asc(g.baseColumn("STRGROUP", String.class)), builder.desc(g.baseColumn("DATVALIDFROM", Date.class)));
 
 		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
 			final GroupTreeNode nodeGroupDefined = new GroupTreeNode(
@@ -464,10 +464,10 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		DbFrom t = query.from("T_UD_GROUP").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		DbFrom fk1 = t.join("T_MD_GROUPTYPE", JoinType.INNER).on("INTID_T_MD_GROUPTYPE", "INTID").alias("fk1");
 		query.multiselect(
-			t.column("STRGROUP", String.class),
-			fk1.column("STRNAME", String.class),
-			t.column("STRDESCRIPTION", String.class));
-		query.where(builder.equal(t.column("INTID", Integer.class), iId));
+			t.baseColumn("STRGROUP", String.class),
+			fk1.baseColumn("STRNAME", String.class),
+			t.baseColumn("STRDESCRIPTION", String.class));
+		query.where(builder.equal(t.baseColumn("INTID", Integer.class), iId));
 
 		DbTuple tuple;
 		try {
@@ -541,10 +541,10 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		DbFrom grp = query.from("T_UD_GO_GROUP").alias("grp");
 		DbFrom gob = grp.join("T_UD_GENERICOBJECT", JoinType.INNER).on("INTID_T_UD_GENERICOBJECT", "INTID").alias("gob");
 		query.multiselect(
-			grp.column("INTID_T_UD_GENERICOBJECT", Integer.class),
-			gob.column("INTID_T_MD_MODULE", Integer.class));
-		query.where(builder.equal(grp.column("INTID_T_UD_GROUP", Integer.class), node.getId()));
-		query.orderBy(builder.asc(grp.column("DATCREATED", Date.class)));
+			grp.baseColumn("INTID_T_UD_GENERICOBJECT", Integer.class),
+			gob.baseColumn("INTID_T_MD_MODULE", Integer.class));
+		query.where(builder.equal(grp.baseColumn("INTID_T_UD_GROUP", Integer.class), node.getId()));
+		query.orderBy(builder.asc(grp.baseColumn("DATCREATED", Date.class)));
 
 		final List<GenericObjectTreeNode> result = new ArrayList<GenericObjectTreeNode>();
 		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {

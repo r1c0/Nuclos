@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dblayer.JoinType;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 
 public class DbFrom implements Serializable {
 	
@@ -99,8 +100,24 @@ public class DbFrom implements Serializable {
 		return join(tableName, JoinType.LEFT);
 	}
 	
-	public <T> DbColumnExpression<T> column(String columnName, Class<T> javaClass) {
-		return new DbColumnExpression<T>(this, columnName, javaClass);
+	/**
+	 * Return a column.
+	 * 
+	 * @since Nuclos 3.1.01
+	 */
+	public <T> DbColumnExpression<T> column(String alias, String columnName, Class<T> javaClass) {
+		if (!containsAlias(alias)) throw new IllegalArgumentException();
+		return new DbColumnExpression<T>(alias, this, columnName, javaClass);
+	}
+	
+	/**
+	 * Return a column from the <em>base</em> table.
+	 * 
+	 * @since Nuclos 3.1.01
+	 */
+	public <T> DbColumnExpression<T> baseColumn(String columnName, Class<T> javaClass) {
+		if (!containsAlias(alias)) throw new IllegalArgumentException();
+		return new DbColumnExpression<T>(alias, this, columnName, javaClass);
 	}
 	
 	DbQuery<?> getQuery() {
@@ -110,12 +127,13 @@ public class DbFrom implements Serializable {
 	/**
 	 * An alternative to column() for usability.
 	 */
-	public <T> DbColumnExpression<T> field(EntityFieldMetaDataVO field) {
+	public <T> DbColumnExpression<T> field(String alias, EntityFieldMetaDataVO field) {
+		if (!containsAlias(alias)) throw new IllegalArgumentException();
 		if (field.getPivotInfo() != null) {
 			throw new IllegalArgumentException(field.toString());
 		}
 		try {
-			return new DbColumnExpression<T>(this, field.getDbColumn(), (Class<T>) Class.forName(field.getDataType()));
+			return new DbColumnExpression<T>(alias, this, field.getDbColumn(), (Class<T>) Class.forName(field.getDataType()));
 		} catch (ClassNotFoundException e) {
 			throw new IllegalArgumentException(e.toString());
 		}
@@ -123,7 +141,25 @@ public class DbFrom implements Serializable {
 	
 	@Deprecated
 	/** @deprecated Only use case-sensitive columns if needed. */
-	public <T> DbColumnExpression<T> columnCaseSensitive(String columnName, Class<T> javaClass) {
-		return new DbColumnExpression<T>(this, columnName, javaClass, true);
+	public <T> DbColumnExpression<T> columnCaseSensitive(String alias, String columnName, Class<T> javaClass) {
+		if (!containsAlias(alias)) throw new IllegalArgumentException();
+		return new DbColumnExpression<T>(alias, this, columnName, javaClass, true);
 	}
+	
+	@Deprecated
+	/** @deprecated Only use case-sensitive columns if needed. */
+	public <T> DbColumnExpression<T> baseColumnCaseSensitive(String columnName, Class<T> javaClass) {
+		if (!containsAlias(alias)) throw new IllegalArgumentException();
+		return new DbColumnExpression<T>(alias, this, columnName, javaClass, true);
+	}
+	
+	private boolean containsAlias(String a) {
+		if (a == null) throw new NullPointerException();
+		if (a.equals(alias)) return true;
+		for (DbJoin j: joins) {
+			if (a.equals(j.getAlias())) return true;
+		}
+		return false;
+	}
+	
 }

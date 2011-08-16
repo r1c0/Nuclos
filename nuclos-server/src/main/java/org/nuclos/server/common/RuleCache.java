@@ -188,11 +188,11 @@ public class RuleCache implements RuleCacheMBean {
 				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<Integer> query = builder.createQuery(Integer.class);
 				DbFrom t = query.from("V_MD_RULE_EVENT").alias(ProcessorFactorySingleton.BASE_ALIAS);
-				query.select(t.column("INTID_T_MD_RULE", Integer.class));
+				query.select(t.baseColumn("INTID_T_MD_RULE", Integer.class));
 				query.where(builder.and(
-					builder.equal(t.column("STREVENT", String.class), pair.getX()),
-					builder.equal(t.column("STRMASTERDATA", String.class), pair.getY())));
-				query.orderBy(builder.asc(t.column("INTORDER", Integer.class)));
+					builder.equal(t.baseColumn("STREVENT", String.class), pair.getX()),
+					builder.equal(t.baseColumn("STRMASTERDATA", String.class), pair.getY())));
+				query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
 				List<Integer> ruleIds = DataBaseHelper.getDbAccess().executeQuery(query);
 
 				List<RuleVO> rules = new ArrayList<RuleVO>();
@@ -230,9 +230,9 @@ public class RuleCache implements RuleCacheMBean {
 				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<Integer> query = builder.createQuery(Integer.class);
 				DbFrom t = query.from("V_MD_RULE_EVENT").alias(ProcessorFactorySingleton.BASE_ALIAS);
-				query.select(t.column("INTID_T_MD_RULE", Integer.class));
-				query.where(builder.equal(t.column("STREVENT", String.class), sEventName));
-				query.orderBy(builder.asc(t.column("INTORDER", Integer.class)));
+				query.select(t.baseColumn("INTID_T_MD_RULE", Integer.class));
+				query.where(builder.equal(t.baseColumn("STREVENT", String.class), sEventName));
+				query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
 				List<Integer> ruleIds = DataBaseHelper.getDbAccess().executeQuery(query);
 
 				List<RuleVO> rules = new ArrayList<RuleVO>();

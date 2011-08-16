@@ -125,8 +125,8 @@ public class DbObjectHelper {
 		DbQuery<DbTuple> queryObject = dbAccess.getQueryBuilder().createTupleQuery();
 		DbFrom fromObject = queryObject.from("T_MD_DBOBJECT").alias("dbo");
 		queryObject.multiselect(
-			fromObject.column("STRDBOBJECT", String.class).alias("STRDBOBJECT"),
-			fromObject.column("STRDBOBJECTTYPE", String.class).alias("STRDBOBJECTTYPE"));
+			fromObject.baseColumn("STRDBOBJECT", String.class).alias("STRDBOBJECT"),
+			fromObject.baseColumn("STRDBOBJECTTYPE", String.class).alias("STRDBOBJECTTYPE"));
 
 		for (DbTuple object : dbAccess.executeQuery(queryObject)) {
 			String name = object.get("STRDBOBJECT", String.class);
@@ -151,10 +151,10 @@ public class DbObjectHelper {
 		DbQueryBuilder builder = dbAccess.getQueryBuilder();
 		DbQuery<Long> queryObject = builder.createQuery(Long.class);
 		DbFrom fromObject = queryObject.from("T_MD_DBOBJECT").alias("dbo");
-		queryObject.select(fromObject.column("INTID", Long.class));
+		queryObject.select(fromObject.baseColumn("INTID", Long.class));
 		queryObject.where(builder.and(
-			builder.equal(fromObject.column("STRDBOBJECT", String.class), eMeta.getDbEntity()),
-			builder.equal(fromObject.column("STRDBOBJECTTYPE", String.class), DbObjectType.VIEW.getName())));
+			builder.equal(fromObject.baseColumn("STRDBOBJECT", String.class), eMeta.getDbEntity()),
+			builder.equal(fromObject.baseColumn("STRDBOBJECTTYPE", String.class), DbObjectType.VIEW.getName())));
 		List<Long> dbObjectIds = dbAccess.executeQuery(queryObject);
 
 		if (dbObjectIds.size() > 1)
@@ -229,13 +229,13 @@ public class DbObjectHelper {
 		DbFrom fromSource = querySource.from("T_MD_DBSOURCE").alias("dbsource");
 		DbFrom fromObject = fromSource.join("T_MD_DBOBJECT", JoinType.RIGHT).on("STRDBOBJECT", "STRDBOBJECT").alias("dbobject");
 		querySource.multiselect(
-			fromSource.column("CLBSOURCE", String.class).alias("CLBSOURCE"),
-			fromSource.column("CLBDROPSTATEMENT", String.class).alias("CLBDROPSTATEMENT"),
-			fromSource.column("BLNACTIVE", Boolean.class).alias("BLNACTIVE"),
-			fromObject.column("STRDBOBJECTTYPE", String.class).alias("STRDBOBJECTTYPE"));
+			fromSource.baseColumn("CLBSOURCE", String.class).alias("CLBSOURCE"),
+			fromSource.baseColumn("CLBDROPSTATEMENT", String.class).alias("CLBDROPSTATEMENT"),
+			fromSource.baseColumn("BLNACTIVE", Boolean.class).alias("BLNACTIVE"),
+			fromObject.baseColumn("STRDBOBJECTTYPE", String.class).alias("STRDBOBJECTTYPE"));
 		querySource.where(builder.and(
-			builder.equal(fromSource.column("STRDBTYPE", String.class), this.dbAccess.getDbType().toString()),
-			builder.equal(fromSource.column("STRDBOBJECT", String.class), name)));
+			builder.equal(fromSource.baseColumn("STRDBTYPE", String.class), this.dbAccess.getDbType().toString()),
+			builder.equal(fromSource.baseColumn("STRDBOBJECT", String.class), name)));
 		List<DbTuple> dbSources = dbAccess.executeQuery(querySource);
 
 		if (dbSources.size() > 1)

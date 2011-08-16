@@ -417,10 +417,10 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		DbFrom from = query.from("T_MD_IMPORT").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 
-		columns.add(from.column("INTID", Integer.class).alias("INTID"));
-		columns.add(from.column("INTID_T_AD_MASTERDATA", Integer.class).alias("INTID_T_AD_MASTERDATA"));
+		columns.add(from.baseColumn("INTID", Integer.class).alias("INTID"));
+		columns.add(from.baseColumn("INTID_T_AD_MASTERDATA", Integer.class).alias("INTID_T_AD_MASTERDATA"));
 		query.multiselect(columns);
-		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("INTID_T_AD_MASTERDATA", Integer.class),
+		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("INTID_T_AD_MASTERDATA", Integer.class),
 			DataBaseHelper.getDbAccess().getQueryBuilder().literal(id)));
 
 		List<DbTuple> count = DataBaseHelper.getDbAccess().executeQuery(query);
@@ -435,14 +435,14 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		DbFrom from = query.from("T_MD_GENERATION").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 
-		columns.add(from.column("INTID", Integer.class).alias("INTID"));
-		columns.add(from.column("INTID_T_MD_MODULE_TARGET", Integer.class).alias("INTID_T_MD_MODULE_TARGET"));
-		columns.add(from.column("INTID_T_MD_MODULE_SOURCE", Integer.class).alias("INTID_T_MD_MODULE_SOURCE"));
+		columns.add(from.baseColumn("INTID", Integer.class).alias("INTID"));
+		columns.add(from.baseColumn("INTID_T_MD_MODULE_TARGET", Integer.class).alias("INTID_T_MD_MODULE_TARGET"));
+		columns.add(from.baseColumn("INTID_T_MD_MODULE_SOURCE", Integer.class).alias("INTID_T_MD_MODULE_SOURCE"));
 		query.multiselect(columns);
 
-		DbCondition cond1 = DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("INTID_T_MD_MODULE_TARGET", Integer.class),
+		DbCondition cond1 = DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("INTID_T_MD_MODULE_TARGET", Integer.class),
 			DataBaseHelper.getDbAccess().getQueryBuilder().literal(id));
-		DbCondition cond2 = DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("INTID_T_MD_MODULE_SOURCE", Integer.class),
+		DbCondition cond2 = DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("INTID_T_MD_MODULE_SOURCE", Integer.class),
 			DataBaseHelper.getDbAccess().getQueryBuilder().literal(id));
 
 		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().or(cond1, cond2));
@@ -561,11 +561,11 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		DbFrom from = query.from("T_MD_LAYOUTUSAGE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 
-		columns.add(from.column("STRENTITY", String.class).alias("STRENTITY"));
-		columns.add(from.column("INTID", Integer.class).alias("INTID"));
-		columns.add(from.column("INTID_T_MD_LAYOUT", Integer.class).alias("INTID_T_MD_LAYOUT"));
+		columns.add(from.baseColumn("STRENTITY", String.class).alias("STRENTITY"));
+		columns.add(from.baseColumn("INTID", Integer.class).alias("INTID"));
+		columns.add(from.baseColumn("INTID_T_MD_LAYOUT", Integer.class).alias("INTID_T_MD_LAYOUT"));
 		query.multiselect(columns);
-		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("STRENTITY", String.class),
+		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("STRENTITY", String.class),
 			DataBaseHelper.getDbAccess().getQueryBuilder().literal(voEntity.getEntity())));
 
 		List<Integer> lstDeleteIds = new ArrayList<Integer>();
@@ -610,7 +610,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
 		DbFrom t = query.from(voEntity.getDbEntity()).alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(builder.count(t.column("INTID", Integer.class)));
+		query.select(builder.count(t.baseColumn("INTID", Integer.class)));
 
 		return DataBaseHelper.getDbAccess().executeQuerySingleResult(query) > 0L;
 	}
@@ -1333,7 +1333,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<Long> query = builder.createQuery(Long.class);
 			DbFrom t = query.from(sTable).alias(ProcessorFactorySingleton.BASE_ALIAS);
-			DbColumnExpression<?> c = t.column(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
+			DbColumnExpression<?> c = t.baseColumn(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
 			query.select(builder.countRows());
 			query.where(c.isNull());
 
@@ -1360,7 +1360,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<Long> query = builder.createQuery(Long.class);
 			DbFrom t = query.from(sTable).alias(ProcessorFactorySingleton.BASE_ALIAS);
-			DbColumnExpression<?> c = t.column(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
+			DbColumnExpression<?> c = t.baseColumn(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
 			query.select(builder.countRows());
 			query.groupBy(c);
 			query.having(builder.greaterThan(builder.countRows(), builder.literal(1L)));
@@ -1400,10 +1400,10 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		DbFrom from = query.from("T_MD_LAYOUTUSAGE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 
-		columns.add(from.column("INTID", Integer.class).alias("INTID"));
-		columns.add(from.column("STRENTITY", String.class).alias("STRENTITY"));
+		columns.add(from.baseColumn("INTID", Integer.class).alias("INTID"));
+		columns.add(from.baseColumn("STRENTITY", String.class).alias("STRENTITY"));
 		query.multiselect(columns);
-		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("STRENTITY", String.class),
+		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("STRENTITY", String.class),
 			DataBaseHelper.getDbAccess().getQueryBuilder().literal(sEntity)));
 
 		List<DbTuple> count = DataBaseHelper.getDbAccess().executeQuery(query);

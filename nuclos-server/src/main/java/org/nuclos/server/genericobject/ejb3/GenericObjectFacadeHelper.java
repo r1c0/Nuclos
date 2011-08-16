@@ -201,18 +201,18 @@ public class GenericObjectFacadeHelper {
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_UD_LOGBOOK").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(
-			t.column("INTID_T_MD_ATTRIBUTE", Integer.class), // 0
-			t.column("INTID_T_DP_VALUE_OLD", Integer.class), // 1
-			t.column("INTID_EXTERNAL_OLD", Integer.class),   // 2
-			t.column("STRVALUE_OLD", String.class),          // 3
-			t.column("INTID_MD_EXTERNAL", Integer.class),     // 4
-			t.column("STRMD_ACTION", String.class),          // 5
-			t.column("INTID_T_AD_MASTERDATA", Integer.class), // 6
-			t.column("INTID_T_AD_MD_FIELD", Integer.class));  // 7
+			t.baseColumn("INTID_T_MD_ATTRIBUTE", Integer.class), // 0
+			t.baseColumn("INTID_T_DP_VALUE_OLD", Integer.class), // 1
+			t.baseColumn("INTID_EXTERNAL_OLD", Integer.class),   // 2
+			t.baseColumn("STRVALUE_OLD", String.class),          // 3
+			t.baseColumn("INTID_MD_EXTERNAL", Integer.class),     // 4
+			t.baseColumn("STRMD_ACTION", String.class),          // 5
+			t.baseColumn("INTID_T_AD_MASTERDATA", Integer.class), // 6
+			t.baseColumn("INTID_T_AD_MD_FIELD", Integer.class));  // 7
 		query.where(builder.and(
-			builder.equal(t.column("INTID_T_UD_GENERICOBJECT", Integer.class), govo.getId()),
-			builder.greaterThanOrEqualTo(t.column("DATCREATED", InternalTimestamp.class), builder.literal(InternalTimestamp.toInternalTimestamp(dateHistorical)))));
-		query.orderBy(builder.desc(t.column("DATCREATED", InternalTimestamp.class)));
+			builder.equal(t.baseColumn("INTID_T_UD_GENERICOBJECT", Integer.class), govo.getId()),
+			builder.greaterThanOrEqualTo(t.baseColumn("DATCREATED", InternalTimestamp.class), builder.literal(InternalTimestamp.toInternalTimestamp(dateHistorical)))));
+		query.orderBy(builder.desc(t.baseColumn("DATCREATED", InternalTimestamp.class)));
 		
 		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
 			try {

@@ -113,8 +113,8 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("INTID", Integer.class));
-		query.where(builder.equal(builder.upper(t.column("STRUSER", String.class)), builder.upper(builder.literal(sUserName))));
+		query.select(t.baseColumn("INTID", Integer.class));
+		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sUserName))));
 
 		Integer userId = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 		if (userId != null) {
@@ -169,8 +169,8 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("T_MD_WORKSPACE").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("STRNAME", String.class));
-		query.where(builder.equal(t.column("INTID_T_MD_USER", Integer.class), userId));
+		query.select(t.baseColumn("STRNAME", String.class));
+		query.where(builder.equal(t.baseColumn("INTID_T_MD_USER", Integer.class), userId));
 		
 		return DataBaseHelper.getDbAccess().executeQuery(query);
 	}
@@ -188,10 +188,10 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("T_MD_WORKSPACE").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("CLBWORKSPACE", String.class));
+		query.select(t.baseColumn("CLBWORKSPACE", String.class));
 		query.where(builder.and(
-			builder.equal(t.column("INTID_T_MD_USER", Integer.class), userId),
-			builder.equal(t.column("STRNAME", String.class), name)));
+			builder.equal(t.baseColumn("INTID_T_MD_USER", Integer.class), userId),
+			builder.equal(t.baseColumn("STRNAME", String.class), name)));
 		
 		try {
 			String xml = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
@@ -217,10 +217,10 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_MD_WORKSPACE").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("INTID", Integer.class));
+		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.and(
-			builder.equal(t.column("INTID_T_MD_USER", Integer.class), userId),
-			builder.equal(t.column("STRNAME", String.class), wd.getName())));
+			builder.equal(t.baseColumn("INTID_T_MD_USER", Integer.class), userId),
+			builder.equal(t.baseColumn("STRNAME", String.class), wd.getName())));
 		
 		try {
 			Integer workspaceId = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
@@ -259,8 +259,8 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<byte[]> query = builder.createQuery(byte[].class);
 		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("OBJPREFERENCES", byte[].class));
-		query.where(builder.equal(builder.upper(t.column("STRUSER", String.class)), builder.upper(builder.literal(sUserName))));
+		query.select(t.baseColumn("OBJPREFERENCES", byte[].class));
+		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sUserName))));
 		
 		try {
 			byte[] b = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);

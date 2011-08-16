@@ -829,10 +829,10 @@ public void processChangingDynamicEntities(Collection<DynamicEntityVO> newDEs, C
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_UD_DATASOURCEUSAGE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(
-			t.column("INTID", Integer.class),
-			t.column("INTID_T_UD_DATASOURCE", Integer.class),
-			t.column("INTID_T_UD_DATASOURCE_USED", Integer.class));
-		query.where(builder.equal(t.column("INTID_T_UD_DATASOURCE", Integer.class), iDatasourceId));
+			t.baseColumn("INTID", Integer.class),
+			t.baseColumn("INTID_T_UD_DATASOURCE", Integer.class),
+			t.baseColumn("INTID_T_UD_DATASOURCE_USED", Integer.class));
+		query.where(builder.equal(t.baseColumn("INTID_T_UD_DATASOURCE", Integer.class), iDatasourceId));
 
 		List<DatasourceVO> result = new ArrayList<DatasourceVO>();
 		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {

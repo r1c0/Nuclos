@@ -681,7 +681,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			DbFrom t = query.from(artifactConstraint.getTableName()).alias(ProcessorFactorySingleton.BASE_ALIAS);
 			List<DbExpression<?>> lstDBSelection = new ArrayList<DbExpression<?>>();
 			for(String sColumn : artifactConstraint.getColumnNames()) {
-				DbColumnExpression<?> c = t.column(sColumn, DalUtils.getDbType(artifactConstraint.getClass()));
+				DbColumnExpression<?> c = t.baseColumn(sColumn, DalUtils.getDbType(artifactConstraint.getClass()));
 				lstDBSelection.add(c);
 			}
 
@@ -1526,8 +1526,8 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("T_AD_PARAMETER").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("STRVALUE", String.class));
-		query.where(builder.equal(t.column("STRPARAMETER", String.class), PARAM_NAME));
+		query.select(t.baseColumn("STRVALUE", String.class));
+		query.where(builder.equal(t.baseColumn("STRPARAMETER", String.class), PARAM_NAME));
 		List<String> v = DataBaseHelper.getDbAccess().executeQuery(query);
 		return (v.size() == 0) ? Boolean.FALSE : Boolean.valueOf(v.get(0));
 	}

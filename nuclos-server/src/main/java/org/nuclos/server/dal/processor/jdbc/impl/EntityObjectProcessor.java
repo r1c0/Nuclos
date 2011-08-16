@@ -279,19 +279,19 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		DbJoin md_user = role_user.innerJoin("t_md_user").on("intid_t_md_user", "intid").alias("us");
 		DbJoin go_group = sqfrom.leftJoin("t_ud_go_group").on("INTID", "INTID_T_UD_GENERICOBJECT").alias("gg");
 
-		groupsubquery.select(sqfrom.column("intid", Long.class));
+		groupsubquery.select(sqfrom.baseColumn("intid", Long.class));
 
-		DbCondition usercondition = builder.equal(builder.upper(md_user.column("STRUSER", String.class)), builder.upper(builder.literal(user)));
+		DbCondition usercondition = builder.equal(builder.upper(md_user.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(user)));
 		DbCondition groupcondition = groupsubquery.getBuilder().or(
-			groupsubquery.getBuilder().isNull(role_mod.column("intid_t_ud_group", Long.class)),
+			groupsubquery.getBuilder().isNull(role_mod.baseColumn("intid_t_ud_group", Long.class)),
 			groupsubquery.getBuilder().and(
-				groupsubquery.getBuilder().isNotNull(go_group.column("intid_t_ud_group", Long.class)),
-				groupsubquery.getBuilder().equal(go_group.column("intid_t_ud_group", Long.class), role_mod.column("intid_t_ud_group", Long.class))));
+				groupsubquery.getBuilder().isNotNull(go_group.baseColumn("intid_t_ud_group", Long.class)),
+				groupsubquery.getBuilder().equal(go_group.baseColumn("intid_t_ud_group", Long.class), role_mod.baseColumn("intid_t_ud_group", Long.class))));
 
 		DbCondition userandgroup = query.getBuilder().and(usercondition, groupcondition);
 		groupsubquery.where(userandgroup);
 
-		DbCondition objectgroup = from.column("intid", Long.class).in(groupsubquery);
+		DbCondition objectgroup = from.baseColumn("intid", Long.class).in(groupsubquery);
 
 		query.where(query.getRestriction() != null ? (query.getBuilder().and(query.getRestriction(), objectgroup)) : objectgroup);
 		return DataBaseHelper.getDbAccess().executeQuery(query);

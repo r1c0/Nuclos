@@ -267,7 +267,7 @@ public class MasterDataFacadeHelper {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from(mdmetavo.getDBEntity()).alias(ProcessorFactorySingleton.BASE_ALIAS);
-		DbColumnExpression<Integer> goColumn = t.column("INTID_T_UD_GENERICOBJECT", Integer.class);
+		DbColumnExpression<Integer> goColumn = t.baseColumn("INTID_T_UD_GENERICOBJECT", Integer.class);
 		List<DbSelection<?>> selection = new ArrayList<DbSelection<?>>();
 		for (MasterDataMetaFieldVO field : collFields) {
 			String fieldName = field.getFieldName();
@@ -275,10 +275,10 @@ public class MasterDataFacadeHelper {
 				selection.add(goColumn);
 			} else {
 				Class<?> javaType = DalUtils.getDbType(field.getJavaClass());
-				selection.add(t.columnCaseSensitive(fieldName, javaType));
+				selection.add(t.baseColumnCaseSensitive(fieldName, javaType));
 			}
 		}
-		selection.add(t.column("INTID", Integer.class));
+		selection.add(t.baseColumn("INTID", Integer.class));
 		query.multiselect(selection);
 		query.where(builder.equal(goColumn, oRelatedId));
 

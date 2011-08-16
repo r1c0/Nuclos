@@ -174,8 +174,8 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<String> query = builder.createQuery(String.class);
 				DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
-				query.select(t.column("STREMAIL", String.class));
-				query.where(builder.equal(builder.upper(t.column("STRUSER", String.class)), builder.upper(builder.literal(sRecipient))));
+				query.select(t.baseColumn("STREMAIL", String.class));
+				query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sRecipient))));
 
 				// @todo P2 There will be a NPE in mailcommunicator.sendMessage(). Replace array with Collection.
 				String sEmail = CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));

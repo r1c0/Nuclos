@@ -136,11 +136,11 @@ public class AutoDbSetup {
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_AD_RELEASE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(
-			t.column("STRRELEASE", String.class),
-			t.column("DATDELIVERED", Date.class));
-		query.where(builder.equal(t.column("STRAPPLICATION", String.class), NUCLOS));
+			t.baseColumn("STRRELEASE", String.class),
+			t.baseColumn("DATDELIVERED", Date.class));
+		query.where(builder.equal(t.baseColumn("STRAPPLICATION", String.class), NUCLOS));
 		query.orderBy(
-			builder.desc(t.column("STRRELEASE", String.class)));
+			builder.desc(t.baseColumn("STRRELEASE", String.class)));
 		return dbAccess.executeQuery(query, new Transformer<DbTuple, Pair<String, Date>>() {
 			@Override
 			public Pair<String, Date> transform(DbTuple tuple) {
@@ -155,10 +155,10 @@ public class AutoDbSetup {
 		DbQueryBuilder builder = dbAccess.getQueryBuilder();
 		DbQuery<byte[]> query = builder.createQuery(byte[].class);
 		DbFrom t = query.from("T_AD_RELEASE").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("BLBDATA", byte[].class));
+		query.select(t.baseColumn("BLBDATA", byte[].class));
 		query.where(builder.and(
-			builder.equal(t.column("STRAPPLICATION", String.class), NUCLOS),
-			builder.equal(t.column("STRRELEASE", String.class), release)));
+			builder.equal(t.baseColumn("STRAPPLICATION", String.class), NUCLOS),
+			builder.equal(t.baseColumn("STRRELEASE", String.class), release)));
 		byte[] b = CollectionUtils.getFirst(dbAccess.executeQuery(query));
 		if (b != null && b.length > 0) {
 			return uncompressSchema(b);

@@ -1175,10 +1175,10 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_MD_PROCESS").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("INTID", Integer.class));
+		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.and(
-			builder.equal(t.column("INTID_T_MD_MODULE", Integer.class), moduleId),
-			builder.equal(t.column("STRPROCESS", String.class), process)));
+			builder.equal(t.baseColumn("INTID_T_MD_MODULE", Integer.class), moduleId),
+			builder.equal(t.baseColumn("STRPROCESS", String.class), process)));
 		return CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query), 0);
 	}
 
@@ -1292,10 +1292,10 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_AD_MASTERDATA_FIELD").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(
-			t.column("INTID_T_AD_MASTERDATA", Integer.class),
-			t.column("STRFIELD", String.class),
-			t.column("STRDBFIELD", String.class));
-		query.where(builder.equal(t.column("STRFOREIGNENTITY", String.class), sEntity));
+			t.baseColumn("INTID_T_AD_MASTERDATA", Integer.class),
+			t.baseColumn("STRFIELD", String.class),
+			t.baseColumn("STRDBFIELD", String.class));
+		query.where(builder.equal(t.baseColumn("STRFOREIGNENTITY", String.class), sEntity));
 		
 		try {
 			for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
@@ -1307,8 +1307,8 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	
 				DbQuery<Integer> query2 = builder.createQuery(Integer.class);
 				DbFrom t2 = query.from(mdmvo.getDBEntity()).alias("t2");
-				query2.select(t2.column("INTID", Integer.class));
-				query2.where(builder.equal(t2.column(sDBField, Integer.class), mdvo.getIntId()));
+				query2.select(t2.baseColumn("INTID", Integer.class));
+				query2.where(builder.equal(t2.baseColumn(sDBField, Integer.class), mdvo.getIntId()));
 	
 				try {
 					for (Integer iIntid : DataBaseHelper.getDbAccess().executeQuery(query2)) {

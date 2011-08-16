@@ -71,10 +71,10 @@ public class NuclosUpdateJob extends NuclosQuartzJob{
 			DbQuery<DbTuple> query = builder.createTupleQuery();
 			DbFrom t = query.from("T_AD_UPDATEJOBS").alias(ProcessorFactorySingleton.BASE_ALIAS);
 			query.multiselect(
-				t.column("INTID", Integer.class),
-				t.column("STRJAVACLASSNAME", String.class));
-			query.where(t.column("DATEXECUTED", Date.class).isNull());
-			query.orderBy(builder.asc(t.column("INTID", Integer.class)), builder.asc(t.column("INTORDER", Integer.class))); 
+				t.baseColumn("INTID", Integer.class),
+				t.baseColumn("STRJAVACLASSNAME", String.class));
+			query.where(t.baseColumn("DATEXECUTED", Date.class).isNull());
+			query.orderBy(builder.asc(t.baseColumn("INTID", Integer.class)), builder.asc(t.baseColumn("INTORDER", Integer.class))); 
 
 			ArrayList<Pair<Integer, String>> lstJavaClassNames = new ArrayList<Pair<Integer, String>>();
 			try {

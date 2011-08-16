@@ -308,10 +308,10 @@ public class RecordGrantUtils {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom table = query.from("T_UD_SEARCHFILTER").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		DbColumnExpression<Integer> intId = table.column("INTID", Integer.class);
-		DbColumnExpression<String> strName = table.column("STRNAME", String.class);
-		DbColumnExpression<String> strEntity = table.column("STRENTITY", String.class);
-		DbColumnExpression<String> xmlFilter = table.column("CLBSEARCHFILTER", String.class);
+		DbColumnExpression<Integer> intId = table.baseColumn("INTID", Integer.class);
+		DbColumnExpression<String> strName = table.baseColumn("STRNAME", String.class);
+		DbColumnExpression<String> strEntity = table.baseColumn("STRENTITY", String.class);
+		DbColumnExpression<String> xmlFilter = table.baseColumn("CLBSEARCHFILTER", String.class);
 		query.multiselect(intId, strName, strEntity, xmlFilter);
 		query.where(intId.in(filterIds));
 		query.distinct(true);

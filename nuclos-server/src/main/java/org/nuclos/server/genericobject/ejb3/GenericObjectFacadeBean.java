@@ -1515,11 +1515,11 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_UD_GO_RELATION").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("INTID", Integer.class));
+		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.and(
-			builder.equal(t.column("INTID_T_UD_GO_1", Integer.class), iGenericObjectIdSource),
-			builder.equal(t.column("INTID_T_UD_GO_2", Integer.class), iGenericObjectIdTarget),
-			builder.equal(t.column("STRRELATIONTYPE", String.class), relationType)));
+			builder.equal(t.baseColumn("INTID_T_UD_GO_1", Integer.class), iGenericObjectIdSource),
+			builder.equal(t.baseColumn("INTID_T_UD_GO_2", Integer.class), iGenericObjectIdTarget),
+			builder.equal(t.baseColumn("STRRELATIONTYPE", String.class), relationType)));
 		return findRelationsImpl(query);
 	}
 
@@ -1528,10 +1528,10 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_UD_GO_RELATION").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("INTID", Integer.class));
+		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.or(
-			builder.equal(t.column("INTID_T_UD_GO_1", Integer.class), iGenericObjectId),
-			builder.equal(t.column("INTID_T_UD_GO_2", Integer.class), iGenericObjectId)));
+			builder.equal(t.baseColumn("INTID_T_UD_GO_1", Integer.class), iGenericObjectId),
+			builder.equal(t.baseColumn("INTID_T_UD_GO_2", Integer.class), iGenericObjectId)));
 		return findRelationsImpl(query);
 	}
 
@@ -1635,15 +1635,15 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			DbQuery<DbTuple> query = builder.createTupleQuery();
 			DbFrom r = query.from("T_UD_GO_RELATION").alias("r");
 			DbFrom l = query.from("T_UD_GENERICOBJECT").alias("l");
-			DbColumnExpression<Integer> genericObject1 = r.column(direction.isReverse() ? "INTID_T_UD_GO_2" : "INTID_T_UD_GO_1", Integer.class);
-			DbColumnExpression<Integer> genericObject2 = r.column(direction.isReverse() ? "INTID_T_UD_GO_1" : "INTID_T_UD_GO_2", Integer.class);
+			DbColumnExpression<Integer> genericObject1 = r.baseColumn(direction.isReverse() ? "INTID_T_UD_GO_2" : "INTID_T_UD_GO_1", Integer.class);
+			DbColumnExpression<Integer> genericObject2 = r.baseColumn(direction.isReverse() ? "INTID_T_UD_GO_1" : "INTID_T_UD_GO_2", Integer.class);
 			query.multiselect(
 				genericObject2,
-				l.column("INTID_T_MD_MODULE", Integer.class));
+				l.baseColumn("INTID_T_MD_MODULE", Integer.class));
 			query.where(builder.and(
 				builder.equal(genericObject1, iGenericObjectId),
-				builder.equal(genericObject2, l.column("INTID", Integer.class)),
-				builder.equal(r.column("STRRELATIONTYPE", String.class), relationType)));
+				builder.equal(genericObject2, l.baseColumn("INTID", Integer.class)),
+				builder.equal(r.baseColumn("STRRELATIONTYPE", String.class), relationType)));
 			query.distinct(true);
 
 			List<DbTuple> result1 = DataBaseHelper.getDbAccess().executeQuery(query);
@@ -1657,8 +1657,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 					query.multiselect(genericObject2);
 					query.where(builder.and(
 						builder.equal(genericObject1, intid1),
-						builder.equal(genericObject2, l.column("INTID", Integer.class)),
-						builder.equal(r.column("STRRELATIONTYPE", String.class), relationType)));
+						builder.equal(genericObject2, l.baseColumn("INTID", Integer.class)),
+						builder.equal(r.baseColumn("STRRELATIONTYPE", String.class), relationType)));
 
 					for (DbTuple tuple2 : DataBaseHelper.getDbAccess().executeQuery(query)) {
 						result.add(tuple2.get(0, Integer.class));
@@ -1843,23 +1843,24 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		DbFrom from = query.from("T_MD_RULE_EVENT").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 
-		columns.add(from.column("intid", Integer.class).alias("intid"));
+		columns.add(from.baseColumn("intid", Integer.class).alias("intid"));
 		query.multiselect(columns);
 
 		List<DbCondition> lstDbCondition = new ArrayList<DbCondition>();
-		lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("strmasterdata", String.class),
+		lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("strmasterdata", String.class),
 			DataBaseHelper.getDbAccess().getQueryBuilder().literal(sEntityName)));
 		if(userEvent) {
-			lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("strevent", String.class),
+			lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("strevent", String.class),
 				DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.USER_EVENT)));
 		} else {
-			DbCondition orCondition = DataBaseHelper.getDbAccess().getQueryBuilder().or(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("strevent", String.class),
+			DbCondition orCondition = DataBaseHelper.getDbAccess().getQueryBuilder().or(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
+					from.baseColumn("strevent", String.class),
 				DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.SAVE_EVENT)),
-				DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("strevent", String.class),
+				DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("strevent", String.class),
 					DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.DELETE_EVENT)),
-					DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("strevent", String.class),
+					DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("strevent", String.class),
 						DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.SAVE_AFTER_EVENT)),
-						DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.column("strevent", String.class),
+						DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("strevent", String.class),
 							DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.DELETE_AFTER_EVENT)));
 			lstDbCondition.add(orCondition);
 		}

@@ -30,6 +30,12 @@ public abstract class DbSelection<T> {
 		this.javaType = javaType;
 	}
 
+	DbSelection(DbQueryBuilder builder, Class<? extends T> javaType, String alias) {
+		this.builder = builder;
+		this.javaType = javaType;
+		this.alias = alias;
+	}
+
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
@@ -51,6 +57,10 @@ public abstract class DbSelection<T> {
 	public DbSelection<T> alias(String alias) {
 		if (this.alias != null)
 			throw new IllegalStateException();
+		return replaceAlias(alias);
+	}
+	
+	final DbSelection<T> replaceAlias(String alias) {
 		this.alias = alias;
 		return this;
 	}

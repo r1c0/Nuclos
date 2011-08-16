@@ -129,8 +129,8 @@ public class DatasourceCache {
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<Integer> query = builder.createQuery(Integer.class);
 			DbFrom t = query.from("T_UD_DATASOURCE").alias(ProcessorFactorySingleton.BASE_ALIAS);
-			query.select(t.column("INTID", Integer.class));
-			query.where(builder.equal(t.column("STRCREATED", String.class), sCreator));
+			query.select(t.baseColumn("INTID", Integer.class));
+			query.where(builder.equal(t.baseColumn("STRCREATED", String.class), sCreator));
 
 	      for (Integer id : DataBaseHelper.getDbAccess().executeQuery(query.distinct(true))) {
 	      	MasterDataVO mdVO = mdFacade.get(NuclosEntity.DATASOURCE.getEntityName(),id);

@@ -123,7 +123,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_LAYOUT").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.multiselect(t.column("INTID", Integer.class), t.column("CLBLAYOUTML", String.class));
+		query.multiselect(t.baseColumn("INTID", Integer.class), t.baseColumn("CLBLAYOUTML", String.class));
 
 		Map<Integer, String> result = new HashMap<Integer, String>();
 		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
@@ -169,8 +169,8 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("T_MD_LAYOUT").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.multiselect(t.column("STRLAYOUT", String.class));
-		query.where(builder.equal(t.column("INTID", Integer.class), iLayoutId));
+		query.multiselect(t.baseColumn("STRLAYOUT", String.class));
+		query.where(builder.equal(t.baseColumn("INTID", Integer.class), iLayoutId));
 		return CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
 	}
 
@@ -183,10 +183,10 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_LAYOUTUSAGE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(
-			t.column("INTID_T_MD_LAYOUT", Integer.class),
-			t.column("STRENTITY", String.class),
-			t.column("INTID_T_MD_PROCESS", Integer.class),
-			t.column("BLNSEARCHSCREEN", Boolean.class));
+			t.baseColumn("INTID_T_MD_LAYOUT", Integer.class),
+			t.baseColumn("STRENTITY", String.class),
+			t.baseColumn("INTID_T_MD_PROCESS", Integer.class),
+			t.baseColumn("BLNSEARCHSCREEN", Boolean.class));
 		List<LayoutUsageVO> result = DataBaseHelper.getDbAccess().executeQuery(query, new Transformer<DbTuple, LayoutUsageVO>() {
 			@Override
 			public LayoutUsageVO transform(DbTuple tuple) {

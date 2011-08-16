@@ -182,9 +182,9 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_RULE_TRANSITION").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.multiselect(t.column("INTID_T_MD_RULE", Integer.class), t.column("BLNRUNAFTERWARDS", Boolean.class));
-		query.where(builder.equal(t.column("INTID_T_MD_STATE_TRANSITION", Integer.class), transitionId));
-		query.orderBy(builder.asc(t.column("INTORDER", Integer.class)));
+		query.multiselect(t.baseColumn("INTID_T_MD_RULE", Integer.class), t.baseColumn("BLNRUNAFTERWARDS", Boolean.class));
+		query.where(builder.equal(t.baseColumn("INTID_T_MD_STATE_TRANSITION", Integer.class), transitionId));
+		query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
 
 		for (DbTuple res : DataBaseHelper.getDbAccess().executeQuery(query)) {
 			Boolean bRuleRunAfterwards = res.get(1, Boolean.class);
@@ -656,9 +656,9 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_MD_RULE_GENERATION").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("INTID_T_MD_GENERATION", Integer.class));
+		query.select(t.baseColumn("INTID_T_MD_GENERATION", Integer.class));
 		if (iRuleId != null) {
-			query.where(builder.equal(t.column("INTID_T_MD_RULE", Integer.class), iRuleId));
+			query.where(builder.equal(t.baseColumn("INTID_T_MD_RULE", Integer.class), iRuleId));
 		}
 
 		List<Integer> generationIds = DataBaseHelper.getDbAccess().executeQuery(query.distinct(true));
@@ -814,9 +814,9 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_RULE_GENERATION").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.multiselect(t.column("INTID_T_MD_RULE", Integer.class), t.column("BLNRUNAFTERWARDS", Boolean.class));
-		query.where(builder.equal(t.column("INTID_T_MD_GENERATION", Integer.class), iGenerationId));
-		query.orderBy(builder.asc(t.column("INTORDER", Integer.class)));
+		query.multiselect(t.baseColumn("INTID_T_MD_RULE", Integer.class), t.baseColumn("BLNRUNAFTERWARDS", Boolean.class));
+		query.where(builder.equal(t.baseColumn("INTID_T_MD_GENERATION", Integer.class), iGenerationId));
+		query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
 
 		for (DbTuple res : DataBaseHelper.getDbAccess().executeQuery(query)) {
 			Boolean bRuleRunAfterwards = res.get(1, Boolean.class);

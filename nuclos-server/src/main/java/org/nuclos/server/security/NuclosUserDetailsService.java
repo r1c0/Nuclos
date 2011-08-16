@@ -73,15 +73,15 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(
-			t.column("INTID", Long.class),
-			t.column("STRPASSWORD", String.class),
-			t.column("BLNSUPERUSER", Boolean.class),
-			t.column("DATLASTLOGIN", Date.class),
-			t.column("BLNLOCKED", Boolean.class),
-			t.column("DATEXPIRATIONDATE", Date.class),
-			t.column("DATPASSWORDCHANGED", Date.class),
-			t.column("BLNREQUIREPASSWORDCHANGE", Boolean.class));
-		query.where(builder.equal(builder.upper(t.column("STRUSER", String.class)), builder.upper(builder.literal(username))));
+			t.baseColumn("INTID", Long.class),
+			t.baseColumn("STRPASSWORD", String.class),
+			t.baseColumn("BLNSUPERUSER", Boolean.class),
+			t.baseColumn("DATLASTLOGIN", Date.class),
+			t.baseColumn("BLNLOCKED", Boolean.class),
+			t.baseColumn("DATEXPIRATIONDATE", Date.class),
+			t.baseColumn("DATPASSWORDCHANGED", Date.class),
+			t.baseColumn("BLNREQUIREPASSWORDCHANGE", Boolean.class));
+		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(username))));
 
 		DbTuple tuple = CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
 		Long intid;
@@ -187,8 +187,8 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.multiselect(t.column("INTID", Long.class), t.column("INTLOGINATTEMPTS", Integer.class));
-		query.where(builder.equal(builder.upper(t.column("STRUSER", String.class)), builder.upper(builder.literal(username))));
+		query.multiselect(t.baseColumn("INTID", Long.class), t.baseColumn("INTLOGINATTEMPTS", Integer.class));
+		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(username))));
 		DbTuple tuple = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 
 		Long id;
@@ -228,7 +228,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 		Set<String> actions = new HashSet<String>();
 		DbQuery<String> rolesQuery = builder.createQuery(String.class);
 		DbFrom action = rolesQuery.from("T_AD_ACTION").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		rolesQuery.select(action.column("STRACTION", String.class));
+		rolesQuery.select(action.baseColumn("STRACTION", String.class));
 		actions.addAll(DataBaseHelper.getDbAccess().executeQuery(rolesQuery));
 
 		for(MasterDataVO mdvo : XMLEntities.getData(NuclosEntity.ACTION).getAll()) {

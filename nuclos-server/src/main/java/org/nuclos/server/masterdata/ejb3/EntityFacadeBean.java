@@ -190,7 +190,7 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 			PreparedStringBuilder sqlPrepared =  new PreparedStringBuilder();
 			sqlPrepared.append(DataBaseHelper.getDbAccess().getSelectSqlForColumn(view, columnType, viewPattern));
 
-			final DbExpression<Long> id = from.column("INTID", Long.class);
+			final DbExpression<Long> id = from.baseColumn("INTID", Long.class);
 			final DbExpression<String> presentation = new DbExpression<String>(builder, String.class, sqlPrepared);
 			final DbOrder order = builder.asc(presentation);
 			final String wildcard = DataBaseHelper.getDbAccess().getWildcardLikeSearchChar();

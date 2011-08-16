@@ -58,11 +58,11 @@ public abstract class DbQueryBuilder implements Serializable {
 		DbQuery<DbTuple> query = createTupleQuery();
 		DbFrom from = query.from(tableName).alias(ProcessorFactorySingleton.BASE_ALIAS);
 		List<DbExpression<?>> columns = new ArrayList<DbExpression<?>>();
-		columns.add(from.column(columnName1, columnType1).alias(columnName1));
+		columns.add(from.baseColumn(columnName1, columnType1).alias(columnName1));
 		for (int i = 0; i < varargs.length; i += 2) {
 			String columnName = (String) varargs[i];
 			Class<?> columnType = (Class<?>) varargs[i+1];
-			columns.add(from.column(columnName, columnType).alias(columnName));
+			columns.add(from.baseColumn(columnName, columnType).alias(columnName));
 		}
 		query.multiselect(columns);
 		return query;

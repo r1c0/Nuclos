@@ -90,16 +90,16 @@ public class ResourceCache {
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_RESOURCE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(
-			t.column("INTID", Integer.class),
-			t.column("DATCREATED", Date.class),
-			t.column("STRCREATED", String.class),
-			t.column("DATCHANGED", Date.class),
-			t.column("STRCHANGED", String.class),
-			t.column("INTVERSION", Integer.class),
-			t.column("STRNAME", String.class),
-			t.column("STRDESCRIPTION", String.class),
-			t.column("STRFILENAME", String.class),
-			t.column("BLNSYSTEMRESOURCE", Boolean.class));
+			t.baseColumn("INTID", Integer.class),
+			t.baseColumn("DATCREATED", Date.class),
+			t.baseColumn("STRCREATED", String.class),
+			t.baseColumn("DATCHANGED", Date.class),
+			t.baseColumn("STRCHANGED", String.class),
+			t.baseColumn("INTVERSION", Integer.class),
+			t.baseColumn("STRNAME", String.class),
+			t.baseColumn("STRDESCRIPTION", String.class),
+			t.baseColumn("STRFILENAME", String.class),
+			t.baseColumn("BLNSYSTEMRESOURCE", Boolean.class));
 
 		final Map<Integer, ResourceVO> result = CollectionUtils.newHashMap();
 		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {

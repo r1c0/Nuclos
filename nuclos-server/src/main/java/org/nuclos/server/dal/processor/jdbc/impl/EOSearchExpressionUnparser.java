@@ -108,7 +108,7 @@ public class EOSearchExpressionUnparser {
 			}
 		}
 		if (!containsId) {
-			orderList.add(queryBuilder.asc(table.column("INTID", Integer.class)));
+			orderList.add(queryBuilder.asc(table.baseColumn("INTID", Integer.class)));
 		}
 		query.orderBy(orderList);
 	}
@@ -116,9 +116,9 @@ public class EOSearchExpressionUnparser {
 	public DbColumnExpression<?> getDbColumn(String fieldName) {
 		EntityFieldMetaDataVO entityField = MetaDataServerProvider.getInstance().getEntityField(entity.getEntity(), fieldName);
 		if(entity.isDynamic())
-			return table.columnCaseSensitive(entityField.getDbColumn(), normalizeJavaType(entityField.getDataType()));
+			return table.baseColumnCaseSensitive(entityField.getDbColumn(), normalizeJavaType(entityField.getDataType()));
 		else
-			return table.column(entityField.getDbColumn(), normalizeJavaType(entityField.getDataType()));
+			return table.baseColumn(entityField.getDbColumn(), normalizeJavaType(entityField.getDataType()));
 	}
 
 	private class UnparseVisitor implements Visitor<DbCondition, RuntimeException>, CompositeVisitor<DbCondition, RuntimeException>, AtomicVisitor<DbCondition, RuntimeException> {
@@ -174,13 +174,13 @@ public class EOSearchExpressionUnparser {
 			DbFrom subTable = subQuery.from(subEntityMeta.getDbEntity()).alias("sub");
 			subQuery.distinct(true);
 			if(subEntityMeta.isDynamic())
-				subQuery.select(subTable.columnCaseSensitive(DalUtils.getDbIdFieldName(MetaDataServerProvider.getInstance().getEntityField(subEntityMeta.getEntity(), subcond.getForeignKeyFieldName()).getDbColumn()), Integer.class));
+				subQuery.select(subTable.baseColumnCaseSensitive(DalUtils.getDbIdFieldName(MetaDataServerProvider.getInstance().getEntityField(subEntityMeta.getEntity(), subcond.getForeignKeyFieldName()).getDbColumn()), Integer.class));
 			else
-				subQuery.select(subTable.column(DalUtils.getDbIdFieldName(MetaDataServerProvider.getInstance().getEntityField(subEntityMeta.getEntity(), subcond.getForeignKeyFieldName()).getDbColumn()), Integer.class));
+				subQuery.select(subTable.baseColumn(DalUtils.getDbIdFieldName(MetaDataServerProvider.getInstance().getEntityField(subEntityMeta.getEntity(), subcond.getForeignKeyFieldName()).getDbColumn()), Integer.class));
 			EOSearchExpressionUnparser subUnparser = new EOSearchExpressionUnparser(subQuery, subEntityMeta);
 			subUnparser.unparseSearchCondition(subcond.getSubCondition());
 
-			return table.column("INTID", Integer.class).in(subQuery);
+			return table.baseColumn("INTID", Integer.class).in(subQuery);
 		}
 
 		@Override
@@ -202,7 +202,7 @@ public class EOSearchExpressionUnparser {
 			final String joinTable = EntityObjectMetaDbHelper.getViewName(mdSubEntity);
 			final String keyColumn = mdProv.getEntityField(subEntity, pinfo.getKeyField()).getDbColumn(); 
 			final DbJoin join = table.join(joinTable, JoinType.LEFT).alias(subEntity).on(foreignEntityField, ref.getDbColumn());
-			return queryBuilder.equal(join.column(keyColumn, String.class), queryBuilder.literal(field.getField()));
+			return queryBuilder.equal(join.baseColumn(keyColumn, String.class), queryBuilder.literal(field.getField()));
 		}
 
 		@Override
@@ -213,7 +213,7 @@ public class EOSearchExpressionUnparser {
 			DbQuery<Integer> subQuery = query.subquery(Integer.class);
 			DbFrom refTable = subQuery.from(refEntityMeta.getDbEntity()).alias("ref");
 			subQuery.distinct(true);
-			subQuery.select(refTable.column("INTID", Integer.class));
+			subQuery.select(refTable.baseColumn("INTID", Integer.class));
 			EOSearchExpressionUnparser subUnparser = new EOSearchExpressionUnparser(subQuery, refEntityMeta);
 			subUnparser.unparseSearchCondition(refcond.getSubCondition());
 
@@ -418,20 +418,20 @@ public class EOSearchExpressionUnparser {
 	private DbColumnExpression<?> getDbColumn(CollectableEntityField field) {
 		EntityFieldMetaDataVO entityField = MetaDataServerProvider.getInstance().getEntityField(entity.getEntity(), field.getName());
 		if(entity.isDynamic() && entityField.isDynamic())
-			return table.columnCaseSensitive(entityField.getDbColumn(), field.getJavaClass());
+			return table.baseColumnCaseSensitive(entityField.getDbColumn(), field.getJavaClass());
 		else
-			return table.column(entityField.getDbColumn(), field.getJavaClass());
+			return table.baseColumn(entityField.getDbColumn(), field.getJavaClass());
 	}
 
 	private DbColumnExpression<Integer> getDbIdColumn(CollectableEntityField field) {
 		EntityFieldMetaDataVO entityField = MetaDataServerProvider.getInstance().getEntityField(entity.getEntity(), field.getName());
 		if(entity.isDynamic() && entityField.isDynamic())
-			return table.columnCaseSensitive(DalUtils.getDbIdFieldName(entityField.getDbColumn()), Integer.class);
+			return table.baseColumnCaseSensitive(DalUtils.getDbIdFieldName(entityField.getDbColumn()), Integer.class);
 		else
-			return table.column(DalUtils.getDbIdFieldName(entityField.getDbColumn()), Integer.class);
+			return table.baseColumn(DalUtils.getDbIdFieldName(entityField.getDbColumn()), Integer.class);
 	}
 
 	private DbExpression<Integer> getDbIntIdColumn() {
-		return table.column("INTID", Integer.class);
+		return table.baseColumn("INTID", Integer.class);
 	}
 }

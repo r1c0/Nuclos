@@ -811,7 +811,7 @@ public Integer generateGenericObject(RuleObjectContainerCVO loccvoSource, String
 					MasterDataMetaFieldVO mdmfVO = MasterDataMetaCache.getInstance().getMetaData(subEntity).getField(sColumn);
 					sColumn = mdmfVO.getDBFieldName();
 					sColumn = sColumn.replaceFirst("STRVALUE", "INTID");
-					DbColumnExpression<?> c = t.column(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
+					DbColumnExpression<?> c = t.baseColumn(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
 					c.alias(mdmfVO.getFieldName()+"Id");
 					lst.add(c);
 					lstSelection.add(c);
@@ -819,7 +819,7 @@ public Integer generateGenericObject(RuleObjectContainerCVO loccvoSource, String
 				else {
 					MasterDataMetaFieldVO mdmfVO = MasterDataMetaCache.getInstance().getMetaData(subEntity).getField(sColumn);
 					sColumn = mdmfVO.getDBFieldName();
-					DbColumnExpression<?> c = t.column(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
+					DbColumnExpression<?> c = t.baseColumn(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
 					c.alias(mdmfVO.getFieldName());
 					lst.add(c);
 					lstSelection.add(c);
@@ -832,7 +832,7 @@ public Integer generateGenericObject(RuleObjectContainerCVO loccvoSource, String
 				String sColumn = (String)vo.getField("subentityAttributeSource");
 				MasterDataMetaFieldVO mdmfVO = MasterDataMetaCache.getInstance().getMetaData(subEntity).getField(sColumn);
 				sColumn = mdmfVO.getDBFieldName();
-				DbColumnExpression<?> c = t.column(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
+				DbColumnExpression<?> c = t.baseColumn(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
 				c.alias(mdmfVO.getFieldName());
 				DbExpression<?> dbe = builder.sum(c);
 				dbe.alias(mdmfVO.getFieldName());
@@ -843,7 +843,7 @@ public Integer generateGenericObject(RuleObjectContainerCVO loccvoSource, String
 				String sColumn = (String)vo.getField("subentityAttributeSource");
 				MasterDataMetaFieldVO mdmfVO = MasterDataMetaCache.getInstance().getMetaData(subEntity).getField(sColumn);
 				sColumn = mdmfVO.getDBFieldName();
-				DbColumnExpression<?> c = t.column(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
+				DbColumnExpression<?> c = t.baseColumn(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
 				c.alias(mdmfVO.getFieldName());
 				DbExpression<?> dbe = builder.min(c);
 				dbe.alias(mdmfVO.getFieldName());
@@ -854,7 +854,7 @@ public Integer generateGenericObject(RuleObjectContainerCVO loccvoSource, String
 				String sColumn = (String)vo.getField("subentityAttributeSource");
 				MasterDataMetaFieldVO mdmfVO = MasterDataMetaCache.getInstance().getMetaData(subEntity).getField(sColumn);
 				sColumn = mdmfVO.getDBFieldName();
-				DbColumnExpression<?> c = t.column(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
+				DbColumnExpression<?> c = t.baseColumn(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
 				c.alias(mdmfVO.getFieldName());
 				DbExpression<?> dbe = builder.min(c);
 				dbe.alias(mdmfVO.getFieldName());				
@@ -865,7 +865,7 @@ public Integer generateGenericObject(RuleObjectContainerCVO loccvoSource, String
 				String sColumn = (String)vo.getField("subentityAttributeSource");
 				MasterDataMetaFieldVO mdmfVO = MasterDataMetaCache.getInstance().getMetaData(subEntity).getField(sColumn);
 				sColumn = mdmfVO.getDBFieldName();
-				DbColumnExpression<?> c = t.column(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
+				DbColumnExpression<?> c = t.baseColumn(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
 				c.alias(mdmfVO.getFieldName());								
 				lstSelection.add(c);
 			}
@@ -879,7 +879,7 @@ public Integer generateGenericObject(RuleObjectContainerCVO loccvoSource, String
 			String dbColumn = MetaDataServerProvider.getInstance().getEntityField(subEntity, foreignField).getDbColumn();
 			dbColumn = dbColumn.replaceFirst("STRVALUE", "INTID");
 			for(Integer iSourceId : collSourceGenericObjectId) {
-				cond[counter++] = builder.equal(t.column(dbColumn, Integer.class), iSourceId);
+				cond[counter++] = builder.equal(t.baseColumn(dbColumn, Integer.class), iSourceId);
 			}
 			query.where(builder.or(cond));
 			
@@ -1333,9 +1333,9 @@ public Collection<GeneratorRuleVO> getRuleUsages(Integer generatorId) throws Com
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_RULE_GENERATION").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.multiselect(t.column("INTID_T_MD_RULE", Integer.class), t.column("INTORDER", Integer.class), t.column("BLNRUNAFTERWARDS", Boolean.class));
-		query.where(builder.equal(t.column("INTID_T_MD_GENERATION", Integer.class), generatorId));
-		query.orderBy(builder.asc(t.column("INTORDER", Integer.class)));
+		query.multiselect(t.baseColumn("INTID_T_MD_RULE", Integer.class), t.baseColumn("INTORDER", Integer.class), t.baseColumn("BLNRUNAFTERWARDS", Boolean.class));
+		query.where(builder.equal(t.baseColumn("INTID_T_MD_GENERATION", Integer.class), generatorId));
+		query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
   	
    	List<DbTuple> rulesWithOrders = DataBaseHelper.getDbAccess().executeQuery(query.distinct(true));
    		

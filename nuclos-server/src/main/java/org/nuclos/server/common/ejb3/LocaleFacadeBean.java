@@ -268,10 +268,10 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("STRTEXT", String.class));
+		query.select(t.baseColumn("STRTEXT", String.class));
 		query.where(builder.and(
-			builder.equal(t.column("STRRESOURCEID", String.class), sresourceId),
-			builder.equal(t.column("STRLOCALE", String.class), localeInfo.getTag())));
+			builder.equal(t.baseColumn("STRRESOURCEID", String.class), sresourceId),
+			builder.equal(t.baseColumn("STRLOCALE", String.class), localeInfo.getTag())));
 		return CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
 	}
 
@@ -285,9 +285,9 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		query.multiselect(
-			t.column("STRLOCALE", String.class),
-			t.column("STRTEXT", String.class));
-		query.where(builder.equal(t.column("STRRESOURCEID", String.class), resourceId));
+			t.baseColumn("STRLOCALE", String.class),
+			t.baseColumn("STRTEXT", String.class));
+		query.where(builder.equal(t.baseColumn("STRRESOURCEID", String.class), resourceId));
 		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
 			map.put(tuple.get(0, String.class), tuple.get(1, String.class));
 		}
@@ -524,10 +524,10 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("INTID", Integer.class));
+		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.and(
-			builder.equal(t.column("STRRESOURCEID", String.class), resId),
-			builder.equal(t.column("STRLOCALE", String.class), localeInfo.getTag())));
+			builder.equal(t.baseColumn("STRRESOURCEID", String.class), resId),
+			builder.equal(t.baseColumn("STRLOCALE", String.class), localeInfo.getTag())));
 		return CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
 	}
 
@@ -579,7 +579,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Date> query = builder.createQuery(Date.class);
 		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(builder.max(t.column("DATCHANGED", Date.class)));
+		query.select(builder.max(t.baseColumn("DATCHANGED", Date.class)));
 		return DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 	}
 
@@ -592,7 +592,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
 		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias(ProcessorFactorySingleton.BASE_ALIAS);
-		query.select(t.column("INTID", Long.class)).where(builder.equal(builder.upper(t.column("STRRESOURCEID", String.class)), s.toUpperCase()));
+		query.select(t.baseColumn("INTID", Long.class)).where(builder.equal(builder.upper(t.baseColumn("STRRESOURCEID", String.class)), s.toUpperCase()));
 		return DataBaseHelper.getDbAccess().executeQuery(query).size() > 0;
 	}
 }
