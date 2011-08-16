@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
@@ -44,6 +45,8 @@ public class DynamicMetaDataProcessor implements IDalReadSpecification<EntityMet
 	
 	public static final String DYNAMIC_ENTITY_VIEW_PREFIX = "V_DE_";//if you change this value, change the exception text <datasource.validation.dynamic.entity.name.1> too.
 	public static final String DYNAMIC_ENTITY_PREFIX = "dyn_";
+
+	private static final Logger LOG = Logger.getLogger(DynamicMetaDataProcessor.class);
 	
 	public DynamicMetaDataProcessor() {
 	}
@@ -123,7 +126,7 @@ public class DynamicMetaDataProcessor implements IDalReadSpecification<EntityMet
 		Map<String, EntityFieldMetaDataVO> res = new HashMap<String, EntityFieldMetaDataVO>();
 		String entityName = getEntityNameFromDynamicViewName(viewName);
 		DbTable tableMetaData = DataBaseHelper.getDbAccess().getTableMetaData(viewName);
-		
+
 		long columnId = entityId - 1;
 		for(DbColumn column : tableMetaData.getTableArtifacts(DbColumn.class)) {
 			String columnName = column.getColumnName();
@@ -157,30 +160,42 @@ public class DynamicMetaDataProcessor implements IDalReadSpecification<EntityMet
 		}
 		else {
 			Class<?> cls = String.class;
-			Integer length = 255;
+			Integer scale = null;
+			Integer precision = null;
+			String outputformat = null;
 			DbColumnType columnType = dbColumn.getColumnType();
+			LOG.debug("Create dynamic field metadata for " + entity + "." + dbColumn.getColumnName() + ": " + dbColumn.toString());
 			if(columnType.getGenericType() != null) {
 				switch (columnType.getGenericType()) {
 				case DATE:
 				case DATETIME:
 					cls = Date.class;
-					length = null;
 					break;
 				case NUMERIC:
+					precision = columnType.getPrecision();
+					scale = columnType.getScale();
 					// this seems wrong because it can be floating point number, too...
 					if(columnType.getPrecision() != null && columnType.getPrecision() == 1
-						&& columnType.getScale() != null && columnType.getScale() == 0)
+						&& columnType.getScale() != null && columnType.getScale() == 0) {
 						// TODO
 						// booleans are mapped as NUMBER(1), but it's possible that there are
 						// other columns which are not meant as a boolean.
 						cls = Boolean.class;
-					else
+					}
+					else if (columnType.getScale() != null && columnType.getScale() > 0) {
+						cls = Double.class;
+						outputformat = "#,##0.";
+						for (int i = 0; i < scale; i++) {
+							outputformat += "0";
+						}
+					}
+					else {
 						cls = Integer.class;
-					length = columnType.getPrecision();
+					}
 					break;
 				case VARCHAR:
 					cls = String.class;
-					length = columnType.getLength();
+					scale = columnType.getLength();
 					break;
 				}
 			}
@@ -190,8 +205,9 @@ public class DynamicMetaDataProcessor implements IDalReadSpecification<EntityMet
 			result.setField(fieldName);
 			result.setDbColumn(fieldName);
 			result.setDataType(cls.getName());
-			result.setScale(length);
-			result.setPrecision(null);
+			result.setScale(scale);
+			result.setPrecision(precision);
+			result.setFormatOutput(outputformat);
 			result.setDynamic(true);
 		}
 

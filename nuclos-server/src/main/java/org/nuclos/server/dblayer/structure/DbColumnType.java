@@ -76,7 +76,7 @@ public class DbColumnType {
 
 		/**
 		 * Converts the given object (which must be a supported java type) into
-		 * the specified (supported) java type. 
+		 * the specified (supported) java type.
 		 */
 		@SuppressWarnings({ "unchecked", "cast" })
 		public <T> T convert(Object obj, Class<T> javaType) {
@@ -92,7 +92,7 @@ public class DbColumnType {
 					return (T) (Object) Integer.valueOf(((Number) obj).intValue());
 				} else if (clazz == Long.class) {
 					return (T) (Object) Long.valueOf(((Number) obj).longValue());
-				} else if (clazz == BigDecimal.class) {      			
+				} else if (clazz == BigDecimal.class) {
 					return (T) (Object) new BigDecimal(obj.toString());
 				}
 			}
@@ -101,7 +101,7 @@ public class DbColumnType {
 
 
 		/**
-		 * Returns a portable string representation of the object. 
+		 * Returns a portable string representation of the object.
 		 */
 		public String encodeAsString(Object obj) {
 			switch (this) {
@@ -114,7 +114,7 @@ public class DbColumnType {
 			case DATE:
 				return String.format("%tF", obj);
 			case DATETIME:
-				return new java.sql.Timestamp(((java.util.Date) obj).getTime()).toString();    
+				return new java.sql.Timestamp(((java.util.Date) obj).getTime()).toString();
 			case CLOB:
 				return (String) obj;
 			case BLOB:
@@ -127,7 +127,7 @@ public class DbColumnType {
 
 		/**
 		 * Parses the portable string representation of the object.
-		 * Note that  
+		 * Note that
 		 */
 		public Object decodeFromString(String str) {
 			switch (this) {
@@ -254,5 +254,10 @@ public class DbColumnType {
 			return Arrays.equals(getParameters(), other.getParameters());
 		}
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		return "DbColumnType [genericType=" + genericType + ", typeName=" + typeName + ", length=" + length + ", precision=" + precision + ", scale=" + scale + "]";
 	}
 }

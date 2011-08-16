@@ -45,7 +45,7 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 	 * @since Nuclos 3.1.01
 	 */
 	private PivotInfo pivot;
-	
+
 	private String dbColumn;
 
 	private String foreignEntity;
@@ -81,12 +81,9 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 	private String fallbacklabel;
 	private String localeResourceIdForLabel;
 	private String localeResourceIdForDescription;
-	
+
 	private String defaultMandatory;
 
-	/**
-	 * @deprecated Only for serialization, should be protected.
-	 */
 	public EntityFieldMetaDataVO() {
 		super();
 	}
@@ -143,7 +140,7 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 	public void setField(String field) {
 		this.field = field;
 	}
-	
+
 	public void setPivotInfo(PivotInfo pivot) {
 		this.pivot = pivot;
 	}
@@ -244,10 +241,10 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 	public String getField() {
 		return field;
 	}
-	
+
 	/**
 	 * @return Get the associated PivotInfo if this is a pivot field.
-	 * 
+	 *
 	 * @author Thomas Pasch
 	 * @since Nuclos 3.1.01
 	 */
@@ -407,11 +404,11 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 	public Boolean isIndexed() {
 		return indexed;
 	}
-	
+
 	public void setIndexed(Boolean indexed) {
 		this.indexed = indexed;
 	}
-	
+
 	public String getDefaultMandatory() {
 		return defaultMandatory;
 	}
@@ -419,22 +416,22 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 	public void setDefaultMandatory(String defaultMandatory) {
 		this.defaultMandatory = defaultMandatory;
 	}
-	
+
 	public String formatOutput(Object value) {
 		return FormatOutputUtils.formatOutput(getFormatOutput(), value);
 	}
-		
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (!(obj instanceof EntityFieldMetaDataVO)) return false;
-		
+
 		final EntityFieldMetaDataVO that = (EntityFieldMetaDataVO) obj;
 		return LangUtils.equals(getField(), that.getField())
 			&& LangUtils.equals(getId(), that.getId())
 			&& LangUtils.equals(getPivotInfo(), that.getPivotInfo());
 	}
-	
+
 	@Override
     public int hashCode() {
 		int result = getField().hashCode();
@@ -448,7 +445,7 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 		}
 	    return result;
     }
-	
+
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
@@ -457,7 +454,7 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 		result.append(",column=").append(getDbColumn());
 		result.append(",entityId=").append(getEntityId());
 		if (getPivotInfo() != null) {
-			result.append(",pivot=").append(getPivotInfo());			
+			result.append(",pivot=").append(getPivotInfo());
 		}
 		if (getForeignEntity() != null) {
 			result.append(",foreign=").append(getForeignEntity());
@@ -469,6 +466,6 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 		result.append(",version=").append(getVersion());
 		result.append("]");
 		return result.toString();
-	}	
-	
+	}
+
 }
