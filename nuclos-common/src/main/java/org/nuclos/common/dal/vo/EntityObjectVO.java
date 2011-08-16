@@ -33,15 +33,15 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
  * @version 01.00.00
  */
 public class EntityObjectVO extends AbstractDalVOWithFields<Object> {
-	
+
 	private static final Logger LOG = Logger.getLogger(EntityObjectVO.class);
 
 	private String entity;
-	
+
 	// map for dependant child subform data
 	private DependantMasterDataMap mpDependants = new DependantMasterDataMap();
-	
-	public EntityObjectVO() {	
+
+	public EntityObjectVO() {
 	}
 
 	public String getEntity() {
@@ -50,15 +50,15 @@ public class EntityObjectVO extends AbstractDalVOWithFields<Object> {
 	public void setEntity(String entity) {
 		this.entity = entity;
 	}
-	
+
 	public void setDependants(DependantMasterDataMap mpDependants) {
 		this.mpDependants = mpDependants;
 	}
-	
+
 	public DependantMasterDataMap getDependants() {
 		return this.mpDependants;
 	}
-	
+
 	public EntityObjectVO copy() {
 		EntityObjectVO vo = new EntityObjectVO();
 		vo.initFields(1, 1);
@@ -67,7 +67,7 @@ public class EntityObjectVO extends AbstractDalVOWithFields<Object> {
 		vo.getFieldIds().putAll(this.getFieldIds());
 		return vo;
 	}
-	
+
 	@Override
 	public <S> S getRealField(String fieldName) {
 		final S result;
@@ -75,14 +75,14 @@ public class EntityObjectVO extends AbstractDalVOWithFields<Object> {
 			result = (S) getSystemField(fieldName);
 		}
 		else {
-			result = getField(fieldName);
+			result = (S) getField(fieldName);
 		}
 		return result;
 	}
-	
+
 	@Override
 	public <S> S getRealField(String fieldName, Class<S> cls) {
-		final S value = getRealField(fieldName);
+		final Object value = getRealField(fieldName);
 		try {
 			return cls.cast(value);
 		}
@@ -91,7 +91,7 @@ public class EntityObjectVO extends AbstractDalVOWithFields<Object> {
 			throw e;
 		}
 	}
-	
+
 	private Object getSystemField(String f) {
 		final Object result;
 		if (SystemFields.CHANCHED_AT.equals(f)) {
@@ -115,17 +115,17 @@ public class EntityObjectVO extends AbstractDalVOWithFields<Object> {
 		else {
 			throw new IllegalArgumentException(f);
 		}
-		
+
 		return result;
 	}
-	
+
 	public static class GetId implements Transformer<EntityObjectVO, Object> {
 		@Override
         public Object transform(EntityObjectVO mdvo) {
 			return mdvo.getId();
 		}
 	}
-	
+
 	/**
 	 * Transformer: gets the field with the given name, casted to the given type.
 	 */
@@ -147,16 +147,16 @@ public class EntityObjectVO extends AbstractDalVOWithFields<Object> {
 			return mdvo.getField(this.sFieldName, this.cls);
 		}
 	}
-	
+
 	public static EntityObjectVO newObject(String sEntity) {
 		EntityObjectVO vo = new EntityObjectVO();
 		vo.initFields(1, 1);
 		vo.flagNew();
 		vo.setEntity(sEntity);
-		
+
 		return vo;
 	}
-	
+
 	public String getDebugInfo() {
 		final StringBuffer sb = new StringBuffer();
 		sb.append("EntityObjectVO {");
@@ -175,7 +175,7 @@ public class EntityObjectVO extends AbstractDalVOWithFields<Object> {
 		sb.append("}");
 		return sb.toString();
 	}
-	
+
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
@@ -189,5 +189,5 @@ public class EntityObjectVO extends AbstractDalVOWithFields<Object> {
 		result.append("]");
 		return result.toString();
 	}
-	
+
 }

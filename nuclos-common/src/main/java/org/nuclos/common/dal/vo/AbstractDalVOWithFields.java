@@ -26,19 +26,19 @@ public abstract class AbstractDalVOWithFields<T> extends AbstractDalVOWithVersio
 	private static final Logger LOG = Logger.getLogger(AbstractDalVOWithFields.class);
 
 	private Map<String, Long> mapFieldId;
-	
+
 	private Map<String, T> mapField;
-	
+
 	protected AbstractDalVOWithFields() {
 		super();
 	}
-	
+
 	@Override
 	public void initFields(int maxFieldCount, int maxFieldIdCount) {
 		mapField = new HashMap<String, T>(maxFieldCount);
 		mapFieldId = new HashMap<String, Long>(maxFieldIdCount);
 	}
-	
+
 	@Override
 	public boolean hasFields() {
 		return true;
@@ -67,7 +67,7 @@ public abstract class AbstractDalVOWithFields<T> extends AbstractDalVOWithVersio
 
 	@Override
 	public <S> S getField(String sFieldName, Class<S> cls) {
-		final S value = getField(sFieldName);
+		final Object value = getField(sFieldName);
 		try {
 			return cls.cast(value);
 		}
