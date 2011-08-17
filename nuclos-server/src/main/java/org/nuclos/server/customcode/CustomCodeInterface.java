@@ -450,7 +450,7 @@ public abstract class CustomCodeInterface {
 		}
 		catch (CommonFinderException e) {
 			//for masterdata dependants needed foreignkeyfieldname
-			throw new NuclosBusinessRuleException("code.interface.exception.2", e);//"Bitte geben Sie das Fremdschl\u00fcssel an."
+			throw new NuclosBusinessRuleException("code.interface.exception.2", e);//"Bitte geben Sie den Fremdschl\u00fcssel an."
 		}
 		catch (CommonPermissionException e) {
 			throw new NuclosFatalRuleException(e.getMessage(), e);
