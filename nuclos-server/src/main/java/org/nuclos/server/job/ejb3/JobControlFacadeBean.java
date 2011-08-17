@@ -405,8 +405,7 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 			asRecipientAddresses[0] = sEmail;
 			try {
 				mailcommunicator.sendMessage(ServerParameterProvider.getInstance().getValue("SMTP Authentication"), ServerParameterProvider.getInstance().getValue("SMTP Sender"), asRecipientAddresses, sSubject, sMessage);
-			}
-			catch (CommonCommunicationException ex) {
+			} catch (CommonCommunicationException ex) {
 				throw new NuclosFatalException(StringUtils.getParameterizedExceptionMessage("task.facade.exception", ex.getMessage()), ex);
 					//"Es ist ein Fehler beim Versenden einer Benachrichtigung per E-Mail aufgetreten.\n\n" + ex.getMessage(), ex);
 			}
@@ -525,9 +524,13 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 				jobRun.setField("state", sErrorMessage);
 				modifyJobRun(jobRun);
 			}
-			sendMessage("ERROR", jobVO, sErrorMessage);
-	    }
-	    catch (Exception ex) {
+			try {
+				sendMessage("ERROR", jobVO, sErrorMessage);
+			} catch (Exception ex) {
+				error(ex);
+				writeToJobRunMessages(iSessionId, "ERROR", "Error while trying to send email: " + ex.getMessage(), null);
+			}
+	    } catch (Exception ex) {
 	    	throw new RuntimeException(ex);
 	    }
     }
