@@ -418,21 +418,12 @@ public class NuclosJavaCompiler implements Closeable {
 			@Override
 			public List<File> create() {
 				List<File> classPath = new ArrayList<File>();
-
-				File path = NuclosSystemParameters.getDirectory(NuclosSystemParameters.GENERATOR_CLASS_PATH);
-
-				// if the configured path does not exist, try to obtain path from application context (development)
-				if (!path.isDirectory()) {
-					Resource r = SpringApplicationContextHolder.getApplicationContext().getResource("WEB-INF/lib/");
-					try {
-						path = r.getFile();
-					}
-					catch (Exception ex) {
-						log.warn("Cannot resolve compiler class path.");
-					}
+				Resource r = SpringApplicationContextHolder.getApplicationContext().getResource("WEB-INF/lib/");
+				try {
+					classPath.addAll(getLibs(r.getFile()));
+				} catch (IOException e) {
+					throw new NuclosFatalException(e);
 				}
-
-				classPath.addAll(getLibs(path));
 				return classPath;
 			}
 		}));
