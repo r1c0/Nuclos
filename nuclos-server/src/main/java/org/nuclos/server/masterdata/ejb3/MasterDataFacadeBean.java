@@ -772,12 +772,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			final RuleObjectContainerCVO roccvoResult = this.fireSaveEvent(Event.MODIFY_BEFORE,
 				sEntityName, mdvo, mpDependants, false);
 			mdvo = roccvoResult.getMasterData();
-			DependantMasterDataMap mpFromRuleContainer = roccvoResult.getDependants();
-			if (mpDependants != null) {
-				mergeDependants(mpDependants, mpFromRuleContainer);
-			}
-			mpDependants = mpFromRuleContainer;
-
+			mpDependants = roccvoResult.getDependants(true);
 		}
 
 		if(nuclosEntity == NuclosEntity.ROLE
@@ -841,16 +836,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			notifyClients(nuclosEntity);
 
 		return result;
-	}
-
-	private void mergeDependants(DependantMasterDataMap mpAll, DependantMasterDataMap mpFromRuleContainer) {
-		for(String subEntity : mpAll.getEntityNames()) {
-			for(EntityObjectVO vo : mpAll.getData(subEntity)) {
-				if(vo.isFlagRemoved()){
-					mpFromRuleContainer.addData(subEntity, vo);
-				}
-			}
-		}
 	}
 
 	/**

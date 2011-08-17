@@ -877,9 +877,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			this.debug("Modifying (Start rules)");
 			final RuleObjectContainerCVO loccvoResult = this.fireSaveEvent(Event.MODIFY_BEFORE, govo, mpDependants, false);
 			govo = loccvoResult.getGenericObject();
-			DependantMasterDataMap mpFromRuleContainer = loccvoResult.getDependants();
-			mergeDependants(mpDependants, mpFromRuleContainer);
-			mpDependants = mpFromRuleContainer;
+			mpDependants = loccvoResult.getDependants(true);
 		}
 
 		this.debug("Modifying (Start change genericobject)");
@@ -935,16 +933,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		this.debug("Leaving modify(GenericObjectVO govo, DependantMasterDataMap mpDependants)");
 		return result;
-	}
-
-	private void mergeDependants(DependantMasterDataMap mpAll, DependantMasterDataMap mpFromRuleContainer) {
-		for(String subEntity : mpAll.getEntityNames()) {
-			for(EntityObjectVO vo : mpAll.getData(subEntity)) {
-				if(vo.isFlagRemoved()){
-					mpFromRuleContainer.addData(subEntity, vo);
-				}
-			}
-		}
 	}
 
 	/**

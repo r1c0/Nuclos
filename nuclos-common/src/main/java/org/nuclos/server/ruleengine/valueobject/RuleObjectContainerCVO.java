@@ -170,8 +170,9 @@ public class RuleObjectContainerCVO implements Serializable {
 	}
 
 	public DependantMasterDataMap getDependants(boolean withDeleted) {
-		if(withDeleted)
+		if(!withDeleted) {
 			return getDependants();
+		}
 		return convert(mpDependants);
 	}
 
