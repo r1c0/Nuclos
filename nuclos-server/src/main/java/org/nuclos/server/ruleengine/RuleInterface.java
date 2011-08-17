@@ -1042,6 +1042,12 @@ public class RuleInterface extends CustomCodeInterface {
 		}
 	}
 
+	public Integer createObject(Integer iId, String sGeneratorName) throws NuclosBusinessRuleException {
+		if (this.getMasterData() != null) {
+			throw new NuclosBusinessRuleException("rule.interface.error.5");//"Objektgenerierung bei den Stammdaten ist unzul\u00e4ssig");
+		}
+		return getRuleInterface().createObject(iId, sGeneratorName);
+	}
 
 	/**
 	 * create a new object based on the given RuleObjectContainerCVO
