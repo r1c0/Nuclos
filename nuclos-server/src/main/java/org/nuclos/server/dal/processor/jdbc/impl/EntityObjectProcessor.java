@@ -115,6 +115,11 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 	}
 	
 	@Override
+	public EntityMetaDataVO getMeta() {
+		return eMeta;
+	}
+	
+	@Override
 	protected EntityObjectVO newDalVOInstance() {
 		try {
 			final EntityObjectVO newInstance = super.newDalVOInstance();

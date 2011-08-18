@@ -105,7 +105,8 @@ public class DbFrom implements Serializable {
 	 * @since Nuclos 3.1.01
 	 */
 	public <T> DbColumnExpression<T> column(String alias, String columnName, Class<T> javaClass) {
-		if (!containsAlias(alias)) throw new IllegalArgumentException();
+		// This would be to early, as the unparser could add a join... (tp)
+		// if (!containsAlias(alias)) throw new IllegalArgumentException("FROM clause " + this + " does not contain alias " + alias);
 		return new DbColumnExpression<T>(alias, this, columnName, javaClass);
 	}
 	

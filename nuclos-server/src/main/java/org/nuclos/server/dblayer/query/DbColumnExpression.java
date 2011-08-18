@@ -34,8 +34,8 @@ public class DbColumnExpression<T> extends DbExpression<T> {
 	
 	DbColumnExpression(String tableAlias, DbFrom fromTable, String columnName, Class<T> javaType, boolean caseSensitive) {
 		super(fromTable.getQuery().getBuilder(), javaType, tableAlias, caseSensitive
-			? PreparedStringBuilder.concat(fromTable.getAlias(), ".", "\"", columnName, "\"")
-			: PreparedStringBuilder.concat(fromTable.getAlias(), ".", columnName));
+			? PreparedStringBuilder.concat(tableAlias, ".", "\"", columnName, "\"")
+			: PreparedStringBuilder.concat(tableAlias, ".", columnName));
 		if (fromTable.getAlias() == null) {
 			throw new IllegalArgumentException("Table alias in DbFrom must not be null on table " + fromTable.getTableName());
 		}

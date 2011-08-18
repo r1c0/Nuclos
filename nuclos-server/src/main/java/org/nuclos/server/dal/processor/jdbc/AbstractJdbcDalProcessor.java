@@ -302,9 +302,9 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 
    protected <S> DbExpression<S> getDbColumn(DbFrom table, IColumnToVOMapping<?> mapping) {
 	   if(mapping.isCaseSensitive())
-		   return table.baseColumnCaseSensitive(mapping.getColumn(), (Class<S>) DalUtils.getDbType(mapping.getDataType()));
+		   return table.columnCaseSensitive(mapping.getTableAlias(), mapping.getColumn(), (Class<S>) DalUtils.getDbType(mapping.getDataType()));
 	   else
-		   return table.baseColumn(mapping.getColumn(), (Class<S>) DalUtils.getDbType(mapping.getDataType()));
+		   return table.column(mapping.getTableAlias(), mapping.getColumn(), (Class<S>) DalUtils.getDbType(mapping.getDataType()));
    }
 
    // TODO:

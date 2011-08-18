@@ -337,14 +337,23 @@ public class ProcessorFactorySingleton {
 	public void addToColumns(JdbcEntityObjectProcessor processor, EntityFieldMetaDataVO field) {
 		final IColumnToVOMapping<?> mapping;
 		final PivotInfo pinfo = field.getPivotInfo();
+		final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
+		final EntityMetaDataVO mdEnitiy = mdProv.getEntity(field.getEntityId());
+		
+		final String alias;
+		if (mdEnitiy.equals(processor.getMeta())) {
+			alias = BASE_ALIAS;
+		}
+		else {
+			alias = mdEnitiy.getEntity();
+		}
 		if (pinfo == null) {
-			mapping = createFieldMapping(BASE_ALIAS, 
+			mapping = createFieldMapping(alias, 
 					field.getDbColumn(), field.getField(), field.getDataType(), field.isReadonly(), false);
 		}
 		else {
-			final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
 			final EntityFieldMetaDataVO vField = mdProv.getEntityField(pinfo.getSubform(), pinfo.getValueField());
-			mapping = createFieldMapping(BASE_ALIAS, 
+			mapping = createFieldMapping(alias, 
 					vField.getDbColumn(), vField.getField(), vField.getDataType(), vField.isReadonly(), false);
 		}
 		processor.addToColumns(mapping);

@@ -18,6 +18,7 @@ package org.nuclos.server.dal.processor.nuclet;
 
 import java.util.List;
 
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.specification.IDalCountSpecification;
@@ -39,5 +40,7 @@ public interface JdbcEntityObjectProcessor extends
 	void addToColumns(IColumnToVOMapping<? extends Object> column);
 	
 	void setAllColumns(List<IColumnToVOMapping<? extends Object>> columns);
+	
+	EntityMetaDataVO getMeta();	
 	
 }

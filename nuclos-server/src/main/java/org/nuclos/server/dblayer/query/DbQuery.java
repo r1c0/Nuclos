@@ -107,7 +107,7 @@ public class DbQuery<T extends Object> {
 		for (DbSelection<?> s: selections) {
 			final String n = s.getSqlColumnExpr();
 			if (!names.add(n)) {
-				throw new IllegalArgumentException("The name/alias " + n + " appears more than once in the SELECT clause");
+				throw new IllegalArgumentException("The name/alias " + n + " appears more than once in the SELECT clause " + selections);
 			}
 		}
 	}
