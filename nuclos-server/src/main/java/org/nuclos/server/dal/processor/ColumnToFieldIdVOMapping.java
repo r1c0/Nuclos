@@ -36,9 +36,9 @@ public final class ColumnToFieldIdVOMapping<T> extends AbstractColumnToVOMapping
 	 * @param dataType
 	 * @param isReadonly
 	 */
-	public ColumnToFieldIdVOMapping(String alias, String column, String fieldId, Class<T> dataType,
+	public ColumnToFieldIdVOMapping(String tableAlias, String column, String fieldId, Class<T> dataType,
 			boolean isReadonly, boolean isCaseSensitive) {
-		super(alias, column, dataType, isReadonly, isCaseSensitive);
+		super(tableAlias, column, dataType, isReadonly, isCaseSensitive);
 		if (fieldId == null) throw new NullPointerException();
 		this.fieldId = fieldId;
 	}
@@ -48,6 +48,7 @@ public final class ColumnToFieldIdVOMapping<T> extends AbstractColumnToVOMapping
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");
 		result.append("col=").append(getColumn());
+		result.append(", tableAlias=").append(getTableAlias());
 		result.append(", fieldId=").append(fieldId);
 		if (getDataType() != null)
 			result.append(", type=").append(getDataType().getName());

@@ -318,4 +318,5 @@ public abstract class DbQueryBuilder implements Serializable {
 		}
 		return PreparedStringBuilder.concat(args);
 	}
+	
 }

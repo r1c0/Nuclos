@@ -21,6 +21,9 @@ import java.util.Collection;
 
 import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 
+/**
+ * TODO: DbExpression should *not* extend DbSelection.
+ */
 public class DbExpression<T> extends DbSelection<T> implements Serializable {
 
 	private PreparedStringBuilder sqlString;
@@ -38,6 +41,12 @@ public class DbExpression<T> extends DbSelection<T> implements Serializable {
 		this.sqlString = sqlString.freeze();
 	}
 	
+	@Override
+	public String getSqlColumnExpr() {
+		// TODO: ???
+		return sqlString.toString();
+	}
+
 	/**
 	 * Changes the underlying java type, but does <b>not</b> perform any conversions.
 	 */
@@ -69,11 +78,12 @@ public class DbExpression<T> extends DbSelection<T> implements Serializable {
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");
-		result.append("sql=").append(sqlString);
-		result.append(", tableAlias=").append(getTableAlias());
+		result.append("tableAlias=").append(getTableAlias());
 		result.append(", type=").append(getJavaType());
-		if (sqlString != null) {
-			result.append(", frozen=").append(sqlString.isFrozen());
+		final PreparedStringBuilder psb = getSqlString();
+		if (psb != null) {
+			result.append(", sql=").append(psb);
+			result.append(", frozen=").append(psb.isFrozen());
 		}
 		result.append("]");
 		return result.toString();

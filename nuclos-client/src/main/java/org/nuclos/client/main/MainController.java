@@ -179,6 +179,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @version 01.00.00
  */
 public class MainController {
+	
 	private static final Logger log = Logger.getLogger(MainController.class);
 
 	/**
@@ -228,194 +229,191 @@ public class MainController {
 
 	private DirectHelpActionListener dha = new DirectHelpActionListener();
 
-
-
 	/**
 	 * @param sUserName name of the logged in user
 	 * @param sNuclosServerName name of the Nucleus server connected to.
 	 * @throws BackingStoreException
 	 */
 	public MainController(String sUserName, String sNuclosServerName, final LoginController loginController) throws CommonPermissionException, BackingStoreException {
-
-		this.sUserName = sUserName;
-		this.sNuclosServerName = sNuclosServerName;
-		/** @todo this is a workaround - because Main.getMainController() is called to get the user name */
-		Main.setMainController(this);
-
-		log.debug(">>> read user rights...");
-		SecurityCache.initialize();
-		loginController.increaseLoginProgressBar(StartUp.PROGRESS_INIT_SECURITYCACHE);
-
-		if (!SecurityCache.getInstance().isActionAllowed(Actions.ACTION_SYSTEMSTART)) {
-			throw new CommonPermissionException(CommonLocaleDelegate.getMessage("MainController.23", "Sie haben nicht das Recht, {0} zu benutzen.", ApplicationProperties.getInstance().getName()));
-		}
-
-		loginController.increaseLoginProgressBar(StartUp.PROGRESS_READ_ATTRIBUTES);
-
-		DefaultCollectableEntityProvider.setInstance(NuclosCollectableEntityProvider.getInstance());
-
-		Thread threadGenericObjectMetaDataCache = new Thread() {
-
-			@Override
-			public void run() {
-				log.debug(">>> read metadata...");
-				GenericObjectMetaDataCache.getInstance();
+		try {
+			this.sUserName = sUserName;
+			this.sNuclosServerName = sNuclosServerName;
+			/** @todo this is a workaround - because Main.getMainController() is called to get the user name */
+			Main.setMainController(this);
+	
+			log.debug(">>> read user rights...");
+			SecurityCache.initialize();
+			loginController.increaseLoginProgressBar(StartUp.PROGRESS_INIT_SECURITYCACHE);
+	
+			if (!SecurityCache.getInstance().isActionAllowed(Actions.ACTION_SYSTEMSTART)) {
+				throw new CommonPermissionException(CommonLocaleDelegate.getMessage("MainController.23", "Sie haben nicht das Recht, {0} zu benutzen.", ApplicationProperties.getInstance().getName()));
 			}
-		};
-
-		loginController.increaseLoginProgressBar(StartUp.PROGRESS_READ_LOMETA);
-
-		Thread threadSearchFilterCache = new Thread() {
-
-			@Override
-			public void run() {
-				log.debug(">>> read searchfilter...");
-				SearchFilterCache.getInstance();
+	
+			loginController.increaseLoginProgressBar(StartUp.PROGRESS_READ_ATTRIBUTES);
+	
+			DefaultCollectableEntityProvider.setInstance(NuclosCollectableEntityProvider.getInstance());
+	
+			Thread threadGenericObjectMetaDataCache = new Thread() {
+	
+				@Override
+				public void run() {
+					log.debug(">>> read metadata...");
+					GenericObjectMetaDataCache.getInstance();
+				}
+			};
+	
+			loginController.increaseLoginProgressBar(StartUp.PROGRESS_READ_LOMETA);
+	
+			Thread threadSearchFilterCache = new Thread() {
+	
+				@Override
+				public void run() {
+					log.debug(">>> read searchfilter...");
+					SearchFilterCache.getInstance();
+				}
+			};
+	
+			loginController.increaseLoginProgressBar(StartUp.PROGRESS_READ_SEARCHFILTER);
+	
+			List<Thread> lstCacheThreads = new ArrayList<Thread>();
+			lstCacheThreads.add(threadGenericObjectMetaDataCache);
+			lstCacheThreads.add(threadSearchFilterCache);
+			threadGenericObjectMetaDataCache.start();
+			threadSearchFilterCache.start();
+	
+			for(Thread t : lstCacheThreads) {
+				try {
+					t.join();
+				}
+				catch(InterruptedException e) {
+					// do noting here
+				}
 			}
-		};
-
-		loginController.increaseLoginProgressBar(StartUp.PROGRESS_READ_SEARCHFILTER);
-
-		List<Thread> lstCacheThreads = new ArrayList<Thread>();
-		lstCacheThreads.add(threadGenericObjectMetaDataCache);
-		lstCacheThreads.add(threadSearchFilterCache);
-		threadGenericObjectMetaDataCache.start();
-		threadSearchFilterCache.start();
-
-		for(Thread t : lstCacheThreads) {
+	
+			log.debug(">>> create mainframe...");
+			this.frm = new MainFrame(this.getUserName(), this.getNuclosServerName());
+	
+			this.frm.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+			this.frm.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosing(WindowEvent ev) {
+					cmdWindowClosing();
+				}
+			});
+			loginController.increaseLoginProgressBar(StartUp.PROGRESS_CREATE_MAINFRAME);
+	
+			log.debug(">>> init client communication...");
+			this.notificationdlg = new NuclosNotificationDialog(this.frm, this.getDesktopPane());
+			TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_RULENOTIFICATION, messagelistener);
+			loginController.increaseLoginProgressBar(StartUp.PROGRESS_INIT_NOTIFICATION);
+	
+			log.debug(">>> setup menus...");
+			this.setupMenus();
+			loginController.increaseLoginProgressBar(StartUp.PROGRESS_CREATE_MAINMENU);
+	
+			log.debug(">>> create explorer controller...");
+			this.ctlExplorer = new ExplorerController(frm);
+	
+			log.debug(">>> create task controller...");
+			this.ctlTasks = new TaskController(frm, getUserName());
+	
+			this.ctlTasks.setExplorerController(ctlExplorer);
+			this.ctlExplorer.setTaskController(ctlTasks);
+	
+			log.debug(">>> restore last workspace...");
 			try {
-				t.join();
+				MainFrame.readMainFramePreferences(prefs);
+				RestoreUtils.restoreWorkspaceThreaded(MainFrame.getLastWorkspaceFromPreferences());
 			}
-			catch(InterruptedException e) {
-				// do noting here
+			catch (Exception ex) {
+				final String sMessage = CommonLocaleDelegate.getMessage("MainController.4","Die in der letzten Sitzung ge\u00f6ffneten Fenster konnten nicht wiederhergestellt werden.");
+				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
-		}
-
-		log.debug(">>> create mainframe...");
-		this.frm = new MainFrame(this.getUserName(), this.getNuclosServerName());
-
-		this.frm.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		this.frm.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent ev) {
-				cmdWindowClosing();
+			finally {
+				loginController.increaseLoginProgressBar(StartUp.PROGRESS_RESTORE_WORKSPACE);
 			}
-		});
-		loginController.increaseLoginProgressBar(StartUp.PROGRESS_CREATE_MAINFRAME);
-
-		log.debug(">>> init client communication...");
-		this.notificationdlg = new NuclosNotificationDialog(this.frm, this.getDesktopPane());
-		TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_RULENOTIFICATION, messagelistener);
-		loginController.increaseLoginProgressBar(StartUp.PROGRESS_INIT_NOTIFICATION);
-
-		log.debug(">>> setup menus...");
-		this.setupMenus();
-		loginController.increaseLoginProgressBar(StartUp.PROGRESS_CREATE_MAINMENU);
-
-		log.debug(">>> create explorer controller...");
-		this.ctlExplorer = new ExplorerController(frm);
-
-		log.debug(">>> create task controller...");
-		this.ctlTasks = new TaskController(frm, getUserName());
-
-		this.ctlTasks.setExplorerController(ctlExplorer);
-		this.ctlExplorer.setTaskController(ctlTasks);
-
-		log.debug(">>> restore last workspace...");
-		try {
-			MainFrame.readMainFramePreferences(prefs);
-			RestoreUtils.restoreWorkspaceThreaded(MainFrame.getLastWorkspaceFromPreferences());
-		}
-		catch (Exception ex) {
-			final String sMessage = CommonLocaleDelegate.getMessage("MainController.4","Die in der letzten Sitzung ge\u00f6ffneten Fenster konnten nicht wiederhergestellt werden.");
-			Errors.getInstance().showExceptionDialog(null, sMessage, ex);
-		}
-		finally {
-			loginController.increaseLoginProgressBar(StartUp.PROGRESS_RESTORE_WORKSPACE);
-		}
-
-		log.debug(">>> show mainFrame...");
-		frm.setVisible(true);
-
-		try {
-			log.debug(">>> restore last controllers (for migration only)...");
-			reopenAllControllers(ClientPreferences.getUserPreferences());
-		}
-		catch (Exception ex) {
-			final String sMessage = CommonLocaleDelegate.getMessage("MainController.4","Die in der letzten Sitzung ge\u00f6ffneten Fenster konnten nicht wiederhergestellt werden.");
-			Errors.getInstance().showExceptionDialog(null, sMessage, ex);
-		}
-
-		log.debug(">>> restore task views (for migration only)...");
-		try {
-			ctlTasks.restoreGenericObjectTaskViewsFromPreferences();
-		}
-		catch (Exception ex) {
-			final String sMessage = CommonLocaleDelegate.getMessage("tasklist.error.restore", "Die Aufgabenlisten konnten nicht wiederhergestellt werden.");
-			log.error(sMessage, ex);
-			Errors.getInstance().showExceptionDialog(null, sMessage, ex);
-		}
-
-		Thread theadTaskController = new Thread() {
-			@Override
-			public void run() {
-				log.debug(">>> refresh tasks...");
-				ctlTasks.run();
+	
+			log.debug(">>> show mainFrame...");
+			frm.setVisible(true);
+	
+			try {
+				log.debug(">>> restore last controllers (for migration only)...");
+				reopenAllControllers(ClientPreferences.getUserPreferences());
 			}
-		};
-		theadTaskController.start();
-
-		// Show the release notes for this version, if the user hasn't seen it yet.
-		showReleaseNotesIfNewVersion();
-
-		// Show the internal informations if they have changed since the last start of the client
-		showInternalInfoIfChanged();
-
-		// Show startup panel to configure an application
-		SwingUtilities.invokeLater(new Runnable() {
-
-			@Override
-			public void run() {
-				showStartupPanel(true);
+			catch (Exception ex) {
+				final String sMessage = CommonLocaleDelegate.getMessage("MainController.4","Die in der letzten Sitzung ge\u00f6ffneten Fenster konnten nicht wiederhergestellt werden.");
+				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
-		});
-
-		// Debug purposes
-		final String sKeyWindowShow = "CtlShiftF11";
-		frm.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F11, (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK)), sKeyWindowShow);
-		frm.getRootPane().getActionMap().put(sKeyWindowShow, new AbstractAction() {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void actionPerformed(ActionEvent ev) {
-				debugFrame.showComponentDetails(frm.findComponentAt(frm.getMousePosition()));
+	
+			log.debug(">>> restore task views (for migration only)...");
+			try {
+				ctlTasks.restoreGenericObjectTaskViewsFromPreferences();
 			}
-		});
-
-		//Call wikipage
-		final String sKeyWikiShow = "CtlShiftF1";
-		frm.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F1, (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK)), sKeyWikiShow);
-		frm.getRootPane().getActionMap().put(sKeyWikiShow, new AbstractAction() {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void actionPerformed(ActionEvent ev) {
-
-//				Component comp = frm.findComponentAt(frm.getMousePosition());
-				Component fundComponent = frm.getFocusOwner() != null ? frm.getFocusOwner() : frm.findComponentAt(frm.getMousePosition());
-				CollectController<?> clctctrl = getControllerForInternalFrame(UIUtils.getInternalFrameForComponent(fundComponent));
-
-				WikiController wikiCtrl = WikiController.getInstance();
-				wikiCtrl.openURLinBrowser(wikiCtrl.getWikiPageForComponent(fundComponent, clctctrl));
-
+			catch (Exception ex) {
+				final String sMessage = CommonLocaleDelegate.getMessage("tasklist.error.restore", "Die Aufgabenlisten konnten nicht wiederhergestellt werden.");
+				log.error(sMessage, ex);
+				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
-		});
+	
+			Thread theadTaskController = new Thread() {
+				@Override
+				public void run() {
+					log.debug(">>> refresh tasks...");
+					ctlTasks.run();
+				}
+			};
+			theadTaskController.start();
+	
+			// Show the release notes for this version, if the user hasn't seen it yet.
+			showReleaseNotesIfNewVersion();
+	
+			// Show the internal informations if they have changed since the last start of the client
+			showInternalInfoIfChanged();
+	
+			// Show startup panel to configure an application
+			SwingUtilities.invokeLater(new Runnable() {
+	
+				@Override
+				public void run() {
+					showStartupPanel(true);
+				}
+			});
+	
+			// Debug purposes
+			final String sKeyWindowShow = "CtlShiftF11";
+			frm.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F11, (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK)), sKeyWindowShow);
+			frm.getRootPane().getActionMap().put(sKeyWindowShow, new AbstractAction() {
+				/**
+				 *
+				 */
+				private static final long serialVersionUID = 1L;
+	
+				@Override
+				public void actionPerformed(ActionEvent ev) {
+					debugFrame.showComponentDetails(frm.findComponentAt(frm.getMousePosition()));
+				}
+			});
+	
+			//Call wikipage
+			final String sKeyWikiShow = "CtlShiftF1";
+			frm.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F1, (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK)), sKeyWikiShow);
+			frm.getRootPane().getActionMap().put(sKeyWikiShow, new AbstractAction() {
+	
+				@Override
+				public void actionPerformed(ActionEvent ev) {
+					Component fundComponent = frm.getFocusOwner() != null ? frm.getFocusOwner() : frm.findComponentAt(frm.getMousePosition());
+					CollectController<?> clctctrl = getControllerForInternalFrame(UIUtils.getInternalFrameForComponent(fundComponent));
+	
+					WikiController wikiCtrl = WikiController.getInstance();
+					wikiCtrl.openURLinBrowser(wikiCtrl.getWikiPageForComponent(fundComponent, clctctrl));
+	
+				}
+			});
+		}
+		catch (Throwable e) {
+			log.fatal("Creating MainController failed, this is fatal: " + e.toString(), e);
+			throw new ExceptionInInitializerError(e);
+		}
 	}
 
 	public void addForcedContent() {
@@ -423,10 +421,6 @@ public class MainController {
 	}
 
 	private Action cmdDirectHelp = new AbstractAction() {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {

@@ -21,17 +21,24 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.nuclos.server.dblayer.DbTuple;
+import org.nuclos.server.dblayer.query.DbColumnExpression;
+import org.nuclos.server.dblayer.query.DbSelection;
 
 public class DbTupleImpl implements DbTuple, Serializable {
 
 	public static class DbTupleElementImpl<T> implements DbTuple.DbTupleElement<T> {
 		
 		private final String alias;
-		private final Class<T> javaType;
+		private final Class<? extends T> javaType;
 
-		public DbTupleElementImpl(String alias, Class<T> javaType) {
-			this.alias = alias;
-			this.javaType = javaType;
+		public DbTupleElementImpl(DbSelection<T> expr) {
+			if (expr instanceof DbColumnExpression) {
+				this.alias = ((DbColumnExpression<T>) expr).getColumnAlias();
+			}
+			else {
+				this.alias = expr.getSqlColumnExpr();
+			}
+			this.javaType = expr.getJavaType();
 		}
 
 		@Override
@@ -40,7 +47,7 @@ public class DbTupleImpl implements DbTuple, Serializable {
 		}
 
 		@Override
-		public Class<T> getJavaType() {
+		public Class<? extends T> getJavaType() {
 			return javaType;
 		}
 		

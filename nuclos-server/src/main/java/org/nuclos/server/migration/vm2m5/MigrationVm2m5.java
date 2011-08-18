@@ -1194,7 +1194,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 							DbQuery<DbTuple> queryForeign = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 							DbFrom fromForeign = queryForeign.from(eForeign.getDbEntity().replace("V_", "T_"));
 							fromForeign.alias("f");
-							queryForeign.select((DbSelection<? extends DbTuple>) getColumn(fromForeign, "INTID", DT_INTEGER));
+							queryForeign.select((DbSelection<DbTuple>) getColumn(fromForeign, "INTID", DT_INTEGER));
 							queryForeign.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
 								fromForeign.baseColumn(efForeign.getDbColumn(), Class.forName(efForeign.getDataType())),
 								DataBaseHelper.getDbAccess().getQueryBuilder().literal(sValue)));

@@ -293,12 +293,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 		return "";
 	}
 
-	class OracleQueryBuilder extends QueryBuilder {
-
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
+	static class OracleQueryBuilder extends QueryBuilder {
 
 		@Override
 		public DbExpression<Date> currentDate() {
@@ -321,7 +316,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 		}
 	}
 
-	class OracleMetaData extends MetaDataSchemaExtractor {
+	static class OracleMetaData extends MetaDataSchemaExtractor {
 
 		@Override
 		protected void initMetaData() throws SQLException {
@@ -389,7 +384,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 
 		@Override
 		protected DbGenericType getDbGenericType(int sqlType, String typeName) {
-			return OracleDBAccess.this.getDbGenericType(sqlType, typeName);
+			return OracleDBAccess.getDbGenericType(sqlType, typeName);
 		}
 	}
 

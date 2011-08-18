@@ -18,6 +18,10 @@ package org.nuclos.server.dblayer.query;
 
 import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 
+/**
+ * TODO: Is there really any difference between DbSelections and DbColumnExpressions?
+ *   What does it mean a column and/or table alias here? 
+ */
 public class DbColumnExpression<T> extends DbExpression<T> {
 
 	private String columnAlias;
@@ -45,6 +49,15 @@ public class DbColumnExpression<T> extends DbExpression<T> {
 		return this;
 	}
 	
+	@Override
+	public String getSqlColumnExpr() {
+		if (columnAlias == null)
+			return getSqlString().toString();
+		final StringBuilder result = new StringBuilder(getSqlString().toString());
+		result.append(" ").append(columnAlias);
+		return result.toString();
+	}
+
 	public final String getColumnAlias() {
 		return columnAlias;
 	}
@@ -58,9 +71,14 @@ public class DbColumnExpression<T> extends DbExpression<T> {
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");
 		result.append("tableAlias=").append(getTableAlias());
-		result.append("columnAlias=").append(getColumnAlias());
+		result.append(", columnAlias=").append(getColumnAlias());
 		result.append(", type=").append(getJavaType());
 		result.append(", column=").append(columnName);
+		final PreparedStringBuilder psb = getSqlString();
+		if (psb != null) {
+			result.append(", sql=").append(psb);
+			result.append(", frozen=").append(psb.isFrozen());
+		}
 		result.append("]");
 		return result.toString();
 	}

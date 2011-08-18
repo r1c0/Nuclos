@@ -20,14 +20,21 @@ import java.util.List;
 
 /**
  * A result tuple, similar to JPA's tuple type.
+ * 
+ * TODO: This interface does not reflect that there might be result columns
+ * without alias or same column names from different tables in the result.
  */
 public interface DbTuple {
 
+	/**
+	 * TODO: This interface does not reflect that there might be result columns
+	 * without alias or same column names from different tables in the result.
+	 */
 	public static interface DbTupleElement<T> {
 		
 		String getAlias();
 		
-		Class<T> getJavaType();
+		Class<? extends T> getJavaType();
 	}
 	
 	Object get(int index);

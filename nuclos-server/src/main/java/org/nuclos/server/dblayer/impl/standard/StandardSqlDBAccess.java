@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +74,7 @@ import org.nuclos.server.dblayer.impl.util.PreparedString;
 import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 import org.nuclos.server.dblayer.incubator.DbExecutor.ConnectionRunner;
 import org.nuclos.server.dblayer.incubator.DbExecutor.ResultSetRunner;
+import org.nuclos.server.dblayer.query.DbColumnExpression;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbJoin;
@@ -388,7 +390,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         return JDBCType.getJDCBTypesForObjectType(javaType)[0].getSqlType();
     }
 
-    protected <T> T getResultSetValue(ResultSet rs, int index, Class<T> javaType) throws SQLException {
+    protected static <T> T getResultSetValue(ResultSet rs, int index, Class<T> javaType) throws SQLException {
         Object value;
         if (javaType == String.class) {
             value = rs.getString(index);
@@ -444,7 +446,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         return stmt.wasNull() ? null : javaType.cast(value);
     }
 
-    protected DbGenericType getDbGenericType(int sqlType, String typeName) {
+    protected static DbGenericType getDbGenericType(int sqlType, String typeName) {
         switch (sqlType) {
         case Types.VARCHAR:
         case Types.NVARCHAR:
@@ -516,22 +518,16 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         return true;
     }
 
-    public abstract class QueryBuilder extends DbQueryBuilder {
+    public static abstract class QueryBuilder extends DbQueryBuilder {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		@SuppressWarnings({ "unchecked", "rawtypes" })
         protected <T, R> ResultSetRunner<List<R>> createListResultSetRunner(final DbQuery<? extends T> query, Transformer<? super T, R> transformer) {
-            final List<DbSelection<?>> selections = getPrimitiveSelections(query.getSelection());
+            final List<? extends DbSelection<?>> selections = query.getSelections();
             final DbTupleElementImpl<?>[] elements = new DbTupleElementImpl<?>[selections.size()];
             for (int i = 0; i < selections.size(); i++) {
                 DbSelection<?> selection = selections.get(i);
-                elements[i] = new DbTupleElementImpl(selection.getTableAlias(), selection.getJavaType());
+                elements[i] = new DbTupleElementImpl(selection);
             }
-            Transformer internalTransformer;
+            Transformer<Object[], ? extends Object> internalTransformer;
             if (query.getResultType() == Object[].class) {
                 internalTransformer = TransformerUtils.id();
             } else if (query.getResultType() == DbTuple.class) {
@@ -552,7 +548,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
             if (transformer == TransformerUtils.id()) {
                 return new DefaultResultSetRunner(elements, internalTransformer);
             } else {
-                return new DefaultResultSetRunner(elements, TransformerUtils.chained(internalTransformer, transformer));
+                return new DefaultResultSetRunner(elements, TransformerUtils.chained(internalTransformer, (Transformer<Object, R>) transformer));
             }
         }
 
@@ -564,7 +560,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         protected PreparedStringBuilder buildPreparedString(DbQuery<?> query) {
             PreparedStringBuilder ps = new PreparedStringBuilder();
             prepareSelect(ps, query);
-            appendSelection(ps, query.getSelection());
+            appendSelection(ps, query.getSelections());
             ps.append(" FROM ");
             appendFrom(ps, query.getRoots());
             if (query.getRestriction() != null) {
@@ -599,19 +595,15 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
                 ps.append("DISTINCT ");
         }
 
-        protected void appendSelection(PreparedStringBuilder ps, DbSelection<?> selection) {
-            if (selection.isCompoundSelection()) {
-                List<DbSelection<?>> items = selection.getCompoundSelectionItems();
-                for (int i = 0; i < items.size(); i++) {
-                    if (i > 0)
-                        ps.append(", ");
-                    appendSelection(ps, items.get(i));
-                    if (selection.getTableAlias() != null)
-                        ps.append(" ").append(selection.getTableAlias());
-                }
-            } else {
-                ps.append(getPreparedString((DbExpression<?>) selection));
-            }
+        private void appendSelection(PreparedStringBuilder ps, List<? extends DbSelection<?>> selections) {
+        	for (Iterator<? extends DbSelection<?>> it = selections.iterator(); it.hasNext();) {
+        		final DbSelection<?> s = it.next();
+        		ps.append(s.getSqlColumnExpr());
+        		if (it.hasNext()) {
+        			ps.append(",");
+        		}
+        		ps.append(" ");
+        	}
         }
 
         protected void appendFrom(PreparedStringBuilder ps, Set<DbFrom> roots) {
@@ -649,22 +641,6 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 
         protected Set<DbJoin> getAllJoins(DbFrom root) {
             return collectAllJoinsImpl(root, new LinkedHashSet<DbJoin>());
-        }
-
-        protected List<DbSelection<?>> getPrimitiveSelections(DbSelection<?> selection) {
-            if (!selection.isCompoundSelection()) {
-                return Collections.<DbSelection<?>>singletonList(selection);
-            } else {
-                List<DbSelection<?>> selections = new ArrayList<DbSelection<?>>();
-                for (DbSelection<?> item : selection.getCompoundSelectionItems()) {
-                    if (!item.isCompoundSelection()) {
-                        selections.add(item);
-                    } else {
-                        selections.addAll(getPrimitiveSelections(item));
-                    }
-                }
-                return selections;
-            }
         }
 
         private Set<DbJoin> collectAllJoinsImpl(DbFrom parent, Set<DbJoin> set) {
@@ -1225,7 +1201,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
             getQualifiedName(callable.getCallableName())));
     }
 
-    public class DefaultResultSetRunner<T> implements ResultSetRunner<List<T>> {
+    public static class DefaultResultSetRunner<T> implements ResultSetRunner<List<T>> {
 
         DbTupleElementImpl<?>[] elements;
         Transformer<Object[], T> transformer;

@@ -22,13 +22,12 @@ import java.util.Set;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dblayer.JoinType;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 
 public class DbFrom implements Serializable {
 	
 	private final DbQuery<?> query;
 	private final String tableName;
-	private String alias;
+	private String tableAlias;
 	private Set<DbJoin> joins;
 	
 	// private final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
@@ -44,7 +43,7 @@ public class DbFrom implements Serializable {
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");
 		result.append("table=").append(tableName);
-		result.append(", alias=").append(alias);
+		result.append(", alias=").append(tableAlias);
 		result.append(", joins=").append(joins);
 		result.append(", query=").append(query);
 		result.append("]");
@@ -56,12 +55,12 @@ public class DbFrom implements Serializable {
 	}
 	
 	public String getAlias() {
-		return alias;
+		return tableAlias;
 	}
 	
-	public DbFrom alias(String alias) {
-		query.registerAlias(this, alias);
-		this.alias = alias;
+	public DbFrom alias(String tableAlias) {
+		query.registerAlias(this, tableAlias);
+		this.tableAlias = tableAlias;
 		return this;
 	}
 	
@@ -116,8 +115,8 @@ public class DbFrom implements Serializable {
 	 * @since Nuclos 3.1.01
 	 */
 	public <T> DbColumnExpression<T> baseColumn(String columnName, Class<T> javaClass) {
-		if (!containsAlias(alias)) throw new IllegalArgumentException();
-		return new DbColumnExpression<T>(alias, this, columnName, javaClass);
+		if (!containsAlias(tableAlias)) throw new IllegalArgumentException();
+		return new DbColumnExpression<T>(tableAlias, this, columnName, javaClass);
 	}
 	
 	DbQuery<?> getQuery() {
@@ -149,13 +148,13 @@ public class DbFrom implements Serializable {
 	@Deprecated
 	/** @deprecated Only use case-sensitive columns if needed. */
 	public <T> DbColumnExpression<T> baseColumnCaseSensitive(String columnName, Class<T> javaClass) {
-		if (!containsAlias(alias)) throw new IllegalArgumentException();
-		return new DbColumnExpression<T>(alias, this, columnName, javaClass, true);
+		if (!containsAlias(tableAlias)) throw new IllegalArgumentException();
+		return new DbColumnExpression<T>(tableAlias, this, columnName, javaClass, true);
 	}
 	
 	private boolean containsAlias(String a) {
 		if (a == null) throw new NullPointerException();
-		if (a.equals(alias)) return true;
+		if (a.equals(tableAlias)) return true;
 		for (DbJoin j: joins) {
 			if (a.equals(j.getAlias())) return true;
 		}

@@ -19,7 +19,6 @@ package org.nuclos.server.dal.provider;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuclos.common.NuclosEntity;
@@ -28,9 +27,6 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.processor.jdbc.impl.DynamicFieldMetaDataProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.DynamicMetaDataProcessor;
 import org.nuclos.server.dal.processor.json.impl.EntityObjectProcessor;
-import org.nuclos.server.dal.processor.nuclet.IEOGenericObjectProcessor;
-import org.nuclos.server.dal.processor.nuclet.JdbcEntityFieldMetaDataProcessor;
-import org.nuclos.server.dal.processor.nuclet.JdbcEntityMetaDataProcessor;
 import org.nuclos.server.dal.processor.nuclos.JsonEntityFieldMetaDataProcessor;
 import org.nuclos.server.dal.processor.nuclos.JsonEntityMetaDataProcessor;
 import org.nuclos.server.dal.processor.nuclos.JsonEntityObjectProcessor;

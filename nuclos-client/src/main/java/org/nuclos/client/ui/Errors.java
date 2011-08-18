@@ -127,6 +127,7 @@ public class Errors {
 	}
 
 	public void showExceptionDialog(final Component parent, final String sErrorMsg, final Throwable t, final boolean forceDetailDialog) {
+		log.error("showExceptionDialog: " + t.toString(), t);
 		UIUtils.invokeOnDispatchThread(new Runnable() {
 			@Override
 			public void run() {

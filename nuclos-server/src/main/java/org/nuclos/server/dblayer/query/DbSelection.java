@@ -16,24 +16,27 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dblayer.query;
 
-import java.util.List;
-
 
 public abstract class DbSelection<T> {
 
+	private final DbQueryBuilder builder;
+	
+	private final Class<? extends T> javaType;
+	
 	private String tableAlias;
-	private DbQueryBuilder builder;
-	private Class<? extends T> javaType;
 	
 	DbSelection(DbQueryBuilder builder, Class<? extends T> javaType) {
-		this.builder = builder;
-		this.javaType = javaType;
+		this(builder, javaType, null);
 	}
 
 	DbSelection(DbQueryBuilder builder, Class<? extends T> javaType, String tableAlias) {
 		this.builder = builder;
 		this.javaType = javaType;
 		this.tableAlias = tableAlias;
+	}
+
+	public String getSqlColumnExpr() {
+		throw new IllegalStateException("No column alias in " + this);
 	}
 
 	@Override
@@ -54,23 +57,11 @@ public abstract class DbSelection<T> {
 		return tableAlias;
 	}
 		
-	public final DbSelection<T> alias(String alias) {
+	public final DbSelection<T> alias(String tableAlias) {
 		if (this.tableAlias != null)
-			throw new IllegalStateException();
-		return replaceAlias(alias);
-	}
-	
-	final DbSelection<T> replaceAlias(String alias) {
-		this.tableAlias = alias;
+			throw new IllegalStateException("Tried to alter table alias from " + this.tableAlias + " to " + tableAlias + " at " + this);
+		this.tableAlias = tableAlias;
 		return this;
-	}
-
-	public boolean isCompoundSelection() {
-		return false;
-	}
-	
-	public List<DbSelection<?>> getCompoundSelectionItems() {
-		throw new IllegalStateException();
 	}
 	
 	final DbQueryBuilder getBuilder() {

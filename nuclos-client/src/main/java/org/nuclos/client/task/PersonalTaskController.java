@@ -834,6 +834,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			}
 		} catch (NuclosBusinessException ex) {
 			Errors.getInstance().showExceptionDialog(this.getParent(), CommonLocaleDelegate.getMessage("PersonalTaskController.20","Fehler beim Aktualisieren der Aufgabenliste"), ex);
+		} catch (Exception e) {
+			log.error("unhandled exception: " + e.toString(), e);
 		}
 	}
 
@@ -842,6 +844,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			new ReportController(this.getParent()).export(this.personaltaskview.getTable(), null);
 		} catch (CommonBusinessException ex) {
 			Errors.getInstance().showExceptionDialog(this.getParent(), ex);
+		} catch (Exception e) {
+			log.error("unhandled exception: " + e.toString(), e);
 		}
 	}
 

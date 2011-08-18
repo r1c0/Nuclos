@@ -23,7 +23,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
 import org.nuclos.common.collection.CollectionUtils;
@@ -34,10 +36,10 @@ public class DbQuery<T extends Object> {
 	private final DbQueryBuilder builder;
 	private final Class<T> resultType;
 	private Set<DbFrom> roots = new LinkedHashSet<DbFrom>();
-	private Map<String, DbFrom> aliases = new TreeMap<String, DbFrom>(String.CASE_INSENSITIVE_ORDER);
+	private Map<String, DbFrom> tableAliases = new TreeMap<String, DbFrom>(String.CASE_INSENSITIVE_ORDER);
 	private boolean distinct = false;
 	private int maxResults = -1;
-	private DbSelection<T> selection;
+	private List<? extends DbSelection<T>> selections;
 	private DbCondition condition;
 	private List<DbExpression<?>> groupList;
 	private DbCondition groupRestriction;
@@ -65,14 +67,15 @@ public class DbQuery<T extends Object> {
 		return roots;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public DbQuery<T> select(DbSelection<? extends T> selection) {
-		this.selection = (DbExpression<T>) selection;
+	public DbQuery<T> select(DbSelection<T> selection) {
+		this.selections = Collections.singletonList(selection);
+		checkSelections();
 		return this;
 	}
 	
 	public DbQuery<T> selectLiberate(DbSelection<?> selection) {
-		this.selection = (DbExpression<T>) selection;
+		this.selections = Collections.singletonList((DbSelection<T>) selection);
+		checkSelections();
 		return this;
 	}
 	
@@ -81,16 +84,36 @@ public class DbQuery<T extends Object> {
 	}
 	
 	public DbQuery<T> multiselect(List<? extends DbSelection<?>> selections) {
-		if (getResultType() == Object[].class || getResultType() == DbTuple.class) {
-			this.selection = new DbCompoundSelection<T>(builder, getResultType(), selections);
+		final Class<T> clazz = getResultType();
+		if (clazz == Object[].class || clazz == DbTuple.class) {
+			this.selections = (List<? extends DbSelection<T>>) selections;
 		} else {
-			throw new IllegalArgumentException("Multi selection requires tuple/array result type");
+			throw new IllegalArgumentException("Multi selection requires tuple/array result type, not " + clazz);
 		}
+		checkSelections();
 		return this;
 	}
 	
-	public DbSelection<T> getSelection() {
-		return selection;
+	private final void checkSelections() {
+		final int size = selections.size();
+		if (size == 0) throw new IllegalArgumentException("No item in SELECT clause");
+		if (size > 1) {
+			final Class<T> clazz = getResultType();
+			if (clazz != Object[].class && clazz != DbTuple.class) {
+				throw new IllegalArgumentException("Multi selection requires tuple/array result type, not " + clazz);
+			}			
+		}
+		final SortedSet<String> names = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+		for (DbSelection<?> s: selections) {
+			final String n = s.getSqlColumnExpr();
+			if (!names.add(n)) {
+				throw new IllegalArgumentException("The name/alias " + n + " appears more than once in the SELECT clause");
+			}
+		}
+	}
+	
+	public List<? extends DbSelection<T>> getSelections() {
+		return selections;
 	}
 	
 	public DbQuery<T> distinct(boolean distinct) {
@@ -177,21 +200,9 @@ public class DbQuery<T extends Object> {
 		return builder.createQuery(type);
 	}
 
-//	public void setParameter(String name, Object value) {
-//		this.parameters.put(name, value);
-//	}
-//	
-//	public Map<String, Object> getParameters() {
-//		return parameters;
-//	}
-	
-	//
-	//
-	//
-	
-	void registerAlias(DbFrom from, String alias) {
-		if (aliases.containsKey(alias))
-			throw new IllegalArgumentException("Alias " + alias + " already used");
-		aliases.put(alias, from);
+	void registerAlias(DbFrom from, String tableAlias) {
+		if (tableAliases.containsKey(tableAlias))
+			throw new IllegalArgumentException("Alias " + tableAlias + " already used");
+		tableAliases.put(tableAlias, from);
 	}
 }

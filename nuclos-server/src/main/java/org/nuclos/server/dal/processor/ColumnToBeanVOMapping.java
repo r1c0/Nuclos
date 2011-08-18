@@ -36,9 +36,9 @@ public final class ColumnToBeanVOMapping<T> extends AbstractColumnToVOMapping<T>
 	/**
 	 * Konstruktor für statische VO Werte (Aufruf von Methoden zum setzen und lesen von Werten).
 	 */
-	public ColumnToBeanVOMapping(String alias, String column, String fieldName, Method setMethod, Method getMethod, Class<T> dataType,
+	public ColumnToBeanVOMapping(String tableAlias, String column, String fieldName, Method setMethod, Method getMethod, Class<T> dataType,
 			boolean isReadonly) {
-		super(alias, column, dataType, isReadonly, false);
+		super(tableAlias, column, dataType, isReadonly, false);
 		if (fieldName == null) throw new NullPointerException();
 		if (getMethod == null) throw new NullPointerException();
 		if (setMethod == null && !isReadonly) throw new NullPointerException();
@@ -52,6 +52,7 @@ public final class ColumnToBeanVOMapping<T> extends AbstractColumnToVOMapping<T>
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");
 		result.append("col=").append(getColumn());
+		result.append(", tableAlias=").append(getTableAlias());
 		result.append(", getter=").append(getMethod);
 		if (getDataType() != null)
 			result.append(", type=").append(getDataType().getName());

@@ -205,7 +205,7 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 		throw new UnsupportedOperationException();
 	}
 
-	protected abstract class TransactSqlMetaDataExtractor extends MetaDataSchemaExtractor {
+	protected static abstract class TransactSqlMetaDataExtractor extends MetaDataSchemaExtractor {
 
 		@Override
 		public Map<String, String> getDatabaseParameters() throws SQLException {
@@ -214,16 +214,11 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 
 		@Override
 		protected DbGenericType getDbGenericType(int sqlType, String typeName) {
-			return TransactSqlDbAccess.this.getDbGenericType(sqlType, typeName);
+			return TransactSqlDbAccess.getDbGenericType(sqlType, typeName);
 		}
 	}
 
-	class TransactSqlQueryBuilder extends QueryBuilder {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+	static class TransactSqlQueryBuilder extends QueryBuilder {
 
 		@Override
 		public DbExpression<Date> currentDate() {

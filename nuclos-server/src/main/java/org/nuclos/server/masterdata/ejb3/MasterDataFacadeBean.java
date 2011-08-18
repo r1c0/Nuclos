@@ -986,7 +986,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		DbFrom from = query.from("T_MD_RULE_EVENT").alias(ProcessorFactorySingleton.BASE_ALIAS);
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 
-		columns.add(from.baseColumn("INTID", Integer.class).alias("intid"));
+		columns.add(from.baseColumn("INTID", Integer.class).columnAlias("intid"));
 		query.multiselect(columns);
 
 		List<DbCondition> lstDbCondition = new ArrayList<DbCondition>();

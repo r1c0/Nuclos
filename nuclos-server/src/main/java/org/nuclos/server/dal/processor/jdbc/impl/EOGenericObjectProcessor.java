@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EOGenericObjectVO;
-import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.IEOGenericObjectProcessor;

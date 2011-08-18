@@ -20,7 +20,6 @@ import java.sql.SQLException;
 
 import org.nuclos.common.NuclosImage;
 import org.nuclos.common.NuclosPassword;
-import org.nuclos.common.dal.vo.IDalVO;
 import org.nuclos.common2.DateTime;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
@@ -37,16 +36,16 @@ import org.nuclos.server.resource.valueobject.ResourceFile;
  */
 abstract class AbstractColumnToVOMapping<T> implements IColumnToVOMapping<T> {
 
-	private final String alias;
+	private final String tableAlias;
 	private final String column;
 	private final Class<T> dataType;
 	private final boolean isReadonly;
 	private final boolean caseSensitive;
 
-	AbstractColumnToVOMapping(String alias, String column, Class<T> dataType, boolean isReadonly, boolean caseSensitive) {
-		if (alias == null) throw new NullPointerException();
+	AbstractColumnToVOMapping(String tableAlias, String column, Class<T> dataType, boolean isReadonly, boolean caseSensitive) {
+		if (tableAlias == null) throw new NullPointerException();
 		if (column == null) throw new NullPointerException();
-		this.alias = alias;
+		this.tableAlias = tableAlias;
 		this.column = column;
 		this.dataType = dataType;
 		this.isReadonly = isReadonly;
@@ -54,8 +53,8 @@ abstract class AbstractColumnToVOMapping<T> implements IColumnToVOMapping<T> {
 	}
 
 	@Override
-	public final String getAlias() {
-		return alias;
+	public final String getTableAlias() {
+		return tableAlias;
 	}
 
 	@Override

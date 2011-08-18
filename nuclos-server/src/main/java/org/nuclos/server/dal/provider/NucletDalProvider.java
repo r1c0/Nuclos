@@ -16,12 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dal.provider;
 
-import java.lang.reflect.Constructor;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;

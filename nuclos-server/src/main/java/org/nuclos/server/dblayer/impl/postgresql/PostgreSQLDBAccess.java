@@ -336,12 +336,7 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 		}
 	}
 
-	class PostgreSQLQueryBuilder extends QueryBuilder {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+	static class PostgreSQLQueryBuilder extends QueryBuilder {
 
 		@Override
 		public DbExpression<String> upper(DbExpression<String> x) {
@@ -363,7 +358,7 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 		}
 	}
 
-	class PostgreSQLMetaData extends MetaDataSchemaExtractor {
+	static class PostgreSQLMetaData extends MetaDataSchemaExtractor {
 
 		@Override
 		protected void initMetaData() throws SQLException {
@@ -430,7 +425,7 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 		}      
 		@Override
 		protected DbGenericType getDbGenericType(int sqlType, String typeName) {
-			return PostgreSQLDBAccess.this.getDbGenericType(sqlType, typeName);
+			return PostgreSQLDBAccess.getDbGenericType(sqlType, typeName);
 		}
 	}
 }

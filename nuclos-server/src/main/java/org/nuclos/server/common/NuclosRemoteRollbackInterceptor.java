@@ -20,6 +20,7 @@ import java.io.Serializable;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.apache.log4j.Logger;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.interceptor.TransactionAttribute;
@@ -28,19 +29,11 @@ import org.springframework.transaction.support.CallbackPreferringPlatformTransac
 
 public class NuclosRemoteRollbackInterceptor extends TransactionInterceptor implements MethodInterceptor, Serializable {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-
-
-	public NuclosRemoteRollbackInterceptor() {	
-		
+	private static final Logger LOG = Logger.getLogger(NuclosRemoteRollbackInterceptor.class);
+	
+	public NuclosRemoteRollbackInterceptor() {		
 	}
 	
-	
-
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {		
 		Object obj = null;
@@ -63,9 +56,10 @@ public class NuclosRemoteRollbackInterceptor extends TransactionInterceptor impl
 				retVal = invocation.proceed();
 			}
 			catch (Throwable ex) {
-				// target invocation exception
-				completeTransactionAfterThrowing(txInfo, ex);
+				LOG.error("server bean exception, propagated to client: " + ex.toString(), ex);
 				
+				// target invocation exception
+				completeTransactionAfterThrowing(txInfo, ex);		
 				throw ex;
 			}
 			finally {
