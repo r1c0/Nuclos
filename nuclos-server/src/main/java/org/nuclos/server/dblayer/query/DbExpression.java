@@ -33,8 +33,8 @@ public class DbExpression<T> extends DbSelection<T> implements Serializable {
 		this.sqlString = sqlString.freeze();
 	}
 	
-	DbExpression(DbQueryBuilder builder, Class<? extends T> javaType, String alias, PreparedStringBuilder sqlString) {
-		super(builder, javaType, alias);
+	DbExpression(DbQueryBuilder builder, Class<? extends T> javaType, String tableAlias, PreparedStringBuilder sqlString) {
+		super(builder, javaType, tableAlias);
 		this.sqlString = sqlString.freeze();
 	}
 	
@@ -45,23 +45,23 @@ public class DbExpression<T> extends DbSelection<T> implements Serializable {
 		return new DbExpression<X>(getBuilder(), javaType, sqlString);
 	}
 	
-	public DbCondition isNull() {
+	public final DbCondition isNull() {
 		return getBuilder().isNull(this);
 	}
 	
-	public DbCondition isNotNull() {
+	public final DbCondition isNotNull() {
 		return getBuilder().isNotNull(this);
 	}
 	
-	public DbCondition in(Collection<T> values) {
+	public final DbCondition in(Collection<T> values) {
 		return getBuilder().in(this, values);
 	}
 	
-	public DbCondition in(DbQuery<T> subquery) {
+	public final DbCondition in(DbQuery<T> subquery) {
 		return getBuilder().in(this, subquery);
 	}
 	
-	PreparedStringBuilder getSqlString() {
+	final PreparedStringBuilder getSqlString() {
 		return sqlString;
 	}
 	
@@ -70,7 +70,7 @@ public class DbExpression<T> extends DbSelection<T> implements Serializable {
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");
 		result.append("sql=").append(sqlString);
-		result.append(", alias=").append(getAlias());
+		result.append(", tableAlias=").append(getTableAlias());
 		result.append(", type=").append(getJavaType());
 		if (sqlString != null) {
 			result.append(", frozen=").append(sqlString.isFrozen());

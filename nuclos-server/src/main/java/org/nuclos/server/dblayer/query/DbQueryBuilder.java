@@ -58,11 +58,11 @@ public abstract class DbQueryBuilder implements Serializable {
 		DbQuery<DbTuple> query = createTupleQuery();
 		DbFrom from = query.from(tableName).alias(ProcessorFactorySingleton.BASE_ALIAS);
 		List<DbExpression<?>> columns = new ArrayList<DbExpression<?>>();
-		columns.add(from.baseColumn(columnName1, columnType1).alias(columnName1));
+		columns.add(from.baseColumn(columnName1, columnType1).columnAlias(columnName1));
 		for (int i = 0; i < varargs.length; i += 2) {
 			String columnName = (String) varargs[i];
 			Class<?> columnType = (Class<?>) varargs[i+1];
-			columns.add(from.baseColumn(columnName, columnType).alias(columnName));
+			columns.add(from.baseColumn(columnName, columnType).columnAlias(columnName));
 		}
 		query.multiselect(columns);
 		return query;
@@ -72,7 +72,6 @@ public abstract class DbQueryBuilder implements Serializable {
 	// Expressions
 	//
 
-	@SuppressWarnings("unchecked")
 	public <T> DbExpression<T> literal(T value) {
 		Class<? extends T> javaType = (Class<? extends T>) value.getClass();
 		return buildExpressionSql(javaType, literalImpl(value));

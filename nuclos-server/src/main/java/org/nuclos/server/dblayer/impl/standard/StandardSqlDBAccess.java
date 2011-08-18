@@ -529,7 +529,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
             final DbTupleElementImpl<?>[] elements = new DbTupleElementImpl<?>[selections.size()];
             for (int i = 0; i < selections.size(); i++) {
                 DbSelection<?> selection = selections.get(i);
-                elements[i] = new DbTupleElementImpl(selection.getAlias(), selection.getJavaType());
+                elements[i] = new DbTupleElementImpl(selection.getTableAlias(), selection.getJavaType());
             }
             Transformer internalTransformer;
             if (query.getResultType() == Object[].class) {
@@ -606,8 +606,8 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
                     if (i > 0)
                         ps.append(", ");
                     appendSelection(ps, items.get(i));
-                    if (selection.getAlias() != null)
-                        ps.append(" ").append(selection.getAlias());
+                    if (selection.getTableAlias() != null)
+                        ps.append(" ").append(selection.getTableAlias());
                 }
             } else {
                 ps.append(getPreparedString((DbExpression<?>) selection));

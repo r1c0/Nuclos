@@ -20,25 +20,33 @@ import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 
 public class DbColumnExpression<T> extends DbExpression<T> {
 
+	private String columnAlias;
+	
 	private final String columnName;
 
 	DbColumnExpression(String alias, DbFrom fromTable, String columnName, Class<T> javaType) {
 		this(alias, fromTable, columnName, javaType, false);
 	}
 	
-	DbColumnExpression(String alias, DbFrom fromTable, String columnName, Class<T> javaType, boolean caseSensitive) {
-		super(fromTable.getQuery().getBuilder(), javaType, alias, caseSensitive
+	DbColumnExpression(String tableAlias, DbFrom fromTable, String columnName, Class<T> javaType, boolean caseSensitive) {
+		super(fromTable.getQuery().getBuilder(), javaType, tableAlias, caseSensitive
 			? PreparedStringBuilder.concat(fromTable.getAlias(), ".", "\"", columnName, "\"")
 			: PreparedStringBuilder.concat(fromTable.getAlias(), ".", columnName));
 		if (fromTable.getAlias() == null) {
-			throw new IllegalArgumentException("Alias must not be null on table " + fromTable.getTableName());
+			throw new IllegalArgumentException("Table alias in DbFrom must not be null on table " + fromTable.getTableName());
 		}
 		this.columnName = columnName;
 	}
 	
-	@Override
-	public final DbExpression<T> alias(String alias) {
-		return (DbExpression<T>) super.replaceAlias(alias);
+	public final DbExpression<T> columnAlias(String columnAlias) {
+		if (this.columnAlias != null) throw new IllegalArgumentException(
+				"Tried to change column alias from " + this.columnAlias + " to " + columnAlias);
+		this.columnAlias = columnAlias;
+		return this;
+	}
+	
+	public final String getColumnAlias() {
+		return columnAlias;
 	}
 	
 	public final String getColumnName() {
@@ -49,7 +57,8 @@ public class DbColumnExpression<T> extends DbExpression<T> {
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");
-		result.append("alias=").append(getAlias());
+		result.append("tableAlias=").append(getTableAlias());
+		result.append("columnAlias=").append(getColumnAlias());
 		result.append(", type=").append(getJavaType());
 		result.append(", column=").append(columnName);
 		result.append("]");

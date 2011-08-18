@@ -21,7 +21,7 @@ import java.util.List;
 
 public abstract class DbSelection<T> {
 
-	private String alias;
+	private String tableAlias;
 	private DbQueryBuilder builder;
 	private Class<? extends T> javaType;
 	
@@ -30,38 +30,38 @@ public abstract class DbSelection<T> {
 		this.javaType = javaType;
 	}
 
-	DbSelection(DbQueryBuilder builder, Class<? extends T> javaType, String alias) {
+	DbSelection(DbQueryBuilder builder, Class<? extends T> javaType, String tableAlias) {
 		this.builder = builder;
 		this.javaType = javaType;
-		this.alias = alias;
+		this.tableAlias = tableAlias;
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");
-		result.append("alias=").append(alias);
+		result.append("tableAlias=").append(tableAlias);
 		result.append(", type=").append(javaType);
 		result.append("]");
 		return result.toString();
 	}
 
-	public Class<? extends T> getJavaType() {
+	public final Class<? extends T> getJavaType() {
 		return javaType;
 	}
 		
-	public String getAlias() {
-		return alias;
+	public final String getTableAlias() {
+		return tableAlias;
 	}
 		
-	public DbSelection<T> alias(String alias) {
-		if (this.alias != null)
+	public final DbSelection<T> alias(String alias) {
+		if (this.tableAlias != null)
 			throw new IllegalStateException();
 		return replaceAlias(alias);
 	}
 	
 	final DbSelection<T> replaceAlias(String alias) {
-		this.alias = alias;
+		this.tableAlias = alias;
 		return this;
 	}
 
@@ -73,7 +73,7 @@ public abstract class DbSelection<T> {
 		throw new IllegalStateException();
 	}
 	
-	DbQueryBuilder getBuilder() {
+	final DbQueryBuilder getBuilder() {
 		return builder;
 	}
 }
