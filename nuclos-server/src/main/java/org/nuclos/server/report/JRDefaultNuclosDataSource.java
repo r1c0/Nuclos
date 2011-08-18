@@ -208,6 +208,9 @@ public class JRDefaultNuclosDataSource implements JRNuclosDataSource {
 					return data.getString(columnIndex);
 				}
 			}
+			else if (params.containsKey(fieldname)) {
+				return params.get(fieldname);
+			}
 			return null;
 		}
 		catch (SQLException ex) {
