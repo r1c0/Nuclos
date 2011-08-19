@@ -91,11 +91,11 @@ public abstract class CollectableTextComponent extends LabeledCollectableCompone
 				ComparisonOperator.NOT_EQUAL };
 		return super.getSupportedComparisonOperators();
 	}
-	
+
 	@Override
 	protected void updateView(CollectableField clctfValue) {
 		final CollectableFieldFormat clctfformat = CollectableFieldFormat.getInstance(this.getEntityField().getJavaClass());
-		final String sText = clctfformat.format(null, clctfValue.getValue());
+		final String sText = clctfformat.format(this.getEntityField().getFormatOutput(), clctfValue.getValue());
 
 		final JTextComponent textcomp = this.getJTextComponent();
 		textcomp.setText(sText);
@@ -166,7 +166,7 @@ public abstract class CollectableTextComponent extends LabeledCollectableCompone
 		/** @todo check this */
 //		this.getJTextComponent().setEditable(bInsertable);
 	}
-	
+
 	protected boolean selectAllOnGainFocus() {
 		return true;
 	}

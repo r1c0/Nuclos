@@ -53,6 +53,7 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO
 public class SearchResultDataSource implements JRDataSource {
 
 	private final Map<String, Class<?>> mpTypes;
+	private final Map<String, String> mpOutputFormats;
 	private final Map<String, Object> mpRows = new HashMap<String, Object>();
 	private final Iterator<GenericObjectWithDependantsVO> iterator;
 	private final String sMainEntityName;
@@ -91,6 +92,18 @@ public class SearchResultDataSource implements JRDataSource {
 					return i.getJavaClass();
 				}
 			});
+		this.mpOutputFormats = CollectionUtils.transformIntoMap(lstclctefweSelected, new Transformer<CollectableEntityField, String>() {
+			@Override
+			public String transform(CollectableEntityField i) {
+				return PDFHelper.getFieldName(i);
+			}
+		},
+		new Transformer<CollectableEntityField, String>() {
+			@Override
+			public String transform(CollectableEntityField i) {
+				return i.getFormatOutput();
+			}
+		});
 		this.iterator = goFacade.getPrintableGenericObjectsWithDependants(iModuleId, clctexpr, new HashSet<Integer>(lstAttributeIds),
 				stRequiredSubEntityNames, bIncludeParentObjects, bIncludeSubModules).iterator();
 	}
@@ -146,7 +159,7 @@ public class SearchResultDataSource implements JRDataSource {
 	 */
 	@Override
 	public Object getFieldValue(JRField jrfield) throws JRException {
-		return CollectableFieldFormat.getInstance(mpTypes.get(jrfield.getName())).format(null, mpRows.get(jrfield.getName()));
+		return CollectableFieldFormat.getInstance(mpTypes.get(jrfield.getName())).format(mpOutputFormats.get(jrfield.getName()), mpRows.get(jrfield.getName()));
 	}
 
 }	// class SearchResultDataSource

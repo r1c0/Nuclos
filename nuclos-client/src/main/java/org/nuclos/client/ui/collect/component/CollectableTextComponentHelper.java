@@ -61,7 +61,7 @@ public class CollectableTextComponentHelper {
 		// Text components cannot distinguish between null and "". By convention,
 		// a CollectableTextComponent that is empty writes a CollectableField that isNull():
 
-		final Object oValue = CollectableFieldFormat.getInstance(clctef.getJavaClass()).parse(null,
+		final Object oValue = CollectableFieldFormat.getInstance(clctef.getJavaClass()).parse(clctef.getFormatOutput(),
 				StringUtils.nullIfEmpty(sText));
 
 		return CollectableUtils.newCollectableFieldForValue(clctef, oValue);

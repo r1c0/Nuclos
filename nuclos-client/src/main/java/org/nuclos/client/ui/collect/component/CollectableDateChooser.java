@@ -18,6 +18,8 @@ package org.nuclos.client.ui.collect.component;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.util.Date;
 
@@ -61,7 +63,7 @@ public class CollectableDateChooser extends CollectableTextComponent {
 
 		assert this.isDetailsComponent();
 	}
-	
+
 // Override the tab key
 	private void overrideActionMap() {
 		JTextComponent component = getJTextComponent();
@@ -69,7 +71,7 @@ public class CollectableDateChooser extends CollectableTextComponent {
 		// The actions
 		Action nextFocusAction = new AbstractAction("insert-tab") {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -80,7 +82,7 @@ public class CollectableDateChooser extends CollectableTextComponent {
 		};
 		Action prevFocusAction = new AbstractAction("Move Focus Backwards") {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -114,6 +116,16 @@ public class CollectableDateChooser extends CollectableTextComponent {
 			throw new CommonFatalException("collectable.date.chooser.exception");//"Datum erwartet.");
 		}
 
+		this.getDateChooser().getJTextField().addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				try {
+					updateView(getFieldFromView());
+				} catch (CollectableFieldFormatException e1) {
+					//e1.printStackTrace();
+				}
+			}
+		});
 		// just for debugging - remove!
 		assert this.getJTextComponent() == this.getDateChooser().getJTextField();
 	}

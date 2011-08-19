@@ -21,15 +21,17 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.text.DecimalFormat;
-import java.text.Format;
-import java.text.ParseException;
+import java.awt.event.KeyListener;
 import java.util.List;
 
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
+
+import org.nuclos.common.collect.collectable.CollectableFieldFormat;
+import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 
 /**
  * <code>JTextField</code> which may not be smaller than its preferred size, so all characters
@@ -44,7 +46,7 @@ import javax.swing.text.Document;
 
 public class CommonJTextField extends javax.swing.JTextField {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -54,17 +56,49 @@ public class CommonJTextField extends javax.swing.JTextField {
 	private int iColumnWidth;
 
 	/**
-	 * output format of the text field
+	 * format class for output and input
 	 */
-	private Format fOutputFormat;
+	private CollectableFieldFormat format;
+
+	/**
+	 * pattern to use for parsing and formatting
+	 */
+	private String pattern;
+	
+	/**
+	 * format on focus lost
+	 */
+	private final FocusListener formattingFocusListener = new FocusAdapter() {
+		@Override
+		public void focusLost(FocusEvent e) {
+			if (!getText().equals(getUnformattedText())) {
+				setText(getText());
+			}
+		}
+	};
+	
+	/**
+	 * format on enter pressed
+	 */
+	private final KeyListener formattingKeyListener = new KeyAdapter() {
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				if (!getText().equals(getUnformattedText())) {
+					setText(getText());
+				}
+				super.keyPressed(e);
+			}
+		}
+	};
 
 	/**
 	 * the character used to calculate the width needed by one column.
 	 */
 	private char cColumnWidthChar = 'm';
-	
+
 	/**
-	 * <code>DocumentFilter</code> to add the autocomplete feature 
+	 * <code>DocumentFilter</code> to add the autocomplete feature
 	 */
 	private AutoCompleterFilter filter;
 
@@ -74,7 +108,7 @@ public class CommonJTextField extends javax.swing.JTextField {
 	public CommonJTextField(int iColumns) {
 		super(iColumns);
 	}
-	
+
 	public void addAutoCompleteItems(List<String> items) {
 		if(filter != null)
 			filter.setAutoCompleteItems(items);
@@ -87,7 +121,7 @@ public class CommonJTextField extends javax.swing.JTextField {
 			}
 		}
 	}
-	
+
 	/**
 	 * only AbstractDocument has DocumentFilter support
 	 */
@@ -127,8 +161,8 @@ public class CommonJTextField extends javax.swing.JTextField {
 		return iColumnWidth;
 	}
 
-	public void setOutputFormat(Format fOutputFormat) {
-		this.fOutputFormat = fOutputFormat;
+	public void setFormat(CollectableFieldFormat format) {
+		this.format = format;
 		addListener();
 	}
 
@@ -138,40 +172,35 @@ public class CommonJTextField extends javax.swing.JTextField {
 	 */
 	private void addListener() {
 		if (isOutputFormatted()) {
-			addFocusListener(new FocusAdapter() {
-				@Override
-				public void focusLost(FocusEvent e) {
-					if (!getText().equals(getUnformattedText())) {
-						setText(getText());
-					}
-				}
-			});
-
-			addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyPressed(KeyEvent e) {
-					if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-						if (!getText().equals(getUnformattedText())) {
-							setText(getText());
-						}
-						super.keyPressed(e);
-					}
-				}
-			});
+			addFocusListener(formattingFocusListener);
+			addKeyListener(formattingKeyListener);
+		}
+		else {
+			removeFocusListener(formattingFocusListener);
+			removeKeyListener(formattingKeyListener);
 		}
 	}
 
-	public Format getOutputFormat() {
-		return this.fOutputFormat;
+	public CollectableFieldFormat getFormat() {
+		return this.format;
 	}
 
 	public boolean isOutputFormatted() {
-		if (fOutputFormat != null) {
+		if (format != null) {
 			return true;
 		}
 		else {
 			return false;
 		}
+	}
+
+	public String getPattern() {
+		return pattern;
+	}
+
+	public void setPattern(String pattern) {
+		this.pattern = pattern;
+		addListener();
 	}
 
 	@Override
@@ -199,9 +228,10 @@ public class CommonJTextField extends javax.swing.JTextField {
 		if (obj != null) {
 			if (isOutputFormatted()) {
 				try {
-					return fOutputFormat.format(obj);
+					System.out.println(format.format(pattern, obj));
+					return format.format(pattern, obj);
 				}
-				catch (IllegalArgumentException e) {
+				catch (Exception e) {
 					// throw new CommonFatalException(e);
 				}
 			}
@@ -222,19 +252,16 @@ public class CommonJTextField extends javax.swing.JTextField {
 		if (obj != null) {
 			if (isOutputFormatted()) {
 				try {
-					if (fOutputFormat instanceof DecimalFormat) {
-						obj = ((DecimalFormat)fOutputFormat).parse(sText);
-					}
-					/* add additional formats here if necessary */
+					obj = format.parse(pattern, sText);
 				}
-				catch (ParseException e) {
+				catch (CollectableFieldFormatException e) {
 					//throw new CommonFatalException(e);
 				}
 			}
 		}
 		return obj;
 	}
-	
+
 	/**
 	 * NUCLEUSINT-1000
 	 * Inserts the clipboard contents into the text.
@@ -249,7 +276,7 @@ public class CommonJTextField extends javax.swing.JTextField {
 				String selection = ((String) clipboard.getContents(this).getTransferData(DataFlavor.stringFlavor)).replace('\r', '\n');
 				if (selection.endsWith("\n")) {
 					selection = selection.substring(0, selection.length()-1);
-				}	
+				}
 				//NUCLEUSINT-1139
 				replaceSelection(selection);
 			}

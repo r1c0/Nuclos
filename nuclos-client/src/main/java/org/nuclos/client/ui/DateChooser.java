@@ -29,6 +29,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -90,7 +91,7 @@ import org.nuclos.common2.exception.CommonValidationException;
 public class DateChooser extends JComponent implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -152,7 +153,7 @@ public class DateChooser extends JComponent implements Serializable {
 
 	private GregorianCalendar selectedCalendar;
 	private SimpleDateFormat dateformatMonthYear = new SimpleDateFormat("MMMM yyyy");
-	
+
 	private String sPattern;
 
 	private JButton btnToday;
@@ -214,17 +215,17 @@ public class DateChooser extends JComponent implements Serializable {
 		if (iColumns != 0) {
 			this.setColumns(iColumns);
 		}
-		
+
 		super.addFocusListener(new DateChooserFocusListener());
-		
+
 		assert isTodayRelative() == bTodayIsRelative;
 	}
-	
+
 	public void setOutputFormat(String sPattern) {
 		this.dateformatTextField = new SimpleDateFormat(sPattern);
 		this.sPattern = sPattern;
 	}
-	
+
 	public String getPattern() {
 		return this.sPattern;
 	}
@@ -257,7 +258,7 @@ public class DateChooser extends JComponent implements Serializable {
 	public void setHistoricalState(boolean bHistoricalState) {
 		this.bHistoricalState = bHistoricalState;
 	}
-	
+
 	@Override
 	public boolean hasFocus() {
 		return this.tfDate.hasFocus();
@@ -298,7 +299,7 @@ public class DateChooser extends JComponent implements Serializable {
 		this.setLayout(new BorderLayout(2, 0));
 		this.tfDate = new TextFieldWithButton(Icons.getInstance().getIconTextFieldButtonCalendar()) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -333,7 +334,7 @@ public class DateChooser extends JComponent implements Serializable {
 		this.btnDropDown = newArrowButton();
 		final AbstractAction actOpenCalendar = new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -365,6 +366,14 @@ public class DateChooser extends JComponent implements Serializable {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				fireDateChanged();
+			}
+		});
+
+		this.tfDate.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				// TODO Auto-generated method stub
+				super.focusLost(e);
 			}
 		});
 	}
@@ -408,7 +417,7 @@ public class DateChooser extends JComponent implements Serializable {
 		}
 		setDateText(dateformatTextField.format(dateSelected), false);
 	}
-	
+
 	private void setDateText(String text, boolean fireChange) {
 		if (!StringUtils.emptyIfNull(text).equals(tfDate.getText())) {
 			tfDate.setText(text);
@@ -550,7 +559,7 @@ public class DateChooser extends JComponent implements Serializable {
 	public void setBackgroundColorProviderForTextField(ColorProvider colorproviderBackground) {
 		this.tfDate.setBackgroundColorProviderForTextField(colorproviderBackground);
 	}
-	
+
 	class DateChooserFocusListener implements FocusListener {
 		@Override
 		public void focusGained(FocusEvent e) {
@@ -566,7 +575,7 @@ public class DateChooser extends JComponent implements Serializable {
 	 */
 	private class PopupCalendar extends JDialog {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		private JLabel[] alabDay = null;
@@ -687,7 +696,7 @@ public class DateChooser extends JComponent implements Serializable {
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.CTRL_MASK), sKeyCTRLRight);
 			pnlMain.getActionMap().put(sKeyCTRLRight, new AbstractAction() {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -700,7 +709,7 @@ public class DateChooser extends JComponent implements Serializable {
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_MASK), sKeyALTRight);
 			pnlMain.getActionMap().put(sKeyALTRight, new AbstractAction() {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -713,7 +722,7 @@ public class DateChooser extends JComponent implements Serializable {
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), sKeyRight);
 			pnlMain.getActionMap().put(sKeyRight, new AbstractAction() {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -726,7 +735,7 @@ public class DateChooser extends JComponent implements Serializable {
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.CTRL_MASK), sKeyCTRLLeft);
 			pnlMain.getActionMap().put(sKeyCTRLLeft, new AbstractAction() {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -739,7 +748,7 @@ public class DateChooser extends JComponent implements Serializable {
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_MASK), sKeyALTLeft);
 			pnlMain.getActionMap().put(sKeyALTLeft, new AbstractAction() {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -752,7 +761,7 @@ public class DateChooser extends JComponent implements Serializable {
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), sKeyLeft);
 			pnlMain.getActionMap().put(sKeyLeft, new AbstractAction() {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -765,7 +774,7 @@ public class DateChooser extends JComponent implements Serializable {
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), sKeyUp);
 			pnlMain.getActionMap().put(sKeyUp, new AbstractAction() {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -778,7 +787,7 @@ public class DateChooser extends JComponent implements Serializable {
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), sKeyDown);
 			pnlMain.getActionMap().put(sKeyDown, new AbstractAction() {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -791,7 +800,7 @@ public class DateChooser extends JComponent implements Serializable {
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), sKeyEnter);
 			pnlMain.getActionMap().put(sKeyEnter, new AbstractAction() {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -806,7 +815,7 @@ public class DateChooser extends JComponent implements Serializable {
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), sKeyEscape);
 			pnlMain.getActionMap().put(sKeyEscape, new AbstractAction() {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 

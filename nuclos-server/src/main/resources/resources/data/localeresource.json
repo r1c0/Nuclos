@@ -47229,6 +47229,26 @@
     "text": "Datentyp existiert schon"
   },
   {
+    "resourceID": "wizard.datatype.11",
+    "locale": "i-default",
+    "text": "Inputformat"
+  },
+  {
+    "resourceID": "wizard.datatype.11",
+    "locale": "de",
+    "text": "Eingabeformat"
+  },
+  {
+    "resourceID": "wizard.datatype.individual",
+    "locale": "i-default",
+    "text": "Customized"
+  },
+  {
+    "resourceID": "wizard.datatype.individual",
+    "locale": "de",
+    "text": "Individuell"
+  },
+  {
     "resourceID": "wizard.step.entityname.1",
     "locale": "i-default",
     "text": "Please enter the name of the new entity"
@@ -60787,6 +60807,125 @@
     "resourceID": "CollectableBooleanFormat.no",
     "locale": "de",
     "text": "nein"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.validation.scale",
+    "locale": "i-default",
+    "text": "The entered field length \"{0}\" in invalid."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.validation.scale",
+    "locale": "en",
+    "text": "The entered field length \"{0}\" in invalid."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.validation.scale",
+    "locale": "de",
+    "text": "Die angegebene Feldlänge \"{0}\" ist ungültig."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.validation.precision",
+    "locale": "i-default",
+    "text": "The entered precision number \"{0}\" in invalid."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.validation.precision",
+    "locale": "en",
+    "text": "The entered precision number \"{0}\" in invalid."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.validation.precision",
+    "locale": "de",
+    "text": "Der angegebene Wert der Nachkommastellen \"{0}\" ist ungültig."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.validation.outputformat",
+    "locale": "i-default",
+    "text": "The entered output format \"{0}\" is invalid for the type \"{1}\"."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.validation.outputformat",
+    "locale": "en",
+    "text": "The entered output format \"{0}\" is invalid for the type \"{1}\"."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.validation.outputformat",
+    "locale": "de",
+    "text": "Das angegebene Ausgabeformat \"{0}\" ist ungültig für den Typ \"{1}\"."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.javatype",
+    "locale": "i-default",
+    "text": "Javatype"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.javatype",
+    "locale": "en",
+    "text": "Javatype"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.javatype",
+    "locale": "de",
+    "text": "Javatyp"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.tooltip.javatype",
+    "locale": "i-default",
+    "text": "Choose javatype."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.tooltip.javatype",
+    "locale": "en",
+    "text": "Choose javatype."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.tooltip.javatype",
+    "locale": "de",
+    "text": "Javatyp wählen."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.reference",
+    "locale": "i-default",
+    "text": "Reference field"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.reference",
+    "locale": "en",
+    "text": "Reference field"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.reference",
+    "locale": "de",
+    "text": "Referenzfeld"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.tooltip.reference",
+    "locale": "i-default",
+    "text": "A reference field enables you to select values from another entity."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.tooltip.reference",
+    "locale": "en",
+    "text": "A reference field enables you to select values from another entity."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.tooltip.reference",
+    "locale": "de",
+    "text": "Ein Referenzfeld ermöglicht die Auswahl von Werten aus einer anderen Entität."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.validation.conversion",
+    "locale": "i-default",
+    "text": "The conversion to the new datatype configuration is not possible."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.validation.conversion",
+    "locale": "en",
+    "text": "The conversion to the new datatype configuration is not possible."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.validation.conversion",
+    "locale": "de",
+    "text": "Die angegebene Änderung des Datentyps ist nicht möglich."
   }
 ]
-

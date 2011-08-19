@@ -276,25 +276,79 @@ public abstract class CollectableFieldFormat {
 					throw new CollectableFieldFormatException(CommonLocaleDelegate.getMessage("CollectableFieldFormat.5","Invalid date: {0}", sText), e);
 				}
 			}
-			else if(sInputFormat != null) {
-				try {
-					SimpleDateFormat sdf = new SimpleDateFormat(sInputFormat);
-					result = sdf.parse(sText);
-					return result;
-				}
-				catch (ParseException ex) {
-					throw new CollectableFieldFormatException(CommonLocaleDelegate.getMessage("CollectableFieldFormat.6","Invalid date: {0}", sText), ex);
-				}
-			}
 			else {
 				try {
-					result = CommonLocaleDelegate.parseDate(sText);
+					ParseException pe = null;
+					if (sInputFormat != null) {
+						try {
+							result = tryParse(sInputFormat, sText);
+						}
+						catch (ParseException ex) {
+							pe = ex;
+						}
+					}
+					if (result == null) {
+						try {
+							result = tryParse(((SimpleDateFormat)CommonLocaleDelegate.getDateFormat()).toPattern(), sText);
+						}
+						catch (ParseException ex) {
+							throw (pe != null) ? pe : ex;
+						}
+					}
 				}
 				catch (ParseException ex) {
 						throw new CollectableFieldFormatException(CommonLocaleDelegate.getMessage("CollectableFieldFormat.6","Invalid date: {0}", sText), ex);
 				}
 			}
 			return result;
+		}
+
+		/**
+		 * try different parsing alternatives
+		 * @param format the outputformat
+		 * @param input the text to parse
+		 * @return
+		 * @throws ParseException
+		 */
+		private Date tryParse(String format, String input) throws ParseException {
+			ParseException pe = null;
+			try {
+				if (format.indexOf("yyyy") > 0) {
+					return tryParseWith2DigitYear(format, input);
+				}
+			}
+			catch (ParseException ex) {
+				pe = ex;
+			}
+			try {
+				return new SimpleDateFormat(format).parse(input);
+			}
+			catch (ParseException ex) {
+				pe = ex;
+			}
+			try {
+				return tryParseWithoutSymbols(format, input);
+			}
+			catch (ParseException ex) {
+				pe = ex;
+			}
+			throw pe;
+		}
+
+		private Date tryParseWith2DigitYear(String format, String input) throws ParseException {
+			String alternate = format.replaceAll("yyyy", "yy");
+			return new SimpleDateFormat(alternate).parse(input);
+		}
+
+		private Date tryParseWithoutSymbols(String format, String input) throws ParseException {
+			String alternate = format.replaceAll("[^a-zA-Z]", "");
+			try {
+				if (format.indexOf("yyyy") > 0) {
+					return tryParseWith2DigitYear(alternate, input);
+				}
+			}
+			catch (ParseException ex) { }
+			return new SimpleDateFormat(alternate).parse(input);
 		}
 	}	// class CollectableDateFormat
 
@@ -321,11 +375,26 @@ public abstract class CollectableFieldFormat {
 				return null;
 			}
 			try {
-				final NumberFormat format = (sInputFormat == null) ?
-						NumberFormat.getIntegerInstance() :
-						new DecimalFormat(sInputFormat);
+				// try input format first
+				ParseException pe = null;
+				Number result = null;
+				if (sInputFormat != null) {
+					try {
+						result = new DecimalFormat(sInputFormat).parse(sText);
+					}
+					catch (ParseException ex) {
+						pe = ex;
+					}
+				}
+				if (result == null) {
+					try {
+						result = NumberFormat.getNumberInstance().parse(sText);
+					}
+					catch (ParseException ex) {
+						throw (pe != null) ? pe : ex;
+					}
+				}
 
-				final Number result = format.parse(sText);
 				if (new BigInteger(result.toString()).compareTo(new BigInteger(new Integer(Integer.MAX_VALUE).toString())) > 0) {
 					throw new CollectableFieldFormatException(CommonLocaleDelegate.getMessage("CollectableFieldFormat.13","Number too big: {0}", sText));
 				}
@@ -366,14 +435,22 @@ public abstract class CollectableFieldFormat {
 			}
 
 			try {
-				final NumberFormat numberformat;
-				if (sInputFormat == null) {
-					numberformat = NumberFormat.getNumberInstance();
+				// try input format first
+				ParseException pe = null;
+				if (sInputFormat != null) {
+					try {
+						return new DecimalFormat(sInputFormat).parse(sText).doubleValue();
+					}
+					catch (ParseException ex) {
+						pe = ex;
+					}
 				}
-				else {
-					numberformat = new DecimalFormat(sInputFormat);
+				try {
+					return NumberFormat.getNumberInstance().parse(sText).doubleValue();
 				}
-				return numberformat.parse(sText).doubleValue();
+				catch (ParseException ex) {
+					throw (pe != null) ? pe : ex;
+				}
 			}
 			catch (ParseException ex) {
 				throw new CollectableFieldFormatException(CommonLocaleDelegate.getMessage("CollectableFieldFormat.8","Invalid decimal number: {0}", sText), ex);
@@ -474,5 +551,4 @@ public abstract class CollectableFieldFormat {
 			throw new UnsupportedOperationException(CommonLocaleDelegate.getMessage("CollectableFieldFormat.1","DefaultFormat.parse not implemented."));
 		}
 	}
-
 }	// class CollectableFieldFormat

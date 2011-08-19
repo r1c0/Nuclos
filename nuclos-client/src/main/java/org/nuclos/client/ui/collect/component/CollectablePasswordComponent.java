@@ -63,7 +63,7 @@ public abstract class CollectablePasswordComponent extends LabeledCollectableCom
 	@Override
 	protected void updateView(CollectableField clctfValue) {
 		final CollectableFieldFormat clctfformat = CollectableFieldFormat.getInstance(this.getEntityField().getJavaClass());
-		final String sText = clctfformat.format(null, clctfValue.getValue());
+		final String sText = clctfformat.format(getEntityField().getFormatOutput(), clctfValue.getValue());
 
 		final JTextComponent textcomp = this.getJTextComponent();
 		textcomp.setText(sText);

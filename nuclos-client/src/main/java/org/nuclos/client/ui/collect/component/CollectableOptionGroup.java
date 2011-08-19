@@ -85,7 +85,7 @@ public class CollectableOptionGroup extends AbstractCollectableComponent {
 
 	@Override
 	protected void updateView(CollectableField clctfValue) {
-		String sText = this.clctfformat.format(null, clctfValue.getValue());
+		String sText = this.clctfformat.format(this.getEntityField().getFormatOutput(), clctfValue.getValue());
 		if (StringUtils.isNullOrEmpty(sText)) {
 			sText = sDefaultOption;
 		}

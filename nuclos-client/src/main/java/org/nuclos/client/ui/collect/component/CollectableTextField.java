@@ -17,8 +17,6 @@
 package org.nuclos.client.ui.collect.component;
 
 import java.awt.Component;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +33,7 @@ import org.nuclos.client.ui.message.MessageExchange;
 import org.nuclos.client.ui.message.MessageExchange.MessageExchangeListener;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.ClientPreferences;
@@ -100,24 +99,12 @@ public class CollectableTextField extends CollectableTextComponent implements Me
    private static void setupTextField(CollectableEntityField clctef, CommonJTextField ntf, boolean bSearchable) {
       // set the preferred width for numbers and dates:
       final Class<?> cls = clctef.getJavaClass();
+      ntf.setFormat(CollectableFieldFormat.getInstance(cls));
+      ntf.setPattern(clctef.getFormatOutput());
       if (Number.class.isAssignableFrom(cls)) {
          ntf.setColumnWidthChar('0');
          // numbers are right aligned:
          ntf.setHorizontalAlignment(JTextField.TRAILING);
-
-         // set output format
-         String sFormatOutput = clctef.getFormatOutput();
-         if (sFormatOutput != null && !sFormatOutput.equals("")) {
-            final DecimalFormat df =   new DecimalFormat  (sFormatOutput);
-             ntf.setOutputFormat(df);
-         }
-         else if (Double.class.isAssignableFrom(cls) && clctef.getPrecision() != null){
-            final NumberFormat nf = NumberFormat.getNumberInstance();
-//				nf.setMaximumFractionDigits(clctef.getPrecision());
-            nf.setGroupingUsed(false);
-
-            ntf.setOutputFormat(nf);
-         }
       }
       else if (Date.class.isAssignableFrom(cls)) {
          /** @todo this could be enhanced by calculating the width of "01.01.2000" */
