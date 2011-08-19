@@ -662,10 +662,10 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 
 			try {
 				if (!StringUtils.isNullOrEmpty(tfOutputFormat.getText())) {
-					if (Integer.class.getName().equals(selectedType.getJavaType()) || Double.class.getName().equals(selectedType.getJavaType())) {
+					if (Integer.class.getName().equals(newType.getJavaType()) || Double.class.getName().equals(newType.getJavaType())) {
 						new DecimalFormat(tfOutputFormat.getText());
 					}
-					else if (Date.class.getName().equals(selectedType.getJavaType())) {
+					else if (Date.class.getName().equals(newType.getJavaType())) {
 						new SimpleDateFormat(tfOutputFormat.getText());
 					}
 					else {
@@ -677,7 +677,7 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 			catch (IllegalArgumentException ex) {
 				throw new InvalidStateException(CommonLocaleDelegate.getMessage("wizard.step.attributeproperties.validation.outputformat", "", tfOutputFormat.getText(), selectedType.getJavaType()));
 			}
-			if (!DataTyp.isConversionSupported(selectedType, newType)) {
+			if (model.isEditMode() && !DataTyp.isConversionSupported(selectedType, newType)) {
 				throw new InvalidStateException(CommonLocaleDelegate.getText("wizard.step.attributeproperties.validation.conversion"));
 			}
 			else {
