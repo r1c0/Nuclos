@@ -1204,14 +1204,42 @@ public class CollectionUtils {
          return result;
    }
 
+   /**
+    * @deprecated Strongly consider if you want the first element or rather only expect
+    * 		one element. In the latter case, use {@link #getUnique(Iterable)} or 
+    * 		{@link #getSingleIfExist(Iterable)}.
+    */
    public static <T> T getFirst(Iterable<T> iterable) {
       return getFirst(iterable, null);
    }
 
    public static <T> T getFirst(Iterable<? extends T> iterable, T def) {
-      Iterator<? extends T> iter = iterable.iterator();
+      final Iterator<? extends T> iter = iterable.iterator();
       return iter.hasNext() ? iter.next() : def;
    }
+   
+	public static <T> T getUnique(Iterable<T> iterable) {
+		final Iterator<? extends T> iter = iterable.iterator();
+		if (!iter.hasNext()) {
+			throw new IllegalArgumentException("No element in " + iterable);
+		}
+		final T result =  iter.next();
+		if (iter.hasNext()) {
+			throw new IllegalArgumentException("More than (expected) one element in " + iterable);
+		}
+		return result;
+	}
+
+	public static <T> T getSingleIfExist(Iterable<T> iterable) {
+		if (iterable == null) return null;
+		final Iterator<? extends T> iter = iterable.iterator();
+		if (!iter.hasNext()) return null;
+		final T result =  iter.next();
+		if (iter.hasNext()) {
+			throw new IllegalArgumentException("More than (expected) one element in " + iterable);
+		}
+		return result;
+	}
 
    public static <T> List<T> iterableToList(Iterable<T> iterable) {
       if (iterable instanceof Collection<?>) {

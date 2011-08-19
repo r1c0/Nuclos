@@ -127,13 +127,13 @@ public class DbFrom implements Serializable {
 	/**
 	 * An alternative to column() for usability.
 	 */
-	public <T> DbColumnExpression<T> field(String alias, EntityFieldMetaDataVO field) {
-		if (!containsAlias(alias)) throw new IllegalArgumentException();
+	public <T> DbColumnExpression<T> field(String tableAlias, EntityFieldMetaDataVO field) {
+		if (!containsAlias(tableAlias)) throw new IllegalArgumentException();
 		if (field.getPivotInfo() != null) {
 			throw new IllegalArgumentException(field.toString());
 		}
 		try {
-			return new DbColumnExpression<T>(alias, this, field.getDbColumn(), (Class<T>) Class.forName(field.getDataType()));
+			return new DbColumnExpression<T>(tableAlias, this, field.getDbColumn(), (Class<T>) Class.forName(field.getDataType()));
 		} catch (ClassNotFoundException e) {
 			throw new IllegalArgumentException(e.toString());
 		}
@@ -141,23 +141,25 @@ public class DbFrom implements Serializable {
 	
 	@Deprecated
 	/** @deprecated Only use case-sensitive columns if needed. */
-	public <T> DbColumnExpression<T> columnCaseSensitive(String alias, String columnName, Class<T> javaClass) {
-		if (!containsAlias(alias)) throw new IllegalArgumentException();
-		return new DbColumnExpression<T>(alias, this, columnName, javaClass, true);
+	public <T> DbColumnExpression<T> columnCaseSensitive(String tableAlias, String columnName, Class<T> javaClass) {
+		if (!containsAlias(tableAlias)) throw new IllegalArgumentException(
+				"No such table alias in FROM clause " + this + ": " + tableAlias);
+		return new DbColumnExpression<T>(tableAlias, this, columnName, javaClass, true);
 	}
 	
 	@Deprecated
 	/** @deprecated Only use case-sensitive columns if needed. */
 	public <T> DbColumnExpression<T> baseColumnCaseSensitive(String columnName, Class<T> javaClass) {
-		if (!containsAlias(tableAlias)) throw new IllegalArgumentException();
+		if (!containsAlias(tableAlias)) throw new IllegalArgumentException(
+				"No such table alias in FROM clause " + this + ": " + tableAlias);
 		return new DbColumnExpression<T>(tableAlias, this, columnName, javaClass, true);
 	}
 	
-	private boolean containsAlias(String a) {
-		if (a == null) throw new NullPointerException();
-		if (a.equals(tableAlias)) return true;
+	private boolean containsAlias(String tAlias) {
+		if (tAlias == null) throw new NullPointerException();
+		if (tAlias.equals(tableAlias)) return true;
 		for (DbJoin j: joins) {
-			if (a.equals(j.getAlias())) return true;
+			if (tAlias.equals(j.getAlias())) return true;
 		}
 		return false;
 	}

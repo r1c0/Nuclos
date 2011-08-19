@@ -16,7 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common.ejb3;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +27,7 @@ import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
@@ -99,48 +102,54 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		
 		final List<EntityObjectVO> eos = eop.getBySearchExpressionAndPrimaryKeys(
 				appendRecordGrants(getSearchExpression(fields), eMeta), lstIds);
-		/*
-		// TODO: join table...
+				
 		final Set<String> subforms = new HashSet<String>();
-		final Collection<EntityFieldMetaDataVO> pivots = new ArrayList<EntityFieldMetaDataVO>();
+		// final Collection<EntityFieldMetaDataVO> pivots = new ArrayList<EntityFieldMetaDataVO>();
 		for (EntityFieldMetaDataVO f: fields) {
 			final PivotInfo pinfo = f.getPivotInfo();
 			if (pinfo != null) {
-				pivots.add(f);
+				// do nothing: now handled by join
+				// pivots.add(f);
 			}
 			else {
 				final String subform = mdProv.getEntity(f.getEntityId()).getEntity();
 				subforms.add(subform);
 			}
 		}
+		
+		// fill in (dependent) subforms 
 		for (EntityObjectVO eo : eos) {
 			try {
 				fillDependants(eo, subforms);
-				fillPivots(eo, pivots);
+				// fillPivots(eo, pivots);
 			}
-			catch(CommonFinderException e) {
+			catch (CommonFinderException e) {
 				throw new NuclosFatalException(e);
 			}
 		}
-		 */
 		return eos;
 	}
 	
 	private CollectableSearchExpression getSearchExpression(Collection<EntityFieldMetaDataVO> fields) {
 		final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
-		// TODO: more than one pivot...
-		CollectableSearchCondition join = null;
+		final List<CollectableSearchCondition> join = new ArrayList<CollectableSearchCondition>();
 		for (EntityFieldMetaDataVO f: fields) {
 			if (f.getPivotInfo() != null) {
 				final EntityMetaDataVO subEntity = mdProv.getEntity(f.getEntityId());
-				join = new PivotJoinCondition(subEntity, f);
+				join.add(new PivotJoinCondition(subEntity, f));
 				break;
 			}
 		}
-		if (join == null) {
-			join = TrueCondition.TRUE;
+		if (join.isEmpty()) {
+			return new CollectableSearchExpression(TrueCondition.TRUE);
 		}
-		return new CollectableSearchExpression(join);
+		if (join.size() > 1) {
+			// TODO: Is this all right? What to do with more than one join?
+			return new CollectableSearchExpression(new CompositeCollectableSearchCondition(LogicalOperator.AND, join));
+		}
+		else {
+			return new CollectableSearchExpression(join.iterator().next());
+		}
 	}
 
 	/**
@@ -170,6 +179,9 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		// base.setDependants(dmdm);
 	}
 	
+	/**
+	 * @deprecated Not in use any more.
+	 */
 	private void fillPivots(EntityObjectVO base, Collection<EntityFieldMetaDataVO> pivots) 
 			throws CommonFinderException {
 
