@@ -423,7 +423,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange() == e.SELECTED) {
+				if(e.getStateChange() == ItemEvent.SELECTED) {
 					model.getAttribute().setIdDefaultValue((DefaultValue)e.getItem());
 				}
 			}
@@ -433,7 +433,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange() == e.SELECTED) {
+				if(e.getStateChange() == ItemEvent.SELECTED) {
 					model.getAttribute().setMandatoryValue(((DefaultValue)e.getItem()).getId());
 				}
 			}
@@ -947,7 +947,9 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			blnNullable = Boolean.TRUE;
 		}
 
-		if(this.getModel().getAttribute().getDatatyp().getJavaType().equals("java.util.Date") && this.parentWizardModel.isEditMode() && cbMandatory.isSelected()) {
+		Boolean requiresDefault = blnNullable && cbMandatory.isSelected();
+
+		if(this.getModel().getAttribute().getDatatyp().getJavaType().equals("java.util.Date") && this.parentWizardModel.isEditMode() && requiresDefault) {
 			Date date;
 			try {
 				date = dateMandatory.getDate();
@@ -968,7 +970,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 				this.getModel().getAttribute().setMandatoryValue(date);
 			}
 		}
-		else if(this.getModel().getAttribute().getDatatyp().getJavaType().equals("java.lang.Integer") && this.parentWizardModel.isEditMode() && cbMandatory.isSelected()) {
+		else if(this.getModel().getAttribute().getDatatyp().getJavaType().equals("java.lang.Integer") && this.parentWizardModel.isEditMode() && requiresDefault) {
 			int iScale = this.getModel().getAttribute().getDatatyp().getScale();
 			if(tfMandatory.getText().length() > iScale) {
 				String sMessage = getMessage("wizard.step.attributeproperties.27", "Der angegebene Defaultwert hat keinen gültigen Wert!");
@@ -977,7 +979,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 				throw new InvalidStateException("");
 			}
 		}
-		else if(this.getModel().getAttribute().getDatatyp().getJavaType().equals("java.lang.Double") && this.parentWizardModel.isEditMode() && cbMandatory.isSelected()) {
+		else if(this.getModel().getAttribute().getDatatyp().getJavaType().equals("java.lang.Double") && this.parentWizardModel.isEditMode() && requiresDefault) {
 			int iScale = this.getModel().getAttribute().getDatatyp().getScale();
 			int iPrecision = this.getModel().getAttribute().getDatatyp().getPrecision();
 			String sValue = tfMandatory.getText().replace(',', '.');
@@ -996,7 +998,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			}
 		}
 
-		if(this.parentWizardModel.isEditMode() && cbMandatory.isSelected()) {
+		if(this.parentWizardModel.isEditMode() && requiresDefault) {
 			Object obj = this.model.getAttribute().getMandatoryValue();
 			String sMessage = null;
 			if(obj != null && obj instanceof String) {

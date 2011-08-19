@@ -147,21 +147,21 @@ import org.xml.sax.SAXException;
 * <br>
 * Created by Novabit Informationssysteme GmbH <br>
 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
-* 
+*
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
 
 public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	static String[] labels = NuclosWizardConstants.labels;
 	static String[] labelsFields = {getMessage("wizard.step.entitytranslationstable.1", "Anzeigename"), getMessage("wizard.step.entitytranslationstable.2", "Beschreibung")};
 	static String[] sEditFields = {"STRCREATED", "DATCREATED", "STRCHANGED", "DATCHANGED" };
-	
+
 	static int I_CELL_HEIGHT = 35;
 	static int I_CELL_HEIGHT_EXT = 30;
 	static int I_CELL_WIDTH = 35;
@@ -175,8 +175,8 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	static int I_EDITCELL_HEIGTH = 50;
 	static int I_CREATEAT_WIDTH = 85;
 	static int I_CREATEBY_WIDTH = 75;
-	
-	
+
+
 	JLabel lbLayout;
 	JCheckBox cbLayout;
 	JLabel lbAttributeGroup;
@@ -185,26 +185,26 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	JCheckBox cbSubforms;
 	JLabel lbEditFields;
 	JCheckBox cbEditFields;
-	
+
 	JLabel lbInfo;
 	JLabel lbAttributeText;
-	
+
 	boolean changeLayout;
 	boolean hasEntityLayout;
-	
+
 	JPanel panelAttributes;
 	JScrollPane sPane;
 	JList listAttributeOrder;
 	JTree treeAttributeOrder;
 	JButton btUp;
 	JButton btDown;
-		
+
 	Map<String, String> mpFieldNameChanged;
-	
+
 	MyTreeModel treeModel;
-	
-	public NuclosEntitySQLLayoutStep() {	
-		initComponents();		
+
+	public NuclosEntitySQLLayoutStep() {
+		initComponents();
 		mpFieldNameChanged = new HashMap<String, String>();
 	}
 
@@ -217,81 +217,81 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		super(name, summary, icon);
 		initComponents();
 	}
-	
-	
+
+
 	@Override
 	protected void initComponents() {
-		
+
 		double size [][] = {{TableLayout.FILL, 20, TableLayout.FILL}, {TableLayout.PREFERRED, 20,20,20,20,20,5,TableLayout.PREFERRED,20 }};
-		
+
 		TableLayout layout = new TableLayout(size);
 		layout.setVGap(3);
 		layout.setHGap(5);
 		this.setLayout(layout);
-		
+
 		lbLayout = new JLabel(getMessage("wizard.step.entitysqllayout.2", "M\u00f6chten Sie eine Standard-Maske generieren lassen"));
-		cbLayout = new JCheckBox();		
+		cbLayout = new JCheckBox();
 		cbLayout.setToolTipText(getMessage("wizard.step.entitysqllayout.tooltip.2", "M\u00f6chten Sie eine Standard-Maske generieren lassen"));
-		
+
 		lbAttributeGroup = new JLabel(getMessage("wizard.step.entitysqllayout.12", "Attributegruppen werden zusammengefasst"));
 		cbAttributeGroup = new JCheckBox();
 		cbAttributeGroup.setToolTipText(getMessage("wizard.step.entitysqllayout.tooltip.3", "Attributegruppen werden zusammengefasst"));
-		
+
 		lbAttributeText = new JLabel(getMessage("wizard.step.entitysqllayout.13", "Geben Sie die Reihenfolge an, in der die Felder in der Maske erstellt werden sollen"));
-		
+
 		lbSubforms = new JLabel(getMessage("wizard.step.entitysqllayout.14", "Vorhandene Unterformular mit ins Layout aufnehmen"));
 		cbSubforms = new JCheckBox();
 		cbSubforms.setToolTipText(getMessage("wizard.step.entitysqllayout.tooltip.4", "Vorhandene Unterformulare mit ins Layout aufnehmen"));
-		
+
 		lbEditFields = new JLabel(getMessage("wizard.step.entitysqllayout.15","Editierungsfelder erstellen:"));
 		cbEditFields = new JCheckBox();
 		cbEditFields.setSelected(true);
 		cbEditFields.setToolTipText(getMessage("wizard.step.entitysqllayout.tooltip.7","Editierungsfelder mit in das Layout aufnehmen"));
-		
+
 		lbInfo = new JLabel(getMessage("wizard.step.entitysqllayout.9", "Achtung! Ihr bestehendes Layout wird überschrieben!"));
 		lbInfo.setVisible(false);
 		lbInfo.setForeground(Color.RED);
-		
+
 		listAttributeOrder = new JList();
-		
+
 		treeModel = new MyTreeModel();
-		
-		treeAttributeOrder = new JTree(treeModel);		
+
+		treeAttributeOrder = new JTree(treeModel);
 		treeAttributeOrder.setCellRenderer(new MyTreeCellRenderer());
 		treeAttributeOrder.setRootVisible(false);
 		treeAttributeOrder.setExpandsSelectedPaths(true);
-		
-		sPane = new JScrollPane(listAttributeOrder);		
-		
+
+		sPane = new JScrollPane(listAttributeOrder);
+
 		panelAttributes = new JPanel();
 		double sizePanel [][] = {{TableLayout.FILL, 3, 20}, {20,3,20,3,TableLayout.PREFERRED }};
 		panelAttributes.setLayout(new TableLayout(sizePanel));
-		
+
 		btUp = new JButton(Icons.getInstance().getIconSortAscending());
 		btUp.setToolTipText(getMessage("wizard.step.entitysqllayout.tooltip.5", "Attribut nach oben schieben"));
 		btDown = new JButton(Icons.getInstance().getIconSortDescending());
 		btDown.setToolTipText(getMessage("wizard.step.entitysqllayout.tooltip.6", "Attribut nach unten schieben"));
-		
+
 		panelAttributes.add(sPane, "0,0, 0,4");
 		panelAttributes.add(btUp, "2,0");
 		panelAttributes.add(btDown, "2,2");
-		
+
 		this.add(lbInfo, "0,0, 1,0");
-		this.add(lbLayout, "0,1");		
+		this.add(lbLayout, "0,1");
 		this.add(cbLayout, "1,1");
-		this.add(lbAttributeGroup, "0,2");		
+		this.add(lbAttributeGroup, "0,2");
 		this.add(cbAttributeGroup, "1,2");
-		this.add(lbSubforms, "0,3");		
+		this.add(lbSubforms, "0,3");
 		this.add(cbSubforms, "1,3");
-		this.add(lbEditFields, "0,4");		
+		this.add(lbEditFields, "0,4");
 		this.add(cbEditFields, "1,4");
 		this.add(lbAttributeText, "0,5, 1,5");
 		this.add(panelAttributes, "0,6, 1,7");
-		
+
 		enableLayoutOptions(false);
-		
+
 //		cbAttributeGroup.addItemListener(new ItemListener() {
-//			
+//
 //			@Override
 //			public void itemStateChanged(ItemEvent e) {
 //				JCheckBox cb = (JCheckBox)e.getItem();
@@ -303,22 +303,22 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 //				}
 //			}
 //		});
-		
+
 		cbLayout.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cb = (JCheckBox)e.getItem();
 				NuclosEntitySQLLayoutStep.this.model.setCreateLayout(cb.isSelected());
 				if(cb.isSelected() && hasEntityLayout) {
 					(new Bubble(cbLayout, getMessage("wizard.step.entitysqllayout.9", "Achtung! Ihr bestehendes Layout wird überschrieben!"), 5, Position.UPPER)).setVisible(true);
-				}		
+				}
 				enableLayoutOptions(cb.isSelected());
 			}
 		});
-		
+
 		btUp.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 //				if(cbAttributeGroup.isSelected()) {
@@ -327,12 +327,12 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 //				else {
 					buttonUpAttributeAction();
 //				}
-				
+
 			}
 		});
-		
+
 		btDown.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 //				if(cbAttributeGroup.isSelected()) {
@@ -343,9 +343,9 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				}
 //			}
 		});
-	
+
 	}
-	
+
 	private void buttonUpGroupAction() {
 		int count = treeAttributeOrder.getSelectionPath().getPathCount();
 		Object selected = treeAttributeOrder.getSelectionPath().getPathComponent(count-1);
@@ -366,9 +366,9 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				return;
 			treeModel.groupUpIfPossible(group);
 			treeModel.fireTreeModelChanged();
-		}		
+		}
 	}
-	
+
 	private void buttonDownGroupAction() {
 		int count = treeAttributeOrder.getSelectionPath().getPathCount();
 		Object selected = treeAttributeOrder.getSelectionPath().getPathComponent(count-1);
@@ -391,31 +391,31 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			treeModel.fireTreeModelChanged();
 		}
 	}
-	
+
 	private void buttonDownAttributeAction() {
 		int iSelected = listAttributeOrder.getSelectedIndex();
 		if(iSelected < 0 || iSelected >= listAttributeOrder.getModel().getSize()-1)
 			return;
-		
+
 		DefaultListModel model = (DefaultListModel)listAttributeOrder.getModel();
 		Object obj = model.remove(iSelected);
 		model.add(iSelected+1, obj);
 		listAttributeOrder.getSelectionModel().setSelectionInterval(iSelected+1, iSelected+1);
 	}
-	
+
 	private void buttonUpAttributeAction() {
 		int iSelected = listAttributeOrder.getSelectedIndex();
 		if(iSelected < 1 || iSelected > listAttributeOrder.getModel().getSize())
 			return;
-		
+
 		DefaultListModel model = (DefaultListModel)listAttributeOrder.getModel();
 		Object obj = model.remove(iSelected);
 		model.add(iSelected-1, obj);
-		
+
 		listAttributeOrder.getSelectionModel().setSelectionInterval(iSelected-1, iSelected-1);
 	}
-	
-	
+
+
 	private void enableLayoutOptions(boolean enable) {
 		lbAttributeGroup.setEnabled(enable && getModel().isStateModel());
 		lbSubforms.setEnabled(enable);
@@ -428,63 +428,63 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		btDown.setEnabled(enable);
 		btUp.setEnabled(enable);
 	}
-	
+
 	@Override
 	public void applyState() throws InvalidStateException {
 		super.applyState();
-		
+
 		if(!createOrModifyEntity()) {
 			return;
 		}
-		
+
 	}
-	
+
 	@Override
 	public void prepare() {
 		this.setComplete(true);
 		mpFieldNameChanged = new HashMap<String, String>();
-		
-		if(this.model.getAttributeModel().getAttributes().size() == 0) 
+
+		if(this.model.getAttributeModel().getAttributes().size() == 0)
 			cbLayout.setEnabled(false);
 		else
 			cbLayout.setEnabled(true);
-		
-		
+
+
 		hasEntityLayout = hasEntityLayout();
 		if(hasEntityLayout){
 			lbLayout.setText(getMessage("wizard.step.entitysqllayout.16", "Wollen Sie die bestehende Maske aktualisieren:"));
 		}
-		
+
 		DefaultListModel listmodel = new DefaultListModel();
-		
+
 		List<Attribute> lstAttr = new ArrayList<Attribute>(this.model.getAttributeModel().getAttributes());
-		
+
 		Collections.sort(lstAttr, new Comparator<Attribute>() {
 
 			@Override
-            public int compare(Attribute o1, Attribute o2) {	            				
+            public int compare(Attribute o1, Attribute o2) {
 				Long l1 = (Long)ObjectUtils.defaultIfNull(o1.getInternalId(), 0L);
 			    Long l2 = (Long)ObjectUtils.defaultIfNull(o2.getInternalId(), 0L);
 				return l1.compareTo(l2);
             }
-						
+
 		});
-		
+
 		for(Attribute attr : lstAttr) {
 			listmodel.addElement(attr);
 		}
-		
+
 		treeModel = new MyTreeModel(model.getAttributeModel().getAttributeMap());
-		
+
 		try {
-			treeAttributeOrder.setModel(treeModel);		
+			treeAttributeOrder.setModel(treeModel);
 			treeModel.expandWholeTree();
 		}catch(Exception e) {}
-				
-		listAttributeOrder.setModel(listmodel);		
-		
+
+		listAttributeOrder.setModel(listmodel);
+
 		SwingUtilities.invokeLater(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				try {
@@ -492,15 +492,15 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		        }
 		        catch(CommonValidationException ex) {
 		        	NuclosEntitySQLLayoutStep.this.setComplete(false);
-		        	Errors.getInstance().showExceptionDialog(NuclosEntitySQLLayoutStep.this, ex);			        
+		        	Errors.getInstance().showExceptionDialog(NuclosEntitySQLLayoutStep.this, ex);
 		        }
 			}
 		});
-		
+
 	}
-	
-	
-	
+
+
+
 	private void validateEntity() throws CommonValidationException {
 		// validate removed Attributes
 		for(TranslationVO voTranslation : this.model.getTranslation()) {
@@ -508,7 +508,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				final String sValue = voTranslation.getLabels().get(sKey);
 				StringBuffer sb = new StringBuffer();
 				if(hasStringRemovedAttributes(sValue, sb)) {
-					final String sMessage = sb.toString(); 
+					final String sMessage = sb.toString();
 					throw new CommonValidationException(sMessage);
 				}
 			}
@@ -528,7 +528,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				}
 			}
 		}
-		
+
 		// validate MultiEditEquation
 		if(model.getMultiEditEquation() != null && model.getMultiEditEquation().length() > 0) {
 			for(String sField : model.getMultiEditEquation().split(",")) {
@@ -539,7 +539,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 					}
 				}
 			}
-			
+
 			for(String sField : model.getMultiEditEquation().split(",")) {
 				for(Attribute attr : this.model.getAttributeModel().getAttributes()) {
 					if(!attr.hasInternalNameChanged())
@@ -551,7 +551,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				}
 			}
 		}
-		
+
 		// validate document path
 		StringBuffer sb = new StringBuffer();
 		if(hasStringRemovedAttributes(model.getDocumentPath(), sb)) {
@@ -563,7 +563,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			final String sMessage = sb.toString();
 			throw new CommonValidationException(sMessage);
 		}
-		
+
 		// validate report name
 		sb = new StringBuffer();
 		if(hasStringRemovedAttributes(model.getReportFilename(), sb)) {
@@ -575,19 +575,19 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			final String sMessage = sb.toString();
 			throw new CommonValidationException(sMessage);
 		}
-		
+
 	}
-	
+
 	private boolean hasStringChangedAttributes(String sNodeLabel, StringBuffer sb) {
 		if(sNodeLabel == null)
 			return false;
 		String sField = sNodeLabel;
 		Pattern referencedEntityPattern = Pattern.compile ("[$][{][\\w\\[\\]]+[}]");
 	    Matcher referencedEntityMatcher = referencedEntityPattern.matcher (sField);
-	    
+
 		while (referencedEntityMatcher.find()) {
 		  Object value = referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1);
-		  	  	
+
 		  String sName = value.toString();
 		  for(Attribute attr : this.model.getAttributeModel().getAttributes()) {
 			  if(!attr.hasInternalNameChanged())
@@ -598,22 +598,22 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				  return true;
 			  }
 		  }
-		  
+
 		}
 
 		return false;
 	}
-	
+
 	private boolean hasStringRemovedAttributes(String sNodeLabel, StringBuffer sb) {
 		if(sNodeLabel == null)
 			return false;
 		String sField = sNodeLabel;
 		Pattern referencedEntityPattern = Pattern.compile ("[$][{][\\w\\[\\]]+[}]");
 	    Matcher referencedEntityMatcher = referencedEntityPattern.matcher (sField);
-	    
+
 		while (referencedEntityMatcher.find()) {
 		  Object value = referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1);
-		  	  	
+
 		  String sName = value.toString();
 		  for(Attribute attr : this.model.getAttributeModel().getRemoveAttributes()) {
 			  if(attr.getInternalName().equals(sName)){
@@ -622,16 +622,16 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				  return true;
 			  }
 		  }
-		  
+
 		}
       return false;
 	}
-	
+
 
 	protected boolean createOrModifyEntity() {
-		
+
 		buildValueListIfNeeded();
-		
+
 		List<MasterDataVO> lstLayoutToChange = new ArrayList<MasterDataVO>();
 		changeLayout = false;
 		NuclosEntityWizardStaticModel wizardModel = this.getModel();
@@ -639,17 +639,17 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		if(wizardModel.isEditMode()) {
 			metaVOOld = MetaDataClientProvider.getInstance().getEntity(wizardModel.getEntityName());
 		}
-		
-		EntityAttributeTableModel attributeModel = wizardModel.getAttributeModel();		
-		
+
+		EntityAttributeTableModel attributeModel = wizardModel.getAttributeModel();
+
 		EntityMetaDataVO metaVO = new EntityMetaDataVO();
 
 		if(metaVOOld != null){
 			metaVO = MetaDataClientProvider.getInstance().getEntity(metaVOOld.getEntity());
 		}
-		
+
 		metaVO.setEntity(wizardModel.getEntityName());
-		
+
 		metaVO.setDbEntity(NuclosWizardUtils.replace(wizardModel.getTableOrViewName()));
 		metaVO.setSearchable(wizardModel.isSearchable());
 		metaVO.setCacheable(wizardModel.isCachable());
@@ -669,25 +669,25 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		metaVO.setStateModel(wizardModel.isStateModel());
 		metaVO.setImportExport(true);
 		metaVO.setDynamic(false);
-		metaVO.setAccelerator(wizardModel.getAccelerator());		 
+		metaVO.setAccelerator(wizardModel.getAccelerator());
 		metaVO.setFieldValueEntity(Boolean.FALSE);
 		if(wizardModel.getAccelerator() != null)
-			metaVO.setAcceleratorModifier(wizardModel.getModifier()); 
-		else 
+			metaVO.setAcceleratorModifier(wizardModel.getModifier());
+		else
 			metaVO.setAcceleratorModifier(null);
-				
+
 		if(metaVOOld != null) {
-			metaVO.setId(metaVOOld.getId());		
+			metaVO.setId(metaVOOld.getId());
 		}
 		else {
 			metaVO.setId(null);
 		}
-		
+
 		metaVO.setFieldsForEquality(wizardModel.getMultiEditEquation());
-		
+
 		List<EntityFieldMetaDataTO> lstEntityFields = new ArrayList<EntityFieldMetaDataTO>();
-		
-		for(Attribute attr : attributeModel.getAttributes()) {			
+
+		for(Attribute attr : attributeModel.getAttributes()) {
 			EntityFieldMetaDataVO mdFieldVO = buildMasterDataField(attr, metaVO, metaVOOld);
 			EntityFieldMetaDataTO to = new EntityFieldMetaDataTO();
 			to.setEntityFieldMeta(mdFieldVO);
@@ -695,27 +695,27 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			lstEntityFields.add(to);
 		}
 		if(wizardModel.isEditMode()) {
-			for(Attribute attr : attributeModel.getRemoveAttributes()) {				
+			for(Attribute attr : attributeModel.getRemoveAttributes()) {
 				EntityFieldMetaDataVO mdFieldVO = buildMasterDataField(attr, metaVO, metaVOOld);
 				mdFieldVO.flagRemove();
 				EntityFieldMetaDataTO to = new EntityFieldMetaDataTO();
 				to.setEntityFieldMeta(mdFieldVO);
 				to.setTranslation(attributeModel.getTranslation().get(attr));
-				
+
 				lstEntityFields.add(to);
 			}
 		}
-		
+
 		try {
 			lstLayoutToChange = searchParentLayouts();
 			EntityMetaDataTO to = new EntityMetaDataTO();
 			to.setEntityMetaVO(metaVO);
 			to.setTranslation(wizardModel.getTranslation());
-			to.setTreeView(wizardModel.getTreeView());			
+			to.setTreeView(wizardModel.getTreeView());
 			String sResult = MetaDataDelegate.getInstance().createOrModifyEntity(metaVOOld, to, null, lstEntityFields, true, null, null);
 			if(sResult != null) {
-				Errors.getInstance().showExceptionDialog(this, new CommonFatalException(sResult));		
-				throw new CommonFatalException(sResult);				
+				Errors.getInstance().showExceptionDialog(this, new CommonFatalException(sResult));
+				throw new CommonFatalException(sResult);
 			}
 			this.model.setResultText(sResult);
 		}
@@ -730,18 +730,18 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		finally {
 			NuclosWizardUtils.flushCaches();
 		}
-		
-		
+
+
 		Long iEntityId = MetaDataDelegate.getInstance().getEntityIdByName(metaVO.getEntity());
 
-		
+
 		try {
 			RoleRepository.getInstance().updateRoles();
 	   }
 	   catch(Exception e) {
 	   	throw new NuclosFatalException(e);
 	   }
-		
+
 		try {
 			 for(MasterDataVO vo : wizardModel.getUserRights()) {
 				 if(wizardModel.isStateModel()) {
@@ -753,20 +753,20 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	 				catch(Exception e) {
 	 					throw new NuclosFatalException(e);
 	 				}
-					 
+
 					 Integer permission = (Integer)vo.getField("modulepermission");
-					
+
 					 if(permission == null)
 						 vo.remove();
-					 else 
-						 vo.setField("modulepermission", permission);	 
-						 
+					 else
+						 vo.setField("modulepermission", permission);
+
 					 vo.setField("module", metaVO.getEntity());
 					 vo.setField("moduleId", iEntityId);
-					 
-					 DependantMasterDataMap mp = new DependantMasterDataMap(NuclosEntity.ROLEMODULE.getEntityName(), 
+
+					 DependantMasterDataMap mp = new DependantMasterDataMap(NuclosEntity.ROLEMODULE.getEntityName(),
 						 Collections.singletonList(DalSupportForMD.getEntityObjectVO(vo)));
-				 
+
 					 MasterDataDelegate.getInstance().update(NuclosEntity.ROLE.getEntityName(), voRole, mp);
 				 }
 				 else {
@@ -780,16 +780,16 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	 				 }
 					 Integer permission = (Integer)vo.getField("masterdatapermission");
 					 vo.setField("entity", metaVO.getEntity());
-					 
+
 					 vo.setField("masterdatapermission", permission);
 					 if(permission == null)
 						 vo.remove();
-					 else 
+					 else
 						 vo.setField("masterdatapermission", permission);
-					 
+
 					 DependantMasterDataMap mp = new DependantMasterDataMap(NuclosEntity.ROLEMASTERDATA.getEntityName(), Collections.singletonList(DalSupportForMD.getEntityObjectVO(vo)));
 					 MasterDataDelegate.getInstance().update(NuclosEntity.ROLE.getEntityName(), voRole, mp);
-					 
+
 				 }
 				 try {
 						RoleRepository.getInstance().updateRoles();
@@ -798,16 +798,16 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 						 throw new NuclosFatalException(e);
 				 }
 			 }
-			
+
 		}
 		catch(CommonBusinessException bex) {
 			// do nothing here
       }
-		
-		
+
+
 		if(wizardModel.isImportTable()) {
-			MetaDataDelegate.getInstance().transferTable(wizardModel.getJdbcUrl(), wizardModel.getExternalUser(), 
-				wizardModel.getExternalPassword(), null, wizardModel.getExternalTable(), 
+			MetaDataDelegate.getInstance().transferTable(wizardModel.getJdbcUrl(), wizardModel.getExternalUser(),
+				wizardModel.getExternalPassword(), null, wizardModel.getExternalTable(),
 				wizardModel.getEntityName());
 		}
 
@@ -816,16 +816,16 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			CollectableMasterDataEntity masterDataEntity = new CollectableMasterDataEntity(masterVO);
 			buildLayoutML(wizardModel, masterDataEntity, iEntityId.intValue());
 		}
-		
+
 		if(wizardModel.getAttributeModel().getRemoveAttributes().size() > 0 && !wizardModel.isCreateLayout()) {
 			for(Attribute attr : wizardModel.getAttributeModel().getRemoveAttributes()) {
-				
+
 				Set<Integer> lstLayouts = new HashSet<Integer>();
 				CollectableComparison compare = SearchConditionUtils.newComparison(NuclosEntity.LAYOUTUSAGE.getEntityName(), "entity", ComparisonOperator.EQUAL, wizardModel.getEntityName());
 				for(MasterDataVO layout : MasterDataDelegate.getInstance().getMasterData(NuclosEntity.LAYOUTUSAGE.getEntityName(), compare)) {
 					lstLayouts.add((Integer)layout.getField("layoutId"));
 				}
-			
+
 				for(Integer iLayoutId : lstLayouts) {
 					MasterDataVO voLayout = null;
 					try {
@@ -853,17 +853,17 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				}
 			}
 		}
-		
+
 		if(mpFieldNameChanged.size() > 0 && !wizardModel.isCreateLayout()) {
 			for(String sField : mpFieldNameChanged.keySet()) {
 				String newField = mpFieldNameChanged.get(sField);
-				
+
 				Set<Integer> lstLayouts = new HashSet<Integer>();
 				CollectableComparison compare = SearchConditionUtils.newComparison(NuclosEntity.LAYOUTUSAGE.getEntityName(), "entity", ComparisonOperator.EQUAL, wizardModel.getEntityName());
 				for(MasterDataVO layout : MasterDataDelegate.getInstance().getMasterData(NuclosEntity.LAYOUTUSAGE.getEntityName(), compare)) {
 					lstLayouts.add((Integer)layout.getField("layoutId"));
 				}
-			
+
 				for(Integer iLayoutId : lstLayouts) {
 					MasterDataVO voLayout = null;
 					try {
@@ -878,9 +878,9 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 					String sLayout = (String)voLayout.getField("layoutML");
 					if(sLayout == null)
 						continue;
-					
+
 					sLayout = modifyLayout(sLayout, sField, newField, false);
-					
+
 					if(sLayout != null) {
 						voLayout.setField("layoutML", sLayout);
 						try {
@@ -893,7 +893,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				}
 			}
 		}
-		
+
 		for(MasterDataVO voParentLayout : lstLayoutToChange) {
 			try {
 	            MasterDataDelegate.getInstance().update(NuclosEntity.LAYOUT.getEntityName(), voParentLayout, null);
@@ -902,21 +902,21 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
             	throw new NuclosFatalException(e);
             }
 		}
-		
+
 		MasterDataCache.getInstance().invalidate(NuclosEntity.LAYOUT.getEntityName());
 		MasterDataCache.getInstance().invalidate(NuclosEntity.LAYOUTUSAGE.getEntityName());
 		MasterDataDelegate.getInstance().invalidateCaches();
 		MasterDataDelegate.getInstance().invalidateLayoutCache();
 		MetaDataClientProvider.getInstance().revalidate();
-		
-		ServiceLocator.getInstance().getFacade(ConsoleFacadeRemote.class).invalidateAllCaches();				
-		
+
+		ServiceLocator.getInstance().getFacade(ConsoleFacadeRemote.class).invalidateAllCaches();
+
 		ApplicationChangedEvent event = new ApplicationChangedEvent(ApplicationObserver.NEWENTITY, metaVO.getEntity());
-		ApplicationObserver.getInstance().fireApplicationChangedEvent(event);	
-		
+		ApplicationObserver.getInstance().fireApplicationChangedEvent(event);
+
 		return true;
 	}
-	
+
 	private List<MasterDataVO> searchParentLayouts() {
 		List<MasterDataVO> layoutToChange = new ArrayList<MasterDataVO>();
 		for(Attribute attr : model.getAttributeModel().getRemoveAttributes()) {
@@ -930,13 +930,13 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 					for(Integer iLayoutId : lstLayouts) {
 						try {
 							MasterDataVO voLayout = MasterDataDelegate.getInstance().get(NuclosEntity.LAYOUT.getEntityName(), iLayoutId);
-						
+
 							String sLayout = (String)voLayout.getField("layoutML");
-							
+
 							WYSIWYGLayoutControllingPanel ctrlPanel = new WYSIWYGLayoutControllingPanel(new WYSIWYGMetaInformation());
-						
+
 							ctrlPanel.setLayoutML(sLayout);
-		
+
 							if(attr.getField() != null && NuclosWizardUtils.searchParentEntity(getModel().getEntityName()).size() < 1) {
 								List<WYSIWYGComponent> allCollectables = new ArrayList<WYSIWYGComponent>();
 								ctrlPanel.getEditorPanel().getWYSIWYGComponents(WYSIWYGComponent.class, ctrlPanel.getEditorPanel().getMainEditorPanel(), allCollectables);
@@ -959,7 +959,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 										collectable.getLayoutMLRulesIfCapable().addRule(rule);
 									}
 								}
-								
+
 								List<WYSIWYGSubForm> allSubForms = new ArrayList<WYSIWYGSubForm>();
 								ctrlPanel.getEditorPanel().getWYSIWYGComponents(WYSIWYGSubForm.class, ctrlPanel.getEditorPanel().getMainEditorPanel(), allSubForms);
 								for(WYSIWYGSubForm collectable : allSubForms) {
@@ -970,7 +970,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 											collectable.removeColumn(col.getName());
 										}
 									}
-									
+
 								}
 							}
 							else if(NuclosWizardUtils.searchParentEntity(getModel().getEntityName()).size() > 0) {
@@ -983,28 +983,28 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 									}
 								}
 							}
-										
+
 							sLayout = ctrlPanel.getLayoutML();
-						
+
 							voLayout.setField("layoutML", sLayout);
 							layoutToChange.add(voLayout);
 						}
 						catch(Exception e) {
 							   // don't modify layout
-						}					
-						
+						}
+
 					}
-					
+
 				}
-			}			
+			}
 		}
-		
+
 		return layoutToChange;
 	}
-	
+
 	private Set<String> searchParentEntity(String sEntity) {
 		Set<String> setParents = new HashSet<String>();
-		
+
 		for(MasterDataVO vo : MasterDataDelegate.getInstance().getMasterData(NuclosEntity.LAYOUT.getEntityName())) {
 			LayoutMLParser parser = new LayoutMLParser();
 			try {
@@ -1022,10 +1022,10 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
             catch(LayoutMLException e) {
 	            // do nothing here
             }
-				
+
 		}
-		
-		
+
+
 		return setParents;
 	}
 
@@ -1033,13 +1033,13 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		WYSIWYGLayoutEditorPanel panel = new WYSIWYGLayoutEditorPanel(new WYSIWYGMetaInformation());
 		TableLayoutUtil util = panel.getTableLayoutUtil();
 		util.createStandardLayout();
-		
+
 		try {
 
 			 List<EntityFieldMetaDataVO> metaFields = new ArrayList<EntityFieldMetaDataVO>(MetaDataDelegate.getInstance().getAllEntityFieldsByEntity(wizardModel.getEntityName()).values());
-			 			 
+
 			 SortedMap<Integer, EntityFieldMetaDataVO> mpFields = new TreeMap<Integer, EntityFieldMetaDataVO>();
-			 
+
 			 for(int i = 0; i < listAttributeOrder.getModel().getSize(); i++) {
 				 Attribute attr = (Attribute)listAttributeOrder.getModel().getElementAt(i);
 				 for(EntityFieldMetaDataVO voField : metaFields) {
@@ -1049,21 +1049,21 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 					 }
 				 }
 			 }
-			 
+
 			 List<EntityFieldMetaDataVO> setEditFields = new ArrayList<EntityFieldMetaDataVO>();
 			 for(EntityFieldMetaDataVO voField : metaFields) {
 				 if(isEditField(voField)) {
 					 setEditFields.add(voField);
 				 }
 			 }
-			 
+
 			 int maxWidth = 0;
 
 			 for(Integer iKey : mpFields.keySet()) {
 				 EntityFieldMetaDataVO field = mpFields.get(iKey);
 				 if(isSystemField(field))
 					 continue;
-				 
+
 				 String sdesc = CommonLocaleDelegate.getResource(field.getLocaleResourceIdForDescription(), "");
 				 Component c = ComponentProcessors.getInstance().createComponent(LayoutMLConstants.ELEMENT_COLLECTABLECOMPONENT, LayoutMLConstants.ELEMENT_LABEL, panel.getMetaInformation(), field.getField());
 				 Font font = new Font("Courier", Font.PLAIN, 12);
@@ -1076,18 +1076,18 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			 if(maxWidth < InterfaceGuidelines.DEFAULT_COLUMN_WIDTH ) {
 				 maxWidth = InterfaceGuidelines.DEFAULT_COLUMN_WIDTH;
 			 }
-			 
+
 			 int counter = 1;
-			 			 
-			 if(cbAttributeGroup.isSelected()) {			 
+
+			 if(cbAttributeGroup.isSelected()) {
 				 counter = buildAttributeGroupsForLayout(util, mpFields, maxWidth, counter);
 			 }
-			 else {			 
-				 counter = createComponentForLayout(panel, util, mpFields, maxWidth, counter);		
+			 else {
+				 counter = createComponentForLayout(panel, util, mpFields, maxWidth, counter);
 			 }
-			 
+
 			 if(cbSubforms.isSelected()) {
-				 
+
 				 Map<String, String> mpSubEntites = getSubformEntities(wizardModel);
 				 if(mpSubEntites.size() > 1) {
 					 counter = buildSubformsLayout(util, maxWidth, counter,	mpSubEntites);
@@ -1095,28 +1095,28 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				 else if(mpSubEntites.size() == 1) {
 					 counter = buildSubformLayout(util, counter, mpSubEntites);
 				 }
-				 
+
 				 if(mpSubEntites.size() > 0) {
 					 LayoutCell cell = createBetweenCell(counter);
 					 util.addRow(cell);
 					 counter++;
 				 }
-				 
+
 			 }
 			 // subforms end
-			 
+
 			 if(cbEditFields.isSelected())
 				 buildEditFieldsPanel(panel, util, setEditFields, maxWidth, counter);
-			 
+
 			 createDefaultBorder(util);
-		
+
 			LayoutMLGenerator gen = new LayoutMLGenerator();
-			String layoutml = gen.getLayoutML(panel);	
-			
+			String layoutml = gen.getLayoutML(panel);
+
 			final String sLayoutType;
 			final String sLayoutUsageType;
-			sLayoutType = NuclosEntity.LAYOUT.getEntityName();  
-			sLayoutUsageType = NuclosEntity.LAYOUTUSAGE.getEntityName();  
+			sLayoutType = NuclosEntity.LAYOUT.getEntityName();
+			sLayoutUsageType = NuclosEntity.LAYOUTUSAGE.getEntityName();
 
 			MasterDataMetaVO metaLayout = MasterDataDelegate.getInstance().getMetaData(sLayoutType);
 			CollectableMasterDataEntity masterDataLayout = new CollectableMasterDataEntity(metaLayout);
@@ -1125,73 +1125,73 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			mdLayout.setField("name", wizardModel.getEntityName());
 			mdLayout.setField("description", wizardModel.getEntityName());
 			mdLayout.setField("layoutML", layoutml);
-			
+
 			MasterDataMetaVO metaLayoutUsage = MasterDataDelegate.getInstance().getMetaData(sLayoutUsageType);
 			CollectableMasterDataEntity masterDataLayoutUsage = new CollectableMasterDataEntity(metaLayoutUsage);
 			CollectableMasterData masterDataLayoumlUsage = new CollectableMasterData(masterDataEntity, new MasterDataVO(masterDataLayoutUsage.getMasterDataMetaCVO(), false));
 			MasterDataVO mdLayoutUsage = masterDataLayoumlUsage.getMasterDataCVO();
 			DependantMasterDataMap dependMapLayoutUsage = new DependantMasterDataMap();
-			
+
 			mdLayoutUsage.setField("entity", wizardModel.getEntityName());
 
 			mdLayoutUsage.setField("searchScreen", Boolean.FALSE);
 			mdLayoutUsage.setField("layout", wizardModel.getEntityName());
 			dependMapLayoutUsage.addData(sLayoutUsageType, DalSupportForMD.getEntityObjectVO(mdLayoutUsage));
-			
+
 			metaLayoutUsage = MasterDataDelegate.getInstance().getMetaData(sLayoutUsageType);
 			masterDataLayoutUsage = new CollectableMasterDataEntity(metaLayoutUsage);
 			masterDataLayoumlUsage = new CollectableMasterData(masterDataEntity, new MasterDataVO(masterDataLayoutUsage.getMasterDataMetaCVO(), false));
 			mdLayoutUsage = masterDataLayoumlUsage.getMasterDataCVO();
-			
+
 			mdLayoutUsage.setField("entity", wizardModel.getEntityName());
 
 			mdLayoutUsage.setField("searchScreen", Boolean.TRUE);
 			mdLayoutUsage.setField("layout", wizardModel.getEntityName());
 			dependMapLayoutUsage.addData(sLayoutUsageType, DalSupportForMD.getEntityObjectVO(mdLayoutUsage));
-			
+
 			try {
 				String sCompareField = "entity";
 
 				CollectableComparison compare = SearchConditionUtils.newMDComparison(metaLayoutUsage, sCompareField, ComparisonOperator.EQUAL, wizardModel.getEntityName());
 				Collection<MasterDataVO> colLayout = MasterDataDelegate.getInstance().getMasterDataFacade().getMasterData(sLayoutUsageType, compare, true);
-				
+
 				if(colLayout.size() > 0) {
-					MasterDataVO voLayoutUsage = colLayout.iterator().next();					
+					MasterDataVO voLayoutUsage = colLayout.iterator().next();
 					MasterDataVO voLayout = MasterDataDelegate.getInstance().get(sLayoutType, voLayoutUsage.getField("layoutId"));
 					voLayout.setField("layoutML", layoutml);
 					MasterDataDelegate.getInstance().update(sLayoutType, voLayout, voLayout.getDependants());
 				}
-				else {						
+				else {
 					MasterDataDelegate.getInstance().create(sLayoutType, mdLayout, dependMapLayoutUsage);
 				}
-				
-				
+
+
 			}
 			catch(Exception ex) {
 				Errors.getInstance().showExceptionDialog(this, ex);
 			}
-		
+
 		}
 		catch(CommonValidationException e) {
 			Errors.getInstance().showExceptionDialog(this, e);
 		}catch(CommonBusinessException e1) {
 			Errors.getInstance().showExceptionDialog(this, e1);
 		}
-		
+
 	}
 
 	private void createDefaultBorder(TableLayoutUtil util) {
 		try {
 			LayoutCell cell = util.getLayoutCellByPosition(0, util.getNumRows());
 			util.delRow(cell);
-			
+
 			LayoutCell cellForEditing = new LayoutCell();
 			cellForEditing.setCellX(util.getNumColumns()-1);
 			cellForEditing.setCellWidth(InterfaceGuidelines.MARGIN_BETWEEN);
 			if (util.getNumColumns() > 0)
 				cellForEditing.setCellX(cellForEditing.getCellX() + 1);
 			util.addCol(cellForEditing);
-			
+
 			cellForEditing = new LayoutCell();
 			cellForEditing.setCellY(util.getNumRows()-1);
 			cellForEditing.setCellHeight(InterfaceGuidelines.MARGIN_BETWEEN);
@@ -1202,7 +1202,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		catch(Exception ex) {
 			// don't create default border when exception
 		}
-			
+
 	}
 
 	private LayoutCell createBetweenCell(int counter) {
@@ -1224,32 +1224,32 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				 continue;
 			 if(field.getForeignEntity() != null && field.getForeignEntityField() == null)
 				 continue;
-			 
-		  	 String controltype = getCollectableComponentType(field);			  	  
-			 	
+
+		  	 String controltype = getCollectableComponentType(field);
+
 			 //label
 		  	 Component c = ComponentProcessors.getInstance().createComponent(LayoutMLConstants.ELEMENT_COLLECTABLECOMPONENT, LayoutMLConstants.ELEMENT_LABEL, panel.getMetaInformation(), field.getField());
-		  	
-		  	 LayoutCell cell = new LayoutCell();			  	 
+
+		  	 LayoutCell cell = new LayoutCell();
 			 cell.setCellX(counter);
 			 cell.setCellY(counter);
 			 int iHeight = c.getPreferredSize().height;
 			 if(controltype.equals(LayoutMLConstants.CONTROLTYPE_TEXTAREA) || controltype.equals(LayoutMLConstants.CONTROLTYPE_IMAGE))
-				 iHeight *=3;					
-			 
+				 iHeight *=3;
+
 			 cell.setCellHeight(iHeight);
 			 cell.setCellWidth(maxWidth);
 			 c.setPreferredSize(new Dimension(maxWidth, iHeight));
 			 util.addRow(cell);
 			 if (counter == 1) {
 			 	util.addCol(cell);
-			 	cell = new LayoutCell();			  	 
+			 	cell = new LayoutCell();
 				cell.setCellX(2);
 				cell.setCellY(counter);
 		 		cell.setCellWidth(maxWidth*2);
 				util.addCol(cell);
 			 	if(field.getDataType().equals("java.lang.String")) {
-					cell = new LayoutCell();			  	 
+					cell = new LayoutCell();
 					cell.setCellX(3);
 					cell.setCellY(counter);
 			 		cell.setCellWidth(maxWidth*2);
@@ -1259,10 +1259,10 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			 		util.addCol(cell);
 			 	}
 			 }
-				
+
 			 if(controltype.equals(LayoutMLConstants.CONTROLTYPE_TEXTAREA) && !controltype.equals(LayoutMLConstants.CONTROLTYPE_IMAGE))
 				 util.insertComponentTo((WYSIWYGComponent)c, new TableLayoutConstraints(1, counter, 1, counter, 2,0));
-			 else if (!controltype.equals(LayoutMLConstants.CONTROLTYPE_IMAGE)) 
+			 else if (!controltype.equals(LayoutMLConstants.CONTROLTYPE_IMAGE))
 				 util.insertComponentTo((WYSIWYGComponent)c, new TableLayoutConstraints(1, counter));
 			 //component
 			 c = ComponentProcessors.getInstance().createComponent(LayoutMLConstants.ELEMENT_COLLECTABLECOMPONENT, controltype, panel.getMetaInformation(), field.getField());
@@ -1273,10 +1273,10 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			 }
 			 else if(controltype.equals(LayoutMLConstants.CONTROLTYPE_TEXTFIELD)){
 				 util.insertComponentTo((WYSIWYGComponent)c, new TableLayoutConstraints(2, counter, 3, counter,2,0));
-				 	 				 
+
 				 //util.modifyTableLayoutSizes(TableLayout.PREFERRED, true, cell, true, false);
 			 }
-			 else 
+			 else
 				 util.insertComponentTo((WYSIWYGComponent)c, new TableLayoutConstraints(2, counter));
 			 counter++;
 			 cell = new LayoutCell();
@@ -1286,7 +1286,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			 if(field.getDataType().equals("java.lang.String")) {
 				 cell.setCellWidth(c.getPreferredSize().width*2);
 			 }
-			 else 
+			 else
 				 cell.setCellWidth(c.getPreferredSize().width);
 			 util.addRow(cell);
 
@@ -1303,40 +1303,40 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		 WYSIWYGLayoutEditorPanel panelEdit = (WYSIWYGLayoutEditorPanel)ComponentProcessors.getInstance().createComponent(LayoutMLConstants.ELEMENT_PANEL, LayoutMLConstants.ELEMENT_LABEL, new WYSIWYGMetaInformation(), "Editierung");
 		 LayoutCell upperLeftCorner = panelEdit.getTableLayoutUtil().getLayoutCellByPosition(0, 0);
 		 panelEdit.getTableLayoutUtil().modifyTableLayoutSizes(TableLayoutUtil.ACTION_TOGGLE_STANDARDBORDER, true, upperLeftCorner, false, false);
-		 panelEdit.getTableLayoutUtil().modifyTableLayoutSizes(TableLayoutUtil.ACTION_TOGGLE_STANDARDBORDER, false, upperLeftCorner, false, false);		 
-		 
+		 panelEdit.getTableLayoutUtil().modifyTableLayoutSizes(TableLayoutUtil.ACTION_TOGGLE_STANDARDBORDER, false, upperLeftCorner, false, false);
+
 		 TranslationMap tm = new TranslationMap(LocaleDelegate.getInstance().getAllResourcesByStringId("nuclos.layout.editfield"));
 		 Border border = new TitledBorderWithTranslations(tm.remove(LocaleInfo.I_DEFAULT_TAG), tm);
-		 
+
 		 PropertyValueBorder prop = new PropertyValueBorder();
 		 prop.setValue(border);
-		 
-		 
+
+
 		 panelEdit.setProperty(WYSIWYGComponent.PROPERTY_BORDER, prop, Border.class);
-		 LayoutCell cellEdit = new LayoutCell();				 
+		 LayoutCell cellEdit = new LayoutCell();
 		 cellEdit.setCellX(columncounter);
 		 cellEdit.setCell2X(columncounter + (cbAttributeGroup.isSelected() ? 1 : 3));
 		 cellEdit.setCellY(counter);
 		 cellEdit.setCell2Y(counter);
-		 
+
 		 cellEdit.setCellHeight(I_EDITCELL_HEIGTH);
 		 cellEdit.setCellWidth(I_EDITCELL_WIDTH);
 		 panelEdit.setPreferredSize(new Dimension(I_CELL_WIDTH, I_CELL_HEIGHT));
 
 		 util.addRow(cellEdit);
-		 
-		 util.insertComponentTo(panelEdit, cellEdit);		
+
+		 util.insertComponentTo(panelEdit, cellEdit);
 
 		 TableLayoutUtil utilEdit = panelEdit.getTableLayoutUtil();
-		 
+
 		 columncounter = 1;
 		 rowcounter = 1;
-		 
+
 		 for(EntityFieldMetaDataVO field : lstEditFields) {
 			 String controltype = getCollectableComponentType(field);
 			 // Label
 			 Component c = ComponentProcessors.getInstance().createComponent(LayoutMLConstants.ELEMENT_COLLECTABLECOMPONENT, LayoutMLConstants.ELEMENT_LABEL, panel.getMetaInformation(), field.getField());
-			 LayoutCell cell = new LayoutCell();				 
+			 LayoutCell cell = new LayoutCell();
 			 cell.setCellX(columncounter);
 			 cell.setCell2X(columncounter);
 			 cell.setCellY(rowcounter);
@@ -1347,21 +1347,21 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			 utilEdit.addCol(cell);
 
 			 utilEdit.insertComponentTo((WYSIWYGComponent)c, cell);
-			 
-			 cell = new LayoutCell();				 
+
+			 cell = new LayoutCell();
 			 cell.setCellX(++columncounter);
 			 cell.setCell2X(columncounter);
 			 cell.setCellY(rowcounter);
-			 cell.setCell2Y(rowcounter);				 
+			 cell.setCell2Y(rowcounter);
 			 cell.setCellHeight(c.getPreferredSize().height);
 			 cell.setCellWidth(InterfaceGuidelines.MARGIN_BETWEEN);
 			 utilEdit.addCol(cell);
-			 
+
 			 // Component
 			 c = ComponentProcessors.getInstance().createComponent(LayoutMLConstants.ELEMENT_COLLECTABLECOMPONENT, controltype, panel.getMetaInformation(), field.getField());
 			 ((WYSIWYGComponent)c).getProperties().setProperty(WYSIWYGComponent.PROPERTY_ENABLED, new PropertyValueBoolean(Boolean.FALSE), null);
-			 
-			 cell = new LayoutCell();				 
+
+			 cell = new LayoutCell();
 			 cell.setCellX(++columncounter);
 			 cell.setCell2X(columncounter);
 			 cell.setCellY(rowcounter);
@@ -1369,21 +1369,21 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			 cell.setCellHeight(c.getPreferredSize().height);
 			 if(controltype.equals(LayoutMLConstants.CONTROLTYPE_DATECHOOSER))
 				 cell.setCellWidth(I_CREATEAT_WIDTH);
-			 else 
+			 else
 				 cell.setCellWidth(I_CREATEBY_WIDTH);
 			 c.setPreferredSize(new Dimension(maxWidth+I_CELL_HEIGHT_EXT, c.getPreferredSize().height));
 			 utilEdit.addCol(cell);
 			 utilEdit.insertComponentTo((WYSIWYGComponent)c, cell);
-			 
-			 cell = new LayoutCell();				 
+
+			 cell = new LayoutCell();
 			 cell.setCellX(++columncounter);
 			 cell.setCell2X(columncounter);
 			 cell.setCellY(rowcounter);
-			 cell.setCell2Y(rowcounter);				 
+			 cell.setCell2Y(rowcounter);
 			 cell.setCellHeight(c.getPreferredSize().height);
 			 cell.setCellWidth(InterfaceGuidelines.DISTANCE_TO_OTHER_OBJECTS);
 			 utilEdit.addCol(cell);
-			 
+
 			 columncounter++;
 		 }
 	}
@@ -1391,11 +1391,11 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	private int buildSubformLayout(TableLayoutUtil util, int counter, Map<String, String> mpSubEntites) throws CommonBusinessException {
 		 String sSubEntity = mpSubEntites.keySet().iterator().next();
 		 WYSIWYGLayoutEditorPanel panelSubEntites = (WYSIWYGLayoutEditorPanel)ComponentProcessors.getInstance().createComponent(LayoutMLConstants.ELEMENT_PANEL, LayoutMLConstants.ELEMENT_LABEL, new WYSIWYGMetaInformation(), "subEntites");
-		 LayoutCell cell = new LayoutCell();			  	 
+		 LayoutCell cell = new LayoutCell();
 		 cell.setCellX(1);
 		 if(cbAttributeGroup.isSelected())
 			 cell.setCell2X(2);
-		 else 
+		 else
 			 cell.setCell2X(4);
 		 cell.setCellY(counter);
 		 cell.setCell2Y(counter++);
@@ -1403,15 +1403,15 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		 cell.setCellWidth(I_MAX_WIDTH_GROUP);
 		 util.addRow(cell);
 		 util.insertComponentTo(panelSubEntites, cell);
-		 
+
 		 WYSIWYGSubForm subForm = (WYSIWYGSubForm)ComponentProcessors.getInstance().createComponent(LayoutMLConstants.ELEMENT_SUBFORM, LayoutMLConstants.ELEMENT_SUBFORM, new WYSIWYGMetaInformation(), sSubEntity);
 		 subForm.setProperty(WYSIWYGSubForm.PROPERTY_ENTITY, new PropertyValueString(sSubEntity), PropertyUtils.getValueClass(subForm, WYSIWYGSubForm.PROPERTY_ENTITY));
 		 subForm.setProperty(WYSIWYGSubForm.PROPERTY_FOREIGNKEY, new PropertyValueString(mpSubEntites.get(sSubEntity)), PropertyUtils.getValueClass(subForm, WYSIWYGSubForm.PROPERTY_FOREIGNKEY));
-		 
+
 		 subForm.setName(sSubEntity);
 		 subForm.setProperty(WYSIWYGSubForm.PROPERTY_NAME, new PropertyValueString(sSubEntity), PropertyUtils.getValueClass(subForm, WYSIWYGSubForm.PROPERTY_NAME));
 		 subForm.setSize(I_SUBFORM_PANEL_HEIGHT, I_SUBFORM_HEIGHT);
-		 
+
 		 TableLayoutConstraints constr = new TableLayoutConstraints(1, 1, 1, 1, 2, 2);
 		 panelSubEntites.getTableLayoutUtil().insertComponentTo(subForm, constr);
 		 return counter;
@@ -1424,23 +1424,23 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		tm.put("de", "");
 		tm.put("en", "");
 		Border border = new TitledBorderWithTranslations("", tm);
-		 
+
 		PropertyValueBorder prop = new PropertyValueBorder();
 		prop.setValue(border);
-		  
-		 
+
+
 		panelSubEntites.setProperty(WYSIWYGComponent.PROPERTY_BORDER, prop, Border.class);
-		 
-		LayoutCell cell = new LayoutCell();			  	 
+
+		LayoutCell cell = new LayoutCell();
 		 cell.setCellX(1);
 		 if(cbAttributeGroup.isSelected())
 			 cell.setCell2X(2);
-		 else 
+		 else
 			 cell.setCell2X(4);
 		 cell.setCellY(counter);
 		 cell.setCell2Y(counter);
-		 int iHeight = I_PANEL_SUBFORM_HEIGHT; 
-		 
+		 int iHeight = I_PANEL_SUBFORM_HEIGHT;
+
 		 cell.setCellHeight(iHeight+100);
 		 cell.setCellWidth(maxWidth);
 		 panelSubEntites.setPreferredSize(new Dimension(I_PANEL_WIDTH, iHeight+35));
@@ -1448,49 +1448,49 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		 if (counter == 1) {
 		 	util.addCol(cell);
 		 }
-			
+
 		 util.insertComponentTo(panelSubEntites, cell);
 		 TableLayoutUtil utilSubEntities = panelSubEntites.getTableLayoutUtil();
-		 
-		 cell = new LayoutCell();			  	 
+
+		 cell = new LayoutCell();
 		 cell.setCellX(1);
 		 cell.setCell2X(2);
 		 cell.setCellY(1);
 		 cell.setCell2Y(1);
-		 iHeight = I_PANEL_SUBFORM_HEIGHT; 
-		 
+		 iHeight = I_PANEL_SUBFORM_HEIGHT;
+
 		 cell.setCellHeight(iHeight+70);
 		 cell.setCellWidth(maxWidth);
 		 WYSIWYGTabbedPane tabPane = (WYSIWYGTabbedPane)ComponentProcessors.getInstance().createComponent(LayoutMLConstants.ELEMENT_TABBEDPANE, LayoutMLConstants.ELEMENT_TABBEDPANE, new WYSIWYGMetaInformation(), "tab");
 		 utilSubEntities.addRow(cell);
 		 utilSubEntities.addCol(cell);
 		 utilSubEntities.insertComponentTo(tabPane, cell);
-		 
+
 		 int tabcounter = 0;
-		 for(String sSubEntity : mpSubEntites.keySet()) {					 
+		 for(String sSubEntity : mpSubEntites.keySet()) {
 			 Component comp = null;
 			 try {
 				comp = tabPane.getComponent(tabcounter++);
 			 }
 			 catch(Exception ex) {
-				 // new tab necessary 
+				 // new tab necessary
 				 comp = ComponentProcessors.getInstance().createComponent(LayoutMLConstants.ELEMENT_PANEL, LayoutMLConstants.ELEMENT_LABEL, new WYSIWYGMetaInformation(), "subEntites");
 				 tabPane.addTab(sSubEntity, comp);
 			 }
-			 
+
 			 if(!(comp instanceof WYSIWYGLayoutEditorPanel))
 				 continue;
 			 WYSIWYGSubForm subForm = (WYSIWYGSubForm)ComponentProcessors.getInstance().createComponent(LayoutMLConstants.ELEMENT_SUBFORM, LayoutMLConstants.ELEMENT_SUBFORM, new WYSIWYGMetaInformation(), sSubEntity);
 			 subForm.setProperty(WYSIWYGSubForm.PROPERTY_ENTITY, new PropertyValueString(sSubEntity), PropertyUtils.getValueClass(subForm, WYSIWYGSubForm.PROPERTY_ENTITY));
 			 subForm.setProperty(WYSIWYGSubForm.PROPERTY_FOREIGNKEY, new PropertyValueString(mpSubEntites.get(sSubEntity)), PropertyUtils.getValueClass(subForm, WYSIWYGSubForm.PROPERTY_FOREIGNKEY));
-			 
+
 			 subForm.setName(sSubEntity);
 			 subForm.setProperty(WYSIWYGSubForm.PROPERTY_NAME, new PropertyValueString(sSubEntity), PropertyUtils.getValueClass(subForm, WYSIWYGSubForm.PROPERTY_NAME));
 			 subForm.setSize(tabPane.getWidth(), tabPane.getHeight()*2);
-			 
+
 			 WYSIWYGLayoutEditorPanel tabPanel = (WYSIWYGLayoutEditorPanel)comp;
-			 
-			 cell = new LayoutCell();			  	 
+
+			 cell = new LayoutCell();
 			 cell.setCellX(1);
 			 cell.setCell2X(1);
 			 cell.setCellY(1);
@@ -1498,18 +1498,18 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			 cell.setCellHeight(tabPanel.getHeight()*2);
 			 cell.setCellWidth(tabPanel.getWidth());
 			 cell.setCellDimensionsHeight(tabPanel.getHeight()*2);
-			 cell.setCellDimensionsWidth(tabPanel.getWidth());						 
+			 cell.setCellDimensionsWidth(tabPanel.getWidth());
 			 TableLayoutConstraints constr = new TableLayoutConstraints(1, 1, 1, 1, 2, 2);
-			 
-			 tabPanel.getTableLayoutUtil().insertComponentTo(subForm, constr);		
-			 
+
+			 tabPanel.getTableLayoutUtil().insertComponentTo(subForm, constr);
+
 			 tabPane.setTitleAt(tabcounter-1, sSubEntity);
-			 
+
 		 }
 		 counter++;
 		return counter;
 	}
-	
+
 	private Long getAttributeGroupId(String sGroup) {
 		if(sGroup == null || sGroup.length() == 0)
 			return -1L;
@@ -1525,28 +1525,28 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		 for(String sGroup : getAttributeGroups()) {
 			 sGroup = org.nuclos.common2.StringUtils.emptyIfNull(sGroup);
 			 Long groupId = getAttributeGroupId(sGroup);
-			 
+
 			 WYSIWYGLayoutEditorPanel panelGroup = (WYSIWYGLayoutEditorPanel)ComponentProcessors.getInstance().createComponent(LayoutMLConstants.ELEMENT_PANEL, LayoutMLConstants.ELEMENT_LABEL, new WYSIWYGMetaInformation(), sGroup);
 			 TranslationMap tm = new TranslationMap();
 			 tm.put("de", sGroup);
 			 tm.put("en", sGroup);
 			 Border border = new TitledBorderWithTranslations(sGroup, tm);
-			 
+
 			 PropertyValueBorder prop = new PropertyValueBorder();
 			 prop.setValue(border);
-			  
-			 
+
+
 			 panelGroup.setProperty(WYSIWYGComponent.PROPERTY_BORDER, prop, Border.class);
-			 
-			 createAttributeGroupPanel(panelGroup, groupId, mpFields);					  	
-		  	 LayoutCell cell = new LayoutCell();			  	 
+
+			 createAttributeGroupPanel(panelGroup, groupId, mpFields);
+		  	 LayoutCell cell = new LayoutCell();
 			 cell.setCellX(1);
 			 cell.setCell2X(2);
 			 cell.setCellY(counter);
 			 cell.setCell2Y(counter);
-			 int iHeight = I_CELL_HEIGHT; 
+			 int iHeight = I_CELL_HEIGHT;
 			 iHeight *= getAttributeGroupCount(mpFields, groupId);
-			 
+
 			 cell.setCellHeight(iHeight + I_CELL_HEIGHT_EXT);
 			 cell.setCellWidth(maxWidth);
 			 panelGroup.setPreferredSize(new Dimension(I_CELL_WIDTH, iHeight*2));
@@ -1554,10 +1554,10 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			 if (counter == 1) {
 			 	util.addCol(cell);
 			 }
-				
+
 			 util.insertComponentTo(panelGroup, cell);
 			 counter++;
-			 
+
 			 cell = new LayoutCell();
 			 cell.setCellX(counter);
 			 cell.setCellY(counter);
@@ -1569,7 +1569,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		 }
 		return counter;
 	}
-	
+
 	private Map<String, String> getSubformEntities(NuclosEntityWizardStaticModel wizardModel) {
 		Map<String, String> mpSubEntities = new HashMap<String, String>();
 		final String sEntity = wizardModel.getEntityName();
@@ -1577,7 +1577,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			if(voEntity.equals(sEntity))
 				continue;
 			for(EntityFieldMetaDataVO voField : MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(voEntity.getEntity()).values()) {
-				if(voField.getForeignEntity() != null && voField.getForeignEntity().equals(sEntity) && voField.getForeignEntityField() == null) { 
+				if(voField.getForeignEntity() != null && voField.getForeignEntity().equals(sEntity) && voField.getForeignEntityField() == null) {
 					mpSubEntities.put(voEntity.getEntity(), voField.getField());
 					break;
 				}
@@ -1585,47 +1585,47 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		}
 		return mpSubEntities;
 	}
-	
+
 	private void createAttributeGroupPanel(WYSIWYGLayoutEditorPanel panel, Long lAttributeGroup, SortedMap<Integer, EntityFieldMetaDataVO> mpFields) {
 		try {
 			TableLayoutUtil util = panel.getTableLayoutUtil();
 			int counter = 1;
 			int maxWidth = I_MAX_WIDTH_GROUP*2;
-			
+
 			SortedMap<Integer, EntityFieldMetaDataVO> mpFields1 = new TreeMap<Integer, EntityFieldMetaDataVO>();
-			
+
 			for(Integer iKey : mpFields.keySet()) {
-				EntityFieldMetaDataVO field = mpFields.get(iKey);				
+				EntityFieldMetaDataVO field = mpFields.get(iKey);
 				if(isSystemField(field))
 					continue;
 				if(field.getForeignEntity() != null && field.getForeignEntityField() == null)
 					continue;
 				if(lAttributeGroup.longValue() == -1L && field.getFieldGroupId() == null) {
-					
-				}					
+
+				}
 				else if(!lAttributeGroup.equals(field.getFieldGroupId()))
 					continue;
 				mpFields1.put(iKey, mpFields.get(iKey));
 			}
-			
+
 			createComponentForLayout(panel, util, mpFields1, maxWidth, counter);
-			
+
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	private Set<String> getAttributeGroups() {
 		Set<String> set = new HashSet<String>();
-		
+
 		for(Integer key : treeModel.getIndexMap().keySet()) {
 			set.add(treeModel.getIndexMap().get(key));
 		}
-				
+
 		return set;
 	}
-	
+
 	private int getAttributeGroupCount(SortedMap<Integer, EntityFieldMetaDataVO> mpFields, Long lGroup) {
 		int i = 0;
 		for(EntityFieldMetaDataVO field : mpFields.values()) {
@@ -1636,10 +1636,10 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 					i++;
 			}
 		}
-			
+
 		return i;
 	}
-	
+
 	private boolean isSystemField(EntityFieldMetaDataVO field) {
 		 if(field.getField().equals(NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getField()))
 			 return true;
@@ -1660,34 +1660,34 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			return true;
 		return false;
 	}
-	
+
 	private String getCollectableComponentType(EntityFieldMetaDataVO f) {
 
 		if(f.getForeignEntity() != null && !f.isSearchable())
 			return LayoutMLConstants.CONTROLTYPE_COMBOBOX;
-		
+
 		if(f.getForeignEntity() != null && f.isSearchable())
 			return LayoutMLConstants.CONTROLTYPE_LISTOFVALUES;
 
-		if(Date.class.getName().equals(f.getDataType()) || InternalTimestamp.class.getName().equals(f.getDataType()))		
+		if(Date.class.getName().equals(f.getDataType()) || InternalTimestamp.class.getName().equals(f.getDataType()))
 			return LayoutMLConstants.CONTROLTYPE_DATECHOOSER;
 
 		if(Boolean.class.getName().equals(f.getDataType()))
 			return LayoutMLConstants.CONTROLTYPE_CHECKBOX;
-		
+
 		if(NuclosImage.class.getName().equals(f.getDataType()))
 			return LayoutMLConstants.CONTROLTYPE_IMAGE;
-		
+
 		if(f.getScale() != null && f.getScale().intValue() > 255 || f.getDataType().equals("java.lang.String") && f.getScale() == null)
 			return LayoutMLConstants.CONTROLTYPE_TEXTAREA;
-		
+
 		return LayoutMLConstants.CONTROLTYPE_TEXTFIELD;
 
 	}
-	
+
 	private List<EntityFieldMetaDataVO> sortEditFields(List<EntityFieldMetaDataVO> lstFields) {
 		List<EntityFieldMetaDataVO> lstNewList = new ArrayList<EntityFieldMetaDataVO>();
-		
+
 		for(int i = 0; i < this.sEditFields.length; i++) {
 			for(EntityFieldMetaDataVO field : lstFields) {
 				String sDBField = field.getDbColumn();
@@ -1697,10 +1697,10 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				}
 			}
 		}
-		
+
 		return lstNewList;
 	}
-	
+
 	private boolean isEditField(EntityFieldMetaDataVO f) {
 		for(String s : this.sEditFields) {
 			if(s.equals(f.getDbColumn())) {
@@ -1709,13 +1709,13 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		}
 		return false;
 	}
-	
+
 	private EntityFieldMetaDataVO buildMasterDataField(Attribute attr, EntityMetaDataVO parentVO, EntityMetaDataVO metaVOOld) {
-		
+
 		EntityFieldMetaDataVO metaFieldVO = new EntityFieldMetaDataVO();
-		
+
 		if(attr.getId() != null) {
-			
+
 			EntityFieldMetaDataVO v = null;
 			if(attr.hasInternalNameChanged()) {
 				v = MetaDataClientProvider.getInstance().getEntityField(parentVO.getEntity(), attr.getOldInternalName());
@@ -1730,7 +1730,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			metaFieldVO.setCreatedBy(v.getCreatedBy());
 			metaFieldVO.setVersion(v.getVersion());
 			metaFieldVO.flagUpdate();
-			
+
 			if(!v.getField().equals(attr.getInternalName())) {
 				mpFieldNameChanged.put(v.getField(), attr.getInternalName());
 			}
@@ -1738,7 +1738,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		else {
 			metaFieldVO.flagNew();
 		}
-		
+
 		if(attr.getId() != null && attr.isMandatory()) {
 			EntityFieldMetaDataVO v = null;
 			if(attr.hasInternalNameChanged()) {
@@ -1747,9 +1747,9 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			else {
 				v = MetaDataClientProvider.getInstance().getEntityField(parentVO.getEntity(), attr.getInternalName());
 			}
-			
+
 		}
-		
+
 		if(attr.getId() != null && attr.isDistinct()) {
 			EntityFieldMetaDataVO v = null;
 			if(attr.hasInternalNameChanged()) {
@@ -1766,15 +1766,15 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				}
 			}
 		}
-		
+
 		metaFieldVO.setEntityId(parentVO.getId());
 		metaFieldVO.setForeignEntityField(null);
 		metaFieldVO.setForeignEntity(null);
 		metaFieldVO.setUnique(attr.isDistinct());
 		metaFieldVO.setIndexed(attr.isIndexed());
 		metaFieldVO.setLogBookTracking(attr.isLogBook());
-		
-		metaFieldVO.setFormatOutput(attr.getDatatyp().getOutputFormat());
+
+		metaFieldVO.setFormatOutput(attr.getOutputFormat());
 		metaFieldVO.setDataType(attr.getDatatyp().getJavaType());
 		metaFieldVO.setPrecision(attr.getDatatyp().getPrecision());
 		metaFieldVO.setScale(attr.getDatatyp().getScale());
@@ -1790,27 +1790,27 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			metaFieldVO.setReadonly(Boolean.FALSE);
 		}
 		metaFieldVO.setInsertable(false);
-		
-		
+
+
 		metaFieldVO.setSearchable(attr.isValueListProvider());
-		
-		
+
+
 		metaFieldVO.setShowMnemonic(false);
-		
+
 		metaFieldVO.setLocaleResourceIdForLabel(attr.getLabelResource());
 		metaFieldVO.setLocaleResourceIdForDescription(attr.getDescriptionResource());
-		
+
 		for(MasterDataVO voAttributeGroup : MasterDataDelegate.getInstance().getMasterData(NuclosEntity.ENTITYFIELDGROUP.getEntityName())) {
 			if(voAttributeGroup.getField("name").equals(attr.getAttributeGroup())) {
 				metaFieldVO.setFieldGroupId(new Long(voAttributeGroup.getIntId()));
 				break;
 			}
 		}
-		
-		 			
+
+
 		String sDbFieldName = attr.getDbName();
 		attr.setDbName(sDbFieldName.replaceAll("[^A-Za-z0-9_]", "_"));
-		
+
 		metaFieldVO.setDbColumn(attr.getDbName());
 		metaFieldVO.setField(attr.getInternalName());
 		if(attr.getIdDefaultValue() != null && attr.getIdDefaultValue().getId() != null){
@@ -1825,12 +1825,12 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			else {
 				metaFieldVO.setDefaultValue(attr.getDefaultValue());
 			}
-			
+
 		}
 		metaFieldVO.setSearchable(attr.isValueListProvider());
 		if(attr.getField() != null && attr.getField().length() < 1)
 			attr.setField(null);
- 
+
 		if(attr.getMetaVO() != null && attr.getField() != null) {
 			metaFieldVO.setModifiable(false);
 			metaFieldVO.setForeignEntity(attr.getMetaVO().getEntity());
@@ -1840,19 +1840,19 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			}
 		}
 		else if (attr.getMetaVO() != null && attr.getField() == null) {
-			metaFieldVO.setForeignEntity(attr.getMetaVO().getEntity()); 
+			metaFieldVO.setForeignEntity(attr.getMetaVO().getEntity());
 			if(!attr.getDbName().startsWith("INTID_")) {
 				metaFieldVO.setDbColumn("INTID_"+ attr.getDbName().replaceFirst("STRVALUE_", ""));
 			}
 			metaFieldVO.setForeignEntityField(null);
 			metaFieldVO.setModifiable(false);
-		}	
+		}
 		else {
 			metaFieldVO.setModifiable(true);
 		}
-		
+
 		setDefaultMandatoryValue(attr, metaFieldVO);
-		
+
 		return metaFieldVO;
 	}
 
@@ -1872,15 +1872,15 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			metaFieldVO.setDefaultMandatory(sDate);
 		}
 		else if(sJavaType.equals("java.lang.Boolean")){
-			metaFieldVO.setDefaultMandatory(attr.getMandatoryValue().toString());			
+			metaFieldVO.setDefaultMandatory(attr.getMandatoryValue().toString());
 		}
 		else {
 			metaFieldVO.setDefaultMandatory(attr.getMandatoryValue().toString());
 		}
-		
-		
+
+
 	}
-	
+
 	protected String replace(String str) {
 		str = StringUtils.replace(str, "\u00e4", "ae");
 		str = StringUtils.replace(str, "\u00f6", "oe");
@@ -1892,20 +1892,20 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		str = str.replaceAll("[^\\w]", "");
 		return str;
 	}
-	
+
 	private String modifyLayout(String layoutML, String oldField, String newField, boolean removeOldField) {
 		String sLayout = null;
-						
+
 		WYSIWYGLayoutControllingPanel ctrlPanel = new WYSIWYGLayoutControllingPanel(new WYSIWYGMetaInformation());
 		try {
 			ctrlPanel.setLayoutML(layoutML);
-			
+
 			for(WYSIWYGComponent comp : ctrlPanel.getAllComponents()) {
 				String sFieldName = (String)comp.getProperties().getProperty(PROPERTY_LABELS.NAME).getValue();
 				if(oldField.equals(sFieldName)) {
 					if(removeOldField)
 						ctrlPanel.getEditorPanel().getTableLayoutUtil().removeComponentFromLayout(comp);
-					else {						
+					else {
 						comp.setProperty(WYSIWYGCollectableComponent.PROPERTY_NAME, new PropertyValueString(newField), String.class);
 					}
 				}
@@ -1913,46 +1913,46 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			sLayout = ctrlPanel.getLayoutML();
 		}
 		catch(CommonBusinessException e) {
-			// don't modify layout 
+			// don't modify layout
 		}
 		catch(SAXException e) {
 		   // don't modify layout
 		}
-		
+
 		return sLayout;
 	}
-	
+
 
 	private boolean hasEntityLayout() {
-		return (MasterDataDelegate.getInstance().getLayoutId(model.getEntityName(), false) != null) ? true : false;  
+		return (MasterDataDelegate.getInstance().getLayoutId(model.getEntityName(), false) != null) ? true : false;
 	}
-	
+
 	private void buildValueListIfNeeded() {
-		
+
 		List<EntityFieldMetaDataTO> lstFields = new ArrayList<EntityFieldMetaDataTO>();
-		
-		for(Attribute attr : getModel().getAttributeModel().getAttributes()) {		
-			
+
+		for(Attribute attr : getModel().getAttributeModel().getAttributes()) {
+
 			if(!attr.isValueList())
 				continue;
-			
-			if(attr.isValueListNew()) {			
+
+			if(attr.isValueListNew()) {
 				createValueListEntity(lstFields, attr);
 			}
-            
+
             for(ValueList valueList: attr.getValueList()) {
             	Map<String, Object> mpFields = new HashMap<String, Object>();
             	mpFields.put("value", valueList.getLabel());
             	mpFields.put("mnemonic", valueList.getMnemonic());
             	mpFields.put("description", valueList.getDescription());
             	mpFields.put("validFrom", valueList.getValidFrom());
-            	mpFields.put("validUntil", valueList.getValidUntil());            	
-            	
+            	mpFields.put("validUntil", valueList.getValidUntil());
+
             	try {
             		if(valueList.getId() != null) {
             			MasterDataVO vo = new MasterDataVO(valueList.getId().intValue(), new Date(), "nuclos", new Date(), "nuclos", valueList.getVersionId(), mpFields);
             			MasterDataDelegate.getInstance().update(attr.getValueListName(), vo, null);
-            		}            		
+            		}
             		else {
             			MasterDataVO vo = new MasterDataVO(null, new Date(), "nuclos", new Date(), "nuclos", 1, mpFields);
             			MasterDataDelegate.getInstance().create(attr.getValueListName(), vo, null);
@@ -1962,18 +1962,18 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	                e.printStackTrace();
                 }
             }
-            
-            
+
+
 		}
 	}
 
 	private void createValueListEntity(List<EntityFieldMetaDataTO> lstFields, Attribute attr) {
-		
+
 	    EntityMetaDataTO toEntity = new EntityMetaDataTO();
 	    EntityMetaDataVO voEntity = new EntityMetaDataVO();
 	    voEntity.flagNew();
 	    voEntity.setEntity(attr.getValueListName());
-	    voEntity.setDbEntity("V_EO_"+ attr.getValueListName());			
+	    voEntity.setDbEntity("V_EO_"+ attr.getValueListName());
 	    voEntity.setSearchable(true);
 	    voEntity.setCacheable(false);
 	    voEntity.setEditable(true);
@@ -1987,45 +1987,45 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	    toEntity.setEntityMetaVO(voEntity);
 	    toEntity.setTranslation(new ArrayList<TranslationVO>());
 	    toEntity.setTreeView(new ArrayList<EntityTreeViewVO>());
-	    
+
 	    attr.setMetaVO(voEntity);
-	    attr.setField("${value}");			
-	    
+	    attr.setField("${value}");
+
 	    EntityFieldMetaDataVO voField = new EntityFieldMetaDataVO();
 	    buildValueListField("value","STRVALUE","java.lang.String", 255, attr, voField);
 	    EntityFieldMetaDataTO toField = new EntityFieldMetaDataTO();
 	    toField.setEntityFieldMeta(voField);
 	    toField.setTranslation(new ArrayList<TranslationVO>());
 	    lstFields.add(toField);
-	    
+
 	    voField = new EntityFieldMetaDataVO();
 	    buildValueListField("mnemonic","STRMNEMONIC","java.lang.String", 255, attr, voField);
 	    toField = new EntityFieldMetaDataTO();
 	    toField.setEntityFieldMeta(voField);
 	    toField.setTranslation(new ArrayList<TranslationVO>());
 	    lstFields.add(toField);
-	    
+
 	    voField = new EntityFieldMetaDataVO();
 	    buildValueListField("description","STRDESCRIPTION","java.lang.String", 255, attr, voField);
 	    toField = new EntityFieldMetaDataTO();
 	    toField.setEntityFieldMeta(voField);
 	    toField.setTranslation(new ArrayList<TranslationVO>());
 	    lstFields.add(toField);
-	    
+
 	    voField = new EntityFieldMetaDataVO();
 	    buildValueListField("validFrom","DATVALIDFROM","java.util.Date", null, attr, voField);
 	    toField = new EntityFieldMetaDataTO();
 	    toField.setEntityFieldMeta(voField);
 	    toField.setTranslation(new ArrayList<TranslationVO>());
 	    lstFields.add(toField);
-	    
+
 	    voField = new EntityFieldMetaDataVO();
 	    buildValueListField("validUntil","DATVALIDUNTIL","java.util.Date", null, attr, voField);
 	    toField = new EntityFieldMetaDataTO();
 	    toField.setEntityFieldMeta(voField);
 	    toField.setTranslation(new ArrayList<TranslationVO>());
 	    lstFields.add(toField);
-	    
+
 	    try {
 	        String sResult = MetaDataDelegate.getInstance().createOrModifyEntity(null, toEntity, null, lstFields, true, null, null);
 	    }
@@ -2045,18 +2045,18 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	    voField.setShowMnemonic(false);
 	    voField.setNullable(true);
 	    voField.setReadonly(false);
-	    
+
 	    voField.setDataType(javaType);
 	    voField.setPrecision(null);
 	    voField.setScale(iScale);
 	    voField.setField(fieldname);
 	    voField.setDbColumn(dbField);
     }
-	
+
 	class MyTreeCellRenderer extends DefaultTreeCellRenderer {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -2084,54 +2084,54 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		public Icon getOpenIcon() {
 			return Icons.getInstance().getIconModule();
 		}
-		
+
 	}
-	
+
 	class MyTreeModel implements TreeModel {
-		
+
 		String root = "root";
 		Map<String, List<Attribute>> mpGroup;
 		Map<Integer, String> mpIndex;
 		Collection<TreeModelListener> colListener;
-		
+
 		MyTreeModel() {
 			mpGroup = new HashMap<String, List<Attribute>>();
 			mpIndex = new HashMap<Integer, String>();
 		}
-		
+
 		MyTreeModel(Map<String, List<Attribute>> mp) {
 			mpGroup = mp;
 			initIndexMap();
 			expandWholeTree();
 		}
-		
+
 		public Map<Integer, String> getIndexMap() {
 			return mpIndex;
 		}
-		
+
 		public void groupUpIfPossible(String group) {
 			int index = getIndexOfGroup(group);
 			if(index == -1 || index == 0)
 				return;
-			
+
 			String obj1 = mpIndex.remove(index);
 			String obj2 = mpIndex.remove(index-1);
 			mpIndex.put(index , obj2);
 			mpIndex.put(index-1, obj1);
-			
+
 		}
-		
+
 		public void groupDownIfPossible(String group) {
 			int index = getIndexOfGroup(group);
 			if(index == -1 || index == mpIndex.size()-1)
 				return;
-			
+
 			String obj1 = mpIndex.remove(index);
 			String obj2 = mpIndex.remove(index+1);
 			mpIndex.put(index , obj2);
 			mpIndex.put(index+1, obj1);
 		}
-		
+
 		private Integer getIndexOfGroup(String group) {
 			for(Integer index : mpIndex.keySet()) {
 				if(mpIndex.get(index).equals(group))
@@ -2139,11 +2139,11 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			}
 			return -1;
 		}
-		
+
 		public List<Attribute> getAttributeGroupList(String group) {
 			return mpGroup.get(group);
 		}
-		
+
 		private void initIndexMap() {
 			mpIndex = new HashMap<Integer, String>();
 			int counter = 0;
@@ -2181,7 +2181,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 					}
 				}
 			}
-			
+
 			return null;
 		}
 
@@ -2194,7 +2194,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				if(mpGroup.get(parent) != null)
 					return mpGroup.get(parent).size();
 			}
-			
+
 			return 0;
 		}
 
@@ -2208,7 +2208,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				String group = (String)child;
 				if("root".equals(group))
 					return 0;
-				
+
 				for(Integer index : mpIndex.keySet()) {
 					if(mpIndex.get(index).equals(group))
 						return index;
@@ -2226,7 +2226,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		public boolean isLeaf(Object node) {
 			if(node instanceof Attribute)
 				return true;
-			else 
+			else
 				return false;
 		}
 
@@ -2235,31 +2235,31 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			if(colListener == null)
 				return;
 			colListener.remove(l);
-			
+
 		}
 
 		@Override
 		public void valueForPathChanged(TreePath path, Object newValue) {
-			System.out.println(newValue);			
+			System.out.println(newValue);
 		}
-		
+
 		public void setModelData(Map<String, List<Attribute>> mp) {
 			this.mpGroup = mp;
 			initIndexMap();
 			fireTreeModelChanged();
 		}
-		
+
 		public void fireTreeModelChanged() {
 			TreePath pathSelected = treeAttributeOrder.getSelectionPath();
 			TreePath path = pathSelected.getParentPath();
-			 
-			for(TreeModelListener l : colListener) {				
+
+			for(TreeModelListener l : colListener) {
 				l.treeStructureChanged(new TreeModelEvent(btUp, path));
-			}			
+			}
 			treeAttributeOrder.setSelectionPath(pathSelected);
 			expandWholeTree();
 		}
-		
+
 		private void expandWholeTree() {
 			int row = 0;
 		    while (row < treeAttributeOrder.getRowCount()) {
@@ -2267,7 +2267,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		    	row++;
 		      }
 		}
-		
+
 	}
 
 

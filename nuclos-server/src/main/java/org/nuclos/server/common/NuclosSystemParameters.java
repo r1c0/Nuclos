@@ -29,7 +29,6 @@ import org.nuclos.common2.StringUtils;
 public class NuclosSystemParameters {
 
 	// wurden sowieso statisch (=einmalig) im NuclosCodeGenerator verwendet
-	public static final String GENERATOR_CLASS_PATH = "nuclos.codegenerator.class.path";
 	public static final String GENERATOR_OUTPUT_PATH = "nuclos.codegenerator.output.path";
 	public static final String WSDL_GENERATOR_LIB_PATH = "nuclos.wsdl.generator.lib.path";
 	public static final String WSDL_GENERATOR_OUTPUT_PATH = "nuclos.wsdl.generator.output.path";

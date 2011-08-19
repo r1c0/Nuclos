@@ -26,7 +26,7 @@ import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 
 public class Attribute {
-	
+
 	Long id;
 	Long internalId;
 	String label;
@@ -47,6 +47,7 @@ public class Attribute {
 	String attributeGroup;
 	String calcFunction;
 	String sValueListName;
+	String outputFormat;
 	String sInputValidation;
 	List<ValueList> lstValueList;
 	boolean blnValueListNew;
@@ -55,17 +56,17 @@ public class Attribute {
 
 	String labelRes;
 	String descriptionRes;
-		
+
 	boolean blnResume;
-	
+
 	boolean blnRemove;
-	
+
 	public static int quantity = 10;
-	
+
 	public Attribute() {
-		
+
 	}
-	
+
 	public boolean hasInternalNameChanged() {
 		if(oldInternalName != null && oldInternalName.length() > 0) {
 			return !oldInternalName.equals(internalName);
@@ -81,11 +82,11 @@ public class Attribute {
 		this.id = id;
 		this.internalId = id;
 	}
-	
+
 	public Long getInternalId() {
 		return this.internalId;
 	}
-	
+
 	public void setInternalId(Long id) {
 		this.internalId = id;
 	}
@@ -129,7 +130,7 @@ public class Attribute {
 	public void setLogBook(boolean logBook) {
 		this.logBook = logBook;
 	}
-	
+
 	public boolean isModifiable() {
 		return modifiable;
 	}
@@ -137,7 +138,7 @@ public class Attribute {
 	public void setModifiable(boolean bModifiable) {
 		this.modifiable = bModifiable;
 	}
-	
+
 	public boolean isRemove() {
 		return blnRemove;
 	}
@@ -153,7 +154,7 @@ public class Attribute {
 	public void setDistinct(boolean distinct) {
 		this.distinct = distinct;
 	}
-	
+
 	public String getInternalName() {
 		return internalName;
 	}
@@ -161,19 +162,19 @@ public class Attribute {
 	public void setInternalName(String internalName) {
 		this.internalName = internalName;
 	}
-	
+
 	public void setOldInternalName(String name) {
 		this.oldInternalName = name;
 	}
-	
+
 	public String getOldInternalName() {
 		return this.oldInternalName;
 	}
-	
+
 	public void setDbName(String sName) {
 		this.dbName = sName;
 	}
-	
+
 	public static String getDBPrefix(Attribute attr) {
 		if(attr.getDatatyp().getJavaType().equals("java.lang.String")) {
 			return NuclosWizardUtils.COLUMN_STRING_PREFFIX;
@@ -192,12 +193,12 @@ public class Attribute {
 		}
 		else if(attr.getDatatyp().getJavaType().equals("org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile")) {
 			return NuclosWizardUtils.COLUMN_STRING_PREFFIX;
-		}			
+		}
 		else {
 			return NuclosWizardUtils.COLUMN_PREFFIX;
 		}
 	}
-	
+
 	public String getDbName() {
 		if(dbName != null)
 			return dbName;
@@ -219,13 +220,13 @@ public class Attribute {
 			}
 			else if(this.getDatatyp().getJavaType().equals("org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile")) {
 				return NuclosWizardUtils.COLUMN_STRING_PREFFIX + internalName.replaceAll(" ", "");
-			}			
+			}
 			else {
 				return NuclosWizardUtils.COLUMN_PREFFIX + internalName.replaceAll(" ", "");
 			}
-		}		
+		}
 	}
-	
+
 	public EntityMetaDataVO getMetaVO() {
 		return metaVO;
 	}
@@ -251,18 +252,18 @@ public class Attribute {
 	}
 
 	@Override
-	public String toString() {		
+	public String toString() {
 		return getLabel();
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	@Override
 	public Object clone() {
 		Attribute attr = new Attribute();
-		
+
 		attr.setDatatyp(this.getDatatyp());
 		attr.setDbName(this.getDbName());
 		attr.setDefaultValue(this.getDefaultValue());
@@ -284,14 +285,14 @@ public class Attribute {
 		attr.setValueListNew(this.isValueListNew());
 		attr.setValueListName(this.getValueListName());
 		attr.setLabelResource(this.getLabelResource());
-		attr.setDescriptionResource(this.getDescriptionResource());		
+		attr.setDescriptionResource(this.getDescriptionResource());
 		attr.setAttributeGroup(this.getAttributeGroup());
 		attr.setCalcFunction(this.getCalcFunction());
-		attr.setInputValidation(this.sInputValidation);		
+		attr.setInputValidation(this.sInputValidation);
 		attr.setIndexed(this.isIndexed());
 		attr.setMandatoryValue(this.getMandatoryValue());
-		
-		return attr;		
+
+		return attr;
 	}
 
 	public boolean isForResume() {
@@ -301,7 +302,7 @@ public class Attribute {
 	public void setResume(boolean resume) {
 		this.blnResume = resume;
 	}
-	
+
 	public boolean isValueListProvider() {
 		return blnValueListProvider;
 	}
@@ -325,11 +326,11 @@ public class Attribute {
 	public void setCalcFunction(String calcFunction) {
 		this.calcFunction = calcFunction;
 	}
-	
+
 	public void setValueList(List<ValueList> lstValueList) {
 		this.lstValueList = lstValueList;
 	}
-	
+
 	public List<ValueList> getValueList() {
 		if(lstValueList == null)
 			lstValueList = new ArrayList<ValueList>();
@@ -355,19 +356,19 @@ public class Attribute {
 	public void setValueListName(String sName) {
 		this.sValueListName = sName;
 	}
-	
+
 	public String getValueListName() {
 		return this.sValueListName;
 	}
-	
+
 	public boolean isValueList() {
 		return this.sValueListName != null;
 	}
-	
+
 	public void setValueListNew(boolean blnNew) {
 		this.blnValueListNew = blnNew;
 	}
-	
+
 	public boolean isValueListNew()  {
 		return this.blnValueListNew;
 	}
@@ -379,50 +380,58 @@ public class Attribute {
 	public void setInputValidation(String inputValidation) {
     	this.sInputValidation = inputValidation;
     }
-	
+
 	public void setIdDefaultValue(DefaultValue dv){
 		this.idDefaultValue = dv;
 	}
-	
+
 	public DefaultValue getIdDefaultValue() {
 		return this.idDefaultValue;
 	}
-	
+
 	public void setIndexed(boolean indexed) {
 		this.indexed = indexed;
 	}
-	
+
 	public boolean isIndexed() {
 		return indexed;
 	}
-	
+
 	public boolean isImage() {
 		return this.getDatatyp().getJavaType().equals("org.nuclos.common.NuclosImage");
 	}
-	
+
 	public boolean isPasswordField() {
 		return this.getDatatyp().getJavaType().equals("org.nuclos.common.NuclosPassword");
 	}
-	
+
 	public boolean isFileType() {
 		return this.getDatatyp().getJavaType().equals("org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile");
 	}
-	
+
 	public Object getMandatoryValue() {
 		return this.mandatoryValue;
 	}
-	
+
 	public void setMandatoryValue(Object value) {
 		this.mandatoryValue = value;
 	}
-	
+
+	public String getOutputFormat() {
+		return outputFormat;
+	}
+
+	public void setOutputFormat(String outputFormat) {
+		this.outputFormat = outputFormat;
+	}
+
 	@Override
 	public int hashCode() {
 		if(this.internalName != null){
 			return this.internalName.hashCode();
 		}
 		else
-			return 0; 
+			return 0;
 	}
 
 	@Override
@@ -433,9 +442,4 @@ public class Attribute {
 		}
 		return false;
 	}
-	
-	
-	
-	
-
 }

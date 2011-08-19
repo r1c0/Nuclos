@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -31,13 +32,13 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 * <br>
 * Created by Novabit Informationssysteme GmbH <br>
 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
-* 
+*
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
 
-public class DataTyp {
-	
+public class DataTyp implements Cloneable {
+
 	String name;
 	String inputFormat;
 	String outputFormat;
@@ -47,7 +48,7 @@ public class DataTyp {
 	String javaType;
 
 	public DataTyp() {
-		
+
 	}
 
 	public DataTyp(String name, String inputFormat, String outputFormat,
@@ -58,7 +59,7 @@ public class DataTyp {
 		this.outputFormat = outputFormat;
 		this.databaseTyp = databaseTyp;
 		this.javaType = javaTyp;
-	}	
+	}
 
 	public DataTyp(String name, String inputFormat, String outputFormat,
 			String databaseTyp, Integer scale,Integer precision, String javaTyp) {
@@ -71,7 +72,7 @@ public class DataTyp {
 		this.scale = scale;
 		this.javaType = javaTyp;
 	}
-	
+
 	public DataTyp(MasterDataVO voDataType) {
 		super();
 		this.name = (String)voDataType.getField("name");
@@ -82,7 +83,7 @@ public class DataTyp {
 		this.javaType = (String)voDataType.getField("javatyp");
 		this.databaseTyp = (String)voDataType.getField("databasetyp");
 	}
-	
+
 	public boolean isRefenceTyp() {
 		if(name.equals("Referenz Feld")) {
 			return true;
@@ -91,7 +92,7 @@ public class DataTyp {
 			return false;
 		}
 	}
-	
+
 	public boolean isValueListTyp() {
 		if(name.equals("Werteliste")) {
 			return true;
@@ -100,7 +101,7 @@ public class DataTyp {
 			return false;
 		}
 	}
-	
+
 	public static String getDefaultTypForJavaClass(Class<?> clazz) {
 		if(clazz.isAssignableFrom(String.class)) {
 			return "Text";
@@ -127,32 +128,49 @@ public class DataTyp {
 			return "Text";
 		}
 	}
-	
-	public static List<DataTyp> getSameDataTyps(String sJavaType, DataTyp dataTyp) {		
-		List<DataTyp> lstFilter = new ArrayList<DataTyp>();
-		for(DataTyp typ : getSameDataTyps(sJavaType)){
-			if(typ.getScale() == null && typ.getJavaType().equals("java.lang.String")) {
-				lstFilter.add(typ);
-				continue;
+
+	public static boolean isConversionSupported(DataTyp source, DataTyp target) {
+		int sourcescale = LangUtils.defaultIfNull(source.getScale(), 0);
+		int sourceprecision = LangUtils.defaultIfNull(source.getPrecision(), 0);
+		int targetscale = LangUtils.defaultIfNull(target.getScale(), 0);
+		int targetprecision = LangUtils.defaultIfNull(target.getPrecision(), 0);
+
+		if (!String.class.getName().equals(target.getJavaType())) {
+			// no to-string conversion, check if source type equals target type
+			if (source.getJavaType().equals(target.getJavaType())) {
+				// check scale and precision if required
+				if (Double.class.getName().equals(target.getJavaType())) {
+					if (sourceprecision - targetprecision > 0) {
+						return false;
+					}
+					if ((sourcescale - sourceprecision) - (targetscale - targetprecision) > 0) {
+						return false;
+					}
+				}
+				return true;
 			}
-			if(dataTyp.getScale() == null)
-				continue;
-			if(typ.getScale() >= dataTyp.getScale())
-				lstFilter.add(typ);
+			else {
+				return false;
+			}
 		}
-		
-		return lstFilter;
+		else {
+			if (!LangUtils.equals(source.isRefenceTyp(), target.isRefenceTyp())) {
+				return false;
+			}
+			if (!LangUtils.equals(source.isValueListTyp(), target.isValueListTyp())) {
+				return false;
+			}
+			return (sourcescale <= targetscale);
+		}
 	}
-	
-	public static List<DataTyp> getSameDataTyps(String sJavaType) {		
+
+	public static List<DataTyp> getConvertibleTypes(DataTyp dataTyp) {
 		List<DataTyp> lst = new ArrayList<DataTyp>();
-		
 		for(DataTyp typ : getAllDataTyps()) {
-			if(sJavaType.equals(typ.getJavaType()) && !typ.equals(getReferenzTyp())) {
+			if(isConversionSupported(dataTyp, typ)) {
 				lst.add(typ);
 			}
 		}
-		
 		return lst;
 	}
 
@@ -207,8 +225,8 @@ public class DataTyp {
 	public void setScale(Integer scale) {
 		this.scale = scale;
 	}
-	
-	
+
+
 
 	@Override
 	public boolean equals(Object obj) {
@@ -231,39 +249,45 @@ public class DataTyp {
 	public String toString() {
 		return name;
 	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return new DataTyp(name, inputFormat, outputFormat, databaseTyp, javaType);
+	}
+
 	public static List<DataTyp> getAllDataTyps() {
 		List<DataTyp> lst = new ArrayList<DataTyp>();
-		
+
 		lst.addAll(DataTyp.getAllDataTypsFromDB());
 		lst.add(getReferenzTyp());
-		
+
 		return lst;
 	}
-	
+
 	private static List<DataTyp> getAllDataTypsFromDB() {
 		List<DataTyp> lst = new ArrayList<DataTyp>();
-		
+
 		Collection<MasterDataVO> colVO = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.DATATYP.getEntityName());
 		for(MasterDataVO vo : colVO) {
-			DataTyp typ = new DataTyp((String)vo.getField("name"), (String)vo.getField("inputformat"), (String)vo.getField("outputformat"), 
+			DataTyp typ = new DataTyp((String)vo.getField("name"), (String)vo.getField("inputformat"), (String)vo.getField("outputformat"),
 				(String)vo.getField("databasetyp"), (Integer)vo.getField("scale"), (Integer)vo.getField("precision"), (String)vo.getField("javatyp"));
 			if(typ.getName().equals("Referenz Feld"))
 				continue;
 			lst.add(typ);
 		}
-		
+
 		return lst;
 	}
-	
+
 	public static DataTyp getReferenzTyp() {
 		return new DataTyp("Referenz Feld", null, null, "varchar", 255, 0, "java.lang.String");
 	}
-	
+
 	public static DataTyp getValueListTyp() {
 		return new DataTyp("explizite Werteliste", null, null, "varchar", 255, 0, "java.lang.String");
 	}
-	
-	public static DataTyp getDefaultDataTyp() throws CommonFinderException, CommonPermissionException  {		
+
+	public static DataTyp getDefaultDataTyp() throws CommonFinderException, CommonPermissionException  {
 		MasterDataVO vo = null;
 		for(MasterDataVO voDataType : MasterDataDelegate.getInstance().getMasterData(NuclosEntity.DATATYP.getEntityName())) {
 			if("Text".equals(voDataType.getField("name"))) {
@@ -271,15 +295,15 @@ public class DataTyp {
 				break;
 			}
 		}
-		DataTyp typ = new DataTyp((String)vo.getField("name"), (String)vo.getField("inputformat"), (String)vo.getField("outputformat"), 
+		DataTyp typ = new DataTyp((String)vo.getField("name"), (String)vo.getField("inputformat"), (String)vo.getField("outputformat"),
 			(String)vo.getField("databasetyp"), (Integer)vo.getField("scale"), (Integer)vo.getField("precision"), (String)vo.getField("javatyp"));
-		return typ;	
+		return typ;
 	}
-	
+
 	public static DataTyp getDefaultStringTyp() {
 		return new DataTyp("Text", null, null, "varchar", 255, 0, "java.lang.String");
 	}
-	
+
 	public static DataTyp getDefaultDateTyp() {
 		return new DataTyp("Date", null, null, "varchar", null, null, "java.util.Date");
 	}

@@ -117,7 +117,7 @@ public class NuclosWizardUtils {
 			}
 		}
 		if(typ == null) {
-			 typ = new DataTyp("Unknown", inputFormat, outputFormat, null, scale, precision, javaType);
+			 typ = new DataTyp(CommonLocaleDelegate.getText("wizard.datatype.individual"), inputFormat, outputFormat, null, scale, precision, javaType);
 		}
 		return typ;
 	}

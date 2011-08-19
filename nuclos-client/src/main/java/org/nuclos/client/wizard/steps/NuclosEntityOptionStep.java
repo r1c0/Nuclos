@@ -436,6 +436,7 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 								attr.setModifiable(field.isModifiable());
 								attr.setDefaultValue(field.getDefaultValue());
 								attr.setCalcFunction(field.getCalcFunction());
+								attr.setOutputFormat(field.getFormatOutput());
 								attr.setInputValidation(field.getFormatInput());
 								attr.setIndexed(Boolean.TRUE.equals(field.isIndexed()));
 								String sForeignEntity = field.getForeignEntity();
