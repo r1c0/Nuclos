@@ -33,7 +33,7 @@ import org.nuclos.server.report.ByteArrayCarrier;
 public class ReportOutputVO extends NuclosValueObject {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -53,7 +53,7 @@ public class ReportOutputVO extends NuclosValueObject {
 		public String getLabel() {
 			return this.value;
 		}
-		
+
 		@Override
 		public String getValue() {
 			return value;
@@ -70,9 +70,9 @@ public class ReportOutputVO extends NuclosValueObject {
         }
 	}	// enum Destination
 
-	
+
 	public static enum Format implements KeyEnum<String> {
-	
+
 		PDF, XLS, CSV, DOC, TSV;
 
 		@Override
@@ -80,7 +80,7 @@ public class ReportOutputVO extends NuclosValueObject {
 			return name();
 		}
 	}
-	
+
 	private Integer iReportId;
 	private Format format;
 	private Destination destination;
@@ -97,12 +97,14 @@ public class ReportOutputVO extends NuclosValueObject {
 	private String sDescription;
 	private ByteArrayCarrier oReportCLS;
 
+	private String locale;
+
 	private boolean bFirstOfMany = true;
 	private boolean bLastOfMany = true;
 
-	public ReportOutputVO(NuclosValueObject nvo, Integer iReportId, Format format, Destination destination, 
+	public ReportOutputVO(NuclosValueObject nvo, Integer iReportId, Format format, Destination destination,
 			String sParameter, String sSourceFile, ByteArrayCarrier oReportCLS, ByteArrayCarrier oSourceFileContent,
-			Integer iDatasourceId, String sDatasource, String sSheetname, String sDescription) {
+			Integer iDatasourceId, String sDatasource, String sSheetname, String sDescription, String locale) {
 
 		super(nvo);
 
@@ -118,6 +120,8 @@ public class ReportOutputVO extends NuclosValueObject {
 		this.sDatasource = sDatasource;
 		this.sSheetName = sSheetname;
 		this.sDescription = sDescription;
+
+		this.locale = locale;
 	}
 
 	/**
@@ -125,8 +129,7 @@ public class ReportOutputVO extends NuclosValueObject {
 	 * @param sParameter
 	 */
 	public ReportOutputVO(Format format, Destination destination, String sParameter) {
-
-		this(new NuclosValueObject(), null, format, destination, sParameter, null, null, null, null, null, null, null);
+		this(new NuclosValueObject(), null, format, destination, sParameter, null, null, null, null, null, null, null, null);
 	}
 
 	public Integer getReportId() {
@@ -233,6 +236,14 @@ public class ReportOutputVO extends NuclosValueObject {
 		this.sDescription = sDescription;
 	}
 
+	public String getLocale() {
+		return locale;
+	}
+
+	public void setLocale(String locale) {
+		this.locale = locale;
+	}
+
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
@@ -241,6 +252,7 @@ public class ReportOutputVO extends NuclosValueObject {
 		result.append(",srcFile=").append(getSourceFile());
 		result.append(",ds=").append(getDatasource());
 		result.append(",format=").append(getFormat());
+		result.append(",locale=").append(getLocale());
 		result.append("]");
 		return result.toString();
 	}

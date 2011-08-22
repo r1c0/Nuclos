@@ -22,30 +22,32 @@ import java.util.Locale;
 
 
 public class LocaleInfo implements Serializable {
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	/** The standardized (IETF) "i-default" language tag which represents our null locale */ 
-	public static LocaleInfo I_DEFAULT = new LocaleInfo(null, null, "i-default", null);
+	/** The standardized (IETF) "i-default" language tag which represents our null locale */
+	public static LocaleInfo I_DEFAULT = new LocaleInfo("Null", null, null, "i-default", null);
 	public static final String I_DEFAULT_TAG = "i-default";
-	
+
 	public static Comparator<LocaleInfo> DESCRIPTION_COMPARATOR = DescriptionComparator.INSTANCE;
 
-	
+
+	public final String name;
 	public final String title;
 	public final Integer localeId;
 	public final String language;
 	public final String country;
 
-	public LocaleInfo(String title, Integer localeId, String language, String country) {
+	public LocaleInfo(String name, String title, Integer localeId, String language, String country) {
+		this.name = name;
 		this.language = language;
 		this.country  = country;
 		this.localeId = localeId;
 		this.title = title;
 	}
-	
+
 	public String getTag() {
 		if (language == null) {
 			return I_DEFAULT_TAG;
@@ -54,8 +56,8 @@ public class LocaleInfo implements Serializable {
 		} else {
 			return language + "-" + country;
 		}
-	}	
-	
+	}
+
 	public Locale toLocale() {
 		if (language == null) {
 			return null;
@@ -63,12 +65,12 @@ public class LocaleInfo implements Serializable {
 			return new Locale(language, country != null ? country : "");
 		}
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return LangUtils.hashCode(language) ^ LangUtils.hashCode(country);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof LocaleInfo) {
@@ -82,18 +84,18 @@ public class LocaleInfo implements Serializable {
 	public String toString() {
 		return (title != null) ? title : getTag();
 	}
-	
+
 	public static LocaleInfo parseTag(String tag) {
 		if (tag == null || tag.isEmpty())
 			return LocaleInfo.I_DEFAULT;
 		int i = tag.indexOf('-', 2);
 		if (i == -1) {
-			return new LocaleInfo(null, null, tag, null);
+			return new LocaleInfo(null, null, null, tag, null);
 		} else {
-			return new LocaleInfo(null, null, tag.substring(0, i), tag.substring(i+1));
+			return new LocaleInfo(null, null, null, tag.substring(0, i), tag.substring(i+1));
 		}
 	}
-	
+
 	public static String getStandardParentTag(String tag) {
 		LocaleInfo li = LocaleInfo.parseTag(tag);
 		if (li != null && li.country != null) {

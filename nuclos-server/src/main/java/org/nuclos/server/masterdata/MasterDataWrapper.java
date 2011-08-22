@@ -800,7 +800,8 @@ public class MasterDataWrapper {
 			(Integer)mdVO.getField("datasourceId"),
 			(String)mdVO.getField("datasource"),
 			(String)mdVO.getField("sheetname"),
-			(String)mdVO.getField("description"));
+			(String)mdVO.getField("description"),
+			(String)mdVO.getField("locale"));
 
 		return vo;
 	}
@@ -818,6 +819,7 @@ public class MasterDataWrapper {
 		mpFields.put("datasource", vo.getDatasource());
 		mpFields.put("sheetname", vo.getSheetname());
 		mpFields.put("description", vo.getDescription());
+		mpFields.put("locale", vo.getLocale());
 
 		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}

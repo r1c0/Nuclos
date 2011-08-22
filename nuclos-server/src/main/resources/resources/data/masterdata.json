@@ -2212,20 +2212,6 @@
         "descriptionres": "nuclos.entityfield.locale.timeformat.description"
       },
       {
-        "name": "decimalpoint",
-        "dbfield": "STRDECIMALPOINT",
-        "label": "Dezimaldarstellung",
-        "description": "Dezimaldarstellung",
-        "datatype": "java.lang.String",
-        "datascale": 1,
-        "nullable": false,
-        "searchable": false,
-        "logbook": false,
-        "unique": false,
-        "labelres": "nuclos.entityfield.locale.decimalpoint.label",
-        "descriptionres": "nuclos.entityfield.locale.decimalpoint.description"
-      },
-      {
         "name": "description",
         "dbfield": "STRDESCRIPTION",
         "label": "Beschreibung",
@@ -5945,6 +5931,20 @@
         "unique": false,
         "labelres": "nuclos.entityfield.reportoutput.description.label",
         "descriptionres": "nuclos.entityfield.reportoutput.description.description"
+      },
+      {
+        "name": "locale",
+        "dbfield": "STRLOCALE",
+        "label": "Locale",
+        "description": "Locale for report execution",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.reportoutput.locale.label",
+        "descriptionres": "nuclos.entityfield.reportoutput.locale.description"
       }
     ]
   },

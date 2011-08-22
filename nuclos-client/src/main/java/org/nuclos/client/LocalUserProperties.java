@@ -289,7 +289,7 @@ public class LocalUserProperties extends java.util.Properties {
     			String title = valArr[i + 1];
     			String language = valArr[i + 2];
     			String country = valArr[i + 3];
-    			res.add(new LocaleInfo(title, id, language, country));
+    			res.add(new LocaleInfo(null, title, id, language, country));
     		}
     	}
     	return res;

@@ -190,7 +190,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	private Map<LocaleInfo, String> getLocaleInfosWithParent() {
 		Map<LocaleInfo, String> map = new HashMap<LocaleInfo, String>();
 		for (MasterDataVO mdvo : getMasterDataFacade().getMasterData(NuclosEntity.LOCALE.getEntityName(), null, true)) {
-			LocaleInfo localeInfo = new LocaleInfo(
+			LocaleInfo localeInfo = new LocaleInfo(mdvo.getField("name", String.class),
 				mdvo.getField("description", String.class), mdvo.getIntId(),
 				mdvo.getField("language", String.class), mdvo.getField("country", String.class));
 			String parentTag = mdvo.getField("parent", String.class);

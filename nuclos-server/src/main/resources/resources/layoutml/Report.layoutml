@@ -17,7 +17,7 @@
         <minimum-size height="40" width="180" />
         <preferred-size height="100" width="300" />
         <panel visible="yes" opaque="yes">
-        <tabbedpane-constraints title="Bemerkung" enabled="yes"/>
+        <tabbedpane-constraints title="Bemerkung" enabled="yes" internalname="Bemerkung" />
           <tablelayout columns="-1.0" rows="-1.0" />
           <panel>
             <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
@@ -30,7 +30,7 @@
           </panel>
         </panel>
         <panel visible="yes" opaque="yes">
-        <tabbedpane-constraints title="Verwendungen" enabled="yes"/>
+        <tabbedpane-constraints title="Verwendungen" enabled="yes" internalname="Verwendungen" />
           <tablelayout columns="-1.0" rows="-1.0" />
           <panel>
             <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
@@ -48,7 +48,7 @@
           </panel>
         </panel>
         <panel visible="yes" opaque="yes">
-        <tabbedpane-constraints title="Ausgabeformate" enabled="yes">
+        <tabbedpane-constraints title="Ausgabeformate" enabled="yes" internalname="Ausgabeformate">
           <translations>
             <translation lang="de" text="Ausgabeformate"/>
             <translation lang="en" text="Output formats"/>
@@ -64,31 +64,32 @@
               </titled-border>
               <minimum-size height="40" width="180" />
               <preferred-size height="100" width="300" />
-              <subform-column insertable="no" name="format" controltype="combobox">
-	                      <valuelist-provider type="enum">
-	              			<parameter name="showEnum" value="org.nuclos.server.report.valueobject.ReportOutputVO$Format" />
-	              		  </valuelist-provider>
-	                    </subform-column>
-	                    <subform-column insertable="no" name="destination" controltype="combobox">
-	                      <valuelist-provider type="enum">
-	              			<parameter name="showEnum" value="org.nuclos.server.report.valueobject.ReportOutputVO$Destination" />
-	              		  </valuelist-provider>
-	                    </subform-column>
-	                    <subform-column controltypeclass="org.nuclos.client.masterdata.ui.CollectableFileNameChooserFilesAndDirectories" name="parameter"/>
-	                    <subform-column controltypeclass="org.nuclos.client.masterdata.ui.CollectableFileNameChooserFilesOnly" name="sourceFile"/>
-	                    <subform-column insertable="no" name="datasource"/>
-	                    <subform-column name="reportCLS" visible="no"/>
-	                    <subform-column name="sourceFileContent" visible="no"/>
+              <initial-sorting-order name="locale" sorting-order="ascending" />
+              <subform-column name="sourceFileContent" enabled="yes" visible="no" insertable="yes"></subform-column>
+              <subform-column name="locale" enabled="yes" visible="yes" insertable="yes" controltype="combobox">
+                <valuelist-provider type="locales"/></subform-column>
+              <subform-column name="format" enabled="yes" visible="yes" insertable="no" controltype="combobox">
+                <valuelist-provider type="enum">
+                  <parameter name="showEnum" value="org.nuclos.server.report.valueobject.ReportOutputVO$Format" />
+                </valuelist-provider></subform-column>
+              <subform-column name="destination" enabled="yes" visible="yes" insertable="no" controltype="combobox">
+                <valuelist-provider type="enum">
+                  <parameter name="showEnum" value="org.nuclos.server.report.valueobject.ReportOutputVO$Destination" />
+                </valuelist-provider></subform-column>
+              <subform-column name="reportCLS" enabled="yes" visible="no" insertable="yes"></subform-column>
+              <subform-column name="parameter" enabled="yes" visible="yes" insertable="yes" controltypeclass="org.nuclos.client.masterdata.ui.CollectableFileNameChooserFilesAndDirectories"></subform-column>
+              <subform-column name="sourceFile" enabled="yes" visible="yes" insertable="yes" controltypeclass="org.nuclos.client.masterdata.ui.CollectableFileNameChooserFilesOnly"></subform-column>
+              <subform-column name="datasource" enabled="yes" visible="yes" insertable="no"></subform-column>
             </subform>
-            <subform name="SubForm_2" entity="nuclos_subreport" foreignkeyfield-to-parent="reportoutput" parent-subform="nuclos_reportoutput" toolbarorientation="vertical" enabled="yes" >
+            <subform name="SubForm_2" entity="nuclos_subreport" foreignkeyfield-to-parent="reportoutput" toolbarorientation="vertical" enabled="yes" parent-subform="nuclos_reportoutput" >
               <tablelayout-constraints col1="1" col2="1" row1="3" row2="3" hAlign="2" vAlign="2" />
               <titled-border title="Subreports">
               </titled-border>
               <minimum-size height="40" width="180" />
               <preferred-size height="100" width="300" />
-              <subform-column controltypeclass="org.nuclos.client.masterdata.ui.CollectableFileNameChooserFilesOnly" name="sourcefilename"/>
-                        <subform-column name="reportCLS" visible="no"/>
-                        <subform-column name="sourcefileContent" visible="no"/>
+              <subform-column name="sourcefilename" enabled="yes" visible="yes" insertable="yes" controltypeclass="org.nuclos.client.masterdata.ui.CollectableFileNameChooserFilesOnly"></subform-column>
+              <subform-column name="reportCLS" enabled="yes" visible="no" insertable="yes"></subform-column>
+              <subform-column name="sourcefileContent" enabled="yes" visible="no" insertable="yes"></subform-column>
             </subform>
           </panel>
         </panel>

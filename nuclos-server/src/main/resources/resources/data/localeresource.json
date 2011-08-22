@@ -60927,5 +60927,35 @@
     "resourceID": "wizard.step.attributeproperties.validation.conversion",
     "locale": "de",
     "text": "Die angegebene Änderung des Datentyps ist nicht möglich."
+  },
+  {
+    "resourceID": "nuclos.entityfield.reportoutput.locale.label",
+    "locale": "i-default",
+    "text": "Language"
+  },
+  {
+    "resourceID": "nuclos.entityfield.reportoutput.locale.label",
+    "locale": "en",
+    "text": "Language"
+  },
+  {
+    "resourceID": "nuclos.entityfield.reportoutput.locale.label",
+    "locale": "de",
+    "text": "Sprache"
+  },
+  {
+    "resourceID": "nuclos.entityfield.reportoutput.locale.description",
+    "locale": "i-default",
+    "text": "Language for formatting numbers and dates. If empty, the user's current language will be used."
+  },
+  {
+    "resourceID": "nuclos.entityfield.reportoutput.locale.description",
+    "locale": "en",
+    "text": "Language for formatting numbers and dates. If empty, the user's current language will be used."
+  },
+  {
+    "resourceID": "nuclos.entityfield.reportoutput.locale.description",
+    "locale": "de",
+    "text": "Sprache zur Formatierung von Zahlen und Datumswerten. Falls leer, wird die aktuelle Sprache des Benutzers verwendet."
   }
 ]

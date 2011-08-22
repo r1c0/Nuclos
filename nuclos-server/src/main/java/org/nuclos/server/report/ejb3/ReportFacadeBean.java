@@ -34,6 +34,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -47,6 +48,7 @@ import javax.swing.table.TableModel;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -66,7 +68,9 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dblayer.JoinType;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IOUtils;
+import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.XMLUtils;
@@ -81,6 +85,7 @@ import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.NuclosDataSources;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.SecurityCache;
+import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
@@ -124,9 +129,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeLocal, ReportFacadeRemote {
 
    public static final String ALIAS_INTID = "intid";
-
-   private static final int DIN_A4_HEIGHT = 842;
-   private static final int DIN_A4_WIDTH = 595;
 
    private static final String CHARENCODING = "UTF-8";
 
@@ -426,14 +428,14 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
             }
          }
       }
-      
+
       Collections.sort(reports, new Comparator<ReportVO>(){
 
 			@Override
 			public int compare(ReportVO o1, ReportVO o2) {
 				return StringUtils.emptyIfNull(o1.getName()).compareToIgnoreCase(StringUtils.emptyIfNull(o2.getName()));
 			}});
-      
+
 
       return reports;
    }
@@ -490,8 +492,9 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
 
                JRDefaultNuclosDataSource ds = new JRDefaultNuclosDataSource(facade.get(reportoutput.getDatasourceId()).getName(), mpParams, conn);
 
-               mpParams2.put("REPORT_DATA_SOURCE", ds);
-               mpParams2.put("REPORT_FILE_RESOLVER", new JRFileResolver());
+               mpParams2.put(JRParameter.REPORT_DATA_SOURCE, ds);
+               mpParams2.put(JRParameter.REPORT_FILE_RESOLVER, new JRFileResolver());
+               mpParams2.put(JRParameter.REPORT_LOCALE, getLocale(reportoutput.getLocale(), CommonLocaleDelegate.getLocale()));
 
                try {
                   jprint = JasperFillManager.fillReport(jr, mpParams2, ds);
@@ -526,6 +529,17 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
       catch (JRException ex) {
          throw new NuclosReportException(ex);
       }
+   }
+
+   private Locale getLocale(String locale, Locale def) {
+	   if (!StringUtils.isNullOrEmpty(locale)) {
+		   for (LocaleInfo li : ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).getAllLocales(true)) {
+			   if (locale.equalsIgnoreCase(li.name)) {
+				   return li.toLocale();
+			   }
+		   }
+	   }
+	   return def;
    }
 
    /**
