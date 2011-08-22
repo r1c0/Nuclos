@@ -20,18 +20,18 @@ import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 
 /**
  * TODO: Is there really any difference between DbSelections and DbColumnExpressions?
- *   What does it mean a column and/or table alias here? 
+ *   What does it mean a column and/or table alias here?
  */
 public class DbColumnExpression<T> extends DbExpression<T> {
 
 	private String columnAlias;
-	
+
 	private final String columnName;
 
 	DbColumnExpression(String alias, DbFrom fromTable, String columnName, Class<T> javaType) {
 		this(alias, fromTable, columnName, javaType, false);
 	}
-	
+
 	DbColumnExpression(String tableAlias, DbFrom fromTable, String columnName, Class<T> javaType, boolean caseSensitive) {
 		super(fromTable.getQuery().getBuilder(), javaType, tableAlias, caseSensitive
 			? PreparedStringBuilder.concat(tableAlias, ".", "\"", columnName, "\"")
@@ -41,14 +41,19 @@ public class DbColumnExpression<T> extends DbExpression<T> {
 		}
 		this.columnName = columnName;
 	}
-	
+
 	public final DbExpression<T> columnAlias(String columnAlias) {
 		if (this.columnAlias != null) throw new IllegalArgumentException(
 				"Tried to change column alias from " + this.columnAlias + " to " + columnAlias);
 		this.columnAlias = columnAlias;
 		return this;
 	}
-	
+
+	@Override
+	public DbSelection<T> alias(String tableAlias) {
+		return columnAlias(tableAlias);
+	}
+
 	@Override
 	public String getSqlColumnExpr() {
 		if (columnAlias == null)
@@ -61,11 +66,11 @@ public class DbColumnExpression<T> extends DbExpression<T> {
 	public final String getColumnAlias() {
 		return columnAlias;
 	}
-	
+
 	public final String getColumnName() {
 		return columnName;
 	}
-	
+
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder();

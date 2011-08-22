@@ -20,11 +20,11 @@ package org.nuclos.server.dblayer.query;
 public abstract class DbSelection<T> {
 
 	private final DbQueryBuilder builder;
-	
+
 	private final Class<? extends T> javaType;
-	
+
 	private String tableAlias;
-	
+
 	DbSelection(DbQueryBuilder builder, Class<? extends T> javaType) {
 		this(builder, javaType, null);
 	}
@@ -52,18 +52,18 @@ public abstract class DbSelection<T> {
 	public final Class<? extends T> getJavaType() {
 		return javaType;
 	}
-		
+
 	public final String getTableAlias() {
 		return tableAlias;
 	}
-		
-	public final DbSelection<T> alias(String tableAlias) {
+
+	public DbSelection<T> alias(String tableAlias) {
 		if (this.tableAlias != null)
 			throw new IllegalStateException("Tried to alter table alias from " + this.tableAlias + " to " + tableAlias + " at " + this);
 		this.tableAlias = tableAlias;
 		return this;
 	}
-	
+
 	final DbQueryBuilder getBuilder() {
 		return builder;
 	}
