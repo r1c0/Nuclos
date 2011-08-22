@@ -228,7 +228,6 @@ public class CommonJTextField extends javax.swing.JTextField {
 		if (obj != null) {
 			if (isOutputFormatted()) {
 				try {
-					System.out.println(format.format(pattern, obj));
 					return format.format(pattern, obj);
 				}
 				catch (Exception e) {

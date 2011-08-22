@@ -99,16 +99,18 @@ public class CollectableTextField extends CollectableTextComponent implements Me
    private static void setupTextField(CollectableEntityField clctef, CommonJTextField ntf, boolean bSearchable) {
       // set the preferred width for numbers and dates:
       final Class<?> cls = clctef.getJavaClass();
-      ntf.setFormat(CollectableFieldFormat.getInstance(cls));
-      ntf.setPattern(clctef.getFormatOutput());
       if (Number.class.isAssignableFrom(cls)) {
          ntf.setColumnWidthChar('0');
          // numbers are right aligned:
          ntf.setHorizontalAlignment(JTextField.TRAILING);
+         ntf.setFormat(CollectableFieldFormat.getInstance(cls));
+         ntf.setPattern(clctef.getFormatOutput());
       }
       else if (Date.class.isAssignableFrom(cls)) {
          /** @todo this could be enhanced by calculating the width of "01.01.2000" */
          ntf.setColumnWidthChar('0');
+         ntf.setFormat(CollectableFieldFormat.getInstance(cls));
+         ntf.setPattern(clctef.getFormatOutput());
       }
 
       if (bSearchable)
