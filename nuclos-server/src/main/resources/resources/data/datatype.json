@@ -46,8 +46,7 @@
     "scale": 9,
     "precision": 0,
     "javatyp": "java.lang.Integer",
-    "databasetyp": "number",
-    "outputformat": "#,###"
+    "databasetyp": "number"
   },
   {
     "name": "Kommazahl",
