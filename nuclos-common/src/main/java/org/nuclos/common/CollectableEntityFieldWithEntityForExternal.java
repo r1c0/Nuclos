@@ -19,7 +19,7 @@ package org.nuclos.common;
 import org.nuclos.common.collect.collectable.*;
 
 /**
- * CollectableEntityFieldWithEntityForExternal supports including rows from a subform 
+ * CollectableEntityFieldWithEntityForExternal supports including rows from a subform
  * in the base entity result list.
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
@@ -37,12 +37,13 @@ public class CollectableEntityFieldWithEntityForExternal extends CollectableEnti
 		this.bFieldBelongsToSubEntity = bFieldBelongsToSubEntity;
 		this.bFieldBelongsToMainEntity = bFieldBelongsToMainEntity;
 	}
-	
+
 	// As the values of subentity fields must be concatenatable,
-	// we have to pretend they're plain String fields without maximum lengths:
+	// we have to pretend they're plain String fields without maximum lengths.
+	// -> No, we can a expect a list of values
 	@Override
 	public Class<?> getJavaClass() {
-		return bFieldBelongsToSubEntity ? String.class : super.getJavaClass();
+		return super.getJavaClass();
 	}
 
 	@Override
@@ -85,11 +86,11 @@ public class CollectableEntityFieldWithEntityForExternal extends CollectableEnti
 						"<font color=\"black\">" + this.getField().getLabel() + "</font>" +
 						"</html>";
 	}
-	
+
 	public boolean fieldBelongsToSubEntity() {
 		return bFieldBelongsToSubEntity;
 	}
-	
+
 	public boolean fieldBelongsToMainEntity() {
 		return bFieldBelongsToMainEntity;
 	}

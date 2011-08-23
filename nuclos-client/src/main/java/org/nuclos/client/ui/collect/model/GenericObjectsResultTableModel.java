@@ -1,3 +1,19 @@
+//Copyright (C) 2010  Novabit Informationssysteme GmbH
+//
+//This file is part of Nuclos.
+//
+//Nuclos is free software: you can redistribute it and/or modify
+//it under the terms of the GNU Affero General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+//Nuclos is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU Affero General Public License for more details.
+//
+//You should have received a copy of the GNU Affero General Public License
+//along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.model;
 
 import java.util.ArrayList;
@@ -12,27 +28,28 @@ import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
+import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
-import org.nuclos.common2.FormatOutputUtils;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 
 public class GenericObjectsResultTableModel<Clct extends Collectable> extends SortableCollectableTableModelImpl<Clct> {
-	
+
 	private final CollectableEntity entity;
-	
+
 	public GenericObjectsResultTableModel(CollectableEntity entity) {
 		super(entity.getName());
 		this.entity = entity;
 	}
-	
+
 	public GenericObjectsResultTableModel(CollectableEntity entity, List<? extends CollectableEntityField> list) {
 		this(entity);
 		setColumns(list);
 	}
-	
+
 	@Override
 	public CollectableField getValueAt(int iRow, int iColumn) {
 		/* @todo How shall we handle exceptions here?!
@@ -61,24 +78,18 @@ public class GenericObjectsResultTableModel<Clct extends Collectable> extends So
 		// field of base entity
 		if (sFieldEntityName.equals(sMainEntityName)) {
 			result = clct.getField(sFieldName);
-			// result = FormatOutputUtils.format(clctefwe, clct);
 		}
 		// pivot field
 		else if (pinfo != null) {
 			final List<Object> values = new ArrayList<Object>(1);
 			final Collection<EntityObjectVO> items = lowdcvo.getDependants().getData(sFieldEntityName);
+
 			for (EntityObjectVO k: items) {
 				if (sFieldName.equals(k.getRealField(pinfo.getKeyField(), String.class))) {
 					values.add(k.getRealField(pinfo.getValueField(), pinfo.getValueType()));
 				}
 			}
-			// If there is more than one value (not supported in the pivot case), we loose the type... 
-			if (values.size() == 1) {
-				result = new CollectableValueField(values.iterator().next());
-			}
-			else {
-				result = new CollectableValueField(FormatOutputUtils.formatOutput(clctefwe.getFormatOutput(), values, " "));
-			}
+			return new CollectableValueField(values);
 		}
 		// field of subform entity
 		else {
@@ -95,32 +106,15 @@ public class GenericObjectsResultTableModel<Clct extends Collectable> extends So
 			}
 			else {
 				final Collection<EntityObjectVO> collmdvo = lowdcvo.getDependants().getData(sFieldEntityName);
-				// result = new CollectableValueField(GenericObjectUtils.getConcatenatedValue(collmdvo, sFieldName));
-				// If there is more than one value, we loose the type... 
-				if (collmdvo.size() == 1) {
-					result = new CollectableValueField(collmdvo.iterator().next());
-				}
-				else {
-					result = FormatOutputUtils.format(clctefwe, collmdvo, " ");
-				}
+				List<Object> values = CollectionUtils.transform(collmdvo, new Transformer<EntityObjectVO, Object>() {
+					@Override
+					public Object transform(EntityObjectVO i) {
+						return i.getRealField(sFieldName);
+					}
+				});
+				return new CollectableValueField(values);
 			}
 		}
-		
-		/*
-		Since Nuclos 3.1.01 we do _not_ format number in the model. 
-		If needed it has to be done 'later'. (Thomas Pasch + Maik Stüker)
-		
-		// set output format
-		final Class<?> cls = clctefwe.getJavaClass();
-		if (Number.class.isAssignableFrom(cls)) {
-			String sFormatOutput = clctefwe.getFormatOutput();
-			if (result.getValue() != null && sFormatOutput != null && !sFormatOutput.equals("")) {
-				final DecimalFormat df =   new DecimalFormat(sFormatOutput);
-				result = new CollectableValueField(df.format(result.getValue()));
-			}			
-		}
-		 */
-		
 		return result;
 	}
 

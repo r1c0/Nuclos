@@ -94,20 +94,20 @@ public interface CollectableEntityField {
 	 * @return the name of this field
 	 */
 	String getName();
-	
+
 	/**
 	 * @return the name of the entity this field belongs to.
-	 * 
+	 *
 	 * @author Thomas Pasch
 	 * @since Nuclos 3.1.01
 	 */
 	String getEntityName();
-		
+
 	/**
 	 * @return the input format of this field
 	 */
 	String getFormatInput();
-	
+
 	/**
 	 * @return the output format of this field
 	 */
@@ -152,7 +152,7 @@ public interface CollectableEntityField {
 	 * @return the maximum length of this field in characters, if any
 	 */
 	Integer getMaxLength();
-	
+
 	/**
 	 * @return the precision of this field, if any
 	 */
@@ -175,25 +175,25 @@ public interface CollectableEntityField {
 	 * In a database application, this would be <code>true</code> for foreign key fields.
 	 */
 	boolean isReferencing();
-	
+
 	/**
 	 * @return the parent <code>CollectableEntity</code>, if any.
-	 * 
+	 *
 	 * @deprecated Not always present.
 	 */
 	CollectableEntity getCollectableEntity();
-	
+
 	/**
 	 * sets the parent <code>CollectableEntity</code>
 	 * @param the parent <code>CollectableEntity</code>
-	 * 
+	 *
 	 * @deprecated Not always present.
 	 */
 	void setCollectableEntity(CollectableEntity clent);
 
 	/**
 	 * @return the name of the referenced <code>CollectableEntity</code>, if any.
-	 * 
+	 *
 	 * @deprecated There is no such thing like a "referenced field" - only a whole Collectable can be referenced.
 	 */
 	String getReferencedEntityName();
@@ -204,7 +204,7 @@ public interface CollectableEntityField {
 	 * The field name returned by this method is used for lookups and for displaying the identifier of a referenced Collectable (entity).
 	 * In lookups, the field to transfer must be specified as it isn't always the same. For displaying the identifier,
 	 * {@link Collectable#getIdentifierLabel()} should be used.
-	 * 
+	 *
 	 * @deprecated There is no such thing like a "referenced field" - only a whole Collectable can be referenced.
 	 */
 	@Deprecated
@@ -245,14 +245,6 @@ public interface CollectableEntityField {
 	CollectableField getDefault();
 
 	/**
-	 * Formats the value according to the formatOutput value.
-	 * 
-	 * @author Thomas Pasch
-	 * @since Nuclos 3.1.01
-	 */
-	String formatOutput(Object value);
-
-	/**
 	 * @return <code>this.getLabel()</code>
 	 */
 	@Override
@@ -282,14 +274,14 @@ public interface CollectableEntityField {
 		}
 
 	}	// inner class GetName
-	
+
 	/**
 	 * inner class <code>CollectableEntityFieldSecurityAgent</code>:
 	 * checks the permission (read, write, delete) for this <code>CollectableEntityField</code> according to the <code>Collectable</code>.
 	 */
 	public class CollectableEntityFieldSecurityAgent {
 		private Collectable clct;
-		
+
 		/**
 		 * sets the <code>Collectable</code> for the <code>CollectableEntityField</code>
 		 * @param Collectable
@@ -297,14 +289,14 @@ public interface CollectableEntityField {
 		public void setCollectable(Collectable clct) {
 			this.clct = clct;
 		}
-		
+
 		/**
 		 * @return the <code>Collectable</code> of the <code>CollectableEntityField</code>
 		 */
 		public Collectable getCollectable() {
 			return clct;
 		}
-		
+
 		/**
 		 * you may use and overwrite this method for your own purpose
 		 * @return true if read permission is granted to this field according to the <code>Collectable</code> otherwise false;
@@ -313,7 +305,7 @@ public interface CollectableEntityField {
 		public boolean isReadable() {
 			return true;
 		}
-	
+
 		/**
 		 * you may use and overwrite this method for your own purpose
 		 * @return true if write permission is granted to this field according to the <code>Collectable</code> otherwise false;
@@ -322,7 +314,7 @@ public interface CollectableEntityField {
 		public boolean isWritable() {
 			return true;
 		}
-		
+
 		/**
 		 * you may use and overwrite this method for your own purpose
 		 * @return true if delete permission is granted to this field according to the <code>Collectable</code> otherwise false;
@@ -338,26 +330,26 @@ public interface CollectableEntityField {
 	 * @param CollectableEntityFieldSecurityAgent
 	 */
 	void setSecurityAgent(CollectableEntityFieldSecurityAgent sa);
-	
+
 	/**
 	 * get the security agent for this <code>CollectableEntityField</code>
 	 * @return CollectableEntityFieldSecurityAgent
 	 */
 	CollectableEntityFieldSecurityAgent getSecurityAgent();
-	
+
 	/**
 	 * checks whether read permission is granted to this field or not
 	 */
 	boolean isReadable();
-	
+
 	/**
 	 * checks whether write permission is granted to this field or not
 	 */
 	boolean isWritable();
-	
+
 	/**
 	 * checks whether delete permission is granted to this field or not
 	 */
 	boolean isRemovable();
-	
+
 }	// interface CollectableEntityField

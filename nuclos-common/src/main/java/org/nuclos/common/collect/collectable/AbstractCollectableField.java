@@ -61,7 +61,7 @@ public abstract class AbstractCollectableField implements CollectableField {
 		}
 		return equals((CollectableField) o, true);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -107,11 +107,9 @@ public abstract class AbstractCollectableField implements CollectableField {
 	 */
 	@Override
 	public String toString() {
-		final Object oValue = this.getValue();
-
-		return (oValue == null) ? "" : CollectableFieldFormat.getInstance(oValue.getClass()).format(null, oValue);
+		return String.valueOf(getValue());
 	}
-	
+
 	/**
 	 * @postcondition result <--> ((this.getValue() == null) && (this.isIdField() --> this.getValueId() == null))
 	 */

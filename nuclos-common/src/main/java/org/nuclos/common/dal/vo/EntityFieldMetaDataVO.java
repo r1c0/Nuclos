@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.dal.vo;
 
-import org.nuclos.common2.FormatOutputUtils;
 import org.nuclos.common2.LangUtils;
 
 
@@ -415,10 +414,6 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 
 	public void setDefaultMandatory(String defaultMandatory) {
 		this.defaultMandatory = defaultMandatory;
-	}
-
-	public String formatOutput(Object value) {
-		return FormatOutputUtils.formatOutput(getFormatOutput(), value);
 	}
 
 	@Override

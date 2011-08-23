@@ -112,6 +112,10 @@ public class CollectableTextField extends CollectableTextComponent implements Me
          ntf.setFormat(CollectableFieldFormat.getInstance(cls));
          ntf.setPattern(clctef.getFormatOutput());
       }
+      else if (Boolean.class.isAssignableFrom(cls)) {
+    	  ntf.setColumnWidthChar('0');
+          ntf.setFormat(CollectableFieldFormat.getInstance(cls));
+      }
 
       if (bSearchable)
       	addAutoComplete(clctef, ntf, getAutoCompletePreferences(clctef));
@@ -128,30 +132,47 @@ public class CollectableTextField extends CollectableTextComponent implements Me
    	}
    }
 
-   @Override
-   public TableCellRenderer getTableCellRenderer() {
-      final TableCellRenderer parentRenderer = CollectableTextField.super.getTableCellRenderer();
-      return new TableCellRenderer() {
-         @Override
-        public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
-            Component comp = parentRenderer.getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
+	@Override
+	@SuppressWarnings("unchecked")
+	public TableCellRenderer getTableCellRenderer() {
+		final TableCellRenderer parentRenderer = CollectableTextField.super.getTableCellRenderer();
+		return new TableCellRenderer() {
+			@Override
+			public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
+				Component comp = parentRenderer.getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
+				if (comp instanceof JLabel) {
+					JLabel lb = (JLabel) comp;
+					final CommonJTextField ntf = getJTextField();
 
-            if (comp instanceof JLabel) {
-               JLabel lb = (JLabel)comp;
-               final CommonJTextField ntf = getJTextField();
+					lb.setHorizontalAlignment(ntf.getHorizontalAlignment());
+					if (oValue != null && ((CollectableField) oValue).getValue() != null) {
+						if (((CollectableField) oValue).getValue() instanceof List) {
+							List<Object> values = (List<Object>) ((CollectableField) oValue).getValue();
+							StringBuilder sb = new StringBuilder();
+							for (Object o : values) {
+								if (o != null) {
+									if (sb.length() > 0) {
+										sb.append(", ");
+									}
+									if (ntf.isOutputFormatted()) {
+										sb.append(ntf.format(o));
+									}
+									else {
+										sb.append(o);
+									}
+								}
+							}
+							lb.setText(sb.toString());
+						} else if (ntf.isOutputFormatted()) {
+							lb.setText(ntf.format(((CollectableField) oValue).getValue()));
+						}
+					}
+				}
 
-               lb.setHorizontalAlignment(ntf.getHorizontalAlignment());
-               if (oValue != null && ((CollectableField)oValue).getValue() != null) {
-                  if (ntf.isOutputFormatted()) {
-                     lb.setText(ntf.format(((CollectableField)oValue).getValue()));
-                  }
-               }
-            }
-
-            return comp;
-         }
-      };
-   }
+				return comp;
+			}
+		};
+	}
 
    @Override
    public void receive(Object id, ObjectType type, MessageType msg) {

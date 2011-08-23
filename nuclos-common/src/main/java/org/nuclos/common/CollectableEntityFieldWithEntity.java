@@ -16,11 +16,18 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common;
 
-import org.nuclos.common.collect.collectable.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
+import org.nuclos.common.collect.collectable.AbstractCollectableEntity;
+import org.nuclos.common.collect.collectable.CollectableEntity;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
-
-import java.io.*;
 
 /**
  * A <code>CollectableEntityField</code>, along with the <code>CollectableEntity</code> it belongs to.
@@ -33,7 +40,7 @@ import java.io.*;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  * @todo Even CollectableEntityField should probably know to which entity it belongs. Try to eliminate this class.
- * 
+ *
  * @deprecated CollectableEntityField now knows the entity name.
  */
 public class CollectableEntityFieldWithEntity implements CollectableEntityField, Serializable {
@@ -41,17 +48,17 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	private static final long serialVersionUID = 6352766708611387488L;
 
 	private final String entityName;
-	
+
 	/**
 	 * @deprecated Why is this transient? How is a value after serialization enforced?
 	 */
 	private transient CollectableEntity clcte;
-	
+
 	/**
 	 * @deprecated Why is this transient? How is a value after serialization enforced?
 	 */
 	private transient CollectableEntityField clctef;
-	
+
 	/**
 	 * @deprecated Why is this transient? How is a value after serialization enforced?
 	 */
@@ -72,7 +79,7 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	/**
 	 * @return the name of the <code>CollectableEntity</code> this field belongs to.
 	 * @postcondition result != null
-	 * 
+	 *
 	 * @deprecated Not always set. Use {@link #getEntityName()} instead.
 	 */
 	public final String getCollectableEntityName() {
@@ -187,11 +194,6 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	public CollectableField getDefault() {
 		return this.getField().getDefault();
 	}
-	
-	@Override
-	public String formatOutput(Object value) {
-		return getField().formatOutput(value);
-	}
 
 	@Override
 	public String toString() {
@@ -205,7 +207,7 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 		final CollectableEntityField that = (CollectableEntityField) o;
 		final boolean result;
 		if (that instanceof CollectableEntityFieldWithEntity)  {
-			result = getEntityName().equals(that.getEntityName()) && 
+			result = getEntityName().equals(that.getEntityName()) &&
 					getField().equals(((CollectableEntityFieldWithEntity) that).getField());
 		}
 		else {
@@ -222,7 +224,7 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 
 	/**
 	 * Predicate: HasEntity
-	 * 
+	 *
 	 * @deprecated Use CollectableEntityField.HasEntity
 	 */
 	public static class HasEntity implements Predicate<CollectableEntityFieldWithEntity> {
@@ -244,7 +246,7 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 
 	/**
 	 * Qualified field name. Format: EntityName.FieldName
-	 * 
+	 *
 	 * @deprecated Use CollectableEntityField.QualifiedEntityFieldName
 	 */
 	public static class QualifiedEntityFieldName {
@@ -278,7 +280,7 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 
 	/**
 	 * Transformer: GetEntityName
-	 * 
+	 *
 	 * @deprecated Use CollectableEntityField.GetEntityName
 	 */
 	public static class GetEntityName implements Transformer<CollectableEntityFieldWithEntity, String> {
@@ -290,7 +292,7 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 
 	/**
 	 * Transformer: GetQualifiedEntityFieldName
-	 * 
+	 *
 	 * @deprecated Use CollectableEntityField.GetQualifiedEntityFieldName
 	 */
 	public static class GetQualifiedEntityFieldName implements Transformer<CollectableEntityFieldWithEntity, String> {
@@ -376,5 +378,5 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	public String getEntityName() {
 		return clcte.getName();
 	}
-	
+
 }	// class CollectableEntityFieldWithEntity
