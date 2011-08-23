@@ -361,7 +361,7 @@ public abstract class CollectableFieldFormat {
 			}
 			NumberFormat nf;
 			if (sOutputFormat == null) {
-				nf = CommonLocaleDelegate.getNumberFormat();
+				nf = CommonLocaleDelegate.getIntegerFormat();
 			}
 			else {
 				nf = new DecimalFormat(sOutputFormat);

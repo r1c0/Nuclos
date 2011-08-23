@@ -118,6 +118,12 @@ public class CommonLocaleDelegate {
 		return getKeyLookup().getLocaleInfo();
 	}
 
+	public static NumberFormat getIntegerFormat() {
+		NumberFormat nf = NumberFormat.getIntegerInstance(getLocale());
+		nf.setGroupingUsed(false);
+		return nf;
+	}
+
 	public static NumberFormat getNumberFormat() {
 		return getKeyLookup().getNumberFormat();
 	}
