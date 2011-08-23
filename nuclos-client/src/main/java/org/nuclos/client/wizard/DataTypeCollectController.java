@@ -16,7 +16,10 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,6 +41,7 @@ import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
 
@@ -52,9 +56,9 @@ import org.nuclos.common2.exception.CommonValidationException;
  */
 
 public class DataTypeCollectController extends MasterDataCollectController{
-	
+
 	private List<ChangeListener> lstChangeListener;
-	
+
 	protected class DataTypeCollectStateListener extends CollectStateAdapter {
 
 		@Override
@@ -67,21 +71,21 @@ public class DataTypeCollectController extends MasterDataCollectController{
 			}
 			else if(ev.getNewCollectState().getInnerState() == CollectState.DETAILSMODE_NEW_CHANGED) {
 				for(CollectableComponent comp : getDetailsEditView().getCollectableComponentsFor("javatyp")) {
-					comp.setEnabled(true);			
+					comp.setEnabled(true);
 				}
 			}
 			else {
 				for(CollectableComponent comp : getDetailsEditView().getCollectableComponentsFor("javatyp")) {
-					comp.setEnabled(false);			
+					comp.setEnabled(false);
 				}
-			}			
+			}
 		}
 	}
 
 	/**
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -91,29 +95,29 @@ public class DataTypeCollectController extends MasterDataCollectController{
 		super(parent, NuclosEntity.DATATYP, tabIfAny);
 		// this.init();
 		this.getCollectStateModel().addCollectStateListener(new DataTypeCollectStateListener());
-		lstChangeListener = new ArrayList<ChangeListener>();	
+		lstChangeListener = new ArrayList<ChangeListener>();
 	}
-	
+
 	public void addChangeListener(ChangeListener listener) {
 		lstChangeListener.add(listener);
 	}
-		
-	
+
+
 	@Override
 	public void save() throws CommonBusinessException {
 		super.save();
-		
+
 		for(ChangeListener cl : lstChangeListener) {
 			cl.stateChanged(new ChangeEvent(this.getCompleteSelectedCollectable()));
 		}
-		
+
 	}
 
 	@Override
 	protected void cmdCloneSelectedCollectable() {
 		super.cmdCloneSelectedCollectable();
-		resetFields();				
-	
+		resetFields();
+
 	}
 
 
@@ -122,18 +126,33 @@ public class DataTypeCollectController extends MasterDataCollectController{
 	@Override
 	protected void validate(CollectableMasterDataWithDependants clct)
 		throws CommonBusinessException {
-		super.validate(clct);		
+		super.validate(clct);
 		String sJavaType = (String)clct.getField("javatyp").getValue();
 		if(sJavaType == null) {
 			throw new CommonValidationException(CommonLocaleDelegate.getMessage("DataTypeCollectController.1","Kein Java Datentyp gesetzt"));
 		}
-		
+
 		if(sJavaType.equals("java.lang.Double") || sJavaType.equals("java.lang.Integer")) {
 			Integer iScale = (Integer)clct.getField("scale").getValue();
 			if(iScale == null) {
 				throw new CommonValidationException(CommonLocaleDelegate.getMessage("DataTypeCollectController.2","Keine Vorkommastellen gesetzt"));
 			}
-		}		
+		}
+
+		String sOutputFormat = (String)clct.getField("outputformat").getValue();
+		try {
+			if (!StringUtils.isNullOrEmpty(sOutputFormat)) {
+				if (Integer.class.getName().equals(sJavaType) || Double.class.getName().equals(sJavaType)) {
+					new DecimalFormat(sOutputFormat);
+				}
+				else if (Date.class.getName().equals(sJavaType)) {
+					new SimpleDateFormat(sOutputFormat);
+				}
+			}
+		}
+		catch (IllegalArgumentException ex) {
+			throw new CommonBusinessException(StringUtils.getParameterizedExceptionMessage("wizard.step.attributeproperties.validation.outputformat", sOutputFormat, sJavaType));
+		}
 	}
 
 	/**
@@ -142,20 +161,20 @@ public class DataTypeCollectController extends MasterDataCollectController{
 	public void init() {
 		super.init();
 		this.getDetailsEditView().getModel().getCollectableComponentModelFor("javatyp").addCollectableComponentModelListener(new CollectableComponentModelListener() {
-			
+
 			@Override
 			public void valueToBeChanged(DetailsComponentModelEvent ev) {}
-			
+
 			@Override
 			public void searchConditionChangedInModel(SearchComponentModelEvent ev) {}
-			
+
 			@Override
 			public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
-				 
-				resetFields();				
-				
+
+				resetFields();
+
 				String sValue = (String)ev.getNewValue().getValue();
-				
+
 				if("java.lang.Integer".equals(sValue)) {
 					disablePrecision();
 					for(CollectableComponent comp : getDetailsEditView().getCollectableComponentsFor("databasetyp")) {
@@ -179,7 +198,7 @@ public class DataTypeCollectController extends MasterDataCollectController{
 					disableScale();
 					//disableInputFormat();
 					disableOutputFormat();
-					
+
 					for(CollectableComponent comp : getDetailsEditView().getCollectableComponentsFor("scale")) {
 						comp.setField(new CollectableValueField(new Integer(1)));
 					}
@@ -200,9 +219,9 @@ public class DataTypeCollectController extends MasterDataCollectController{
 				}
 			}
 		});
-		
+
 	}
-	
+
 	private void resetFields() {
 		for(CollectableComponent comp : getDetailsEditView().getCollectableComponents()) {
 			if(!comp.getEntityField().getName().equals("javatyp")) {
@@ -210,7 +229,7 @@ public class DataTypeCollectController extends MasterDataCollectController{
 			}
 		}
 	}
-	
+
 	private void disablePrecision() {
 		Iterator<CollectableComponent> it = getDetailsEditView().getCollectableComponentsFor("precision").iterator();
 		while(it.hasNext()) {
@@ -219,7 +238,7 @@ public class DataTypeCollectController extends MasterDataCollectController{
 			comp.setField(new CollectableValueField(null));
 		}
 	}
-	
+
 	private void disableInputFormat() {
 		Iterator<CollectableComponent> it = getDetailsEditView().getCollectableComponentsFor("inputformat").iterator();
 		while(it.hasNext()) {
@@ -228,7 +247,7 @@ public class DataTypeCollectController extends MasterDataCollectController{
 			comp.setField(new CollectableValueField(null));
 		}
 	}
-	
+
 	private void disableOutputFormat() {
 		Iterator<CollectableComponent> it = getDetailsEditView().getCollectableComponentsFor("outputformat").iterator();
 		while(it.hasNext()) {
@@ -237,7 +256,7 @@ public class DataTypeCollectController extends MasterDataCollectController{
 			comp.setField(new CollectableValueField(null));
 		}
 	}
-	
+
 	private void disableScale() {
 		Iterator<CollectableComponent> it = getDetailsEditView().getCollectableComponentsFor("scale").iterator();
 		while(it.hasNext()) {
@@ -246,6 +265,6 @@ public class DataTypeCollectController extends MasterDataCollectController{
 			comp.setField(new CollectableValueField(null));
 		}
 	}
-		
-	
+
+
 }
