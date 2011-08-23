@@ -32,7 +32,6 @@ import org.nuclos.client.ui.labeled.LabeledTextField;
 import org.nuclos.client.ui.message.MessageExchange;
 import org.nuclos.client.ui.message.MessageExchange.MessageExchangeListener;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collection.Pair;
@@ -133,9 +132,8 @@ public class CollectableTextField extends CollectableTextComponent implements Me
    }
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public TableCellRenderer getTableCellRenderer() {
-		final TableCellRenderer parentRenderer = CollectableTextField.super.getTableCellRenderer();
+		final TableCellRenderer parentRenderer = super.getTableCellRenderer();
 		return new TableCellRenderer() {
 			@Override
 			public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
@@ -143,34 +141,7 @@ public class CollectableTextField extends CollectableTextComponent implements Me
 				if (comp instanceof JLabel) {
 					JLabel lb = (JLabel) comp;
 					final CommonJTextField ntf = getJTextField();
-
 					lb.setHorizontalAlignment(ntf.getHorizontalAlignment());
-					final CollectableField cf = (CollectableField) oValue;
-					if (cf != null && cf.getValue() != null) {
-						if (cf.getValue() instanceof List) {
-							List<Object> values = (List<Object>) cf.getValue();
-							StringBuilder sb = new StringBuilder();
-							for (Object o : values) {
-								if (o != null) {
-									if (sb.length() > 0) {
-										sb.append(", ");
-									}
-									if (ntf.isOutputFormatted()) {
-										sb.append(ntf.format(o));
-									}
-									else {
-										sb.append(o);
-									}
-								}
-							}
-							lb.setText(sb.toString());
-						} else if (ntf.isOutputFormatted()) {
-							lb.setText(ntf.format(cf.getValue()));
-						}
-					}
-					else {
-						lb.setText("");
-					}
 				}
 				return comp;
 			}

@@ -54,7 +54,7 @@ import org.nuclos.common2.exception.PreferencesException;
 public class CollectableUtils {
 
 	private static final Logger log = Logger.getLogger(CollectableUtils.class);
-	
+
 	private static final String PREFS_KEY_FIELDTYPE = "fieldType";
 	private static final String PREFS_KEY_VALUE = "value";
 	private static final String PREFS_KEY_VALUEID = "valueId";
@@ -225,7 +225,7 @@ public class CollectableUtils {
 	/**
 	 * @param collclctef Collection<CollectableEntityField>
 	 * @return List<String> the field names from the <code>CollectableEntityField</code>s.
-	 * 
+	 *
 	 * @deprecated Not really usefull. Use transform directly.
 	 */
 	public static List<String> getFieldNamesFromCollectableEntityFields(Collection<? extends CollectableEntityField> collclctef) {
@@ -360,7 +360,7 @@ public class CollectableUtils {
 	public static void setDefaultValues(Collectable clct, CollectableEntity clcte) {
 		for (String sFieldName : clcte.getFieldNames()) {
 			if (clcte.getEntityField(sFieldName).getDefault().getValue() != null &&
-				clcte.getEntityField(sFieldName).getDefault().getValue().equals(RelativeDate.today().toString())) {
+				clcte.getEntityField(sFieldName).getDefault().getValue().toString().equals(RelativeDate.today().toString())) {
 				clct.setField(sFieldName, new CollectableValueField(DateUtils.today()));
 			}
 			else if (clcte.getEntityField(sFieldName).getJavaClass() == Boolean.class &&
@@ -436,7 +436,7 @@ public class CollectableUtils {
 		assert result != null;
 		return result;
 	}
-	
+
 	public static String formatFieldExpression(String expr, final Collectable clct) {
 		if (expr == null || expr.isEmpty()) {
 			try {
@@ -470,7 +470,7 @@ public class CollectableUtils {
 			return StringUtils.replaceParameters(expr,paramTransformer);
 		}
 	}
-	
+
 	/**
 	 * Comparator for sorting collectable fields along a given string list
 	 */

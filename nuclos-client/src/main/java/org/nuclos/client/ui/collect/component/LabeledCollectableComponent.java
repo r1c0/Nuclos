@@ -16,11 +16,18 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.component;
 
+import java.awt.Component;
+import java.util.List;
+
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.table.TableCellRenderer;
 
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 
 /**
  * Default (abstract) implementation of a <code>CollectableComponent</code>,
@@ -73,5 +80,44 @@ public abstract class LabeledCollectableComponent extends AbstractCollectableCom
 	@Override
 	public void setFillControlHorizontally(boolean bFill) {
 		getLabeledComponent().setFillControlHorizontally(bFill);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public TableCellRenderer getTableCellRenderer() {
+		final TableCellRenderer parentRenderer = super.getTableCellRenderer();
+		return new TableCellRenderer() {
+			@Override
+			public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
+				Component comp = parentRenderer.getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
+				if (comp instanceof JLabel) {
+					JLabel lb = (JLabel) comp;
+					CollectableFieldFormat format = CollectableFieldFormat.getInstance(getEntityField().getJavaClass());
+
+					final CollectableField cf = (CollectableField) oValue;
+					if (cf != null && cf.getValue() != null) {
+						if (cf.getValue() instanceof List) {
+							List<Object> values = (List<Object>) cf.getValue();
+							StringBuilder sb = new StringBuilder();
+							for (Object o : values) {
+								if (o != null) {
+									if (sb.length() > 0) {
+										sb.append(", ");
+									}
+									sb.append(format.format(getEntityField().getFormatOutput(), o));
+								}
+							}
+							lb.setText(sb.toString());
+						} else {
+							lb.setText(format.format(getEntityField().getFormatOutput(), cf.getValue()));
+						}
+					}
+					else {
+						lb.setText("");
+					}
+				}
+				return comp;
+			}
+		};
 	}
 }  // class LabeledCollectableComponent
