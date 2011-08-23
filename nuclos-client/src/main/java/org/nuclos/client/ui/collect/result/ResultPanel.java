@@ -89,9 +89,9 @@ import org.nuclos.common2.exception.PreferencesException;
  * @version	01.00.00
  */
 public class ResultPanel<Clct extends Collectable> extends JPanel {
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -101,11 +101,11 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 * the toolbar.
 	 */
 	private final JToolBar toolBar = UIUtils.createNonFloatableToolBar();
-	
+
 	private int popbtnExtraIndex = -1;
-	
+
 	private final PopupButton popbtnExtra = new PopupButton(CommonLocaleDelegate.getMessage("PopupButton.Extras","Extras"));
-	
+
 	//private final JPanel pnlToolBar = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
 	//private Component compCustomToolBarArea = createDefaultCustomToolBarArea();
@@ -145,34 +145,34 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 * TODO: make private.
 	 */
 	public final JMenuItem btnSelectColumns = new JMenuItem();
-	
+
 
 	/**
 	 * Button: "Export selected Collectables."
 	 * TODO: make private.
 	 */
 	public final JMenuItem btnExport = new JMenuItem();
-	
+
 	/**
 	 * Button: "Import Collectables."
 	 * TODO: make private.
 	 */
 	public final JMenuItem btnImport = new JMenuItem();
-	
+
 	/**
 	 * Button: "Add Bookmark"
 	 * TODO: make private.
 	 */
 	public final JMenuItem btnBookmark = new JMenuItem();
-	
+
 	protected static final String EXPORT_IMPORT_EXTENSION = ".zip";
-	
+
 	private JComponent compCenter = new JPanel(new BorderLayout());
 
 	private final JPanel pnlResultTable;
 	private final JScrollPane scrlpnResult = new JScrollPane();
 	private final JTable tblResult;
-	
+
 	public final StatusBarTextField tfStatusBar = new StatusBarTextField(" ");
 
 	/**
@@ -189,34 +189,34 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public final JMenuItem miPopupCopyCells = new JMenuItem(CommonLocaleDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen"));
 	public final JMenuItem miPopupCopyRows = new JMenuItem(CommonLocaleDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen"));
 	public final JMenu miGenerations = new JMenu(CommonLocaleDelegate.getMessage("ResultPanel.12","Arbeitsschritte"));
-	
+
 	private TableHeaderColumnPopupListener tableHeaderColumnListener;
-	
+
 	public ResultPanel() {
 		super(new BorderLayout());
-		
+
 		this.btnDelete = getDeleteButton();
 
 		this.tblResult = newResultTable();
 		this.pnlResultTable = newResultTablePanel();
-		
+
 		//this.add(compCenter, BorderLayout.CENTER);
 		//this.add(UIUtils.newStatusBar(tfStatusBar), BorderLayout.SOUTH);
 		this.setCenterComponent(compCenter);
 		this.setSouthComponent(UIUtils.newStatusBar(tfStatusBar));
-		
+
 		this.popupmenuRow.setName("popupmenuRow");
 		this.popupmenuRow.add(this.miPopupEdit);
 		this.popupmenuRow.add(this.miPopupClone);
 		this.popupmenuRow.add(this.miPopupDelete);
 		this.popupmenuRow.addSeparator();
-		this.popupmenuRow.add(this.miPopupOpenInNewTab); 
+		this.popupmenuRow.add(this.miPopupOpenInNewTab);
 		this.popupmenuRow.add(this.miPopupBookmark);
 		this.miGenerations.setVisible(false);
 		this.popupmenuRow.add(this.miGenerations);
 		this.popupmenuRow.add(this.miPopupCopyCells);
 		this.popupmenuRow.add(this.miPopupCopyRows);
-		
+
 		/** @todo implement: */
 //		this.popupmenuRow.add(this.miPopupDefineAsNewSearchResult);
 
@@ -234,28 +234,28 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 		// Edit is default action:
 		this.miPopupEdit.setFont(this.miPopupEdit.getFont().deriveFont(Font.BOLD));
-		
+
 		init();
 	}
-	
+
 	public final CollectPanelIndicator getCollectPanelIndicator() {
 		return cpi;
 	}
-	
+
 	/**
 	 * TODO: Make this package visible.
 	 */
 	public final TableHeaderColumnPopupListener getTableHeaderColumnPopupListener() {
 		return tableHeaderColumnListener;
 	}
-	
+
 	/**
 	 * TODO: Make this package visible.
 	 */
 	public final void setTableHeaderColumnPopupListener(TableHeaderColumnPopupListener tableHeaderColumnListener) {
 		this.tableHeaderColumnListener = tableHeaderColumnListener;
 	}
-	
+
 	/**
 	 * init after construct...
 	 */
@@ -265,7 +265,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		popbtnExtraIndex = getToolBarNextIndex();
 		if (popbtnExtra.getComponentCount() > 0)
 			toolBar.add(popbtnExtra);
-		
+
 		this.popupmenuRow.addPopupMenuListener(new PopupMenuListener() {
 			@Override
 			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
@@ -275,7 +275,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 				if (miPopupBookmark.getAction() != null) {
 					miPopupBookmark.setEnabled(miPopupBookmark.getAction().isEnabled());
 				}
-				
+
 			}
 			@Override
 			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
@@ -283,37 +283,37 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 			public void popupMenuCanceled(PopupMenuEvent e) {}
 		});
 	}
-	
+
 	public void updatePopupExtraVisibility() {
 		if (popbtnExtraIndex != -1 && toolBar.getComponentIndex(popbtnExtra) < 0) {
 			toolBar.add(popbtnExtra, popbtnExtraIndex);
 		}
 	}
-	
+
 	private void setNorthComponent(JComponent comp) {
 		add(comp, BorderLayout.NORTH);
 	}
-	
+
 	protected void setSouthComponent(JComponent comp) {
 		add(comp, BorderLayout.SOUTH);
 	}
 
 	protected void setupDefaultToolBarActions( JToolBar toolBar) {
-		
+
 		toolBar.add(cpi.getJPanel());
-		
+
 		toolBar.add(btnEdit, null);
 		toolBar.add(btnRefresh, null);
 		toolBar.add(btnNew, null);
 		toolBar.add(btnDelete, null);
-		
+
 		addPopupExtraMenuItem(btnBookmark);
 
 		//result.add(btnClone, null);
 		//result.add(btnSelectColumns, null);
 		addPopupExtraMenuItem(btnClone);
 		addPopupExtraMenuItem(btnSelectColumns);
-		
+
 		this.btnEdit.setName("btnEdit");
 		this.btnEdit.setIcon(Icons.getInstance().getIconEdit16());
 		this.btnEdit.setEnabled(false);
@@ -338,14 +338,14 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		this.btnSelectColumns.setName("btnSelectColumns");
 		this.btnSelectColumns.setIcon(Icons.getInstance().getIconSelectVisibleColumns16());
 		this.btnSelectColumns.setText(CommonLocaleDelegate.getMessage("ResultPanel.11","Spalten ein-/ausblenden"));
-		
+
 		//result.addSeparator();
 		//result.add(btnExport);
 		//result.add(btnImport);
 		addPopupExtraSeparator();
 		addPopupExtraMenuItem(btnExport);
 		addPopupExtraMenuItem(btnImport);
-		
+
 		this.btnExport.setName("btnExport");
 		this.btnExport.setIcon(Icons.getInstance().getIconExport16());
 		this.btnExport.setText(CommonLocaleDelegate.getMessage("ResultPanel.10","Selektierte Daten Exportieren"));
@@ -354,21 +354,21 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		this.btnImport.setIcon(Icons.getInstance().getIconImport16());
 		this.btnImport.setText(CommonLocaleDelegate.getMessage("ResultPanel.5","Daten Importieren"));
 	}
-	
+
 	public void addPopupExtraSeparator() {
 		updatePopupExtraVisibility();
 		popbtnExtra.addSeparator();
 	}
-	
+
 	public Component addPopupExtraComponent(Component comp) {
 		updatePopupExtraVisibility();
 		return popbtnExtra.add(comp);
 	}
-	
+
 	public void removePopupExtraComponent(Component comp) {
 		popbtnExtra.remove(comp);
 	}
-	
+
 	public JMenuItem addPopupExtraMenuItem(JMenuItem mi) {
 		updatePopupExtraVisibility();
 		return popbtnExtra.add(mi);
@@ -377,9 +377,9 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public void removePopupExtrasMenuItem(JMenuItem mi) {
 		popbtnExtra.remove(mi);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param comp
 	 * @return index of comp in toolbar
 	 */
@@ -388,26 +388,26 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		toolBar.validate();
 		return toolBar.getComponentIndex(comp);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param comps
 	 * @return index of comp in toolbar
 	 */
 	public int addToolBarComponents(List<Component> comps) {
 		if (comps.size() == 0)
 			return -1;
-		
+
 		for (Component comp : comps)
 			toolBar.add(comp);
 		toolBar.validate();
 		return toolBar.getComponentIndex(comps.get(0));
 	}
-	
+
 	public void addToolBarComponents(List<Component> comps, int index) {
 		if (comps.size() == 0)
 			return;
-		
+
 		// add last list entry first to toolbar
 		List<Component> reversedComps = new ArrayList<Component>(comps);
 		Collections.reverse(reversedComps);
@@ -415,36 +415,36 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 			toolBar.add(comp, index);
 		toolBar.validate();
 	}
-	
+
 	public int getToolBarNextIndex() {
 		return toolBar.getComponentCount();
 	}
-	
+
 	public int addToolBarSeparator() {
 		toolBar.addSeparator();
 		return toolBar.getComponentCount()-1;
 	}
-	
+
 	public void addToolBarComponent(Component comp, int index) {
 		toolBar.add(comp, index);
 		toolBar.validate();
 	}
-	
+
 	public void addToolBarHorizontalStruct(int width) {
 		toolBar.add(Box.createHorizontalStrut(width));
 	}
-	
+
 	public void removeToolBarComponent(Component comp) {
 		toolBar.remove(comp);
 		toolBar.revalidate();
 	}
-	
+
 	public void removeToolBarComponents(List<Component> comps) {
 		for (Component comp : comps)
 			toolBar.remove(comp);
 		toolBar.revalidate();
 	}
-	
+
 	/**
 	 * cleans up the toolbars
 	 */
@@ -457,7 +457,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 */
 	protected CommonJTable newResultTable() {
 		CommonJTable result = new CommonJTable();
-		
+
 		ToolTipsTableHeader tblHeader = new ToolTipsTableHeader(null, result.getColumnModel());
 
 		tblHeader.setName("tblHeader");
@@ -481,7 +481,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		this.tblResult.setName("tblResult");
 		this.tblResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.tblResult.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		
+
 		final JPanel result = new JPanel(new BorderLayout());
 		result.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		result.add(scrlpnResult, BorderLayout.CENTER);
@@ -495,11 +495,11 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public JTable getResultTable() {
 		return tblResult;
 	}
-	
+
 	protected AbstractButton getDeleteButton() {
 		return new JButton();
 	}
-	
+
 
 	/**
 	 * defines the initial custom toolbar area
@@ -570,11 +570,11 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public void cmdImport(final CollectController<Clct> clctctl) {
 		throw new UnsupportedOperationException("cmdImport");
 	}
-	
+
 	/**
 	 * @param lstclctefSelected
 	 * @return field -> column width
-	 * 
+	 *
 	 * TODO: Make protected again.
 	 */
 	public Map<String, Integer> getVisibleColumnWidth(List<? extends CollectableEntityField> lstclctefSelected) {
@@ -584,13 +584,13 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 			final Integer iWidth = this.getResultTable().getColumn(clctef.getLabel()).getWidth();
 			result.put(clctef.getName(), iWidth);
 		}
-		return result; 
+		return result;
 	}
 
 	/**
 	 * @param lstclctefColumns
 	 * @param mpWidths field name -> column width
-	 * 
+	 *
 	 * TODO: Make this protected again.
 	 */
 	public void restoreColumnWidths(List<? extends CollectableEntityField> lstclctefColumns, Map<String, Integer> mpWidths) {
@@ -605,12 +605,12 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	protected void setVisibleTable(boolean visibility){
 		getResultTable().setVisible(visibility);
 	}
-	
+
 	/**
 	 *
 	 * @param table for compatibility with old code the tabel is geven to this method
 	 * 			could be removed later
-	 * 
+	 *
 	 * TODO: Make this protected again.
 	 */
 	public void setupTableCellRenderers(JTable table) {
@@ -633,25 +633,34 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 * sets all column widths to user prefs; set optimal width if no preferences yet saved
 	 * Copied from the SubFormController
 	 * @param tblResult
-	 * 
+	 *
 	 * TODO: Make this protected again.
 	 */
 	public void setColumnWidths(JTable tblResult, boolean bUseCustomColumnWidths, Preferences prefs) {
-		//log.debug("setColumnWidths");
+		final Map<String, Integer> lstWidthsFromPreferences = this.getTableColumnWidthsFromPreferences(prefs);
 
-		final List<Integer> lstWidthsFromPreferences =  this.getTableColumnWidthsFromPreferences(prefs);
-		//System.out.println(tblResult.getColumnCount()+ " " + tblResult.getModel().getColumnCount() + " " +  lstWidthsFromPreferences.size());
-		bUseCustomColumnWidths = !lstWidthsFromPreferences.isEmpty() && lstWidthsFromPreferences.size() == tblResult.getColumnCount();
+		bUseCustomColumnWidths = !lstWidthsFromPreferences.isEmpty();
 		if (bUseCustomColumnWidths) {
 			Logger.getLogger(this.getClass()).debug("Restoring column widths from user preferences");
-			assert(lstWidthsFromPreferences.size() == tblResult.getColumnCount());
-			final Enumeration<TableColumn> enumeration = tblResult.getColumnModel().getColumns();
-			int iColumn = 0;
-			while (enumeration.hasMoreElements()) {
-				final TableColumn column = enumeration.nextElement();
-				final int iPreferredCellWidth = lstWidthsFromPreferences.get(iColumn++);
-				column.setPreferredWidth(iPreferredCellWidth);
-				column.setWidth(iPreferredCellWidth);
+			if (tblResult.getModel() instanceof CollectableEntityFieldBasedTableModel) {
+				CollectableEntityFieldBasedTableModel cefbtm = (CollectableEntityFieldBasedTableModel) tblResult.getModel();
+
+				for (String field : lstWidthsFromPreferences.keySet()) {
+					for (int iColumn = 0; iColumn < cefbtm.getColumnCount(); ++iColumn) {
+						if (cefbtm.getCollectableEntityField(iColumn).getName().equals(field)) {
+							final TableColumn column = tblResult.getColumnModel().getColumn(iColumn);
+							final Integer iPreferredCellWidth = lstWidthsFromPreferences.get(field);
+							if (iPreferredCellWidth != null) {
+								column.setPreferredWidth(iPreferredCellWidth);
+								column.setWidth(iPreferredCellWidth);
+							}
+							else {
+								TableUtils.setOptimalColumnWidth(tblResult, iColumn);
+							}
+							break;
+						}
+					}
+				}
 			}
 		}
 		else {
@@ -670,15 +679,20 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 * @return the table columns widths. If there are stored user preferences, the sizes will be restored.
 	 * Size and order of list entries is determined by number and order of visible columns
 	 */
-	private List<Integer> getTableColumnWidthsFromPreferences(Preferences prefs) {
-		List<Integer> result;
+	private Map<String, Integer> getTableColumnWidthsFromPreferences(Preferences prefs) {
+		Map<String, Integer> result = new HashMap<String, Integer>();
+		List<String> fields;
+		List<Integer> widths;
 		try {
-			result = PreferencesUtils.getIntegerList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDWIDTHS);
+			fields = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS);
+			widths = PreferencesUtils.getIntegerList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDWIDTHS);
 		}
 		catch (PreferencesException ex) {
-			result = new ArrayList<Integer>();
+			return result;
 		}
-
+		for (int i = 0; i < fields.size(); i++) {
+			result.put(fields.get(i), widths.size() > i ? widths.get(i) : null);
+		}
 		return result;
 	}
 
@@ -686,7 +700,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		JTable resultTable = getResultTable();
 		return CollectableTableHelper.getColumnWidthsMap(resultTable);
 	}
-	
+
 	/**
 	 * Popup menu for the rows in the Result table.
 	 */
@@ -755,7 +769,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 	/**
 	 * Popup menu for the columns in the Result table.
-	 * 
+	 *
 	 * TODO: Should be private or protected.
 	 */
 	public static abstract class TableHeaderColumnPopupListener extends AbstractJPopupMenuListener {
@@ -803,8 +817,8 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		protected abstract void removeColumnVisibility(TableColumn column);
 
 	}  // inner class PopupMenuColumnListener
-	
+
 	protected void setupCopyAction() {
 	}
-	
+
 }  // class ResultPanel
