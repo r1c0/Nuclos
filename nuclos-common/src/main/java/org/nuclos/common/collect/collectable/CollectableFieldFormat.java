@@ -215,7 +215,7 @@ public abstract class CollectableFieldFormat {
 			sText = sText.toUpperCase();
 
 			String labelToday = CommonLocaleDelegate.getMessage("datechooser.today.label", "Heute");
-			if (sText.equalsIgnoreCase(labelToday)) {
+			if (sText.equalsIgnoreCase(RelativeDate.today().toString()) || sText.equalsIgnoreCase(labelToday)) {
 				result = RelativeDate.today();
 			}
 			else if (sText.startsWith(labelToday.toUpperCase())) {
