@@ -84,6 +84,7 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelPro
 import org.nuclos.client.ui.collect.component.model.DetailsEditModel;
 import org.nuclos.client.ui.collect.detail.DetailsPanel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
+import org.nuclos.client.ui.collect.result.NuclosResultController;
 import org.nuclos.client.ui.collect.result.NuclosSearchResultStrategy;
 import org.nuclos.client.ui.collect.result.ResultController;
 import org.nuclos.client.ui.collect.result.ResultPanel;
@@ -223,7 +224,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
     */
    protected MasterDataCollectController(JComponent parent, String sEntityName, MainFrameTab tabIfAny, boolean detailsWithScrollbar) {
 	   this(parent, sEntityName, tabIfAny, detailsWithScrollbar,
-			   new ResultController<CollectableMasterDataWithDependants>(sEntityName,
+			   new NuclosResultController<CollectableMasterDataWithDependants>(sEntityName,
 					   new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()));
    }
 
