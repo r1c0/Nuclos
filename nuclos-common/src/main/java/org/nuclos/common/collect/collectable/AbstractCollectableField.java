@@ -107,7 +107,9 @@ public abstract class AbstractCollectableField implements CollectableField {
 	 */
 	@Override
 	public String toString() {
-		return String.valueOf(getValue());
+		final Object value = getValue();
+		if (value == null) return "";
+		return value.toString();
 	}
 
 	/**

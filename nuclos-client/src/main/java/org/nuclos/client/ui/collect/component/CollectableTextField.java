@@ -145,9 +145,10 @@ public class CollectableTextField extends CollectableTextComponent implements Me
 					final CommonJTextField ntf = getJTextField();
 
 					lb.setHorizontalAlignment(ntf.getHorizontalAlignment());
-					if (oValue != null && ((CollectableField) oValue).getValue() != null) {
-						if (((CollectableField) oValue).getValue() instanceof List) {
-							List<Object> values = (List<Object>) ((CollectableField) oValue).getValue();
+					final CollectableField cf = (CollectableField) oValue;
+					if (cf != null && cf.getValue() != null) {
+						if (cf.getValue() instanceof List) {
+							List<Object> values = (List<Object>) cf.getValue();
 							StringBuilder sb = new StringBuilder();
 							for (Object o : values) {
 								if (o != null) {
@@ -164,11 +165,13 @@ public class CollectableTextField extends CollectableTextComponent implements Me
 							}
 							lb.setText(sb.toString());
 						} else if (ntf.isOutputFormatted()) {
-							lb.setText(ntf.format(((CollectableField) oValue).getValue()));
+							lb.setText(ntf.format(cf.getValue()));
 						}
 					}
+					else {
+						lb.setText("");
+					}
 				}
-
 				return comp;
 			}
 		};
