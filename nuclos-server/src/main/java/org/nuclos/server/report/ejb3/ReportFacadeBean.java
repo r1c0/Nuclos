@@ -164,12 +164,15 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeLo
     * @throws CommonPermissionException
     */
    @Override
-public Collection<ReportVO> getReports() throws CommonPermissionException {
+   public Collection<ReportVO> getReports() throws CommonPermissionException {
       this.checkReadAllowed(NuclosEntity.REPORT);
-      final Collection<ReportVO> collreport = Collections.emptyList();
+      final Collection<ReportVO> collreport = new ArrayList<ReportVO>();
 
       for (MasterDataVO mdVO : getMasterDataFacade().getMasterData(NuclosEntity.REPORT.getEntityName(), null, true)) {
          Collection<Integer> readableReports = SecurityCache.getInstance().getReadableReports(getCurrentUserName()).get(ReportType.REPORT);
+         if (readableReports == null) {
+        	 return collreport;
+         }
          if (readableReports.contains(mdVO.getIntId()))
             collreport.add(MasterDataWrapper.getReportVO(mdVO,getCurrentUserName()));
       }

@@ -34,6 +34,11 @@ import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 
+/**
+ * Create a CSV-export from a template.
+ *
+ * @author thomas.schiffmann
+ */
 public class TemplatedCsvExport {
 
 	private final ReportOutputVO output;
@@ -67,6 +72,7 @@ public class TemplatedCsvExport {
 				writer.append(format.format(row));
 				writer.newLine();
 			}
+			writer.flush();
 			NuclosFile result = new NuclosFile(output.getDescription() + ".csv", baos.toByteArray());
 			return result;
 		}

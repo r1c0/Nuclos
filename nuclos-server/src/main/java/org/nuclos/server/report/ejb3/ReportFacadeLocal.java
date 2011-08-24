@@ -17,11 +17,16 @@
 package org.nuclos.server.report.ejb3;
 
 import java.util.Collection;
+import java.util.Map;
 
 import javax.ejb.Local;
 
+import net.sf.jasperreports.engine.JasperPrint;
+
+import org.nuclos.common.NuclosFile;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
+import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.SubreportVO;
@@ -37,6 +42,13 @@ public interface ReportFacadeLocal {
 		throws CommonPermissionException;
 
 	/**
+	 * get output formats for report
+	 * @param iReportId id of report
+	 * @return collection of output formats
+	 */
+	public abstract Collection<ReportOutputVO> getReportOutputs(Integer iReportId);
+
+	/**
 	 * get output format for reportoutput id
 	 * @param iReportOutputId
 	 * @return reportoutput
@@ -50,5 +62,18 @@ public interface ReportFacadeLocal {
 	 * @return collection of subreports
 	 */
 	public abstract Collection<SubreportVO> getSubreports(Integer reportoutputId);
+
+	/**
+	 * gets a report/form filled with data
+	 * @param iReportOutputId
+	 * @param mpParams parameters
+	 * @return report/form filled with data
+	 */
+	public abstract JasperPrint prepareReport(Integer iReportOutputId,
+		Map<String, Object> mpParams, Integer iMaxRowCount)
+		throws CommonFinderException, NuclosReportException,
+		CommonPermissionException;
+
+	public NuclosFile prepareCsvReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) throws CommonFinderException, NuclosReportException, CommonPermissionException;
 
 }
