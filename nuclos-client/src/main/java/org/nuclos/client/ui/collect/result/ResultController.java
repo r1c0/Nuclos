@@ -699,10 +699,12 @@ public class ResultController<Clct extends Collectable> {
 	 * TODO make this private
 	 */
 	public List<CollectableSorting> getCollectableSortingSequence() {
+		final String baseEntity = getEntity().getName();
 		final List<CollectableSorting> result = new LinkedList<CollectableSorting>();
 		for (SortKey sortKey : clctctl.getResultTableModel().getSortKeys()) {
-			final String fieldName = clctctl.getResultTableModel().getCollectableEntityField(sortKey.getColumn()).getName();
-			result.add(new CollectableSorting(fieldName, sortKey.getSortOrder() == SortOrder.ASCENDING));
+			final CollectableEntityField sortField = clctctl.getResultTableModel().getCollectableEntityField(sortKey.getColumn());
+			result.add(new CollectableSorting(sortField.getEntityName(), baseEntity.equals(sortField.getEntityName()),
+					sortField.getName(), sortKey.getSortOrder() == SortOrder.ASCENDING));
 		}
 		return result;
 	}

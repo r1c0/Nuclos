@@ -23592,17 +23592,17 @@
   {
     "resourceID": "GenericObjectCollectController.19",
     "locale": "i-default",
-    "text": "The search result cannot be sorted by sub form or parent columns"
+    "text": "The search result cannot be sorted by subform columns"
   },
   {
     "resourceID": "GenericObjectCollectController.19",
     "locale": "en",
-    "text": "The search result cannot be sorted by sub form or parent columns"
+    "text": "The search result cannot be sorted by subform columns"
   },
   {
     "resourceID": "GenericObjectCollectController.19",
     "locale": "de",
-    "text": "Das Suchergebnis kann nicht nach Unterformularspalten bzw. Vaterspalten sortiert werden."
+    "text": "Das Suchergebnis kann nicht nach Unterformularspalten sortiert werden."
   },
   {
     "resourceID": "GenericObjectCollectController.18",

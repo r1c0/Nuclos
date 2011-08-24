@@ -24,25 +24,36 @@ import java.io.Serializable;
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
+ * <p>
+ * TODO: Incorporate a real (foreign) table ref instead of just the entity.
+ * </p><p>
+ * TODO: Consider including an entity field rather than the mere field name.
+ * </p>
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
- * @todo Consider including an entity field rather than the mere field name.
  */
 public class CollectableSorting implements Serializable {
-	private static final long serialVersionUID = 1002927873365829612L;
+	
+	private static final long serialVersionUID = 1002927873365829613L;
 
-	private final String sFieldName;
-	private final boolean bAscending;
+	private final String entity;
+	
+	private final boolean isBaseEntity;
+	
+	private final String field;
+	
+	private final boolean asc;
 
 	/**
-	 * @param sFieldName name of the field to sort
-	 * @param bAscending Sort ascending? (false: sort descending)
+	 * @param field name of the field to sort
+	 * @param asc Sort ascending? (false: sort descending)
 	 * @precondition sFieldName != null
 	 */
-	public CollectableSorting(String sFieldName, boolean bAscending) {
-		this.sFieldName = sFieldName;
-		this.bAscending = bAscending;
+	public CollectableSorting(String entity, boolean isBaseEntity, String field, boolean asc) {
+		this.entity = entity;
+		this.isBaseEntity = isBaseEntity;
+		this.field = field;
+		this.asc = asc;
 	}
 
 	/**
@@ -50,23 +61,23 @@ public class CollectableSorting implements Serializable {
 	 * @postcondition result != null
 	 */
 	public String getFieldName() {
-		return this.sFieldName;
+		return this.field;
 	}
 
 	/**
 	 * @return Sort ascending? (false: sort descending)
 	 */
 	public boolean isAscending() {
-		return this.bAscending;
+		return this.asc;
 	}
 	
     @Override
     public String toString() {
     	final StringBuilder result = new StringBuilder();
     	result.append("CollectableSorting[");
-    	result.append("field=").append(sFieldName);
+    	result.append("field=").append(field);
     	result.append(",");
-    	if (bAscending) {
+    	if (asc) {
     		result.append("ASC");
     	}
     	else {
@@ -74,6 +85,14 @@ public class CollectableSorting implements Serializable {
     	}
     	result.append("]");
     	return result.toString();
-    }	
+    }
+
+	public String getEntity() {
+		return entity;
+	}
+
+	public boolean isBaseEntity() {
+		return isBaseEntity;
+	}	
 
 }  // class CollectableSorting

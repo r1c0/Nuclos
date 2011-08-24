@@ -36,7 +36,6 @@ import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.PreferencesException;
@@ -47,29 +46,33 @@ import org.nuclos.common2.exception.PreferencesException;
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
+ * <p>
+ * TODO: This looks *very* similiar to 
+ * {@link org.nuclos.client.searchfilter.EntitySearchFilter}!
+ * Perhaps we could unify both classes.
+ * </p><p>
+ * TODO: ModuleSearchFilter should contain a CollectableSearchExpression rather 
+ * than a CollectableSearchCondition (along with other field's already contained in the expression).
+ * </p>
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @author  <a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version 01.00.00
- * @todo a ModuleSearchFilter should contain a CollectableSearchExpression rather than a CollectableSearchCondition (along with other field's already contained in the expression)
  */
 public class EntitySearchFilter extends SearchFilter {
 
 	/**
 	 * list of visible columns
 	 */
-	private List<? extends CollectableEntityField> lstclctefweVisible;
+	private List<? extends CollectableEntityField> visibleFields;
 
 	/**
-	 * @todo This should be replaced by a List<CollectableSorting>, as the direction (ascending/descending) is missing here.
 	 * @todo Or better: the filter itself should contain a [GenericObject]CollectableSearchExpression
 	 */
-	private List<String> lstSortingColumnNames;
+	private List<CollectableSorting> sortingOrder;
 
 	public EntitySearchFilter() {
 		super();
-
-		this.lstSortingColumnNames = Collections.emptyList();
+		this.sortingOrder = Collections.emptyList();
 	}
 
 	/**
@@ -119,46 +122,26 @@ public class EntitySearchFilter extends SearchFilter {
 	 * @return the columns to be shown in the search result.
 	 */
 	public List<? extends CollectableEntityField> getVisibleColumns() {
-		return this.lstclctefweVisible;
+		return this.visibleFields;
 	}
 
 	/**
 	 * @param lstclctefweVisible the columns to be shown in the search result.
 	 */
 	public void setVisibleColumns(List<? extends CollectableEntityField> lstclctefweVisible) {
-		this.lstclctefweVisible = lstclctefweVisible;
+		this.visibleFields = lstclctefweVisible;
 	}
-
-	/**
-	 * @return List<String> the names of the columns defining the sorting of the result.
-	 * Note that these columns must belong to the main entity.
-	 * @deprecated The direction (ascending/descending) is missing here.
-	 */
-	@Deprecated
-	public List<String> getSortingColumnNames() {
-		return this.lstSortingColumnNames;
-	}
-
-	/**
-	 * @todo This is a workaround - the Search filter should contain the sorting order, not just the column names.
-	 */
+	
 	public List<CollectableSorting> getSortingOrder() {
-		return CollectionUtils.transform(this.getSortingColumnNames(), new Transformer<String, CollectableSorting>() {
-			@Override
-			public CollectableSorting transform(String sFieldName) {
-				return new CollectableSorting(sFieldName, true);
-			}
-		});
+		return sortingOrder;
 	}
 
 	/**
-	 * @param lstSortingColumnNames List<String> the names of the columns defining the sorting of the result.
+	 * @param sortingOrder List<String> the names of the columns defining the sorting of the result.
 	 * Note that these columns must belong to the main entity.
-	 * @deprecated The direction (ascending/descending) is missing here.
 	 */
-	@Deprecated
-	public void setSortingColumnNames(List<String> lstSortingColumnNames) {
-		this.lstSortingColumnNames = lstSortingColumnNames;
+	public void setSortingOrder(List<CollectableSorting> sortingOrder) {
+		this.sortingOrder = sortingOrder;
 	}
 
 	/**

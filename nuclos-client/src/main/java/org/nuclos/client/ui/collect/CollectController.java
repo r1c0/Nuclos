@@ -3957,23 +3957,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	/**
-	 * @return List<CollectableEntityField> of fields from the given List<String> of field names.
-	 * @param clcte
-	 * @param fieldNames
-	 */
-	protected List<CollectableEntityField> getFieldsFromFieldNames(CollectableEntity clcte, List<String> fieldNames) {
-		final List<CollectableEntityField> result = Utils.createCollectableEntityFieldListFromFieldNames(getResultController(), clcte, fieldNames);
-
-		makeSureSelectedFieldsAreNonEmpty(clcte, result);
-
-		// Here we have at least one field as selected column:
-		assert !result.isEmpty();
-		return result;
-	}
-
-//
-
-	/**
 	 * makes sure the given list of selected fields is non-empty. If the list is empty, this method adds one field to it.
 	 * This is to avoid a seemingly empty search result, which might be irritating to the user.
 	 * @param clcte

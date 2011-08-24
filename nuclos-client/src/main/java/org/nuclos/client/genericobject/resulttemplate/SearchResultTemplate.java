@@ -16,17 +16,22 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.genericobject.resulttemplate;
 
-import org.nuclos.common.collect.collectable.CollectableSorting;
-import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common.collection.Transformer;
-import org.nuclos.common2.CommonLocaleDelegate;
-
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.prefs.Preferences;
 
+import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
+import org.nuclos.common.MetaDataProvider;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableSorting;
+import org.nuclos.common.collection.Pair;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.entityobject.CollectableEOEntity;
+import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.StringUtils;
@@ -37,18 +42,51 @@ import org.nuclos.common2.exception.PreferencesException;
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
+ * <p>
+ * TODO: This looks *very* similiar to 
+ * {@link org.nuclos.client.searchfilter.EntitySearchFilter}!
+ * Perhaps we could unify both classes.
+ * </p>
  * @author	<a href="mailto:Rostislav.Maksymovskyi@novabit.de">Rostislav Maksymovskyi</a>
  * @version 01.00.00
  */
 public class SearchResultTemplate {
 
 	private static final String PREFS_KEY_DESCRIPTION = "description";
-	private static final String PREFS_NODE_VISIBLECOLUMNS = "visibleColumns";
-	private static final String PREFS_NODE_SORTINGCOLUMNS = "sortingColumns";
 	private static final String PREFS_KEY_MODULEID = "moduleId";
-	private static final String PREFS_NODE_VISIBLECOLUMNSFIXED = "visibleFixedColumns";
 	private static final String PREFS_NODE_VISIBLECOLUMNSWITHS = "visibleColumnsWiths";
+	
+	/**
+	 * New way to save/load column prefs: as {@link org.nuclos.common.collect.collectable.CollectableEntityField}.
+	 */
+	private static final String PREFS_NODE_VISIBLEENTITYFIELDS = "visibleEntityFields";
+	
+	/**
+	 * New way to save/load sorting column prefs: as {@link org.nuclos.common.collect.collectable.CollectableSorting}.
+	 */
+	private static final String PREFS_NODE_COLLECTABLESORTING = "collectableSorting";
+	
+	/**
+	 * New way to save/load fixed column prefs: as {@link org.nuclos.common.collect.collectable.CollectableEntityField}.
+	 */
+	private static final String PREFS_NODE_FIXEDENTITYFIELDS = "visibleFixedColumns";
+	
+	/**
+	 * @deprecated Old way to save/load prefs: only columns *names* (String).
+	 */
+	private static final String PREFS_NODE_VISIBLECOLUMNS = "visibleColumns";
+	
+	/**
+	 * @deprecated Old way to save/load prefs: only sorting columns *names* (String).
+	 */
+	private static final String PREFS_NODE_SORTINGCOLUMNS = "sortingColumns";
+	
+	/**
+	 * @deprecated Old way to save/load prefs: only fixed columns *names* (String).
+	 */
+	private static final String PREFS_NODE_VISIBLECOLUMNSFIXED = "visibleFixedColumns";
+	
+	// 
 
 	private String sName;
 
@@ -57,38 +95,32 @@ public class SearchResultTemplate {
 	/**
 	 * list of visible columns
 	 */
-	private List<String> lstclctefweVisible;
+	private List<CollectableEntityField> visibleFields;
 	
-	private List<String> lstSortingColumnNames;
+	private List<CollectableSorting> sortingOrder;
 
 	private Map<String, Integer> lstColumnsWidths;
 	
-	private List<String> lstColumnsFixed;
+	private List<CollectableEntityField> fixedColumns;
 	
-	private Integer iModuleId;
+	private final int moduleId;
 	
 	
 	
-	public SearchResultTemplate(){
+	public SearchResultTemplate(int moduleId){
+		this.moduleId = moduleId;
 	}
 
-	/*public boolean equals(SearchResultTemplate template){
-		return ((this.getModuleId() == null && template.getModuleId() == null) || 
-					(this.getModuleId() != null && this.getModuleId().equals(template.getModuleId()))) 
-				&& ((this.getName() == null && template.getName() == null) || 
-						(this.getName() != null && this.getName().equals(template.getName())));
-	}*/
-	
 	@Override
 	public String toString() {
-		return this.getName();
+		return getName();
 	}
 
 	/**
 	 * @return this template's name
 	 */
 	public String getName() {
-		return this.sName;
+		return sName;
 	}
 
 	public void setName(String sName) {
@@ -111,57 +143,33 @@ public class SearchResultTemplate {
 	 * @return the id of the module, if any
 	 */
 	public Integer getModuleId() {
-		return this.iModuleId;
-	}
-
-	public void setModuleId(Integer iModuleId) {
-		this.iModuleId = iModuleId;
+		return moduleId;
 	}
 
 	/**
 	 * @return the columns to be shown in the search result.
 	 */
-	public List<String> getVisibleColumns() {
-		return this.lstclctefweVisible;
+	public List<CollectableEntityField> getVisibleColumns() {
+		return visibleFields;
 	}
 
 	/**
 	 * @param lstclctefweVisible the columns to be shown in the search result.
 	 */
-	public void setVisibleColumns(List<String> lstclctefweVisible) {
-		this.lstclctefweVisible = lstclctefweVisible;
+	public void setVisibleColumns(List<CollectableEntityField> lstclctefweVisible) {
+		this.visibleFields = lstclctefweVisible;
 	}
-
-	/**
-	 * @return List<String> the names of the columns defining the sorting of the result.
-	 * Note that these columns must belong to the main entity.
-	 * @deprecated The direction (ascending/descending) is missing here.
-	 */
-	@Deprecated
-	public List<String> getSortingColumnNames() {
-		return this.lstSortingColumnNames;
-	}
-
-	/**
-	 * @todo This is a workaround - the search result template should contain the sorting order, not just the column names.
-	 */
+	
 	public List<CollectableSorting> getSortingOrder() {
-		return CollectionUtils.transform(this.getSortingColumnNames(), new Transformer<String, CollectableSorting>() {
-			@Override
-			public CollectableSorting transform(String sFieldName) {
-				return new CollectableSorting(sFieldName, true);
-			}
-		});
+		return sortingOrder;
 	}
 
 	/**
 	 * @param lstSortingColumnNames List<String> the names of the columns defining the sorting of the result.
 	 * Note that these columns must belong to the main entity.
-	 * @deprecated The direction (ascending/descending) is missing here.
 	 */
-	@Deprecated
-	public void setSortingColumnNames(List<String> lstSortingColumnNames) {
-		this.lstSortingColumnNames = lstSortingColumnNames;
+	public void setSortingOrder(List<CollectableSorting> lstSortingColumnNames) {
+		this.sortingOrder = lstSortingColumnNames;
 	}
 
 	public Map<String, Integer> getListColumnsWidths() {
@@ -172,12 +180,12 @@ public class SearchResultTemplate {
 		this.lstColumnsWidths = lstColumnsWidths;
 	}	
 
-	public List<String> getListColumnsFixed() {
-		return lstColumnsFixed;
+	public List<CollectableEntityField> getListColumnsFixed() {
+		return fixedColumns;
 	}
 
-	public void setListColumnsFixed(List<String> lstColumnsFixed) {
-		this.lstColumnsFixed = lstColumnsFixed;
+	public void setFixedColumns(List<CollectableEntityField> fixedColumns) {
+		this.fixedColumns = fixedColumns;
 	}	
 	
 	/**
@@ -248,19 +256,15 @@ public class SearchResultTemplate {
 			prefs.put(PREFS_KEY_DESCRIPTION, sDescription);
 		}
 
-		PreferencesUtils.putStringList(prefs, PREFS_NODE_VISIBLECOLUMNS, this.getVisibleColumns());
-
-		PreferencesUtils.putStringList(prefs, PREFS_NODE_SORTINGCOLUMNS, this.getSortingColumnNames());
-
-		PreferencesUtils.putStringList(prefs, PREFS_NODE_VISIBLECOLUMNSFIXED, lstColumnsFixed);
+		PreferencesUtils.putSerializableListXML(prefs, PREFS_NODE_VISIBLEENTITYFIELDS, getVisibleColumns());
+		PreferencesUtils.putSerializableListXML(prefs, PREFS_NODE_COLLECTABLESORTING, getSortingOrder());
+		PreferencesUtils.putSerializableListXML(prefs, PREFS_NODE_FIXEDENTITYFIELDS, getListColumnsFixed());
 
 		final Integer iModuleId = this.getModuleId();
 		final int iModuleIdOr0 = (iModuleId == null) ? 0 : iModuleId.intValue();
 		prefs.putInt(PREFS_KEY_MODULEID, iModuleIdOr0);
 
 		PreferencesUtils.putSerializable(prefs, PREFS_NODE_VISIBLECOLUMNSWITHS, lstColumnsWidths);
-		
-		
 		/** @todo prefs.flush */
 	}	
 	
@@ -272,42 +276,106 @@ public class SearchResultTemplate {
 	 * @throws NoSuchElementException if there is no template with the given name.
 	 * @postcondition result != null
 	 */
-	@SuppressWarnings("unchecked")
 	public static SearchResultTemplate get(Preferences prefsParent, String sTemplateName) throws PreferencesException {
 		final String sEncodedTemplateName = encoded(sTemplateName);
 		if (!PreferencesUtils.nodeExists(prefsParent, sEncodedTemplateName)) {
-			throw new NoSuchElementException(CommonLocaleDelegate.getMessage("SearchResultTemplate.4","Es existiert keine Suchergebnisvorlage mit dem Namen {0}.", sTemplateName));
+			throw new NoSuchElementException(CommonLocaleDelegate.getMessage(
+					"SearchResultTemplate.4","Es existiert keine Suchergebnisvorlage mit dem Namen {0}.", sTemplateName));
 		}
 
-		final SearchResultTemplate result = new SearchResultTemplate();
 		final Preferences prefs = prefsParent.node(sEncodedTemplateName);
-
 		final int iModuleIdOr0 = prefs.getInt(PREFS_KEY_MODULEID, 0);
-		final Integer iModuleId = (iModuleIdOr0 == 0) ? null : new Integer(iModuleIdOr0);
-		result.setModuleId(iModuleId);
+		final SearchResultTemplate result = new SearchResultTemplate(iModuleIdOr0);
+		
+		final MetaDataProvider mdProv = MetaDataClientProvider.getInstance();
+		final Integer iModuleId;
+		final EntityMetaDataVO entityVO;
+		final String entity;
+		final CollectableEOEntity cEntity;
+		if (iModuleIdOr0 == 0) {
+			iModuleId = null;
+			entityVO = null;
+			entity = null;
+			cEntity = null;
+		}
+		else {
+			iModuleId = Integer.valueOf(iModuleIdOr0);
+			entityVO = mdProv.getEntity(IdUtils.toLongId(iModuleIdOr0));
+			entity = entityVO.getEntity();
+			cEntity = new CollectableEOEntity(entityVO, mdProv.getAllEntityFieldsByEntity(entity));
+		}
 
 		result.setName(sTemplateName);
 		result.setDescription(prefs.get(PREFS_KEY_DESCRIPTION, null));
 
-		result.setVisibleColumns(PreferencesUtils.getStringList(prefs, PREFS_NODE_VISIBLECOLUMNS));
+		if (PreferencesUtils.nodeExists(prefs, PREFS_NODE_VISIBLEENTITYFIELDS)) {
+			result.setVisibleColumns((List<CollectableEntityField>) PreferencesUtils.getSerializableListXML(prefs, PREFS_NODE_VISIBLEENTITYFIELDS));
+		}
+		// backward compatibility
+		else {
+			final List<CollectableEntityField> visible = new ArrayList<CollectableEntityField>();
+			for (String n: PreferencesUtils.getStringList(prefs, PREFS_NODE_VISIBLECOLUMNS)) {
+				final Pair<String,String> p = StringUtils.getDot(n);
+				final CollectableEntityFieldWithEntityForExternal field;
+				if (p.getX().equals("") || p.getX().equals(entity)) {
+					field = new CollectableEntityFieldWithEntityForExternal(cEntity, p.getY(), false, true);
+				}
+				else {
+					final EntityMetaDataVO vo = mdProv.getEntity(p.getX());
+					final CollectableEOEntity e = new CollectableEOEntity(vo, mdProv.getAllEntityFieldsByEntity(p.getX()));
+					field = new CollectableEntityFieldWithEntityForExternal(e, p.getY(), false, true);
+				}
+				visible.add(field);
+			}
+			result.setVisibleColumns(visible);
+		}
 
-		result.setSortingColumnNames(PreferencesUtils.getStringList(prefs, PREFS_NODE_SORTINGCOLUMNS));
+		if (PreferencesUtils.nodeExists(prefs, PREFS_NODE_COLLECTABLESORTING)) {
+			result.setSortingOrder((List<CollectableSorting>) PreferencesUtils.getSerializableListXML(prefs, PREFS_NODE_COLLECTABLESORTING));
+		}
+		// backward compatibility
+		else {
+			final List<CollectableSorting> sorting = new ArrayList<CollectableSorting>();
+			for (String n: PreferencesUtils.getStringList(prefs, PREFS_NODE_SORTINGCOLUMNS)) {
+				sorting.add(new CollectableSorting(entity, true, n, true));
+			}
+			result.setSortingOrder(sorting);
+		}
 
-		result.setListColumnsWidths((Map<String,Integer>)PreferencesUtils.getSerializable(prefs, PREFS_NODE_VISIBLECOLUMNSWITHS));
+		if (PreferencesUtils.nodeExists(prefs, PREFS_NODE_FIXEDENTITYFIELDS)) {
+			result.setFixedColumns((List<CollectableEntityField>) PreferencesUtils.getSerializableListXML(prefs, PREFS_NODE_FIXEDENTITYFIELDS));
+		}
+		// backward compatibility
+		else {
+			final List<CollectableEntityField> fixed = new ArrayList<CollectableEntityField>();
+			for (String n: PreferencesUtils.getStringList(prefs, PREFS_NODE_VISIBLECOLUMNSFIXED)) {
+				final Pair<String,String> p = StringUtils.getDot(n);
+				final CollectableEntityFieldWithEntityForExternal field;
+				if (p.getX().equals("") || p.getX().equals(entity)) {
+					field = new CollectableEntityFieldWithEntityForExternal(cEntity, p.getY(), false, true);
+				}
+				else {
+					final EntityMetaDataVO vo = mdProv.getEntity(p.getX());
+					final CollectableEOEntity e = new CollectableEOEntity(vo, mdProv.getAllEntityFieldsByEntity(p.getX()));
+					field = new CollectableEntityFieldWithEntityForExternal(e, p.getY(), false, true);
+				}
+				fixed.add(field);
+			}
+			result.setFixedColumns(fixed);
+		}
 		
-		result.setListColumnsFixed(PreferencesUtils.getStringList(prefs, PREFS_NODE_VISIBLECOLUMNSFIXED));
-		
+		result.setListColumnsWidths((Map<String,Integer>)PreferencesUtils.getSerializable(prefs, PREFS_NODE_VISIBLECOLUMNSWITHS));		
 		assert result != null;
 		return result;
 	}
-
+	
 	/**
 	 * creates the default search result template with a specific name.
 	 * @return new default search result template
 	 * @postcondition result.isDefaultTemplate()
 	 */
-	public static SearchResultTemplate newDefaultTemplate() {
-		final SearchResultTemplate result = new SearchResultTemplate() {
+	public static SearchResultTemplate newDefaultTemplate(int moduleId) {
+		final SearchResultTemplate result = new SearchResultTemplate(moduleId) {
 			@Override
 			public boolean isDefaultTemplate() {
 				return true;
@@ -323,7 +391,7 @@ public class SearchResultTemplate {
 	 * @return Is this search result template a default template?
 	 */
 	public boolean isDefaultTemplate() {
-		return this.getName() != null && SearchResultTemplate.newDefaultTemplate().getName().equals(this.getName());
+		return this.getName() != null && SearchResultTemplate.newDefaultTemplate(moduleId).getName().equals(this.getName());
 	}
 
 }

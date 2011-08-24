@@ -141,9 +141,7 @@ public class ResultTemplates {
 		 * @postcondition result != null
 		 */
 		public SearchResultTemplate newDefaultTemplate() {
-			final SearchResultTemplate result = SearchResultTemplate.newDefaultTemplate();
-			result.setModuleId(this.iModuleId);
-	
+			final SearchResultTemplate result = SearchResultTemplate.newDefaultTemplate(iModuleId);
 			return result;
 		}
 	

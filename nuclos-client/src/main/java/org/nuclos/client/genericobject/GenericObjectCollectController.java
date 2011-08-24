@@ -209,6 +209,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
+import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
@@ -230,6 +231,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.genericobject.GenericObjectUtils;
 import org.nuclos.common.security.Permission;
@@ -2215,7 +2217,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							getCollectableEntity(), getFields().getSelectedFields());
 
 		// setup sorted fields and sorting order from preferences
-		List<SortKey> sortKeys = readColumnOrderFromPreferences();
+		final List<SortKey> sortKeys = readColumnOrderFromPreferences();
 		if (result.getColumnCount() > 0) {
 			try {
 				result.setSortKeys(sortKeys, false);
@@ -2230,20 +2232,31 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		class GenericObjectSortingRunnable implements CommonRunnable {
 			@Override
 			public void run() throws CommonBusinessException {
-				List<? extends SortKey> sortKeys = result.getSortKeys();
-				List<SortKey> filteredSortKeys = CollectionUtils.applyFilter(sortKeys, new Predicate<SortKey>() {
-					@Override
-					public boolean evaluate(SortKey k) {
-						final CollectableEntityField clctefSorted = result.getCollectableEntityField(k.getColumn());
-						return (clctefSorted.getEntityName().equals(getCollectableEntity().getName()));
+				final String baseEntity = getCollectableEntity().getName();
+				boolean canSort = true;
+				for (SortKey sk: result.getSortKeys()) {
+					final CollectableEntityField sortField = result.getCollectableEntityField(sk.getColumn());
+					if (!sortField.getEntityName().equals(baseEntity)) {
+						if (sortField instanceof CollectableEOEntityField) {
+							final CollectableEOEntityField f = (CollectableEOEntityField) sortField;
+							if (f.getMeta().getPivotInfo() == null) {
+								canSort = false;
+								break;
+							}
+						}
+						else {
+							canSort = false;
+							break;
+						}
 					}
-				});
-				if (filteredSortKeys.size() == sortKeys.size()) {
+				}
+				if (canSort) {
 					//NUCLEUSINT-1039
 					getResultController().getSearchResultStrategy().cmdSearch();
-				} else {
+				} 
+				else {
 					result.setSortKeys(Collections.<SortKey>emptyList(), false);
-					throw new CommonBusinessException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.19","Das Suchergebnis kann nicht nach Unterformularspalten bzw. Vaterspalten sortiert werden."));
+					throw new CommonBusinessException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.19","Das Suchergebnis kann nicht nach Unterformularspalten sortiert werden."));
 				}
 			}
 		}
@@ -5671,9 +5684,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @deprecated Remove if possible.
 	 */
 	protected void setSearchResultFormatAccordingToTemplate(SearchResultTemplate templateSelected) {
-		final List<CollectableEntityField> lstSelectedNew = getFieldsFromFieldNames(getCollectableEntity(), templateSelected.getVisibleColumns());
+		makeSureSelectedFieldsAreNonEmpty(getCollectableEntity(), templateSelected.getVisibleColumns());
+		final List<CollectableEntityField> lstSelectedNew = templateSelected.getVisibleColumns();
 		final Set<CollectableEntityField> fixedColumns = new HashSet<CollectableEntityField>(
-				getFieldsFromFieldNames(getCollectableEntity(), templateSelected.getListColumnsFixed()));
+				templateSelected.getListColumnsFixed());
 		Map<String, Integer> listColumnsWidths = templateSelected.getListColumnsWidths();
 		Map<String, Integer> clefListColumnsWidths = new HashMap<String, Integer>();
 		for(CollectableEntityField clFiled : lstSelectedNew)
@@ -5682,23 +5696,21 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		getResultController().initializeFields(getFields(), this, lstSelectedNew);
 	}
 
-	/*
+	/**
 	 * creates a SearchResultTemplate accordng to selected columns in search result
 	 * @throws CommonBusinessException
 	 */
-	@SuppressWarnings("deprecation")
 	protected SearchResultTemplate getCurrentSearchResultFormatFromResultPanel() throws CommonBusinessException {
-		final SearchResultTemplate result = new SearchResultTemplate();
-		result.setModuleId(getModuleId());
+		final SearchResultTemplate result = new SearchResultTemplate(getModuleId());
 		// set selected columns:
 		//List<String> sFieldsNames = CollectableUtils.getFieldNamesFromCollectableEntityFields(this.getSelectedFields());
 		//result.setVisibleColumns(sFieldsNames);
-		final List<String> lstQualifiedEntityFieldNames = CollectionUtils.transform(getSelectedFields(),
-			new CollectableEntityField.GetQualifiedEntityFieldName());
-		result.setVisibleColumns(lstQualifiedEntityFieldNames);
+		//final List<String> lstQualifiedEntityFieldNames = CollectionUtils.transform(getSelectedFields(),
+		//	new CollectableEntityField.GetQualifiedEntityFieldName());
+		result.setVisibleColumns(getSelectedFields());
 		// TODO set sorting column names
-		List<String> lstSortingColumnNames = Collections.emptyList();
-		result.setSortingColumnNames(lstSortingColumnNames);
+		List<CollectableSorting> lstSortingColumnNames = Collections.emptyList();
+		result.setSortingOrder(lstSortingColumnNames);
 		Map<String, Integer> currentFieldWiths = getResultPanel().getCurrentFieldWithsMap();
 		result.setListColumnsWidths(currentFieldWiths);
 		//result.setListColumnsFixed(CollectableUtils.getFieldNamesFromCollectableEntityFields(((NuclosResultPanel) this.getResultPanel()).getFixedColumns()));
@@ -5710,9 +5722,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			)
 		);
 
-		final List<String> lstQualifiedEntityFieldNamesFixed = CollectionUtils.transform(filteredFixedColumns,
-			new CollectableEntityField.GetQualifiedEntityFieldName());
-		result.setListColumnsFixed(lstQualifiedEntityFieldNamesFixed);
+		//final List<String> lstQualifiedEntityFieldNamesFixed = CollectionUtils.transform(filteredFixedColumns,
+		//	new CollectableEntityField.GetQualifiedEntityFieldName());
+		result.setFixedColumns(filteredFixedColumns);
 		return result;
 	}
 

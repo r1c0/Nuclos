@@ -28,8 +28,8 @@ public class DbColumnExpression<T> extends DbExpression<T> {
 
 	private final String columnName;
 
-	DbColumnExpression(String alias, DbFrom fromTable, String columnName, Class<T> javaType) {
-		this(alias, fromTable, columnName, javaType, false);
+	DbColumnExpression(String tableAlias, DbFrom fromTable, String columnName, Class<T> javaType) {
+		this(tableAlias, fromTable, columnName, javaType, false);
 	}
 
 	DbColumnExpression(String tableAlias, DbFrom fromTable, String columnName, Class<T> javaType, boolean caseSensitive) {
@@ -50,8 +50,8 @@ public class DbColumnExpression<T> extends DbExpression<T> {
 	}
 
 	@Override
-	public DbSelection<T> alias(String tableAlias) {
-		return columnAlias(tableAlias);
+	public DbSelection<T> alias(String columnAlias) {
+		return columnAlias(columnAlias);
 	}
 
 	@Override

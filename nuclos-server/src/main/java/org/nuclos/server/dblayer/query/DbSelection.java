@@ -57,6 +57,10 @@ public abstract class DbSelection<T> {
 		return tableAlias;
 	}
 
+	/**
+	 * @deprecated You probably don't want to reset the <em>table</em> alias. It should be
+	 * 		valid right from the creation of the DbSelection.
+	 */
 	public DbSelection<T> alias(String tableAlias) {
 		if (this.tableAlias != null)
 			throw new IllegalStateException("Tried to alter table alias from " + this.tableAlias + " to " + tableAlias + " at " + this);

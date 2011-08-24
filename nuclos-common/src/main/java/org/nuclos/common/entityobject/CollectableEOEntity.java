@@ -44,10 +44,13 @@ public class CollectableEOEntity implements CollectableEntity {
 
 	@Override
 	public CollectableEntityField getEntityField(String field) {
-		
-		CollectableEntityField result = new CollectableEOEntityField(mapEfMeta.get(field), eMeta.getEntity());
+		final EntityFieldMetaDataVO efVO = mapEfMeta.get(field);
+		if (efVO == null) {
+			throw new IllegalArgumentException("No such field '" + field + "' in entity '" + eMeta.getEntity() + 
+					"', field are: " + mapEfMeta.keySet());
+		}
+		CollectableEntityField result = new CollectableEOEntityField(efVO, eMeta.getEntity());
 		result.setCollectableEntity(this);
-		
 		return result;
 	}
 

@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.xml.security.utils.Base64;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.exception.CommonFatalException;
 
@@ -55,6 +56,22 @@ public class StringUtils {
 	private static final Pattern PARAM_PATTERN = Pattern.compile("\\$\\{([^}]*)\\}");
 
 	private StringUtils() {
+	}
+
+	public static Pair<String, String> getDot(String s) {
+		if (s == null) return null;
+		final Pair<String, String> result;
+		final int dot = s.lastIndexOf('.');
+		if (dot >= 1) {
+			result = new Pair<String, String>(s.substring(0, dot), s.substring(dot + 1));
+		}
+		else if (dot == 0) {
+			result = new Pair<String, String>("", s.substring(dot + 1));
+		}
+		else {
+			result = new Pair<String, String>("", s);
+		}
+		return result;
 	}
 
 	/**

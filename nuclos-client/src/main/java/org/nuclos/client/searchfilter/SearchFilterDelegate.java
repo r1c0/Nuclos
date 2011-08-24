@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.TranslationVO;
+import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.visit.PutSearchConditionToPrefsVisitor;
@@ -52,7 +53,7 @@ import org.nuclos.server.searchfilter.valueobject.SearchFilterVO;
  */
 public class SearchFilterDelegate {
 
-	private static final Logger log = Logger.getLogger(SearchFilterDelegate.class);
+	private static final Logger LOG = Logger.getLogger(SearchFilterDelegate.class);
 
 	private static final String PREFS_NODE_SEARCHFILTERS = "searchFilters";
 	private static final String PREFS_NODE_GLOBALSEARCHFILTERS = "globalSearchFilters";
@@ -60,6 +61,15 @@ public class SearchFilterDelegate {
 	private static final String PREFS_NODE_SEARCHCONDITION = "searchCondition";
 	private static final String PREFS_NODE_VISIBLECOLUMNS = "visibleColumns";
 	private static final String PREFS_NODE_VISIBLECOLUMNENTITIES = "visibleColumnEntities";
+	
+	/**
+	 * New way to save/load sorting column prefs: As {@link org.nuclos.common.collect.collectable.CollectableSorting}.
+	 */
+	public static final String PREFS_NODE_COLLECTABLESORTING = "collectableSorting";
+	
+	/**
+	 * @deprecated Old way to save/load sorting column prefs: only sorting columns *names* (String).
+	 */
 	private static final String PREFS_NODE_SORTINGCOLUMNS = "sortingColumns";
 
 	private static SearchFilterDelegate singleton;
@@ -105,7 +115,7 @@ public class SearchFilterDelegate {
 		}
 		catch (Exception e) {
 			String sMessage = CommonLocaleDelegate.getMessage("SearchFilterDelegate.1", "Ein Fehler beim Speichern des Suchfilters ist aufgetreten!");
-			log.error(sMessage);
+			LOG.error(sMessage);
 			throw new NuclosFatalException(sMessage, e);
 		}
 	}
@@ -131,46 +141,43 @@ public class SearchFilterDelegate {
 		}
 		catch (CommonStaleVersionException e) {
 			String sMessage = CommonLocaleDelegate.getMessage("SearchFilterDelegate.4", "Der Suchfilter wurde zwischenzeitlich von einem anderen Benutzer ge\u00e4ndert. Bitte initialisieren Sie den Client.");
-			log.info(sMessage);
+			LOG.info(sMessage);
 			throw new NuclosBusinessException(sMessage, e);
 		}
 		catch (Exception e) {
 			String sMessage = CommonLocaleDelegate.getMessage("SearchFilterDelegate.1", "Ein Fehler beim Speichern des Suchfilters ist aufgetreten!");
-			log.error(sMessage);
+			LOG.error(sMessage);
 			throw new NuclosFatalException(sMessage, e);
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private SearchFilter insertOrUpdateFilter(SearchFilter filter) {
 		try {
 			Preferences prefs = Preferences.userRoot().node("org/nuclos/client");
-
 			if (filter instanceof EntitySearchFilter) {
 				prefs = prefs.node(PREFS_NODE_SEARCHFILTERS);
 			}
 			else {
 				prefs = prefs.node(PREFS_NODE_GLOBALSEARCHFILTERS);
 			}
-
 			prefs = prefs.node(filter.getName());
 
 			PutSearchConditionToPrefsVisitor.putSearchCondition(prefs.node(PREFS_NODE_SEARCHCONDITION), filter.getSearchCondition());
-
 			if (filter instanceof EntitySearchFilter) {
-				EntitySearchFilter.writeCollectableEntityFieldsToPreferences(prefs, ((EntitySearchFilter)filter).getVisibleColumns(), PREFS_NODE_VISIBLECOLUMNS, PREFS_NODE_VISIBLECOLUMNENTITIES);
-				PreferencesUtils.putStringList(prefs, PREFS_NODE_SORTINGCOLUMNS, ((EntitySearchFilter)filter).getSortingColumnNames());
+				final EntitySearchFilter f = (EntitySearchFilter) filter;
+				EntitySearchFilter.writeCollectableEntityFieldsToPreferences(prefs, f.getVisibleColumns(), 
+						PREFS_NODE_VISIBLECOLUMNS, PREFS_NODE_VISIBLECOLUMNENTITIES);
+				PreferencesUtils.putSerializableListXML(prefs, PREFS_NODE_COLLECTABLESORTING, f.getSortingOrder());
 			}
 
 			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			prefs.exportSubtree(baos);
 			filter.getSearchFilterVO().setFilterPrefs(baos.toString("UTF-8"));
-
 			return filter;
 		}
 		catch (Exception e) {
 			String sMessage = CommonLocaleDelegate.getMessage("SearchFilterDelegate.1", "Ein Fehler beim Speichern des Suchfilters ist aufgetreten!");
-			log.error(sMessage);
+			LOG.error(sMessage);
 			throw new NuclosFatalException(sMessage, e);
 		}
 	}
@@ -218,12 +225,12 @@ public class SearchFilterDelegate {
 						collSearchFilter.add(sf);
 				}
 				catch (Exception e) {
-					log.error(CommonLocaleDelegate.getMessage("SearchFilterDelegate.9", "Ein Suchfilter konnte nicht geladen werden"));
+					LOG.error(CommonLocaleDelegate.getMessage("SearchFilterDelegate.9", "Ein Suchfilter konnte nicht geladen werden"));
 				}
 			}
 		}
 		catch (Exception e) {
-			log.error(CommonLocaleDelegate.getMessage("SearchFilterDelegate.9", "Ein Suchfilter konnte nicht geladen werden"));
+			LOG.error(CommonLocaleDelegate.getMessage("SearchFilterDelegate.9", "Ein Suchfilter konnte nicht geladen werden"));
 		}
 
 		return collSearchFilter;
@@ -234,29 +241,22 @@ public class SearchFilterDelegate {
 	 * @param searchFilterVO
 	 * @return SearchFilter
 	 */
-	@SuppressWarnings("deprecation")
 	private SearchFilter makeSearchFilter(SearchFilterVO searchFilterVO) {
 		SearchFilter result = null;
-
 		try {
 			result = new EntitySearchFilter();
-
 			result.setSearchFilterVO(searchFilterVO);
 
 			final ByteArrayInputStream is = new ByteArrayInputStream(searchFilterVO.getFilterPrefs().getBytes("UTF-8"));
 			Preferences.importPreferences(is);
-
 			Preferences prefs = Preferences.userRoot().node("org/nuclos/client");
-
-			Preferences prefsSearchfilter;
-
+			final Preferences prefsSearchfilter;
 			if (prefs.nodeExists(PREFS_NODE_SEARCHFILTERS)) {
 				prefsSearchfilter = prefs.node(PREFS_NODE_SEARCHFILTERS);
 			}
 			else {
 				return null;
 			}
-
 
 			if (prefsSearchfilter.nodeExists(searchFilterVO.getFilterName())) {
 				prefs = prefsSearchfilter.node(searchFilterVO.getFilterName());
@@ -265,21 +265,31 @@ public class SearchFilterDelegate {
 				return null;
 			}
 
-			String sEntityName = searchFilterVO.getEntity();
-
+			final String sEntityName = searchFilterVO.getEntity();
 			// SearchFilter properties
 			result.setSearchCondition(SearchConditionUtils.getSearchCondition(prefs.node(PREFS_NODE_SEARCHCONDITION),sEntityName));
-
 			// EntitySearchFilter properties
-			((EntitySearchFilter)result).setVisibleColumns(EntitySearchFilter.readCollectableEntityFieldsFromPreferences(prefs,
+			final EntitySearchFilter f = (EntitySearchFilter) result;
+			f.setVisibleColumns(EntitySearchFilter.readCollectableEntityFieldsFromPreferences(prefs,
 					DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName),
 					PREFS_NODE_VISIBLECOLUMNS, PREFS_NODE_VISIBLECOLUMNENTITIES));
-			((EntitySearchFilter)result).setSortingColumnNames(PreferencesUtils.getStringList(prefs, PREFS_NODE_SORTINGCOLUMNS));
-
+			
+			if (PreferencesUtils.nodeExists(prefs, PREFS_NODE_COLLECTABLESORTING)) {
+				f.setSortingOrder((List<CollectableSorting>) PreferencesUtils.getSerializableListXML(prefs, PREFS_NODE_COLLECTABLESORTING));
+			}
+			// backward compatibility
+			else {
+				final List<CollectableSorting> sorting = new ArrayList<CollectableSorting>();
+				for (String n: PreferencesUtils.getStringList(prefs, PREFS_NODE_SORTINGCOLUMNS)) {
+					sorting.add(new CollectableSorting(sEntityName, true, n, true));
+				}
+				f.setSortingOrder(sorting);
+			}
+			
 			prefsSearchfilter.removeNode();
 		}
 		catch (Exception e) {
-			log.error(CommonLocaleDelegate.getMessage("SearchFilterDelegate.11", "Fehler beim Transformieren des Filters"));
+			LOG.error(CommonLocaleDelegate.getMessage("SearchFilterDelegate.11", "Fehler beim Transformieren des Filters"));
 			if (result != null) {
 				result.setValid(false);
 				result.setName((result.getName() != null ? (result.getName()+" - ") : "") + CommonLocaleDelegate.getMessage("SearchFilterDelegate.12", "Filter ist ung\u00fcltig"));
@@ -292,4 +302,5 @@ public class SearchFilterDelegate {
 	public List<TranslationVO> getResources(Integer id) throws CommonBusinessException {
 		return facade.getResources(id);
 	}
+	
 }

@@ -266,11 +266,12 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 		final GenericObjectCollectController controller = getGenericObjectCollectController();
 		final List<CollectableSorting> result = new LinkedList<CollectableSorting>();
 		SortableCollectableTableModel<CollectableGenericObjectWithDependants> tm = controller.getResultTableModel();
+		final String baseEntity = controller.getCollectableEntity().getName();
 		for (SortKey sortKey :  tm.getSortKeys()) {
-			final CollectableEntityFieldWithEntity clctefwe = (CollectableEntityFieldWithEntity) tm.getCollectableEntityField(sortKey.getColumn());
-			if (clctefwe.getCollectableEntityName().equals(controller.getCollectableEntity().getName())) {
-				final String fieldName = clctefwe.getName();
-				result.add(new CollectableSorting(fieldName, sortKey.getSortOrder() == SortOrder.ASCENDING));
+			final CollectableEntityField sortField = tm.getCollectableEntityField(sortKey.getColumn());
+			if (sortField.getEntityName().equals(baseEntity)) {
+				result.add(new CollectableSorting(sortField.getEntityName(), baseEntity.equals(sortField.getEntityName()),
+						sortField.getName(), sortKey.getSortOrder() == SortOrder.ASCENDING));
 			}
 		}
 		return result;

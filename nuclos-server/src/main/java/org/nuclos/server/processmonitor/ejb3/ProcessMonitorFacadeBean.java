@@ -868,10 +868,11 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 		final List<Integer> lstRoleIds = new ArrayList<Integer>();
 		
 		//get rules attached to transition
-		List<CollectableSorting> lstSortingOrder = new ArrayList<CollectableSorting>();
-		lstSortingOrder.add(new CollectableSorting("order", true));
-		for (Object id : getMasterDataFacade().getMasterDataIds(NuclosEntity.RULETRANSITION.getEntityName(), new CollectableSearchExpression(
-			SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.RULETRANSITION), "transition", ComparisonOperator.EQUAL, ptId), 
+		final List<CollectableSorting> lstSortingOrder = new ArrayList<CollectableSorting>();
+		final NuclosEntity ruleTransition = NuclosEntity.RULETRANSITION;
+		lstSortingOrder.add(new CollectableSorting(ruleTransition.getEntityName(), true, "order", true));
+		for (Object id : getMasterDataFacade().getMasterDataIds(ruleTransition.getEntityName(), new CollectableSearchExpression(
+			SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(ruleTransition), "transition", ComparisonOperator.EQUAL, ptId), 
 			lstSortingOrder))) {
 			lstRuleIds.add((Integer) id);
 		}
@@ -883,8 +884,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 			lstRoleIds.add((Integer) id);
 		}
 		result.setRoleIds(lstRoleIds);
-		
-		
 		return result;
 	}
 
