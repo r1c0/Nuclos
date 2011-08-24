@@ -61,6 +61,7 @@ import org.apache.commons.lang.SerializationUtils;
 import org.nuclos.common.MarshalledValue;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.NuclosFile;
 import org.nuclos.common.PDFHelper;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.UsageCriteria;
@@ -68,6 +69,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dblayer.JoinType;
+import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.LocaleInfo;
@@ -107,9 +109,11 @@ import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.SearchResultDataSource;
 import org.nuclos.server.report.TableModelDataSource;
 import org.nuclos.server.report.api.JRNuclosDataSource;
+import org.nuclos.server.report.csv.TemplatedCsvExport;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ReportVO.ReportType;
+import org.nuclos.server.report.valueobject.ResultVO;
 import org.nuclos.server.report.valueobject.SubreportVO;
 import org.nuclos.server.resource.ResourceCache;
 import org.nuclos.server.resource.valueobject.ResourceVO;
@@ -348,7 +352,7 @@ public void remove(MasterDataVO mdvo)
     * @return collection of output formats
     */
    @Override
-public Collection<ReportOutputVO> getReportOutputs(Integer iReportId) {
+   public Collection<ReportOutputVO> getReportOutputs(Integer iReportId) {
       List<ReportOutputVO> outputs = new ArrayList<ReportOutputVO>();
 
       CollectableComparison cond = SearchConditionUtils.newMDReferenceComparison(
@@ -530,6 +534,35 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
          throw new NuclosReportException(ex);
       }
    }
+
+	/**
+	 * gets a report/form filled with data
+	 *
+	 * @param iReportOutputId
+	 * @param mpParams parameters
+	 * @return report/form filled with data
+	 */
+	@Override
+	public NuclosFile prepareCsvReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) throws CommonFinderException, NuclosReportException, CommonPermissionException {
+		final ReportOutputVO reportoutput = getReportOutput(iReportOutputId);
+
+		final String sSourceFileName = reportoutput.getSourceFile();
+		if (sSourceFileName == null) {
+			throw new NuclosReportException("report.error.missing.template.2");
+		}
+
+		TemplatedCsvExport export = new TemplatedCsvExport(reportoutput);
+		try {
+			DatasourceFacadeLocal facade = ServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
+			ResultVO rvo = facade.executeQuery(reportoutput.getDatasourceId(), mpParams, iMaxRowCount);
+
+			return export.export(rvo, getLocale(reportoutput.getLocale(), CommonLocaleDelegate.getLocale()));
+		} catch (CommonFinderException ex) {
+			throw new NuclosFatalException(ex);
+		} catch (NuclosDatasourceException ex) {
+			throw new NuclosReportException(ex);
+		}
+	}
 
    private Locale getLocale(String locale, Locale def) {
 	   if (!StringUtils.isNullOrEmpty(locale)) {

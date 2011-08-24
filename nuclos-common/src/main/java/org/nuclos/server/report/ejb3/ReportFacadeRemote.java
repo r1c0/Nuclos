@@ -29,6 +29,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
+import org.nuclos.common.NuclosFile;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -124,6 +125,8 @@ public interface ReportFacadeRemote {
 		Map<String, Object> mpParams, Integer iMaxRowCount)
 		throws CommonFinderException, NuclosReportException,
 		CommonPermissionException;
+
+	public NuclosFile prepareCsvReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) throws CommonFinderException, NuclosReportException, CommonPermissionException;
 
 	/**
 	 * gets an empty report/form

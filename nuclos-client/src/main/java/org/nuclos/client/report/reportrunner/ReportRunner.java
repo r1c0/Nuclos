@@ -43,6 +43,7 @@ import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.report.ReportDelegate;
 import org.nuclos.client.report.reportrunner.export.CSVExport;
 import org.nuclos.client.report.reportrunner.export.DOCExport;
+import org.nuclos.client.report.reportrunner.export.FileExport;
 import org.nuclos.client.report.reportrunner.export.PDFExport;
 import org.nuclos.client.report.reportrunner.export.XLSExport;
 import org.nuclos.client.ui.CommonInterruptibleProcess;
@@ -51,6 +52,7 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.NuclosFile;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.ServiceLocator;
@@ -357,6 +359,11 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 						}
 						setBackgroundProcessInterruptionIntervalForCurrentThread();
 						new PDFExport().export((reportoutputvo.getDescription() != null) ? reportoutputvo.getDescription() : reportvo.getName(), jasperPrint, reportoutputvo.getParameter(), reportoutputvo.getDestination().equals(ReportOutputVO.Destination.SCREEN));
+					}
+					else if (outputFormat == ReportOutputVO.Format.CSV && reportoutputvo.getSourceFile() != null) {
+						NuclosFile result = ReportDelegate.getInstance().prepareCsvReport(reportoutputvo.getId(), mpParams, iMaxRowCount);
+						setBackgroundProcessInterruptionIntervalForCurrentThread();
+						new FileExport(result).export((reportoutputvo.getDescription() != null) ? reportoutputvo.getDescription() : reportvo.getName(), reportoutputvo.getParameter(), reportoutputvo.getDestination().equals(ReportOutputVO.Destination.SCREEN));
 					}
 					else {
 						// report without a layout
