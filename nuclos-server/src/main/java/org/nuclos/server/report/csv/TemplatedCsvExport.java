@@ -24,7 +24,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.text.FieldPosition;
+import java.text.Format;
 import java.text.MessageFormat;
+import java.text.ParsePosition;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -68,7 +71,21 @@ public class TemplatedCsvExport {
 			}
 			// write lines by template line
 			MessageFormat format = new MessageFormat(line, locale);
+			Format[] formats = new Format[format.getFormatsByArgumentIndex().length];
+			System.arraycopy(format.getFormatsByArgumentIndex(), 0, formats, 0, formats.length);
+			NullFormat nullFormat = new NullFormat();
+			NullValue nullValue = new NullValue();
 			for (Object[] row : resultvo.getRows()) {
+				// set formats for each row
+				for (int i = 0; i < row.length; i++) {
+					if (row[i] == null) {
+						row[i] = nullValue;
+						format.setFormatByArgumentIndex(i, nullFormat);
+					}
+					else {
+						format.setFormatByArgumentIndex(i, formats[i]);
+					}
+				}
 				writer.append(format.format(row));
 				writer.newLine();
 			}
@@ -90,5 +107,25 @@ public class TemplatedCsvExport {
 				baos.close();
 			} catch (IOException e) { }
 		}
+	}
+
+	private class NullFormat extends Format {
+
+		private static final long serialVersionUID = -5137522621157459206L;
+
+		@Override
+		public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
+			return toAppendTo;
+		}
+
+		@Override
+		public Object parseObject(String source, ParsePosition pos) {
+			throw new UnsupportedOperationException();
+		}
+
+	}
+
+	private class NullValue extends Object {
+
 	}
 }
