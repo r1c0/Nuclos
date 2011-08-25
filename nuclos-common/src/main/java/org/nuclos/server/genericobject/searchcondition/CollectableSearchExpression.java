@@ -41,12 +41,12 @@ public class CollectableSearchExpression implements Serializable {
 	/**
 	 * the search condition
 	 */
-	private final CollectableSearchCondition clctcond;
+	private CollectableSearchCondition clctcond;
 
 	/**
 	 * the sorting order.
 	 */
-	private final List<CollectableSorting> lstSortingOrder;
+	private List<CollectableSorting> lstSortingOrder;
 	
 	/** if true, Nuclos-internal data records should be included */ 
 	private boolean includingSystemData = true;
@@ -91,12 +91,20 @@ public class CollectableSearchExpression implements Serializable {
 	public CollectableSearchCondition getSearchCondition() {
 		return this.clctcond;
 	}
+	
+	public void setSearchCondition(CollectableSearchCondition searchCondition) {
+		this.clctcond = searchCondition;
+	}
 
 	/**
 	 * @return sorting order
 	 */
 	public List<CollectableSorting> getSortingOrder() {
 		return this.lstSortingOrder;
+	}
+	
+	public void setSortingOrder(List<CollectableSorting> sortingOrder) {
+		this.lstSortingOrder = sortingOrder;
 	}
 
 	public void setIncludingSystemData(boolean includingSystemData) {

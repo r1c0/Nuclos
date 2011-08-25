@@ -48,7 +48,7 @@ import org.nuclos.common2.exception.PreferencesException;
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  * <p>
  * TODO: This looks *very* similiar to 
- * {@link org.nuclos.client.searchfilter.EntitySearchFilter}!
+ * {@link org.nuclos.client.genericobject.resulttemplate.SearchResultTemplate}!
  * Perhaps we could unify both classes.
  * </p><p>
  * TODO: ModuleSearchFilter should contain a CollectableSearchExpression rather 

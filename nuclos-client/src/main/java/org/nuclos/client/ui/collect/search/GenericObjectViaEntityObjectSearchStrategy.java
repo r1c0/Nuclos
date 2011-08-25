@@ -395,6 +395,10 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 	}
 	
 	private CollectableGenericObjectWithDependants eo2Go(CollectableEntityObject eo) {
+		if (eo == null) {
+			LOG.warn("eo2Go: CollectableEntityObject is null");
+			return null;
+		}
 		return CollectableGenericObjectWithDependants.newCollectableGenericObjectWithDependants(
 				DalSupportForGO.getGenericObjectWithDependantsVO(eo.getEntityObjectVO(), meta));
 	}

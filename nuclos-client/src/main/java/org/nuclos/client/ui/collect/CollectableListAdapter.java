@@ -18,6 +18,7 @@ package org.nuclos.client.ui.collect;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collection.ListAdapter;
 
@@ -31,6 +32,8 @@ import org.nuclos.common.collection.ListAdapter;
  * @version	01.00.00
  */
 public abstract class CollectableListAdapter<VO, Clct extends Collectable> extends ListAdapter<VO, Clct> {
+	
+	private static final Logger LOG = Logger.getLogger(CollectableListAdapter.class);
 
 	/**
 	 * @param lstvoAdaptee the wrapped <code>List</code> of value objects (adaptees).

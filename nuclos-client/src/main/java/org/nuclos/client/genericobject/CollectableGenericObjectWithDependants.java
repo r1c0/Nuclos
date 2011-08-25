@@ -19,6 +19,7 @@ package org.nuclos.client.genericobject;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.masterdata.CollectableWithDependants;
@@ -43,6 +44,8 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
  * @version 01.00.00
  */
 public class CollectableGenericObjectWithDependants extends CollectableGenericObject implements CollectableWithDependants {
+	
+	private static final Logger LOG = Logger.getLogger(CollectableGenericObjectWithDependants.class);
 
 	/**
 	 * @param govo
@@ -59,6 +62,10 @@ public class CollectableGenericObjectWithDependants extends CollectableGenericOb
 	 * @since Nuclos 3.1.01
 	 */
 	public static CollectableGenericObjectWithDependants newCollectableGenericObjectWithDependants(GenericObjectVO govo) {
+		if (govo == null) {
+			LOG.warn("newCollectableGenericObjectWithDependants: GenericObjectVO is null");
+			return null;
+		}
 		final DependantMasterDataMap dep;
 		if (govo instanceof GenericObjectWithDependantsVO) {
 			final GenericObjectWithDependantsVO gowd = (GenericObjectWithDependantsVO) govo;

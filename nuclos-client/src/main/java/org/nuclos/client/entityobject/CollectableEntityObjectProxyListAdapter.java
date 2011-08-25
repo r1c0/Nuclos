@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.swing.event.ChangeListener;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.collect.CollectableListAdapter;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
@@ -42,6 +43,8 @@ public class CollectableEntityObjectProxyListAdapter extends
 		CollectableListAdapter<EntityObjectVO, CollectableEntityObject> implements
 		ProxyList<CollectableEntityObject> {
 	
+	private static final Logger LOG = Logger.getLogger(CollectableEntityObjectProxyListAdapter.class);
+	
 	private final CollectableEOEntity meta;
 	
 	public CollectableEntityObjectProxyListAdapter(List<EntityObjectVO> list, CollectableEOEntity meta) {
@@ -56,6 +59,10 @@ public class CollectableEntityObjectProxyListAdapter extends
 
 	@Override
 	protected CollectableEntityObject makeCollectable(EntityObjectVO vo) {
+		if (vo == null) {
+			LOG.warn("makeCollectable: EntityObjectVO is null");
+			return null;
+		}
 		final CollectableEntityObject result = new CollectableEntityObject(meta, vo);
 		final DependantMasterDataMap deps = vo.getDependants();
 		result.setDependantMasterDataMap(deps);

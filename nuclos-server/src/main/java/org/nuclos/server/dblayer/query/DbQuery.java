@@ -19,6 +19,7 @@ package org.nuclos.server.dblayer.query;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -27,11 +28,14 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.server.dblayer.DbTuple;
 
 public class DbQuery<T extends Object> {
+	
+	private static final Logger LOG = Logger.getLogger(DbQuery.class);
 
 	private final DbQueryBuilder builder;
 	private final Class<T> resultType;
@@ -104,10 +108,13 @@ public class DbQuery<T extends Object> {
 			}			
 		}
 		final SortedSet<String> names = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
-		for (DbSelection<?> s: selections) {
+		for (Iterator<? extends DbSelection<?>> it = selections.iterator(); it.hasNext();) {
+			final DbSelection<?> s = it.next();
 			final String n = s.getSqlColumnExpr();
 			if (!names.add(n)) {
-				throw new IllegalArgumentException("The name/alias " + n + " appears more than once in the SELECT clause " + selections);
+				LOG.info("The name/alias " + n + " appears more than once in the SELECT clause " + selections);
+				it.remove();
+				// throw new IllegalArgumentException("The name/alias " + n + " appears more than once in the SELECT clause " + selections);
 			}
 		}
 	}

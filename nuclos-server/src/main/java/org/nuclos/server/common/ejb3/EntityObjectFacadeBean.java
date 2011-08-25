@@ -81,6 +81,8 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 
 	@Override
 	public ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr, Collection<EntityFieldMetaDataVO> fields) {
+		final CollectableSearchCondition search = getSearchCondition(clctexpr.getSearchCondition(), fields);
+		clctexpr.setSearchCondition(search);
 		return new EntityObjectProxyList(id, clctexpr, fields);
 	}
 
@@ -100,8 +102,9 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 			}
 		}
 		
+		final CollectableSearchExpression search = new CollectableSearchExpression(getSearchCondition(null, fields));
 		final List<EntityObjectVO> eos = eop.getBySearchExpressionAndPrimaryKeys(
-				appendRecordGrants(getSearchExpression(fields), eMeta), lstIds);
+				appendRecordGrants(search, eMeta), lstIds);
 				
 		final Set<String> subforms = new HashSet<String>();
 		// final Collection<EntityFieldMetaDataVO> pivots = new ArrayList<EntityFieldMetaDataVO>();
@@ -130,7 +133,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		return eos;
 	}
 	
-	private CollectableSearchExpression getSearchExpression(Collection<EntityFieldMetaDataVO> fields) {
+	private CollectableSearchCondition getSearchCondition(CollectableSearchCondition constrain, Collection<EntityFieldMetaDataVO> fields) {
 		final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
 		final List<CollectableSearchCondition> join = new ArrayList<CollectableSearchCondition>();
 		for (EntityFieldMetaDataVO f: fields) {
@@ -140,16 +143,30 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 				break;
 			}
 		}
-		if (join.isEmpty()) {
-			return new CollectableSearchExpression(TrueCondition.TRUE);
+		final int size = join.size();
+		if (size == 0) {
+			if (constrain == null) {
+				constrain = TrueCondition.TRUE;
+			}
 		}
-		if (join.size() > 1) {
+		else if (size > 1) {
 			// TODO: Is this all right? What to do with more than one join?
-			return new CollectableSearchExpression(new CompositeCollectableSearchCondition(LogicalOperator.AND, join));
+			if (constrain != null) {
+				join.add(constrain);
+			}
+			constrain = new CompositeCollectableSearchCondition(LogicalOperator.AND, join);
 		}
+		// size == 1
 		else {
-			return new CollectableSearchExpression(join.iterator().next());
+			if (constrain == null) {
+				constrain = join.iterator().next();
+			}
+			else {
+				join.add(constrain);
+				constrain = new CompositeCollectableSearchCondition(LogicalOperator.AND, join);
+			}
 		}
+		return constrain;
 	}
 
 	/**

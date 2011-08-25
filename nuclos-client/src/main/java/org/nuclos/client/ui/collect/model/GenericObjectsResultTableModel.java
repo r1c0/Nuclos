@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.CollectableGenericObject;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.Modules;
@@ -37,6 +38,8 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 
 public class GenericObjectsResultTableModel<Clct extends Collectable> extends SortableCollectableTableModelImpl<Clct> {
+	
+	private static final Logger LOG = Logger.getLogger(GenericObjectsResultTableModel.class);
 
 	private final CollectableEntity entity;
 
@@ -60,6 +63,10 @@ public class GenericObjectsResultTableModel<Clct extends Collectable> extends So
 		 * Good ideas, anyone???
 		 */
 		final CollectableGenericObjectWithDependants clct = (CollectableGenericObjectWithDependants) getCollectable(iRow);
+		if (clct == null) {
+			LOG.warn("getValueAt: CollectableGenericObjectWithDependants is null");
+			return null;
+		}
 		final GenericObjectWithDependantsVO lowdcvo = clct.getGenericObjectWithDependantsCVO();
 		final CollectableEntityField clctefwe = getCollectableEntityField(iColumn);
 		final PivotInfo pinfo;
