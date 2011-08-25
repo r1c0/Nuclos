@@ -16,12 +16,11 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.masterdata;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collection.Transformer;
+import org.nuclos.common.format.FormattingTransformer;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 /**
@@ -36,44 +35,38 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class MakeMasterDataValueIdField implements Transformer<MasterDataVO, CollectableField> {
 
+	private final String entity;
 	private final String sFieldNameForValue;
 
-	public MakeMasterDataValueIdField() {
-		this("name");
+	public MakeMasterDataValueIdField(String entity) {
+		this(entity, "name");
 	}
 
-	public MakeMasterDataValueIdField(String sFieldNameForValue) {
+	public MakeMasterDataValueIdField(String entity, String sFieldNameForValue) {
+		this.entity = entity;
 		this.sFieldNameForValue = sFieldNameForValue;
 	}
 
 	@Override
-	public CollectableField transform(MasterDataVO mdvo) {
+	public CollectableField transform(final MasterDataVO mdvo) {
 		/** @todo take care for "isShowMnemonic" */
 		if (sFieldNameForValue.contains("${")){
-			Pattern referencedEntityPattern = Pattern.compile ("[$][{][\\w]+[}]");
-			Matcher referencedEntityMatcher = referencedEntityPattern.matcher (sFieldNameForValue);
-			StringBuffer sb = new StringBuffer();
-
-			while (referencedEntityMatcher.find()) {
-				String fieldName = referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1);
-				Object value = mdvo.getField(fieldName);
-				if (value != null) {
-					referencedEntityMatcher.appendReplacement (sb, value.toString());
-				}else{
-					referencedEntityMatcher.appendReplacement (sb,"n/a");
+			String value = StringUtils.replaceParameters(sFieldNameForValue, new FormattingTransformer() {
+				@Override
+				protected Object getValue(String field) {
+					return mdvo.getField(field);
 				}
-			}
 
-			// complete the transfer to the StringBuffer
-			referencedEntityMatcher.appendTail (sb);
-
-			return new CollectableValueIdField(mdvo.getId(), sb.toString());
-		}else{
+				@Override
+				protected String getEntity() {
+					return entity;
+				}
+			});
+			return new CollectableValueIdField(mdvo.getId(), value);
+		}
+		else{
 			return new CollectableValueIdField(mdvo.getId(), mdvo.getField(this.sFieldNameForValue));
 		}
-		
-		
-		
 	}
 
 }	// class MakeValueIdField

@@ -16,13 +16,10 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.navigation.treenode;
 
-import java.util.StringTokenizer;
-
-import org.nuclos.common.MasterDataMetaProvider;
+import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 /**
@@ -36,10 +33,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public abstract class MasterDataTreeNode<Id> extends AbstractTreeNode<Id> implements Comparable<MasterDataTreeNode<Id>> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+
 	private final String sEntityName;
 
 	/**
@@ -56,88 +51,17 @@ public abstract class MasterDataTreeNode<Id> extends AbstractTreeNode<Id> implem
 	}
 
 	protected String getIdentifier(MasterDataVO mdvo) {
-		MasterDataMetaProvider cache = SpringApplicationContextHolder.getBean(MasterDataMetaProvider.class);
-		if (cache != null) {
-			final MasterDataMetaVO mdMeta = cache.getMetaData(this.getEntityName());
-			String treeview = mdMeta.getTreeView();
-			final String text = mdMeta.getResourceSIdForTreeView() != null ?
-				CommonLocaleDelegate.getResourceById(CommonLocaleDelegate.getUserLocaleInfo(), mdMeta.getResourceSIdForTreeView()) : treeview;
-			if (text != null) {
-				return replaceTreeView(text, mdvo);
-			}
-
-			// if no treeview is set use field "name"; if "name" does not exist use the first field we find or "<undefiniert>" if this one is empty
-			return mdvo.getField("name") != null ? mdvo.getField("name").toString() : mdvo.getField(mdMeta.getFieldNames().iterator().next()) != null ? mdvo.getField(mdMeta.getFieldNames().iterator().next()).toString() : "<undefiniert>";
-		}
-		else {
-			return "<undefiniert>";
-		}
+		MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
+		return CommonLocaleDelegate.getTreeViewLabel(mdvo, getEntityName(), metaprovider);
 	}
 
-	protected String getDescription(MasterDataVO mdvo){
-		MasterDataMetaProvider cache = SpringApplicationContextHolder.getBean(MasterDataMetaProvider.class);
-		if (cache != null) {
-			final MasterDataMetaVO mdMeta = cache.getMetaData(this.getEntityName());
-			String treeviewdescription = mdMeta.getTreeView();
-			final String text = mdMeta.getResourceSIdForTreeViewDescription() != null ?
-				CommonLocaleDelegate.getResourceById(CommonLocaleDelegate.getUserLocaleInfo(), mdMeta.getResourceSIdForTreeViewDescription()) : treeviewdescription;
-			if (text != null) {
-				return replaceTreeView(text, mdvo);
-			}
-		}
-
-		// if no treeview description
-		return "Last change: " + mdvo.getChangedAt() + " by " + mdvo.getChangedBy();
+	protected String getDescription(MasterDataVO mdvo) {
+		MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
+		return CommonLocaleDelegate.getTreeViewDescription(mdvo, getEntityName(), metaprovider);
 	}
 
-	/**
-	 * replace the user defined pattern with the attribute values for this object
-	 * @param sTreeView
-	 * @param gowdvo
-	 * @param attrprovider
-	 * @return
-	 */
-    private String replaceTreeView(String sTreeView, MasterDataVO mdvo) {
-       int sidx = 0;
-       while ((sidx = sTreeView.indexOf("${", sidx)) >= 0) {
-           int eidx = sTreeView.indexOf("}", sidx);
-           String key = sTreeView.substring(sidx + 2, eidx);
-           String flags = null;
-           int ci = key.indexOf(':');
-           if(ci >= 0) {
-              flags = key.substring(ci + 1);
-              key = key.substring(0, ci);
-           }
-           String rep = findReplacement(key, flags, mdvo);
-           sTreeView = sTreeView.substring(0, sidx) + rep + sTreeView.substring(eidx + 1);
-           sidx = sidx + rep.length();
-      }
-      return sTreeView;
-  }
-
-	/**
-	 * replace a single attribute pattern with the value for this object
-	 * @param sKey
-	 * @param sFlag
-	 * @param gowdvo
-	 * @param attrprovider
-	 * @return attribute value or "" if attribute has no value
-	 */
-    private String findReplacement(String sKey, String sFlag, MasterDataVO mdvo) {
-       String sResIfNull = "";
-       if(sFlag != null) {
-          for(StringTokenizer st = new StringTokenizer(sFlag, ":"); st.hasMoreElements(); ) {
-             String flag = st.nextToken();
-             if(flag.startsWith("ifnull="))
-                sResIfNull = flag.substring(7);
-          }
-       }
-       final Object oValue = mdvo.getField(sKey);
-       return oValue != null ? oValue.toString() : sResIfNull;
-   }
-
-   @Override
-public int compareTo(MasterDataTreeNode<Id> that) {
-   	return LangUtils.compareComparables(this.getLabel(), that.getLabel());
-   }
-}	// class MasterDataTreeNode
+	@Override
+	public int compareTo(MasterDataTreeNode<Id> that) {
+		return LangUtils.compareComparables(this.getLabel(), that.getLabel());
+	}
+} // class MasterDataTreeNode

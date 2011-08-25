@@ -16,14 +16,15 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.genericobject;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.nuclos.common.AttributeProvider;
+import org.nuclos.common.ModuleProvider;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collection.Transformer;
+import org.nuclos.common.format.FormattingTransformer;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 
 /**
@@ -53,44 +54,37 @@ public class MakeGenericObjectValueIdField implements
 	}
 
 	@Override
-	public CollectableField transform(GenericObjectVO govo) {
+	public CollectableField transform(final GenericObjectVO govo) {
 
-		DynamicAttributeVO dynAttribVO;
-
+		ModuleProvider modules = SpringApplicationContextHolder.getBean(ModuleProvider.class);
+		final String entity = modules.getEntityNameByModuleId(govo.getModuleId());
 		if (sAttributeNameForValue.contains("${")) {
-			Pattern referencedEntityPattern = Pattern
-					.compile("[$][{][\\w]+[}]");
-			Matcher referencedEntityMatcher = referencedEntityPattern
-					.matcher(sAttributeNameForValue);
-			StringBuffer sb = new StringBuffer();
-
-			while (referencedEntityMatcher.find()) {
-
-				dynAttribVO = govo.getAttribute(referencedEntityMatcher.group()
-						.substring(2,
-								referencedEntityMatcher.group().length() - 1),
-								attributeProvider);
-
-				if (dynAttribVO != null) {
-					referencedEntityMatcher.appendReplacement(sb,
-							(String) dynAttribVO.getValue());
-				} else {
-					referencedEntityMatcher.appendReplacement(sb, "n/a");
+			String value = StringUtils.replaceParameters(sAttributeNameForValue, new FormattingTransformer() {
+				@Override
+				protected Object getValue(String field) {
+					DynamicAttributeVO att = govo.getAttribute(field, attributeProvider);
+					if (att != null) {
+						return att.getValue();
+					}
+					else {
+						return null;
+					}
 				}
+
+				@Override
+				protected String getEntity() {
+					return entity;
+				}
+			});
+			return new CollectableValueIdField(govo.getId(), value);
+		}
+		else {
+			DynamicAttributeVO att = govo.getAttribute(this.sAttributeNameForValue, attributeProvider);
+			if (att != null) {
+				return new CollectableValueIdField(govo.getId(), att.getValue());
 			}
-			referencedEntityMatcher.appendTail(sb);
-
-			return new CollectableValueIdField(govo.getId(), sb.toString());
-
-		} else {
-			dynAttribVO = govo.getAttribute(this.sAttributeNameForValue,
-					attributeProvider);
-			if (dynAttribVO != null) {
-				return new CollectableValueIdField(govo.getId(), dynAttribVO
-						.getValue());
-			} else {
-				return new CollectableValueIdField(govo.getId(),
-						"Attribut not loaded!");
+			else {
+				return new CollectableValueIdField(govo.getId(), "Attribut not loaded!");
 			}
 		}
 	}

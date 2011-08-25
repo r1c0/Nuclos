@@ -400,6 +400,21 @@ public class StringUtils {
 	 }
 
 
+	/**
+	 * Get all parameters in placeholder format <code>${...}</code>.
+	 *
+	 * @param s the input string
+	 * @return list of parameters in input string
+	 */
+	public static List<String> getParameters(String s) {
+		List<String> result = new ArrayList<String>();
+		Matcher m = PARAM_PATTERN.matcher(s);
+		while (m.find()) {
+			result.add(m.group(1));
+		}
+		return result;
+	}
+
 	  /**
 	   * Replaces all embedded parameters of the form <code>${...}</code>.
 	   * The replacement string is determined by calling a given transformer.
@@ -631,23 +646,23 @@ public class StringUtils {
 		}
 		return result.append("</body></html>").toString();
 	}
-	
+
 	public static String trimInvalidCharactersInFilename(String sFilename){
 		// this is very ugly. regexp should be used here !
 	    String invalidChars = "\\/:*?\"<>|(){}[]";
 	    char ch[] = invalidChars.toCharArray();
-	    
+
 	    for(int i = 0 ; i < ch.length; i++){
-	    	sFilename = sFilename.replace(ch[i], '_');	    	
+	    	sFilename = sFilename.replace(ch[i], '_');
 	    }
 	    sFilename = sFilename.replace(' ', '_');
-	    
+
 
 	    return sFilename.trim();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param s1
 	 * @param s2
 	 * @return
@@ -655,5 +670,5 @@ public class StringUtils {
 	public static boolean equalsIgnoreCase(String s1, String s2) {
 		return (s1 == null) ? (s2 == null) : s1.equalsIgnoreCase(s2);
 	}
-	
+
 }	// class StringUtils

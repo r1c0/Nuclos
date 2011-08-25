@@ -47,6 +47,7 @@ import org.nuclos.client.application.assistant.ApplicationObserver;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.EntityCollectController;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.MultiUpdateOfDependants;
 import org.nuclos.client.common.NuclosCollectableListOfValues;
 import org.nuclos.client.common.NuclosFocusTraversalPolicy;
@@ -116,7 +117,6 @@ import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -364,31 +364,25 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       String sSuffix = "";
       final String sMode;
 
-      switch (iTab) {
-         case CollectState.OUTERSTATE_DETAILS:
-            sPrefix = ""; //this.getEntityLabel();
-            sMode = asDetailsMode[iMode];
-            if (CollectState.isDetailsModeViewOrEdit(iMode)) {
-               final String sIdentifier;
-               MasterDataMetaVO metaDataVO = MasterDataDelegate.getInstance().getMetaData(this.getEntityName());
-               String sDescription = CommonLocaleDelegate.getTreeViewFromMetaDataVO(metaDataVO);
-               if (sDescription != null) {
-               	sIdentifier = StringUtils.replaceParameters(sDescription, new ParameterTransformer(this.getSelectedCollectable().getMasterDataCVO()));
-               }
-               else {
-                  sIdentifier = this.getSelectedCollectable()!=null? this.getSelectedCollectable().getIdentifierLabel() : "<>";
-               }
-
-               sPrefix += sIdentifier;
-            }
-            else if (CollectState.isDetailsModeMultiViewOrEdit(iMode)) {
-               sSuffix = CommonLocaleDelegate.getMessage("MasterDataCollectController.19"," von {0} Objekten", this.getSelectedCollectables().size());
-            }
-            break;
-         default:
-            sPrefix = this.getEntityLabel();
-            sMode = asTabs[iTab];
-      }
+		switch (iTab) {
+		case CollectState.OUTERSTATE_DETAILS:
+			sPrefix = ""; // this.getEntityLabel();
+			sMode = asDetailsMode[iMode];
+			if (CollectState.isDetailsModeViewOrEdit(iMode)) {
+				MasterDataMetaVO metaDataVO = MasterDataDelegate.getInstance().getMetaData(this.getEntityName());
+				String sIdentifier = CommonLocaleDelegate.getTreeViewLabel(this.getSelectedCollectable(), getEntity(), MetaDataClientProvider.getInstance());
+				if (sIdentifier == null) {
+					sIdentifier = this.getSelectedCollectable() != null ? this.getSelectedCollectable().getIdentifierLabel() : "<>";
+				}
+				sPrefix += sIdentifier;
+			} else if (CollectState.isDetailsModeMultiViewOrEdit(iMode)) {
+				sSuffix = CommonLocaleDelegate.getMessage("MasterDataCollectController.19", " von {0} Objekten", this.getSelectedCollectables().size());
+			}
+			break;
+		default:
+			sPrefix = this.getEntityLabel();
+			sMode = asTabs[iTab];
+		}
 
       return sPrefix + (sPrefix.length()>0?" - ":"") + sMode + sSuffix;
    }
@@ -408,10 +402,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		}
 
 		if (buildTreeView) {
-            String sDescription = CommonLocaleDelegate.getTreeViewFromMetaDataVO(MasterDataDelegate.getInstance().getMetaData(this.getEntityName()));
-            if (sDescription != null) {
-            		result = StringUtils.replaceParameters(sDescription, new ParameterTransformer(this.getSelectedCollectable().getMasterDataCVO()));
-            }
+            result = CommonLocaleDelegate.getTreeViewLabel(this.getSelectedCollectable(), getEntity(), MetaDataClientProvider.getInstance());
 		}
 
 		if (result == null) {

@@ -62,6 +62,7 @@ import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
@@ -81,7 +82,7 @@ import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
 public class CollectableListOfValues extends LabeledCollectableComponentWithVLP implements ICollectableListOfValues {
 
 	private static final Logger log = Logger.getLogger(CollectableListOfValues.class);
-	
+
 	/**
 	 * the value id "remembered in the view", as the JTextField only holds the value.
 	 */
@@ -96,7 +97,7 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	 */
 	public static class Event extends CollectableComponentEvent {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -188,25 +189,25 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 						vlpParameter = dsProvider.getValueListParameter();
 					}
 				}
-				
+
 				return CollectableListOfValues.getQuickSearchResult(clctef, inputString, vlpId, vlpParameter);
 			}
 		});
-		
+
 		this.setupLookupListener();
 
 		this.getListOfValues().setQuickSearchEnabled(enableQuickSearch(clctef));
-		
+
 		CollectableEntity clcte = clctef.getCollectableEntity();
 		EntityFieldMetaDataVO efMeta = MetaDataClientProvider.getInstance().getEntityField(clcte.getName(), clctef.getName());
 		final EntityMetaDataVO eMetaForeign = MetaDataClientProvider.getInstance().getEntity(efMeta.getForeignEntity());
-		
+
 		this.getListOfValues().setQuickSearchSelectedListener(new ListOfValues.QuickSearchSelectedListener() {
 			@Override
 			public void actionPerformed(CollectableValueIdField itemSelected) {
 				if (itemSelected == null) {
 					CollectableListOfValues.this.clearListOfValues();
-				} else {			
+				} else {
 					try {
 						if (eMetaForeign.isStateModel()) {
 							CollectableListOfValues.this.acceptLookedUpCollectable(CollectableGenericObjectWithDependants.newCollectableGenericObject(
@@ -250,16 +251,16 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	 *
 	 * @param clctef
 	 * @param inputString
-	 * @param dsvo 
-	 * @param collectableFieldsProvider 
+	 * @param dsvo
+	 * @param collectableFieldsProvider
 	 * @return
 	 */
 	private static List<CollectableValueIdField> getQuickSearchResult(final CollectableEntityField clctef, final String inputString, Integer vlpId, Map<String, Object> vlpParameter) {
-		
+
 		CollectableEntity clcte = clctef.getCollectableEntity();
 		if (clcte == null)
 			return Collections.emptyList();
-		
+
 		return ServiceLocator.getInstance().getFacade(EntityFacadeRemote.class).getQuickSearchResult(clcte.getName(), clctef.getName(), inputString, vlpId, vlpParameter, QUICKSEARCH_MAX);
 	}
 
@@ -545,37 +546,27 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	 * @precondition clctLookedUp != null
 	 * @precondition clctLookedUp.isComplete()
 	 */
-	protected void acceptLookedUpCollectable(Collectable clctLookedUp, String sReferencedEntityFieldName, List<Collectable> additionalCollectables) {
+	protected void acceptLookedUpCollectable(final Collectable clctLookedUp, String sReferencedEntityFieldName, List<Collectable> additionalCollectables) {
 		if (clctLookedUp == null) {
 			throw new NullArgumentException("clctLookedUp");
 		}
-		/*if (!clctLookedUp.isComplete()) {
-			throw new IllegalArgumentException("clctLookedUp");
-		}*/
 
 		Object oForeignValue;
 		try {
-			if (sReferencedEntityFieldName.contains("${")){
-				Pattern referencedEntityPattern = Pattern.compile ("[$][{][\\w]+[}]");
-			    Matcher referencedEntityMatcher = referencedEntityPattern.matcher (sReferencedEntityFieldName);
-			    StringBuffer sb = new StringBuffer();
+			if (sReferencedEntityFieldName.contains("${")) {
+				oForeignValue = StringUtils.replaceParameters(sReferencedEntityFieldName, new FormattingTransformer() {
+					@Override
+					protected Object getValue(String field) {
+						return clctLookedUp.getValue(field);
+					}
 
-			      while (referencedEntityMatcher.find()) {
-			    	  if (clctLookedUp.getValue(referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1)) != null) {
-			    		  Object value = clctLookedUp.getValue(referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1));
-			    		  referencedEntityMatcher.appendReplacement(sb, value.toString());
-			    	  }else{
-			    	  referencedEntityMatcher.appendReplacement (sb,"n/a");
-			    	  }
-			      }
-
-			      // complete the transfer to the StringBuffer
-			      referencedEntityMatcher.appendTail (sb);
-
-			      oForeignValue = sb.toString();
-
-
-			}else{
+					@Override
+					protected String getEntity() {
+						return getEntityField().getReferencedEntityName();
+					}
+				});
+			}
+			else {
 				oForeignValue = clctLookedUp.getValue(sReferencedEntityFieldName);
 			}
 

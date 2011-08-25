@@ -61,6 +61,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
+import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
 import org.nuclos.common.transport.vo.EntityMetaDataTO;
@@ -87,6 +88,7 @@ import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.dal.DalUtils;
+import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
@@ -109,6 +111,7 @@ import org.nuclos.server.dblayer.structure.DbColumn;
 import org.nuclos.server.dblayer.structure.DbColumnType;
 import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.dblayer.structure.DbTableType;
+import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
@@ -855,30 +858,23 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 	}
 
-	private String getPath(String path, GenericObjectWithDependantsVO oParent) {
-
+	private String getPath(String path, final GenericObjectWithDependantsVO oParent) {
+		final String entity = Modules.getInstance().getEntityNameByModuleId(oParent.getModuleId());
 		String rPath = new String(path);
 		if (rPath.contains("${")){
-			Pattern referencedEntityPattern = Pattern.compile ("[$][{][\\w\\[\\]]+[}]");
-		    Matcher referencedEntityMatcher = referencedEntityPattern.matcher (rPath);
-		    StringBuffer sb = new StringBuffer();
+			rPath = StringUtils.replaceParameters(rPath, new FormattingTransformer() {
+				@Override
+				protected Object getValue(String field) {
+					return oParent.getAttribute(field, AttributeCache.getInstance()).getValue();
+				}
 
-		      while (referencedEntityMatcher.find()) {
-		    	  	Object value = referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1);
-
-		    	   String sName = value.toString();
-		    	   Object fieldValue = oParent.getAttribute(sName, AttributeCache.getInstance()).getValue();
-		    	  	referencedEntityMatcher.appendReplacement (sb, fieldValue.toString());
-		      }
-
-		      // complete the transfer to the StringBuffer
-		      referencedEntityMatcher.appendTail (sb);
-		      rPath = sb.toString();
-
+				@Override
+				protected String getEntity() {
+					return entity;
+				}
+			});
 		}
-
 		return rPath;
-
 	}
 
 

@@ -16,31 +16,23 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.navigation.treenode;
 
-import java.text.DateFormat;
-import java.text.MessageFormat;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.AttributeProvider;
+import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.ModuleProvider;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.attribute.DynamicAttributeVO;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
-import org.nuclos.common2.TruncatableCollection;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.SecurityCache;
-import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeRemote;
-import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode.RelationDirection;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode.SystemRelationType;
@@ -103,13 +95,9 @@ public class GenericObjectTreeNodeFactory {
 	 */
 	protected String getIdentifier(GenericObjectWithDependantsVO gowdvo, AttributeProvider attrprovider, String username) {
 		ModuleProvider modules = SpringApplicationContextHolder.getBean(ModuleProvider.class);
-		String sTreeView = (String)modules.getModuleById(gowdvo.getModuleId()).getField("treeview");
-		if(sTreeView != null) {
-			sTreeView = CommonLocaleDelegate.getResourceById(CommonLocaleDelegate.getUserLocaleInfo(), sTreeView);
-			this.addAttribute(gowdvo, attrprovider, StringUtils.getFieldsFromTreeViewPattern(sTreeView));
-			return replaceTreeView(sTreeView, gowdvo, attrprovider, username);
-		}
-		return LangUtils.defaultIfNull(gowdvo.getSystemIdentifier(), "#FEHLER#");
+		MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
+		Map<String, Object> values = getReadableAttributes(username, gowdvo, attrprovider);
+		return CommonLocaleDelegate.getTreeViewLabel(values, modules.getEntityNameByModuleId(gowdvo.getModuleId()), metaprovider);
 	}
 
 	/**
@@ -121,152 +109,39 @@ public class GenericObjectTreeNodeFactory {
 	 */
 	public String getDescription(GenericObjectWithDependantsVO gowdvo, AttributeProvider attrprovider, Date dateChangedAt, String username){
 		ModuleProvider modules = SpringApplicationContextHolder.getBean(ModuleProvider.class);
-		String sTreeViewDescription = (String)modules.getModuleById(gowdvo.getModuleId()).getField("treeviewdescription");
-		if(sTreeViewDescription != null) {
-			sTreeViewDescription = CommonLocaleDelegate.getResourceById(CommonLocaleDelegate.getUserLocaleInfo(), sTreeViewDescription);
-			this.addAttribute(gowdvo, attrprovider, StringUtils.getFieldsFromTreeViewPattern(sTreeViewDescription));
-			return replaceTreeView(sTreeViewDescription, gowdvo, attrprovider, username);
-		}
-
-		//if no treeview description
-		return MessageFormat.format(CommonLocaleDelegate.getResourceById(CommonLocaleDelegate.getUserLocaleInfo(), "gotreenode.tooltip"), DateFormat.getDateTimeInstance().format(dateChangedAt));
-		//"Last change: " + DateFormat.getDateTimeInstance().format(dateChangedAt);
+		MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
+		Map<String, Object> values = getReadableAttributes(username, gowdvo, attrprovider);
+		return CommonLocaleDelegate.getTreeViewDescription(values, modules.getEntityNameByModuleId(gowdvo.getModuleId()), metaprovider);
 	}
 
-	/**
-	 * replace the user defined pattern with the attribute values for this object
-	 * @param sTreeView
-	 * @param gowdvo
-	 * @param attrprovider
-	 * @return
-	 */
-    private String replaceTreeView(String sTreeView, GenericObjectWithDependantsVO gowdvo, AttributeProvider attrprovider, String username) {
-       int sidx = 0;
-       while ((sidx = sTreeView.indexOf("${", sidx)) >= 0) {
-           int eidx = sTreeView.indexOf("}", sidx);
-           String key = sTreeView.substring(sidx + 2, eidx);
-           String flags = null;
-           int ci = key.indexOf(':');
-           if(ci >= 0) {
-              flags = key.substring(ci + 1);
-              key = key.substring(0, ci);
-           }
-           String rep = findReplacement(key, flags, gowdvo, attrprovider, username);
-           sTreeView = sTreeView.substring(0, sidx) + rep + sTreeView.substring(eidx + 1);
-           sidx = sidx + rep.length();
-      }
-      return sTreeView;
-  }
-
-	/**
-	 * replace a single attribute pattern with the value for this object
-	 * @param sKey
-	 * @param sFlag
-	 * @param gowdvo
-	 * @param attrprovider
-	 * @return attribute value or "" if attribute has no value
-	 */
-    private String findReplacement(String sKey, String sFlag, GenericObjectWithDependantsVO gowdvo, AttributeProvider attrprovider, String username) {
-    	String sResIfNull = "";
-    	String sResIfNoPermission = StringUtils.defaultIfNull(SpringApplicationContextHolder.getBean(ParameterProvider.class).getValue(ParameterProvider.KEY_BLUR_FILTER),"***");
-
-    	if(sFlag != null) {
-    		for(StringTokenizer st = new StringTokenizer(sFlag, ":"); st.hasMoreElements(); ) {
-    			String flag = st.nextToken();
-    			if(flag.startsWith("ifnull="))
-    				sResIfNull = flag.substring(7);
-    		}
-    	}
-    	DynamicAttributeVO attrVO = gowdvo.getAttributeForTreeView(attrprovider.getAttribute(gowdvo.getModuleId(), sKey).getId());
-
-    	boolean blnReadPermission = isReadAllowedForAttribute(username, sKey, gowdvo, attrprovider);
-
-    	String oValue = null;
-    	if (attrVO != null && attrVO.getValue() != null) {
-     		if (attrVO.getValue() instanceof java.util.Date) {
-    		oValue = CommonLocaleDelegate.getDateFormat().format(attrVO.getValue());
-     		}
-     		else {
-     			oValue = attrVO.getValue().toString();
-     		}
-     	 }
-     	 else {
-     		oValue = sResIfNull;
-     	 }
-    	return (blnReadPermission) ? oValue : sResIfNoPermission;
-   }
-
-    /**
-	 * add and set additional attributes to gowdvo
-	 * @param gowdvo
-	 * @param attrprovider
-	 * @param stSAttribute
-	 */
-	protected void addAttribute(GenericObjectWithDependantsVO gowdvo, AttributeProvider attrprovider, Set<String> stSAttribute) {
-		// 1. create search condition/expression with id of original gowdvo
-		final CollectableIdCondition collIdCond = new CollectableIdCondition(gowdvo.getId());
-		final CollectableSearchExpression collSearchExpr = new CollectableSearchExpression(collIdCond);
-
-		// 2. define set of additional attributes
-		final Set<Integer> stIAttribute = new HashSet<Integer>();
-		for (String sAttribute : stSAttribute) {
-			Integer id = attrprovider.getAttribute(gowdvo.getModuleId(), sAttribute).getId();
-			if(!gowdvo.wasAttributeIdLoaded(id))
-				stIAttribute.add(id);
-		}
-
-		if(stIAttribute.isEmpty())
-			return;
-
-		final int DEFAULT_ROWCOUNT_FOR_SEARCHRESULT = 500;
-		final ParameterProvider paramprovider = SpringApplicationContextHolder.getBean(ParameterProvider.class);
-		final int iMaxRowCount = paramprovider.getIntValue(ParameterProvider.KEY_MAX_ROWCOUNT_FOR_SEARCHRESULT_IN_TREE, DEFAULT_ROWCOUNT_FOR_SEARCHRESULT);
-
-		// 3. create temporary gowdvo incuding the new attributes
-		TruncatableCollection<GenericObjectWithDependantsVO> collgowdvo = null;
-		try {
-			// TODO switch from remote to local interface
-			collgowdvo = ServiceLocator.getInstance().getFacade(GenericObjectFacadeRemote.class).getRestrictedNumberOfGenericObjects(gowdvo.getModuleId(), collSearchExpr,
-						stIAttribute, getSubEntityNamesRequiredForGenericObjectTreeNode(), iMaxRowCount);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-
-		// 4. add new attributes to original gowdvo
-		for (String sAttribute : stSAttribute) {
-			gowdvo.addAttribute(attrprovider.getAttribute(gowdvo.getModuleId(), sAttribute).getId());
-		}
-
-		assert collgowdvo != null && collgowdvo.size() == 1;
-
-		// 5. set values of new attributes in original gowdvo using temporary gowdvo
-		for (GenericObjectWithDependantsVO vo: collgowdvo) {
-			for (String sAttribute : stSAttribute) {
-				DynamicAttributeVO daVO = vo.getAttribute(attrprovider.getAttribute(gowdvo.getModuleId(), sAttribute).getId());
-				if (daVO != null) {
-					gowdvo.setAttribute(daVO);
-				}
+	private Map<String, Object> getReadableAttributes(String sUserName, GenericObjectWithDependantsVO gowdvo, AttributeProvider attrprovider) {
+		String sResIfNoPermission = StringUtils.defaultIfNull(SpringApplicationContextHolder.getBean(ParameterProvider.class).getValue(ParameterProvider.KEY_BLUR_FILTER),"***");
+		Map<String, Object> values = new HashMap<String, Object>();
+		for (DynamicAttributeVO att : gowdvo.getAttributes()) {
+			String attname = attrprovider.getAttribute(att.getAttributeId()).getName();
+			if (isReadAllowedForAttribute(sUserName, attname, gowdvo, attrprovider)) {
+				values.put(attname, att.getValue());
+			}
+			else {
+				values.put(attname, sResIfNoPermission);
 			}
 		}
-	}
-
-	private Set<String> getSubEntityNamesRequiredForGenericObjectTreeNode() {
-		return Collections.emptySet();
+		return values;
 	}
 
 	/**
-	    * check whether the data of the attribute is readable for current user
-	    * @param sUserName
-	    * @param sKey
-	    * @param gowdvo
-	    * @param attrprovider
-	    * @return true, if attribute data is readable, otherwise false
-	    */
-	   public boolean isReadAllowedForAttribute(String sUserName, String sKey, GenericObjectWithDependantsVO gowdvo, AttributeProvider attrprovider) {
-		   Integer iAttributeGroupId = SpringApplicationContextHolder.getBean(AttributeProvider.class).getAttribute(gowdvo.getModuleId(), sKey).getAttributegroupId();
-		   Permission permission = SecurityCache.getInstance().getAttributeGroup(sUserName, iAttributeGroupId).get(gowdvo.getStatusId());
+	 * check whether the data of the attribute is readable for current user
+	 *
+	 * @param sUserName
+	 * @param sKey
+	 * @param gowdvo
+	 * @param attrprovider
+	 * @return true, if attribute data is readable, otherwise false
+	 */
+	public boolean isReadAllowedForAttribute(String sUserName, String sKey, GenericObjectWithDependantsVO gowdvo, AttributeProvider attrprovider) {
+		Integer iAttributeGroupId = SpringApplicationContextHolder.getBean(AttributeProvider.class).getAttribute(gowdvo.getModuleId(), sKey).getAttributegroupId();
+		Permission permission = SecurityCache.getInstance().getAttributeGroup(sUserName, iAttributeGroupId).get(gowdvo.getStatusId());
 
-		   return (permission == null) ? false : permission.includesReading();
-	   }
+		return (permission == null) ? false : permission.includesReading();
+	}
 }	// class GenericObjectTreeNodeFactory

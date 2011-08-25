@@ -32,7 +32,6 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.Collator;
-import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,11 +44,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.prefs.Preferences;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -194,6 +190,7 @@ import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.client.valuelistprovider.cache.ManagedCollectableFieldsProvider;
 import org.nuclos.common.Actions;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
+import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
@@ -201,6 +198,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.PointerCollection;
 import org.nuclos.common.PointerException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -231,6 +229,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
+import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.genericobject.GenericObjectUtils;
 import org.nuclos.common.security.Permission;
@@ -1024,7 +1023,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			private GenericObjectIdModuleProcess getTransferableObject(
 				final JTable tbl, int iSelectedRow,
 				final CollectableGenericObjectWithDependants clct) {
-				return new GenericObjectIdModuleProcess(clct, GenericObjectCollectController.getTreeViewIdentifier(clct), getContents(tbl, iSelectedRow));
+				return new GenericObjectIdModuleProcess(clct, getTreeViewIdentifier(clct), getContents(tbl, iSelectedRow));
 			}
 
 			private String getContents(JTable tbl, int iRow) {
@@ -2252,7 +2251,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				if (canSort) {
 					//NUCLEUSINT-1039
 					getResultController().getSearchResultStrategy().cmdSearch();
-				} 
+				}
 				else {
 					result.setSortKeys(Collections.<SortKey>emptyList(), false);
 					throw new CommonBusinessException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.19","Das Suchergebnis kann nicht nach Unterformularspalten sortiert werden."));
@@ -3024,33 +3023,18 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	private String getDirectoryPath(String path, CollectableGenericObjectWithDependants oParent) {
-
-		if (path.contains("${")){
-			Pattern referencedEntityPattern = Pattern.compile ("[$][{][\\w\\[\\]]+[}]");
-			Matcher referencedEntityMatcher = referencedEntityPattern.matcher (path);
-			StringBuffer sb = new StringBuffer();
-
-			while (referencedEntityMatcher.find()) {
-				Object value = referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1);
-
-				String sName = value.toString();
-				Object fieldValue =  getDetailsEditView().getModel().getCollectableComponentModelFor(sName).getField().getValue();
-				if(fieldValue != null)
-					referencedEntityMatcher.appendReplacement (sb, fieldValue.toString());
-				else
-					referencedEntityMatcher.appendReplacement (sb, "");
+		return StringUtils.replaceParameters(path, new FormattingTransformer() {
+			@Override
+			protected Object getValue(String field) {
+				return getDetailsEditView().getModel().getCollectableComponentModelFor(field).getField().getValue();
 			}
 
-			// complete the transfer to the StringBuffer
-			referencedEntityMatcher.appendTail (sb);
-			path = sb.toString();
-
-		}
-
-		return path;
-
+			@Override
+			protected String getEntity() {
+				return getEntityName();
+			}
+		});
 	}
-
 
 	/**
 	 * @return
@@ -5047,72 +5031,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 	}
 
-	private static String getTreeViewIdentifier(CollectableGenericObjectWithDependants clct) {
-		final String sIdentifier;
-		String sDescription = Modules.getInstance().getTreeView(Modules.getInstance().getModuleById(clct.getGenericObjectWithDependantsCVO().getModuleId()));
-		if (sDescription != null) {
-			sIdentifier = replaceTreeView(sDescription,clct.getGenericObjectWithDependantsCVO(), AttributeCache.getInstance());;
-		}
-		else
-			sIdentifier = clct.getIdentifierLabel();
-		return sIdentifier;
+	private String getTreeViewIdentifier(CollectableGenericObjectWithDependants clct) {
+		MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
+		return CommonLocaleDelegate.getTreeViewLabel(clct, getEntity(), metaprovider);
 	}
-
-	/**
-	 * replace the user defined pattern with the attribute values for this object
-	 * @param sTreeView
-	 * @param gowdvo
-	 * @param attrprovider
-	 * @return
-	 */
-	private static String replaceTreeView(String sTreeView, GenericObjectWithDependantsVO gowdvo, AttributeCache attrprovider) {
-		int sidx = 0;
-		while ((sidx = sTreeView.indexOf("${", sidx)) >= 0) {
-			int eidx = sTreeView.indexOf("}", sidx);
-			String key = sTreeView.substring(sidx + 2, eidx);
-			String flags = null;
-			int ci = key.indexOf(':');
-			if(ci >= 0) {
-				flags = key.substring(ci + 1);
-				key = key.substring(0, ci);
-			}
-			String rep = findReplacement(key, flags, gowdvo, attrprovider);
-			sTreeView = sTreeView.substring(0, sidx) + rep + sTreeView.substring(eidx + 1);
-			sidx = sidx + rep.length();
-		}
-		return sTreeView;
-	}
-
-	/**
-	 * replace a single attribute pattern with the value for this object
-	 * @param sKey
-	 * @param sFlag
-	 * @param gowdvo
-	 * @param attrprovider
-	 * @return attribute value or "" if attribute has no value
-	 */
-	private static String findReplacement(String sKey, String sFlag, GenericObjectWithDependantsVO gowdvo, AttributeCache attrprovider) {
-		String sResIfNull = "";
-		if(sFlag != null)
-			for(StringTokenizer st = new StringTokenizer(sFlag, ":"); st.hasMoreElements(); ) {
-				String flag = st.nextToken();
-				if(flag.startsWith("ifnull="))
-					sResIfNull = flag.substring(7);
-			}
-		DynamicAttributeVO attrVO = gowdvo.getAttribute(attrprovider.getAttribute(gowdvo.getModuleId(), sKey).getId());
-
-		String oValue = null;
-		if (attrVO != null && attrVO.getValue() != null) {
-			if (attrVO.getValue() instanceof java.util.Date)
-				oValue = DateFormat.getDateInstance(DateFormat.DEFAULT, CommonLocaleDelegate.getLocale()).format(attrVO.getValue());
-			else
-				oValue = attrVO.getValue().toString();
-		}
-		else
-			oValue = sResIfNull;
-		return oValue;
-	}
-
 
 	private boolean isSelectedCollectableMarkedAsDeleted() {
 		boolean result = false;

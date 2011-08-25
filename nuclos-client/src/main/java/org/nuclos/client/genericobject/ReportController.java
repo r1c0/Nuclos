@@ -41,6 +41,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.ClientParameterProvider;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.datasource.admin.DatasourceCollectController;
 import org.nuclos.client.report.ReportDelegate;
@@ -59,8 +60,12 @@ import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Transformer;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common.genericobject.GenericObjectUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.ServiceLocator;
@@ -115,7 +120,7 @@ public class ReportController extends Controller {
 	 * shows dialog to choose export form for a list of selected leased objects, using only common forms of selection
 	 * @param lstclctlo
 	 * @param usagecriteria
-	 * @param documentFieldNames 
+	 * @param documentFieldNames
 	 * @throws NuclosFatalException
 	 * @throws NuclosReportException
 	 */
@@ -182,7 +187,7 @@ public class ReportController extends Controller {
 	 * executes the selected form for each single leased object, one after the other
 	 * @param pnlSelection
 	 * @param lstclctlo
-	 * @param documentFieldNames 
+	 * @param documentFieldNames
 	 * @param facade
 	 * @throws RemoteException
 	 */
@@ -354,33 +359,19 @@ public class ReportController extends Controller {
 		thread.start();
 	}
 
-	private String getPath(String path, CollectableGenericObject oParent) {
+	private String getPath(String path, final CollectableGenericObject oParent) {
+		final String entity = Modules.getInstance().getEntityNameByModuleId(oParent.getGenericObjectCVO().getId());
+		return StringUtils.replaceParameters(path, new FormattingTransformer() {
+			@Override
+			protected Object getValue(String field) {
+				return oParent.getField(field).getValue();
+			}
 
-		if (path.contains("${")){
-			Pattern referencedEntityPattern = Pattern.compile ("[$][{][\\w\\[\\]]+[}]");
-		    Matcher referencedEntityMatcher = referencedEntityPattern.matcher (path);
-		    StringBuffer sb = new StringBuffer();
-
-		      while (referencedEntityMatcher.find()) {
-		    	  	Object value = referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1);
-
-		    	   String sName = value.toString();
-		    	   Object fieldValue = oParent.getField(sName).getValue();
-		    	   if(fieldValue != null)
-		    	   	referencedEntityMatcher.appendReplacement (sb, fieldValue.toString());
-		    	   else {
-		    	   	referencedEntityMatcher.appendReplacement (sb, "");
-		    	   }
-		      }
-
-		      // complete the transfer to the StringBuffer
-		      referencedEntityMatcher.appendTail (sb);
-		      path = sb.toString();
-
-		}
-
-		return path;
-
+			@Override
+			protected String getEntity() {
+				return entity;
+			}
+		});
 	}
 
 	/**

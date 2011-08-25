@@ -18,12 +18,12 @@ package org.nuclos.common.collect.collectable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.StringUtils;
 
 /**
  * Transformer that makes a value id field out of a <code>EntityObjectVO</code>,
@@ -48,52 +48,41 @@ public class MakeCollectableValueIdField implements Transformer<EntityObjectVO, 
 	}
 
 	@Override
-	public CollectableField transform(EntityObjectVO eovo) {
+	public CollectableField transform(final EntityObjectVO eovo) {
 		/** @todo take care for "isShowMnemonic" */
+		final String entity = eovo.getEntity();
 		if (sFieldNameForValue.contains("${")){
-			Pattern referencedEntityPattern = Pattern.compile ("[$][{][\\w]+[}]");
-			Matcher referencedEntityMatcher = referencedEntityPattern.matcher (sFieldNameForValue);
-			StringBuffer sb = new StringBuffer();
-
-			while (referencedEntityMatcher.find()) {
-				String fieldName = referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1);
-				Object value = eovo.getFields().get(fieldName);
-				if (value != null) {
-					referencedEntityMatcher.appendReplacement (sb, value.toString());
-				}else{
-					referencedEntityMatcher.appendReplacement (sb,"n/a");
+			String value = StringUtils.replaceParameters(sFieldNameForValue, new FormattingTransformer() {
+				@Override
+				protected Object getValue(String field) {
+					return eovo.getFields().get(field);
 				}
-			}
 
-			// complete the transfer to the StringBuffer
-			referencedEntityMatcher.appendTail (sb);
-
-			return new CollectableValueIdField(LangUtils.convertId(eovo.getId()), sb.toString());
-		}else{
+				@Override
+				protected String getEntity() {
+					return entity;
+				}
+			});
+			return new CollectableValueIdField(LangUtils.convertId(eovo.getId()), value);
+		}
+		else {
 			return new CollectableValueIdField(LangUtils.convertId(eovo.getId()), eovo.getFields().get(this.sFieldNameForValue));
-		}		
+		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Collection<String> getFields() {
-		Collection<String> fields = new ArrayList<String>();
-
 		if (sFieldNameForValue.contains("${")){
-			Pattern referencedEntityPattern = Pattern.compile ("[$][{][\\w]+[}]");
-			Matcher referencedEntityMatcher = referencedEntityPattern.matcher (sFieldNameForValue);
-
-			while (referencedEntityMatcher.find()) {
-				String fieldName = referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1);
-				fields.add(fieldName);
-			}
-		} else {
-			fields.add(sFieldNameForValue);
+			return StringUtils.getParameters(sFieldNameForValue);
 		}
-		
-		return fields;
+		else {
+			Collection<String> fields = new ArrayList<String>();
+			fields.add(sFieldNameForValue);
+			return fields;
+		}
 	}
 
 }	// class MakeValueIdField

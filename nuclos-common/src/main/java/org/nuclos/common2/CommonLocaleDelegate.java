@@ -20,11 +20,13 @@
 package org.nuclos.common2;
 
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -34,15 +36,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuclos.common.MetaDataProvider;
+import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.SpringApplicationContextHolder;
+import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldFormat;
+import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
+import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
+import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 /**
  * Static utility class in the "common" hierarchy, which holds the selected
@@ -315,33 +323,138 @@ public class CommonLocaleDelegate {
 	public static String getTreeViewFromMetaDataVO(EntityMetaDataVO entitymetavo) {
 		String result = null;
 		if(entitymetavo.getLocaleResourceIdForTreeView() != null && keyLookup != null)
-			result = CommonLocaleDelegate.getText(entitymetavo.getLocaleResourceIdForTreeView(), null);
+			result = getResourceById(getUserLocaleInfo(), entitymetavo.getLocaleResourceIdForTreeView());
 
-		if(result == null)
-			result = entitymetavo.getEntity();
 		return result;
 	}
 
+	public static String getTreeViewLabel(MasterDataVO mdvo, String entityname, MetaDataProvider metaDataProvider) {
+		return getTreeViewLabel(mdvo.getFields(), entityname, metaDataProvider);
+	}
+
+	public static String getTreeViewLabel(GenericObjectVO govo, String entityname, MetaDataProvider metaDataProvider) {
+		Map<String, Object> values = new HashMap<String, Object>();
+		for (DynamicAttributeVO att : govo.getAttributes()) {
+			values.put(metaDataProvider.getEntityField(entityname, att.getAttributeId().longValue()).getField(), att.getValue());
+		}
+		return getTreeViewLabel(values, entityname, metaDataProvider);
+	}
+
+	public static String getTreeViewLabel(EntityObjectVO eovo, String entityname, MetaDataProvider metaDataProvider) {
+		return getTreeViewLabel(eovo.getFields(), entityname, metaDataProvider);
+	}
+
 	public static String getTreeViewLabel(Collectable clct, String entityname, MetaDataProvider metaDataProvider) {
+		Map<String, Object> values = new HashMap<String, Object>();
+		for (EntityFieldMetaDataVO field : metaDataProvider.getAllEntityFieldsByEntity(entityname).values()) {
+			CollectableField value = clct.getField(field.getField());
+			if (value != null && value.getValue() != null) {
+				values.put(field.getField(), value.getValue());
+			}
+			else {
+				values.put(field.getField(), null);
+			}
+		}
+		return getTreeViewLabel(values, entityname, metaDataProvider);
+	}
+
+	public static String getTreeViewLabel(Map<String, Object> values, String entityname, MetaDataProvider metaDataProvider) {
 		String result = getTreeViewFromMetaDataVO(metaDataProvider.getEntity(entityname));
+		if (result != null) {
+			return replace(result, values, entityname, metaDataProvider);
+		}
+		else {
+			if (values.containsKey(NuclosEOField.SYSTEMIDENTIFIER.getName())) {
+				return (String)values.get(NuclosEOField.SYSTEMIDENTIFIER.getName());
+			}
+			else if (values.containsKey("name")) {
+				return (String)values.get("name");
+			}
+			else {
+				return "<unknown>";
+			}
+		}
+	}
+
+	public static String getTreeViewDescriptionFromMetaDataVO(EntityMetaDataVO metavo) {
+		String result = null;
+		if(metavo.getLocaleResourceIdForTreeViewDescription() != null && keyLookup != null)
+			result = getResourceById(getUserLocaleInfo(), metavo.getLocaleResourceIdForTreeViewDescription());
+
+		return result;
+	}
+
+	public static String getTreeViewDescription(MasterDataVO mdvo, String entityname, MetaDataProvider metaDataProvider) {
+		return getTreeViewDescription(mdvo.getFields(), entityname, metaDataProvider);
+	}
+
+	public static String getTreeViewDescription(GenericObjectVO govo, String entityname, MetaDataProvider metaDataProvider) {
+		Map<String, Object> values = new HashMap<String, Object>();
+		for (DynamicAttributeVO att : govo.getAttributes()) {
+			values.put(metaDataProvider.getEntityField(entityname, att.getAttributeId().longValue()).getField(), att.getValue());
+		}
+		return getTreeViewDescription(values, entityname, metaDataProvider);
+	}
+
+	public static String getTreeViewDescription(EntityObjectVO eovo, String entityname, MetaDataProvider metaDataProvider) {
+		return getTreeViewDescription(eovo.getFields(), entityname, metaDataProvider);
+	}
+
+	public static String getTreeViewDescription(Collectable clct, String entityname, MetaDataProvider metaDataProvider) {
+		Map<String, Object> values = new HashMap<String, Object>();
+		for (EntityFieldMetaDataVO field : metaDataProvider.getAllEntityFieldsByEntity(entityname).values()) {
+			CollectableField value = clct.getField(field.getField());
+			if (value != null && value.getValue() != null) {
+				values.put(field.getField(), value.getValue());
+			}
+			else {
+				values.put(field.getField(), null);
+			}
+		}
+		return getTreeViewLabel(values, entityname, metaDataProvider);
+	}
+
+	public static String getTreeViewDescription(Map<String, Object> values, String entityname, MetaDataProvider metaDataProvider) {
+		String result = getTreeViewDescriptionFromMetaDataVO(metaDataProvider.getEntity(entityname));
+		if (result != null) {
+			return replace(result, values, entityname, metaDataProvider);
+		}
+		else {
+			if (values.containsKey(NuclosEOField.CHANGEDAT.getName())) {
+				Date date = (Date)values.get(NuclosEOField.CHANGEDAT.getName());
+				return MessageFormat.format(getResourceById(getUserLocaleInfo(), "gotreenode.tooltip"), getDateTimeFormat().format(date));
+			}
+			else if (values.containsKey(NuclosEOField.SYSTEMIDENTIFIER.getName())) {
+				return (String)values.get(NuclosEOField.SYSTEMIDENTIFIER.getName());
+			}
+			else if (values.containsKey("name")) {
+				return (String)values.get("name");
+			}
+			else {
+				return "<unknown>";
+			}
+		}
+	}
+
+	private static String replace(String input, Map<String, Object> values, String entityname, MetaDataProvider metaDataProvider) {
 		int sidx = 0;
-		while ((sidx = result.indexOf("${", sidx)) >= 0) {
-			int eidx = result.indexOf("}", sidx);
-			String key = result.substring(sidx + 2, eidx);
+		while ((sidx = input.indexOf("${", sidx)) >= 0) {
+			int eidx = input.indexOf("}", sidx);
+			String key = input.substring(sidx + 2, eidx);
 			String flags = null;
 			int ci = key.indexOf(':');
 			if(ci >= 0) {
 				flags = key.substring(ci + 1);
 				key = key.substring(0, ci);
 			}
-			String rep = findReplacement(key, flags, clct, entityname, metaDataProvider);
-			result = result.substring(0, sidx) + rep + result.substring(eidx + 1);
+			String rep = findReplacement(key, flags, values, entityname, metaDataProvider);
+			input = input.substring(0, sidx) + rep + input.substring(eidx + 1);
 			sidx = sidx + rep.length();
 		}
-		return result;
+		return input;
 	}
 
-	private static String findReplacement(String sKey, String sFlag, Collectable clct, String entityname, MetaDataProvider metaDataProvider) {
+	private static String findReplacement(String sKey, String sFlag, Map<String, Object> values, String entityname, MetaDataProvider metaDataProvider) {
 		String sResIfNull = "";
 		if(sFlag != null) {
 			for(StringTokenizer st = new StringTokenizer(sFlag, ":"); st.hasMoreElements(); ) {
@@ -351,10 +464,9 @@ public class CommonLocaleDelegate {
 				}
 			}
 		}
-		CollectableField field = clct.getField(sKey);
 
-		if (field != null && field.getValue() != null) {
-			Object value = field.getValue();
+		if (values.containsKey(sKey) && values.get(sKey) != null) {
+			Object value = values.get(sKey);
 			EntityFieldMetaDataVO fieldmeta = metaDataProvider.getEntityField(entityname, sKey);
 			try {
 				CollectableFieldFormat formatter = CollectableFieldFormat.getInstance(Class.forName(fieldmeta.getDataType()));
@@ -367,18 +479,6 @@ public class CommonLocaleDelegate {
 		else {
 			return sResIfNull;
 		}
-	}
-
-	public static String getTreeViewFromMetaDataVO(MasterDataMetaVO metavo) {
-		String resId = metavo.getResourceSIdForTreeView(); // lookupResourceId(metavo.getResourceIdForTreeView());
-		String otext = metavo.getTreeView();
-		return resId != null ? getText(resId, otext) : otext;
-	}
-
-	public static String getTreeViewDescriptionFromMetaDataVO(MasterDataMetaVO metavo) {
-		String resId = metavo.getResourceSIdForTreeViewDescription(); // lookupResourceId(metavo.getResourceIdForTreeViewDescription());
-		String otext = metavo.getDescription();
-		return resId != null ? getText(resId, otext) : otext;
 	}
 
 	public static String getResource(String resId, String sText) {

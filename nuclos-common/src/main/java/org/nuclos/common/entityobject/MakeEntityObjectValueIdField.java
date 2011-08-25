@@ -16,14 +16,13 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.entityobject;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.StringUtils;
 
 public class MakeEntityObjectValueIdField implements Transformer<EntityObjectVO, CollectableField> {
 
@@ -38,27 +37,23 @@ public class MakeEntityObjectValueIdField implements Transformer<EntityObjectVO,
 	}
 
 	@Override
-	public CollectableField transform(EntityObjectVO eo) {
+	public CollectableField transform(final EntityObjectVO eo) {
+		final String entity = eo.getEntity();
 		if (sFieldNameForValue.contains("${")){
-			Pattern referencedEntityPattern = Pattern.compile ("[$][{][\\w]+[}]");
-			Matcher referencedEntityMatcher = referencedEntityPattern.matcher (sFieldNameForValue);
-			StringBuffer sb = new StringBuffer();
-
-			while (referencedEntityMatcher.find()) {
-				String fieldName = referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1);
-				Object value = eo.getFields().get(fieldName);
-				if (value != null) {
-					referencedEntityMatcher.appendReplacement (sb, value.toString());
-				}else{
-					referencedEntityMatcher.appendReplacement (sb,"n/a");
+			String value = StringUtils.replaceParameters(sFieldNameForValue, new FormattingTransformer() {
+				@Override
+				protected Object getValue(String field) {
+					return eo.getFields().get(field);
 				}
-			}
 
-			// complete the transfer to the StringBuffer
-			referencedEntityMatcher.appendTail (sb);
-
-			return new CollectableValueIdField(LangUtils.convertId(eo.getId()), sb.toString());
-		}else{
+				@Override
+				protected String getEntity() {
+					return entity;
+				}
+			});
+			return new CollectableValueIdField(LangUtils.convertId(eo.getId()), value);
+		}
+		else {
 			return new CollectableValueIdField(LangUtils.convertId(eo.getId()), eo.getFields().get(this.sFieldNameForValue));
 		}
 	}

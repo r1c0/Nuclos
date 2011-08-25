@@ -26,6 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuclos.client.attribute.AttributeCache;
+import org.nuclos.client.entityobject.EntityFacadeDelegate;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -75,72 +76,17 @@ public class GenericCollectableFieldsProvider implements CollectableFieldsProvid
 	@Override
 	public List<CollectableField> getCollectableFields() throws CommonBusinessException {
 		final List<CollectableField> result;
-		
+
 		if (Modules.getInstance().isModuleEntity(entity)) {
-			result = getGenericObjectFields();
-			Collections.sort(result);
+			result = EntityFacadeDelegate.getInstance().getCollectableFieldsByName(entity, fieldexpression, false);
 		}
 		else {
 			CollectableFieldsProvider masterdataCollectableFieldsProvider = new MasterDataCollectableFieldsProvider(entity);
 			masterdataCollectableFieldsProvider.setParameter("fieldName", fieldexpression);
 			masterdataCollectableFieldsProvider.setParameter("_searchmode", !valid);
-			result =  masterdataCollectableFieldsProvider.getCollectableFields();
+			result = masterdataCollectableFieldsProvider.getCollectableFields();
 		}
-		
-		return result;
-	}
 
-	private List<CollectableField> getGenericObjectFields() throws CommonBusinessException {
-		try {
-			int iModuleId = Modules.getInstance().getModuleIdByEntityName(entity);
-			Set<Integer> stAttributeIds = new HashSet<Integer>();
-			List<String> sAttributeNames = new ArrayList<String>();
-
-			// case of multiple pattern attributes
-			if (fieldexpression.contains("${")){
-				Pattern referencedEntityPattern = Pattern.compile ("[$][{][\\w]+[}]");
-			    Matcher referencedEntityMatcher = referencedEntityPattern.matcher (fieldexpression);
-			    new StringBuffer();
-			      while (referencedEntityMatcher.find()) {
-			    	  sAttributeNames.add(referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1));
-			    	  stAttributeIds.add(AttributeCache.getInstance().getAttribute(entity, referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1)).getId());
-			    }
-			}
-			else {
-				stAttributeIds.add(AttributeCache.getInstance().getAttribute(entity, fieldexpression).getId());
-			}
-
-			List <GenericObjectWithDependantsVO> collgowdvo = GenericObjectDelegate.getInstance().getGenericObjectsWithDependants(iModuleId, new CollectableSearchExpression(), stAttributeIds, new HashSet<String>(), false, false);
-
-			final Collection<GenericObjectWithDependantsVO> collgovoFiltered =selectValidAndActive(entity, sAttributeNames, collgowdvo);
-			return CollectionUtils.transform(collgovoFiltered, new MakeGenericObjectValueIdField(AttributeCache.getInstance(), fieldexpression));
-		}
-		catch (RuntimeException e) {
-			throw new CommonBusinessException(e);
-		}
-	}
-
-	private Collection<GenericObjectWithDependantsVO> selectValidAndActive(String sEntity, Collection<String> sAttributeName, Collection<GenericObjectWithDependantsVO> collgowdvo) {
-		final List<GenericObjectWithDependantsVO> result = new ArrayList<GenericObjectWithDependantsVO>();
-
-		final Collection<String> collFieldNames = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sEntity).getFieldNames();
-		final boolean bContainsAttribute = collFieldNames.containsAll(sAttributeName);
-
-		for (GenericObjectWithDependantsVO gowdvo : collgowdvo) {
-			// separate valid entries...
-			boolean bAddToResult = true;
-			if (!bContainsAttribute) {
-				bAddToResult = false;
-			}
-			if (bAddToResult) {
-				if (gowdvo.isDeleted() || gowdvo.isRemoved()) {
-					bAddToResult = false;
-				}
-			}
-			if (bAddToResult) {
-				result.add(gowdvo);
-			}
-		}
 		return result;
 	}
 }
