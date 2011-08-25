@@ -21,6 +21,7 @@ import java.util.List;
 import javax.ejb.CreateException;
 
 import org.nuclos.common.collection.Pair;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -30,7 +31,6 @@ import org.nuclos.server.attribute.valueobject.AttributeValueVO;
 import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.UpdateJobs;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -84,7 +84,7 @@ public class MakeAttributesConsistent implements UpdateJobs{
 	private void makeAttributesConsistent() {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_UD_GO_ATTRIBUTE").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_UD_GO_ATTRIBUTE").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID_EXTERNAL", Integer.class));
 		query.distinct(true);
 		

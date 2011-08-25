@@ -33,6 +33,7 @@ import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Predicate;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.job.IntervalUnit;
 import org.nuclos.common.job.JobUtils;
 import org.nuclos.common.job.LogLevel;
@@ -53,7 +54,6 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -395,7 +395,7 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
-		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("STREMAIL", String.class));
 		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sRecipient))));
 

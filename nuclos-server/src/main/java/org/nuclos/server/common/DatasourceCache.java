@@ -29,10 +29,10 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -128,7 +128,7 @@ public class DatasourceCache {
 
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<Integer> query = builder.createQuery(Integer.class);
-			DbFrom t = query.from("T_UD_DATASOURCE").alias(ProcessorFactorySingleton.BASE_ALIAS);
+			DbFrom t = query.from("T_UD_DATASOURCE").alias(SystemFields.BASE_ALIAS);
 			query.select(t.baseColumn("INTID", Integer.class));
 			query.where(builder.equal(t.baseColumn("STRCREATED", String.class), sCreator));
 

@@ -34,8 +34,10 @@ import java.io.Serializable;
  */
 public class CollectableSorting implements Serializable {
 	
-	private static final long serialVersionUID = 1002927873365829613L;
+	private static final long serialVersionUID = 1002927873365829614L;
 
+	private final String tableAlias;
+	
 	private final String entity;
 	
 	private final boolean isBaseEntity;
@@ -49,7 +51,8 @@ public class CollectableSorting implements Serializable {
 	 * @param asc Sort ascending? (false: sort descending)
 	 * @precondition sFieldName != null
 	 */
-	public CollectableSorting(String entity, boolean isBaseEntity, String field, boolean asc) {
+	public CollectableSorting(String tableAlias, String entity, boolean isBaseEntity, String field, boolean asc) {
+		this.tableAlias = tableAlias;
 		this.entity = entity;
 		this.isBaseEntity = isBaseEntity;
 		this.field = field;
@@ -71,11 +74,23 @@ public class CollectableSorting implements Serializable {
 		return this.asc;
 	}
 	
+	public String getTableAlias() {
+		return tableAlias;
+	}
+	
+	public String getEntity() {
+		return entity;
+	}
+
+	public boolean isBaseEntity() {
+		return isBaseEntity;
+	}	
+
     @Override
     public String toString() {
     	final StringBuilder result = new StringBuilder();
     	result.append("CollectableSorting[");
-    	result.append("entity=").append(entity);
+    	result.append("entity=").append(tableAlias);
     	result.append(", field=").append(field);
     	result.append(", isBase=").append(isBaseEntity);
     	result.append(",");
@@ -88,13 +103,5 @@ public class CollectableSorting implements Serializable {
     	result.append("]");
     	return result.toString();
     }
-
-	public String getEntity() {
-		return entity;
-	}
-
-	public boolean isBaseEntity() {
-		return isBaseEntity;
-	}	
 
 }  // class CollectableSorting

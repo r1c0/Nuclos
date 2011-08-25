@@ -1,14 +1,10 @@
 package org.nuclos.server.dal.processor;
 
-import java.util.ArrayList;
-
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.IDalVO;
 import org.nuclos.common.dal.vo.IDalWithDependantsVO;
 import org.nuclos.common2.exception.CommonFatalException;
-
-import com.sun.tools.javac.util.List;
 
 public class JoinEntityFieldVOMapping<T> extends AbstractColumnToVOMapping<T> {
 	

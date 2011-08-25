@@ -68,6 +68,7 @@ import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.MasterDataToEntityObjectTransformer;
 import org.nuclos.common.collection.Pair;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.EntityAndFieldName;
@@ -87,7 +88,6 @@ import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbTuple;
@@ -1174,7 +1174,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	private Integer getReferencedProcessId(Integer moduleId, String process) {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_MD_PROCESS").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_PROCESS").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.and(
 			builder.equal(t.baseColumn("INTID_T_MD_MODULE", Integer.class), moduleId),
@@ -1290,7 +1290,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	private void removeReferenceToEntity(final String sEntity, final MasterDataVO mdvo) {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_AD_MASTERDATA_FIELD").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_AD_MASTERDATA_FIELD").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(
 			t.baseColumn("INTID_T_AD_MASTERDATA", Integer.class),
 			t.baseColumn("STRFIELD", String.class),

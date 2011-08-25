@@ -19,14 +19,11 @@ package org.nuclos.server.dblayer.query;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
@@ -107,6 +104,7 @@ public class DbQuery<T extends Object> {
 				throw new IllegalArgumentException("Multi selection requires tuple/array result type, not " + clazz);
 			}			
 		}
+		/*
 		final SortedSet<String> names = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 		for (Iterator<? extends DbSelection<?>> it = selections.iterator(); it.hasNext();) {
 			final DbSelection<?> s = it.next();
@@ -117,6 +115,7 @@ public class DbQuery<T extends Object> {
 				// throw new IllegalArgumentException("The name/alias " + n + " appears more than once in the SELECT clause " + selections);
 			}
 		}
+		*/
 	}
 	
 	public List<? extends DbSelection<T>> getSelections() {

@@ -21,7 +21,7 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.collection.Pair;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbStatementUtils;
@@ -69,7 +69,7 @@ public class NuclosUpdateJob extends NuclosQuartzJob{
 
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<DbTuple> query = builder.createTupleQuery();
-			DbFrom t = query.from("T_AD_UPDATEJOBS").alias(ProcessorFactorySingleton.BASE_ALIAS);
+			DbFrom t = query.from("T_AD_UPDATEJOBS").alias(SystemFields.BASE_ALIAS);
 			query.multiselect(
 				t.baseColumn("INTID", Integer.class),
 				t.baseColumn("STRJAVACLASSNAME", String.class));

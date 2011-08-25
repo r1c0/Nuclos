@@ -34,12 +34,12 @@ import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.visit.PutSearchConditionToPrefsVisitor;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.entityobject.CollectableEOEntityProvider;
 import org.nuclos.common.preferences.ReadOnlyPreferences;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.PreferencesException;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
@@ -307,7 +307,7 @@ public class RecordGrantUtils {
 		
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom table = query.from("T_UD_SEARCHFILTER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom table = query.from("T_UD_SEARCHFILTER").alias(SystemFields.BASE_ALIAS);
 		DbColumnExpression<Integer> intId = table.baseColumn("INTID", Integer.class);
 		DbColumnExpression<String> strName = table.baseColumn("STRNAME", String.class);
 		DbColumnExpression<String> strEntity = table.baseColumn("STRENTITY", String.class);

@@ -22,8 +22,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.InternalTimestamp;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.expression.DbNull;
 import org.nuclos.server.dblayer.impl.SQLUtils2;
@@ -56,7 +56,7 @@ public abstract class DbQueryBuilder implements Serializable {
 	 */
 	public DbQuery<DbTuple> createSimpleQuery(String tableName, String columnName1, Class<?> columnType1, Object...varargs) {
 		DbQuery<DbTuple> query = createTupleQuery();
-		DbFrom from = query.from(tableName).alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom from = query.from(tableName).alias(SystemFields.BASE_ALIAS);
 		List<DbExpression<?>> columns = new ArrayList<DbExpression<?>>();
 		columns.add(from.baseColumn(columnName1, columnType1).columnAlias(columnName1));
 		for (int i = 0; i < varargs.length; i += 2) {

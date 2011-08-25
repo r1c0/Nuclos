@@ -21,12 +21,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import org.nuclos.common.UsageCriteria;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.UpdateJobs;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbStatementUtils;
@@ -126,7 +126,7 @@ public class AssignSubformRightToRole implements UpdateJobs{
 	private Collection<Integer> getRoleIdsFrom(StateVO statevo) throws DbException, CommonFatalException {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_MD_ROLE_ATTRIBUTEGROUP").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_ROLE_ATTRIBUTEGROUP").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID_T_MD_ROLE", Integer.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_MD_STATE", Integer.class), statevo.getId()));
 		return DataBaseHelper.getDbAccess().executeQuery(query);

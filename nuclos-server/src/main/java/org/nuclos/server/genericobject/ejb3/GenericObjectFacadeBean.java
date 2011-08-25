@@ -52,6 +52,7 @@ import org.nuclos.common.dal.exception.DalBusinessException;
 import org.nuclos.common.dal.vo.EOGenericObjectVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.InternalTimestamp;
@@ -82,7 +83,6 @@ import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.DalUtils;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbStatementUtils;
@@ -1502,7 +1502,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	public Collection<GenericObjectRelationVO> findRelations(Integer iGenericObjectIdSource, String relationType, Integer iGenericObjectIdTarget) throws CommonFinderException, CommonPermissionException {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_UD_GO_RELATION").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_UD_GO_RELATION").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.and(
 			builder.equal(t.baseColumn("INTID_T_UD_GO_1", Integer.class), iGenericObjectIdSource),
@@ -1515,7 +1515,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	public Collection<GenericObjectRelationVO> findRelationsByGenericObjectId(Integer iGenericObjectId) throws CommonFinderException, CommonPermissionException {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_UD_GO_RELATION").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_UD_GO_RELATION").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.or(
 			builder.equal(t.baseColumn("INTID_T_UD_GO_1", Integer.class), iGenericObjectId),
@@ -1828,7 +1828,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	private boolean getUsesRuleEngine(String sEntityName, boolean userEvent) {
 
 		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
-		DbFrom from = query.from("T_MD_RULE_EVENT").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom from = query.from("T_MD_RULE_EVENT").alias(SystemFields.BASE_ALIAS);
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 
 		columns.add(from.baseColumn("intid", Integer.class).alias("intid"));

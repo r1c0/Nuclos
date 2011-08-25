@@ -17,8 +17,8 @@
 package org.nuclos.server.statemodel.valueobject;
 
 import org.nuclos.common.UsageCriteria;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -88,7 +88,7 @@ public class StateModelUsagesCache {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom s = query.from("T_MD_STATE").alias("s");
-		DbJoin t = s.join("T_MD_STATE_TRANSITION", JoinType.INNER).on("INTID", "INTID_T_MD_STATE_2").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbJoin t = s.join("T_MD_STATE_TRANSITION", JoinType.INNER).on("INTID", "INTID_T_MD_STATE_2").alias(SystemFields.BASE_ALIAS);
 		DbJoin u = s.join("T_MD_STATEMODELUSAGE",	JoinType.INNER).on("INTID_T_MD_STATEMODEL", "INTID_T_MD_STATEMODEL").alias("u");
 		query.multiselect(
 		   s.baseColumn("INTID_T_MD_STATEMODEL", Integer.class),

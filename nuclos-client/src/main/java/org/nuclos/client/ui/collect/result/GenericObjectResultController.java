@@ -20,15 +20,12 @@ import java.awt.Component;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
 import javax.swing.JTable;
-import javax.swing.RowSorter.SortKey;
-import javax.swing.SortOrder;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
@@ -39,11 +36,9 @@ import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.client.ui.collect.PivotController;
 import org.nuclos.client.ui.collect.PivotPanel;
 import org.nuclos.client.ui.collect.SelectFixedColumnsController;
-import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;

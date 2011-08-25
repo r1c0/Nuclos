@@ -25,6 +25,7 @@ import javax.ejb.Stateless;
 
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -34,7 +35,6 @@ import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
 import org.nuclos.server.dblayer.DbStatementUtils;
@@ -165,7 +165,7 @@ public class XmlExportImportProtocolFacadeBean extends NuclosFacadeBean implemen
 			
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<byte[]> query = builder.createQuery(byte[].class);
-			DbFrom t = query.from(mdmvo.getDBEntity()).alias(ProcessorFactorySingleton.BASE_ALIAS);			
+			DbFrom t = query.from(mdmvo.getDBEntity()).alias(SystemFields.BASE_ALIAS);			
 			query.select(t.baseColumn("BLBXMLFILE", byte[].class));
 			query.where(builder.equal(t.baseColumn("INTID", Integer.class), iParentId));
 			

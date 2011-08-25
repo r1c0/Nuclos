@@ -29,7 +29,7 @@ import org.nuclos.common.AbstractParameterProvider;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -122,7 +122,7 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_AD_PARAMETER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_AD_PARAMETER").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("STRPARAMETER", String.class), t.baseColumn("STRVALUE", String.class));
 
 		Map<String, String> result = new HashMap<String, String>();

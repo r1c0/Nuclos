@@ -31,6 +31,8 @@ import org.nuclos.common2.InternalTimestamp;
  */
 public class SystemFields {
 	
+	public static final String BASE_ALIAS = "t";
+		
 	public static final String CHANCHED_AT = "changedAt";
 	public static final String CHANCHED_AT_TYPE = "org.nuclos.common2.InternalTimestamp";
 	public static final Class<?> CHANCHED_AT_CLASS = InternalTimestamp.class;
@@ -70,7 +72,7 @@ public class SystemFields {
 		
 		FIELDS2TYPES_MAP = Collections.unmodifiableMap(map);
 	}
-	
+
 	private SystemFields() {
 		// Never invoked.
 	}

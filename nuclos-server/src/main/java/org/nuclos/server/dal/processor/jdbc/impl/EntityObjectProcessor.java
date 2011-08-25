@@ -38,6 +38,7 @@ import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.exception.DalBusinessException;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -45,7 +46,6 @@ import org.nuclos.server.common.DatasourceServerUtils;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.ProcessorConfiguration;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcWithFieldsDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.database.DataBaseHelper;
@@ -267,7 +267,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		}
         DbQuery<Long> query = DataBaseHelper.getDbAccess().getQueryBuilder().<Long>createQuery(getPrimaryKeyColumn().getDataType());
 
-		DbFrom from = query.from(getDbSourceForSQL()).alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom from = query.from(getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
 
 		query.select(this.<Long>getDbColumn(from, getPrimaryKeyColumn()));
 

@@ -31,11 +31,11 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.exception.DalBusinessException;
 import org.nuclos.common.dal.vo.IDalVO;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.AbstractDalProcessor;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.expression.DbNull;
@@ -187,7 +187,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 
    protected DbQuery<Object[]> createQuery(List<IColumnToVOMapping<? extends Object>> columns, boolean overrideDbSourceUseDML) {
       DbQuery<Object[]> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Object[].class);
-      DbFrom from = query.from(overrideDbSourceUseDML ? getDbSourceForDML() : getDbSourceForSQL()).alias(ProcessorFactorySingleton.BASE_ALIAS);
+      DbFrom from = query.from(overrideDbSourceUseDML ? getDbSourceForDML() : getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
       List<DbExpression<?>> selections = new ArrayList<DbExpression<?>>();
       for (IColumnToVOMapping<?> column : columns) {
          selections.add(getDbColumn(from, column));
@@ -198,7 +198,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 
 	protected <S> DbQuery<S> createSingleColumnQuery(IColumnToVOMapping<S> column, boolean overrideDbSourceUseDML) {
 		DbQuery<S> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(column.getDataType());
-		DbFrom from = query.from(overrideDbSourceUseDML ? getDbSourceForDML() : getDbSourceForSQL()).alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom from = query.from(overrideDbSourceUseDML ? getDbSourceForDML() : getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
 		DbExpression<S> dbColumn = getDbColumn(from, column);
 		query.select(dbColumn);
 		return query;
@@ -206,7 +206,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 
    protected DbQuery<Long> createCountQuery(IColumnToVOMapping<Long> column) {
       DbQuery<Long> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(column.getDataType());
-      DbFrom from = query.from(getDbSourceForSQL()).alias(ProcessorFactorySingleton.BASE_ALIAS);
+      DbFrom from = query.from(getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
       query.select(query.getBuilder().count(getDbColumn(from, column)));
       return query;
    }
@@ -260,7 +260,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
    protected DalBusinessException checkLogicalUniqueConstraint(final Map<IColumnToVOMapping<?>, Object> values, final Long id) {
       DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
-      DbFrom from = query.from(getDbSourceForSQL()).alias(ProcessorFactorySingleton.BASE_ALIAS);
+      DbFrom from = query.from(getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
       query.select(query.getBuilder().countRows());
       List<DbCondition> conditions = new ArrayList<DbCondition>();
 

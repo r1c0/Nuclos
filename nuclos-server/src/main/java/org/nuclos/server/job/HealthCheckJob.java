@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbTuple;
@@ -67,7 +67,7 @@ public class HealthCheckJob extends SchedulableJob implements NuclosJob{
 	private static List<DataBaseObject> getJobDBObjects(Object oId) {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_MD_JOBDBOBJECT").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_JOBDBOBJECT").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("STRNAME", String.class), t.baseColumn("STRTYPE", String.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_MD_JOBCONTROLLER", Integer.class), oId));
 		query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));

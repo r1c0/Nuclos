@@ -140,7 +140,6 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 			if (f.getPivotInfo() != null) {
 				final EntityMetaDataVO subEntity = mdProv.getEntity(f.getEntityId());
 				join.add(new PivotJoinCondition(subEntity, f));
-				break;
 			}
 		}
 		final int size = join.size();

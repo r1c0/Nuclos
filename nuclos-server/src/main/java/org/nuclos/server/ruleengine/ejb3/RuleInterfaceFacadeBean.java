@@ -46,6 +46,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCo
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.StringUtils;
@@ -63,7 +64,6 @@ import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.dal.DalSupportForGO;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
@@ -173,7 +173,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 			else {
 				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<String> query = builder.createQuery(String.class);
-				DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+				DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 				query.select(t.baseColumn("STREMAIL", String.class));
 				query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sRecipient))));
 

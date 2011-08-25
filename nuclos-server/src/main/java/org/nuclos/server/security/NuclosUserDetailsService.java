@@ -29,11 +29,11 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.autosync.XMLEntities;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerParameterProvider;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.expression.DbCurrentDateTime;
@@ -71,7 +71,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(
 			t.baseColumn("INTID", Long.class),
 			t.baseColumn("STRPASSWORD", String.class),
@@ -186,7 +186,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("INTID", Long.class), t.baseColumn("INTLOGINATTEMPTS", Integer.class));
 		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(username))));
 		DbTuple tuple = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
@@ -227,7 +227,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		Set<String> actions = new HashSet<String>();
 		DbQuery<String> rolesQuery = builder.createQuery(String.class);
-		DbFrom action = rolesQuery.from("T_AD_ACTION").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom action = rolesQuery.from("T_AD_ACTION").alias(SystemFields.BASE_ALIAS);
 		rolesQuery.select(action.baseColumn("STRACTION", String.class));
 		actions.addAll(DataBaseHelper.getDbAccess().executeQuery(rolesQuery));
 

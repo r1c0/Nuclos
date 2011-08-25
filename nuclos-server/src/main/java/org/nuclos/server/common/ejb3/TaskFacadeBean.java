@@ -41,6 +41,7 @@ import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.StringUtils;
@@ -55,7 +56,6 @@ import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.valueobject.TaskVO;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
@@ -400,7 +400,7 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 	public List<String> getOwnerNamesByTask(TaskVO taskvo) {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_UD_TASKOWNER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_UD_TASKOWNER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID_T_MD_USER", Integer.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_UD_TODOLIST", Integer.class), taskvo.getId()));
 		List<String> lstOwners = new ArrayList<String>();
@@ -418,7 +418,7 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 	public Set<Long> getOwnerIdsByTask(final Long iTaskId) {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
-		DbFrom t = query.from("T_UD_TASKOWNER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_UD_TASKOWNER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID_T_MD_USER", Long.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_UD_TODOLIST", Integer.class), iTaskId));
 		return new HashSet<Long>(DataBaseHelper.getDbAccess().executeQuery(query));
@@ -427,7 +427,7 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 	private boolean existOwnerForTask(Long iTaskId, Long iOwnerId) {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
-		DbFrom t = query.from("T_UD_TASKOWNER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_UD_TASKOWNER").alias(SystemFields.BASE_ALIAS);
 		query.select(builder.count(t.baseColumn("INTID", Long.class)));
 		query.where(builder.and(
 			builder.equal(t.baseColumn("INTID_T_MD_USER", Long.class), iOwnerId),
@@ -439,7 +439,7 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
    public Long getUserId(String sUserName) {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
-		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Long.class));
 		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sUserName))));
 		try {
@@ -456,7 +456,7 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 	   for (Long iUserId : stUserIds) {
 		   DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		   DbQuery<String> query = builder.createQuery(String.class);
-		   DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		   DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		   query.select(t.baseColumn("STRUSER", String.class));
 		   query.where(builder.equal(t.baseColumn("INTID", Integer.class), iUserId));
 		   lstUserNames.addAll(DataBaseHelper.getDbAccess().executeQuery(query));
@@ -488,7 +488,7 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		if (taskVO.getDelegator() != null) {
 			DbQuery<DbTuple> queryOwner = builder.createTupleQuery();
-			DbFrom userOwner = queryOwner.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+			DbFrom userOwner = queryOwner.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 			DbFrom owner = userOwner.join("T_UD_TASKOWNER", JoinType.INNER).on("INTID", "INTID_T_MD_USER").alias("t2");
 			queryOwner.where(builder.equal(owner.baseColumn("INTID_T_UD_TODOLIST", Integer.class), taskVO.getId()));
 			queryOwner.multiselect(userOwner.baseColumn("STRFIRSTNAME", String.class), userOwner.baseColumn("STRLASTNAME", String.class));
@@ -516,7 +516,7 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 				// TODO implement migration that inserts entity names to task-object-table and remove this
 				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<DbTuple> queryOwner = builder.createTupleQuery();
-				DbFrom userOwner = queryOwner.from("T_UD_GENERICOBJECT").alias(ProcessorFactorySingleton.BASE_ALIAS);
+				DbFrom userOwner = queryOwner.from("T_UD_GENERICOBJECT").alias(SystemFields.BASE_ALIAS);
 				queryOwner.multiselect(userOwner.baseColumn("INTID_T_MD_MODULE", Integer.class).columnAlias("id"));
 				queryOwner.where(builder.equal(userOwner.baseColumn("INTID", Integer.class).columnAlias("moduleId"), iObjectId));
 				List<DbTuple> resultsList = DataBaseHelper.getDbAccess().executeQuery(queryOwner.maxResults(2));

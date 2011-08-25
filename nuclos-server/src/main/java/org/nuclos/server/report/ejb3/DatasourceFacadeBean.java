@@ -32,6 +32,7 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.database.query.definition.Schema;
 import org.nuclos.common.database.query.definition.Table;
 import org.nuclos.common.querybuilder.DatasourceUtils;
@@ -52,7 +53,6 @@ import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
@@ -827,7 +827,7 @@ public void processChangingDynamicEntities(Collection<DynamicEntityVO> newDEs, C
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_UD_DATASOURCEUSAGE").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_UD_DATASOURCEUSAGE").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(
 			t.baseColumn("INTID", Integer.class),
 			t.baseColumn("INTID_T_UD_DATASOURCE", Integer.class),

@@ -63,6 +63,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.EntityAndFieldName;
@@ -93,7 +94,6 @@ import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
 import org.nuclos.server.customcode.codegenerator.WsdlCodeGenerator;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
@@ -983,7 +983,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	private boolean getUsesRuleEngine(String sEntityName, boolean userEvent) {
 
 		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
-		DbFrom from = query.from("T_MD_RULE_EVENT").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom from = query.from("T_MD_RULE_EVENT").alias(SystemFields.BASE_ALIAS);
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 
 		columns.add(from.baseColumn("INTID", Integer.class).columnAlias("intid"));

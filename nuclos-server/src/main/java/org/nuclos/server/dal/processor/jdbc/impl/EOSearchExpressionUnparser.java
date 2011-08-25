@@ -127,7 +127,7 @@ public class EOSearchExpressionUnparser {
 			}
 		}
 		else {
-			result = table.column(sort.getEntity(), entityField.getDbColumn(), type);
+			result = table.column(sort.getTableAlias(), entityField.getDbColumn(), type);
 		}
 		return result;
 	}
@@ -211,8 +211,11 @@ public class EOSearchExpressionUnparser {
 			}
 			
 			final String joinTable = EntityObjectMetaDbHelper.getViewName(mdSubEntity);
-			final String keyColumn = mdProv.getEntityField(subEntity, pinfo.getKeyField()).getDbColumn(); 
-			final DbJoin join = table.join(joinTable, JoinType.LEFT).alias(subEntity).on(foreignEntityField, ref.getDbColumn());
+			final String keyColumn = mdProv.getEntityField(subEntity, pinfo.getKeyField()).getDbColumn();
+			
+			// The join table alias must be unique in the SQL
+			final String joinAlias = "\"" + subEntity + "_" + field.getField() + "\"";
+			final DbJoin join = table.join(joinTable, JoinType.LEFT).alias(joinAlias).on(foreignEntityField, ref.getDbColumn());
 			return queryBuilder.equal(join.baseColumn(keyColumn, String.class), queryBuilder.literal(field.getField()));
 		}
 

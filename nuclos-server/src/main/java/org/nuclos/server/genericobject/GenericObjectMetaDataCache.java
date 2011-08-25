@@ -39,6 +39,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -46,7 +47,6 @@ import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.nuclos.server.attribute.valueobject.LayoutUsageVO;
 import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MetaDataServerProvider;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
@@ -122,7 +122,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	public static Map<Integer, String> getLayoutMap() {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_MD_LAYOUT").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_LAYOUT").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("INTID", Integer.class), t.baseColumn("CLBLAYOUTML", String.class));
 
 		Map<Integer, String> result = new HashMap<Integer, String>();
@@ -168,7 +168,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	public static String getLayoutName(Integer iLayoutId){
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
-		DbFrom t = query.from("T_MD_LAYOUT").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_LAYOUT").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("STRLAYOUT", String.class));
 		query.where(builder.equal(t.baseColumn("INTID", Integer.class), iLayoutId));
 		return CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
@@ -181,7 +181,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	private static Collection<LayoutUsageVO> getLayoutUsageVOs() {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_MD_LAYOUTUSAGE").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_LAYOUTUSAGE").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(
 			t.baseColumn("INTID_T_MD_LAYOUT", Integer.class),
 			t.baseColumn("STRENTITY", String.class),

@@ -37,6 +37,7 @@ import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common.security.PermissionKey;
@@ -46,7 +47,6 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.autosync.XMLEntities;
 import org.nuclos.server.common.ejb3.SecurityFacadeLocal;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
@@ -156,10 +156,10 @@ public class SecurityCache implements SecurityCacheMBean {
 				DbQuery<Integer> query = builder.createQuery(Integer.class);
 
 				if (isSuperUser()) {
-					DbFrom t = query.from("T_MD_STATE_TRANSITION").alias(ProcessorFactorySingleton.BASE_ALIAS);
+					DbFrom t = query.from("T_MD_STATE_TRANSITION").alias(SystemFields.BASE_ALIAS);
 					query.select(t.baseColumn("INTID", Integer.class));
 				} else {
-					DbFrom t = query.from("T_MD_ROLE_TRANSITION").alias(ProcessorFactorySingleton.BASE_ALIAS);
+					DbFrom t = query.from("T_MD_ROLE_TRANSITION").alias(SystemFields.BASE_ALIAS);
 					query.select(t.baseColumn("INTID_T_MD_STATE_TRANSITION", Integer.class));
 					query.where(t.baseColumn("INTID_T_MD_ROLE", Integer.class).in(getRoleIds()));
 				}
@@ -190,7 +190,7 @@ public class SecurityCache implements SecurityCacheMBean {
 
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<DbTuple> query = builder.createTupleQuery();
-			DbFrom t = query.from("T_UD_REPORT").alias(ProcessorFactorySingleton.BASE_ALIAS);
+			DbFrom t = query.from("T_UD_REPORT").alias(SystemFields.BASE_ALIAS);
 			query.multiselect(t.baseColumn("INTID", Integer.class), t.baseColumn("INTTYPE", Integer.class));
 			if (!isSuperUser()) {
 				DbFrom rr = t.join("T_MD_ROLE_REPORT", JoinType.LEFT).on("INTID", "INTID_T_UD_REPORT").alias("rr");
@@ -248,7 +248,7 @@ public class SecurityCache implements SecurityCacheMBean {
 		private synchronized Collection<Integer> readDataSourceIds(boolean readWrite) {
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<Integer> query = builder.createQuery(Integer.class);
-			DbFrom t = query.from("T_UD_DATASOURCE").alias(ProcessorFactorySingleton.BASE_ALIAS);
+			DbFrom t = query.from("T_UD_DATASOURCE").alias(SystemFields.BASE_ALIAS);
 			query.select(t.baseColumn("INTID", Integer.class));
 
 			if (!isSuperUser()) {
@@ -287,7 +287,7 @@ public class SecurityCache implements SecurityCacheMBean {
 
 			if (isSuperUser()) {
 				DbQuery<String> query = builder.createQuery(String.class);
-				DbFrom t = query.from("T_MD_ENTITY").alias(ProcessorFactorySingleton.BASE_ALIAS);
+				DbFrom t = query.from("T_MD_ENTITY").alias(SystemFields.BASE_ALIAS);
 				query.select(t.baseColumn("STRENTITY", String.class));
 				query.where(builder.equal(t.baseColumn("BLNUSESSTATEMODEL", Boolean.class), true));
 				for (String entityName : DataBaseHelper.getDbAccess().executeQuery(query.distinct(true))) {
@@ -379,7 +379,7 @@ public class SecurityCache implements SecurityCacheMBean {
 			} else {
 				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<DbTuple> query = builder.createTupleQuery();
-				DbFrom t = query.from("T_MD_ROLE_MASTERDATA").alias(ProcessorFactorySingleton.BASE_ALIAS);
+				DbFrom t = query.from("T_MD_ROLE_MASTERDATA").alias(SystemFields.BASE_ALIAS);
 				query.multiselect(t.baseColumn("STRMASTERDATA", String.class), t.baseColumn("INTPERMISSION", Integer.class));
 				query.where(t.baseColumn("INTID_T_MD_ROLE", Integer.class).in(getRoleIds()));
 				for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
@@ -398,7 +398,7 @@ public class SecurityCache implements SecurityCacheMBean {
 		private Set<Integer> readUserRoleIds() {
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<Integer> query = builder.createQuery(Integer.class);
-			DbFrom t = query.from("T_MD_ROLE_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+			DbFrom t = query.from("T_MD_ROLE_USER").alias(SystemFields.BASE_ALIAS);
 			query.select(t.baseColumn("INTID_T_MD_ROLE", Integer.class));
 			query.where(builder.equal(t.baseColumn("INTID_T_MD_USER", Integer.class), getUserId()));
 			return new HashSet<Integer>(DataBaseHelper.getDbAccess().executeQuery(query.distinct(true)));
@@ -408,7 +408,7 @@ public class SecurityCache implements SecurityCacheMBean {
 			if (isSuperUser()) {
 				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<String> query = builder.createQuery(String.class);
-				DbFrom t = query.from("T_AD_ACTION").alias(ProcessorFactorySingleton.BASE_ALIAS);
+				DbFrom t = query.from("T_AD_ACTION").alias(SystemFields.BASE_ALIAS);
 				query.select(t.baseColumn("STRACTION", String.class));
 				Set<String> actions = new HashSet<String>(DataBaseHelper.getDbAccess().executeQuery(query));
 
@@ -420,7 +420,7 @@ public class SecurityCache implements SecurityCacheMBean {
 
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<String> query = builder.createQuery(String.class);
-			DbFrom t = query.from("T_MD_ROLE_ACTION").alias(ProcessorFactorySingleton.BASE_ALIAS);
+			DbFrom t = query.from("T_MD_ROLE_ACTION").alias(SystemFields.BASE_ALIAS);
 			query.select(t.baseColumn("STRACTIONNAME", String.class));
 			query.where(t.baseColumn("INTID_T_MD_ROLE", Integer.class).in(getRoleIds()));
 			return new HashSet<String>(DataBaseHelper.getDbAccess().executeQuery(query));
@@ -432,14 +432,14 @@ public class SecurityCache implements SecurityCacheMBean {
 
 			if (isSuperUser()) {
 				DbQuery<Integer> query = builder.createQuery(Integer.class);
-				DbFrom t = query.from("T_MD_STATE").alias(ProcessorFactorySingleton.BASE_ALIAS);
+				DbFrom t = query.from("T_MD_STATE").alias(SystemFields.BASE_ALIAS);
 				query.select(t.baseColumn("INTID", Integer.class));
 				for (Integer state : DataBaseHelper.getDbAccess().executeQuery(query)) {
 					result.put(state, Permission.READWRITE);
 				}
 			} else {
 				DbQuery<DbTuple> query = builder.createQuery(DbTuple.class);
-				DbFrom t = query.from("T_MD_ROLE_SUBFORM").alias(ProcessorFactorySingleton.BASE_ALIAS);
+				DbFrom t = query.from("T_MD_ROLE_SUBFORM").alias(SystemFields.BASE_ALIAS);
 				query.multiselect(
 					t.baseColumn("INTID_T_MD_STATE", Integer.class),
 					t.baseColumn("BLNREADWRITE", Boolean.class));
@@ -461,14 +461,14 @@ public class SecurityCache implements SecurityCacheMBean {
 
 			if (isSuperUser()) {
 				DbQuery<Integer> query = builder.createQuery(Integer.class);
-				DbFrom t = query.from("T_MD_STATE").alias(ProcessorFactorySingleton.BASE_ALIAS);
+				DbFrom t = query.from("T_MD_STATE").alias(SystemFields.BASE_ALIAS);
 				query.select(t.baseColumn("INTID", Integer.class));
 				for (Integer state : DataBaseHelper.getDbAccess().executeQuery(query)) {
 					result.put(state, Permission.READWRITE);
 				}
 			} else {
 				DbQuery<DbTuple> query = builder.createQuery(DbTuple.class);
-				DbFrom t = query.from("T_MD_ROLE_ATTRIBUTEGROUP").alias(ProcessorFactorySingleton.BASE_ALIAS);
+				DbFrom t = query.from("T_MD_ROLE_ATTRIBUTEGROUP").alias(SystemFields.BASE_ALIAS);
 				query.multiselect(
 					t.baseColumn("INTID_T_MD_STATE", Integer.class),
 					t.baseColumn("BLNREADWRITE", Boolean.class));
@@ -497,7 +497,7 @@ public class SecurityCache implements SecurityCacheMBean {
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 
 			DbQuery<DbTuple> query = builder.createTupleQuery();
-			DbFrom t = query.from("T_UD_SEARCHFILTER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+			DbFrom t = query.from("T_UD_SEARCHFILTER").alias(SystemFields.BASE_ALIAS);
 			DbFrom u = t.join(subtable, JoinType.INNER).on("INTID", "INTID_T_UD_SEARCHFILTER").alias("u");
 			query.multiselect(
 				t.baseColumn("INTID", Integer.class), t.baseColumn("STRENTITY", String.class),
@@ -518,7 +518,7 @@ public class SecurityCache implements SecurityCacheMBean {
 		private void readUserData() {
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<DbTuple> query = builder.createTupleQuery();
-			DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+			DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 			query.multiselect(
 				t.baseColumn("INTID", Integer.class),
 				t.baseColumn("BLNSUPERUSER", Boolean.class));

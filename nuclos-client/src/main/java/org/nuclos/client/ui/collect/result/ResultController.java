@@ -25,7 +25,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -76,6 +75,7 @@ import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.PredicateUtils;
 import org.nuclos.common.dal.vo.PivotInfo;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
@@ -710,16 +710,21 @@ public class ResultController<Clct extends Collectable> {
 				final CollectableEOEntityField sf = (CollectableEOEntityField) sortField;
 				final PivotInfo pinfo = sf.getMeta().getPivotInfo();
 				if (pinfo != null) {
-					sort = new CollectableSorting(pinfo.getSubform(), baseEntity.equals(pinfo.getSubform()),
+					// The join table alias must be unique in the SQL
+					final String joinAlias = "\"" + pinfo.getSubform() + "_" + sf.getMeta().getField() + "\"";
+					
+					sort = new CollectableSorting(joinAlias, pinfo.getSubform(), baseEntity.equals(pinfo.getSubform()),
 							pinfo.getValueField(), sortKey.getSortOrder() == SortOrder.ASCENDING);
 				}
 				else {
-					sort = new CollectableSorting(sortField.getEntityName(), baseEntity.equals(sortField.getEntityName()),
+					// ???
+					sort = new CollectableSorting(SystemFields.BASE_ALIAS, baseEntity, baseEntity.equals(sortField.getEntityName()),
 							sortField.getName(), sortKey.getSortOrder() == SortOrder.ASCENDING);
 				}
 			}
 			else {
-				sort = new CollectableSorting(sortField.getEntityName(), baseEntity.equals(sortField.getEntityName()),
+				// ???
+				sort = new CollectableSorting(SystemFields.BASE_ALIAS, baseEntity, baseEntity.equals(sortField.getEntityName()),
 						sortField.getName(), sortKey.getSortOrder() == SortOrder.ASCENDING);
 			}
 			result.add(sort);

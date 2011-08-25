@@ -31,6 +31,7 @@ import javax.annotation.security.RolesAllowed;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.mail.NuclosMail;
 import org.nuclos.common.security.UserFacadeRemote;
 import org.nuclos.common.security.UserVO;
@@ -43,7 +44,6 @@ import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.mail.NuclosMailSender;
 import org.nuclos.server.dal.DalUtils;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -105,7 +105,7 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 	public void setPassword(String username, String password) throws CommonBusinessException {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(username))));
 		Integer userId = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
@@ -191,7 +191,7 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_MD_PASSWORDHISTORY").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_PASSWORDHISTORY").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("INTID", Long.class), t.baseColumn("DATCREATED", Date.class), t.baseColumn("STRPASSWORD", String.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_MD_USER", Long.class), user));
 		query.orderBy(builder.desc(t.baseColumn("DATCREATED", Date.class)), builder.desc(t.baseColumn("INTID", Long.class)));
@@ -225,7 +225,7 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 	private String getEncryptedPassword(Long user) {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
-		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("STRPASSWORD", String.class));
 		query.where(builder.equal(t.baseColumn("INTID", Long.class), user));
 		return DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
@@ -250,7 +250,7 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_MD_PASSWORDHISTORY").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_PASSWORDHISTORY").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("INTID", Long.class), t.baseColumn("DATCREATED", Date.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_MD_USER", Long.class), user));
 		query.orderBy(builder.desc(t.baseColumn("DATCREATED", Date.class)), builder.desc(t.baseColumn("INTID", Long.class)));

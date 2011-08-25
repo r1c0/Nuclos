@@ -35,6 +35,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.preferences.PreferencesConverter;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -42,7 +43,6 @@ import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.valueobject.PreferencesVO;
 import org.nuclos.server.dal.DalUtils;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
@@ -112,7 +112,7 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 	public void setPreferencesForUser(String sUserName, PreferencesVO prefsvo) throws CommonFinderException {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sUserName))));
 
@@ -168,7 +168,7 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
-		DbFrom t = query.from("T_MD_WORKSPACE").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_WORKSPACE").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("STRNAME", String.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_MD_USER", Integer.class), userId));
 		
@@ -187,7 +187,7 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
-		DbFrom t = query.from("T_MD_WORKSPACE").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_WORKSPACE").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("CLBWORKSPACE", String.class));
 		query.where(builder.and(
 			builder.equal(t.baseColumn("INTID_T_MD_USER", Integer.class), userId),
@@ -216,7 +216,7 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_MD_WORKSPACE").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_WORKSPACE").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.and(
 			builder.equal(t.baseColumn("INTID_T_MD_USER", Integer.class), userId),
@@ -258,7 +258,7 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 	private PreferencesVO getUserPreferences(String sUserName) throws CommonFinderException {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<byte[]> query = builder.createQuery(byte[].class);
-		DbFrom t = query.from("T_MD_USER").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("OBJPREFERENCES", byte[].class));
 		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sUserName))));
 		

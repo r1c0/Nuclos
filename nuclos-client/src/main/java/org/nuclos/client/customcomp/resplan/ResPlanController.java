@@ -69,6 +69,7 @@ import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collection.Pair;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.time.LocalTime;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.DateUtils;
@@ -247,7 +248,7 @@ public class ResPlanController extends CustomComponentController {
 	private CollectableSearchExpression getInternalResourceSearchExpression() {
 		List<CollectableSorting> sorting = new ArrayList<CollectableSorting>();
 		if (configVO.getResourceSortField() != null) {
-			sorting.add(new CollectableSorting(configVO.getResourceEntity(), true, configVO.getResourceSortField(), true));
+			sorting.add(new CollectableSorting(SystemFields.BASE_ALIAS, configVO.getResourceEntity(), true, configVO.getResourceSortField(), true));
 		}
 		return new CollectableSearchExpression(component.getSearchCondition(), sorting);
 	}

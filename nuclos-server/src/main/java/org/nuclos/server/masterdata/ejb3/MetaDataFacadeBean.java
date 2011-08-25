@@ -61,6 +61,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
 import org.nuclos.common.transport.vo.EntityMetaDataTO;
 import org.nuclos.common.valueobject.EntityRelationshipModelVO;
@@ -86,7 +87,6 @@ import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.dal.DalUtils;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
@@ -414,7 +414,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	@Override
 	public boolean hasEntityImportStructure(Long id) throws CommonBusinessException {
 		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
-		DbFrom from = query.from("T_MD_IMPORT").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom from = query.from("T_MD_IMPORT").alias(SystemFields.BASE_ALIAS);
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 
 		columns.add(from.baseColumn("INTID", Integer.class).alias("INTID"));
@@ -432,7 +432,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	@RolesAllowed("Login")
 	public boolean hasEntityWorkflow(Long id) throws CommonBusinessException {
 		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
-		DbFrom from = query.from("T_MD_GENERATION").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom from = query.from("T_MD_GENERATION").alias(SystemFields.BASE_ALIAS);
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 
 		columns.add(from.baseColumn("INTID", Integer.class).alias("INTID"));
@@ -558,7 +558,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 		// delete layouts
 		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
-		DbFrom from = query.from("T_MD_LAYOUTUSAGE").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom from = query.from("T_MD_LAYOUTUSAGE").alias(SystemFields.BASE_ALIAS);
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 
 		columns.add(from.baseColumn("STRENTITY", String.class).alias("STRENTITY"));
@@ -609,7 +609,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
-		DbFrom t = query.from(voEntity.getDbEntity()).alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from(voEntity.getDbEntity()).alias(SystemFields.BASE_ALIAS);
 		query.select(builder.count(t.baseColumn("INTID", Integer.class)));
 
 		return DataBaseHelper.getDbAccess().executeQuerySingleResult(query) > 0L;
@@ -1332,7 +1332,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			// @TODO GOREF: maybe this should be delegated to the (JDBC)-EntityObjectProcessor ?
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<Long> query = builder.createQuery(Long.class);
-			DbFrom t = query.from(sTable).alias(ProcessorFactorySingleton.BASE_ALIAS);
+			DbFrom t = query.from(sTable).alias(SystemFields.BASE_ALIAS);
 			DbColumnExpression<?> c = t.baseColumn(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
 			query.select(builder.countRows());
 			query.where(c.isNull());
@@ -1359,7 +1359,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			// @TODO GOREF: maybe this should be delegated to the (JDBC)-EntityObjectProcessor ?
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<Long> query = builder.createQuery(Long.class);
-			DbFrom t = query.from(sTable).alias(ProcessorFactorySingleton.BASE_ALIAS);
+			DbFrom t = query.from(sTable).alias(SystemFields.BASE_ALIAS);
 			DbColumnExpression<?> c = t.baseColumn(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
 			query.select(builder.countRows());
 			query.groupBy(c);
@@ -1397,7 +1397,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	public boolean hasEntityLayout(Long id) {
 		final String sEntity = MetaDataServerProvider.getInstance().getEntity(id).getEntity();
 		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
-		DbFrom from = query.from("T_MD_LAYOUTUSAGE").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom from = query.from("T_MD_LAYOUTUSAGE").alias(SystemFields.BASE_ALIAS);
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 
 		columns.add(from.baseColumn("INTID", Integer.class).alias("INTID"));

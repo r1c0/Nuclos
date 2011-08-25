@@ -25,9 +25,9 @@ import javax.ejb.Stateless;
 
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.server.autosync.XMLEntities;
 import org.nuclos.server.common.ServerParameterProvider;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -51,7 +51,7 @@ public class WikiFacadeBean extends MasterDataFacadeBean implements WikiFacadeRe
 	public String getWikiPageFor(String sEntityName, String sAttributeName) {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_MD_WIKI").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_WIKI").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.equal(t.baseColumn("STRMASTERDATA", String.class), sEntityName));
 		

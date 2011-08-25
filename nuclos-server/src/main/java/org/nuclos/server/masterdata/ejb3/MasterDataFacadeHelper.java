@@ -51,6 +51,7 @@ import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.transport.GzipList;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IOUtils;
@@ -79,7 +80,6 @@ import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.DalUtils;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
@@ -266,7 +266,7 @@ public class MasterDataFacadeHelper {
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from(mdmetavo.getDBEntity()).alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from(mdmetavo.getDBEntity()).alias(SystemFields.BASE_ALIAS);
 		DbColumnExpression<Integer> goColumn = t.baseColumn("INTID_T_UD_GENERICOBJECT", Integer.class);
 		List<DbSelection<?>> selection = new ArrayList<DbSelection<?>>();
 		for (MasterDataMetaFieldVO field : collFields) {

@@ -68,6 +68,7 @@ import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -89,7 +90,6 @@ import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
@@ -406,7 +406,7 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
 
       DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
       DbQuery<Integer> query = builder.createQuery(Integer.class);
-      DbFrom t = query.from("T_UD_REPORTUSAGE").alias(ProcessorFactorySingleton.BASE_ALIAS);
+      DbFrom t = query.from("T_UD_REPORTUSAGE").alias(SystemFields.BASE_ALIAS);
       query.select(t.baseColumn("INTID_T_UD_REPORT", Integer.class));
       DbCondition cond = builder.equal(t.baseColumn("INTID_T_MD_MODULE", Integer.class), usagecriteria.getModuleId());
 

@@ -24,10 +24,10 @@ import java.util.Map;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.NuclosSystemParameters;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -88,7 +88,7 @@ public class ResourceCache {
 	private Map<Integer, ResourceVO> buildIdMap() {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_MD_RESOURCE").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_MD_RESOURCE").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(
 			t.baseColumn("INTID", Integer.class),
 			t.baseColumn("DATCREATED", Date.class),

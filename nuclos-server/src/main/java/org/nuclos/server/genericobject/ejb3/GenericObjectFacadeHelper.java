@@ -40,6 +40,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondit
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
@@ -63,7 +64,6 @@ import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ModuleConstants;
 import org.nuclos.server.common.RecordGrantUtils;
 import org.nuclos.server.dal.DalSupportForGO;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbStatementUtils;
@@ -199,7 +199,7 @@ public class GenericObjectFacadeHelper {
 
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_UD_LOGBOOK").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_UD_LOGBOOK").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(
 			t.baseColumn("INTID_T_MD_ATTRIBUTE", Integer.class), // 0
 			t.baseColumn("INTID_T_DP_VALUE_OLD", Integer.class), // 1

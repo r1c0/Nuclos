@@ -35,8 +35,8 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.StringUtils;
-import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.provider.SystemMetaDataProvider;
 import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
@@ -134,7 +134,7 @@ public class AutoDbSetup {
 	public List<Pair<String, Date>> getInstalledVersions() {
 		DbQueryBuilder builder = dbAccess.getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom t = query.from("T_AD_RELEASE").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_AD_RELEASE").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(
 			t.baseColumn("STRRELEASE", String.class),
 			t.baseColumn("DATDELIVERED", Date.class));
@@ -154,7 +154,7 @@ public class AutoDbSetup {
 	public Schema getInstalledSchemaFor(String release) {
 		DbQueryBuilder builder = dbAccess.getQueryBuilder();
 		DbQuery<byte[]> query = builder.createQuery(byte[].class);
-		DbFrom t = query.from("T_AD_RELEASE").alias(ProcessorFactorySingleton.BASE_ALIAS);
+		DbFrom t = query.from("T_AD_RELEASE").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("BLBDATA", byte[].class));
 		query.where(builder.and(
 			builder.equal(t.baseColumn("STRAPPLICATION", String.class), NUCLOS),
