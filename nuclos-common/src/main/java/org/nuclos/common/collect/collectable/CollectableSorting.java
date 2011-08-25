@@ -75,7 +75,9 @@ public class CollectableSorting implements Serializable {
     public String toString() {
     	final StringBuilder result = new StringBuilder();
     	result.append("CollectableSorting[");
-    	result.append("field=").append(field);
+    	result.append("entity=").append(entity);
+    	result.append(", field=").append(field);
+    	result.append(", isBase=").append(isBaseEntity);
     	result.append(",");
     	if (asc) {
     		result.append("ASC");

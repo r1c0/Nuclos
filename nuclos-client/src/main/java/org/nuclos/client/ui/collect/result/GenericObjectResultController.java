@@ -257,26 +257,6 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 		}
 	}
 
-
-	/**
-	 * TODO: eliminate this workaround
-	 * @deprecated Remove this.
-	 */
-	public List<CollectableSorting> getCollectableSortingSequence() {
-		final GenericObjectCollectController controller = getGenericObjectCollectController();
-		final List<CollectableSorting> result = new LinkedList<CollectableSorting>();
-		SortableCollectableTableModel<CollectableGenericObjectWithDependants> tm = controller.getResultTableModel();
-		final String baseEntity = controller.getCollectableEntity().getName();
-		for (SortKey sortKey :  tm.getSortKeys()) {
-			final CollectableEntityField sortField = tm.getCollectableEntityField(sortKey.getColumn());
-			if (sortField.getEntityName().equals(baseEntity)) {
-				result.add(new CollectableSorting(sortField.getEntityName(), baseEntity.equals(sortField.getEntityName()),
-						sortField.getName(), sortKey.getSortOrder() == SortOrder.ASCENDING));
-			}
-		}
-		return result;
-	}
-	
 	public GenericObjectCollectController getGenericObjectCollectController() {
 		return (GenericObjectCollectController) getCollectController();
 	}

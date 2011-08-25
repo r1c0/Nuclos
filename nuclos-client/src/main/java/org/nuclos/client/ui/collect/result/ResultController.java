@@ -75,6 +75,8 @@ import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.PredicateUtils;
+import org.nuclos.common.dal.vo.PivotInfo;
+import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.PreferencesUtils;
@@ -700,11 +702,27 @@ public class ResultController<Clct extends Collectable> {
 	 */
 	public List<CollectableSorting> getCollectableSortingSequence() {
 		final String baseEntity = getEntity().getName();
-		final List<CollectableSorting> result = new LinkedList<CollectableSorting>();
+		final List<CollectableSorting> result = new ArrayList<CollectableSorting>();
 		for (SortKey sortKey : clctctl.getResultTableModel().getSortKeys()) {
 			final CollectableEntityField sortField = clctctl.getResultTableModel().getCollectableEntityField(sortKey.getColumn());
-			result.add(new CollectableSorting(sortField.getEntityName(), baseEntity.equals(sortField.getEntityName()),
-					sortField.getName(), sortKey.getSortOrder() == SortOrder.ASCENDING));
+			final CollectableSorting sort;
+			if (sortField instanceof CollectableEOEntityField) {
+				final CollectableEOEntityField sf = (CollectableEOEntityField) sortField;
+				final PivotInfo pinfo = sf.getMeta().getPivotInfo();
+				if (pinfo != null) {
+					sort = new CollectableSorting(pinfo.getSubform(), baseEntity.equals(pinfo.getSubform()),
+							pinfo.getValueField(), sortKey.getSortOrder() == SortOrder.ASCENDING);
+				}
+				else {
+					sort = new CollectableSorting(sortField.getEntityName(), baseEntity.equals(sortField.getEntityName()),
+							sortField.getName(), sortKey.getSortOrder() == SortOrder.ASCENDING);
+				}
+			}
+			else {
+				sort = new CollectableSorting(sortField.getEntityName(), baseEntity.equals(sortField.getEntityName()),
+						sortField.getName(), sortKey.getSortOrder() == SortOrder.ASCENDING);
+			}
+			result.add(sort);
 		}
 		return result;
 	}

@@ -96,12 +96,12 @@ public class EOSearchExpressionUnparser {
 		}   	
 	}
 
-	public void unparseSortingOrder(List<CollectableSorting> sorting) {
-		List<DbOrder> orderList = new ArrayList<DbOrder>();
+	public void unparseSortingOrder(final List<CollectableSorting> sorting) {
+		final List<DbOrder> orderList = new ArrayList<DbOrder>();
 		boolean containsId = false;
 		if (sorting != null) {
 			for (CollectableSorting cs : sorting) {
-				DbColumnExpression<?> column = getDbColumn(cs.getFieldName());
+				DbColumnExpression<?> column = getDbColumn(cs);
 				orderList.add(cs.isAscending() ? queryBuilder.asc(column) : queryBuilder.desc(column));
 				if (column.getColumnName().equalsIgnoreCase("INTID"))
 					containsId = true;
@@ -113,12 +113,23 @@ public class EOSearchExpressionUnparser {
 		query.orderBy(orderList);
 	}
 
-	public DbColumnExpression<?> getDbColumn(String fieldName) {
-		EntityFieldMetaDataVO entityField = MetaDataServerProvider.getInstance().getEntityField(entity.getEntity(), fieldName);
-		if(entity.isDynamic())
-			return table.baseColumnCaseSensitive(entityField.getDbColumn(), normalizeJavaType(entityField.getDataType()));
-		else
-			return table.baseColumn(entityField.getDbColumn(), normalizeJavaType(entityField.getDataType()));
+	private DbColumnExpression<?> getDbColumn(CollectableSorting sort) {
+		final EntityFieldMetaDataVO entityField = MetaDataServerProvider.getInstance().getEntityField(
+				sort.getEntity(), sort.getFieldName());
+		final Class<?> type = normalizeJavaType(entityField.getDataType());
+		final DbColumnExpression<?> result;
+		if (sort.isBaseEntity()) {
+			if (entity.isDynamic()) {
+				result = table.baseColumnCaseSensitive(entityField.getDbColumn(), type);
+			}
+			else {
+				result = table.baseColumn(entityField.getDbColumn(), type);
+			}
+		}
+		else {
+			result = table.column(sort.getEntity(), entityField.getDbColumn(), type);
+		}
+		return result;
 	}
 
 	private class UnparseVisitor implements Visitor<DbCondition, RuntimeException>, CompositeVisitor<DbCondition, RuntimeException>, AtomicVisitor<DbCondition, RuntimeException> {

@@ -91,8 +91,9 @@ public abstract class CollectableFieldFormat {
 			result = getFormat(Date.class);
 		}
 		if (result == null) {
-//			throw new CommonFatalException("Unbekannter Feldtyp: " + cls.getName());
-			log.warn("Default-Format erzeugt f\u00fcr Klasse " + cls.getName());
+			if (log.isDebugEnabled()) {
+				log.debug("Default-Format erzeugt f\u00fcr Klasse " + cls.getName());
+			}
 			return getDefaultFormat();
 		}
 		return result;

@@ -186,7 +186,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 					if (isBlank(c)) continue;
 					final EntityFieldMetaDataVO md = new EntityFieldMetaDataVO(vo);
 					final String pseudoFieldName = c.toString();
-					md.setDynamic(true);
+					md.setDynamic(false);
 					md.setDbColumn(keyField.getDbColumn());
 					md.setField(pseudoFieldName);
 					md.setFallbacklabel(info.getSubform() + ":" + info.getKeyField() + ":" + c + ":" + info.getValueField());
