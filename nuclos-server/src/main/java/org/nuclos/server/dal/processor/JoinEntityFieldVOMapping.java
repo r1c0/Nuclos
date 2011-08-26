@@ -50,9 +50,10 @@ public class JoinEntityFieldVOMapping<T> extends AbstractColumnToVOMapping<T> {
 	@Override
 	public void convertFromDbValueToDalField(IDalVO result, T o) {
 		final IDalWithDependantsVO<?> realDal = (IDalWithDependantsVO<?>) result;
-		EntityObjectVO joinEntityVO = CollectionUtils.getSingleIfExist(realDal.getDependants().getData(joinEntity));
-		// Create dependant if it does not exist.
-		if (joinEntityVO == null) {
+		EntityObjectVO joinEntityVO = CollectionUtils.getLastOrNull(realDal.getDependants().getData(joinEntity));
+		
+		// Create dependant if it does not exist or.
+		if (joinEntityVO == null || joinEntityVO.getFields().containsKey(field)) {
 			joinEntityVO = new EntityObjectVO();
 			joinEntityVO.initFields(5, 5);
 			joinEntityVO.setEntity(joinEntity);

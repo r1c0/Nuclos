@@ -1212,7 +1212,13 @@ public class CollectionUtils {
    public static <T> T getFirst(Iterable<T> iterable) {
       return getFirst(iterable, null);
    }
-
+   
+   public static <T> T getLastOrNull(List<T> l) {
+	   final int size = l.size();
+	   if (size == 0) return null;
+	   return l.get(size - 1);
+   }
+   
    public static <T> T getFirst(Iterable<? extends T> iterable, T def) {
       final Iterator<? extends T> iter = iterable.iterator();
       return iter.hasNext() ? iter.next() : def;

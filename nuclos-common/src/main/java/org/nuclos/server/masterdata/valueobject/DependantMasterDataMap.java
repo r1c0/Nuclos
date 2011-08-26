@@ -82,7 +82,7 @@ public final class DependantMasterDataMap implements Serializable {
 	 * @return the dependants belonging to the given entity, if any.
 	 * @postcondition result != null
 	 */
-	public Collection<EntityObjectVO> getData(String sDependantEntityName) {
+	public List<EntityObjectVO> getData(String sDependantEntityName) {
 		return this.mmp.getValues(sDependantEntityName);
 	}
 
