@@ -85,13 +85,13 @@ public class GenericObjectClientUtils {
 		// new implementation
 		List<CollectableEntityField> result = null;
 		try {
-			result = (List<CollectableEntityField>) 
+			result = (List<CollectableEntityField>)
 					PreferencesUtils.getSerializableListXML(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS);
 		} catch (PreferencesException e) {
 			// do nothing
 			LOG.error("XMLEncoder/XMLDecoder Fehler", e);
 		}
-		if (result != null) {
+		if (result != null && !result.isEmpty()) {
 			for (Iterator<CollectableEntityField> it = result.iterator(); it.hasNext();) {
 				final CollectableEntityField f = it.next();
 				// TODO: ???
@@ -119,19 +119,19 @@ public class GenericObjectClientUtils {
 			}
 			assert lstSelectedFieldNames != null;
 			assert lstSelectedEntityNames != null;
-	
+
 			// ensure backwards compatibility:
 			if (lstSelectedEntityNames.isEmpty() && !lstSelectedFieldNames.isEmpty()) {
 				lstSelectedEntityNames = Arrays.asList(new String[lstSelectedFieldNames.size()]);
 				assert lstSelectedEntityNames.size() == lstSelectedFieldNames.size();
 			}
-	
+
 			if (lstSelectedFieldNames.size() != lstSelectedEntityNames.size()) {
 				LOG.warn("Die Listen der selektierten Felder und ihrer Entit\u00e4ten stimmen nicht \u00fcberein.");
 				lstSelectedFieldNames = new ArrayList<String>();
 				lstSelectedEntityNames = new ArrayList<String>();
 			}
-	
+
 			result = new ArrayList<CollectableEntityField>();
 			final CollectableEntityProvider clcteprovider = DefaultCollectableEntityProvider.getInstance();
 			for (int i = 0; i < lstSelectedFieldNames.size(); i++) {
@@ -158,7 +158,7 @@ public class GenericObjectClientUtils {
 			fieldNames.add(f.getName());
 			entityNames.add(f.getEntityName());
 		}
-		
+
 		PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS, fieldNames);
 		PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES, entityNames);
 		PreferencesUtils.putSerializableListXML(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS, selectedFields);
@@ -169,7 +169,7 @@ public class GenericObjectClientUtils {
 	 * @param sFieldName the name of the field
 	 * @param clcteMain the main entity
 	 * @return a <code>CollectableEntityField</code> for the Result tab with the given entity and field name.
-	 * 
+	 *
 	 * @deprecated Should be private!
 	 */
 	public static CollectableEntityField getCollectableEntityFieldForResult(final CollectableEntity clcte, String sFieldName, CollectableEntity clcteMain) {
@@ -179,15 +179,15 @@ public class GenericObjectClientUtils {
 		final boolean bFieldBelongsToParentEntity = clcte.getName().equals(sParentEntityName);
 		final boolean bFieldBelongsToSubEntity = !(bFieldBelongsToMainEntity || bFieldBelongsToParentEntity);
 		final CollectableEntityFieldWithEntityForExternal clctefwefe = new CollectableEntityFieldWithEntityForExternal(clcte, sFieldName, bFieldBelongsToSubEntity, bFieldBelongsToMainEntity);
-		
+
 		// set security agent, to check whether the user has the right to see the data in the result panel
 		setSecurityAgent(clcte, clctefwefe, bFieldBelongsToSubEntity);
 		return clctefwefe;
 	}
-	
+
 	/**
 	 * TODO: For me, it is complete miracle why this is needed... (tp)
-	 * 
+	 *
 	 * @param entity Could be another entity than the entity the fields belongs to, because it is a subform field display in the result panel.
 	 * @param field to set the SecurityAgent on
 	 * @param bFieldBelongsToSubEntity true if fields belongs to a subform
@@ -220,7 +220,7 @@ public class GenericObjectClientUtils {
 				}
 				return (permission == null) ? false : permission.includesReading();
 			}
-		});		
+		});
 	}
 
 	/**
@@ -267,7 +267,7 @@ public class GenericObjectClientUtils {
 					final String sForeignKeyFieldName = ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME;
 					final CollectableEntityField clctefSub = clcteSub.getEntityField(pairEntityAndFieldname.getY());
 
-					collOperands.add(new CollectableSubCondition(clcteSub.getName(), sForeignKeyFieldName, 
+					collOperands.add(new CollectableSubCondition(clcteSub.getName(), sForeignKeyFieldName,
 						SearchConditionUtils.getConditionForPeer(clctefSub, atomiccond)));
 				}
 				result = new CompositeCollectableSearchCondition(LogicalOperator.OR, collOperands);
@@ -345,9 +345,9 @@ public class GenericObjectClientUtils {
 
 		return Main.getMainController().showDetails(sEntityName);
 	}
-	
+
 	/**
-	 * Open a collection of generic objects of unknown and possibly different modules in the appropriate view of the appropriate CollectController. 
+	 * Open a collection of generic objects of unknown and possibly different modules in the appropriate view of the appropriate CollectController.
 	 * @param parent
 	 * @param collLeasedObjectIds
 	 * @throws CommonBusinessException
@@ -370,7 +370,7 @@ public class GenericObjectClientUtils {
 			ctlLeasedObject.runViewResults(getSearchConditionForRelatedObjects(collLeasedObjectIds));
 		}
 	}
-	
+
 	/**
 	 * Build a search condition if there are more than one related objects
 	 * @param collLeasedObjectIds
@@ -385,5 +385,5 @@ public class GenericObjectClientUtils {
 
 		return cond;
 	}
-	
+
 }	// class GenericObjectClientUtils

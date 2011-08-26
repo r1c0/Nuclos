@@ -646,8 +646,8 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 				CollectableEntityFieldBasedTableModel cefbtm = (CollectableEntityFieldBasedTableModel) tblResult.getModel();
 
 				for (String field : lstWidthsFromPreferences.keySet()) {
-					for (int iColumn = 0; iColumn < cefbtm.getColumnCount(); ++iColumn) {
-						if (cefbtm.getCollectableEntityField(iColumn).getName().equals(field)) {
+					for (int iColumn = 0; iColumn < cefbtm.getColumnCount(); iColumn++) {
+						if (cefbtm.getCollectableEntityField(iColumn).getName().equals(field) && tblResult.getColumnModel().getColumnCount() > iColumn) {
 							final TableColumn column = tblResult.getColumnModel().getColumn(iColumn);
 							final Integer iPreferredCellWidth = lstWidthsFromPreferences.get(field);
 							if (iPreferredCellWidth != null) {
