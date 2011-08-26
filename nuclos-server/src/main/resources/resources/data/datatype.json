@@ -49,7 +49,7 @@
     "databasetyp": "number"
   },
   {
-    "name": "Kommazahl",
+    "name": "Kommazahl (9,4)",
     "scale": 9,
     "precision": 4,
     "javatyp": "java.lang.Double",
@@ -57,7 +57,7 @@
     "outputformat": "#,##0.0000"
   },
   {
-    "name": "Kommazahl 2-stellig",
+    "name": "Kommazahl (9,2)",
     "scale": 9,
     "precision": 2,
     "javatyp": "java.lang.Double",

@@ -110,7 +110,7 @@ public class DataTyp implements Cloneable {
 			return "Ganzzahl";
 		}
 		else if(clazz.isAssignableFrom(Double.class)) {
-			return "Kommazahl";
+			return "Kommazahl (9,2)";
 		}
 		else if(clazz.isAssignableFrom(Boolean.class)) {
 			return "Ja/Nein";

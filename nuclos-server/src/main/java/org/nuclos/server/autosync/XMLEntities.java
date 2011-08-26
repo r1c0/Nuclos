@@ -53,13 +53,13 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 public class XMLEntities {
 
 	public static boolean DEV = true;
-	
+
 	private static Map<NuclosEntity, SystemDataCache> internalDataCaches;
-	
+
 	private static Map<String, SystemMasterDataMetaVO> systemEntities;
 
 	private static Map<NuclosEntity, Integer> idCounter = new EnumMap<NuclosEntity, Integer>(NuclosEntity.class);
-	
+
 	static {
 		try {
 			init();
@@ -67,13 +67,13 @@ public class XMLEntities {
 			throw new CommonFatalException(e);
 		}
 	}
-	
+
 	private static void init() throws IOException, XMLStreamException, ParseException {
 		internalDataCaches = new EnumMap<NuclosEntity, SystemDataCache>(NuclosEntity.class);
 
 		// (Masterdata) Meta-data is special because it contains data necessary for the correct interpretation
 		// of the system data (including itself).
-		// Special care is needed for the handling of the ids.  The (raw) data doesn't contain any ids (except 
+		// Special care is needed for the handling of the ids.  The (raw) data doesn't contain any ids (except
 		// for some rare special cases).  But after processing, the ids in the extracted metadata objects and
 		// the ids in the corresponding masterdata objects must match!
 		List<?> masterdata = (List<?>) readJSON("masterdata");
@@ -91,16 +91,16 @@ public class XMLEntities {
 		initInternalDataJSON(NuclosEntity.LOCALE, "locale");
 		initInternalDataJSON(NuclosEntity.LOCALERESOURCE, "localeresource");
 		initInternalDataJSON(NuclosEntity.ACTION, "action");
-		initInternalDataJSON(NuclosEntity.EVENT, "event");		
+		initInternalDataJSON(NuclosEntity.EVENT, "event");
 		initInternalDataJSON(NuclosEntity.LAYOUT, "layout");
 		initInternalDataJSON(NuclosEntity.WIKI, "wiki");
 		initInternalDataJSON(NuclosEntity.DATATYP, "datatype");
 		initInternalDataJSON(NuclosEntity.RELATIONTYPE, "relationtype");
-		
+
 		// Add Layout ML strings from resources
 		// TODO: Why is layoutML a String field?  It's a physical XML (i.e. it contains an encoding declaration(!))
 		for (MasterDataVO mdvo : getOrCreate(NuclosEntity.LAYOUT).getAll()) {
-			String layoutMLResource = "resources/layoutml/" + mdvo.getField("name", String.class) + ".layoutml";			
+			String layoutMLResource = "resources/layoutml/" + mdvo.getField("name", String.class) + ".layoutml";
 			InputStream is = XMLEntities.class.getClassLoader().getResourceAsStream(layoutMLResource);
 			if (is != null) {
 				String layoutML = IOUtils.readFromTextStream(is, "ISO-8859-15");
@@ -108,48 +108,48 @@ public class XMLEntities {
 			}
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		Map<NuclosEntity, SystemDataCache> internalDataCaches = XMLEntities.internalDataCaches;
 		System.err.println(internalDataCaches);
 	}
-	
+
 	public static Map<String, SystemMasterDataMetaVO> getSystemEntities() {
 		return systemEntities;
 	}
-	
-	
+
+
 	public static SystemDataCache getData(NuclosEntity entity) {
 		return internalDataCaches.get(entity);
 	}
-	
+
 	private static SystemDataCache getData(String entityName) {
 		return internalDataCaches.get(NuclosEntity.getByName(entityName));
 	}
-	
-	private static boolean hasSystemData(String entityName) {
+
+	public static boolean hasSystemData(String entityName) {
 		NuclosEntity nuclosEntity = NuclosEntity.getByName(entityName);
 		return nuclosEntity != null && internalDataCaches.containsKey(nuclosEntity);
 	}
-	
+
 	public static Collection<MasterDataVO> getSystemObjects(String entity, CollectableSearchCondition cond) {
 		if (!XMLEntities.hasSystemData(entity))
 			return Collections.emptyList();
 		return getData(entity).findAllVO(cond);
 	}
-	
+
 	public static Collection<MasterDataVO> getSystemObjectsWith(String entity, String field, Object value) {
 		if (!XMLEntities.hasSystemData(entity))
 			return Collections.emptyList();
 		return getData(entity).findAllVO(field, value);
 	}
-	
+
 	public static Collection<MasterDataVO> getSystemObjectsWith(String entity, String field, Object...values) {
 		if (!XMLEntities.hasSystemData(entity))
 			return Collections.emptyList();
 		return getData(entity).findAllVOIn(field, Arrays.asList(values));
 	}
-	
+
 	public static Collection<Object> getSystemObjectIds(String entity, CollectableSearchCondition cond) {
 		return transform(getSystemObjects(entity, cond), new MasterDataVO.GetId());
 	}
@@ -157,13 +157,13 @@ public class XMLEntities {
 	public static Collection<Object> getSystemObjectIdsWith(String entity, String field, Object value) {
 		return transform(getSystemObjectsWith(entity, field, value), new MasterDataVO.GetId());
 	}
-	
+
 	public static MasterDataVO getSystemObjectById(String entity, Object id) {
 		if (!XMLEntities.hasSystemData(entity))
 			return null;
 		return getData(entity).getById(id);
 	}
-	
+
 	private static void registerData(NuclosEntity entity, Collection<MasterDataVO> mdvos) {
 		for (MasterDataVO mdvo : mdvos) {
 			if (mdvo.getId() == null) {
@@ -178,19 +178,19 @@ public class XMLEntities {
 					NuclosEntity dependantEntity = NuclosEntity.getByName(dependantEntityName);
 					Collection<EntityObjectVO> dependantVOs = dependants.getData(dependantEntityName);
 					MasterDataMetaFieldVO fieldRef = systemEntities.get(dependantEntityName).getFieldReferencing(entity.getEntityName());
-					
+
 					Collection<MasterDataVO> colVO = CollectionUtils.transform(dependantVOs, new EntityObjectToMasterDataTransformer());
-					
+
 					ensureAggregation(mdvo, colVO, fieldRef);
 					registerData(dependantEntity, colVO);
 				}
-			}			
+			}
 		}
-		
+
 		SystemDataCache cache = getOrCreate(entity);
 		cache.addAll(mdvos);
 	}
-	
+
 	private static void ensureAggregation(MasterDataVO mdvo, Collection<MasterDataVO> dependantVOs, MasterDataMetaFieldVO refField) {
 		String refFieldName = refField.getFieldName();
 		Object refId = mdvo.getId();
@@ -203,14 +203,14 @@ public class XMLEntities {
 			dependantVO.setField(refFieldName, refValue);
 		}
 	}
-	
+
 	private static Integer nextId(NuclosEntity entity) {
 		Integer lastId = idCounter.get(entity);
 		Integer nextId = (lastId != null) ? lastId - 1 : -1;
 		idCounter.put(entity, nextId);
 		return nextId;
 	}
-	
+
 	private static SystemDataCache getOrCreate(NuclosEntity entity) {
 		SystemDataCache cache = internalDataCaches.get(entity);
 		if (cache == null) {
@@ -219,11 +219,11 @@ public class XMLEntities {
 		}
 		return cache;
 	}
-	
+
 	private static void initInternalDataJSON(NuclosEntity entity, String file) throws IOException, ParseException {
 		registerData(entity, parseJSON(entity.getEntityName(), file));
 	}
-	
+
 	private static MasterDataVO readVO(XMLStreamReader reader, String entity, Map<String, Class<?>> t, MasterDataVOHandler handler) throws XMLStreamException {
 		Map<String, Object> fields = new LinkedHashMap<String, Object>();
 		DependantMasterDataMap dependantMap = null;
@@ -233,12 +233,12 @@ public class XMLEntities {
 				dependantMap = new DependantMasterDataMap();
 				while (reader.nextTag() == XMLStreamReader.START_ELEMENT) {
 					String dependantName = reader.getLocalName();
-					List<MasterDataVO> list = readList(reader, t, handler);					
+					List<MasterDataVO> list = readList(reader, t, handler);
 					Collection<EntityObjectVO> colVO = CollectionUtils.transform(list, new MasterDataToEntityObjectTransformer());
 					dependantMap.addAllData(dependantName, colVO);
 				}
 			} else {
-				Class<?> type = t.get(entity + "." + name);			
+				Class<?> type = t.get(entity + "." + name);
 				String text = reader.getElementText();
 				Object value;
 				if (text.isEmpty()) {
@@ -261,7 +261,7 @@ public class XMLEntities {
 		}
 		return mdvo;
 	}
-	
+
 	private static List<MasterDataVO> readList(XMLStreamReader reader, Map<String, Class<?>> t, MasterDataVOHandler handler) throws XMLStreamException {
 		List<MasterDataVO> list = new ArrayList<MasterDataVO>();
 		String entity = reader.getLocalName();
@@ -270,19 +270,19 @@ public class XMLEntities {
 		}
 		return list;
 	}
-	
+
 	public static Object readJSON(String file) throws IOException, ParseException {
 		InputStream is = XMLEntities.class.getClassLoader().getResourceAsStream("resources/data/" + file + ".json");
 		if (is == null) {
-			return null; 
+			return null;
 		}
 		return JSONValue.parseWithException(new InputStreamReader(is, "utf-8"));
 	}
-	
+
 	public static List<MasterDataVO> parseJSON(String entity, String file) throws IOException, ParseException {
 		return mdvoListFromJSON(entity, (List<?>) readJSON(file));
 	}
-	
+
 	public static List<MasterDataVO> mdvoListFromJSON(String entity, List<?> list) {
 		List<MasterDataVO> mdvos = new ArrayList<MasterDataVO>();
 		for (Object obj : list) {
@@ -293,13 +293,13 @@ public class XMLEntities {
 		}
 		return mdvos;
 	}
-	
+
 	public static MasterDataVO mdvo(String entity, Map<?, ?> map) {
 		return JSONHelper.makeMasterDataVO(map, entity, systemEntities);
 	}
-	
+
 	private static interface MasterDataVOHandler {
-		
+
 		public void handle(String entity, MasterDataVO mdvo);
 	}
 }

@@ -43,6 +43,8 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableComparis
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
+import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
+import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.MasterDataToEntityObjectTransformer;
 import org.nuclos.common.collection.Transformer;
@@ -525,6 +527,8 @@ public class MasterDataFacadeHelper {
 
 		checkInvariantFields(mdmetavo, mdvo, mdvoInDB);
 
+		validateUniqueConstraintWithJson(mdmetavo, mdvo);
+
 		if(NuclosEntity.USER.getEntityName().equals(sEntityName)
 			&& sUserName.equalsIgnoreCase(mdvoInDB.getField("name", String.class))
 			&& !mdvoInDB.getField("name", String.class).equalsIgnoreCase(mdvo.getField("name", String.class))) {
@@ -584,6 +588,8 @@ public class MasterDataFacadeHelper {
 
 		final MasterDataMetaVO mdmetavo = MasterDataMetaCache.getInstance().getMetaData(sEntityName);
 
+		validateUniqueConstraintWithJson(mdmetavo, mdvoToCreate);
+
 		// @todo optimize: use idfactory.nextval for insert
 
 		final Integer result = (intid != null) ? intid : DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
@@ -627,6 +633,34 @@ public class MasterDataFacadeHelper {
 		return result;
 	}
 
+	private void validateUniqueConstraintWithJson(MasterDataMetaVO mdmetavo, MasterDataVO mdvoToCreate) throws CommonValidationException {
+		if (!XMLEntities.hasSystemData(mdmetavo.getEntityName())) {
+			return;
+		}
+		CompositeCollectableSearchCondition cond = new CompositeCollectableSearchCondition(LogicalOperator.AND);
+		for (MasterDataMetaFieldVO field : mdmetavo.getFields()) {
+			if (field.isUnique()) {
+				String fieldname = field.getFieldName();
+				if (mdvoToCreate.getField(fieldname) != null) {
+					if (field.getForeignEntity() != null) {
+						cond.addOperand(SearchConditionUtils.newMDReferenceComparison(mdmetavo, fieldname, mdvoToCreate.getField(fieldname + "Id", Integer.class)));
+					}
+					else {
+						cond.addOperand(SearchConditionUtils.newMDComparison(mdmetavo, field.getFieldName(), ComparisonOperator.EQUAL, mdvoToCreate.getField(field.getFieldName())));
+					}
+				}
+				else {
+					cond.addOperand(SearchConditionUtils.newMDIsNullCondition(mdmetavo, fieldname));
+				}
+			}
+		}
+
+		final Collection<MasterDataVO> systemObjects = XMLEntities.getSystemObjects(mdmetavo.getEntityName(), cond);
+		if (!systemObjects.isEmpty()) {
+			throw new CommonValidationException("nuclos.validation.systementity.unique");
+		}
+	}
+
 	/**
 	 *
 	 * @param eoVO
@@ -667,11 +701,27 @@ public class MasterDataFacadeHelper {
 				for (EntityObjectVO mdvoDependant : mpDependants.getData(sDependantEntityName)) {
 
 					removeDependants(mdvoDependant.getDependants());
-					if (MasterDataMetaCache.getInstance().getMetaData(sDependantEntityName).isEditable()
-						&& mdvoDependant.isFlagRemoved() && mdvoDependant.getId() != null) {
-						// remove the row:
-						MasterDataVO voDependant = DalSupportForMD.wrapEntityObjectVO(mdvoDependant);
-						removeSingleRow(sDependantEntityName, voDependant);
+					if(MetaDataServerProvider.getInstance().getEntity(sDependantEntityName).isStateModel()) {
+						try {
+							mdvoDependant.setEntity(sDependantEntityName);
+							GenericObjectVO govo = DalSupportForGO.getGenericObjectVO(mdvoDependant);
+							GenericObjectFacadeLocal goLocal = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
+							goLocal.remove(new GenericObjectWithDependantsVO(govo, mdvoDependant.getDependants()), true);
+						}
+						catch(CommonCreateException ex) {
+							throw new NuclosFatalException(ex);
+						}
+						catch(NuclosBusinessException ex) {
+							throw new NuclosFatalException(ex);
+						}
+					}
+					else {
+						if (MasterDataMetaCache.getInstance().getMetaData(sDependantEntityName).isEditable()
+							&& mdvoDependant.isFlagRemoved() && mdvoDependant.getId() != null) {
+							// remove the row:
+							MasterDataVO voDependant = DalSupportForMD.wrapEntityObjectVO(mdvoDependant);
+							removeSingleRow(sDependantEntityName, voDependant);
+						}
 					}
 				}
 			}
@@ -707,10 +757,7 @@ public class MasterDataFacadeHelper {
 						if(mdvoDependant.isFlagNew()) {
 							goLocal.create(new GenericObjectWithDependantsVO(govo, mdvoDependant.getDependants()));
 						}
-						else if(mdvoDependant.isFlagRemoved()) {
-							goLocal.remove(new GenericObjectWithDependantsVO(govo, mdvoDependant.getDependants()), true);
-						}
-						else {
+						else if (!mdvoDependant.isFlagRemoved()) {
 							goLocal.modify(govo, mdvoDependant.getDependants(), false);
 						}
 					}

@@ -60957,5 +60957,20 @@
     "resourceID": "nuclos.entityfield.reportoutput.locale.description",
     "locale": "de",
     "text": "Sprache zur Formatierung von Zahlen und Datumswerten. Falls leer, wird die aktuelle Sprache des Benutzers verwendet."
+  },
+  {
+    "resourceID": "nuclos.validation.systementity.unique",
+    "locale": "i-default",
+    "text": "Unique constraint violation because with system data."
+  },
+  {
+    "resourceID": "nuclos.validation.systementity.unique",
+    "locale": "en",
+    "text": "Unique constraint violation because with system data."
+  },
+  {
+    "resourceID": "nuclos.validation.systementity.unique",
+    "locale": "de",
+    "text": "Verletzung der Eindeutigkeitseinschränkung mit Systemdaten."
   }
 ]
