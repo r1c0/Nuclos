@@ -18,12 +18,16 @@ package org.nuclos.client.common;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.common.AbstractProvider;
 import org.nuclos.common.JMSConstants;
@@ -48,6 +52,8 @@ import org.springframework.beans.factory.InitializingBean;
  * </p>
  */
 public class MetaDataClientProvider extends AbstractProvider implements MetaDataProvider, InitializingBean {
+	
+	private static final Logger LOG = Logger.getLogger(MetaDataClientProvider.class);
 
 	private final DataCache dataCache = new DataCache();
 
@@ -132,7 +138,7 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 		return result;
 	}
 	
-	// @Override
+	@Override
     public Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info) {
     	Map<String, EntityFieldMetaDataVO> result = dataCache.getMapPivotMetaData().get(info);
     	if (result == null) {
@@ -142,7 +148,33 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
     	}
     	return result;
 	}
+	
+	public EntityFieldMetaDataVO getPivotKeyField(String baseEntity, String subform) {
+		final Map<String, EntityFieldMetaDataVO> fields = getAllEntityFieldsByEntity(subform);
+		final Set<EntityFieldMetaDataVO> uniqueFields = new HashSet<EntityFieldMetaDataVO>();
+		boolean refToBase = false;
+		for (String f : fields.keySet()) {
+			final EntityFieldMetaDataVO mdF = fields.get(f);
+			if (mdF.isUnique()) {
+				if (baseEntity.equals(mdF.getForeignEntity())) {
+					refToBase = true;
+				} else if (mdF.getForeignEntity() != null) {
+					uniqueFields.add(mdF);
+				}
+			}
+		}
+		if (refToBase && uniqueFields.size() == 1) {
+			return uniqueFields.iterator().next();
+		}
+		else { 
+			return null;
+		}
+	}
 
+	/**
+	 * @deprecated In the general case there could be more than one ref between entities, hence
+	 * 		we must replace this...
+	 */
 	public EntityFieldMetaDataVO getRefField(String baseEntity, String subform) {
 		// TODO: caching
 		final Map<String, EntityFieldMetaDataVO>  fields = getAllEntityFieldsByEntity(baseEntity);

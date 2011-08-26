@@ -216,7 +216,7 @@ public class EOSearchExpressionUnparser {
 			// The join table alias must be unique in the SQL
 			final String joinAlias = pinfo.getPivotTableAlias(field.getField());
 			
-			final DbJoin join = table.join(joinTable, JoinType.LEFT).alias(joinAlias).on(foreignEntityField, ref.getDbColumn());
+			final DbJoin join = table.join(joinTable, JoinType.LEFT).alias(joinAlias).on("INTID", DalUtils.getDbIdFieldName(ref.getDbColumn()));
 			
 			DbCondition cond;
 			// pivot key matches

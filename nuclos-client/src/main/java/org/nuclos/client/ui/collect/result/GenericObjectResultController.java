@@ -144,6 +144,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 		// add subentities' fields, if any:
 		final Set<String> stSubEntityNames = GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(controller.getModuleId());
 		final Set<String> stSubEntityLabels = new HashSet<String>();
+		
 		for (String sSubEntityName : stSubEntityNames) {
 			if (pivots.containsKey(sSubEntityName)) {
 				getFieldsAvaibleInPivotSubform(result, stSubEntityLabels, sSubEntityName);
