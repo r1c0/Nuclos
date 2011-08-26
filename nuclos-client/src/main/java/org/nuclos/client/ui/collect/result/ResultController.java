@@ -711,7 +711,7 @@ public class ResultController<Clct extends Collectable> {
 				final PivotInfo pinfo = sf.getMeta().getPivotInfo();
 				if (pinfo != null) {
 					// The join table alias must be unique in the SQL
-					final String joinAlias = "\"" + pinfo.getSubform() + "_" + sf.getMeta().getField() + "\"";
+					final String joinAlias = pinfo.getPivotTableAlias(sf.getMeta().getField());
 
 					sort = new CollectableSorting(joinAlias, pinfo.getSubform(), baseEntity.equals(pinfo.getSubform()),
 							pinfo.getValueField(), sortKey.getSortOrder() == SortOrder.ASCENDING);

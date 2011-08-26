@@ -214,9 +214,16 @@ public class EOSearchExpressionUnparser {
 			final String keyColumn = mdProv.getEntityField(subEntity, pinfo.getKeyField()).getDbColumn();
 			
 			// The join table alias must be unique in the SQL
-			final String joinAlias = "\"" + subEntity + "_" + field.getField() + "\"";
+			final String joinAlias = pinfo.getPivotTableAlias(field.getField());
+			
 			final DbJoin join = table.join(joinTable, JoinType.LEFT).alias(joinAlias).on(foreignEntityField, ref.getDbColumn());
-			return queryBuilder.equal(join.baseColumn(keyColumn, String.class), queryBuilder.literal(field.getField()));
+			
+			DbCondition cond;
+			// pivot key matches
+			cond = queryBuilder.equal(join.baseColumn(keyColumn, String.class), queryBuilder.literal(field.getField()));
+			// pivot key is NULL (i.e. does not exist). This could happen as this is an outer join
+			cond = queryBuilder.or(cond, queryBuilder.isNull(join.baseColumn(keyColumn, String.class)));
+			return cond;
 		}
 
 		@Override

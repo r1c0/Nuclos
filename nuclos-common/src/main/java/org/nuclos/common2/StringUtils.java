@@ -670,5 +670,77 @@ public class StringUtils {
 	public static boolean equalsIgnoreCase(String s1, String s2) {
 		return (s1 == null) ? (s2 == null) : s1.equalsIgnoreCase(s2);
 	}
+	
+	/**
+	 * Make a valid SQL identifier (e.g. for an SQL alias) from an arbitrary String.
+	 */
+	public static String makeSQLIdentifierFrom(String s) {
+		final int len = s.length();
+		final StringBuilder result = new StringBuilder(len);
+		// allow string with only numbers in
+		result.append('_');
+		for (int i = 0; i < len; ++i) {
+			final boolean accept;
+			int c = s.codePointAt(i);
+			if (Character.isSupplementaryCodePoint(c)) {
+				++i;
+			}
+			if (c >= 'A' && c <='Z') {
+				accept = true;
+			}
+			else if (c >= 'a' && c <= 'z') {
+				accept = true;
+			}
+			else if (c >= '0' && c <= '9') {
+				accept = true;
+			}
+			else {
+				switch (c) {
+				case '_':
+					accept = true;
+					break;
+				case ' ':
+					c = '_';
+					accept = true;
+					break;
+				// german umlaut support
+				case 'ä':
+					c = 'a';
+					accept = true;
+					break;
+				case 'ö':
+					c = 'o';
+					accept = true;
+					break;
+				case 'ü':
+					c = 'u';
+					accept = true;
+					break;
+				case 'ß':
+					c = 's';
+					accept = true;
+					break;
+				case 'Ä':
+					c = 'A';
+					accept = true;
+					break;
+				case 'Ö':
+					c = 'O';
+					accept = true;
+					break;
+				case 'Ü':
+					c = 'U';
+					accept = true;
+					break;
+				default:
+					accept = false;
+				}
+			}
+			if (accept) {
+				result.append((char) c);
+			}
+		}
+		return result.toString();
+	}
 
 }	// class StringUtils

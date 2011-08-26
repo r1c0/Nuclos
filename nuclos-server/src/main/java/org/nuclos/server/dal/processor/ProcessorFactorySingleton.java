@@ -142,7 +142,7 @@ public class ProcessorFactorySingleton {
 	protected static <S extends Object> IColumnToVOMapping<S> createJoinMapping(String alias, String column,
 			String field, String dataType, Boolean isReadonly, String joinEntity) {
 		try {
-			return new JoinEntityFieldVOMapping<S>(alias, column,
+			return new PivotJoinEntityFieldVOMapping<S>(alias, column,
 					(Class<S>) Class.forName(dataType), isReadonly, joinEntity, field);
 		} catch (ClassNotFoundException e) {
 			throw new CommonFatalException(e);
@@ -355,7 +355,7 @@ public class ProcessorFactorySingleton {
 		}
 		// The join table alias must be unique in the SQL
 		else if (pinfo != null) {
-			alias = "\"" + mdEnitiy.getEntity() + "_" + field.getField() + "\"";						
+			alias = pinfo.getPivotTableAlias(field.getField());						
 		}
 		else {
 			alias = mdEnitiy.getEntity();

@@ -18,6 +18,8 @@ package org.nuclos.common.dal.vo;
 
 import java.io.Serializable;
 
+import org.nuclos.common2.StringUtils;
+
 /**
  * For displaying pivot subforms as part of the result list of a entity, we
  * need some additional information.
@@ -57,6 +59,12 @@ public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 	
 	public Class<?> getValueType() {
 		return valueType;
+	}
+	
+	public String getPivotTableAlias(String keyValue) {
+		// final String result = "\"" + getSubform() + "_" + keyValue + "\"";
+		final String result = StringUtils.makeSQLIdentifierFrom(keyValue);
+		return result;
 	}
 	
 	@Override
