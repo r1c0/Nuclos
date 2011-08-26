@@ -1459,7 +1459,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 
 
 		@Override
-		public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
+		public void changeSelection(final int rowIndex, final int columnIndex, boolean toggle, boolean extend) {
 			super.changeSelection(rowIndex, columnIndex, toggle, extend);
 			AWTEvent event = EventQueue.getCurrentEvent();
 			if(event instanceof KeyEvent) {
@@ -1467,18 +1467,16 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 					if(getRowCount() == 1) {
 						for(FocusActionListener fal : subform.getFocusActionLister()) {
 							fal.focusAction(new EventObject(this));
-							if (editCellAt(++rowIndex, columnIndex)) {
-								SwingUtilities.invokeLater(new Runnable() {
-
-									@Override
-									public void run() {
+							SwingUtilities.invokeLater(new Runnable() {
+								@Override
+								public void run() {
+									if (editCellAt(rowIndex + 1, columnIndex)) {
 										Component editor = getEditorComponent();
 										if(editor != null)
 											editor.requestFocusInWindow();
 									}
-								});
-
-							}
+								}
+							});
 						}
 					}
 					newRowOnNext = false;
@@ -1489,31 +1487,30 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 				}
 
 				if(isCellEditable(rowIndex, columnIndex)) {
-					if (editCellAt(rowIndex, columnIndex)) {
-						SwingUtilities.invokeLater(new Runnable() {
-
-							@Override
-							public void run() {
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							if (editCellAt(rowIndex, columnIndex)) {
 								Component editor = getEditorComponent();
 								if(editor != null)
 									editor.requestFocusInWindow();
 							}
-						});
-					}
+						}
+					});
 				}
 				else {
 					final int rowCol[] = getNextEditableCell(this, rowIndex, columnIndex);
-
-					if (editCellAt(rowCol[0], rowCol[1])) {
+					if (isCellEditable(rowCol[0], rowCol[1])) {
 						SwingUtilities.invokeLater(new Runnable() {
-
 							@Override
 							public void run() {
-								Component editor = getEditorComponent();
-								if(editor != null) {
-									editor.requestFocusInWindow();
-									if(rowCol[0] < getRowCount())
-										changeSelection(rowCol[0], rowCol[1], false, false);
+								if (editCellAt(rowCol[0], rowCol[1])) {
+									Component editor = getEditorComponent();
+									if(editor != null) {
+										editor.requestFocusInWindow();
+										if(rowCol[0] < getRowCount())
+											changeSelection(rowCol[0], rowCol[1], false, false);
+									}
 								}
 							}
 						});
@@ -1523,19 +1520,18 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 							for(FocusActionListener fal : subform.getFocusActionLister()) {
 								fal.focusAction(new EventObject(this));
 								final int col[] = getNextEditableCell(this, rowIndex, 0);
-								if (editCellAt(++rowIndex, col[1])) {
-									final int rowI = rowIndex;
-									SwingUtilities.invokeLater(new Runnable() {
-										@Override
-										public void run() {
+								SwingUtilities.invokeLater(new Runnable() {
+									@Override
+									public void run() {
+										if (editCellAt(rowIndex + 1, col[1])) {
+											final int rowI = rowIndex;
 											Component editor = getEditorComponent();
 											if(editor != null)
 												editor.requestFocusInWindow();
 											changeSelection(rowI, col[1], false, false);
 										}
-									});
-
-								}
+									}
+								});
 							}
 							newRowOnNext = false;
 						}

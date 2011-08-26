@@ -92,14 +92,14 @@ import org.nuclos.common2.exception.PreferencesException;
  * no subtype is defined.
  * </p><p>
  * The ResultController is used for displaying a search result on
- * ResultPanel. The result shown are (list) representations of 
+ * ResultPanel. The result shown are (list) representations of
  * (DB) persisted entities.
  * </p><p>
  * Since Nuclos 3.1.01 ResultController is a Controller hierarchy of its own.
  * The main intention of this is to remove as many methods away from
- * CollectController as possible. In principle, the ResultController hierarchy 
- * should mimic the hierarchy of CollectControllers. In practice, subtypes of 
- * ResultController are only implemented in case they change the behaviour 
+ * CollectController as possible. In principle, the ResultController hierarchy
+ * should mimic the hierarchy of CollectControllers. In practice, subtypes of
+ * ResultController are only implemented in case they change the behaviour
  * defined here.
  * </p>
  * @see ResultPanel
@@ -107,27 +107,27 @@ import org.nuclos.common2.exception.PreferencesException;
  * @author Thomas Pasch
  */
 public class ResultController<Clct extends Collectable> {
-	
+
 	private static final Logger LOG = Logger.getLogger(ResultController.class);
 
 	/**
 	 * The entity for which the results are displayed.
-	 * 
+	 *
 	 * @since Nuclos 3.1.01
 	 * @author Thomas Pasch
 	 */
 	private final CollectableEntity clcte;
-	
+
 	/**
 	 * The SearchResultStrategy for the result displayed.
-	 * 
+	 *
 	 * @since Nuclos 3.1.01
 	 * @author Thomas Pasch
 	 */
 	private final ISearchResultStrategy<Clct> srs;
-	
-	/** 
-	 * TODO: Try to avoid cyclic dependency: The ResultController shouldn't depend on the CollectController. 
+
+	/**
+	 * TODO: Try to avoid cyclic dependency: The ResultController shouldn't depend on the CollectController.
 	 * 		While this would be desirable, it is - in real - completely unrealistic at present. Even
 	 * 		more, a Result is always the result (pun intended!) of some other (controller) operation!
 	 * 		(Thomas Pasch)
@@ -160,7 +160,7 @@ public class ResultController<Clct extends Collectable> {
 
 	/**
 	 * action: Define as new Search result
-	 * 
+	 *
 	 * @deprecated Does nothing.
 	 */
 	private final Action actDefineAsNewSearchResult = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultController.3","Als neues Suchergebnis"),
@@ -176,7 +176,7 @@ public class ResultController<Clct extends Collectable> {
 
 	/**
 	 * Don't make this public!
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -186,22 +186,22 @@ public class ResultController<Clct extends Collectable> {
 		this(clcte, srs);
 		setCollectController(clctctl);
 	}
-	
+
 	/**
 	 * @deprecated You should really provide a CollectableEntity here.
 	 */
 	public ResultController(String entityName, ISearchResultStrategy<Clct> srs) {
 		this(NuclosCollectableEntityProvider.getInstance().getCollectableEntity(entityName), srs);
 	}
-	
+
 	public ResultController(CollectableEntity clcte, ISearchResultStrategy<Clct> srs) {
 		this.srs = srs;
 		srs.setResultController(this);
 		actDeleteSelectedCollectables = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultController.10","L\u00f6schen..."),
 				(clctctl instanceof GenericObjectCollectController)? // quick and dirty... I know
-				Icons.getInstance().getIconDelete16() : Icons.getInstance().getIconRealDelete16(), 
+				Icons.getInstance().getIconDelete16() : Icons.getInstance().getIconRealDelete16(),
 				CommonLocaleDelegate.getMessage("ResultController.5","Ausgew\u00e4hlte Datens\u00e4tze l\u00f6schen")) {
-			
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -211,34 +211,34 @@ public class ResultController<Clct extends Collectable> {
 		};
 		this.clcte = clcte;
 	}
-	
+
 	/**
 	 * TODO: Could this be protected?
 	 */
 	public final ISearchResultStrategy<Clct> getSearchResultStrategy() {
 		return srs;
 	}
-	
+
 	public final Action getEditSelectedCollectablesAction() {
 		return actEditSelectedCollectables;
 	}
-	
+
 	public final Action getDeleteSelectedCollectablesAction() {
 		return actDeleteSelectedCollectables;
 	}
-	
+
 	public final MouseListener getTableDblClickML() {
 		return mouselistenerTableDblClick;
 	}
-	
+
 	public final void setCollectController(CollectController<Clct> controller) {
 		this.clctctl = controller;
 	}
-	
+
 	protected final CollectController<Clct> getCollectController() {
 		return clctctl;
 	}
-	
+
 	/**
 	 * TODO: Make protected again.
 	 */
@@ -249,7 +249,7 @@ public class ResultController<Clct extends Collectable> {
 	private ResultPanel<Clct> getResultPanel() {
 		return this.clctctl.getResultPanel();
 	}
-	
+
 	/**
 	 * TODO: Make this package visible again.
 	 */
@@ -286,7 +286,7 @@ public class ResultController<Clct extends Collectable> {
 		// action: Refresh (search again)
 		final Action actRefresh = new CommonAbstractAction(pnlResult.btnRefresh) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -299,7 +299,7 @@ public class ResultController<Clct extends Collectable> {
 
 		// action: New
 		pnlResult.btnNew.setAction(this.clctctl.getNewAction());
-		
+
 		// action: Bookmark
 		pnlResult.btnBookmark.setAction(this.clctctl.getBookmarkAction());
 
@@ -313,7 +313,7 @@ public class ResultController<Clct extends Collectable> {
 		// action: View
 		this.actEditSelectedCollectables = new CommonAbstractAction(pnlResult.btnEdit) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -328,7 +328,7 @@ public class ResultController<Clct extends Collectable> {
 		// action: Select Columns
 		pnlResult.btnSelectColumns.setAction(new CommonAbstractAction(pnlResult.btnSelectColumns) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -346,7 +346,7 @@ public class ResultController<Clct extends Collectable> {
 			// action: Export
 			pnlResult.btnExport.setAction(new CommonAbstractAction(pnlResult.btnExport) {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -355,11 +355,11 @@ public class ResultController<Clct extends Collectable> {
 					pnlResult.cmdExport(clctctl);
 				}
 			});
-			
+
 			// action: Import
 			pnlResult.btnImport.setAction(new CommonAbstractAction(pnlResult.btnImport) {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -369,7 +369,7 @@ public class ResultController<Clct extends Collectable> {
 				}
 			});
 		}
-		
+
 		pnlResult.miPopupEdit.setAction(actEditSelectedCollectables);
 		pnlResult.miPopupClone.setAction(clctctl.getCloneAction());
 		pnlResult.miPopupDelete.setAction(this.actDeleteSelectedCollectables);
@@ -377,12 +377,12 @@ public class ResultController<Clct extends Collectable> {
 		pnlResult.miPopupBookmark.setAction(clctctl.getBookmarkAction());
 		pnlResult.miPopupDefineAsNewSearchResult.setAction(actDefineAsNewSearchResult);
 		pnlResult.miPopupCopyCells.setAction(clctctl.getCopyCellsAction());
-		pnlResult.miPopupCopyRows.setAction(clctctl.getCopyRowsAction());		
-		
+		pnlResult.miPopupCopyRows.setAction(clctctl.getCopyRowsAction());
+
 	}
 
 	/**
-	 * Initializes the <code>fields</code> field as follows: 
+	 * Initializes the <code>fields</code> field as follows:
 	 * <ol>
 	 *   <li>(re-)set the list of avaiable fields to {@link #getFieldsAvailableForResult}</li>
 	 *   <li>(re-)set the list of selected fields to {@link #getSelectedFieldsFromPreferences}</li>
@@ -390,7 +390,7 @@ public class ResultController<Clct extends Collectable> {
 	 * </ul>
 	 * @param clcte
 	 * @param preferences
-	 * 
+	 *
 	 * TODO: Make protected again.
 	 */
 	public void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl, Preferences preferences) {
@@ -398,14 +398,14 @@ public class ResultController<Clct extends Collectable> {
 		assert this.clcte.equals(clcte);
 		final Comparator<CollectableEntityField> comp = getCollectableEntityFieldComparator();
 		fields.set(
-				getFieldsAvailableForResult(clcte, comp), 
-				new ArrayList<CollectableEntityField>(), 
+				getFieldsAvailableForResult(clcte, comp),
+				new ArrayList<CollectableEntityField>(),
 				comp);
 
 		// select the previously selected fields according to user preferences:
 		fields.moveToSelectedFields(getSelectedFieldsFromPreferences(clcte, clctctl));
 	}
-	
+
 	/**
 	 * initializes the <code>fields</code> field, while setting selected columns.
 	 * @param clcte
@@ -414,8 +414,8 @@ public class ResultController<Clct extends Collectable> {
 	 * @param lstFixedNew
 	 * @param lstColumnWiths
 	 */
-	public final void initializeFields(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl, final List<CollectableEntityField> lstSelectedNew) 
-	{		
+	public final void initializeFields(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl, final List<CollectableEntityField> lstSelectedNew)
+	{
 		assert clctctl == this.clctctl && clctctl.getFields() == fields && clctctl.getResultController() == this;
 		fields.setSelectedFields(lstSelectedNew);
 	}
@@ -438,7 +438,7 @@ public class ResultController<Clct extends Collectable> {
 		assert !result.isEmpty();
 		return result;
 	}
-	
+
 	private ListSelectionListener newListSelectionListener(final JTable tblResult) {
 		return new ListSelectionListener() {
 			@Override
@@ -545,7 +545,7 @@ public class ResultController<Clct extends Collectable> {
 	 * @param tblResult
 	 * @param bResultTruncated
 	 * @param iTotalNumberOfRecords
-	 * 
+	 *
 	 * TODO: Make package visible again.
 	 */
 	public void setStatusBar(JTable tblResult, boolean bResultTruncated, int iTotalNumberOfRecords) {
@@ -712,7 +712,7 @@ public class ResultController<Clct extends Collectable> {
 				if (pinfo != null) {
 					// The join table alias must be unique in the SQL
 					final String joinAlias = "\"" + pinfo.getSubform() + "_" + sf.getMeta().getField() + "\"";
-					
+
 					sort = new CollectableSorting(joinAlias, pinfo.getSubform(), baseEntity.equals(pinfo.getSubform()),
 							pinfo.getValueField(), sortKey.getSortOrder() == SortOrder.ASCENDING);
 				}
@@ -722,10 +722,12 @@ public class ResultController<Clct extends Collectable> {
 							sortField.getName(), sortKey.getSortOrder() == SortOrder.ASCENDING);
 				}
 			}
-			else {
-				// ???
+			else if (sortField.getEntityName().equals(baseEntity)) {
 				sort = new CollectableSorting(SystemFields.BASE_ALIAS, baseEntity, baseEntity.equals(sortField.getEntityName()),
 						sortField.getName(), sortKey.getSortOrder() == SortOrder.ASCENDING);
+			}
+			else {
+				continue;
 			}
 			result.add(sort);
 		}
@@ -793,7 +795,7 @@ public class ResultController<Clct extends Collectable> {
 	 * as the given <code>Collectable</code>s, with those <code>Collectable</code>s.
 	 * @param collclct
 	 * @precondition collclct != null
-	 * 
+	 *
 	 * TODO Make this protected again.
 	 */
 	public final void replaceCollectablesInTableModel(Collection<Clct> collclct) {
@@ -904,7 +906,7 @@ public class ResultController<Clct extends Collectable> {
 		final JTable resultTable = panel.getResultTable();
 		resultTable.setModel(tblmodel);
 		((ToolTipsTableHeader) resultTable.getTableHeader()).setExternalModel(tblmodel);
-		
+
 		panel.setTableHeaderColumnPopupListener(new TableHeaderColumnPopupListener(resultTable.getTableHeader()) {
 
 			@Override
@@ -942,7 +944,7 @@ public class ResultController<Clct extends Collectable> {
 				cmdRemoveColumn(fields, clctef, ctl);
 			}
 			panel.restoreColumnWidths(fields.getSelectedFields(), mpWidths);
-		} 
+		}
 		catch (CommonBusinessException ex) {
 			// TODO Auto-generated catch block
 			ex.printStackTrace();
@@ -958,7 +960,7 @@ public class ResultController<Clct extends Collectable> {
 		final List<Integer> lstFieldWidths = CollectableTableHelper.getColumnWidths(panel.getResultTable());
 		PreferencesUtils.putIntegerList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDWIDTHS, lstFieldWidths);
 	}
-	
+
 	/**
 	 * writes the selected columns (fields) and their widths to the user preferences.
 	 * TODO make private again or refactor!
@@ -987,7 +989,7 @@ public class ResultController<Clct extends Collectable> {
 
 	/**
 	 * Command: Define selected <code>Collectable</code>s as a new search result.
-	 * 
+	 *
 	 * @deprecated Does nothing.
 	 */
 	private void cmdDefineSelectedCollectablesAsNewSearchResult() {
@@ -1019,5 +1021,5 @@ public class ResultController<Clct extends Collectable> {
 //			}
 //		});
 	}
-	
+
 }	// class ResultController

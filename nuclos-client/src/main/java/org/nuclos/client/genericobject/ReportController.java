@@ -360,7 +360,7 @@ public class ReportController extends Controller {
 	}
 
 	private String getPath(String path, final CollectableGenericObject oParent) {
-		final String entity = Modules.getInstance().getEntityNameByModuleId(oParent.getGenericObjectCVO().getId());
+		final String entity = Modules.getInstance().getEntityNameByModuleId(oParent.getGenericObjectCVO().getModuleId());
 		return StringUtils.replaceParameters(path, new FormattingTransformer() {
 			@Override
 			protected Object getValue(String field) {
