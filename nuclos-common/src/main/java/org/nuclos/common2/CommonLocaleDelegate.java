@@ -187,7 +187,7 @@ public class CommonLocaleDelegate {
 	 * @param otext   original resource text (optional, just for debugging purposes)
 	 */
 	public static String getText(String rid) {
-		return keyLookup.getResource(rid);
+		return getKeyLookup().getResource(rid);
 	}
 	/**
 	 * Gets the plain-vanilla text with the given resource id.

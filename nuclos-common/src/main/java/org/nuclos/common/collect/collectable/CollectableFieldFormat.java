@@ -465,8 +465,8 @@ public abstract class CollectableFieldFormat {
 		private final String labelNo;
 
 		public CollectableBooleanFormat() {
-			this.labelYes = LangUtils.defaultIfNull(CommonLocaleDelegate.getText("CollectableBooleanFormat.yes"), "yes") ;
-			this.labelNo = LangUtils.defaultIfNull(CommonLocaleDelegate.getText("CollectableBooleanFormat.no"), "no") ;
+			this.labelYes = CommonLocaleDelegate.getTextFallback("CollectableBooleanFormat.yes", "yes") ;
+			this.labelNo = CommonLocaleDelegate.getTextFallback("CollectableBooleanFormat.no", "no") ;
 		}
 
 		@Override
@@ -487,10 +487,10 @@ public abstract class CollectableFieldFormat {
 			if (sText == null) {
 				return null;
 			}
-			else if (sText.equalsIgnoreCase(labelYes) || sText.equals("true")) {
+			else if (sText.equalsIgnoreCase(labelYes) || sText.equalsIgnoreCase("Ja") || sText.equals("true")) {
 				return Boolean.TRUE;
 			}
-			else if (sText.equalsIgnoreCase(labelNo) || sText.equals("false")) {
+			else if (sText.equalsIgnoreCase(labelNo) || sText.equalsIgnoreCase("Nein") || sText.equals("false")) {
 				return Boolean.FALSE;
 			}
 			else {
