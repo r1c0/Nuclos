@@ -42,7 +42,7 @@ public class PivotController extends SelectFixedColumnsController {
 		@Override
 		public void itemStateChanged(ItemEvent e) {
 			final ItemSelectable src = e.getItemSelectable();
-			final int index = getPivotPanel().indexFromKeyComponent(src);
+			final int index = getPivotPanel().indexFromValueComponent(src);
 			final String subform = getPivotPanel().getSubformName(index);
 			final PivotInfo newState = getPivotPanel().getState(subform);
 			final EntityFieldMetaDataVO item = (EntityFieldMetaDataVO) e.getItem();
@@ -86,7 +86,7 @@ public class PivotController extends SelectFixedColumnsController {
 			
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				LOG.info("contentsChanged: " + panel.indexFromKeyComponent(e.getItemSelectable()) + ": " + panel.getState());
+				LOG.info("contentsChanged: " + panel.indexFromValueComponent(e.getItemSelectable()) + ": " + panel.getState());
 			}
 			
 		});

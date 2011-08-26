@@ -72,14 +72,14 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				LOG.info("Enabler: item event " + e);
 				final JCheckBox src = (JCheckBox) e.getSource();
 				final boolean selected = src.isSelected();
-				final JComboBox key = keyCombos.get(index);
+				final JLabel key = keyLabels.get(index);
 				final JComboBox value = valueCombos.get(index);
 				key.setEnabled(selected);
 				value.setEnabled(selected);
-				final EntityFieldMetaDataVO keyItem = (EntityFieldMetaDataVO) key.getSelectedItem();
+				final EntityFieldMetaDataVO keyItem = keyMds.get(index);
 				final EntityFieldMetaDataVO valueItem = (EntityFieldMetaDataVO) value.getSelectedItem();
 				setState(selected, index, keyItem, valueItem);
-				fireItemEvent(key, keyItem);			
+				fireItemEvent(value, keyItem);			
 			}
 			
 		}
@@ -97,12 +97,12 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				LOG.info("Changer: item event " + e);
 				final JComboBox src = (JComboBox) e.getSource();
 				if (e.getStateChange() == ItemEvent.SELECTED) {
-					final JComboBox key = keyCombos.get(index);
+					final JLabel key = keyLabels.get(index);
 					final JComboBox value = valueCombos.get(index);
-					final EntityFieldMetaDataVO keyItem = (EntityFieldMetaDataVO) key.getSelectedItem();
+					final EntityFieldMetaDataVO keyItem = keyMds.get(index);
 					final EntityFieldMetaDataVO valueItem = (EntityFieldMetaDataVO) value.getSelectedItem();
 					setState(true, index, keyItem, valueItem);
-					fireItemEvent(key, keyItem);			
+					fireItemEvent(value, keyItem);			
 				}
 			}
 			
@@ -112,7 +112,9 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 		
 		private final List<JCheckBox> subformCbs = new ArrayList<JCheckBox>();
 		
-		private final List<JComboBox> keyCombos = new ArrayList<JComboBox>();
+		private final List<JLabel> keyLabels = new ArrayList<JLabel>();
+		
+		private final List<EntityFieldMetaDataVO> keyMds = new ArrayList<EntityFieldMetaDataVO>();
 		
 		private final List<JComboBox> valueCombos = new ArrayList<JComboBox>();
 		
@@ -122,7 +124,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 		
 		private final List<ItemListener> listener = new LinkedList<ItemListener>();
 		
-		private Header(Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields, Map<String,PivotInfo> state) {
+		private Header(String baseEntity, Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields, Map<String,PivotInfo> state) {
 			super(new GridBagLayout());
 			// copy state: see below
 			this.state = new LinkedHashMap<String, PivotInfo>();
@@ -142,14 +144,14 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 						final JCheckBox s = subformCbs.get(i);
 						s.setEnabled(selected);
 						final boolean senabled = selected && s.isSelected();
-						final JComboBox key = keyCombos.get(i);
+						final JLabel key = keyLabels.get(i);
 						final JComboBox value = valueCombos.get(i);
 						key.setEnabled(senabled);
 						value.setEnabled(senabled);
-						final EntityFieldMetaDataVO keyItem = (EntityFieldMetaDataVO) key.getSelectedItem();
+						final EntityFieldMetaDataVO keyItem = keyMds.get(i);
 						final EntityFieldMetaDataVO valueItem = (EntityFieldMetaDataVO) value.getSelectedItem();
 						setState(senabled, i, keyItem, valueItem);
-						fireItemEvent(key, keyItem);
+						fireItemEvent(value, keyItem);
 					}
 				}
 			});
@@ -213,17 +215,15 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				cb.setEnabled(checkbox.isSelected());
 				
 				final Changer changer = new Changer(index);
-				JComboBox combo = mkComboForStringFields(fields);
-				combo.setEnabled(enabled);
-				if (pinfo != null) {
-					combo.setSelectedItem(fields.get(pinfo.getKeyField()));
-				}
-				combo.addItemListener(changer);
-				keyCombos.add(combo);
+				final EntityFieldMetaDataVO keyField = mdProv.getPivotKeyField(baseEntity, subform);
+				final JLabel l = new JLabel(CommonLocaleDelegate.getLabelFromMetaFieldDataVO(keyField));
+				l.setEnabled(enabled);
+				keyLabels.add(l);
+				keyMds.add(keyField);
 				c.gridx = 1;
-				add(combo, c);
+				add(l, c);
 				
-				combo = mkCombo(fields);
+				final JComboBox combo = mkCombo(fields);
 				combo.setEnabled(enabled);
 				if (pinfo != null) {
 					combo.setSelectedItem(fields.get(pinfo.getValueField()));
@@ -238,6 +238,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			}
 		}
 		
+		/*
 		private static JComboBox mkComboForStringFields(Map<String, EntityFieldMetaDataVO> fields) {
 			final List<EntityFieldMetaDataVO> strFields = new ArrayList<EntityFieldMetaDataVO>();
 			for (EntityFieldMetaDataVO f: fields.values()) {
@@ -252,6 +253,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			result.setSelectedIndex(0);
 			return result;
 		}
+		 */
 		
 		private static JComboBox mkCombo(Map<String, EntityFieldMetaDataVO> fields) {
 			final ComboBoxModel model = new SimpleCollectionComboBoxModel<EntityFieldMetaDataVO>(new ArrayList<EntityFieldMetaDataVO>(fields.values()));
@@ -293,8 +295,8 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 		
 	}
 	
-	public PivotPanel(Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields, Map<String,PivotInfo> state) {
-		super(new Header(subFormFields, state));		
+	public PivotPanel(String baseEntity, Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields, Map<String,PivotInfo> state) {
+		super(subFormFields.isEmpty() ? null : new Header(baseEntity, subFormFields, state));		
 	}
 	
 	public void addPivotItemListener(ItemListener l) {
@@ -319,8 +321,8 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 		return getHeader().subformNames.get(index);
 	}
 	
-	public int indexFromKeyComponent(ItemSelectable key) {
-		return getHeader().keyCombos.indexOf(key);
+	public int indexFromValueComponent(ItemSelectable key) {
+		return getHeader().valueCombos.indexOf(key);
 	}
 	
 	public Map<String,PivotInfo> getState() {
