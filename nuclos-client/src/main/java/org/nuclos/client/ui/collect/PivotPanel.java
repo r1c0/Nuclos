@@ -19,19 +19,16 @@ package org.nuclos.client.ui.collect;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.ItemSelectable;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.JCheckBox;
@@ -47,6 +44,7 @@ import org.nuclos.common.CloneUtils;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.CommonLocaleDelegate;
 
 
@@ -111,7 +109,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			}
 
 		}
-
+		
 		private final List<JCheckBox> subformCbs = new ArrayList<JCheckBox>();
 
 		private final List<JLabel> keyLabels = new ArrayList<JLabel>();
@@ -127,7 +125,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 		private final List<ItemListener> listener = new LinkedList<ItemListener>();
 
 		private Header(String baseEntity, Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields, Map<String,PivotInfo> state) {
-			super(new GridBagLayout());
+			super(new GridBagLayout());			
 			// copy state: see below
 			this.state = new LinkedHashMap<String, PivotInfo>();
 
@@ -198,7 +196,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				c.gridx = 1;
 				add(l, c);
 
-				final JComboBox combo = mkCombo(collator, fields);
+				final JComboBox combo = mkCombo(baseEntity, collator, fields);
 				combo.setEnabled(enabled);
 				if (pinfo != null) {
 					combo.setSelectedItem(fields.get(pinfo.getValueField()));
@@ -213,7 +211,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			}
 		}
 
-		private static JComboBox mkCombo(final Collator col, Map<String, EntityFieldMetaDataVO> fields) {
+		private static JComboBox mkCombo(final String baseEntity, final Collator col, Map<String, EntityFieldMetaDataVO> fields) {
 			/*
 			final TreeSet<EntityFieldMetaDataVO> sorted = new TreeSet<EntityFieldMetaDataVO>(
 					new Comparator<EntityFieldMetaDataVO>() {
@@ -226,7 +224,22 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			sorted.addAll(fields.values());
 			final ComboBoxModel model = new SimpleCollectionComboBoxModel<EntityFieldMetaDataVO>(sorted);
 			 */
-			final ComboBoxModel model = new SimpleCollectionComboBoxModel<EntityFieldMetaDataVO>(new ArrayList<EntityFieldMetaDataVO>(fields.values()));
+			final List<EntityFieldMetaDataVO> fieldList = new ArrayList<EntityFieldMetaDataVO>();
+			for (EntityFieldMetaDataVO ef: fields.values()) {
+				// don't allow system fields (bug in result table display)
+				if (SystemFields.FIELDS2TYPES_MAP.containsKey(ef.getField())) continue;
+				// don't allow refs to base entity
+				if (baseEntity.equals(ef.getForeignEntity())) continue;
+				fieldList.add(ef);
+			}
+			Collections.sort(fieldList, new Comparator<EntityFieldMetaDataVO>() {
+				@Override
+				public int compare(EntityFieldMetaDataVO o1, EntityFieldMetaDataVO o2) {
+					return col.compare(CommonLocaleDelegate.getLabelFromMetaFieldDataVO(o1),
+							CommonLocaleDelegate.getLabelFromMetaFieldDataVO(o2));
+				}
+			});
+			final ComboBoxModel model = new SimpleCollectionComboBoxModel<EntityFieldMetaDataVO>(fieldList);
 			final JComboBox result = new JComboBox(model);
 			result.setRenderer(EntityFieldMetaDataListCellRenderer.getInstance());
 			result.setVisible(true);
@@ -264,7 +277,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 		}
 
 	}
-
+	
 	public PivotPanel(String baseEntity, Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields, Map<String,PivotInfo> state) {
 		super(subFormFields.isEmpty() ? null : new Header(baseEntity, subFormFields, state));
 	}

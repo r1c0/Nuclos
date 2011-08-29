@@ -98,22 +98,17 @@ public class GenericObjectClientUtils {
 		if (beans != null && !beans.isEmpty()) {
 			result = new ArrayList<CollectableEntityField>();
 			for (Iterator<CollectableEntityField> it = beans.iterator(); it.hasNext();) {
-				// TODO: ???
+				final CollectableEntityField f;
 				final CollectableEntityField bean = it.next();
-				if (clcteprovider.getCollectableEntity(bean.getEntityName()) != null && clcteprovider.getCollectableEntity(bean.getEntityName()).getEntityField(bean.getName()) != null) {
-					final CollectableEntityField f;
-					if (bean instanceof CollectableEntityFieldWithEntity) {
-						f = getCollectableEntityFieldForResult(clcteprovider.getCollectableEntity(bean.getEntityName()), bean.getName(), clcte);
-					}
-					else {
-						f = bean;
-						setSecurityAgent(clcte, f, !(clcte.getName().equals(f.getEntityName())));
-					}
-					result.add(f);
+				
+				if (bean instanceof CollectableEntityFieldWithEntity) {
+					f = getCollectableEntityFieldForResult(clcteprovider.getCollectableEntity(bean.getEntityName()), bean.getName(), clcte);
 				}
 				else {
-					continue;
+					f = bean;
+					setSecurityAgent(clcte, f, !(clcte.getName().equals(f.getEntityName())));
 				}
+				result.add(f);
 			}
 		}
 		// old implementation (for backward compatibility)

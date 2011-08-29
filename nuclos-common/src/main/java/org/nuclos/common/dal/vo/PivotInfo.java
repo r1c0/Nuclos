@@ -63,7 +63,7 @@ public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 	
 	public String getPivotTableAlias(String keyValue) {
 		// final String result = "\"" + getSubform() + "_" + keyValue + "\"";
-		final String result = StringUtils.makeSQLIdentifierFrom(keyValue);
+		final String result = StringUtils.makeSQLIdentifierFrom(getSubform() + "_" + keyValue);
 		return result;
 	}
 	
