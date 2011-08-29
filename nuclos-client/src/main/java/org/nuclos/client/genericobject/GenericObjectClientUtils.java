@@ -33,6 +33,7 @@ import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.collect.CollectController;
+import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -45,11 +46,11 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
-import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
+import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
@@ -57,6 +58,7 @@ import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
+import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;
@@ -83,23 +85,34 @@ public class GenericObjectClientUtils {
 
 	public static List<? extends CollectableEntityField> readCollectableEntityFieldsFromPreferences(Preferences prefs, CollectableEntity clcte) {
 		// new implementation
-		List<CollectableEntityField> result = null;
+		final CollectableEntityProvider clcteprovider = DefaultCollectableEntityProvider.getInstance();
+		List<CollectableEntityField> beans = null;
 		try {
-			result = (List<CollectableEntityField>)
+			beans = (List<CollectableEntityField>)
 					PreferencesUtils.getSerializableListXML(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS);
 		} catch (PreferencesException e) {
 			// do nothing
 			LOG.error("XMLEncoder/XMLDecoder Fehler", e);
 		}
-		if (result != null && !result.isEmpty()) {
-			for (Iterator<CollectableEntityField> it = result.iterator(); it.hasNext();) {
-				final CollectableEntityField f = it.next();
+		List<CollectableEntityField> result = null;
+		if (beans != null && !beans.isEmpty()) {
+			result = new ArrayList<CollectableEntityField>();
+			for (Iterator<CollectableEntityField> it = beans.iterator(); it.hasNext();) {
 				// TODO: ???
-				if (f != null) {
-					setSecurityAgent(clcte, f, !(clcte.getName().equals(f.getEntityName())));
+				final CollectableEntityField bean = it.next();
+				if (clcteprovider.getCollectableEntity(bean.getEntityName()) != null && clcteprovider.getCollectableEntity(bean.getEntityName()).getEntityField(bean.getName()) != null) {
+					final CollectableEntityField f;
+					if (bean instanceof CollectableEntityFieldWithEntity) {
+						f = getCollectableEntityFieldForResult(clcteprovider.getCollectableEntity(bean.getEntityName()), bean.getName(), clcte);
+					}
+					else {
+						f = bean;
+						setSecurityAgent(clcte, f, !(clcte.getName().equals(f.getEntityName())));
+					}
+					result.add(f);
 				}
 				else {
-					it.remove();
+					continue;
 				}
 			}
 		}
@@ -133,7 +146,6 @@ public class GenericObjectClientUtils {
 			}
 
 			result = new ArrayList<CollectableEntityField>();
-			final CollectableEntityProvider clcteprovider = DefaultCollectableEntityProvider.getInstance();
 			for (int i = 0; i < lstSelectedFieldNames.size(); i++) {
 				final String sFieldName = lstSelectedFieldNames.get(i);
 				final String sEntityName = lstSelectedEntityNames.get(i);
@@ -152,16 +164,20 @@ public class GenericObjectClientUtils {
 
 	public static void writeCollectableEntityFieldsToPreferences(Preferences prefs, List<CollectableEntityField> selectedFields) throws PreferencesException {
 		final int size = selectedFields.size();
+		final List<CollectableEntityField> beans = new ArrayList<CollectableEntityField>(size);
 		final List<String> fieldNames = new ArrayList<String>(size);
 		final List<String> entityNames = new ArrayList<String>(size);
-		for (CollectableEntityField f: selectedFields) {
+		for (CollectableEntityField f : selectedFields) {
 			fieldNames.add(f.getName());
 			entityNames.add(f.getEntityName());
+			if (f instanceof CollectableGenericObjectEntityField) {
+				beans.add(new CollectableGenericObjectEntityField(null, ((CollectableGenericObjectEntityField) f).getFieldMeta(), f.getEntityName()));
+			}
 		}
 
 		PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS, fieldNames);
 		PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES, entityNames);
-		PreferencesUtils.putSerializableListXML(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS, selectedFields);
+		PreferencesUtils.putSerializableListXML(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS, beans);
 	}
 
 	/**

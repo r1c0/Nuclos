@@ -77,13 +77,13 @@ public class SystemEntityMetaDataVO extends EntityMetaDataVO {
 				entityFields.put(field.getFieldName(), new SystemEntityFieldMetaDataVO(getId(), field));
 			}
 			entityFields.put(NuclosEOField.CREATEDAT.getMetaData().getField(), new SystemEntityFieldMetaDataVO(
-				NuclosEOField.CREATEDAT.getMetaData().getId(), DalSupportForMD.wrapEntityFieldMetaDataVO(NuclosEOField.CREATEDAT.getMetaData())));
+				getId(), DalSupportForMD.wrapEntityFieldMetaDataVO(NuclosEOField.CREATEDAT.getMetaData())));
 			entityFields.put(NuclosEOField.CREATEDBY.getMetaData().getField(), new SystemEntityFieldMetaDataVO(
-				NuclosEOField.CREATEDBY.getMetaData().getId(), DalSupportForMD.wrapEntityFieldMetaDataVO(NuclosEOField.CREATEDBY.getMetaData())));
+				getId(), DalSupportForMD.wrapEntityFieldMetaDataVO(NuclosEOField.CREATEDBY.getMetaData())));
 			entityFields.put(NuclosEOField.CHANGEDAT.getMetaData().getField(), new SystemEntityFieldMetaDataVO(
-				NuclosEOField.CHANGEDAT.getMetaData().getId(), DalSupportForMD.wrapEntityFieldMetaDataVO(NuclosEOField.CHANGEDAT.getMetaData())));
+				getId(), DalSupportForMD.wrapEntityFieldMetaDataVO(NuclosEOField.CHANGEDAT.getMetaData())));
 			entityFields.put(NuclosEOField.CHANGEDBY.getMetaData().getField(), new SystemEntityFieldMetaDataVO(
-				NuclosEOField.CHANGEDBY.getMetaData().getId(), DalSupportForMD.wrapEntityFieldMetaDataVO(NuclosEOField.CHANGEDBY.getMetaData())));
+				getId(), DalSupportForMD.wrapEntityFieldMetaDataVO(NuclosEOField.CHANGEDBY.getMetaData())));
 		}
 		return entityFields;
 	}

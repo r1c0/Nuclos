@@ -47,11 +47,11 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 public class CollectableGenericObjectEntityField extends AbstractCollectableEntityField {
 
 	private final String entityName;
-	
+
 	private final AttributeCVO attrcvo;
-	
+
 	private final EntityFieldMetaDataVO  entityFieldMeta;
-	
+
 	public CollectableGenericObjectEntityField(AttributeCVO attrcvo, EntityFieldMetaDataVO entityFieldMeta, String entityName) {
 		this.attrcvo = attrcvo;
 		this.entityFieldMeta = entityFieldMeta;
@@ -65,7 +65,7 @@ public class CollectableGenericObjectEntityField extends AbstractCollectableEnti
 	public EntityFieldMetaDataVO getFieldMeta() {
 		return entityFieldMeta;
 	}
-	
+
 	@Override
 	public String getDescription() {
 		return CommonLocaleDelegate.getDescriptionFromAttributeCVO(attrcvo);
@@ -106,7 +106,7 @@ public class CollectableGenericObjectEntityField extends AbstractCollectableEnti
 		}
 		return attrcvo.getDataScale();
 	}
-	
+
 	@Override
 	public Integer getPrecision() {
 		return attrcvo.getDataPrecision();
@@ -114,19 +114,19 @@ public class CollectableGenericObjectEntityField extends AbstractCollectableEnti
 
 	@Override
 	public String getName() {
-		return attrcvo.getName();
+		return entityFieldMeta.getField();
 	}
 
 	@Override
 	public String getFormatInput() {
 		return attrcvo.getInputFormat();
 	}
-	
+
 	@Override
 	public String getFormatOutput() {
 		return attrcvo.getOutputFormat();
 	}
-	
+
 	@Override
 	public boolean isIdField() {
 		return this.attrcvo.isIdField();
@@ -143,7 +143,7 @@ public class CollectableGenericObjectEntityField extends AbstractCollectableEnti
 //		return !this.attrcvo.isInsertable();
 		if (this.isIdField())
 			return true;
-		else 
+		else
 			return !this.attrcvo.isInsertable();
 	}
 

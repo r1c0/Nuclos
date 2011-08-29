@@ -34,9 +34,9 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 
 public class PivotController extends SelectFixedColumnsController {
-	
+
 	private static final Logger LOG = Logger.getLogger(PivotController.class);
-	
+
 	private class ShowPivotListener implements ItemListener {
 
 		@Override
@@ -53,14 +53,14 @@ public class PivotController extends SelectFixedColumnsController {
 			else {
 				resultController.removePivotInfo(subform);
 			}
-			final Comparator<CollectableEntityField> comp = (Comparator<CollectableEntityField>) 
+			final Comparator<CollectableEntityField> comp = (Comparator<CollectableEntityField>)
 				resultController.getFields().getComparatorForAvaible();
-			final SortedSet<CollectableEntityField> available = 
+			final SortedSet<CollectableEntityField> available =
 				resultController.getFieldsAvailableForResult(resultController.getEntity(), comp);
 			// TODO: check if the unmodifiable List is necessary here
 			final List<CollectableEntityField> selected = new ArrayList<CollectableEntityField>(
 					resultController.getFields().getSelectedFields());
-			
+
 			// remove field that are not available any more from selected fields
 			for(Iterator<CollectableEntityField> it = selected.iterator(); it.hasNext();) {
 				final CollectableEntityField ef = it.next();
@@ -68,30 +68,32 @@ public class PivotController extends SelectFixedColumnsController {
 					it.remove();
 				}
 			}
-			
+
 			getModel().set(available, selected, comp);
 			// TODO: ???
 			setModel(getModel());
 		}
-		
+
 	}
-	
+
 	private final GenericObjectResultController<? extends CollectableGenericObjectWithDependants> resultController;
 
 	public PivotController(Component parent, final PivotPanel panel, GenericObjectResultController<? extends CollectableGenericObjectWithDependants> resultController) {
 		super(parent, panel);
 		this.resultController = resultController;
-		panel.addPivotItemListener(new ShowPivotListener());
-		panel.addPivotItemListener(new ItemListener() {
-			
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				LOG.info("contentsChanged: " + panel.indexFromValueComponent(e.getItemSelectable()) + ": " + panel.getState());
-			}
-			
-		});
+		if (panel.getHeader() != null) {
+			panel.addPivotItemListener(new ShowPivotListener());
+			panel.addPivotItemListener(new ItemListener() {
+
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					LOG.info("contentsChanged: " + panel.indexFromValueComponent(e.getItemSelectable()) + ": " + panel.getState());
+				}
+
+			});
+		}
 	}
-	
+
 	private PivotPanel getPivotPanel() {
 		return (PivotPanel) getPanel();
 	}
