@@ -655,9 +655,11 @@ public class MasterDataFacadeHelper {
 			}
 		}
 
-		final Collection<MasterDataVO> systemObjects = XMLEntities.getSystemObjects(mdmetavo.getEntityName(), cond);
-		if (!systemObjects.isEmpty()) {
-			throw new CommonValidationException("nuclos.validation.systementity.unique");
+		if (cond.getOperandCount() > 0) {
+			final Collection<MasterDataVO> systemObjects = XMLEntities.getSystemObjects(mdmetavo.getEntityName(), cond);
+			if (!systemObjects.isEmpty()) {
+				throw new CommonValidationException("nuclos.validation.systementity.unique");
+			}
 		}
 	}
 
