@@ -60731,22 +60731,22 @@
   {
     "resourceID": "pivot.panel.enable.pivot",
     "locale": "de",
-    "text": "Stelle Ergebnisfelder aus (Sub-)Pivottabellen dar"
+    "text": "Stelle Ergebnisfelder aus Unterformularen als Pivotfelder dar"
   },
   {
     "resourceID": "pivot.panel.pivot.entity",
     "locale": "i-default",
-    "text": "Pivot entity"
+    "text": "subform"
   },
   {
     "resourceID": "pivot.panel.pivot.entity",
     "locale": "en",
-    "text": "Pivot entity"
+    "text": "subform"
   },
   {
     "resourceID": "pivot.panel.pivot.entity",
     "locale": "de",
-    "text": "Pivottabelle"
+    "text": "Unterformular"
   },
   {
     "resourceID": "pivot.panel.key.field",

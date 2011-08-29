@@ -40,6 +40,7 @@ import org.nuclos.common.dal.util.DalTransformations;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -144,6 +145,14 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
     	if (result == null) {
     		// load data lazy
     		result = MetaDataDelegate.getInstance().getAllPivotEntityFields(info);
+    		// localize name for client
+			final EntityFieldMetaDataVO keyField = getEntityField(info.getSubform(), info.getKeyField());
+    		for (EntityFieldMetaDataVO ef: result.values()) {
+    			ef.setFallbacklabel("<html>" +
+						"<font color=\"red\">" + CommonLocaleDelegate.getLabelFromMetaFieldDataVO(keyField) + ":" + "</font>" +
+						"<font color=\"black\">" + ef.getField() + "</font>" +
+						"</html>");
+    		}
     		dataCache.getMapPivotMetaData().put(info, result);
     	}
     	return result;

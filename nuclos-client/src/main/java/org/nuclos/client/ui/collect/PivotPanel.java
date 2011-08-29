@@ -23,11 +23,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.JCheckBox;
@@ -193,6 +196,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			// c.weightx = 0.0;
 			
 			final MetaDataClientProvider mdProv = MetaDataClientProvider.getInstance();
+			final Collator collator = Collator.getInstance(CommonLocaleDelegate.getLocale());
 			for (String subform: subFormFields.keySet()) {
 				final Map<String, EntityFieldMetaDataVO> fields = subFormFields.get(subform);
 				
@@ -223,7 +227,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				c.gridx = 1;
 				add(l, c);
 				
-				final JComboBox combo = mkCombo(fields);
+				final JComboBox combo = mkCombo(collator, fields);
 				combo.setEnabled(enabled);
 				if (pinfo != null) {
 					combo.setSelectedItem(fields.get(pinfo.getValueField()));
@@ -238,25 +242,17 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			}
 		}
 		
-		/*
-		private static JComboBox mkComboForStringFields(Map<String, EntityFieldMetaDataVO> fields) {
-			final List<EntityFieldMetaDataVO> strFields = new ArrayList<EntityFieldMetaDataVO>();
-			for (EntityFieldMetaDataVO f: fields.values()) {
-				if ("java.lang.String".equals(f.getDataType())) {
-					strFields.add(f);
-				}
-			}
-			final ComboBoxModel model = new SimpleCollectionComboBoxModel<EntityFieldMetaDataVO>(strFields);
-			final JComboBox result = new JComboBox(model);
-			result.setRenderer(EntityFieldMetaDataListCellRenderer.getInstance());
-			result.setVisible(true);
-			result.setSelectedIndex(0);
-			return result;
-		}
-		 */
-		
-		private static JComboBox mkCombo(Map<String, EntityFieldMetaDataVO> fields) {
-			final ComboBoxModel model = new SimpleCollectionComboBoxModel<EntityFieldMetaDataVO>(new ArrayList<EntityFieldMetaDataVO>(fields.values()));
+		private static JComboBox mkCombo(final Collator col, Map<String, EntityFieldMetaDataVO> fields) {
+			final TreeSet<EntityFieldMetaDataVO> sorted = new TreeSet<EntityFieldMetaDataVO>(
+					new Comparator<EntityFieldMetaDataVO>() {
+						@Override
+						public int compare(EntityFieldMetaDataVO o1, EntityFieldMetaDataVO o2) {
+							return col.compare(CommonLocaleDelegate.getLabelFromMetaFieldDataVO(o1),
+									CommonLocaleDelegate.getLabelFromMetaFieldDataVO(o2));
+						}
+					});
+			sorted.addAll(fields.values());
+			final ComboBoxModel model = new SimpleCollectionComboBoxModel<EntityFieldMetaDataVO>(sorted);
 			final JComboBox result = new JComboBox(model);
 			result.setRenderer(EntityFieldMetaDataListCellRenderer.getInstance());
 			result.setVisible(true);
