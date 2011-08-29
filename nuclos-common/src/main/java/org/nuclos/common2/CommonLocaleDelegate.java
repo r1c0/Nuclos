@@ -367,8 +367,8 @@ public class CommonLocaleDelegate {
 			if (values.containsKey(NuclosEOField.SYSTEMIDENTIFIER.getName())) {
 				return (String)values.get(NuclosEOField.SYSTEMIDENTIFIER.getName());
 			}
-			else if (values.containsKey("name")) {
-				return (String)values.get("name");
+			else if (values.containsKey("name") && values.get("name") != null) {
+				return values.get("name").toString();
 			}
 			else {
 				return "<unknown>";
@@ -427,8 +427,8 @@ public class CommonLocaleDelegate {
 			else if (values.containsKey(NuclosEOField.SYSTEMIDENTIFIER.getName())) {
 				return (String)values.get(NuclosEOField.SYSTEMIDENTIFIER.getName());
 			}
-			else if (values.containsKey("name")) {
-				return (String)values.get("name");
+			else if (values.containsKey("name") && values.get("name") != null) {
+				return values.get("name").toString();
 			}
 			else {
 				return "<unknown>";
