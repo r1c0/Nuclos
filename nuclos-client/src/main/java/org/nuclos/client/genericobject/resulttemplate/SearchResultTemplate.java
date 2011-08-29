@@ -44,7 +44,7 @@ import org.nuclos.common2.exception.PreferencesException;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  * <p>
- * TODO: This looks *very* similiar to 
+ * TODO: This looks *very* similiar to
  * {@link org.nuclos.client.searchfilter.EntitySearchFilter}!
  * Perhaps we could unify both classes.
  * </p>
@@ -56,58 +56,58 @@ public class SearchResultTemplate {
 	private static final String PREFS_KEY_DESCRIPTION = "description";
 	private static final String PREFS_KEY_MODULEID = "moduleId";
 	private static final String PREFS_NODE_VISIBLECOLUMNSWITHS = "visibleColumnsWiths";
-	
+
 	/**
 	 * New way to save/load column prefs: as {@link org.nuclos.common.collect.collectable.CollectableEntityField}.
 	 */
 	private static final String PREFS_NODE_VISIBLEENTITYFIELDS = "visibleEntityFields";
-	
+
 	/**
 	 * New way to save/load sorting column prefs: as {@link org.nuclos.common.collect.collectable.CollectableSorting}.
 	 */
 	private static final String PREFS_NODE_COLLECTABLESORTING = "collectableSorting";
-	
+
 	/**
 	 * New way to save/load fixed column prefs: as {@link org.nuclos.common.collect.collectable.CollectableEntityField}.
 	 */
-	private static final String PREFS_NODE_FIXEDENTITYFIELDS = "visibleFixedColumns";
-	
+	private static final String PREFS_NODE_FIXEDENTITYFIELDS = "fixedEntityFields";
+
 	/**
 	 * @deprecated Old way to save/load prefs: only columns *names* (String).
 	 */
 	private static final String PREFS_NODE_VISIBLECOLUMNS = "visibleColumns";
-	
+
 	/**
 	 * @deprecated Old way to save/load prefs: only sorting columns *names* (String).
 	 */
 	private static final String PREFS_NODE_SORTINGCOLUMNS = "sortingColumns";
-	
+
 	/**
 	 * @deprecated Old way to save/load prefs: only fixed columns *names* (String).
 	 */
 	private static final String PREFS_NODE_VISIBLECOLUMNSFIXED = "visibleFixedColumns";
-	
-	// 
+
+	//
 
 	private String sName;
 
 	private String sDescription;
-	
+
 	/**
 	 * list of visible columns
 	 */
 	private List<CollectableEntityField> visibleFields;
-	
+
 	private List<CollectableSorting> sortingOrder;
 
 	private Map<String, Integer> lstColumnsWidths;
-	
+
 	private List<CollectableEntityField> fixedColumns;
-	
+
 	private final int moduleId;
-	
-	
-	
+
+
+
 	public SearchResultTemplate(int moduleId){
 		this.moduleId = moduleId;
 	}
@@ -160,7 +160,7 @@ public class SearchResultTemplate {
 	public void setVisibleColumns(List<CollectableEntityField> lstclctefweVisible) {
 		this.visibleFields = lstclctefweVisible;
 	}
-	
+
 	public List<CollectableSorting> getSortingOrder() {
 		return sortingOrder;
 	}
@@ -179,7 +179,7 @@ public class SearchResultTemplate {
 
 	public void setListColumnsWidths(Map<String, Integer> lstColumnsWidths) {
 		this.lstColumnsWidths = lstColumnsWidths;
-	}	
+	}
 
 	public List<CollectableEntityField> getListColumnsFixed() {
 		return fixedColumns;
@@ -187,8 +187,8 @@ public class SearchResultTemplate {
 
 	public void setFixedColumns(List<CollectableEntityField> fixedColumns) {
 		this.fixedColumns = fixedColumns;
-	}	
-	
+	}
+
 	/**
 	 * Two <code>SearchResultTemplate</code>s are equal iff their names are equal.
 	 * @param o
@@ -220,7 +220,7 @@ public class SearchResultTemplate {
 		if (sTemplateName.matches(".*\\\\.*")) {
 			throw new IllegalStateException(CommonLocaleDelegate.getMessage("SearchResultTemplate.2","Der Name darf keinen Backslash (\"\\\") enthalten."));
 		}
-	}	
+	}
 
 	/**
 	 * @param sTemplateName
@@ -267,8 +267,8 @@ public class SearchResultTemplate {
 
 		PreferencesUtils.putSerializable(prefs, PREFS_NODE_VISIBLECOLUMNSWITHS, lstColumnsWidths);
 		/** @todo prefs.flush */
-	}	
-	
+	}
+
 	/**
 	 * reads the search result template with the given name from the preferences.
 	 * @param sTemplateName
@@ -287,7 +287,7 @@ public class SearchResultTemplate {
 		final Preferences prefs = prefsParent.node(sEncodedTemplateName);
 		final int iModuleIdOr0 = prefs.getInt(PREFS_KEY_MODULEID, 0);
 		final SearchResultTemplate result = new SearchResultTemplate(iModuleIdOr0);
-		
+
 		final MetaDataProvider mdProv = MetaDataClientProvider.getInstance();
 		final Integer iModuleId;
 		final EntityMetaDataVO entityVO;
@@ -364,12 +364,12 @@ public class SearchResultTemplate {
 			}
 			result.setFixedColumns(fixed);
 		}
-		
-		result.setListColumnsWidths((Map<String,Integer>)PreferencesUtils.getSerializable(prefs, PREFS_NODE_VISIBLECOLUMNSWITHS));		
+
+		result.setListColumnsWidths((Map<String,Integer>)PreferencesUtils.getSerializable(prefs, PREFS_NODE_VISIBLECOLUMNSWITHS));
 		assert result != null;
 		return result;
 	}
-	
+
 	/**
 	 * creates the default search result template with a specific name.
 	 * @return new default search result template
