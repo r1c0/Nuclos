@@ -52,6 +52,7 @@ public class CollectableSorting implements Serializable {
 	 * @precondition sFieldName != null
 	 */
 	public CollectableSorting(String tableAlias, String entity, boolean isBaseEntity, String field, boolean asc) {
+		if (tableAlias == null || entity == null || field == null) throw new NullPointerException();
 		this.tableAlias = tableAlias;
 		this.entity = entity;
 		this.isBaseEntity = isBaseEntity;
@@ -85,6 +86,19 @@ public class CollectableSorting implements Serializable {
 	public boolean isBaseEntity() {
 		return isBaseEntity;
 	}	
+	
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof CollectableSorting)) return false;
+		final CollectableSorting other = (CollectableSorting) o;
+		return entity.equals(other.entity) && field.equals(other.field);
+	}
+	
+	public int hashCode() {
+		int result = 3 * entity.hashCode() + 7;
+		result += 11 * field.hashCode();
+		return result;
+	}
 
     @Override
     public String toString() {

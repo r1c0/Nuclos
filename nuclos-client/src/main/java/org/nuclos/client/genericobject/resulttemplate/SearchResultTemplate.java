@@ -27,6 +27,7 @@ import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableSorting;
+import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.SystemFields;
@@ -332,7 +333,10 @@ public class SearchResultTemplate {
 		}
 
 		if (PreferencesUtils.nodeExists(prefs, PREFS_NODE_COLLECTABLESORTING)) {
-			result.setSortingOrder((List<CollectableSorting>) PreferencesUtils.getSerializableListXML(prefs, PREFS_NODE_COLLECTABLESORTING));
+			final List<CollectableSorting> sorting = 
+				(List<CollectableSorting>) PreferencesUtils.getSerializableListXML(prefs, PREFS_NODE_COLLECTABLESORTING);
+			CollectionUtils.removeDublicates(sorting);
+			result.setSortingOrder(sorting);
 		}
 		// backward compatibility
 		else {

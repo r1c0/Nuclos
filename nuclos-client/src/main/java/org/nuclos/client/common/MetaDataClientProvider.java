@@ -149,7 +149,7 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 			final EntityFieldMetaDataVO keyField = getEntityField(info.getSubform(), info.getKeyField());
     		for (EntityFieldMetaDataVO ef: result.values()) {
     			ef.setFallbacklabel("<html>" +
-						"<font color=\"red\">" + CommonLocaleDelegate.getLabelFromMetaFieldDataVO(keyField) + ":" + "</font>" +
+						"<font color=\"green\">" + CommonLocaleDelegate.getLabelFromMetaFieldDataVO(keyField) + ":" + "</font>" +
 						"<font color=\"black\">" + ef.getField() + "</font>" +
 						"</html>");
     		}

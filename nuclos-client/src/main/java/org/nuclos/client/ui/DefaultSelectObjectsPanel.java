@@ -24,7 +24,9 @@ import java.awt.Insets;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 
 import org.nuclos.common2.CommonLocaleDelegate;
 
@@ -70,9 +72,18 @@ public class DefaultSelectObjectsPanel<T> extends SelectObjectsPanel<T> {
 		this.btnDown.setEnabled(false);
 		this.scrlpnSelectedColumns.setPreferredSize(new Dimension(200, 300));
 		if (header != null) {
-			add(header, BorderLayout.NORTH);
+			// add(header, BorderLayout.NORTH);
+			final JTabbedPane tabbed = new JTabbedPane();
+			tabbed.add(CommonLocaleDelegate.getMessage("select.panel.column", "Spalten"), pnlMain);
+			final JPanel panel = new JPanel();
+			panel.setLayout(new BorderLayout());
+			panel.add(header, BorderLayout.NORTH);
+			tabbed.add(CommonLocaleDelegate.getMessage("select.panel.pivot", "Pivot"), panel);
+			add(tabbed, BorderLayout.CENTER);
 		}
-		this.add(pnlMain, BorderLayout.CENTER);
+		else {
+			this.add(pnlMain, BorderLayout.CENTER);
+		}
 		this.pnlMain.add(pnlTitleAvailableObjects, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 																		  , GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		this.pnlMain.add(pnlAvailableObjects, new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0

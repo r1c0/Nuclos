@@ -39,6 +39,7 @@ public class SimpleCollectionComboBoxModel<T> implements ComboBoxModel {
 	private T selected;
 	
 	public SimpleCollectionComboBoxModel(Collection<T> c) {
+		if (c == null) throw new NullPointerException();
 		this.c = c;
 	}
 
@@ -88,7 +89,7 @@ public class SimpleCollectionComboBoxModel<T> implements ComboBoxModel {
 			} while(++i < index);
 		}
 		else {
-			throw new IllegalStateException();
+			throw new IllegalStateException("Collection of type " + c.getClass().getName() + " is unsupported: " + c);
 		}
 		return result;
 	}

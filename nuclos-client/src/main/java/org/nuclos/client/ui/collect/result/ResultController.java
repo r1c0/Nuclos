@@ -25,8 +25,10 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.prefs.Preferences;
@@ -702,6 +704,7 @@ public class ResultController<Clct extends Collectable> {
 	 */
 	public List<CollectableSorting> getCollectableSortingSequence() {
 		final String baseEntity = getEntity().getName();
+		final Set<CollectableSorting> set = new HashSet<CollectableSorting>();
 		final List<CollectableSorting> result = new ArrayList<CollectableSorting>();
 		for (SortKey sortKey : clctctl.getResultTableModel().getSortKeys()) {
 			final CollectableEntityField sortField = clctctl.getResultTableModel().getCollectableEntityField(sortKey.getColumn());
@@ -727,10 +730,15 @@ public class ResultController<Clct extends Collectable> {
 						sortField.getName(), sortKey.getSortOrder() == SortOrder.ASCENDING);
 			}
 			else {
+				// not a pivot element and not a field of the base entity => we cannot sort that
 				continue;
 			}
-			result.add(sort);
+			// only use each sort column once
+			if (set.add(sort)) {
+				result.add(sort);
+			}
 		}
+		CollectionUtils.removeDublicates(result);
 		return result;
 	}
 

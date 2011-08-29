@@ -60719,19 +60719,34 @@
     "text": "Bibliotheksregeln"
   },
   {
-    "resourceID": "pivot.panel.enable.pivot",
+    "resourceID": "select.panel.column",
     "locale": "i-default",
-    "text": "Use some subforms as pivot tables in result list"
+    "text": "Column Selection"
   },
   {
-    "resourceID": "pivot.panel.enable.pivot",
+    "resourceID": "select.panel.column",
     "locale": "en",
-    "text": "Use some subforms as pivot tables in result list"
+    "text": "Column Selection"
   },
   {
-    "resourceID": "pivot.panel.enable.pivot",
+    "resourceID": "select.panel.column",
     "locale": "de",
-    "text": "Stelle Ergebnisfelder aus Unterformularen als Pivotfelder dar"
+    "text": "Auswahl Spalten"
+  },
+  {
+    "resourceID": "select.panel.pivot",
+    "locale": "i-default",
+    "text": "subform pivoting"
+  },
+  {
+    "resourceID": "select.panel.pivot",
+    "locale": "en",
+    "text": "subform pivoting"
+  },
+  {
+    "resourceID": "select.panel.pivot",
+    "locale": "de",
+    "text": "Pivotisierung Unterformulare"
   },
   {
     "resourceID": "pivot.panel.pivot.entity",
@@ -60761,7 +60776,7 @@
   {
     "resourceID": "pivot.panel.key.field",
     "locale": "de",
-    "text": "Schlüssel Spalte"
+    "text": "Schlüsselspalte"
   },
   {
     "resourceID": "pivot.panel.value.field",
@@ -60776,7 +60791,7 @@
   {
     "resourceID": "pivot.panel.value.field",
     "locale": "de",
-    "text": "Werte Spalte"
+    "text": "Wertespalte"
   },
   {
     "resourceID": "CollectableBooleanFormat.yes",

@@ -1333,4 +1333,14 @@ public class CollectionUtils {
 	   return result;
    }
    
+   public static <T> void removeDublicates(List<T> l) {
+	   final Set<T> set = new HashSet<T>();
+	   for (Iterator<T> it = l.iterator(); it.hasNext(); ) {
+		   final T t = it.next();
+		   if (!set.add(t)) {
+			   it.remove();
+		   }
+	   }
+   }
+   
 }	// class CollectionUtils
