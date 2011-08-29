@@ -571,7 +571,7 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 			builder.equal(t.baseColumn("INTID_T_MD_INSTANCE", Integer.class), iInstanceId),
 			builder.equal(t.baseColumn("INTID_T_MD_MODULE", Integer.class), iModuleId));
 		if (true) {
-			DbFrom t2 = t.join("T_UD_GO_ATTRIBUTE", JoinType.INNER).on("INTID", "INTID_T_UD_GENERICOBJECT").alias("at");
+			DbFrom t2 = t.join("T_UD_GO_ATTRIBUTE", JoinType.INNER).alias("at").on("INTID", "INTID_T_UD_GENERICOBJECT", Integer.class);
 			cond = builder.and(cond,
 				builder.equal(t2.baseColumn("INTID_T_MD_ATTRIBUTE", Integer.class), 100003),
 				builder.equal(t2.baseColumn("INTID_EXTERNAL", Integer.class), iProcessId));

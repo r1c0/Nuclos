@@ -230,10 +230,10 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom m = query.from("T_AD_MASTERDATA").alias("m");
-		DbFrom mf = m.join("T_AD_MASTERDATA_FIELD", JoinType.INNER).on("INTID", "INTID_T_AD_MASTERDATA").alias("mf");
-		DbFrom p = mf.join("T_AD_MASTERDATA", JoinType.INNER).on("STRFOREIGNENTITY", "STRENTITY").alias("p");
+		DbFrom mf = m.join("T_AD_MASTERDATA_FIELD", JoinType.INNER).alias("mf").on("INTID", "INTID_T_AD_MASTERDATA", Integer.class);
+		DbFrom p = mf.join("T_AD_MASTERDATA", JoinType.INNER).alias("p").on("STRFOREIGNENTITY", "STRENTITY", String.class);
 		// @TODO GOREF
-		DbFrom go = p.join("T_MD_MODULE", JoinType.INNER).on("STRENTITY", "STRENTITY").alias("go");
+		DbFrom go = p.join("T_MD_MODULE", JoinType.INNER).alias("go").on("STRENTITY", "STRENTITY", String.class);
 		query.select(m.baseColumn("STRENTITY", String.class));
 		query.where(builder.equal(go.baseColumn("INTID", Integer.class), iModuleId));
 		query.orderBy(builder.asc(m.baseColumn("STRENTITY", String.class)));
@@ -1221,8 +1221,8 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom m = query.from("T_MD_ENTITY").alias("m");
-		DbFrom mf = m.join("T_MD_ENTITY_FIELD", JoinType.INNER).on("INTID", "INTID_T_MD_ENTITY").alias("mf");
-		DbFrom p = mf.join("T_MD_ENTITY", JoinType.INNER).on("STRFOREIGNENTITY", "STRENTITY").alias("p");
+		DbFrom mf = m.join("T_MD_ENTITY_FIELD", JoinType.INNER).alias("mf").on("INTID", "INTID_T_MD_ENTITY", Integer.class);
+		DbFrom p = mf.join("T_MD_ENTITY", JoinType.INNER).alias("p").on("STRFOREIGNENTITY", "STRENTITY", String.class);
 		query.multiselect(m.baseColumn("INTID", Integer.class),	m.baseColumn("STRENTITY", String.class));
 		query.where(builder.equal(p.baseColumn("INTID", Integer.class), iModuleId));
 		query.orderBy(builder.asc(m.baseColumn("STRENTITY", String.class)));

@@ -1164,8 +1164,8 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom s = query.from("T_MD_STATE").alias("s");
-		DbFrom t = s.join("T_MD_STATE_TRANSITION", JoinType.INNER).on("INTID", "INTID_T_MD_STATE_2").alias(SystemFields.BASE_ALIAS);
-		DbFrom rt = t.join("T_MD_RULE_TRANSITION", JoinType.INNER).on("INTID", "INTID_T_MD_STATE_TRANSITION").alias("rt");
+		DbFrom t = s.join("T_MD_STATE_TRANSITION", JoinType.INNER).alias(SystemFields.BASE_ALIAS).on("INTID", "INTID_T_MD_STATE_2", Integer.class);
+		DbFrom rt = t.join("T_MD_RULE_TRANSITION", JoinType.INNER).alias("rt").on("INTID", "INTID_T_MD_STATE_TRANSITION", Integer.class);
 		query.select(s.baseColumn("INTID_T_MD_STATEMODEL", Integer.class));
 		query.where(builder.equal(rt.baseColumn("INTID_T_MD_RULE", Integer.class), 123));
 

@@ -34,7 +34,7 @@ public class DbCondition implements Serializable {
 		return parent.not(this);
 	}
 	
-	PreparedStringBuilder getSqlString() {
+	public PreparedStringBuilder getSqlString() {
 		return sqlString;
 	}
 	

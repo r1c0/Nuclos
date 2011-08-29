@@ -193,7 +193,7 @@ public class SecurityCache implements SecurityCacheMBean {
 			DbFrom t = query.from("T_UD_REPORT").alias(SystemFields.BASE_ALIAS);
 			query.multiselect(t.baseColumn("INTID", Integer.class), t.baseColumn("INTTYPE", Integer.class));
 			if (!isSuperUser()) {
-				DbFrom rr = t.join("T_MD_ROLE_REPORT", JoinType.LEFT).on("INTID", "INTID_T_UD_REPORT").alias("rr");
+				DbFrom rr = t.join("T_MD_ROLE_REPORT", JoinType.LEFT).alias("rr").on("INTID", "INTID_T_UD_REPORT", Integer.class);
 				DbColumnExpression<Integer> rrc = rr.baseColumn("INTID_T_MD_ROLE", Integer.class);
 				DbCondition readWriteCond = readWrite
 					? builder.equal(rr.baseColumn("BLNREADWRITE", Boolean.class), true)
@@ -252,7 +252,7 @@ public class SecurityCache implements SecurityCacheMBean {
 			query.select(t.baseColumn("INTID", Integer.class));
 
 			if (!isSuperUser()) {
-				DbFrom ro = t.join("T_UD_REPORTOUTPUT", JoinType.LEFT).on("INTID", "INTID_T_UD_DATASOURCE").alias("ro");
+				DbFrom ro = t.join("T_UD_REPORTOUTPUT", JoinType.LEFT).alias("ro").on("INTID", "INTID_T_UD_DATASOURCE", Integer.class);
 				List<Integer> reportIds = CollectionUtils.concatAll(readReports(readWrite).values());
 				query.where(builder.or(
 					getNameCondition(query, t, "STRCREATED"),
@@ -314,7 +314,7 @@ public class SecurityCache implements SecurityCacheMBean {
 			} else {
 				DbQuery<DbTuple> query = builder.createTupleQuery();
 				DbFrom m = query.from("T_MD_ENTITY").alias("m");
-				DbFrom re = m.join("T_MD_ROLE_MODULE", JoinType.INNER).on("INTID", "INTID_T_MD_MODULE").alias("re");
+				DbFrom re = m.join("T_MD_ROLE_MODULE", JoinType.INNER).alias("re").on("INTID", "INTID_T_MD_MODULE", Integer.class);
 				query.multiselect(
 					m.baseColumn("STRENTITY", String.class),
 					re.baseColumn("INTID_T_UD_GROUP", Integer.class),
@@ -498,7 +498,7 @@ public class SecurityCache implements SecurityCacheMBean {
 
 			DbQuery<DbTuple> query = builder.createTupleQuery();
 			DbFrom t = query.from("T_UD_SEARCHFILTER").alias(SystemFields.BASE_ALIAS);
-			DbFrom u = t.join(subtable, JoinType.INNER).on("INTID", "INTID_T_UD_SEARCHFILTER").alias("u");
+			DbFrom u = t.join(subtable, JoinType.INNER).alias("u").on("INTID", "INTID_T_UD_SEARCHFILTER", Integer.class);
 			query.multiselect(
 				t.baseColumn("INTID", Integer.class), t.baseColumn("STRENTITY", String.class),
 				u.baseColumn("DATVALIDFROM", Date.class), u.baseColumn("DATVALIDUNTIL", Date.class));

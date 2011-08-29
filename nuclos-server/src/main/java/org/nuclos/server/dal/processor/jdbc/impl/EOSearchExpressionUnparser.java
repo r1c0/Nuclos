@@ -216,14 +216,17 @@ public class EOSearchExpressionUnparser {
 			// The join table alias must be unique in the SQL
 			final String joinAlias = pinfo.getPivotTableAlias(field.getField());
 			
-			final DbJoin join = table.join(joinTable, JoinType.LEFT).alias(joinAlias).on("INTID", DalUtils.getDbIdFieldName(ref.getDbColumn()));
+			final DbJoin join = table.join(joinTable, JoinType.LEFT).alias(joinAlias).onAnd("INTID", DalUtils.getDbIdFieldName(ref.getDbColumn()), Long.class,
+					queryBuilder.equal(table.column(joinAlias, keyColumn, String.class), queryBuilder.literal(field.getField())));
 			
-			DbCondition cond;
+			// DbCondition cond;
 			// pivot key matches
-			cond = queryBuilder.equal(join.baseColumn(keyColumn, String.class), queryBuilder.literal(field.getField()));
+			// cond = queryBuilder.equal(join.baseColumn(keyColumn, String.class), queryBuilder.literal(field.getField()));
 			// pivot key is NULL (i.e. does not exist). This could happen as this is an outer join
-			cond = queryBuilder.or(cond, queryBuilder.isNull(join.baseColumn(keyColumn, String.class)));
-			return cond;
+			// cond = queryBuilder.or(cond, queryBuilder.isNull(join.baseColumn(keyColumn, String.class)));
+			
+			// ??? We have no real condition, all is said within the (non-equi) join...
+			return queryBuilder.alwaysTrue();
 		}
 
 		@Override

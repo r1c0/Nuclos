@@ -196,7 +196,7 @@ public Collection<ReportVO> getReportsForDatasourceId(Integer iDataSourceId, fin
       DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
       DbQuery<Integer> query = builder.createQuery(Integer.class);
       DbFrom r = query.from("T_UD_REPORT").alias("r");
-      DbFrom o = r.join("T_UD_REPORTOUTPUT", JoinType.INNER).on("INTID", "INTID_T_UD_REPORT").alias("o");
+      DbFrom o = r.join("T_UD_REPORTOUTPUT", JoinType.INNER).alias("o").on("INTID", "INTID_T_UD_REPORT", Integer.class);
       query.select(r.baseColumn("INTID", Integer.class));
       query.where(builder.and(
          builder.equal(r.baseColumn("INTTYPE", Integer.class), type.getValue()),

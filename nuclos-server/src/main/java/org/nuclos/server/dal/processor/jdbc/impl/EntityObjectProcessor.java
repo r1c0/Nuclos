@@ -278,11 +278,11 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> groupsubquery = builder.createQuery(getPrimaryKeyColumn().getDataType());
 		DbFrom sqfrom = groupsubquery.from("t_ud_genericobject").alias("g");
-		sqfrom.innerJoin(getDbSourceForDML()).on("intid", "intid").alias("eo");
-		DbJoin role_mod = sqfrom.innerJoin("t_md_role_module").on("intid_t_md_module", "intid_t_md_module").alias("rm");
-		DbJoin role_user = role_mod.innerJoin("t_md_role_user").on("intid_t_md_role", "intid_t_md_role").alias("ru");
-		DbJoin md_user = role_user.innerJoin("t_md_user").on("intid_t_md_user", "intid").alias("us");
-		DbJoin go_group = sqfrom.leftJoin("t_ud_go_group").on("INTID", "INTID_T_UD_GENERICOBJECT").alias("gg");
+		sqfrom.innerJoin(getDbSourceForDML()).alias("eo").on("intid", "intid", Long.class);
+		DbJoin role_mod = sqfrom.innerJoin("t_md_role_module").alias("rm").on("intid_t_md_module", "intid_t_md_module", Long.class);
+		DbJoin role_user = role_mod.innerJoin("t_md_role_user").alias("ru").on("intid_t_md_role", "intid_t_md_role", Long.class);
+		DbJoin md_user = role_user.innerJoin("t_md_user").alias("us").on("intid_t_md_user", "intid", Long.class);
+		DbJoin go_group = sqfrom.leftJoin("t_ud_go_group").alias("gg").on("INTID", "INTID_T_UD_GENERICOBJECT", Long.class);
 
 		groupsubquery.select(sqfrom.baseColumn("intid", Long.class));
 

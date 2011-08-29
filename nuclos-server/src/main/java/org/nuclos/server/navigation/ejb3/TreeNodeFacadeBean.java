@@ -428,8 +428,8 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom l = query.from("T_UD_GO_GROUP").alias("l");
-		DbFrom g = l.join("T_UD_GROUP", JoinType.INNER).on("INTID_T_UD_GROUP", "INTID").alias("g");
-		DbFrom t = g.join("T_MD_GROUPTYPE", JoinType.INNER).on("INTID_T_MD_GROUPTYPE", "INTID").alias(SystemFields.BASE_ALIAS);
+		DbFrom g = l.join("T_UD_GROUP", JoinType.INNER).alias("g").on("INTID_T_UD_GROUP", "INTID", Integer.class);
+		DbFrom t = g.join("T_MD_GROUPTYPE", JoinType.INNER).alias(SystemFields.BASE_ALIAS).on("INTID_T_MD_GROUPTYPE", "INTID", Integer.class);
 		query.multiselect(
 			l.baseColumn("INTID_T_UD_GROUP", Integer.class),
 			g.baseColumn("STRGROUP", String.class),
@@ -462,7 +462,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_UD_GROUP").alias(SystemFields.BASE_ALIAS);
-		DbFrom fk1 = t.join("T_MD_GROUPTYPE", JoinType.INNER).on("INTID_T_MD_GROUPTYPE", "INTID").alias("fk1");
+		DbFrom fk1 = t.join("T_MD_GROUPTYPE", JoinType.INNER).alias("fk1").on("INTID_T_MD_GROUPTYPE", "INTID", Integer.class);
 		query.multiselect(
 			t.baseColumn("STRGROUP", String.class),
 			fk1.baseColumn("STRNAME", String.class),
@@ -539,7 +539,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom grp = query.from("T_UD_GO_GROUP").alias("grp");
-		DbFrom gob = grp.join("T_UD_GENERICOBJECT", JoinType.INNER).on("INTID_T_UD_GENERICOBJECT", "INTID").alias("gob");
+		DbFrom gob = grp.join("T_UD_GENERICOBJECT", JoinType.INNER).alias("gob").on("INTID_T_UD_GENERICOBJECT", "INTID", Integer.class);
 		query.multiselect(
 			grp.baseColumn("INTID_T_UD_GENERICOBJECT", Integer.class),
 			gob.baseColumn("INTID_T_MD_MODULE", Integer.class));

@@ -88,8 +88,8 @@ public class StateModelUsagesCache {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom s = query.from("T_MD_STATE").alias("s");
-		DbJoin t = s.join("T_MD_STATE_TRANSITION", JoinType.INNER).on("INTID", "INTID_T_MD_STATE_2").alias(SystemFields.BASE_ALIAS);
-		DbJoin u = s.join("T_MD_STATEMODELUSAGE",	JoinType.INNER).on("INTID_T_MD_STATEMODEL", "INTID_T_MD_STATEMODEL").alias("u");
+		DbJoin t = s.join("T_MD_STATE_TRANSITION", JoinType.INNER).alias(SystemFields.BASE_ALIAS).on("INTID", "INTID_T_MD_STATE_2", Integer.class);
+		DbJoin u = s.join("T_MD_STATEMODELUSAGE",	JoinType.INNER).alias("u").on("INTID_T_MD_STATEMODEL", "INTID_T_MD_STATEMODEL", Integer.class);
 		query.multiselect(
 		   s.baseColumn("INTID_T_MD_STATEMODEL", Integer.class),
 		   s.baseColumn("INTID", Integer.class),

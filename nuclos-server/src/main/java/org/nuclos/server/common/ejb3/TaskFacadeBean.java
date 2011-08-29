@@ -489,7 +489,7 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 		if (taskVO.getDelegator() != null) {
 			DbQuery<DbTuple> queryOwner = builder.createTupleQuery();
 			DbFrom userOwner = queryOwner.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
-			DbFrom owner = userOwner.join("T_UD_TASKOWNER", JoinType.INNER).on("INTID", "INTID_T_MD_USER").alias("t2");
+			DbFrom owner = userOwner.join("T_UD_TASKOWNER", JoinType.INNER).alias("t2").on("INTID", "INTID_T_MD_USER", Integer.class);
 			queryOwner.where(builder.equal(owner.baseColumn("INTID_T_UD_TODOLIST", Integer.class), taskVO.getId()));
 			queryOwner.multiselect(userOwner.baseColumn("STRFIRSTNAME", String.class), userOwner.baseColumn("STRLASTNAME", String.class));
 			taskVO.setAssignees(StringUtils.join("; ", DataBaseHelper.getDbAccess().executeQuery(queryOwner, new UserDisplayNameTransformer())));

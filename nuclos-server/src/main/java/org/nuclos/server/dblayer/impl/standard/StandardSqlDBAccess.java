@@ -630,9 +630,12 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
                     }
                     ps.append(join.getTableName() + " " + join.getAlias());
                     ps.append(" ON (");
+                    /*
                     ps.append(join.getParent().getAlias() + "." + join.getOn().x);
                     ps.append(" = ");
                     ps.append(join.getAlias() + "." + join.getOn().y);
+                    */
+                    ps.append(join.getOn().getSqlString());
                     ps.append(")");
                 }
             };

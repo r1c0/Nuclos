@@ -16,14 +16,17 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dblayer.query;
 
-import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dblayer.JoinType;
 
 public class DbJoin extends DbFrom {
 
 	private final DbFrom left;
 	private final JoinType joinType;
-	private Pair<String, String> on;
+	
+	// Old implementation, bad because it does not support non-equi joins.
+	// private Pair<String, String> on;
+	
+	private DbCondition on;
 	
 	DbJoin(DbQuery<?> query, DbFrom left, JoinType joinType, String tableName) {
 		super(query, tableName);
@@ -46,11 +49,39 @@ public class DbJoin extends DbFrom {
 		return left;
 	}
 
-	public DbJoin on(String baseTableColumn, String joinedTableColumn) {
+	/**
+	 * Simple equi-join.
+	 */
+	public DbJoin on(String baseTableColumn, String joinedTableColumn, Class<?> type) {
 		if (on != null) {
 			throw new IllegalStateException("Join criteria already set");
 		}
-		this.on = Pair.makePair(baseTableColumn, joinedTableColumn);
+		final DbQueryBuilder b = left.getQuery().getBuilder();
+		this.on = b.equal(left.baseColumn(baseTableColumn, type), baseColumn(joinedTableColumn, type));
+		return this;
+	}
+	
+	/**
+	 * Simple equi-join with additional constraints.
+	 */
+	public DbJoin onAnd(String baseTableColumn, String joinedTableColumn, Class<?> type, DbCondition...cond) {
+		if (on != null) {
+			throw new IllegalStateException("Join criteria already set");
+		}
+		final DbQueryBuilder b = left.getQuery().getBuilder();
+		this.on = b.and2(b.equal(left.baseColumn(baseTableColumn, type), baseColumn(joinedTableColumn, type)), cond);
+		return this;
+	}
+	
+	/**
+	 * Non equi-join.
+	 */
+	public DbJoin onAnd(DbCondition...cond) {
+		if (on != null) {
+			throw new IllegalStateException("Join criteria already set");
+		}
+		final DbQueryBuilder b = left.getQuery().getBuilder();
+		this.on = b.and(cond);
 		return this;
 	}
 	
@@ -58,7 +89,7 @@ public class DbJoin extends DbFrom {
 		return joinType;
 	}
 	
-	public Pair<String, String> getOn() {
+	public DbCondition getOn() {
 		return on;
 	}
 	

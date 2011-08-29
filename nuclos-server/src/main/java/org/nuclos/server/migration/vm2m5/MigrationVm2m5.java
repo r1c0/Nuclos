@@ -560,7 +560,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 				/** update logbook */
 				DbQuery<Integer> queryLB = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Integer.class);
 				DbFrom lb = queryLB.from("T_UD_LOGBOOK").alias("lb");
-				DbFrom go = lb.join("T_UD_GENERICOBJECT", JoinType.INNER).on("INTID_T_UD_GENERICOBJECT", "INTID").alias("go");
+				DbFrom go = lb.join("T_UD_GENERICOBJECT", JoinType.INNER).alias("go").on("INTID_T_UD_GENERICOBJECT", "INTID", Integer.class);
 				queryLB.select(lb.baseColumn("INTID", Integer.class));
 				queryLB.where(DataBaseHelper.getDbAccess().getQueryBuilder().and(
 					DataBaseHelper.getDbAccess().getQueryBuilder().equal(go.baseColumn("INTID_T_MD_MODULE", Integer.class), iModuleId),
@@ -705,7 +705,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 				{
 					DbQuery<Integer> queryGENA = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Integer.class);
 					DbFrom gena = queryGENA.from("T_MD_GENERATION_ATTRIBUTE").alias("gena");
-					DbFrom gen = gena.join("T_MD_GENERATION", JoinType.INNER).on("INTID_T_MD_GENERATION", "INTID").alias("gen");
+					DbFrom gen = gena.join("T_MD_GENERATION", JoinType.INNER).alias("gen").on("INTID_T_MD_GENERATION", "INTID", Integer.class);
 					queryGENA.select(gena.baseColumn("INTID", Integer.class));
 					queryGENA.where(DataBaseHelper.getDbAccess().getQueryBuilder().and(
 						DataBaseHelper.getDbAccess().getQueryBuilder().equal(gen.baseColumn("INTID_T_MD_MODULE_SOURCE", Integer.class), iModuleId),
@@ -723,7 +723,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 				{
 					DbQuery<Integer> queryGENA = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Integer.class);
 					DbFrom gena = queryGENA.from("T_MD_GENERATION_ATTRIBUTE").alias("gena");
-					DbFrom gen = gena.join("T_MD_GENERATION", JoinType.INNER).on("INTID_T_MD_GENERATION", "INTID").alias("gen");
+					DbFrom gen = gena.join("T_MD_GENERATION", JoinType.INNER).alias("gen").on("INTID_T_MD_GENERATION", "INTID", Integer.class);
 					queryGENA.select(gena.baseColumn("INTID", Integer.class));
 					queryGENA.where(DataBaseHelper.getDbAccess().getQueryBuilder().and(
 						DataBaseHelper.getDbAccess().getQueryBuilder().equal(gen.baseColumn("INTID_T_MD_MODULE_TARGET", Integer.class), iModuleId),

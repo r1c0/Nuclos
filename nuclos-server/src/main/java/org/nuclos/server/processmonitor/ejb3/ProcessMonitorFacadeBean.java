@@ -1003,7 +1003,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom g = query.from("T_MD_GENERATION").alias("g");
-		DbFrom pt = g.join("T_MD_CASE_TRANSITION", JoinType.INNER).on("INTID_T_MD_CASE_TRANSITION", "INTID").alias("pt");
+		DbFrom pt = g.join("T_MD_CASE_TRANSITION", JoinType.INNER).alias("pt").on("INTID_T_MD_CASE_TRANSITION", "INTID", Integer.class);
 		query.select(g.baseColumn("INTID", Integer.class));
 		query.where(builder.and(
 			builder.equal(g.baseColumn("INTID", Integer.class), generationId).not(),

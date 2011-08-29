@@ -244,7 +244,17 @@ public abstract class DbQueryBuilder implements Serializable {
 		}
 		return new DbCondition(this, sqlString.append(")"));
 	}
-
+	
+	public DbCondition and2(DbCondition c, DbCondition...conditions) {
+		if (conditions.length == 0)
+			return c;
+		final PreparedStringBuilder sqlString = PreparedStringBuilder.valueOf("(").append(c.getSqlString());
+		for (int i = 0; i < conditions.length; i++) {
+			sqlString.append(" AND ").append(conditions[i].getSqlString());
+		}
+		return new DbCondition(this, sqlString.append(")"));
+	}
+	
 	public DbCondition or(DbCondition...conditions) {
 		if (conditions.length == 0)
 			return alwaysFalse(); // This is the same behavior as JPA's Criteria API
@@ -252,6 +262,16 @@ public abstract class DbQueryBuilder implements Serializable {
 		for (int i = 0; i < conditions.length; i++) {
 			if (i > 0) sqlString.append(" OR ");
 			sqlString.append(conditions[i].getSqlString());
+		}
+		return new DbCondition(this, sqlString.append(")"));
+	}
+	
+	public DbCondition or2(DbCondition c, DbCondition...conditions) {
+		if (conditions.length == 0)
+			return c;
+		final PreparedStringBuilder sqlString = PreparedStringBuilder.valueOf("(").append(c.getSqlString());
+		for (int i = 0; i < conditions.length; i++) {
+			sqlString.append(" OR ").append(conditions[i].getSqlString());
 		}
 		return new DbCondition(this, sqlString.append(")"));
 	}
