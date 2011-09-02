@@ -29,6 +29,9 @@ public abstract class FormattingTransformer implements Transformer<String, Strin
 	@Override
 	public String transform(String i) {
 		Object val = getValue(i);
+		if (val == null) {
+			return "";
+		}
 		EntityFieldMetaDataVO meta = metaprovider.getEntityField(getEntity(), i);
 		try {
 			return CollectableFieldFormat.getInstance(Class.forName(meta.getDataType())).format(meta.getFormatOutput(), val);
