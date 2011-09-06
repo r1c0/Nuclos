@@ -173,7 +173,7 @@ enabled (%boolean;) #IMPLIED
 resourceId CDATA #IMPLIED
 >
 
-<!ELEMENT collectable-component ((%layoutconstraints;)?,property*,(%borders;),(%sizes;),font?,background?,description?,options?,translations?,valuelist-provider?)>
+<!ELEMENT collectable-component ((%layoutconstraints;)?,property*,(%borders;),(%sizes;),background?,font?,description?,options?,translations?,valuelist-provider?)>
 <!ATTLIST collectable-component
 name CDATA #REQUIRED
 controltype (%controltype;) #IMPLIED
@@ -375,16 +375,16 @@ width CDATA #IMPLIED
 height CDATA #IMPLIED
 >
 
-<!ELEMENT font EMPTY>
-<!ATTLIST font
-size CDATA #IMPLIED
->
-
 <!ELEMENT background EMPTY>
 <!ATTLIST background
 red CDATA #IMPLIED
 green CDATA #IMPLIED
 blue CDATA #IMPLIED
+>
+
+<!ELEMENT font EMPTY>
+<!ATTLIST font
+size CDATA #IMPLIED
 >
 
 <!ELEMENT translations (translation*)>
