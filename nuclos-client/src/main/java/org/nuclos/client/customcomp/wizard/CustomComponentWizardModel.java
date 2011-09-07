@@ -347,15 +347,14 @@ public class CustomComponentWizardModel extends StaticModel {
 				if (!"org.nuclos.resplan".equals(componentVO.getComponentType())) {
 					invalidState(null, "Only resource components can be reconfigured");
 				}
+				// Load translations
+				try {
+					model.setTranslations(CustomComponentDelegate.getInstance().getTranslations(componentVO.getId()));
+				} catch (CommonBusinessException e) {
+					throw new InvalidStateException(e.getMessage());
+				}
 			}
 			model.setCustomComponentVO(componentVO);
-
-			// Load translations
-			try {
-				model.setTranslations(CustomComponentDelegate.getInstance().getTranslations(componentVO.getId()));
-			} catch (CommonBusinessException e) {
-				throw new InvalidStateException(e.getMessage());
-			}
 		}
 	}
 
