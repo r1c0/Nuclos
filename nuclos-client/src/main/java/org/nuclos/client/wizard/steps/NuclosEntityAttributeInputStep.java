@@ -142,7 +142,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				btnDropAttribute.setEnabled(e.getFirstIndex() >= 0);
+				btnDropAttribute.setEnabled(e.getFirstIndex() >= 0 && !isVirtual());
 				btnEditAttribute.setEnabled(e.getFirstIndex() >= 0);
 			}
 		});
@@ -310,6 +310,10 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 
 	}
 
+	private boolean isVirtual() {
+		return model != null ? model.isVirtual() : false;
+	}
+
 	private boolean isSubformEntity(Attribute attribute) {
 		final Set<String> set = NuclosWizardUtils.searchParentEntity(model.getEntityName());
 		if(set.size() > 0) {
@@ -365,7 +369,9 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 
 		TableUtils.setOptimalColumnWidths(tblAttributes);
 
-
+		if (model.isVirtual()) {
+			btnNewAttribute.setEnabled(false);
+		}
 	}
 
 	@Override
