@@ -28,7 +28,9 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -47,6 +49,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
+import org.jdesktop.swingx.combobox.ListComboBoxModel;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -57,14 +60,20 @@ import org.nuclos.client.resource.admin.ResourceCollectController;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
 import org.nuclos.client.ui.resource.ResourceIconChooser;
+import org.nuclos.client.wizard.model.Attribute;
+import org.nuclos.client.wizard.model.DataTyp;
+import org.nuclos.client.wizard.model.EntityAttributeTableModel;
 import org.nuclos.client.wizard.util.ModifierMap;
 import org.nuclos.client.wizard.util.MoreOptionPanel;
 import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -83,10 +92,10 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep implements CollectableResouceSaveListener {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 1L;
+
+	private static final String[] VIRTUAL_STATICFIELDS = new String[] {"INTID", "DATCREATED", "STRCREATED", "DATCHANGED", "STRCHANGED", "INTVERSION"};
+
 	JLabel lbLabelSingular;
 	JTextField tfLabelSingular;
 	JLabel lbMenupath;
@@ -117,6 +126,8 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 	JLabel lbStateModel;
 	JCheckBox cbStateModel;
 
+	JLabel lbVirtual;
+	JComboBox cbxVirtual;
 	JLabel lbCache;
 	JCheckBox cbCache;
 	JLabel lbTableName;
@@ -225,6 +236,14 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 			else {
 				cbStateModel.setEnabled(true);
 			}
+
+			if (model.isVirtual()) {
+				cbxVirtual.setSelectedItem(model.getVirtualentity());
+				cbStateModel.setEnabled(false);
+				cbEditable.setEnabled(false);
+				cbLogbook.setEnabled(false);
+			}
+			cbxVirtual.setEnabled(false);
 		}
 		model.setEditable(cbEditable.isSelected());
 		model.setSearchable(cbSearchable.isSelected());
@@ -273,7 +292,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 	@Override
 	protected void initComponents() {
 
-		double size [][] = {{170,200,20, TableLayout.FILL, 20}, {20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20, TableLayout.FILL}};
+		double size [][] = {{170,200,20, TableLayout.FILL, 20}, {20,20,20,20,20,20,20,20,20,20,20,20,120,20,20, TableLayout.FILL}};
 
 		TableLayout layout = new TableLayout(size);
 		layout.setVGap(3);
@@ -339,6 +358,15 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		cbStateModel = new JCheckBox();
 		cbStateModel.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.17", "Statusmodell:"));
 
+		lbVirtual = new JLabel(getMessage("wizard.step.entitycommonproperties.virtual.label", "Virtual entity")+":");
+		cbxVirtual = new JComboBox();
+		List<String> ves = MetaDataDelegate.getInstance().getVirtualEntities();
+		ves.add("");
+		Collections.sort(ves);
+		ListComboBoxModel<String> virtualentitymodel = new ListComboBoxModel<String>(ves);
+		cbxVirtual.setModel(virtualentitymodel);
+		cbxVirtual.setToolTipText(getMessage("wizard.step.entitycommonproperties.virtual.description", "Virtual entity (use an existing view)"));
+
 		lbCache = new JLabel(getMessage("wizard.step.entitycommonproperties.9", "Entit\u00e4t cachen")+":");
 		cbCache = new JCheckBox();
 		cbCache.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.9", "Entit\u00e4t cachen"));
@@ -393,23 +421,28 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		this.add(cbShowGroups, "1,10");
 
 		this.add(lbIcon, "3,1");
-		this.add(nuclosIconChooser, "3,2 , 3,18");
+		this.add(nuclosIconChooser, "3,2 , 3,15");
 
-		double sizeMoreOptions [][] = {{175, 200, 20}, {20,20,20, TableLayout.FILL}};
+		double sizeMoreOptions [][] = {{170, 200, 20}, {20,20,20,20, TableLayout.FILL}};
 
 		pnlMoreOptions = new JPanel();
 
-		pnlMoreOptions.setLayout(new TableLayout(sizeMoreOptions));
-		pnlMoreOptions.add(lbCache, "0,0");
-		pnlMoreOptions.add(cbCache, "1,0");
-		pnlMoreOptions.add(lbTableName, "0,1");
-		pnlMoreOptions.add(tfTableName, "1,1");
-		pnlMoreOptions.add(lbInternalEntityName, "0,2");
-		pnlMoreOptions.add(tfInternalEntityName, "1,2");
+		TableLayout tlMoreOptions = new TableLayout(sizeMoreOptions);
+		tlMoreOptions.setVGap(3);
+		tlMoreOptions.setHGap(5);
+		pnlMoreOptions.setLayout(tlMoreOptions);
+		pnlMoreOptions.add(lbVirtual, "0,0");
+		pnlMoreOptions.add(cbxVirtual, "1,0");
+		pnlMoreOptions.add(lbCache, "0,1");
+		pnlMoreOptions.add(cbCache, "1,1");
+		pnlMoreOptions.add(lbTableName, "0,2");
+		pnlMoreOptions.add(tfTableName, "1,2");
+		pnlMoreOptions.add(lbInternalEntityName, "0,3");
+		pnlMoreOptions.add(tfInternalEntityName, "1,3");
 
 		MoreOptionPanel optionPanel = new MoreOptionPanel(pnlMoreOptions);
 
-		this.add(optionPanel, "0,12,2,15");
+		this.add(optionPanel, "0,12,2,12");
 
 		fillIconCombobox();
 
@@ -466,6 +499,8 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				cbShowGroups.setEnabled(cb.isSelected());
 				lbShowRelation.setEnabled(cb.isSelected());
 				cbShowRelation.setEnabled(cb.isSelected());
+				lbVirtual.setEnabled(!cb.isSelected());
+				cbxVirtual.setEnabled(!cb.isSelected());
 			}
 		});
 
@@ -810,6 +845,23 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 
 		});
 
+		cbxVirtual.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				String item = (String) e.getItem();
+				cbEditable.setSelected(StringUtils.isNullOrEmpty(item));
+				cbEditable.setEnabled(StringUtils.isNullOrEmpty(item));
+				NuclosEntityCommonPropertiesStep.this.model.setEditable(cbEditable.isSelected());
+				cbLogbook.setSelected(StringUtils.isNullOrEmpty(item));
+				cbLogbook.setEnabled(StringUtils.isNullOrEmpty(item));
+				NuclosEntityCommonPropertiesStep.this.model.setEditable(cbLogbook.isSelected());
+				cbCache.setSelected(StringUtils.isNullOrEmpty(item));
+				cbCache.setEnabled(StringUtils.isNullOrEmpty(item));
+				NuclosEntityCommonPropertiesStep.this.model.setCachable(cbCache.isSelected());
+				cbStateModel.setEnabled(StringUtils.isNullOrEmpty(item));
+			}
+		});
+
 	}
 
 	protected void fillIconCombobox() {
@@ -837,6 +889,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 	    super.applyState();
 
 	    model.setMenuPath((String)cbMenupath.getSelectedItem());
+	    model.setVirtualentity((String)cbxVirtual.getSelectedItem());
 
 	    String sTable = tfTableName.getText();
 	    for(EntityMetaDataVO vo : MetaDataClientProvider.getInstance().getAllEntities()) {
@@ -849,6 +902,109 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 	    	}
 	    }
 
+	    if(model.isVirtual()) {
+	    	// initialize/update attributes from table/view metadata
+	    	final List<String> staticfields = CollectionUtils.asList(VIRTUAL_STATICFIELDS);
+	    	final List<EntityFieldMetaDataVO> attributes;
+	    	Map<String, EntityFieldMetaDataVO> fields = new HashMap<String, EntityFieldMetaDataVO>();
+	    	if (model.isEditMode()) {
+	    		attributes = new ArrayList<EntityFieldMetaDataVO>();
+		    	fields = new HashMap<String, EntityFieldMetaDataVO>();
+		    	for (EntityFieldMetaDataVO field : MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(model.getEntityName()).values()) {
+		    		if (staticfields.contains(field.getDbColumn().toUpperCase())) {
+		    			continue;
+		    		}
+		    		fields.put(field.getDbColumn().toUpperCase(), field);
+		    	}
+		    	for (EntityFieldMetaDataVO dbattribute : MetaDataDelegate.getInstance().getVirtualEntityFields(model.getVirtualentity())) {
+		    		String name = dbattribute.getDbColumn().toUpperCase();
+		    		if (fields.containsKey(name)) {
+		    			EntityFieldMetaDataVO field = fields.get(name);
+		    			field.setDataType(dbattribute.getDataType());
+		    			field.setScale(dbattribute.getScale());
+		    			field.setPrecision(dbattribute.getPrecision());
+		    			attributes.add(field);
+		    			fields.remove(name);
+		    		}
+		    		else if (name.startsWith("INTID_") && fields.containsKey(name.replaceFirst("INTID_", "STRVALUE_"))) {
+		    			name = name.replaceFirst("INTID_", "STRVALUE_");
+		    			// was defined as reference field
+		    			EntityFieldMetaDataVO field = fields.get(name);
+		    			attributes.add(field);
+		    			fields.remove(name);
+		    		}
+	    			else {
+		    			attributes.add(dbattribute);
+		    		}
+		    	}
+	    	}
+	    	else {
+	    		attributes = MetaDataDelegate.getInstance().getVirtualEntityFields(model.getVirtualentity());
+	    	}
+	    	EntityAttributeTableModel attributeModel = new EntityAttributeTableModel();
+			for(EntityFieldMetaDataVO attribute : attributes) {
+				String dbcolumn = attribute.getDbColumn().toUpperCase();
+				if (staticfields.contains(dbcolumn)) {
+					staticfields.remove(dbcolumn);
+	    			continue;
+	    		}
+				try {
+					Attribute attr = NuclosEntityNameStep.wrapEntityMetaFieldVO(attribute);
+					if (StringUtils.isNullOrEmpty(attr.getLabel())) {
+						attr.setLabel(attribute.getField());
+					}
+					if (StringUtils.isNullOrEmpty(attr.getDescription())) {
+						attr.setDescription(attribute.getField());
+					}
+					if (attribute.getDbColumn().toUpperCase().startsWith("INTID_")) {
+						attr.setDatatyp(DataTyp.getReferenzTyp());
+					}
+					attributeModel.addAttribute(attr);
+				}
+				catch(CommonFinderException e1) {
+					Errors.getInstance().showExceptionDialog(NuclosEntityCommonPropertiesStep.this, e1);
+				}
+				catch(CommonPermissionException e1) {
+					Errors.getInstance().showExceptionDialog(NuclosEntityCommonPropertiesStep.this, e1);
+				}
+			}
+			for (EntityFieldMetaDataVO attribute : fields.values()) {
+				try {
+					Attribute attr = NuclosEntityNameStep.wrapEntityMetaFieldVO(attribute);
+					attributeModel.addAttribute(attr);
+					attributeModel.removeRow(attributeModel.getRowCount() - 1, true);
+				}
+				catch(CommonFinderException e1) {
+					Errors.getInstance().showExceptionDialog(NuclosEntityCommonPropertiesStep.this, e1);
+				}
+				catch(CommonPermissionException e1) {
+					Errors.getInstance().showExceptionDialog(NuclosEntityCommonPropertiesStep.this, e1);
+				}
+			}
+			if (staticfields.size() > 0) {
+				String message = getMessage("wizard.step.entitycommonproperties.error.virtual.fields", "Virtual entity is missing required attributes ({0}).", StringUtils.join(", ", staticfields));
+				JOptionPane.showMessageDialog(this, message, getMessage("wizard.step.entitycommonproperties.19", "Achtung!"), JOptionPane.OK_OPTION);
+		 	    throw new InvalidStateException();
+			}
+			else {
+				// check if select is possible
+				try {
+					EntityMetaDataVO virtualentity = new EntityMetaDataVO();
+					virtualentity.setEntity(model.getEntityName());
+					virtualentity.setDbEntity(model.getVirtualentity());
+					virtualentity.setVirtualentity(model.getVirtualentity());
+					MetaDataDelegate.getInstance().tryVirtualEntitySelect(virtualentity);
+				}
+				catch (NuclosBusinessException ex) {
+					String message = CommonLocaleDelegate.getMessageFromResource(ex.getMessage());
+					JOptionPane.showMessageDialog(this, message, getMessage("wizard.step.entitycommonproperties.19", "Achtung!"), JOptionPane.OK_OPTION);
+			 	    throw new InvalidStateException();
+				}
+				model.setAttributeModel(attributeModel);
+				model.nextStep();
+				model.refreshModelState();
+			}
+		}
     }
 
 

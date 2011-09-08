@@ -42,7 +42,6 @@ import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldFormat;
-import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
@@ -267,7 +266,7 @@ public class CommonLocaleDelegate {
 
 	public static String getLabelFromAttributeCVO(AttributeCVO a) {
 		if(a.getResourceSIdForLabel() != null && a.getResourceSIdForLabel().length() > 0) {
-			return getText(a.getResourceSIdForLabel(), a.getLabel());
+			return getTextFallback(a.getResourceSIdForLabel(), a.getLabel());
 		}
 		return a.getLabel();
 	}

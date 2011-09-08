@@ -66,7 +66,7 @@ import org.pietschy.wizard.InvalidStateException;
 * <br>
 * Created by Novabit Informationssysteme GmbH <br>
 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
-* 
+*
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
@@ -74,35 +74,35 @@ import org.pietschy.wizard.InvalidStateException;
 public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttributeAbstractStep {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	JLabel lbEntity;
 	JComboBox cbxEntity;
-	
+
 	JLabel lbFields;
-	
+
 	JScrollPane scrollPane;
 	JList listFields;
 	JButton btSelect;
-	
+
 	JLabel lbInfo;
-	
+
 	JLabel lbAlternativeLabel;
 	JTextField tfAlternativeLabel;
-	
+
 	EntityMetaDataVO voSelected;
-	
+
 	JLabel lbValueListProvider;
 	JCheckBox cbValueListProvider;
-	
-	List<Attribute> lstAttributes;
-	
-	NuclosEntityWizardStaticModel parentWizardModel;
-	
 
-	public NuclosEntityAttributeRelationShipStep() {	
-		initComponents();		
+	List<Attribute> lstAttributes;
+
+	NuclosEntityWizardStaticModel parentWizardModel;
+
+
+	public NuclosEntityAttributeRelationShipStep() {
+		initComponents();
 	}
 
 	public NuclosEntityAttributeRelationShipStep(String name, String summary) {
@@ -114,37 +114,37 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 		super(name, summary, icon);
 		initComponents();
 	}
-	
+
 	public void setAttributeList(List<Attribute> lst) {
 		this.lstAttributes = lst;
 	}
-	
+
 	@Override
-	protected void initComponents() {		
+	protected void initComponents() {
 		double size [][] = {{TableLayout.PREFERRED,40, TableLayout.FILL}, {20,20,20,100,20,TableLayout.PREFERRED, TableLayout.FILL}};
-		
+
 		TableLayout layout = new TableLayout(size);
 		layout.setVGap(3);
 		layout.setHGap(5);
 		this.setLayout(layout);
-		
+
 		lbEntity = new JLabel(getMessage("wizard.step.attributerelationship.1", "Verweis auf Entit\u00e4t")+": ");
 		cbxEntity = new JComboBox();
 		cbxEntity.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.1", "Verweis auf Entit\u00e4t"));
-		
+
 		lbFields = new JLabel(getMessage("wizard.step.attributerelationship.2", "Auswahl f\u00fcr Fremdschl\u00fcsselaufbau")+": ");
-		
+
 		lbAlternativeLabel = new JLabel(getMessage("wizard.step.attributerelationship.3", "Fremdschl\u00fcsselaufbau")+": ");
 		tfAlternativeLabel = new JTextField();
 		tfAlternativeLabel.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.3", "Fremdschl\u00fcsselaufbau"));
 		tfAlternativeLabel.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		
+
 		lbValueListProvider = new JLabel(getMessage("wizard.step.attributerelationship.4", "Suchfeld"));
 		cbValueListProvider = new JCheckBox();
 		cbValueListProvider.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.4", "Suchfeld"));
-		
+
 		lbInfo = new JLabel();
-		
+
 		listFields = new JList();
 		listFields.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPane = new JScrollPane(listFields);
@@ -153,21 +153,21 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 
 		this.add(lbEntity, "0,0, 1,0");
 		this.add(cbxEntity, "2,0");
-		
+
 		this.add(lbValueListProvider, "0,1, 1,1");
 		this.add(cbValueListProvider, "2,1");
-		
-		
+
+
 		this.add(scrollPane, "0,2, 0,6");
-		
+
 		this.add(btSelect, "1,2");
 
-		
+
 		this.add(tfAlternativeLabel, "2,2");
 		this.add(lbInfo, "0,5, 2,5");
-		
+
 		cbxEntity.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(final ItemEvent e) {
 				if(e.getStateChange() == ItemEvent.SELECTED) {
@@ -180,10 +180,10 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 						Collections.sort(lstFields, new Comparator<EntityFieldMetaDataVO>() {
 
 							@Override
-							public int compare(EntityFieldMetaDataVO o1, EntityFieldMetaDataVO o2) {				
+							public int compare(EntityFieldMetaDataVO o1, EntityFieldMetaDataVO o2) {
 								return o1.getField().toUpperCase().compareTo(o2.getField().toUpperCase());
 							}
-							
+
 						});
 						for(EntityFieldMetaDataVO voField : lstFields) {
 							if(voField.getForeignEntity() == null)
@@ -197,8 +197,8 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 						catch(Exception ex) {
 							tfAlternativeLabel.setText("");
 							NuclosEntityAttributeRelationShipStep.this.model.getAttribute().setField(null);
-						}						
-						
+						}
+
 						List<String> lstItems = new ArrayList<String>();
 						lstItems.addAll(setFieldNames);
 						Collections.sort(lstItems);
@@ -210,60 +210,60 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 						NuclosEntityAttributeRelationShipStep.this.model.getAttribute().setMetaVO(null);
 						NuclosEntityAttributeRelationShipStep.this.setComplete(false);
 					}
-				}				
+				}
 			}
-		});		
-		
+		});
+
 		btSelect.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
  				 setKeyDescription();
 			}
 		});
-		
+
 		listFields.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				
+
 				if(SwingUtilities.isLeftMouseButton(e)) {
 					if(e.getClickCount() == 2) {
 						 setKeyDescription();
 					}
 				}
 			}
-		
-			
-		
+
+
+
 		});
-		
+
 		cbValueListProvider.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cb = (JCheckBox)e.getItem();
-				NuclosEntityAttributeRelationShipStep.this.model.getAttribute().setValueListProvider(cb.isSelected());				
+				NuclosEntityAttributeRelationShipStep.this.model.getAttribute().setValueListProvider(cb.isSelected());
 			}
 		});
-		
+
 		tfAlternativeLabel.getDocument().addDocumentListener(new DocumentListener() {
-			
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				doSomeWork(e);
 			}
-			
+
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				doSomeWork(e);				
+				doSomeWork(e);
 			}
-			
+
 			protected void doSomeWork(DocumentEvent e) {
 				try {
 					model.getAttribute().setField(e.getDocument().getText(0, e.getDocument().getLength()));
@@ -274,16 +274,16 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 				}
 			}
 		});
-		
+
 	}
 
 	@Override
 	public void prepare() {
 		super.prepare();
 		fillEntityCombobox();
-		
-		if(this.model.getAttribute().getMetaVO() != null) {			
-			if(model.getAttribute().getField() != null) {				
+
+		if(this.model.getAttribute().getMetaVO() != null) {
+			if(model.getAttribute().getField() != null) {
 				String sField = new String(model.getAttribute().getField());
 				cbxEntity.setSelectedItem(this.model.getAttribute().getMetaVO());
 				tfAlternativeLabel.setText(sField);
@@ -293,51 +293,51 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 				cbxEntity.setSelectedItem(this.model.getAttribute().getMetaVO());
 			}
 		}
-		
-		if(parentWizardModel.hasRows() && model.isEditMode()) {
+
+		if(parentWizardModel.hasRows() && model.isEditMode() && !parentWizardModel.isVirtual()) {
 			cbxEntity.setEnabled(false);
-			cbxEntity.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.5", "Verweis kann nicht geändert werden. Da bereits Datensätze vorhanden sind."));			
+			cbxEntity.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.5", "Verweis kann nicht geändert werden. Da bereits Datensätze vorhanden sind."));
 		}
 		else {
 			cbxEntity.setEnabled(true);
 			cbxEntity.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.1", "Verweis auf Entit\u00e4t"));
 		}
-		
+
 	}
-	
+
 	private void fillEntityCombobox() {
-		
+
 		ItemListener ilArray[] = cbxEntity.getItemListeners();
 		for(ItemListener il : ilArray) {
 			cbxEntity.removeItemListener(il);
 		}
-		
+
 		cbxEntity.removeAllItems();
-		
+
 		Collection<EntityMetaDataVO> colMasterdata = MetaDataClientProvider.getInstance().getAllEntities();
 		List<EntityMetaDataVO> lstMasterdata = new ArrayList<EntityMetaDataVO>(colMasterdata);
 		Collections.sort(lstMasterdata, new Comparator<EntityMetaDataVO>() {
 
 			@Override
-			public int compare(EntityMetaDataVO o1, EntityMetaDataVO o2) {				
+			public int compare(EntityMetaDataVO o1, EntityMetaDataVO o2) {
 				return o1.toString().compareTo(o2.toString());
 			}
-			
+
 		});
 		cbxEntity.addItem("");
-		for(EntityMetaDataVO vo : lstMasterdata) {		
-			if(NuclosEntity.PROCESS.getEntityName().equals(vo.getEntity()) || 
-			   NuclosEntity.USER.getEntityName().equals(vo.getEntity()) || 
-			   NuclosEntity.ROLE.getEntityName().equals(vo.getEntity()) || 
+		for(EntityMetaDataVO vo : lstMasterdata) {
+			if(NuclosEntity.PROCESS.getEntityName().equals(vo.getEntity()) ||
+			   NuclosEntity.USER.getEntityName().equals(vo.getEntity()) ||
+			   NuclosEntity.ROLE.getEntityName().equals(vo.getEntity()) ||
 			   vo.getId() > 0)
 				cbxEntity.addItem(vo);
 		}
-		
+
 		for(ItemListener il : ilArray) {
-			cbxEntity.addItemListener(il);			
+			cbxEntity.addItemListener(il);
 		}
 	}
-	
+
 	public void setParentWizardModel(NuclosEntityWizardStaticModel model) {
 		this.parentWizardModel = model;
 	}
@@ -347,8 +347,8 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 		checkReferenceField();
 		super.applyState();
 	}
-	
-	
+
+
 	private void checkReferenceField() throws InvalidStateException {
 		String sField = this.model.getAttribute().getField();
 		if(sField == null || sField.length() < 1)
@@ -357,21 +357,21 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 	    Matcher referencedEntityMatcher = referencedEntityPattern.matcher (sField);
 	    boolean invalid = true;
 		while (referencedEntityMatcher.find()) {
-		  String sName = referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1);		   
-		  
-		  try {			  
+		  String sName = referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1);
+
+		  try {
 			  MetaDataDelegate.getInstance().getEntityField(model.getAttribute().getMetaVO().getEntity(), sName);
 			  invalid = false;
 		  }
 		  catch(Exception e){
 			  throw new InvalidStateException(getMessage("wizard.step.attributerelationship.7", "Es wurde ein ungültiger Eintrag gefunden: " + sName, sName));
-		  }		  
-		}	
-		
+		  }
+		}
+
 		if(invalid){
 			throw new InvalidStateException(getMessage("wizard.step.attributerelationship.8", "Es wurde kein gültiger Referenzeintrag gefunden!"));
 		}
-		
+
 	}
 
 	private void setKeyDescription() {
@@ -384,5 +384,5 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 
 		 tfAlternativeLabel.setText(strText);
 	}
-	
+
 }

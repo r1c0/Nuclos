@@ -97,9 +97,9 @@ import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.statemodel.RoleRepository;
 import org.nuclos.client.ui.Bubble;
+import org.nuclos.client.ui.Bubble.Position;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
-import org.nuclos.client.ui.Bubble.Position;
 import org.nuclos.client.wizard.NuclosEntityWizardStaticModel;
 import org.nuclos.client.wizard.model.Attribute;
 import org.nuclos.client.wizard.model.EntityAttributeTableModel;
@@ -684,6 +684,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		}
 
 		metaVO.setFieldsForEquality(wizardModel.getMultiEditEquation());
+		metaVO.setVirtualentity(wizardModel.getVirtualentity());
 
 		List<EntityFieldMetaDataTO> lstEntityFields = new ArrayList<EntityFieldMetaDataTO>();
 
@@ -1787,7 +1788,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		}
 		else {
 			metaFieldVO.setCalcFunction(null);
-			metaFieldVO.setReadonly(Boolean.FALSE);
+			metaFieldVO.setReadonly(parentVO.isVirtual() ? attr.isReadonly() : Boolean.FALSE);
 		}
 		metaFieldVO.setInsertable(false);
 

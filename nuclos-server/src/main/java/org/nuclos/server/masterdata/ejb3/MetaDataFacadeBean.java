@@ -35,8 +35,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
@@ -53,6 +51,7 @@ import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.StaticMetaDataProvider;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.dal.DalCallResult;
@@ -61,8 +60,8 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
-import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common.dal.vo.SystemFields;
+import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
 import org.nuclos.common.transport.vo.EntityMetaDataTO;
 import org.nuclos.common.valueobject.EntityRelationshipModelVO;
@@ -89,6 +88,7 @@ import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
+import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
@@ -144,6 +144,16 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	//LocaleFacadeLocal localefacade = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class, "localServiceLocal", true);
 
 	private final static String ENTITYFIELD_TABLE = "t_ad_masterdata_field";
+
+	private ProcessorFactorySingleton processorFactory;
+
+	public ProcessorFactorySingleton getProcessorFactory() {
+		return processorFactory;
+	}
+
+	public void setProcessorFactory(ProcessorFactorySingleton processorFactory) {
+		this.processorFactory = processorFactory;
+	}
 
 	@PostConstruct
 	@RolesAllowed("Login")
@@ -457,39 +467,41 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 	@Override
     public void removeEntity(EntityMetaDataVO voEntity, boolean dropLayout) throws CommonBusinessException {
+		final MetaDataProvider mdProvider = MetaDataServerProvider.getInstance();
+		if (!voEntity.isVirtual()) {
+			if(hasEntityRows(voEntity)) {
+				if(voEntity.isStateModel()) {
+					GenericObjectFacadeLocal local = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
+					for(Integer iId : local.getGenericObjectIds(LangUtils.convertId(voEntity.getId()), new CollectableSearchExpression())) {
+						Set<String> setNames = new HashSet<String>();
+						try {
+							GenericObjectWithDependantsVO vo = local.getWithDependants(iId, setNames);
+							local.remove(vo, true);
+						}
+						catch(CommonBusinessException e) {
+							throw new NuclosFatalException(e);
+						}
+					}
 
-		if(hasEntityRows(voEntity)) {
-			if(voEntity.isStateModel()) {
-				GenericObjectFacadeLocal local = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
-				for(Integer iId : local.getGenericObjectIds(LangUtils.convertId(voEntity.getId()), new CollectableSearchExpression())) {
-					Set<String> setNames = new HashSet<String>();
-					try {
-						GenericObjectWithDependantsVO vo = local.getWithDependants(iId, setNames);
-						local.remove(vo, true);
-					}
-					catch(CommonBusinessException e) {
-						throw new NuclosFatalException(e);
-					}
 				}
+				else {
+					MasterDataFacadeLocal local = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+					for(MasterDataVO vo : local.getMasterData(voEntity.getEntity(), null, true)) {
+						try {
+							local.remove(voEntity.getEntity(), vo, false);
+						}
+						catch(NuclosBusinessRuleException e) {
+							throw new NuclosFatalException(e);
+						}
+						catch(CommonBusinessException e) {
+							throw new NuclosFatalException(e);
+						}
+					}
 
-			}
-			else {
-				MasterDataFacadeLocal local = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
-				for(MasterDataVO vo : local.getMasterData(voEntity.getEntity(), null, true)) {
-					try {
-						local.remove(voEntity.getEntity(), vo, false);
-					}
-					catch(NuclosBusinessRuleException e) {
-						throw new NuclosFatalException(e);
-					}
-					catch(CommonBusinessException e) {
-						throw new NuclosFatalException(e);
-					}
 				}
-
 			}
 		}
-		final MetaDataProvider mdProvider = MetaDataServerProvider.getInstance();
+
 		final EntityObjectMetaDbHelper helper = new EntityObjectMetaDbHelper(mdProvider);
 		final DbTable table = helper.getDbTable(voEntity);
 
@@ -630,11 +642,6 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			sOldPath = StringUtils.emptyIfNull(sOldPath);
 		}
 
-
-// eine Entit\u00e4t
-		EntityObjectMetaDbHelper dbHelperIst = new EntityObjectMetaDbHelper(DataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
-		DbTable tableIst = dbHelperIst.getDbTable(updatedMDEntity);
-
 		StaticMetaDataProvider staticMetaData = new StaticMetaDataProvider();
 		staticMetaData.addEntity(updatedMDEntity);
 		List<EntityFieldMetaDataVO> lstFields = new ArrayList<EntityFieldMetaDataVO>();
@@ -667,6 +674,10 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				}
 			}
 		}
+
+		EntityObjectMetaDbHelper dbHelperIst = new EntityObjectMetaDbHelper(DataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
+		DbTable tableIst = dbHelperIst.getDbTable(updatedMDEntity);
+
 		EntityObjectMetaDbHelper dbHelperSoll = new EntityObjectMetaDbHelper(DataBaseHelper.getDbAccess(), staticMetaData);
 		DbTable tableSoll = dbHelperSoll.getDbTable(updatedMDEntity);
 
@@ -730,9 +741,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			return resultMessage;
 		}
 
-
 		try {
-
 			DalUtils.updateVersionInformation(updatedMDEntity, getCurrentUserName());
 
 			if(updatedMDEntity.getId() != null) {
@@ -1426,7 +1435,48 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	}
 
 	@Override
+	@RolesAllowed("Login")
     public void invalidateServerMetadata() {
 	    MetaDataServerProvider.getInstance().revalidate();
     }
+
+	@Override
+	@RolesAllowed("Login")
+	public List<String> getVirtualEntities() {
+		List<String> result = new ArrayList<String>();
+		result.addAll(DataBaseHelper.getDbAccess().getTableNames(DbTableType.TABLE));
+		result.addAll(DataBaseHelper.getDbAccess().getTableNames(DbTableType.VIEW));
+		for (EntityMetaDataVO meta : getAllEntities()) {
+			result.remove(meta.getDbEntity());
+			result.remove("T_" + meta.getDbEntity().substring(2));
+		}
+		return result;
+	}
+
+	@Override
+	@RolesAllowed("Login")
+	public List<EntityFieldMetaDataVO> getVirtualEntityFields(String virtualentity) {
+		List<EntityFieldMetaDataVO> result = new ArrayList<EntityFieldMetaDataVO>();
+		DbTable tableMetaData = DataBaseHelper.getDbAccess().getTableMetaData(virtualentity);
+
+		for (DbColumn column : tableMetaData.getTableColumns()) {
+			EntityFieldMetaDataVO field = DalUtils.getFieldMeta(column);
+			field.setField(field.getField().toLowerCase());
+			field.setFallbacklabel(field.getField());
+			result.add(field);
+		}
+		return result;
+	}
+
+	@Override
+	public void tryVirtualEntitySelect(EntityMetaDataVO virtualentity) throws NuclosBusinessException {
+		JdbcEntityObjectProcessor processor = getProcessorFactory().newEntityObjectProcessor(virtualentity, new ArrayList<EntityFieldMetaDataVO>(), true);
+		try {
+			processor.getBySearchExpression(new CollectableSearchExpression(new CollectableIdCondition(new Integer(0))));
+		}
+		catch (Exception ex) {
+			error(ex);
+			throw new NuclosBusinessException(StringUtils.getParameterizedExceptionMessage("MetaDataFacade.tryVirtualEntitySelect.error", ex.getMessage()));
+		}
+	}
 }

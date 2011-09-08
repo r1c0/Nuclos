@@ -60987,5 +60987,80 @@
     "resourceID": "nuclos.validation.systementity.unique",
     "locale": "de",
     "text": "Verletzung der Eindeutigkeitseinschränkung mit Systemdaten."
+  },
+  {
+    "resourceID": "wizard.step.entitycommonproperties.virtual.label",
+    "locale": "i-default",
+    "text": "Virtual entity"
+  },
+  {
+    "resourceID": "wizard.step.entitycommonproperties.virtual.label",
+    "locale": "en",
+    "text": "Virtual entity"
+  },
+  {
+    "resourceID": "wizard.step.entitycommonproperties.virtual.label",
+    "locale": "de",
+    "text": "Virtuelle Entiät"
+  },
+  {
+    "resourceID": "wizard.step.entitycommonproperties.virtual.description",
+    "locale": "i-default",
+    "text": "Virtual entity (use an existing view)"
+  },
+  {
+    "resourceID": "wizard.step.entitycommonproperties.virtual.description",
+    "locale": "en",
+    "text": "Virtual entity (use an existing view)"
+  },
+  {
+    "resourceID": "wizard.step.entitycommonproperties.virtual.description",
+    "locale": "de",
+    "text": "Virtuelle Entiät (existierende Entität verwenden)"
+  },
+  {
+    "resourceID": "wizard.step.entitycommonproperties.error.virtual.fields",
+    "locale": "i-default",
+    "text": "Virtual entity is missing required attributes ({0})."
+  },
+  {
+    "resourceID": "wizard.step.entitycommonproperties.error.virtual.fields",
+    "locale": "en",
+    "text": "Virtual entity is missing required attributes ({0})."
+  },
+  {
+    "resourceID": "wizard.step.entitycommonproperties.error.virtual.fields",
+    "locale": "de",
+    "text": "In der virtuellen Entität fehlen benötigte Attribute ({0})"
+  },
+  {
+    "resourceID": "MetaDataFacade.tryVirtualEntitySelect.error",
+    "locale": "i-default",
+    "text": "Error validating virtual entity: {0}."
+  },
+  {
+    "resourceID": "MetaDataFacade.tryVirtualEntitySelect.error",
+    "locale": "en",
+    "text": "Error validating virtual entity: {0}."
+  },
+  {
+    "resourceID": "MetaDataFacade.tryVirtualEntitySelect.error",
+    "locale": "de",
+    "text": "Die virtuelle Entität konnte nicht validiert werden: {0}."
+  },
+  {
+    "resourceID": "wizard.step.inputattribute.validation.reference",
+    "locale": "i-default",
+    "text": "Please select a foreign entity for each reference field ({0})."
+  },
+  {
+    "resourceID": "wizard.step.inputattribute.validation.reference",
+    "locale": "en",
+    "text": "Please select a foreign entity for each reference field ({0})."
+  },
+  {
+    "resourceID": "wizard.step.inputattribute.validation.reference",
+    "locale": "de",
+    "text": "Bitte geben Sie für jedes Referenzfeld eine Verweisentität an ({0})."
   }
 ]

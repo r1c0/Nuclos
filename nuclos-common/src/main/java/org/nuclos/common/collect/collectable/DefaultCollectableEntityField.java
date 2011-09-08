@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 import org.apache.commons.lang.NullArgumentException;
-
 import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
@@ -39,7 +38,7 @@ import org.nuclos.common2.RelativeDate;
  */
 public class DefaultCollectableEntityField extends AbstractCollectableEntityField implements Serializable {
 
-	private final String entityName;	
+	private final String entityName;
 	private final String sName;
 	private final Class<?> cls;
 	private final String sLabel;
@@ -65,7 +64,7 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
      * @param sOutputFormat
 	 */
 	public DefaultCollectableEntityField(String sName, Class<?> cls, String sLabel, String sDescription,
-			Integer iMaxLength, Integer iPrecision, boolean bNullable, int iFieldType, String sFormatInput, 
+			Integer iMaxLength, Integer iPrecision, boolean bNullable, int iFieldType, String sFormatInput,
 			String sFormatOutput, String entityName) {
 		this(sName, cls, sLabel, sDescription, iMaxLength, iPrecision, bNullable, iFieldType, null,
 				CollectableUtils.getNullField(iFieldType), sFormatInput, sFormatOutput, entityName);
@@ -85,8 +84,8 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 	 * @precondition clctfDefault != null
 	 * @todo add precondition (sReferencedEntityName != null) --> (iFieldType == IDFIELD)
 	 */
-	public DefaultCollectableEntityField(String sName, Class<?> cls, String sLabel, String sDescription, Integer iMaxLength, 
-			Integer iPrecision, boolean bNullable, int iFieldType, String sReferencedEntityName, CollectableField clctfDefault, 
+	public DefaultCollectableEntityField(String sName, Class<?> cls, String sLabel, String sDescription, Integer iMaxLength,
+			Integer iPrecision, boolean bNullable, int iFieldType, String sReferencedEntityName, CollectableField clctfDefault,
 			String sFormatInput, String sFormatOutput, String entityName) {
 		if (clctfDefault == null) {
 			throw new NullArgumentException("clctfDefault");
@@ -106,7 +105,7 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 		this.sFormatOutput = sFormatOutput;
 		try {
 			CollectableUtils.validateFieldType(clctfDefault, this);
-			if (this.getJavaClass().equals(Date.class) && clctfDefault.getValue() != null && 
+			if (this.getJavaClass().equals(Date.class) && clctfDefault.getValue() != null &&
 				clctfDefault.getValue().equals(RelativeDate.today().toString())) {
 				//ok
 			}
@@ -124,8 +123,8 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 	 * @postcondition this.equals(clctef)
 	 */
 	public DefaultCollectableEntityField(CollectableEntityField clctef, String entityName) {
-		this(clctef.getName(), clctef.getJavaClass(), clctef.getLabel(), clctef.getDescription(), clctef.getMaxLength(), 
-				clctef.getPrecision(), clctef.isNullable(), clctef.getFieldType(), clctef.getReferencedEntityName(), 
+		this(clctef.getName(), clctef.getJavaClass(), clctef.getLabel(), clctef.getDescription(), clctef.getMaxLength(),
+				clctef.getPrecision(), clctef.isNullable(), clctef.getFieldType(), clctef.getReferencedEntityName(),
 				clctef.getDefault(), clctef.getFormatInput(), clctef.getFormatOutput(), entityName);
 	}
 
@@ -133,12 +132,12 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 	public String getName() {
 		return this.sName;
 	}
-	
+
 	@Override
 	public String getFormatInput() {
 		return this.sFormatInput;
 	}
-	
+
 	@Override
 	public String getFormatOutput() {
 		return this.sFormatOutput;
@@ -156,7 +155,7 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 
 	@Override
 	public String getLabel() {
-		return this.sLabel;
+		return this.sLabel == null ? this.sName : this.sLabel;
 	}
 
 	@Override
@@ -168,7 +167,7 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 	public Integer getMaxLength() {
 		return this.iMaxLength;
 	}
-	
+
 	@Override
 	public Integer getPrecision() {
 		return this.iPrecision;
@@ -204,5 +203,5 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 	public String getEntityName() {
 		return entityName;
 	}
-	
+
 }	// class DefaultCollectableEntityField

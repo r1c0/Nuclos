@@ -30,14 +30,19 @@ import org.nuclos.common.collection.PredicateUtils;
 import org.nuclos.server.dblayer.DbException;
 
 public class DbTable extends DbArtifact {
-	
+
 	private final List<DbTableArtifact> tableArtifacts;
-	
+	private final boolean virtual;
+
 	public DbTable(String tableName, DbTableArtifact...tableArtifacts) {
 		this(tableName, Arrays.asList(tableArtifacts));
 	}
-	
+
 	public DbTable(String tableName, Collection<? extends DbTableArtifact> tableArtifacts) {
+		this(tableName, tableArtifacts, false);
+	}
+
+	public DbTable(String tableName, Collection<? extends DbTableArtifact> tableArtifacts, boolean virtual) {
 		super(tableName);
 		for (DbTableArtifact tableArtifact : tableArtifacts) {
 			if (tableArtifact.getTableName() == null) {
@@ -47,9 +52,10 @@ public class DbTable extends DbArtifact {
 			}
 		}
 		this.tableArtifacts = new ArrayList<DbTableArtifact>(tableArtifacts);
+		this.virtual = virtual;
 		Collections.sort(this.tableArtifacts, DbArtifact.COMPARATOR);
 	}
-	
+
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
@@ -63,34 +69,34 @@ public class DbTable extends DbArtifact {
 	public String getTableName() {
 		return getSimpleName();
 	}
-	
+
 	public List<DbTableArtifact> getTableArtifacts() {
 		return tableArtifacts;
 	}
-	
+
 	public <T extends DbTableArtifact> List<T> getTableArtifacts(Class<T> clazz) {
 		return CollectionUtils.selectInstancesOf(tableArtifacts, clazz);
 	}
-	
+
 	public List<DbColumn> getTableColumns() {
 		return getTableArtifacts(DbColumn.class);
 	}
-	
+
 	public Pair<DbTable, List<DbTableArtifact>> flatten() {
 		return flatten(false);
 	}
-	
+
 	public Pair<DbTable, List<DbTableArtifact>> flatten(boolean flattenColumns) {
-		Predicate<DbTableArtifact> predicate; 
+		Predicate<DbTableArtifact> predicate;
 		if (flattenColumns) {
 			predicate = PredicateUtils.alwaysFalse();
-		} else {			
+		} else {
 			predicate = PredicateUtils.<DbTableArtifact>isInstanceOf(DbColumn.class);
 		}
 		Pair<List<DbTableArtifact>,List<DbTableArtifact>> p = CollectionUtils.split(tableArtifacts, predicate);
-		return Pair.makePair(new DbTable(getTableName(), p.x), p.y);
+		return Pair.makePair(new DbTable(getTableName(), p.x, virtual), p.y);
 	}
-	
+
 	@Override
 	protected boolean isUnchanged(DbArtifact a) {
 		DbTable other = (DbTable) a;
@@ -98,9 +104,13 @@ public class DbTable extends DbArtifact {
 		Map<String, DbTableArtifact> otherMap = DbArtifact.makeNameMap(other.getTableArtifacts());
 		return map.equals(otherMap);
 	}
-	
+
 	@Override
 	public <T> T accept(DbArtifactVisitor<T> visitor) throws DbException {
 		return visitor.visitTable(this);
+	}
+
+	public boolean isVirtual() {
+		return virtual;
 	}
 }

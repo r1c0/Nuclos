@@ -29,9 +29,9 @@ import org.nuclos.common2.exception.CommonFatalException;
 public class CollectableEOEntityField extends AbstractCollectableEntityField {
 
 	private final String entityName;
-	
+
 	private final EntityFieldMetaDataVO efMeta;
-	
+
 	public CollectableEOEntityField(EntityFieldMetaDataVO efMeta, String entityName) {
 		if (efMeta == null || entityName == null) {
 			throw new NullArgumentException("efMeta");
@@ -39,7 +39,7 @@ public class CollectableEOEntityField extends AbstractCollectableEntityField {
 		this.efMeta = efMeta;
 		this.entityName = entityName;
 	}
-	
+
 	@Override
 	public CollectableField getDefault() {
 		try {
@@ -47,7 +47,7 @@ public class CollectableEOEntityField extends AbstractCollectableEntityField {
 			if(sDefault == null || sDefault.length() == 0) {
 				return super.getDefault();
 			}
-			else {			
+			else {
 				Object o = SpringApplicationContextHolder.getBean("enumeratedDefaultValueProvider");
 				if (o != null && o instanceof EnumeratedDefaultValueProvider) {
 					return ((EnumeratedDefaultValueProvider)o).getDefaultValue(this.efMeta);
@@ -65,7 +65,7 @@ public class CollectableEOEntityField extends AbstractCollectableEntityField {
 
 	@Override
 	public String getDescription() {
-		return CommonLocaleDelegate.getResource(efMeta.getLocaleResourceIdForDescription(), efMeta.getFallbacklabel());
+		return CommonLocaleDelegate.getTextFallback(efMeta.getLocaleResourceIdForDescription(), efMeta.getFallbacklabel());
 	}
 
 	@Override
@@ -95,7 +95,7 @@ public class CollectableEOEntityField extends AbstractCollectableEntityField {
 
 	@Override
 	public String getLabel() {
-		return CommonLocaleDelegate.getResource(efMeta.getLocaleResourceIdForLabel(), efMeta.getFallbacklabel());		
+		return CommonLocaleDelegate.getTextFallback(efMeta.getLocaleResourceIdForLabel(), efMeta.getFallbacklabel());
 	}
 
 	@Override

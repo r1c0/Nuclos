@@ -797,7 +797,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
             return String.format("%s %s", column.getColumnName(), getDataType(column.getColumnType()));
         }
     }
-    
+
     protected String getColumnSpecNullable(DbColumn column) {
     	return String.format("%s %s %s", column.getColumnName(), getDataType(column.getColumnType()), DbNullable.NULL);
     }
@@ -851,20 +851,20 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
             public String transform(String c) { return c + " = ?"; }
         }));
     }
-    
+
     private String buildWhereString(final Map<String, Object> mpConditions) {
         if (mpConditions.isEmpty())
             return "1=1";
 
         return StringUtils.join(" AND ", CollectionUtils.transform(mpConditions.keySet(), new Transformer<String, String>() {
             @Override
-            public String transform(String c) { 
+            public String transform(String c) {
             	if(mpConditions.get(c) instanceof DbNull<?>) {
             		mpConditions.remove(c);
             		return c + " is null ";
             	}
-            	else 
-            		return c + " = ?"; 
+            	else
+            		return c + " = ?";
             	}
         }));
     }
@@ -886,19 +886,21 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     protected List<String> getSqlForCreateTable(DbTable table) {
         List<String> list = new ArrayList<String>();
         List<DbColumn> columns = table.getTableArtifacts(DbColumn.class);
-        list.add(String.format("CREATE TABLE %s(\n%s\n) %s",
-            getQualifiedName(table.getTableName()),
-            join(",\n", transform(columns, new Transformer<DbColumn, String>() {
-                @Override public String transform(DbColumn column) { return getColumnSpec(column, true); }
-            })),
-            getTablespaceSuffix(table)));
+        if (!table.isVirtual()) {
+	        list.add(String.format("CREATE TABLE %s(\n%s\n) %s",
+	            getQualifiedName(table.getTableName()),
+	            join(",\n", transform(columns, new Transformer<DbColumn, String>() {
+	                @Override public String transform(DbColumn column) { return getColumnSpec(column, true); }
+	            })),
+	            getTablespaceSuffix(table)));
+        }
         for (DbTableArtifact tableArtifact : table.getTableArtifacts()) {
             if (!columns.contains(tableArtifact))
                 list.addAll(getSqlForCreate(tableArtifact));
         }
         return list;
     }
-    
+
     @Override
 	protected abstract List<String> getSqlForAlterTableNotNullColumn(DbColumn column);
 
@@ -908,21 +910,21 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     	lstCreateColumn.add(String.format("ALTER TABLE %s ADD %s",
             getQualifiedName(column.getTableName()),
             getColumnSpec(column, true)));
-    	
+
     	if(column.getDefaultValue() != null && column.getNullable().equals(DbNullable.NOT_NULL)) {
     		lstCreateColumn.clear();
     		lstCreateColumn.add(String.format("ALTER TABLE %s ADD %s",
                 getQualifiedName(column.getTableName()),
                 getColumnSpecNullable(column)));
-    		
+
     		String sPlainUpdate = getSqlForUpdateNotNullColumn(column);
-    		
+
     		lstCreateColumn.add(sPlainUpdate);
     		lstCreateColumn.addAll((getSqlForAlterTableNotNullColumn(column)));
     	}
-    	
+
     	return lstCreateColumn;
-    	
+
     }
 
 	protected String getSqlForUpdateNotNullColumn(final DbColumn column) {
@@ -962,15 +964,15 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 			}
 
 			@Override
-			public String visitUpdate(DbUpdateStatement update) {				
+			public String visitUpdate(DbUpdateStatement update) {
 				String updateString = new String(sUpdate);
 				for(Object obj : update.getColumnValues().values()) {
 					updateString = org.apache.commons.lang.StringUtils.replace(updateString, "?", "'"+obj.toString()+"'");
 				}
 				return updateString;
 			}
-			
-			
+
+
 		});
 		return sPlainUpdate;
 	}
@@ -1009,7 +1011,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 
     @Override
     protected abstract List<String> getSqlForCreateIndex(DbIndex index);
-    
+
     @Override
     public String getSelectSqlForColumn(String table, DbColumnType columnType, List<?> viewPattern) {
     	String sql = null;
@@ -1098,11 +1100,11 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         // or JDBC escape syntax? String.format("{fn concat(%s,%s)}", x, y);
         return String.format("CONCAT(%s,%s)", x, y);
     }
-    
+
     protected String getSqlForCast(String x, DbColumnType columnType) {
         return String.format("CAST(%s AS %s)", x, getDataType(columnType));
     }
-    
+
     protected String getSqlForNullCheck(String x, String y) {
         return String.format("CASE WHEN %s IS NOT NULL THEN %s END", x, y);
     }
@@ -1146,8 +1148,13 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 
     @Override
     protected List<String> getSqlForDropTable(DbTable table) {
-        return Collections.singletonList(String.format("DROP TABLE %s",
-            getQualifiedName(table.getTableName())));
+    	if (!table.isVirtual()) {
+	        return Collections.singletonList(String.format("DROP TABLE %s",
+	            getQualifiedName(table.getTableName())));
+    	}
+    	else {
+    		return Collections.emptyList();
+    	}
     }
 
     @Override

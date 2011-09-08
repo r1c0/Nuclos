@@ -163,7 +163,7 @@ public class EntityObjectMetaDbHelper {
 					continue;
 				}
 
-				if (!fieldMeta.isReadonly())
+				if (!fieldMeta.isReadonly() && !foreignEntity.isVirtual())
 					fkConstraints.add(fkConstraint);
 
 				boolean isJoin = !StringUtils.toUpperCase(fieldMeta.getDbColumn()).startsWith("INTID_");
@@ -208,36 +208,38 @@ public class EntityObjectMetaDbHelper {
 		}
 
 		List<DbTableArtifact> tableArtifacts = new ArrayList<DbTableArtifact>();
-		// Columns
-		tableArtifacts.addAll(dbColumns.values());
-		// Primary Key
-		tableArtifacts.add(new DbPrimaryKeyConstraint(dbTableName, generateDbName("PK_" + tableName), Arrays.asList("INTID")));
-		// Foreign Keys
-		tableArtifacts.addAll(fkConstraints);
-		// Unique Columns
-		List<List<String>> uniqueColumnsList = new ArrayList<List<String>>();
-		// - System entities support multiple unique combinations
-		Collection<Set<String>> uniqueFieldCombinations = entityMeta.getUniqueFieldCombinations();
-		if (uniqueFieldCombinations != null) {
-			for (Set<String> uniqueFields : uniqueFieldCombinations) {
-				uniqueColumnsList.add(mapFieldList(uniqueFields, dbColumnsByField));
+		if (!entityMeta.isVirtual()) {
+			// Columns
+			tableArtifacts.addAll(dbColumns.values());
+			// Primary Key
+			tableArtifacts.add(new DbPrimaryKeyConstraint(dbTableName, generateDbName("PK_" + tableName), Arrays.asList("INTID")));
+			// Foreign Keys
+			tableArtifacts.addAll(fkConstraints);
+			// Unique Columns
+			List<List<String>> uniqueColumnsList = new ArrayList<List<String>>();
+			// - System entities support multiple unique combinations
+			Collection<Set<String>> uniqueFieldCombinations = entityMeta.getUniqueFieldCombinations();
+			if (uniqueFieldCombinations != null) {
+				for (Set<String> uniqueFields : uniqueFieldCombinations) {
+					uniqueColumnsList.add(mapFieldList(uniqueFields, dbColumnsByField));
+				}
 			}
-		}
 
-		// - Legacy behaviour: generate one combined unique key for all flagged columns
-		if (uniqueColumnsList.isEmpty() && simpleUniqueColumns.size() > 0) {
-			uniqueColumnsList.add(new ArrayList<String>(simpleUniqueColumns.values()));
-		}
-		// - Generate unique constraints (and remove index for the same columns)
-		for (List<String> uniqueColumns : uniqueColumnsList) {
-			tableArtifacts.add(new DbUniqueConstraint(dbTableName, generateDbName("XAK_" + tableName, uniqueColumns), uniqueColumns));
-			if (uniqueColumns.size() == 1) {
-				indexes.remove(uniqueColumns.get(0));
+			// - Legacy behaviour: generate one combined unique key for all flagged columns
+			if (uniqueColumnsList.isEmpty() && simpleUniqueColumns.size() > 0) {
+				uniqueColumnsList.add(new ArrayList<String>(simpleUniqueColumns.values()));
 			}
-		}
+			// - Generate unique constraints (and remove index for the same columns)
+			for (List<String> uniqueColumns : uniqueColumnsList) {
+				tableArtifacts.add(new DbUniqueConstraint(dbTableName, generateDbName("XAK_" + tableName, uniqueColumns), uniqueColumns));
+				if (uniqueColumns.size() == 1) {
+					indexes.remove(uniqueColumns.get(0));
+				}
+			}
 
-		// Indexes
-		tableArtifacts.addAll(indexes.values());
+			// Indexes
+			tableArtifacts.addAll(indexes.values());
+		}
 
 		// View
 		String viewName = getViewName(entityMeta);
@@ -256,7 +258,7 @@ public class EntityObjectMetaDbHelper {
 			}
 		}
 
-		DbTable dbTable = new DbTable(dbTableName, tableArtifacts);
+		DbTable dbTable = new DbTable(dbTableName, tableArtifacts, entityMeta.isVirtual());
 		return dbTable;
 	}
 
@@ -328,6 +330,9 @@ public class EntityObjectMetaDbHelper {
 	}
 
 	public static String getTableName(EntityMetaDataVO entityMeta) {
+		if (entityMeta.isVirtual()) {
+			return entityMeta.getVirtualentity();
+		}
 		String tableName = StringUtils.toUpperCase(entityMeta.getDbEntity());
 		if (tableName.startsWith("V_"))
 			tableName = "T_" + tableName.substring(2);

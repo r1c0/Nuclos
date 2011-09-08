@@ -19,7 +19,9 @@ package org.nuclos.common.dal.vo;
 import java.util.Collection;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.StringUtils;
+
 
 
 /**
@@ -35,10 +37,10 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 
 	private String entity;
 	private String dbEntity;
-	
+
 	private String systemIdPrefix;
 	private String menuShortcut;
-	
+
 	private Boolean editable;
 	private Boolean stateModel;
 	private Boolean logBookTracking;
@@ -60,26 +62,28 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	private String localeResourceIdForMenuPath;
 	private String localeResourceIdForTreeView;
 	private String localeResourceIdForTreeViewDescription;
-	
+
+	private String virtualentity;
+
 	private Collection<Set<String>> uniqueFieldCombinations;
 	private Collection<Set<String>> logicalUniqueFieldCombinations;
-	
+
 	private String documentPath;
 	private String reportFilename;
 
 	public EntityMetaDataVO() {
 	    super();
     }
-	
+
 	public EntityMetaDataVO(EntityObjectVO eo) {
 	    // super(eo);
 	    this.setId(eo.getId());
 	    this.setEntity(eo.getField("entity", String.class));
 	    this.setDbEntity(eo.getField("dbentity", String.class));
-	    
+
 	    this.setSystemIdPrefix(eo.getField("systemidprefix", String.class));
 	    this.setMenuShortcut(eo.getField("menushortcut", String.class));
-	    
+
 	    this.setEditable(eo.getField("editable", Boolean.class));
 	    this.setStateModel(eo.getField("usessatemodel", Boolean.class));
 	    this.setLogBookTracking(eo.getField("logbooktracking", Boolean.class));
@@ -89,7 +93,7 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	    this.setTreeGroup(eo.getField("treegroup", Boolean.class));
 	    this.setImportExport(eo.getField("importexport", Boolean.class));
 	    this.setFieldValueEntity(eo.getField("fieldvalueentity", Boolean.class));
-	    
+
 	    this.setAccelerator(eo.getField("accelerator", String.class));
 	    this.setAcceleratorModifier(eo.getField("acceleratormodifier", Integer.class));
 	    this.setFieldsForEquality(eo.getField("fieldsforequality", String.class));
@@ -99,9 +103,11 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	    this.setLocaleResourceIdForMenuPath(eo.getField("localeresourcem", String.class));
 	    this.setLocaleResourceIdForTreeView(eo.getField("localeresourcetw", String.class));
 	    this.setLocaleResourceIdForTreeViewDescription(eo.getField("localeresourcett", String.class));
-	    
+
 	    this.setDocumentPath(eo.getField("documentPath", String.class));
 	    this.setReportFilename(eo.getField("reportFilename", String.class));
+
+	    this.setVirtualentity(eo.getField("virtualentity", String.class));
     }
 
 	public void setEntity(String entity) {
@@ -151,7 +157,7 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	public void setImportExport(Boolean importExport) {
 		this.importExport = importExport;
 	}
-	
+
 	public void setFieldValueEntity(Boolean fieldValueEntity) {
 		this.fieldValueEntity = fieldValueEntity;
 	}
@@ -245,7 +251,7 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	public Boolean isImportExport() {
 		return importExport;
 	}
-	
+
 	public Boolean isFieldValueEntity() {
 		return fieldValueEntity;
 	}
@@ -289,7 +295,7 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	public String getLocaleResourceIdForTreeViewDescription() {
 		return localeResourceIdForTreeViewDescription;
 	}
-	
+
 	public Collection<Set<String>> getLogicalUniqueFieldCombinations() {
 		return logicalUniqueFieldCombinations;
 	}
@@ -298,7 +304,7 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 		Collection<Set<String>> logicalUniqueFieldCombinations) {
 		this.logicalUniqueFieldCombinations = logicalUniqueFieldCombinations;
 	}
-	
+
 	public Collection<Set<String>> getUniqueFieldCombinations() {
 		return uniqueFieldCombinations;
 	}
@@ -333,6 +339,23 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
     }
 
 	@Override
+	public String toString() {
+		return getEntity();
+	}
+
+	public String getVirtualentity() {
+		return virtualentity;
+	}
+
+	public void setVirtualentity(String virtualentity) {
+		this.virtualentity = virtualentity;
+	}
+
+	public boolean isVirtual() {
+		return !StringUtils.isNullOrEmpty(virtualentity);
+	}
+
+	@Override
 	public int hashCode() {
 		return this.getEntity().hashCode();
 	}
@@ -341,15 +364,8 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	public boolean equals(Object obj) {
 		if(obj instanceof EntityMetaDataVO) {
 			EntityMetaDataVO that = (EntityMetaDataVO)obj;
-			return StringUtils.equals(this.getEntity(), that.getEntity());
+			return LangUtils.equals(this.getEntity(), that.getEntity());
 		}
-			
 		return false;
 	}
-	
-	@Override
-	public String toString() {
-		return getEntity();
-	}	
-	
 }

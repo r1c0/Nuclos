@@ -241,7 +241,12 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 						try {
 							EntityMetaDataVO vo = ((EntityWrapper)obj).getWrappedEntity();
 							NuclosEntityNameStep.this.model.resetModel();
-							NuclosEntityNameStep.this.model.setHasRows(hasEntityRows(vo));
+							if (!vo.isVirtual()) {
+								NuclosEntityNameStep.this.model.setHasRows(hasEntityRows(vo));
+							}
+							else {
+								NuclosEntityNameStep.this.model.setHasRows(true);
+							}
 							NuclosEntityNameStep.this.model.setEditMode(true);
 							NuclosEntityNameStep.this.model.setEntityName(vo.getEntity());
 							NuclosEntityNameStep.this.model.setLabelSingular(CommonLocaleDelegate.getResource(vo.getLocaleResourceIdForLabel(), ""));
@@ -264,6 +269,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 							NuclosEntityNameStep.this.model.setNodeTooltipResource(vo.getLocaleResourceIdForTreeViewDescription());
 							NuclosEntityNameStep.this.model.setDocumentPath(vo.getDocumentPath());
 							NuclosEntityNameStep.this.model.setReportFilename(vo.getReportFilename());
+							NuclosEntityNameStep.this.model.setVirtualentity(vo.getVirtualentity());
 
 
 							if(vo.getResourceId() != null)

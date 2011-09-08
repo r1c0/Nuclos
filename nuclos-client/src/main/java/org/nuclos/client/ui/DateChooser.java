@@ -164,6 +164,8 @@ public class DateChooser extends JComponent implements Serializable {
 
 	private final boolean bTodayIsRelative;
 
+	private String actionCommand;
+
 	/**
 	 * Creates a <code>DateChooser</code> with no initial date and with the default number of columns.
 	 * @postcondition !isTodayRelative()
@@ -530,7 +532,7 @@ public class DateChooser extends JComponent implements Serializable {
 		ActionEvent event = null;
 		for (ActionListener listener : getActionListeners()) {
 			if (event == null)
-				event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null);
+				event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, getActionCommand());
 			listener.actionPerformed(event);
 		}
 	}
@@ -558,6 +560,14 @@ public class DateChooser extends JComponent implements Serializable {
 
 	public void setBackgroundColorProviderForTextField(ColorProvider colorproviderBackground) {
 		this.tfDate.setBackgroundColorProviderForTextField(colorproviderBackground);
+	}
+
+	public String getActionCommand() {
+		return actionCommand;
+	}
+
+	public void setActionCommand(String actionCommand) {
+		this.actionCommand = actionCommand;
 	}
 
 	class DateChooserFocusListener implements FocusListener {

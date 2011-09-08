@@ -34,12 +34,14 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.server.dal.specification.IDalVersionSpecification;
 import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.dblayer.structure.DbColumn;
+import org.nuclos.server.dblayer.structure.DbColumnType;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.nuclos.server.report.ByteArrayCarrier;
 import org.nuclos.server.resource.valueobject.ResourceFile;
 
 public class DalUtils {
-	
+
 	public static List<Integer> convertLongIdList(List<Long> listIds) {
 		if (listIds == null) {
 			return null;
@@ -50,7 +52,7 @@ public class DalUtils {
 		}
 		return result;
 	}
-	
+
 	public static List<Long> convertIntegerIdList(List<Integer> listIds) {
 		if (listIds == null) {
 			return null;
@@ -61,7 +63,7 @@ public class DalUtils {
 		}
 		return result;
 	}
-	
+
 	public static void addNucletEOSystemFields(List<EntityFieldMetaDataVO> entityFields, EntityMetaDataVO eMeta) {
 		entityFields.add(NuclosEOField.CHANGEDAT.getMetaData());
 		entityFields.add(NuclosEOField.CHANGEDBY.getMetaData());
@@ -76,7 +78,7 @@ public class DalUtils {
 			entityFields.add(NuclosEOField.STATENUMBER.getMetaData());
 		}
 	}
-	
+
 	public static boolean isNucletEOSystemField(EntityFieldMetaDataVO voField) {
 		for(NuclosEOField field : NuclosEOField.values()) {
 			if(field.getMetaData().getField().equals(voField.getField()))
@@ -84,21 +86,21 @@ public class DalUtils {
 		}
 		return false;
 	}
-	
+
 	public static Long getNextId() {
 		return LangUtils.convertId(DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
 	}
-	
-	public static void handleVersionUpdate(IDalVersionSpecification processor, 
+
+	public static void handleVersionUpdate(IDalVersionSpecification processor,
 		EntityObjectVO vo, String user) throws CommonStaleVersionException {
-		
+
 		if (vo.getId() != null) {
 			final Integer oldVersion = processor.getVersion(vo.getId());
 			if (!vo.getVersion().equals(oldVersion)) {
 				throw new CommonStaleVersionException();
 			}
 		}
-		
+
 		updateVersionInformation(vo, user);
 		vo.flagUpdate();
 	}
@@ -116,7 +118,7 @@ public class DalUtils {
 		} else {
 			vo.setVersion(vo.getVersion()+1);
 		}
-		
+
 		vo.setChangedBy(user);
 		vo.setChangedAt(InternalTimestamp.toInternalTimestamp(sysdate));
 	}
@@ -124,7 +126,7 @@ public class DalUtils {
 	public static <T> boolean isNuclosProcessor(AbstractDalVOWithVersion dalVO) {
 		return dalVO.processor() != null && isNuclosProcessor(dalVO.processor());
 	}
-	
+
 	public static boolean isNuclosProcessor(String processor) {
 		try {
 			Class<?> processorClzz = Class.forName(processor);
@@ -139,7 +141,7 @@ public class DalUtils {
 			throw new CommonFatalException(e);
 		}
 	}
-	
+
 	public static String getDbIdFieldName(String fieldName) {
 		final String uFieldName = fieldName.toUpperCase();
 		final int index_ = uFieldName.indexOf("_");
@@ -148,22 +150,87 @@ public class DalUtils {
 		}
 		return "INTID"+uFieldName.substring(index_);
 	}
-	
+
 	public static boolean isDbIdField(String fieldName) {
 		return fieldName.startsWith("INTID_");
 	}
-	
-   public static Class<?> getDbType(Class<?> javaType) {
-      if (javaType == ByteArrayCarrier.class || javaType == Object.class || javaType == NuclosImage.class) {
-         javaType = byte[].class;   // Column stores data (blob)
-      } else if (javaType == ResourceFile.class || javaType == GenericObjectDocumentFile.class) {
-      	return String.class;       // Column stores filename
-      } else if (javaType == DateTime.class) {
-      	return InternalTimestamp.class;
-      } else if (javaType == NuclosPassword.class) {
-      	return NuclosPassword.class;
-      }
-      return javaType;
-   }
-   
+
+	public static Class<?> getDbType(Class<?> javaType) {
+		if (javaType == ByteArrayCarrier.class || javaType == Object.class || javaType == NuclosImage.class) {
+			javaType = byte[].class; // Column stores data (blob)
+		} else if (javaType == ResourceFile.class || javaType == GenericObjectDocumentFile.class) {
+			return String.class; // Column stores filename
+		} else if (javaType == DateTime.class) {
+			return InternalTimestamp.class;
+		} else if (javaType == NuclosPassword.class) {
+			return NuclosPassword.class;
+		}
+		return javaType;
+	}
+
+	public static EntityFieldMetaDataVO getFieldMeta(DbColumn column) {
+		Class<?> cls = String.class;
+		Integer scale = null;
+		Integer precision = null;
+		String outputformat = null;
+		DbColumnType columnType = column.getColumnType();
+		if(columnType.getGenericType() != null) {
+			switch (columnType.getGenericType()) {
+			case DATE:
+			case DATETIME:
+				cls = Date.class;
+				break;
+			case NUMERIC:
+				scale = columnType.getPrecision();
+				precision = columnType.getScale();
+				// this seems wrong because it can be floating point number, too...
+				if(columnType.getPrecision() != null && columnType.getPrecision() == 1
+					&& columnType.getScale() != null && columnType.getScale() == 0) {
+					// TODO
+					// booleans are mapped as NUMBER(1), but it's possible that there are
+					// other columns which are not meant as a boolean.
+					cls = Boolean.class;
+				}
+				else if (columnType.getScale() != null && columnType.getScale() > 0) {
+					cls = Double.class;
+					outputformat = "#,##0.";
+					for (int i = 0; i < scale; i++) {
+						outputformat += "0";
+					}
+				}
+				else {
+					if (scale == null) {
+						// default
+						scale = 9;
+					}
+					cls = Integer.class;
+				}
+				break;
+			case VARCHAR:
+				cls = String.class;
+				scale = columnType.getLength();
+				break;
+			}
+		}
+
+		EntityFieldMetaDataVO field = new EntityFieldMetaDataVO();
+		field.setField(column.getColumnName());
+		field.setDbColumn(column.getColumnName());
+		field.setDataType(cls.getName());
+		field.setScale(scale);
+		field.setPrecision(precision);
+		field.setFormatOutput(outputformat);
+		field.setReadonly(false);
+		field.setUnique(false);
+		field.setNullable(true);
+		field.setIndexed(false);
+		field.setSearchable(false);
+		field.setModifiable(false);
+		field.setInsertable(false);
+		field.setLogBookTracking(false);
+		field.setShowMnemonic(false);
+		field.setPermissiontransfer(false);
+		return field;
+	}
+
 }

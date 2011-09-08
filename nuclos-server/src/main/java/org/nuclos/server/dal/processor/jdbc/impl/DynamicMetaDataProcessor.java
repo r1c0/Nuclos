@@ -19,7 +19,6 @@ package org.nuclos.server.dal.processor.jdbc.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,20 +33,20 @@ import org.nuclos.common.dal.util.DalTransformations;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.specification.IDalReadSpecification;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.structure.DbColumn;
-import org.nuclos.server.dblayer.structure.DbColumnType;
 import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.dblayer.structure.DbTableType;
 
 public class DynamicMetaDataProcessor implements IDalReadSpecification<EntityMetaDataVO> {
-	
+
 	public static final String DYNAMIC_ENTITY_VIEW_PREFIX = "V_DE_";//if you change this value, change the exception text <datasource.validation.dynamic.entity.name.1> too.
 	public static final String DYNAMIC_ENTITY_PREFIX = "dyn_";
 
 	private static final Logger LOG = Logger.getLogger(DynamicMetaDataProcessor.class);
-	
+
 	public DynamicMetaDataProcessor() {
 	}
 
@@ -140,13 +139,10 @@ public class DynamicMetaDataProcessor implements IDalReadSpecification<EntityMet
 	}
 
 	public static EntityFieldMetaDataVO newDynamicFieldVO(DbColumn dbColumn, long columnId, String entity, long entityId) {
-		String fieldName = dbColumn.getColumnName();
-		EntityFieldMetaDataVO result = null;
-
-		if("INTID_T_UD_GENERICOBJECT".equals(fieldName.toUpperCase())) {
-			result = new EntityFieldMetaDataVO();
-			result.setId(columnId);
-			result.setEntityId(entityId);
+		EntityFieldMetaDataVO result = DalUtils.getFieldMeta(dbColumn);
+		result.setId(columnId);
+		result.setEntityId(entityId);
+		if("INTID_T_UD_GENERICOBJECT".equals(result.getField().toUpperCase())) {
 			result.setField("genericObject");
 			result.setDbColumn("INTID_T_UD_GENERICOBJECT");
 			result.setDataType("java.lang.String");
@@ -159,59 +155,10 @@ public class DynamicMetaDataProcessor implements IDalReadSpecification<EntityMet
 			result.setDynamic(false);
 		}
 		else {
-			Class<?> cls = String.class;
-			Integer scale = null;
-			Integer precision = null;
-			String outputformat = null;
-			DbColumnType columnType = dbColumn.getColumnType();
 			LOG.debug("Create dynamic field metadata for " + entity + "." + dbColumn.getColumnName() + ": " + dbColumn.toString());
-			if(columnType.getGenericType() != null) {
-				switch (columnType.getGenericType()) {
-				case DATE:
-				case DATETIME:
-					cls = Date.class;
-					break;
-				case NUMERIC:
-					precision = columnType.getPrecision();
-					scale = columnType.getScale();
-					// this seems wrong because it can be floating point number, too...
-					if(columnType.getPrecision() != null && columnType.getPrecision() == 1
-						&& columnType.getScale() != null && columnType.getScale() == 0) {
-						// TODO
-						// booleans are mapped as NUMBER(1), but it's possible that there are
-						// other columns which are not meant as a boolean.
-						cls = Boolean.class;
-					}
-					else if (columnType.getScale() != null && columnType.getScale() > 0) {
-						cls = Double.class;
-						outputformat = "#,##0.";
-						for (int i = 0; i < scale; i++) {
-							outputformat += "0";
-						}
-					}
-					else {
-						cls = Integer.class;
-					}
-					break;
-				case VARCHAR:
-					cls = String.class;
-					scale = columnType.getLength();
-					break;
-				}
-			}
-			result = new EntityFieldMetaDataVO();
-			result.setId(columnId);
-			result.setEntityId(entityId);
-			result.setField(fieldName);
-			result.setDbColumn(fieldName);
-			result.setDataType(cls.getName());
-			result.setScale(scale);
-			result.setPrecision(precision);
-			result.setFormatOutput(outputformat);
 			result.setDynamic(true);
 		}
-
-		result.setFallbacklabel(fieldName);
+		result.setFallbacklabel(result.getField());
 		result.setNullable(true);
 		result.setSearchable(true);
 		result.setUnique(false);
@@ -219,7 +166,6 @@ public class DynamicMetaDataProcessor implements IDalReadSpecification<EntityMet
 		result.setLogBookTracking(false);
 		result.setInsertable(false);
 		result.setReadonly(true);
-
 		return result;
 	}
 }

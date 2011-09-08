@@ -38,6 +38,7 @@ public class Attribute {
 	boolean mandatory;
 	boolean logBook;
 	boolean distinct;
+	boolean readonly;
 	boolean modifiable;
 	EntityMetaDataVO metaVO;
 	boolean blnValueListProvider;
@@ -423,6 +424,14 @@ public class Attribute {
 
 	public void setOutputFormat(String outputFormat) {
 		this.outputFormat = outputFormat;
+	}
+
+	public boolean isReadonly() {
+		return readonly;
+	}
+
+	public void setReadonly(boolean readonly) {
+		this.readonly = readonly;
 	}
 
 	@Override

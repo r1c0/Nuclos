@@ -7394,6 +7394,13 @@
         "datascale": 255,
         "nullable": true
       },
+      {
+        "name": "virtualentity",
+        "dbfield": "STRVIRTUALENTITY",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true
+      }
     ]
   },
   {

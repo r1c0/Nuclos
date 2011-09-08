@@ -23,9 +23,8 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,8 +44,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.ui.DateChooser;
@@ -80,9 +79,11 @@ import org.pietschy.wizard.InvalidStateException;
 * @version 01.00.00
 */
 
-public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAbstractStep implements ChangeListener {
+public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAbstractStep implements ChangeListener, ActionListener {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeCommonPropertiesStep.class);
 
 	private final static String[] JAVA_TYPES = { String.class.getName(),
 		Integer.class.getName(),
@@ -93,6 +94,21 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 		byte[].class.getName(),
 		NuclosPassword.class.getName(),
 		NuclosImage.class.getName()};
+
+	private static final String ACTIONCOMMAND_NAME = "actionName";
+	private static final String ACTIONCOMMAND_DESCRIPTION = "actionDescription";
+	private static final String ACTIONCOMMAND_DATATYPE = "actionDatatype";
+	private static final String ACTIONCOMMAND_JAVATYPE = "actionJavatype";
+	private static final String ACTIONCOMMAND_FIELDWIDTH = "actionFieldwidth";
+	private static final String ACTIONCOMMAND_FIELDPRECISION = "actionFieldprecision";
+	private static final String ACTIONCOMMAND_OUTPUTFORMAT = "actionOutputformat";
+	private static final String ACTIONCOMMAND_REFERENCE = "actionReference";
+	private static final String ACTIONCOMMAND_VALUELIST = "actionValuelist";
+
+	private static final String ACTIONCOMMAND_MINVALUE = "actionMinValue";
+	private static final String ACTIONCOMMAND_MAXVALUE = "actionMaxValue";
+	private static final String ACTIONCOMMAND_MINVALUEDATE = "actionMinValueDate";
+	private static final String ACTIONCOMMAND_MAXVALUEDATE = "actionMaxValueDate";
 
 	JLabel lbName;
 	JTextField tfName;
@@ -161,14 +177,19 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 
 		lbName = new JLabel(getMessage("wizard.step.attributeproperties.1", "Anzeigename")+": ");
 		tfName = new JTextField();
+		tfName.setActionCommand(ACTIONCOMMAND_NAME);
 		tfName.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.1", "Anzeigename"));
 		tfName.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
+		tfName.addActionListener(this);
+
 		lbDesc = new JLabel(getMessage("wizard.step.attributeproperties.2", "Beschreibung")+": ");
 		tfDesc = new JTextField();
+		tfDesc.setActionCommand(ACTIONCOMMAND_DESCRIPTION);
 		tfDesc.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.2", "Beschreibung"));
 		tfDesc.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		lbDatatyp = new JLabel(getMessage("wizard.step.attributeproperties.3", "Datentyp")+": ");
+		tfDesc.addActionListener(this);
 
+		lbDatatyp = new JLabel(getMessage("wizard.step.attributeproperties.3", "Datentyp")+": ");
 		List<DataTyp> lstTypes = DataTyp.getAllDataTyps();
 		Collections.sort(lstTypes, new Comparator<DataTyp>() {
 			@Override
@@ -176,305 +197,81 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 				return o1.getName().toUpperCase().compareTo(o2.getName().toUpperCase());
 			}
 		});
-
 		cbxDatatyp = new JComboBox(lstTypes.toArray());
+		cbxDatatyp.setActionCommand(ACTIONCOMMAND_DATATYPE);
 		cbxDatatyp.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.3", "Datentyp"));
+		cbxDatatyp.addActionListener(this);
 
 		lbJavatype = new JLabel(getMessage("wizard.step.attributeproperties.javatype", "Javatyp")+": ");
 		List<String> javaTypes = CollectionUtils.asList(JAVA_TYPES);
 		Collections.sort(javaTypes);
 		cbxJavatype = new JComboBox(javaTypes.toArray());
+		cbxJavatype.setActionCommand(ACTIONCOMMAND_JAVATYPE);
 		cbxJavatype.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.javatype", "Javatyp"));
+		cbxJavatype.addActionListener(this);
 
 		lbFieldWidth = new JLabel(getMessage("wizard.datatype.3", "Feldbreite")+": ");
 		tfFieldWidth = new JTextField();
+		tfFieldWidth.setActionCommand(ACTIONCOMMAND_FIELDWIDTH);
 		tfFieldWidth.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
+		tfFieldWidth.addActionListener(this);
+
 		lbFieldPrecision = new JLabel(getMessage("wizard.datatype.4", "Nachkommastellen")+": ");
 		tfFieldPrecision = new JTextField();
+		tfFieldPrecision.setActionCommand(ACTIONCOMMAND_FIELDPRECISION);
 		tfFieldPrecision.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
+		tfFieldPrecision.addActionListener(this);
+
 		lbOutputFormat = new JLabel(getMessage("wizard.datatype.6", "Ausgabeformat")+": ");
 		tfOutputFormat = new JTextField();
+		tfOutputFormat.setActionCommand(ACTIONCOMMAND_OUTPUTFORMAT);
 		tfOutputFormat.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
+		tfOutputFormat.addActionListener(this);
 
 		lbMinValue = new JLabel(getMessage("wizard.step.attributeproperties.21", "Mindestwert"));
-		lbMaxValue = new JLabel(getMessage("wizard.step.attributeproperties.22", "Maximalwert"));
 		tfMinValue = new JTextField();
+		tfMinValue.setActionCommand(ACTIONCOMMAND_MINVALUE);
 		tfMinValue.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 		tfMinValue.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.23", "Bestimmen Sie einen Mindeswert, der in der Eingabemaske validiert wird."));
 		tfMinValue.setEnabled(false);
+		tfMinValue.addActionListener(this);
+
+		lbMaxValue = new JLabel(getMessage("wizard.step.attributeproperties.22", "Maximalwert"));
 		tfMaxValue = new JTextField();
+		tfMaxValue.setActionCommand(ACTIONCOMMAND_MAXVALUE);
 		tfMaxValue.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 		tfMaxValue.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.24", "Bestimmen Sie einen Maximalwert, der in der Eingabemaske validiert wird."));
 		tfMaxValue.setEnabled(false);
+		tfMaxValue.addActionListener(this);
 
 		datMinValue = new DateChooser();
+		datMinValue.setActionCommand(ACTIONCOMMAND_MINVALUEDATE);
 		datMinValue.setVisible(false);
 		datMinValue.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.23", "Bestimmen Sie einen Mindeswert, der in der Eingabemaske validiert wird."));
+		datMinValue.addActionListener(this);
+
 		datMaxValue = new DateChooser();
+		datMaxValue.setActionCommand(ACTIONCOMMAND_MAXVALUEDATE);
 		datMaxValue.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.24", "Bestimmen Sie einen Maximalwert, der in der Eingabemaske validiert wird."));
 		datMaxValue.setVisible(false);
+		datMaxValue.addActionListener(this);
 
 		btnDataTyp = new JButton("...");
 		btnDataTyp.setToolTipText(getMessage("wizard.step.attributeproperties.4", "Datentypen konfigurieren"));
 
 		lbReference = new JLabel(getMessage("wizard.step.attributeproperties.reference", "Referenzfeld"));
 		cbxReference = new JCheckBox();
+		cbxReference.setActionCommand(ACTIONCOMMAND_REFERENCE);
 		cbxReference.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.reference", "Ein Referenzfeld erm\u00f6glicht die Auswahl von Werten aus einer anderen Entit\u00e4t."));
+		cbxReference.addActionListener(this);
 
 		lbValueList = new JLabel(getMessage("wizard.step.attributeproperties.77", "Werteliste:"));
 		cbxValueList = new JCheckBox();
+		cbxValueList.setActionCommand(ACTIONCOMMAND_VALUELIST);
 		cbxValueList.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.22", "In einer Werteliste definieren Sie fest definierte Werte"));
+		cbxValueList.addActionListener(this);
 
 		lbInfo = new JLabel();
-
-		tfName.getDocument().addDocumentListener(new DocumentListener() {
-
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				doSomeWork(e);
-			}
-
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				doSomeWork(e);
-			}
-
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				doSomeWork(e);
-			}
-
-			protected void doSomeWork(DocumentEvent e) {
-				int size = e.getDocument().getLength();
-				if(size > 0) {
-					NuclosEntityAttributePropertiesStep.this.setComplete(true);
-				}
-				else  {
-					NuclosEntityAttributePropertiesStep.this.setComplete(false);
-				}
-
-				try {
-					String value = e.getDocument().getText(0, e.getDocument().getLength());
-					NuclosEntityAttributePropertiesStep.this.model.setName(value);
-					if(!blnDescModified) {
-						tfDesc.setText(e.getDocument().getText(0, e.getDocument().getLength()));
-					}
-					if(parentWizardModel.getAttributeModel() != null &&
-						!NuclosEntityAttributePropertiesStep.this.model.isEditMode()) {
-						for(Attribute attr : parentWizardModel.getAttributeModel().getAttributes()) {
-							if(attr.getLabel().equals(value)) {
-								lbInfo.setForeground(Color.RED);
-								lbInfo.setText(getMessage("wizard.step.attributeproperties.5", "Der Name wurde schon einmal vergeben"));
-								lbInfo.setVisible(true);
-								NuclosEntityAttributePropertiesStep.this.setComplete(false);
-								break;
-							}
-							else {
-								lbInfo.setVisible(false);
-								NuclosEntityAttributePropertiesStep.this.setComplete(true);
-							}
-						}
-					}
-				} catch (BadLocationException ex) {
-					Errors.getInstance().showExceptionDialog(NuclosEntityAttributePropertiesStep.this, ex);
-				}
-
-			}
-		});
-
-		tfDesc.addKeyListener(new KeyListener() {
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-				doSomeWork();
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				doSomeWork();
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				doSomeWork();
-			}
-
-			protected void doSomeWork() {
-				blnDescModified = true;
-			}
-		});
-
-		tfDesc.getDocument().addDocumentListener(new DocumentListener() {
-
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				doSomeWork(e);
-			}
-
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				doSomeWork(e);
-			}
-
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				doSomeWork(e);
-			}
-
-			protected void doSomeWork(DocumentEvent e) {
-				try {
-					NuclosEntityAttributePropertiesStep.this.model.setDesc(e.getDocument().getText(0, e.getDocument().getLength()));
-				} catch (BadLocationException ex) {
-					Errors.getInstance().showExceptionDialog(NuclosEntityAttributePropertiesStep.this, ex);
-				}
-
-			}
-		});
-
-		// Selection of datatype template -> update all attributes
-		cbxDatatyp.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						final Object obj = cbxDatatyp.getSelectedItem();
-						if(obj instanceof DataTyp) {
-							DataTyp typ = (DataTyp)obj;
-							cbxJavatype.setSelectedItem(typ.getJavaType());
-							tfOutputFormat.setText(typ.getOutputFormat());
-							tfFieldWidth.setText(typ.getScale() != null ? typ.getScale().toString(): "");
-							tfFieldPrecision.setText(typ.getPrecision() != null ? typ.getPrecision().toString(): "");
-							cbxReference.setSelected(typ.isRefenceTyp());
-							cbxValueList.setSelected(typ.isValueListTyp());
-							enableDatatypeConfiguration(((DataTyp)obj).getName().equals(customtypename));
-						}
-					}
-				});
-			}
-		});
-
-		btnDataTyp.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
-				final MainFrameTab tabDataType = new MainFrameTab(getMessage("wizard.step.attributeproperties.23", "Datentypen verwalten"));
-				final DataTypeCollectController dtcc = factory.newDataTypeCollectController(parent, tabDataType);
-				dtcc.addChangeListener(NuclosEntityAttributePropertiesStep.this);
-				parent.add(tabDataType);
-
-				try {
-					dtcc.runNew();
-				} catch(CommonBusinessException e1) {
-					Errors.getInstance().showExceptionDialog(parent, e1);
-				}
-			}
-		});
-
-		// class selected, update checkboxes state and set type
-		cbxJavatype.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						final Object obj = cbxJavatype.getSelectedItem();
-						enableMinMaxValue((String)obj);
-						if (obj != null) {
-							boolean customType = ((DataTyp)cbxDatatyp.getSelectedItem()).getName().equals(customtypename);
-							if (customType) {
-								if (Integer.class.getName().equals(obj)) {
-									tfFieldWidth.setEnabled(true);
-									tfFieldPrecision.setEnabled(false);
-									tfFieldPrecision.setText(null);
-									tfOutputFormat.setEnabled(true);
-								}
-								else if (Double.class.getName().equals(obj)) {
-									tfFieldWidth.setEnabled(true);
-									tfFieldPrecision.setEnabled(true);
-									tfOutputFormat.setEnabled(true);
-								}
-								else if (Date.class.getName().equals(obj)) {
-									tfFieldWidth.setEnabled(false);
-									tfFieldWidth.setText(null);
-									tfFieldPrecision.setEnabled(false);
-									tfFieldPrecision.setText(null);
-									tfOutputFormat.setEnabled(true);
-								}
-								else if (Boolean.class.getName().equals(obj)) {
-									tfFieldWidth.setEnabled(false);
-									tfFieldWidth.setText("1");
-									tfFieldPrecision.setEnabled(false);
-									tfFieldPrecision.setText(null);
-									tfOutputFormat.setEnabled(false);
-								}
-								else {
-									tfFieldWidth.setEnabled(true);
-									tfFieldPrecision.setEnabled(false);
-									tfFieldPrecision.setText(null);
-									tfOutputFormat.setEnabled(false);
-								}
-							}
-							if (String.class.getName().equals(obj) && customType) {
-								cbxReference.setEnabled(true);
-								cbxValueList.setEnabled(true);
-							}
-							else {
-								cbxReference.setSelected(false);
-								cbxValueList.setSelected(model.getAttribute().isValueList());
-								cbxReference.setEnabled(false);
-								cbxValueList.setEnabled(!model.isEditMode() && DataTyp.getDefaultStringTyp().equals(cbxDatatyp.getSelectedItem()));
-							}
-						}
-					}
-				});
-			}
-		});
-
-		cbxReference.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				if(e.getSource() instanceof JCheckBox) {
-					final JCheckBox cbx = (JCheckBox)e.getSource();
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							if(cbx.isSelected()) {
-								NuclosEntityAttributePropertiesStep.this.model.setReferenzTyp(true);
-								cbxValueList.setEnabled(false);
-							}
-							else {
-								NuclosEntityAttributePropertiesStep.this.model.setReferenzTyp(false);
-								cbxValueList.setEnabled(!model.isEditMode() && DataTyp.getDefaultStringTyp().equals(cbxDatatyp.getSelectedItem()));
-							}
-						}
-					});
-
-				}
-			}
-		});
-
-		cbxValueList.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				if(e.getSource() instanceof JCheckBox) {
-					final JCheckBox cbx = (JCheckBox)e.getSource();
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							boolean customType = ((DataTyp)cbxDatatyp.getSelectedItem()).getName().equals(customtypename);
-							if(cbx.isSelected()) {
-								NuclosEntityAttributePropertiesStep.this.model.setValueListTyp(true);
-								cbxReference.setEnabled(false);
-							}
-							else {
-								NuclosEntityAttributePropertiesStep.this.model.setValueListTyp(false);
-								cbxReference.setEnabled(!model.isEditMode() && String.class.getName().equals(cbxJavatype.getSelectedItem()) && customType);
-							}
-						}
-					});
-				}
-			}
-		});
 
 		this.add(lbName, "0,0");
 		this.add(tfName, "1,0");
@@ -502,65 +299,134 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 		this.add(tfMaxValue, "1,10");
 		this.add(datMaxValue, "1,10");
 		this.add(lbInfo, "0,11, 1,11");
+
+		tfName.getDocument().addDocumentListener(new DocumentListener() {
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				doSomeWork(e);
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				doSomeWork(e);
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				doSomeWork(e);
+			}
+
+			protected void doSomeWork(DocumentEvent e) {
+				if(!blnDescModified) {
+					tfDesc.setText(tfName.getText());
+				}
+				int size = e.getDocument().getLength();
+				if(size > 0) {
+					NuclosEntityAttributePropertiesStep.this.setComplete(true);
+				}
+				else  {
+					NuclosEntityAttributePropertiesStep.this.setComplete(false);
+				}
+			}
+		});
+
+		tfDesc.getDocument().addDocumentListener(new DocumentListener() {
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				doSomeWork(e);
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				doSomeWork(e);
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				doSomeWork(e);
+			}
+
+			protected void doSomeWork(DocumentEvent e) {
+				if (tfDesc.hasFocus()) {
+					blnDescModified = true;
+				}
+			}
+		});
+
+		btnDataTyp.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
+				final MainFrameTab tabDataType = new MainFrameTab(getMessage("wizard.step.attributeproperties.23", "Datentypen verwalten"));
+				final DataTypeCollectController dtcc = factory.newDataTypeCollectController(parent, tabDataType);
+				dtcc.addChangeListener(NuclosEntityAttributePropertiesStep.this);
+				parent.add(tabDataType);
+
+				try {
+					dtcc.runNew();
+				} catch(CommonBusinessException e1) {
+					Errors.getInstance().showExceptionDialog(parent, e1);
+				}
+			}
+		});
 	}
 
 	@Override
 	public void prepare() {
 		super.prepare();
-		if(this.model.isEditMode()) {
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					boolean isreference = model.getAttribute().getMetaVO() != null;
-					blnDescModified = true;
-					tfName.setText(model.getAttribute().getLabel());
-					tfDesc.setText(model.getAttribute().getDescription());
-					tfFieldWidth.setText(String.valueOf(model.getAttribute().getDatatyp().getScale()));
-					tfFieldPrecision.setText(String.valueOf(model.getAttribute().getDatatyp().getPrecision()));
-					tfOutputFormat.setText(model.getAttribute().getDatatyp().getOutputFormat());
-					cbxReference.setSelected(isreference);
-					cbxReference.setEnabled(columnTypeChangeAllowed);
-					cbxValueList.setSelected(model.getAttribute().isValueList());
-					cbxValueList.setEnabled(columnTypeChangeAllowed);
+		cbxDatatyp.removeActionListener(this);
+		cbxJavatype.removeActionListener(this);
 
-					// setup change options for current attribute
-					if(isreference) {
-						cbxDatatyp.setEnabled(columnTypeChangeAllowed);
-						cbxJavatype.setEnabled(columnTypeChangeAllowed);
-					}
-					else {
-						cbxDatatyp.removeAllItems();
-						if(!columnTypeChangeAllowed) {
-							for(DataTyp type : DataTyp.getConvertibleTypes(model.getAttribute().getDatatyp())) {
-								cbxDatatyp.addItem(type);
-							}
-						}
-						else {
-							for(DataTyp type : DataTyp.getAllDataTyps()) {
-								cbxDatatyp.addItem(type);
-							}
-						}
-						cbxDatatyp.setEnabled(true);
+		if (model.isEditMode() || parentWizardModel.isVirtual()) {
+			blnDescModified = model.isEditMode();
+			tfName.setText(model.getAttribute().getLabel());
+			tfDesc.setText(model.getAttribute().getDescription());
+			tfFieldWidth.setText(model.getAttribute().getDatatyp().getScale() == null ? null : String.valueOf(model.getAttribute().getDatatyp().getScale()));
+			tfFieldPrecision.setText(model.getAttribute().getDatatyp().getPrecision() == null ? null : String.valueOf(model.getAttribute().getDatatyp().getPrecision()));
+			tfOutputFormat.setText(model.getAttribute().getDatatyp().getOutputFormat());
+			cbxReference.setSelected(model.getAttribute().getMetaVO() != null);
+			cbxValueList.setSelected(model.getAttribute().isValueList());
 
-						cbxJavatype.removeAllItems();
-						cbxJavatype.addItem(model.getAttribute().getDatatyp().getJavaType());
-						if (!String.class.getName().equals(model.getAttribute().getDatatyp().getJavaType())) {
-							cbxJavatype.addItem(String.class.getName());
-						}
-					}
-					DataTyp current = model.getAttribute().getDatatyp();
-					customtype.setJavaType(current.getJavaType());
-					customtype.setScale(current.getScale());
-					customtype.setPrecision(current.getPrecision());
-					customtype.setOutputFormat(current.getOutputFormat());
-					customtype.setInputFormat(current.getOutputFormat());
-
-					cbxDatatyp.addItem(customtype);
-					cbxDatatyp.setSelectedItem(NuclosEntityAttributePropertiesStep.this.model.getAttribute().getDatatyp());
-					setInputValidation();
+			// setup change options for current attribute
+			cbxDatatyp.removeAllItems();
+			if (parentWizardModel.isVirtual()) {
+				if (!customtypename.equals(model.getAttribute().getDatatyp().getName())) {
+					cbxDatatyp.addItem(model.getAttribute().getDatatyp());
 				}
-			});
+			}
+			else if (!columnTypeChangeAllowed) {
+				for(DataTyp type : DataTyp.getConvertibleTypes(model.getAttribute().getDatatyp())) {
+					cbxDatatyp.addItem(type);
+				}
+			}
+			else {
+				for(DataTyp type : DataTyp.getAllDataTyps()) {
+					cbxDatatyp.addItem(type);
+				}
+			}
 
+			DataTyp current = model.getAttribute().getDatatyp();
+			customtype.setJavaType(current.getJavaType());
+			customtype.setScale(current.getScale());
+			customtype.setPrecision(current.getPrecision());
+			customtype.setOutputFormat(current.getOutputFormat());
+			customtype.setInputFormat(current.getOutputFormat());
+
+			setInputValidation(current.getJavaType(), model.getAttribute().getInputValidation());
+
+			cbxDatatyp.addItem(customtype);
+			cbxDatatyp.setSelectedItem(NuclosEntityAttributePropertiesStep.this.model.getAttribute().getDatatyp());
+
+			if (!columnTypeChangeAllowed || parentWizardModel.isVirtual()) {
+				cbxJavatype.removeAllItems();
+				cbxJavatype.addItem(model.getAttribute().getDatatyp().getJavaType());
+				if (!String.class.getName().equals(model.getAttribute().getDatatyp().getJavaType())) {
+					cbxJavatype.addItem(String.class.getName());
+				}
+			}
 		}
 		else {
 			if(parentWizardModel.isStateModel()) {
@@ -578,48 +444,129 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 				}
 			}
 			cbxDatatyp.addItem(customtype);
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					if(model.getAttribute().getDatatyp() == null) {
-						cbxDatatyp.setSelectedItem(DataTyp.getDefaultStringTyp());
-					}
-					else {
-						cbxDatatyp.setSelectedItem(model.getAttribute().getDatatyp());
-					}
-				}
-			});
+			if(model.getAttribute().getDatatyp() == null) {
+				cbxDatatyp.setSelectedItem(DataTyp.getDefaultStringTyp());
+			}
+			else {
+				cbxDatatyp.setSelectedItem(model.getAttribute().getDatatyp());
+			}
 		}
+		cbxDatatyp.addActionListener(this);
+		cbxJavatype.addActionListener(this);
+
+		updateState();
+		tfName.requestFocus();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		LOG.debug(MessageFormat.format("actionPerformed({0})", String.valueOf(e)));
+		updateState();
+	}
+
+	private void updateState() {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				tfName.requestFocus();
+				DataTyp selectedType = (DataTyp) cbxDatatyp.getSelectedItem();
+				Boolean isCustomType = selectedType.getName().equals(customtypename);
+
+				if(parentWizardModel.getAttributeModel() != null && !model.isEditMode()) {
+					for(Attribute attr : parentWizardModel.getAttributeModel().getAttributes()) {
+						if(attr.getLabel().equals(tfName.getText())) {
+							lbInfo.setForeground(Color.RED);
+							lbInfo.setText(getMessage("wizard.step.attributeproperties.5", "Der Name wurde schon einmal vergeben"));
+							lbInfo.setVisible(true);
+							setComplete(false);
+							break;
+						}
+						else {
+							lbInfo.setVisible(false);
+							setComplete(true);
+						}
+					}
+				}
+
+				cbxJavatype.setEnabled(isCustomType);
+				tfOutputFormat.setEnabled(isCustomType);
+				tfFieldWidth.setEnabled(isCustomType);
+				tfFieldPrecision.setEnabled(isCustomType);
+				cbxReference.setEnabled(isCustomType && columnTypeChangeAllowed && !selectedType.isValueListTyp());
+				cbxValueList.setEnabled(DataTyp.getDefaultStringTyp().equals(selectedType) && columnTypeChangeAllowed && !selectedType.isRefenceTyp());
+
+				if (!isCustomType) {
+					cbxJavatype.getModel().setSelectedItem(selectedType.getJavaType());
+					tfOutputFormat.setText(selectedType.getOutputFormat());
+					tfFieldWidth.setText(selectedType.getScale() != null ? selectedType.getScale().toString(): "");
+					tfFieldPrecision.setText(selectedType.getPrecision() != null ? selectedType.getPrecision().toString(): "");
+					cbxReference.setSelected(selectedType.isRefenceTyp());
+					cbxValueList.setSelected(selectedType.isValueListTyp());
+					setInputValidation(selectedType.getJavaType(), selectedType.getInputFormat());
+				}
+				else {
+					String clazz = (String) cbxJavatype.getSelectedItem();
+					if (Integer.class.getName().equals(clazz)) {
+						tfFieldWidth.setEnabled(true);
+						tfFieldPrecision.setEnabled(false);
+						tfFieldPrecision.setText(null);
+						tfOutputFormat.setEnabled(true);
+					}
+					else if (Double.class.getName().equals(clazz)) {
+						tfFieldWidth.setEnabled(true);
+						tfFieldPrecision.setEnabled(true);
+						tfOutputFormat.setEnabled(true);
+					}
+					else if (Date.class.getName().equals(clazz)) {
+						tfFieldWidth.setEnabled(false);
+						tfFieldWidth.setText(null);
+						tfFieldPrecision.setEnabled(false);
+						tfFieldPrecision.setText(null);
+						tfOutputFormat.setEnabled(true);
+					}
+					else if (Boolean.class.getName().equals(clazz)) {
+						tfFieldWidth.setEnabled(false);
+						tfFieldWidth.setText("1");
+						tfFieldPrecision.setEnabled(false);
+						tfFieldPrecision.setText(null);
+						tfOutputFormat.setEnabled(false);
+					}
+					else {
+						tfFieldWidth.setEnabled(true);
+						tfFieldPrecision.setEnabled(false);
+						tfFieldPrecision.setText(null);
+						tfOutputFormat.setEnabled(false);
+					}
+				}
+				enableMinMaxValue((String) cbxJavatype.getSelectedItem());
+
+				if (parentWizardModel.isVirtual()) {
+					cbxJavatype.setEnabled(false);
+					tfFieldWidth.setEnabled(false);
+					tfFieldPrecision.setEnabled(false);
+					cbxReference.setEnabled(false);
+					cbxValueList.setEnabled(false);
+					tfMinValue.setEnabled(false);
+					tfMaxValue.setEnabled(false);
+					datMinValue.setEnabled(false);
+					datMaxValue.setEnabled(false);
+				}
 			}
 		});
 	}
 
-	private void setInputValidation() {
-		ItemListener li[] = cbxDatatyp.getItemListeners();
-		for(ItemListener l : li) {
-			cbxDatatyp.removeItemListener(l);
-		}
-		Attribute attr = this.model.getAttribute();
-        String sInputValidation = attr.getInputValidation();
-		if(sInputValidation != null && sInputValidation.length() > 0) {
-			String s[] = sInputValidation.split(" ");
-			if(attr.getDatatyp().getJavaType().equals("java.lang.Integer") || attr.getDatatyp().getJavaType().equals("java.lang.Double")) {
+	private void setInputValidation(String clazz, String input) {
+		if(input != null && input.length() > 0) {
+			String s[] = input.split(" ");
+			if(clazz.equals("java.lang.Integer") || clazz.equals("java.lang.Double")) {
 				tfMinValue.setText(s[0]);
 				tfMaxValue.setText(s[1]);
 			}
-			else if(attr.getDatatyp().getJavaType().equals("java.util.Date")) {
+			else if(clazz.equals("java.util.Date")) {
 				Date dateMin = new Date(Long.parseLong(s[0]));
 				Date dateMax = new Date(Long.parseLong(s[1]));
 				datMinValue.setDate(dateMin);
 				datMaxValue.setDate(dateMax);
 			}
-		}
-		for(ItemListener l : li) {
-			cbxDatatyp.addItemListener(l);
 		}
     }
 
@@ -637,6 +584,8 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
         	throw new InvalidStateException();
 		}
 		super.applyState();
+		model.setName(tfName.getText());
+		model.setDesc(tfDesc.getText());
 		DataTyp selectedType = (DataTyp) cbxDatatyp.getSelectedItem();
 		boolean customType = selectedType.getName().equals(customtypename);
 		if (customType) {
@@ -692,6 +641,7 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 		}
 		model.getAttribute().setDatatyp(selectedType);
 		model.getAttribute().setOutputFormat(selectedType.getOutputFormat());
+
 		if(!this.model.isValueListTyp() && !this.model.isRefernzTyp()) {
 			model.getAttribute().setMetaVO(null);
 			model.getAttribute().setField(null);
@@ -797,17 +747,7 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 					cbxDatatyp.setSelectedItem(typ);
 				}
 			});
-
 		}
-	}
-
-	private void enableDatatypeConfiguration(boolean custom) {
-		cbxJavatype.setEnabled(custom);
-		tfOutputFormat.setEnabled(custom);
-		tfFieldWidth.setEnabled(custom);
-		tfFieldPrecision.setEnabled(custom);;
-		cbxReference.setEnabled(custom);
-		cbxValueList.setEnabled(DataTyp.getDefaultStringTyp().equals(cbxDatatyp.getSelectedItem()));
 	}
 
 	private void enableMinMaxValue(String dataTyp) {
@@ -852,5 +792,4 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 	public void setColumnTypeChangeAllowed(boolean blnAllowed)  {
 		this.columnTypeChangeAllowed = blnAllowed;
 	}
-
 }

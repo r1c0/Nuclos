@@ -31,25 +31,28 @@ import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.wizard.model.Attribute;
 import org.nuclos.client.wizard.model.EntityAttributeTableModel;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeInputStep;
+import org.nuclos.client.wizard.steps.NuclosEntityAttributeRelationShipStep;
+import org.nuclos.client.wizard.steps.NuclosEntityAttributeTranslationStep;
 import org.nuclos.client.wizard.steps.NuclosEntityFinalStep;
 import org.nuclos.client.wizard.util.ModifierMap;
 import org.nuclos.common.EntityTreeViewVO;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.resource.valueobject.ResourceVO;
+import org.pietschy.wizard.WizardStep;
 import org.pietschy.wizard.models.StaticModel;
 
 /**
 * <br>
 * Created by Novabit Informationssysteme GmbH <br>
 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
-* 
+*
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
 
 public class NuclosEntityWizardStaticModel extends StaticModel {
-	
+
 	String entityName;
 	String modifiedEntityName;
 	String labelSingular;
@@ -80,31 +83,31 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	boolean blnCreateLayout;
 	Integer iModifier;
 	String sAccelerator;
-	
+
 	String labelSingularRes;
 	String menuPathRes;
 	String nodeLabelRes;
 	String nodeTooltipRes;
 	String documentPath;
 	String reportFilename;
-	
-	
+	String virtualentity;
+
 	boolean blnImportTable;
 	String jdbcUrl;
 	String externalUser;
-	String externalPassword;	
+	String externalPassword;
 	String externalTable;
-	
+
 	boolean blnEditMode;
 	boolean blnAdvancedMode;
-	
+
 	boolean blnHasRows;
-	
+
 	//DatabaseStructureChangeResultVO resultVO;
 	String resultText;
-	
+
 	MainFrameTab ifrm;
-	
+
 	NuclosEntityWizard wizard;
 
 	public NuclosEntityWizardStaticModel() {
@@ -113,39 +116,39 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 		lstTreeView = new ArrayList<EntityTreeViewVO>();
 		resultText = new String();
 	}
-	
+
 	public void setWizard(NuclosEntityWizard wizard) {
-		this.wizard = wizard;		
+		this.wizard = wizard;
 	}
-	
+
 	public void cancelWizard() {
 		this.wizard.getCancelAction().actionPerformed(null);
 	}
-	
+
 	public void setParentFrame(MainFrameTab frame) {
 		ifrm = frame;
 	}
-	
+
 	public MainFrameTab getParentFrame() {
 		return ifrm;
 	}
-	
+
 	public void setEditMode(boolean editMode) {
-		this.blnEditMode = editMode;		
+		this.blnEditMode = editMode;
 	}
-	
+
 	public boolean isEditMode() {
 		return blnEditMode;
 	}
-	
+
 	public void setHasRows(boolean hasRows) {
-		this.blnHasRows = hasRows;		
+		this.blnHasRows = hasRows;
 	}
-	
+
 	public boolean hasRows() {
 		return this.blnHasRows;
 	}
-	
+
 	public String getTableOrViewName() {
 		if(strTableName != null && !strTableName.startsWith("V_"))
 			strTableName = "V_" + strTableName;
@@ -158,12 +161,12 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 			}
 		}
 		else if (strTableName != null && strTableName.length() < 1) {
-			String sTable = "V_EO_" + entityName.replaceAll(" " ,"").toUpperCase(); 
+			String sTable = "V_EO_" + entityName.replaceAll(" " ,"").toUpperCase();
 			return sTable;
 		}
 		else if(strTableName != null) {
 			return strTableName;
-		}				
+		}
 		else {
 			String sTable = "V_EO_" + entityName.replaceAll(" " ,"").toUpperCase();
 			if(sTable.length() > 30) {
@@ -172,11 +175,11 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 			return sTable;
 		}
 	}
-	
+
 	public void setTableOrViewName(String sTableName) {
 		strTableName = sTableName;
-	}	
-	
+	}
+
 	public String getEntityName() {
 		return entityName;
 	}
@@ -184,7 +187,7 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	public void setEntityName(String entityName) {
 		this.entityName = entityName;
 	}
-	
+
 	public String getModifiedEntityName() {
 		return modifiedEntityName;
 	}
@@ -212,7 +215,7 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 		EntityAttributeTableModel attributeModel) {
 		this.attributeModel = attributeModel;
 	}
-	
+
 	public boolean isLogbook() {
 		return blnLogbook;
 	}
@@ -236,7 +239,7 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	public void setEditable(boolean blnEditable) {
 		this.blnEditable = blnEditable;
 	}
-	
+
 	public boolean isImExportable() {
 		return blnImExport;
 	}
@@ -244,7 +247,7 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	public void setImExport(boolean blnImExport) {
 		this.blnImExport = blnImExport;
 	}
-	
+
 	public boolean isShowRelation() {
 		return blnShowRelation;
 	}
@@ -260,7 +263,7 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	public void setShowGroups(boolean blnShowGroups) {
 		this.blnShowGroups = blnShowGroups;
 	}
-	
+
 	public boolean isStateModel() {
 		return blnStateModel;
 	}
@@ -268,7 +271,7 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	public void setStateModel(boolean blnStateModel) {
 		this.blnStateModel = blnStateModel;
 	}
-	
+
 	public boolean isCachable() {
 		return blnCachable;
 	}
@@ -276,44 +279,44 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	public void setCachable(boolean blnCachable) {
 		this.blnCachable = blnCachable;
 	}
-	
+
 	public String getNodeLabel() {
 		return nodeLabel;
 	}
-	
+
 	public String getNodeLabelForMasterDataTable() {
 		String str = null;
 		if(this.nodeLabel != null) {
 			str = new String(this.nodeLabel);
-		}		
-		
+		}
+
 		return str;
 	}
 
 	public void setNodeLabel(String nodeLabel) {
 		this.nodeLabel = nodeLabel;
 	}
-	
+
 	public List<String> getFieldsInNodeLabel() {
 		List<String> lstFields = new ArrayList<String>();
-		
+
 		String sField = getNodeLabel();
 		Pattern referencedEntityPattern = Pattern.compile ("[$][{][\\w\\[\\]]+[}]");
 	    Matcher referencedEntityMatcher = referencedEntityPattern.matcher (sField);
 	    StringBuffer sb = new StringBuffer();
-	    
+
 		while (referencedEntityMatcher.find()) {
 		  Object value = referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1);
-		  	  	
-		  String sName = value.toString();		  
+
+		  String sName = value.toString();
 		  referencedEntityMatcher.appendReplacement (sb, sName);
 		}
 
       // complete the transfer to the StringBuffer
       referencedEntityMatcher.appendTail (sb);
       sField = sb.toString();
-		
-		
+
+
 		String s = StringUtils.replace(StringUtils.replace(getNodeLabel(), "]", " "), "[", " ");
 		if(s != null) {
 			StringTokenizer st = new StringTokenizer(s, " ");
@@ -323,10 +326,10 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 		}
 		return lstFields;
 	}
-	
+
 	public List<String> getFieldsInNodeDirectory() {
 		List<String> lstFields = new ArrayList<String>();
-		
+
 		String s = StringUtils.replace(StringUtils.replace(getDocumentPath(), "]", " "), "[", " ");
 		if(s != null) {
 		StringTokenizer st = new StringTokenizer(s, " ");
@@ -336,10 +339,10 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 		}
 		return lstFields;
 	}
-	
+
 	public List<String> getFieldsInNodeReportName() {
 		List<String> lstFields = new ArrayList<String>();
-		
+
 		String s = StringUtils.replace(StringUtils.replace(getReportFilename(), "]", " "), "[", " ");
 		if(s != null) {
 		StringTokenizer st = new StringTokenizer(s, " ");
@@ -349,10 +352,10 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 		}
 		return lstFields;
 	}
-	
+
 	public List<String> getFieldsInNodeTooltip() {
 		List<String> lstFields = new ArrayList<String>();
-		
+
 		String s = StringUtils.replace(StringUtils.replace(getNodeTooltip(), "]", " "), "[", " ");
 		if(s != null) {
 			StringTokenizer st = new StringTokenizer(s, " ");
@@ -362,7 +365,7 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 		}
 		return lstFields;
 	}
-	
+
 	public List<String> getFieldsInMultiEditEquation() {
 		List<String> lstFields = new ArrayList<String>();
 		String s = getMultiEditEquation();
@@ -378,14 +381,14 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	public String getNodeTooltip() {
 		return nodeTooltip;
 	}
-	
+
 	public String getNodeTooltipForMasterDataTable() {
 		String str = null;
 		if(this.nodeTooltip != null) {
 			str = new String(this.nodeTooltip);
 		}
-		
-		
+
+
 		return str;
 	}
 
@@ -456,7 +459,7 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	public void setMenuPath(String menuPath) {
 		this.menuPath = menuPath;
 	}
-	
+
 	public String getMultiEditEquation() {
 		return strMultiEditEquation;
 	}
@@ -464,7 +467,7 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	public void setMultiEditEquation(String multiEditEquation) {
 		this.strMultiEditEquation = multiEditEquation;
 	}
-	
+
 	public void setMultiEditEquation(Set<String> multiEditEquation) {
 		if(multiEditEquation.size() < 1)
 			return;
@@ -473,13 +476,13 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 			str += (" " + s);
 		}
 		this.strMultiEditEquation = str;
-		 
+
 	}
-		
+
 	public Integer getModifier() {
 		return iModifier;
 	}
-	
+
 	public String getModifierAsString() {
 		String sModifier = null;
 		if(iModifier == null)
@@ -491,15 +494,15 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 				break;
 			}
 		}
-		
-		
+
+
 		return sModifier;
 	}
 
 	public void setModifier(Integer iModifier) {
 		this.iModifier = iModifier;
 	}
-	
+
 	public String getAccelerator() {
 		return sAccelerator;
 	}
@@ -507,23 +510,23 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	public void setAccelerator(String sAccelerator) {
 		this.sAccelerator = sAccelerator;
 	}
-	
+
 	public void setUserRights(List<MasterDataVO> userRights) {
 		this.lstUserRights = userRights;
 	}
-	
+
 	public List<MasterDataVO> getUserRights() {
 		return lstUserRights;
 	}
-	
+
 	public void setTranslation(List<TranslationVO> translation) {
 		this.lstTranslation = translation;
 	}
-	
+
 	public List<TranslationVO> getTranslation() {
 		return lstTranslation;
 	}
-	
+
 	public boolean isImportTable() {
 		return blnImportTable;
 	}
@@ -563,7 +566,7 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	public void setExternalTable(String externalTable) {
 		this.externalTable = externalTable;
 	}
-	
+
 	public String getResultText() {
 		return resultText;
 	}
@@ -571,7 +574,7 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	public void setResultText(String resultText) {
 		this.resultText = resultText;
 	}
-	
+
 	public String getSystemIdPrefix() {
 		return systemIdPrefix;
 	}
@@ -584,8 +587,8 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 		setEntityName(null);
 		setLabelSingular(null);
 		setEditable(true);
-		setSearchable(true);		
-		setAttributeModel(null);		
+		setSearchable(true);
+		setAttributeModel(null);
 		setTableOrViewName(null);
 		setMenuPath(null);
 		setStateModel(false);
@@ -607,12 +610,12 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 		setMenuPathResource(null);
 		setNodeLabelResource(null);
 		setNodeTooltipResource(null);
-		
-		
+
+
 		lstUserRights = new ArrayList<MasterDataVO>();
 		lstTranslation = new ArrayList<TranslationVO>();
 		lstTreeView = new ArrayList<EntityTreeViewVO>();
-		
+
 		Iterator it = this.stepIterator();
 		while(it.hasNext()) {
 			Object step =  it.next();
@@ -621,14 +624,14 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 				stepToReset.resetStep();
 			}
 		}
-		
+
 	}
 
 	@Override
     public JComponent getOverviewComponent() {
       return new NuclosEntityWizardStaticModelOverview(this);
     }
-	
+
 	public boolean hasReferenzTyp() {
 		for(Attribute attr : this.attributeModel.getAttributes()) {
 			if(attr.getDatatyp().isRefenceTyp()) {
@@ -637,8 +640,8 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 		}
 		return false;
 	}
-	
-	
+
+
 	@Override
 	public void refreshModelState() {
       super.refreshModelState();
@@ -703,5 +706,28 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	public void setTreeView(List<EntityTreeViewVO> lstTreeView) {
 		this.lstTreeView = lstTreeView;
 	}
-	
+
+	public boolean isVirtual() {
+		return !StringUtils.isBlank(virtualentity);
+	}
+
+	public String getVirtualentity() {
+		return virtualentity;
+	}
+
+	public void setVirtualentity(String virtualentity) {
+		this.virtualentity = virtualentity;
+	}
+
+	@Override
+	public void previousStep() {
+		WizardStep step = this.getActiveStep();
+		if(step instanceof NuclosEntityAttributeInputStep && this.isVirtual()) {
+			super.previousStep();
+			super.previousStep();
+		}
+		else {
+			super.previousStep();
+		}
+   }
 }

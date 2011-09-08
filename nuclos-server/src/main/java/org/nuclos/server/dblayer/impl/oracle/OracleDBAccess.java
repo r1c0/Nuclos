@@ -64,13 +64,13 @@ import org.nuclos.server.dblayer.statements.DbUpdateStatement;
 import org.nuclos.server.dblayer.structure.DbArtifact;
 import org.nuclos.server.dblayer.structure.DbColumn;
 import org.nuclos.server.dblayer.structure.DbColumnType;
+import org.nuclos.server.dblayer.structure.DbColumnType.DbGenericType;
+import org.nuclos.server.dblayer.structure.DbConstraint.DbPrimaryKeyConstraint;
+import org.nuclos.server.dblayer.structure.DbConstraint.DbUniqueConstraint;
 import org.nuclos.server.dblayer.structure.DbIndex;
 import org.nuclos.server.dblayer.structure.DbNullable;
 import org.nuclos.server.dblayer.structure.DbSequence;
 import org.nuclos.server.dblayer.structure.DbTable;
-import org.nuclos.server.dblayer.structure.DbColumnType.DbGenericType;
-import org.nuclos.server.dblayer.structure.DbConstraint.DbPrimaryKeyConstraint;
-import org.nuclos.server.dblayer.structure.DbConstraint.DbUniqueConstraint;
 
 public class OracleDBAccess extends StandardSqlDBAccess {
 
@@ -252,8 +252,13 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 
 	@Override
 	protected List<String> getSqlForDropTable(DbTable table) {
-		return Collections.singletonList(String.format("DROP TABLE %s PURGE",
-			getQualifiedName(table.getTableName())));
+		if (!table.isVirtual()) {
+			return Collections.singletonList(String.format("DROP TABLE %s PURGE",
+				getQualifiedName(table.getTableName())));
+		}
+		else {
+			return Collections.emptyList();
+		}
 	}
 
 	@Override

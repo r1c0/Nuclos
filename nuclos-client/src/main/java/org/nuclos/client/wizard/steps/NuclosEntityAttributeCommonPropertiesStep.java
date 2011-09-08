@@ -114,7 +114,6 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 	DateChooser dateMandatory;
 	JCheckBox cbMandatoryValue;
 
-
 	JLabel lbIndexed;
 	JCheckBox cbIndexed;
 
@@ -149,7 +148,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 	@Override
 	protected void initComponents() {
-		double size [][] = {{150,20, TableLayout.FILL}, {20,20,20,20,20,20,20,20,20,20,20, TableLayout.FILL}};
+		double size [][] = {{150,20, TableLayout.FILL}, {20,20,20,20,20,20,20,90, TableLayout.FILL}};
 
 		TableLayout layout = new TableLayout(size);
 		layout.setVGap(3);
@@ -226,9 +225,13 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 		pnlMoreOptions = new JPanel();
 
-		double sizeMoreOptions [][] = {{155, TableLayout.FILL}, {20,20,20, TableLayout.FILL}};
+		double sizeMoreOptions [][] = {{150, TableLayout.FILL}, {20,20,20, TableLayout.FILL}};
 
-		pnlMoreOptions.setLayout(new TableLayout(sizeMoreOptions));
+		TableLayout tlMoreOptions = new TableLayout(sizeMoreOptions);
+		tlMoreOptions.setVGap(3);
+		tlMoreOptions.setHGap(5);
+
+		pnlMoreOptions.setLayout(tlMoreOptions);
 		pnlMoreOptions.add(lbDBFieldName, "0,0");
 		pnlMoreOptions.add(tfDBFieldName, "1,0");
 		pnlMoreOptions.add(lbDBFieldNameComplete, "0,1");
@@ -261,7 +264,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		this.add(lbCalcFunction, "0,6");
 		this.add(cbxCalcFunction, "1,6 , 2,6");
 
-		this.add(optionPanel, "0,7, 2,10");
+		this.add(optionPanel, "0,7, 2,7");
 
 
 		tfLabel.addKeyListener(new KeyListener() {
@@ -402,7 +405,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			public void itemStateChanged(ItemEvent e) {
 				final JCheckBox cb = (JCheckBox)e.getItem();
 				NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setMandatory(cb.isSelected());
-				if(NuclosEntityAttributeCommonPropertiesStep.this.parentWizardModel.isEditMode() && cb.isSelected()) {
+				if(NuclosEntityAttributeCommonPropertiesStep.this.parentWizardModel.isEditMode() && cb.isSelected() && !parentWizardModel.isVirtual()) {
 					if(NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().getMandatoryValue() == null) {
 						(new Bubble(cb, getMessage("wizard.step.attributeproperties.tooltip.28", "Bitte tragen Sie einen Wert ein mit dem das Feld vorbelegt werden kann!"), 3, Position.UPPER)).setVisible(true);
 					}
@@ -880,6 +883,24 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 				cbDistinct.setToolTipText(getMessage("wizard.step.entitysqllayout.6", "Das Feld {0} kann nicht auf ein eindeutiges Feld umgestellt werden.", attr.getLabel()));
 			}
 		}
+
+		if (parentWizardModel.isVirtual()) {
+			cbDistinct.setSelected(false);
+			cbDistinct.setEnabled(false);
+			tfMandatory.setEnabled(false);
+			dateMandatory.setEnabled(false);
+			cbMandatory.setEnabled(false);
+			cbxMandatory.setEnabled(false);
+			cbMandatoryValue.setEnabled(false);
+			cbxCalcFunction.setEnabled(false);
+			tfDBFieldName.setEnabled(false);
+			cbIndexed.setEnabled(false);
+			tfDefaultValue.setEnabled(false);
+			dateDefaultValue.setEnabled(false);
+			cbxDefaultValue.setEnabled(false);
+			cbDefaultValue.setEnabled(false);
+			cbLogBook.setEnabled(false);
+		}
 	}
 
 	public void setParentWizardModel(NuclosEntityWizardStaticModel model) {
@@ -947,7 +968,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			blnNullable = Boolean.TRUE;
 		}
 
-		Boolean requiresDefault = blnNullable && cbMandatory.isSelected();
+		Boolean requiresDefault = blnNullable && cbMandatory.isSelected() && !parentWizardModel.isVirtual();
 
 		if(this.getModel().getAttribute().getDatatyp().getJavaType().equals("java.util.Date") && this.parentWizardModel.isEditMode() && requiresDefault) {
 			Date date;
@@ -1017,6 +1038,9 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			}
 		}
 
+		if (parentWizardModel.isVirtual()) {
+			attr.setReadonly(parentWizardModel.isEditable());
+		}
 	}
 
 	static class LimitCharacterDocument extends PlainDocument {

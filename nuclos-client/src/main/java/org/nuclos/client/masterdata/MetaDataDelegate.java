@@ -20,8 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.CommonMetaDataProvider;
+import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
@@ -38,7 +38,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 /**
- * An singleton for remotely accessing the meta data information 
+ * An singleton for remotely accessing the meta data information
  * from the client side.
  * <p>
  * This class will directly call to the server. You normally
@@ -46,7 +46,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * </p>
  */
 public class MetaDataDelegate implements CommonMetaDataProvider {
-	
+
 	private static MetaDataDelegate singleton;
 
 	public static final String ENTITYNAME_ENTITY = "entity";
@@ -74,16 +74,16 @@ public class MetaDataDelegate implements CommonMetaDataProvider {
 		}
 		return singleton;
 	}
-	
+
 	public Collection<MasterDataVO> hasEntityFieldInImportStructure(String sEntity, String sField) {
 		return getMetaDataFacade().hasEntityFieldInImportStructure(sEntity, sField);
 	}
-	
-	
+
+
 	public void invalidateServerMetadata() {
 		getMetaDataFacade().invalidateServerMetadata();
 	}
-	
+
 	public Long getEntityIdByName(String sEntity) {
 		return getMetaDataFacade().getEntityIdByName(sEntity);
 	}
@@ -95,11 +95,11 @@ public class MetaDataDelegate implements CommonMetaDataProvider {
 	public MasterDataFacadeRemote getMasterDataFacade() {
 		return this.mdfacade;
 	}
-	
+
 	public boolean hasEntityRows(EntityMetaDataVO voEntity) {
 		return this.facade.hasEntityRows(voEntity);
 	}
-	
+
 	public boolean hasEntityLayout(Long id) {
 		return this.facade.hasEntityLayout(id);
 	}
@@ -107,11 +107,11 @@ public class MetaDataDelegate implements CommonMetaDataProvider {
 //	private synchronized MetaDataCache getMetaDataCache() {
 //		return MetaDataCache.getInstance();
 //	}
-	
+
 	public  Object modifyEntityMetaData(EntityMetaDataVO metaVO, List<EntityFieldMetaDataTO> lstFields) {
 		return this.getMetaDataFacade().modifyEntityMetaData(metaVO, lstFields);
 	}
-	
+
 	public String getResourceSIdForEntityFieldLabel(Integer iId) {
 		try {
 			return this.getMetaDataFacade().getResourceSIdForEntityFieldLabel(iId);
@@ -120,7 +120,7 @@ public class MetaDataDelegate implements CommonMetaDataProvider {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	public String getResourceSIdForEntityFieldDescription(Integer iId) {
 		try {
 			return this.getMetaDataFacade().getResourceSIdForEntityFieldDescription(iId);
@@ -171,31 +171,31 @@ public class MetaDataDelegate implements CommonMetaDataProvider {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	public List<String> getDBTables() {
 		return getMetaDataFacade().getDBTables();
 	}
-	
+
 	public Map<String, MasterDataVO> getColumnsFromTable(String sTable) {
 		return getMetaDataFacade().getColumnsFromTable(sTable);
 	}
-	
+
 	public List<String> getTablesFromSchema(String url, String user, String password, String schema) {
 		return getMetaDataFacade().getTablesFromSchema(url, user, password, schema);
 	}
-	
+
 	public MasterDataMetaVO transferTable(String url, String user, String password, String schema, String table, String sEntity) {
 		return getMetaDataFacade().transferTable(url, user, password, schema, table, sEntity);
 	}
-	
+
 	public List<MasterDataVO> transformTable(String url, String user, String password, String schema, String table) {
 		return getMetaDataFacade().transformTable(url, user, password, schema, table);
 	}
-	
+
 	public void changeEntityName(String newName, Integer id) {
 		getMetaDataFacade().changeEntityName(newName, id);
 	}
-	
+
 	public EntityRelationshipModelVO getEntityRelationshipModelVO(MasterDataVO vo) {
 		return getMetaDataFacade().getEntityRelationshipModelVO(vo);
 	}
@@ -203,11 +203,11 @@ public class MetaDataDelegate implements CommonMetaDataProvider {
 	public boolean isChangeDatabaseColumnToNotNullableAllowed(String sEntity, String field) {
 		return getMetaDataFacade().isChangeDatabaseColumnToNotNullableAllowed(sEntity, field);
 	}
-	
+
 	public boolean isChangeDatabaseColumnToUniqueAllowed(String sEntity, String field) {
 		return getMetaDataFacade().isChangeDatabaseColumnToUniqueAllowed(sEntity, field);
 	}
-	
+
 	/**
 	 * uses Server Cache
 	 * @return
@@ -215,7 +215,7 @@ public class MetaDataDelegate implements CommonMetaDataProvider {
 	public Collection<EntityMetaDataVO> getAllEntities() {
 		return getMetaDataFacade().getAllEntities();
 	}
-	
+
 	/**
 	 * uses Server Cache
 	 * @param entity
@@ -229,11 +229,11 @@ public class MetaDataDelegate implements CommonMetaDataProvider {
 	public Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info) {
 		return getMetaDataFacade().getAllPivotEntityFields(info);
 	}
-	
+
 	public Map<String, Map<String, EntityFieldMetaDataVO>> getAllEntityFieldsByEntitiesGz(List<String> entities) {
 		return getMetaDataFacade().getAllEntityFieldsByEntitiesGz(entities);
     }
-	
+
 	public EntityFieldMetaDataVO getEntityField(String entity, String field) {
 		for(EntityFieldMetaDataVO voField : this.getAllEntityFieldsByEntity(entity).values()) {
 			if(voField.getField().equals(field))
@@ -241,7 +241,7 @@ public class MetaDataDelegate implements CommonMetaDataProvider {
 		}
 		throw new CommonFatalException("entity field " + field + " in " + entity+ " does not exists.");
 	}
-	
+
 	/**
 	 * uses Server Cache
 	 * @return
@@ -249,7 +249,7 @@ public class MetaDataDelegate implements CommonMetaDataProvider {
 	public Collection<EntityMetaDataVO> getNucletEntities() {
 		return getMetaDataFacade().getNucletEntities();
 	}
-	
+
 	public void removeEntity(EntityMetaDataVO voEntity, boolean dropLayout) throws CommonBusinessException{
 		getMetaDataFacade().removeEntity(voEntity, dropLayout);
 	}
@@ -257,16 +257,28 @@ public class MetaDataDelegate implements CommonMetaDataProvider {
 	public boolean hasEntityImportStructure(Long id) throws CommonBusinessException {
 		return getMetaDataFacade().hasEntityImportStructure(id);
 	}
-	
+
 	public boolean hasEntityWorkflow(Long id) throws CommonBusinessException {
 		return getMetaDataFacade().hasEntityWorkflow(id);
 	}
-	
+
 	public EntityMetaDataVO getEntityByName(String sEntity) {
 		return getMetaDataFacade().getEntityByName(sEntity);
 	}
-	
+
 	public EntityMetaDataVO getEntityById(Long id) {
 		return getMetaDataFacade().getEntityById(id);
+	}
+
+	public List<String> getVirtualEntities() {
+		return getMetaDataFacade().getVirtualEntities();
+	}
+
+	public List<EntityFieldMetaDataVO> getVirtualEntityFields(String virtualentity) {
+		return getMetaDataFacade().getVirtualEntityFields(virtualentity);
+	}
+
+	public void tryVirtualEntitySelect(EntityMetaDataVO virtualentity) throws NuclosBusinessException {
+		getMetaDataFacade().tryVirtualEntitySelect(virtualentity);
 	}
 }

@@ -27,6 +27,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -72,6 +73,7 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.pietschy.wizard.InvalidStateException;
 import org.pietschy.wizard.WizardEvent;
 import org.pietschy.wizard.WizardListener;
 
@@ -79,7 +81,7 @@ import org.pietschy.wizard.WizardListener;
 * <br>
 * Created by Novabit Informationssysteme GmbH <br>
 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
-* 
+*
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
@@ -87,25 +89,25 @@ import org.pietschy.wizard.WizardListener;
 public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	JScrollPane scrolPane;
 	JTable tblAttributes;
-	
+
 	JButton btnNewAttribute;
 	JButton btnDropAttribute;
 	JButton btnEditAttribute;
 	TableColumn colGroup;
 
 	static String[] sEditFields = {"STRCREATED","DATCREATED","STRCHANGED","DATCHANGED"};
-	
-	
+
+
 	EntityAttributeTableModel entityModel;
-	
-	
-	public NuclosEntityAttributeInputStep() {	
-		initComponents();		
+
+
+	public NuclosEntityAttributeInputStep() {
+		initComponents();
 	}
 
 	public NuclosEntityAttributeInputStep(String name, String summary) {
@@ -117,42 +119,42 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 		super(name, summary, icon);
 		initComponents();
 	}
-	
-	
-	
+
+
+
 	@Override
 	protected void initComponents() {
-		
+
 		double size [][] = {{160,160,160,160,TableLayout.FILL}, {TableLayout.FILL, 25,10}};
-		
+
 		TableLayout layout = new TableLayout(size);
 		layout.setVGap(3);
 		layout.setHGap(5);
 		this.setLayout(layout);
-		
+
 		entityModel = new EntityAttributeTableModel();
-		
+
 		tblAttributes = new JTable(entityModel);
 		tblAttributes.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		tblAttributes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);		
-	
+		tblAttributes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
 		tblAttributes.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			
+
 			@Override
-			public void valueChanged(ListSelectionEvent e) {				
+			public void valueChanged(ListSelectionEvent e) {
 				btnDropAttribute.setEnabled(e.getFirstIndex() >= 0);
-				btnEditAttribute.setEnabled(e.getFirstIndex() >= 0);								
+				btnEditAttribute.setEnabled(e.getFirstIndex() >= 0);
 			}
 		});
-		
-		
+
+
 		tblAttributes.setDefaultRenderer(Boolean.class, new TableCellRenderer() {
-			
+
 			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value,
 					boolean isSelected, boolean hasFocus, int row, int column) {
 				JCheckBox cb = new JCheckBox();
-				
+
 				switch (column) {
 				case 5:
 					cb.setSelected(((Boolean)value).booleanValue());
@@ -169,86 +171,86 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 				}
 				cb.setHorizontalAlignment(SwingConstants.CENTER);
 				cb.setBackground(table.getBackground());
-				
+
 				return cb;
 			}
 		});
-		
+
 		tblAttributes.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(e.getClickCount() == 2) {
-					int selected = tblAttributes.getSelectedRow();					
+					int selected = tblAttributes.getSelectedRow();
 					EntityAttributeTableModel model = (EntityAttributeTableModel)tblAttributes.getModel();
 					Attribute attr = model.getObject(selected);
 					showNuclosEntityAttributeWizard(attr, true, selected);
 				}
 			}
 		});
-		
-		
+
+
 		scrolPane = new JScrollPane();
 		scrolPane.getViewport().add(tblAttributes);
-		
+
 		btnNewAttribute = new JButton(getMessage("wizard.step.inputattribute.1", "Attribut hinzuf\u00fcgen"));
 		btnNewAttribute.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				showNuclosEntityAttributeWizard(null,false,-1);
 			}
-			
-			
+
+
 		});
-		
+
 		btnDropAttribute = new JButton(getMessage("wizard.step.inputattribute.2", "Attribut entfernen"));
 		btnDropAttribute.setEnabled(false);
 		btnDropAttribute.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int selected = tblAttributes.getSelectedRow();
-				
+
 				Attribute attr = entityModel.getObject(selected);
-				
+
 				StringBuffer sMessage = new StringBuffer();
-				if(hasAttributeReferenz(attr, sMessage)) {					
-					JOptionPane.showMessageDialog(NuclosEntityAttributeInputStep.this, sMessage, 
+				if(hasAttributeReferenz(attr, sMessage)) {
+					JOptionPane.showMessageDialog(NuclosEntityAttributeInputStep.this, sMessage,
 						getMessage("wizard.step.inputattribute.12", "Entfernen nicht möglich!"), JOptionPane.OK_OPTION);
 					return;
 				}
-				
+
 				Collection<MasterDataVO> colImportStructure = MetaDataDelegate.getInstance().hasEntityFieldInImportStructure(NuclosEntityAttributeInputStep.this.getModel().getEntityName(), attr.getInternalName());
 				if(colImportStructure.size() > 0) {
 					Collection<String> colImportStructureNames = CollectionUtils.transform(colImportStructure, new Transformer<MasterDataVO, String>() {
 						@Override
 						public String transform(MasterDataVO vo) {
 							return (String)vo.getField("name");
-						}												
+						}
 					});
-					
+
 					String sMessageText = getMessage("wizard.step.inputattribute.15", "Das Attribut wird in der Import Strukturdefinition ");
-					
+
 					for(String sImport : colImportStructureNames){
 						sMessageText += sImport + " ";
-					}					
-					
+					}
+
 					sMessageText += getMessage("wizard.step.inputattribute.16", "\nDie Referenz wird entfernt, wenn das Attribut gelöscht wird!\nSoll das Attribut trotzdem gelöscht werden?");
 					int option = JOptionPane.showConfirmDialog(NuclosEntityAttributeInputStep.this, sMessageText,getMessage("wizard.step.inputattribute.17", "Achtung"), JOptionPane.YES_NO_OPTION);
 					if(option != JOptionPane.YES_OPTION) {
 						return;
 					}
 				}
-				
+
 				if(attr.getMetaVO() != null) {
 					if(isSubformEntity(attr)){
 						if(NuclosEntityAttributeInputStep.this.getModel().hasRows()) {
-							String sText = getMessage("wizard.step.inputattribute.14",  
+							String sText = getMessage("wizard.step.inputattribute.14",
 								"Die Entität enthält bereits Daten. Wenn Sie dieses Attribut löschen,\n" +
 									"verliert die Hauptentität, die Datensätze dieser Entität.\n" +
 									"Das Unterformular wird ebenfalls aus der Maske herausgenommen.");
-							final JOptionPane pane = new JOptionPane(sText, JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);						
+							final JOptionPane pane = new JOptionPane(sText, JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
 							final JDialog dia = new JDialog(Main.getMainFrame(), true);
 							pane.addPropertyChangeListener(new PropertyChangeListener() {
 							        @Override
@@ -259,36 +261,36 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 							            }
 							        }
 							    });
-							
+
 							dia.setContentPane(pane);
 							dia.setTitle(getMessage("wizard.step.inputattribute.13", "Attribut entfernen?"));
 							dia.setLocationRelativeTo(NuclosEntityAttributeInputStep.this.getModel().getParentFrame());
 							dia.pack();
 							dia.setVisible(true);
-							
+
 							if(!(pane.getValue() instanceof Integer))
 								return;
-			
+
 							int value = ((Integer)pane.getValue()).intValue();
-							
+
 							if(value != JOptionPane.YES_OPTION) {
 								return;
-							}						
+							}
 						}
 					}
 				}
-				
+
 				if(selected < 0)
 					return;
 				entityModel.removeRow(selected, true);
 				NuclosEntityAttributeInputStep.this.model.setAttributeModel(entityModel);
 			}
 		});
-		
+
 		btnEditAttribute = new JButton(getMessage("wizard.step.inputattribute.3", "Attribut bearbeiten"));
 		btnEditAttribute.setEnabled(false);
 		btnEditAttribute.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int selected = tblAttributes.getSelectedRow();
@@ -300,14 +302,14 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 				showNuclosEntityAttributeWizard(attr, true, selected);
 			}
 		});
-		
+
 		this.add(scrolPane, new TableLayoutConstraints(0, 0, 4, 0));
-		this.add(btnNewAttribute, "0,1");	
+		this.add(btnNewAttribute, "0,1");
 		this.add(btnDropAttribute, "1,1");
 		this.add(btnEditAttribute, "2,1");
-				
+
 	}
-	
+
 	private boolean isSubformEntity(Attribute attribute) {
 		final Set<String> set = NuclosWizardUtils.searchParentEntity(model.getEntityName());
 		if(set.size() > 0) {
@@ -316,8 +318,8 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 		}
 		return false;
 	}
-	
-	
+
+
 
 	@Override
 	public void prepare() {
@@ -327,26 +329,26 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 			List<Attribute> lstAttribute = this.model.getAttributeModel().getAttributes();
 			for(Attribute attr : lstAttribute) {
 				boolean hasAlready = false;
-				for(Attribute attrModel : tableModel.getAttributes()) {					
+				for(Attribute attrModel : tableModel.getAttributes()) {
 					if(attr.getInternalName().equals(attrModel.getInternalName())) {
 						hasAlready = true;
 						break;
-					}					
+					}
 				}
 				if(!hasAlready) {
-					tableModel.addAttribute(attr);					
+					tableModel.addAttribute(attr);
 					tableModel.addTranslation(attr, this.model.getAttributeModel().getTranslation().get(attr));
 				}
-			}			
-			this.setComplete(true);			
+			}
+			this.setComplete(true);
 			this.tblAttributes.repaint();
 		}
-	
-		btnNewAttribute.setEnabled(!this.model.isImportTable());	
-		
+
+		btnNewAttribute.setEnabled(!this.model.isImportTable());
+
 		initTableSorter();
-		
-		
+
+
 		if(!this.model.isStateModel()) {
 			if(tblAttributes.getColumnCount() > 9) {
 				colGroup = tblAttributes.getColumnModel().getColumn(9);
@@ -360,25 +362,42 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 				}
 			}
 		}
-		
+
 		TableUtils.setOptimalColumnWidths(tblAttributes);
-		
-		
+
+
+	}
+
+	@Override
+	public void applyState() throws InvalidStateException {
+		super.applyState();
+		EntityAttributeTableModel tableModel = (EntityAttributeTableModel)tblAttributes.getModel();
+		List<String> missingreferences = new ArrayList<String>();
+		for (Attribute a : tableModel.getAttributes()) {
+			if (a.getDatatyp().isRefenceTyp() && a.getMetaVO() == null) {
+				missingreferences.add(a.getInternalName());
+			}
+		}
+		if (missingreferences.size() > 0) {
+			String message = getMessage("wizard.step.inputattribute.validation.reference", "Please select a foreign entity for each reference field ({0}).", StringUtils.join(", ", missingreferences));
+			JOptionPane.showMessageDialog(this, message, getMessage("wizard.step.entitycommonproperties.19", "Achtung!"), JOptionPane.OK_OPTION);
+	        throw new InvalidStateException();
+		}
 	}
 
 	private void initTableSorter() {
 	    final MyRowSorter sorter = new MyRowSorter(tblAttributes.getModel());
 		sorter.setMaxSortKeys(1);
-		
+
 		sorter.addRowSorterListener(new RowSorterListener() {
-			
+
 			@Override
 			public void sorterChanged(RowSorterEvent e) {
 				sorter.sortModel();
-				
+
 			}
 		});
-		
+
 		tblAttributes.setRowSorter(sorter);
 		sorter.setComparator(0, new StringComparator());
 		sorter.setComparator(1, new StringComparator());
@@ -394,9 +413,9 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
     }
 
 	protected void showNuclosEntityAttributeWizard(Attribute attr, final boolean editMode, final int row) {
-		
+
 		final MainFrameTab tabAttribute = new MainFrameTab(getMessage("wizard.step.inputattribute.8", "Attribut Wizard f\u00fcr Entit\u00e4t"+" " + NuclosEntityAttributeInputStep.this.model.getEntityName()));
-		
+
 		try {
 			final NuclosEntityAttributeWizardStaticModel model = new NuclosEntityAttributeWizardStaticModel(tblAttributes.getModel().getRowCount());
 			model.setEditMode(editMode);
@@ -409,7 +428,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 					model.setValueListTyp(false);
 			}
 			model.setTranslation(entityModel.getTranslation().get(attr));
-			
+
 			NuclosEntityAttributePropertiesStep step1 = new NuclosEntityAttributePropertiesStep(getMessage("wizard.step.inputattribute.4", "Eigenschaften"), getMessage("wizard.step.inputattribute.4", "Eigenschaften"));
 			step1.setParentWizardModel(this.model);
 			step1.setParent(tabAttribute);
@@ -428,10 +447,10 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 			model.add(step2b);
 			model.add(step3);
 			model.add(step4);
-			
-			
+
+
 			NuclosEntityAttributeWizard wizard = new NuclosEntityAttributeWizard(model);
-			
+
 			wizard.addWizardListener(new WizardListener() {
 				@Override
 				public void wizardClosed(WizardEvent e) {
@@ -439,26 +458,26 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 					if(!editMode || attribute.getInternalId() == null) {
 						attribute.setInternalId(getHighestInternalId());
 					}
-					
-					if(row >= 0 && editMode) {						
+
+					if(row >= 0 && editMode) {
 						entityModel.removeRow(row, false);
 					}
-															
+
 					entityModel.addAttribute(attribute);
 					entityModel.addTranslation(attribute, model.getTranslation());
-					
-					NuclosEntityAttributeInputStep.this.setComplete(true);					
-					NuclosEntityAttributeInputStep.this.model.setAttributeModel(entityModel);				
-					
+
+					NuclosEntityAttributeInputStep.this.setComplete(true);
+					NuclosEntityAttributeInputStep.this.model.setAttributeModel(entityModel);
+
 					tabAttribute.dispose();
 					TableUtils.setOptimalColumnWidths(tblAttributes);
 				}
 				@Override
 				public void wizardCancelled(WizardEvent e) {
-					tabAttribute.dispose();				
+					tabAttribute.dispose();
 				}
 			});
-			
+
 			tabAttribute.setLayeredComponent(wizard);
 			parent.add(tabAttribute);
 		}
@@ -468,14 +487,14 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 		catch(CommonPermissionException e) {
 			Errors.getInstance().showExceptionDialog(NuclosEntityAttributeInputStep.this, e);
 		}
-		
+
 	}
-	
+
 	private Long getHighestInternalId() {
 		Long l = new Long(0);
 		for(Attribute attr : model.getAttributeModel().getAttributes()) {
 			if(attr.getInternalId() != null) {
-				if(l.longValue() < attr.getInternalId()) {					
+				if(l.longValue() < attr.getInternalId()) {
 					l = attr.getInternalId();
 					l++;
 				}
@@ -483,24 +502,24 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 		}
 		return l;
 	}
-	
-	
+
+
 	private boolean hasEntityValues() {
 		boolean yes = false;
-		
+
 		if(this.model.isEditMode()) {
 			return this.model.hasRows();
 		}
-		
+
 		return yes;
 	}
-	
-	
+
+
 	public void resetStep() {
 		entityModel = new EntityAttributeTableModel();
 		tblAttributes.setModel(entityModel);
 	}
-	
+
 	private boolean hasAttributeReferenz(Attribute attr, StringBuffer message) {
 		boolean blnRef = false;
 
@@ -509,7 +528,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 				continue;
 			for(EntityFieldMetaDataVO voField : MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(vo.getEntity()).values()) {
 				if(voField.getForeignEntity() == null)
-					continue;				
+					continue;
 				if(voField.getForeignEntityField() == null)
 					continue;
 				final String sForeign = voField.getForeignEntity();
@@ -521,19 +540,19 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 						message.append(sMessage);
 						return true;
 					}
-						
+
 				}
 			}
 		}
-		
+
 		return blnRef;
 	}
 
-	
+
 	class MyRowSorter extends TableRowSorter<EntityAttributeTableModel> {
-		
+
 		final EntityAttributeTableModel model;
-		
+
 		public MyRowSorter(TableModel model) {
 			this.model = (EntityAttributeTableModel)model;
 			this.setModelWrapper(new ModelWrapper<EntityAttributeTableModel, Integer>() {
@@ -562,9 +581,9 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
                 public Object getValueAt(int row, int column) {
 	                return MyRowSorter.this.model.getValueAt(row, column);
                 }
-				
+
 			});
-			
+
 		}
 
 		@Override
@@ -577,14 +596,14 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 			super.sort();
 			sortModel();
 		}
-		
+
         @SuppressWarnings("unchecked")
-        public void sortModel() {	       
+        public void sortModel() {
 	        List<Attribute> lstAttributes = model.getAttributes();
-	        List<SortKey> lst = (List<javax.swing.RowSorter.SortKey>) this.getSortKeys();	        
+	        List<SortKey> lst = (List<javax.swing.RowSorter.SortKey>) this.getSortKeys();
 	        for(SortKey key : lst) {
 	        	final int column = key.getColumn();
-	        	
+
         		Collections.sort(lstAttributes, new Comparator<Attribute>() {
 
 					@Override
@@ -620,9 +639,9 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 	                        break;
                         }
                         return 0;
-                    }	        			
-        			
-        			
+                    }
+
+
         		});
 
         		if(key.getSortOrder().equals(SortOrder.DESCENDING)){
@@ -631,37 +650,37 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 	        }
 	        if(lst.size() == 0) {
 	        	Collections.sort(lstAttributes, new Comparator<Attribute>() {
-        			
+
 					@Override
 					public int compare(Attribute o1, Attribute o2) {
 						Long l1 = o1.getInternalId() == null ? 0L : o1.getInternalId().longValue();
 					    Long l2 = o2.getInternalId() == null ? 0L : o2.getInternalId().longValue();
 						return l1.compareTo(l2);
 					}
-					
+
 				});
 	        }
-	        
+
 	       }
-		
+
 	}
-	
+
 	class StringComparator implements Comparator<String> {
 
 		@Override
         public int compare(String o1, String o2) {
 	        o1 = org.nuclos.common2.StringUtils.emptyIfNull(o1);
 	        o2 = org.nuclos.common2.StringUtils.emptyIfNull(o2);
-			return o1.compareTo(o2);	        
+			return o1.compareTo(o2);
         }
 	}
 
-	
+
 	class BooleanComparator implements Comparator<Boolean> {
 
 		@Override
         public int compare(Boolean o1, Boolean o2) {
-	        return o1.compareTo(o2);	        
+	        return o1.compareTo(o2);
         }
 	}
 
@@ -669,15 +688,15 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 
 		@Override
         public int compare(Integer o1, Integer o2) {
-	        return o1.compareTo(o2);	        
+	        return o1.compareTo(o2);
         }
 	}
-	
+
 	class DataTypComparator implements Comparator<DataTyp> {
 
 		@Override
         public int compare(DataTyp o1, DataTyp o2) {
-	        return o1.getName().compareTo(o2.getName());  
+	        return o1.getName().compareTo(o2.getName());
         }
 	}
 

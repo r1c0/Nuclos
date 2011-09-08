@@ -61,17 +61,17 @@ import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpressi
 
 public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<EntityObjectVO>
 	implements JdbcEntityObjectProcessor {
-	
+
 	// static variables
 
 	/**
 	 * TODO: Is null for entity name ok?
-	 * 
+	 *
 	 * @deprecated This is not really a field of an entity - avoid this!
 	 */
 	private static final CollectableEntityField clctEOEFdeleted = new CollectableEOEntityField(NuclosEOField.LOGGICALDELETED.getMetaData(), "<dummy>");
 
-	private final Collection<List<IColumnToVOMapping<?>>> logicalUniqueConstraintCombinations = 
+	private final Collection<List<IColumnToVOMapping<?>>> logicalUniqueConstraintCombinations =
 		new ArrayList<List<IColumnToVOMapping<?>>>();
 
 	// instance variables
@@ -84,22 +84,22 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 	private final IColumnToVOMapping<Long> idColumn;
 	private final IColumnToVOMapping<Integer> versionColumn;
 
-	public EntityObjectProcessor(ProcessorConfiguration config) 
+	public EntityObjectProcessor(ProcessorConfiguration config)
 	{
 		super((Class<EntityObjectVO>) config.getDalType(), config.getAllColumns(), config.getMaxFieldCount(), config.getMaxFieldIdCount());
 		this.eMeta = config.geteMeta();
 		this.idColumn = config.getIdColumn();
 		this.versionColumn = config.getVersionColumn();
-		
+
 		dbSourceForSQL = this.eMeta.getDbEntity();
-		dbSourceForDML = "T_" + this.eMeta.getDbEntity().substring(2);
-		
+		dbSourceForDML = this.eMeta.isVirtual() ? this.eMeta.getVirtualentity() : "T_" + this.eMeta.getDbEntity().substring(2);
+
 		/**
 		 * Logical Unique Constraints
 		 */
 		if (eMeta.getLogicalUniqueFieldCombinations() != null) {
 			for (Set<String> lufCombination : eMeta.getLogicalUniqueFieldCombinations()) {
-				List<IColumnToVOMapping<? extends Object>> ctovMappings = 
+				List<IColumnToVOMapping<? extends Object>> ctovMappings =
 					new ArrayList<IColumnToVOMapping<?>>(lufCombination.size());
 
 				for (String luField : lufCombination) {
@@ -111,14 +111,14 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 				}
 				logicalUniqueConstraintCombinations.add(ctovMappings);
 			}
-		}		
+		}
 	}
-	
+
 	@Override
 	public EntityMetaDataVO getMeta() {
 		return eMeta;
 	}
-	
+
 	@Override
 	protected EntityObjectVO newDalVOInstance() {
 		try {
@@ -140,7 +140,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		clone.allColumns = (List<IColumnToVOMapping<? extends Object>>) CloneUtils.cloneCollection(allColumns);
 		return clone;
 	}
-	
+
 	@Override
 	public String getDbSourceForDML() {
 		return dbSourceForDML;

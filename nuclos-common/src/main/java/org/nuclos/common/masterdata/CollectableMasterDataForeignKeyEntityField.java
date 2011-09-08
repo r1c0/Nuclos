@@ -39,7 +39,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 public class CollectableMasterDataForeignKeyEntityField extends AbstractCollectableEntityField {
 
 	private final String entityName;
-	
+
 	private final MasterDataMetaFieldVO mdmetafield;
 
 	/**
@@ -108,12 +108,12 @@ public class CollectableMasterDataForeignKeyEntityField extends AbstractCollecta
 
 	@Override
 	public String getDescription() {
-		return CommonLocaleDelegate.getResource(mdmetafield.getResourceSIdForDescription(), this.mdmetafield.getDescription());
+		return CommonLocaleDelegate.getTextFallback(mdmetafield.getResourceSIdForDescription(), this.mdmetafield.getDescription());
 	}
 
 	@Override
 	public String getLabel() {
-		return CommonLocaleDelegate.getResource(mdmetafield.getResourceSIdForLabel(), this.mdmetafield.getLabel());
+		return CommonLocaleDelegate.getTextFallback(mdmetafield.getResourceSIdForLabel(), this.mdmetafield.getLabel());
 	}
 
 	@Override
