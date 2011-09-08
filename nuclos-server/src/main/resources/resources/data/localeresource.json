@@ -26430,6 +26430,21 @@
     "text": "Verwendung löschen"
   },
   {
+    "resourceID": "RuleExplorerNode.5",
+    "locale": "i-default",
+    "text": "Work steps"
+  },
+  {
+    "resourceID": "RuleExplorerNode.5",
+    "locale": "en",
+    "text": "Work steps"
+  },
+  {
+    "resourceID": "RuleExplorerNode.5",
+    "locale": "de",
+    "text": "Arbeitsschritte"
+  },
+  {
     "resourceID": "DynamicAttributeVO.1",
     "locale": "i-default",
     "text": "\"{0}\" (attribute name: \"{1}\")"
@@ -36683,6 +36698,36 @@
     "resourceID": "SubFormController.2",
     "locale": "de",
     "text": "Das Feld ({0}) ist nicht in der Entität ({1}) vorhanden!"
+  },
+  {
+    "resourceID": "DetailsSubFormController.1",
+    "locale": "i-default",
+    "text": "Set all"
+  },
+  {
+    "resourceID": "DetailsSubFormController.1",
+    "locale": "en",
+    "text": "Set all"
+  },
+  {
+    "resourceID": "DetailsSubFormController.1",
+    "locale": "de",
+    "text": "Alle setzen"
+  },
+  {
+    "resourceID": "DetailsSubFormController.2",
+    "locale": "i-default",
+    "text": "Reset all"
+  },
+  {
+    "resourceID": "DetailsSubFormController.2",
+    "locale": "en",
+    "text": "Reset all"
+  },
+  {
+    "resourceID": "DetailsSubFormController.2",
+    "locale": "de",
+    "text": "Alle zurücksetzen"
   },
   {
     "resourceID": "SelectUserController.1",
@@ -56774,6 +56819,21 @@
     "text": "<html>Folgende Berechtigungen können vergeben werden:<br\/><table border=\"0\" cellpadding=\"0\"><tr><td><b>grau<\/b><\/td><td>= nicht sichtbar (nicht bei Unterformular Spalten wählbar)<\/td><\/tr><tr><td><b>gelb<\/td><td>= lesen<\/td><\/tr><tr><td><b>grün<\/td><td>= schreiben<\/td><\/tr><\/table><\/html>"
   },
   {
+    "resourceID": "StatePropertiesPanel.20",
+    "locale": "i-default",
+    "text": "State icon"
+  },
+  {
+    "resourceID": "StatePropertiesPanel.20",
+    "locale": "en",
+    "text": "State icon"
+  },
+  {
+    "resourceID": "StatePropertiesPanel.20",
+    "locale": "de",
+    "text": "Statusicon"
+  },
+  {
     "resourceID": "StatePropertiesPanel.19",
     "locale": "i-default",
     "text": "Without group"
@@ -58604,19 +58664,19 @@
     "text": "Das Ergebnis konnte nicht gespeichert werden: "
   },
   {
-    "resourceID": "TableRowResizer.1",
+    "resourceID": "TableRowIndicator.1",
     "locale": "i-default",
-    "text": "Reset"
+    "text": "Reset row height"
   },
   {
-    "resourceID": "TableRowResizer.1",
+    "resourceID": "TableRowIndicator.1",
     "locale": "en",
-    "text": "Reset"
+    "text": "Reset row height"
   },
   {
-    "resourceID": "TableRowResizer.1",
+    "resourceID": "TableRowIndicator.1",
     "locale": "de",
-    "text": "Zurücksetzen"
+    "text": "Zeilenhöhe zurücksetzen"
   },
   {
     "resourceID": "ldap.exception.search",

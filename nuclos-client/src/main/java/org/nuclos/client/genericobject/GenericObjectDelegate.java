@@ -474,7 +474,7 @@ public class GenericObjectDelegate {
 	 * @return the id of the generated leased object
 	 * @throws NuclosFatalException
 	 */
-	public GenericObjectVO generateGenericObject(int iSourceGenericObjectId, int parameterObjectId, GeneratorActionVO generatoractionvo)
+	public GenericObjectVO generateGenericObject(Integer iSourceGenericObjectId, Integer parameterObjectId, GeneratorActionVO generatoractionvo)
 			throws CommonBusinessException {
 		try {
 			return this.getGeneratorFacade().generateGenericObject(iSourceGenericObjectId, parameterObjectId, generatoractionvo);

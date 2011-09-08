@@ -24,26 +24,40 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.explorer.ExplorerNode;
+import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
+import org.nuclos.client.genericobject.GeneratorActions;
+import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.genericobject.RelateGenericObjectsController;
 import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess;
 import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess.HasModuleId;
 import org.nuclos.client.genericobject.datatransfer.TransferableGenericObjects;
+import org.nuclos.client.main.Main;
+import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
+import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.CommonClientWorkerAdapter;
@@ -51,14 +65,25 @@ import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.CollectState;
+import org.nuclos.client.ui.collect.detail.DetailsCollectableEventListener;
+import org.nuclos.client.ui.tree.CompositeTreeNodeAction;
 import org.nuclos.client.ui.tree.TreeNodeAction;
+import org.nuclos.common.AttributeProvider;
 import org.nuclos.common.MutableBoolean;
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.NuclosEOField;
+import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.common2.exception.CommonFinderException;
+import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
+import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
+import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode.RelationDirection;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode.SystemRelationType;
@@ -75,6 +100,8 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNode> implements EntityExplorerNode {
 
+	protected static final Logger log = Logger.getLogger(GenericObjectExplorerNode.class);
+	
 	/**
 	 * action: add to group (currently disabled)
 	 */
@@ -94,6 +121,11 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 	 * action: remove from parent group
 	 */
 	private static final String ACTIONCOMMAND_REMOVE_RELATION = "REMOVE RELATION";
+	
+	/**
+	 * action: generate genericobject
+	 */
+	private static final String ACTIONCOMMAND_GENERATE_GENERICOBJECT = "GENERATE GENERICOBJECT";
 
 	public GenericObjectExplorerNode(TreeNode treenode) {
 		super(treenode);
@@ -115,6 +147,14 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		if (this.getParent() != null && this.getParent() instanceof GroupExplorerNode) {
 			result.add(new RemoveFromParentGroupAction(tree));
 		}
+		
+		// add generator actions here.
+		TreeNodeAction newGeneratorAction = newGeneratorAction(tree);
+		if (newGeneratorAction != null) {
+			result.add(TreeNodeAction.newSeparatorAction());
+			result.add(newGeneratorAction);
+		}			
+		
 		return result;
 	}
 
@@ -123,6 +163,44 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		final Integer iModuleId = ((GenericObjectExplorerNode) tree.getSelectionPath().getLastPathComponent()).getTreeNode().getModuleId();
 		final Integer iGenericObjectId = ((GenericObjectExplorerNode) tree.getSelectionPath().getLastPathComponent()).getTreeNode().getId();
 		result.setEnabled(SecurityCache.getInstance().isReadAllowedForModule(Modules.getInstance().getEntityNameByModuleId(iModuleId), iGenericObjectId));
+		return result;
+	}
+
+	private TreeNodeAction newGeneratorAction(JTree tree) {		
+		GenericObjectVO genericObjectVO;
+		
+		try {
+			genericObjectVO = GenericObjectDelegate.getInstance().get(this.getTreeNode().getId());			
+		} catch (CommonBusinessException ex) {
+			Errors.getInstance().showExceptionDialog(tree, ex);
+			return null;
+		}
+		
+		Integer iModuleId = this.getTreeNode().getModuleId();
+		Integer iProcessId = this.getTreeNode().getProcessId();
+		Integer iStateNumeral = (Integer)genericObjectVO.getAttribute(NuclosEOField.STATENUMBER.getMetaData().getField(), SpringApplicationContextHolder.getBean(AttributeProvider.class)).getValue();
+
+		final List<TreeNodeAction> lst = getGeneratorActions(tree, genericObjectVO, iModuleId, iStateNumeral, iProcessId);
+		if (lst.isEmpty()) {
+			return null;
+		}
+			
+		final CompositeTreeNodeAction result = new CompositeTreeNodeAction(CommonLocaleDelegate.getMessage("RuleExplorerNode.5","Arbeitsschritte"), lst);
+		return result;
+	}
+	
+
+
+	private List<TreeNodeAction> getGeneratorActions(JTree tree, GenericObjectVO genericObjectVO, Integer iModuleId, Integer iStateNumeral,Integer iProcessId) {
+		final List<TreeNodeAction> result = new LinkedList<TreeNodeAction>();
+		
+		final List<GeneratorActionVO> lstActions = GeneratorActions.getActions(iModuleId, iStateNumeral, iProcessId);
+		if (lstActions.size() > 0) {
+			for (Iterator iterator = lstActions.iterator(); iterator.hasNext();) {
+				GeneratorActionVO generatorActionVO = (GeneratorActionVO) iterator.next();
+				result.add(new GeneratorAction(tree, genericObjectVO, generatorActionVO));				
+			}
+		}
 		return result;
 	}
 
@@ -446,4 +524,141 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 			}
 		}
 	}	// inner class RemoveRelationAction
+
+
+	/**
+	 * inner class GeneratorAction. Removes the relation between this node and its parent.
+	 */
+	private class GeneratorAction extends TreeNodeAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private final GenericObjectVO genericobjectvo;
+		private final GeneratorActionVO generatoractionvo;
+
+		/**
+		 * @param tree
+		 */
+		GeneratorAction(JTree tree, GenericObjectVO genericobjectvo, GeneratorActionVO generatoractionvo) {
+			super(ACTIONCOMMAND_GENERATE_GENERICOBJECT, generatoractionvo.getLabel() + "...", tree);
+			this.genericobjectvo = genericobjectvo;
+			this.generatoractionvo = generatoractionvo;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			final JTree tree = this.getJTree();
+			
+			CommonClientWorkerAdapter<Collectable> searchWorker = new CommonClientWorkerAdapter<Collectable>(null) {
+				@Override
+				public void init() {
+					UIUtils.setWaitCursor(tree);
+				}
+				
+				@Override
+				public void work() throws CommonBusinessException {
+					final GenericObjectExplorerNode goexplorernode = (GenericObjectExplorerNode) tree.getSelectionPath().getLastPathComponent();
+					cmdGenerateGenericObject(tree, goexplorernode);
+				}
+				
+				@Override
+				public void paint() {
+					tree.setCursor(null);
+				}
+				
+				@Override
+				public void handleError(Exception ex) {
+					Errors.getInstance().showExceptionDialog(null, getMessage("GenericObjectExplorerNode.3", "Fehler beim entfernen der Beziehungen"), ex);
+				}
+			};
+			
+			CommonMultiThreader.getInstance().execute(searchWorker);
+		}
+
+		protected final String getModuleLabel(Integer iModuleId) {
+			return Modules.getInstance().getEntityLabelByModuleId(iModuleId);
+		}
+
+		/**
+		 * Ask the user for type of desired generation and confirmation of object generation.
+		 * @param bShowDetails
+		 * @param bMulti
+		 * @param sSourceModuleName
+		 * @param sTargetModuleName
+		 * @param generatoractionvo
+		 * @return selected option
+		 */
+		private int confirmGenerationType(String sSourceModuleName, String sTargetModuleName, GenericObjectVO genericobjectvo, GeneratorActionVO generatoractionvo) {
+			final int iBtn;
+			if (generatoractionvo.getTargetProcessId() != null) {
+				try {
+					sTargetModuleName = MessageFormat.format("{0} ({1})", sTargetModuleName, MasterDataCache.getInstance().get(NuclosEntity.PROCESS.getEntityName(), generatoractionvo.getTargetProcessId()).getField("name", String.class));
+				} catch (CommonFinderException e) {
+					log.error("Unable to determine target process name.", e);
+				}
+			}
+
+			Object oProcess = genericobjectvo.getAttribute(NuclosEOField.PROCESS.getMetaData().getField(), SpringApplicationContextHolder.getBean(AttributeProvider.class)).getValue();
+			sSourceModuleName = MessageFormat.format("{0} ({1})", sSourceModuleName, oProcess);
+			final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.71","Soll aus dem/der aktuellen {0} ein(e) {1} erzeugt werden?", sSourceModuleName, sTargetModuleName);
+			iBtn = JOptionPane.showConfirmDialog(MainFrame.getHomePane(), sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName),
+				JOptionPane.OK_CANCEL_OPTION);
+
+			return iBtn;
+		}
+
+		/**
+		 * removes the relation between this node and its parent.
+		 * @param tree
+		 * @param goexplorernode
+		 */
+		private void cmdGenerateGenericObject(final JTree tree, final GenericObjectExplorerNode goexplorernode) {
+			try {
+				final String sTargetModuleName = getModuleLabel(generatoractionvo.getTargetModuleId());
+				final String sSourceModuleName = getModuleLabel(goexplorernode.getTreeNode().getModuleId());
+
+				final int iBtn = confirmGenerationType(sSourceModuleName, sTargetModuleName, genericobjectvo, generatoractionvo);
+
+				if (iBtn != JOptionPane.CANCEL_OPTION && iBtn != JOptionPane.CLOSED_OPTION) {
+					final AtomicReference<Integer> parameterObjectIdRef = new AtomicReference<Integer>();
+					final CommonRunnable generateRunnable = new CommonRunnable() {
+						@Override
+						public void run() throws CommonBusinessException {
+							Integer parameterObjectId = parameterObjectIdRef.get();
+							if (iBtn == JOptionPane.YES_OPTION) {
+								GenericObjectVO generatedGo = GenericObjectDelegate.getInstance().generateGenericObject(genericobjectvo.getId(), parameterObjectId, generatoractionvo);
+								
+								if (generatedGo == null)
+									return;
+
+								Integer generatedGoId = generatedGo.getId();
+								if (SecurityCache.getInstance().isWriteAllowedForModule(Modules.getInstance().getEntityNameByModuleId(generatoractionvo.getTargetModuleId()), generatedGoId))
+									if (generatedGoId != null) {
+										//showGenericObject(generatedGoId, generatoractionvo.getTargetModuleId(), false);
+										Main.getMainController().showDetails(sTargetModuleName, generatedGoId);
+									} else {
+										//GenericObjectCollectController goclct = showIncompleteGenericObject(sourceId, generatedGo);
+										//final String message = CommonLocaleDelegate.getMessage("R00022889", "Der Datensatz konnte nicht erstellt werden.\n\u00dcberpr\u00fcfen Sie alle Pflichtfelder.");
+										//goclct.setPointerInformation(new PointerCollection(message), null);
+
+										JOptionPane.showMessageDialog(MainFrame.getHomePane(),
+											CommonLocaleDelegate.getMessage("R00022889", "Der Datensatz konnte nicht erstellt werden.\n\u00dcberpr\u00fcfen Sie alle Pflichtfelder."),
+											CommonLocaleDelegate.getMessage("R00022892", "Objektgenerierung"),
+											JOptionPane.ERROR_MESSAGE);
+
+										Main.getMainController().showDetails(sSourceModuleName, genericobjectvo.getId());
+									}
+
+								goexplorernode.refresh(tree);							}
+						}
+					};
+					UIUtils.runShortCommand(MainFrame.getHomePane(), generateRunnable);
+				}
+			}
+			catch (Exception ex) {
+				Errors.getInstance().showExceptionDialog(MainFrame.getHomePane(), ex);
+			}
+		}
+	}	// inner class GeneratorAction
 }	// class GenericObjectExplorerNode

@@ -20,6 +20,8 @@ package org.nuclos.client.ui.collect.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -97,23 +99,38 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 		int currentSortIndex = CollectionUtils.indexOfFirst(sortKeys, new Predicate<SortKey>() {
 			@Override public boolean evaluate(SortKey t) { return t.getColumn() == column; }
 		});
+
 		SortOrder newSortOrder = SortOrder.ASCENDING;
+		int lastSortIndex = newSortKeys.size();
 		if (currentSortIndex != -1) {
 			SortKey oldSortKey = newSortKeys.remove(currentSortIndex);
-			if (currentSortIndex == 0) {
+			if (oldSortKey.getSortOrder() != SortOrder.UNSORTED) {
 				switch (oldSortKey.getSortOrder()) {
 				case ASCENDING:
 					newSortOrder = SortOrder.DESCENDING;
+					newSortKeys.add(currentSortIndex, new SortKey(column, newSortOrder));
 					break;
 				case DESCENDING:
-					newSortOrder = SortOrder.ASCENDING;
+					newSortOrder = SortOrder.UNSORTED;
+					// if descending, nothing will be added. 3-click behavior. asc,desc,unsorted.
+					newSortKeys.add(currentSortIndex, new SortKey(column, newSortOrder));	
+					break;
+				case UNSORTED:
+					newSortOrder = SortOrder.ASCENDING;	
+					newSortKeys.add(currentSortIndex, new SortKey(column, newSortOrder));		
 					break;
 				}
+			} else {
+				newSortOrder = SortOrder.ASCENDING;
+				newSortKeys.add(lastSortIndex == 0 ? 0 : lastSortIndex - 1, new SortKey(column, newSortOrder));		
 			}
+		} else {
+			newSortOrder = SortOrder.ASCENDING;
+			newSortKeys.add(lastSortIndex == 0 ? 0 : lastSortIndex - 1, new SortKey(column, newSortOrder));		
 		}
-		newSortKeys.add(0, new SortKey(column, newSortOrder));
+
 		if (newSortKeys.size() > 3) {
-			newSortKeys = newSortKeys.subList(0, 3);
+			newSortKeys = newSortKeys.subList(lastSortIndex-2,lastSortIndex+1);
 		}
 		setSortKeys(newSortKeys, sortImmediately);
 	}

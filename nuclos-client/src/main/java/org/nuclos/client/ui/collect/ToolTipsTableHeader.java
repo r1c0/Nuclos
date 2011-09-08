@@ -17,10 +17,16 @@
 package org.nuclos.client.ui.collect;
 
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.RowSorter.SortKey;
@@ -92,6 +98,9 @@ public class ToolTipsTableHeader extends JTableHeader {
 					if (entityTableModel instanceof SortableTableModel) {
 						sortKeys = ((SortableTableModel) entityTableModel).getSortKeys();
 					}
+					sortKeys = CollectionUtils.applyFilter(sortKeys, new Predicate<SortKey>() {
+						@Override public boolean evaluate(SortKey t) { return t.getSortOrder() != SortOrder.UNSORTED; }
+					});
 					
 					int sortKeyIndex = -1;
 					SortOrder sortOrder = null;
@@ -114,12 +123,38 @@ public class ToolTipsTableHeader extends JTableHeader {
 								sortIcon = descendingSortIcon;
 								break;
 							}
-							if (sortKeyIndex > 0 && sortIcon != null) {
-								sortIcon = new Icons.ResizedIcon(sortIcon, 0.75d);
+							
+							if (sortIcon != null) {
+								final Icon icon = sortIcon;
+								final int index = sortKeyIndex + 1;
+								sortIcon = new ImageIcon(){
+									public int getIconHeight() {
+										return icon.getIconHeight();
+									};
+									public int getIconWidth() {
+										return icon.getIconWidth();
+									};
+									public synchronized void paintIcon(Component c, Graphics g, int x, int y) {
+										Graphics2D g2 = (Graphics2D)g;
+										g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+										
+										Font f = g2.getFont();
+										g2.setFont(f.deriveFont(10f));
+										g2.drawString(String.valueOf(index), x + getIconWidth() - 1, getIconHeight() / 2 + 1);
+										g2.setFont(f);
+										
+										icon.paintIcon(c, g, x, y);
+									}
+								};
+
+								//if (sortKeyIndex > 0 && sortIcon != null) {
+								//	sortIcon = new Icons.ResizedIcon(sortIcon, 0.75d);
+								//}
 							}
 						}
 						((JLabel) comp).setIcon(sortIcon);
 					}
+					((JLabel) comp).setPreferredSize(new Dimension(ascendingSortIcon.getIconWidth(), ascendingSortIcon.getIconWidth()));
 				}
 				
 				return comp;

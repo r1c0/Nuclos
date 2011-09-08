@@ -16,14 +16,23 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.common;
 
+import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
+
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,16 +41,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.MouseInputAdapter;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
@@ -65,6 +82,7 @@ import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.CollectableValueField;
@@ -145,11 +163,139 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 		this.getSubForm().loadTableFilter(getParentEntityName());
 
-		TableRowResizer row2 = new TableRowResizer(this.fixedcolumnheader.getHeaderTable(), TableRowResizer.RESIZE_ALL_ROWS, this.getPrefs());
+		TableRowIndicator row2 = new TableRowIndicator(this.fixedcolumnheader.getHeaderTable(), TableRowIndicator.RESIZE_ALL_ROWS, this.getPrefs(), this);
 		row2.addJTableToSynch(getJTable());
 
 		super.postCreate();
-		this.getSubForm().getJTable().setRowHeight(this.getPrefs().getInt(TableRowResizer.SUBFORM_ROW_HEIGHT, 20));
+		this.getSubForm().getJTable().setRowHeight(this.getPrefs().getInt(TableRowIndicator.SUBFORM_ROW_HEIGHT, 20));
+		
+		this.getSubForm().getJTable().getTableHeader().addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if(SwingUtilities.isRightMouseButton(e)) {
+					JPopupMenu pop = new JPopupMenu();
+					
+					int iColumn = getSubForm().getJTable().getTableHeader().columnAtPoint(e.getPoint());
+					List<JComponent> lstColumnActions = getColumnIndicatorActions(iColumn);
+					if (!lstColumnActions.isEmpty())
+					{
+						for (JComponent action : lstColumnActions) {
+							pop.add(action);
+						}
+					}
+					pop.setLocation(e.getLocationOnScreen());
+					pop.show(DetailsSubFormController.this.getJTable(), e.getX(), e.getY());
+				}
+			}
+			
+		});
+	}
+	
+	/**
+	 * @return an list of jmenuitems. if no boolean entityfield available returns an empty list.
+	 */	
+	List<JComponent> getRowIndicatorActions() {
+		List<JComponent> result = new LinkedList<JComponent>();
+		
+		Collectable clct = this.getSelectedCollectable();
+		if (clct == null) {		
+			return result;
+		}
+		
+		final List<String> lstFieldNames = new LinkedList<String>(); 
+		CollectableEntity clcte = this.getCollectableEntity();
+		for (Iterator iterator = clcte.getFieldNames().iterator(); iterator.hasNext();) {
+			String sFieldName = (String) iterator.next();
+			CollectableEntityField clctef = clcte.getEntityField(sFieldName);
+			if (clctef.getJavaClass() == Boolean.class && getSubForm().isColumnVisible(sFieldName)) {
+				lstFieldNames.add(sFieldName);
+			}							
+		}		
+		
+		if (!lstFieldNames.isEmpty()) { // if empty, return an empty list.
+			JMenuItem mi1 = new JMenuItem(getMessage("DetailsSubFormController.1", "Alle setzen"));
+			mi1.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					Collectable clct = DetailsSubFormController.this.getSelectedCollectable();
+					if (clct != null) {					
+						for (Iterator iterator = lstFieldNames.iterator(); iterator.hasNext();) {
+							String sFieldName = (String) iterator.next();
+							if (DetailsSubFormController.this.getSubForm().isColumnEnabled(sFieldName)) {
+								clct.setField(sFieldName, new CollectableValueField(Boolean.TRUE));
+							}
+						}
+					}
+				}
+			});
+			JMenuItem mi2 = new JMenuItem(getMessage("DetailsSubFormController.2", "Alle zur√ºcksetzen"));
+			mi2.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					Collectable clct = DetailsSubFormController.this.getSelectedCollectable();
+					if (clct != null) {
+						for (Iterator iterator = lstFieldNames.iterator(); iterator.hasNext();) {
+							String sFieldName = (String) iterator.next();
+							if (DetailsSubFormController.this.getSubForm().isColumnEnabled(sFieldName)) {
+								clct.setField(sFieldName, new CollectableValueField(Boolean.FALSE));
+							}
+						}
+					}
+				}
+			});
+			result.add(mi1);
+			result.add(mi2);
+			result.add(new JPopupMenu.Separator());
+		}
+		return result;
+	}
+	
+	/**
+	 * @return an list of jmenuitems. if no boolean entityfield available returns an empty list.
+	 */	
+	List<JComponent> getColumnIndicatorActions(int iColumn) {
+		List<JComponent> result = new LinkedList<JComponent>();
+		
+		if (iColumn == -1)
+		{
+			return result;
+		}
+		
+		final CollectableEntityField clctef = getCollectableTableModel().getCollectableEntityField(iColumn);
+		if (clctef.getJavaClass() != Boolean.class || !getSubForm().isColumnVisible(clctef.getName())) {
+			return result;
+		}		
+		
+		JMenuItem mi1 = new JMenuItem(getMessage("DetailsSubFormController.1", "Alle setzen"));
+		mi1.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				List<Clct> clcts = DetailsSubFormController.this.getCollectables();
+				for (Clct clct : clcts) {
+					clct.setField(clctef.getName(), new CollectableValueField(Boolean.TRUE));
+				}
+			}
+		});
+		mi1.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive());
+		JMenuItem mi2 = new JMenuItem(getMessage("DetailsSubFormController.2", "Alle zur√ºcksetzen"));
+		mi2.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				List<Clct> clcts = DetailsSubFormController.this.getCollectables();
+				for (Clct clct : clcts) {
+					clct.setField(clctef.getName(), new CollectableValueField(Boolean.FALSE));
+				}
+			}
+		});
+		mi2.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive());
+		
+		result.add(mi1);
+		result.add(mi2);
+
+		return result;
 	}
 
 	/**

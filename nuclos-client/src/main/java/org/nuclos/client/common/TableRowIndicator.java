@@ -26,10 +26,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
@@ -37,7 +39,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
 
-public class TableRowResizer extends MouseInputAdapter { 
+import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.CollectableEntity;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableValueField;
+
+public class TableRowIndicator extends MouseInputAdapter { 
     public static Cursor resizeCursor = Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR);
     
     public static int RESIZE_ALL_ROWS = 0;
@@ -47,17 +54,19 @@ public class TableRowResizer extends MouseInputAdapter {
     private int mouseYOffset, resizingRow; 
     private Cursor otherCursor = resizeCursor; 
     private JTable table;
-    Set<JTable> sTables;
-    Preferences prefs;
+    private DetailsSubFormController clctcontroller;
+    private Set<JTable> sTables;
+    private Preferences prefs;
     
     
     List<ListSelectionListener> lstListener;
     int mode;
 
-    public TableRowResizer(JTable table, int mode, Preferences pref) { 
+    public TableRowIndicator(JTable table, int mode, Preferences pref, DetailsSubFormController clctcontroller) { 
         this.table = table;
         this.mode = mode;
         this.prefs = pref;
+        this.clctcontroller = clctcontroller;
         table.addMouseListener(this); 
         table.addMouseMotionListener(this);
         sTables = new HashSet<JTable>();
@@ -155,7 +164,16 @@ public class TableRowResizer extends MouseInputAdapter {
 	public void mouseClicked(MouseEvent e) {
 		if(SwingUtilities.isRightMouseButton(e)) {
 			JPopupMenu pop = new JPopupMenu();
-			JMenuItem mi = new JMenuItem(getMessage("TableRowResizer.1", "zurück setzen"));
+			
+			List<JComponent> lstRowActions = clctcontroller.getRowIndicatorActions();
+			if (!lstRowActions.isEmpty())
+			{
+				for (JComponent action : lstRowActions) {
+					pop.add(action);
+				}
+			}
+			
+			JMenuItem mi = new JMenuItem(getMessage("TableRowIndicator.1", "Zeilenh√∂he zur√ºcksetzen"));
 			mi.addActionListener(new ActionListener() {
 				
 				@Override
