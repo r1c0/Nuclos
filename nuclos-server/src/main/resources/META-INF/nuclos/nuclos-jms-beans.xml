@@ -24,7 +24,7 @@
 	<!-- JMS start -->
 
 	<!--  Embedded ActiveMQ Broker -->
-    <amq:broker id="broker" useJmx="true" persistent="false">
+    <amq:broker id="broker" useJmx="false" persistent="false">
         <amq:transportConnectors>
             <amq:transportConnector uri="vm://localhost"/>
         </amq:transportConnectors>
@@ -50,7 +50,7 @@
     <amq:topic id="destinationLocalizationChanges" physicalName="topic/localizationChanges"/>
 
     <amq:topic id="destinationProgressNotification" physicalName="topic/progressNotification"/>
-    
+
     <amq:topic id="destinationLockedTabProgressNotification" physicalName="topic/lockedTabProgressNotification"/>
 
     <amq:topic id="destinationCustomcomponentCache" physicalName="topic/customcomponentCache"/>
@@ -126,7 +126,7 @@
           p:defaultDestination-ref="destinationProgressNotification" >
           <property name="pubSubDomain" value="true"></property>
     </bean>
-    
+
     <bean id="topic.lockedTabProgressNotification" class="org.springframework.jms.core.JmsTemplate"
           p:connectionFactory-ref="jmsProducerConnectionFactory"
           p:defaultDestination-ref="destinationLockedTabProgressNotification" >
