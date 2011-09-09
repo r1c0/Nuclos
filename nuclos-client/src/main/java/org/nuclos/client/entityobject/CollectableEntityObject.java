@@ -36,7 +36,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 public class CollectableEntityObject extends CollectableMasterData implements Removable {
 
 	private CollectableEOEntity ceoe;
-	
+
 	private final Map<String, CollectableField> mpFields = CollectionUtils.newHashMap();
 
 	private EntityObjectVO vo;
@@ -100,7 +100,9 @@ public class CollectableEntityObject extends CollectableMasterData implements Re
 		if(clctfValue.isIdField()) {
 			vo.getFieldIds().put(sFieldName, IdUtils.toLongId(clctfValue.getValueId()));
 		}
-		vo.flagUpdate();
+		if (!vo.isFlagRemoved()) {
+			vo.flagUpdate();
+		}
 	}
 
 	@Override
@@ -133,7 +135,7 @@ public class CollectableEntityObject extends CollectableMasterData implements Re
 		result.append("]");
 		return result.toString();
 	}
-	
+
 	/**
 	 * inner class MakeCollectable: makes a <code>MasterDataVO</code> <code>Collectable</code>.
 	 */
