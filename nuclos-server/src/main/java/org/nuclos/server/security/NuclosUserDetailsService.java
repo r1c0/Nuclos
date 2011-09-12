@@ -52,7 +52,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
+@Transactional(propagation=Propagation.REQUIRES_NEW)
 public class NuclosUserDetailsService implements org.nuclos.server.security.UserDetailsService {
 
 	private static final Logger log = Logger.getLogger(MasterDataFacadeHelper.class);
@@ -170,7 +170,6 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 	}
 
 	@Override
-	@Transactional(propagation=Propagation.REQUIRED)
 	public void logAttempt(String username, boolean authenticated) {
 		Integer maxattempts = 0;
 		String sMaxattempts = paramprovider.getValue(ParameterProvider.KEY_SECURITY_LOCK_ATTEMPTS);

@@ -46,7 +46,7 @@ import org.springframework.util.Assert;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Transactional(propagation=Propagation.REQUIRES_NEW)
+@Transactional(propagation=Propagation.NOT_SUPPORTED)
 public class RemoteAuthenticationManager implements org.nuclos.common.security.RemoteAuthenticationManager, InitializingBean {
 
 	private AuthenticationManager authenticationManager;
@@ -63,6 +63,7 @@ public class RemoteAuthenticationManager implements org.nuclos.common.security.R
 
 		try {
 			Authentication auth = authenticationManager.authenticate(request);
+			userDetailsService.logAttempt(username, auth.isAuthenticated());
 			return auth.getAuthorities();
 		}
 		catch (UsernameNotFoundException ex) {
