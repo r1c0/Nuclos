@@ -152,6 +152,9 @@ public class ToolTipsTableHeader extends JTableHeader {
 								//}
 							}
 						}
+
+						((JLabel) comp).setHorizontalAlignment(JLabel.CENTER);
+						((JLabel) comp).setHorizontalTextPosition(JLabel.LEADING);
 						((JLabel) comp).setIcon(sortIcon);
 					}
 					((JLabel) comp).setPreferredSize(new Dimension(ascendingSortIcon.getIconWidth(), ascendingSortIcon.getIconWidth()));

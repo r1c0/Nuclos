@@ -122,15 +122,30 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 				}
 			} else {
 				newSortOrder = SortOrder.ASCENDING;
-				newSortKeys.add(lastSortIndex == 0 ? 0 : lastSortIndex - 1, new SortKey(column, newSortOrder));		
+				newSortKeys.add(lastSortIndex == 0 ? 0 : (lastSortIndex > newSortKeys.size() ? lastSortIndex - 1 : lastSortIndex), new SortKey(column, newSortOrder));		
 			}
 		} else {
 			newSortOrder = SortOrder.ASCENDING;
-			newSortKeys.add(lastSortIndex == 0 ? 0 : lastSortIndex - 1, new SortKey(column, newSortOrder));		
+			newSortKeys.add(lastSortIndex == 0 ? 0 : (lastSortIndex > newSortKeys.size() ? lastSortIndex - 1 : lastSortIndex), new SortKey(column, newSortOrder));		
 		}
 
 		if (newSortKeys.size() > 3) {
-			newSortKeys = newSortKeys.subList(lastSortIndex-2,lastSortIndex+1);
+			int i1 = 0;
+			List<SortKey> newSortKeys1 = new LinkedList<SortKey>();
+			List<SortKey> newSortKeys2 = new LinkedList<SortKey>();
+			for (SortKey sortKey : newSortKeys) {
+				if (sortKey.getSortOrder() == SortOrder.UNSORTED && i1 < 3) {
+					newSortKeys1.add(sortKey);
+					i1++;
+				} else {
+					newSortKeys2.add(sortKey);
+				}
+			}
+			
+			newSortKeys.clear();
+			newSortKeys.addAll(newSortKeys2.subList(newSortKeys2.size() < 3 ? 0 : newSortKeys2.size()-3, newSortKeys2.size()));
+			newSortKeys.addAll(newSortKeys1);
+			//newSortKeys = newSortKeys.subList(0,3);
 		}
 		setSortKeys(newSortKeys, sortImmediately);
 	}
