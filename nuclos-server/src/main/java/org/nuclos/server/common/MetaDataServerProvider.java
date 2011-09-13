@@ -173,7 +173,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 				// select distinct p.<keyfield> from <subform> p 
 				final DbQuery<? extends Object> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Object.class);
 				final DbFrom from = query.distinct(true).from(subformTable).alias("p");
-				query.selectLiberate(from.baseColumn(keyField.getDbColumn(), keyTypeClass)).maxResults(40);
+				query.selectLiberate(from.baseColumn(keyField.getDbColumn(), keyTypeClass)).maxResults(250);
 				final List<? extends Object> columns = DataBaseHelper.getDbAccess().executeQuery(query);
 				//
 				final EntityObjectVO vo = new EntityObjectVO();

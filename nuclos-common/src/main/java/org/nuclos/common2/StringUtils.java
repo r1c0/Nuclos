@@ -677,8 +677,8 @@ public class StringUtils {
 	public static String makeSQLIdentifierFrom(String s) {
 		final int len = s.length();
 		final StringBuilder result = new StringBuilder(len);
-		// allow string with only numbers in
-		result.append('_');
+		// allow string with only numbers in, and trailing '_' in oracle db
+		result.append("a_");
 		for (int i = 0; i < len; ++i) {
 			final boolean accept;
 			int c = s.codePointAt(i);

@@ -51,6 +51,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.collection.TransformerUtils;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.StringUtils;
@@ -1033,7 +1034,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     @Override
     protected List<String> getSqlForCreateSimpleView(DbSimpleView view) {
         StringBuilder fromClause = new StringBuilder();
-        fromClause.append(getName(view.getTableName()) + " t");
+        fromClause.append(getName(view.getTableName()) + " " + SystemFields.BASE_ALIAS);
 
         int fkIndex = 1;
         for (DbSimpleViewColumn vc : view.getReferencingViewColumns()) {
