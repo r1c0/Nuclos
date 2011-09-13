@@ -110,7 +110,7 @@ public class MasterDataSearchStrategy extends CollectSearchStrategy<CollectableM
 	@Override
 	public CollectableSearchCondition getCollectableSearchCondition() throws CollectableFieldFormatException {
 		final CollectableSearchCondition result;
-		final CollectableSearchCondition cond = super.getCollectableSearchCondition();
+		final CollectableSearchCondition cond = (getCollectableIdListCondition() != null) ? getCollectableIdListCondition() : super.getCollectableSearchCondition();
 		if (getMasterCollectDataController().isFilteringDesired()) {
 			if (cond == null) {
 				// If no other search conditions specified, the validity
@@ -185,5 +185,4 @@ public class MasterDataSearchStrategy extends CollectSearchStrategy<CollectableM
 		*/
 		return result;
 	}
-
 }

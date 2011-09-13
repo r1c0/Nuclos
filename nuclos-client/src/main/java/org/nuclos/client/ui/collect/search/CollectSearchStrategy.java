@@ -26,6 +26,7 @@ import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.strategy.AlwaysLoadCompleteCollectablesStrategy;
 import org.nuclos.client.ui.collect.strategy.CompleteCollectablesStrategy;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -47,6 +48,8 @@ public class CollectSearchStrategy<Clct extends Collectable> implements ISearchS
 
 	private CompleteCollectablesStrategy<Clct> completecollectablesstrategy;
 
+	private CollectableIdListCondition idListCondition;
+
 	public CollectSearchStrategy() {
 	}
 
@@ -63,7 +66,7 @@ public class CollectSearchStrategy<Clct extends Collectable> implements ISearchS
 	 * performs a single-threaded search, according to the current search condition, if any.
 	 * TODO replace with search(boolean bRefreshOnly)
 	 * @see #getSearchWorker()
-	 * 
+	 *
 	 * @deprecated Use multithreaded search for new applications.
 	 */
 	@Deprecated
@@ -164,7 +167,7 @@ public class CollectSearchStrategy<Clct extends Collectable> implements ISearchS
 
 	/**
 	 * @return Are <code>Collectable</code>s in the ResultTable always complete in this <code>CollectController</code>?
-	 * 
+	 *
 	 * @deprecated Use #getCompleteCollectablesStrategy().getCollectablesInResultAreAlwaysComplete() directly.
 	 */
 	@Override
@@ -202,4 +205,12 @@ public class CollectSearchStrategy<Clct extends Collectable> implements ISearchS
 		throw new UnsupportedOperationException();
 	}
 
+	public CollectableIdListCondition getCollectableIdListCondition() {
+		return idListCondition;
+	}
+
+	@Override
+	public void setCollectableIdListCondition(CollectableIdListCondition condition) {
+		this.idListCondition = condition;
+	}
 }

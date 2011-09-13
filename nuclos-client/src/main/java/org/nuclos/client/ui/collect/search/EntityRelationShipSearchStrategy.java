@@ -40,8 +40,13 @@ public class EntityRelationShipSearchStrategy extends CollectSearchStrategy<Enti
 		final MainFrameTab mft = cc.getMainFrameTab();
 		try {
 			mft.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			Collection<MasterDataVO> colVO = MasterDataDelegate.getInstance().getMasterData(
-					NuclosEntity.ENTITYRELATION.getEntityName());
+			final Collection<MasterDataVO> colVO;
+			if (getCollectableIdListCondition() == null) {
+				colVO = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.ENTITYRELATION.getEntityName());
+			}
+			else {
+				colVO = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.ENTITYRELATION.getEntityName(), getCollectableSearchCondition());
+			}
 
 			List<EntityRelationshipModel> lstModel = new ArrayList<EntityRelationshipModel>();
 			for (MasterDataVO vo : colVO) {

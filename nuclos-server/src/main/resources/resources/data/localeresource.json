@@ -61122,5 +61122,20 @@
     "resourceID": "wizard.step.inputattribute.validation.reference",
     "locale": "de",
     "text": "Bitte geben Sie für jedes Referenzfeld eine Verweisentität an ({0})."
+  },
+  {
+    "resourceID": "StartTabPanel.error.open.list",
+    "locale": "i-default",
+    "text": "The result view can not be opened."
+  },
+  {
+    "resourceID": "StartTabPanel.error.open.list",
+    "locale": "en",
+    "text": "The result view can not be opened."
+  },
+  {
+    "resourceID": "StartTabPanel.error.open.list",
+    "locale": "de",
+    "text": "Die Ergebnisliste kann nicht geöffnet werden."
   }
 ]

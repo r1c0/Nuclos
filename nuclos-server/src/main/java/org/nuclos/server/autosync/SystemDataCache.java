@@ -59,16 +59,16 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class SystemDataCache {
-	
+
 	private final NuclosEntity entity;
 	private final Map<Object, MasterDataVO> elements;
-	
+
 	public SystemDataCache(NuclosEntity entity) {
 		this.entity = entity;
 		this.elements = new HashMap<Object, MasterDataVO>();
 	}
-	
-	protected void addAll(Iterable<MasterDataVO> mdvos) {		
+
+	protected void addAll(Iterable<MasterDataVO> mdvos) {
 		for (MasterDataVO mdvo : mdvos) {
 			Object id = mdvo.getId();
 			if (id == null || elements.containsKey(id))
@@ -76,7 +76,7 @@ public class SystemDataCache {
 			elements.put(id, mdvo);
 		}
 	}
-	
+
 	public Collection<MasterDataVO> getAll() {
 		return Collections.unmodifiableCollection(elements.values());
 	}
@@ -88,50 +88,50 @@ public class SystemDataCache {
 	public MasterDataVO getById(Object id) {
 		return elements.get(id);
 	}
-	
+
 	public MasterDataVO findVO(String field, Object value) {
 		return CollectionUtils.findFirst(elements.values(), new FieldEqualsPredicate(field, value));
 	}
-	
+
 	public MasterDataVO findVO(String field1, Object value1, Object...opt) {
 		return CollectionUtils.findFirst(elements.values(), makeFieldEqualsPredicate(field1, value1, opt));
 	}
-	
+
 	public List<MasterDataVO> findAllVO(String field1, Object value1) {
 		return findAllVO(new FieldEqualsPredicate(field1, value1));
-	}	
-	
+	}
+
 	public List<MasterDataVO> findAllVO(String field1, Object value1, Object...opt) {
 		return findAllVO(makeFieldEqualsPredicate(field1, value1, opt));
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private static Predicate<MasterDataVO> makeFieldEqualsPredicate(String field, Object value, Object[] opt) {		
-		Predicate<MasterDataVO>[] predicates = new Predicate[1 + (opt.length / 2)]; 
+	private static Predicate<MasterDataVO> makeFieldEqualsPredicate(String field, Object value, Object[] opt) {
+		Predicate<MasterDataVO>[] predicates = new Predicate[1 + (opt.length / 2)];
 		predicates[0] = new FieldEqualsPredicate(field, value);
 		for (int i = 0, k = 1; i < opt.length; i += 2) {
-			predicates[k++] = new FieldEqualsPredicate((String) opt[i], opt[i + 1]); 
+			predicates[k++] = new FieldEqualsPredicate((String) opt[i], opt[i + 1]);
 		}
 		return PredicateUtils.and(predicates);
 	}
-	
+
 	public List<MasterDataVO> findAllVOIn(String field1, Collection<?> col1) {
 		return findAllVO(new FieldInPredicate(field1, col1));
-	}	
-	
+	}
+
 	// TODO: clone to restrict manipulation
 	public List<MasterDataVO> findAllVO(Predicate<MasterDataVO> predicate) {
 		return CollectionUtils.<MasterDataVO>applyFilter(elements.values(), predicate);
 	}
-	
+
 	public Collection<MasterDataVO> findAllVO(CollectableSearchCondition cond) {
 		if (cond == null)
 			return getAll();
 		return findAllVO(cond.accept(new ConditionToPredicateVisitor(null)));
 	}
-	
+
 	private static class FieldEqualsPredicate implements Predicate<MasterDataVO> {
-		
+
 		private final String	field;
 		private final Object value;
 
@@ -139,13 +139,13 @@ public class SystemDataCache {
 			this.field = field;
 			this.value = value;
 		}
-		
+
 		@Override
 		public boolean evaluate(MasterDataVO mdvo) {
 			return ObjectUtils.equals(mdvo.getField(field), value);
 		}
 	}
-	
+
 	private static class FieldPredicate<T> implements Predicate<MasterDataVO> {
 
 		private final String	field;
@@ -157,13 +157,13 @@ public class SystemDataCache {
 			this.cls = cls;
 			this.predicate = predicate;
 		}
-		
+
 		@Override
 		public boolean evaluate(MasterDataVO mdvo) {
 			return predicate.evaluate(mdvo.getField(field, cls));
 		}
 	}
-	
+
 	static class MdvoPredicate<T> implements Predicate<MasterDataVO> {
 
 		private final Transformer<? super MasterDataVO, T> transformer;
@@ -173,7 +173,7 @@ public class SystemDataCache {
 			this.transformer = transformer;
 			this.predicate = predicate;
 		}
-		
+
 		@Override
 		public boolean evaluate(MasterDataVO mdvo) {
 			return predicate.evaluate(transformer.transform(mdvo));
@@ -185,13 +185,13 @@ public class SystemDataCache {
 		protected final ComparisonOperator operator;
 		protected final Class<T> clazz;
 		protected final Comparator<? super T> comparator;
-		
+
 		public ComparisonOperatorPredicate(ComparisonOperator operator, Class<T> clazz, Comparator<? super T> comparator) {
 			this.operator = operator;
 			this.clazz = clazz;
 			this.comparator = comparator;
 		}
-		
+
 		@Override
 		public boolean evaluate(T t1, T t2) {
 			if (t1 == null || t2 == null)
@@ -200,7 +200,7 @@ public class SystemDataCache {
 			case EQUAL:
 				return t1.equals(t2);
 			case NOT_EQUAL:
-				return !t1.equals(t2);					
+				return !t1.equals(t2);
 			case GREATER:
 				return compare(t1, t2, comparator) > 0;
 			case GREATER_OR_EQUAL:
@@ -212,29 +212,43 @@ public class SystemDataCache {
 			}
 			throw new IllegalStateException("Invalid comparison operator " + operator);
 		}
-		
+
 		@SuppressWarnings("unchecked")
 		private static <T> int compare(T t1, T t2, Comparator<? super T> comparator) {
 			return (comparator != null) ? comparator.compare(t1, t2) : ((Comparable) t1).compareTo(t2);
 		}
 	}
-	
+
 	private static class FieldIdPredicate implements Predicate<MasterDataVO> {
-		
+
 		private final Object id;
 
 		public FieldIdPredicate(Object id) {
 			this.id = id;
 		}
-		
+
 		@Override
 		public boolean evaluate(MasterDataVO mdvo) {
 			return ObjectUtils.equals(mdvo.getId(), id);
 		}
 	}
-	
+
+	private static class FieldIdListPredicate implements Predicate<MasterDataVO> {
+
+		private final List<Object> ids;
+
+		public FieldIdListPredicate(List<Object> ids) {
+			this.ids = ids;
+		}
+
+		@Override
+		public boolean evaluate(MasterDataVO mdvo) {
+			return ids.indexOf(mdvo.getId()) > -1;
+		}
+	}
+
 	private static class FieldInPredicate implements Predicate<MasterDataVO> {
-		
+
 		private final String	field;
 		private final Collection<?> values;
 
@@ -242,15 +256,15 @@ public class SystemDataCache {
 			this.field = field;
 			this.values = values;
 		}
-		
+
 		@Override
 		public boolean evaluate(MasterDataVO mdvo) {
 			return values.contains(mdvo.getField(field));
 		}
 	}
-	
+
 	static class ConditionToPredicateVisitor implements Visitor<Predicate<MasterDataVO>, RuntimeException>, CompositeVisitor<Predicate<MasterDataVO>, RuntimeException>, Transformer<CollectableSearchCondition, Predicate<MasterDataVO>> {
-		
+
 		ConditionToPredicateVisitor(MasterDataMetaVO mdmetavo) {
 			// parameter is used until now
 		}
@@ -259,7 +273,7 @@ public class SystemDataCache {
 		public Predicate<MasterDataVO> visitTrueCondition(TrueCondition truecond) {
 			return PredicateUtils.alwaysTrue();
 		}
-		
+
 		@Override
 		public Predicate<MasterDataVO> visitAtomicCondition(AtomicCollectableSearchCondition atomiccond) throws RuntimeException {
 			// Note that we call the overloaded method accept(AtomicThingy...) which will then call one
@@ -305,16 +319,16 @@ public class SystemDataCache {
 		public Predicate<MasterDataVO> visitReferencingCondition(ReferencingCollectableSearchCondition refcond) {
 			throw new IllegalArgumentException("refcond");
 		}
-		
+
 		//
 		// CompositeVisitor
 		//
-		
+
 		@Override
 		public Predicate<MasterDataVO> visitPlainSubCondition(PlainSubCondition subcond) {
 			throw new IllegalArgumentException("Plain SQL sub queries are not supported for system data");
 		}
-		
+
 		@Override
 		public Predicate<MasterDataVO> visitSelfSubCondition(CollectableSelfSubCondition subcond) {
 			throw new IllegalArgumentException("Self-sub queries are not supported for system data");
@@ -327,19 +341,19 @@ public class SystemDataCache {
 
 		@Override
         public Predicate<MasterDataVO> visitIdListCondition(CollectableIdListCondition collectableIdListCondition) throws RuntimeException {
-	        throw new IllegalArgumentException("collectableIdListCondition");
+	        return new FieldIdListPredicate(collectableIdListCondition.getIds());
         }
 	}
 
 	static class AtomicConditionToPredicateVisitor implements AtomicVisitor<Predicate<MasterDataVO>, RuntimeException>{
-		
+
 		@Override
 		@SuppressWarnings("unchecked")
 		public Predicate<MasterDataVO> visitComparison(CollectableComparison comparison) {
 			CollectableEntityField entityField = comparison.getEntityField();
 			CollectableField comparand = comparison.getComparand();
-			final Object id = comparand.isIdField() ? comparand.getValueId() : null;			
-			if (id != null) { /* && operator == EQUALS, but the SQL unparser doesn't check either */ 
+			final Object id = comparand.isIdField() ? comparand.getValueId() : null;
+			if (id != null) { /* && operator == EQUALS, but the SQL unparser doesn't check either */
 				return new FieldPredicate<Object>(entityField.getName() + "Id", Object.class, PredicateUtils.isEqual(id));
 			} else {
 				if (comparand.getValue() == null) {
@@ -351,22 +365,22 @@ public class SystemDataCache {
 				return new FieldPredicate(entityField.getName(), javaClass, PredicateUtils.bindSecond(pred,comparand.getValue()));
 			}
 		}
-		
+
 		@Override
 		public Predicate<MasterDataVO> visitComparisonWithParameter(CollectableComparisonWithParameter comparisonwp) {
 			throw new UnsupportedOperationException();
 		}
-		
+
 		@Override
 		public Predicate<MasterDataVO> visitComparisonWithOtherField(CollectableComparisonWithOtherField comparisonwf) {
 			throw new UnsupportedOperationException();
 		}
-		
+
 		@Override
 		public Predicate<MasterDataVO> visitIsNullCondition(CollectableIsNullCondition isnullcond) {
 			return new FieldPredicate<Object>(isnullcond.getFieldName(), Object.class, PredicateUtils.isNull());
 		}
-		
+
 		@Override
 		public Predicate<MasterDataVO> visitLikeCondition(CollectableLikeCondition likecond) {
 			throw new UnsupportedOperationException();

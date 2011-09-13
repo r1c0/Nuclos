@@ -72,7 +72,7 @@ import org.apache.commons.lang.NullArgumentException;
 public abstract class SearchConditionTreeNode extends DefaultMutableTreeNode {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	protected static final String ACTIONCOMMAND_ADD_ATOMICNODE = "ADD ATOMIC NODE";
@@ -285,7 +285,7 @@ public abstract class SearchConditionTreeNode extends DefaultMutableTreeNode {
 
 	protected class RemoveNodeAction extends TreeNodeAction {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -301,13 +301,13 @@ public abstract class SearchConditionTreeNode extends DefaultMutableTreeNode {
 
 	protected class AddCompositeNodeAction extends TreeNodeAction {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		private final LogicalOperator logicalOperator;
 
 		AddCompositeNodeAction(LogicalOperator logicalOperator, JTree tree) {
-			super("ADD LOGICAL " + CommonLocaleDelegate.getMessage(logicalOperator.getResourceIdForLabel(), null) 
+			super("ADD LOGICAL " + CommonLocaleDelegate.getMessage(logicalOperator.getResourceIdForLabel(), null)
 				+ " NODE", CommonLocaleDelegate.getMessage(logicalOperator.getResourceIdForDescription(), null), tree);
 			this.logicalOperator = logicalOperator;
 		}
@@ -325,7 +325,7 @@ public abstract class SearchConditionTreeNode extends DefaultMutableTreeNode {
 
 	protected class AddAtomicNodeAction extends TreeNodeAction {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		private final CollectableEntity clcte;

@@ -26,7 +26,7 @@ import java.util.Set;
 
 public class WorkspaceDescription implements Serializable {
 	private static final long serialVersionUID = 6637996725938917463L;
-	
+
 	private String name;
 	private final List<Frame> frames = new ArrayList<Frame>();
 
@@ -48,7 +48,7 @@ public class WorkspaceDescription implements Serializable {
 
 	public static class Tab implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
-		
+
 		private String label;
 		private boolean neverClose = false;;
 		private String preferencesXML;
@@ -78,10 +78,10 @@ public class WorkspaceDescription implements Serializable {
 			this.restoreController = restoreController;
 		}
 	}
-	
+
 	public static class Tabbed implements NestedContent {
 		private static final long serialVersionUID = 6637996725938917463L;
-		
+
 		private boolean home = false;
 		private boolean homeTree = false;
 		private boolean showEntity = true;
@@ -93,12 +93,14 @@ public class WorkspaceDescription implements Serializable {
 		private boolean alwaysHideStartmenu = false;
 		private boolean alwaysHideHistory = false;
 		private boolean alwaysHideBookmark = false;
-		
+
 		private int selected;
 		private final List<Tab> tabs = new ArrayList<Tab>();
 		private final Set<String> predefinedEntityOpenLocation = new HashSet<String>();
 		private final Set<String> reducedStartmenus = new HashSet<String>();
-		
+		private final Set<String> reducedHistoryEntities = new HashSet<String>();
+		private final Set<String> reducedBookmarkEntities = new HashSet<String>();
+
 		public boolean isHome() {
 			return home;
 		}
@@ -195,11 +197,29 @@ public class WorkspaceDescription implements Serializable {
 		public void addAllReducedStartmenus(Set<String> reducedStartmenus) {
 			this.reducedStartmenus.addAll(reducedStartmenus);
 		}
+		public Set<String> getReducedHistoryEntities() {
+			return reducedHistoryEntities;
+		}
+		public void addReducedHistoryEntity(String reducedHistoryEntity) {
+			this.reducedHistoryEntities.add(reducedHistoryEntity);
+		}
+		public void addAllReducedHistoryEntities(Set<String> reducedHistoryEntities) {
+			this.reducedHistoryEntities.addAll(reducedHistoryEntities);
+		}
+		public Set<String> getReducedBookmarkEntities() {
+			return reducedBookmarkEntities;
+		}
+		public void addReducedBookmarkEntity(String reducedBookmarkEntity) {
+			this.reducedBookmarkEntities.add(reducedBookmarkEntity);
+		}
+		public void addAllReducedBookmarkEntities(Set<String> reducedBookmarkEntities) {
+			this.reducedBookmarkEntities.addAll(reducedBookmarkEntities);
+		}
 	}
-	
+
 	public static class Split implements NestedContent {
 		private static final long serialVersionUID = 6637996725938917463L;
-		
+
 		private boolean horizontal;
 		private int position;
 		private final MutableContent contentA = new MutableContent();
@@ -223,14 +243,14 @@ public class WorkspaceDescription implements Serializable {
 			return contentB;
 		}
 	}
-	
+
 	public static class Frame implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
-		
+
 		private boolean mainFrame;
 		private int number = 0;
 		private final MutableContent content = new MutableContent();
-		private int extendedState;		
+		private int extendedState;
 		Rectangle normalBounds;
 		public MutableContent getContent() {
 			return content;
@@ -260,10 +280,10 @@ public class WorkspaceDescription implements Serializable {
 			this.number = number;
 		}
 	}
-	
+
 	public static class MutableContent implements NestedContent {
 		private static final long serialVersionUID = 6637996725938917463L;
-		
+
 		private NestedContent content;
 		public NestedContent getContent() {
 			return content;
@@ -272,6 +292,6 @@ public class WorkspaceDescription implements Serializable {
 			this.content = content;
 		}
 	}
-	
+
 	public static interface NestedContent extends Serializable {}
 }

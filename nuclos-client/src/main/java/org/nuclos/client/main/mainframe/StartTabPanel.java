@@ -36,6 +36,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,11 +67,14 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.EntityUtils;
 import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.common.NuclosCollectController;
+import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.NuclosDropTarget;
 import org.nuclos.client.common.NuclosDropTargetVisitor;
 import org.nuclos.client.common.OneDropNuclosDropTargetListener;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.UIUtils;
@@ -78,6 +82,7 @@ import org.nuclos.client.ui.WrapLayout;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
+import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.collection.multimap.MultiListHashMap;
 import org.nuclos.common.collection.multimap.MultiListMap;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -87,23 +92,23 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 
 public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger log = Logger.getLogger(StartTabPanel.class);
-	
+
 	public final static int CENTER_COLUMNS_PREFFERED_WIDTH = 200;
-	
+
 	private final MainFrameTabbedPane tabbedPane;
-	
+
 	/**
 	 * NORTH
 	 */
 	private final JPanel jpnHiddenTabs = new JPanel(new WrapLayout(WrapLayout.LEFT, 3, 3));
-	
+
 	/**
 	 * CENTER
 	 */
@@ -114,7 +119,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	private boolean isStartmenuShown = true;
 	private boolean isHistoryShown = true;
 	private boolean isBookmarkShown = true;
-	
+
 
 	/**
 	 * CONTENTS
@@ -122,7 +127,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	private final List<MainFrameTab> hiddenTabs = new ArrayList<MainFrameTab>();
 	private final Map<MainFrameTab, LinkLabel> hiddenTabLinks = new HashMap<MainFrameTab, LinkLabel>();
 	private final Map<String, LinkLabel> startmenuEntries = new HashMap<String, LinkLabel>();
-	
+
 	/**
 	 * FUNCTIONS
 	 */
@@ -137,17 +142,23 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	private Action actionShowConfiguration;
 	private Action actionClearHistory;
 	private Action actionClearBookmark;
-	
-	
+
+
 	private boolean showEntityStartmenuEntries = true;
 	private boolean showAdministrationStartmenuEntries = false;
 	private boolean showConfigurationStartmenuEntries = false;
-	
+
 	private Set<String> reducedStartmenus = new HashSet<String>();
-	private Map<String, ExpandOrReduceAction> startmenuExpandOrReduceActions = new HashMap<String, StartTabPanel.ExpandOrReduceAction>();
-	
+	private final Map<String, ExpandOrReduceAction> startmenuExpandOrReduceActions = new HashMap<String, StartTabPanel.ExpandOrReduceAction>();
+
+	private Set<String> reducedHistoryEntities = new HashSet<String>();
+	private final Map<String, ExpandOrReduceAction> historyExpandOrReduceActions = new HashMap<String, StartTabPanel.ExpandOrReduceAction>();
+
+	private Set<String> reducedBookmarkEntities = new HashSet<String>();
+	private final Map<String, ExpandOrReduceAction> bookmarkExpandOrReduceActions = new HashMap<String, StartTabPanel.ExpandOrReduceAction>();
+
 	/**
-	 * 
+	 *
 	 * @param tabbedPane
 	 */
 	public StartTabPanel(MainFrameTabbedPane tabbedPane) {
@@ -155,39 +166,39 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		this.tabbedPane = tabbedPane;
 		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		setOpaque(true);
-		
+
 		jpnHiddenTabs.setOpaque(false);
 		jpnCenter.setOpaque(false);
 		jpnStartmenu.setOpaque(false);
 		jpnHistory.setOpaque(false);
 		jpnBookmark.setOpaque(false);
-		
+
 		setupActions();
-		
+
 		jpnHiddenTabs.setBorder(BorderFactory.createTitledBorder(CommonLocaleDelegate.getMessage("StartTabPanel.1","Ausgeblendete Tabs")));
 		jpnStartmenu.setLayout(new BoxLayout(jpnStartmenu, BoxLayout.Y_AXIS));
 		jpnHistory.setLayout(new BoxLayout(jpnHistory, BoxLayout.Y_AXIS));
 		jpnBookmark.setLayout(new BoxLayout(jpnBookmark, BoxLayout.Y_AXIS));
-		
+
 		jpnCenter.add(createTitledScrollPane(CommonLocaleDelegate.getMessage("StartTabPanel.11","Startmenu"), jpnStartmenu), "0,0");
 		jpnCenter.add(createTitledScrollPane(CommonLocaleDelegate.getMessage("StartTabPanel.12","Zuletzt angesehen"), jpnHistory), "1,0");
 		jpnCenter.add(createTitledScrollPane(CommonLocaleDelegate.getMessage("StartTabPanel.13","Lesezeichen"), jpnBookmark), "2,0");
-		
+
 		add(jpnHiddenTabs, BorderLayout.NORTH);
 		add(jpnCenter, BorderLayout.CENTER);
-		
+
 		setupStartmenu();
 		refreshHistory();
 		refreshBookmark();
-		
+
 		adjustCenter();
 		addComponentListener(createResizeListener());
-		
+
 		updateControlOverview();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param title
 	 * @param jpnContent
 	 * @return
@@ -196,24 +207,24 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		final JPanel result = new JPanel(new BorderLayout());
 		result.setOpaque(false);
 		result.setBorder(BorderFactory.createTitledBorder(title));
-		
+
 		final JScrollPane scrollPane = new JScrollPane(jpnContent, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setOpaque(false);
 		scrollPane.getViewport().setOpaque(false);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		scrollPane.getVerticalScrollBar().setUnitIncrement(15);
-		
+
 		result.add(scrollPane, BorderLayout.CENTER);
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private void setupActions() {
 		actionNeverHideStartmenu =  new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.2","Immer anzeigen")) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -226,7 +237,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		};
 		actionNeverHideHistory = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.2","Immer anzeigen")) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -239,7 +250,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		};
 		actionNeverHideBookmark = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.2","Immer anzeigen")) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -252,7 +263,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		};
 		actionAlwaysHideStartmenu =  new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.16","Niemals anzeigen")) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -265,7 +276,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		};
 		actionAlwaysHideHistory = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.16","Niemals anzeigen")) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -278,7 +289,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		};
 		actionAlwaysHideBookmark = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.16","Niemals anzeigen")) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -291,43 +302,43 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		};
 		actionShowAdministration = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.3","Administration")) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean selected = transferSelected(e, actionShowAdministration); 
+				boolean selected = transferSelected(e, actionShowAdministration);
 				setShowAdministration(selected);
 			}
 		};
 		actionShowEntity = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.14","Entitäten")) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean selected = transferSelected(e, actionShowEntity); 
+				boolean selected = transferSelected(e, actionShowEntity);
 				setShowEntity(selected);
 			}
 		};
 		actionShowConfiguration = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.15","Konfiguration")) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean selected = transferSelected(e, actionShowConfiguration); 
+				boolean selected = transferSelected(e, actionShowConfiguration);
 				setShowConfiguration(selected);
 			}
 		};
-		actionClearHistory = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.4","Alle Eintraege entfernen"), Icons.getInstance().getIconRealDelete16()) { 
+		actionClearHistory = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.4","Alle Eintraege entfernen"), Icons.getInstance().getIconRealDelete16()) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -336,9 +347,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				MainFrame.clearHistory();
 			}
 		};
-		actionClearBookmark = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.5","Alle Lesezeichen entfernen"), Icons.getInstance().getIconRealDelete16()) { 
+		actionClearBookmark = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.5","Alle Lesezeichen entfernen"), Icons.getInstance().getIconRealDelete16()) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -348,9 +359,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			}
 		};
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param ev
 	 * @param ac
 	 * @return
@@ -365,33 +376,33 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		ac.putValue(Action.SELECTED_KEY, selected);
 		return selected;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Action getShowStartmenuAction() {
 		return actionNeverHideStartmenu;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Action getShowHistoryAction() {
 		return actionNeverHideHistory;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Action getShowBookmarkAction() {
 		return actionNeverHideBookmark;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Action getAlwaysHideStartmenuAction() {
@@ -399,7 +410,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Action getAlwaysHideHistoryAction() {
@@ -407,7 +418,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Action getAlwaysHideBookmarkAction() {
@@ -415,15 +426,15 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Action getShowAdministration() {
 		return actionShowAdministration;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Action getShowEntity() {
@@ -431,7 +442,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Action getShowConfiguration() {
@@ -439,30 +450,30 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Action getClearHistoryAction() {
 		return actionClearHistory;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Action getClearBookmarkAction() {
 		return actionClearBookmark;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param index
 	 * @return
 	 */
 	public Action createSelectHistorySize(final int index) {
 		Action result = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.6","Merke {0} Eintraege",MainFrame.HISTORY_SIZES[index])) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -476,9 +487,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		};
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param action
 	 * @return
 	 */
@@ -487,16 +498,16 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		Boolean result = (Boolean) action.getValue(Action.SELECTED_KEY);
 		return result==null? false : result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private void adjustCenter() {
 		int columnPrefferedCount = getWidth() / CENTER_COLUMNS_PREFFERED_WIDTH;
 		if (columnPrefferedCount == 0) columnPrefferedCount = 1;
-		
+
 		int columnShowingCount = (isStartmenuShown?1:0) + (isHistoryShown?1:0) + (isBookmarkShown?1:0);
-		
+
 		if (!isActionSelected(getAlwaysHideStartmenuAction()) && isActionSelected(getShowStartmenuAction()) && !isStartmenuShown) {
 			setShowStartmenu(true);
 			columnShowingCount++;
@@ -509,7 +520,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			setShowBookmark(true);
 			columnShowingCount++;
 		}
-		
+
 		/**
 		 * hide columns always
 		 */
@@ -525,7 +536,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			setShowStartmenu(false);
 			columnShowingCount--;
 		}
-		
+
 		/**
 		 * show more columns
 		 */
@@ -541,7 +552,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			setShowBookmark(true);
 			columnShowingCount++;
 		}
-		
+
 		/**
 		 * hide coulmns if avaiable
 		 */
@@ -551,7 +562,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			columnShowingCount--;
 		}
 		if (!isActionSelected(getAlwaysHideHistoryAction()) && columnPrefferedCount < columnShowingCount &&
-			isHistoryShown && !isActionSelected(getShowHistoryAction())) {			
+			isHistoryShown && !isActionSelected(getShowHistoryAction())) {
 			setShowHistory(false);
 			columnShowingCount--;
 		}
@@ -560,11 +571,11 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			setShowStartmenu(false);
 			columnShowingCount--;
 		}
-		
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param show
 	 */
 	private void setShowStartmenu(boolean show) {
@@ -572,9 +583,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		jpnCenter.revalidate();
 		isStartmenuShown = show;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param show
 	 */
 	private void setShowHistory(boolean show) {
@@ -582,9 +593,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		jpnCenter.revalidate();
 		isHistoryShown = show;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param show
 	 */
 	private void setShowBookmark(boolean show) {
@@ -592,9 +603,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		jpnCenter.revalidate();
 		isBookmarkShown = show;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	protected ComponentListener createResizeListener() {
@@ -605,50 +616,101 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			}
 		};
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param menu
 	 * @return
 	 */
 	private String getStartmenuLabel(String[] menu) {
 		return StringUtils.join("/", menu);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	void refreshHistory() {
 		jpnHistory.removeAll();
-		for (Entry<String, String> entity : sortEntities(MainFrame.getHistory().keySet()).entrySet()) {
-			jpnHistory.add(createHeadline(entity.getKey(), MainFrame.resizeAndCacheLinkIcon(MainFrame.getEntityIcon(entity.getValue()))));
-			
+		for (final Entry<String, String> entity : sortEntities(MainFrame.getHistory().keySet()).entrySet()) {
+			final ExpandOrReduceAction headlineAction = new ExpandOrReduceAction(reducedHistoryEntities, entity.getKey(), MainFrame.resizeAndCacheLinkIcon(MainFrame.getEntityIcon(entity.getValue())));
+			historyExpandOrReduceActions.put(entity.getKey(), headlineAction);
+
+			final Action openAll = new AbstractAction(CommonLocaleDelegate.getText("ExplorerController.22"), MainFrame.resizeAndCacheLinkIcon(Icons.getInstance().getIconShowList())) {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					List<EntityBookmark> history = MainFrame.getHistory().getValues(entity.getValue());
+					viewList(entity.getValue(), CollectionUtils.transform(history, new Transformer<EntityBookmark, Object>() {
+						@Override
+						public Object transform(EntityBookmark i) {
+							return i.getId();
+						}
+					}));
+				}
+			};
+
+			LinkLabel ll = new LinkLabel(headlineAction, true) {
+				@Override
+				protected List<JMenuItem> getContextMenuItems() {
+					JMenuItem miOpenAll = new JMenuItem(openAll);
+					return Collections.singletonList(miOpenAll);
+				}
+			};
+
+			jpnHistory.add(ll);
+
 			for (EntityBookmark eb : sortEntityBookmark(MainFrame.getHistory().getValues(entity.getValue()))) {
 				LinkLabel historyEntry = createHistoryEntry(eb);
 				jpnHistory.add(historyEntry);
+				headlineAction.addLinkLabel(historyEntry);
 				setupDragDrop(historyEntry, eb);
 			}
 		}
 		jpnHistory.revalidate();
 		jpnHistory.repaint();
 	}
-	
-	protected void setupDragDrop(final LinkLabel ll, final EntityBookmark eb) {		
-		OneDropNuclosDropTargetListener listener = new OneDropNuclosDropTargetListener(this, ClientParameterProvider.getInstance().getIntValue(ParameterProvider.KEY_DRAG_CURSOR_HOLDING_TIME, 600));				
+
+	protected void setupDragDrop(final LinkLabel ll, final EntityBookmark eb) {
+		OneDropNuclosDropTargetListener listener = new OneDropNuclosDropTargetListener(this, ClientParameterProvider.getInstance().getIntValue(ParameterProvider.KEY_DRAG_CURSOR_HOLDING_TIME, 600));
 		NuclosDropTarget drop = new NuclosDropTarget(ll, listener, eb);
-		drop.setActive(true);		
+		drop.setActive(true);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	void refreshBookmark() {
 		jpnBookmark.removeAll();
-		for (Entry<String, String> entity : sortEntities(MainFrame.getBookmark().keySet()).entrySet()) {
-			jpnBookmark.add(createHeadline(entity.getKey(), MainFrame.resizeAndCacheLinkIcon(MainFrame.getEntityIcon(entity.getValue()))));
-			
+		for (final Entry<String, String> entity : sortEntities(MainFrame.getBookmark().keySet()).entrySet()) {
+			final ExpandOrReduceAction headlineAction = new ExpandOrReduceAction(reducedBookmarkEntities, entity.getKey(), MainFrame.resizeAndCacheLinkIcon(MainFrame.getEntityIcon(entity.getValue())));
+			bookmarkExpandOrReduceActions.put(entity.getKey(), headlineAction);
+
+			final Action openAll = new AbstractAction(CommonLocaleDelegate.getText("ExplorerController.22"), MainFrame.resizeAndCacheLinkIcon(Icons.getInstance().getIconShowList())) {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					List<EntityBookmark> bookmarks = MainFrame.getBookmark().getValues(entity.getValue());
+					viewList(entity.getValue(), CollectionUtils.transform(bookmarks, new Transformer<EntityBookmark, Object>() {
+						@Override
+						public Object transform(EntityBookmark i) {
+							return i.getId();
+						}
+					}));
+				}
+			};
+
+			LinkLabel ll = new LinkLabel(headlineAction, true) {
+				@Override
+				protected List<JMenuItem> getContextMenuItems() {
+					JMenuItem miOpenAll = new JMenuItem(openAll);
+					return Collections.singletonList(miOpenAll);
+				}
+			};
+
+			//jpnBookmark.add(createHeadline(entity.getKey(), MainFrame.resizeAndCacheLinkIcon(MainFrame.getEntityIcon(entity.getValue()))));
+			jpnBookmark.add(ll);
+
 			for (EntityBookmark eb : sortEntityBookmark(MainFrame.getBookmark().getValues(entity.getValue()))) {
 				LinkLabel bookmarkEntry = createBookmarkEntry(eb);
+				headlineAction.addLinkLabel(bookmarkEntry);
 				jpnBookmark.add(bookmarkEntry);
 				setupDragDrop(bookmarkEntry, eb);
 			}
@@ -656,9 +718,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		jpnBookmark.revalidate();
 		jpnBookmark.repaint();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param entities
 	 * @return
 	 */
@@ -673,9 +735,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		}
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param ebs
 	 * @return
 	 */
@@ -687,9 +749,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			}});
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	void setupStartmenu() {
 		UIUtils.runCommand(StartTabPanel.this, new CommonRunnable() {
@@ -697,56 +759,56 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			public void run() throws CommonBusinessException {
 				String mainMenuAdministration = Main.getMainController().getMainMenuAdministration();
 				String mainMenuConfiguration = Main.getMainController().getMainMenuConfiguration();
-				
+
 				List<Pair<String[], Action>> startmenuActionsAll = new ArrayList<Pair<String[], Action>>();
 				List<Pair<String[], Action>> startmenuActionsGeneric = new ArrayList<Pair<String[], Action>>();
 				List<Pair<String[], Action>> startmenuActionsStatic = new ArrayList<Pair<String[], Action>>();
-				
+
 				startmenuActionsStatic.addAll(Main.getMainController().getAdministrationMenuActions());
 				startmenuActionsStatic.addAll(Main.getMainController().getConfigurationMenuActions());
-				
+
 				startmenuActionsGeneric.addAll(Main.getMainController().getEntityMenuActions());
 				startmenuActionsGeneric.addAll(Main.getMainController().getCustomComponentMenuActions());
-				
+
 				startmenuActionsAll.addAll(startmenuActionsStatic);
 				startmenuActionsAll.addAll(startmenuActionsGeneric);
-				
-				
+
+
 				startmenuEntries.clear();
 				jpnStartmenu.removeAll();
-				
+
 				List<String[]> listAllMenus = new ArrayList<String[]>();
-				
+
 				for (Pair<String[], Action> startmenuAction : startmenuActionsAll) {
 					listAllMenus.add(startmenuAction.x);
 				}
-				
+
 				List<String[]> listMenusSorted = CollectionUtils.sorted(listAllMenus, new Comparator<String[]>(){
 					@Override
 					public int compare(String[] o1, String[] o2) {
 						int depth = o1.length > o2.length ? o2.length : o1.length;
-						
+
 						for (int i = 0; i < depth; i++) {
 							int result = LangUtils.compare(o1[i], o2[i]);
 							if (result != 0) {
 								return result;
 							}
 						}
-						
+
 						return o1.length - o2.length;
 					}
 				});
-				
+
 				List<String> listMenusSortedDistinctAll = new ArrayList<String>();
 				List<String> listMenusSortedDistinctAdministration = new ArrayList<String>();
 				List<String> listMenusSortedDistinctConfiguration = new ArrayList<String>();
-				
+
 				for (String[] menu : listMenusSorted) {
 					String menuString = getStartmenuLabel(menu);
 					if (!listMenusSortedDistinctAll.contains(menuString) &&
 						!listMenusSortedDistinctAdministration.contains(menuString) &&
 						!listMenusSortedDistinctConfiguration.contains(menuString)) {
-						
+
 						if (menu.length > 0) {
 							if (mainMenuAdministration.equalsIgnoreCase(menu[0])) {
 								if (showAdministrationStartmenuEntries) {
@@ -767,14 +829,14 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 						}
 					}
 				}
-				
+
 				listMenusSortedDistinctAll.addAll(0, listMenusSortedDistinctConfiguration);
 				listMenusSortedDistinctAll.addAll(0, listMenusSortedDistinctAdministration);
-				
+
 				MultiListMap<String, Action> mapStartmenuActionsAll = new MultiListHashMap<String, Action>();
 				MultiListMap<String, Action> mapStartmenuActionsStatic = new MultiListHashMap<String, Action>();
 				MultiListMap<String, Action> mapStartmenuActionsGeneric = new MultiListHashMap<String, Action>();
-				
+
 				for (Pair<String[], Action> startmenuAction : startmenuActionsStatic) {
 					String menuString = getStartmenuLabel(startmenuAction.x);
 					mapStartmenuActionsAll.addValue(menuString, startmenuAction.y);
@@ -785,22 +847,22 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 					mapStartmenuActionsAll.addValue(menuString, startmenuAction.y);
 					mapStartmenuActionsGeneric.addValue(menuString, startmenuAction.y);
 				}
-				
+
 				for (String menu : listMenusSortedDistinctAll) {
 					if (mapStartmenuActionsAll.getValues(menu).isEmpty())
 						continue;
-					
-					ExpandOrReduceAction actionExpOrRed = new ExpandOrReduceAction(menu);
+
+					ExpandOrReduceAction actionExpOrRed = new ExpandOrReduceAction(reducedStartmenus, menu);
 					startmenuExpandOrReduceActions.put(menu, actionExpOrRed);
 					jpnStartmenu.add(createHeadline(actionExpOrRed));
-					
+
 					// add static items unsorted
 					for (Action action : mapStartmenuActionsStatic.getValues(menu)) {
 						LinkLabel startmenuEntry = createStarmenuEntry(action);
 						jpnStartmenu.add(startmenuEntry);
 						actionExpOrRed.addLinkLabel(startmenuEntry);
 					}
-					
+
 					// add generic items sorted
 					List<Action> listActionsSorted = CollectionUtils.sorted(mapStartmenuActionsGeneric.getValues(menu), new Comparator<Action>(){
 						@Override
@@ -814,16 +876,16 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 						actionExpOrRed.addLinkLabel(startmenuEntry);
 					}
 				}
-				
+
 				jpnStartmenu.revalidate();
 				jpnStartmenu.repaint();
 			}
 		});
-		
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param title
 	 * @param ico
 	 * @return
@@ -833,11 +895,11 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		result.setBorder(BorderFactory.createEmptyBorder(5, 0, 2, 0));
 		return result;
 	}
-	
+
 	private LinkLabel createHeadline(Action action) {
 		return new LinkLabel(action, true){
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -846,119 +908,119 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				return null;
 			}};
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	boolean isNeverHideStartmenu() {
 		return isActionSelected(actionNeverHideStartmenu);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param neverHideStartmenu
 	 */
 	void setNeverHideStartmenu(boolean neverHideStartmenu) {
 		setActionSelected(actionNeverHideStartmenu, neverHideStartmenu);
 		adjustCenter();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	boolean isNeverHideHistory() {
 		return isActionSelected(actionNeverHideHistory);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param neverHideHistory
 	 */
 	void setNeverHideHistory(boolean neverHideHistory) {
 		setActionSelected(actionNeverHideHistory, neverHideHistory);
 		adjustCenter();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	boolean isNeverHideBookmark() {
 		return isActionSelected(actionNeverHideBookmark);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param neverHideBookmark
 	 */
 	void setNeverHideBookmark(boolean neverHideBookmark) {
 		setActionSelected(actionNeverHideBookmark, neverHideBookmark);
 		adjustCenter();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	boolean isAlwaysHideStartmenu() {
 		return isActionSelected(actionAlwaysHideStartmenu);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param alwaysHideStartmenu
 	 */
 	void setAlwaysHideStartmenu(boolean alwaysHideStartmenu) {
 		setActionSelected(actionAlwaysHideStartmenu, alwaysHideStartmenu);
 		adjustCenter();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	boolean isAlwaysHideHistory() {
 		return isActionSelected(actionAlwaysHideHistory);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param alwaysHideHistory
 	 */
 	void setAlwaysHideHistory(boolean alwaysHideHistory) {
 		setActionSelected(actionAlwaysHideHistory, alwaysHideHistory);
 		adjustCenter();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	boolean isAlwaysHideBookmark() {
 		return isActionSelected(actionAlwaysHideBookmark);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param alwaysHideBookmark
 	 */
 	void setAlwaysHideBookmark(boolean alwaysHideBookmark) {
 		setActionSelected(actionAlwaysHideBookmark, alwaysHideBookmark);
 		adjustCenter();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	boolean isShowAdministration() {
 		return showAdministrationStartmenuEntries;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	boolean isShowEntity() {
@@ -966,7 +1028,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	boolean isShowConfiguration() {
@@ -974,7 +1036,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param showAdministration
 	 */
 	void setShowAdministration(boolean showAdministration) {
@@ -982,9 +1044,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		setActionSelected(actionShowAdministration, showAdministration);
 		setupStartmenu();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param showEntity
 	 */
 	void setShowEntity(boolean showEntity) {
@@ -992,9 +1054,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		setActionSelected(actionShowEntity, showEntity);
 		setupStartmenu();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param showConfiguration
 	 */
 	void setShowConfiguration(boolean showConfiguration) {
@@ -1002,9 +1064,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		setActionSelected(actionShowConfiguration, showConfiguration);
 		setupStartmenu();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param entity
 	 * @param marker
 	 */
@@ -1013,16 +1075,16 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			startmenuEntries.get(entity).setMarker(marker);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param eb
 	 * @return
 	 */
 	private LinkLabel createBookmarkEntry(final EntityBookmark eb) {
 		Action act = new AbstractAction(eb.getLabel()) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -1031,13 +1093,13 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				tabbedPane.newNuclosTab(eb);
 			}
 		};
-			
+
 		act.putValue(Action.SELECTED_KEY, true);
-		
+
 		LinkLabel result = new LinkLabel(act) {
 
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -1046,7 +1108,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				List<JMenuItem> result = new ArrayList<JMenuItem>();
 				result.add(new JMenuItem(new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.7","Lesezeichen entfernen"), Icons.getInstance().getIconDelete16()){
 					/**
-					 * 
+					 *
 					 */
 					private static final long serialVersionUID = 1L;
 
@@ -1058,21 +1120,21 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				}));
 				return result;
 			}
-			
+
 		};
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param eb
 	 * @return
 	 */
 	private LinkLabel createHistoryEntry(final EntityBookmark eb) {
 		Action act = new AbstractAction(eb.getLabel()) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -1081,22 +1143,22 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				tabbedPane.newNuclosTab(eb);
 			}
 		};
-			
+
 		act.putValue(Action.SELECTED_KEY, true);
-		
+
 		LinkLabel result = new LinkLabel(act) {
 
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected List<JMenuItem> getContextMenuItems() {
 				List<JMenuItem> result = new ArrayList<JMenuItem>();
-				result.add(new JMenuItem(new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.8","Lesezeichen setzen"), Icons.getInstance().getIconBookmark16()){ 
+				result.add(new JMenuItem(new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.8","Lesezeichen setzen"), Icons.getInstance().getIconBookmark16()){
 					/**
-					 * 
+					 *
 					 */
 					private static final long serialVersionUID = 1L;
 
@@ -1107,7 +1169,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				}));
 				result.add(new JMenuItem(new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.9","Eintrag entfernen"), Icons.getInstance().getIconDelete16()){
 					/**
-					 * 
+					 *
 					 */
 					private static final long serialVersionUID = 1L;
 
@@ -1119,14 +1181,14 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				}));
 				return result;
 			}
-			
+
 		};
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param action
 	 * @return
 	 */
@@ -1136,20 +1198,20 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		if (label.endsWith("...")) label = label.substring(0, label.length()-3);
 		action.putValue(Action.NAME, label);
 		action.putValue(Action.SELECTED_KEY, true);
-		
+
 		LinkLabel result = new LinkLabel(action) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected List<JMenuItem> getContextMenuItems() {
 				List<JMenuItem>result = new ArrayList<JMenuItem>();
-				
+
 				JCheckBoxMenuItem cbmiOpenHere = new JCheckBoxMenuItem(new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.10","Immer hier oeffnen")) {
 					/**
-					 * 
+					 *
 					 */
 					private static final long serialVersionUID = 1L;
 
@@ -1170,26 +1232,26 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				return result;
 			}
 		};
-		
+
 		if (MainFrame.getPredefinedEntityOpenLocations(tabbedPane).contains(command)) {
 			result.setMarker(LinkMarker.ORANGE_HALF);
 		} else if (MainFrame.getAllPredefinedEntityOpenLocations().contains(command)) {
 			result.setMarker(LinkMarker.GRAY);
 		}
-		
+
 		startmenuEntries.put(command, result);
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tab
 	 */
 	void addHiddenTab(final MainFrameTab tab) {
 		hiddenTabs.add(tab);
 		final LinkLabel restoreLink = new LinkLabel(new AbstractAction(tab.getTitle(), tab.getTabIcon()) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -1199,7 +1261,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			}
 		}) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -1207,7 +1269,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			protected List<JMenuItem> getContextMenuItems() {
 				return null;
 			}
-			
+
 		};
 		tab.addMainFrameTabListener(new MainFrameTabAdapter() {
 			@Override
@@ -1222,13 +1284,13 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		});
 		hiddenTabLinks.put(tab, restoreLink);
 		jpnHiddenTabs.add(restoreLink);
-		
+
 		updateControlOverview();
 		tab.notifyHidden();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param nuclosTab
 	 * @param updateCO
 	 */
@@ -1236,23 +1298,23 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		hiddenTabs.remove(tab);
 		jpnHiddenTabs.remove(hiddenTabLinks.get(tab));
 		hiddenTabLinks.remove(tab);
-		
+
 		if (updateCO) {
 			updateControlOverview();
 		}
 		tab.notifyRestoredFromHidden();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param nuclosTab
 	 */
 	void removeHiddenTab(MainFrameTab nuclosTab) {
 		removeHiddenTab(nuclosTab, true);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param size
 	 * @return list of CommonJInternalFrame (reversed order from end ... list_size=5 param_size=3 --> 5, 4, 3)
 	 */
@@ -1260,51 +1322,61 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		final List<MainFrameTab> result = new ArrayList<MainFrameTab>();
 		final int removeUntil = hiddenTabs.size()>size ? hiddenTabs.size()-size : 0;
 		for (int i = hiddenTabs.size()-1; i >= removeUntil; i--) {
-			
-			MainFrameTab hiddenTab = hiddenTabs.get(i); 
+
+			MainFrameTab hiddenTab = hiddenTabs.get(i);
 			result.add(hiddenTab);
-			
-			removeHiddenTab(hiddenTab, false); 
+
+			removeHiddenTab(hiddenTab, false);
 		}
-		
+
 		updateControlOverview();
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private void updateControlOverview() {
 		jpnHiddenTabs.setVisible(hiddenTabs.size()>0);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	int countHiddenTabs() {
 		return hiddenTabs.size();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	List<MainFrameTab> getHiddenTabs() {
 		return new ArrayList<MainFrameTab>(hiddenTabs);
-	}		
-	
+	}
+
+	private void viewList(String entity, List<Object> ids) {
+		try {
+			NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(MainFrame.getPredefinedEntityOpenLocation(entity), entity, null);
+			controller.runViewResults(ids);
+		}
+		catch (CommonBusinessException ex) {
+			Errors.getInstance().showExceptionDialog(this, "StartTabPanel.error.open.list", ex);
+		}
+	}
+
 	/**
-	 * 
+	 *
 	 *
 	 */
 	public enum LinkMarker {
 		NONE, ORANGE_FULL, ORANGE_HALF, BLUE_FULL, BLUE_HALF, GRAY;
-		
+
 		public boolean isMarked() {
 			return this != NONE;
 		}
-		
+
 		public Color getColor() {
 			switch (this) {
 			case ORANGE_FULL : return new Color(210, 123, 59, 255);
@@ -1316,37 +1388,37 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			}
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 *
 	 */
 	abstract static class LinkLabel extends JLabel {
-		
+
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		private LinkMarker marker = LinkMarker.NONE;
 		private boolean hover = false;
 		private boolean selected = true;
 		private boolean headline;
-		
+
 		public LinkLabel(final Action action) {
 			this(action, false);
 		}
-		
+
 		public LinkLabel(final Action action, final boolean isHeadline) {
 			super(
-				(String)action.getValue(Action.NAME), 
-				MainFrame.resizeAndCacheLinkIcon((Icon)action.getValue(Action.SMALL_ICON)), 
+				(String)action.getValue(Action.NAME),
+				MainFrame.resizeAndCacheLinkIcon((Icon)action.getValue(Action.SMALL_ICON)),
 				JLabel.LEFT);
 			this.headline = isHeadline;
 			setSelected(isActionSelected(action));
 			setOpaque(false);
 			setBackground(new Color(0,0,0,0));
 			setBorder(BorderFactory.createEmptyBorder(1, 5, 1, 5));
-			
+
 			addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -1376,35 +1448,35 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				}
 			});
 		}
-		
+
 		public void setSelected(boolean selected) {
 			this.selected = selected;
 			if (headline)
 				setForeground(selected?Color.BLACK:Color.LIGHT_GRAY);
 			setFont(getFont().deriveFont(headline&&selected?Font.BOLD:Font.PLAIN));
 		}
-		
+
 		public boolean isSelected() {
 			return selected;
 		}
 
 		/**
-		 * 
+		 *
 		 * @return
 		 */
 		protected abstract List<JMenuItem> getContextMenuItems();
-		
+
 		/**
-		 * 
+		 *
 		 * @param marker
 		 */
 		public void setMarker(LinkMarker marker) {
 			this.marker = marker;
 			repaint();
 		}
-		
+
 		/**
-		 * 
+		 *
 		 * @return
 		 */
 		public LinkMarker getMarker() {
@@ -1417,21 +1489,21 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				Graphics2D g2 = (Graphics2D) g;
 				Object renderingHint = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				
+
 				Rectangle bounds = getBounds();
 				g2.setColor(hover ? (headline&&!selected?NuclosSyntheticaConstants.BACKGROUND_DARK:NuclosSyntheticaConstants.BACKGROUND_SPOT) : marker.getColor());
 				g2.fillRoundRect(0, 0, bounds.width, bounds.height, 4, 4);
-				
+
 				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, renderingHint);
 			}
-			
+
 			super.paint(g);
 		}
-		
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param action
 	 * @param selected
 	 */
@@ -1456,7 +1528,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			else
 				dtde.rejectDrag();
 		}
-			
+
 	}
 
 	@Override
@@ -1464,17 +1536,25 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 
 	@Override
 	public void visitDropActionChanged(DropTargetDragEvent dtde) {}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Set<String> getReducedStartmenus() {
 		return reducedStartmenus;
 	}
-	
+
+	public Set<String> getReducedHistoryEntities() {
+		return reducedHistoryEntities;
+	}
+
+	public Set<String> getReducedBookmarkEntities() {
+		return reducedBookmarkEntities;
+	}
+
 	/**
-	 * 
+	 *
 	 * @param reducedStartmenus
 	 */
 	public void setReducedStartmenus(Set<String> reducedStartmenus) {
@@ -1488,45 +1568,69 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			}
 		}
 	}
-	
-	/**
-	 * 
-	 *
-	 */
+
+	public void setReducedHistoryEntities(Set<String> reducedHistoryEntities) {
+		if (reducedHistoryEntities != null) {
+			for (String reducedHistoryEntity : reducedHistoryEntities) {
+				if (historyExpandOrReduceActions.containsKey(reducedHistoryEntity)) {
+					ExpandOrReduceAction act = historyExpandOrReduceActions.get(reducedHistoryEntity);
+					act.setSelected(false);
+					this.reducedHistoryEntities.add(reducedHistoryEntity);
+				}
+			}
+		}
+	}
+
+	public void setReducedBookmarkEntities(Set<String> reducedBookmarkEntities) {
+		if (reducedBookmarkEntities != null) {
+			for (String reducedBookmarkEntity : reducedBookmarkEntities) {
+				if (bookmarkExpandOrReduceActions.containsKey(reducedBookmarkEntity)) {
+					ExpandOrReduceAction act = bookmarkExpandOrReduceActions.get(reducedBookmarkEntity);
+					act.setSelected(false);
+					this.reducedBookmarkEntities.add(reducedBookmarkEntity);
+				}
+			}
+		}
+	}
+
 	private class ExpandOrReduceAction extends AbstractAction {
 
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
+
+		private final Set<String> reducedItems;
 		private Collection<LinkLabel> items = new ArrayList<StartTabPanel.LinkLabel>();
-		
-		public ExpandOrReduceAction(String menu) {
-			super(menu);
-			setSelected(!reducedStartmenus.contains(menu));
+
+		public ExpandOrReduceAction(Set<String> reducedItems, String menu) {
+			this(reducedItems, menu, null);
 		}
-		
+
+		public ExpandOrReduceAction(Set<String> reducedItems, String menu, Icon icon) {
+			super(menu, icon);
+			this.reducedItems = reducedItems;
+			setSelected(!reducedItems.contains(menu));
+		}
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
-			setSelected(transferSelected(ev, this)); 
+			setSelected(transferSelected(ev, this));
 		}
-		
+
 		public void setSelected(boolean selected) {
 			setActionSelected(this, selected);
 			for (LinkLabel ll : items) {
 				ll.setVisible(selected);
 			}
 			if (selected) {
-				reducedStartmenus.remove(getValue(Action.NAME));
+				reducedItems.remove(getValue(Action.NAME));
 			} else {
-				reducedStartmenus.add((String) getValue(Action.NAME));
+				reducedItems.add((String) getValue(Action.NAME));
 			}
 		}
-		
+
 		public void addLinkLabel(LinkLabel ll) {
 			items.add(ll);
 			ll.setVisible(isActionSelected(this));
 		}
-		
+
 	}
 }

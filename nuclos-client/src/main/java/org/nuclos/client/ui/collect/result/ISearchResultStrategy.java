@@ -23,19 +23,21 @@ import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.exception.CommonBusinessException;
 
 public interface ISearchResultStrategy<Clct extends Collectable> {
-	
+
 	// initializing
-	
+
 	void setResultController(ResultController<Clct> rc);
-	
+
 	// business
-	
+
 	void cmdRefreshResult();
-	
+
 	void cmdRefreshResult(List<Observer> observer);
-	
+
 	void cmdSearch();
-	
+
 	void refreshResult() throws CommonBusinessException;
+
+	void viewList(List<Object> ids);
 
 }

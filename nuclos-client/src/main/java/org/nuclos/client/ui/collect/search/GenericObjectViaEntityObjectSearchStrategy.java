@@ -56,13 +56,13 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 	// static
 
 	private static final Logger LOG = Logger.getLogger(GenericObjectViaEntityObjectSearchStrategy.class);
-	
+
 	private final class MyProxyListAdapter implements ProxyList<CollectableGenericObjectWithDependants> {
-		
+
 		private final class MyListIterator implements ListIterator<CollectableGenericObjectWithDependants> {
-			
+
 			private final ListIterator<CollectableEntityObject> iter;
-			
+
 			public MyListIterator(ListIterator<CollectableEntityObject> iter) {
 				this.iter = iter;
 			}
@@ -111,11 +111,11 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 			public void add(CollectableGenericObjectWithDependants e) {
 				throw new UnsupportedOperationException();
 			}
-			
+
 		}
-		
+
 		private final CollectableEntityObjectProxyListAdapter list;
-		
+
 		private MyProxyListAdapter(CollectableEntityObjectProxyListAdapter list) {
 			this.list = list;
 		}
@@ -160,7 +160,7 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 		@Override
 		public boolean containsAll(Collection<?> c) {
 			for (Object i: c) {
-				if (!contains(i)) return false; 
+				if (!contains(i)) return false;
 			}
 			return true;
 		}
@@ -261,13 +261,13 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 		public int getIndexById(Object oId) {
 			return list.getIndexById(IdUtils.toLongId(oId));
 		}
-		
+
 	}
 
 	// instance
 
 	private final EntityObjectDelegate lodelegate = EntityObjectDelegate.getInstance();
-	
+
 	private final CollectableEOEntity meta;
 
 	private ProxyList<CollectableGenericObjectWithDependants> proxylstclct;
@@ -287,7 +287,7 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 	 * @throws CollectableFieldFormatException
 	 * @postcondition result != null
 	 * @own-thread
-	 * 
+	 *
 	 * TODO: Make this private again.
 	 */
 	@Override
@@ -300,7 +300,7 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 		final Collection<EntityFieldMetaDataVO> fields = new ArrayList<EntityFieldMetaDataVO>();
 		for (CollectableEntityField f: getCollectController().getResultController().getFields().getSelectedFields()) {
 			// We need a EntityFieldMetaDataVO from the CollectableEntityField.
-			
+
 			// Case 0: Wrapped CollectableEntityField: unwrap.
 			if (f instanceof CollectableEntityFieldWithEntityForExternal) {
 				f = ((CollectableEntityFieldWithEntityForExternal) f).getField();
@@ -316,10 +316,10 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 				fields.add(mdProv.getEntityField(f.getEntityName(), f.getName()));
 			}
 		}
-		
+
 		// TODO: OPTIMIZATION: only selected and/or required attributes should be loaded here!
 		final ProxyList<EntityObjectVO> proxylstlovwdvo = lodelegate.getEntityObjectProxyList(
-				IdUtils.toLongId(getGenericObjectController().getModuleId()), 
+				IdUtils.toLongId(getGenericObjectController().getModuleId()),
 				clctexprInternal, fields);
 
 		return new MyProxyListAdapter(new CollectableEntityObjectProxyListAdapter(proxylstlovwdvo, meta));
@@ -363,6 +363,9 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 	 * @throws CollectableFieldFormatException
 	 */
 	protected final CollectableSearchCondition getInternalSearchCondition() throws CollectableFieldFormatException {
+		if (getCollectableIdListCondition() != null) {
+			return getCollectableIdListCondition();
+		}
 		final CompositeCollectableSearchCondition compositecond = new CompositeCollectableSearchCondition(
 				LogicalOperator.AND);
 
@@ -390,10 +393,10 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 	}
 
 	private CollectableEntityObject go2Eo(CollectableGenericObjectWithDependants go) {
-		return new CollectableEntityObject(meta, 
+		return new CollectableEntityObject(meta,
 				DalSupportForGO.wrapGenericObjectVO(go.getGenericObjectCVO(), meta));
 	}
-	
+
 	private CollectableGenericObjectWithDependants eo2Go(CollectableEntityObject eo) {
 		if (eo == null) {
 			LOG.warn("eo2Go: CollectableEntityObject is null");
@@ -402,10 +405,10 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 		return CollectableGenericObjectWithDependants.newCollectableGenericObjectWithDependants(
 				DalSupportForGO.getGenericObjectWithDependantsVO(eo.getEntityObjectVO(), meta));
 	}
-	
+
 	/**
 	 * TODO: Make this protected again.
-	 * 
+	 *
 	 * @deprecated Move to ObservableSearchWorker???
 	 */
 	@Override
@@ -418,5 +421,4 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 	public ProxyList<CollectableGenericObjectWithDependants> getCollectableProxyList() {
 		return proxylstclct;
 	}
-
 }

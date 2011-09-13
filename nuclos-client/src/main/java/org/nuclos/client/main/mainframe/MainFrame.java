@@ -124,25 +124,25 @@ import org.nuclos.common2.exception.PreferencesException;
 public class MainFrame extends CommonJFrame implements WorkspaceFrame, ComponentNameSetter {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger log = Logger.getLogger(MainFrame.class);
-	
+
 	private static final String PREFS_NODE_BOOKMARK = "bookmark";
 	private static final String PREFS_NODE_HISTORY = "history";
 	private static final String PREFS_NODE_HISTORY_SIZE_INDEX = "historysizeindex";
 	private static final String PREFS_NODE_SPLITTING_DEACTIVATED = "splittingdeactivated";
 	private static final String PREFS_NODE_DEFAULT_WORKSPACE = "defaultworkspace";
 	private static final String PREFS_NODE_LAST_WORKSPACE = "lastworkspace";
-	
+
 	public final static boolean SPLIT_CONTINUOS_LAYOUT = false;
 	public final static boolean SPLIT_ONE_TOUCH_EXPANDABLE = true;
-	
+
 	public final static int TAB_CONTENT_ICON_MAX = 16;
 	public final static int LINK_ICON_MAX = 16;
-	
+
 	public final static int[] HISTORY_SIZES = new int[] {
 		50, 100, 200
 	};
@@ -153,20 +153,20 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private final NuclosMessagePanel msgPanel = new NuclosMessagePanel();
 	private final JPanel componentMacPanel = new JPanel();
 	private static final JPanel pnlDesktop = new JPanel();
-	
+
 	private static MainFrameTabbedPane homeTabbedPane;
 	private static MainFrameTabbedPane homeTreeTabbedPane;
 	private static MainFrameTabbedPane activeTabNavigation;
-	
+
 	private static int nextExternalFrameNumber = 1;
 	private static final List<CommonJFrame> frameZOrder = new ArrayList<CommonJFrame>();
-	private static final MultiListMap<JFrame, MainFrameTabbedPane> frameContent = new MultiListHashMap<JFrame, MainFrameTabbedPane>(); 
+	private static final MultiListMap<JFrame, MainFrameTabbedPane> frameContent = new MultiListHashMap<JFrame, MainFrameTabbedPane>();
 	private static final Map<MainFrameTabbedPane, MaximizedTabbedPaneParameter> maximizedTabbedPanes = new HashMap<MainFrameTabbedPane, MainFrame.MaximizedTabbedPaneParameter>();
-	
+
 	private static final MultiListMap<MainFrameTabbedPane, String> predefinedEntityOpenLocation = new MultiListHashMap<MainFrameTabbedPane, String>();
-	
+
 	private static final Map<ImageIcon, Map<Integer, ImageIcon>> resizedIcons = new HashMap<ImageIcon, Map<Integer, ImageIcon>>();
-	
+
 	/**
 	 * String: entity
 	 * EntityBookmark
@@ -177,15 +177,15 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 	private final JMenu menuWindow = new JMenu();
 	private static boolean splittingDeactivated = false;
-	
+
 	private static LiveSearchController liveSearchController;
 	private static WorkspaceChooserController workspaceChooserController;
 	private static String defaultWorkspace;
 	private static String lastWorkspace;
-	
+
 	private static final AbstractAction actDeactivateSplitting = new AbstractAction() {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -195,7 +195,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		}
 	};
 	private static final JCheckBoxMenuItem miDeactivateSplitting = new JCheckBoxMenuItem(actDeactivateSplitting);
-	
+
 	/**
 	 * creates the main frame. Note that here we don't follow the general rule that the view shouldn't
 	 * contain a reference to its controller. We hide that fact in this package though.
@@ -208,21 +208,21 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		addWindowFocusListener(new ZOrderUpdater(MainFrame.this));
 		Utils.setComponentNames(this);
 		setIconImage(NuclosIcons.getInstance().getFrameIcon().getImage());
-		
+
 		liveSearchController = new LiveSearchController(this);
 		workspaceChooserController = new WorkspaceChooserController();
 		setupLiveSearchKey(this);
 	}	// ctor
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private static void setProgressBounds() {
 		progressBar.setBounds((Main.getMainFrame().getBounds().width - PROGRESSBAR_WIDTH) / 2, 0, PROGRESSBAR_WIDTH, 10);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param maxValue
 	 */
 	public static void showProgress(final int maxValue) {
@@ -233,13 +233,13 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				progressBar.setMaximum(maxValue);
 				progressBar.setValue(0);
 				setProgressBounds();
-				Main.getMainFrame().getLayeredPane().add(progressBar, PROGRESSBAR_LAYER); 
+				Main.getMainFrame().getLayeredPane().add(progressBar, PROGRESSBAR_LAYER);
 			}
 		});
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public static void hideProgress() {
 		UIUtils.invokeOnDispatchThread(new Runnable() {
@@ -247,13 +247,13 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			public void run() {
 				Main.getMainFrame().getLayeredPane().remove(Main.getMainFrame().getLayeredPane().getIndexOf(progressBar));
 				Main.getMainFrame().getLayeredPane().repaint();
-				progressBar.setValue(0); 
+				progressBar.setValue(0);
 			}
 		});
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public static void continueProgress() {
 		UIUtils.invokeOnDispatchThread(new Runnable() {
@@ -270,7 +270,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	public void setTitle(String sUserName, String sNucleusServerName) {
-		
+
 		super.setTitle(ApplicationProperties.getInstance().getCurrentVersion().getAppName());
 
 	}
@@ -282,7 +282,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		JPanel contentpane = (JPanel) getContentPane();
 		contentpane.setLayout(new BorderLayout());
 		contentpane.add(pnlDesktop, BorderLayout.CENTER);
-		
+
 		contentpane.setBackground(NuclosSyntheticaConstants.BACKGROUND_DARKER);
 		pnlDesktop.setOpaque(false);
 		pnlDesktop.setLayout(new BorderLayout());
@@ -304,28 +304,28 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static MainFrameTabbedPane getHomePane() {
 		return homeTabbedPane;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static MainFrameTabbedPane getHomeTreePane() {
 		return homeTreeTabbedPane;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tabbedPane
 	 * @return
 	 */
 	private static boolean isTabbedPaneVisible(MainFrameTabbedPane tabbedPane) {
-		if (!maximizedTabbedPanes.containsKey(tabbedPane)) {		
+		if (!maximizedTabbedPanes.containsKey(tabbedPane)) {
 			for (JFrame frame : frameContent.keySet()) {
 				if (frameContent.getValues(frame).contains(tabbedPane)) {
 					// check if other tabbedPane is maximized
@@ -334,12 +334,12 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 							if (maximizedTabbedPanes.containsKey(other)) {
 								return false;
 							}
-						} 
+						}
 					}
 				}
 			}
 		}
-		
+
 		try {
 			tabbedPane.getLocationOnScreen();
 			return true;
@@ -347,49 +347,49 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			return false;
 		}
 	}
-	
-	private static MainFrameTabbedPane getMaximizedTabbedPaneIfAny(MainFrameTabbedPane possiblyNotVisibleTabbedPane) {		
+
+	private static MainFrameTabbedPane getMaximizedTabbedPaneIfAny(MainFrameTabbedPane possiblyNotVisibleTabbedPane) {
 		for (JFrame frame : frameContent.keySet()) {
 			if (frameContent.getValues(frame).contains(possiblyNotVisibleTabbedPane)) {
 				for (MainFrameTabbedPane tabbedPane : frameContent.getValues(frame)) {
 					if (maximizedTabbedPanes.containsKey(tabbedPane)) {
-						return tabbedPane;	
+						return tabbedPane;
 					}
 				}
 			}
 		}
-		
+
 		// no maximized found? must be shown...
 		return possiblyNotVisibleTabbedPane;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static JTabbedPane getTreeOpenLocation() {
 		return homeTreeTabbedPane;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tabbedPane
 	 * @return
 	 */
 	public static List<String> getPredefinedEntityOpenLocations(MainFrameTabbedPane tabbedPane) {
 		return predefinedEntityOpenLocation.getValues(tabbedPane);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static Set<String> getAllPredefinedEntityOpenLocations() {
 		return predefinedEntityOpenLocation.getAllValues();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param entity
 	 * @return
 	 */
@@ -401,9 +401,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		}
 		return false;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param entity
 	 * @return
 	 */
@@ -414,23 +414,23 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				result = tabbedPane;
 			}
 		}
-		
+
 		if (result == null) {
 			result = homeTabbedPane;
 		}
-		
+
 		if (!isTabbedPaneVisible(result)) {
 			MainFrameTabbedPane maxTabbedPane = getMaximizedTabbedPaneIfAny(result);
 			(new Bubble(maxTabbedPane,
 				CommonLocaleDelegate.getMessage("MainFrame.3","Neuer Tab im ausgeblendeten Bereich."),
 				5,
 				Bubble.Position.NO_ARROW_CENTER)).setVisible(true);
-			
+
 		}
-		
+
 		return result;
 	}
-	
+
 	public static void removePredefinedEntityOpenLocation(String entity, boolean setup) {
 		for (MainFrameTabbedPane tabbedPane : new ArrayList<MainFrameTabbedPane>(predefinedEntityOpenLocation.keySet())) {
 			predefinedEntityOpenLocation.removeValue(tabbedPane, entity);
@@ -439,7 +439,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			}
 		}
 	}
-	
+
 	public static void setPredefinedEntityOpenLocation(String entity, MainFrameTabbedPane tabbedPane) {
 		removePredefinedEntityOpenLocation(entity, false);
 		predefinedEntityOpenLocation.addValue(tabbedPane, entity);
@@ -475,7 +475,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private void initWindowMenu(Map<String, Map<String, Action>> commandMap, NuclosNotificationDialog notificationDialog) {
 		// Windows menu:
 		menuWindow.removeAll();
-		
+
 		final JCheckBoxMenuItem miWindowNotificationDialog = new JCheckBoxMenuItem();
 		final JCheckBoxMenuItem miWindowBackgroundTasks = new JCheckBoxMenuItem();
 		JMenuItem miNextTab = new JMenuItem();
@@ -497,7 +497,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		menuWindow.add(miWindowNotificationDialog);
 		miWindowNotificationDialog.setSelected(false);
 		menuWindow.addSeparator();
-		
+
 		for (final JFrame frame : CollectionUtils.sorted(frameContent.keySet(), new Comparator<JFrame>() {
 			@Override
 			public int compare(JFrame o1, JFrame o2) {
@@ -507,12 +507,12 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			}
 		})) {
 			if (frame instanceof WorkspaceFrame) {
-				String title = (frame instanceof ExternalFrame) ? 
+				String title = (frame instanceof ExternalFrame) ?
 					CommonLocaleDelegate.getMessage("ExternalFrame.Title","Erweiterungsfenster {0}",((WorkspaceFrame) frame).getNumber()) :
 						CommonLocaleDelegate.getMessage("MainFrame.Title","Hauptfenster");
 				JMenuItem miFrameToFront = new JMenuItem(new AbstractAction("Nuclos " + title) {
 					/**
-					 * 
+					 *
 					 */
 					private static final long serialVersionUID = 1L;
 
@@ -524,15 +524,15 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				menuWindow.add(miFrameToFront);
 			}
 		}menuWindow.addSeparator();
-		
+
 		menuWindow.add(miPreviousTab);
 		menuWindow.add(miNextTab);
 		menuWindow.add(miCloseAllTabs);
 		menuWindow.addSeparator();
-		
+
 		menuWindow.add(miDeactivateSplitting);
 		menuWindow.addSeparator();
-		
+
 		menuWindow.add(miRestoreDefaultWorkspace);
 
 		miWindowBackgroundTasks.addActionListener(new ActionListener() {
@@ -579,9 +579,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 					@Override
 					public void run() {
 						if (!RestoreUtils.isRestoreRunning()) {
-							if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(MainFrame.this, 
-								CommonLocaleDelegate.getMessage("MainFrame.restoreDefaultWorkspace.2","Möchten Sie wirklich die Fenstereinteilung auf den Standard zurücksetzen?\nTabs werden nicht geschlossen, aber Fenstereinteilungen und Erweiterungsfenster werden zurückgesetzt.\nMöchten Sie fortfahren?"), 
-								CommonLocaleDelegate.getMessage("MainFrame.restoreDefaultWorkspace.1","Arbeitsbereich wiederherstellen"), 
+							if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(MainFrame.this,
+								CommonLocaleDelegate.getMessage("MainFrame.restoreDefaultWorkspace.2","Möchten Sie wirklich die Fenstereinteilung auf den Standard zurücksetzen?\nTabs werden nicht geschlossen, aber Fenstereinteilungen und Erweiterungsfenster werden zurückgesetzt.\nMöchten Sie fortfahren?"),
+								CommonLocaleDelegate.getMessage("MainFrame.restoreDefaultWorkspace.1","Arbeitsbereich wiederherstellen"),
 								JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE)) {
 								RestoreUtils.restoreToDefaultWorkspace(getWorkspace());
 							}
@@ -634,18 +634,18 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			}
 		});
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param next
 	 */
 	private void cmdCycleThroughTabs(boolean next) {
 		MainFrameTabbedPane activeTabNavigation = getActiveTabNavigation();
-		
+
 		int currentIndex = activeTabNavigation.getSelectedIndex();
 		int tabCount = activeTabNavigation.getTabCount();
 		int toSelect;
-		
+
 		if (next) {
 			toSelect = currentIndex + 1;
 			if (toSelect == tabCount) toSelect = 0;
@@ -653,7 +653,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			toSelect = currentIndex - 1;
 			if (toSelect == -1) toSelect = tabCount - 1;
 		}
-		
+
 		activeTabNavigation.setSelectedIndex(toSelect);
 	}
 
@@ -671,12 +671,12 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		for (MainFrameTabbedPane tp : frameContent.getAllValues()) {
 			result.addAll(tp.getAllTabs());
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static Set<JFrame> getAllFrames() {
@@ -697,7 +697,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		Map<String, Map<String, JComponent>> componentMap,
 		NuclosNotificationDialog notificationDialog) {
 		initWindowMenu(commandMap, notificationDialog);
-		
+
 		try {
 			List<Component> exportNotJMenuComponents = Main.isMacOSX()? new ArrayList<Component>() : null;
 			MenuGenerator menuGen = new MenuGenerator(commandMap, componentMap, exportNotJMenuComponents);
@@ -712,12 +712,12 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				componentMacPanel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
 				componentMacPanel.setOpaque(false);
 				componentMacPanel.setLayout(new BoxLayout(componentMacPanel, BoxLayout.X_AXIS));
-				
+
 				componentMacPanel.add(Box.createHorizontalGlue());
 				for (Component c : exportNotJMenuComponents) {
 					componentMacPanel.add(c);
 				}
-				
+
 				JPanel contentpane = (JPanel) getContentPane();
 				contentpane.add(componentMacPanel, BorderLayout.NORTH);
 			}
@@ -725,10 +725,10 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		catch(Exception e) {
 			throw new NuclosFatalException(e);
 		}
-		
+
 		addStaticsToMenu();
 		addEntitiesToMenu();
-		
+
 		setupStartmenu();
 	}
 
@@ -775,9 +775,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		}
 		return parent;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param eb
 	 * @param refresh
 	 */
@@ -789,9 +789,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			}
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param entity
 	 * @param id
 	 * @param label
@@ -799,9 +799,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	public static void addBookmark(String entity, Integer id, String label) {
 		addBookmark(new EntityBookmark(entity, id, label), true);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param eb
 	 * @return
 	 */
@@ -818,19 +818,19 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			return false;
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param entity
 	 * @param id
 	 * @param label
 	 */
 	public static void addHistory(String entity, Integer id, String label) {
 		final EntityBookmark eb = new EntityBookmark(entity, id, label);
-		
+
 		// update label if bookmarked
 		updateBookmark(eb);
-		
+
 		final int index = history.getValues(entity).indexOf(eb);
 		if (index >= 0) {
 			final EntityBookmark existing = history.getValues(entity).get(index);
@@ -844,19 +844,19 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			refreshHistory();
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param newFreeSpace
 	 * @param refresh
 	 */
 	static void cleanupHistory(int newFreeSpace, boolean refresh) {
 		Set<EntityBookmark> allValues = history.getAllValues();
-		
+
 		final int freeSpace = HISTORY_SIZES[selectedHistorySize] - allValues.size();
 		final int cleanupSize = newFreeSpace - freeSpace;
 		final int removeCount = cleanupSize > allValues.size() ? allValues.size() : cleanupSize;
-		
+
 		if (removeCount > 0) {
 			final List<EntityBookmark> sortedEB = CollectionUtils.sorted(allValues, new Comparator<EntityBookmark>() {
 				@Override
@@ -873,36 +873,36 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			}
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	static void  refreshSelectedHistorySize() {
 		for (MainFrameTabbedPane tabbedPane : frameContent.getAllValues()) {
 			tabbedPane.refreshSelectedHistorySize();
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	static void refreshHistory() {
 		for (MainFrameTabbedPane tabbedPane : frameContent.getAllValues()) {
 			tabbedPane.refreshHistory();
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	static void refreshBookmark() {
 		for (MainFrameTabbedPane tabbedPane : frameContent.getAllValues()) {
 			tabbedPane.refreshBookmark();
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private void addStaticsToMenu() {
 		for (final Pair<String[], Action> p : Main.getMainController().getAdministrationMenuActions()) {
@@ -922,17 +922,17 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			});
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private void addEntitiesToMenu() {
 		List<Pair<String[], Action>> menuAdditions = new ArrayList<Pair<String[], Action>>();
 		menuAdditions.addAll(Main.getMainController().getEntityMenuActions());
 		menuAdditions.addAll(Main.getMainController().getCustomComponentMenuActions());
-		
+
 		final Collator collator = Collator.getInstance(Locale.getDefault());
-		final Comparator<String[]> arrayCollator = ComparatorUtils.arrayComparator(collator); 
+		final Comparator<String[]> arrayCollator = ComparatorUtils.arrayComparator(collator);
 		Collections.sort(menuAdditions, new Comparator<Pair<String[], Action>>() {
 			@Override
 			public int compare(Pair<String[],Action> p1, Pair<String[],Action> p2) {
@@ -942,7 +942,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				return cmp;
 			}
 		});
-		
+
 		for (final Pair<String[], Action> p : menuAdditions) {
 			UIUtils.runCommand(MainFrame.this, new CommonRunnable() {
 				@Override
@@ -954,7 +954,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	/**
-	 * 
+	 *
 	 * @param menuPath
 	 * @param action
 	 */
@@ -966,15 +966,15 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		JMenuItem mi = new JMenuItem(action);
 		parent.add(mi, index);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 *
 	 */
 	static class ZOrderUpdater implements WindowFocusListener {
-		
+
 		private CommonJFrame frame;
-		
+
 		public ZOrderUpdater(CommonJFrame frame) {
 			super();
 			this.frame = frame;
@@ -983,7 +983,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		private void updateZOrder() {
 			frameZOrder.remove(frame);
 			frameZOrder.add(frame);
-			
+
 			log.debug("Frame Z-Order: ");
 			for (JFrame frame : frameZOrder) {
 				log.debug(frame);
@@ -998,11 +998,11 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		@Override
 		public void windowLostFocus(WindowEvent e) {
 		}
-		
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param ico
 	 * @param max
 	 * @return
@@ -1010,55 +1010,55 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	public static ImageIcon resizeAndCacheIcon(Icon ico, int max) {
 		if (ico instanceof ImageIcon) {
 			ImageIcon imgico = (ImageIcon) ico;
-			
+
 			Map<Integer, ImageIcon> icoCache = resizedIcons.get(imgico);
 			if (icoCache == null) {
 				icoCache = new HashMap<Integer, ImageIcon>();
 				resizedIcons.put(imgico, icoCache);
-			} 
-			
+			}
+
 			ImageIcon cached = icoCache.get(max);
 			if (cached == null) {
 				final int w = imgico.getIconWidth();
 				final int h = imgico.getIconHeight();
-		        
+
 		        final BufferedImage bi = new BufferedImage(w > h ? w : h, w > h ? w : h, BufferedImage.TYPE_INT_ARGB);
 		        final Graphics2D g2 = bi.createGraphics();
 		        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		        g2.drawImage(imgico.getImage(), w > h ? 0 : (h-w)/2, w > h ? (w-h)/2 : 0, null);
 		        g2.dispose();
-	
+
 				cached =  new ImageIcon(bi.getScaledInstance(max, -1, java.awt.Image.SCALE_SMOOTH));
 				icoCache.put(max, cached);
 			}
-			
+
 			return cached;
 		} else {
 			return null;
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param ico
 	 * @return
 	 */
 	public static ImageIcon resizeAndCacheLinkIcon(Icon ico) {
 		return resizeAndCacheIcon(ico, LINK_ICON_MAX);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param ico
 	 * @return
 	 */
 	public static ImageIcon resizeAndCacheTabIcon(ImageIcon ico) {
 		return resizeAndCacheIcon(ico, TAB_CONTENT_ICON_MAX);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 *
 	 */
 	private static class MaximizedTabbedPaneParameter {
@@ -1067,7 +1067,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		final boolean left;
 		final MainFrameTabbedPane tabbedPane;
 		final Map<JSplitPane, Integer> dividerLocations;
-		
+
 		public MaximizedTabbedPaneParameter(
 				JSplitPane splitPaneRoot,
 				JSplitPane splitPaneOrigin, boolean left,
@@ -1080,40 +1080,40 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			this.dividerLocations = dividerLocations;
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tabbedPane
 	 */
 	static void restoreTabbedPaneContainingArea(MainFrameTabbedPane tabbedPane) {
 		if (maximizedTabbedPanes.containsKey(tabbedPane)) {
 			MaximizedTabbedPaneParameter mtpp = maximizedTabbedPanes.get(tabbedPane);
 			final JFrame frame = getJFrame(tabbedPane);
-			
+
 			if (frame == Main.getMainFrame()) {
 				pnlDesktop.remove(tabbedPane);
 				restoreJSplitPanes(mtpp);
 				Main.getMainFrame().setFrameContent(mtpp.splitPaneRoot);
-				
+
 				pnlDesktop.validate();
 				pnlDesktop.repaint();
-				
+
 			} else  if (frame instanceof ExternalFrame) {
 				((ExternalFrame) frame).clearFrameContent();
 				restoreJSplitPanes(mtpp);
 				((ExternalFrame) frame).setFrameContent(mtpp.splitPaneRoot);
 				frame.validate();
 				frame.repaint();
-				
+
 			} else {
 				throw new IllegalArgumentException("Unknown frame: " + frame);
 			}
-			
+
 			tabbedPane.setMaximized(false);
 			maximizedTabbedPanes.remove(tabbedPane);
 		}
 	}
-	
+
 	/**
 	 * Restore all maximized tabbedpanes
 	 */
@@ -1122,9 +1122,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			restoreTabbedPaneContainingArea(tabbedPane);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param mtpp
 	 */
 	private static void restoreJSplitPanes(MaximizedTabbedPaneParameter mtpp) {
@@ -1137,48 +1137,48 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			splitPane.setDividerLocation(mtpp.dividerLocations.get(splitPane));
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tabbedPane
 	 */
 	static void maximizeTabbedPane(MainFrameTabbedPane tabbedPane) {
-		
+
 		MaximizedTabbedPaneParameter mtpp = getMaximizedTabbedPaneParameter(tabbedPane);
 		if (mtpp != null) {
 			JFrame frame = getJFrame(tabbedPane);
 			tabbedPane.setMaximized(true);
 			maximizedTabbedPanes.put(tabbedPane, mtpp);
-			
+
 			if (frame == Main.getMainFrame()) {
 				pnlDesktop.remove(mtpp.splitPaneRoot);
 				pnlDesktop.add(tabbedPane, BorderLayout.CENTER);
 				pnlDesktop.validate();
 				pnlDesktop.repaint();
-				
+
 			} else  if (frame instanceof ExternalFrame) {
 				((ExternalFrame) frame).clearFrameContent();
 				((ExternalFrame) frame).setFrameContent(tabbedPane);
 				frame.validate();
 				frame.repaint();
-				
+
 			} else {
 				throw new IllegalArgumentException("Unknown frame: " + frame);
 			}
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tabbedPane
 	 * @return
 	 */
 	static boolean isTabbedPaneMaximized(MainFrameTabbedPane tabbedPane) {
 		return maximizedTabbedPanes.containsKey(tabbedPane);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tabbedPane
 	 * @return
 	 */
@@ -1186,9 +1186,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		int countTabbedFrames = countTabbedPanes(getFrame(tabbedPane));
 		return countTabbedFrames > 1;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tabbedPane
 	 * @return
 	 */
@@ -1196,10 +1196,10 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		if (tabbedPane.getParent() instanceof JSplitPane) {
 			final JSplitPane splitPane = (JSplitPane) tabbedPane.getParent();
 			final boolean left = splitPane.getLeftComponent() == tabbedPane;
-			
+
 			final Map<JSplitPane, Integer> dividerLocations = new HashMap<JSplitPane, Integer>();
 			dividerLocations.put(splitPane, splitPane.getDividerLocation());
-			
+
 			JSplitPane splitPaneRoot = null;
 			Container parent = tabbedPane.getParent();
 			while (parent != null) {
@@ -1210,54 +1210,54 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				parent = parent.getParent();
 			}
 			if (splitPaneRoot == null) splitPaneRoot = splitPane;
-			
+
 			MaximizedTabbedPaneParameter result = new MaximizedTabbedPaneParameter(splitPaneRoot, splitPane, left, tabbedPane, dividerLocations);
 			return result;
 		} else {
 			return null;
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tabbedPaneToSplit
 	 * @param splitRange
 	 * @param tabbedPaneSource
 	 * @param tabIndexSource
 	 */
 	void splitTabbedPane(MainFrameTabbedPane tabbedPaneToSplit, SplitRange splitRange, MainFrameTabbedPane tabbedPaneSource, int tabIndexSource) {
-		
+
 		restoreTabbedPaneContainingArea(tabbedPaneToSplit);
-		
+
 		final MainFrameTab tab = (MainFrameTab) tabbedPaneSource.getComponentAt(tabIndexSource);
 		// remove first to join necessary TabbedPanes
 		tabbedPaneSource.remove(tabIndexSource);
-		
+
 		final Container parent = tabbedPaneToSplit.getParent();
-		
+
 		final JFrame frame = getJFrame(tabbedPaneToSplit);
 		final MainFrameTabbedPane newTabbedPane = createTabbedPane(frame);
-		
+
 		newTabbedPane.addTab(tab.getTitle(), tab.getTabIcon(), tab, tab.getTitle());
 		newTabbedPane.setSelectedIndex(1);
 
-		int newOrientation = splitRange == SplitRange.NORTH || 
-							 splitRange == SplitRange.SOUTH ? 
+		int newOrientation = splitRange == SplitRange.NORTH ||
+							 splitRange == SplitRange.SOUTH ?
 								 JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT;
-		
-		boolean northOrWest = splitRange == SplitRange.NORTH || splitRange == SplitRange.WEST; 
-		
+
+		boolean northOrWest = splitRange == SplitRange.NORTH || splitRange == SplitRange.WEST;
+
 		final JSplitPane newSplitPane;
 		final Dimension newSplitPaneSize = tabbedPaneToSplit.getSize();
-		
+
 		if (parent instanceof JSplitPane) {
 			JSplitPane splitPaneParent = (JSplitPane) parent;
 			int parentDiverLocation = splitPaneParent.getDividerLocation();
 			boolean isLeftComponent = splitPaneParent.getLeftComponent() == tabbedPaneToSplit;
-			
+
 			splitPaneParent.remove(tabbedPaneToSplit);
 			newSplitPane = new JSplitPane(newOrientation, SPLIT_CONTINUOS_LAYOUT, northOrWest ? newTabbedPane : tabbedPaneToSplit, northOrWest ? tabbedPaneToSplit : newTabbedPane);
-			
+
 			if (isLeftComponent) {
 				splitPaneParent.setLeftComponent(newSplitPane);
 			} else {
@@ -1266,53 +1266,53 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			splitPaneParent.setDividerLocation(parentDiverLocation);
 			splitPaneParent.validate();
 			splitPaneParent.repaint();
-			
+
 		} else if (frame == MainFrame.this) {
 			// first SplitPane
 			pnlDesktop.remove(tabbedPaneToSplit);
 			newSplitPane = new JSplitPane(newOrientation, SPLIT_CONTINUOS_LAYOUT, northOrWest ? newTabbedPane : tabbedPaneToSplit, northOrWest ? tabbedPaneToSplit : newTabbedPane);
-			
+
 			pnlDesktop.add(newSplitPane, BorderLayout.CENTER);
 			pnlDesktop.validate();
 			pnlDesktop.repaint();
-			
+
 		} else if (frame instanceof ExternalFrame) {
 			((ExternalFrame) frame).clearFrameContent();
 			newSplitPane = new JSplitPane(newOrientation, SPLIT_CONTINUOS_LAYOUT, northOrWest ? newTabbedPane : tabbedPaneToSplit, northOrWest ? tabbedPaneToSplit : newTabbedPane);
-			
+
 			((ExternalFrame) frame).setFrameContent(newSplitPane);
 			frame.validate();
 			frame.repaint();
-			
+
 		} else {
 			throw new IllegalArgumentException("Unknown parent: " + parent.getClass().getName());
 		}
-		
+
 		newSplitPane.setOneTouchExpandable(SPLIT_ONE_TOUCH_EXPANDABLE);
 		newSplitPane.setDividerLocation(newOrientation==JSplitPane.VERTICAL_SPLIT ? newSplitPaneSize.height/2 : newSplitPaneSize.width/2);
-		
+
 		updateTabbedPaneActions(frame);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tab
 	 */
 	public static void addTab(MainFrameTab tab) {
 		if (homeTabbedPane != null)
 			homeTabbedPane.add(tab);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tab
 	 */
 	public static void addTabToTreeHome(MainFrameTab tab) {
 		homeTreeTabbedPane.add(tab);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tab
 	 * @param entity
 	 */
@@ -1322,9 +1322,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		}
 		getPredefinedEntityOpenLocation(entity).add(tab);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tab
 	 * @param mousePosition
 	 * @throws CommonBusinessException if tab is not closable
@@ -1332,18 +1332,18 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	static void closeTab(MainFrameTab tab, Point mousePosition) throws CommonBusinessException {
 		getTabbedPane(tab).closeTab(tab, mousePosition);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tab
 	 * @throws CommonBusinessException
 	 */
 	public static void closeTab(MainFrameTab tab) throws CommonBusinessException {
 		closeTab(tab, null);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tab
 	 */
 	public static void setSelectedTab(MainFrameTab tab) {
@@ -1352,15 +1352,15 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			tabbedPane.setSelectedComponent(tab);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tabbedPaneOnScreen
 	 * @return
 	 */
 	public static MainFrameTab getSelectedTab(Point tabbedPaneOnScreen) {
 		final MainFrameTabbedPane tabbedPane = getTabbedPane(tabbedPaneOnScreen);
-		
+
 		if (tabbedPane != null) {
 			Component c = tabbedPane.getSelectedComponent();
 			if (c instanceof MainFrameTab) {
@@ -1372,9 +1372,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			throw new NuclosFatalException("At this point "+tabbedPaneOnScreen.toString()+" exists no TabbedPane");
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param locOnScreen
 	 * @return
 	 */
@@ -1389,20 +1389,20 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				// hidden tab
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static Set<MainFrameTabbedPane> getAllTabbedPanes() {
 		return frameContent.getAllValues();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tab
 	 * @return
 	 */
@@ -1412,29 +1412,29 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				return tabbedPane;
 			}
 		}
-		
+
 		throw new NuclosFatalException("Tab not found");
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tabbedPane
 	 */
 	public static void removeTabbedPane(MainFrameTabbedPane tabbedPane) {
 		removeTabbedPane(tabbedPane, false);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tabbedPane
 	 * @param forcedFromFrameClose
 	 */
 	public static void removeTabbedPane(MainFrameTabbedPane tabbedPane, boolean forcedFromFrameClose) {
 		removeTabbedPane(tabbedPane, forcedFromFrameClose, true);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tabbedPane
 	 * @param forcedFromFrameClose
 	 * @param addNotClosableToHome
@@ -1442,37 +1442,37 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	public static void removeTabbedPane(MainFrameTabbedPane tabbedPane, boolean forcedFromFrameClose, boolean addNotClosableToHome) {
 		final JFrame frame = getJFrame(tabbedPane);
 		final int countTabbedsOnFrame = countTabbedPanes(frame);
-		
+
 		if (!forcedFromFrameClose && countTabbedsOnFrame == 1) {
 			// do not remove last TabbedPane
-			
+
 		} else {
-			
+
 			if (!forcedFromFrameClose && tabbedPane.getTabCount() > 1) {
 				if (JOptionPane.YES_OPTION != JOptionPane.showConfirmDialog(
-					tabbedPane, 
+					tabbedPane,
 					CommonLocaleDelegate.getMessage("MainFrame.1","Tab Leiste mit allen enthaltenen Tabs entfernen.\nMoechten Sie fortfahren?"),
-					CommonLocaleDelegate.getMessage("MainFrame.2","Tab Leiste entfernen"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) 
+					CommonLocaleDelegate.getMessage("MainFrame.2","Tab Leiste entfernen"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE))
 					return;
 			}
-			
+
 			restoreTabbedPaneContainingArea(tabbedPane);
-			
+
 			List<MainFrameTab> notClosableTabs = tabbedPane.closeAllTabs();
-			
-			
+
+
 			if (forcedFromFrameClose) {
 				frameContent.removeValue(frame, tabbedPane);
 			} else {
-				final JSplitPane splitPane = (JSplitPane) tabbedPane.getParent();		
+				final JSplitPane splitPane = (JSplitPane) tabbedPane.getParent();
 				Component otherComp = splitPane.getLeftComponent() == tabbedPane ? splitPane.getRightComponent() : splitPane.getLeftComponent();
 				splitPane.removeAll();
 				frameContent.removeValue(frame, tabbedPane);
-				
+
 				if (splitPane.getParent() instanceof JSplitPane){
 					JSplitPane splitPaneParent = (JSplitPane) splitPane.getParent();
 					int dividerLocation = splitPaneParent.getDividerLocation();
-					
+
 					if (splitPaneParent.getLeftComponent() == splitPane) {
 						splitPaneParent.remove(splitPane);
 						splitPaneParent.setLeftComponent(otherComp);
@@ -1483,24 +1483,24 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 					splitPaneParent.setDividerLocation(dividerLocation);
 					splitPaneParent.validate();
 					splitPaneParent.repaint();
-					
+
 				} else if (frame == Main.getMainFrame()) {
 					pnlDesktop.remove(splitPane);
 					pnlDesktop.add(otherComp, BorderLayout.CENTER);
 					pnlDesktop.validate();
 					pnlDesktop.repaint();
-					
+
 				} else if (frame instanceof ExternalFrame) {
 					((ExternalFrame) frame).clearFrameContent();
 					((ExternalFrame) frame).setFrameContent(otherComp);
 					frame.validate();
 					frame.repaint();
-					
+
 				} else {
 					throw new IllegalArgumentException("Unknown parent: " + splitPane.getParent().getClass().getName());
 				}
 			}
-			
+
 			if (homeTabbedPane == tabbedPane || homeTreeTabbedPane == tabbedPane) {
 				if (homeTabbedPane == tabbedPane) {
 					try {
@@ -1517,55 +1517,55 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 						// clearing workspace...
 						homeTreeTabbedPane = null;
 					}
-					
+
 				}
 				for (MainFrameTabbedPane cursor : frameContent.getAllValues()) {
 					cursor.updateHomes();
 				}
 			}
-			
+
 			if (predefinedEntityOpenLocation.containsKey(tabbedPane)) {
 				predefinedEntityOpenLocation.removeKey(tabbedPane);
 				setupStartmenu();
 			}
-			
+
 			if (addNotClosableToHome) {
 				for (MainFrameTab notClosed : notClosableTabs) {
 					addTab(notClosed);
 				}
 			}
-			
+
 			if (!forcedFromFrameClose) {
 				updateTabbedPaneActions(frame);
 			}
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	static void setupStartmenu() {
 		for (MainFrameTabbedPane tabbedPane : frameContent.getAllValues()) {
 			tabbedPane.setupStartmenu();
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param dp
 	 * @param position
 	 */
 	static void createExternalFrame(MainFrameTabbedPane.DragParameter dp, Point position) {
-		
+
 		MainFrameTab tab = (MainFrameTab) dp.originTabbedPane.getComponentAt(dp.draggedTabIndex);
 		// remove first to join necessary TabbedPanes
 		dp.originTabbedPane.remove(dp.draggedTabIndex);
-		
+
 		MainFrameTabbedPane newTabbedPane = new MainFrameTabbedPane();
-		
+
 		newTabbedPane.addTab(tab.getTitle(), tab.getTabIcon(), tab, tab.getTitle());
 		newTabbedPane.setSelectedIndex(1);
-		
+
 		ExternalFrame ef = new ExternalFrame(nextExternalFrameNumber);
 		ef.setLocation(position);
 		ef.setSize(newTabbedPane.getPreferredSize());
@@ -1574,34 +1574,34 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		ef.setFrameContent(newTabbedPane);
 		newTabbedPane.adjustTabs();
 		frameContent.addValue(ef, newTabbedPane);
-		
+
 		nextExternalFrameNumber++;
-		
+
 		Main.getMainController().refreshMenus();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static WorkspaceFrame createWorkspaceFrame() {
 		ExternalFrame result = new ExternalFrame(nextExternalFrameNumber);
-		
+
 		nextExternalFrameNumber++;
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 *
 	 */
 	public enum SplitRange {
 		NORTH, SOUTH, WEST, EAST, NONE;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tabbedPane
 	 * @return
 	 */
@@ -1613,12 +1613,12 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				}
 			}
 		}
-		
+
 		throw new IllegalArgumentException("TabbedPane is not listed");
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param frame
 	 * @return
 	 */
@@ -1626,39 +1626,39 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		if (!frameContent.containsKey(frame)) {
 			throw new IllegalArgumentException("Frame is not listed");
 		}
-		
+
 		return frameContent.getValues(frame).size();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param frame
 	 */
 	public static void updateTabbedPaneActions(JFrame frame) {
 		int countTabbedFrames = countTabbedPanes(frame);
-		
+
 		for (MainFrameTabbedPane tab : frameContent.getValues(frame)) {
 			tab.setCloseEnabled(countTabbedFrames > 1);
 			tab.setMaximizeEnabled(countTabbedFrames > 1);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	static List<MainFrameTabbedPane> getOrderedTabbedPanes() {
 		List<MainFrameTabbedPane> result = new ArrayList<MainFrameTabbedPane>();
-			
+
 		for (int i = frameZOrder.size()-1; i >= 0; i--) {
 			result.addAll(frameContent.getValues(frameZOrder.get(i)));
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static List<CommonJFrame> getOrderedFrames() {
@@ -1666,7 +1666,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public Component getFrameContent() {
@@ -1674,7 +1674,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	/**
-	 * 
+	 *
 	 * @param frame
 	 * @return
 	 */
@@ -1685,7 +1685,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public void setFrameContent(Component comp) {
@@ -1694,22 +1694,22 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public CommonJFrame getFrame() {
 		return this;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param frame
 	 */
 	static void setupLiveSearchKey(JFrame frame) {
 		frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyBindingProvider.FOCUS_ON_LIVE_SEARCH.getKeystroke(), KeyBindingProvider.FOCUS_ON_LIVE_SEARCH.getKey());
 		frame.getRootPane().getActionMap().put(KeyBindingProvider.FOCUS_ON_LIVE_SEARCH	.getKey(), new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -1719,18 +1719,18 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			}
 		});
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private static void cmdFocusLiveSearch() {
 		Main.getMainFrame().setVisible(true);
 		Main.getMainFrame().requestFocusInWindow();
 		liveSearchController.getSearchComponent().requestFocus();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param mainFramePrefs
 	 * @throws BackingStoreException
 	 * @throws PreferencesException
@@ -1740,22 +1740,22 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		mainFramePrefs.putInt(PREFS_NODE_HISTORY_SIZE_INDEX, selectedHistorySize);
 		mainFramePrefs.put(PREFS_NODE_DEFAULT_WORKSPACE, defaultWorkspace);
 		mainFramePrefs.put(PREFS_NODE_LAST_WORKSPACE, getWorkspace());
-		
+
 		Preferences prefsBookmark = mainFramePrefs.node(PREFS_NODE_BOOKMARK);
 		prefsBookmark.clear();
 		for (String entity : bookmark.keySet()) {
 			PreferencesUtils.putSerializableListXML(prefsBookmark, entity, bookmark.getValues(entity));
 		}
-		
+
 		Preferences prefsHistory = mainFramePrefs.node(PREFS_NODE_HISTORY);
 		prefsHistory.clear();
 		for (String entity : history.keySet()) {
 			PreferencesUtils.putSerializableListXML(prefsHistory, entity, history.getValues(entity));
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param mainFramePrefs
 	 * @throws BackingStoreException
 	 * @throws PreferencesException
@@ -1768,65 +1768,65 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		defaultWorkspace = mainFramePrefs.get(PREFS_NODE_DEFAULT_WORKSPACE, CommonLocaleDelegate.getMessage("Workspace.Default","Standard"));
 		lastWorkspace = mainFramePrefs.get(PREFS_NODE_LAST_WORKSPACE, CommonLocaleDelegate.getMessage("Workspace.Default","Standard"));
 		workspaceChooserController.setupItems();
-		
+
 		Preferences prefsBookmark = mainFramePrefs.node(PREFS_NODE_BOOKMARK);
-		for (String entity : prefsBookmark.keys()) {
+		for (String entity : prefsBookmark.childrenNames()) {
 			bookmark.addAllValues(entity, (List<EntityBookmark>) PreferencesUtils.getSerializableListXML(prefsBookmark, entity));
 		}
-		
+
 		Preferences prefsHistory = mainFramePrefs.node(PREFS_NODE_HISTORY);
-		for (String entity : prefsHistory.keys()) {
+		for (String entity : prefsHistory.childrenNames()) {
 			history.addAllValues(entity, (List<EntityBookmark>) PreferencesUtils.getSerializableListXML(prefsHistory, entity));
 		}
-		
+
 		refreshSelectedHistorySize();
 		refreshBookmark();
 		refreshHistory();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	static void clearHistory() {
 		history.clear();
 		refreshHistory();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	static void clearBookmark() {
 		bookmark.clear();
 		refreshBookmark();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	static int getSelectedHistorySize() {
 		return selectedHistorySize;
 	}
-	
+
 	/*
-	 * 
+	 *
 	 */
 	static void setSelectedHistorySize(int index) {
 		selectedHistorySize = index;
 		cleanupHistory(0, true);
 		refreshSelectedHistorySize();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	static MultiListMap<String, EntityBookmark> getHistory() {
 		return history;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	static MultiListMap<String, EntityBookmark> getBookmark() {
@@ -1834,7 +1834,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	/**
-	 * 
+	 *
 	 * @param tabbedPane
 	 * @return
 	 */
@@ -1848,7 +1848,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	/**
-	 * 
+	 *
 	 * @param tabbedPane
 	 */
 	static void setHomeTabbedPane(MainFrameTabbedPane tabbedPane) {
@@ -1856,7 +1856,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	/**
-	 * 
+	 *
 	 * @param tabbedPane
 	 */
 	static void setHomeTreeTabbedPane(MainFrameTabbedPane tabbedPane) {
@@ -1864,16 +1864,16 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	/**
-	 * 
+	 *
 	 * @param frame
 	 * @return
 	 */
 	static List<MainFrameTabbedPane> getTabbedPanes(JFrame frame) {
 		return frameContent.getValues(frame);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param frame
 	 */
 	static void removeFrameFromContent(JFrame frame) {
@@ -1882,7 +1882,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static boolean isSplittingDeactivated() {
@@ -1890,7 +1890,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	/**
-	 * 
+	 *
 	 * @param splittingDeactivated
 	 */
 	public static void setSplittingDeactivated(boolean splittingDeactivated) {
@@ -1899,7 +1899,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public int getNumber() {
@@ -1907,7 +1907,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static MainFrameTabbedPane getActiveTabNavigation() {
@@ -1915,7 +1915,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	/**
-	 * 
+	 *
 	 * @param activeTabNavigation
 	 */
 	public static void setActiveTabNavigation(MainFrameTabbedPane activeTabNavigation) {
@@ -1923,85 +1923,85 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static String getWorkspace() {
 		return workspaceChooserController.getSelectedWorkspace();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param name
 	 */
 	public static void setWorkspace(String name) {
 		workspaceChooserController.setSelectedWorkspace(name);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public static void resetExternalFrameNumber() {
 		nextExternalFrameNumber = 1;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static boolean isWorkspaceManagementAvaiable() {
 		return ApplicationProperties.getInstance().isFunctionBlockDev();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static boolean isWorkspaceManagementEnabled() {
 		return workspaceChooserController.isEnabled();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param b
 	 * @return
 	 */
 	public static void setWorkspaceManagementEnabled(boolean b) {
 		workspaceChooserController.setEnabled(b);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static String getDefaultWorkspace() {
 		return defaultWorkspace;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static String getLastWorkspaceFromPreferences() {
 		return lastWorkspace;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param entity
 	 * @return
 	 */
 	public static ImageIcon getEntityIcon(String entity) {
 		ImageIcon result = null;
-		
+
 		Integer resourceId = MetaDataClientProvider.getInstance().getEntity(entity).getResourceId();
 		String nuclosResource = MetaDataClientProvider.getInstance().getEntity(entity).getNuclosResource();
 		if (resourceId != null) {
 			result = ResourceCache.getIconResource(resourceId);
 		} else if (nuclosResource != null) {
 			result = NuclosResourceCache.getNuclosResourceIcon(nuclosResource);
-		} 
-		
+		}
+
 		if (result == null) {
 			if (NuclosEntity.isNuclosEntity(entity)) {
 				result = NuclosIcons.getInstance().getDefaultFrameIcon();
@@ -2009,7 +2009,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				result = Icons.getInstance().getIconTabGeneric();
 			}
 		}
-		
+
 		return result;
 	}
 

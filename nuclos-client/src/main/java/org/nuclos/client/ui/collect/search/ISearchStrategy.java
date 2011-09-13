@@ -21,8 +21,10 @@ import java.util.Map;
 import java.util.Observer;
 
 import org.nuclos.client.ui.collect.CollectController;
+import org.nuclos.client.ui.collect.result.ISearchResultStrategy;
 import org.nuclos.client.ui.collect.strategy.CompleteCollectablesStrategy;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -33,17 +35,26 @@ import org.nuclos.server.report.valueobject.DatasourceVO;
 public interface ISearchStrategy<Clct extends Collectable> {
 
 	// initializing
-	
+
 	void setCollectController(CollectController<Clct> cc);
-	
+
 	// business
-	
+
+	/**
+	 * Set a <tt>CollectableIdListCondition</tt> to search for a list of collectables.
+	 * Cannot be triggered from a classic search (or search editor), so we have to set the condition directly.
+	 * The <tt>ISearchResultStrategy</tt> is responsible for setting and resetting the condition.
+	 *
+	 * @see ISearchResultStrategy
+	 */
+	void setCollectableIdListCondition(CollectableIdListCondition condition);
+
 	/**
 	 * performs a single-threaded search, according to the current search
 	 * condition, if any. TODO replace with search(boolean bRefreshOnly)
-	 * 
+	 *
 	 * @see #getSearchWorker()
-	 * 
+	 *
 	 * @deprecated Use multithreaded search for new applications.
 	 */
 	void search() throws CommonBusinessException;
@@ -51,7 +62,7 @@ public interface ISearchStrategy<Clct extends Collectable> {
 	/**
 	 * @param bRefreshOnly
 	 * @throws CommonBusinessException
-	 * 
+	 *
 	 * @deprecated Use multithreaded search for new applications. Move to
 	 *             SearchController. TODO: Make this protected again.
 	 */
@@ -63,7 +74,7 @@ public interface ISearchStrategy<Clct extends Collectable> {
 	 * This default implementation returns <code>null</code> indicating that
 	 * single threaded search is used, which calls the deprecated search()
 	 * method.
-	 * 
+	 *
 	 * TODO add parameter bRefreshOnly
 	 */
 	SearchWorker<Clct> getSearchWorker();
@@ -85,14 +96,14 @@ public interface ISearchStrategy<Clct extends Collectable> {
 	DatasourceVO getValueListProviderDatasource();
 
 	Map<String, Object> getValueListProviderDatasourceParameter();
-	
+
 	//
-	
+
 	/**
 	 * @return the strategy used by this CollectController to complete <code>Collectable</code>s when necessary.
 	 */
 	CompleteCollectablesStrategy<Clct> getCompleteCollectablesStrategy();
-	
+
 	/**
 	 * TODO: Can we get rid of this?
 	 */
@@ -106,7 +117,7 @@ public interface ISearchStrategy<Clct extends Collectable> {
 	 *         data necessary for display in the Details panel?
 	 */
 	boolean isCollectableComplete(Clct clct);
-	
+
 	boolean getCollectablesInResultAreAlwaysComplete();
 
 	//
@@ -127,9 +138,9 @@ public interface ISearchStrategy<Clct extends Collectable> {
 	 * @throws CollectableFieldFormatException
 	 */
 	CollectableGenericObjectSearchExpression getInternalSearchExpression() throws CollectableFieldFormatException;
-	
+
 	boolean getIncludeSubModulesForSearch();
-	
+
 	//
 
 	ProxyList<Clct> getCollectableProxyList();

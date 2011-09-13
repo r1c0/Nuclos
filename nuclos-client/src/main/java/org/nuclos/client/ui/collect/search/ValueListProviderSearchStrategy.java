@@ -17,6 +17,7 @@
 package org.nuclos.client.ui.collect.search;
 
 import java.awt.Cursor;
+import java.util.List;
 
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.datasource.admin.AbstractDatasourceCollectController;
@@ -38,8 +39,12 @@ public class ValueListProviderSearchStrategy extends CollectSearchStrategy<Colle
 		final MainFrameTab mft = cc.getMainFrameTab();
 		try {
 			mft.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			cc.fillResultPanel(CollectionUtils.transform(this.datasourcedelegate.getAllValuelistProvider(),
-					new CollectableDataSource.MakeCollectable()));
+			List<CollectableDataSource> result = CollectionUtils.transform(this.datasourcedelegate.getAllValuelistProvider(),
+					new CollectableDataSource.MakeCollectable());
+			if (getCollectableIdListCondition() != null) {
+				result = CollectionUtils.applyFilter(result, new CollectableIdPredicate(getCollectableIdListCondition().getIds()));
+			}
+			cc.fillResultPanel(result);
 		} catch (Exception ex) {
 			Errors.getInstance().showExceptionDialog(mft, null, ex);
 		} finally {

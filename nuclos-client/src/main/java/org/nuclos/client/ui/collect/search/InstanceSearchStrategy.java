@@ -40,8 +40,13 @@ public class InstanceSearchStrategy extends CollectSearchStrategy<CollectableIns
 		final MainFrameTab mft = cc.getMainFrameTab();
 		try {
 			mft.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			Collection<MasterDataVO> col = MasterDataDelegate.getInstance().getMasterData(
-					NuclosEntity.INSTANCE.getEntityName());
+			final Collection<MasterDataVO> col;
+			if (getCollectableIdListCondition() == null) {
+				col = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.INSTANCE.getEntityName());
+			}
+			else {
+				col = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.INSTANCE.getEntityName(), getCollectableSearchCondition());
+			}
 
 			cc.fillResultPanel(CollectionUtils.transform(col, new CollectableInstanceModel.MakeCollectable()));
 		} catch (Exception ex) {

@@ -41,6 +41,7 @@ import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableLikeCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
@@ -53,14 +54,14 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.exception.PreferencesException;
 
 public class SearchResultStrategy<Clct extends Collectable> implements ISearchResultStrategy<Clct> {
-	
+
 	private static final Logger LOG = Logger.getLogger(SearchResultStrategy.class);
 
 	private ResultController<Clct> rc;
-	
+
 	public SearchResultStrategy() {
 	}
-	
+
 	public void setResultController(ResultController<Clct> rc) {
 		this.rc = rc;
 	}
@@ -70,14 +71,14 @@ public class SearchResultStrategy<Clct extends Collectable> implements ISearchRe
 	}
 
 	// search stuff
-	
+
 	/**
 	 * @deprecated Use multithreaded search for new applications.
 	 */
 	public void refreshResult() throws CommonBusinessException {
 		getCollectController().getSearchStrategy().search(true);
 	}
-	
+
 	/**
 	 * Command: refresh search result.
 	 * Repeats the current search.
@@ -131,6 +132,8 @@ public class SearchResultStrategy<Clct extends Collectable> implements ISearchRe
 	 * Performs a search, according to the current search condition, if any.
 	 */
 	public final void cmdSearch() {
+		// reset CollectableIdListCondition
+		getCollectController().getSearchStrategy().setCollectableIdListCondition(null);
 		this.cmdSearch(false);
 	}
 
@@ -301,5 +304,11 @@ public class SearchResultStrategy<Clct extends Collectable> implements ISearchRe
 		}
 		final JScrollBar scrlbarVertical = cc.getResultPanel().getResultTableScrollPane().getVerticalScrollBar();
 		scrlbarVertical.setValue(scrlbarVertical.getMinimum());
+	}
+
+	@Override
+	public void viewList(List<Object> ids) {
+		getCollectController().getSearchStrategy().setCollectableIdListCondition(new CollectableIdListCondition(ids));
+		cmdSearch(false);
 	}
 }

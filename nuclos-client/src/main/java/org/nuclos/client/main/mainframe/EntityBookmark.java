@@ -20,19 +20,19 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 
 /**
- * 
+ *
  *
  */
 public class EntityBookmark {
 	private static final long serialVersionUID = 6637996725938917463L;
-	
+
 	private final String entity;
 	private final Integer id;
 	private String label;
 	public final long timestamp;
-	
+
 	/**
-	 * 
+	 *
 	 * @param entity
 	 * @param id
 	 * @param label
@@ -40,9 +40,9 @@ public class EntityBookmark {
 	public EntityBookmark(String entity, Integer id, String label) {
 		this(entity, id, label, System.currentTimeMillis());
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param entity
 	 * @param id
 	 * @param label
@@ -57,7 +57,7 @@ public class EntityBookmark {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public String getEntity() {
@@ -65,7 +65,7 @@ public class EntityBookmark {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Integer getId() {
@@ -73,7 +73,7 @@ public class EntityBookmark {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public String getLabel() {
@@ -81,7 +81,7 @@ public class EntityBookmark {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param label
 	 */
 	public void setLabel(String label) {
@@ -91,9 +91,9 @@ public class EntityBookmark {
 			this.label = label;
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public EntityBookmark copy() {
@@ -102,7 +102,7 @@ public class EntityBookmark {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -112,5 +112,9 @@ public class EntityBookmark {
 		}
 		return super.equals(obj);
 	}
-		
+
+	@Override
+	public String toString() {
+		return "EntityBookmark [entity=" + entity + ", id=" + id + ", label=" + label + ", timestamp=" + timestamp + "]";
+	}
 }

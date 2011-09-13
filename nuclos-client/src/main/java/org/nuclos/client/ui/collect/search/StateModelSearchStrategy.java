@@ -17,6 +17,7 @@
 package org.nuclos.client.ui.collect.search;
 
 import java.awt.Cursor;
+import java.util.List;
 
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.statemodel.StateDelegate;
@@ -36,8 +37,12 @@ public class StateModelSearchStrategy extends CollectSearchStrategy<CollectableS
 		final MainFrameTab mft = cc.getMainFrameTab();
 		try {
 			mft.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			cc.fillResultPanel(CollectionUtils.transform(StateDelegate.getInstance().getAllStateModels(),
-					new CollectableStateModel.MakeCollectable()));
+			List<CollectableStateModel> result = CollectionUtils.transform(StateDelegate.getInstance().getAllStateModels(),
+					new CollectableStateModel.MakeCollectable());
+			if (getCollectableIdListCondition() != null) {
+				result = CollectionUtils.applyFilter(result, new CollectableIdPredicate(getCollectableIdListCondition().getIds()));
+			}
+			cc.fillResultPanel(result);
 		} catch (Exception ex) {
 			Errors.getInstance().showExceptionDialog(mft, null, ex);
 		} finally {

@@ -17,6 +17,7 @@
 package org.nuclos.client.ui.collect.search;
 
 import java.awt.Cursor;
+import java.util.List;
 
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.rule.RuleDelegate;
@@ -38,8 +39,12 @@ public class RuleSearchStrategy extends CollectSearchStrategy<CollectableRule> {
 		final MainFrameTab mft = cc.getMainFrameTab();
 		try {
 			mft.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			cc.fillResultPanel(CollectionUtils.transform(this.ruledelegate.getAllRules(),
-					new CollectableRule.MakeCollectable()));
+			List<CollectableRule> result = CollectionUtils.transform(this.ruledelegate.getAllRules(),
+					new CollectableRule.MakeCollectable());
+			if (getCollectableIdListCondition() != null) {
+				result = CollectionUtils.applyFilter(result, new CollectableIdPredicate(getCollectableIdListCondition().getIds()));
+			}
+			cc.fillResultPanel(result);
 		} catch (Exception ex) {
 			Errors.getInstance().showExceptionDialog(mft, null, ex);
 		} finally {

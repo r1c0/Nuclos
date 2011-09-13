@@ -86,89 +86,89 @@ import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 
 public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTargetVisitor {
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger log = Logger.getLogger(MainFrameTabbedPane.class);
-	
+
 	private static MainFrameTabbedPane.DragParameter dp = null;
 	private static MainFrameTabbedPane.DragWindow dw = null;
-	
+
 	public final static int TAB_WIDTH_MAX = 200;
 	public final static int TAB_WIDTH_MIN = 100;
 	public final static int DEFAULT_TAB_COMPONENT_HEIGHT = 18;
-	
+
 	private static final int insetLeft = 2;
 	private static final int insetRight = 2;
 	private static final int insetBottom = 2;
-	
+
 	private final StartTabPanel startTab = new StartTabPanel(MainFrameTabbedPane.this);
-	
+
 	private final ImageIcon defaultFirstTabIcon = MainFrame.resizeAndCacheTabIcon(NuclosIcons.getInstance().getFrameIcon());
 	private final ImageIcon maximizedFirstTabIcon = MainFrame.resizeAndCacheTabIcon(Icons.getInstance().getIconTabbedPaneMaximized());
 	private final ImageIcon maximizedFirstTabHomeIcon = MainFrame.resizeAndCacheTabIcon(Icons.getInstance().getIconTabbedPaneMaximized_Home());
 	private final ImageIcon maximizedFirstTabHomeTreeIcon = MainFrame.resizeAndCacheTabIcon(Icons.getInstance().getIconTabbedPaneMaximized_HomeTree());
-	
+
 	private final JLabel lbFirstTabComponent = new JLabel(defaultFirstTabIcon);
 	private final JLabel lbClose = new JLabel(Icons.getInstance().getIconTabbedPaneClose());
 	private final JLabel lbMax = new JLabel(Icons.getInstance().getIconTabbedPaneMax());
 	private boolean maximizedTabs = false;
-	
+
 	private static final long doubleClickSpeed = 400l;
 	private long lastClickOnTab = 0l;
 	private Point lastClickOnTabPosition;
-	
+
 	private boolean ignoreAdjustTabs = false;
 	private boolean isMouseOverTabHiddenHint = false;
-	
+
 	private final Action actionHome;
 	private final Action actionHomeTree;
 	private final Action[] actionSelectHistorySize = new Action[MainFrame.HISTORY_SIZES.length];
 	private final Icon homeIcon = Icons.getInstance().getIconHome16();
 	private final Icon homeTreeIcon = Icons.getInstance().getIconTree16();
-	
+
 	private final Timer scheduleAdjustTabsTimer = new Timer(MainFrameTabbedPane.class.getName() + " AdjustTabsTimer");
 	private TimerTask adjustTabsTimerTask;
-	
+
 	private final Timer resizeTimer = new Timer(MainFrameTabbedPane.class.getName() + " ResizeTimer");
 	private TimerTask resizeTimerTask;
-	
+
 	/**
 	 *
 	 */
 	public class DragParameter {
 		public final MainFrameTabbedPane originTabbedPane;
-		
+
 		MainFrameTabbedPane mouseOverTabbedPane;
 		Image tabImage = null;
 		Rectangle tabBounds;
 		Point currentMouseLocation = null;
-		
+
 		public int	draggedTabIndex = 0;
 		int	xOffset = 0;
 		int	y = 0;
 		int	mouseOverIndex = -1;
 		int	canceledAdjustTabsTasks = 0;
-		
+
 		SplitRange splitRange = SplitRange.NONE;
 		SplitRange splitRangeBefore = SplitRange.NONE;
-		
+
 		public DragParameter(MainFrameTabbedPane originTabbedPane) {
 			super();
 			this.originTabbedPane = originTabbedPane;
 		}
 	}
-	
+
 	/**
 	 *
 	 */
 	public class DragWindow extends Window {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -182,23 +182,23 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 			add(lbImage);
 			UIUtils.setWindowOpacity(DragWindow.this, 0.7f);
 		}
-		
+
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public MainFrameTabbedPane() {
 		super();
 		setMinimumSize(new Dimension(TAB_WIDTH_MIN+4+41, 50)); // 4=inset // 41=firstTab
-		
+
 		actionHome = createHomeAction();
 		actionHomeTree = createHomeTreeAction();
 		setupStartTab();
 		setCloseEnabled(false);
 		setMaximizeEnabled(false);
 		setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-		
+
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
@@ -207,7 +207,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 					resizeTimerTask = null;
 					resizeTimer.purge();
 				}
-				
+
 				resizeTimerTask = new TimerTask() {
 					@Override
 					public void run() {
@@ -222,9 +222,9 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 				}
 			}
 		});
-		
+
 		addMouseMotionListener(new MouseMotionAdapter() {
-			
+
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				if (countHiddenTabs() <= 0) {
@@ -237,17 +237,17 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 					poly.addPoint(thhBounds.x + thhBounds.width, thhBounds.y + thhBounds.height);
 					isMouseOverTabHiddenHint = poly.contains(e.getPoint());
 				}
-				
+
 				// Gets the tab index based on the mouse position
 				final int tabNumber = getUI().tabForCoordinate(MainFrameTabbedPane.this, e.getX(), e.getY());
-				
+
 				for (int i = 1; i < getTabCount(); i++) {
 					final Component tabComponent = getTabComponentAt(i);
 					if (tabComponent instanceof MainFrameTab.TabTitle) {
 						final MainFrameTab.TabTitle tabTitle = (MainFrameTab.TabTitle) tabComponent;
 						if (i == tabNumber) {
 							tabTitle.setMouseOverPosition(new Point(
-								e.getX(), 
+								e.getX(),
 								e.getY()));
 						} else {
 							tabTitle.setMouseOverPosition(null);
@@ -258,17 +258,17 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 				if(tabNumber >= 1) {
 					Component tabComponent = getTabComponentAt(tabNumber);
 					if (tabComponent instanceof MainFrameTab.TabTitle) {
-						
+
 					}
 				}
 			}
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				
+
 				if(dp == null) {
 					DragParameter dpInit = new DragParameter(MainFrameTabbedPane.this);
-					
+
 					// Gets the tab index based on the mouse position
 					int tabNumber = getUI().tabForCoordinate(MainFrameTabbedPane.this, e.getX(), e.getY());
 
@@ -298,18 +298,18 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 						// Paint just the dragged tab to the buffer
 						dpInit.tabImage = new BufferedImage(dpInit.tabBounds.width, dpInit.tabBounds.height+1, BufferedImage.TYPE_INT_ARGB);
 						Graphics graphics = dpInit.tabImage.getGraphics();
-						graphics.drawImage(totalImage, 0, 0, dpInit.tabBounds.width, dpInit.tabBounds.height+1, 
-							dpInit.tabBounds.x, dpInit.tabBounds.y, dpInit.tabBounds.x + dpInit.tabBounds.width, 
+						graphics.drawImage(totalImage, 0, 0, dpInit.tabBounds.width, dpInit.tabBounds.height+1,
+							dpInit.tabBounds.x, dpInit.tabBounds.y, dpInit.tabBounds.x + dpInit.tabBounds.width,
 							dpInit.tabBounds.y + dpInit.tabBounds.height+1, MainFrameTabbedPane.this);
 
 						dp = dpInit;
 						repaint();
 					}
 				}
-				else {					
+				else {
 					// is mouse position near a tabbedPane? This is needed for drawing the drag window later
 					boolean isMousePositionNearOrInTabbedPane = false;
-					
+
 					// locate mouse over tab pane if any
 					MainFrameTabbedPane newMouseOverTabbedPane = null;
 					for (MainFrameTabbedPane tabbedPane : MainFrame.getOrderedTabbedPanes()) {
@@ -319,7 +319,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 							Rectangle tpBounds = tabbedPane.getBounds();
 							r.width = tpBounds.width;
 							r.height = tpBounds.height;
-							
+
 							if (r.contains(e.getLocationOnScreen())) {
 								newMouseOverTabbedPane = tabbedPane;
 								isMousePositionNearOrInTabbedPane = true;
@@ -334,7 +334,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 									isMousePositionNearOrInTabbedPane = true;
 								}
 							}
-							
+
 						} catch (IllegalComponentStateException ex) {
 							continue;
 						}
@@ -353,13 +353,13 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 					dp.mouseOverTabbedPane = newMouseOverTabbedPane;
 					if (dp.mouseOverTabbedPane == null)
 						dp.mouseOverIndex = -1;
-					
+
 					if (dp.mouseOverTabbedPane != null) {
-						
+
 						try {
 							Point mouseOnScreen = e.getLocationOnScreen();
 							Point tabOnScreen = dp.mouseOverTabbedPane.getLocationOnScreen();
-							
+
 							Point relativeToMouseOverTab = new Point();
 							if (dp.mouseOverTabbedPane == dp.originTabbedPane) {
 								relativeToMouseOverTab.x = e.getX();
@@ -369,7 +369,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 								relativeToMouseOverTab.x = mouseOnScreen.x - tabOnScreen.x;
 								relativeToMouseOverTab.y = mouseOnScreen.y - tabOnScreen.y;
 							}
-							
+
 							int tabNumber = dp.mouseOverTabbedPane.getUI().tabForCoordinate(dp.mouseOverTabbedPane, relativeToMouseOverTab.x, 10);
 
 							if(tabNumber >= 0) {
@@ -377,11 +377,11 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 							} else {
 								dp.mouseOverIndex = -1;
 							}
-							
+
 							log.debug("MouseOverIndex: " + dp.mouseOverIndex);
-							
+
 							dp.currentMouseLocation = relativeToMouseOverTab;
-							
+
 							if (!MainFrame.isSplittingDeactivated()) {
 								// save old splitrange for optimized repaint
 								dp.splitRangeBefore = dp.splitRange;
@@ -407,7 +407,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 									} else {
 										dp.splitRange = SplitRange.NONE;
 									}
-									
+
 								} else {
 									dp.splitRange = SplitRange.NONE;
 								}
@@ -416,26 +416,26 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 						catch(IllegalComponentStateException ex) {
 							// do nothing
 						}
-						
+
 						repaintTabOptimized(dp);
 						if (dw != null) {
 							dw.setVisible(false);
 						}
-						
+
 					} else { // mouse over tab pane is null...
-						
+
 						if (!isMousePositionNearOrInTabbedPane) {
-							// draw image and follow mouse						
+							// draw image and follow mouse
 						    if (dw == null) {
 						    log.debug("Creating Drag Window");
 						    	dw = new DragWindow(MainFrame.getFrame(MainFrameTabbedPane.this), dp.tabImage, dp.tabBounds.getSize());
 						    }
-						    
+
 						    int x = e.getXOnScreen()+dp.xOffset;
 						    int y = e.getYOnScreen()+10;
 						    log.debug("Drag Window follows mouse to " + x + " x " + y);
 						    dw.setLocation(x, y);
-						    
+
 						    if (!dw.isVisible()) {
 						    	dw.setVisible(true);
 						    }
@@ -448,7 +448,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		});
 
 		addMouseListener(new MouseAdapter() {
-			
+
 			@Override
 			public void mousePressed(MouseEvent e) {
 				if (countHiddenTabs() > 0 && isMouseOverTabHiddenHint) {
@@ -472,24 +472,24 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 			public void mouseClicked(MouseEvent e) {
 				// Gets the tab index based on the mouse position
 				int tabNumber = getUI().tabForCoordinate(MainFrameTabbedPane.this, e.getX(), e.getY());
-				
+
 				if (tabNumber > -1) {
-					
+
 					boolean consumed = false;
-					
+
 					final Component tabComponent = getTabComponentAt(tabNumber);
 					if (tabComponent instanceof MainFrameTab.TabTitle) {
 						final MainFrameTab.TabTitle tabTitle = (MainFrameTab.TabTitle) tabComponent;
 						consumed = tabTitle.mouseClicked(new Point(
-							e.getX(), 
+							e.getX(),
 							e.getY()), SwingUtilities.isLeftMouseButton(e));
 					}
-					
-					
-					if (!consumed && SwingUtilities.isLeftMouseButton(e) 
+
+
+					if (!consumed && SwingUtilities.isLeftMouseButton(e)
 						&& lastClickOnTab + doubleClickSpeed > System.currentTimeMillis()
 						&& lastClickOnTabPosition != null) {
-						
+
 						final Rectangle doubleClickArea = new Rectangle(lastClickOnTabPosition.x-10, lastClickOnTabPosition.y-10, 20, 20);
 						if (doubleClickArea.contains(e.getPoint())) {
 							log.debug("DoubleClick on Tab. Maximized=" + maximizedTabs);
@@ -500,12 +500,12 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 							}
 						}
 					}
-					
+
 					lastClickOnTab = System.currentTimeMillis();
 					lastClickOnTabPosition = e.getPoint();
 				}
 			}
-			
+
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
@@ -521,7 +521,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 								Component comp = dp.originTabbedPane.getComponentAt(dp.draggedTabIndex);
 								String title = dp.originTabbedPane.getTitleAt(dp.draggedTabIndex);
 								dp.originTabbedPane.removeTabAt(dp.draggedTabIndex);
-								
+
 								try {
 									if (dp.mouseOverIndex == -1) {
 										dp.mouseOverTabbedPane.addTab(title, comp);
@@ -531,7 +531,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 										dp.mouseOverTabbedPane.setSelectedComponent(comp);
 									}
 								} catch (ArrayIndexOutOfBoundsException ex) {}
-								
+
 								if (dp.originTabbedPane == dp.mouseOverTabbedPane && dp.canceledAdjustTabsTasks == 0) {
 									ignoreAdjustTabs = false;
 								}
@@ -541,10 +541,10 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 							}
 						}
 					} else if (dp != null && dw != null && dw.isVisible()) {
-						
+
 						MainFrame.createExternalFrame(dp, e.getLocationOnScreen());
 					}
-					
+
 					if (dw != null) {
 						dw.setVisible(false);
 					}
@@ -552,12 +552,12 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 					dp = null;
 					dw = null;
 				}
-			}				
+			}
 		});
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	List<MainFrameTab> getAllTabs() {
@@ -570,9 +570,9 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		}
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public List<MainFrameTab> getHiddenTabs() {
@@ -580,23 +580,23 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 	}
 
 	/**
-	 * 
+	 *
 	 * @param enable
 	 */
 	void setCloseEnabled(boolean enable) {
 		lbClose.setEnabled(enable);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param enable
 	 */
 	void setMaximizeEnabled(boolean enable) {
 		lbMax.setEnabled(enable);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param maximized
 	 */
 	void setMaximized(boolean maximized) {
@@ -608,9 +608,9 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		}
 		updateFirstTabIcon();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	protected void updateFirstTabIcon() {
 		if (isMaximized()) {
@@ -629,55 +629,55 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 				lbFirstTabComponent.setIcon(defaultFirstTabIcon);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	protected boolean isMaximized() {
 		return maximizedTabs;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public boolean isEnabledAt(int index) {
 		return isMouseOverTabHiddenHint ? false : super.isEnabledAt(index);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	void refreshHistory() {
 		startTab.refreshHistory();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	void refreshBookmark() {
 		startTab.refreshBookmark();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	void setupStartmenu() {
 		startTab.setupStartmenu();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param entity
 	 * @param marker
 	 */
 	void setStartmenuEntryMarker(String entity, LinkMarker marker) {
 		startTab.setStartmenuEntryMarker(entity, marker);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param eb
 	 */
 	void newNuclosTab(final EntityBookmark eb) {
@@ -699,9 +699,9 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 			}
 		});
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	void showHiddenTabsPopup() {
 		if (countHiddenTabs() > 0) {
@@ -716,34 +716,34 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 				});
 				pm.add(mi);
 			}
-			
+
 			Rectangle thhBounds = getTabHiddenHintBounds();
 			pm.show(MainFrameTabbedPane.this, thhBounds.x, thhBounds.y + thhBounds.height);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	Rectangle getFirstTabBounds() {
 		return getUI().getTabBounds(MainFrameTabbedPane.this, 0);
 	}
-	
+
 	void refreshSelectedHistorySize() {
 		if (0 <= MainFrame.getSelectedHistorySize() && MainFrame.getSelectedHistorySize() < actionSelectHistorySize.length) {
 			StartTabPanel.setActionSelected(actionSelectHistorySize[MainFrame.getSelectedHistorySize()], true);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	protected Action createHomeAction() {
 		AbstractAction result = new AbstractAction(null, homeIcon) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -756,9 +756,9 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		result.putValue(Action.SHORT_DESCRIPTION, CommonLocaleDelegate.getMessage("MainFrameTabbedPane.1","Neue Tabs hier oeffnen"));
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private void cmdHome() {
 		MainFrame.setHomeTabbedPane(MainFrameTabbedPane.this);
@@ -766,15 +766,15 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 			tabbedPane.updateHomes();
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	protected Action createHomeTreeAction() {
 		AbstractAction result = new AbstractAction(null, homeTreeIcon) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -787,9 +787,9 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		result.putValue(Action.SHORT_DESCRIPTION, CommonLocaleDelegate.getMessage("MainFrameTabbedPane.2","Neue Explorer Tabs hier oeffnen"));
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private void cmdHomeTree() {
 		MainFrame.setHomeTreeTabbedPane(MainFrameTabbedPane.this);
@@ -797,231 +797,265 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 			tabbedPane.updateHomes();
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isHome() {
 		return MainFrame.getHomePane() == MainFrameTabbedPane.this;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void setHome() {
 		cmdHome();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isHomeTree() {
 		return MainFrame.getHomeTreePane() == MainFrameTabbedPane.this;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void setHomeTree() {
 		cmdHomeTree();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isShowAdministration() {
 		return startTab.isShowAdministration();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param showAdministration
 	 */
 	public void setShowAdministration(boolean showAdministration) {
 		startTab.setShowAdministration(showAdministration);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isShowConfiguration() {
 		return startTab.isShowConfiguration();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param showConfiguration
 	 */
 	public void setShowConfiguration(boolean showConfiguration) {
 		startTab.setShowConfiguration(showConfiguration);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isShowEntity() {
 		return startTab.isShowEntity();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param showEntity
 	 */
 	public void setShowEntity(boolean showEntity) {
 		startTab.setShowEntity(showEntity);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isNeverHideStartmenu() {
 		return startTab.isNeverHideStartmenu();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param neverHideStartmenu
 	 */
 	public void setNeverHideStartmenu(boolean neverHideStartmenu) {
 		startTab.setNeverHideStartmenu(neverHideStartmenu);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isNeverHideHistory() {
 		return startTab.isNeverHideHistory();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param neverHideHistory
 	 */
 	public void setNeverHideHistory(boolean neverHideHistory) {
 		startTab.setNeverHideHistory(neverHideHistory);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isNeverHideBookmark() {
 		return startTab.isNeverHideBookmark();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param neverHideBookmark
 	 */
 	public void setNeverHideBookmark(boolean neverHideBookmark) {
 		startTab.setNeverHideBookmark(neverHideBookmark);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isAlwaysHideStartmenu() {
 		return startTab.isAlwaysHideStartmenu();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param alwaysHideStartmenu
 	 */
 	public void setAlwaysHideStartmenu(boolean alwaysHideStartmenu) {
 		startTab.setAlwaysHideStartmenu(alwaysHideStartmenu);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isAlwaysHideHistory() {
 		return startTab.isAlwaysHideHistory();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param alwaysHideHistory
 	 */
 	public void setAlwaysHideHistory(boolean alwaysHideHistory) {
 		startTab.setAlwaysHideHistory(alwaysHideHistory);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isAlwaysHideBookmark() {
 		return startTab.isAlwaysHideBookmark();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param alwaysHideBookmark
 	 */
 	public void setAlwaysHideBookmark(boolean alwaysHideBookmark) {
 		startTab.setAlwaysHideBookmark(alwaysHideBookmark);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Set<String> getReducedStartmenus() {
 		return startTab.getReducedStartmenus();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param reducedStartmenus
 	 */
 	public void setReducedStartmenus(Set<String> reducedStartmenus) {
 		startTab.setReducedStartmenus(reducedStartmenus);
 	}
-	
+
 	/**
-	 * 
+	 *
+	 * @return
+	 */
+	public Set<String> getReducedHistoryEntities() {
+		return startTab.getReducedHistoryEntities();
+	}
+
+	/**
+	 *
+	 * @param reducedHistoryEntities
+	 */
+	public void setReducedHistoryEntities(Set<String> reducedHistoryEntities) {
+		startTab.setReducedHistoryEntities(reducedHistoryEntities);
+		refreshHistory();
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public Set<String> getReducedBookmarkEntities() {
+		return startTab.getReducedBookmarkEntities();
+	}
+
+	/**
+	 *
+	 * @param reducedBookmarkEntities
+	 */
+	public void setReducedBookmarkEntities(Set<String> reducedBookmarkEntities) {
+		startTab.setReducedBookmarkEntities(reducedBookmarkEntities);
+		refreshBookmark();
+	}
+
+	/**
+	 *
 	 */
 	public void updateHomes() {
 		actionHome.putValue(Action.SELECTED_KEY, isHome());
 		actionHomeTree.putValue(Action.SELECTED_KEY, isHomeTree());
 		updateFirstTabIcon();
 	}
-	
-	protected void setupDragDrop() {				
+
+	protected void setupDragDrop() {
 		DropTarget drop = new DropTarget(this.lbFirstTabComponent, new NuclosDropTargetListener(this));
-		drop.setActive(true);		
+		drop.setActive(true);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private void setupStartTab() {
 		JPanel jpn = new JPanel(new BorderLayout());
 		JToolBar toolBar = UIUtils.createNonFloatableToolBar();
-		
+
 		jpn.add(toolBar, BorderLayout.NORTH);
 		jpn.add(startTab, BorderLayout.CENTER);
-		
+
 		addTab("", defaultFirstTabIcon, jpn);
-		
+
 		lbFirstTabComponent.setMaximumSize(new Dimension(lbFirstTabComponent.getMaximumSize().width, DEFAULT_TAB_COMPONENT_HEIGHT));
 		lbFirstTabComponent.setMinimumSize(new Dimension(lbFirstTabComponent.getMinimumSize().width, DEFAULT_TAB_COMPONENT_HEIGHT));
 		lbFirstTabComponent.setPreferredSize(new Dimension(lbFirstTabComponent.getPreferredSize().width, DEFAULT_TAB_COMPONENT_HEIGHT));
-		
+
 		setTabComponentAt(0, lbFirstTabComponent);
-		
+
 		setupDragDrop();
-		
+
 		JPanel jpnTabbedPaneControl = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 3));
 		/*final JLabel lbMin = new JLabel(Icons.getInstance().getIconTabbedPaneMin());
 		lbMin.addMouseListener(new MouseAdapter() {
@@ -1053,7 +1087,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 			}
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (maximizedTabs) 
+				if (maximizedTabs)
 					MainFrame.restoreTabbedPaneContainingArea(MainFrameTabbedPane.this);
 				else
 					MainFrame.maximizeTabbedPane(MainFrameTabbedPane.this);
@@ -1074,16 +1108,16 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 			public void mouseReleased(MouseEvent e) {
 				MainFrame.removeTabbedPane(MainFrameTabbedPane.this);
 			}
-			
+
 		});
 		//jpnTabbedPaneControl.add(lbMin);
 		jpnTabbedPaneControl.add(lbMax);
 		jpnTabbedPaneControl.add(lbClose);
-		
-		
+
+
 		BlackLabel bl = new BlackLabel(jpnTabbedPaneControl, CommonLocaleDelegate.getMessage("MainFrameTabbedPane.3","Tableiste"));
 		toolBar.add(bl);
-		
+
 		/**
 		 * HOME's
 		 */
@@ -1093,12 +1127,12 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		JToggleButton btnHomeTree = new JToggleButton(actionHomeTree);
 		btnHomeTree.setFocusable(false);
 		toolBar.add(btnHomeTree);
-		
+
 		/**
 		 * EXTRAS
 		 */
 		PopupButton extraButton = new PopupButton(CommonLocaleDelegate.getMessage("PopupButton.Extras","Extras"));
-		
+
 		extraButton.add(startTab.createHeadline(CommonLocaleDelegate.getMessage("StartTabPanel.11","Startmenu"), null));
 		extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getShowStartmenuAction()));
 		extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getAlwaysHideStartmenuAction()));
@@ -1111,13 +1145,13 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		extraButton.add(cbmiAdministration);
 		extraButton.add(cbmiConfiguration);
 		extraButton.add(cbmiEntity);
-		
+
 		extraButton.addSeparator();
 		extraButton.add(startTab.createHeadline(CommonLocaleDelegate.getMessage("StartTabPanel.12","Zuletzt angesehen"), null));
 		extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getShowHistoryAction()));
 		extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getAlwaysHideHistoryAction()));
 		ButtonGroup bgHistorySize = new ButtonGroup();
-		
+
 		for (int i = 0; i < MainFrame.HISTORY_SIZES.length; i++) {
 			actionSelectHistorySize[i] = startTab.createSelectHistorySize(i);
 			JRadioButtonMenuItem radmiHistorySize = new JRadioButtonMenuItem(actionSelectHistorySize[i]);
@@ -1128,56 +1162,56 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 			}
 		}
 		extraButton.add(new JMenuItem(startTab.getClearHistoryAction()));
-		
+
 		extraButton.addSeparator();
 		extraButton.add(startTab.createHeadline(CommonLocaleDelegate.getMessage("StartTabPanel.13","Lesezeichen"), null));
 		extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getShowBookmarkAction()));
 		extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getAlwaysHideBookmarkAction()));
 		extraButton.add(new JMenuItem(startTab.getClearBookmarkAction()));
-		
+
 		toolBar.add(extraButton);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param nuclosTab
 	 * @param addToFront
 	 */
 	public void addTab(MainFrameTab nuclosTab, boolean addToFront) {
-		if (addToFront) 
+		if (addToFront)
 			insertTab(nuclosTab.getName(), nuclosTab.getTabIcon(), nuclosTab, nuclosTab.getToolTipText(), 1);
 		else
 			addTab(nuclosTab.getName(), nuclosTab.getTabIcon(), nuclosTab, nuclosTab.getToolTipText());
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param nuclosTab
 	 * @param index
 	 */
 	public void addTab(MainFrameTab nuclosTab, int index) {
 		if (index <= 0)
 			index = 1;
-		
+
 		if (index >= getTabCount())
 			addTab(nuclosTab, false);
 		else
 			insertTab(nuclosTab.getName(), nuclosTab.getTabIcon(), nuclosTab, nuclosTab.getToolTipText(), index);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param nuclosTab
 	 * @return index of tab (could by <0 if tab is hidden)
 	 */
 	public int getTabIndex(MainFrameTab nuclosTab) {
 		final int index = indexOfComponent(nuclosTab);
-		
+
 		return index;
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public void insertTab(String title, Icon icon, Component component,	String tip, int index) {
@@ -1190,33 +1224,33 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 				adjustTabs(tab);
 				tab.postAdd();
 				tab.notifyAdded();
-				
+
 			} catch (ArrayIndexOutOfBoundsException ex) {
 				log.error(ex.getMessage(), ex);
 			}
 		}
 	}
-	
-	
-	
+
+
+
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public void removeTabAt(int index) {
 		super.removeTabAt(index);
 		adjustTabs();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public void setSelectedIndex(int index) {
 		int oldSelectedIndex = this.getSelectedIndex();
 		super.setSelectedIndex(index);
 		MainFrame.setActiveTabNavigation(this);
-		
+
 		Component component = getComponentAt(index);
 		if (component instanceof MainFrameTab) {
 			if(oldSelectedIndex != index)
@@ -1231,14 +1265,14 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 	public List<MainFrameTab> closeAllTabs() {
 		return closeAllTabs(null);
 	}
-	
+
 	/**
 	 * close tabs without adjusting width
 	 * @return not closable tabs
 	 */
 	public List<MainFrameTab> closeAllTabs(MainFrameTab ignoreTab) {
 		List<MainFrameTab> notClosableTabs = new ArrayList<MainFrameTab>();
-		
+
 		for (MainFrameTab tab : startTab.getHiddenTabs()) {
 			if (tab == ignoreTab) {
 				continue;
@@ -1278,28 +1312,28 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 				notClosableTabs.add(tab);
 			}
 		}
-		
+
 		return notClosableTabs;
 	}
-	
+
 	/**
 	 * only remove... NO close
 	 * @param tab
 	 */
 	public void removeTab(MainFrameTab tab) {
 		final int index = indexOfComponent(tab);
-		
+
 		if (index < 0) {
 			startTab.removeHiddenTab(tab);
 		} else {
 			super.removeTabAt(index);
 		}
-		
+
 		scheduleAdjustTabs(1250);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tab
 	 * @param mousePosition
 	 * @throws CommonBusinessException if tab is not closable
@@ -1308,9 +1342,9 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		if (!tab.isClosable() || !tab.notifyClosing()) {
 			return;
 		}
-		
+
 		final int index = indexOfComponent(tab);
-		
+
 		if (mousePosition == null) {
 			// try to get MousePosition from current tab
 			final Component tabComponent = getTabComponentAt(index);
@@ -1318,7 +1352,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 				mousePosition = tabComponent.getMousePosition();
 			}
 		}
-		
+
 		if (index < 0) {
 			startTab.removeHiddenTab(tab);
 		} else {
@@ -1326,7 +1360,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		}
 		tab.notifyClosed();
 		adjustTabs(false);
-		
+
 		if (getTabCount() > index) {
 			setSelectedIndex(index);
 			// setMouseOver on tab at same index
@@ -1340,9 +1374,9 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		}
 		scheduleAdjustTabs(1250);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param delay
 	 */
 	private void scheduleAdjustTabs(final int delay) {
@@ -1363,24 +1397,24 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		};
 		scheduleAdjustTabsTimer.schedule(adjustTabsTimerTask, delay);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void adjustTabs() {
 		adjustTabs(null, true);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param tabForceVisibility
 	 */
 	void adjustTabs(final MainFrameTab tabForceVisibility) {
 		adjustTabs(tabForceVisibility, true);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param recalculateWidth
 	 */
 	void adjustTabs(final boolean recalculateWidth) {
@@ -1388,14 +1422,14 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 	}
 
 	/**
-	 * 
+	 *
 	 * @param tabForceVisibility
 	 * @param recalculateWidth
 	 */
 	void adjustTabs(final MainFrameTab tabForceVisibility, final boolean recalculateWidth) {
 		if ((getTabCount() <= 1 && countHiddenTabs() == 0) || ignoreAdjustTabs)
 			return;
-		
+
 		ignoreAdjustTabs = true;
 		final int tabbedPaneWidth = getBounds().width - 4; // -4=insets
 
@@ -1406,17 +1440,17 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		} catch (java.lang.ArrayIndexOutOfBoundsException ex) {
 			firstTabWidth = 0;
 		}
-		
+
 		int hideTabs = getTabCount() - 1 - ((tabbedPaneWidth - firstTabWidth) / TAB_WIDTH_MIN);
 		if (hideTabs == getTabCount()-1) hideTabs--; // do not hide all content tabs... last man standing ;-)
-		
+
 		// hideTabs * -1 = restoreTabs...
 		int restoreTabs = hideTabs * -1;
 		if (countHiddenTabs() < restoreTabs) restoreTabs = countHiddenTabs();
-		
+
 		final int contentTabWidth = (tabbedPaneWidth - firstTabWidth) / ((getTabCount()-1) - (hideTabs>0 ? hideTabs : 0) + (restoreTabs > 0 ? restoreTabs : 0));
 		log.debug("HideTabs="+hideTabs + " content tab width="+contentTabWidth);
-		
+
 		if (restoreTabs > 0) {
 			for (MainFrameTab nuclosTab : startTab.removeHiddenTabs(restoreTabs)) {
 				addTab(nuclosTab, true);
@@ -1431,10 +1465,10 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 				} else if (c != null) {
 					throw new IllegalArgumentException("Unknown Tab Component " + c.getClass().getName() + " at " + i);
 				}
-			}	
+			}
 		}
 		if (hideTabs > 0) {
-			int hideUntil = getTabCount()-1 < hideTabs ? getTabCount()-1 : hideTabs; 
+			int hideUntil = getTabCount()-1 < hideTabs ? getTabCount()-1 : hideTabs;
 			int indexToHide = 1;
 			for (int i = 0; i < hideUntil; i++) {
 				MainFrameTab tabToHide = (MainFrameTab) getComponentAt(indexToHide);
@@ -1447,12 +1481,12 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 				}
 			}
 		}
-		
+
 		ignoreAdjustTabs = false;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param nuclosTab
 	 * @return true if tab hidden, false if nothing to do
 	 */
@@ -1465,110 +1499,110 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		}
 		return false;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	private Rectangle getTabHiddenHintBounds() {
 		Rectangle ftBounds = getFirstTabBounds();
 		ImageIcon icoHint = Icons.getInstance().getIconTabHiddenHint();
-		
+
 		return new Rectangle(
-			ftBounds.x+ftBounds.width-icoHint.getIconWidth(), 
-			ftBounds.y, 
-			icoHint.getIconWidth(), 
+			ftBounds.x+ftBounds.width-icoHint.getIconWidth(),
+			ftBounds.y,
+			icoHint.getIconWidth(),
 			icoHint.getIconHeight());
 	}
 
 	/**
-	 * 
+	 *
 	 * @param dp
 	 */
 	void repaintTabOptimized(DragParameter dp) {
-		if (dp != null && dp.mouseOverTabbedPane != null) { 
+		if (dp != null && dp.mouseOverTabbedPane != null) {
 			Rectangle tpBounds = dp.mouseOverTabbedPane.getBounds();
 			int height = dp.mouseOverTabbedPane.getHeight();
 			log.trace("SplitRange: " + dp.splitRangeBefore + " --> " + dp.splitRange);
-			
+
 			if (dp.splitRange == SplitRange.NONE && dp.splitRangeBefore == SplitRange.NONE)
 				height = 35;
-			
+
 			log.trace("Repaint TabBar: " + tpBounds.width + " x " + height);
 			dp.mouseOverTabbedPane.repaint(0, 0, tpBounds.width, height);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public int countHiddenTabs() {
 		return startTab.countHiddenTabs();
 	}
-	
+
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		
+
 		Graphics2D g2 = (Graphics2D) g;
-		
+
 		Rectangle tpBounds = getBounds();
-		
+
 		// draw notice for hidden tabs
 		if (countHiddenTabs() > 0) {
 			Rectangle ftBounds = getFirstTabBounds();
 			ImageIcon icoHint = isMouseOverTabHiddenHint ? Icons.getInstance().getIconTabHiddenHint_hover() : Icons.getInstance().getIconTabHiddenHint();
-			g2.drawImage(icoHint.getImage(), 
-				ftBounds.x+ftBounds.width-icoHint.getIconWidth(), 
+			g2.drawImage(icoHint.getImage(),
+				ftBounds.x+ftBounds.width-icoHint.getIconWidth(),
 				ftBounds.y, null);
 		}
-		
+
 		// Are we dragging?
 		if(dp != null) {
-			
+
 			// Shadow moving tab
 			if (MainFrameTabbedPane.this == dp.originTabbedPane) {
 				g2.setColor(new Color(120, 120, 120, 120));
-				g2.fillRect(dp.tabBounds.x, 
-							dp.tabBounds.y, 
-							dp.tabBounds.width, 
+				g2.fillRect(dp.tabBounds.x,
+							dp.tabBounds.y,
+							dp.tabBounds.width,
 							dp.tabBounds.height);
 			}
-			
-			
+
+
 			// Draw moving tab or split indicator only if this is mouseover tab pane
 			if (MainFrameTabbedPane.this != dp.mouseOverTabbedPane) {
 				log.trace("this is not the mouseOverTabbedPane " + tpBounds);
 				return;
 			}
-			
-			
+
+
 			// Draw indicator for new splitpane
 			switch (dp.splitRange) {
 				case NONE:
 					break;
-				
+
 				case NORTH: {
 					int x = insetLeft;
 					int y = dp.tabBounds.height + dp.tabBounds.y;
 					int w = MainFrameTabbedPane.this.getWidth() - insetLeft - insetRight;
 					int h = (MainFrameTabbedPane.this.getHeight() - y) / 2;
-					
+
 					BufferedImage buffImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 					Graphics2D gbi = buffImg.createGraphics();
 					gbi.setColor(new Color(120, 120, 120, 120));
-					
+
 					gbi.fillRect(0, 0, w, h);
 					gbi.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OUT));
 					gbi.setPaint(new Color(0, 0, 0, 255));
-					
+
 					int h2 = w / 3 < h / 3 ? w / 3 : h / 3;
 					int w2 = h2;
 					int x2 = w / 2 - w2 / 2;
 					int y2 = h / 2 - h2 / 4;
 					gbi.fillRect(x2 ,y2, w2, h2);
-					
+
 					Polygon p = new Polygon();
 					int x3 = w / 2;
 					int y3 = h / 2 - h2;
@@ -1579,32 +1613,32 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 					x3 -= w2 * 2;
 					p.addPoint(x3, y3);
 					gbi.fillPolygon(p);
-					
+
 					g2.drawImage(buffImg, null, x, y);
 					// no more drawing
 					return;
 				}
-				
-				case SOUTH: {						
+
+				case SOUTH: {
 					int x = insetLeft;
 					int y = (MainFrameTabbedPane.this.getHeight() - dp.tabBounds.height - dp.tabBounds.y) / 2 + dp.tabBounds.height + dp.tabBounds.y;
 					int w = MainFrameTabbedPane.this.getWidth() - insetLeft - insetRight;
 					int h = (MainFrameTabbedPane.this.getHeight() - dp.tabBounds.height - dp.tabBounds.y) / 2 - insetBottom;
-					
+
 					BufferedImage buffImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 					Graphics2D gbi = buffImg.createGraphics();
 					gbi.setColor(new Color(120, 120, 120, 120));
-					
+
 					gbi.fillRect(0, 0, w, h);
 					gbi.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OUT));
 					gbi.setPaint(new Color(0, 0, 0, 255));
-					
+
 					int h2 = w / 3 < h / 3 ? w / 3 : h / 3;
 					int w2 = h2;
 					int x2 = w / 2 - w2 / 2;
 					int y2 = h / 2 + h2 / 4 - h2;
 					gbi.fillRect(x2 ,y2, w2, h2);
-					
+
 					Polygon p = new Polygon();
 					int x3 = w / 2;
 					int y3 = h / 2 + h2;
@@ -1615,32 +1649,32 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 					x3 += w2 * 2;
 					p.addPoint(x3, y3);
 					gbi.fillPolygon(p);
-					
+
 					g2.drawImage(buffImg, null, x, y);
 					// no more drawing
-					return;			
+					return;
 				}
-				
-				case WEST: {					
+
+				case WEST: {
 					int x = insetLeft;
 					int y = dp.tabBounds.height + dp.tabBounds.y;
 					int w = MainFrameTabbedPane.this.getWidth() / 2 - insetLeft;
 					int h = MainFrameTabbedPane.this.getHeight() - dp.tabBounds.height - dp.tabBounds.y - insetBottom;
-					
+
 					BufferedImage buffImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 					Graphics2D gbi = buffImg.createGraphics();
 					gbi.setColor(new Color(120, 120, 120, 120));
-					
+
 					gbi.fillRect(0, 0, w, h);
 					gbi.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OUT));
 					gbi.setPaint(new Color(0, 0, 0, 255));
-					
+
 					int h2 = w / 3 < h / 3 ? w / 3 : h / 3;
 					int w2 = h2;
 					int x2 = w / 2 - w2 / 4;
 					int y2 = h / 2 - h2 / 2;
 					gbi.fillRect(x2 ,y2, w2, h2);
-					
+
 					Polygon p = new Polygon();
 					int x3 = w / 2 - w2;
 					int y3 = h / 2;
@@ -1651,32 +1685,32 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 					y3 -= h2 * 2;
 					p.addPoint(x3, y3);
 					gbi.fillPolygon(p);
-					
+
 					g2.drawImage(buffImg, null, x, y);
 					// no more drawing
-					return;	
+					return;
 				}
-				
+
 				case EAST: {
 					int x = MainFrameTabbedPane.this.getWidth() / 2;
 					int y = dp.tabBounds.height + dp.tabBounds.y;
 					int w = MainFrameTabbedPane.this.getWidth() / 2 - insetRight;
 					int h = MainFrameTabbedPane.this.getHeight() - dp.tabBounds.height - dp.tabBounds.y - insetBottom;
-					
+
 					BufferedImage buffImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 					Graphics2D gbi = buffImg.createGraphics();
 					gbi.setColor(new Color(120, 120, 120, 120));
-					
+
 					gbi.fillRect(0, 0, w, h);
 					gbi.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OUT));
 					gbi.setPaint(new Color(0, 0, 0, 255));
-					
+
 					int h2 = w / 3 < h / 3 ? w / 3 : h / 3;
 					int w2 = h2;
 					int x2 = w / 2 + w2 / 4 - w2;
 					int y2 = h / 2 - h2 / 2;
 					gbi.fillRect(x2 ,y2, w2, h2);
-					
+
 					Polygon p = new Polygon();
 					int x3 = w / 2 + w2;
 					int y3 = h / 2;
@@ -1687,22 +1721,22 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 					y3 += h2 * 2;
 					p.addPoint(x3, y3);
 					gbi.fillPolygon(p);
-					
+
 					g2.drawImage(buffImg, null, x, y);
 					// no more drawing
-					return;	
+					return;
 				}
 			}
-				
-			
+
+
 			// Draw the dragged tab
 			int xTab = dp.currentMouseLocation.x + dp.xOffset;
 			if (xTab < insetLeft) xTab = insetLeft;
 			if (xTab + dp.tabBounds.width > tpBounds.width - insetRight) xTab = tpBounds.width - dp.tabBounds.width - insetRight;
-			
+
 			g2.drawImage(dp.tabImage, xTab, dp.y, this);
-			
-			
+
+
 			// Draw insert indicator
 			if (!(dp.mouseOverTabbedPane == dp.originTabbedPane && dp.draggedTabIndex == dp.mouseOverIndex)) {
 				int xIndi = 0;
@@ -1713,26 +1747,26 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 					if (dp.mouseOverIndex == -1) {
 						indiIndex = dp.mouseOverTabbedPane.getTabCount() -1;
 					}
-					
+
 					Rectangle moBounds = dp.mouseOverTabbedPane.getUI().getTabBounds(dp.mouseOverTabbedPane, indiIndex);
-					
+
 					if (dp.mouseOverIndex == -1) {
 						xIndi += moBounds.width;
 					}
-					
+
 					xIndi += moBounds.x;
 					yIndi += moBounds.height;
-					
+
 					if (dp.mouseOverTabbedPane == dp.originTabbedPane && dp.mouseOverIndex > dp.draggedTabIndex)
 						xIndi += dp.tabBounds.width;
-					
+
 				} catch (ArrayIndexOutOfBoundsException ex) {}
 				xIndi = xIndi < 5 ? 5 : xIndi;
-				
+
 				RenderingHints oldRendHints = g2.getRenderingHints();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); 
-				
-				g2.setPaint(new GradientPaint(new Point(0, yIndi+5), NuclosSyntheticaConstants.BACKGROUND_DARKER, 
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+				g2.setPaint(new GradientPaint(new Point(0, yIndi+5), NuclosSyntheticaConstants.BACKGROUND_DARKER,
 											  new Point(0, yIndi+10), new Color(Color.BLUE.getRed(), Color.BLUE.getGreen(),	Color.BLUE.getBlue(), 50)));
 				Polygon p = new Polygon();
 				p.addPoint(xIndi, 	yIndi);
@@ -1740,7 +1774,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 				p.addPoint(xIndi,   yIndi+8);
 				p.addPoint(xIndi-5, yIndi+12);
 				g2.fillPolygon(p);
-				
+
 				g2.setRenderingHints(oldRendHints);
 			}
 		}
@@ -1754,7 +1788,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 
 	@Override
 	public void visitDragOver(DropTargetDragEvent dtde) {
-		MainFrameTabbedPane.this.setSelectedIndex(0);		
+		MainFrameTabbedPane.this.setSelectedIndex(0);
 		dtde.rejectDrag();
 	}
 
@@ -1763,11 +1797,11 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 
 	@Override
 	public void visitDropActionChanged(DropTargetDragEvent dtde) {}
-	
+
 	private class ShowHideJCheckBoxMenuItem extends JCheckBoxMenuItem {
-		
+
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -1775,7 +1809,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 			super(a);
 			setForeground(NuclosSyntheticaConstants.ICON_BLUE);
 		}
-		
+
 	}
 
 }

@@ -60,12 +60,12 @@ public class Icons {
 		}
 		return singleton;
 	}
-	
+
 	/** @deprecated Use UIManager.getIcon("Table.descendingSortIcon") instead. */
 	@Deprecated public Icon getSortingDown() {
 		return new ImageIcon(this.getClass().getResource("/org/nuclos/client/lookandfeel/images/arrow8x8Down_pressed.png"));
 	}
-	
+
 	/** @deprecated Use UIManager.getIcon("Table.ascendingSortIcon") instead. */
 	@Deprecated public Icon getSortingUp() {
 		return new ImageIcon(this.getClass().getResource("/org/nuclos/client/lookandfeel/images/arrow8x8Up_pressed.png"));
@@ -74,7 +74,7 @@ public class Icons {
 	public Icon getSimpleArrowDown() {
 		return new ImageIcon(this.getClass().getResource("/org/nuclos/client/lookandfeel/images/arrowDown.png"));
 	}
-	
+
 	public Icon getSimpleArrowUp() {
 		return new ImageIcon(this.getClass().getResource("/org/nuclos/client/lookandfeel/images/arrowUp.png"));
 	}
@@ -106,7 +106,7 @@ public class Icons {
 	public ImageIcon getDefaultSearchWatermark() {
 		return this.getCachedImageIcon("org/nuclos/client/ui/images/logo/magnifier.png");
 	}
-	
+
 	public ImageIcon getIconEmpty16() {
 		return this.getIconByName("empty");
 	}
@@ -250,11 +250,11 @@ public class Icons {
 	public Icon getIconNext16() {
 		return this.getIconByName("next");
 	}
-	
+
 	public Icon getIconPlus16() {
 		return this.getIconByName("plus");
 	}
-	
+
 	public Icon getIconMinus16() {
 		return this.getIconByName("minus");
 	}
@@ -262,7 +262,7 @@ public class Icons {
 	public Icon getIconLast16() {
 		return this.getIconByName("last");
 	}
-	
+
 	public ImageIcon getIconFirstWhite16() {
 		return this.getIconByName("first-white");
 	}
@@ -278,7 +278,7 @@ public class Icons {
 	public ImageIcon getIconLastWhite16() {
 		return this.getIconByName("last-white");
 	}
-	
+
 	public ImageIcon getIconFirstWhiteHover16() {
 		return this.getIconByName("first-white-hover");
 	}
@@ -346,7 +346,7 @@ public class Icons {
 	public Icon getIconSelectVisibleColumns16() {
 		return this.getIconByName("select-visible-columns");
 	}
-	
+
 	public Icon getIconPriorityCancel16() {
 		return this.getIconByName("priority-cancel");
 	}
@@ -486,27 +486,27 @@ public class Icons {
 	public Icon getIconLDAP() {
 		return this.getIconByName("ldap");
 	}
-	
+
 	public ImageIcon getIconTextFieldButton() {
 		return this.getIconByName("textFieldButton");
 	}
-	
+
 	public ImageIcon getIconTextFieldButtonHover() {
 		return this.getIconByName("textFieldButton_hover");
 	}
-	
+
 	public ImageIcon getIconTextFieldButtonPressed() {
 		return this.getIconByName("textFieldButton_pressed");
 	}
-	
+
 	public ImageIcon getIconTextFieldButtonFile() {
 		return this.getIconByName("textFieldButton-file");
 	}
-	
+
 	public ImageIcon getIconTextFieldButtonCalendar() {
 		return this.getIconByName("textFieldButton-calendar");
 	}
-	
+
 	public ImageIcon getIconTextFieldButtonLOV() {
 		return this.getIconByName("textFieldButton-lov");
 	}
@@ -514,95 +514,95 @@ public class Icons {
 	public ImageIcon getIconTextFieldButtonScript() {
 		return this.getIconByName("textFieldButton-script");
 	}
-	
+
 	public ImageIcon getIconTabNotRestored() {
 		return this.getIconByName("tabNotRestored");
 	}
-	
+
 	public ImageIcon getIconTabGeneric() {
 		return this.getIconByName("tabGeneric");
 	}
-	
+
 	public ImageIcon getIconTabCloseButton() {
 		return this.getIconByName("tabCloseButton");
 	}
-	
+
 	public ImageIcon getIconTabCloseButton_hover() {
 		return this.getIconByName("tabCloseButton_hover");
 	}
-	
+
 	public ImageIcon getIconTabHiddenHint() {
 		return this.getIconByName("tabHiddenHint");
 	}
-	
+
 	public ImageIcon getIconTabHiddenHint_hover() {
 		return this.getIconByName("tabHiddenHint_hover");
 	}
-	
+
 	public ImageIcon getIconTabbedPaneClose() {
 		return this.getIconByName("tabbedPaneClose");
 	}
-	
+
 	public ImageIcon getIconTabbedPaneClose_hover() {
 		return this.getIconByName("tabbedPaneClose_hover");
 	}
-	
+
 	public ImageIcon getIconTabbedPaneMax() {
 		return this.getIconByName("tabbedPaneMax");
 	}
-	
+
 	public ImageIcon getIconTabbedPaneMax_hover() {
 		return this.getIconByName("tabbedPaneMax_hover");
 	}
-	
+
 	public ImageIcon getIconTabbedPaneSplit() {
 		return this.getIconByName("tabbedPaneSplit");
 	}
-	
+
 	public ImageIcon getIconTabbedPaneSplit_hover() {
 		return this.getIconByName("tabbedPaneSplit_hover");
 	}
-	
+
 	public ImageIcon getIconTabbedPaneMin() {
 		return this.getIconByName("tabbedPaneMin");
 	}
-	
+
 	public ImageIcon getIconTabbedPaneMin_hover() {
 		return this.getIconByName("tabbedPaneMin_hover");
 	}
-	
+
 	public ImageIcon getIconTabbedPaneMaximized() {
 		return this.getIconByName("tabbedPaneMaximized");
 	}
-	
+
 	public ImageIcon getIconTabbedPaneMaximized_Home() {
 		return this.getIconByName("tabbedPaneMaximizedHome");
 	}
-	
+
 	public ImageIcon getIconTabbedPaneMaximized_HomeTree() {
 		return this.getIconByName("tabbedPaneMaximizedHomeTree");
 	}
-	
+
 	public ImageIcon getIconTabTask() {
 		return this.getIconByName("tabTask");
 	}
-	
+
 	public ImageIcon getIconTabTimtlimit() {
 		return this.getIconByName("tabTimelimit");
 	}
-	
+
 	public ImageIcon getIconOpenInNewTab16() {
 		return this.getIconByName("openInNewTab");
 	}
-	
+
 	public ImageIcon getIconCustomComponent16() {
 		return this.getIconByName("customComponent");
 	}
-	
+
 	public ImageIcon getIconMagnifier() {
 		return this.getIconByName("magnifier");
 	}
-	
+
 	public ImageIcon getIconTest() {
 		return this.getIconByName("test");
 	}
@@ -618,7 +618,7 @@ public class Icons {
 	public Icon getIconSelectObject() {
 		return this.getIconByName("cursor");
 	}
-	
+
 	public Icon getIconBookmark16() {
 		return this.getIconByName("bookmark");
 	}
@@ -678,27 +678,31 @@ public class Icons {
 	public Icon getIconApplicationText() {
 		return this.getIconByName("mimetypes.text-x-generic");
 	}
-	
+
 	public Icon getIconRelate() {
 		return this.getIconByName("relate");
 	}
-	
+
 	public Icon getIconPrefsCopy() {
 		return this.getIconByName("preferences-copy");
 	}
-	
+
 	public ImageIcon getIconDesktopFolder() {
 		return getIconByName("desktop-folder");
 	}
-	
+
 	public ImageIcon getArrowButtonX() {
 		return this.getIconByName("arrow-button-x");
 	}
-	
+
 	public ImageIcon getArrowButtonDown() {
 		return this.getIconByName("arrow-button-down");
 	}
-	
+
+	public ImageIcon getIconShowList() {
+		return this.getIconByName("showList");
+	}
+
 	/**
 	 * Properties with the icon theme (mapping from names to resources)
 	 */
@@ -708,22 +712,22 @@ public class Icons {
 	 * Icon cache
 	 */
 	private final Map<String, ImageIcon> icons = new HashMap<String, ImageIcon>();
-	
+
 	public synchronized ImageIcon getIconByName(String name) {
 		ImageIcon icon = this.icons.get(name);
 		if (icon != null)
 			return icon;
-		
+
 		String res = getResource(name);
 		if (res == null)
 			throw new NullPointerException(name);
-		
+
 		icon = getImageIcon(res);
 		icons.put(name, icon);
-		
+
 		return getCachedImageIcon(res);
 	}
-	
+
 	private synchronized String getResource(String name) {
 		if (iconTheme == null) {
 			iconTheme = new java.util.Properties();
@@ -734,10 +738,10 @@ public class Icons {
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		return iconTheme.getProperty(name);
 	}
-	
+
 	private synchronized ImageIcon getCachedImageIcon(String sFileName) {
 		ImageIcon result = this.icons.get(sFileName);
 		if (result == null) {
@@ -750,17 +754,17 @@ public class Icons {
 	private ImageIcon getImageIcon(String sFileName) {
 		return new ImageIcon(this.getClass().getClassLoader().getResource(sFileName));
 	}
-	
+
 	public static class ResizedIcon implements Icon {
 
 		private Icon icon;
 		private final double f;
-		
-		public ResizedIcon(Icon icon, double f) { 
+
+		public ResizedIcon(Icon icon, double f) {
 			this.icon = icon;
 			this.f = f;
 		}
-		
+
 		@Override
 		public void paintIcon(Component c, Graphics g, int x, int y) {
 			Graphics2D g2d = (Graphics2D) g;
@@ -812,5 +816,5 @@ public class Icons {
 			icon2.paintIcon(c, g, x + icon1.getIconWidth(), y);
 		}
 	}
-	
+
 }	// class Icons
