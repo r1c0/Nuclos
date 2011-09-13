@@ -54,6 +54,7 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEve
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.labeled.LabeledComboBox;
 import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
+import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache.CachingCollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -930,7 +931,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						refreshValueList(false);
+						refreshCacheAndValueList(false);
 					}
 				});
 			}
@@ -946,11 +947,11 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 			case DELETE_DONE:
 			case STATECHANGE_DONE:
 				// data has changed -> simply refresh.
-				refreshValueList();
+				refreshCacheAndValueList(false);
 				break;
 			case NEW_DONE:
 				// data has changed -> refresh and try to select new collectable.
-				refreshValueList(false);
+				refreshCacheAndValueList(false);
 				for (int i = 0; i < getJComboBox().getItemCount(); i++) {
 					Object o = getJComboBox().getItemAt(i);
 					if (o instanceof CollectableField) {
@@ -969,6 +970,13 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 				}
 				break;
 		}
+	}
+
+	private void refreshCacheAndValueList(boolean async) {
+		if (getValueListProvider() instanceof CachingCollectableFieldsProvider) {
+			((CachingCollectableFieldsProvider)getValueListProvider()).clear();
+		}
+		refreshValueList(async);
 	}
 
 }	// class CollectableComboBox

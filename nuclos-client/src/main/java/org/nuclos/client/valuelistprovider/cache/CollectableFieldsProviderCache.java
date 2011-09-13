@@ -157,6 +157,19 @@ public class CollectableFieldsProviderCache {
     		}
     		return false;
     	}
-	}
 
+    	public void clear() {
+    		Object cacheKey = delegate.getCacheKey();
+			if (cacheKey == null) {
+				return;
+			}
+
+			Pair<Class<? extends CacheableCollectableFieldsProvider>, Object> qualifiedCacheKey =
+				new Pair<Class<? extends CacheableCollectableFieldsProvider>, Object>(delegate.getClass(), cacheKey);
+
+			synchronized (cache) {
+				cache.remove(qualifiedCacheKey);
+			}
+    	}
+	}
 }
