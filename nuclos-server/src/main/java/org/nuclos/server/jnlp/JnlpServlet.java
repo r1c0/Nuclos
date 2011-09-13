@@ -238,15 +238,7 @@ public class JnlpServlet extends HttpServlet {
         Node jars = jnlp.appendChild(document.createElement("jars"));
 
         if(extensionDir.isDirectory()) {
-        	String sFiles [] = extensionDir.list(new FilenameFilter() {
-				@Override
-				public boolean accept(File dir, String name) {
-					if(name.endsWith(".jar")) {
-						return true;
-					}
-					return false;
-				}
-			});
+        	String sFiles [] = extensionDir.list(new JarFileFilter());
 
         	for(String sFile : sFiles) {
         		Node jar = jars.appendChild(document.createElement("jar"));
@@ -254,7 +246,27 @@ public class JnlpServlet extends HttpServlet {
         	}
         }
 
+        Node natives = jnlp.appendChild(document.createElement("native"));
+
+        File nativeExtensions = new File(extensionDir, "native");
+    	if (nativeExtensions.isDirectory()) {
+    		String files[] = nativeExtensions.list(new JarFileFilter());
+    		for(String file : files) {
+        		Node jar = natives.appendChild(document.createElement("jar"));
+    			jar.setTextContent(file);
+        	}
+    	}
+
         return document;
 	}
 
+	public class JarFileFilter implements FilenameFilter {
+		@Override
+		public boolean accept(File dir, String name) {
+			if(name.endsWith(".jar")) {
+				return true;
+			}
+			return false;
+		}
+	}
 }

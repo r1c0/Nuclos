@@ -19,6 +19,9 @@
 				<xsl:for-each select="jnlp/jars/jar">
 					<jar href="{text()}" />
 				</xsl:for-each>
+				<xsl:for-each select="jnlp/native/jar">
+					<nativelib href="{text()}" />
+				</xsl:for-each>
 			</resources>
 			<component-desc/>
 		</jnlp>
