@@ -840,7 +840,8 @@ public class ResPlanPanel extends JPanel {
 		@Override
 		public void handleCollectableEvent(Collectable collectable, MessageType messageType) {
 			switch (messageType) {
-			case SAVE_DONE:
+			case EDIT_DONE:
+			case NEW_DONE :
 			case DELETE_DONE:
 				try {
 					collectController.getFrame().dispose();

@@ -401,7 +401,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			case REFRESH_DONE:
 				resetTransferedDetailsData();
 				break;
-			case SAVE_DONE:
+			case NEW_DONE:
+			case EDIT_DONE:
 				resetTransferedDetailsData();
 				break;
 			}

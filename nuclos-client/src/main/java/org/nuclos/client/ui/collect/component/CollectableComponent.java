@@ -174,13 +174,13 @@ public interface CollectableComponent {
 	 * @param bEnabled
 	 */
 	void setEnabled(boolean bEnabled);
-	
+
 	/**
 	 * enables this component, that is makes it accessible (or not).
 	 * @param bEnabled
 	 */
 	void setScalable(boolean bScalable);
-	
+
 	/**
 	 * sets the component for next tab key event
 	 * @param sNextFocusComponent
@@ -349,6 +349,12 @@ public interface CollectableComponent {
 		 */
 		void showDetails(CollectableComponentEvent ev);
 
+		/**
+		 * create a new object to be referenced by the component given in the event.
+		 * @param ev
+		 */
+		void createNew(CollectableComponentEvent ev);
+
 	}	// interface ReferencingListener
 
 	/**
@@ -375,6 +381,6 @@ public interface CollectableComponent {
         public boolean evaluate(CollectableComponent clctcomp) {
 			return clctcomp.canDisplay(atomiccond);
 		}
-	}	
+	}
 
 }  // class CollectableComponent

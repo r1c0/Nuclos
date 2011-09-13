@@ -23,8 +23,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -45,6 +43,8 @@ import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.ListOfValues;
 import org.nuclos.client.ui.ListOfValues.QuickSearchResulting;
+import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
+import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.labeled.LabeledListOfValues;
@@ -65,6 +65,7 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
@@ -79,7 +80,7 @@ import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class CollectableListOfValues extends LabeledCollectableComponentWithVLP implements ICollectableListOfValues {
+public class CollectableListOfValues extends LabeledCollectableComponentWithVLP implements ICollectableListOfValues, CollectableEventListener {
 
 	private static final Logger log = Logger.getLogger(CollectableListOfValues.class);
 
@@ -633,6 +634,20 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	@Override
 	public void refreshValueList() {
 		refreshValueList(false);
+	}
+
+	@Override
+	public void handleCollectableEvent(Collectable collectable, MessageType messageType) {
+		switch (messageType) {
+			case EDIT_DONE:
+			case STATECHANGE_DONE:
+				if (LangUtils.equals(IdUtils.toLongId(collectable.getId()), getModel().getField().getValueId())) {
+					acceptLookedUpCollectable(collectable);
+				}
+			case NEW_DONE:
+				acceptLookedUpCollectable(collectable);
+				break;
+		}
 	}
 
 }	// class CollectableListOfValues

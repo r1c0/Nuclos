@@ -34,7 +34,10 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.TableCellRenderer;
@@ -45,10 +48,13 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
+import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.labeled.LabeledComboBox;
 import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
+import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldComparatorFactory;
@@ -65,6 +71,7 @@ import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.collectable.searchcondition.ToHumanReadablePresentationVisitor;
 import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
@@ -82,7 +89,7 @@ import org.nuclos.common2.exception.CommonBusinessException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class CollectableComboBox extends LabeledCollectableComponentWithVLP {
+public class CollectableComboBox extends LabeledCollectableComponentWithVLP implements CollectableEventListener {
 
 	private static final Logger log = Logger.getLogger(CollectableComboBox.class);
 
@@ -298,16 +305,16 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP {
 			}
 		}
 	}
-	
+
 	private class RefreshValueListWorker extends SwingWorker<List<CollectableField>, Object> {
 
 		boolean cancelDone = false;
-		
+
 		@Override
 		protected List<CollectableField> doInBackground() throws Exception {
 			return getValueListProvider() == null ? Collections.<CollectableField>emptyList() : getValueListProvider().getCollectableFields();
 		}
-		
+
 		void cancelDone() {
 			cancelDone = true;
 		}
@@ -318,7 +325,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP {
 				if (!isCancelled() && !cancelDone) {
 					setComboBoxModel(get(), false);
 					getJComboBox().setCursor(null);
-				} 
+				}
 			} catch(Exception e) {
 				Errors.getInstance().showExceptionDialog(CollectableComboBox.this.getJComponent(), e);
 			} finally {
@@ -668,7 +675,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP {
 							setWithComparison(comparisonwp.getParameter());
 							return getEntityField().getNullField();
 						}
-						
+
 						@Override
 						public CollectableField visitComparisonWithOtherField(CollectableComparisonWithOtherField comparisonwf) {
 							setWithComparison(comparisonwf.getOtherField());
@@ -700,7 +707,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP {
 		if (!isSearchComponent() && getValueListProvider() != null) {
 			return new CollectableComponentDetailTableCellRenderer() {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -749,7 +756,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP {
 			//NOAINT-215
 			return new CollectableComponentDetailTableCellRenderer() {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -770,7 +777,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP {
 		else {
 			return new CollectableComponentDetailTableCellRenderer() {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
@@ -826,7 +833,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP {
 
 	public class CollectableFieldRenderer extends DefaultListCellRenderer {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -893,6 +900,74 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP {
 		private boolean isToolTipNecessary() {
 			// this is not exactly right, but it's probably the best guess we can make here:
 			return getPreferredSize().width > getJComboBox().getSize().width;
+		}
+	}
+
+	/**
+	 * adds a "Refresh" entry to the popup menu, for a non-searchable component.
+	 */
+	@Override
+	public JPopupMenu newJPopupMenu() {
+		final JPopupMenu result = super.newJPopupMenu();
+		if (!this.isSearchComponent()) {
+			result.add(newRefreshEntry());
+		}
+		return result;
+	}
+
+	/**
+	 * @precondition getEntityField().isReferencing()
+	 * @return a new "refresh" entry for the context menu in edit mode
+	 */
+	protected final JMenuItem newRefreshEntry() {
+		if (!getEntityField().isReferencing()) {
+			throw new IllegalStateException();
+		}
+		final JMenuItem result = new JMenuItem(TEXT_REFRESH);
+		result.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent ev) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						refreshValueList(false);
+					}
+				});
+			}
+		});
+		result.setEnabled(getJComponent().isEnabled());
+		return result;
+	}
+
+	@Override
+	public void handleCollectableEvent(final Collectable collectable, final MessageType messageType) {
+		switch (messageType) {
+			case EDIT_DONE:
+			case DELETE_DONE:
+			case STATECHANGE_DONE:
+				// data has changed -> simply refresh.
+				refreshValueList();
+				break;
+			case NEW_DONE:
+				// data has changed -> refresh and try to select new collectable.
+				refreshValueList(false);
+				for (int i = 0; i < getJComboBox().getItemCount(); i++) {
+					Object o = getJComboBox().getItemAt(i);
+					if (o instanceof CollectableField) {
+						CollectableField field = (CollectableField) o;
+						if (LangUtils.equals(IdUtils.toLongId(field.getValueId()), IdUtils.toLongId(collectable.getId()))) {
+							getModel().setField(field);
+							runLocked(new Runnable() {
+								@Override
+								public void run() {
+									modelToView();
+								}
+							});
+							break;
+						}
+					}
+				}
+				break;
 		}
 	}
 

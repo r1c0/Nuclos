@@ -55,6 +55,8 @@ import org.jdesktop.jxlayer.plaf.effect.BufferedImageOpEffect;
 import org.jdesktop.swingx.renderer.DefaultListRenderer;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.Utils;
+import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.ResourceIdMapper;
@@ -135,6 +137,8 @@ public abstract class AbstractCollectableComponent
 	protected static final String TEXT_NOCHANGE = CommonLocaleDelegate.getMessage("AbstractCollectableComponent.13","Keine \u00c4nderung vornehmen");
 	protected static final String TEXT_CLEAR = CommonLocaleDelegate.getMessage("AbstractCollectableComponent.11","Feld leeren");
 	protected static final String TEXT_SHOWDETAILS = CommonLocaleDelegate.getMessage("AbstractCollectableComponent.7","Details anzeigen...");
+	protected static final String TEXT_NEW = CommonLocaleDelegate.getMessage("AbstractCollectableComponent.context.new","Neu...");
+	protected static final String TEXT_REFRESH = CommonLocaleDelegate.getMessage("AbstractCollectableComponent.context.refresh","Aktualisieren...");
 
 	/**
 	 * the comparison operator, if any, that can be set by the user.
@@ -929,6 +933,13 @@ public abstract class AbstractCollectableComponent
 		}
 	}
 
+	private void fireCreateNew() {
+		final ReferencingListener reflistener = getReferencingListener();
+		if (reflistener != null) {
+			reflistener.createNew(new CollectableComponentEvent(this));
+		}
+	}
+
 	/**
 	 * @return Does this component have a comparison operator that can be set by the user?
 	 * This default implementation returns <code>false</code>.
@@ -984,6 +995,7 @@ public abstract class AbstractCollectableComponent
 					result.addSeparator();
 				}
 				result.add(newShowDetailsEntry());
+				result.add(newInsertEntry());
 			}
 
 			if (result.getComponentCount() == 0) {
@@ -1273,6 +1285,36 @@ public abstract class AbstractCollectableComponent
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				fireShowDetails();
+			}
+		});
+		return result;
+	}
+
+	/**
+	 * @precondition getEntityField().isReferencing()
+	 * @return a new "new" entry for the context menu in edit mode
+	 */
+	protected final JMenuItem newInsertEntry() {
+		if (!getEntityField().isReferencing()) {
+			throw new IllegalStateException();
+		}
+		final JMenuItem result = new JMenuItem(TEXT_NEW);
+		String referencedEntity = getEntityField().getReferencedEntityName();
+		boolean bInsertEnabled = isReferencedEntityDisplayable();
+		if (bInsertEnabled) {
+			if (Modules.getInstance().existModule(referencedEntity)) {
+				bInsertEnabled = SecurityCache.getInstance().isNewAllowedForModule(referencedEntity);
+			}
+			else {
+				bInsertEnabled = SecurityCache.getInstance().isWriteAllowedForMasterData(referencedEntity);
+			}
+		}
+		result.setEnabled(bInsertEnabled && getJComponent().isEnabled());
+
+		result.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent ev) {
+				fireCreateNew();
 			}
 		});
 		return result;

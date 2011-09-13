@@ -131,6 +131,8 @@ import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.TopController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
+import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
+import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
 import org.nuclos.client.ui.collect.CollectStateModel;
 import org.nuclos.client.ui.collect.detail.DetailsCollectableEventListener;
@@ -179,7 +181,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @version 01.00.00
  */
 public class MainController {
-	
+
 	private static final Logger log = Logger.getLogger(MainController.class);
 
 	/**
@@ -240,47 +242,47 @@ public class MainController {
 			this.sNuclosServerName = sNuclosServerName;
 			/** @todo this is a workaround - because Main.getMainController() is called to get the user name */
 			Main.setMainController(this);
-	
+
 			log.debug(">>> read user rights...");
 			SecurityCache.initialize();
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_INIT_SECURITYCACHE);
-	
+
 			if (!SecurityCache.getInstance().isActionAllowed(Actions.ACTION_SYSTEMSTART)) {
 				throw new CommonPermissionException(CommonLocaleDelegate.getMessage("MainController.23", "Sie haben nicht das Recht, {0} zu benutzen.", ApplicationProperties.getInstance().getName()));
 			}
-	
+
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_READ_ATTRIBUTES);
-	
+
 			DefaultCollectableEntityProvider.setInstance(NuclosCollectableEntityProvider.getInstance());
-	
+
 			Thread threadGenericObjectMetaDataCache = new Thread() {
-	
+
 				@Override
 				public void run() {
 					log.debug(">>> read metadata...");
 					GenericObjectMetaDataCache.getInstance();
 				}
 			};
-	
+
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_READ_LOMETA);
-	
+
 			Thread threadSearchFilterCache = new Thread() {
-	
+
 				@Override
 				public void run() {
 					log.debug(">>> read searchfilter...");
 					SearchFilterCache.getInstance();
 				}
 			};
-	
+
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_READ_SEARCHFILTER);
-	
+
 			List<Thread> lstCacheThreads = new ArrayList<Thread>();
 			lstCacheThreads.add(threadGenericObjectMetaDataCache);
 			lstCacheThreads.add(threadSearchFilterCache);
 			threadGenericObjectMetaDataCache.start();
 			threadSearchFilterCache.start();
-	
+
 			for(Thread t : lstCacheThreads) {
 				try {
 					t.join();
@@ -289,10 +291,10 @@ public class MainController {
 					// do noting here
 				}
 			}
-	
+
 			log.debug(">>> create mainframe...");
 			this.frm = new MainFrame(this.getUserName(), this.getNuclosServerName());
-	
+
 			this.frm.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 			this.frm.addWindowListener(new WindowAdapter() {
 				@Override
@@ -301,25 +303,25 @@ public class MainController {
 				}
 			});
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_CREATE_MAINFRAME);
-	
+
 			log.debug(">>> init client communication...");
 			this.notificationdlg = new NuclosNotificationDialog(this.frm, this.getDesktopPane());
 			TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_RULENOTIFICATION, messagelistener);
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_INIT_NOTIFICATION);
-	
+
 			log.debug(">>> setup menus...");
 			this.setupMenus();
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_CREATE_MAINMENU);
-	
+
 			log.debug(">>> create explorer controller...");
 			this.ctlExplorer = new ExplorerController(frm);
-	
+
 			log.debug(">>> create task controller...");
 			this.ctlTasks = new TaskController(frm, getUserName());
-	
+
 			this.ctlTasks.setExplorerController(ctlExplorer);
 			this.ctlExplorer.setTaskController(ctlTasks);
-	
+
 			log.debug(">>> restore last workspace...");
 			try {
 				MainFrame.readMainFramePreferences(prefs);
@@ -332,10 +334,10 @@ public class MainController {
 			finally {
 				loginController.increaseLoginProgressBar(StartUp.PROGRESS_RESTORE_WORKSPACE);
 			}
-	
+
 			log.debug(">>> show mainFrame...");
 			frm.setVisible(true);
-	
+
 			try {
 				log.debug(">>> restore last controllers (for migration only)...");
 				reopenAllControllers(ClientPreferences.getUserPreferences());
@@ -344,7 +346,7 @@ public class MainController {
 				final String sMessage = CommonLocaleDelegate.getMessage("MainController.4","Die in der letzten Sitzung ge\u00f6ffneten Fenster konnten nicht wiederhergestellt werden.");
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
-	
+
 			log.debug(">>> restore task views (for migration only)...");
 			try {
 				ctlTasks.restoreGenericObjectTaskViewsFromPreferences();
@@ -354,7 +356,7 @@ public class MainController {
 				log.error(sMessage, ex);
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
-	
+
 			Thread theadTaskController = new Thread() {
 				@Override
 				public void run() {
@@ -363,22 +365,22 @@ public class MainController {
 				}
 			};
 			theadTaskController.start();
-	
+
 			// Show the release notes for this version, if the user hasn't seen it yet.
 			showReleaseNotesIfNewVersion();
-	
+
 			// Show the internal informations if they have changed since the last start of the client
 			showInternalInfoIfChanged();
-	
+
 			// Show startup panel to configure an application
 			SwingUtilities.invokeLater(new Runnable() {
-	
+
 				@Override
 				public void run() {
 					showStartupPanel(true);
 				}
 			});
-	
+
 			// Debug purposes
 			final String sKeyWindowShow = "CtlShiftF11";
 			frm.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F11, (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK)), sKeyWindowShow);
@@ -387,26 +389,26 @@ public class MainController {
 				 *
 				 */
 				private static final long serialVersionUID = 1L;
-	
+
 				@Override
 				public void actionPerformed(ActionEvent ev) {
 					debugFrame.showComponentDetails(frm.findComponentAt(frm.getMousePosition()));
 				}
 			});
-	
+
 			//Call wikipage
 			final String sKeyWikiShow = "CtlShiftF1";
 			frm.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F1, (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK)), sKeyWikiShow);
 			frm.getRootPane().getActionMap().put(sKeyWikiShow, new AbstractAction() {
-	
+
 				@Override
 				public void actionPerformed(ActionEvent ev) {
 					Component fundComponent = frm.getFocusOwner() != null ? frm.getFocusOwner() : frm.findComponentAt(frm.getMousePosition());
 					CollectController<?> clctctrl = getControllerForInternalFrame(UIUtils.getInternalFrameForComponent(fundComponent));
-	
+
 					WikiController wikiCtrl = WikiController.getInstance();
 					wikiCtrl.openURLinBrowser(wikiCtrl.getWikiPageForComponent(fundComponent, clctctrl));
-	
+
 				}
 			});
 		}
@@ -1580,12 +1582,15 @@ public class MainController {
 	 * @precondition sEntityName != null
 	 * @precondition oId != null
 	 */
-	public void showDetails(String sEntityName, Object oId, CollectController<?> listeningController) throws CommonBusinessException {
+	public void showDetails(String sEntityName, Object oId, CollectController<?> listeningController, CollectableEventListener... componentListener) throws CommonBusinessException {
 		final CollectController<?> ctlExisting = this.findCollectControllerDisplaying(sEntityName, oId);
 		// reuse existing window if the object is already displayed in Details:
 		if (ctlExisting != null) {
 				if (listeningController != null) {
 					ctlExisting.addCollectableEventListener(new DetailsCollectableEventListener(listeningController, ctlExisting));
+				}
+				for (CollectableEventListener l : componentListener) {
+					ctlExisting.addCollectableEventListener(l);
 				}
 				MainFrame.setSelectedTab(ctlExisting.getFrame());
 		}
@@ -1594,8 +1599,38 @@ public class MainController {
 			if (listeningController != null) {
 				controller.addCollectableEventListener(new DetailsCollectableEventListener(listeningController, controller));
 			}
+			for (CollectableEventListener l : componentListener) {
+				controller.addCollectableEventListener(l);
+			}
 			controller.runViewSingleCollectableWithId(oId);
 		}
+	}
+
+	/**
+	 * Open a new embedded (not in separate tab) dialog to create a new collectable.
+	 * The embedded window will be closed later.
+	 * @param entityname
+	 * @param parent
+	 * @param listener
+	 * @throws CommonBusinessException
+	 */
+	public void showNew(String entityname, MainFrameTab parent, CollectableEventListener listener) throws CommonBusinessException {
+		final NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(parent, entityname, null);
+		controller.addCollectableEventListener(listener);
+		controller.addCollectableEventListener(new CollectableEventListener() {
+			@Override
+			public void handleCollectableEvent(Collectable collectable, MessageType messageType) {
+				if (MessageType.NEW_DONE.equals(messageType)) {
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							controller.getFrame().dispose();
+						}
+					});
+				}
+			}
+		});
+		controller.runNew();
 	}
 
 	/**

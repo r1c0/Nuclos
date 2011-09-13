@@ -35,6 +35,7 @@ import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
+import java.lang.ref.WeakReference;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -309,9 +310,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	public static enum MessageType {
 		REFRESH_DONE,
 		REFRESH_DONE_DIRECTLY,
-		SAVE_DONE,
+		EDIT_DONE,
 		STATECHANGE_DONE,
 		DELETE_DONE,
+		NEW_DONE,
 		CLCT_LEFT/* extend as needed */
 	}
 
@@ -2580,8 +2582,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @param MessageType
 	 */
 	protected void broadcastCollectableEvent(Clct collectable, MessageType messageType) {
-		for(CollectableEventListener l : new ArrayList<CollectableEventListener>(collectableListeners))
+		for(CollectableEventListener l : new ArrayList<CollectableEventListener>(collectableListeners)) {
 			l.handleCollectableEvent(collectable, messageType);
+		}
 	}
 
 	/**
@@ -3149,6 +3152,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			UIUtils.setWaitCursor(this.getFrame());
 
 			log.debug("START save");
+			MessageType mt;
 			switch (this.statemodel.getDetailsMode()) {
 				case CollectState.DETAILSMODE_EDIT:
 					log.debug("START save updateCurrentCollectable");
@@ -3161,6 +3165,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 					log.debug("START save enterViewMode");
 					this.enterViewMode();
 					log.debug("FINISHED save enterViewMode");
+					mt = MessageType.EDIT_DONE;
 					break;
 
 				case CollectState.DETAILSMODE_NEW_CHANGED:
@@ -3172,6 +3177,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 					/** TODO switching the state isn't enough, we have to show values updated by the server. */
 					/** TODO this is not right! Probably should be view(), as in update() (see above) */
 					/** TODO the table model must be updated as well. */
+					mt = MessageType.NEW_DONE;
 					break;
 
 				case CollectState.DETAILSMODE_MULTIEDIT:
@@ -3179,12 +3185,13 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 					new UpdateSelectedCollectablesController<Clct>(this).run(getMultiActionProgressPanel(iCount));
 
 					// do nothing else here. UpdateSelectedCollectablesController is executed in its own thread.
+					mt = MessageType.EDIT_DONE;
 					break;
 
 				default:
 					throw new CommonFatalException("Speichern kann nur bei Bearbeitung, Neueingabe oder Sammelbearbeitung durchgef\u00fchrt werden.");
 			}
-			broadcastCollectableEvent(clct, MessageType.SAVE_DONE);
+			broadcastCollectableEvent(clct, mt);
 		} catch (CommonBusinessException cbe) {
 			if (!handleSpecialException(cbe))
 				throw cbe;

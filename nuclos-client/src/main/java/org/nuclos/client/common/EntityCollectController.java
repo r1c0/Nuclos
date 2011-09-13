@@ -88,21 +88,21 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	private final static String notLoadingLabelText = "              ";
 	protected JLabel loadingLabel;
 	protected SubFormsLoader subFormsLoader;
-	
-	private static final Icon iconPointer = Icons.getInstance().getIconAbout16();  
+
+	private static final Icon iconPointer = Icons.getInstance().getIconAbout16();
 	protected final JButton btnPointer = new JButton(getPointerAction());
 	private PointerCollection pointerCollection = null;
 	private NuclosBusinessRuleException pointerException = null;
 	private List<ActionListener> lstPointerChangeListener = new ArrayList<ActionListener>();
-	
+
 	protected Map<String, SearchConditionSubFormController> mpsubformctlSearch;
 
 	/**
 	 * Don't make this public!
-	 * 
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 *
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -111,13 +111,13 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	protected EntityCollectController(JComponent parent, String sEntityName) {
 		this(parent, NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName));
 	}
-	
+
 	/**
 	 * Don't make this public!
-	 * 
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 *
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -136,11 +136,11 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		});
 		btnPointer.addMouseListener(getPointerContextListener());
 	}
-	
+
 	/**
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -149,11 +149,11 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	protected EntityCollectController(JComponent parent, String sEntityName, ResultController<Clct> rc) {
 		this(parent, NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName), rc);
 	}
-	
+
 	/**
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -210,7 +210,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 			}
 		});
 	}
-	
+
 	/**
 	 * @todo maybe move to CollectController?
 	 * @param subform
@@ -224,7 +224,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 			log.warn("Kein spezieller SearchConditionSubFormController f?r Controllertyp " + sControllerType + " vorhanden.");
 		return _newSearchConditionSubFormController(clctcompmodelprovider, sParentEntityName, subform);
 	}
-	
+
 	protected SearchConditionSubFormController _newSearchConditionSubFormController(CollectableComponentModelProvider clctcompmodelprovider,
 		String sParentEntityName, SubForm subform) {
 
@@ -243,7 +243,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		this.getCollectStateModel().addCollectStateListener(new EntityCollectStateListener());
 		this.addCollectableEventListener(new PointerResetChangeEventListener());
 	}
-	
+
 	protected void initSearchSubforms() {
 		if(!this.isSearchPanelAvailable())
 			return;
@@ -254,18 +254,18 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		mpsubformctlSearch = newSearchConditionSubFormControllers(mpSubForm);
 		setupSubFormController(mpSubForm, mpsubformctlSearch);
 	}
-	
+
 	protected Map<String, SearchConditionSubFormController> getMapOfSubFormControllersInSearch() {
 		return mpsubformctlSearch;
 	}
-	
+
 	public abstract EditView newSearchEditView(LayoutRoot layoutroot);
-	
-	
+
+
 	protected abstract void setupSubFormController(Map<String, SubForm> mpSubForm, Map<String, ? extends SubFormController> mpSubFormController);
-	
+
 	protected abstract LayoutRoot getInitialLayoutMLDefinitionForSearchPanel();
-	
+
 
 	public SubFormsLoader getSubFormsLoader() {
 		return subFormsLoader;
@@ -327,7 +327,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		controller.setParentController((EntityCollectController<CollectableEntityObject>) this);
 		return controller;
 	}
-	
+
 	public abstract Map<String, DetailsSubFormController<CollectableEntityObject>> getDetailsSubforms();
 
 	public Collection<String> getAdditionalLoaderNames(){
@@ -382,7 +382,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 			}
 		}
 	}
-	
+
 	/**
 	 * save scroll position and selection of subforms an restore after reloading has finished (NUCLOSINT-851)
 	 */
@@ -730,9 +730,9 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		}
 
 	}	// inner class DefaultCollectStateListener
-	
+
 	/**
-	 * 
+	 *
 	 * handle reset of <code>PointerCollection</code>
 	 */
 	private class PointerResetChangeEventListener implements CollectableEventListener {
@@ -740,23 +740,24 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		public void handleCollectableEvent(Collectable collectable,	org.nuclos.client.ui.collect.CollectController.MessageType messageType) {
 			switch(messageType) {
 				case REFRESH_DONE_DIRECTLY :
-				case SAVE_DONE :
+				case EDIT_DONE :
 				case STATECHANGE_DONE :
 				case DELETE_DONE :
+				case NEW_DONE :
 				case CLCT_LEFT :
 					setPointerInformation(null, null);
 					break;
 			}
 		}
 	}
-	
+
 	protected class PointerContextListener extends MouseAdapter {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
 
 			if (SwingUtilities.isRightMouseButton(e)) {
-				if (pointerException != null) {					
+				if (pointerException != null) {
 					final JPopupMenu menu = new JPopupMenu();
 					final String itemLabel = CommonLocaleDelegate.getMessage("EntityCollectController.1", "Herkunft anzeigen") + "...";
 					final JMenuItem originItem = new JMenuItem(itemLabel, iconPointer);
@@ -771,17 +772,17 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				}
 			}
 		}
-		
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * displays <code>PointerCollection</code> in a JPopupMenu
 	 */
 	protected class PointerAction extends AbstractAction {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -794,7 +795,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 			final PointerCollection pc = EntityCollectController.this.pointerCollection;
 			if (pc != null) {
 				final JPopupMenu menu = new JPopupMenu();
-				
+
 				if (pc.getMainPointer().message != null) {
 					final String itemLabel = CommonLocaleDelegate.getMessage("EntityCollectController.2", "Hinweis");
 					final JMenuItem mainItem = new JMenuItem(itemLabel, iconPointer);
@@ -820,7 +821,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 					final boolean fieldNotFound = efMeta == null;
 					final String fieldLabel = fieldNotFound ? (field + " (" + fieldNotFoundLabel + ")") : CommonLocaleDelegate.getLabelFromMetaFieldDataVO(efMeta);
 					final JMenuItem fieldItem = new JMenuItem(fieldLabel);
-					
+
 					fieldItem.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
@@ -841,7 +842,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 									}
 								}
 								if (fieldNotInLayout) {
-									showPointerBubble(btnPointer, CommonLocaleDelegate.getMessage("EntityCollectController.4", "Attribut nicht im Layout gefunden!") + 
+									showPointerBubble(btnPointer, CommonLocaleDelegate.getMessage("EntityCollectController.4", "Attribut nicht im Layout gefunden!") +
 										"<br/>" + getHtmlList(pc.getLocalizedFieldPointers(field)));
 								}
 							}
@@ -849,7 +850,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 					});
 					menuItems.add(fieldItem);
 				}
-				
+
 				for (JMenuItem menuItem : CollectionUtils.sorted(menuItems, new Comparator<JMenuItem>() {
 					@Override
 					public int compare(JMenuItem o1, JMenuItem o2) {
@@ -868,12 +869,12 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		@Override
 		public boolean isEnabled() {
 			return EntityCollectController.this.pointerCollection != null;
-		}	
-		
+		}
+
 	} // inner class PointerAction
-	
+
 	/**
-	 * 
+	 *
 	 * @param comp
 	 * @param htmlMessage
 	 */
@@ -889,9 +890,9 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 			}
 		});
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param pc
 	 */
 	protected void showPointers(final PointerCollection pc) {
@@ -911,15 +912,15 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 			}
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param lstMessages
 	 * @return
 	 */
 	private String getHtmlList(List<String> lstMessages) {
 		String htmlMessage = "";
-		
+
 		for (int i = 0; i < lstMessages.size(); i++) {
 			String message = lstMessages.get(i);
 			if (lstMessages.size() > 1)
@@ -928,81 +929,81 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 			if (i < lstMessages.size()-1)
 				htmlMessage = htmlMessage + "<br/>";
 		}
-		
+
 		return htmlMessage;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	protected Action getPointerAction() {
 		return new PointerAction();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	protected MouseListener getPointerContextListener() {
 		return new PointerContextListener();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public PointerCollection getPointerCollection() {
 		return pointerCollection;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param pc
 	 */
 	public void setPointerInformation(PointerCollection pc, NuclosBusinessRuleException nbrex) {
 		this.pointerCollection = pc;
 		this.pointerException = nbrex;
-		
+
 		showPointers(pc);
-		
+
 		for (ActionListener al : this.lstPointerChangeListener) {
 			al.actionPerformed(new ActionEvent(EntityCollectController.this, 0, "setPointerCollection"));
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param al
 	 */
 	public void addPointerChangeListener(ActionListener al) {
 		this.lstPointerChangeListener.add(al);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param al
 	 */
 	public void removePointerChangeListener(ActionListener al) {
 		this.lstPointerChangeListener.remove(al);
 	}
-	
+
 	/**
 	 * shows <code>NuclosBusinessRuleException</code>
-	 *   and <code>PointerException<code> 
+	 *   and <code>PointerException<code>
 	 *    in "Pointer-Style"...
 	 * @param ex
 	 * @return true if exception handled
 	 */
 	public boolean handlePointerException(Exception ex) {
-		if (getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_VIEW || 
+		if (getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_VIEW ||
 			getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_EDIT ||
 			getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_NEW_CHANGED) {
 			final PointerException pex = PointerException.extractPointerExceptionIfAny(ex);
 			final NuclosBusinessRuleException nbrex = NuclosBusinessRuleException.extractNuclosBusinessRuleExceptionIfAny(ex);
 			if (pex != null) {
 				final PointerCollection pc = pex.getPointerCollection();
-				
+
 				if (ex.getMessage() != null && pc.getMainPointer() == null) { // if pointer collection has no main information set exception message
 					pc.setMainPointer(ex.getMessage());
 				}
@@ -1021,7 +1022,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				} else {
 					exceptionMessage = Errors.getReasonableMessage(nbrex);
 				}
-				
+
 				if (exceptionMessage != null) {
 					final PointerCollection pc = new PointerCollection(Errors.formatErrorForBubble(exceptionMessage));
 					setPointerInformation(pc, nbrex);
@@ -1030,10 +1031,10 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				}
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	protected boolean handleSpecialException(Exception ex) {
 		if (handlePointerException(ex)) {
@@ -1047,17 +1048,17 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	protected void handleCollectableValidationException(CollectableValidationException ex, String sMessage1) {
 		PointerCollection pc = null;
 		final String exceptionMessage = Errors.getReasonableMessage(ex);
-		
+
 		if (exceptionMessage != null) {
 			pc = new PointerCollection(Errors.formatErrorForBubble(exceptionMessage));
 		}
-		
+
 		final CollectableEntityField clctefInvalid = ex.getCollectableEntityField();
 		if (clctefInvalid != null) {
 			if (pc == null) pc = new PointerCollection(sMessage1);
 			pc.addEmptyFieldPointer(clctefInvalid.getName());
 		}
-		
+
 		if (pc != null) {
 			setPointerInformation(pc, null);
 			final Collection<CollectableComponent> collclctcomp = getDetailsPanel().getEditView().getCollectableComponentsFor(clctefInvalid.getName());
@@ -1069,5 +1070,5 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 			super.handleCollectableValidationException(ex, sMessage1);
 		}
 	}
-	
+
 }

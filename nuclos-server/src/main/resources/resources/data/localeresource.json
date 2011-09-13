@@ -61137,5 +61137,35 @@
     "resourceID": "StartTabPanel.error.open.list",
     "locale": "de",
     "text": "Die Ergebnisliste kann nicht geöffnet werden."
+  },
+  {
+    "resourceID": "AbstractCollectableComponent.context.new",
+    "locale": "i-default",
+    "text": "New..."
+  },
+  {
+    "resourceID": "AbstractCollectableComponent.context.new",
+    "locale": "en",
+    "text": "New..."
+  },
+  {
+    "resourceID": "AbstractCollectableComponent.context.new",
+    "locale": "de",
+    "text": "Neu..."
+  },
+  {
+    "resourceID": "AbstractCollectableComponent.context.refresh",
+    "locale": "i-default",
+    "text": "Refresh..."
+  },
+  {
+    "resourceID": "AbstractCollectableComponent.context.refresh",
+    "locale": "en",
+    "text": "Refresh..."
+  },
+  {
+    "resourceID": "AbstractCollectableComponent.context.refresh",
+    "locale": "de",
+    "text": "Aktualisieren..."
   }
 ]

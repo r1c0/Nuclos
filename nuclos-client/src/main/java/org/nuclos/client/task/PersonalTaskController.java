@@ -1097,7 +1097,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	@Override
 	public void handleCollectableEvent(Collectable collectable,	MessageType messageType) {
 		switch (messageType) {
-			case SAVE_DONE :
+			case EDIT_DONE :
+			case NEW_DONE :
 				this.refreshPersonalTaskView();
 				break;
 			default :

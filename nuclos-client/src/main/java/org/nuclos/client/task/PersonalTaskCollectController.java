@@ -150,7 +150,7 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 					try {
 						boolean bSplitted = splitTaskForOwners(mdvo.getId() == null, mdvo, sSingletaskButtonName);
 						if(bSplitted){
-							broadcastCollectableEvent(selectedCollectable, MessageType.SAVE_DONE);
+							broadcastCollectableEvent(selectedCollectable, MessageType.EDIT_DONE);
 						}
 						refreshCurrentCollectable();
 					} catch(CommonBusinessException ex) {

@@ -24,7 +24,9 @@ import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
+import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
 import org.nuclos.client.ui.collect.CollectState;
+import org.nuclos.client.ui.collect.WeakCollectableEventListener;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentEvent;
 import org.nuclos.client.ui.collect.component.CollectableListOfValues;
@@ -72,25 +74,8 @@ public class NuclosLOVListener implements CollectableListOfValues.LOVListener {
 	@Override
 	public void lookup(final CollectableListOfValues.Event ev) {
 		final CollectableComponent clctcomp = ev.getCollectableComponent();
-		Component c = UIUtils.getInternalFrameOrWindowForComponent(clctcomp.getControlComponent());
-		final MainFrameTab tab;
-		if (c instanceof MainFrameTab) {
-			tab = (MainFrameTab) c;
-		} else {
-			MainFrameTab selectedTab = null;
-			try {
-				selectedTab = MainFrame.getSelectedTab(clctcomp.getControlComponent().getLocationOnScreen());
-			} catch (IllegalComponentStateException e) {
-				// 
-			} finally {
-				tab = selectedTab;
-			}
-		};
-		
-		if (tab == null) {
-			throw new NuclosFatalException("Tab from parent could not be determinded");
-		}
-		
+		final MainFrameTab tab = getTab(clctcomp);
+
 		UIUtils.runCommandLater(tab, new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
@@ -114,13 +99,58 @@ public class NuclosLOVListener implements CollectableListOfValues.LOVListener {
 					Long l = (Long)oId;
 					oId = new Integer(l.intValue());
 				}
-				Main.getMainController().showDetails(sReferencedEntityName, oId, controller);
+				if (clctcomp instanceof CollectableEventListener) {
+					Main.getMainController().showDetails(sReferencedEntityName, oId, controller, new WeakCollectableEventListener((CollectableEventListener) clctcomp));
+				}
+				else {
+					Main.getMainController().showDetails(sReferencedEntityName, oId, controller);
+				}
 			}
 		});
 	}
 
 	private static CollectController<? extends Collectable> newCollectController(String sEntityName) throws CommonBusinessException {
 		return NuclosCollectControllerFactory.getInstance().newCollectController(MainFrame.getPredefinedEntityOpenLocation(sEntityName), sEntityName, null);
+	}
+
+	@Override
+	public void createNew(CollectableComponentEvent ev) {
+		final CollectableComponent clctcomp = ev.getCollectableComponent();
+		if (!(clctcomp instanceof CollectableEventListener)) {
+			throw new IllegalStateException();
+		}
+		final MainFrameTab tab = getTab(clctcomp);
+
+		UIUtils.runCommandLater(tab, new CommonRunnable() {
+			@Override
+			public void run() throws CommonBusinessException {
+				final String sReferencedEntityName = clctcomp.getEntityField().getReferencedEntityName();
+				final CollectableEventListener listener = new WeakCollectableEventListener((CollectableEventListener) clctcomp);
+				Main.getMainController().showNew(sReferencedEntityName, tab, listener);
+			}
+		});
+	}
+
+	private MainFrameTab getTab(CollectableComponent comp) {
+		Component c = UIUtils.getInternalFrameOrWindowForComponent(comp.getControlComponent());
+		final MainFrameTab tab;
+		if (c instanceof MainFrameTab) {
+			tab = (MainFrameTab) c;
+		} else {
+			MainFrameTab selectedTab = null;
+			try {
+				selectedTab = MainFrame.getSelectedTab(comp.getControlComponent().getLocationOnScreen());
+			} catch (IllegalComponentStateException e) {
+				//
+			} finally {
+				tab = selectedTab;
+			}
+		};
+
+		if (tab == null) {
+			throw new NuclosFatalException("Tab from parent could not be determinded");
+		}
+		return tab;
 	}
 
 }	// class NuclosLOVListener
