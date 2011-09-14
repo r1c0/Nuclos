@@ -20,29 +20,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.searchcondition.PlainSubCondition;
 import org.nuclos.common.database.query.SelectQuery;
 import org.nuclos.common.database.query.definition.Column;
+import org.nuclos.common.database.query.definition.Join;
+import org.nuclos.common.database.query.definition.Join.JoinType;
 import org.nuclos.common.database.query.definition.Schema;
 import org.nuclos.common.database.query.definition.Table;
-import org.nuclos.common.database.query.statement.AndCondition;
-import org.nuclos.common.database.query.statement.ComparisonOperator;
-import org.nuclos.common.database.query.statement.Condition;
-import org.nuclos.common.database.query.statement.InnerJoinCondition;
-import org.nuclos.common.database.query.statement.JoinCondition;
-import org.nuclos.common.database.query.statement.Operand;
-import org.nuclos.common.database.query.statement.OuterJoinCondition;
 import org.nuclos.common.querybuilder.DatasourceUtils;
 import org.nuclos.common.querybuilder.DatasourceXMLParser;
+import org.nuclos.common.querybuilder.DatasourceXMLParser.XMLConnector;
+import org.nuclos.common.querybuilder.DatasourceXMLParser.XMLTable;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
+import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.report.SchemaCache;
 import org.nuclos.server.report.WhereConditionParser;
@@ -110,9 +105,9 @@ public class DatasourceServerUtils {
 	public static PlainSubCondition getConditionWithIdForInClause(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
 		return new PlainSubCondition(getSqlWithIdForInClause(sDatasourceXML, mpParams));
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param sDatasourceXML
 	 * @param mpParams
 	 * @return
@@ -155,8 +150,7 @@ public class DatasourceServerUtils {
 	 */
 	private static String createSQLForCaching(String sDatasourceXML) throws NuclosDatasourceException {
 		String result = null;
-		final SelectQuery query = new SelectQuery(
-		    SessionUtils.getCurrentUserName());
+		final SelectQuery query = new SelectQuery(SessionUtils.getCurrentUserName());
 
 		final DatasourceXMLParser.Result parseresult = parseDatasourceXML(sDatasourceXML);
 
@@ -166,156 +160,22 @@ public class DatasourceServerUtils {
 			final Schema schema = SchemaCache.getInstance().getCurrentSchema();
 
 			// create from clause
-			final Set<Table> setFromTables = new HashSet<Table>();
-			for(DatasourceXMLParser.XMLConnector xmlconnector : parseresult.getLstConnectors()) {
-				setFromTables.add(createTable(
-				    schema,
-				    parseresult.getMapXMLTables().get(
-				        xmlconnector.getSrcTable())));
-				setFromTables.add(createTable(
-				    schema,
-				    parseresult.getMapXMLTables().get(
-				        xmlconnector.getDstTable())));
-			}
-			for(DatasourceXMLParser.XMLColumn xmlcolumn : parseresult.getLstColumns()) {
-				setFromTables.add(createTable(schema,
-				    parseresult.getMapXMLTables().get(xmlcolumn.getTable())));
-			}
-			for(Table table : setFromTables) {
-				parseresult.getMapTables().put(table.getAlias(), table);
-				query.addToFromClause(table);
+			final Map<String, Table> fromTables = new HashMap<String, Table>();
+			for (XMLTable xmlTable : parseresult.getMapXMLTables().values()) {
+				Table t = createTable(schema, xmlTable);
+				fromTables.put(t.getAlias(), t);
+				query.addToFromClause(t);
 			}
 
-			// create where clause (for join)
-			boolean bFirst = true;
-			Vector<Table> joins = null;
-
-			for(DatasourceXMLParser.XMLConnector xmlconnector : parseresult.getLstConnectors()) {
-				final Table srcTable = (Table) (parseresult.getMapTables().get(xmlconnector.getSrcTable())).clone();
-				final Column srcColumn = new Column(
-				    srcTable.getColumn(xmlconnector.getSrcColumn()));
-				final Table dstTable = (Table) (parseresult.getMapTables().get(xmlconnector.getDstTable())).clone();
-				final Column dstColumn = new Column(
-				    dstTable.getColumn(xmlconnector.getDstColumn()));
-				final Operand left = new Operand(srcColumn);
-				final Operand right = new Operand(dstColumn);
-				final String sJoinType = xmlconnector.getJoinType() == null
-				    ? "InnerJoin"
-				    : xmlconnector.getJoinType();
-
-				final ComparisonOperator op;
-
-				if(sJoinType.equals("LeftOuterJoin")) {
-					op = ComparisonOperator.LEFT_OUTER_JOIN_OPERATOR;
-				}
-				else if(sJoinType.equals("RightOuterJoin")) {
-					op = ComparisonOperator.RIGHT_OUTER_JOIN_OPERATOR;
-				}
-				else {
-					op = ComparisonOperator.EQUALS_OPERATOR;
-				}
-
-				// TODO: refactor datasource sql generation
-
-				// At the moment, the MSSQL-/Oracle-specific behaviour is
-				// changed as follows:
-				// As before, inner joins are written as cartesian product with
-				// a where
-				// condition.
-				// Outer joins now always uses the JOIN syntax (like MSSQL
-				// before) because
-				// it is standard SQL (and also supported by Oracle since 9i).
-				// However, to improve portability, the joins are rewritten
-				// using JDBC's
-				// escape syntax (i.e. enclosed by the {oj...} delimiters).
-				// NOTE that the behavior how the JOIN tables/conditions are
-				// generated
-				// is unchanged!
-				/**
-				 * normal WHERE condition. the only case where the statement is
-				 * used as cartesian product
-				 */
-				if(op.equals(ComparisonOperator.EQUALS_OPERATOR)) {
-					JoinCondition condition = new InnerJoinCondition(left, op,
-					    right);
-					if(!bFirst) {
-						query.addToWhereClause(new AndCondition());
-					}
-					else {
-						bFirst = false;
-					}
-					query.addToWhereClause((Condition) condition);
-				}
-				else {
-					/**
-					 * this is the LEFT JOIN or RIGHT JOIN case here the
-					 * statement is put in a fake table for getting it to the
-					 * FROM block of the statement.
-					 */
-					OuterJoinCondition condition = new OuterJoinCondition(left,
-					    op, right);
-
-					int tableAliasNumber = 0;
-
-					if(joins == null) {
-						joins = new Vector<Table>();
-					}
-					String fullTableName = "";
-
-					Table leftTable = ((Column) left.getObject()).getTable();
-					Table rightTable = ((Column) right.getObject()).getTable();
-
-					String leftTableName = leftTable.getName();
-					String rightTableName = rightTable.getName();
-
-					String fullTableNameLeft = ((Column) left.getObject()).getTable().getAlias()
-					    + "." + leftTableName;
-					String fullTableNameRight = ((Column) right.getObject()).getTable().getAlias()
-					    + "." + rightTableName;
-					/**
-					 * is the table already used by an join? create a unique
-					 * alias for that table, the query is working on the first
-					 * alias of that table
-					 */
-					String tempTableName = "";
-
-					for(Table table : joins) {
-						/**
-						 * full table names needed because there might be the
-						 * reason for multiple instances of a query object
-						 */
-						tempTableName = table.getName();
-
-						fullTableName = table.getAlias() + "." + tempTableName;
-
-						if(fullTableName.equals(fullTableNameLeft))
-							((Column) left.getObject()).getTable().setAlias(
-							    getNextNumberForTableAlias(
-							        ((Column) left.getObject()).getTable().getAlias(),
-							        tableAliasNumber++));
-
-						if(fullTableName.equals(fullTableNameRight))
-							((Column) right.getObject()).getTable().setAlias(
-							    getNextNumberForTableAlias(
-							        ((Column) right.getObject()).getTable().getAlias(),
-							        tableAliasNumber++));
-
-					}
-
-					/**
-					 * remembering the tables that were used for joining needed
-					 * for deleting the tables from the statement afterwards.
-					 */
-					joins.add(((Column) left.getObject()).getTable());
-					joins.add(((Column) right.getObject()).getTable());
-
-					/**
-					 * creating a fake table that has the join statment a table
-					 * name. otherwise it is not possible to get the join
-					 * statement to the FROM block in the statment.
-					 */
-					query.addToFromClause(condition.getOuterJoinTable());
-				}
+			for(XMLConnector xmlconnector : parseresult.getLstConnectors()) {
+				final Table srcTable = (Table) (fromTables.get(xmlconnector.getSrcTable())).clone();
+				final Column srcColumn = new Column(srcTable.getColumn(xmlconnector.getSrcColumn()));
+				final Table dstTable = (Table) (fromTables.get(xmlconnector.getDstTable())).clone();
+				final Column dstColumn = new Column(dstTable.getColumn(xmlconnector.getDstColumn()));
+				final JoinType joinType = xmlconnector.getJoinType() == null ? JoinType.INNER_JOIN :
+					KeyEnum.Utils.findEnum(JoinType.class, xmlconnector.getJoinType());
+				Join join = new Join(srcColumn, joinType == null ? JoinType.INNER_JOIN : joinType, dstColumn);
+				query.addJoin(join);
 			}
 
 			// create select, where, group by, order by claues
@@ -323,37 +183,26 @@ public class DatasourceServerUtils {
 			final List<String> lstColumnConditions = new ArrayList<String>();
 
 			for(DatasourceXMLParser.XMLColumn xmlcolumn : parseresult.getLstColumns()) {
-				final Column column = createColumn(parseresult.getMapTables(),
-				    xmlcolumn);
+				final Column column = createColumn(fromTables, xmlcolumn);
 				if(xmlcolumn.isVisible()) {
-					query.addToSelectClause(
-					    createColumn(parseresult.getMapTables(), xmlcolumn),
-					    xmlcolumn.getAlias());
+					query.addToSelectClause(column, xmlcolumn.getAlias());
 				}
 				if(bGroupBy) {
-					if(xmlcolumn.getGroup() == null
-					    || xmlcolumn.getGroup().length() == 0) {
+					if(xmlcolumn.getGroup() == null || xmlcolumn.getGroup().length() == 0) {
 						xmlcolumn.setGroup(DatasourceVO.GroupBy.MAX.getLabel());
 					}
-					else if(xmlcolumn.getGroup().equals(
-					    DatasourceVO.GroupBy.GROUP.getLabel())) {
-						query.addToGroupByClause(
-						    createColumn(parseresult.getMapTables(), xmlcolumn),
-						    xmlcolumn.getGroup());
+					else if(xmlcolumn.getGroup().equals(DatasourceVO.GroupBy.GROUP.getLabel())) {
+						query.addToGroupByClause(column, xmlcolumn.getGroup());
 					}
 					else {
-						query.addToGroupByMap(
-						    createColumn(parseresult.getMapTables(), xmlcolumn),
-						    xmlcolumn.getGroup());
+						query.addToGroupByMap(column, xmlcolumn.getGroup());
 					}
 				}
 				lstColumnConditions.clear();
 				final WhereConditionParser whereConditionParser = new WhereConditionParser();
 				for(DatasourceXMLParser.XMLCondition xmlcondition : xmlcolumn.getLstConditions()) {
-					if(xmlcondition.getCondition() != null
-					    && xmlcondition.getCondition().length() > 0) {
-						final String sCondition = whereConditionParser.parseCondition(
-						    column, xmlcondition.getCondition());
+					if(xmlcondition.getCondition() != null && xmlcondition.getCondition().length() > 0) {
+						final String sCondition = whereConditionParser.parseCondition(column, xmlcondition.getCondition());
 						lstColumnConditions.add(sCondition);
 					}
 				}
@@ -361,26 +210,10 @@ public class DatasourceServerUtils {
 				if(lstColumnConditions.size() > 0) {
 					query.addColumnWhereClauses(lstColumnConditions);
 				}
-				if(xmlcolumn.getSort() != null
-				    && xmlcolumn.getSort().length() > 0) {
-					query.addToOrderByClause(
-					    column,
-					    xmlcolumn.getSort().equals(
-					        DatasourceVO.OrderBy.ASCENDING.getLabel()));
+				if(xmlcolumn.getSort() != null && xmlcolumn.getSort().length() > 0) {
+					query.addToOrderByClause(column, xmlcolumn.getSort().equals(DatasourceVO.OrderBy.ASCENDING.getLabel()));
 				}
 			}
-			/**
-			 * deleting duplicate tables from the query object. they are in
-			 * mssql for joins if the vector joins is not null, otherwise it is
-			 * not used
-			 */
-			if(joins != null) {
-				for(Table table : joins) {
-					query.deleteItemFromLstFrom(table.getName());
-				}
-				joins = null;
-			}
-
 			result = query.getSelectStatement(parseresult.isEntityOptionDynamic());
 		}
 		else {

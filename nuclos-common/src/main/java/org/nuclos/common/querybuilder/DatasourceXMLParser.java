@@ -28,6 +28,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.XMLUtils;
+import org.nuclos.server.report.valueobject.DatasourceParameterVO;
+import org.nuclos.server.report.valueobject.DatasourceParameterValuelistproviderVO;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.EntityResolver;
@@ -36,13 +41,6 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.LexicalHandler;
-
-import org.nuclos.common2.StringUtils;
-import org.nuclos.common2.XMLUtils;
-import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.database.query.definition.Table;
-import org.nuclos.server.report.valueobject.DatasourceParameterVO;
-import org.nuclos.server.report.valueobject.DatasourceParameterValuelistproviderVO;
 
 /**
  * Datasource xml parser to parse a xml representation of a datasource.
@@ -68,7 +66,6 @@ public class DatasourceXMLParser {
 	private static final String TAG_VALUELISTPROVIDER_PARAMETER = "vlpparameter";
 
 	public static class Result {
-		final Map<String, Table> mapTables = new HashMap<String, Table>();
 		final Map<String, DatasourceXMLParser.XMLTable> mapXMLTables = new HashMap<String, DatasourceXMLParser.XMLTable>();
 		final List<DatasourceXMLParser.XMLColumn> lstColumns = new ArrayList<DatasourceXMLParser.XMLColumn>();
 		final List<DatasourceXMLParser.XMLConnector> lstConnectors = new ArrayList<DatasourceXMLParser.XMLConnector>();
@@ -91,9 +88,6 @@ public class DatasourceXMLParser {
 		}
 		public List<DatasourceParameterVO> getLstParameters() {
 			return lstParameters;
-		}
-		public Map<String, Table> getMapTables() {
-			return mapTables;
 		}
 		public Map<String, DatasourceXMLParser.XMLTable> getMapXMLTables() {
 			return mapXMLTables;

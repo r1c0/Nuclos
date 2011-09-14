@@ -17,14 +17,18 @@
 package org.nuclos.common.database.query;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.database.query.definition.Column;
+import org.nuclos.common.database.query.definition.Join;
+import org.nuclos.common.database.query.definition.Join.JoinType;
 import org.nuclos.common.database.query.definition.Table;
 import org.nuclos.common.database.query.statement.AndCondition;
 import org.nuclos.common.database.query.statement.CloseBracketCondition;
@@ -49,6 +53,7 @@ public class SelectQuery {
 
 	private final List<Column> lstSelect = new ArrayList<Column>();
 	private final List<Table> lstFrom = new ArrayList<Table>();
+	private final List<Join> lstJoin = new ArrayList<Join>();
 	private final List<Condition> lstWhere = new ArrayList<Condition>();
 	private final List<OrderBy> lstOrderBy = new ArrayList<OrderBy>();
 	private final List<GroupBy> lstGroupBy = new ArrayList<GroupBy>();
@@ -106,6 +111,12 @@ public class SelectQuery {
 	public void addToFromClause(Table table) {
 		if (!lstFrom.contains(table)) {
 			lstFrom.add(table);
+		}
+	}
+
+	public void addJoin(Join join) {
+		if (!lstJoin.contains(join)) {
+			lstJoin.add(join);
 		}
 	}
 
@@ -185,13 +196,13 @@ public class SelectQuery {
 			}
 			else {
 				sb.append("\t");
-				
+
 				boolean bQuoteColumnName = true;
 				if (("INTID".equalsIgnoreCase(column.getName()) || "INTID_T_UD_GENERICOBJECT".equalsIgnoreCase(column.getName()))
 						&&	isDynamicEntity && table.isQuery()) {
 					bQuoteColumnName = false;
-				} 
-				
+				}
+
 				if (!column.isExpression()) {
 					sb.append(table.getAlias());
 					sb.append(".");
@@ -206,7 +217,7 @@ public class SelectQuery {
 					if (("INTID".equalsIgnoreCase(column.getAlias()) || "INTID_T_UD_GENERICOBJECT".equalsIgnoreCase(column.getAlias()))
 							&& isDynamicEntity) {
 						bQuoteAlias = false;
-					} 
+					}
 					sb.append(bQuoteAlias?" \"":" ");
 					sb.append(column.getAlias());
 					sb.append(bQuoteAlias?"\"":"");
@@ -227,13 +238,18 @@ public class SelectQuery {
 			sb.deleteCharAt(0);
 		}
 		else {
+			Set<String> processed = new HashSet<String>();
 			final Iterator<Table> iterFrom = lstFrom.iterator();
 			while (iterFrom.hasNext()) {
 				final Table table = iterFrom.next();
 				if (table.getAlias() == null) {
 					System.err.println("Processing error: table " + table.getName() + " is referenced in FROM clause, but does not have alias");
 				}
+				else if (processed.contains(table.getAlias())) {
+					continue;
+				}
 				else {
+					processed.add(table.getAlias());
 					if (table.isQuery()) {
 						sb.append("\t(");
 
@@ -244,20 +260,59 @@ public class SelectQuery {
 						sb.append(") ");
 						sb.append(table.getAlias());
 					}
-					else if (table.isJoin()) {
-						sb.append("\t").append(table.getName());
-					}
 					else {
 						sb.append("\t");
 						sb.append(table.getName());
 						sb.append(' ');
 						sb.append(table.getAlias());
 					}
+					addJoins(sb, table, processed);
 					sb.append(iterFrom.hasNext() ? ",\n" : "\n");
 				}
 			}
 			if (sb.charAt(sb.length() - 2) == ',') {
 				sb.deleteCharAt(sb.length() - 2);
+			}
+		}
+	}
+
+	private void addJoins(StringBuffer sb, Table src, Set<String> processed) {
+		for (Join join : lstJoin) {
+			Column srcColumn;
+			Column dstColumn;
+			JoinType joinType;
+			if (src.equals(join.getSrcColumn().getTable())) {
+				srcColumn = join.getSrcColumn();
+				dstColumn = join.getDstColumn();
+				joinType = join.getType();
+			}
+			else if (src.equals(join.getDstColumn().getTable())) {
+				srcColumn = join.getDstColumn();
+				dstColumn = join.getSrcColumn();
+				joinType = join.getType().reverse();
+			}
+			else {
+				continue;
+			}
+
+			if (!processed.contains(dstColumn.getTable().getAlias())) {
+				processed.add(dstColumn.getTable().getAlias());
+
+				sb.append("\n\t");
+				sb.append(' ');
+				sb.append(joinType.getSql());
+				sb.append(' ');
+				sb.append(dstColumn.getTable().getName() + ' ' + dstColumn.getTable().getAlias());
+				sb.append(" ON ");
+				sb.append(srcColumn.getTable().getAlias());
+				sb.append('.');
+				sb.append(srcColumn.getName());
+				sb.append(" = ");
+				sb.append(dstColumn.getTable().getAlias());
+				sb.append('.');
+				sb.append(dstColumn.getName());
+
+				addJoins(sb, dstColumn.getTable(), processed);
 			}
 		}
 	}
@@ -379,23 +434,4 @@ public class SelectQuery {
 	public void addToGroupByMap(Column col, String groupBy) {
 		mpGroupBy.put(col, translateGroupBy(groupBy));
 	}
-
-	/**
-	 * Method needed for MSSQL Server, because the join condition is not in
-	 * the where block, but in the from block. With this Method the
-	 * duplicate Tables are removed which are already used by the join
-	 * condition. otherwise the tables are used twice.
-	 *
-	 * @param toDelete
-	 */
-        public void deleteItemFromLstFrom(String tblToDelete) {
-        	String tablename = tblToDelete;
-        	for (int i = 0; i < lstFrom.size(); i++) {
-        	    Table t = lstFrom.get(i);
-        	    if (t.getName().equals(tablename))
-        		lstFrom.remove(i);
-        	}
-
-        }
-
 }	// class SelectQuery
