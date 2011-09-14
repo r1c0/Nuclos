@@ -712,7 +712,7 @@ public class ResultController<Clct extends Collectable> {
 			if (sortField instanceof CollectableEOEntityField) {
 				final CollectableEOEntityField sf = (CollectableEOEntityField) sortField;
 				final PivotInfo pinfo = sf.getMeta().getPivotInfo();
-				if (pinfo != null) {
+				if (pinfo != null && sortKey.getSortOrder() != SortOrder.UNSORTED) {
 					// The join table alias must be unique in the SQL
 					final String joinAlias = pinfo.getPivotTableAlias(sf.getMeta().getField());
 
@@ -720,14 +720,22 @@ public class ResultController<Clct extends Collectable> {
 							pinfo.getValueField(), sortKey.getSortOrder() == SortOrder.ASCENDING);
 				}
 				else {
-					// ???
-					sort = new CollectableSorting(SystemFields.BASE_ALIAS, baseEntity, baseEntity.equals(sortField.getEntityName()),
+					if (sortKey.getSortOrder() != SortOrder.UNSORTED) {
+						// ???
+						sort = new CollectableSorting(SystemFields.BASE_ALIAS, baseEntity, baseEntity.equals(sortField.getEntityName()),
 							sortField.getName(), sortKey.getSortOrder() == SortOrder.ASCENDING);
+					} else {
+						continue;
+					}
 				}
 			}
 			else if (sortField.getEntityName().equals(baseEntity)) {
-				sort = new CollectableSorting(SystemFields.BASE_ALIAS, baseEntity, baseEntity.equals(sortField.getEntityName()),
-						sortField.getName(), sortKey.getSortOrder() == SortOrder.ASCENDING);
+				if (sortKey.getSortOrder() != SortOrder.UNSORTED) {
+					sort = new CollectableSorting(SystemFields.BASE_ALIAS, baseEntity, baseEntity.equals(sortField.getEntityName()),
+							sortField.getName(), sortKey.getSortOrder() == SortOrder.ASCENDING);
+				} else {
+					continue;
+				}
 			}
 			else {
 				// not a pivot element and not a field of the base entity => we cannot sort that
