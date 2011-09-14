@@ -319,15 +319,22 @@ public class SearchResultTemplate {
 			for (String n: PreferencesUtils.getStringList(prefs, PREFS_NODE_VISIBLECOLUMNS)) {
 				final Pair<String,String> p = StringUtils.getDot(n);
 				final CollectableEntityFieldWithEntityForExternal field;
-				if (p.getX().equals("") || p.getX().equals(entity)) {
-					field = new CollectableEntityFieldWithEntityForExternal(cEntity, p.getY(), false, true);
+				try {
+					if (p.getX().equals("") || p.getX().equals(entity)) {
+						field = new CollectableEntityFieldWithEntityForExternal(cEntity, p.getY(), false, true);
+					}
+					else {
+						final EntityMetaDataVO vo = mdProv.getEntity(p.getX());
+						final CollectableEOEntity e = new CollectableEOEntity(vo, mdProv.getAllEntityFieldsByEntity(p.getX()));
+						field = new CollectableEntityFieldWithEntityForExternal(e, p.getY(), false, true);
+					}
+					visible.add(field);
 				}
-				else {
-					final EntityMetaDataVO vo = mdProv.getEntity(p.getX());
-					final CollectableEOEntity e = new CollectableEOEntity(vo, mdProv.getAllEntityFieldsByEntity(p.getX()));
-					field = new CollectableEntityFieldWithEntityForExternal(e, p.getY(), false, true);
+				catch (IllegalArgumentException r) {
+					// CollectableEntityFieldWithEntityForExternal can throw IllegalArgumentException
+					// if the field does not exist any more. In this case the field is not added to
+					// visible. (tp)
 				}
-				visible.add(field);
 			}
 			result.setVisibleColumns(visible);
 		}
@@ -356,15 +363,22 @@ public class SearchResultTemplate {
 			for (String n: PreferencesUtils.getStringList(prefs, PREFS_NODE_VISIBLECOLUMNSFIXED)) {
 				final Pair<String,String> p = StringUtils.getDot(n);
 				final CollectableEntityFieldWithEntityForExternal field;
-				if (p.getX().equals("") || p.getX().equals(entity)) {
-					field = new CollectableEntityFieldWithEntityForExternal(cEntity, p.getY(), false, true);
+				try {
+					if (p.getX().equals("") || p.getX().equals(entity)) {
+						field = new CollectableEntityFieldWithEntityForExternal(cEntity, p.getY(), false, true);
+					}
+					else {
+						final EntityMetaDataVO vo = mdProv.getEntity(p.getX());
+						final CollectableEOEntity e = new CollectableEOEntity(vo, mdProv.getAllEntityFieldsByEntity(p.getX()));
+						field = new CollectableEntityFieldWithEntityForExternal(e, p.getY(), false, true);
+					}
+					fixed.add(field);
 				}
-				else {
-					final EntityMetaDataVO vo = mdProv.getEntity(p.getX());
-					final CollectableEOEntity e = new CollectableEOEntity(vo, mdProv.getAllEntityFieldsByEntity(p.getX()));
-					field = new CollectableEntityFieldWithEntityForExternal(e, p.getY(), false, true);
+				catch (IllegalArgumentException r) {
+					// CollectableEntityFieldWithEntityForExternal can throw IllegalArgumentException
+					// if the field does not exist any more. In this case the field is not added to
+					// fixed. (tp)
 				}
-				fixed.add(field);
 			}
 			result.setFixedColumns(fixed);
 		}
