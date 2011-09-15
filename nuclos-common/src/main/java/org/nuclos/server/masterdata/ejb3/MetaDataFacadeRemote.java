@@ -27,6 +27,7 @@ import org.nuclos.common.CommonMetaDataProvider;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
 import org.nuclos.common.transport.vo.EntityMetaDataTO;
 import org.nuclos.common.valueobject.EntityRelationshipModelVO;
@@ -174,4 +175,7 @@ public interface MetaDataFacadeRemote extends CommonMetaDataProvider {
 
 	@RolesAllowed("Login")
 	public void tryVirtualEntitySelect(EntityMetaDataVO virtualentity) throws NuclosBusinessException;
+
+	@RolesAllowed("Login")
+	public void tryRemoveProcess(EntityObjectVO process) throws NuclosBusinessException;
 }

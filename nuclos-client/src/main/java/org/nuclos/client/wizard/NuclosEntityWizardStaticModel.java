@@ -17,6 +17,7 @@
 package org.nuclos.client.wizard;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -31,14 +32,17 @@ import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.wizard.model.Attribute;
 import org.nuclos.client.wizard.model.EntityAttributeTableModel;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeInputStep;
-import org.nuclos.client.wizard.steps.NuclosEntityAttributeRelationShipStep;
-import org.nuclos.client.wizard.steps.NuclosEntityAttributeTranslationStep;
 import org.nuclos.client.wizard.steps.NuclosEntityFinalStep;
+import org.nuclos.client.wizard.steps.NuclosEntityOptionStep;
+import org.nuclos.client.wizard.steps.NuclosEntityProcessStep;
+import org.nuclos.client.wizard.steps.NuclosEntityTreeValueStep;
 import org.nuclos.client.wizard.util.ModifierMap;
 import org.nuclos.common.EntityTreeViewVO;
 import org.nuclos.common.TranslationVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.resource.valueobject.ResourceVO;
+import org.pietschy.wizard.InvalidStateException;
 import org.pietschy.wizard.WizardStep;
 import org.pietschy.wizard.models.StaticModel;
 
@@ -91,6 +95,8 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	String documentPath;
 	String reportFilename;
 	String virtualentity;
+
+	Collection<EntityObjectVO> processes;
 
 	boolean blnImportTable;
 	String jdbcUrl;
@@ -270,6 +276,9 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 
 	public void setStateModel(boolean blnStateModel) {
 		this.blnStateModel = blnStateModel;
+		if (overview != null) {
+			overview.setEnabled(NuclosEntityProcessStep.class, blnStateModel);
+		}
 	}
 
 	public boolean isCachable() {
@@ -627,10 +636,17 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 
 	}
 
+	private NuclosEntityWizardStaticModelOverview overview;
+
 	@Override
-    public JComponent getOverviewComponent() {
-      return new NuclosEntityWizardStaticModelOverview(this);
-    }
+	public JComponent getOverviewComponent() {
+		if (overview == null) {
+			overview = new NuclosEntityWizardStaticModelOverview(this);
+			overview.setEnabled(NuclosEntityProcessStep.class, blnStateModel);
+			overview.setEnabled(NuclosEntityOptionStep.class, isVirtual());
+		}
+		return overview;
+	}
 
 	public boolean hasReferenzTyp() {
 		for(Attribute attr : this.attributeModel.getAttributes()) {
@@ -717,12 +733,41 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 
 	public void setVirtualentity(String virtualentity) {
 		this.virtualentity = virtualentity;
+		if (overview != null) {
+			overview.setEnabled(NuclosEntityOptionStep.class, org.nuclos.common2.StringUtils.isNullOrEmpty(virtualentity));
+		}
+	}
+
+	public Collection<EntityObjectVO> getProcesses() {
+		return processes;
+	}
+
+	public void setProcesses(Collection<EntityObjectVO> processes) {
+		this.processes = processes;
+	}
+
+	@Override
+	public void nextStep() {
+		super.nextStep();
+		WizardStep step = this.getActiveStep();
+		if(step instanceof NuclosEntityProcessStep && !this.isStateModel()) {
+			super.nextStep();
+		}
 	}
 
 	@Override
 	public void previousStep() {
 		WizardStep step = this.getActiveStep();
+		if (step instanceof NuclosEntityProcessStep) {
+			try {
+				step.applyState();
+			} catch (InvalidStateException e) { }
+		}
 		if(step instanceof NuclosEntityAttributeInputStep && this.isVirtual()) {
+			super.previousStep();
+			super.previousStep();
+		}
+		else if(step instanceof NuclosEntityTreeValueStep && !this.isStateModel()) {
 			super.previousStep();
 			super.previousStep();
 		}

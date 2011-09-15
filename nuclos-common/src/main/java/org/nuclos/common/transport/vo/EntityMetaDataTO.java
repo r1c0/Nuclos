@@ -17,11 +17,13 @@
 package org.nuclos.common.transport.vo;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 import org.nuclos.common.EntityTreeViewVO;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 
 
 /**
@@ -34,16 +36,18 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
  * @version 01.00.00
  */
 public class EntityMetaDataTO implements Serializable {
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	EntityMetaDataVO voEntityMetaVO;
-	
+
 	List<TranslationVO> lstTranslation;
 	List<EntityTreeViewVO> lstTreeView;
+
+	Collection<EntityObjectVO> processes;
 
 	public EntityMetaDataVO getEntityMetaVO() {
 		return voEntityMetaVO;
@@ -60,7 +64,7 @@ public class EntityMetaDataTO implements Serializable {
 	public void setTranslation(List<TranslationVO> lstTranslation) {
 		this.lstTranslation = lstTranslation;
 	}
-	
+
 	public List<EntityTreeViewVO> getTreeView() {
 		return lstTreeView;
 	}
@@ -68,6 +72,12 @@ public class EntityMetaDataTO implements Serializable {
 	public void setTreeView(List<EntityTreeViewVO> lstTreeView) {
 		this.lstTreeView = lstTreeView;
 	}
-	
-	
+
+	public Collection<EntityObjectVO> getProcesses() {
+		return processes;
+	}
+
+	public void setProcesses(Collection<EntityObjectVO> processes) {
+		this.processes = processes;
+	}
 }

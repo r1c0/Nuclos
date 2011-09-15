@@ -33,106 +33,102 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.pietschy.wizard.WizardStep;
-import org.pietschy.wizard.models.StaticModel;
-
 import org.nuclos.client.wizard.steps.NuclosEntityAbstractStep;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeAbstractStep;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeRelationShipStep;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeValueListShipStep;
+import org.pietschy.wizard.WizardStep;
+import org.pietschy.wizard.models.StaticModel;
 
 /**
-* <br>
-* Created by Novabit Informationssysteme GmbH <br>
-* Please visit <a href="http://www.novabit.de">www.novabit.de</a>
-* 
-* @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
-* @version 01.00.00
-*/
+ * <br>
+ * Created by Novabit Informationssysteme GmbH <br>
+ * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
+ *
+ * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
+ * @version 01.00.00
+ */
 public class NuclosEntityWizardStaticModelOverview extends JPanel implements PropertyChangeListener {
-	
-   /**
-	 * 
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-private StaticModel model;
-   private HashMap<WizardStep, JLabel> labels = new HashMap<WizardStep, JLabel>();
+	private StaticModel model;
+	private HashMap<WizardStep, JLabel> labels = new HashMap<WizardStep, JLabel>();
 
-   @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	public NuclosEntityWizardStaticModelOverview(StaticModel model) {
-      this.model = model;
-      this.model.addPropertyChangeListener(this);
-      setBackground(Color.WHITE);
-      setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
-      setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+		this.model = model;
+		this.model.addPropertyChangeListener(this);
+		setBackground(Color.WHITE);
+		setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-      JLabel title = new JLabel(getMessage("wizard.statemodel.overview", "\u00dcbersicht"));
-      title.setBorder(BorderFactory.createEmptyBorder(0,4,4,4));
-      title.setAlignmentX(0);
-      title.setMaximumSize(new Dimension(Integer.MAX_VALUE, title.getMaximumSize().height));
-      add(title);
-      int i = 1;
-      for (Iterator<WizardStep> iter = model.stepIterator(); iter.hasNext();) {
-         WizardStep step = iter.next();
-         JLabel label = new JLabel(""+ i++ + ". " + step.getName());
-         label.setBackground(Color.GRAY.brighter());
-         label.setBorder(BorderFactory.createEmptyBorder(2,4,2,4));
-         label.setAlignmentX(0);
-         label.setMaximumSize(new Dimension(Integer.MAX_VALUE, label.getMaximumSize().height));
-         add(label);
-         labels.put(step, label);
-         label.addMouseListener(new MouseAdapter() {
-
+		JLabel title = new JLabel(getMessage("wizard.statemodel.overview", "\u00dcbersicht"));
+		title.setBorder(BorderFactory.createEmptyBorder(0, 4, 4, 4));
+		title.setAlignmentX(0);
+		title.setMaximumSize(new Dimension(Integer.MAX_VALUE, title.getMaximumSize().height));
+		add(title);
+		int i = 1;
+		for (Iterator<WizardStep> iter = model.stepIterator(); iter.hasNext();) {
+			WizardStep step = iter.next();
+			JLabel label = new JLabel("" + i++ + ". " + step.getName());
+			label.setBackground(Color.GRAY.brighter());
+			label.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
+			label.setAlignmentX(0);
+			label.setMaximumSize(new Dimension(Integer.MAX_VALUE, label.getMaximumSize().height));
+			add(label);
+			labels.put(step, label);
+			label.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					
-					
-					JLabel lbClicked = (JLabel)e.getSource();
-					for(WizardStep step : labels.keySet()) {
+					JLabel lbClicked = (JLabel) e.getSource();
+					if (!lbClicked.isEnabled()) {
+						return;
+					}
+					for (WizardStep step : labels.keySet()) {
 						JLabel lb = labels.get(step);
-						if(lb.equals(lbClicked)) {
-							if(step.isComplete()) {
-								if(step instanceof NuclosEntityAbstractStep) {
-									NuclosEntityAbstractStep wizardStep = (NuclosEntityAbstractStep)step;								
+						if (lb.equals(lbClicked)) {
+							if (step.isComplete()) {
+								if (step instanceof NuclosEntityAbstractStep) {
+									NuclosEntityAbstractStep wizardStep = (NuclosEntityAbstractStep) step;
 									wizardStep.getModel().reset();
 									boolean blnSearching = true;
-									while(blnSearching) {									
+									while (blnSearching) {
 										WizardStep activeStep = wizardStep.getModel().getActiveStep();
-										if(!activeStep.isComplete()) {
+										if (!activeStep.isComplete()) {
 											blnSearching = false;
 											break;
 										}
-										if(activeStep == wizardStep) {
-											blnSearching = false;									
-										}
-										else {
+										if (activeStep == wizardStep) {
+											blnSearching = false;
+										} else {
 											wizardStep.getModel().nextStep();
 										}
 									}
 									break;
-								}
-								else if(step instanceof NuclosEntityAttributeAbstractStep){
-									NuclosEntityAttributeAbstractStep wizardStep = (NuclosEntityAttributeAbstractStep)step;
+								} else if (step instanceof NuclosEntityAttributeAbstractStep) {
+									NuclosEntityAttributeAbstractStep wizardStep = (NuclosEntityAttributeAbstractStep) step;
 									wizardStep.getModel().reset();
 									boolean blnSearching = true;
-									while(blnSearching) {									
+									while (blnSearching) {
 										WizardStep activeStep = wizardStep.getModel().getActiveStep();
-										if(!activeStep.isComplete()) {
-											if(!(activeStep instanceof NuclosEntityAttributeRelationShipStep)) {
+										if (!activeStep.isComplete()) {
+											if (!(activeStep instanceof NuclosEntityAttributeRelationShipStep)) {
 												blnSearching = false;
 												break;
 											}
 										}
-										if(activeStep == wizardStep) {
-											if(!(activeStep instanceof NuclosEntityAttributeValueListShipStep)) 
-												blnSearching = false;									
+										if (activeStep == wizardStep) {
+											if (!(activeStep instanceof NuclosEntityAttributeValueListShipStep))
+												blnSearching = false;
 											else {
 												blnSearching = false;
 												wizardStep.getModel().nextStep();
 												wizardStep.getModel().nextStep();
 											}
-										}
-										else {
+										} else {
 											wizardStep.getModel().nextStep();
 										}
 									}
@@ -142,32 +138,39 @@ private StaticModel model;
 						}
 					}
 				}
-         	
-         });
-      }
 
-      add(Box.createGlue());
-   }
+			});
+		}
 
-   @Override
-public void propertyChange(PropertyChangeEvent evt) {
-      if (evt.getPropertyName().equals("activeStep"))
-      {
-         JLabel old = labels.get(evt.getOldValue());
-         if (old != null)
-            formatInactive(old);
+		add(Box.createGlue());
+	}
 
-         JLabel label = labels.get(evt.getNewValue());
-         formatActive(label);
-         repaint();
-      }
-   }
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (evt.getPropertyName().equals("activeStep")) {
+			JLabel old = labels.get(evt.getOldValue());
+			if (old != null)
+				formatInactive(old);
 
-   protected void formatActive(JLabel label) {
-      label.setOpaque(true);
-   }
+			JLabel label = labels.get(evt.getNewValue());
+			formatActive(label);
+			repaint();
+		}
+	}
 
-   protected void formatInactive(JLabel label) {
-      label.setOpaque(false);
-   }
+	protected void formatActive(JLabel label) {
+		label.setOpaque(true);
+	}
+
+	protected void formatInactive(JLabel label) {
+		label.setOpaque(false);
+	}
+
+	public void setEnabled(Class<? extends WizardStep> clazz, boolean enabled) {
+		for (WizardStep s : labels.keySet()) {
+			if (clazz.isAssignableFrom(s.getClass())) {
+				labels.get(s).setEnabled(enabled);
+			}
+		}
+	}
 }

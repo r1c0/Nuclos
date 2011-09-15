@@ -29,6 +29,7 @@ import org.nuclos.client.wizard.steps.NuclosEntityAttributeInputStep;
 import org.nuclos.client.wizard.steps.NuclosEntityCommonPropertiesStep;
 import org.nuclos.client.wizard.steps.NuclosEntityNameStep;
 import org.nuclos.client.wizard.steps.NuclosEntityOptionStep;
+import org.nuclos.client.wizard.steps.NuclosEntityProcessStep;
 import org.nuclos.client.wizard.steps.NuclosEntitySQLLayoutStep;
 import org.nuclos.client.wizard.steps.NuclosEntityTranslationStep;
 import org.nuclos.client.wizard.steps.NuclosEntityTreeValueStep;
@@ -38,7 +39,7 @@ import org.pietschy.wizard.WizardEvent;
 import org.pietschy.wizard.WizardListener;
 
 public class ShowNuclosWizard  {
-	
+
 	NuclosEntityWizardStaticModel model;
 	boolean blnEditMode;
 	EntityMetaDataVO toEdit;
@@ -50,19 +51,19 @@ public class ShowNuclosWizard  {
 		ShowNuclosWizard show = new ShowNuclosWizard(false);
 		show.showWizard(null, null);
 	}
-	
+
 	public ShowNuclosWizard(boolean editMode) {
 		model = new NuclosEntityWizardStaticModel();
 		this.blnEditMode = editMode;
 	}
-	
+
 	public void setEntityToEdit(EntityMetaDataVO vo) {
 		this.toEdit = vo;
 	}
-	
+
 	public void showWizard(JTabbedPane desktopPane, JFrame mainFrame) {
 		final MainFrameTab ifrm = MainController.newMainFrameTab(null, getMessage("wizard.show.17", "Nucleus Entit\u00e4tenwizard <Neue Entit\u00e4t>"));
-		
+
 		NuclosEntityNameStep step1 = new NuclosEntityNameStep(getMessage("wizard.show.1", "Entit\u00e4ten erstellen"), getMessage("wizard.show.2", "Bitte geben Sie den Namen der Entit\u00e4t ein"));
 		if(toEdit != null)
 			step1.setEntityToEdit(toEdit);
@@ -72,6 +73,7 @@ public class ShowNuclosWizard  {
 		NuclosEntityAttributeInputStep step4 = new NuclosEntityAttributeInputStep(getMessage("wizard.show.7", "Attribute bearbeiten"), getMessage("wizard.show.8", "F\u00fcgen Sie Attribute hinzu in dem Sie auf den Button Attribute hinzuf\u00fcgen dr\u00fccken"));
 		step4.setParentComponent(ifrm);
 		step4.setComplete(true);
+		NuclosEntityProcessStep step41 = new NuclosEntityProcessStep(getMessage("wizard.show.processes", "Aktionen definieren"), getMessage("wizard.show.processes.summary", "Definition von Aktionen für die Verwendung unterschiedlicher Layouts und Statusmodelle."));
 		NuclosEntityTreeValueStep step5 = new NuclosEntityTreeValueStep(getMessage("wizard.show.9", "Baumdarstellung definieren"), "<html><body>"+getMessage("wizard.show.10", "Definition von Fenstertitel und Baumdarstellung")+"</body></html>");
 		NuclosUserGroupRightsStep step6 = new NuclosUserGroupRightsStep(getMessage("wizard.show.11", "Rechte verwalten"), getMessage("wizard.show.11", "Rechte verwalten"));
 		step6.setComplete(true);
@@ -84,50 +86,51 @@ public class ShowNuclosWizard  {
 		model.add(step2);
 		model.add(step3);
 		model.add(step4);
+		model.add(step41);
 		model.add(step5);
 		model.add(step6);
 		model.add(step7);
 		model.add(step8);
-	
-		
+
+
 		NuclosEntityWizard wizard = new NuclosEntityWizard(model);
-		
+
 		model.setWizard(wizard);
-		
+
 		ifrm.setTabIcon(MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.81-dashboard.png")));
-		
+
 		model.setParentFrame(ifrm);
-		
-		
+
+
 		wizard.addWizardListener(new WizardListener() {
-			
+
 			@Override
 			public void wizardClosed(WizardEvent e) {
 				ifrm.dispose();
 			}
-			
+
 			@Override
 			public void wizardCancelled(WizardEvent e) {
-				ifrm.dispose();				
+				ifrm.dispose();
 			}
 		});
-		
+
 		ifrm.setLayeredComponent(WizardFrame.createFrameInScrollPane(wizard));
 //		ifrm.setLayeredComponent(new WizardFrame(wizard));
-		
+
 //		int x = desktopPane.getWidth()/2-wizard.getPreferredSize().width/2;
 //      int y = desktopPane.getHeight()/2-wizard.getPreferredSize().height/2;
 //      x = x<0?0:x;
 //      y = y<0?0:y;
 //      ifrm.setBounds(x, y, wizard.getWidth(), wizard.getHeight());
 
-		
+
 //		ifrm.pack();
-		
+
 		desktopPane.add(ifrm);
-		
+
 		ifrm.setVisible(true);
-	
+
 	}
 
 }

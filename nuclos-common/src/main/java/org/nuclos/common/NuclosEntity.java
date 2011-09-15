@@ -42,6 +42,7 @@ public enum NuclosEntity {
 	ENTITY("entity"),
 	ENTITYFIELD("entityfield"),
 	ENTITYFIELDGROUP("entityfieldgroup"),
+	ENTITYMENU("entitymenu"),
 	ENTITYSUBNODES("entitysubnodes"),
 	ENTITYRELATION("entityrelation"),
 	EVENT("event"),

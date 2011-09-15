@@ -61167,5 +61167,95 @@
     "resourceID": "AbstractCollectableComponent.context.refresh",
     "locale": "de",
     "text": "Aktualisieren..."
+  },
+  {
+    "resourceID": "wizard.show.processes",
+    "locale": "i-default",
+    "text": "Define actions"
+  },
+  {
+    "resourceID": "wizard.show.processes",
+    "locale": "en",
+    "text": "Define actions"
+  },
+  {
+    "resourceID": "wizard.show.processes",
+    "locale": "de",
+    "text": "Aktionen definieren"
+  },
+  {
+    "resourceID": "wizard.show.processes.summary",
+    "locale": "i-default",
+    "text": "Definition of actions to use different layouts and state models."
+  },
+  {
+    "resourceID": "wizard.show.processes.summary",
+    "locale": "en",
+    "text": "Definition of actions to use different layouts and state models."
+  },
+  {
+    "resourceID": "wizard.show.processes.summary",
+    "locale": "de",
+    "text": "Definition von Aktionen für die Verwendung unterschiedlicher Layouts und Statusmodelle."
+  },
+  {
+    "resourceID": "wizard.step.processes.error.title",
+    "locale": "i-default",
+    "text": "Attention!"
+  },
+  {
+    "resourceID": "wizard.step.processes.error.title",
+    "locale": "en",
+    "text": "Attention!"
+  },
+  {
+    "resourceID": "wizard.step.processes.error.title",
+    "locale": "de",
+    "text": "Achtung!"
+  },
+  {
+    "resourceID": "wizard.step.processes.error.removeprocess",
+    "locale": "i-default",
+    "text": "Action {0} is already in use and cannot be removed."
+  },
+  {
+    "resourceID": "wizard.step.processes.error.removeprocess",
+    "locale": "en",
+    "text": "Action {0} is already in use and cannot be removed."
+  },
+  {
+    "resourceID": "wizard.step.processes.error.removeprocess",
+    "locale": "de",
+    "text": "Aktion {0} ist bereits in Verwendung und kann nicht entfernt werden."
+  },
+  {
+    "resourceID": "wizard.step.processes.error.name.mandatory",
+    "locale": "i-default",
+    "text": "Please enter a name for each action."
+  },
+  {
+    "resourceID": "wizard.step.processes.error.name.mandatory",
+    "locale": "en",
+    "text": "Please enter a name for each action."
+  },
+  {
+    "resourceID": "wizard.step.processes.error.name.mandatory",
+    "locale": "de",
+    "text": "Bitte definieren Sie für jede Aktion einen Namen."
+  },
+  {
+    "resourceID": "wizard.step.processes.error.name.unique",
+    "locale": "i-default",
+    "text": "The name of an action has to be unique ({0})."
+  },
+  {
+    "resourceID": "wizard.step.processes.error.name.unique",
+    "locale": "en",
+    "text": "The name of an action has to be unique ({0})."
+  },
+  {
+    "resourceID": "wizard.step.processes.error.name.unique",
+    "locale": "de",
+    "text": "Der Name einer Aktion muss eindeutig sein ({0})."
   }
 ]

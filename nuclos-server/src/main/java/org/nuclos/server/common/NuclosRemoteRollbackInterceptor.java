@@ -28,16 +28,16 @@ import org.springframework.transaction.interceptor.TransactionInterceptor;
 import org.springframework.transaction.support.CallbackPreferringPlatformTransactionManager;
 
 public class NuclosRemoteRollbackInterceptor extends TransactionInterceptor implements MethodInterceptor, Serializable {
-	
+
 	private static final Logger LOG = Logger.getLogger(NuclosRemoteRollbackInterceptor.class);
-	
-	public NuclosRemoteRollbackInterceptor() {		
+
+	public NuclosRemoteRollbackInterceptor() {
 	}
-	
+
 	@Override
-	public Object invoke(MethodInvocation invocation) throws Throwable {		
+	public Object invoke(MethodInvocation invocation) throws Throwable {
 		Object obj = null;
-		
+
 		Class<?> targetClass = (invocation.getThis() != null ? AopUtils.getTargetClass(invocation.getThis()) : null);
 
 		// If the transaction attribute is null, the method is non-transactional.
@@ -57,21 +57,26 @@ public class NuclosRemoteRollbackInterceptor extends TransactionInterceptor impl
 			}
 			catch (Throwable ex) {
 				LOG.error("server bean exception, propagated to client: " + ex.toString(), ex);
-				
+
 				// target invocation exception
-				completeTransactionAfterThrowing(txInfo, ex);		
+				completeTransactionAfterThrowing(txInfo, ex);
 				throw ex;
 			}
 			finally {
 				cleanupTransactionInfo(txInfo);
 			}
-			commitTransactionAfterReturning(txInfo);
+			if (txInfo != null && txInfo.getTransactionStatus()!= null && txInfo.getTransactionStatus().isRollbackOnly()) {
+				txInfo.getTransactionManager().rollback(txInfo.getTransactionStatus());
+			}
+			else {
+				commitTransactionAfterReturning(txInfo);
+			}
 			return retVal;
-		}		
-		
+		}
+
 		return obj;
 	}
 
-	
+
 
 }

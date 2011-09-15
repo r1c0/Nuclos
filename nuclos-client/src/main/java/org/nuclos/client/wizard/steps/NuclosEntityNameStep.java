@@ -61,6 +61,7 @@ import org.nuclos.common.EntityTreeViewVO;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
@@ -286,6 +287,9 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 
 						   loadUserRights(vo);
 						   loadTreeView();
+						   if (model.isStateModel()) {
+							   loadProcesses(vo.getId());
+						   }
 
 							EntityAttributeTableModel attributeModel = new EntityAttributeTableModel();
 							Collection<EntityFieldMetaDataVO> lstFields = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(vo.getEntity()).values();
@@ -554,6 +558,11 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 			}
 		}
 		model.getTreeView().addAll(views);
+	}
+
+	private void loadProcesses(Long entityId) {
+		Collection<EntityObjectVO> processes = MasterDataDelegate.getInstance().getDependantMasterData(NuclosEntity.PROCESS.getEntityName(), "module", entityId);
+		model.setProcesses(processes);
 	}
 
 	private boolean hasEntityRows(EntityMetaDataVO voEntity) {

@@ -24,6 +24,7 @@ import org.nuclos.common.CommonMetaDataProvider;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
 import org.nuclos.common.transport.vo.EntityMetaDataTO;
@@ -280,5 +281,9 @@ public class MetaDataDelegate implements CommonMetaDataProvider {
 
 	public void tryVirtualEntitySelect(EntityMetaDataVO virtualentity) throws NuclosBusinessException {
 		getMetaDataFacade().tryVirtualEntitySelect(virtualentity);
+	}
+
+	public void tryRemoveProcess(EntityObjectVO process) throws NuclosBusinessException {
+		getMetaDataFacade().tryRemoveProcess(process);
 	}
 }

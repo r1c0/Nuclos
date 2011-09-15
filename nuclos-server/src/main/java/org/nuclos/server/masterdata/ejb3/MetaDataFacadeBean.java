@@ -123,6 +123,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 /**
 * Facade bean for all meta data management functions (server side).
@@ -769,6 +770,22 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 					createResourceIdForEntityField("T_MD_ENTITY_FIELD", toField, LangUtils.convertId(toField.getEntityFieldMeta().getId()));
 				}
 				MetaDataServerProvider.getInstance().revalidate();
+			}
+
+			JdbcEntityObjectProcessor processor = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.PROCESS);
+			for (EntityObjectVO process : updatedTOEntity.getProcesses()) {
+				if (process.isFlagNew() || process.isFlagUpdated()) {
+					if (process.getId() == null || process.isFlagNew()) {
+						process.flagNew();
+						process.setId(DalUtils.getNextId());
+						DalUtils.updateVersionInformation(process, getCurrentUserName());
+					}
+					process.getFieldIds().put("module", updatedMDEntity.getId());
+					processor.insertOrUpdate(process).throwFirstBusinessExceptionIfAny();
+				}
+				else if (process.getId() != null && process.isFlagRemoved()) {
+					processor.delete(process.getId()).throwFirstBusinessExceptionIfAny();
+				}
 			}
 
 			for(EntityTreeViewVO voTreeView : updatedTOEntity.getTreeView()) {
@@ -1478,5 +1495,11 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			error(ex);
 			throw new NuclosBusinessException(StringUtils.getParameterizedExceptionMessage("MetaDataFacade.tryVirtualEntitySelect.error", ex.getMessage()));
 		}
+	}
+
+	@Override
+	public void tryRemoveProcess(EntityObjectVO process) throws NuclosBusinessException {
+		NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.PROCESS).delete(process.getId()).throwFirstBusinessExceptionIfAny();
+		TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 	}
 }
