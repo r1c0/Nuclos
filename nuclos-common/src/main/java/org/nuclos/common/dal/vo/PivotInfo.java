@@ -17,6 +17,9 @@
 package org.nuclos.common.dal.vo;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.nuclos.common2.StringUtils;
 
@@ -29,6 +32,8 @@ import org.nuclos.common2.StringUtils;
  */
 public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 	
+	private static AtomicInteger ai = new AtomicInteger(0);
+	
 	private final String subform;
 	
 	private final String keyField;
@@ -36,6 +41,11 @@ public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 	private final String valueField;
 	
 	private final Class<?> valueType;
+	
+	/**
+	 * keyValue -> tableAlias mapping.
+	 */
+	private Map<String,String> tableAliases = new HashMap<String, String>();
 	
 	public PivotInfo(String subform, String keyField, String valueField, Class<?> valueType) {
 		if (subform == null) throw new NullPointerException();
@@ -62,8 +72,13 @@ public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 	}
 	
 	public String getPivotTableAlias(String keyValue) {
-		// final String result = "\"" + getSubform() + "_" + keyValue + "\"";
-		final String result = StringUtils.makeSQLIdentifierFrom(getSubform() + "_" + keyValue);
+		if (keyValue == null) throw new IllegalArgumentException();
+		String result = tableAliases.get(keyValue);
+		if (result == null) {
+			// allow string with only numbers in, and trailing '_' in oracle db
+			result = StringUtils.makeSQLIdentifierFrom("a_", getSubform(), keyValue, Integer.toString(ai.incrementAndGet()));
+			tableAliases.put(keyValue, result);
+		}
 		return result;
 	}
 	

@@ -671,14 +671,33 @@ public class StringUtils {
 		return (s1 == null) ? (s2 == null) : s1.equalsIgnoreCase(s2);
 	}
 	
+	private static final int MAX_SQL_ID_LENGTH = 21;
+	
 	/**
 	 * Make a valid SQL identifier (e.g. for an SQL alias) from an arbitrary String.
 	 */
-	public static String makeSQLIdentifierFrom(String s) {
+	public static String makeSQLIdentifierFrom(String... strings) {
+		if (strings == null || strings.length == 0 || strings.length >= MAX_SQL_ID_LENGTH) {
+			throw new IllegalArgumentException();
+		}
+		
+		final StringBuilder result = new StringBuilder();		
+		final int slen = strings.length;
+		int i = slen;
+		for (String s: strings) {
+			int ilen = (MAX_SQL_ID_LENGTH - result.length()) / i;
+			if (ilen < 1) ilen = 1;
+			makeSQLIdentifierFrom(result, s, ilen);
+			--i;
+		}
+		if (result.length() > MAX_SQL_ID_LENGTH) result.setLength(MAX_SQL_ID_LENGTH);
+		return result.toString();
+	}
+	
+	private static void makeSQLIdentifierFrom(StringBuilder result, String s, int maxLen) {
+		if (maxLen < 1) throw new IllegalArgumentException();
 		final int len = s.length();
-		final StringBuilder result = new StringBuilder(len);
-		// allow string with only numbers in, and trailing '_' in oracle db
-		result.append("a_");
+		final int max = result.length() + maxLen;
 		for (int i = 0; i < len; ++i) {
 			final boolean accept;
 			int c = s.codePointAt(i);
@@ -740,7 +759,7 @@ public class StringUtils {
 				result.append((char) c);
 			}
 		}
-		return result.toString();
+		if (result.length() > max) result.setLength(max); 
 	}
 
 }	// class StringUtils

@@ -208,7 +208,7 @@ public class DbQuery<T extends Object> {
 
 	void registerAlias(DbFrom from, String tableAlias) {
 		if (tableAliases.containsKey(tableAlias))
-			throw new IllegalArgumentException("Alias " + tableAlias + " already used");
+			throw new IllegalArgumentException("Alias " + tableAlias + " already used: " + tableAliases.keySet());
 		tableAliases.put(tableAlias, from);
 	}
 }
