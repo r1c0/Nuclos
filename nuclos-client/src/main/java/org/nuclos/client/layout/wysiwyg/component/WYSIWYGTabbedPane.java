@@ -60,6 +60,7 @@ import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.PropertiesSorter;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRules;
+import org.nuclos.client.ui.JInfoTabbedPane;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -76,10 +77,10 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @version 01.00.00
  */
 @SuppressWarnings("serial")
-public class WYSIWYGTabbedPane extends JTabbedPane implements WYSIWYGComponent, WYSIWYGEditorModes {
+public class WYSIWYGTabbedPane extends JInfoTabbedPane implements WYSIWYGComponent, WYSIWYGEditorModes {
 
    /**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 public static String PROPERTY_NAME = PROPERTY_LABELS.NAME;
@@ -192,13 +193,13 @@ public static String PROPERTY_NAME = PROPERTY_LABELS.NAME;
         	// Make a copy
         	translations.putAll(getTabTranslations().get(iSelected));
         }
-        
+
         Box box = Box.createHorizontalBox();
         box.add(new JLabel(PROPERTY_LABELS.TRANSLATIONS));
         box.add(Box.createHorizontalStrut(InterfaceGuidelines.DISTANCE_TO_OTHER_OBJECTS));
         box.add(new JButton(new AbstractAction(BUTTON_LABELS.LABEL_EDIT) {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -223,7 +224,7 @@ public static String PROPERTY_NAME = PROPERTY_LABELS.NAME;
         	getWYSIWYGLayoutEditorChangeDescriptor().setContentChanged();
         }
    }
-   
+
    /**
     * Externalized Method for renaming Tabs
     * Triggered by Contextual Menu and with Doubleclick on Tab.
@@ -236,14 +237,14 @@ public static String PROPERTY_NAME = PROPERTY_LABELS.NAME;
         if(!(s != null && s.length() > 0)) {
         	titleTextField = new JTextField();
         }
-        else { 
+        else {
         	int keycode = getMnemonicAt(iSelected);
         	keycode += 32;
         	byte b[] = {(byte)keycode};
 			String sKey = new String(b);
-        	titleTextField = new JTextField(sKey);        	
+        	titleTextField = new JTextField(sKey);
         }
-        
+
         int opt = JOptionPane.showConfirmDialog(
         	WYSIWYGTabbedPane.this,
         	new Object[]{ JTABBEDPANE.INPUTDIALOG_SETMNEMONIC_ACTION, titleTextField},
@@ -417,7 +418,7 @@ public List<JMenuItem> getAdditionalContextMenuItems(int xClick) {
 
       });
       list.add(miRenameTab);
-      
+
       JMenuItem miSetMnemonic = new JMenuItem(JTABBEDPANE.MENUITEM_SET_MNEMONIC);
       miSetMnemonic.addActionListener(new ActionListener() {
 
@@ -428,7 +429,7 @@ public List<JMenuItem> getAdditionalContextMenuItems(int xClick) {
 
       });
       list.add(miSetMnemonic);
-      
+
 
       JMenuItem miRemoveTab = new JMenuItem(JTABBEDPANE.MENUITEM_REMOVE_TAB);
       miRemoveTab.addActionListener(new ActionListener() {

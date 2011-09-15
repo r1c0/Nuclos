@@ -185,8 +185,8 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			private boolean bEnabled = true;
 			private String sInternalname;
 			private String sMnemonic;
-			
-			
+
+
 			private TabbedPaneConstraints() {
 			}
 
@@ -329,7 +329,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 						}
 						final String sTargetComponentName = rpvact.getTargetComponentName();
 						SubForm.Column subformcolumn = event.subform.getColumn(sTargetComponentName);
-						
+
 						if (subformcolumn == null) {
 							subformcolumn = stack.getSubFormForEntity(rpvact.sTargetComponentEntityName).getColumn(sTargetComponentName);
 							if (subformcolumn == null) {
@@ -640,12 +640,12 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				}
 			}
 		}
-		
+
 		private final ComponentBuilderStack stack = new ComponentBuilderStack();
 
 		/** @todo comment */
 		private final ActionListener alButtons;
-		
+
 		/** @todo comment */
 		private final CollectableFieldsProviderFactory valueListProviderFactory;
 
@@ -675,7 +675,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 
 
 		private CollectableComponentFactory clctcompfactory;
-		
+
 		/**
 		 * the root component
 		 */
@@ -1084,7 +1084,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		 * inner class <code>ComponentBuilder</code>. Builds a regular <code>JComponent</code>.
 		 */
 		static class DefaultComponentBuilder implements ComponentBuilder {
-			
+
 			private JComponent comp;
 			private Object oConstraints;
 			private String translation;
@@ -1175,7 +1175,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					cbParent.add(getComponent(), getConstraints());
 				}
 				catch (Exception ex) {
-					final String sMessage = StringUtils.getParameterizedExceptionMessage("LayoutMLParser.13", 
+					final String sMessage = StringUtils.getParameterizedExceptionMessage("LayoutMLParser.13",
 						getComponentNameAndClassName(comp), getComponentNameAndClassName(cbParent.getComponent()), oConstraints);
 					throw new SAXException(sMessage, ex);
 				}
@@ -1257,11 +1257,11 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		 * inner class <code>TabbedPaneBuilder</code>. Builds a <code>JInfoTabbedPane</code>.
 		 */
 		static class TabbedPaneBuilder extends DefaultComponentBuilder implements NuclosDropTargetVisitor {
-			
+
 			private SubForm previousSubForm;
-			
+
 			private int previousTab = -1;
-			
+
 			TabbedPaneBuilder(JInfoTabbedPane tbdpane) {
 				super(tbdpane);
 			}
@@ -1279,8 +1279,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				tbdpn.addTab(tbdpaneconstraints.sTitle, comp);
 				final int index = tbdpn.indexOfComponent(comp);
 				tbdpn.setEnabledAt(index, tbdpaneconstraints.bEnabled);
-				tbdpn.setTabComponentAt(index, new JLabel(tbdpaneconstraints.sTitle));
-				if(tbdpaneconstraints.sMnemonic != null) {					
+				if(tbdpaneconstraints.sMnemonic != null) {
 					tbdpn.setMnemonicAt(index, Integer.parseInt(tbdpaneconstraints.sMnemonic));
 				}
 				final JComponent jcomp = (JComponent) tbdpn.getTabComponentAt(index);
@@ -1288,11 +1287,11 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				if(tbdpaneconstraints.sInternalname != null)
 					comp.setName(tbdpaneconstraints.sInternalname);
 			}
-			
-			protected void setupDragDrop(final JComponent comp) {		
-				NuclosDropTargetListener listener = new NuclosDropTargetListener(this);				
+
+			protected void setupDragDrop(final JComponent comp) {
+				NuclosDropTargetListener listener = new NuclosDropTargetListener(this);
 				DropTarget drop = new DropTarget(comp, listener);
-				drop.setActive(true);		
+				drop.setActive(true);
 			}
 
 			@Override
@@ -1307,7 +1306,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				final JLabel label = (JLabel) target.getComponent();
 				final JInfoTabbedPane tbdpn = (JInfoTabbedPane) getComponent();
 				final int index = tbdpn.indexOfTabComponent(label);
-				tbdpn.setSelectedIndex(index);						
+				tbdpn.setSelectedIndex(index);
 				dtde.rejectDrag();
 			}
 
@@ -1316,14 +1315,14 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 
 			@Override
 			public void visitDropActionChanged(DropTargetDragEvent dtde) {}
-			
+
 			/**
 			 * NUCLOSINT-63: connect the subform with the corresponding tab via the SizeKnownListener.
 			 */
 			public void addSubForm(SubForm subform) {
 				final JInfoTabbedPane tbdpn = (JInfoTabbedPane) getComponent();
 				final int tabs = tbdpn.getTabCount();
-				// Only add the listener to the subform if there is no previous 
+				// Only add the listener to the subform if there is no previous
 				// subform in this tab.
 				if (previousTab != tabs) {
 					previousSubForm = null;
@@ -1337,7 +1336,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					previousSubForm = null;
 				}
 			}
-			
+
 		}	// inner class TabbedPaneBuilder
 
 		/**
@@ -1591,14 +1590,14 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 						clctcomp.setScalable(true);
 					}
 				}
-				
+
 				// next focus component
 				final String sNextFocusComponent = attributes.getValue(ATTRIBUTE_NEXTFOCUSCOMPONENT);
-				if(sNextFocusComponent != null) {					
-					clctcomp.setNextFocusComponent(sNextFocusComponent);		
+				if(sNextFocusComponent != null) {
+					clctcomp.setNextFocusComponent(sNextFocusComponent);
 					clctcomp.getControlComponent().putClientProperty(ATTRIBUTE_NEXTFOCUSCOMPONENT, sNextFocusComponent);
 					clctcomp.getJComponent().putClientProperty(ATTRIBUTE_NEXTFOCUSCOMPONENT, sNextFocusComponent);
-					
+
 				}
 
 				// visible:
@@ -1844,7 +1843,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			}
 
 		}	// inner class TabbedPaneElementProcessor
-		
+
 		/**
 		 * inner class <code>SplitPaneElementProcessor</code>. Processes a splitpane element.
 		 */
@@ -1894,9 +1893,9 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		 * inner class <code>SubFormElementProcessor</code>. Processes a subform element.
 		 */
 		private class SubFormElementProcessor extends ComponentElementProcessor {
-			
+
 			private SubForm subform;
-			
+
 			/**
 			 * constructs a <code>SubForm</code>, configures it according to the XML attributes
 			 * and pushes it on the stack.
@@ -1908,7 +1907,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			@Override
             public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes)
 					throws SAXException {
-				
+
 				final String sEntityName = attributes.getValue(ATTRIBUTE_ENTITY);
 				// entity is a required attribute:
 				assert sEntityName != null;
@@ -1952,7 +1951,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				stack.addSubForm(sEntityName, subform);
 			}
 
-		
+
 		}	// inner class SubFormElementProcessor
 
 		/**
@@ -2157,7 +2156,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					throws SAXException {
 				final JLabel lb = new JLabel() {
 					/**
-					 * 
+					 *
 					 */
 					private static final long serialVersionUID = 1L;
 
@@ -2224,7 +2223,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					throws SAXException {
 				final JTextField tf = new JTextField() {
 					/**
-					 * 
+					 *
 					 */
 					private static final long serialVersionUID = 1L;
 

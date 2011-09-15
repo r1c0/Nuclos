@@ -17,12 +17,14 @@
 package org.nuclos.client.ui;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 
 import org.apache.commons.lang.ObjectUtils;
 
@@ -34,7 +36,7 @@ import org.apache.commons.lang.ObjectUtils;
  * embedded onto a tab (NUCLOSINT-63). LayoutMLParser now only uses
  * JInfoTabbedPane (instead of JTabbedPane).
  * </p>
- * 
+ *
  * @see SizeKnownListener
  * @author Thomas Pasch
  * @since Nuclos 3.1.00
@@ -42,7 +44,7 @@ import org.apache.commons.lang.ObjectUtils;
 public class JInfoTabbedPane extends JTabbedPane {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -94,18 +96,25 @@ public class JInfoTabbedPane extends JTabbedPane {
 	}
 
 	@Override
-	public void setTabComponentAt(int tab, Component component) {
-		if(!(component instanceof JLabel)) {
-			throw new IllegalArgumentException(
-				"JInfoTabbedPane.setTabComponentAt only accepts JLabel, not "
-					+ component);
-		}
-		super.setTabComponentAt(tab, component);
-		final JLabel label = (JLabel) component;
-		tabTitles.set(tab, label.getText());
+	public void insertTab(String title, Icon icon, Component component, String tip, int index) {
+		super.insertTab(title, icon, component, tip, index);
+		setTabComponent(title, index);
 	}
 
-	//
+	@Override
+	public void setTitleAt(int index, String title) {
+		super.setTitleAt(index, title);
+		setTabComponent(title, index);
+	}
+
+	private void setTabComponent(String text, int index) {
+		JLabel tabComponent = new JLabel(text);
+		int height = tabComponent.getFontMetrics(tabComponent.getFont()).getHeight();
+		int width = tabComponent.getFontMetrics(tabComponent.getFont()).stringWidth(text + " 999");
+		tabComponent.setPreferredSize(new Dimension(width, height));
+		tabComponent.setHorizontalAlignment(SwingConstants.CENTER);
+		setTabComponentAt(index, tabComponent);
+	}
 
 	/**
 	 * Set the additional (size) information of the tab.
@@ -146,35 +155,34 @@ public class JInfoTabbedPane extends JTabbedPane {
 		if(displayTabInfo.get(tab)) {
 			final Integer info = tabInfo.get(tab);
 			if(info == null) {
-				text = title + "  *";
+				text = title + " *";
 			}
 			else {
 				int j = info.intValue();
-				if(j < 0) {
-					if(j > -10) {
+				if (j < 0) {
+					if (j > -1000) {
 						text = title + " " + j;
 					}
 					else {
 						text = title + " -?";
 					}
 				}
-				else if(j > 9) {
-					text = title + " >9";
+				else if (j > 999) {
+					text = title + " >999";
 				}
 				else {
-					text = title + "  " + j;
+					text = title + " " + j;
 				}
 			}
 		}
 		else {
 			text = title;
 		}
-		
+
 		text = getMnemonicTextIfAny(text, tab);
-		
 		label.setText(text);
 	}
-	
+
 	/**
 	 * parse text for Mnemonic and underline it
 	 * @param text
@@ -185,7 +193,7 @@ public class JInfoTabbedPane extends JTabbedPane {
 		int keycode = this.getMnemonicAt(tab);
 		try {
 			if(keycode > 0) {
-				keycode += 32;			
+				keycode += 32;
 				byte b[] = {(byte)keycode};
 				String sKey = new String(b);
 				int index = text.indexOf(sKey);
@@ -197,13 +205,12 @@ public class JInfoTabbedPane extends JTabbedPane {
 				else {
 					text = "<html>" + text + "&nbsp;<u>" + sKey + "</u>" + "</html>";
 				}
-				
-			}	
+
+			}
 		}
 		catch (Exception e) {
 			// if any Exception return default text
 		}
 		return text;
 	}
-
 }
