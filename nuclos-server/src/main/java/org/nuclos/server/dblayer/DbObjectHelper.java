@@ -227,7 +227,7 @@ public class DbObjectHelper {
 		DbQueryBuilder builder = dbAccess.getQueryBuilder();
 		DbQuery<DbTuple> querySource = builder.createTupleQuery();
 		DbFrom fromSource = querySource.from("T_MD_DBSOURCE").alias("dbsource");
-		DbFrom fromObject = fromSource.join("T_MD_DBOBJECT", JoinType.RIGHT).on("STRDBOBJECT", "STRDBOBJECT", String.class).alias("dbobject");
+		DbFrom fromObject = fromSource.join("T_MD_DBOBJECT", JoinType.RIGHT).alias("dbobject").on("STRDBOBJECT", "STRDBOBJECT", String.class);
 		querySource.multiselect(
 			fromSource.baseColumn("CLBSOURCE", String.class).alias("CLBSOURCE"),
 			fromSource.baseColumn("CLBDROPSTATEMENT", String.class).alias("CLBDROPSTATEMENT"),
