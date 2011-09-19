@@ -28,6 +28,7 @@ import javax.swing.JComponent;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.CollectableEntityFieldPreferencesUtil;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
@@ -89,7 +90,8 @@ public class GenericObjectClientUtils {
 		List<CollectableEntityField> beans = null;
 		try {
 			beans = (List<CollectableEntityField>)
-					PreferencesUtils.getSerializableListXML(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS);
+					// PreferencesUtils.getSerializableListXML(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS);
+					CollectableEntityFieldPreferencesUtil.readList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS);
 		} catch (PreferencesException e) {
 			// do nothing
 			LOG.error("XMLEncoder/XMLDecoder Fehler", e);
@@ -159,20 +161,17 @@ public class GenericObjectClientUtils {
 
 	public static void writeCollectableEntityFieldsToPreferences(Preferences prefs, List<CollectableEntityField> selectedFields) throws PreferencesException {
 		final int size = selectedFields.size();
-		final List<CollectableEntityField> beans = new ArrayList<CollectableEntityField>(size);
 		final List<String> fieldNames = new ArrayList<String>(size);
 		final List<String> entityNames = new ArrayList<String>(size);
 		for (CollectableEntityField f : selectedFields) {
 			fieldNames.add(f.getName());
 			entityNames.add(f.getEntityName());
-			if (f instanceof CollectableGenericObjectEntityField) {
-				beans.add(new CollectableGenericObjectEntityField(null, ((CollectableGenericObjectEntityField) f).getFieldMeta(), f.getEntityName()));
-			}
 		}
 
 		PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS, fieldNames);
 		PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES, entityNames);
-		PreferencesUtils.putSerializableListXML(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS, beans);
+		// PreferencesUtils.putSerializableListXML(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS, selectedFields);
+		CollectableEntityFieldPreferencesUtil.writeList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS, selectedFields);
 	}
 
 	/**

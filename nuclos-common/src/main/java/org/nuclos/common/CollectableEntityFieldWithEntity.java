@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.prefs.Preferences;
 
 import org.nuclos.common.collect.collectable.AbstractCollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -39,8 +40,12 @@ import org.nuclos.common.collection.Transformer;
  *
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
- * @todo Even CollectableEntityField should probably know to which entity it belongs. Try to eliminate this class.
- *
+ * <p>
+ * TODO: Even CollectableEntityField should probably know to which entity it belongs. Try to eliminate this class.
+ * </p><p>
+ * TODO: Consider {@link org.nuclos.client.common.CollectableEntityFieldPreferencesUtil}
+ * to write to {@link Preferences}.
+ * </p>
  * @deprecated CollectableEntityField now knows the entity name.
  */
 public class CollectableEntityFieldWithEntity implements CollectableEntityField, Serializable {

@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.masterdata;
 
+import java.util.prefs.Preferences;
+
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.AbstractCollectableEntityField;
@@ -32,7 +34,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
+ * <p>
+ * TODO: Consider {@link org.nuclos.client.common.CollectableEntityFieldPreferencesUtil}
+ * to write to {@link Preferences}.
+ * </p>
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
@@ -40,6 +45,9 @@ public class CollectableMasterDataForeignKeyEntityField extends AbstractCollecta
 
 	private final String entityName;
 
+	/**
+	 * @deprecated
+	 */
 	private final MasterDataMetaFieldVO mdmetafield;
 
 	/**

@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.entityobject;
 
+import java.util.prefs.Preferences;
+
 import org.apache.commons.lang.NullArgumentException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.AbstractCollectableEntityField;
@@ -26,6 +28,12 @@ import org.nuclos.common.masterdata.EnumeratedDefaultValueProvider;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 
+/**
+ * <p>
+ * TODO: Consider {@link org.nuclos.client.common.CollectableEntityFieldPreferencesUtil}
+ * to write to {@link Preferences}.
+ * </p>
+ */
 public class CollectableEOEntityField extends AbstractCollectableEntityField {
 
 	private final String entityName;

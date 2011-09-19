@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common;
 
+import java.util.prefs.Preferences;
+
 import org.nuclos.common.collect.collectable.*;
 
 /**
@@ -24,6 +26,10 @@ import org.nuclos.common.collect.collectable.*;
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
+ * <p>
+ * TODO: Consider {@link org.nuclos.client.common.CollectableEntityFieldPreferencesUtil}
+ * to write to {@link Preferences}.
+ * </p>
  * @author	<a href="mailto:uwe.allner@novabit.de">uwe.allner</a>
  * @version 01.00.00
  */

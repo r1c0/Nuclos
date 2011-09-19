@@ -51,7 +51,6 @@ public class CollectableTaskOwner extends DefaultCollectable {
 	
 	public static final CollectableEntity clcte = new Entity();
 
-	
 	private static class TaskOwnerCollectableEntityField extends DefaultCollectableEntityField {
 		
 		public TaskOwnerCollectableEntityField(String sName, Class<?> cls, String sLabel, String sDescription, Integer iMaxLength,

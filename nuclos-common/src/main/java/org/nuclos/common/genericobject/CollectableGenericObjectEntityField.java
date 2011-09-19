@@ -17,6 +17,7 @@
 package org.nuclos.common.genericobject;
 
 import java.util.Date;
+import java.util.prefs.Preferences;
 
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
@@ -40,7 +41,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
+ * <p>
+ * TODO: Consider {@link org.nuclos.client.common.CollectableEntityFieldPreferencesUtil}
+ * to write to {@link Preferences}.
+ * </p>
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
@@ -48,6 +52,9 @@ public class CollectableGenericObjectEntityField extends AbstractCollectableEnti
 
 	private final String entityName;
 
+	/**
+	 * @deprecated
+	 */
 	private final AttributeCVO attrcvo;
 
 	private final EntityFieldMetaDataVO  entityFieldMeta;

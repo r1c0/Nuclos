@@ -18,6 +18,7 @@ package org.nuclos.common.collect.collectable;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.prefs.Preferences;
 
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.RelativeDate;
@@ -27,11 +28,17 @@ import org.nuclos.common2.RelativeDate;
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
+ * <p>
+ * TODO: Why there a such strange transient fields? Are they really needed? If this is mainly
+ * to write to {@link Preferences}, consider todo below.
+ * 
+ * </p><p>
+ * TODO: Consider {@link org.nuclos.client.common.CollectableEntityFieldPreferencesUtil}
+ * to write to {@link Preferences}.
+ * </p>
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-
 public abstract class AbstractCollectableEntityField implements CollectableEntityField, Serializable {
 
 	private static final long serialVersionUID = -6972777641358799942L;

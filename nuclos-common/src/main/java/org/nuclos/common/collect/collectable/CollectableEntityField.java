@@ -18,6 +18,7 @@ package org.nuclos.common.collect.collectable;
 
 import java.text.Collator;
 import java.util.Comparator;
+import java.util.prefs.Preferences;
 
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
@@ -29,7 +30,10 @@ import org.nuclos.common2.LangUtils;
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
+ * <p>
+ * TODO: Consider {@link org.nuclos.client.common.CollectableEntityFieldPreferencesUtil}
+ * to write to {@link Preferences}.
+ * </p>
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */

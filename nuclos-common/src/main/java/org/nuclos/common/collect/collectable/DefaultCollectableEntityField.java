@@ -18,6 +18,7 @@ package org.nuclos.common.collect.collectable;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.prefs.Preferences;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.nuclos.common.collect.exception.CollectableFieldValidationException;
@@ -32,7 +33,13 @@ import org.nuclos.common2.RelativeDate;
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
+ * <p>
+ * TODO: Why we have such a strange implementation? Can we get rid of it? If this is mainly
+ * to write to {@link Preferences}, consider todo below.
+ * </p><p>
+ * TODO: Consider {@link org.nuclos.client.common.CollectableEntityFieldPreferencesUtil}
+ * to write to {@link Preferences}.
+ * </p>
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
