@@ -38,6 +38,7 @@ import org.nuclos.client.ui.collect.model.SortableCollectableTableModelImpl;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableFactory;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
@@ -59,7 +60,7 @@ import org.nuclos.common2.exception.PreferencesException;
 public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 		extends SubFormController
 		implements CollectableFactory<Clct> {
-	
+
 	/**
 	 * Successors must call postCreate.
 	 * @param parent
@@ -71,10 +72,10 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 	 * @param clctfproviderfactory
 	 * @see #postCreate()
 	 */
-	public AbstractDetailsSubFormController(Component parent, JComponent parentMdi, CollectableComponentModelProvider clctcompmodelproviderParent,
+	public AbstractDetailsSubFormController(CollectableEntity clcte, Component parent, JComponent parentMdi, CollectableComponentModelProvider clctcompmodelproviderParent,
 			String sParentEntityName, SubForm subform, Preferences prefsUserParent, CollectableFieldsProviderFactory clctfproviderfactory) {
 
-		super(parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform, false, prefsUserParent, clctfproviderfactory);
+		super(clcte, parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform, false, prefsUserParent, clctfproviderfactory);
 
 		// initialize table model:
 		DetailsSubFormTableModel<Clct>  tblmdl = new DetailsSubFormTableModelImpl<Clct>(this.newCollectableList(new ArrayList<Clct>()));
@@ -110,7 +111,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 				if (!lstStoredFieldNames.isEmpty()) {
 					removeColumnsFromTableColumnModel(subform.getJTable(), lstStoredFieldNames, true);
 				}
-				else {					
+				else {
 					List<String> lstSystemFields = new ArrayList<String>();
 					for(NuclosEOField field : NuclosEOField.values()) {
 						lstSystemFields.add(field.getMetaData().getField());
@@ -201,7 +202,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 		return this.isEnabled() && this.getSubForm().isColumnEnabled(sColumnName);
 	}
 
-	
+
 	/**
 	 * lets the user add/remove multiple rows at once. This requires the subform to define a unique master data column.
 	 */
@@ -248,7 +249,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 
 		TableUtils.addMouseListenerForSortingToTableHeader(tbl, this.getCollectableTableModel());
 	}
-	
+
 	protected void storeColumnOrderToPreferences(){
 		try {
 			CollectController.writeSortKeysToPrefs(getPrefs(), getCollectableTableModel().getSortKeys());
@@ -260,7 +261,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 			}
 		}
 	}
-	
+
 	/**
 	 * Reads the user-preferences for the sorting order.
 	 */
@@ -284,7 +285,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 			try {
 				this.getCollectableTableModel().setSortKeys(sortKeys, false);
 			} catch (IllegalArgumentException e) {
-				log.warn("Sorting in subform \"" + this.getParentEntityName() + "." + this.getSubForm().getEntityName() + 
+				log.warn("Sorting in subform \"" + this.getParentEntityName() + "." + this.getSubForm().getEntityName() +
 					"\" could not be restored. Column count has changed.", e);
 			}
 		}
@@ -293,7 +294,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 	@Override
 	public void close() {
 		super.close();
-		
+
 		this.storeColumnOrderToPreferences();
 	}
 
@@ -311,7 +312,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 			implements DetailsSubFormTableModel<T> {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -341,7 +342,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 			final String sColumnName = this.getCollectableEntityField(iColumn).getName();
 			return AbstractDetailsSubFormController.this.isColumnEnabled(sColumnName);
 		}
-		
+
 		@Override
 		public String getColumnName(int iColumn) {
 			String sLabel = AbstractDetailsSubFormController.this.getSubForm().getColumnLabel(this.getCollectableEntityField(iColumn).getName());
@@ -350,7 +351,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 			}
 			return this.getCollectableEntityField(iColumn).getLabel();
 		}
-		
+
 		@Override
 		public String getColumnFieldName(int columnIndex) {
 			return getCollectableEntityField(columnIndex).getName();

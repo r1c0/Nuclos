@@ -737,16 +737,19 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		// Find or create the main item
 		JMenuBar b = getJMenuBar();
 		JMenu main = null;
-		String mainName = menuPath.get(0);
+		Pair<String, Character> nam = MenuGenerator.getMnemonic(menuPath.get(0));
 		for(Component c : b.getComponents()) {
 			if(c instanceof JMenu) {
 				JMenu m = (JMenu) c;
-				if(m.getText().equals(mainName))
+				if(m.getText().equals(nam.x))
 					main = m;
 			}
 		}
 		if(main == null) {
-			main = new JMenu(mainName);
+			main = new JMenu(nam.x);
+			if (nam.y != null) {
+				main.setMnemonic(nam.y);
+			}
 			int index = MenuGenerator.findCustomInsertionIndex(b.getComponents());
 			b.add(main, index);
 		}
@@ -756,17 +759,21 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		JMenu parent = main;
 
 		for(String menuName : menuPath.subList(1, menuPath.size())) {
+			nam = MenuGenerator.getMnemonic(menuName);
 			JMenu men = null;
 			for(int i = 0, n = parent.getItemCount(); i < n; i++) {
 				JMenuItem me = parent.getItem(i);
 				if(me instanceof JMenu) {
 					JMenu m = (JMenu) me;
-					if(m.getText().equals(menuName))
+					if(m.getText().equals(nam.x))
 						men = m;
 				}
 			}
 			if(men == null) {
-				men = new JMenu(menuName);
+				men = new JMenu(nam.x);
+				if (nam.y != null) {
+					men.setMnemonic(nam.y);
+				}
 				int index = MenuGenerator.findCustomInsertionIndex(parent.getMenuComponents());
 				parent.add(men, index);
 			}

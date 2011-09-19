@@ -26,6 +26,7 @@ import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
+import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 
 /**
  * Controller for collecting dependant data (in a one-to-many relationship) in a subform,
@@ -43,7 +44,7 @@ public abstract class SimpleDetailsSubFormController<Clct extends Collectable> e
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, SubForm subform,
 			Preferences prefsUserParent, CollectableFieldsProviderFactory clctfproviderfactory) {
 
-		super(parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform, prefsUserParent, clctfproviderfactory);
+		super(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform, prefsUserParent, clctfproviderfactory);
 
 		this.postCreate();
 	}

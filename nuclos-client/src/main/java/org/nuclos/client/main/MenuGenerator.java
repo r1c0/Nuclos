@@ -53,6 +53,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.XMLUtils;
@@ -206,7 +207,7 @@ public class MenuGenerator {
 						"MainController.cmdShowAboutDialog".equals(comref))) {
 					return insertIndex; //ignore... we use mac native hander in Main.class
 				}
-				
+
 				a = resolveReference(menuElement.getAttribute("commandreference"), commandMap);
 			} else if(nullIfEmpty(menuElement.getAttribute("dummy")) != null)
 				a = DUMMY_ACTION;
@@ -215,7 +216,7 @@ public class MenuGenerator {
 
 			if (a == null)
 				return insertIndex;
-				
+
 			JMenuItem i = new JMenuItem(menuElement.getAttribute("text"));
 			i.setHideActionText(true);
 			i.setAction(a);
@@ -254,7 +255,7 @@ public class MenuGenerator {
 				c = resolveReference(menuElement.getAttribute("componentreference"), componentMap);
 			else
 				throw new RuntimeException("customcomponent menu element has no component reference!" + menuElement);
-			
+
 			if (c != null){
 				if (exportNotJMenuComponents != null && !(c instanceof JMenuItem)) {
 					exportNotJMenuComponents.add(c);
@@ -281,7 +282,7 @@ public class MenuGenerator {
 	private static final class CustomInsertionMarker extends JMenu {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -307,7 +308,7 @@ public class MenuGenerator {
 
 	private static final Action DUMMY_ACTION = new AbstractAction() {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -325,7 +326,7 @@ public class MenuGenerator {
 				if(a != null)
 					return a;
 			}
-			
+
 		}
 		log.warn("Cannot resolve command reference \"" + ref + "\" for menu");
 		return null;
@@ -438,19 +439,11 @@ public class MenuGenerator {
 	 * @return item, for better command chaining
 	 */
 	public static <T extends JMenuItem> T initMenuItem(T item, String initString, Icon icon, KeyStroke accel) {
-		Matcher m = FIND_MNEMONIC.matcher(initString);
-		StringBuffer sb = new StringBuffer();
-		Character mnemonic = null;
-		if(m.find()) {
-			String mnemonicGroup = m.group(1);
-			mnemonic = mnemonicGroup.charAt(1);
-			m.appendReplacement(sb, Matcher.quoteReplacement(Character.toString(mnemonic)));
-		}
-		m.appendTail(sb);
+		Pair<String, Character> nameAndMnemonic = getMnemonic(initString);
+		item.setText(nameAndMnemonic.x);
 
-		item.setText(sb.toString());
-		if(mnemonic != null)
-			item.setMnemonic(mnemonic);
+		if (nameAndMnemonic.y != null)
+			item.setMnemonic(nameAndMnemonic.y);
 		if(icon != null)
 			item.setIcon(icon);
 		if(accel != null)
@@ -459,4 +452,16 @@ public class MenuGenerator {
 		return item;
 	}
 
+	public static Pair<String, Character> getMnemonic(String input) {
+		Matcher m = FIND_MNEMONIC.matcher(input);
+		StringBuffer sb = new StringBuffer();
+		Character mnemonic = null;
+		if(m.find()) {
+			String mnemonicGroup = m.group(1);
+			mnemonic = mnemonicGroup.charAt(1);
+			m.appendReplacement(sb, Matcher.quoteReplacement(Character.toString(mnemonic)));
+		}
+		m.appendTail(sb);
+		return new Pair<String, Character>(sb.toString(), mnemonic);
+	}
 }

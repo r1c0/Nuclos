@@ -27,6 +27,7 @@ import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeInputStep;
 import org.nuclos.client.wizard.steps.NuclosEntityCommonPropertiesStep;
+import org.nuclos.client.wizard.steps.NuclosEntityMenuStep;
 import org.nuclos.client.wizard.steps.NuclosEntityNameStep;
 import org.nuclos.client.wizard.steps.NuclosEntityOptionStep;
 import org.nuclos.client.wizard.steps.NuclosEntityProcessStep;
@@ -74,6 +75,7 @@ public class ShowNuclosWizard  {
 		step4.setParentComponent(ifrm);
 		step4.setComplete(true);
 		NuclosEntityProcessStep step41 = new NuclosEntityProcessStep(getMessage("wizard.show.processes", "Aktionen definieren"), getMessage("wizard.show.processes.summary", "Definition von Aktionen für die Verwendung unterschiedlicher Layouts und Statusmodelle."));
+		NuclosEntityMenuStep step42 = new NuclosEntityMenuStep(getMessage("wizard.show.menu", "Menue konfigurieren"), getMessage("wizard.show.menu.summary", "Konfigurieren Sie die Menueeintraege für diese Entitaet. Wenn Sie keine Eintraege definieren, wird ein Standard-Menueeintrag generiert."));
 		NuclosEntityTreeValueStep step5 = new NuclosEntityTreeValueStep(getMessage("wizard.show.9", "Baumdarstellung definieren"), "<html><body>"+getMessage("wizard.show.10", "Definition von Fenstertitel und Baumdarstellung")+"</body></html>");
 		NuclosUserGroupRightsStep step6 = new NuclosUserGroupRightsStep(getMessage("wizard.show.11", "Rechte verwalten"), getMessage("wizard.show.11", "Rechte verwalten"));
 		step6.setComplete(true);
@@ -87,6 +89,7 @@ public class ShowNuclosWizard  {
 		model.add(step3);
 		model.add(step4);
 		model.add(step41);
+		model.add(step42);
 		model.add(step5);
 		model.add(step6);
 		model.add(step7);

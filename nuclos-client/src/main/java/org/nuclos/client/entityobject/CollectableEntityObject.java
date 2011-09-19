@@ -20,13 +20,13 @@ import java.util.Map;
 
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.common.collect.collectable.AbstractCollectable;
+import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityProvider;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Removable;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -35,7 +35,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class CollectableEntityObject extends CollectableMasterData implements Removable {
 
-	private CollectableEOEntity ceoe;
+	private CollectableEntity ceoe;
 
 	private final Map<String, CollectableField> mpFields = CollectionUtils.newHashMap();
 
@@ -45,13 +45,13 @@ public class CollectableEntityObject extends CollectableMasterData implements Re
 		super(clcte, mdvo);
 	}
 
-	public CollectableEntityObject(CollectableEOEntity cee, EntityObjectVO vo) {
+	public CollectableEntityObject(CollectableEntity cee, EntityObjectVO vo) {
 		super(null, null);
 		this.ceoe = cee;
 		this.vo = vo;
 	}
 
-	public CollectableEOEntity getCollectableEOEntity(){
+	public CollectableEntity getCollectableEOEntity(){
 		return ceoe;
 	}
 
@@ -140,13 +140,13 @@ public class CollectableEntityObject extends CollectableMasterData implements Re
 	 * inner class MakeCollectable: makes a <code>MasterDataVO</code> <code>Collectable</code>.
 	 */
 	public static class MakeCollectable implements Transformer<EntityObjectVO, CollectableEntityObject> {
-		final CollectableEOEntity clctmde;
+		final CollectableEntity clctmde;
 
 		public MakeCollectable(CollectableEntityProvider clcteprovider, String sEntityName) {
-			this((CollectableEOEntity) clcteprovider.getCollectableEntity(sEntityName));
+			this(clcteprovider.getCollectableEntity(sEntityName));
 		}
 
-		public MakeCollectable(CollectableEOEntity clctmde) {
+		public MakeCollectable(CollectableEntity clctmde) {
 			this.clctmde = clctmde;
 		}
 

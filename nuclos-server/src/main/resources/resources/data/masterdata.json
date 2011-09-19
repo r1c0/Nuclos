@@ -9381,5 +9381,76 @@
         "logbook": false
       }
     ]
+  },
+  {
+    "name": "Entity Menu",
+    "entity": "nuclos_entitymenu",
+    "searchable": false,
+    "editable": true,
+    "cacheable": false,
+    "dbentity": "V_MD_ENTITY_MENU",
+    "importexport": false,
+    "systementity": true,
+    "labelres": "nuclos.entity.entitymenu.label",
+    "nuclos_entityfield": [
+      {
+        "name": "entity",
+        "dbfield": "INTID_T_MD_ENTITY",
+        "foreignentity": "nuclos_entity",
+        "label": "Entität",
+        "description": "Entität",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.entitymenu.entity.label",
+        "descriptionres": "nuclos.entityfield.entitymenu.entity.description"
+      },
+      {
+        "name": "new",
+        "dbfield": "BLNNEW",
+        "label": "Neu",
+        "description": "Neuen Datensatz erfassen",
+        "datatype": "java.lang.Boolean",
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.entitymenu.new.label",
+        "descriptionres": "nuclos.entityfield.entitymenu.new.description"
+      },
+      {
+        "name": "process",
+        "dbfield": "STRVALUE_T_MD_PROCESS",
+        "foreignentity": "nuclos_process",
+        "foreignentityfield": "name",
+        "label": "Aktion",
+        "description": "Aktion",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.entitymenu.process.label",
+        "descriptionres": "nuclos.entityfield.entitymenu.process.description"
+      },
+      {
+        "name": "menupath",
+        "dbfield": "STR_LOCALERESOURCE_M",
+        "label": "Menuepfad",
+        "description": "Menuepfad",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.entitymenu.menupath.label",
+        "descriptionres": "nuclos.entityfield.entitymenu.menupath.description"
+      }
+    ]
   }
 ]

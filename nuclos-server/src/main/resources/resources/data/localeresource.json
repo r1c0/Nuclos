@@ -61257,5 +61257,230 @@
     "resourceID": "wizard.step.processes.error.name.unique",
     "locale": "de",
     "text": "Der Name einer Aktion muss eindeutig sein ({0})."
+  },
+  {
+    "resourceID": "nuclos.entity.entitymenu.label",
+    "locale": "i-default",
+    "text": "Menu configuration"
+  },
+  {
+    "resourceID": "nuclos.entity.entitymenu.label",
+    "locale": "en",
+    "text": "Menu configuration"
+  },
+  {
+    "resourceID": "nuclos.entity.entitymenu.label",
+    "locale": "de",
+    "text": "Menükonfiguration"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.entity.label",
+    "locale": "i-default",
+    "text": "Entity"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.entity.label",
+    "locale": "en",
+    "text": "Entity"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.entity.label",
+    "locale": "de",
+    "text": "Entität"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.entity.description",
+    "locale": "i-default",
+    "text": "Entity for menu item."
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.entity.description",
+    "locale": "en",
+    "text": "Entity for menu item."
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.entity.description",
+    "locale": "de",
+    "text": "Entität für den Menüeintrag."
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.new.label",
+    "locale": "i-default",
+    "text": "New?"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.new.label",
+    "locale": "en",
+    "text": "New?"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.new.label",
+    "locale": "de",
+    "text": "Neu?"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.new.description",
+    "locale": "i-default",
+    "text": "Activate this option if you want to open the details view to create a new object for this menu item."
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.new.description",
+    "locale": "en",
+    "text": "Activate this option if you want to open the details view to create a new object for this menu item."
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.new.description",
+    "locale": "de",
+    "text": "Aktivieren Sie diese Option, wenn Sie für diesen Menüeintrag die Neuanlage eines Objekts öffnen möchten."
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.process.label",
+    "locale": "i-default",
+    "text": "Action"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.process.label",
+    "locale": "en",
+    "text": "Action"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.process.label",
+    "locale": "de",
+    "text": "Aktion"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.process.description",
+    "locale": "i-default",
+    "text": "The action for this menu item (to choose a layout)."
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.process.description",
+    "locale": "en",
+    "text": "The action for this menu item (to choose a layout)."
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.process.description",
+    "locale": "de",
+    "text": "Die Aktion des Menüeintrags (zur Auswahl eines Layouts)."
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.menupath.label",
+    "locale": "i-default",
+    "text": "Resource id"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.menupath.label",
+    "locale": "en",
+    "text": "Resource id"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.menupath.label",
+    "locale": "de",
+    "text": "Ressourcen-ID"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.menupath.description",
+    "locale": "i-default",
+    "text": "Resource id"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.menupath.description",
+    "locale": "en",
+    "text": "Resource id"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entitymenu.menupath.description",
+    "locale": "de",
+    "text": "Ressourcen-ID"
+  },
+  {
+    "resourceID": "wizard.step.menu.error.title",
+    "locale": "i-default",
+    "text": "Attention!"
+  },
+  {
+    "resourceID": "wizard.step.menu.error.title",
+    "locale": "en",
+    "text": "Attention!"
+  },
+  {
+    "resourceID": "wizard.step.menu.error.title",
+    "locale": "de",
+    "text": "Achtung!"
+  },
+  {
+    "resourceID": "wizard.show.menu",
+    "locale": "i-default",
+    "text": "Configure menu"
+  },
+  {
+    "resourceID": "wizard.show.menu",
+    "locale": "en",
+    "text": "Configure menu"
+  },
+  {
+    "resourceID": "wizard.show.menu",
+    "locale": "de",
+    "text": "Menü konfigurieren"
+  },
+  {
+    "resourceID": "wizard.show.menu",
+    "locale": "i-default",
+    "text": "Configure menu"
+  },
+  {
+    "resourceID": "wizard.show.menu",
+    "locale": "en",
+    "text": "Configure menu"
+  },
+  {
+    "resourceID": "wizard.show.menu",
+    "locale": "de",
+    "text": "Menü konfigurieren"
+  },
+  {
+    "resourceID": "wizard.show.menu.summary",
+    "locale": "i-default",
+    "text": "Configure menu items for this entity. If you do not define any items, a default menu item will be generated."
+  },
+  {
+    "resourceID": "wizard.show.menu.summary",
+    "locale": "en",
+    "text": "Configure menu items for this entity. If you do not define any items, a default menu item will be generated."
+  },
+  {
+    "resourceID": "wizard.show.menu.summary",
+    "locale": "de",
+    "text": "Konfigurieren Sie die Menüeinträge für diese Entität. Wenn Sie keine Einträge definieren, wird ein Standard-Menüeintrag generiert."
+  },
+  {
+    "resourceID": "EntityMenuCollectableEntity.translationfield.label",
+    "locale": "i-default",
+    "text": "Menu path ({0})"
+  },
+  {
+    "resourceID": "EntityMenuCollectableEntity.translationfield.label",
+    "locale": "en",
+    "text": "Menu path ({0})"
+  },
+  {
+    "resourceID": "EntityMenuCollectableEntity.translationfield.label",
+    "locale": "de",
+    "text": "Menüpfad ({0})"
+  },
+  {
+    "resourceID": "EntityMenuCollectableEntity.translationfield.description",
+    "locale": "i-default",
+    "text": "Menu path ({0}). Use \\ to create submenus."
+  },
+  {
+    "resourceID": "EntityMenuCollectableEntity.translationfield.description",
+    "locale": "en",
+    "text": "Menu path ({0}). Use \\ to create submenus."
+  },
+  {
+    "resourceID": "EntityMenuCollectableEntity.translationfield.description",
+    "locale": "de",
+    "text": "Menüpfad ({0}). Verwenden Sie \\ um Untermenüs zu erstellen."
   }
 ]

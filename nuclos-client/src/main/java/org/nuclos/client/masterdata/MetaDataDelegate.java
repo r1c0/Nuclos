@@ -286,4 +286,8 @@ public class MetaDataDelegate implements CommonMetaDataProvider {
 	public void tryRemoveProcess(EntityObjectVO process) throws NuclosBusinessException {
 		getMetaDataFacade().tryRemoveProcess(process);
 	}
+
+	public List<EntityObjectVO> getEntityMenus() {
+		return getMetaDataFacade().getEntityMenus();
+	}
 }

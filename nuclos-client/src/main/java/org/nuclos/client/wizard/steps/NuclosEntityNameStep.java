@@ -44,6 +44,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
+import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.masterdata.MasterDataCache;
@@ -63,6 +64,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -290,6 +292,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 						   if (model.isStateModel()) {
 							   loadProcesses(vo.getId());
 						   }
+						   loadEntityMenus(vo.getId());
 
 							EntityAttributeTableModel attributeModel = new EntityAttributeTableModel();
 							Collection<EntityFieldMetaDataVO> lstFields = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(vo.getEntity()).values();
@@ -563,6 +566,16 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 	private void loadProcesses(Long entityId) {
 		Collection<EntityObjectVO> processes = MasterDataDelegate.getInstance().getDependantMasterData(NuclosEntity.PROCESS.getEntityName(), "module", entityId);
 		model.setProcesses(processes);
+	}
+
+	private void loadEntityMenus(Long entityId) {
+		Collection<EntityObjectVO> entityMenus = MasterDataDelegate.getInstance().getDependantMasterData(NuclosEntity.ENTITYMENU.getEntityName(), "entity", entityId);
+		for (EntityObjectVO menu : entityMenus) {
+			for (LocaleInfo li : LocaleDelegate.getInstance().getAllLocales(false)) {
+				menu.getFields().put("menupath_" + li.getTag(), CommonLocaleDelegate.getResourceById(li, menu.getField("menupath", String.class)));
+			}
+		}
+		model.setEntityMenus(entityMenus);
 	}
 
 	private boolean hasEntityRows(EntityMetaDataVO voEntity) {

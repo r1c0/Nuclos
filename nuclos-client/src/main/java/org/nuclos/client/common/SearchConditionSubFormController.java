@@ -35,14 +35,15 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
+import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
-import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
+import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
@@ -66,7 +67,7 @@ import org.nuclos.common2.exception.PreferencesException;
  * @version 01.00.00
  */
 public class SearchConditionSubFormController extends SubFormController {
-	
+
 	private static String[] sEditFields = {"createdBy", "createdAt", "changedBy", "changedAt" };
 
 	/**
@@ -77,7 +78,7 @@ public class SearchConditionSubFormController extends SubFormController {
 		 * @return the search condition represented by this table model. May be <code>null</code>.
 		 */
 		CollectableSearchCondition getCollectableSearchCondition();
-		
+
 		List<CollectableSearchCondition> getCollectableSearchConditions();
 
 		/**
@@ -106,7 +107,7 @@ public class SearchConditionSubFormController extends SubFormController {
 	 */
 	private class SearchConditionTableModelImpl extends DefaultTableModel implements SearchConditionTableModel {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		/**
@@ -182,7 +183,7 @@ public class SearchConditionSubFormController extends SubFormController {
 
 			return SearchConditionUtils.simplified(condOr);
 		}
-		
+
 		@Override
 		public List<CollectableSearchCondition> getCollectableSearchConditions() {
 			List<CollectableSearchCondition> lst = new ArrayList<CollectableSearchCondition>();
@@ -199,7 +200,7 @@ public class SearchConditionSubFormController extends SubFormController {
 					//condOr.addOperand(SearchConditionUtils.simplified(condAnd));
 				}
 			}
-			
+
 			return lst;
 		}
 
@@ -337,7 +338,7 @@ public class SearchConditionSubFormController extends SubFormController {
 		}
 
 		private class SetSearchConditionVisitor implements Visitor<Void, CommonBusinessException> {
-			
+
 			@Override
 			public Void visitTrueCondition(TrueCondition truecond) {
 				// do nothing
@@ -399,11 +400,11 @@ public class SearchConditionSubFormController extends SubFormController {
 	}	// class SearchConditionTableModelImpl
 
 	private SearchConditionTableModel tblmdl;
-	
+
 	public SearchConditionSubFormController(Component parent, JComponent parentMdi,
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, final SubForm subform,
 			Preferences prefsUserParent, CollectableFieldsProviderFactory clctfproviderfactory) {
-		super(parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform, true, prefsUserParent,
+		super(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform, true, prefsUserParent,
 				clctfproviderfactory);
 
 		// there is no multiedit for a SearchConditionSubFormController:
@@ -424,9 +425,9 @@ public class SearchConditionSubFormController extends SubFormController {
 
 		this.setupTableModelListener();
 		this.setupColumnModelListener();
-		
+
 	}
-	
+
 	/**
 	 * @return the table columns widths. If there are stored user preferences, the sizes will be restored.
 	 * Size and order of list entries is determined by number and order of visible columns
@@ -452,7 +453,7 @@ public class SearchConditionSubFormController extends SubFormController {
 
 		return result;
 	}
-	
+
 	private boolean isEditField(CollectableEntityField field) {
 		for(String s : this.sEditFields) {
 			if (s.equals(field.getName())) {
@@ -461,7 +462,7 @@ public class SearchConditionSubFormController extends SubFormController {
 		}
 		return false;
 	}
-	
+
 	private List<CollectableEntityField> getColumnsFromPrefs() {
 		List<CollectableEntityField> lstFieldsToDisplay = new ArrayList<CollectableEntityField>();
 		Preferences pref = this.getPrefs();
@@ -490,9 +491,9 @@ public class SearchConditionSubFormController extends SubFormController {
 			// display all columns on Exception
 			lstFieldsToDisplay = getTableColumns();
 		}
-		
+
 		return lstFieldsToDisplay;
-		
+
 	}
 
 	@Override
@@ -502,7 +503,7 @@ public class SearchConditionSubFormController extends SubFormController {
 
 		super.close();
 	}
-	
+
 	@Override
 	protected CollectableField getFieldFromParentSubform(String sFieldName) {
 		return null;
@@ -548,9 +549,9 @@ public class SearchConditionSubFormController extends SubFormController {
 		/** @todo stopEditing? */
 		return this.getSearchConditionTableModel().getCollectableSearchCondition();
 	}
-	
-	public List<CollectableSearchCondition> getCollectableSubformSearchConditions() {		
-		return this.getSearchConditionTableModel().getCollectableSearchConditions();		
+
+	public List<CollectableSearchCondition> getCollectableSubformSearchConditions() {
+		return this.getSearchConditionTableModel().getCollectableSearchConditions();
 	}
 
 	@Override

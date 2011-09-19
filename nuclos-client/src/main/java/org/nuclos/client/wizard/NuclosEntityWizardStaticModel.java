@@ -33,9 +33,9 @@ import org.nuclos.client.wizard.model.Attribute;
 import org.nuclos.client.wizard.model.EntityAttributeTableModel;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeInputStep;
 import org.nuclos.client.wizard.steps.NuclosEntityFinalStep;
+import org.nuclos.client.wizard.steps.NuclosEntityMenuStep;
 import org.nuclos.client.wizard.steps.NuclosEntityOptionStep;
 import org.nuclos.client.wizard.steps.NuclosEntityProcessStep;
-import org.nuclos.client.wizard.steps.NuclosEntityTreeValueStep;
 import org.nuclos.client.wizard.util.ModifierMap;
 import org.nuclos.common.EntityTreeViewVO;
 import org.nuclos.common.TranslationVO;
@@ -97,6 +97,7 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	String virtualentity;
 
 	Collection<EntityObjectVO> processes;
+	Collection<EntityObjectVO> entityMenus;
 
 	boolean blnImportTable;
 	String jdbcUrl;
@@ -746,6 +747,14 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 		this.processes = processes;
 	}
 
+	public Collection<EntityObjectVO> getEntityMenus() {
+		return entityMenus;
+	}
+
+	public void setEntityMenus(Collection<EntityObjectVO> entityMenus) {
+		this.entityMenus = entityMenus;
+	}
+
 	@Override
 	public void nextStep() {
 		super.nextStep();
@@ -758,7 +767,7 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	@Override
 	public void previousStep() {
 		WizardStep step = this.getActiveStep();
-		if (step instanceof NuclosEntityProcessStep) {
+		if (step instanceof NuclosEntityProcessStep || step instanceof NuclosEntityMenuStep) {
 			try {
 				step.applyState();
 			} catch (InvalidStateException e) { }
@@ -767,7 +776,7 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 			super.previousStep();
 			super.previousStep();
 		}
-		else if(step instanceof NuclosEntityTreeValueStep && !this.isStateModel()) {
+		else if(step instanceof NuclosEntityMenuStep && !this.isStateModel()) {
 			super.previousStep();
 			super.previousStep();
 		}

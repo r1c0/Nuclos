@@ -28,7 +28,6 @@ import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.HashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
@@ -71,7 +70,6 @@ import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
 import org.nuclos.common.collect.collectable.CollectableUtils.GivenFieldOrderComparator;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
-import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collection.ComparatorUtils;
@@ -96,14 +94,14 @@ public abstract class SubFormController extends Controller
 		implements TableCellRendererProvider, TableCellEditorProvider, SubFormParameterProvider, FocusActionListener {
 
 	protected static final Logger log = Logger.getLogger(DetailsSubFormController.class);
-	
-//	private static String[] systemColumns = {NuclosEOField.CHANGEDAT.getMetaData().getField(), 
-//		NuclosEOField.CREATEDBY.getMetaData().getField(), NuclosEOField.CHANGEDBY.getMetaData().getField(), 
+
+//	private static String[] systemColumns = {NuclosEOField.CHANGEDAT.getMetaData().getField(),
+//		NuclosEOField.CREATEDBY.getMetaData().getField(), NuclosEOField.CHANGEDBY.getMetaData().getField(),
 //		NuclosEOField.CREATEDAT.getMetaData().getField()};
 
-	
-	private final KeyStroke tabKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0); 
-	
+
+	private final KeyStroke tabKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0);
+
 	/**
 	 * this controller's subform
 	 */
@@ -141,12 +139,12 @@ public abstract class SubFormController extends Controller
 	 * @param clctfproviderfactory
 	 * @precondition prefsUserParent != null
 	 */
-	public SubFormController(Component parent, JComponent parentMdi,
+	public SubFormController(CollectableEntity clcte, Component parent, JComponent parentMdi,
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, SubForm subform,
 			boolean bSearchable, Preferences prefsUserParent, CollectableFieldsProviderFactory clctfproviderfactory) {
 
 		super(parent);
-
+		this.clcte = clcte;
 		this.parentMdi = parentMdi;
 		this.clctcompmodelproviderParent = clctcompmodelproviderParent;
 		this.sParentEntityName = sParentEntityName;
@@ -156,36 +154,30 @@ public abstract class SubFormController extends Controller
 		this.prefs = prefsUserParent.node("subentity").node(sEntityName);
 		this.clctfproviderfactory = clctfproviderfactory;
 
-		try {
-			this.clcte = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName);
-		}
-		catch (NoSuchElementException ex) {
-			throw new CommonFatalException(ex);
-		}
 		assert this.getCollectableEntity() != null;
 		assert this.getCollectableEntity().getName().equals(this.getSubForm().getEntityName());
 
 		// Inititialize listeners for toolbar actions:
 		subform.addSubFormToolListener(subformToolListener);
-		
+
 		this.setupListSelectionListener(subform);
 
 		// set a provider for dynamic table cell editors and providers:
 		subform.setTableCellEditorProvider(this);
 		subform.setTableCellRendererProvider(this);
-		
+
 		// If this is a data subform indicate that the size is loading in the
-		// corresponding tab. 
+		// corresponding tab.
 		if (!bSearchable) {
 			SizeKnownListener listener = subform.getSizeKnownListener();
-			if (listener != null) { 
+			if (listener != null) {
 				listener.actionPerformed(new SizeKnownEvent(subform, null));
 			}
 		}
-		
-		
+
+
 		subform.addFocusActionListener(this);
-				
+
 	}
 
 	public void close() {
@@ -209,7 +201,7 @@ public abstract class SubFormController extends Controller
 		}
 	};
 
-	
+
 	public final SubForm getSubForm() {
 		return this.subform;
 	}
@@ -332,14 +324,14 @@ public abstract class SubFormController extends Controller
 
 		final String sForeignKeyFieldName = this.getForeignKeyFieldName();
 		for (String sFieldName : this.getCollectableEntity().getFieldNames()) {
-			if (getSubForm().isColumnVisible(sFieldName) && !sFieldName.equals(sForeignKeyFieldName)) {	
+			if (getSubForm().isColumnVisible(sFieldName) && !sFieldName.equals(sForeignKeyFieldName)) {
 				result.add(this.getCollectableEntity().getEntityField(sFieldName));
 			}
 		}
-		
+
 		List<String> definitionOrder = new ArrayList<String>(getSubForm().getColumnNames());
 		Comparator<CollectableEntityField> comparator = new GivenFieldOrderComparator(definitionOrder);
-		
+
 		try {
 			List<String> storedFieldNames = PreferencesUtils.getStringList(this.prefs, PREFS_NODE_SELECTEDFIELDS);
 			comparator = ComparatorUtils.compoundComparator(new GivenFieldOrderComparator(storedFieldNames), comparator);
@@ -369,7 +361,7 @@ public abstract class SubFormController extends Controller
 			if(!remove && lstRemoveStoredFieldNames.contains(clctef.getName())){
 				stColumnsToRemove.add(column);
 			}
-			
+
 		}
 
 		for (TableColumn column : stColumnsToRemove) {
@@ -503,41 +495,41 @@ public abstract class SubFormController extends Controller
 	protected final boolean isEnabled() {
 		return this.getSubForm().isEnabled();
 	}
-	
+
 	public class FocusListSelectionListener implements ListSelectionListener {
 
 		private final JTable tbl;
-		private final KeyStroke tabKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0); 
+		private final KeyStroke tabKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0);
 
 		public FocusListSelectionListener(JTable tbl) {
 			this.tbl = tbl;
 		}
-		
+
 		@Override
 		public void valueChanged(final ListSelectionEvent e) {
-			AWTEvent currentEvent = EventQueue.getCurrentEvent(); 
-	        if(currentEvent instanceof KeyEvent){ 
+			AWTEvent currentEvent = EventQueue.getCurrentEvent();
+	        if(currentEvent instanceof KeyEvent){
 	        	KeyEvent ke = (KeyEvent)currentEvent;
 	            if(!KeyStroke.getKeyStrokeForEvent(ke).equals(tabKeyStroke))
 	            	return;
 	            int rowIndex = tbl.getSelectedRow();
 	            int columnIndex = tbl.getSelectedColumn();
-	            if(rowIndex == 0 && columnIndex == 0 && e.getLastIndex() > 0) {	            	
-					SubFormController.this.cmdInsert();	
+	            if(rowIndex == 0 && columnIndex == 0 && e.getLastIndex() > 0) {
+					SubFormController.this.cmdInsert();
 					SwingUtilities.invokeLater(new Runnable() {
-						
+
 						@Override
 						public void run() {
 							tbl.editCellAt(e.getLastIndex()+1, 0);
 							tbl.getEditorComponent().requestFocusInWindow();
 						}
 					});
-					
+
 	            }
-	            // focus change with keyboard 
-	        } 
+	            // focus change with keyboard
+	        }
 		}
-		
+
 	}
 
 	protected class IsRemovableListSelectionListener implements ListSelectionListener {
@@ -573,7 +565,7 @@ public abstract class SubFormController extends Controller
 		this.listselectionlistener = new IsRemovableListSelectionListener(tbl);
 
 		tbl.getSelectionModel().addListSelectionListener(listselectionlistener);
-		
+
 		tbl.getSelectionModel().addListSelectionListener(new FocusListSelectionListener(tbl));
 	}
 
@@ -653,7 +645,7 @@ public abstract class SubFormController extends Controller
 			String sParentSubForm = subform.getParentSubForm();
 			if(sParentSubForm != null)
 				result = getFieldFromParentSubform(sParentComponentName);
-			else 
+			else
 				result = clctcompmodel.getField();
 		}
 		else if (Modules.getInstance().isModuleEntity(sParentComponentEntityName)) {
@@ -665,17 +657,17 @@ public abstract class SubFormController extends Controller
 				"Die Entit\u00e4t der Vaterkomponente ({0}) muss der Entit\u00e4t des Unterformulars ({1}) oder der Entit\u00e4t des \u00fcbergeordneten Formulars ({2}) entsprechen.",
 				sParentComponentEntityName, this.getCollectableEntity().getName(), this.getParentEntityName()));
 		}
-		
+
 		if(result == null && isSearchable()) {
 			throw new NuclosFieldNotInModelException();
 		}
 		else if(result == null) {
 			throw new CommonFatalException(CommonLocaleDelegate.getMessage("SubFormController.2", "Das Feld ({0}) ist nicht in der Entität ({1}) vorhanden!", sParentComponentEntityName, this.getParentEntityName()));
 		}
-		
+
 		return result;
 	}
-	
+
 	protected abstract CollectableField getFieldFromParentSubform(String sFieldName);
 
 	/**
@@ -710,13 +702,13 @@ public abstract class SubFormController extends Controller
 		this.getSubForm().setupStaticTableCellEditors(tbl, this.isSearchable(), this.getPrefs(), this.getSubFormTableModel(),
 				this.getCollectableFieldsProviderFactory(), this.getParentEntityName(), this.getCollectableEntity());
 	}
-	
+
 	@Override
 	public void focusAction(EventObject eObject) {
 		cmdInsert();
 	}
 
 
-	
+
 
 }	// class SubFormController

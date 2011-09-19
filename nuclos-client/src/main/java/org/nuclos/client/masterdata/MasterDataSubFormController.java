@@ -41,9 +41,7 @@ import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.EntityCollectController;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
-import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
 import org.nuclos.client.entityobject.CollectableEntityObject;
-import org.nuclos.client.genericobject.CollectableGenericObjectEntity;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
@@ -69,17 +67,16 @@ import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.AbstractCollectableField;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
+import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.DefaultValueObjectList;
 import org.nuclos.common.collection.ValueObjectList;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common.entityobject.CollectableEOEntity;
-import org.nuclos.common.entityobject.CollectableEOEntityProvider;
-import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.LangUtils;
@@ -124,7 +121,26 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	public MasterDataSubFormController(Component parent, JComponent parentMdi,
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, final SubForm subform,
 			Preferences prefsUserParent, CollectableFieldsProviderCache valueListProviderCache) {
-		super(parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform,
+		this(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), parent, parentMdi, clctcompmodelproviderParent,
+				sParentEntityName, subform, prefsUserParent, valueListProviderCache);
+	}
+
+	/**
+	 * Ctor for creating a new MasterDataSubFormController with custom CollectableEntity.
+	 *
+	 * @param clcte
+	 * @param parent
+	 * @param parentMdi
+	 * @param clctcompmodelproviderParent
+	 * @param sParentEntityName
+	 * @param subform
+	 * @param prefsUserParent
+	 * @param valueListProviderCache
+	 */
+	public MasterDataSubFormController(CollectableEntity clcte, Component parent, JComponent parentMdi,
+			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, final SubForm subform,
+			Preferences prefsUserParent, CollectableFieldsProviderCache valueListProviderCache) {
+		super(clcte, parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform,
 				prefsUserParent, MasterDataCollectableFieldsProviderFactory.newFactory(null, valueListProviderCache));
 
 		getSubForm().getJTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -504,7 +520,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		return this.clctParent;
 	}
 
-	protected CollectableEOEntity getCollectableMasterDataEntity() {
+	/*protected CollectableEOEntity getCollectableMasterDataEntity() {
 		if(this.getCollectableEntity() instanceof CollectableGenericObjectEntity) {
 			CollectableGenericObjectEntity cgoe = (CollectableGenericObjectEntity)this.getCollectableEntity();
 			CollectableEOEntityProvider provider = CollectableEOEntityClientProvider.getInstance();
@@ -516,14 +532,14 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			return (CollectableEOEntity)provider.getCollectableEntity(cmde.getName());
 		}
 		return (CollectableEOEntity) this.getCollectableEntity();
-	}
+	}*/
 
 	/**
 	 * @return a new collectable adapter object containing a MasterDataVO
 	 */
 	@Override
 	public CollectableEntityObject newCollectable() {
-		final CollectableEOEntity clctmde = this.getCollectableMasterDataEntity();
+		final CollectableEntity clctmde = this.getCollectableEntity();
 		return new CollectableEntityObject(clctmde, EntityObjectVO.newObject(clctmde.getName()));
 	}
 
@@ -564,7 +580,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 				}
 				final List<CollectableEntityObject> lst = CollectionUtils.transform(
 					collmdvo,
-					new CollectableEntityObject.MakeCollectable(MasterDataSubFormController.this.getCollectableMasterDataEntity()));
+					new CollectableEntityObject.MakeCollectable(MasterDataSubFormController.this.getCollectableEntity()));
 				MasterDataSubFormController.this.updateTableModel(lst);
 				// Trigger the 'size' display...
 				if (listener != null) {
@@ -673,7 +689,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 					new ArrayList<EntityObjectVO>() :
 						MasterDataDelegate.getInstance().getDependantMasterData(this.getCollectableEntity().getName(), this.getForeignKeyFieldName(), clct.getId());
 
-					lstclctmd = CollectionUtils.transform(collmdvo, new CollectableEntityObject.MakeCollectable(this.getCollectableMasterDataEntity()));
+					lstclctmd = CollectionUtils.transform(collmdvo, new CollectableEntityObject.MakeCollectable(this.getCollectableEntity()));
 					clct.getDependantCollectableMasterDataMap().addValues(this.getEntityAndForeignKeyFieldName().getEntityName(), lstclctmd);
 		}
 		return lstclctmd;

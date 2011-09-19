@@ -35,7 +35,6 @@ import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
-import java.lang.ref.WeakReference;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1420,6 +1419,15 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		if (selectTab) {
 			this.showFrame();
 		}
+	}
+
+	@SuppressWarnings("deprecation")
+	public final void runSearchWith(CollectableSearchCondition cond) throws CommonBusinessException {
+		this.setCollectState(CollectState.OUTERSTATE_SEARCH, CollectState.SEARCHMODE_UNSYNCHED);
+		if (cond != null) {
+			this.setCollectableSearchConditionInSearchPanel(cond);
+		}
+		this.showFrame();
 	}
 
 	/**

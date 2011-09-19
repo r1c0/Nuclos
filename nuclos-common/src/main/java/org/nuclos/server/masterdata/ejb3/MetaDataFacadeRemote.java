@@ -178,4 +178,7 @@ public interface MetaDataFacadeRemote extends CommonMetaDataProvider {
 
 	@RolesAllowed("Login")
 	public void tryRemoveProcess(EntityObjectVO process) throws NuclosBusinessException;
+
+	@RolesAllowed("Login")
+	public List<EntityObjectVO> getEntityMenus();
 }

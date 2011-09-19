@@ -37,14 +37,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -100,7 +103,9 @@ import org.nuclos.client.customcomp.CustomComponentController;
 import org.nuclos.client.customcomp.resplan.ResPlanAction;
 import org.nuclos.client.customcomp.wizard.CustomComponentWizard;
 import org.nuclos.client.explorer.ExplorerController;
+import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GeneratorActions;
+import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.GenericObjectLayoutCache;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
@@ -143,16 +148,23 @@ import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.CommandInformationMessage;
 import org.nuclos.common.CommandMessage;
 import org.nuclos.common.JMSConstants;
+import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.Priority;
 import org.nuclos.common.RuleNotification;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
+import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.security.RemoteAuthenticationManager;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -1271,7 +1283,8 @@ public class MainController {
 	}
 
 	private void addActionIfAllowed(List<Pair<String[], Action>> menuActions, String[] menuPath, NuclosEntity entity) {
-		Action act = createEntityAction(MetaDataClientProvider.getInstance().getEntity(entity));
+		EntityMetaDataVO entitymetavo = MetaDataClientProvider.getInstance().getEntity(entity);
+		Action act = createEntityAction(entitymetavo, CommonLocaleDelegate.getLabelFromMetaDataVO(entitymetavo), false, null);
 		if (act != null) {
 			menuActions.add(new Pair<String[], Action>(menuPath, act));
 		}
@@ -1279,9 +1292,28 @@ public class MainController {
 
 	public List<Pair<String[], Action>> getEntityMenuActions() {
 		List<Pair<String[], Action>> entityMenuActions = new ArrayList<Pair<String[], Action>>();
+
+		Set<String> customConfigurationEntities = new HashSet<String>();
+
+		for (EntityObjectVO conf : MetaDataDelegate.getInstance().getEntityMenus()) {
+			EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(conf.getFieldId("entity"));
+			String[] menuPath = splitMenuPath(CommonLocaleDelegate.getResource(conf.getField("menupath", String.class), null));
+
+			if (menuPath != null && menuPath.length > 0) {
+				Action action = createEntityAction(meta, menuPath[menuPath.length - 1], conf.getField("new", Boolean.class), conf.getFieldId("process"));
+				if (menuPath != null && menuPath.length > 0 && action != null) {
+					entityMenuActions.add(Pair.makePair(Arrays.copyOf(menuPath, menuPath.length - 1), action));
+				}
+				customConfigurationEntities.add(meta.getEntity());
+			}
+		}
+
 		for (final EntityMetaDataVO entitymetavo : MetaDataDelegate.getInstance().getAllEntities()) {
+			if (customConfigurationEntities.contains(entitymetavo.getEntity())) {
+				continue;
+			}
 			String[] menuPath = splitMenuPath(CommonLocaleDelegate.getResource(entitymetavo.getLocaleResourceIdForMenuPath(), null));
-			Action action = createEntityAction(entitymetavo);
+			Action action = createEntityAction(entitymetavo, CommonLocaleDelegate.getLabelFromMetaDataVO(entitymetavo), false, null);
 			if (menuPath != null && menuPath.length > 0 && action != null) {
 				entityMenuActions.add(Pair.makePair(menuPath, action));
 			}
@@ -1303,39 +1335,44 @@ public class MainController {
 	}
 
 	private Action createEntityAction(NuclosEntity entity) {
-		return createEntityAction(MetaDataClientProvider.getInstance().getEntity(entity));
+		EntityMetaDataVO entitymetavo = MetaDataClientProvider.getInstance().getEntity(entity);
+		return createEntityAction(entitymetavo, CommonLocaleDelegate.getLabelFromMetaDataVO(entitymetavo), false, null);
 	}
 
-	private Action createEntityAction(EntityMetaDataVO entitymetavo) {
+	private Action createEntityAction(EntityMetaDataVO entitymetavo, String label, final boolean isNew, final Long processId) {
 		String entity = entitymetavo.getEntity();
 		if (!SecurityCache.getInstance().isReadAllowedForEntity(entity)) {
 			return null;
 		}
 
-		Action action = new AbstractAction(
-				CommonLocaleDelegate.getLabelFromMetaDataVO(entitymetavo)) {
-			/**
-					 *
-					 */
-					private static final long serialVersionUID = 1L;
+		Action action = new AbstractAction() {
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-				cmdCollectMasterData(evt);
+				cmdCollectMasterData(evt, isNew, processId);
 			}
 		};
+		Pair<String, Character> nameAndMnemonic = MenuGenerator.getMnemonic(label);
+		action.putValue(Action.NAME, nameAndMnemonic.x);
+		if (nameAndMnemonic.y != null) {
+			action.putValue(Action.MNEMONIC_KEY, (int)nameAndMnemonic.y.charValue());
+		}
 		action.setEnabled(true);
 		action.putValue(Action.SMALL_ICON, MainFrame.resizeAndCacheTabIcon(MainFrame.getEntityIcon(entity)));
 		action.putValue(Action.ACTION_COMMAND_KEY, entity);
-		if (!StringUtils.isNullOrEmpty(entitymetavo.getAccelerator()) && entitymetavo.getAcceleratorModifier() != null) {
-			int keycode = entitymetavo.getAccelerator().charAt(0);
-			if(keycode > 90)
-				keycode -= 32;
+		if (!isNew && processId == null) {
+			if (!StringUtils.isNullOrEmpty(entitymetavo.getAccelerator()) && entitymetavo.getAcceleratorModifier() != null) {
+				int keycode = entitymetavo.getAccelerator().charAt(0);
+				if(keycode > 90)
+					keycode -= 32;
 
-			action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(keycode, entitymetavo.getAcceleratorModifier().intValue()));
-		} else if (!StringUtils.isNullOrEmpty(entitymetavo.getAccelerator())) {
-			action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(entitymetavo.getAccelerator().charAt(0)));
+				action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(keycode, entitymetavo.getAcceleratorModifier().intValue()));
+			} else if (!StringUtils.isNullOrEmpty(entitymetavo.getAccelerator())) {
+				action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(entitymetavo.getAccelerator().charAt(0)));
+			}
 		}
+
 		return action;
 	}
 
@@ -1692,15 +1729,35 @@ public class MainController {
 	}
 
 
-	private void cmdCollectMasterData(final ActionEvent ev) {
+	private void cmdCollectMasterData(final ActionEvent ev, final boolean isNew, final Long processId) {
 		UIUtils.runCommand(frm, new Runnable() {
 			@Override
 			public void run() {
 				try {
 					String entity = ev.getActionCommand();
 					NuclosCollectController<?> ncc = NuclosCollectControllerFactory.getInstance().newCollectController(frm.getPredefinedEntityOpenLocation(entity), entity, null);
-					if(ncc != null)
-						ncc.run();
+					if(ncc != null) {
+						if (isNew) {
+							if (processId != null && ncc instanceof GenericObjectCollectController) {
+								GenericObjectCollectController gcc = (GenericObjectCollectController) ncc;
+								CollectableGenericObjectWithDependants clct = gcc.newCollectable();
+								clct.setField(NuclosEOField.PROCESS.getName(), getProcessField(processId));
+								gcc.runNewWith(clct);
+							}
+							else {
+								ncc.runNew(true);
+							}
+						}
+						else {
+							if (processId != null && ncc instanceof GenericObjectCollectController) {
+								CollectableSearchCondition cond = new CollectableComparison(ncc.getCollectableEntity().getEntityField(NuclosEOField.PROCESS.getName()), ComparisonOperator.EQUAL, getProcessField(processId));
+								ncc.runSearchWith(cond);
+							}
+							else {
+								ncc.run();
+							}
+						}
+					}
 				}
 				catch (CommonBusinessException ex) {
 					final String sErrorMsg = CommonLocaleDelegate.getMessage("MainController.21","Die Stammdaten k\u00f6nnen nicht bearbeitet werden.");
@@ -1710,6 +1767,9 @@ public class MainController {
 		});
 	}
 
+	private CollectableField getProcessField(Long processId) throws CommonBusinessException {
+		return new CollectableValueIdField(processId.intValue(), MasterDataCache.getInstance().get(NuclosEntity.PROCESS.getEntityName(), processId.intValue()).getField("name"));
+	}
 
 	private void handleMessge(final Message msg) {
 		try {

@@ -716,6 +716,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			if (metaVO.isStateModel()) {
 				to.setProcesses(wizardModel.getProcesses());
 			}
+			to.setMenus(wizardModel.getEntityMenus());
 			String sResult = MetaDataDelegate.getInstance().createOrModifyEntity(metaVOOld, to, null, lstEntityFields, true, null, null);
 			if(sResult != null) {
 				Errors.getInstance().showExceptionDialog(this, new CommonFatalException(sResult));

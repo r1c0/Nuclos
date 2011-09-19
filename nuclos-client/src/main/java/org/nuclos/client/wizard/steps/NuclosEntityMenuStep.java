@@ -19,40 +19,44 @@ package org.nuclos.client.wizard.steps;
 import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import info.clearthought.layout.TableLayout;
 
-import java.awt.Component;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.prefs.Preferences;
 
 import javax.swing.Icon;
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 
+import org.nuclos.client.common.LocaleDelegate;
+import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
-import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComponentType;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
-import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.TranslationVO;
-import org.nuclos.common.collect.collectable.CollectableUtils;
+import org.nuclos.common.collect.collectable.AbstractCollectableEntity;
+import org.nuclos.common.collect.collectable.CollectableComponentTypes;
+import org.nuclos.common.collect.collectable.CollectableEntity;
+import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
+import org.nuclos.common.collect.collectable.CollectableValueIdField;
+import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.CommonLocaleDelegate;
-import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.LocaleInfo;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.pietschy.wizard.InvalidStateException;
 
@@ -61,27 +65,27 @@ import org.pietschy.wizard.InvalidStateException;
 * Created by Novabit Informationssysteme GmbH <br>
 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
+public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 
 	private static final long serialVersionUID = 2900241917334839766L;
 
-	private static final String ENTITYNAME_PROCESS = NuclosEntity.PROCESS.getEntityName();
+	private static final String ENTITYNAME_MENU = NuclosEntity.ENTITYMENU.getEntityName();
 
 	private SubForm subform;
 	private MasterDataSubFormController subFormController;
 
 	public static String[] labels = TranslationVO.labelsEntity;
 
-	public NuclosEntityProcessStep() {
+	public NuclosEntityMenuStep() {
 		initComponents();
 	}
 
-	public NuclosEntityProcessStep(String name, String summary) {
+	public NuclosEntityMenuStep(String name, String summary) {
 		super(name, summary);
 		initComponents();
 	}
 
-	public NuclosEntityProcessStep(String name, String summary, Icon icon) {
+	public NuclosEntityMenuStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
 		initComponents();
 	}
@@ -101,10 +105,18 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 		super.prepare();
 		this.removeAll();
 
-		subform = new SubForm(ENTITYNAME_PROCESS, JToolBar.VERTICAL, "module");
+		subform = new SubForm(ENTITYNAME_MENU, JToolBar.VERTICAL, "entity");
 
-		SubForm.Column column = new SubForm.Column("nuclet", "Nuclet", new CollectableComponentType(CollectableUtils.getCollectableComponentTypeForClass(String.class), null), false, false, false, 0, 0);
+		CollectableEntity clcte = new EntityMenuCollectableEntity(CollectableEOEntityClientProvider.getInstance().getCollectableEntity(NuclosEntity.ENTITYMENU.getEntityName()));
+
+		// do not show column for resource id
+		SubForm.Column column = new SubForm.Column("menupath", "Menupath", new CollectableComponentType(CollectableComponentTypes.TYPE_TEXTFIELD, null), false, false, false, 0, 0);
 		subform.addColumn(column);
+
+		SubForm.Column column2 = new SubForm.Column("process", clcte.getEntityField("process").getLabel(), new CollectableComponentType(CollectableComponentTypes.TYPE_COMBOBOX, null), true, model.isStateModel(), false, 0, 0);
+		column2.setValueListProvider(new ProcessCollectableFieldsProvider());
+		subform.addColumn(column2);
+
 		this.add(subform, "0,0");
 
 		CollectableComponentModelProvider provider = new CollectableComponentModelProvider() {
@@ -131,10 +143,10 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 		};
 		MainFrameTab tab = getModel().getParentFrame();
 
-		Preferences prefs = java.util.prefs.Preferences.userRoot().node("org/nuclos/client/entitywizard/steps/process");
+		Preferences prefs = java.util.prefs.Preferences.userRoot().node("org/nuclos/client/entitywizard/steps/menu");
 
-		subFormController = new ProcessSubformController(this, tab, provider,ENTITYNAME_PROCESS, subform, prefs, null);
-		Collection<EntityObjectVO> data = model.getProcesses();
+		subFormController = new MasterDataSubFormController(clcte, this, tab, provider, ENTITYNAME_MENU, subform, prefs, null);
+		Collection<EntityObjectVO> data = model.getEntityMenus();
 
 		if (data != null) {
 			try {
@@ -155,70 +167,59 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 			subformdata = subFormController.getCollectables(true, true, true);
 		} catch (CommonValidationException e1) {
 			JOptionPane.showMessageDialog(this, CommonLocaleDelegate.getMessageFromResource(e1.getMessage()),
-	    			getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
+	    			getMessage("wizard.step.menu.error.title", "Achtung!"), JOptionPane.OK_OPTION);
  	        throw new InvalidStateException();
 		}
-		Collection<EntityObjectVO> processes = CollectionUtils.transform(subformdata, new Transformer<CollectableEntityObject, EntityObjectVO>() {
+		Collection<EntityObjectVO> entityMenus = CollectionUtils.transform(subformdata, new Transformer<CollectableEntityObject, EntityObjectVO>() {
 			@Override
 			public EntityObjectVO transform(CollectableEntityObject i) {
 				return i.getEntityObjectVO();
 			}
 		});
-		// validate processes
-		Set<String> names = new HashSet<String>();
-		for (EntityObjectVO process : processes) {
-			String name = process.getField("name");
-			if (StringUtils.isNullOrEmpty(name)) {
-				JOptionPane.showMessageDialog(this, getMessage("wizard.step.processes.error.name.mandatory", "Bitte definieren Sie für jede Aktion einen Namen."),
-		    			getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
-	 	        throw new InvalidStateException();
-			}
-			if (!names.add(name)) {
-				JOptionPane.showMessageDialog(this, getMessage("wizard.step.processes.error.name.unique", "Der Name einer Aktion muss eindeutig sein ({0}).", name),
-		    			getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
-	 	        throw new InvalidStateException();
-			}
-		}
-		model.setProcesses(processes);
+		model.setEntityMenus(entityMenus);
 		subFormController.close();
 		super.applyState();
 	}
 
-	private class ProcessSubformController extends MasterDataSubFormController {
+	public static class EntityMenuCollectableEntity extends AbstractCollectableEntity {
 
-		public ProcessSubformController(Component parent, JComponent parentMdi, CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, SubForm subform, Preferences prefsUserParent, CollectableFieldsProviderCache valueListProviderCache) {
-			super(parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform, prefsUserParent, valueListProviderCache);
+		public EntityMenuCollectableEntity(CollectableEntity clcte) {
+			super(NuclosEntity.ENTITYMENU.getEntityName(), clcte.getLabel());
+
+			for (String field : clcte.getFieldNames()) {
+				this.addCollectableEntityField(clcte.getEntityField(field));
+			}
+
+			for (LocaleInfo li : LocaleDelegate.getInstance().getAllLocales(false)) {
+				String fieldname = "menupath_" + li.getTag();
+				String label = CommonLocaleDelegate.getMessage("EntityMenuCollectableEntity.translationfield.label", "Menu path ({0})", li.title);
+				String description = CommonLocaleDelegate.getMessage("EntityMenuCollectableEntity.translationfield.description", "Menu path ({0}). Use \\ to create submenus.", li.title);
+				DefaultCollectableEntityField field = new DefaultCollectableEntityField(fieldname, String.class, label,
+						description, null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, NuclosEntity.ENTITYMENU.getEntityName());
+				field.setCollectableEntity(this);
+				this.addCollectableEntityField(field);
+			}
 		}
+	}
+
+	private class ProcessCollectableFieldsProvider implements CollectableFieldsProvider {
 
 		@Override
-		protected void removeSelectedRow() {
-			CollectableEntityObject process = getSelectedCollectable();
-			if (process.getId() != null) {
-				try {
-					MetaDataDelegate.getInstance().tryRemoveProcess(process.getEntityObjectVO());
-				}
-				catch (NuclosBusinessException e) {
-					JOptionPane.showMessageDialog(NuclosEntityProcessStep.this, getMessage("wizard.step.processes.error.removeprocess", "Aktion {0} ist bereits in Verwendung und kann nicht entfernt werden.", process.getField("name")),
-			    			getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
-					return;
-				}
-			}
-			super.removeSelectedRow();
-		}
+		public void setParameter(String sName, Object oValue) { }
 
 		@Override
-		public CollectableEntityObject newCollectable() {
-			CollectableEntityObject result = super.newCollectable();
-			long i = -1;
-			for (CollectableEntityObject o : getCollectableTableModel().getCollectables()) {
-				if (o.getEntityObjectVO().getId() <= i) {
-					i = o.getEntityObjectVO().getId() - 1;
-				}
+		public List<CollectableField> getCollectableFields() throws CommonBusinessException {
+			if (model.getProcesses() != null) {
+				return CollectionUtils.transform(model.getProcesses(), new Transformer<EntityObjectVO, CollectableField>() {
+					@Override
+					public CollectableField transform(EntityObjectVO i) {
+						return new CollectableValueIdField(i.getId(), i.getField("name"));
+					}
+				});
 			}
-			result.getEntityObjectVO().setId(i);
-			return result;
+			else {
+				return new ArrayList<CollectableField>();
+			}
 		}
-
-
 	}
 }

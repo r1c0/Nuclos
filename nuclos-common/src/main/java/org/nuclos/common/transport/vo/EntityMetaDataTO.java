@@ -49,6 +49,8 @@ public class EntityMetaDataTO implements Serializable {
 
 	Collection<EntityObjectVO> processes;
 
+	Collection<EntityObjectVO> menus;
+
 	public EntityMetaDataVO getEntityMetaVO() {
 		return voEntityMetaVO;
 	}
@@ -79,5 +81,13 @@ public class EntityMetaDataTO implements Serializable {
 
 	public void setProcesses(Collection<EntityObjectVO> processes) {
 		this.processes = processes;
+	}
+
+	public Collection<EntityObjectVO> getMenus() {
+		return menus;
+	}
+
+	public void setMenus(Collection<EntityObjectVO> menus) {
+		this.menus = menus;
 	}
 }
