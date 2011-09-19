@@ -1343,4 +1343,16 @@ public class CollectionUtils {
 	   }
    }
    
+	/**
+	 * Remove all null elements at the end of the list.
+	 */
+	public static <T> void trimTail(List<T> l) {
+		final ListIterator<T> it = l.listIterator(l.size());
+		while (it.hasPrevious()) {
+			if (it.previous() != null)
+				return;
+			it.remove();
+		}
+	}
+
 }	// class CollectionUtils

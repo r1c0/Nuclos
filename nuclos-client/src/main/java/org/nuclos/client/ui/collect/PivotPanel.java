@@ -46,6 +46,7 @@ import org.nuclos.client.ui.model.SimpleCollectionComboBoxModel;
 import org.nuclos.client.ui.renderer.EntityFieldMetaDataListCellRenderer;
 import org.nuclos.client.ui.util.ViewIndex;
 import org.nuclos.common.CloneUtils;
+import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
@@ -152,11 +153,24 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				pivotLines.deleteModelItem(index);
-				remove(subformCbs.remove(index));
-				remove(subformAddOrDelete.remove(index));
-				remove(keyLabels.remove(index));
-				remove(valueCombos.remove(index));
+				pivotLines.removeFromViewByMi(index);
+				
+				remove(subformCbs.get(index));
+				subformCbs.set(index, null);
+				CollectionUtils.trimTail(subformCbs);
+				
+				remove(subformAddOrDelete.get(index));
+				subformAddOrDelete.set(index, null);
+				CollectionUtils.trimTail(subformAddOrDelete);
+				
+				remove(keyLabels.get(index));
+				keyLabels.set(index, null);
+				CollectionUtils.trimTail(keyLabels);
+				
+				remove(valueCombos.get(index));
+				valueCombos.set(index, null);
+				CollectionUtils.trimTail(valueCombos);
+				
 				updateLayout();
 			}	
 			
@@ -352,29 +366,39 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			c.ipadx = 3;
 			c.ipady = 1;
 			
+			final Iterator<Integer> itLines = pivotLines.iterator();
 			final Iterator<JCheckBox> itCheck = subformCbs.iterator();
 			final Iterator<JButton> itAdd = subformAddOrDelete.iterator();
 			final Iterator<JLabel> itKey = keyLabels.iterator();
 			final Iterator<JComboBox> itValue = valueCombos.iterator();
-			final Iterator<Integer> itLines = pivotLines.iterator();
 			for (int i = 0; i < size; ++i) {
+				final Integer viewIndex = itLines.next();
+				if (!itCheck.hasNext()) break;
+				
 				final JCheckBox ch = itCheck.next();
 				final JButton a = itAdd.next();
 				final JLabel k = itKey.next();
 				final JComboBox v = itValue.next();
-				final int vi = itLines.next().intValue();
+				
+				if (viewIndex == null) {
+					continue;
+				}
+				
+				final int vi = viewIndex.intValue();
 				c.gridy = vi + 2;
 				
-				c.gridx = 0;
-				lm.setConstraints(ch, c);
-				c.gridx = 1;
-				lm.setConstraints(k, c);
-				c.fill = GridBagConstraints.NONE;
-				c.gridx = 2;
-				lm.setConstraints(a, c);
-				c.fill = GridBagConstraints.BOTH;
-				c.gridx = 3;
-				lm.setConstraints(v, c);
+				if (ch != null) {
+					c.gridx = 0;
+					lm.setConstraints(ch, c);
+					c.gridx = 1;
+					lm.setConstraints(k, c);
+					c.fill = GridBagConstraints.NONE;
+					c.gridx = 2;
+					lm.setConstraints(a, c);
+					c.fill = GridBagConstraints.BOTH;
+					c.gridx = 3;
+					lm.setConstraints(v, c);
+				}
 			}
 		}
 

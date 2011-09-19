@@ -4,12 +4,17 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.nuclos.common.collection.CollectionUtils;
+
 public class ViewIndex {
+	
+	private static final Logger LOG = Logger.getLogger(ViewIndex.class); 
 	
 	/**
 	 * Mapping (model index) -> (view index).
 	 */
-	final List<Integer> model2View = new LinkedList<Integer>();
+	private final List<Integer> model2View = new LinkedList<Integer>();
 	
 	public ViewIndex() {
 	}
@@ -70,8 +75,10 @@ public class ViewIndex {
 		}
 		
 		if (oldViewIndex != null) {
-			final Integer mi = removeFromView(oldViewIndex);
-			assert mi == null;
+			final Integer mi = removeFromViewByVi(oldViewIndex);
+			assert mi == null 
+				: "map(" + modelIndex + ", " + viewIndex + "): old view index " + oldViewIndex 
+				+ " taken by " + mi + " on " + this;
 		}
 	}
 	
@@ -83,35 +90,42 @@ public class ViewIndex {
 	
 	public void popModelItem() {
 		final int oldModelIndex = model2View.size() - 1;
-		deleteModelItem(oldModelIndex);
+		removeFromViewByMi(oldModelIndex);
 	}
 	
-	public void deleteModelItem(int modelIndex) {
-		final Integer mi = removeFromView(model2View.get(modelIndex));
-		assert mi != null && mi.intValue() == modelIndex;
+	public void removeFromViewByMi(int modelIndex) {
+		final Integer mi = removeFromViewByVi(model2View.get(modelIndex));
+		// assert mi != null && mi.intValue() == modelIndex : "deleteModelItem(" + modelIndex + "): mi is " + mi;
 	}
 	
 	/**
-	 * Return the modelIndex but maybe null.
+	 * Return the modelIndex removed but maybe null.
 	 */
-	public Integer removeFromView(int viewIndex) {
+	public Integer removeFromViewByVi(int viewIndex) {
 		Integer miToRemove = null; 
 		int mi = 0;
 		for (Integer vi: model2View) {
-			if (vi == null) continue;
-			int i = vi.intValue();
-			if (i > viewIndex) {
-				// dec viewIndex
-				model2View.set(mi, Integer.valueOf(i - 1));
-			}
-			else if (i == viewIndex) {
-				miToRemove = mi;
+			if (vi != null) {
+				int i = vi.intValue();
+				if (i > viewIndex) {
+					// dec viewIndex
+					model2View.set(mi, Integer.valueOf(i - 1));
+				}
+				else if (i == viewIndex) {
+					miToRemove = mi;
+				}
 			}
 			++mi;
 		}
 		
 		if (miToRemove != null) {
-			model2View.remove(miToRemove.intValue());
+			if (miToRemove == model2View.size() - 1) {
+				model2View.remove(miToRemove.intValue());
+			}
+			else {
+				model2View.set(miToRemove.intValue(), null);
+			}
+			CollectionUtils.trimTail(model2View);
 		}
 		return miToRemove;
 	}
@@ -123,11 +137,12 @@ public class ViewIndex {
 		boolean result = false;
 		int mi = 0;
 		for (Integer vi: model2View) {
-			if (vi == null) continue;
-			int i = vi.intValue();
-			if (i >= viewIndex) {
-				model2View.set(mi, Integer.valueOf(i + 1));
-				result = true;
+			if (vi != null) {
+				int i = vi.intValue();
+				if (i >= viewIndex) {
+					model2View.set(mi, Integer.valueOf(i + 1));
+					result = true;
+				}
 			}
 			++mi;
 		}
@@ -135,7 +150,10 @@ public class ViewIndex {
 	}
 	
 	private boolean checkNewViewIndex(int viewIndex) {
-		return viewIndex >= 0 && !model2View.contains(Integer.valueOf(viewIndex)) && viewIndex - 1 <= maxViewIndex();   
+		final boolean result = 
+			viewIndex >= 0 && !model2View.contains(Integer.valueOf(viewIndex)) && viewIndex - 1 <= maxViewIndex();
+		if (!result)  LOG.warn("index " + viewIndex + " on " + this);
+		return result;
 	}
 	
 	private int maxViewIndex() {
