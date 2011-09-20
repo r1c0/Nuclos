@@ -772,53 +772,57 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				MetaDataServerProvider.getInstance().revalidate();
 			}
 
-			JdbcEntityObjectProcessor processor = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.PROCESS);
-			for (EntityObjectVO process : updatedTOEntity.getProcesses()) {
-				if (process.getId() != null && process.getId() < 0L) {
-					process.setId(null);
-				}
-				if (process.isFlagNew() || process.isFlagUpdated()) {
-					if (process.getId() == null || process.isFlagNew()) {
-						process.flagNew();
-						process.setId(DalUtils.getNextId());
-						DalUtils.updateVersionInformation(process, getCurrentUserName());
+			if (updatedTOEntity.getProcesses() != null) {
+				JdbcEntityObjectProcessor processor = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.PROCESS);
+				for (EntityObjectVO process : updatedTOEntity.getProcesses()) {
+					if (process.getId() != null && process.getId() < 0L) {
+						process.setId(null);
 					}
-					process.getFieldIds().put("module", updatedMDEntity.getId());
-					processor.insertOrUpdate(process).throwFirstBusinessExceptionIfAny();
-				}
-				else if (process.getId() != null && process.isFlagRemoved()) {
-					processor.delete(process.getId()).throwFirstBusinessExceptionIfAny();
+					if (process.isFlagNew() || process.isFlagUpdated()) {
+						if (process.getId() == null || process.isFlagNew()) {
+							process.flagNew();
+							process.setId(DalUtils.getNextId());
+							DalUtils.updateVersionInformation(process, getCurrentUserName());
+						}
+						process.getFieldIds().put("module", updatedMDEntity.getId());
+						processor.insertOrUpdate(process).throwFirstBusinessExceptionIfAny();
+					}
+					else if (process.getId() != null && process.isFlagRemoved()) {
+						processor.delete(process.getId()).throwFirstBusinessExceptionIfAny();
+					}
 				}
 			}
 
-			JdbcEntityObjectProcessor menuProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.ENTITYMENU);
-			for (EntityObjectVO menu : updatedTOEntity.getMenus()) {
-				if (menu.isFlagNew() || menu.isFlagUpdated()) {
-					if (menu.getId() == null || menu.isFlagNew()) {
-						menu.flagNew();
-						menu.setId(DalUtils.getNextId());
-						DalUtils.updateVersionInformation(menu, getCurrentUserName());
-					}
-					menu.getFieldIds().put("entity", updatedMDEntity.getId());
-					if (menu.getField("process") != null && menu.getFieldId("process") != null && menu.getFieldId("process") < 0L) {
-						String processname = menu.getField("process", String.class);
-						for (EntityObjectVO process : updatedTOEntity.getProcesses()) {
-							if (processname.equals(process.getField("name"))) {
-								menu.getFieldIds().put("process", process.getId());
+			if (updatedTOEntity.getMenus() != null) {
+				JdbcEntityObjectProcessor menuProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.ENTITYMENU);
+				for (EntityObjectVO menu : updatedTOEntity.getMenus()) {
+					if (menu.isFlagNew() || menu.isFlagUpdated()) {
+						if (menu.getId() == null || menu.isFlagNew()) {
+							menu.flagNew();
+							menu.setId(DalUtils.getNextId());
+							DalUtils.updateVersionInformation(menu, getCurrentUserName());
+						}
+						menu.getFieldIds().put("entity", updatedMDEntity.getId());
+						if (menu.getField("process") != null && menu.getFieldId("process") != null && menu.getFieldId("process") < 0L) {
+							String processname = menu.getField("process", String.class);
+							for (EntityObjectVO process : updatedTOEntity.getProcesses()) {
+								if (processname.equals(process.getField("name"))) {
+									menu.getFieldIds().put("process", process.getId());
+								}
 							}
 						}
-					}
-					String resourceId = menu.getField("menupath", String.class);
-					for (LocaleInfo li : getLocaleFacade().getAllLocales(false)) {
-						resourceId = getLocaleFacade().setResourceForLocale(resourceId, li, menu.getField("menupath_" + li.getTag(), String.class));
-					}
-					menu.getFields().put("menupath", resourceId);
-					menuProcessor.insertOrUpdate(menu).throwFirstBusinessExceptionIfAny();
+						String resourceId = menu.getField("menupath", String.class);
+						for (LocaleInfo li : getLocaleFacade().getAllLocales(false)) {
+							resourceId = getLocaleFacade().setResourceForLocale(resourceId, li, menu.getField("menupath_" + li.getTag(), String.class));
+						}
+						menu.getFields().put("menupath", resourceId);
+						menuProcessor.insertOrUpdate(menu).throwFirstBusinessExceptionIfAny();
 
-				}
-				else if (menu.getId() != null && menu.isFlagRemoved()) {
-					menuProcessor.delete(menu.getId()).throwFirstBusinessExceptionIfAny();
-					getLocaleFacade().deleteResource(menu.getField("menupath", String.class));
+					}
+					else if (menu.getId() != null && menu.isFlagRemoved()) {
+						menuProcessor.delete(menu.getId()).throwFirstBusinessExceptionIfAny();
+						getLocaleFacade().deleteResource(menu.getField("menupath", String.class));
+					}
 				}
 			}
 

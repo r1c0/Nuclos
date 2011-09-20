@@ -491,8 +491,15 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 				tfOutputFormat.setEnabled(isCustomType);
 				tfFieldWidth.setEnabled(isCustomType);
 				tfFieldPrecision.setEnabled(isCustomType);
-				cbxReference.setEnabled(isCustomType && columnTypeChangeAllowed && !selectedType.isValueListTyp());
-				cbxValueList.setEnabled(DataTyp.getDefaultStringTyp().equals(selectedType) && columnTypeChangeAllowed && !selectedType.isRefenceTyp());
+				if (model.isEditMode()) {
+					cbxReference.setEnabled(isCustomType && columnTypeChangeAllowed && !selectedType.isValueListTyp());
+					cbxValueList.setEnabled(DataTyp.getDefaultStringTyp().equals(selectedType) && columnTypeChangeAllowed && !selectedType.isRefenceTyp());
+				}
+				else {
+					cbxReference.setEnabled(isCustomType && !selectedType.isValueListTyp());
+					cbxValueList.setEnabled(DataTyp.getDefaultStringTyp().equals(selectedType) && !selectedType.isRefenceTyp());
+				}
+
 
 				if (!isCustomType) {
 					cbxJavatype.getModel().setSelectedItem(selectedType.getJavaType());
@@ -500,7 +507,9 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 					tfFieldWidth.setText(selectedType.getScale() != null ? selectedType.getScale().toString(): "");
 					tfFieldPrecision.setText(selectedType.getPrecision() != null ? selectedType.getPrecision().toString(): "");
 					cbxReference.setSelected(selectedType.isRefenceTyp());
-					cbxValueList.setSelected(selectedType.isValueListTyp());
+					if (!DataTyp.getDefaultStringTyp().equals(selectedType) || selectedType.isRefenceTyp()) {
+						cbxValueList.setSelected(false);
+					}
 					setInputValidation(selectedType.getJavaType(), selectedType.getInputFormat());
 				}
 				else {
