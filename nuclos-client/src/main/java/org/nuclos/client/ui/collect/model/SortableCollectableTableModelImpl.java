@@ -177,6 +177,7 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 		//new CollectableComparator<Clct>(this.getCollectableEntityField(iColumn));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void sort() {
 		if (!sortKeys.isEmpty()) {
@@ -194,12 +195,15 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 					break;
 				}
 			}
-			if (!comparators.isEmpty()) {
+			// always add id comparator as compound.
+			comparators.add((Comparator<Clct>) CollectableComparatorFactory.getInstance().newCollectableIdComparator());
+			
+			//if (!comparators.isEmpty()) { // will never happen.
 				// This can happen if some sort keys with UNSORTED ordering are provided
 				Comparator<Clct> comparator = ComparatorUtils.compoundComparator(comparators);
 				this.sort(comparator);
 				this.fireTableDataSorted();
-			}
+			//}
 		}
 	}
 

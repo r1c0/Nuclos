@@ -69,4 +69,29 @@ public class CollectableComparatorFactory <Clct extends Collectable> {
 		
 		return new CollectableComparator<Clct>(clctEntityField);
 	}
+
+
+	/**
+	 * @return comparator that sorts by id field
+	 * @precondition clctEntityField != null
+	 */
+	public Comparator<Clct> newCollectableIdComparator() {		
+		return new Comparator<Clct>() {
+
+			@Override
+			@SuppressWarnings("unchecked")
+			public int compare(Clct clct1, Clct clct2) {
+				int result = 0;
+
+				Object oId1 = clct1.getId();
+				Object oId2 = clct2.getId();
+				if(oId1 instanceof Comparable<?> && oId2 instanceof Comparable<?>) {
+					Comparable<Object> comp1 = (Comparable<Object>) oId1;
+					Comparable<Object> comp2 = (Comparable<Object>) oId2;
+					result = comp1 == null ? 1 : comp2 == null ? -1 : comp1.compareTo(oId2);
+				}
+				return result;
+			}
+		};
+	}
 }

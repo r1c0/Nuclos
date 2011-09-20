@@ -61,6 +61,8 @@ public class CollectableComparator<Clct extends Collectable> implements Comparat
 	 * If sorting by field content results in equality, we also compare the id.
 	 * This can be especially useful for date fields, where the time component is omitted.
 	 * So the order of creation is preserved.
+	 * 
+	 * fix. we do not sort by id. we have to add an compound comparator that respects the id. 
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -77,13 +79,13 @@ public class CollectableComparator<Clct extends Collectable> implements Comparat
 			result = this.comparatorForFields.compare(clctf1, clctf2);
 		}
 		
-		Object oId1 = clct1.getId();
+		/*Object oId1 = clct1.getId();
 		Object oId2 = clct2.getId();
 		if(result==0 && oId1 instanceof Comparable<?> && oId2 instanceof Comparable<?>) {
 			Comparable<Object> comp1 = (Comparable<Object>) oId1;
 			Comparable<Object> comp2 = (Comparable<Object>) oId2;
 			result = comp1 == null ? 1 : comp2 == null ? -1 : comp1.compareTo(oId2);
-		}
+		}*/
 		return result;
 	}
 
