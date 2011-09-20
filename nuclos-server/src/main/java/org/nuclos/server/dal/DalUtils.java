@@ -194,7 +194,7 @@ public class DalUtils {
 				else if (columnType.getScale() != null && columnType.getScale() > 0) {
 					cls = Double.class;
 					outputformat = "#,##0.";
-					for (int i = 0; i < scale; i++) {
+					for (int i = 0; i < columnType.getScale(); i++) {
 						outputformat += "0";
 					}
 				}
