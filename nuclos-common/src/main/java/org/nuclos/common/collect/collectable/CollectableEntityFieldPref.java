@@ -26,20 +26,30 @@ public class CollectableEntityFieldPref implements Serializable {
 	// optional
 	private final CollectableEntityPref ce;
 	
+	// optional, only when ce is set
+	private final boolean belongsToSubEntity;
+	
+	// optional, only when ce is set
+	private final boolean belongsToMainEntity;
+	
 	public CollectableEntityFieldPref(String type, String entity, String field, PivotInfo pivot) {
 		this.type = type;
 		this.entity = entity;
 		this.field = field;
 		this.pivot = pivot;
 		this.ce = null;
+		this.belongsToSubEntity = false;
+		this.belongsToMainEntity = true;
 	}
 	
-	public CollectableEntityFieldPref(String type, CollectableEntityPref entity, String field) {
+	public CollectableEntityFieldPref(String type, CollectableEntityPref entity, String field, boolean belongsToSubEntity, boolean belongsToMainEntity) {
 		this.type = type;
 		this.entity = entity.getEntity();
 		this.field = field;
 		this.pivot = null;
 		this.ce = entity;
+		this.belongsToSubEntity = belongsToSubEntity;
+		this.belongsToMainEntity = belongsToMainEntity;
 	}
 	
 	public String getType() {
@@ -62,4 +72,12 @@ public class CollectableEntityFieldPref implements Serializable {
 		return ce;
 	}
 
+	public boolean getBelongsToSubEntity() {
+		return belongsToSubEntity;
+	}
+	
+	public boolean getBelongsToMainEntity() {
+		return belongsToMainEntity;
+	}
+	
 }

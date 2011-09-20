@@ -1778,12 +1778,12 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 		Preferences prefsBookmark = mainFramePrefs.node(PREFS_NODE_BOOKMARK);
 		for (String entity : prefsBookmark.childrenNames()) {
-			bookmark.addAllValues(entity, (List<EntityBookmark>) PreferencesUtils.getSerializableListXML(prefsBookmark, entity));
+			bookmark.addAllValues(entity, (List<EntityBookmark>) PreferencesUtils.getSerializableListXML(prefsBookmark, entity, true));
 		}
 
 		Preferences prefsHistory = mainFramePrefs.node(PREFS_NODE_HISTORY);
 		for (String entity : prefsHistory.childrenNames()) {
-			history.addAllValues(entity, (List<EntityBookmark>) PreferencesUtils.getSerializableListXML(prefsHistory, entity));
+			history.addAllValues(entity, (List<EntityBookmark>) PreferencesUtils.getSerializableListXML(prefsHistory, entity, true));
 		}
 
 		refreshSelectedHistorySize();

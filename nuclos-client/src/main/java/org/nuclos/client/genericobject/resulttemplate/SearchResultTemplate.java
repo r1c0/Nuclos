@@ -311,7 +311,7 @@ public class SearchResultTemplate {
 		result.setDescription(prefs.get(PREFS_KEY_DESCRIPTION, null));
 
 		if (PreferencesUtils.nodeExists(prefs, PREFS_NODE_VISIBLEENTITYFIELDS)) {
-			result.setVisibleColumns((List<CollectableEntityField>) PreferencesUtils.getSerializableListXML(prefs, PREFS_NODE_VISIBLEENTITYFIELDS));
+			result.setVisibleColumns((List<CollectableEntityField>) PreferencesUtils.getSerializableListXML(prefs, PREFS_NODE_VISIBLEENTITYFIELDS, true));
 		}
 		// backward compatibility
 		else {
@@ -341,7 +341,7 @@ public class SearchResultTemplate {
 
 		if (PreferencesUtils.nodeExists(prefs, PREFS_NODE_COLLECTABLESORTING)) {
 			final List<CollectableSorting> sorting = 
-				(List<CollectableSorting>) PreferencesUtils.getSerializableListXML(prefs, PREFS_NODE_COLLECTABLESORTING);
+				(List<CollectableSorting>) PreferencesUtils.getSerializableListXML(prefs, PREFS_NODE_COLLECTABLESORTING, true);
 			CollectionUtils.removeDublicates(sorting);
 			result.setSortingOrder(sorting);
 		}
@@ -355,7 +355,7 @@ public class SearchResultTemplate {
 		}
 
 		if (PreferencesUtils.nodeExists(prefs, PREFS_NODE_FIXEDENTITYFIELDS)) {
-			result.setFixedColumns((List<CollectableEntityField>) PreferencesUtils.getSerializableListXML(prefs, PREFS_NODE_FIXEDENTITYFIELDS));
+			result.setFixedColumns((List<CollectableEntityField>) PreferencesUtils.getSerializableListXML(prefs, PREFS_NODE_FIXEDENTITYFIELDS, true));
 		}
 		// backward compatibility
 		else {

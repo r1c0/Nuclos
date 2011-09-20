@@ -15,15 +15,9 @@ public class CollectableEntityPref {
 	
 	private final String entity;
 	
-	private final boolean belongsToSubEntity;
-	
-	private final boolean belongsToMainEntity;
-	
-	public CollectableEntityPref(String type, String entity, boolean belongsToSubEntity, boolean belongsToMainEntity) {
+	public CollectableEntityPref(String type, String entity) {
 		this.type = type;
 		this.entity = entity;
-		this.belongsToSubEntity = belongsToSubEntity;
-		this.belongsToMainEntity = belongsToMainEntity;
 	}
 	
 	public String getType() {
@@ -34,11 +28,4 @@ public class CollectableEntityPref {
 		return entity;
 	}
 	
-	public boolean getBelongsToSubEntity() {
-		return belongsToSubEntity;
-	}
-	
-	public boolean getBelongsToMainEntity() {
-		return belongsToMainEntity;
-	}
 }

@@ -276,7 +276,7 @@ public class SearchFilterDelegate {
 					PREFS_NODE_VISIBLECOLUMNS, PREFS_NODE_VISIBLECOLUMNENTITIES));
 			
 			if (PreferencesUtils.nodeExists(prefs, PREFS_NODE_COLLECTABLESORTING)) {
-				f.setSortingOrder((List<CollectableSorting>) PreferencesUtils.getSerializableListXML(prefs, PREFS_NODE_COLLECTABLESORTING));
+				f.setSortingOrder((List<CollectableSorting>) PreferencesUtils.getSerializableListXML(prefs, PREFS_NODE_COLLECTABLESORTING, true));
 			}
 			// backward compatibility
 			else {

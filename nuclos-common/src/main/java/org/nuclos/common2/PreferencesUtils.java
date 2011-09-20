@@ -65,6 +65,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 /**
@@ -80,7 +81,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  */
 public class PreferencesUtils {
 
-	private static final Logger log = Logger.getLogger(PreferencesUtils.class);
+	private static final Logger LOG = Logger.getLogger(PreferencesUtils.class);
 	
 	private static final String ENCODING = "UTF-8";
 
@@ -609,7 +610,7 @@ public class PreferencesUtils {
 	 *
 	 * @throws PreferencesException
 	 */
-	public static <T> List<? extends T> getSerializableListXML(Preferences prefs, String key) throws PreferencesException {
+	public static <T> List<? extends T> getSerializableListXML(Preferences prefs, String key, boolean ignoreErrors) throws PreferencesException {
 		/*
 		Object o = new XMLSerializationIO(key).get(prefs);
 		if(o != null && o instanceof List)
@@ -625,7 +626,17 @@ public class PreferencesUtils {
 				result.ensureCapacity(iSize);
 				for (int i = 0; i < iSize; ++i) {
 					// use a separate node for each element:
-					result.add((T) getSerializableObjectXML(prefs, String.valueOf(i)));
+					try {
+						result.add((T) getSerializableObjectXML(prefs, String.valueOf(i)));
+					}
+					catch(XStreamException e) {
+						if (ignoreErrors) {
+							LOG.warn("getSerializableListXML: getSerializableListXML fails " + e);
+						}
+						else {
+							throw e;
+						}
+					}
 				}
 			}
 		}
@@ -774,7 +785,7 @@ public class PreferencesUtils {
 		}
 		catch (PropertyVetoException ex) {
 			// ignore
-			log.debug(ex);
+			LOG.debug(ex);
 		}
 
 		final Rectangle rectNormalBounds = getRectangle(node, PREFS_KEY_NORMAL_BOUNDS, iDefaultWidth, iDefaultHeight);
@@ -787,7 +798,7 @@ public class PreferencesUtils {
 		}
 		catch (PropertyVetoException ex) {
 			// ignore
-			log.debug(ex);
+			LOG.debug(ex);
 		}
 	}
 
