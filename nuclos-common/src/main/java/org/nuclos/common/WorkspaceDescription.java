@@ -29,6 +29,9 @@ public class WorkspaceDescription implements Serializable {
 
 	private String name;
 	private final List<Frame> frames = new ArrayList<Frame>();
+	
+	public WorkspaceDescription() {
+	}
 
 	public String getName() {
 		return name;

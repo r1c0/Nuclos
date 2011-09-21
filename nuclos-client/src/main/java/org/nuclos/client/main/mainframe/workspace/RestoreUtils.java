@@ -30,6 +30,7 @@ import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 
 import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.ExternalFrame;
@@ -58,7 +59,7 @@ import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 
 public class RestoreUtils {
 
-	private static final Logger log = Logger.getLogger(RestoreUtils.class);
+	private static final Logger LOG = Logger.getLogger(RestoreUtils.class);
 
 	private static final String THREAD_NAME = "Workspace restoring...";
 	private static final List<Thread> threadList = new ArrayList<Thread>();
@@ -74,7 +75,7 @@ public class RestoreUtils {
 			TabRestoreController restoreController = (TabRestoreController) Class.forName(wdTab.getRestoreController()).getConstructor().newInstance();
 			restoreController.restoreFromPreferences(wdTab.getPreferencesXML(), tab);
 		} catch(Exception e) {
-			log.warn("TabRestoreController could not be created or restore failed:", e);
+			LOG.warn("TabRestoreController could not be created or restore failed:", e);
 			return false;
 		}
 
@@ -115,14 +116,14 @@ public class RestoreUtils {
 		GraphicsDevice[] devices = ge.getScreenDevices();
 
 		boolean restoreAtStoredPosition = false;
-		log.info("stored frame bounds: " + wdFrame.getNormalBounds());
+		LOG.info("stored frame bounds: " + wdFrame.getNormalBounds());
 		for (GraphicsDevice gd : devices) {
 			if (restoreAtStoredPosition) break;
 
 			GraphicsConfiguration[] gc = gd.getConfigurations();
 			for (int i=0; i < gc.length && !restoreAtStoredPosition; i++) {
 				Rectangle deviceBounds = gc[i].getBounds();
-				log.info("device bounds: " + deviceBounds);
+				LOG.info("device bounds: " + deviceBounds);
 				if (!deviceBounds.contains(wdFrame.getNormalBounds())) {
 					restoreAtStoredPosition = true;
 				}
@@ -174,6 +175,7 @@ public class RestoreUtils {
 				wd = getPrefsFacade().getWorkspace(name);
 			}
 		} catch(CommonFinderException e) {
+			Log.error(e);
 			name = MainFrame.getDefaultWorkspace();
 			wd = WorkspaceDescriptionDefaultsFactory.createOldMdiStyle();
 		}

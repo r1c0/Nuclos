@@ -53,6 +53,7 @@ import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 /**
@@ -196,8 +197,14 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		try {
 			String xml = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 			return (WorkspaceDescription) (new XStream(new DomDriver())).fromXML(xml);
-		} catch (DbInvalidResultSizeException e) {
-			throw new CommonFinderException("There is no workspace stored for the current user and given name. (" + getCurrentUserName() + ", " + name + ")");
+		} 
+		catch (DbInvalidResultSizeException e) {
+			throw new CommonFinderException("There is no workspace stored for the current user and given name. (" 
+					+ getCurrentUserName() + ", " + name + "): " + e.toString());
+		}
+		catch (XStreamException e) {
+			throw new CommonFinderException("There is no workspace stored for the current user and given name. (" 
+					+ getCurrentUserName() + ", " + name + "): " + e.toString());
 		}
 	}
 	
