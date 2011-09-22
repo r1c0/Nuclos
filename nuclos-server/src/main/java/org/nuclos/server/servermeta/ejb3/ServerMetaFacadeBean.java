@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.servermeta.ejb3;
 
+import java.util.TimeZone;
+
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -34,5 +36,9 @@ public class ServerMetaFacadeBean implements ServerMetaFacadeRemote {
 		if(key.startsWith("application.settings.client."))
 			return ServerParameterProvider.getInstance().getValue(key);
 		return "<no access>";
+	}
+	@Override
+	public TimeZone getServerDefaultTimeZone() {
+		return TimeZone.getDefault();
 	}
 }

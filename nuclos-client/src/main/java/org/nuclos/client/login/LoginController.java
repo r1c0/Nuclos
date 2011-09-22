@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.naming.NamingException;
 import javax.swing.BorderFactory;
@@ -52,6 +53,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
+import org.apache.commons.httpclient.util.LangUtils;
 import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.LocaleDelegate;
@@ -118,6 +120,19 @@ public class LoginController extends Controller {
 
 		try {
 	        ServerMetaFacadeRemote sm = ServiceLocator.getInstance().getFacade(ServerMetaFacadeRemote.class);
+	        
+	        // little time zone tests:
+	        //TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
+	        //TimeZone.setDefault(TimeZone.getTimeZone("Europe/Moscow"));
+	        
+	        final TimeZone serverDefaultTimeZone = sm.getServerDefaultTimeZone();
+			System.out.println("Default local  time zone is: " + TimeZone.getDefault().getID());
+			System.out.println("Default server time zone is: " + serverDefaultTimeZone.getID());
+			if (!LangUtils.equals(TimeZone.getDefault(), serverDefaultTimeZone)) {
+				TimeZone.setDefault(serverDefaultTimeZone);
+				System.out.println("Local default time zone is set to server default!");
+			}
+	        
 	        passwordSaveAllowed = Boolean.valueOf(
 	        	StringUtils.defaultIfNull(
 	        		StringUtils.nullIfEmpty(
