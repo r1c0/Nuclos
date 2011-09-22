@@ -1641,6 +1641,12 @@ public class MainController {
 			ctl = this.findCollectControllerDisplaying(sEntityName, oId);
 			if (ctl == null) {
 				ctl = this.findCollectControllerDisplayingDetails(sEntityName);
+				if (ctl != null) {
+					if (!ctl.askAndSaveIfNecessary()) {
+						// action was cancelled
+						return;
+					}
+				}
 			}
 			else {
 				activateOnly = true;
