@@ -22,9 +22,8 @@ import java.util.prefs.Preferences;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.KeyEnum.Utils;
-import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.common2.Localizable;
-import org.nuclos.common2.PreferencesUtils;
+import org.nuclos.common2.exception.PreferencesException;
 
 /**
  * Class to save and load preferences for explorer tree.
@@ -81,7 +80,7 @@ public class ExplorerSettings {
 	public static ExplorerSettings getInstance() {
 		// default actions
 		Preferences prefs = ClientPreferences.getUserPreferences().node("explorer/actions/default");
-		ObjectNodeAction objectNodeAction = Utils.findEnum(ObjectNodeAction.class, prefs.get("objectNodeAction", ObjectNodeAction.SHOW_DETAILS.value));
+		ObjectNodeAction objectNodeAction = Utils.findEnum(ObjectNodeAction.class, prefs.get("objectNodeAction", ObjectNodeAction.SHOW_DETAILS_IN_NEW_TAB.value));
 		FolderNodeAction folderNodeAction = Utils.findEnum(FolderNodeAction.class, prefs.get("folderNodeAction", FolderNodeAction.EXPAND_SUBNODES.value));
 		return new ExplorerSettings(objectNodeAction, folderNodeAction);
 	}
@@ -95,6 +94,7 @@ public class ExplorerSettings {
 	public enum ObjectNodeAction implements KeyEnum<String>, Localizable {
 
 		SHOW_DETAILS("ShowDetails", "ExplorerSettings.ObjectNodeAction.ShowDetails"),
+		SHOW_DETAILS_IN_NEW_TAB("ShowDetailsInNewTab", "ExplorerSettings.ObjectNodeAction.ShowDetailsInNewTab"),
 		SHOW_LIST("ShowList", "ExplorerSettings.ObjectNodeAction.ShowList");
 
 		private String value;

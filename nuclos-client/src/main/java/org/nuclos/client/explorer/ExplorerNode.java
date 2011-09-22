@@ -46,6 +46,8 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
+import org.nuclos.client.explorer.ExplorerSettings.FolderNodeAction;
+import org.nuclos.client.explorer.ExplorerSettings.ObjectNodeAction;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.ui.Errors;
@@ -82,6 +84,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	private static final Logger log = Logger.getLogger(ExplorerNode.class);
 
 	public static final String ACTIONCOMMAND_SHOW_DETAILS = "SHOW DETAILS";
+	public static final String ACTIONCOMMAND_SHOW_DETAILS_IN_NEW_TAB = "SHOW DETAILS IN NEW TAB";
 	public static final String ACTIONCOMMAND_COPY = "COPY";
 	public static final String ACTIONCOMMAND_PASTE = "PASTE";
 	public static final String ACTIONCOMMAND_REMOVE = "REMOVE";
@@ -415,6 +418,13 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 		return result;
 	}
 
+	protected TreeNodeAction newShowDetailsAction(JTree tree, boolean newTab) {
+		String command = newTab ? ACTIONCOMMAND_SHOW_DETAILS_IN_NEW_TAB : ACTIONCOMMAND_SHOW_DETAILS;
+		String resource = newTab ? "ExplorerSettings.ObjectNodeAction.ShowDetailsInNewTab" : "RuleExplorerNode.1";
+		final TreeNodeAction result = new ShowDetailsAction(command, resource, tree, newTab);
+		return result;
+	}
+
 	protected TreeNodeAction newShowListAction(JTree tree) {
 		final TreeNodeAction result = new ShowListAction(tree);
 		boolean enabled = CollectionUtils.applyFilter(getTreeNode().getSubNodes(), new Predicate<TreeNode>() {
@@ -685,6 +695,74 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 			});
 		}
 	}
+
+	protected String getDefaultObjectNodeAction() {
+		ExplorerSettings settings = ExplorerSettings.getInstance();
+		if (ObjectNodeAction.SHOW_LIST == settings.getObjectNodeAction()) {
+			return ACTIONCOMMAND_SHOW_IN_LIST;
+		}
+		else if (ObjectNodeAction.SHOW_DETAILS == settings.getObjectNodeAction()) {
+			return ACTIONCOMMAND_SHOW_DETAILS;
+		}
+		else if (ObjectNodeAction.SHOW_DETAILS_IN_NEW_TAB == settings.getObjectNodeAction()) {
+			return ACTIONCOMMAND_SHOW_DETAILS_IN_NEW_TAB;
+		}
+		else {
+			// Fallback
+			return ACTIONCOMMAND_SHOW_DETAILS;
+		}
+	}
+
+	protected String getDefaultFolderNodeAction() {
+		ExplorerSettings settings = ExplorerSettings.getInstance();
+		if (FolderNodeAction.SHOW_LIST == settings.getFolderNodeAction()) {
+			return ACTIONCOMMAND_SHOW_IN_LIST;
+		}
+		else if (FolderNodeAction.EXPAND_SUBNODES == settings.getFolderNodeAction()) {
+			return ACTIONCOMMAND_EXPAND;
+		}
+		else {
+			// Fallback
+			return ACTIONCOMMAND_EXPAND;
+		}
+	}
+
+	/**
+	 * Action: Shows the details for a object.
+	 */
+	protected class ShowDetailsAction extends TreeNodeAction {
+
+		private static final long serialVersionUID = 1L;
+		private final boolean newTab;
+
+		protected ShowDetailsAction(String command, String labelResourceId, JTree tree, boolean newTab) {
+			super(command, CommonLocaleDelegate.getText(labelResourceId), tree);
+			this.newTab = newTab;
+		}
+
+		@Override
+		public boolean isEnabled() {
+			if (!super.isEnabled()) {
+				return false;
+			}
+			if (getTreeNode() != null && !StringUtils.isNullOrEmpty(getTreeNode().getEntityName()) && getTreeNode().getId() != null) {
+				return getExplorerController().isDisplayable(getTreeNode().getEntityName());
+			}
+			else {
+				return false;
+			}
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			UIUtils.runCommand(this.getParent(), new CommonRunnable() {
+				@Override
+				public void run() throws CommonBusinessException {
+					Main.getMainController().showDetails(getTreeNode().getEntityName(), getTreeNode().getId(), newTab);
+				}
+			});
+		}
+	}	// inner class ShowDetailsAction
 
 	/**
 	 * Action: Show subnodes in lists

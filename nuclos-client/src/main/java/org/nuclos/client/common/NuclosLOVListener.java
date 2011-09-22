@@ -100,10 +100,10 @@ public class NuclosLOVListener implements CollectableListOfValues.LOVListener {
 					oId = new Integer(l.intValue());
 				}
 				if (clctcomp instanceof CollectableEventListener) {
-					Main.getMainController().showDetails(sReferencedEntityName, oId, controller, new WeakCollectableEventListener((CollectableEventListener) clctcomp));
+					Main.getMainController().showDetails(sReferencedEntityName, oId, true, controller, new WeakCollectableEventListener((CollectableEventListener) clctcomp));
 				}
 				else {
-					Main.getMainController().showDetails(sReferencedEntityName, oId, controller);
+					Main.getMainController().showDetails(sReferencedEntityName, oId, true, controller);
 				}
 			}
 		});

@@ -76,6 +76,7 @@ import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.workspace.ITabStoreController;
 import org.nuclos.client.main.mainframe.workspace.TabRestoreController;
+import org.nuclos.client.masterdata.MasterDataLayoutHelper;
 import org.nuclos.client.task.TaskController;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.CommonClientWorkerAdapter;
@@ -1389,4 +1390,7 @@ public class ExplorerController extends Controller {
 		return false;
 	}
 
+	public boolean isDisplayable(String entityname) {
+		return MasterDataLayoutHelper.isLayoutMLAvailable(entityname, false);
+	}
 }	// class ExplorerController

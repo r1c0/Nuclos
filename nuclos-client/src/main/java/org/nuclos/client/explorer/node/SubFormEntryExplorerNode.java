@@ -69,9 +69,9 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends ExplorerNode<TN> implements EntityExplorerNode {
+public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends ExplorerNode<TN> {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(SubFormEntryExplorerNode.class);
@@ -83,58 +83,51 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
     @Override
 	public List<TreeNodeAction> getTreeNodeActions(JTree tree) {
 		final List<TreeNodeAction> result = new LinkedList<TreeNodeAction>(super.getTreeNodeActions(tree));
-		
+
+		result.add(TreeNodeAction.newSeparatorAction());
+		result.add(this.newShowDetailsAction(tree, false));
+		result.add(this.newShowDetailsAction(tree, true));
+
 		Map<String, Integer> foreignReferences = getForeignReferences();
-		if (!foreignReferences.isEmpty()) {
-			result.add(TreeNodeAction.newSeparatorAction());
-			
-			if (foreignReferences.size() == 1) {
-				result.add(new ShowReferenceAction(
-					foreignReferences.keySet().iterator().next(), 
-					foreignReferences.values().iterator().next(), 
-					tree, ACTIONCOMMAND_SHOW_DETAILS));
-			} else {
-				for (String sEntity : foreignReferences.keySet()) {
-					result.add(new ShowReferenceAction(
-						sEntity, 
-						foreignReferences.get(sEntity), 
-						tree, sEntity));
-				}
-			}
+		for (String sEntity : foreignReferences.keySet()) {
+			result.add(new ShowReferenceAction(
+				sEntity,
+				foreignReferences.get(sEntity),
+				tree, sEntity));
 		}
-		
+
 		result.add(new RemoveAction(tree));
 		return result;
 	}
-    
+
     protected class RemoveAction extends TreeNodeAction {
-    	
+
     	/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
 		public static final int KEY = KeyEvent.VK_DELETE;
-    	
+
     	private Integer iObjectId = null;
     	private Integer iModuleId = null;
     	String sSubFormEntity = null;
-    	
+
 		@SuppressWarnings("rawtypes")
         public RemoveAction(JTree tree) {
 			super(ACTIONCOMMAND_REMOVE, CommonLocaleDelegate.getMessage("MasterDataExplorerNode.1", "L\u00f6schen")+ "...", tree);
-			
+
 			javax.swing.tree.TreeNode tnParent = SubFormEntryExplorerNode.this.getParent();
 			if (tnParent instanceof SubFormExplorerNode && ((SubFormExplorerNode) tnParent).getTreeNode() instanceof SubFormTreeNode) {
 				SubFormTreeNode sfTreeNode = (SubFormTreeNode) ((SubFormExplorerNode) tnParent).getTreeNode();
-				
+
 				iObjectId = sfTreeNode.getGenericObjectTreeNode().getId();
 				iModuleId = sfTreeNode.getGenericObjectTreeNode().getModuleId();
 				Integer iStateId = sfTreeNode.getGenericObjectTreeNode().getStatusId();
 				String sModuleEntity = MetaDataClientProvider.getInstance().getEntity(iModuleId.longValue()).getEntity();
 				sSubFormEntity = sfTreeNode.getMasterDataVO().getField("entity", String.class);
 				String sSubFormForeignField = sfTreeNode.getMasterDataVO().getField("field", String.class);
-				
+
 				setEnabled(SecurityCache.getInstance().isWriteAllowedForModule(sModuleEntity, iObjectId) &&
 					SecurityCache.getInstance().getSubFormPermission(sSubFormEntity, iStateId).includesWriting());
 			} else {
@@ -153,7 +146,7 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 					}
                 }
 	        });
-	        
+
 	        if (comp instanceof JMenuItem) {
 	        	((JMenuItem)comp).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
 	        }
@@ -163,7 +156,7 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 		public void actionPerformed(ActionEvent ev) {
 			askAndRemove();
 		}
-		
+
 		public void askAndRemove() {
 			if (isEnabled()) {
 				final String sName = getTreeNode().getLabel();
@@ -175,14 +168,14 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 				}
 			}
 		}
-		
+
 		@SuppressWarnings("rawtypes")
 	    private void remove(JTree tree){
-			if (iObjectId != null && iModuleId != null && sSubFormEntity != null) {				
+			if (iObjectId != null && iModuleId != null && sSubFormEntity != null) {
 				try {
 					GenericObjectWithDependantsVO gowdVO = GenericObjectDelegate.getInstance().getWithDependants(iObjectId);
 					for (EntityObjectVO mdVO : gowdVO.getDependants().getData(sSubFormEntity)) {
-						if (mdVO.getId().equals(getId().intValue())) {
+						if (mdVO.getId().equals(getTreeNode().getId())) {
 							mdVO.flagRemove();
 						}
 					}
@@ -198,34 +191,34 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 			}
 	    }
 	}
-	
+
 	@Override
     public void handleKeyEvent(JTree tree, KeyEvent ev) {
 		if(ev.getKeyChar() == RemoveAction.KEY) {
 			(new RemoveAction(tree)).askAndRemove();
-	    	
+
 	    }
     }
 
 	@SuppressWarnings("rawtypes")
     private Map<String, Integer> getForeignReferences(){
 		Map<String, Integer> result = new HashMap<String, Integer>();
-		
+
 		javax.swing.tree.TreeNode tnParent = getParent();
 		if (tnParent instanceof SubFormExplorerNode && ((SubFormExplorerNode) tnParent).getTreeNode() instanceof SubFormTreeNode) {
 			SubFormTreeNode sfTreeNode = (SubFormTreeNode) ((SubFormExplorerNode) tnParent).getTreeNode();
-			
+
 			Integer iObjectId = sfTreeNode.getGenericObjectTreeNode().getId();
 			Integer iModuleId = sfTreeNode.getGenericObjectTreeNode().getModuleId();
 			String sModuleEntity = MetaDataClientProvider.getInstance().getEntity(iModuleId.longValue()).getEntity();
 			String sSubFormEntity = sfTreeNode.getMasterDataVO().getField("entity", String.class);
 			String sSubFormForeignField = sfTreeNode.getMasterDataVO().getField("field", String.class);
-			
+
 			for (EntityFieldMetaDataVO efMeta : MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(sSubFormEntity).values()) {
 				if (efMeta.getForeignEntity() != null && !efMeta.getForeignEntity().equals(sModuleEntity)) {
 					// Reference to other entity:
                     try {
-                    	MasterDataVO mdVO = MasterDataDelegate.getInstance().get(sSubFormEntity, getId().intValue());
+                    	MasterDataVO mdVO = MasterDataDelegate.getInstance().get(sSubFormEntity, getTreeNode().getId());
                     	Object oId = mdVO.getField(efMeta.getField()+"Id");
                     	if (oId != null)
                     		result.put(efMeta.getForeignEntity(), (Integer) oId);
@@ -237,14 +230,14 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	private class ShowReferenceAction extends TreeNodeAction {
-		
+
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		final String entityName;
@@ -277,9 +270,15 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 
 	@Override
 	public String getDefaultTreeNodeActionCommand(JTree tree) {
-		return ACTIONCOMMAND_SHOW_DETAILS;
+		if (newShowDetailsAction(tree, false).isEnabled()) {
+			return getDefaultObjectNodeAction();
+		}
+		else if (getForeignReferences().size() == 1) {
+			return getForeignReferences().keySet().iterator().next();
+		}
+		return ACTIONCOMMAND_EXPAND;
 	}
-	
+
 	private void showBubble(JComponent component, String message) {
 		new Bubble(
 			component,
@@ -302,21 +301,4 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 		}
 		return Icons.getInstance().getIconGenericObject16();
 	}
-
-	@Override
-    public Long getId() {
-	    return getTreeNode().getId().longValue();
-    }
-
-	@SuppressWarnings("rawtypes")
-    @Override
-    public String getEntity() {
-		javax.swing.tree.TreeNode tnParent = getParent();
-		if (tnParent instanceof SubFormExplorerNode && ((SubFormExplorerNode) tnParent).getTreeNode() instanceof SubFormTreeNode) {
-			SubFormTreeNode sfTreeNode = (SubFormTreeNode) ((SubFormExplorerNode) tnParent).getTreeNode();
-			return sfTreeNode.getMasterDataVO().getField("entity", String.class);
-		}
-		
-		return null;
-    }
 }

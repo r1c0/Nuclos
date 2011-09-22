@@ -41,8 +41,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.explorer.ExplorerNode;
-import org.nuclos.client.explorer.ExplorerSettings;
-import org.nuclos.client.explorer.ExplorerSettings.ObjectNodeAction;
 import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.Modules;
@@ -90,7 +88,7 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNode> implements EntityExplorerNode {
+public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNode> {
 
 	protected static final Logger log = Logger.getLogger(GenericObjectExplorerNode.class);
 
@@ -129,7 +127,8 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 
 		result.add(TreeNodeAction.newSeparatorAction());
 
-		result.add(newShowDetailsAction(tree));
+		result.add(newShowDetailsAction(tree, false));
+		result.add(newShowDetailsAction(tree, true));
 		result.add(newShowListAction(tree));
 
 		if (this.isRelated()) {
@@ -151,8 +150,9 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		return result;
 	}
 
-	private TreeNodeAction newShowDetailsAction(JTree tree) {
-		final TreeNodeAction result = new ShowDetailsAction(tree);
+	@Override
+	protected TreeNodeAction newShowDetailsAction(JTree tree, boolean newTab) {
+		final TreeNodeAction result = super.newShowDetailsAction(tree, newTab);
 		final Integer iModuleId = ((GenericObjectExplorerNode) tree.getSelectionPath().getLastPathComponent()).getTreeNode().getModuleId();
 		final Integer iGenericObjectId = ((GenericObjectExplorerNode) tree.getSelectionPath().getLastPathComponent()).getTreeNode().getId();
 		result.setEnabled(SecurityCache.getInstance().isReadAllowedForModule(Modules.getInstance().getEntityNameByModuleId(iModuleId), iGenericObjectId));
@@ -199,17 +199,7 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 
 	@Override
 	public String getDefaultTreeNodeActionCommand(JTree tree) {
-		ExplorerSettings settings = ExplorerSettings.getInstance();
-		if (ObjectNodeAction.SHOW_LIST == settings.getObjectNodeAction()) {
-			return ACTIONCOMMAND_SHOW_IN_LIST;
-		}
-		else if (ObjectNodeAction.SHOW_DETAILS == settings.getObjectNodeAction()) {
-			return ACTIONCOMMAND_SHOW_DETAILS;
-		}
-		else {
-			// Fallback
-			return ACTIONCOMMAND_SHOW_DETAILS;
-		}
+		return getDefaultObjectNodeAction();
 	}
 
 	/**
@@ -339,53 +329,6 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 			return this.importTransferData(parent, transferable, tree);
 		}
 	}
-
-
-
-	@Override
-    public Long getId() {
-		return getTreeNode().getId().longValue();
-    }
-
-	@Override
-    public String getEntity() {
-	    return MetaDataClientProvider.getInstance().getEntity(getTreeNode().getModuleId().longValue()).getEntity();
-    }
-
-
-	/**
-	 * inner class ShowDetailsAction. Shows the details for a leased object.
-	 */
-	private class ShowDetailsAction extends TreeNodeAction {
-
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-
-		ShowDetailsAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent ev) {
-			this.cmdShowDetails(this.getJTree(), (GenericObjectExplorerNode) this.getJTree().getSelectionPath().getLastPathComponent());
-		}
-
-		/**
-		 * command: show the details of the leased object represented by the given explorernode
-		 * @param tree
-		 * @param loexplorernode
-		 */
-		private void cmdShowDetails(JTree tree, final GenericObjectExplorerNode loexplorernode) {
-			UIUtils.runCommand(tree.getParent(), new CommonRunnable() {
-				@Override
-				public void run() throws CommonBusinessException {
-					ExplorerActions.openDetails(GenericObjectExplorerNode.this);
-				}
-			});
-		}
-	}	// inner class ShowDetailsAction
 
 	/**
 	 * inner class RemoveFromParentGroupAction. Removes this leased object from its parent (group).

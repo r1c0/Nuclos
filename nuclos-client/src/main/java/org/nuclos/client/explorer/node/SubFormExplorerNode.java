@@ -27,11 +27,8 @@ import javax.swing.JComponent;
 import javax.swing.JTree;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.explorer.ExplorerNode;
-import org.nuclos.client.explorer.ExplorerSettings;
-import org.nuclos.client.explorer.ExplorerSettings.FolderNodeAction;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
@@ -57,7 +54,7 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends ExplorerNode<TN> implements EntityExplorerNode {
+public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends ExplorerNode<TN> {
 	/**
 	 *
 	 */
@@ -78,28 +75,8 @@ public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends Ex
 
 	@Override
 	public String getDefaultTreeNodeActionCommand(JTree tree) {
-		ExplorerSettings settings = ExplorerSettings.getInstance();
-		if (FolderNodeAction.SHOW_LIST == settings.getFolderNodeAction()) {
-			return ACTIONCOMMAND_SHOW_IN_LIST;
-		}
-		else if (FolderNodeAction.EXPAND_SUBNODES == settings.getFolderNodeAction()) {
-			return ACTIONCOMMAND_EXPAND;
-		}
-		else {
-			// Fallback
-			return ACTIONCOMMAND_EXPAND;
-		}
+		return getDefaultFolderNodeAction();
 	}
-
-	@Override
-    public Long getId() {
-	    return getTreeNode().getId().longValue();
-    }
-
-	@Override
-    public String getEntity() {
-	    return MetaDataClientProvider.getInstance().getEntity(getTreeNode().getGenericObjectTreeNode().getModuleId().longValue()).getEntity();
-    }
 
 	@Override
     public boolean importTransferData(final Component parent, final Transferable transferable, final JTree tree) throws IOException, UnsupportedFlavorException {

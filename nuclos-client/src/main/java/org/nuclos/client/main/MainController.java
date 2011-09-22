@@ -1602,6 +1602,11 @@ public class MainController {
 		return clazz.cast(ctl);
 	}
 
+	public CollectController<?> findCollectControllerDisplayingDetails(String sEntityName) {
+		return (CollectController<?>) CollectionUtils.findFirst(this.getTopControllersForInternalFrames(),
+			new IsCollectControllerDisplayingDetails(sEntityName));
+	}
+
 	public void showDetails(String entityName, Long id) throws CommonBusinessException {
 		showDetails(entityName, id.intValue());
 	}
@@ -1614,7 +1619,11 @@ public class MainController {
 	 * @precondition oId != null
 	 */
 	public void showDetails(String sEntityName, Object oId) throws CommonBusinessException {
-		showDetails(sEntityName, oId, null);
+		showDetails(sEntityName, oId, true);
+	}
+
+	public void showDetails(String sEntityName, Object oId, boolean newTab) throws CommonBusinessException {
+		showDetails(sEntityName, oId, newTab, null);
 	}
 
 	/**
@@ -1625,28 +1634,34 @@ public class MainController {
 	 * @precondition sEntityName != null
 	 * @precondition oId != null
 	 */
-	public void showDetails(String sEntityName, Object oId, CollectController<?> listeningController, CollectableEventListener... componentListener) throws CommonBusinessException {
-		final CollectController<?> ctlExisting = this.findCollectControllerDisplaying(sEntityName, oId);
-		// reuse existing window if the object is already displayed in Details:
-		if (ctlExisting != null) {
-				if (listeningController != null) {
-					ctlExisting.addCollectableEventListener(new DetailsCollectableEventListener(listeningController, ctlExisting));
-				}
-				for (CollectableEventListener l : componentListener) {
-					ctlExisting.addCollectableEventListener(l);
-				}
-				MainFrame.setSelectedTab(ctlExisting.getFrame());
-		}
-		else {
-			NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(MainFrame.getPredefinedEntityOpenLocation(sEntityName), sEntityName, null);
-			if (listeningController != null) {
-				controller.addCollectableEventListener(new DetailsCollectableEventListener(listeningController, controller));
+	public void showDetails(String sEntityName, Object oId, boolean newTab, CollectController<?> listeningController, CollectableEventListener... componentListener) throws CommonBusinessException {
+		CollectController<?> ctl = null;
+		boolean activateOnly = false;
+		if (!newTab) {
+			ctl = this.findCollectControllerDisplaying(sEntityName, oId);
+			if (ctl == null) {
+				ctl = this.findCollectControllerDisplayingDetails(sEntityName);
 			}
-			for (CollectableEventListener l : componentListener) {
-				controller.addCollectableEventListener(l);
+			else {
+				activateOnly = true;
 			}
-			controller.runViewSingleCollectableWithId(oId);
 		}
+		if (ctl == null) {
+			ctl = NuclosCollectControllerFactory.getInstance().newCollectController(MainFrame.getPredefinedEntityOpenLocation(sEntityName), sEntityName, null);
+		}
+
+		if (listeningController != null) {
+			ctl.addCollectableEventListener(new DetailsCollectableEventListener(listeningController, ctl));
+		}
+
+		for (CollectableEventListener l : componentListener) {
+			ctl.addCollectableEventListener(l);
+		}
+
+		if (!activateOnly) {
+			ctl.runViewSingleCollectableWithId(oId);
+		}
+		MainFrame.setSelectedTab(ctl.getFrame());
 	}
 
 	/**
@@ -1917,6 +1932,28 @@ public class MainController {
 				return this.sEntityName.equals(clctctl.getEntityName()) &&
 					clctctl.getCollectState().isDetailsModeViewOrEdit() &&
 					this.iId.equals(clctctl.getSelectedCollectableId());
+			}
+			return false;
+		}
+	}
+
+	private static class IsCollectControllerDisplayingDetails implements Predicate<TopController> {
+		private final String sEntityName;
+
+		/**
+		 * @param sEntityName
+		 * @precondition sEntityName != null
+		 */
+		IsCollectControllerDisplayingDetails(String sEntityName) {
+			this.sEntityName = sEntityName;
+		}
+
+		@Override
+		public boolean evaluate(TopController ctl) {
+			if (ctl instanceof CollectController) {
+				CollectController<?> clctctl = (CollectController<?>) ctl;
+				return this.sEntityName.equals(clctctl.getEntityName()) &&
+					clctctl.getCollectState().isDetailsModeViewOrEdit();
 			}
 			return false;
 		}

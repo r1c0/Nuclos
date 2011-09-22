@@ -61602,5 +61602,20 @@
     "resourceID": "settings.explorer.actions.default.foldernode",
     "locale": "de",
     "text": "Doppelklick-Befehl für Ordnerknoten:"
+  },
+  {
+    "resourceID": "ExplorerSettings.ObjectNodeAction.ShowDetailsInNewTab",
+    "locale": "i-default",
+    "text": "Show details in new tab"
+  },
+  {
+    "resourceID": "ExplorerSettings.ObjectNodeAction.ShowDetailsInNewTab",
+    "locale": "en",
+    "text": "Show details in new tab"
+  },
+  {
+    "resourceID": "ExplorerSettings.ObjectNodeAction.ShowDetailsInNewTab",
+    "locale": "de",
+    "text": "Details in neuem Tab anzeigen"
   }
 ]

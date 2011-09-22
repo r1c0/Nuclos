@@ -31,8 +31,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.explorer.ExplorerController;
 import org.nuclos.client.explorer.ExplorerNode;
-import org.nuclos.client.explorer.ExplorerSettings;
-import org.nuclos.client.explorer.ExplorerSettings.ObjectNodeAction;
 import org.nuclos.client.explorer.ExplorerView;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -43,7 +41,6 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common2.CommonLocaleDelegate;
-import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.navigation.treenode.MasterDataTreeNode;
@@ -58,7 +55,7 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> extends ExplorerNode<TN> implements EntityExplorerNode {
+public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> extends ExplorerNode<TN> {
 	/**
 	 *
 	 */
@@ -73,7 +70,8 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 	public List<TreeNodeAction> getTreeNodeActions(JTree tree) {
 		final List<TreeNodeAction> result = new LinkedList<TreeNodeAction>(super.getTreeNodeActions(tree));
 		result.add(TreeNodeAction.newSeparatorAction());
-		result.add(new ShowDetailsAction(tree));
+		result.add(this.newShowDetailsAction(tree, false));
+		result.add(this.newShowDetailsAction(tree, true));
 		result.add(this.newShowListAction(tree));
 		result.add(this.newRemoveAction(tree));
 		return result;
@@ -81,67 +79,12 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 
 	@Override
 	public String getDefaultTreeNodeActionCommand(JTree tree) {
-		ExplorerSettings settings = ExplorerSettings.getInstance();
-		if (ObjectNodeAction.SHOW_LIST == settings.getObjectNodeAction()) {
-			return ACTIONCOMMAND_SHOW_IN_LIST;
-		}
-		else if (ObjectNodeAction.SHOW_DETAILS == settings.getObjectNodeAction()) {
-			return ACTIONCOMMAND_SHOW_DETAILS;
-		}
-		else {
-			// Fallback
-			return ACTIONCOMMAND_SHOW_DETAILS;
-		}
+		return getDefaultObjectNodeAction();
 	}
 
 	protected MasterDataExplorerNode<TN>.RemoveAction newRemoveAction(JTree tree) {
 		return new RemoveAction(tree, CommonLocaleDelegate.getMessage("MasterDataExplorerNode.1", "L\u00f6schen")+ "...");
 	}
-
-
-	@Override
-    public Long getId() {
-	    return getTreeNode().getId().longValue();
-    }
-
-	@Override
-    public String getEntity() {
-	    return getTreeNode().getEntityName();
-    }
-
-	/**
-	 * inner class ShowDetailsAction. Shows the details for a leased object.
-	 */
-	private class ShowDetailsAction extends TreeNodeAction {
-
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-
-		ShowDetailsAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public void actionPerformed(ActionEvent ev) {
-			this.cmdShowDetails((MasterDataExplorerNode<TN>) this.getJTree().getSelectionPath().getLastPathComponent());
-		}
-
-		/**
-		 * command: show the details of the leased object represented by the given explorernode
-		 * @param explorernode
-		 */
-		private void cmdShowDetails(final MasterDataExplorerNode<TN> explorernode) {
-			UIUtils.runCommand(this.getParent(), new CommonRunnable() {
-				@Override
-				public void run() throws CommonBusinessException {
-					ExplorerActions.openDetails(MasterDataExplorerNode.this);
-				}
-			});
-		}
-	}	// inner class ShowDetailsAction
 
 	/**
 	 * Action: remove node
