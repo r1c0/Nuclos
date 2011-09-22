@@ -49,7 +49,7 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 		this.id = id;
 		assert this.hasSubNodes() == null;
 	}
-	
+
 	/**
 	 * @param id the tree node's id. May be <code>null</code>.
 	 * @param sLabel label of tree node
@@ -70,7 +70,7 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 	public Id getId() {
 		return this.id;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -82,7 +82,7 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 	protected void setLabel(String sLabel) {
 		this.sLabel = sLabel;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -92,7 +92,7 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 	protected void setChangedAt(Date dateChangedAt){
 		this.dateChangedAt = dateChangedAt;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -104,7 +104,7 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 	protected void setDescription(String sDescription) {
 		this.sDescription = sDescription;
 	}
-	
+
 	@Override
 	public String getIdentifier() {
 		if (this.getId() != null) {
@@ -186,6 +186,11 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 		return false;
 	}
 
+	@Override
+	public String getEntityName() {
+		return null;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -206,5 +211,5 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 	@Override
 	public int hashCode() {
 		return LangUtils.hashCode(this.getId());
-	}	
+	}
 }	// class AbstractTreeNode

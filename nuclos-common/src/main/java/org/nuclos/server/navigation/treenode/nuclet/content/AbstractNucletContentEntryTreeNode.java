@@ -43,7 +43,7 @@ import org.nuclos.server.navigation.treenode.TreeNode;
 public abstract class AbstractNucletContentEntryTreeNode implements TreeNode {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	protected final NuclosEntity entity;
@@ -209,6 +209,11 @@ public abstract class AbstractNucletContentEntryTreeNode implements TreeNode {
 
 	protected static EntityMetaDataVO getMetaData(String entity) {
 		return SpringApplicationContextHolder.getBean(MetaDataProvider.class).getEntity(entity);
+	}
+
+	@Override
+	public String getEntityName() {
+		return null;
 	}
 
 	public static class Comparator implements java.util.Comparator<AbstractNucletContentEntryTreeNode> {

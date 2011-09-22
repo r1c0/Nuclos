@@ -24,26 +24,33 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 
 /**
- * Interface implemented by MetaDataProviders for accessing meta data information. 
+ * Interface implemented by MetaDataProviders for accessing meta data information.
  */
 public interface MetaDataProvider extends CommonMetaDataProvider {
 
 	Collection<EntityMetaDataVO> getAllEntities();
-	
+
 	EntityMetaDataVO getEntity(Long id);
-	
+
 	EntityMetaDataVO getEntity(String entity);
-	
+
 	EntityMetaDataVO getEntity(NuclosEntity entity);
-	
+
 	Map<String, EntityFieldMetaDataVO> getAllEntityFieldsByEntity(String entity);
-	
+
     Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info);
 
     EntityFieldMetaDataVO getEntityField(String entity, String field);
-	
+
 	EntityFieldMetaDataVO getEntityField(String entity, Long fieldId);
-	
+
 	EntityFieldMetaDataVO getRefField(String baseEntity, String subform);
-	
+
+	/**
+	 * Get the base entity name of a dynamic entity.
+	 *
+	 * @param dynamicentityname The name of the dynamic entity.
+	 * @return Returns the base entity name. Returns the original entity name if there is no dynamic entity with the given name.
+	 */
+	String getBaseEntity(String dynamicentityname);
 }

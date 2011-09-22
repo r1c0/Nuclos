@@ -44,15 +44,23 @@ import javax.swing.tree.TreePath;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.NuclosCollectController;
+import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.ChainedTreeNodeAction;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Predicate;
+import org.nuclos.common.collection.multimap.MultiListHashMap;
+import org.nuclos.common.collection.multimap.MultiListMap;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.navigation.treenode.TreeNode;
 
@@ -67,7 +75,7 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -81,6 +89,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	public static final String ACTIONCOMMAND_REFRESH = "REFRESH";
 	public static final String ACTIONCOMMAND_EXPAND = "EXPAND";
 	public static final String ACTIONCOMMAND_COLLAPSE = "COLLAPSE";
+	public static final String ACTIONCOMMAND_SHOW_IN_LIST = "SHOW_IN_LIST";
 
 	/**
 	 * Have the children of this node already been loaded?
@@ -184,10 +193,10 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 */
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	public void refresh(final JTree tree, boolean fullRefreshCurrent) throws CommonFinderException {
-		List<String> lstExpandedPathsResult = new ArrayList<String>();		
+		List<String> lstExpandedPathsResult = new ArrayList<String>();
 		ExplorerNode.createExpandendPathsForTree(new TreePath(tree.getModel().getRoot()), tree, lstExpandedPathsResult);
 
-		final TreePath selected = tree.getSelectionPath();		
+		final TreePath selected = tree.getSelectionPath();
 		DefaultTreeModel dtm = (DefaultTreeModel) tree.getModel();
 		unloadChildren();
 
@@ -221,9 +230,9 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 		assert getChildrenHaveBeenLoaded();
 
 		dtm.nodeStructureChanged(this);
-		
+
 		ExplorerNode.expandTreeAsync(lstExpandedPathsResult, tree);
-		
+
 		if(selected != null) {
 			List<Object> pathEssence = CollectionUtils.asList(selected.getPath());
 			Collections.reverse(pathEssence);
@@ -233,7 +242,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 			}
 		}
 	}
-	
+
 	private class TreeExpander implements TreeExpansionListener, Runnable {
 		private JTree        tree;
 		private List<Object> toExpand;
@@ -245,7 +254,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	    	this.toExpand = toExpand;
 	    	this.expanded = new TreePath(tree.getModel().getRoot());
 	    }
-		
+
 	    @Override
         public void run() {
 	    	if(toExpand.isEmpty())
@@ -275,7 +284,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 				ExplorerNode<?> last   = (ExplorerNode<?>) expanded.getLastPathComponent();
 				ExplorerNode<?> expand = (ExplorerNode<?>) toExpand.get(toExpand.size() - 1);
 				ExplorerNode<?> child  = null;
-				
+
 				for(int i=0; i<last.getChildCount(); i++) {
 					ExplorerNode<?> childNode = (ExplorerNode<?>) last.getChildAt(i);
 					if(childNode.getTreeNode().equals(expand.getTreeNode())) {
@@ -283,7 +292,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 						break;
 					}
 				}
-				
+
 				if(child != null) {
 					expanded = expanded.pathByAddingChild(child);
 					toExpand = toExpand.subList(0, toExpand.size() - 1);
@@ -301,7 +310,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 		@Override
         public void treeCollapsed(TreeExpansionEvent event) {}
 	}
-	
+
 	public void handleKeyEvent(JTree tree, KeyEvent ev) {}
 
 	/**
@@ -341,10 +350,10 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 		return result;
 	}
-	
+
 	/**
-	 * 
-	 * @param jTree 
+	 *
+	 * @param jTree
 	 * @return additional tool bar components
 	 */
 	public List<JComponent> getToolBarComponents(JTree jTree) {
@@ -373,7 +382,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 	/**
 	 * There is no default action by default. Subclasses may specify the default action here.
-	 * @param tree 
+	 * @param tree
 	 * @return the action command of the default <code>TreeNodeAction</code> for this node, if any.
 	 */
 	public String getDefaultTreeNodeActionCommand(JTree tree) {
@@ -403,6 +412,18 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 			}
 		}
 		assert result == null || result.isEnabled();
+		return result;
+	}
+
+	protected TreeNodeAction newShowListAction(JTree tree) {
+		final TreeNodeAction result = new ShowListAction(tree);
+		boolean enabled = CollectionUtils.applyFilter(getTreeNode().getSubNodes(), new Predicate<TreeNode>() {
+			@Override
+			public boolean evaluate(TreeNode t) {
+				return !StringUtils.isNullOrEmpty(t.getEntityName()) && t.getId() != null;
+			}
+		}).size() > 0;
+		result.setEnabled(enabled);
 		return result;
 	}
 
@@ -496,7 +517,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 */
 	protected class ShowInOwnTabAction extends TreeNodeAction {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -509,7 +530,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 			cmdShowInOwnTabAction();
 		}
 	}	// inner class ShowInOwnTabAction
-	
+
 	protected void cmdShowInOwnTabAction() {
 		getExplorerController().cmdShowInOwnTab(ExplorerNode.this.getTreeNode());
 	}
@@ -519,7 +540,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 */
 	protected class RefreshAction extends TreeNodeAction {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -548,7 +569,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 */
 	protected class ExpandAction extends TreeNodeAction {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -577,7 +598,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 */
 	protected class CollapseAction extends TreeNodeAction {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -604,13 +625,13 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 		}
 		return sb.toString().substring(1);
 	}
-	
+
 	public static TreePath findDescendant(DefaultTreeModel model, String idPath) {
 		String[] idComponent = idPath.split("/");
 		ExplorerNode<?> root = (ExplorerNode<?>) model.getRoot();
 		if (idComponent.length == 0 || !idComponent[0].equals(root.getTreeNode().getIdentifier()))
 			return null;
-		
+
 		ExplorerNode<?>[] path = new ExplorerNode<?>[idComponent.length];
 		path[0] = root;
 		for (int i = 1; i < path.length; i++) {
@@ -619,10 +640,10 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 				return null;
 			path[i] = child;
 		}
-		
+
 		return new TreePath(path);
 	}
-	
+
 	public ExplorerNode<?> findChildNodeWithIdentifier(String id) {
 		this.loadChildren(false);
 		int childCount = this.getChildCount();
@@ -634,23 +655,23 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 		return null;
 	}
 
-	
+
 	// --- expanded paths ---> collect paths (e.g. for storing in preferences) ; expand stored paths asynchronous
-	
-	
+
+
 	static void createExpandendPathsForTree(TreePath path, JTree tree, List<String> lstExpandedPathsResult) {
 		final ExplorerNode<?> explorernode = (ExplorerNode<?>) path.getLastPathComponent();
 		boolean isExpanded = tree.isExpanded(path);
 		if (isExpanded) {
 			lstExpandedPathsResult.add(explorernode.getIdentifierPath());
-			
+
 			for (int i = 0; i < explorernode.getChildCount(); i++) {
 				final ExplorerNode<?> explorernodeChild = (ExplorerNode<?>) explorernode.getChildAt(i);
 				createExpandendPathsForTree(path.pathByAddingChild(explorernodeChild), tree, lstExpandedPathsResult);
-			}			
-		}		
+			}
+		}
 	}
-	
+
 	static void expandTreeAsync(List<String> lstExpandedPaths, final JTree tree) {
 		for (final String idPath : lstExpandedPaths) {
 			SwingUtilities.invokeLater(new Runnable() {
@@ -664,5 +685,42 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 			});
 		}
 	}
-	
+
+	/**
+	 * Action: Show subnodes in lists
+	 */
+	protected class ShowListAction extends TreeNodeAction {
+
+		private static final long serialVersionUID = 1L;
+
+		public ShowListAction(JTree tree) {
+			super(ACTIONCOMMAND_SHOW_IN_LIST, CommonLocaleDelegate.getMessage("ExplorerNode.ShowList", "Unterelemente in Liste anzeigen"), tree);
+		}
+
+		@Override
+        public void actionPerformed(ActionEvent ev) {
+			UIUtils.runCommand(getExplorerController().getParent(), new Runnable() {
+				@Override
+                public void run() {
+					MultiListMap<String, Object> toOpen = new MultiListHashMap<String, Object>();
+					for (TreeNode node : ExplorerNode.this.getTreeNode().getSubNodes()) {
+						if (node.getId() != null && !StringUtils.isNullOrEmpty(node.getEntityName())) {
+							toOpen.addValue(node.getEntityName(), node.getId());
+						}
+					}
+
+					for (String entity : toOpen.keySet()) {
+						try {
+							NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(MainFrame.getPredefinedEntityOpenLocation(entity), entity, null);
+							controller.runViewResults(toOpen.getValues(entity));
+						}
+						catch (CommonBusinessException ex) {
+							Errors.getInstance().showExceptionDialog(getExplorerController().getParent(), "StartTabPanel.error.open.list", ex);
+						}
+					}
+				}
+			});
+		}
+	}	// inner class CollapseAction
+
 }	// class ExplorerNode

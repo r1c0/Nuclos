@@ -46,6 +46,7 @@ public abstract class MasterDataTreeNode<Id> extends AbstractTreeNode<Id> implem
 		this.sEntityName = sEntityName;
 	}
 
+	@Override
 	public String getEntityName() {
 		return this.sEntityName;
 	}
@@ -64,4 +65,5 @@ public abstract class MasterDataTreeNode<Id> extends AbstractTreeNode<Id> implem
 	public int compareTo(MasterDataTreeNode<Id> that) {
 		return LangUtils.compareComparables(this.getLabel(), that.getLabel());
 	}
+
 } // class MasterDataTreeNode

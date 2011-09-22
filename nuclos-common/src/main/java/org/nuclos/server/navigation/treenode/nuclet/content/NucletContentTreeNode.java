@@ -41,7 +41,7 @@ import org.nuclos.server.navigation.treenode.TreeNode;
 public class NucletContentTreeNode implements TreeNode {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private final Long nucletId;
@@ -119,5 +119,10 @@ public class NucletContentTreeNode implements TreeNode {
 
 	private TreeNodeFacadeRemote getTreeNodeFacade() throws NuclosFatalException {
 		return ServiceLocator.getInstance().getFacade(TreeNodeFacadeRemote.class);
+	}
+
+	@Override
+	public String getEntityName() {
+		return null;
 	}
 }	// class NucletContentTreeNode

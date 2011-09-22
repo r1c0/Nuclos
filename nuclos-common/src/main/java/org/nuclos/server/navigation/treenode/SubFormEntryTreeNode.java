@@ -16,11 +16,14 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.navigation.treenode;
 
+import org.nuclos.common.MetaDataProvider;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.Utils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoteException;
+import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 /**
@@ -35,12 +38,23 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 public class SubFormEntryTreeNode extends DefaultMasterDataTreeNode {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	public SubFormEntryTreeNode(String sEntity, MasterDataVO mdvo) {
 		super(sEntity, mdvo);
+	}
+
+	@Override
+	public String getEntityName() {
+		if (super.getEntityName().startsWith(MasterDataMetaVO.DYNAMIC_ENTITY_PREFIX)) {
+			MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
+			return metaprovider.getBaseEntity(super.getEntityName());
+		}
+		else {
+			return super.getEntityName();
+		}
 	}
 
 	@Override

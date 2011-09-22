@@ -16,12 +16,15 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.explorer.node.datasource;
 
-import org.nuclos.common2.exception.CommonBusinessException;
+import java.text.Collator;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.nuclos.client.masterdata.datatransfer.DatasourceEntity;
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.treenode.TreeNode;
-import java.text.Collator;
-import java.util.*;
 
 /**
  * Treenode representing an Node in the datasource tree
@@ -30,7 +33,7 @@ import java.util.*;
 public abstract class AbstractDatasourceTreeNode implements TreeNode {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -75,7 +78,7 @@ public abstract class AbstractDatasourceTreeNode implements TreeNode {
 	public String getDescription() {
 		return this.sDescription;
 	}
-	
+
 	@Override
 	public String getIdentifier() {
 		if (this.getId() != null) {
@@ -163,4 +166,8 @@ public abstract class AbstractDatasourceTreeNode implements TreeNode {
 		});
 	}
 
+	@Override
+	public String getEntityName() {
+		return null;
+	}
 }	// class AbstractDatasourceTreeNode

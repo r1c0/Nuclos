@@ -35,17 +35,15 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
-import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.explorer.ExplorerNode;
-import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
+import org.nuclos.client.explorer.ExplorerSettings;
+import org.nuclos.client.explorer.ExplorerSettings.ObjectNodeAction;
 import org.nuclos.client.genericobject.GeneratorActions;
-import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.genericobject.RelateGenericObjectsController;
@@ -53,10 +51,7 @@ import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess
 import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess.HasModuleId;
 import org.nuclos.client.genericobject.datatransfer.TransferableGenericObjects;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrame;
-import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
@@ -65,8 +60,6 @@ import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.client.ui.collect.CollectState;
-import org.nuclos.client.ui.collect.detail.DetailsCollectableEventListener;
 import org.nuclos.client.ui.tree.CompositeTreeNodeAction;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.AttributeProvider;
@@ -83,7 +76,6 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
-import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode.RelationDirection;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode.SystemRelationType;
@@ -101,14 +93,14 @@ import org.nuclos.server.navigation.treenode.TreeNode;
 public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNode> implements EntityExplorerNode {
 
 	protected static final Logger log = Logger.getLogger(GenericObjectExplorerNode.class);
-	
+
 	/**
 	 * action: add to group (currently disabled)
 	 */
 //	private static final String ACTIONCOMMAND_ADD_TO_GROUP = "ADD TO GROUP";
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -121,7 +113,7 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 	 * action: remove from parent group
 	 */
 	private static final String ACTIONCOMMAND_REMOVE_RELATION = "REMOVE RELATION";
-	
+
 	/**
 	 * action: generate genericobject
 	 */
@@ -138,6 +130,7 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		result.add(TreeNodeAction.newSeparatorAction());
 
 		result.add(newShowDetailsAction(tree));
+		result.add(newShowListAction(tree));
 
 		if (this.isRelated()) {
 			result.add(new RemoveRelationAction(tree));
@@ -147,14 +140,14 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		if (this.getParent() != null && this.getParent() instanceof GroupExplorerNode) {
 			result.add(new RemoveFromParentGroupAction(tree));
 		}
-		
+
 		// add generator actions here.
 		TreeNodeAction newGeneratorAction = newGeneratorAction(tree);
 		if (newGeneratorAction != null) {
 			result.add(TreeNodeAction.newSeparatorAction());
 			result.add(newGeneratorAction);
-		}			
-		
+		}
+
 		return result;
 	}
 
@@ -166,16 +159,16 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		return result;
 	}
 
-	private TreeNodeAction newGeneratorAction(JTree tree) {		
+	private TreeNodeAction newGeneratorAction(JTree tree) {
 		GenericObjectVO genericObjectVO;
-		
+
 		try {
-			genericObjectVO = GenericObjectDelegate.getInstance().get(this.getTreeNode().getId());			
+			genericObjectVO = GenericObjectDelegate.getInstance().get(this.getTreeNode().getId());
 		} catch (CommonBusinessException ex) {
 			Errors.getInstance().showExceptionDialog(tree, ex);
 			return null;
 		}
-		
+
 		Integer iModuleId = this.getTreeNode().getModuleId();
 		Integer iProcessId = this.getTreeNode().getProcessId();
 		Integer iStateNumeral = (Integer)genericObjectVO.getAttribute(NuclosEOField.STATENUMBER.getMetaData().getField(), SpringApplicationContextHolder.getBean(AttributeProvider.class)).getValue();
@@ -184,21 +177,21 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		if (lst.isEmpty()) {
 			return null;
 		}
-			
+
 		final CompositeTreeNodeAction result = new CompositeTreeNodeAction(CommonLocaleDelegate.getMessage("RuleExplorerNode.5","Arbeitsschritte"), lst);
 		return result;
 	}
-	
+
 
 
 	private List<TreeNodeAction> getGeneratorActions(JTree tree, GenericObjectVO genericObjectVO, Integer iModuleId, Integer iStateNumeral,Integer iProcessId) {
 		final List<TreeNodeAction> result = new LinkedList<TreeNodeAction>();
-		
+
 		final List<GeneratorActionVO> lstActions = GeneratorActions.getActions(iModuleId, iStateNumeral, iProcessId);
 		if (lstActions.size() > 0) {
 			for (Iterator iterator = lstActions.iterator(); iterator.hasNext();) {
 				GeneratorActionVO generatorActionVO = (GeneratorActionVO) iterator.next();
-				result.add(new GeneratorAction(tree, genericObjectVO, generatorActionVO));				
+				result.add(new GeneratorAction(tree, genericObjectVO, generatorActionVO));
 			}
 		}
 		return result;
@@ -206,7 +199,17 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 
 	@Override
 	public String getDefaultTreeNodeActionCommand(JTree tree) {
-		return ACTIONCOMMAND_SHOW_DETAILS;
+		ExplorerSettings settings = ExplorerSettings.getInstance();
+		if (ObjectNodeAction.SHOW_LIST == settings.getObjectNodeAction()) {
+			return ACTIONCOMMAND_SHOW_IN_LIST;
+		}
+		else if (ObjectNodeAction.SHOW_DETAILS == settings.getObjectNodeAction()) {
+			return ACTIONCOMMAND_SHOW_DETAILS;
+		}
+		else {
+			// Fallback
+			return ACTIONCOMMAND_SHOW_DETAILS;
+		}
 	}
 
 	/**
@@ -217,7 +220,7 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		String sResourceName = GenericObjectDelegate.getInstance().getResourceMap().get(getTreeNode().getUsageCriteria().getModuleId());
 		String nuclosResource = MetaDataClientProvider.getInstance().getEntity(Modules.getInstance().getEntityNameByModuleId(getTreeNode().getUsageCriteria().getModuleId())).getNuclosResource();
 		if (sResourceName != null && ResourceCache.getIconResource(sResourceName) != null) {
-			return MainFrame.resizeAndCacheTabIcon(ResourceCache.getIconResource(sResourceName));					
+			return MainFrame.resizeAndCacheTabIcon(ResourceCache.getIconResource(sResourceName));
 		} else if (nuclosResource != null){
 			ImageIcon nuclosIcon = NuclosResourceCache.getNuclosResourceIcon(nuclosResource);
 			if (nuclosIcon != null) return MainFrame.resizeAndCacheTabIcon(nuclosIcon);
@@ -317,11 +320,11 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 				@Override
 				public void run() throws CommonBusinessException {
 					for (GenericObjectIdModuleProcess goimpSource : collgoimpSource) {
-						
+
 						if (goimpSource.getGenericObjectId() == getTreeNode().getId()) {
 							throw new CommonBusinessException(CommonLocaleDelegate.getMessage("GenericObjectExplorerNode.1", "Der ausgew\u00e4hlte Knoten kann nicht Knoten von sich selber sein!"));
 						}
-						
+
 						GenericObjectDelegate.getInstance().relate(goimpSource.getGenericObjectId(), relationType,
 								getTreeNode().getId(), getTreeNode().getModuleId(), null, null, null);
 
@@ -337,7 +340,7 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		}
 	}
 
-	
+
 
 	@Override
     public Long getId() {
@@ -349,14 +352,14 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 	    return MetaDataClientProvider.getInstance().getEntity(getTreeNode().getModuleId().longValue()).getEntity();
     }
 
-	
+
 	/**
 	 * inner class ShowDetailsAction. Shows the details for a leased object.
 	 */
 	private class ShowDetailsAction extends TreeNodeAction {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -389,7 +392,7 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 	 */
 	private class RemoveFromParentGroupAction extends TreeNodeAction {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -444,7 +447,7 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 	 */
 	private class RemoveRelationAction extends TreeNodeAction {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -458,30 +461,30 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			final JTree tree = this.getJTree();
-			
+
 			CommonClientWorkerAdapter<Collectable> searchWorker = new CommonClientWorkerAdapter<Collectable>(null) {
 				@Override
 				public void init() {
 					UIUtils.setWaitCursor(tree);
 				}
-				
+
 				@Override
 				public void work() throws CommonBusinessException {
 					final GenericObjectExplorerNode goexplorernode = (GenericObjectExplorerNode) tree.getSelectionPath().getLastPathComponent();
 					cmdRemoveRelation(tree, goexplorernode);
 				}
-				
+
 				@Override
 				public void paint() {
 					tree.setCursor(null);
 				}
-				
+
 				@Override
 				public void handleError(Exception ex) {
 					Errors.getInstance().showExceptionDialog(null, getMessage("GenericObjectExplorerNode.3", "Fehler beim entfernen der Beziehungen"), ex);
 				}
 			};
-			
+
 			CommonMultiThreader.getInstance().execute(searchWorker);
 		}
 
@@ -531,7 +534,7 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 	 */
 	private class GeneratorAction extends TreeNodeAction {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		private final GenericObjectVO genericobjectvo;
@@ -549,30 +552,30 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			final JTree tree = this.getJTree();
-			
+
 			CommonClientWorkerAdapter<Collectable> searchWorker = new CommonClientWorkerAdapter<Collectable>(null) {
 				@Override
 				public void init() {
 					UIUtils.setWaitCursor(tree);
 				}
-				
+
 				@Override
 				public void work() throws CommonBusinessException {
 					final GenericObjectExplorerNode goexplorernode = (GenericObjectExplorerNode) tree.getSelectionPath().getLastPathComponent();
 					cmdGenerateGenericObject(tree, goexplorernode);
 				}
-				
+
 				@Override
 				public void paint() {
 					tree.setCursor(null);
 				}
-				
+
 				@Override
 				public void handleError(Exception ex) {
 					Errors.getInstance().showExceptionDialog(null, getMessage("GenericObjectExplorerNode.3", "Fehler beim entfernen der Beziehungen"), ex);
 				}
 			};
-			
+
 			CommonMultiThreader.getInstance().execute(searchWorker);
 		}
 
@@ -628,7 +631,7 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 							Integer parameterObjectId = parameterObjectIdRef.get();
 							if (iBtn == JOptionPane.YES_OPTION) {
 								GenericObjectVO generatedGo = GenericObjectDelegate.getInstance().generateGenericObject(genericobjectvo.getId(), parameterObjectId, generatoractionvo);
-								
+
 								if (generatedGo == null)
 									return;
 

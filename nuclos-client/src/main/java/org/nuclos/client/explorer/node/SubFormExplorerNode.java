@@ -30,6 +30,8 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.explorer.ExplorerNode;
+import org.nuclos.client.explorer.ExplorerSettings;
+import org.nuclos.client.explorer.ExplorerSettings.FolderNodeAction;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
@@ -57,7 +59,7 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends ExplorerNode<TN> implements EntityExplorerNode {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(SubFormExplorerNode.class);
@@ -70,12 +72,23 @@ public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends Ex
 	public List<TreeNodeAction> getTreeNodeActions(JTree tree) {
 		final List<TreeNodeAction> result = new LinkedList<TreeNodeAction>(super.getTreeNodeActions(tree));
 		result.add(TreeNodeAction.newSeparatorAction());
+		result.add(newShowListAction(tree));
 		return result;
 	}
 
 	@Override
 	public String getDefaultTreeNodeActionCommand(JTree tree) {
-		return ACTIONCOMMAND_EXPAND;
+		ExplorerSettings settings = ExplorerSettings.getInstance();
+		if (FolderNodeAction.SHOW_LIST == settings.getFolderNodeAction()) {
+			return ACTIONCOMMAND_SHOW_IN_LIST;
+		}
+		else if (FolderNodeAction.EXPAND_SUBNODES == settings.getFolderNodeAction()) {
+			return ACTIONCOMMAND_EXPAND;
+		}
+		else {
+			// Fallback
+			return ACTIONCOMMAND_EXPAND;
+		}
 	}
 
 	@Override
@@ -93,7 +106,7 @@ public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends Ex
 	    // Import like drop in subform
 
 		final MutableBoolean mb = new MutableBoolean();
-		
+
 		UIUtils.runCommand(parent, new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
@@ -101,14 +114,14 @@ public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends Ex
 				Integer iTargetModuleId = getTreeNode().getGenericObjectTreeNode().getModuleId();
 				final String sTargetSubFormEntity = getTreeNode().getMasterDataVO().getField("entity", String.class);
 				String sTargetSubFormForeignField = getTreeNode().getMasterDataVO().getField("field", String.class);
-				
+
 				final GenericObjectCollectController goController = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(
 					Main.getMainFrame().getHomePane(), iTargetModuleId, null);
-			
+
 				goController.runViewSingleCollectable(
 					CollectableGenericObjectWithDependants.newCollectableGenericObject(
 						GenericObjectDelegate.getInstance().get(iTargetObjectId)), false);
-				
+
 				try {
 					int[] importResult = goController.dropOnSubForm(sTargetSubFormEntity, transferable);
 					if (importResult[0] > 0) {
@@ -131,12 +144,12 @@ public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends Ex
 				}
 			}
 		});
-		
+
 		final boolean result = mb.getValue();
-		
+
 		return result;
     }
-	
+
 	private void showBubbleRight(JComponent component, String message) {
 		new Bubble(
 			component,
@@ -145,7 +158,7 @@ public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends Ex
 			Bubble.Position.NW)
 		.setVisible(true);
 	}
-	
+
 	private void showBubbleCenter(JComponent component, String message) {
 		new Bubble(
 			component,
@@ -154,5 +167,5 @@ public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends Ex
 			Bubble.Position.NO_ARROW_CENTER)
 		.setVisible(true);
 	}
-	
+
 }	// class MasterDataExplorerNode

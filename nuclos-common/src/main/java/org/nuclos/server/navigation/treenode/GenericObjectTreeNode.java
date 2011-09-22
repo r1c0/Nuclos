@@ -22,7 +22,9 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import org.nuclos.common.AttributeProvider;
+import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.LangUtils;
@@ -110,6 +112,7 @@ public class GenericObjectTreeNode extends AbstractTreeNode<Integer> implements
 	private final RelationDirection		direction;
 	private String						sUserName;
 	private Integer						iStatusId;
+	private String						sEntity;
 
 	protected GenericObjectTreeNode(GenericObjectWithDependantsVO gowdvo,
 		AttributeProvider attrprovider, Integer iRelationId,
@@ -138,6 +141,13 @@ public class GenericObjectTreeNode extends AbstractTreeNode<Integer> implements
 		this.direction = direction;
 		this.sUserName = sUserName;
 		this.iStatusId = iStatusId;
+
+		if (usagecriteria != null) {
+			MetaDataProvider provider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
+			if (provider != null) {
+				sEntity = provider.getEntity(usagecriteria.getModuleId().longValue()).getEntity();
+			}
+		}
 	}
 
 	/**
@@ -236,6 +246,11 @@ public class GenericObjectTreeNode extends AbstractTreeNode<Integer> implements
 	@Override
 	protected List<? extends TreeNode> getSubNodesImpl() throws RemoteException {
 		return getTreeNodeFacade().getSubNodesIgnoreUser(this);
+	}
+
+	@Override
+	public String getEntityName() {
+		return this.sEntity;
 	}
 
 	/**

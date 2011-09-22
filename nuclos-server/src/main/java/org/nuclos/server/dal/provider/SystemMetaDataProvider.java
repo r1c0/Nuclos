@@ -33,7 +33,7 @@ import org.nuclos.server.autosync.SystemMasterDataMetaVO;
 import org.nuclos.server.autosync.XMLEntities;
 
 /**
- * An implementation for accessing the system (i.e. JSON, like 'masterdata.json') 
+ * An implementation for accessing the system (i.e. JSON, like 'masterdata.json')
  * meta data information on the server side.
  */
 @SuppressWarnings("deprecation")
@@ -94,10 +94,10 @@ public class SystemMetaDataProvider implements MetaDataProvider {
 		final Map<String, EntityFieldMetaDataVO> fields = getAllEntityFieldsByEntity(info.getSubform());
 		final EntityFieldMetaDataVO key = fields.get(info.getKeyField());
 		final EntityFieldMetaDataVO value = fields.get(info.getValueField());
-		
+
 		throw new NotImplementedException();
 	}
-	
+
 	public EntityFieldMetaDataVO getRefField(String baseEntity, String subform) {
 		// TODO: caching
 		final Map<String, EntityFieldMetaDataVO>  fields = getAllEntityFieldsByEntity(baseEntity);
@@ -110,7 +110,7 @@ public class SystemMetaDataProvider implements MetaDataProvider {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public EntityFieldMetaDataVO getEntityField(String entity, String field) {
 		SystemEntityFieldMetaDataVO result = getEntity(entity).getEntityFields().get(field);
@@ -131,6 +131,11 @@ public class SystemMetaDataProvider implements MetaDataProvider {
 	@Override
 	public EntityMetaDataVO getEntity(NuclosEntity entity) {
 		return getEntity(entity.getEntityName());
+	}
+
+	@Override
+	public String getBaseEntity(String dynamicentityname) {
+		throw new UnsupportedOperationException("getBaseEntity() is not applicable for system entites.");
 	}
 
 }

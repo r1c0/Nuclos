@@ -34,12 +34,12 @@ import org.nuclos.server.navigation.treenode.TreeNode;
 public class NuclosInstanceTreeNode implements TreeNode {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private String label = "Nuclos";
 	private String description = "";
-	
+
 	public NuclosInstanceTreeNode() {
 	}
 
@@ -88,12 +88,12 @@ public class NuclosInstanceTreeNode implements TreeNode {
 
 	@Override
 	public void removeSubNodes() {
-		
+
 	}
 
 	@Override
 	public void refresh() {
-		
+
 	}
 
 	@Override
@@ -104,5 +104,10 @@ public class NuclosInstanceTreeNode implements TreeNode {
 	@Override
 	public boolean needsParent() {
 		return false;
+	}
+
+	@Override
+	public String getEntityName() {
+		return null;
 	}
 }

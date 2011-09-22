@@ -61482,5 +61482,125 @@
     "resourceID": "EntityMenuCollectableEntity.translationfield.description",
     "locale": "de",
     "text": "Menüpfad ({0}). Verwenden Sie \\ um Untermenüs zu erstellen."
+  },
+  {
+    "resourceID": "ExplorerNode.ShowList",
+    "locale": "i-default",
+    "text": "Show subnodes in list"
+  },
+  {
+    "resourceID": "ExplorerNode.ShowList",
+    "locale": "en",
+    "text": "Show subnodes in list"
+  },
+  {
+    "resourceID": "ExplorerNode.ShowList",
+    "locale": "de",
+    "text": "Unterelemente in Liste anzeigen"
+  },
+  {
+    "resourceID": "settings.explorer.title",
+    "locale": "i-default",
+    "text": "Explorer settings"
+  },
+  {
+    "resourceID": "settings.explorer.title",
+    "locale": "en",
+    "text": "Explorer settings"
+  },
+  {
+    "resourceID": "settings.explorer.title",
+    "locale": "de",
+    "text": "Explorer-Einstellungen"
+  },
+  {
+    "resourceID": "ExplorerSettings.ObjectNodeAction.ShowDetails",
+    "locale": "i-default",
+    "text": "Show details"
+  },
+  {
+    "resourceID": "ExplorerSettings.ObjectNodeAction.ShowDetails",
+    "locale": "en",
+    "text": "Show details"
+  },
+  {
+    "resourceID": "ExplorerSettings.ObjectNodeAction.ShowDetails",
+    "locale": "de",
+    "text": "Details anzeigen"
+  },
+  {
+    "resourceID": "ExplorerSettings.ObjectNodeAction.ShowList",
+    "locale": "i-default",
+    "text": "Show subnodes in list"
+  },
+  {
+    "resourceID": "ExplorerSettings.ObjectNodeAction.ShowList",
+    "locale": "en",
+    "text": "Show subnodes in list"
+  },
+  {
+    "resourceID": "ExplorerSettings.ObjectNodeAction.ShowList",
+    "locale": "de",
+    "text": "Unterelemente in Liste anzeigen"
+  },
+  {
+    "resourceID": "ExplorerSettings.FolderNodeAction.ExpandSubnodes",
+    "locale": "i-default",
+    "text": "Expand sub nodes"
+  },
+  {
+    "resourceID": "ExplorerSettings.FolderNodeAction.ExpandSubnodes",
+    "locale": "en",
+    "text": "Expand sub nodes"
+  },
+  {
+    "resourceID": "ExplorerSettings.FolderNodeAction.ExpandSubnodes",
+    "locale": "de",
+    "text": "Unterelemente aufklappen"
+  },
+  {
+    "resourceID": "ExplorerSettings.FolderNodeAction.ShowList",
+    "locale": "i-default",
+    "text": "Show subnodes in list"
+  },
+  {
+    "resourceID": "ExplorerSettings.FolderNodeAction.ShowList",
+    "locale": "en",
+    "text": "Show subnodes in list"
+  },
+  {
+    "resourceID": "ExplorerSettings.FolderNodeAction.ShowList",
+    "locale": "de",
+    "text": "Unterelemente in Liste anzeigen"
+  },
+  {
+    "resourceID": "settings.explorer.actions.default.objectnode",
+    "locale": "i-default",
+    "text": "Double click command on object nodes:"
+  },
+  {
+    "resourceID": "settings.explorer.actions.default.objectnode",
+    "locale": "en",
+    "text": "Double click command on object nodes:"
+  },
+  {
+    "resourceID": "settings.explorer.actions.default.objectnode",
+    "locale": "de",
+    "text": "Doppelklick-Befehl für Objektknoten:"
+  },
+  {
+    "resourceID": "settings.explorer.actions.default.foldernode",
+    "locale": "i-default",
+    "text": "Double click command on folder nodes:"
+  },
+  {
+    "resourceID": "settings.explorer.actions.default.foldernode",
+    "locale": "en",
+    "text": "Double click command on folder nodes:"
+  },
+  {
+    "resourceID": "settings.explorer.actions.default.foldernode",
+    "locale": "de",
+    "text": "Doppelklick-Befehl für Ordnerknoten:"
   }
 ]

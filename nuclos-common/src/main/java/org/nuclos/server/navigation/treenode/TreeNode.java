@@ -38,6 +38,11 @@ public interface TreeNode extends Serializable {
 	Object getId();
 
 	/**
+	 * @return the entity name of the object represented by this node, if applicable.
+	 */
+	String getEntityName();
+
+	/**
 	 * @return the label of this node, which is usually displayed to the user.
 	 * @postcondition result != null
 	 */
@@ -47,7 +52,7 @@ public interface TreeNode extends Serializable {
 	 * @return the description, if any, of this node, which is usually displayed to the user as a tooltip.
 	 */
 	String getDescription();
-	
+
 	String getIdentifier();
 
 	/**

@@ -85,17 +85,17 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
     * get a list of DatasourceVO which uses the datasource
     *
     * @param datasourceVO
-    * 						could also be an instance of 
+    * 						could also be an instance of
     * 						<code>DynamicEntityVO</code> or
     * 						<code>ValuelistProviderVO</code>
     * @return
-	 * @throws CommonPermissionException 
-	 * @throws CommonFinderException 
+	 * @throws CommonPermissionException
+	 * @throws CommonFinderException
     */
    public List<DatasourceVO> getUsagesForDatasource(DatasourceVO datasourceVO) throws CommonFinderException, CommonPermissionException {
    	try {
@@ -126,7 +126,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * Get datasource with the specified name.
 	 * @param sName
@@ -140,7 +140,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * Get dynamic entity with the specified name.
 	 * @param sDynamicEntity
@@ -154,7 +154,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * Get valuelist provider with the specified name.
 	 * @param sValuelistProvider
@@ -182,7 +182,7 @@ public class DatasourceDelegate {
 	/**
 	 * @return collection of all DynamicEntityVOs
 	 */
-	public Collection<DynamicEntityVO> getAllDynamicEntities() throws CommonPermissionException {
+	public Collection<DynamicEntityVO> getAllDynamicEntities() {
 		try {
 			return getDatasourceFacade().getDynamicEntities();
 		}
@@ -190,7 +190,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
     * get dynamic entity value object
     *
@@ -206,7 +206,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
    }
-	
+
 	/**
 	 * @return collection of all ValuelistProviderVOs
 	 */
@@ -218,7 +218,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
     * get valuelist provider value object
     *
@@ -234,7 +234,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
    }
-   
+
 	/**
 	 * @param dynamicEntityVOs
 	 * @param lstUsedDynamicEntities
@@ -248,7 +248,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * @param valuelistProviderVO
 	 * @param lstUsedValuelistProvider
@@ -262,7 +262,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * @param recordGrantVO
 	 * @param lstUsedRecordGrant
@@ -276,7 +276,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * @param sDatasourceXML
 	 * @return the parameters of the datasource
@@ -289,7 +289,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * @param dsvo
 	 * @return the newly created datasource
@@ -302,7 +302,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * @param datasourceVO
 	 */
@@ -314,7 +314,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * @param dynamicEntityVO
 	 */
@@ -326,7 +326,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * @param valuelistProviderVO
 	 */
@@ -338,7 +338,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * @param recordGrantVO
 	 */
@@ -350,7 +350,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * @param dsvo
 	 * @return the modified datasource
@@ -363,7 +363,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * @param dynamicEntityVO
 	 * @param lstUsedDynamicEntities
@@ -377,7 +377,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * @param valuelistProviderVO
 	 * @param lstUsedValuelistProvider
@@ -391,7 +391,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * @param recordGrantVO
 	 * @param lstUsedRecordGrant
@@ -405,7 +405,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * execute a datasource by datasource id
 	 * @param iDatasourceId
@@ -438,7 +438,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * @param sDatasourceXML
 	 * @return the newly created sql string
@@ -460,7 +460,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
 	 * @return collection of all datasources the current user has access to
 	 */
@@ -498,9 +498,9 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Schema getSchemaTables() {
@@ -515,7 +515,7 @@ public class DatasourceDelegate {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param table
 	 * @return
 	 */
@@ -527,7 +527,7 @@ public class DatasourceDelegate {
 			throw new NuclosFatalException(e);
 		}
 	}
-	
+
 	/**
 	 * @return collection of all RecordGrantVOs
 	 */
@@ -539,7 +539,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
     * get RecordGrant value object
     *
@@ -555,7 +555,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
    }
-   
+
 	/**
 	 * Get RecordGrant with the specified name.
 	 * @param sRecordGrant
@@ -569,5 +569,5 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 }	// class DatasourceDelegate

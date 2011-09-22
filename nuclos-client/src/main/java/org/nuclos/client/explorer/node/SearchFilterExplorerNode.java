@@ -56,7 +56,7 @@ import org.nuclos.server.navigation.treenode.TreeNode;
 public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode> {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final String ACTIONCOMMAND_REMOVEFILTER = "REMOVE_FILTER";
@@ -76,14 +76,14 @@ public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode>
 	public List<TreeNodeAction> getTreeNodeActions(JTree tree) {
 		final List<TreeNodeAction> result = new LinkedList<TreeNodeAction>(super.getTreeNodeActions(tree));
 		result.add(TreeNodeAction.newSeparatorAction());
-		
+
 		TreeNodeAction actShowInTab = new ShowFilterInTaskPanelAction(tree);
 		actShowInTab.setEnabled(getTreeNode().getSearchFilter().isValid());
 		result.add(actShowInTab);
-		
+
 		result.add(new RemoveFilterAction(tree));
 		result.add(TreeNodeAction.newSeparatorAction());
-		result.add(new ShowResultAction(tree));
+		result.add(newShowListAction(tree));
 
 		return result;
 	}
@@ -98,7 +98,7 @@ public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode>
 	 */
 	private class RemoveFilterAction extends TreeNodeAction {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -139,7 +139,7 @@ public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode>
 	 */
 	private class ShowFilterInTaskPanelAction extends TreeNodeAction {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -169,7 +169,7 @@ public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode>
 	private class ShowResultAction extends TreeNodeAction {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 

@@ -419,7 +419,7 @@ public class CommonLocaleDelegate {
 			return replace(result, values, entityname, metaDataProvider);
 		}
 		else {
-			if (values.containsKey(NuclosEOField.CHANGEDAT.getName())) {
+			if (values.containsKey(NuclosEOField.CHANGEDAT.getName()) && values.get(NuclosEOField.CHANGEDAT.getName()) != null) {
 				Date date = (Date)values.get(NuclosEOField.CHANGEDAT.getName());
 				return MessageFormat.format(getResourceById(getUserLocaleInfo(), "gotreenode.tooltip"), getDateTimeFormat().format(date));
 			}

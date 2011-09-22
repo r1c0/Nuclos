@@ -31,6 +31,8 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.explorer.ExplorerController;
 import org.nuclos.client.explorer.ExplorerNode;
+import org.nuclos.client.explorer.ExplorerSettings;
+import org.nuclos.client.explorer.ExplorerSettings.ObjectNodeAction;
 import org.nuclos.client.explorer.ExplorerView;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -58,7 +60,7 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> extends ExplorerNode<TN> implements EntityExplorerNode {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(MasterDataExplorerNode.class);
@@ -72,13 +74,24 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 		final List<TreeNodeAction> result = new LinkedList<TreeNodeAction>(super.getTreeNodeActions(tree));
 		result.add(TreeNodeAction.newSeparatorAction());
 		result.add(new ShowDetailsAction(tree));
+		result.add(this.newShowListAction(tree));
 		result.add(this.newRemoveAction(tree));
 		return result;
 	}
 
 	@Override
 	public String getDefaultTreeNodeActionCommand(JTree tree) {
-		return ACTIONCOMMAND_SHOW_DETAILS;
+		ExplorerSettings settings = ExplorerSettings.getInstance();
+		if (ObjectNodeAction.SHOW_LIST == settings.getObjectNodeAction()) {
+			return ACTIONCOMMAND_SHOW_IN_LIST;
+		}
+		else if (ObjectNodeAction.SHOW_DETAILS == settings.getObjectNodeAction()) {
+			return ACTIONCOMMAND_SHOW_DETAILS;
+		}
+		else {
+			// Fallback
+			return ACTIONCOMMAND_SHOW_DETAILS;
+		}
 	}
 
 	protected MasterDataExplorerNode<TN>.RemoveAction newRemoveAction(JTree tree) {
@@ -95,14 +108,14 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
     public String getEntity() {
 	    return getTreeNode().getEntityName();
     }
-	
+
 	/**
 	 * inner class ShowDetailsAction. Shows the details for a leased object.
 	 */
 	private class ShowDetailsAction extends TreeNodeAction {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -135,7 +148,7 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 	 */
 	protected class RemoveAction extends TreeNodeAction {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -192,7 +205,7 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 		String nuclosResource = MetaDataClientProvider.getInstance().getEntity(getTreeNode().getEntityName()).getNuclosResource();
 		if(resId != null) {
 			ImageIcon standardIcon = ResourceCache.getIconResource(resId);
-			return MainFrame.resizeAndCacheTabIcon(standardIcon);		
+			return MainFrame.resizeAndCacheTabIcon(standardIcon);
 		} else if (nuclosResource != null){
 			ImageIcon nuclosIcon = NuclosResourceCache.getNuclosResourceIcon(nuclosResource);
 			if (nuclosIcon != null) return MainFrame.resizeAndCacheTabIcon(nuclosIcon);

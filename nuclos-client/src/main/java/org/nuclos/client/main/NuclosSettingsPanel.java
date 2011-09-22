@@ -16,7 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.main;
 
-import java.awt.Color;
+import info.clearthought.layout.TableLayout;
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.util.prefs.BackingStoreException;
@@ -24,31 +25,77 @@ import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
+import org.nuclos.client.explorer.ExplorerSettings;
+import org.nuclos.client.explorer.ExplorerSettings.FolderNodeAction;
+import org.nuclos.client.explorer.ExplorerSettings.ObjectNodeAction;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.settings.KeyEnumComboBoxModel;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.message.MessageExchange;
 import org.nuclos.client.ui.message.MessageExchange.MessageExchangeListener;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.exception.PreferencesException;
 
 public class NuclosSettingsPanel extends JPanel {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
+	private static double settingslayout[][] = {
+        { TableLayout.FILL }, // Columns
+        { TableLayout.FILL, TableLayout.FILL } };// Rows
+
+	private static double explorerSettingslayout[][] = {
+        { TableLayout.FILL, TableLayout.FILL }, // Columns
+        { 20.0, 20.0, TableLayout.FILL } };// Rows
+
+	private ExplorerSettings explorerSettings = ExplorerSettings.getInstance();
+
+	private KeyEnumComboBoxModel<ObjectNodeAction> modelObjectNodeAction;
+	private KeyEnumComboBoxModel<FolderNodeAction> modelFolderNodeAction;
+
 	public NuclosSettingsPanel(final MainFrame frm) {
-		setBackground(Color.WHITE);
+		//setBackground(Color.WHITE);
 		setBorder(new TitledBorder(""));
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+		TableLayout layout = new TableLayout(settingslayout);
+		layout.setVGap(5);
+        layout.setHGap(5);
+		setLayout(layout);
+
+		JPanel explorerSettingsPanel = new JPanel();
+		explorerSettingsPanel.setBorder(new TitledBorder(CommonLocaleDelegate.getText("settings.explorer.title")));
+
+		layout = new TableLayout(explorerSettingslayout);
+		layout.setVGap(5);
+        layout.setHGap(5);
+        explorerSettingsPanel.setLayout(layout);
+
+		JLabel lbDoubleClickObjectNode = new JLabel(CommonLocaleDelegate.getText("settings.explorer.actions.default.objectnode"));
+		explorerSettingsPanel.add(lbDoubleClickObjectNode, "0,0");
+
+		modelObjectNodeAction = new KeyEnumComboBoxModel<ObjectNodeAction>(ObjectNodeAction.values());
+		modelObjectNodeAction.setSelectedValue(explorerSettings.getObjectNodeAction());
+		JComboBox cbDoubleClickObjectNode = new JComboBox(modelObjectNodeAction);
+		explorerSettingsPanel.add(cbDoubleClickObjectNode, "1,0");
+
+		JLabel lbDoubleClickFolderNode = new JLabel(CommonLocaleDelegate.getText("settings.explorer.actions.default.foldernode"));
+		explorerSettingsPanel.add(lbDoubleClickFolderNode, "0,1");
+
+		modelFolderNodeAction = new KeyEnumComboBoxModel<FolderNodeAction>(FolderNodeAction.values());
+		modelFolderNodeAction.setSelectedValue(explorerSettings.getFolderNodeAction());
+		JComboBox cbDoubleClickFolderNode = new JComboBox(modelFolderNodeAction);
+		explorerSettingsPanel.add(cbDoubleClickFolderNode, "1,1");
+
+		add(explorerSettingsPanel, "0,0");
 
 		// clear search history
 		Box clearHistBox = Box.createVerticalBox();
@@ -56,18 +103,16 @@ public class NuclosSettingsPanel extends JPanel {
 		clearHistBox.setBorder(new TitledBorder(CommonLocaleDelegate.getMessage("R00022913", "Client-Daten")));
 		JButton btClearHistory = new JButton();
 		btClearHistory.setAction(new AbstractAction(CommonLocaleDelegate.getMessage("R00022898", "Suchhistorie l\u00f6schen")) {
-			/**
-			 * 
-			 */
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(JOptionPane.showConfirmDialog(frm, 
-					CommonLocaleDelegate.getMessage("R00022910", "Suchhistorie wirklich l\u00f6schen?"), "", 
+				if(JOptionPane.showConfirmDialog(frm,
+					CommonLocaleDelegate.getMessage("R00022910", "Suchhistorie wirklich l\u00f6schen?"), "",
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
 					UIUtils.runCommand(NuclosSettingsPanel.this, new Runnable() {
-						
+
 						@Override
 						public void run() {
 							Preferences entityPrefs = ClientPreferences.getUserPreferences().node("collect").node("entity");
@@ -78,8 +123,8 @@ public class NuclosSettingsPanel extends JPanel {
 										Preferences values = fields.node(fieldName);
 										values.removeNode();
 										values.flush();
-										MessageExchange.send(new Pair<String, String>(entityName, fieldName), 
-											MessageExchangeListener.ObjectType.TEXTFIELD, 
+										MessageExchange.send(new Pair<String, String>(entityName, fieldName),
+											MessageExchangeListener.ObjectType.TEXTFIELD,
 											MessageExchangeListener.MessageType.REFRESH);
 									}
 								}
@@ -93,12 +138,15 @@ public class NuclosSettingsPanel extends JPanel {
 		});
 		clearHistBox.add(btClearHistory);
 		clearHistBox.add(Box.createGlue());
-		add(clearHistBox);
+		add(clearHistBox, "0,1");
 
 		setPreferredSize(new Dimension(400, 450));
 		validate();
 	}
 
-	public void restoreSettings() {
+	public void save() throws PreferencesException {
+		explorerSettings.setObjectNodeAction(modelObjectNodeAction.getSelectedValue());
+		explorerSettings.setFolderNodeAction(modelFolderNodeAction.getSelectedValue());
+		explorerSettings.save();
 	}
 }

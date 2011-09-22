@@ -19,6 +19,8 @@ package org.nuclos.common.dal.util;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.IDalVO;
+import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
+import org.nuclos.server.report.valueobject.DynamicEntityVO;
 
 public class DalTransformations {
 	private DalTransformations() {}
@@ -39,8 +41,17 @@ public class DalTransformations {
 			return md.getEntity();
 		}
 	};
-	
+
 	public static Transformer<EntityMetaDataVO, String> getEntity() {
 		return GET_ENTITY;
+	}
+
+	public static Transformer<DynamicEntityVO, String> getDynamicEntityName() {
+		return new Transformer<DynamicEntityVO, String>() {
+			@Override
+			public String transform(DynamicEntityVO i) {
+				return MasterDataMetaVO.DYNAMIC_ENTITY_PREFIX + i.getName();
+			}
+		};
 	}
 }

@@ -661,8 +661,14 @@ public class MainController {
 			? ((Integer) o).intValue()
 				: JOptionPane.CANCEL_OPTION);
 
-		if(res != JOptionPane.OK_OPTION)
-			panel.restoreSettings();
+		if(res == JOptionPane.OK_OPTION) {
+			try {
+				panel.save();
+			}
+			catch (PreferencesException e) {
+				Errors.getInstance().showExceptionDialog(frm, e);
+			}
+		}
 	}
 
 	public Action cmdRefreshClientCaches = new AbstractAction() {

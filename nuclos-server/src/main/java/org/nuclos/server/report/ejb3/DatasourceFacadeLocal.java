@@ -131,4 +131,6 @@ public interface DatasourceFacadeLocal {
 		Integer iDatasourceId) throws NuclosFatalException,
 		NuclosDatasourceException;
 
+	@RolesAllowed("Login")
+	public Collection<DynamicEntityVO> getDynamicEntities();
 }

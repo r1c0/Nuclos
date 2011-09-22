@@ -1151,7 +1151,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
     */
    @Override
 @RolesAllowed("Login")
-   public Collection<DynamicEntityVO> getDynamicEntities() throws CommonPermissionException {
+   public Collection<DynamicEntityVO> getDynamicEntities() {
 //   	this.checkReadAllowed(ENTITY_NAME_DYNAMICENTITY);
    	return DatasourceCache.getInstance().getAllDynamicEntities();
    }

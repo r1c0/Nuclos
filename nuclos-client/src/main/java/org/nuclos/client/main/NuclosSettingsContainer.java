@@ -27,20 +27,21 @@ import javax.swing.JTabbedPane;
 import org.nuclos.client.livesearch.LiveSearchSettingsPanel;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.exception.PreferencesException;
 
 public class NuclosSettingsContainer extends JPanel {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private NuclosSettingsPanel      settingsPanel;
 	private LiveSearchSettingsPanel  livesearchPanel;
-	
+
 	public NuclosSettingsContainer(MainFrame frm) {
 		super(new GridLayout(1, 1));
 		JTabbedPane  tabPane = new JTabbedPane(JTabbedPane.TOP);
 		add(tabPane);
-		
+
 		livesearchPanel = new LiveSearchSettingsPanel();
 		tabPane.addTab(
 			CommonLocaleDelegate.getResource("nuclos.settings.container.tab2", "Live-Suche"),
@@ -50,13 +51,13 @@ public class NuclosSettingsContainer extends JPanel {
 		tabPane.addTab(
 			CommonLocaleDelegate.getResource("nuclos.settings.container.tab1", "Ansichtsoptionen"),
 			settingsPanel);
-		
+
 		validate();
 	}
-	
-	
-	public void restoreSettings() {
-		settingsPanel.restoreSettings();
-		livesearchPanel.restoreOriginalPrefs();
+
+
+	public void save() throws PreferencesException {
+		settingsPanel.save();
+		livesearchPanel.save();
 	}
 }

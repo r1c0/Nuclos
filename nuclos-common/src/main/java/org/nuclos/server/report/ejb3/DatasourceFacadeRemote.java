@@ -145,20 +145,20 @@ public interface DatasourceFacadeRemote {
 	public abstract List<DatasourceVO> getUsagesForDatasource(
 		final Integer iDatasourceId) throws CommonFinderException,
 		CommonPermissionException;
-	
+
    /**
     * get a list of DatasourceVO which uses the datasource
     *
     * @param datasourceVO
-    * 						could also be an instance of 
+    * 						could also be an instance of
     * 						<code>DynamicEntityVO</code> or
     * 						<code>ValuelistProviderVO</code>
     * @return
-    * @throws CommonPermissionException 
-    * @throws CommonFinderException 
+    * @throws CommonPermissionException
+    * @throws CommonFinderException
     */
    @RolesAllowed("Login")
-   public List<DatasourceVO> getUsagesForDatasource(DatasourceVO datasourceVO) throws 
+   public List<DatasourceVO> getUsagesForDatasource(DatasourceVO datasourceVO) throws
    CommonFinderException, CommonPermissionException;
 
 	/**
@@ -219,7 +219,7 @@ public interface DatasourceFacadeRemote {
    @RolesAllowed("Login")
    public void validateSqlFromXML(String sDatasourceXML)
 		throws CommonValidationException, NuclosDatasourceException;
-   
+
    /**
     * validate the given SQL
     *
@@ -260,7 +260,7 @@ public interface DatasourceFacadeRemote {
 	@RolesAllowed("Login")
 	public abstract String createSQL(String sDatasourceXML,
 		Map<String, Object> mpParams) throws NuclosDatasourceException;
-	
+
 	/**
 	 * get sql string for datasource definition
 	 *
@@ -277,7 +277,7 @@ public interface DatasourceFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	public abstract void invalidateCache();
-	
+
    /**
     * get all DynamicEntities
     *
@@ -285,8 +285,8 @@ public interface DatasourceFacadeRemote {
     * @throws CommonPermissionException
     */
 	@RolesAllowed("Login")
-   public Collection<DynamicEntityVO> getDynamicEntities() throws CommonPermissionException;
-   
+   public Collection<DynamicEntityVO> getDynamicEntities();
+
    /**
     * get dynamic entity value object
     *
@@ -296,7 +296,7 @@ public interface DatasourceFacadeRemote {
     */
    @RolesAllowed("Login")
    public DynamicEntityVO getDynamicEntity(Integer iDynamicEntityId) throws CommonPermissionException;
-   
+
    /**
     * get all ValuelistProvider
     *
@@ -305,7 +305,7 @@ public interface DatasourceFacadeRemote {
     */
    @RolesAllowed("Login")
    public Collection<ValuelistProviderVO> getValuelistProvider() throws CommonPermissionException;
-   
+
    /**
     * get valuelist provider value object
     *
@@ -315,7 +315,7 @@ public interface DatasourceFacadeRemote {
     */
    @RolesAllowed("Login")
    public ValuelistProviderVO getValuelistProvider(Integer iValuelistProviderId) throws CommonPermissionException;
-	
+
    /**
     * create new dynamic entity
     *
@@ -327,7 +327,7 @@ public interface DatasourceFacadeRemote {
     */
    @RolesAllowed("Login")
    public DynamicEntityVO createDynamicEntity(DynamicEntityVO dynamicEntityVO, List<String> lstUsedDynamicEntities) throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException;
-   
+
    /**
     * create new valuelist provider
     *
@@ -348,16 +348,16 @@ public interface DatasourceFacadeRemote {
     */
    @RolesAllowed("Login")
    public void removeDynamicEntity(DynamicEntityVO dynamicEntityVO) throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException ;
-   
+
    /**
-    * delete an existing valuelist provider 
+    * delete an existing valuelist provider
     *
     * @param valuelistProviderVO
     *                value object
     */
    @RolesAllowed("Login")
    public void removeValuelistProvider(ValuelistProviderVO valuelistProviderVO) throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException;
-   
+
    /**
     * modify an existing dynamic entity
     *
@@ -371,7 +371,7 @@ public interface DatasourceFacadeRemote {
     */
    @RolesAllowed("Login")
    public DynamicEntityVO modifyDynamicEntity(DynamicEntityVO dynamicEntityVO, List<String> lstUsedDynamicEntities) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException;
-   
+
    /**
     * modify an existing valuelist provider
     *
@@ -385,7 +385,7 @@ public interface DatasourceFacadeRemote {
     */
    @RolesAllowed("Login")
    public ValuelistProviderVO modifyValuelistProvider(ValuelistProviderVO valuelistProviderVO, List<String> lstUsedValuelistProvider) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException;
-   
+
 	/**
 	 * get a datasource result by datasource id
 	 * @param iDatasourceId
@@ -413,7 +413,7 @@ public interface DatasourceFacadeRemote {
 		throws CommonFinderException, NuclosDatasourceException;
 
    /**
-    * 
+    *
     * @return
     */
 	public abstract Schema getSchemaTables();
@@ -422,7 +422,7 @@ public interface DatasourceFacadeRemote {
 	 * @throws CommonPermissionException
 	 */
 	public abstract Table getSchemaColumns(Table table);
-	
+
 	/**
     * get valuelist provider value object
     *
@@ -432,7 +432,7 @@ public interface DatasourceFacadeRemote {
     */
    @RolesAllowed("Login")
    public ValuelistProviderVO getValuelistProvider(String sValuelistProvider) throws CommonFinderException, CommonPermissionException;
-   
+
    /**
     * get dynamic entity value object
     *
@@ -471,7 +471,7 @@ public interface DatasourceFacadeRemote {
 	 */
    @RolesAllowed("Login")
 	RecordGrantVO getRecordGrant(String sRecordGrant) throws CommonFinderException, CommonPermissionException;
-   
+
    /**
     * delete an existing RecordGrant
     *
@@ -494,7 +494,7 @@ public interface DatasourceFacadeRemote {
     */
    @RolesAllowed("Login")
    public RecordGrantVO modifyRecordGrant(RecordGrantVO recordGrantVO, List<String> lstUsedRecordGrant) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException;
-   
+
    /**
     * create new RecordGrant
     *

@@ -16,14 +16,20 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.explorer.node.rule;
 
-import org.nuclos.common2.exception.CommonBusinessException;
+import java.text.Collator;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.nuclos.client.masterdata.datatransfer.RuleAndRuleUsageEntity;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
-import java.text.Collator;
-import java.util.*;
 
 /**
  * Treenode representing an Node in the Ruletree
@@ -32,7 +38,7 @@ import java.util.*;
 public abstract class AbstractRuleTreeNode implements TreeNode {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -98,7 +104,7 @@ public abstract class AbstractRuleTreeNode implements TreeNode {
 	public String getDescription() {
 		return this.sDescription;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -206,4 +212,8 @@ public abstract class AbstractRuleTreeNode implements TreeNode {
 		});
 	}
 
+	@Override
+	public String getEntityName() {
+		return null;
+	}
 }	// class AbstractRuleTreeNode

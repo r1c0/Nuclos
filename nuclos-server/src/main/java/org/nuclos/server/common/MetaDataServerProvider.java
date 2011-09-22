@@ -30,11 +30,14 @@ import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
+import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.dal.util.DalTransformations;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.transport.GzipMap;
+import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.jdbc.impl.DynamicMetaDataProcessor;
@@ -48,9 +51,11 @@ import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.report.SchemaCache;
+import org.nuclos.server.report.ejb3.DatasourceFacadeLocal;
+import org.nuclos.server.report.valueobject.DynamicEntityVO;
 
 /**
- * An caching singleton for accessing the meta data information 
+ * An caching singleton for accessing the meta data information
  * on the server side.
  */
 public class MetaDataServerProvider extends AbstractProvider implements MetaDataProvider {
@@ -152,7 +157,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		final String subformTable = EntityObjectMetaDbHelper.getViewName(subform);
 		final EntityFieldMetaDataVO keyField = getEntityField(info.getSubform(), info.getKeyField());
 		final EntityFieldMetaDataVO valueField = getEntityField(info.getSubform(), info.getValueField());
-		
+
 		Map<String, EntityFieldMetaDataVO> result = dataCache.getMapPivotMetaData().get(info);
 		if (result == null) {
 			// get 'real' meta data
@@ -169,8 +174,8 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 				} catch (ClassNotFoundException e) {
 					throw new CommonFatalException(e);
 				}
-				
-				// select distinct p.<keyfield> from <subform> p 
+
+				// select distinct p.<keyfield> from <subform> p
 				final DbQuery<? extends Object> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Object.class);
 				final DbFrom from = query.distinct(true).from(subformTable).alias("p");
 				query.selectLiberate(from.baseColumn(keyField.getDbColumn(), keyTypeClass)).maxResults(250);
@@ -180,7 +185,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 				vo.initFields(columns.size(), 1);
 				vo.setEntity(info.getSubform());
 				// vo.setDependants(mpDependants);
-				
+
 				result = new HashMap<String, EntityFieldMetaDataVO>(columns.size());
 				for (Object c: columns) {
 					if (isBlank(c)) continue;
@@ -196,7 +201,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 					md.setEntityId(subform.getId());
 					// ???
 					md.setReadonly(valueField.isReadonly() != null ? valueField.isReadonly() : Boolean.FALSE);
-					
+
 					result.put(pseudoFieldName, md);
 				}
 			}
@@ -204,7 +209,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		}
 		return result;
 	}
-	
+
 	public EntityFieldMetaDataVO getRefField(String baseEntity, String subform) {
 		// TODO: caching
 		final Map<String, EntityFieldMetaDataVO>  fields = getAllEntityFieldsByEntity(subform);
@@ -217,7 +222,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		}
 		return result;
 	}
-	
+
 	private static boolean isBlank(Object o) {
 		if (o == null) return true;
 		if (o instanceof String) {
@@ -225,7 +230,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		}
 		return false;
 	}
-	
+
 	public Map<String, Map<String, EntityFieldMetaDataVO>> getAllEntityFieldsByEntitiesGz(Collection<String> entities) {
 		// We can simply iterate most inefficiently over the single get results,
 		// as these depend on caches themselves. All in all, the only thing
@@ -253,7 +258,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 	}
 
 	/**
-	 * 
+	 *
 	 * @param entity
 	 * @param field
 	 * @return
@@ -261,7 +266,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 	public EntityFieldMetaDataVO getEntityField(NuclosEntity entity, String field) {
 		return getEntityField(entity.getEntityName(), field);
 	}
-	
+
 	@Override
 	public EntityFieldMetaDataVO getEntityField(String entity, Long fieldId) {
 		for(EntityFieldMetaDataVO fieldMeta : getAllEntityFieldsByEntity(entity).values())
@@ -304,6 +309,8 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		private Map<Long, EntityMetaDataVO> mapMetaDataById = null;
 		private Map<String, Map<String, EntityFieldMetaDataVO>> mapFieldMetaData = null;
 		private ConcurrentHashMap<PivotInfo, Map<String, EntityFieldMetaDataVO>> mapPivotMetaData = new ConcurrentHashMap<PivotInfo, Map<String,EntityFieldMetaDataVO>>();
+
+		private Map<String, DynamicEntityVO> mapDynamicEntities;
 
 		public Map<String, EntityMetaDataVO> getMapMetaDataByEntity() {
 			if (isRevalidating()) {
@@ -366,6 +373,14 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 			}
 		}
 
+		public Map<String, DynamicEntityVO> getMapDynamicEntities() {
+			if (isRevalidating()) {
+				return getMapDynamicEntities();
+			} else {
+				return mapDynamicEntities;
+			}
+		}
+
 		private Map<String, Map<String, EntityFieldMetaDataVO>> buildMapFieldMetaData(Map<String, EntityMetaDataVO> mapMetaDataByEntity) {
 			Map<String, Map<String, EntityFieldMetaDataVO>> result = new HashMap<String, Map<String,EntityFieldMetaDataVO>>();
 
@@ -406,6 +421,8 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 			return result;
 		}
 
+
+
 		public synchronized void buildMaps() {
 			startRevalidating = System.currentTimeMillis();
 			revalidating = true;
@@ -413,6 +430,8 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 			mapMetaDataById = Collections.unmodifiableMap(buildMapMetaDataById(mapMetaDataByEntity));
 			mapFieldMetaData = Collections.unmodifiableMap(buildMapFieldMetaData(mapMetaDataByEntity));
 			mapPivotMetaData.clear();
+
+			mapDynamicEntities = Collections.unmodifiableMap(CollectionUtils.generateLookupMap(getDatasourceFacade().getDynamicEntities(), DalTransformations.getDynamicEntityName()));
 			revalidating = false;
 		}
 
@@ -431,6 +450,20 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 				return false;
 			}
 		}
+
+		private DatasourceFacadeLocal getDatasourceFacade() {
+			return ServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
+		}
 	} // class DataCache
+
+	@Override
+	public String getBaseEntity(String dynamicentityname) {
+		if (dataCache.getMapDynamicEntities().containsKey(dynamicentityname)) {
+			return dataCache.getMapDynamicEntities().get(dynamicentityname).getEntity();
+		}
+		else {
+			return dynamicentityname;
+		}
+	}
 
 }
