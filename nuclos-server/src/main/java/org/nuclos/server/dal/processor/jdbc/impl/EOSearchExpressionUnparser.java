@@ -93,7 +93,7 @@ public class EOSearchExpressionUnparser {
 
 			DbCondition condition = clctcond.accept(new UnparseVisitor());
 			query.where(condition);
-		}   	
+		}
 	}
 
 	public void unparseSortingOrder(final List<CollectableSorting> sorting) {
@@ -197,34 +197,34 @@ public class EOSearchExpressionUnparser {
 		@Override
 		public DbCondition visitPivotJoinCondition(PivotJoinCondition joincond) {
 			final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
-			
+
 			final EntityMetaDataVO mdSubEntity = joincond.getJoinEntity();
 			final String subEntity = mdSubEntity.getEntity();
 			final EntityFieldMetaDataVO field = joincond.getField();
 			final PivotInfo pinfo = field.getPivotInfo();
-			
+
 			final EntityFieldMetaDataVO ref = mdProv.getRefField(entity.getEntity(), subEntity);
 			String foreignEntityField = ref.getForeignEntityField();
 			// TODO: ???
 			if (foreignEntityField == null) {
 				foreignEntityField = "INTID";
 			}
-			
+
 			final String joinTable = EntityObjectMetaDbHelper.getViewName(mdSubEntity);
 			final String keyColumn = mdProv.getEntityField(subEntity, pinfo.getKeyField()).getDbColumn();
-			
+
 			// The join table alias must be unique in the SQL
 			final String joinAlias = pinfo.getPivotTableAlias(field.getField());
-			
+
 			final DbJoin join = table.join(joinTable, JoinType.LEFT).alias(joinAlias).onAnd("INTID", DalUtils.getDbIdFieldName(ref.getDbColumn()), Long.class,
 					queryBuilder.equal(table.column(joinAlias, keyColumn, String.class), queryBuilder.literal(field.getField())));
-			
+
 			// DbCondition cond;
 			// pivot key matches
 			// cond = queryBuilder.equal(join.baseColumn(keyColumn, String.class), queryBuilder.literal(field.getField()));
 			// pivot key is NULL (i.e. does not exist). This could happen as this is an outer join
 			// cond = queryBuilder.or(cond, queryBuilder.isNull(join.baseColumn(keyColumn, String.class)));
-			
+
 			// ??? We have no real condition, all is said within the (non-equi) join...
 			return queryBuilder.alwaysTrue();
 		}
@@ -267,12 +267,12 @@ public class EOSearchExpressionUnparser {
 				if (valueId != null) {
 					DbExpression<?> x = getDbIdColumn(comparison.getEntityField());
 					return queryBuilder.equal(x, queryBuilder.literal(valueId));
-				} 
+				}
 			case NOT_EQUAL:
 				if (valueId != null) {
 					DbExpression<?> x = getDbIdColumn(comparison.getEntityField());
 					return queryBuilder.notEqual(x, queryBuilder.literal(valueId));
-				} 
+				}
 			default:
 				DbExpression<?> x = getDbColumn(comparison.getEntityField());
 				DbExpression<?> y = normalizedLiteral(clctfComparand.getValue());
@@ -282,9 +282,10 @@ public class EOSearchExpressionUnparser {
 					y = queryBuilder.upper(y.as(String.class));
 				}
 
-				if (x.getJavaType() == InternalTimestamp.class) {
+				// InternalTimestamp should be interpreted with time, so do not truncate time!
+				/*if (x.getJavaType() == InternalTimestamp.class) {
 					x = queryBuilder.convertInternalTimestampToDate(x.as(InternalTimestamp.class));
-				}
+				}*/
 				return compare(comparison.getComparisonOperator(), x, y);
 			}
 		}
@@ -396,14 +397,14 @@ public class EOSearchExpressionUnparser {
 		@Override
         public DbCondition visitIdListCondition(CollectableIdListCondition collectableIdListCondition) throws RuntimeException {
 			/** @todo This only works for entities that have an INTID field. */
-			DbExpression<Integer> intid = getDbIntIdColumn();	
-			
+			DbExpression<Integer> intid = getDbIntIdColumn();
+
 			List<List<Long>> split = CollectionUtils.splitEvery(collectableIdListCondition.getLongIds(), query.getBuilder().getInLimit());
 			DbCondition[] inConditions = new DbCondition[split.size()];
 			for(int i = 0 ; i < split.size() ; i++) {
 				inConditions[i] = intid.as(Long.class).in(split.get(i));
 			}
-			
+
 			return queryBuilder.or(inConditions);
         }
 	}

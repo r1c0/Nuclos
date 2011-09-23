@@ -32,10 +32,13 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosPassword;
+import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.DateTime;
 import org.nuclos.common2.ExtendedRelativeDate;
+import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.RelativeDate;
 import org.nuclos.common2.StringUtils;
@@ -86,6 +89,12 @@ public abstract class CollectableFieldFormat {
 	public static CollectableFieldFormat getInstance(Class<?> cls) {
 		CollectableFieldFormat result = getFormat(cls);
 
+		if (result instanceof CollectableTimestampFormat) {
+			// set property here, because initialization is static and parameters can be changed at runtime
+			ParameterProvider provider = SpringApplicationContextHolder.getBean(ParameterProvider.class);
+			String value = provider.getValue(ParameterProvider.KEY_SHOW_INTERNAL_TIMESTAMP_WITH_TIME);
+			((CollectableTimestampFormat) result).setFormatWithTime(value != null && value.toUpperCase().equals("TRUE"));
+		}
 		// We also allow classes derived from java.util.Date, especially java.sql.Date:
 		if (result == null && java.util.Date.class.isAssignableFrom(cls)) {
 			result = getFormat(Date.class);
@@ -108,7 +117,7 @@ public abstract class CollectableFieldFormat {
 
 	private static synchronized Map<Class<?>, CollectableFieldFormat> getMapOfFormats() {
 		if (mpFormats == null) {
-			mpFormats = new HashMap<Class<?>, CollectableFieldFormat>(6);
+			mpFormats = new HashMap<Class<?>, CollectableFieldFormat>(9);
 			mpFormats.put(String.class, new CollectableStringFormat());
 			mpFormats.put(Date.class, new CollectableDateFormat());
 			mpFormats.put(DateTime.class, new CollectableDateTimeFormat());
@@ -117,6 +126,7 @@ public abstract class CollectableFieldFormat {
 			mpFormats.put(Boolean.class, new CollectableBooleanFormat());
 			mpFormats.put(BigDecimal.class, new CollectableBigDecimalFormat());
 			mpFormats.put(NuclosPassword.class, new CollectablePasswordFormat());
+			mpFormats.put(InternalTimestamp.class, new CollectableTimestampFormat());
 		}
 		return mpFormats;
 	}
@@ -352,6 +362,54 @@ public abstract class CollectableFieldFormat {
 			return new SimpleDateFormat(alternate).parse(input);
 		}
 	}	// class CollectableDateFormat
+
+	/**
+	 * Format and parse instances of {@link InternalTimestamp}.
+	 * Default fall-back behaviour (parsing) is inherited by {@link CollectableDateFormat}.
+	 *
+	 * @author thomas.schiffmann
+	 */
+	private static class CollectableTimestampFormat extends CollectableDateFormat {
+
+		private boolean formatWithTime;
+
+		public boolean isFormatWithTime() {
+			return formatWithTime;
+		}
+
+		public void setFormatWithTime(boolean formatWithTime) {
+			this.formatWithTime = formatWithTime;
+		}
+
+		@Override
+		public String format(String sOutputFormat, Object oValue) {
+			if (oValue == null) {
+				return null;
+			}
+			if (!(oValue instanceof InternalTimestamp) && !(oValue instanceof Date)) {
+				throw new NuclosFatalException("Kein g\u00fcltiger Zeitstempel: " + oValue + " (" + oValue.getClass() + ").");
+			}
+			if (isFormatWithTime()) {
+				return CommonLocaleDelegate.getDateTimeFormat().format(oValue);
+			}
+			else {
+				return super.format(sOutputFormat, oValue);
+			}
+		}
+
+		@Override
+		public InternalTimestamp parse(String sInputFormat, String sText) throws CollectableFieldFormatException {
+			if (StringUtils.looksEmpty(sText)) {
+				return null;
+			}
+			try {
+				return new InternalTimestamp(CommonLocaleDelegate.getDateTimeFormat().parse(sText).getTime());
+			}
+			catch (ParseException ex) {
+				return new InternalTimestamp(super.parse(sInputFormat, sText).getTime());
+			}
+		}
+	}	// class CollectableTimestampFormat
 
 	private static class CollectableIntegerFormat extends CollectableFieldFormat {
 

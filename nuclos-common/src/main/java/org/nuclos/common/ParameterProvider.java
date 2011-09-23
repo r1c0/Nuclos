@@ -121,6 +121,8 @@ public interface ParameterProvider {
 	public static final String KEY_SECURITY_PASSWORD_STRENGTH_LENGTH = "SECURITY_PASSWORD_STRENGTH_LENGTH";
 	public static final String KEY_SECURITY_PASSWORD_STRENGTH_REGEXP = "SECURITY_PASSWORD_STRENGTH_REGEXP";
 
+	public static final String KEY_SHOW_INTERNAL_TIMESTAMP_WITH_TIME = "SHOW_INTERNAL_TIMESTAMP_WITH_TIME";
+
 	/**
 	 * @param sParameterName
 	 * @return the value for the parameter with the given name, if any.
