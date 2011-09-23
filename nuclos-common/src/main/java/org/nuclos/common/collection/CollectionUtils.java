@@ -1343,6 +1343,18 @@ public class CollectionUtils {
 	   }
    }
    
+   public static <T> List<T> copyWithoutDublicates(List<T> l) {
+	   final List<T> result = new ArrayList<T>();
+	   final Set<T> set = new HashSet<T>();
+	   for (Iterator<T> it = l.iterator(); it.hasNext(); ) {
+		   final T t = it.next();
+		   if (set.add(t)) {
+			   result.add(t);
+		   }
+	   }
+	   return result;
+   }
+   
 	/**
 	 * Remove all null elements at the end of the list.
 	 */

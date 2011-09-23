@@ -17,6 +17,7 @@
 package org.nuclos.client.ui.collect.result;
 
 import java.awt.Component;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,7 +38,6 @@ import org.nuclos.client.ui.collect.PivotController;
 import org.nuclos.client.ui.collect.PivotPanel;
 import org.nuclos.client.ui.collect.SelectFixedColumnsController;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
-import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
@@ -71,18 +71,18 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	 * pivot representation instead of a subform field representation.
 	 * </p> 
 	 */
-	private final Map<String,PivotInfo> pivots;
+	private final Map<String,List<PivotInfo>> pivots;
 	
 	public GenericObjectResultController(CollectableEntity clcte, ISearchResultStrategy<Clct> srs) {
 		super(clcte, srs);
-		pivots = new HashMap<String, PivotInfo>();
+		pivots = new HashMap<String, List<PivotInfo>>();
 	}
 	
-	public void putPivotInfo(PivotInfo info) {
-		pivots.put(info.getSubform(), info);
+	public void putPivotInfo(String subform, List<PivotInfo> info) {
+		pivots.put(subform, CollectionUtils.copyWithoutDublicates(info));
 	}
 	
-	public PivotInfo getPivotInfo(String subformName) {
+	public List<PivotInfo> getPivotInfo(String subformName) {
 		return pivots.get(subformName);
 	}
 	
@@ -116,8 +116,11 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 			}
 		}
 		
-		return new PivotController(parent, new PivotPanel(getEntity().getName(), subFormFields, pivots), this);
-		
+		try {
+			return new PivotController(parent, new PivotPanel(getEntity().getName(), subFormFields, pivots), this);
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException(e.toString());
+		}		
 		// Old (pre-pivot) columns controller.
 		// return super.newSelectColumnsController(parent);
 	}
@@ -183,7 +186,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 		// remove the subform entries
 		// TODO: make sth sensible here!
 		// final PivotInfo info = new PivotInfo("WarenArt", "shortName", "quantityUnit");
-		final PivotInfo info = getPivotInfo(sSubEntityName);
+		final PivotInfo info = getPivotInfo(sSubEntityName).iterator().next();
 		final Map<String, EntityFieldMetaDataVO> fields = MetaDataClientProvider.getInstance().getAllPivotEntityFields(info);
 		for (String fn: fields.keySet()) {
 			final EntityFieldMetaDataVO md = fields.get(fn);
@@ -201,6 +204,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 		assert getEntity().equals(clcte);
 		final List<? extends CollectableEntityField>  result = GenericObjectClientUtils.readCollectableEntityFieldsFromPreferences(
 				getGenericObjectCollectController().getPreferences(), clcte);
+		CollectionUtils.removeDublicates(result);
 		
 		// recover pivots state
 		for (CollectableEntityField f: result) {
@@ -208,7 +212,12 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 				final CollectableEOEntityField field = (CollectableEOEntityField) f;
 				final PivotInfo pinfo = field.getMeta().getPivotInfo();
 				if (pinfo != null) {
-					pivots.put(pinfo.getSubform(), pinfo);
+					List<PivotInfo> plist = pivots.get(pinfo.getSubform());
+					if (plist == null) {
+						plist = new ArrayList<PivotInfo>();
+						pivots.put(pinfo.getSubform(), plist);
+					}
+					plist.add(pinfo);
 				}
 			}
 		}
