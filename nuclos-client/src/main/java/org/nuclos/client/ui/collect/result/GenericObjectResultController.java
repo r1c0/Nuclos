@@ -217,7 +217,9 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 						plist = new ArrayList<PivotInfo>();
 						pivots.put(pinfo.getSubform(), plist);
 					}
-					plist.add(pinfo);
+					if (!plist.contains(pinfo)) {
+						plist.add(pinfo);
+					}
 				}
 			}
 		}

@@ -153,5 +153,19 @@ public class CollectableEOEntityField extends AbstractCollectableEntityField {
 	public EntityFieldMetaDataVO getMeta() {
 		return efMeta;
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) return true;
+		if (!(other instanceof CollectableEOEntityField)) return false;
+		final CollectableEOEntityField o = (CollectableEOEntityField) other;
+		return efMeta.equals(o.efMeta);
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = efMeta.hashCode();
+		return result + 3971;
+	}
 
 }

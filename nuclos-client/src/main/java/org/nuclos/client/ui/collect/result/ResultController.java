@@ -746,6 +746,7 @@ public class ResultController<Clct extends Collectable> {
 				result.add(sort);
 			}
 		}
+		// ??? is this needed (see above)
 		CollectionUtils.removeDublicates(result);
 		return result;
 	}
