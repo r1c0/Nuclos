@@ -51,6 +51,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
+import javax.swing.table.AbstractTableModel;
 
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
@@ -209,12 +210,18 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					Collectable clct = DetailsSubFormController.this.getSelectedCollectable();
-					if (clct != null) {
+					if (clct != null) {	
+						boolean blnChanged = false;
 						for (Iterator iterator = lstFieldNames.iterator(); iterator.hasNext();) {
 							String sFieldName = (String) iterator.next();
 							if (DetailsSubFormController.this.getSubForm().isColumnEnabled(sFieldName)) {
 								clct.setField(sFieldName, new CollectableValueField(Boolean.TRUE));
+								blnChanged = true;
 							}
+						}
+						if (blnChanged)
+						{
+							((AbstractTableModel)DetailsSubFormController.this.getSubForm().getJTable().getModel()).fireTableDataChanged();
 						}
 					}
 				}
@@ -226,11 +233,17 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				public void actionPerformed(ActionEvent e) {
 					Collectable clct = DetailsSubFormController.this.getSelectedCollectable();
 					if (clct != null) {
+						boolean blnChanged = false;
 						for (Iterator iterator = lstFieldNames.iterator(); iterator.hasNext();) {
 							String sFieldName = (String) iterator.next();
 							if (DetailsSubFormController.this.getSubForm().isColumnEnabled(sFieldName)) {
 								clct.setField(sFieldName, new CollectableValueField(Boolean.FALSE));
+								blnChanged = true;
 							}
+						}
+						if (blnChanged)
+						{
+							((AbstractTableModel)DetailsSubFormController.this.getSubForm().getJTable().getModel()).fireTableDataChanged();
 						}
 					}
 				}
@@ -264,8 +277,14 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				List<Clct> clcts = DetailsSubFormController.this.getCollectables();
+				boolean blnChanged = false;
 				for (Clct clct : clcts) {
 					clct.setField(clctef.getName(), new CollectableValueField(Boolean.TRUE));
+					blnChanged = true;
+				}
+				if (blnChanged)
+				{
+					((AbstractTableModel)DetailsSubFormController.this.getSubForm().getJTable().getModel()).fireTableDataChanged();
 				}
 			}
 		});
@@ -275,9 +294,15 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				boolean blnChanged = false;
 				List<Clct> clcts = DetailsSubFormController.this.getCollectables();
 				for (Clct clct : clcts) {
 					clct.setField(clctef.getName(), new CollectableValueField(Boolean.FALSE));
+					blnChanged = true;
+				}
+				if (blnChanged)
+				{
+					((AbstractTableModel)DetailsSubFormController.this.getSubForm().getJTable().getModel()).fireTableDataChanged();
 				}
 			}
 		});
