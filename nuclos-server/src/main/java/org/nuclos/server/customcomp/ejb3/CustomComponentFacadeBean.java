@@ -83,9 +83,9 @@ public final class CustomComponentFacadeBean extends NuclosFacadeBean implements
 	@Override
 	public void create(CustomComponentVO vo, List<TranslationVO> translations) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.CUSTOMCOMPONENT);
-		getMasterDataFacade().create(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), wrapVO(vo), null);
+		MasterDataVO result = getMasterDataFacade().create(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), wrapVO(vo), null);
 
-		setResources(vo, translations);
+		setResources(getCustomComponentVO(result), translations);
 
 		notifyClients();
 	}

@@ -753,15 +753,18 @@ public class CustomComponentWizardModel extends StaticModel {
 			List<ResPlanResourceVO> resources = new ArrayList<ResPlanResourceVO>();
 			for (LocaleInfo locale : locales) {
 				boolean found = false;
-				for (ResPlanResourceVO vo : model.configVO.getResources()) {
-					if (locale.localeId.equals(vo.getLocaleId())) {
-						found = true;
-						resources.add(vo);
+				if (model.configVO != null && model.configVO.getResources() != null) {
+					for (ResPlanResourceVO vo : model.configVO.getResources()) {
+						if (locale.localeId.equals(vo.getLocaleId())) {
+							found = true;
+							resources.add(vo);
+						}
 					}
 				}
 				if (!found) {
 					ResPlanResourceVO vo = new ResPlanResourceVO();
 					vo.setLocaleId(locale.localeId);
+					resources.add(vo);
 				}
 			}
 			tablemodel.setRows(resources);
