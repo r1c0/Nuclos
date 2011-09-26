@@ -40390,6 +40390,36 @@
     "text": "Die Beziehung kann nicht entfernt werden, da die Beziehungs-Id fehlt. Bitte aktualisieren Sie die Baumansicht und versuchen Sie es erneut."
   },
   {
+    "resourceID": "GenericObjectExplorerNode.6",
+    "locale": "i-default",
+    "text": "Create a {1} from the current {0}?"
+  },
+  {
+    "resourceID": "GenericObjectExplorerNode.6",
+    "locale": "en",
+    "text": "Create a {1} from the current {0}?"
+  },
+  {
+    "resourceID": "GenericObjectExplorerNode.6",
+    "locale": "de",
+    "text": "Soll aus dieser\/diesem {0} ein(e) {1} erzeugt werden?"
+  },
+  {
+    "resourceID": "GenericObjectExplorerNode.7",
+    "locale": "i-default",
+    "text": "create {0}"
+  },
+  {
+    "resourceID": "GenericObjectExplorerNode.7",
+    "locale": "en",
+    "text": "create {0}"
+  },
+  {
+    "resourceID": "GenericObjectExplorerNode.7",
+    "locale": "de",
+    "text": "{0} erzeugen"
+  },
+  {
     "resourceID": "GroupExplorerNode.1",
     "locale": "i-default",
     "text": "The data transfer is not supported."
