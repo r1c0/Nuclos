@@ -66,7 +66,9 @@ import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SpringApplicationContextHolder;
+import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
@@ -545,10 +547,12 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 				}
 			}
 
-			Object oProcess = genericobjectvo.getAttribute(NuclosEOField.PROCESS.getMetaData().getField(), SpringApplicationContextHolder.getBean(AttributeProvider.class)).getValue();
-			sSourceModuleName = MessageFormat.format("{0} ({1})", sSourceModuleName, oProcess);
-			final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.71","Soll aus dem/der aktuellen {0} ein(e) {1} erzeugt werden?", sSourceModuleName, sTargetModuleName);
-			iBtn = JOptionPane.showConfirmDialog(MainFrame.getHomePane(), sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName),
+			DynamicAttributeVO dAttrProcess = genericobjectvo.getAttribute(NuclosEOField.PROCESS.getMetaData().getField(), SpringApplicationContextHolder.getBean(AttributeProvider.class));
+			if (dAttrProcess != null && dAttrProcess.getValue() != null) {
+				sSourceModuleName = MessageFormat.format("{0} ({1})", sSourceModuleName, dAttrProcess.getValue());
+			}
+			final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectExplorerNode.6","Soll aus dieser/diesem {0} ein(e) {1} erzeugt werden?", sSourceModuleName, sTargetModuleName);
+			iBtn = JOptionPane.showConfirmDialog(MainFrame.getHomePane(), sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.7","{0} erzeugen", sTargetModuleName),
 				JOptionPane.OK_CANCEL_OPTION);
 
 			return iBtn;
