@@ -16,10 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common;
 
-import java.util.Map;
-
-import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
-import org.nuclos.common.dal.vo.PivotInfo;
 
 /**
  * Common interface implemented by MetaData Delegates, Facades, and Providers. 
@@ -28,7 +24,5 @@ import org.nuclos.common.dal.vo.PivotInfo;
  * @since Nuclos 3.1.01
  */
 public interface CommonMetaDataProvider {
-
-    Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info);
 
 }

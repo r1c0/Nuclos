@@ -87,15 +87,25 @@ public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 		if (this == o) return true;
 		if (!(o instanceof PivotInfo)) return false;
 		final PivotInfo other = (PivotInfo) o;
-		return subform.equals(other.subform) && keyField.equals(other.keyField) &&
-			valueField.equals(other.valueField);
+		boolean result = subform.equals(other.subform) && keyField.equals(other.keyField);
+		if (result) { 
+			if (valueField != null) {
+				result = valueField.equals(other.valueField);
+			}
+			else {
+				result = (other.valueField == null);
+			}
+		}
+		return result;
 	}
 	
 	@Override
 	public int hashCode() {
 		int result = subform.hashCode() + 82781;
 		result += 7 * keyField.hashCode() + 123;
-		result += 11 * valueField.hashCode() + 721;
+		if (valueField != null) {
+			result += 11 * valueField.hashCode() + 721;
+		}
 		return result;
 	}
 
@@ -105,7 +115,12 @@ public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 		if (result == 0) {
 			result = keyField.compareTo(o.keyField);
 			if (result == 0 && valueField instanceof Comparable) {
-				result = ((Comparable<String>) valueField).compareTo(o.valueField);
+				if (valueField != null) {
+					result = ((Comparable<String>) valueField).compareTo(o.valueField);
+				}
+				else {
+					result = -1;
+				}
 			}
 		}
 		return result;

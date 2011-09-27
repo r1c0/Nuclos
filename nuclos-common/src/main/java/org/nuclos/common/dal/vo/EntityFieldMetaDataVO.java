@@ -28,7 +28,7 @@ import org.nuclos.common2.LangUtils;
  * @author	<a href="mailto:maik.stueker@novabit.de">Maik.Stueker</a>
  * @version 01.00.00
  */
-public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
+public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements Cloneable {
 
 	private static final long serialVersionUID = 7938377056541228804L;
 
@@ -124,6 +124,16 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 		setLocaleResourceIdForLabel(eo.getField("localeresourcel", String.class));
 		setLocaleResourceIdForDescription(eo.getField("localeresourced", String.class));
 		setDefaultMandatory(eo.getField("defaultmandatory", String.class));
+	}
+	
+	public Object clone() {
+		EntityFieldMetaDataVO clone;
+		try {
+			clone = (EntityFieldMetaDataVO) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException(e.toString());
+		}
+		return clone;
 	}
 
 	public void setEntityId(Long entityId) {
@@ -440,7 +450,7 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion {
 		}
 	    return result;
     }
-
+	
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder();

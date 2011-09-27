@@ -6,6 +6,8 @@
 .project
 .settings
 target
+pom.xml.versionsBackup
+/velocity.log
 #META-INF
 
 

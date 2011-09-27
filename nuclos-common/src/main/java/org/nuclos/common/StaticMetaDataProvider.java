@@ -73,11 +73,6 @@ public class StaticMetaDataProvider extends AbstractProvider implements MetaData
 		return result;
 	}
 
-	@Override
-	public Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info) {
-		throw new UnsupportedOperationException();
-	}
-
 	public EntityFieldMetaDataVO getRefField(String baseEntity, String subform) {
 		// TODO: caching
 		final Map<String, EntityFieldMetaDataVO>  fields = getAllEntityFieldsByEntity(baseEntity);

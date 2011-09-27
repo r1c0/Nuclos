@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuclos.common.AbstractProvider;
+import org.nuclos.common.CommonMetaDataServerProvider;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
@@ -58,7 +59,7 @@ import org.nuclos.server.report.valueobject.DynamicEntityVO;
  * An caching singleton for accessing the meta data information
  * on the server side.
  */
-public class MetaDataServerProvider extends AbstractProvider implements MetaDataProvider {
+public class MetaDataServerProvider extends AbstractProvider implements MetaDataProvider, CommonMetaDataServerProvider {
 
 	private final DataCache dataCache = new DataCache();
 
@@ -153,15 +154,18 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 
 	@Override
 	public Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info) {
+		// According to the interface spec, we have to ignore value and value type.
+		final PivotInfo cacheInfo = new PivotInfo(info.getSubform(), info.getKeyField(), null, null);
+		
 		final EntityMetaDataVO subform = getEntity(info.getSubform());
 		final String subformTable = EntityObjectMetaDbHelper.getViewName(subform);
 		final EntityFieldMetaDataVO keyField = getEntityField(info.getSubform(), info.getKeyField());
-		final EntityFieldMetaDataVO valueField = getEntityField(info.getSubform(), info.getValueField());
+		// final EntityFieldMetaDataVO valueField = getEntityField(info.getSubform(), info.getValueField());
 
-		Map<String, EntityFieldMetaDataVO> result = dataCache.getMapPivotMetaData().get(info);
+		Map<String, EntityFieldMetaDataVO> result = dataCache.getMapPivotMetaData().get(cacheInfo);
 		if (result == null) {
 			// get 'real' meta data
-			final EntityFieldMetaDataVO mdKeyField = getEntityField(info.getSubform(), info.getKeyField());
+			final EntityFieldMetaDataVO mdKeyField = getEntityField(cacheInfo.getSubform(), cacheInfo.getKeyField());
 			// The key column must contain a String.
 			if (!mdKeyField.getDataType().equals("java.lang.String")) {
 				result = Collections.emptyMap();
@@ -183,7 +187,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 				//
 				final EntityObjectVO vo = new EntityObjectVO();
 				vo.initFields(columns.size(), 1);
-				vo.setEntity(info.getSubform());
+				vo.setEntity(cacheInfo.getSubform());
 				// vo.setDependants(mpDependants);
 
 				result = new HashMap<String, EntityFieldMetaDataVO>(columns.size());
@@ -194,18 +198,19 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 					md.setDynamic(false);
 					md.setDbColumn(keyField.getDbColumn());
 					md.setField(pseudoFieldName);
-					md.setFallbacklabel(info.getSubform() + ":" + info.getKeyField() + ":" + c + ":" + info.getValueField());
+					md.setFallbacklabel(cacheInfo.getSubform() + ":" + cacheInfo.getKeyField() + ":" + c);
 					md.setNullable(Boolean.TRUE);
-					md.setDataType(valueField.getDataType());
-					md.setPivotInfo(info);
+					// md.setDataType(valueField.getDataType());
+					md.setPivotInfo(cacheInfo);
 					md.setEntityId(subform.getId());
 					// ???
-					md.setReadonly(valueField.isReadonly() != null ? valueField.isReadonly() : Boolean.FALSE);
+					// md.setReadonly(valueField.isReadonly() != null ? valueField.isReadonly() : Boolean.FALSE);
+					md.setReadonly(Boolean.FALSE);
 
 					result.put(pseudoFieldName, md);
 				}
 			}
-			dataCache.getMapPivotMetaData().put(info, result);
+			dataCache.getMapPivotMetaData().put(cacheInfo, result);
 		}
 		return result;
 	}

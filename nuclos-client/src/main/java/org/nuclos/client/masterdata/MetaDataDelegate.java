@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.nuclos.common.CommonMetaDataProvider;
+import org.nuclos.common.CommonMetaDataServerProvider;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
@@ -42,11 +42,12 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * An singleton for remotely accessing the meta data information
  * from the client side.
  * <p>
- * This class will directly call to the server. You normally
+ * This class will directly call to the server (and hence implements
+ * {@link CommonMetaDataServerProvider}. You normally
  * want to use {@link org.nuclos.client.common.MetaDataClientProvider}.
  * </p>
  */
-public class MetaDataDelegate implements CommonMetaDataProvider {
+public class MetaDataDelegate implements CommonMetaDataServerProvider {
 
 	private static MetaDataDelegate singleton;
 

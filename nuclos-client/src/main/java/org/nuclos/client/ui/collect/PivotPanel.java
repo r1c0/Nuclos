@@ -32,6 +32,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
@@ -64,14 +66,19 @@ import org.nuclos.common2.CommonLocaleDelegate;
 public class PivotPanel extends SelectFixedColumnsPanel {
 
 	private static final Logger LOG = Logger.getLogger(PivotPanel.class);
+	
+	private static final String SUBFORM_KEY = "SUBFORM_KEY";
 
 	private static class Header extends JPanel {
 
 		private class Enabler implements ItemListener {
+			
+			private final String subform;
 
 			private final int index;
 
-			public Enabler(int index) {
+			public Enabler(String subform, int index) {
+				this.subform = subform;
 				this.index = index;
 			}
 
@@ -88,7 +95,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				value.setEnabled(selected);
 				final EntityFieldMetaDataVO keyItem = keyMds.get(index);
 				final EntityFieldMetaDataVO valueItem = (EntityFieldMetaDataVO) value.getSelectedItem();
-				setState(selected, index, keyItem, valueItem);
+				setState(selected, subform, keyItem, valueItem);
 				fireItemEvent(value, keyItem);
 			}
 
@@ -96,9 +103,12 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 
 		private class Changer implements ItemListener {
 
+			private final String subform;
+			
 			private final int index;
 
-			public Changer(int index) {
+			public Changer(String subform, int index) {
+				this.subform = subform;
 				this.index = index;
 			}
 
@@ -111,7 +121,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 					final JComboBox value = valueCombos.get(index);
 					final EntityFieldMetaDataVO keyItem = keyMds.get(index);
 					final EntityFieldMetaDataVO valueItem = (EntityFieldMetaDataVO) value.getSelectedItem();
-					setState(true, index, keyItem, valueItem);
+					setState(true, subform, keyItem, valueItem);
 					fireItemEvent(value, keyItem);
 				}
 			}
@@ -139,16 +149,22 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				addLine(Header.this, baseEntity, pinfo, viewIndex, fields, false, true);
 				final int modelIndex = subformAddOrDelete.size() - 1;
 				pivotLines.map(modelIndex, viewIndex);
+				
+				subformNames.put(subform, Integer.valueOf(subformNames.get(subform).intValue() + 1));
+				
 				updateLayout();
 			}	
 			
 		}
 		
 		private class Deleter implements ActionListener {
+			
+			private final String subform;
 						
 			private final int index;
 			
-			public Deleter(int index) {
+			public Deleter(String subform, int index) {
+				this.subform = subform;
 				this.index = index;
 			}
 
@@ -171,6 +187,8 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				remove(valueCombos.get(index));
 				valueCombos.set(index, null);
 				CollectionUtils.trimTail(valueCombos);
+								
+				subformNames.put(subform, Integer.valueOf(subformNames.get(subform).intValue() - 1));
 				
 				updateLayout();
 			}	
@@ -200,7 +218,8 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 
 		private final LinkedHashMap<String, List<PivotInfo>> state;
 
-		private final List<String> subformNames = new ArrayList<String>();
+		// subform -> (number of gui lines) mapping 
+		private final SortedMap<String,Integer> subformNames = new TreeMap<String,Integer>();
 
 		private final List<ItemListener> listener = new LinkedList<ItemListener>();
 
@@ -262,7 +281,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 					first = false;
 				}
 				
-				subformNames.add(subform);
+				subformNames.put(subform, Integer.valueOf(1));
 				++index;
 			}
 		}
@@ -271,7 +290,8 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				Map<String, EntityFieldMetaDataVO> fields, boolean first, boolean enabled) {
 			final MetaDataClientProvider mdProv = MetaDataClientProvider.getInstance();
 			final Collator collator = Collator.getInstance(CommonLocaleDelegate.getLocale());
-			final EntityMetaDataVO mdSubform = mdProv.getEntity(pinfo.getSubform());
+			final String subform = pinfo.getSubform();
+			final EntityMetaDataVO mdSubform = mdProv.getEntity(subform);
 			final int index = me.keyLabels.size();
 			
 			final GridBagConstraints c = new GridBagConstraints();
@@ -285,7 +305,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 
 			final JCheckBox cb = new JCheckBox(CommonLocaleDelegate.getLabelFromMetaDataVO(mdSubform));
 			cb.setSelected(enabled);
-			cb.addItemListener(me.new Enabler(index));
+			cb.addItemListener(me.new Enabler(subform, index));
 			me.subformCbs.add(cb);
 			c.gridy = viewIndex + 2;
 			c.gridx = 0;
@@ -293,8 +313,8 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			cb.setVisible(true);
 			cb.setEnabled(first);
 			
-			final Changer changer = me.new Changer(index);
-			final EntityFieldMetaDataVO keyField = mdProv.getPivotKeyField(baseEntity, pinfo.getSubform());
+			final Changer changer = me.new Changer(pinfo.getSubform(), index);
+			final EntityFieldMetaDataVO keyField = mdProv.getPivotKeyField(baseEntity, subform);
 			final JLabel l = new JLabel(CommonLocaleDelegate.getLabelFromMetaFieldDataVO(keyField));
 			l.setEnabled(enabled);
 			me.keyLabels.add(l);
@@ -305,11 +325,11 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			final JButton add;
 			if (first) {
 				add = new JButton("+");
-				add.addActionListener(me.new Adder(pinfo.getSubform(), index, fields));
+				add.addActionListener(me.new Adder(subform, index, fields));
 			}
 			else {
 				add = new JButton("-");
-				add.addActionListener(me.new Deleter(index));
+				add.addActionListener(me.new Deleter(subform, index));
 			}
 			add.setEnabled(enabled);
 			me.subformAddOrDelete.add(add);
@@ -318,7 +338,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			me.add(add, c);
 			c.fill = GridBagConstraints.BOTH;
 
-			final JComboBox combo = mkCombo(baseEntity, keyField.getField(), collator, fields);
+			final JComboBox combo = mkCombo(baseEntity, subform, keyField.getField(), collator, fields);
 			combo.setEnabled(enabled);
 			if (pinfo != null) {
 				combo.setSelectedItem(fields.get(pinfo.getValueField()));
@@ -326,10 +346,10 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			combo.addItemListener(changer);
 			me.valueCombos.add(combo);
 			c.gridx = 3;
-			me.add(combo, c);			
+			me.add(combo, c);
 		}
 
-		private static JComboBox mkCombo(final String baseEntity, String keyField, final Collator col, Map<String, EntityFieldMetaDataVO> fields) {
+		private static JComboBox mkCombo(final String baseEntity, String subform, String keyField, final Collator col, Map<String, EntityFieldMetaDataVO> fields) {
 			/*
 			final TreeSet<EntityFieldMetaDataVO> sorted = new TreeSet<EntityFieldMetaDataVO>(
 					new Comparator<EntityFieldMetaDataVO>() {
@@ -364,6 +384,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			result.setRenderer(EntityFieldMetaDataListCellRenderer.getInstance());
 			result.setVisible(true);
 			result.setSelectedIndex(0);
+			result.putClientProperty(SUBFORM_KEY, subform);
 			return result;
 		}
 		
@@ -417,9 +438,8 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			invalidate();
 		}
 
-		private void setState(boolean selected, int index, EntityFieldMetaDataVO keyItem, EntityFieldMetaDataVO valueItem) {
+		private void setState(boolean selected, String subform, EntityFieldMetaDataVO keyItem, EntityFieldMetaDataVO valueItem) {
 			// set state
-			final String subform = subformNames.get(index);
 			if (selected) {
 				final Class<?> type;
 				try {
@@ -476,7 +496,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 	}
 
 	public String getSubformName(int index) {
-		return getHeader().subformNames.get(index);
+		return (String) getHeader().valueCombos.get(index).getClientProperty(SUBFORM_KEY);
 	}
 
 	public int indexFromValueComponent(ItemSelectable key) {

@@ -2,6 +2,7 @@ package org.nuclos.client.common;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -57,7 +58,7 @@ public class CollectableEntityFieldPreferencesUtil {
 	}
 	
 	public static CollectableEntityField fromPref(CollectableEntityFieldPref p) throws PreferencesException {
-		final MetaDataProvider mdProv = MetaDataClientProvider.getInstance();
+		final MetaDataClientProvider mdProv = MetaDataClientProvider.getInstance();
 		final CollectableEntityField result;
 		if (CollectableEOEntityField.class.getName().equals(p.getType())) {
 			final EntityFieldMetaDataVO efMeta;
@@ -65,7 +66,20 @@ public class CollectableEntityFieldPreferencesUtil {
 				efMeta = mdProv.getEntityField(p.getEntity(), p.getField());
 			}
 			else {
-				efMeta = mdProv.getAllPivotEntityFields(p.getPivot()).get(p.getField());
+				final Collection<EntityFieldMetaDataVO> fields = mdProv.getAllPivotEntityFields(p.getPivot(), Collections.singletonList(p.getPivot().getValueField()));
+				EntityFieldMetaDataVO rightField = null;
+				for (EntityFieldMetaDataVO f: fields) {
+					if (f.getField().equals(p.getField()) && f.getPivotInfo().equals(p.getPivot())) {
+						rightField = f;
+						break;
+					}
+				}
+				if (rightField == null) {
+					throw new PreferencesException("No pivot field found for " + p);
+				}
+				else {
+					efMeta = rightField;
+				}
 			}
 			result = new CollectableEOEntityField(efMeta, p.getEntity());
 		}

@@ -17,6 +17,7 @@
 package org.nuclos.common;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
@@ -37,8 +38,6 @@ public interface MetaDataProvider extends CommonMetaDataProvider {
 	EntityMetaDataVO getEntity(NuclosEntity entity);
 
 	Map<String, EntityFieldMetaDataVO> getAllEntityFieldsByEntity(String entity);
-
-    Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info);
 
     EntityFieldMetaDataVO getEntityField(String entity, String field);
 

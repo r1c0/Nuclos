@@ -23,7 +23,7 @@ import java.util.Map;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Remote;
 
-import org.nuclos.common.CommonMetaDataProvider;
+import org.nuclos.common.CommonMetaDataServerProvider;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
@@ -43,9 +43,13 @@ import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 /**
  * Remote facade for accessing meta data information from the
  * client side.
+ * <p>
+ * This implements {@link CommonMetaDataServerProvider}. You should implement
+ * {@link org.nuclos.common.CommonMetaDataClientProvider} on the client side.
+ * </p>
  */
 @Remote
-public interface MetaDataFacadeRemote extends CommonMetaDataProvider {
+public interface MetaDataFacadeRemote extends CommonMetaDataServerProvider {
 
 	@RolesAllowed("Login")
 	Object modifyEntityMetaData(EntityMetaDataVO metaVO, List<EntityFieldMetaDataTO> lstFields);

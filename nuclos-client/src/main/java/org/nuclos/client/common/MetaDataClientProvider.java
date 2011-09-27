@@ -16,9 +16,12 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.common;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,6 +33,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.common.AbstractProvider;
+import org.nuclos.common.CommonMetaDataClientProvider;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
@@ -53,7 +57,7 @@ import org.springframework.beans.factory.InitializingBean;
  * {@link org.nuclos.client.masterdata.MetaDataDelegate}.
  * </p>
  */
-public class MetaDataClientProvider extends AbstractProvider implements MetaDataProvider, InitializingBean {
+public class MetaDataClientProvider extends AbstractProvider implements MetaDataProvider, CommonMetaDataClientProvider, InitializingBean {
 
 	private static final Logger LOG = Logger.getLogger(MetaDataClientProvider.class);
 
@@ -141,20 +145,56 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 	}
 
 	@Override
-    public Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info) {
-    	Map<String, EntityFieldMetaDataVO> result = dataCache.getMapPivotMetaData().get(info);
-    	if (result == null) {
+    public Collection<EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info, List<String> valueColumns) {
+		if (valueColumns == null || valueColumns.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
+		
+		// According to the interface spec, we have to ignore value and value type.
+		info = new PivotInfo(info.getSubform(), info.getKeyField(), null, null);
+		
+		// We only cache server side data.
+    	Map<String, EntityFieldMetaDataVO> serverResult = dataCache.getMapPivotMetaData().get(info);
+    	if (serverResult == null) {
     		// load data lazy
-    		result = MetaDataDelegate.getInstance().getAllPivotEntityFields(info);
+    		serverResult = MetaDataDelegate.getInstance().getAllPivotEntityFields(info);
     		// localize name for client
 			final EntityFieldMetaDataVO keyField = getEntityField(info.getSubform(), info.getKeyField());
-    		for (EntityFieldMetaDataVO ef: result.values()) {
+    		for (EntityFieldMetaDataVO ef: serverResult.values()) {
     			ef.setFallbacklabel("<html>" +
 						"<font color=\"green\">" + CommonLocaleDelegate.getLabelFromMetaFieldDataVO(keyField) + ":" + "</font>" +
-						"<font color=\"black\">" + ef.getField() + "</font>" +
+						"<font color=\"black\">" + ef.getField() + ":" + ef.getPivotInfo().getValueField() + "</font>" +
 						"</html>");
     		}
-    		dataCache.getMapPivotMetaData().put(info, result);
+    		dataCache.getMapPivotMetaData().put(info, serverResult);
+    	}
+    	
+    	// Convert the server side answer to the client view, i.e. respect valueColumns.
+    	final Collection<EntityFieldMetaDataVO> result = new ArrayList<EntityFieldMetaDataVO>();
+    	try {
+	    	for (String v: valueColumns) {
+				final EntityFieldMetaDataVO valueField = getEntityField(info.getSubform(), v);
+				final PivotInfo pinfo = new PivotInfo(info.getSubform(), info.getKeyField(), v, Class.forName(valueField.getDataType()));
+	    		for (EntityFieldMetaDataVO raw: serverResult.values()) {
+	    			final EntityFieldMetaDataVO keyField = getEntityField(info.getSubform(), info.getKeyField());
+	    			
+	    			final EntityFieldMetaDataVO field = (EntityFieldMetaDataVO) raw.clone();
+	    			field.setPivotInfo(pinfo);
+	    			field.setDataType(valueField.getDataType());
+					// ???
+					field.setReadonly(valueField.isReadonly() != null ? valueField.isReadonly() : Boolean.FALSE);
+	    	   		// localize name for client
+	    			field.setFallbacklabel("<html>" +
+							"<font color=\"green\">" + CommonLocaleDelegate.getLabelFromMetaFieldDataVO(keyField) + ":" + "</font>" +
+							"<font color=\"black\">" + field.getField() + ":" + v + "</font>" +
+							"</html>");
+	    			
+	    			result.add(field);
+	    		}
+	    	}
+    	}
+    	catch (ClassNotFoundException e) {
+    		throw new IllegalStateException(e.toString());
     	}
     	return result;
 	}

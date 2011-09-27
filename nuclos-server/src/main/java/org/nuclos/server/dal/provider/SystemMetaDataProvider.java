@@ -89,15 +89,6 @@ public class SystemMetaDataProvider implements MetaDataProvider {
 		return Collections.<String, EntityFieldMetaDataVO>unmodifiableMap(getEntity(entity).getEntityFields());
 	}
 
-	@Override
-	public Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info) {
-		final Map<String, EntityFieldMetaDataVO> fields = getAllEntityFieldsByEntity(info.getSubform());
-		final EntityFieldMetaDataVO key = fields.get(info.getKeyField());
-		final EntityFieldMetaDataVO value = fields.get(info.getValueField());
-
-		throw new NotImplementedException();
-	}
-
 	public EntityFieldMetaDataVO getRefField(String baseEntity, String subform) {
 		// TODO: caching
 		final Map<String, EntityFieldMetaDataVO>  fields = getAllEntityFieldsByEntity(baseEntity);

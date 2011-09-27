@@ -21,7 +21,7 @@ import java.util.Collection;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Local;
 
-import org.nuclos.common.CommonMetaDataProvider;
+import org.nuclos.common.CommonMetaDataServerProvider;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -35,7 +35,7 @@ import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
  * server side.
  */
 @Local
-public interface MetaDataFacadeLocal extends CommonMetaDataProvider {
+public interface MetaDataFacadeLocal extends CommonMetaDataServerProvider {
 
 	/**
 	 * method to delete an existing master data record

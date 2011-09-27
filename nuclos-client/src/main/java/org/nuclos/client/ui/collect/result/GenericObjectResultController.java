@@ -18,6 +18,7 @@ package org.nuclos.client.ui.collect.result;
 
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -161,7 +162,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 		
 		for (String sSubEntityName : stSubEntityNames) {
 			if (pivots.containsKey(sSubEntityName)) {
-				getFieldsAvaibleInPivotSubform(result, stSubEntityLabels, sSubEntityName);
+				getFieldsAvaibleInPivotSubform(result, sSubEntityName);
 			}
 			else {
 				getFieldsAvaibleInSubform(result, stSubEntityLabels, sSubEntityName);
@@ -182,14 +183,15 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 		}
 	}
 
-	private void getFieldsAvaibleInPivotSubform(SortedSet<CollectableEntityField> result, Set<String> stSubEntityLabels, String sSubEntityName) {
-		// remove the subform entries
-		// TODO: make sth sensible here!
-		// final PivotInfo info = new PivotInfo("WarenArt", "shortName", "quantityUnit");
-		final PivotInfo info = getPivotInfo(sSubEntityName).iterator().next();
-		final Map<String, EntityFieldMetaDataVO> fields = MetaDataClientProvider.getInstance().getAllPivotEntityFields(info);
-		for (String fn: fields.keySet()) {
-			final EntityFieldMetaDataVO md = fields.get(fn);
+	private void getFieldsAvaibleInPivotSubform(SortedSet<CollectableEntityField> result, String sSubEntityName) {
+		final List<PivotInfo> plist = getPivotInfo(sSubEntityName);
+		final List<String> valueColumns = new ArrayList<String>(plist.size());
+		for (PivotInfo p: plist) {
+			valueColumns.add(p.getValueField());
+		}
+		
+		final Collection<EntityFieldMetaDataVO> fields = MetaDataClientProvider.getInstance().getAllPivotEntityFields(plist.get(0), valueColumns);
+		for (EntityFieldMetaDataVO md: fields) {
 			result.add(new CollectableEOEntityField(md, sSubEntityName));
 		}
 	}
