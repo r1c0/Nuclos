@@ -17,7 +17,9 @@
 package org.nuclos.server.dal.processor.jdbc.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.MetaDataProvider;
@@ -28,23 +30,23 @@ import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
-import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparisonWithOtherField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparisonWithParameter;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIsNullCondition;
-import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableLikeCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSelfSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
+import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.PlainSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
+import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
 import org.nuclos.common.collect.collectable.searchcondition.visit.CompositeVisitor;
 import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common.collection.CollectionUtils;
@@ -52,7 +54,6 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.dblayer.JoinType;
-import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.RelativeDate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.MetaDataServerProvider;
@@ -72,6 +73,8 @@ import org.nuclos.server.dblayer.query.DbQueryBuilder;
 public class EOSearchExpressionUnparser {
 
 	private static final Logger LOG = Logger.getLogger(EOSearchExpressionUnparser.class);
+	
+	private final Set<String> pivotTableAliases = new HashSet<String>();
 
 	private final DbQueryBuilder queryBuilder;
 	private final DbQuery<?> query;
@@ -203,6 +206,14 @@ public class EOSearchExpressionUnparser {
 			final EntityFieldMetaDataVO field = joincond.getField();
 			final PivotInfo pinfo = field.getPivotInfo();
 
+			// The join table alias must be unique in the SQL
+			final String joinAlias = pinfo.getPivotTableAlias(field.getField());
+			if (pivotTableAliases.contains(joinAlias)) {
+				// the join condition has already been added to the SQL clause
+				return queryBuilder.alwaysTrue();
+			}
+			pivotTableAliases.add(joinAlias);
+
 			final EntityFieldMetaDataVO ref = mdProv.getRefField(entity.getEntity(), subEntity);
 			String foreignEntityField = ref.getForeignEntityField();
 			// TODO: ???
@@ -212,9 +223,6 @@ public class EOSearchExpressionUnparser {
 
 			final String joinTable = EntityObjectMetaDbHelper.getViewName(mdSubEntity);
 			final String keyColumn = mdProv.getEntityField(subEntity, pinfo.getKeyField()).getDbColumn();
-
-			// The join table alias must be unique in the SQL
-			final String joinAlias = pinfo.getPivotTableAlias(field.getField());
 
 			final DbJoin join = table.join(joinTable, JoinType.LEFT).alias(joinAlias).onAnd("INTID", DalUtils.getDbIdFieldName(ref.getDbColumn()), Long.class,
 					queryBuilder.equal(table.column(joinAlias, keyColumn, String.class), queryBuilder.literal(field.getField())));

@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.StringUtils;
 
 /**
@@ -32,7 +33,7 @@ import org.nuclos.common2.StringUtils;
  */
 public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 	
-	private static final AtomicInteger ai = new AtomicInteger(0);
+	private static final AtomicInteger AI = new AtomicInteger(0);
 	
 	private final String subform;
 	
@@ -43,9 +44,19 @@ public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 	private final Class<?> valueType;
 	
 	/**
-	 * keyValue -> tableAlias mapping.
+	 * The table alias for each pivot (subform, key) pair must be unique (and repeatable).
+	 * Hence we store this class-wise.
+	 * <p>
+	 * (Pair (subform, key) -> tableAlias) mapping.
+	 * </p><p>
+	 * TODO:
+	 * Is the HashMap really enough or is ConcurrentHashMap just enough?
+	 * </p><p>
+	 * TODO:
+	 * Is PivotInfo the right place to store this information?
+	 * </p>
 	 */
-	private Map<String,String> tableAliases = new HashMap<String, String>();
+	private static final Map<Pair<String,String>,String> TABLE_ALIASES = new HashMap<Pair<String,String>, String>();
 	
 	public PivotInfo(String subform, String keyField, String valueField, Class<?> valueType) {
 		if (subform == null) throw new NullPointerException();
@@ -73,11 +84,12 @@ public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 	
 	public String getPivotTableAlias(String keyValue) {
 		if (keyValue == null) throw new IllegalArgumentException();
-		String result = tableAliases.get(keyValue);
+		final Pair<String,String> pair = new Pair<String,String>(subform, keyValue);
+		String result = TABLE_ALIASES.get(pair);
 		if (result == null) {
 			// allow string with only numbers in, and trailing '_' in oracle db
-			result = StringUtils.makeSQLIdentifierFrom("a_", getSubform(), keyValue, Integer.toString(ai.incrementAndGet()));
-			tableAliases.put(keyValue, result);
+			result = StringUtils.makeSQLIdentifierFrom("a_", getSubform(), keyValue, Integer.toString(AI.incrementAndGet()));
+			TABLE_ALIASES.put(pair, result);
 		}
 		return result;
 	}

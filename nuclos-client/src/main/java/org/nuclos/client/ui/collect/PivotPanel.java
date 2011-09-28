@@ -146,11 +146,11 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			public void actionPerformed(ActionEvent e) {
 				final int viewIndex = pivotLines.getViewIndex(index) + 1;
 				final PivotInfo pinfo = state.get(subform).iterator().next();
-				addLine(Header.this, baseEntity, pinfo, viewIndex, fields, false, true);
-				final int modelIndex = subformAddOrDelete.size() - 1;
+				final int modelIndex = keyLabels.size();
+				addLine(Header.this, baseEntity, pinfo, modelIndex, viewIndex, fields, false, true);
 				pivotLines.map(modelIndex, viewIndex);
 				
-				subformNames.put(subform, Integer.valueOf(subformNames.get(subform).intValue() + 1));
+				incSubformNames(subform);
 				
 				updateLayout();
 			}	
@@ -188,7 +188,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				valueCombos.set(index, null);
 				CollectionUtils.trimTail(valueCombos);
 								
-				subformNames.put(subform, Integer.valueOf(subformNames.get(subform).intValue() - 1));
+				decSubformNames(subform);
 				
 				updateLayout();
 			}	
@@ -226,7 +226,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 		private Header(String baseEntity, Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields, Map<String,List<PivotInfo>> state) throws ClassNotFoundException {
 			super(new GridBagLayout());
 			this.baseEntity = baseEntity;
-			this.pivotLines = new ViewIndex(subFormFields.size());
+			this.pivotLines = new ViewIndex();
 			
 			// copy state: see below
 			this.state = new LinkedHashMap<String, List<PivotInfo>>();
@@ -273,26 +273,29 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 					// not pivot from this subform is in state
 					final EntityFieldMetaDataVO field = fields.values().iterator().next();
 					final PivotInfo pinfo = new PivotInfo(subform, null, field.getField(), Class.forName(field.getDataType()));
-					addLine(this, baseEntity, pinfo, index, fields, true, false);
+					addLine(this, baseEntity, pinfo, index, index, fields, true, false);
+					pivotLines.map(index, index);
+					incSubformNames(subform);
+					++index;
 				}
 				boolean first = true;
 				for (PivotInfo pinfo: plist) {
-					addLine(this, baseEntity, pinfo, index, fields, first, true);
+					addLine(this, baseEntity, pinfo, index, index, fields, first, true);
+					pivotLines.map(index, index);
+					incSubformNames(subform);
+					++index;
 					first = false;
-				}
-				
-				subformNames.put(subform, Integer.valueOf(1));
-				++index;
+				}				
 			}
 		}
 		
-		private static void addLine(Header me, String baseEntity, PivotInfo pinfo, int viewIndex, 
+		private static void addLine(Header me, String baseEntity, PivotInfo pinfo, int index, int viewIndex, 
 				Map<String, EntityFieldMetaDataVO> fields, boolean first, boolean enabled) {
 			final MetaDataClientProvider mdProv = MetaDataClientProvider.getInstance();
 			final Collator collator = Collator.getInstance(CommonLocaleDelegate.getLocale());
 			final String subform = pinfo.getSubform();
 			final EntityMetaDataVO mdSubform = mdProv.getEntity(subform);
-			final int index = me.keyLabels.size();
+			// final int index = me.keyLabels.size();
 			
 			final GridBagConstraints c = new GridBagConstraints();
 			c.gridx = 0;
@@ -469,6 +472,18 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			for (ItemListener i: l) {
 				i.itemStateChanged(event);
 			}
+		}
+		
+		private void incSubformNames(String subform) {
+			Integer old = subformNames.get(subform);
+			if (old == null) {
+				old = Integer.valueOf(0);
+			}
+			subformNames.put(subform, Integer.valueOf(old.intValue() + 1));
+		}
+
+		private void decSubformNames(String subform) {
+			subformNames.put(subform, Integer.valueOf(subformNames.get(subform).intValue() - 1));
 		}
 
 	}
