@@ -32,7 +32,7 @@ import org.nuclos.common2.StringUtils;
  */
 public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 	
-	private static AtomicInteger ai = new AtomicInteger(0);
+	private static final AtomicInteger ai = new AtomicInteger(0);
 	
 	private final String subform;
 	
