@@ -517,8 +517,8 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<DbTuple> queryOwner = builder.createTupleQuery();
 				DbFrom userOwner = queryOwner.from("T_UD_GENERICOBJECT").alias(SystemFields.BASE_ALIAS);
-				queryOwner.multiselect(userOwner.baseColumn("INTID_T_MD_MODULE", Integer.class).columnAlias("id"));
-				queryOwner.where(builder.equal(userOwner.baseColumn("INTID", Integer.class).columnAlias("moduleId"), iObjectId));
+				queryOwner.multiselect(userOwner.baseColumn("INTID_T_MD_MODULE", Integer.class).alias("id"));
+				queryOwner.where(builder.equal(userOwner.baseColumn("INTID", Integer.class).alias("moduleId"), iObjectId));
 				List<DbTuple> resultsList = DataBaseHelper.getDbAccess().executeQuery(queryOwner.maxResults(2));
 				if (resultsList.size() == 1) {
 					Integer iModuleId = (Integer) resultsList.get(0).get("id");

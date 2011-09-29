@@ -27,7 +27,7 @@ import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 public class DbExpression<T> extends DbSelection<T> implements Serializable {
 
 	private PreparedStringBuilder sqlString;
-	
+
 	/**
 	 * @deprecated This should be package-private.
 	 */
@@ -35,16 +35,19 @@ public class DbExpression<T> extends DbSelection<T> implements Serializable {
 		super(builder, javaType);
 		this.sqlString = sqlString.freeze();
 	}
-	
+
 	DbExpression(DbQueryBuilder builder, Class<? extends T> javaType, String tableAlias, PreparedStringBuilder sqlString) {
 		super(builder, javaType, tableAlias);
 		this.sqlString = sqlString.freeze();
 	}
-	
+
 	@Override
 	public String getSqlColumnExpr() {
-		// TODO: ???
-		return sqlString.toString();
+		if (getAlias() == null)
+			return getSqlString().toString();
+		final StringBuilder result = new StringBuilder(getSqlString().toString());
+		result.append(" ").append(getAlias());
+		return result.toString();
 	}
 
 	/**
@@ -53,32 +56,32 @@ public class DbExpression<T> extends DbSelection<T> implements Serializable {
 	public <X> DbExpression<X> as(Class<X> javaType) {
 		return new DbExpression<X>(getBuilder(), javaType, sqlString);
 	}
-	
+
 	public final DbCondition isNull() {
 		return getBuilder().isNull(this);
 	}
-	
+
 	public final DbCondition isNotNull() {
 		return getBuilder().isNotNull(this);
 	}
-	
+
 	public final DbCondition in(Collection<T> values) {
 		return getBuilder().in(this, values);
 	}
-	
+
 	public final DbCondition in(DbQuery<T> subquery) {
 		return getBuilder().in(this, subquery);
 	}
-	
+
 	final PreparedStringBuilder getSqlString() {
 		return sqlString;
 	}
-	
+
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");
-		result.append("tableAlias=").append(getTableAlias());
+		result.append("alias=").append(getAlias());
 		result.append(", type=").append(getJavaType());
 		final PreparedStringBuilder psb = getSqlString();
 		if (psb != null) {

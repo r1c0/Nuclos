@@ -23,16 +23,16 @@ public abstract class DbSelection<T> {
 
 	private final Class<? extends T> javaType;
 
-	private String tableAlias;
+	private String alias;
 
 	DbSelection(DbQueryBuilder builder, Class<? extends T> javaType) {
 		this(builder, javaType, null);
 	}
 
-	DbSelection(DbQueryBuilder builder, Class<? extends T> javaType, String tableAlias) {
+	DbSelection(DbQueryBuilder builder, Class<? extends T> javaType, String alias) {
 		this.builder = builder;
 		this.javaType = javaType;
-		this.tableAlias = tableAlias;
+		this.alias = alias;
 	}
 
 	public String getSqlColumnExpr() {
@@ -43,7 +43,7 @@ public abstract class DbSelection<T> {
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");
-		result.append("tableAlias=").append(tableAlias);
+		result.append("alias=").append(alias);
 		result.append(", type=").append(javaType);
 		result.append("]");
 		return result.toString();
@@ -53,19 +53,13 @@ public abstract class DbSelection<T> {
 		return javaType;
 	}
 
-	public final String getTableAlias() {
-		return tableAlias;
+	public DbSelection<T> alias(String alias) {
+		this.alias = alias;
+		return this;
 	}
 
-	/**
-	 * @deprecated You probably don't want to reset the <em>table</em> alias. It should be
-	 * 		valid right from the creation of the DbSelection.
-	 */
-	public DbSelection<T> alias(String tableAlias) {
-		if (this.tableAlias != null)
-			throw new IllegalStateException("Tried to alter table alias from " + this.tableAlias + " to " + tableAlias + " at " + this);
-		this.tableAlias = tableAlias;
-		return this;
+	public String getAlias() {
+		return this.alias;
 	}
 
 	final DbQueryBuilder getBuilder() {

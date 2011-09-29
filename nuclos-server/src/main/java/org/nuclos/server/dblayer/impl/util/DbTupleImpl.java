@@ -27,17 +27,12 @@ import org.nuclos.server.dblayer.query.DbSelection;
 public class DbTupleImpl implements DbTuple, Serializable {
 
 	public static class DbTupleElementImpl<T> implements DbTuple.DbTupleElement<T> {
-		
+
 		private final String alias;
 		private final Class<? extends T> javaType;
 
 		public DbTupleElementImpl(DbSelection<T> expr) {
-			if (expr instanceof DbColumnExpression) {
-				this.alias = ((DbColumnExpression<T>) expr).getColumnAlias();
-			}
-			else {
-				this.alias = expr.getSqlColumnExpr();
-			}
+			this.alias = expr.getAlias();
 			this.javaType = expr.getJavaType();
 		}
 
@@ -50,7 +45,7 @@ public class DbTupleImpl implements DbTuple, Serializable {
 		public Class<? extends T> getJavaType() {
 			return javaType;
 		}
-		
+
 		@Override
 		public String toString() {
 			final StringBuilder result = new StringBuilder();
@@ -62,7 +57,7 @@ public class DbTupleImpl implements DbTuple, Serializable {
 		}
 
 	}
-	
+
 	private final DbTupleElementImpl<?>[] elements;
 	private final Object[] values;
 
@@ -70,12 +65,12 @@ public class DbTupleImpl implements DbTuple, Serializable {
 		this.elements = elements;
 		this.values = values;
 	}
-	
+
 	@Override
 	public Object get(int index) {
 		return values[index];
 	}
-	
+
 	@Override
 	public Object get(String alias) {
 		for (int i = 0, n = elements.length; i < n; i++) {
@@ -84,17 +79,17 @@ public class DbTupleImpl implements DbTuple, Serializable {
 		}
 		throw new IllegalArgumentException("Unknown alias " + alias);
 	}
-	
+
 	@Override
 	public <T> T get(int index, Class<T> type) {
 		return type.cast(get(index));
 	}
-	
+
 	@Override
 	public <T> T get(String alias, Class<T> type) {
 		return type.cast(get(alias));
 	}
-	
+
 	@Override
 	public <T> T get(DbTupleElement<T> element) {
 		for (int i = 0, n = elements.length; i < n; i++) {
@@ -103,7 +98,7 @@ public class DbTupleImpl implements DbTuple, Serializable {
 		}
 		throw new IllegalArgumentException("Invlaid element " + element);
 	}
-	
+
 	@Override
 	public List<DbTupleElement<?>> getElements() {
 		return Arrays.<DbTupleElement<?>>asList(elements);
@@ -113,7 +108,7 @@ public class DbTupleImpl implements DbTuple, Serializable {
 	public Object[] toArray() {
 		return values;
 	}
-	
+
 	@Override
 	public String toString() {
 		return Arrays.toString(values);

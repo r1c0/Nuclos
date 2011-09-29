@@ -34,20 +34,20 @@ import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder.Parameter;
 public abstract class DbQueryBuilder implements Serializable {
 
 	public static final String DATE_PATTERN_GERMAN = "dd.mm.yyyy";
-	
+
 	protected DbQueryBuilder() {
 	}
-	
+
 	//
 	// Query
 	//
-	
+
 	public <T> DbQuery<T> createQuery(Class<T> javaType) {
 		return new DbQuery<T>(this, javaType);
 	}
-	
+
 	public DbQuery<DbTuple> createTupleQuery() {
-		return createQuery(DbTuple.class); 
+		return createQuery(DbTuple.class);
 	}
 
 	/**
@@ -57,17 +57,17 @@ public abstract class DbQueryBuilder implements Serializable {
 	public DbQuery<DbTuple> createSimpleQuery(String tableName, String columnName1, Class<?> columnType1, Object...varargs) {
 		DbQuery<DbTuple> query = createTupleQuery();
 		DbFrom from = query.from(tableName).alias(SystemFields.BASE_ALIAS);
-		List<DbExpression<?>> columns = new ArrayList<DbExpression<?>>();
-		columns.add(from.baseColumn(columnName1, columnType1).columnAlias(columnName1));
+		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
+		columns.add(from.baseColumn(columnName1, columnType1).alias(columnName1));
 		for (int i = 0; i < varargs.length; i += 2) {
 			String columnName = (String) varargs[i];
 			Class<?> columnType = (Class<?>) varargs[i+1];
-			columns.add(from.baseColumn(columnName, columnType).columnAlias(columnName));
+			columns.add(from.baseColumn(columnName, columnType).alias(columnName));
 		}
 		query.multiselect(columns);
 		return query;
 	}
-	
+
 	//
 	// Expressions
 	//
@@ -76,31 +76,31 @@ public abstract class DbQueryBuilder implements Serializable {
 		Class<? extends T> javaType = (Class<? extends T>) value.getClass();
 		return buildExpressionSql(javaType, literalImpl(value));
 	}
-	
+
 	protected PreparedStringBuilder literalImpl(Object value) {
 		Parameter param = new PreparedStringBuilder.Parameter().bind(value);
 		return new PreparedStringBuilder().append(param);
 	}
-	
+
 	public <T> DbExpression<T> nullLiteral(Class<T> javaType) {
 		Parameter param = new PreparedStringBuilder.Parameter().bind(DbNull.forType(javaType));
 		return buildExpressionSql(javaType, param);
 	}
-	
+
 	public DbExpression<String> upper(DbExpression<String> x) {
 		return buildExpressionSql(String.class, "UPPER(", x, ")");
 	}
-	
+
 	public abstract DbExpression<java.util.Date> currentDate();
 
 	public DbExpression<String> convertDateToString(DbExpression<java.util.Date> x, String pattern) {
 		return buildExpressionSql(String.class, "TO_CHAR(", x, ", ", SQLUtils2.escape(pattern), ")");
 	}
-	
+
 	public DbExpression<java.util.Date> convertInternalTimestampToDate(DbExpression<InternalTimestamp> x) {
 		return buildExpressionSql(Date.class, "CAST(", x, " AS DATE)");
 	}
-	
+
 	@Deprecated
 	public <T> DbExpression<T> plainExpression(Class<T> javaType, String sql) {
 		return buildExpressionSql(javaType, sql);
@@ -109,19 +109,19 @@ public abstract class DbQueryBuilder implements Serializable {
 	//
 	// Count
 	//
-	
+
 	public DbExpression<Long> count(DbExpression<?> x) {
 		return buildExpressionSql(Long.class, "COUNT (", x, ")");
 	}
-	
+
 	public DbExpression<Long> countDistinct(DbExpression<?> x) {
 		return buildExpressionSql(Long.class, "COUNT (DISTINCT ", x, ")");
 	}
-	
+
 	public DbExpression<Long> countRows() {
 		return buildExpressionSql(Long.class, "COUNT (*)");
 	}
-	
+
 	//
 	// Aggregates
 	//
@@ -129,7 +129,7 @@ public abstract class DbQueryBuilder implements Serializable {
 	public <T> DbExpression<T> min(DbExpression<T> x) {
 		return buildExpressionSql(x.getJavaType(), "MIN (", x, ")");
 	}
-	
+
 	public <T> DbExpression<T> max(DbExpression<T> x) {
 		return buildExpressionSql(x.getJavaType(), "MAX (", x, ")");
 	}
@@ -149,8 +149,8 @@ public abstract class DbQueryBuilder implements Serializable {
 	public DbCondition equal(DbExpression<?> x, DbExpression<?> y) {
 		return buildConditionSql(x, " = ", y);
 	}
-	
-	public DbCondition equal(DbExpression<?> x, Object y) {
+
+	public DbCondition equal(DbSelection<?> x, Object y) {
 		if (y == null) {
 			// Note that "x = NULL" (which *is always false*) is the intended behavior here!!
 			return buildConditionSql(x, " = NULL");
@@ -158,7 +158,7 @@ public abstract class DbQueryBuilder implements Serializable {
 			return buildConditionSql(x, " = ", literalImpl(y));
 		}
 	}
-	
+
 	public DbCondition notEqual(DbExpression<?> x, DbExpression<?> y) {
 		return buildConditionSql(x, " <> ", y);
 	}
@@ -166,7 +166,7 @@ public abstract class DbQueryBuilder implements Serializable {
 	public DbCondition lessThan(DbExpression<?> x, DbExpression<?> y) {
 		return buildConditionSql(x, " < ", y);
 	}
-	
+
 	public DbCondition lessThanOrEqualTo(DbExpression<?> x, DbExpression<?> y) {
 		return buildConditionSql(x, " <= ", y);
 	}
@@ -182,11 +182,11 @@ public abstract class DbQueryBuilder implements Serializable {
 	public DbCondition isNull(DbExpression<?> expression) {
 		return buildConditionSql(expression, " IS NULL");
 	}
-	
+
 	public DbCondition isNotNull(DbExpression<?> expression) {
 		return buildConditionSql(expression, " IS NOT NULL");
 	}
-	
+
 	public DbCondition like(DbExpression<String> x, String pattern) {
 		return buildConditionSql(x, " LIKE '", SQLUtils2.escape(pattern), "'");
 	}
@@ -194,7 +194,7 @@ public abstract class DbQueryBuilder implements Serializable {
 	public DbCondition notLike(DbExpression<String> x, String pattern) {
 		return buildConditionSql(x, " NOT LIKE '", SQLUtils2.escape(pattern), "'");
 	}
-	
+
 	public DbCondition like(DbExpression<String> x, DbExpression<String> y) {
 		return buildConditionSql(x, " LIKE ", y);
 	}
@@ -202,11 +202,11 @@ public abstract class DbQueryBuilder implements Serializable {
 	public DbCondition notLike(DbExpression<String> x, DbExpression<String> y) {
 		return buildConditionSql(x, " NOT LIKE ", x);
 	}
-	
+
 	public <T, C extends Collection<T>> DbCondition isMember(DbExpression<T> e, DbExpression<T> coll) {
 		return buildConditionSql(e, " IN ", coll);
 	}
-	
+
 	protected <T> DbCondition in(DbExpression<T> expression, Collection<T> values) {
 		if (values.size() > getInLimit())
 			throw new IllegalArgumentException("limit for in-clause is " + getInLimit() + ", please split list");
@@ -219,17 +219,17 @@ public abstract class DbQueryBuilder implements Serializable {
 		}
 		if (index == 0)
 			ps.append("NULL");
-		return buildConditionSql(expression, " IN (", ps, ")"); 
+		return buildConditionSql(expression, " IN (", ps, ")");
 	}
-	
+
 	public <T> DbCondition in(DbExpression<T> expression, String sql) {
 		return buildConditionSql(expression, " IN (", sql, ")");
 	}
-	
+
 	protected <T> DbCondition in(DbExpression<T> expression, DbQuery<T> subquery) {
 		return buildConditionSql(expression, " IN (", buildPreparedString(subquery), ")");
 	}
-	
+
 	public DbCondition not(DbCondition condition) {
 		return buildConditionSql("NOT (", condition.getSqlString(), ")");
 	}
@@ -244,7 +244,7 @@ public abstract class DbQueryBuilder implements Serializable {
 		}
 		return new DbCondition(this, sqlString.append(")"));
 	}
-	
+
 	public DbCondition and2(DbCondition c, DbCondition...conditions) {
 		if (conditions.length == 0)
 			return c;
@@ -254,7 +254,7 @@ public abstract class DbQueryBuilder implements Serializable {
 		}
 		return new DbCondition(this, sqlString.append(")"));
 	}
-	
+
 	public DbCondition or(DbCondition...conditions) {
 		if (conditions.length == 0)
 			return alwaysFalse(); // This is the same behavior as JPA's Criteria API
@@ -265,7 +265,7 @@ public abstract class DbQueryBuilder implements Serializable {
 		}
 		return new DbCondition(this, sqlString.append(")"));
 	}
-	
+
 	public DbCondition or2(DbCondition c, DbCondition...conditions) {
 		if (conditions.length == 0)
 			return c;
@@ -275,7 +275,7 @@ public abstract class DbQueryBuilder implements Serializable {
 		}
 		return new DbCondition(this, sqlString.append(")"));
 	}
-	
+
 	public DbCondition alwaysTrue() {
 		return buildConditionSql("1=1");
 	}
@@ -283,33 +283,33 @@ public abstract class DbQueryBuilder implements Serializable {
 	public DbCondition alwaysFalse() {
 		return buildConditionSql("1<>1");
 	}
-	
+
 	public int getInLimit() {
 		// this limit is smaller than Oracle's
 		return 100;
 	}
-	
+
 	@Deprecated
 	public DbCondition plainCondition(String sql) {
 		return new DbCondition(this, PreparedStringBuilder.valueOf(sql));
 	}
-	
+
 	//
 	// Order
 	//
-	
+
 	public DbOrder asc(DbExpression<?> expression) {
 		return new DbOrder(expression, true);
 	}
-	
+
 	public DbOrder desc(DbExpression<?> expression) {
 		return new DbOrder(expression, false);
 	}
-	
+
 	//
 	//
 	//
-	
+
 	protected DbCondition buildConditionSql(Object...args) {
 		return new DbCondition(this, buildSql(args));
 	}
@@ -317,9 +317,9 @@ public abstract class DbQueryBuilder implements Serializable {
 	protected <T> DbExpression<T> buildExpressionSql(Class<? extends T> javaType, Object...args) {
 		return new DbExpression<T>(this, javaType, buildSql(args));
 	}
-	
+
 	protected abstract PreparedStringBuilder buildPreparedString(DbQuery<?> query);
-	
+
 	protected PreparedStringBuilder getPreparedString(DbCondition condition) {
 		return condition.getSqlString();
 	}
@@ -327,7 +327,7 @@ public abstract class DbQueryBuilder implements Serializable {
 	protected PreparedStringBuilder getPreparedString(DbExpression<?> expression) {
 		return expression.getSqlString();
 	}
-	
+
 	protected PreparedStringBuilder buildSql(Object...args) {
 		for (int i = 0; i < args.length; i++) {
 			if (args[i] instanceof DbCondition) {
@@ -338,5 +338,5 @@ public abstract class DbQueryBuilder implements Serializable {
 		}
 		return PreparedStringBuilder.concat(args);
 	}
-	
+
 }

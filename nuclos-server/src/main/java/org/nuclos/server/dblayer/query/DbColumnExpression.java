@@ -24,7 +24,7 @@ import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
  */
 public class DbColumnExpression<T> extends DbExpression<T> {
 
-	private String columnAlias;
+	private String tableAlias;
 
 	private final String columnName;
 
@@ -33,38 +33,25 @@ public class DbColumnExpression<T> extends DbExpression<T> {
 	}
 
 	DbColumnExpression(String tableAlias, DbFrom fromTable, String columnName, Class<T> javaType, boolean caseSensitive) {
-		super(fromTable.getQuery().getBuilder(), javaType, tableAlias, caseSensitive
+		super(fromTable.getQuery().getBuilder(), javaType, caseSensitive
 			? PreparedStringBuilder.concat(tableAlias, ".", "\"", columnName, "\"")
 			: PreparedStringBuilder.concat(tableAlias, ".", columnName));
 		if (fromTable.getAlias() == null) {
 			throw new IllegalArgumentException("Table alias in DbFrom must not be null on table " + fromTable.getTableName());
 		}
+		this.tableAlias = tableAlias;
 		this.columnName = columnName;
 	}
 
-	public final DbExpression<T> columnAlias(String columnAlias) {
-		if (this.columnAlias != null) throw new IllegalArgumentException(
-				"Tried to change column alias from " + this.columnAlias + " to " + columnAlias);
-		this.columnAlias = columnAlias;
+	public final DbExpression<T> tableAlias(String tableAlias) {
+		if (this.tableAlias != null) throw new IllegalArgumentException(
+				"Tried to alter table alias from " + this.tableAlias + " to " + tableAlias);
+		this.tableAlias = tableAlias;
 		return this;
 	}
 
-	@Override
-	public DbSelection<T> alias(String columnAlias) {
-		return columnAlias(columnAlias);
-	}
-
-	@Override
-	public String getSqlColumnExpr() {
-		if (columnAlias == null)
-			return getSqlString().toString();
-		final StringBuilder result = new StringBuilder(getSqlString().toString());
-		result.append(" ").append(columnAlias);
-		return result.toString();
-	}
-
-	public final String getColumnAlias() {
-		return columnAlias;
+	public final String getTableAlias() {
+		return tableAlias;
 	}
 
 	public final String getColumnName() {
@@ -76,7 +63,7 @@ public class DbColumnExpression<T> extends DbExpression<T> {
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");
 		result.append("tableAlias=").append(getTableAlias());
-		result.append(", columnAlias=").append(getColumnAlias());
+		result.append(", Alias=").append(getAlias());
 		result.append(", type=").append(getJavaType());
 		result.append(", column=").append(columnName);
 		final PreparedStringBuilder psb = getSqlString();
