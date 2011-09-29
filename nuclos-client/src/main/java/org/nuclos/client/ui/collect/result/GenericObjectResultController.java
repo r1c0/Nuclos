@@ -117,11 +117,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 			}
 		}
 		
-		try {
-			return new PivotController(parent, new PivotPanel(getEntity().getName(), subFormFields, pivots), this);
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException(e.toString());
-		}		
+		return new PivotController(parent, new PivotPanel(getEntity().getName(), subFormFields, pivots), this);
 		// Old (pre-pivot) columns controller.
 		// return super.newSelectColumnsController(parent);
 	}
