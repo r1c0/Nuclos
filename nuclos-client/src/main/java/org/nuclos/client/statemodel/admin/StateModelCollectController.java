@@ -119,6 +119,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 			smepp.getTransitionRulePanel().getBtnAdd().setEnabled(bWriteAllowed);
 			smepp.getTransitionRulePanel().getBtnDelete().setEnabled(bWriteAllowed);
 			smepp.getTransitionRulePanel().getBtnAutomatic().setEnabled(bWriteAllowed);
+			smepp.getTransitionRulePanel().getBtnDefault().setEnabled(bWriteAllowed);
 			// smepp.getStatePropertiesPanel().getStateDependantRightsPanel().getSubformRoles().setEnabled(bWriteAllowed);
 			// smepp.getStatePropertiesPanel().getStateDependantRightsPanel().getSubformAttributeGroups().setEnabled(bWriteAllowed);
 

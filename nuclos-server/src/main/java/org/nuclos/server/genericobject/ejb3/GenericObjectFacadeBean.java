@@ -430,6 +430,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		stRequiredAttributeIds.add(NuclosEOField.STATENUMBER.getMetaData().getId().intValue());
 		stRequiredAttributeIds.add(NuclosEOField.STATE.getMetaData().getId().intValue());
+		//stRequiredAttributeIds.add(NuclosEOField.STATEICON.getMetaData().getId().intValue());
 
 		ProxyList<GenericObjectWithDependantsVO> proxyList = this.getGenericObjectsWithDependants(iModuleId, clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, bIncludeParentObjects, bIncludeSubModules);
 

@@ -96,7 +96,8 @@ public class GenericObjectCollectableFieldsProvider extends ManagedCollectableFi
 				final String sFieldName = this.clctef.getReferencedEntityFieldName();	
 				// NUCLOSINT-4
 				if (NuclosEOField.STATE.getMetaData().getField().equals(this.clctef.getName()) || 
-					NuclosEOField.STATENUMBER.getMetaData().getField().equals(this.clctef.getName())) {
+					NuclosEOField.STATENUMBER.getMetaData().getField().equals(this.clctef.getName()) || 
+					NuclosEOField.STATEICON.getMetaData().getField().equals(this.clctef.getName())) {
 
 					boolean bShowName = NuclosEOField.STATE.getMetaData().getField().equals(this.clctef.getName());
 					Collection<StateVO> states = StateDelegate.getInstance().getStatesByModule(MetaDataClientProvider.getInstance().getEntity(this.clctef.getCollectableEntity().getName()).getId().intValue());

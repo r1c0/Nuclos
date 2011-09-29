@@ -720,6 +720,21 @@
     "text": "Automatischer Statuswechsel"
   },
   {
+    "resourceID": "nuclos.entityfield.statetransition.default.label",
+    "locale": "i-default",
+    "text": "Standard state transition"
+  },
+  {
+    "resourceID": "nuclos.entityfield.statetransition.default.label",
+    "locale": "en",
+    "text": "Standard state transition"
+  },
+  {
+    "resourceID": "nuclos.entityfield.statetransition.default.label",
+    "locale": "de",
+    "text": "Standard Statuswechsel"
+  },
+  {
     "resourceID": "nuclos.entityfield.roleattributegroup.state.label",
     "locale": "i-default",
     "text": "State"
@@ -6075,6 +6090,21 @@
     "text": "Statusnumeral"
   },
   {
+    "resourceID": "nuclos.entityfield.state.icon.label",
+    "locale": "i-default",
+    "text": "State"
+  },
+  {
+    "resourceID": "nuclos.entityfield.state.icon.label",
+    "locale": "en",
+    "text": "State"
+  },
+  {
+    "resourceID": "nuclos.entityfield.state.icon.label",
+    "locale": "de",
+    "text": "Status"
+  },
+  {
     "resourceID": "R00012359",
     "locale": "i-default",
     "text": "Interface reserve 1"
@@ -6992,17 +7022,17 @@
   {
     "resourceID": "nuclos.entityfield.state.name.label",
     "locale": "i-default",
-    "text": "State"
+    "text": "State name"
   },
   {
     "resourceID": "nuclos.entityfield.state.name.label",
     "locale": "en",
-    "text": "State"
+    "text": "State name"
   },
   {
     "resourceID": "nuclos.entityfield.state.name.label",
     "locale": "de",
-    "text": "Status"
+    "text": "Statusname"
   },
   {
     "resourceID": "nuclos.entityfield.attribute.systemAttribute.label",
@@ -13003,6 +13033,21 @@
     "resourceID": "nuclos.entityfield.statetransition.automatic.description",
     "locale": "de",
     "text": "Automatischer Statuswechsel"
+  },
+  {
+    "resourceID": "nuclos.entityfield.statetransition.default.description",
+    "locale": "i-default",
+    "text": "Standard state change"
+  },
+  {
+    "resourceID": "nuclos.entityfield.statetransition.default.description",
+    "locale": "en",
+    "text": "Standard state change"
+  },
+  {
+    "resourceID": "nuclos.entityfield.statetransition.default.description",
+    "locale": "de",
+    "text": "Standard Statuswechsel"
   },
   {
     "resourceID": "nuclos.entityfield.roleattributegroup.state.description",
@@ -21991,6 +22036,11 @@
   },
   {
     "resourceID": "GenericObjectCollectController.71a",
+    "locale": "i-default",
+    "text": "Create a {1} from the current {0}?"
+  },
+  {
+    "resourceID": "GenericObjectCollectController.71a",
     "locale": "en",
     "text": "Create a {1} from the current {0}?"
   },
@@ -29983,6 +30033,21 @@
     "resourceID": "TransitionRulesPanel.1",
     "locale": "de",
     "text": "Automatischer Statuswechsel"
+  },
+  {
+    "resourceID": "TransitionRulesPanel.6",
+    "locale": "i-default",
+    "text": "Standard state transition"
+  },
+  {
+    "resourceID": "TransitionRulesPanel.6",
+    "locale": "en",
+    "text": "Standard state transition"
+  },
+  {
+    "resourceID": "TransitionRulesPanel.6",
+    "locale": "de",
+    "text": "Standard Statuswechsel"
   },
   {
     "resourceID": "TransitionRulesPanel.5",
@@ -49961,42 +50026,62 @@
   {
     "resourceID": "nuclos.entityfield.eo.state.label",
     "locale": "en",
-    "text": "State"
+    "text": "State name"
   },
   {
     "resourceID": "nuclos.entityfield.eo.state.label",
     "locale": "de",
-    "text": "Status"
+    "text": "Statusname"
   },
   {
     "resourceID": "nuclos.entityfield.eo.state.description",
+    "locale": "en",
+    "text": "State name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.eo.state.description",
+    "locale": "de",
+    "text": "Statusname"
+  },
+  {
+    "resourceID": "nuclos.entityfield.eo.statenumeral.label",
+    "locale": "en",
+    "text": "State number"
+  },
+  {
+    "resourceID": "nuclos.entityfield.eo.statenumeral.label",
+    "locale": "de",
+    "text": "Statusnumeral"
+  },
+  {
+    "resourceID": "nuclos.entityfield.eo.statenumeral.description",
+    "locale": "en",
+    "text": "State number"
+  },
+  {
+    "resourceID": "nuclos.entityfield.eo.statenumeral.description",
+    "locale": "de",
+    "text": "Statusnumeral"
+  },
+  {
+    "resourceID": "nuclos.entityfield.eo.stateicon.label",
     "locale": "en",
     "text": "State"
   },
   {
-    "resourceID": "nuclos.entityfield.eo.state.description",
+    "resourceID": "nuclos.entityfield.eo.stateicon.label",
     "locale": "de",
     "text": "Status"
   },
   {
-    "resourceID": "nuclos.entityfield.eo.statenumeral.label",
+    "resourceID": "nuclos.entityfield.eo.stateicon.description",
     "locale": "en",
-    "text": "State number"
+    "text": "State"
   },
   {
-    "resourceID": "nuclos.entityfield.eo.statenumeral.label",
+    "resourceID": "nuclos.entityfield.eo.stateicon.description",
     "locale": "de",
-    "text": "Statusnumeral"
-  },
-  {
-    "resourceID": "nuclos.entityfield.eo.statenumeral.description",
-    "locale": "en",
-    "text": "State number"
-  },
-  {
-    "resourceID": "nuclos.entityfield.eo.statenumeral.description",
-    "locale": "de",
-    "text": "Statusnumeral"
+    "text": "Status"
   },
   {
     "resourceID": "nuclos.entityfield.eo.systemidentifier.label",

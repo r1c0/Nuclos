@@ -28,6 +28,7 @@ import org.apache.commons.lang.NullArgumentException;
 import org.nuclos.common.MarshalledValue;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.NuclosImage;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.DalSupportForMD;
@@ -261,6 +262,7 @@ public class MasterDataWrapper {
 			(Integer)mdVO.getField("state2Id"),
 			(String)mdVO.getField("description"),
 			(Boolean)mdVO.getField("automatic"),
+			mdVO.getField("default") == null ? false : (Boolean)mdVO.getField("default"),
 			mdVO.getCreatedAt(),
 			mdVO.getCreatedBy(),
 			mdVO.getChangedAt(),
@@ -295,6 +297,7 @@ public class MasterDataWrapper {
 		mpFields.put("state1Id", vo.getStateSource());
 		mpFields.put("state2Id", vo.getStateTarget());
 		mpFields.put("automatic", vo.isAutomatic());
+		mpFields.put("default", vo.isDefault());
 		mpFields.put("description", vo.getDescription());
 
 		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
@@ -437,6 +440,7 @@ public class MasterDataWrapper {
 			(Integer)mdVO.getField("numeral"),
 			(String)mdVO.getField("name"),
 			(String)mdVO.getField("description"),
+			(NuclosImage)mdVO.getField("icon"),
 			(Integer)mdVO.getField("modelId"));
 		vo.setTabbedPaneName((String)mdVO.getField("tab"));
 
@@ -448,6 +452,7 @@ public class MasterDataWrapper {
 		mpFields.put("numeral", vo.getNumeral());
 		mpFields.put("name", vo.getStatename());
 		mpFields.put("description", vo.getDescription());
+		mpFields.put("icon", vo.getIcon());
 		mpFields.put("modelId", vo.getModelId());
 		mpFields.put("tab", vo.getTabbedPaneName());
 

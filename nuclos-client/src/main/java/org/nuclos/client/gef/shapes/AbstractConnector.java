@@ -73,6 +73,7 @@ public abstract class AbstractConnector extends AbstractShape {
 	protected Point2D startPoint = new Point2D.Double();
 	protected Point2D endPoint = new Point2D.Double();
 	double dCPIndicatorSize = 6d;
+	protected Color paint = Color.BLACK;
 	protected Stroke stroke = new BasicStroke(1f);
 
 	/**
@@ -249,7 +250,7 @@ public abstract class AbstractConnector extends AbstractShape {
 			gfx.setPaint(Color.BLUE);
 		}
 		else {
-			gfx.setPaint(Color.BLACK);
+			gfx.setPaint(paint);
 		}
 		gfx.setStroke(stroke);
 		gfx.draw(shape);
@@ -398,8 +399,8 @@ public abstract class AbstractConnector extends AbstractShape {
 		removeConnections();
 	}
 
-	public Stroke getStroke() {
-		return stroke;
+	public void setPaint(Color paint) {
+		this.paint = paint;
 	}
 
 	public void setStroke(Stroke stroke) {

@@ -49,7 +49,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class MetaDataDelegate implements CommonMetaDataServerProvider {
 
-	private static MetaDataDelegate singleton;
+ 	private static MetaDataDelegate singleton;
 
 	public static final String ENTITYNAME_ENTITY = "entity";
 

@@ -43,6 +43,7 @@ public class StateTransitionVO extends NuclosValueObject {
 	private Integer iStateTarget;
 	private String sDescription;
 	private boolean bAutomatic;
+	private boolean bDefault;
 	private List<Pair<Integer, Boolean>> lstRuleIdsWithRunAfterwards = new ArrayList<Pair<Integer, Boolean>>();
 	private List<Integer> lstRoleIds = new ArrayList<Integer>();
 
@@ -59,7 +60,7 @@ public class StateTransitionVO extends NuclosValueObject {
 	 * @param sChanged last changer of underlying database record
 	 */
 	public StateTransitionVO(Integer iId, Integer iStateSource, Integer iStateTarget, String sDescription,
-			boolean bAutomatic, Date dCreated, String sCreated, Date dChanged, String sChanged,
+			boolean bAutomatic, boolean bDefault, Date dCreated, String sCreated, Date dChanged, String sChanged,
 			Integer iVersion) {
 		super(iId, dCreated, sCreated, dChanged, sChanged, iVersion);
 		this.iClientId = iId;
@@ -67,6 +68,7 @@ public class StateTransitionVO extends NuclosValueObject {
 		this.iStateTarget = iStateTarget;
 		this.sDescription = sDescription;
 		this.bAutomatic = bAutomatic;
+		this.bDefault = bDefault;
 	}
 
 	/**
@@ -76,13 +78,14 @@ public class StateTransitionVO extends NuclosValueObject {
 	 * @param bAutomatic automatic transition only?
 	 */
 	public StateTransitionVO(Integer iClientId, Integer iStateSource, Integer iStateTarget, String sDescription,
-			boolean bAutomatic) {
+			boolean bAutomatic, boolean bDefault) {
 		super();
 		this.iClientId = iClientId;
 		this.iStateSource = iStateSource;
 		this.iStateTarget = iStateTarget;
 		this.sDescription = sDescription;
 		this.bAutomatic = bAutomatic;
+		this.bDefault = bDefault;
 	}
 
 	/**
@@ -139,6 +142,22 @@ public class StateTransitionVO extends NuclosValueObject {
 	 */
 	public void setAutomatic(boolean bAutomatic) {
 		this.bAutomatic = bAutomatic;
+	}
+
+	/**
+	 * get default flag of underlying database record
+	 * @return default flag of underlying database record
+	 */
+	public boolean isDefault() {
+		return bDefault;
+	}
+
+	/**
+	 * set default flag of underlying database record
+	 * @param bDefault default flag of underlying database record
+	 */
+	public void setDefault(boolean bDefault) {
+		this.bDefault = bDefault;
 	}
 
 	/**

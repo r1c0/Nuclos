@@ -391,6 +391,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		// add the attributes 'nuclosState' and 'nuclosStateNumber' to the set of required attributes to be able
 		// to check the permission for the resultset 
 		stRequiredAttributeIds.add(NuclosEOField.STATE.getMetaData().getId().intValue());
+		stRequiredAttributeIds.add(NuclosEOField.STATEICON.getMetaData().getId().intValue());
 		stRequiredAttributeIds.add(NuclosEOField.STATENUMBER.getMetaData().getId().intValue());
 		
 		final int iMaxRowCount = ClientParameterProvider.getInstance().getIntValue(ParameterProvider.KEY_MAX_ROWCOUNT_FOR_SEARCHRESULT_IN_TASKLIST, 500);

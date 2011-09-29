@@ -19,6 +19,7 @@ package org.nuclos.client.statemodel;
 
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -43,6 +44,8 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -82,10 +85,15 @@ import org.nuclos.client.statemodel.shapes.StateShape;
 import org.nuclos.client.statemodel.shapes.StateTransition;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
+import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
+import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
+import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
+import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.NuclosImage;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
@@ -208,6 +216,28 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 				deleteSelection();
 		}
 	}
+
+	private class DefaultTransitionAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		DefaultTransitionAction() {
+			super(CommonLocaleDelegate.getMessage("StateModelEditor.19","Als Standardpfad definieren"));
+		}
+
+		@Override
+        public void actionPerformed(ActionEvent e) {
+			if (shapeSelected instanceof AbstractConnector) {
+				((StateTransition) shapeSelected).getStateTransitionVO().setDefault(btnDefaultTransition.getSelectedObjects() != null);
+				pnlProperties.getTransitionRulePanel().getBtnDefault().setSelected(btnDefaultTransition.getSelectedObjects() != null);
+				
+				getViewer().getModel().fireModelChanged();
+				((Component) getViewer()).repaint();
+			}	
+		}
+	}
 	
 	private class CopyStateRightsAction extends AbstractAction {
 		/**
@@ -323,6 +353,25 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 		}
 	}
 
+
+	private class IconDocumentListener implements CollectableComponentModelListener {
+		@Override
+		public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
+			StateModelEditor.this.changeStateIcon();
+		}
+
+		@Override
+		public void searchConditionChangedInModel(SearchComponentModelEvent ev) {
+			// ...
+			
+		}
+
+		@Override
+		public void valueToBeChanged(DetailsComponentModelEvent ev) {
+			// ...			
+		}
+	}
+
 	private class DescriptionDocumentListener implements DocumentListener {
 		@Override
         public void changedUpdate(DocumentEvent e) {
@@ -389,6 +438,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private final Action actNewTransition = new NewTransitionAction();
 	private final Action actNewNote = new NewNoteAction();
 	private final Action actDelete = new DeleteAction();
+	private final Action actDefaultTransition = new DefaultTransitionAction();
 	private final Action actCopyStateRights = new CopyStateRightsAction();
 	private final Action actPasteStateRights = new PasteStateRightsAction();
 	private final Action actZoomIn = new ZoomInAction();
@@ -399,6 +449,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private final JToggleButton btnInsertState = new JToggleButton(actNewState);
 	private final JToggleButton btnInsertTransition = new JToggleButton(actNewTransition);
 	private final JToggleButton btnInsertNote = new JToggleButton(actNewNote);
+	private final JCheckBoxMenuItem btnDefaultTransition = new JCheckBoxMenuItem(actDefaultTransition);
 	private final double[] adZoomSteps = {30d, 50d, 75d, 100d, 125d, 150d, 200d, 300d};
 	private int iCurrentZoom = 3;
 	private final List<ChangeListener> lstChangeListeners = new Vector<ChangeListener>();
@@ -413,6 +464,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private final List<ActionListener> lstPrintEventListeners = new Vector<ActionListener>();
 	private final NameDocumentListener nameDocumentListener = new NameDocumentListener();
 	private final MnemonicDocumentListener mnemonicDocumentListener = new MnemonicDocumentListener();
+	private final IconDocumentListener iconDocumentListener = new IconDocumentListener();
 	private final DescriptionDocumentListener descriptionDocumentListener = new DescriptionDocumentListener();
 	private final NoteDocumentListener noteDocumentListener = new NoteDocumentListener();
 	private final TabDataListener tabDataListener = new TabDataListener();
@@ -508,6 +560,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 		popup.add(actNewTransition);
 		popup.add(actNewNote);
 		popup.addSeparator();
+		popup.add(btnDefaultTransition);
 		popup.add(actDelete);
 		popup.addSeparator();
 		popup.add(actCopyStateRights);
@@ -550,6 +603,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private void addStatePanelListeners() {
 		pnlProperties.getStatePropertiesPanel().getModel().docName.addDocumentListener(nameDocumentListener);
 		pnlProperties.getStatePropertiesPanel().getModel().docMnemonic.addDocumentListener(mnemonicDocumentListener);
+		pnlProperties.getStatePropertiesPanel().getModel().clctImage.getModel().addCollectableComponentModelListener(iconDocumentListener);
 		pnlProperties.getStatePropertiesPanel().getModel().docDescription.addDocumentListener(descriptionDocumentListener);
 		pnlProperties.getStatePropertiesPanel().getModel().modelTab.addListDataListener(tabDataListener);
 	}
@@ -560,6 +614,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private void removeStatePanelListeners() {
 		pnlProperties.getStatePropertiesPanel().getModel().docName.removeDocumentListener(nameDocumentListener);
 		pnlProperties.getStatePropertiesPanel().getModel().docMnemonic.removeDocumentListener(mnemonicDocumentListener);
+		pnlProperties.getStatePropertiesPanel().getModel().clctImage.getModel().removeCollectableComponentModelListener(iconDocumentListener);
 		pnlProperties.getStatePropertiesPanel().getModel().docDescription.removeDocumentListener(descriptionDocumentListener);
 	}
 
@@ -589,6 +644,14 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private void setDeleteActionEnabled(boolean enabled) {
 		actDelete.setEnabled(enabled);
 	}
+
+	private void setDefaultTransitionActionEnabled(boolean enabled) {
+		actDefaultTransition.setEnabled(enabled);
+	}
+
+	private void setDefaultTransitionActionSelected(boolean selected) {
+		btnDefaultTransition.setSelected(selected);
+	}
 	
 	private void setCopyAndPasteStateRightAction(boolean enabled) {
 		actCopyStateRights.setEnabled(enabled);
@@ -598,6 +661,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	@Override
     public void selectionChanged(Shape shape) {
 		setDeleteActionEnabled(shape != null || pnlShapeViewer.getModel().isMultiSelected());
+		setDefaultTransitionActionEnabled(false);
+		setDefaultTransitionActionSelected(false);
 		setCopyAndPasteStateRightAction(shape != null && !pnlShapeViewer.getModel().isMultiSelected());
 
 		this.handlePreviousSelection();
@@ -624,6 +689,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			final StatePropertiesPanelModel model = pnlProperties.getStatePropertiesPanel().getModel();
 			model.setName(stateshapeSelected.getName());
 			model.setNumeral(stateshapeSelected.getNumeral());
+			model.setIcon(stateshapeSelected.getIcon());
 			model.setDescription(stateshapeSelected.getDescription());
 			model.setTab(stateshapeSelected.getStateVO().getTabbedPaneName());
 
@@ -645,10 +711,15 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			log.debug("selectionChanged: single transition shape selected");
 			pnlProperties.setPanel("Transition");
 			shapeSelected = shape;
+			
+			setDefaultTransitionActionEnabled(!((StateTransition) shapeSelected).getStateTransitionVO().isAutomatic());
+			setDefaultTransitionActionSelected(((StateTransition) shapeSelected).getStateTransitionVO().isDefault());
+			
 			try {
 				pnlProperties.getTransitionRulePanel().getModel().setRules(RuleRepository.getInstance().selectRulesById(((StateTransition) shape).getRuleIdsWithRunAfterwards()));
 				TableUtils.setPreferredColumnWidth(pnlProperties.getTransitionRulePanel().getTblRules(), 10, 10);
 				pnlProperties.getTransitionRulePanel().getBtnAutomatic().setSelected(((StateTransition) shapeSelected).getStateTransitionVO().isAutomatic());
+				pnlProperties.getTransitionRulePanel().getBtnDefault().setSelected(((StateTransition) shapeSelected).getStateTransitionVO().isDefault());
 				pnlProperties.getTransitionRolePanel().getModel().setRoles(RoleRepository.getInstance().selectRolesById(((StateTransition) shape).getRoles()));
 				TableUtils.setPreferredColumnWidth(pnlProperties.getTransitionRolePanel().getTblRoles(), 10, 10);
 			}
@@ -787,6 +858,14 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	public void changeStateMnemonic() {
 		if (shapeSelected != null && shapeSelected instanceof StateShape) {
 			((StateShape) shapeSelected).setNumeral(pnlProperties.getStatePropertiesPanel().getModel().getNumeral());
+			pnlShapeViewer.getModel().fireModelChanged();
+			pnlShapeViewer.repaint();
+		}
+	}
+
+	public void changeStateIcon() {
+		if (shapeSelected != null && shapeSelected instanceof StateShape) {
+			((StateShape) shapeSelected).setIcon(pnlProperties.getStatePropertiesPanel().getModel().getIcon());
 			pnlShapeViewer.getModel().fireModelChanged();
 			pnlShapeViewer.repaint();
 		}
@@ -1690,11 +1769,19 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 //	}  // inner class StateRoleSubFormsSubFormController
 
 	/**
-	 * Rerurns the Shapeviewer used by the editor
+	 * Returns the Shapeviewer used by the editor
 	 * @return DefaultShapeViewer
 	 */
 	public DefaultShapeViewer getPnlShapeViewer() {
 		return pnlShapeViewer;
+	}
+	
+	/**
+	 * Returns the btnDefaultTransition used by the editor
+	 * @return btnDefaultTransition
+	 */
+	public JCheckBoxMenuItem getBtnDefaultTransition() {
+		return btnDefaultTransition;
 	}
 
 }	// class StateModelEditor

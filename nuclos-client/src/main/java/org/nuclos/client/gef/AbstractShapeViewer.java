@@ -38,6 +38,8 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.util.Iterator;
 
+import org.nuclos.client.gef.shapes.AbstractConnector;
+
 public abstract class AbstractShapeViewer extends AbstractViewer {
 	/**
 	 * 
@@ -136,6 +138,9 @@ public abstract class AbstractShapeViewer extends AbstractViewer {
 			while (i.hasNext()) {
 				Shape shape = i.next();
 				shape.paint(gfxBuffer);
+				if (shape instanceof AbstractConnector) {
+					gfxBuffer.drawString("sdsdsd", 0, 0);
+				}
 			}
 		}	
 				

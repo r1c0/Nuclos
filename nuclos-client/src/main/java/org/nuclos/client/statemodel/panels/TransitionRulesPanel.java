@@ -56,6 +56,7 @@ public class TransitionRulesPanel extends JPanel {
 	private final JButton btnUp = new JButton();
 	private final JButton btnDown = new JButton();
 	private final JToggleButton btnAutomatic = new JToggleButton();
+	private final JToggleButton btnDefault = new JToggleButton();
 	private final JTable tblRules = new JTable();
 	private final JScrollPane scrlpn = new JScrollPane(tblRules);
 	private final SortableRuleTableModel model = new SortableRuleTableModel();
@@ -81,6 +82,9 @@ public class TransitionRulesPanel extends JPanel {
 		btnAutomatic.setIcon(Icons.getInstance().getIconStateTransitionAuto());
 		btnAutomatic.setToolTipText(CommonLocaleDelegate.getMessage("TransitionRulesPanel.1","Automatische Transition"));
 		btnAutomatic.setActionCommand("setAuto");
+		btnDefault.setIcon(Icons.getInstance().getIconStateTransitionDefault());
+		btnDefault.setToolTipText(CommonLocaleDelegate.getMessage("TransitionRulesPanel.6","Standard Transition"));
+		btnDefault.setActionCommand("setDefault");
 
 		toolbar.setFloatable(false);
 		toolbar.add(btnAdd, null);
@@ -90,6 +94,7 @@ public class TransitionRulesPanel extends JPanel {
 		toolbar.add(btnUp);
 		toolbar.addSeparator();
 		toolbar.add(btnAutomatic);
+		toolbar.add(btnDefault);
 		this.add(toolbar, BorderLayout.NORTH);
 		tblRules.setBorder(BorderFactory.createLoweredBevelBorder());
 		tblRules.setModel(model);
@@ -144,6 +149,10 @@ public class TransitionRulesPanel extends JPanel {
 
 	public JToggleButton getBtnAutomatic() {
 		return btnAutomatic;
+	}
+
+	public JToggleButton getBtnDefault() {
+		return btnDefault;
 	}
 
 }	// class TransitionRulesPanel

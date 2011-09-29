@@ -1654,6 +1654,8 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			 return true;
 		 if(field.getField().equals(NuclosEOField.STATENUMBER.getMetaData().getField()))
 			 return true;
+		 if(field.getField().equals(NuclosEOField.STATEICON.getMetaData().getField()))
+			 return true;
 		 if(field.getField().equals(NuclosEOField.LOGGICALDELETED.getMetaData().getField()))
 			 return true;
 		 if(field.getField().equals(NuclosEOField.ORIGIN.getMetaData().getField()))

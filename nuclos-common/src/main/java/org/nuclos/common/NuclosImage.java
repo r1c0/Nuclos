@@ -23,6 +23,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.Serializable;
 
 import javax.imageio.ImageIO;
@@ -39,6 +40,8 @@ public class NuclosImage implements Serializable, NuclosAttributeExternalValue {
 	String sFileName;
 	byte[] content;
 	byte[] thumbnail;
+	int width = -1;
+	int height = -1;
 	boolean bProduce;
 
 	public static int thumbsize = 20;
@@ -52,6 +55,19 @@ public class NuclosImage implements Serializable, NuclosAttributeExternalValue {
 		this.sFileName = fileName;
 		this.content = content;
 		this.thumbnail = thumbnail;
+
+		if (this.content != null) {
+			try {
+				BufferedImage buff = ImageIO.read(new ByteArrayInputStream(this.content));
+				if (buff != null) {
+					width = buff.getWidth();
+					height = buff.getHeight();
+				}
+			} catch (IOException e) {
+				// ...
+			}
+		}
+		
 		if(produceThumbnail)
 			produceThumbnail();
 	}
@@ -72,6 +88,14 @@ public class NuclosImage implements Serializable, NuclosAttributeExternalValue {
 		this.thumbnail = thumbnail;
 	}
 
+	public int getWidth() {
+		return width;
+	}
+	
+	public int getHeight()  {
+		return height;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof NuclosImage) {
@@ -106,13 +130,18 @@ public class NuclosImage implements Serializable, NuclosAttributeExternalValue {
 				}
 
 				BufferedImage buff = ImageIO.read(new ByteArrayInputStream(this.content));
-				BufferedImage bdest = new BufferedImage(iWidth, iHeight, BufferedImage.TYPE_INT_RGB);
+				if (buff.getHeight() < iHeight) {
+					iHeight = buff.getHeight();
+					iWidth = buff.getWidth();
+				}
+				
+				BufferedImage bdest = new BufferedImage(iWidth, iHeight, BufferedImage.TYPE_INT_ARGB);
 				Graphics2D g = bdest.createGraphics();
 			    AffineTransform at = AffineTransform.getScaleInstance((double)iWidth/buff.getWidth(), (double)iHeight/buff.getHeight());
 			    g.drawRenderedImage(buff,at);
-			    File scaled = new File(IOUtils.getDefaultTempDir() + "tmp.jpg");
+			    File scaled = new File(IOUtils.getDefaultTempDir() + new Double(Math.random()).toString() + "tmp.png");
 			    scaled.deleteOnExit();
-			    ImageIO.write(bdest,"JPG", scaled);
+			    ImageIO.write(bdest,"PNG", scaled);
 
 				BufferedInputStream bisscaled = new BufferedInputStream(new FileInputStream(scaled));
 				byte bscaled[] = new byte[bisscaled.available()];

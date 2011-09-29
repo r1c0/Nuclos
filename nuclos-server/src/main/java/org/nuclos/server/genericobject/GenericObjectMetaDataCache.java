@@ -79,6 +79,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 		setExcludedAttributeIds.add(NuclosEOField.CREATEDBY.getMetaData().getId().intValue());
 		setExcludedAttributeIds.add(NuclosEOField.STATE.getMetaData().getId().intValue());
 		setExcludedAttributeIds.add(NuclosEOField.STATENUMBER.getMetaData().getId().intValue());
+		setExcludedAttributeIds.add(NuclosEOField.STATEICON.getMetaData().getId().intValue());
 	}
 
 	final Integer[] asExcludedAttributeIds = {
@@ -88,7 +89,8 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 		NuclosEOField.CREATEDAT.getMetaData().getId().intValue(),
 		NuclosEOField.CREATEDBY.getMetaData().getId().intValue(),
 		NuclosEOField.STATE.getMetaData().getId().intValue(),
-		NuclosEOField.STATENUMBER.getMetaData().getId().intValue()};
+		NuclosEOField.STATENUMBER.getMetaData().getId().intValue(),
+		NuclosEOField.STATEICON.getMetaData().getId().intValue()};
 
 	public static synchronized GenericObjectMetaDataCache getInstance() {
 		if (singleton == null) {

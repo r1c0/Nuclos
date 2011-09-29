@@ -19,11 +19,16 @@ package org.nuclos.server.statemodel.valueobject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.RowSorter.SortKey;
+
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Predicate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
 
@@ -199,6 +204,7 @@ public class StateGraphVO implements Serializable {
 				}
 
 				this.checkDuplicateTransition(statetransitionvo);
+				this.checkDuplicateDefaultTransition(statetransitionvo);
 			}
 		}
 
@@ -208,6 +214,8 @@ public class StateGraphVO implements Serializable {
 		if (iStartTransitionCount > 1) {
 			throw new CommonValidationException("statemachine.error.validation.graph.toomanystartstates");
 		}
+		
+		this.validateDefaultTransitions();
 	}
 
 	/**
@@ -235,4 +243,77 @@ public class StateGraphVO implements Serializable {
 		}
 		return duplicateTransitions;
 	}
+
+	/**
+	 * @param statetransitionvo
+	 * @throws CommonValidationException if the given transition is duplicated.
+	 */
+	private void validateDefaultTransitions() throws CommonValidationException {
+		// validate if there is an valid path from an start to an end state.
+		List<StateTransitionVO> transitionVOs = new LinkedList<StateTransitionVO>(getTransitions());
+		if (CollectionUtils.indexOfFirst(transitionVOs, new Predicate<StateTransitionVO>() {
+			@Override public boolean evaluate(StateTransitionVO t) { return !t.isRemoved() && t.isDefault(); }
+		}) != -1) {
+			// find start transition - there has to be one because of the checks before.
+			StateTransitionVO startTransition = CollectionUtils.findFirst(transitionVOs, new Predicate<StateTransitionVO>() {
+				@Override public boolean evaluate(StateTransitionVO t) { return !t.isRemoved() && t.getStateSource() == null && t.isAutomatic() == true; }
+			});
+			
+			List<Integer> checkedStateNumerals = new LinkedList<Integer>();
+			
+			// finde alle trans die als source den end der letzten haben.
+			Integer iSubsequentState = startTransition.getStateTarget();
+			while (iSubsequentState != null) {
+				if (checkedStateNumerals.contains(iSubsequentState)) {
+					throw new CommonValidationException("statemachine.error.validation.graph.defaulttransition");					
+				}
+				
+				final Integer iSubsequentStateSource = iSubsequentState;
+				StateTransitionVO subsequentTransition = CollectionUtils.findFirst(transitionVOs, new Predicate<StateTransitionVO>() {
+					@Override public boolean evaluate(StateTransitionVO t) { return !t.isRemoved() && t.getStateSource() == iSubsequentStateSource && t.isDefault() == true; }
+				});
+				
+				if (subsequentTransition == null) {
+					StateTransitionVO subsequentStateTransition = CollectionUtils.findFirst(transitionVOs, new Predicate<StateTransitionVO>() {
+						@Override public boolean evaluate(StateTransitionVO t) { return !t.isRemoved() && t.getStateSource() == iSubsequentStateSource && t.isDefault() == false; }
+					});
+					if (subsequentStateTransition != null) {
+						throw new CommonValidationException("statemachine.error.validation.graph.defaulttransition");
+					}
+					break;
+				}
+				
+				// iterate next.
+				checkedStateNumerals.add(iSubsequentState);
+				iSubsequentState = subsequentTransition.getStateTarget();
+			}
+		}
+	}
+	
+	/**
+	 * @param statetransitionvo
+	 * @throws CommonValidationException if the given transition is duplicated.
+	 */
+	private void checkDuplicateDefaultTransition(StateTransitionVO statetransitionvo) throws CommonValidationException {
+		List<StateTransitionVO> duplicateTransitions = getDuplicateDefaultTransitions(statetransitionvo);
+		if(duplicateTransitions != null && !duplicateTransitions.isEmpty()){
+			throw new CommonValidationException("statemachine.error.validation.graph.duplicatedefaulttransition");
+		}
+	}
+
+	private List<StateTransitionVO> getDuplicateDefaultTransitions(StateTransitionVO statetransitionvo) {
+		List<StateTransitionVO> duplicateTransitions = new ArrayList<StateTransitionVO>();
+		for (StateTransitionVO statetransitionvo2 : this.getTransitions()) {
+			if (!statetransitionvo2.isRemoved()) {
+				if (!statetransitionvo.getClientId().equals(statetransitionvo2.getClientId())) {
+					if ((statetransitionvo.getStateSource() != null) && (statetransitionvo.getStateSource().equals(statetransitionvo2.getStateSource())) && (statetransitionvo.isDefault() && statetransitionvo2.isDefault()))
+					{
+						duplicateTransitions.add(statetransitionvo2);
+					}
+				}
+			}
+		}
+		return duplicateTransitions;
+	}
+
 }	// class StateGraphVO

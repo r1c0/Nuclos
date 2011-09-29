@@ -59,7 +59,7 @@ public class AndShape extends OvalShape {
 
 	@Override
 	public void afterCreate() {
-		stateVO = new StateVO(new Integer(-getId()), null, "Neuer Zweig", "", null);
+		stateVO = new StateVO(new Integer(-getId()), null, "Neuer Zweig", "", null, null);
 		super.afterCreate();		
 	}
 	

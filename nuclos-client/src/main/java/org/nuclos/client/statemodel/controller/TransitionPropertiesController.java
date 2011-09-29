@@ -77,6 +77,7 @@ public class TransitionPropertiesController {
 		this.pnlTransitionRules.getBtnUp().addActionListener(alRules);
 		this.pnlTransitionRules.getBtnDown().addActionListener(alRules);
 		this.pnlTransitionRules.getBtnAutomatic().addActionListener(alRules);
+		this.pnlTransitionRules.getBtnDefault().addActionListener(alRules);
 
 		this.pnlTransitionRules.getBtnDelete().setEnabled(false);
 		this.pnlTransitionRules.getBtnUp().setEnabled(false);
@@ -176,6 +177,14 @@ public class TransitionPropertiesController {
 			else if (ev.getActionCommand().equals("setAuto")) {
 				final StateTransition statetransition = (StateTransition) (parent.getViewer().getModel().getSelection().iterator().next());
 				statetransition.getStateTransitionVO().setAutomatic(pnlTransitionRules.getBtnAutomatic().isSelected());
+				parent.getViewer().getModel().fireModelChanged();
+				((Component) parent.getViewer()).repaint();
+			}
+			else if (ev.getActionCommand().equals("setDefault")) {
+				final StateTransition statetransition = (StateTransition) (parent.getViewer().getModel().getSelection().iterator().next());
+				statetransition.getStateTransitionVO().setDefault(pnlTransitionRules.getBtnDefault().isSelected());
+				parent.getBtnDefaultTransition().setSelected(pnlTransitionRules.getBtnDefault().isSelected());
+				
 				parent.getViewer().getModel().fireModelChanged();
 				((Component) parent.getViewer()).repaint();
 			}

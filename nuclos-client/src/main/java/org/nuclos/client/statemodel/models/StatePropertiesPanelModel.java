@@ -22,12 +22,20 @@ import java.util.Map;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.NuclosCollectableImage;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.collect.collectable.AbstractCollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableEntity;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collect.collectable.CollectableValueField;
+import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.StringUtils;
 
 /**
@@ -40,24 +48,95 @@ import org.nuclos.common2.StringUtils;
  * @version 01.00.00
  */
 public class StatePropertiesPanelModel implements Serializable {
+	// workaround - cause statemodel does not have an collectable metainformation yet.
+	public class CollectableImageEntityField extends AbstractCollectableEntityField {
+
+		@Override
+		public int getFieldType() {
+			return CollectableEntityField.TYPE_VALUEFIELD;
+		}
+
+		@Override
+		public Class<?> getJavaClass() {
+			return org.nuclos.common.NuclosImage.class;
+		}
+
+		@Override
+		public String getName() {
+			return null;
+		}
+
+		@Override
+		public String getEntityName() {
+			return null;
+		}
+
+		@Override
+		public String getFormatInput() {
+			return null;
+		}
+
+		@Override
+		public String getFormatOutput() {
+			return null;
+		}
+
+		@Override
+		public String getLabel() {
+			return null;
+		}
+
+		@Override
+		public String getDescription() {
+			return null;
+		}
+
+		@Override
+		public Integer getMaxLength() {
+			return null;
+		}
+
+		@Override
+		public Integer getPrecision() {
+			return null;
+		}
+
+		@Override
+		public boolean isNullable() {
+			return false;
+		}
+
+		@Override
+		public boolean isReferencing() {
+			return false;
+		}
+
+		@Override
+		public String getReferencedEntityName() {
+			return null;
+		}	}
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	public static final String PROPERTY_SHAPE_NAME = "ShapeName";
 	public static final String PROPERTY_SHAPE_MNEMONIC = "ShapeMnemonic";
+	public static final String PROPERTY_SHAPE_ICON = "ShapeIcon";
 	public static final String PROPERTY_SHAPE_DESCRIPTION = "ShapeDescription";
 
 	public Document docName = new PlainDocument();
 	public Document docMnemonic = new PlainDocument();
 	public Document docDescription = new PlainDocument();
 	public ComboBoxModel modelTab = new DefaultComboBoxModel();
+	public final NuclosCollectableImage clctImage;
 
 	protected static final Logger log = Logger.getLogger(StatePropertiesPanelModel.class);
 	
 	private Map<String, String> mpTabName = new HashMap<String, String>();
 	
 	public StatePropertiesPanelModel() {
+		this.clctImage = new NuclosCollectableImage(new CollectableImageEntityField());
 	}
 
 	public String getName() {
@@ -108,6 +187,19 @@ public class StatePropertiesPanelModel implements Serializable {
 		catch (BadLocationException ex) {
 			throw new NuclosFatalException(ex);
 		}
+	}
+
+	public void setIcon(org.nuclos.common.NuclosImage icon) {
+		clctImage.setField(new CollectableValueField(icon));
+	}
+
+	public org.nuclos.common.NuclosImage getIcon() {
+		try {
+			return (org.nuclos.common.NuclosImage) clctImage.getField().getValue();
+		}
+		catch (CollectableFieldFormatException ex) {
+			throw new NuclosFatalException(ex);
+		}		
 	}
 
 	public String getDescription() {

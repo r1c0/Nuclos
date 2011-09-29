@@ -66,6 +66,7 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.NuclosImage;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
@@ -134,12 +135,13 @@ public class StateModelEditor2 extends JPanel {
 						mxCell cellAdded = (mxCell)ob;
 						if(ENTITYSTYLE.equals(cellAdded.getStyle())) {
 							if(cellAdded.getValue() instanceof String) {
-								StateVO vo = new StateVO(clientId--, null, "", "", null);
+								StateVO vo = new StateVO(clientId--, null, "", "", null, null);
 								cellAdded.setValue(vo);					
 								final StatePropertiesPanelModel model = pnlProperties.getStatePropertiesPanel().getModel();
 								
 								model.setName(vo.getStatename());
 								model.setNumeral(vo.getNumeral());
+								model.setIcon(vo.getIcon());
 								model.setDescription(vo.getDescription());
 								model.setTab(vo.getTabbedPaneName());
 								
@@ -152,7 +154,7 @@ public class StateModelEditor2 extends JPanel {
 								pnlProperties.setPanel("State");
 							}
 							else {
-								StateVO vo = new StateVO(clientId--, null, "", "", null);
+								StateVO vo = new StateVO(clientId--, null, "", "", null, null);
 								try {
 									mxCell cell = (mxCell)cellAdded.clone();
 								
@@ -190,7 +192,7 @@ public class StateModelEditor2 extends JPanel {
 							mxUtils.setCellStyles(graphComponent.getGraph().getModel(), cells, mxConstants.STYLE_ELBOW , mxConstants.ELBOW_VERTICAL);
 							mxUtils.setCellStyles(graphComponent.getGraph().getModel(), cells, "edgeStyle" , "mxEdgeStyle.ElbowConnector");
 							mxUtils.setCellStyles(graphComponent.getGraph().getModel(), cells, mxConstants.STYLE_ELBOW , mxConstants.ELBOW_HORIZONTAL);
-							StateTransitionVO vo = new StateTransitionVO(clientId--, null, null, "", false);
+							StateTransitionVO vo = new StateTransitionVO(clientId--, null, null, "", false, false);
 							cellAdded.setValue(vo);
 							pnlProperties.setPanel("Transition");
 							try {
@@ -212,6 +214,7 @@ public class StateModelEditor2 extends JPanel {
 									pnlProperties.getTransitionRulePanel().getModel().setRules(RuleRepository.getInstance().selectRulesById(voAdded.getRuleIdsWithRunAfterwards()));
 									TableUtils.setPreferredColumnWidth(pnlProperties.getTransitionRulePanel().getTblRules(), 10, 10);
 									pnlProperties.getTransitionRulePanel().getBtnAutomatic().setSelected(voAdded.isAutomatic());
+									pnlProperties.getTransitionRulePanel().getBtnDefault().setSelected(voAdded.isDefault());
 									pnlProperties.getTransitionRolePanel().getModel().setRoles(RoleRepository.getInstance().selectRolesById(voAdded.getRoleIds()));
 									TableUtils.setPreferredColumnWidth(pnlProperties.getTransitionRolePanel().getTblRoles(), 10, 10);
 									addedRoundedCell = null;
@@ -707,6 +710,7 @@ public class StateModelEditor2 extends JPanel {
 									
 									model.setName(vo.getStatename());
 									model.setNumeral(vo.getNumeral());
+									model.setIcon(vo.getIcon());
 									model.setDescription(vo.getDescription());
 									model.setTab(vo.getTabbedPaneName());
 
@@ -742,6 +746,7 @@ public class StateModelEditor2 extends JPanel {
 								pnlProperties.getTransitionRulePanel().getModel().setRules(RuleRepository.getInstance().selectRulesById(vo.getRuleIdsWithRunAfterwards()));
 								TableUtils.setPreferredColumnWidth(pnlProperties.getTransitionRulePanel().getTblRules(), 10, 10);
 								pnlProperties.getTransitionRulePanel().getBtnAutomatic().setSelected(vo.isAutomatic());
+								pnlProperties.getTransitionRulePanel().getBtnDefault().setSelected(vo.isDefault());
 								pnlProperties.getTransitionRolePanel().getModel().setRoles(RoleRepository.getInstance().selectRolesById(vo.getRoleIds()));
 								TableUtils.setPreferredColumnWidth(pnlProperties.getTransitionRolePanel().getTblRoles(), 10, 10);
 							}
@@ -1058,7 +1063,7 @@ public class StateModelEditor2 extends JPanel {
 		mxCell cellRoot = (mxCell)graphComponent.getGraph().getModel().getRoot();
 		mxCell cellContainer = (mxCell)cellRoot.getChildAt(0);
 		if(cellContainer.getChildCount() == 1) {
-			StateTransitionVO vo = new StateTransitionVO(clientId--, null, null, "", false);
+			StateTransitionVO vo = new StateTransitionVO(clientId--, null, null, "", false, false);
 			
 			mxGeometry geo = new mxGeometry(20, 20, 20, 20);
 			geo.setSourcePoint(new mxPoint(20,20));
@@ -1402,7 +1407,7 @@ public class StateModelEditor2 extends JPanel {
 		int index = 0;
 		
 		mxGeometry mxgeo = new mxGeometry(60, 60, 100, 80);
-		StateVO voState = new StateVO(clientId--, null, "", "", null);
+		StateVO voState = new StateVO(clientId--, null, "", "", null, null);
 		
 		mxCell child = new mxCell(voState, mxgeo, ENTITYSTYLE);
 		child.setVertex(true);
@@ -1411,7 +1416,7 @@ public class StateModelEditor2 extends JPanel {
 		mxGeometry geo = new mxGeometry(20, 20, 20, 20);
 		geo.setSourcePoint(new mxPoint(20,20));
 		geo.setTargetPoint(new mxPoint(150,150));
-		StateTransitionVO vo = new StateTransitionVO(clientId--, null, null, "", false);
+		StateTransitionVO vo = new StateTransitionVO(clientId--, null, null, "", false, false);
 		mxCell cellTransition = new mxCell(vo, geo, "dashed=1;endArrow=open;endSize=12;startArrow=oval;startSize=25");
 		cellTransition.setTarget(child);
 		cellTransition.setEdge(true);
@@ -1914,6 +1919,20 @@ public class StateModelEditor2 extends JPanel {
 		StateVO vo = (StateVO)cell.getValue();
 		try {
 			vo.setNumeral(new Integer(mnemonic));
+			fireChangeListenEvent();
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+	
+	public void changeStateIcon(NuclosImage iIcon) {
+		mxCell cell = (mxCell)graphComponent.getGraph().getSelectionCell();
+		if(cell == null)
+			return;
+		StateVO vo = (StateVO)cell.getValue();
+		try {
+			vo.setIcon(iIcon);
 			fireChangeListenEvent();
 		}
 		catch (Exception e) {

@@ -21,13 +21,14 @@ import java.util.Properties;
 
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.Modules;
-import org.nuclos.client.genericobject.GenericObjectCollectController.StateWrapper;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.CHANGESTATEACTIONLISTENER;
 import org.nuclos.client.statemodel.StateDelegate;
+import org.nuclos.client.statemodel.StateWrapper;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.collect.CollectActionAdapter;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.NuclosImage;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 
@@ -69,15 +70,17 @@ public class ChangeStateButtonAction<Clct extends Collectable> implements Collec
 			Collection<StateVO> possibleStates = StateDelegate.getInstance().getStatesByModule(moduleId);
 			String stateName = null;
 			Integer stateID = null;
+			NuclosImage stateIcon = null;
 			for(StateVO possibleState : possibleStates) {
 				if(possibleState.getNumeral().equals(targetState)) {
 					stateName = possibleState.getStatename();
 					stateID = possibleState.getId();
+					stateIcon = possibleState.getIcon();
 					break;
 				}
 			}
 			
-			StateWrapper newState = new StateWrapper(stateID, targetState, stateName);
+			StateWrapper newState = new StateWrapper(stateID, targetState, stateName, stateIcon);
 			gController.cmdChangeState(newState);
 		}
 		else {

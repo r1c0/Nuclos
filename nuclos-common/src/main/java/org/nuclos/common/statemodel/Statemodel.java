@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +32,7 @@ import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.TransformerUtils;
+import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
@@ -164,5 +166,45 @@ public class Statemodel implements Serializable {
 			}
 		});
         return res;
+    }
+
+    public List<StateVO> getDefaultStatePath() {
+    	List<StateVO> result = new LinkedList<StateVO>();
+    	
+		// validate if there is an valid path from an start to an end state.
+		List<StateTransitionVO> transitionVOs = new LinkedList<StateTransitionVO>();
+		for (Collection<StateTransitionVO> transitions : stateTransitions.values()) {
+			transitionVOs.addAll(transitions);
+		}
+		if (CollectionUtils.indexOfFirst(transitionVOs, new Predicate<StateTransitionVO>() {
+			@Override public boolean evaluate(StateTransitionVO t) { return t.isDefault(); }
+		}) != -1) {
+			// find start transition - there has to be one because of the checks before.
+			StateTransitionVO startTransition = CollectionUtils.findFirst(transitionVOs, new Predicate<StateTransitionVO>() {
+				@Override public boolean evaluate(StateTransitionVO t) {
+					return t.getStateSource().equals(initialStateId) && t.isDefault();
+				}
+			});
+			result.add(getStateLookup().get(initialStateId));
+            result.add(getStateLookup().get(startTransition.getStateTarget()));
+            
+			// finde alle trans die als source den end der letzten haben.
+			Integer iSubsequentState = startTransition.getStateTarget();
+			while (iSubsequentState != null) {
+				final Integer iSubsequentStateSource = iSubsequentState;
+				StateTransitionVO subsequentTransition = CollectionUtils.findFirst(transitionVOs, new Predicate<StateTransitionVO>() {
+					@Override public boolean evaluate(StateTransitionVO t) { return t.getStateSource().equals(iSubsequentStateSource) && t.isDefault() == true; }
+				});
+				
+				if (subsequentTransition == null) {
+					break;
+				}
+				
+				// iterate next.
+				iSubsequentState = subsequentTransition.getStateTarget();
+	            result.add(getStateLookup().get(subsequentTransition.getStateTarget()));
+			}
+		}
+		return result;
     }
 }

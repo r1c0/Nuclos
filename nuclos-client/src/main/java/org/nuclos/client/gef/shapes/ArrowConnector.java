@@ -131,7 +131,7 @@ public class ArrowConnector extends AbstractConnector {
 		super.paint(gfx);
 		if (dArrowAngle >= 0d && dArrowAngle <= Math.PI) {
 			AffineTransform oldTransform = gfx.getTransform();
-			gfx.setPaint(Color.BLACK);
+			gfx.setPaint(paint);
 			AffineTransform at = new AffineTransform(oldTransform);
 			at.concatenate(AffineTransform.getTranslateInstance(endPoint.getX(), endPoint.getY()));
 			at.concatenate(AffineTransform.getRotateInstance(dArrowAngle));

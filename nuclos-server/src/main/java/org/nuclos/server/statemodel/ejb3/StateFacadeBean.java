@@ -504,6 +504,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 						}
 
 						transitionVO.setAutomatic(statetransitionvo.isAutomatic());
+						transitionVO.setDefault(statetransitionvo.isDefault());
 						transitionVO.setDescription(statetransitionvo.getDescription());
 						transitionVO.setStateSource(statetransitionvo.getStateSource());
 						transitionVO.setStateTarget(statetransitionvo.getStateTarget());
@@ -536,6 +537,9 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		if(clientStateVO.getNumeral().compareTo(dbStateVO.getNumeral()) != 0) {
 			mpChangedFields.put(NuclosEOField.STATENUMBER.getMetaData().getField(), dbStateVO.getNumeral());
 		}
+		if (clientStateVO.getIcon() != dbStateVO.getIcon()) {
+			mpChangedFields.put(NuclosEOField.STATEICON.getMetaData().getField(), dbStateVO.getIcon());
+		}
 		if (!clientStateVO.getStatename().equals(dbStateVO.getStatename())) {
 			mpChangedFields.put(NuclosEOField.STATE.getMetaData().getField(), dbStateVO.getStatename());
 		}
@@ -552,6 +556,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 		dbStateVO.setNumeral(clientStateVO.getNumeral());
 		dbStateVO.setStatename(clientStateVO.getStatename());
+		dbStateVO.setIcon(clientStateVO.getIcon());
 		dbStateVO.setDescription(clientStateVO.getDescription());
 		dbStateVO.setModelId(modelVO.getId());
 		dbStateVO.setTabbedPaneName(clientStateVO.getTabbedPaneName());
@@ -1232,6 +1237,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			GenericObjectFacadeLocal goFacade = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
 			goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATE.getMetaData().getField(), stateVO.getId(), stateVO.getStatename());
 			goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATENUMBER.getMetaData().getField(), stateVO.getId(), stateVO.getNumeral());
+			goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATEICON.getMetaData().getField(), stateVO.getId(), stateVO.getIcon());
 		}
 		catch (CommonValidationException ex) {
 			throw new NuclosFatalException(ex);

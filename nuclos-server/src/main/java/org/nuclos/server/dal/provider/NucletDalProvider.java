@@ -30,6 +30,7 @@ import org.nuclos.server.dal.processor.nuclet.IEOGenericObjectProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityFieldMetaDataProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityMetaDataProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
+import org.nuclos.server.database.DataBaseHelper;
 
 /**
  * @deprecated Replace with pure Spring solution.

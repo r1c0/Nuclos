@@ -18,6 +18,11 @@ package org.nuclos.common.collect.collectable;
 
 
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
@@ -29,8 +34,12 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.NuclosImage;
 import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.SpringApplicationContextHolder;
@@ -42,6 +51,7 @@ import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.RelativeDate;
 import org.nuclos.common2.StringUtils;
+import org.w3c.tools.codec.Base64Encoder;
 
 /**
  * Defines formatting and parsing of <code>CollectableField</code>s. This may be used to get the
@@ -125,6 +135,7 @@ public abstract class CollectableFieldFormat {
 			mpFormats.put(Double.class, new CollectableDoubleFormat());
 			mpFormats.put(Boolean.class, new CollectableBooleanFormat());
 			mpFormats.put(BigDecimal.class, new CollectableBigDecimalFormat());
+			mpFormats.put(NuclosImage.class, new CollectableNuclosImageFormat());
 			mpFormats.put(NuclosPassword.class, new CollectablePasswordFormat());
 			mpFormats.put(InternalTimestamp.class, new CollectableTimestampFormat());
 		}
@@ -147,6 +158,18 @@ public abstract class CollectableFieldFormat {
 		}
 	}	// class CollectableStringFormat
 
+	private static class CollectableNuclosImageFormat extends CollectableFieldFormat {
+		@Override
+		public String format(String sOutputFormat, Object oValue) {
+			return "[$" + CollectableFieldFormat.class.getName() + "," + oValue.getClass().getName() + "," + ((NuclosImage)oValue).getContent().length+ "," + Base64.encodeBase64String(((NuclosImage)oValue).getContent()) + "$]";
+		}
+
+		@Override
+		public Object parse(String sInputFormat, String sText) {
+			return new NuclosImage("", Base64.decodeBase64(sText), null, true);
+		}
+	}	// class CollectableStringFormat
+	
 	private static class CollectablePasswordFormat extends CollectableFieldFormat {
 		@Override
 		public String format(String outputFormat, Object value) {

@@ -561,6 +561,7 @@ public class GenericObjectFacadeHelper {
 
 		// @todo P2 this is for backwards compatibility only - check if this is correct!
 		result.remove(NuclosEOField.STATENUMBER.getMetaData().getId().intValue());
+		result.remove(NuclosEOField.STATEICON.getMetaData().getId().intValue());
 
 		return result;
 	}

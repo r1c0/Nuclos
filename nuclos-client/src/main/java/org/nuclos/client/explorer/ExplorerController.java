@@ -18,6 +18,7 @@ package org.nuclos.client.explorer;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Graphics2D;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -43,6 +44,7 @@ import java.util.prefs.Preferences;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -89,9 +91,12 @@ import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.NuclosImage;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
+import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.ClientPreferences;
@@ -719,6 +724,15 @@ public class ExplorerController extends Controller {
 			 *
 			 */
 			private static final long serialVersionUID = 1L;
+			class PaintImage {
+				int x;
+				NuclosImage image;
+				
+				public PaintImage(int x, NuclosImage image) {
+					this.x = x;
+					this.image = image;
+				}
+			}
 
 			@Override
 			public Component getTreeCellRendererComponent(JTree tree, Object oValue, boolean bSelected, boolean bExpanded,
@@ -726,24 +740,75 @@ public class ExplorerController extends Controller {
 
 				final JLabel lbl = (JLabel) super.getTreeCellRendererComponent(tree, oValue, bSelected, bExpanded, bLeaf, iRow,
 						bHasFocus);
+				
+				String tmp = lbl.getText();
 
+				final List<PaintImage> images = new LinkedList<PaintImage>();
+					
+				int idx = -1;
+				int spaceX = SwingUtilities.computeStringWidth(lbl.getFontMetrics(lbl.getFont()), " ");
+				
+				while ((idx = tmp.indexOf("[$" + CollectableFieldFormat.class.getName() + ",")) != -1)
+				{						
+					int formatEnd = tmp.indexOf("$]");
+					String format = tmp.substring(idx, formatEnd);
+					
+					String[] formatDef = format.split(",");
+					try {
+						CollectableFieldFormat clctformat = CollectableFieldFormat.getInstance(Class.forName(formatDef[1]));
+
+						int x = SwingUtilities.computeStringWidth(lbl.getFontMetrics(lbl.getFont()), tmp.substring(0, idx));
+						
+						NuclosImage img = (NuclosImage) clctformat.parse(null, formatDef[3]);
+						
+						String tmp1 = tmp.substring(0, idx);
+						for (int i = 0; i < img.getWidth() / spaceX; i++) {
+							tmp1 += " ";
+						}
+						tmp1 += tmp.substring(formatEnd + 2);
+						tmp = tmp1;
+				
+						images.add(new PaintImage(x, img));
+					} catch (CollectableFieldFormatException e) {
+						log.error("format exception at " + formatDef[1], e);
+					} catch (ClassNotFoundException e) {
+						log.error("class not found for " + formatDef[1], e);
+					}
+				}
+				
 				final ExplorerNode<?> explorernode = (ExplorerNode<?>) oValue;
+				
+				DefaultTreeCellRenderer lbComp = new DefaultTreeCellRenderer() {
 
+					public void paintComponent(java.awt.Graphics g) {
+						super.paintComponent(g);		
+						
+						Graphics2D g2d = (Graphics2D)g;
+						for (PaintImage paintImage : images) {
+							g2d.drawImage(new ImageIcon(paintImage.image.getContent()).getImage(), getIcon().getIconWidth()+ getIconTextGap() + paintImage.x, 1, null);
+						}
+					};
+				};
+
+				JComponent result = (JComponent)lbComp.getTreeCellRendererComponent(tree, oValue, bSelected, bExpanded, bLeaf, iRow,
+						bHasFocus);
+
+				lbComp.setText(tmp);
+				
 				// set tooltip text:
 				final String sDescription = StringUtils.nullIfEmpty(explorernode.getTreeNode().getDescription());
-				lbl.setToolTipText(sDescription);
+				lbComp.setToolTipText(sDescription);
 
 				// set icon:
 				final Icon icon = explorernode.getIcon();
 				//if (icon != null) {
-					lbl.setIcon(icon);
+					lbComp.setIcon(icon);
 				//}
-
-				JComponent result = lbl;
+					
 				if (explorernode instanceof GenericObjectExplorerNode) {
 					final Icon iconRelation = ((GenericObjectExplorerNode) explorernode).getRelationIcon();
 					if (iconRelation != null) {
-						lbl.setIcon(new CompositeIcon(iconRelation,icon));
+						lbComp.setIcon(new CompositeIcon(iconRelation,icon));
 
 						//result = new JPanel(new FlowLayout(FlowLayout.LEFT, 1, 0));
 						//result.add(new JLabel(iconRelation));

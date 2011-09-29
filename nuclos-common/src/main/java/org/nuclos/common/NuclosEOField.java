@@ -24,6 +24,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 public enum NuclosEOField implements NuclosEOFieldConstants{
 	STATE(getState(), true),
 	STATENUMBER(getStateNumber(), true),
+	STATEICON(getStateIcon(), false),
 	SYSTEMIDENTIFIER(getSystemIdentifier(), false),
 	PROCESS(getProcess(), false),
 	CREATEDAT(getCreatedAt(), false),
@@ -133,6 +134,37 @@ public enum NuclosEOField implements NuclosEOFieldConstants{
 
 		result.setLocaleResourceIdForLabel("nuclos.entityfield.eo.statenumeral.label");
 		result.setLocaleResourceIdForDescription("nuclos.entityfield.eo.statenumeral.description");
+
+		return result;
+	}
+
+	private static EntityFieldMetaDataVO getStateIcon() {
+		EntityFieldMetaDataVO result = new EntityFieldMetaDataVO();
+		result = new EntityFieldMetaDataVO();
+		result.setEntityId(-100l);
+		result.setField("nuclosStateIcon");
+		result.setDbColumn("OBJVALUE_NUCLOSSTATE");
+		result.setDataType(NuclosImage.class.getName());
+		result.setScale(255);
+		result.setFieldGroupId(GROUP_ID_READ);
+
+		result.setReadonly(true);
+		result.setNullable(true);
+		result.setModifiable(true);
+		result.setSearchable(false);
+		result.setLogBookTracking(false);
+		result.setShowMnemonic(false);
+		result.setUnique(false);
+		result.setInsertable(false);
+		result.processor(PROCESSOR);
+
+		result.setId(-10020l);
+
+		result.setForeignEntity(NuclosEntity.STATE.getEntityName());
+		result.setForeignEntityField("icon");
+
+		result.setLocaleResourceIdForLabel("nuclos.entityfield.eo.stateicon.label");
+		result.setLocaleResourceIdForDescription("nuclos.entityfield.eo.stateicon.description");
 
 		return result;
 	}

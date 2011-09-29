@@ -54,6 +54,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import org.jfree.util.Log;
@@ -84,8 +85,12 @@ import org.nuclos.common2.IOUtils;
  * @version 01.00.00
  */
 public class NuclosCollectableImage extends CollectableMediaComponent implements MessageExchangeListener {
-   NuclosImage nuclosImage;
-   boolean bScalable;
+   private NuclosImage nuclosImage;
+   private boolean bScalable;
+   private int inputWidth = -1;
+   private int inputHeight = -1;
+   
+   
    /**
     * @param clctef
     * @postcondition this.isDetailsComponent()
@@ -163,6 +168,14 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		// to be fully displayed:
 
 		this.adjustAppearance();
+	}
+	
+	public void setInputWidth(int inputWidth) {
+		this.inputWidth = inputWidth;
+	}
+	
+	public void setInputHeight(int inputHeight) {
+		this.inputHeight = inputHeight;
 	}
 
 	private void clearField() {
@@ -292,8 +305,22 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		}
 		return defaultformat;
 	}
+	
+	public void loadImageFromIcon(ImageIcon icon) {
+		BufferedImage buff = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB); 
+		buff.getGraphics().drawImage(icon.getImage(), 0,0, null);
+		
+		File scaled = new File(IOUtils.getDefaultTempDir() + new Double(Math.random()).toString() + "tmp.png");
+	    scaled.deleteOnExit();
+	    try {
+			ImageIO.write(buff,"PNG", scaled);
+		    loadImageFromFile(scaled);
+		} catch (IOException e) {
+			// do nothing
+		}
+	}
 
-	private void loadImageFromFile(File file) {
+	public void loadImageFromFile(File file) {
 		try {
 			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
 			byte b[] = new byte[bis.available()];
@@ -304,7 +331,12 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 			}
 			bis.close();
 
-			nuclosImage = new NuclosImage(file.getName(), b, null, true);
+			if (inputWidth == -1 || inputHeight == -1) {
+				nuclosImage = new NuclosImage(file.getName(), b, null, true);
+			} else {
+				nuclosImage = new NuclosImage(file.getName(), getScaled(file, inputWidth, inputHeight), null, true);
+			}
+			
 			JComponent comp = NuclosCollectableImage.this.getJComponent();
 			if(comp instanceof LabeledImage) {
 				LabeledImage li = (LabeledImage)comp;
@@ -312,27 +344,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 				Image scaledImageForLabeled = ii.getImage().getScaledInstance(li.getWidth(), li.getHeight(), Image.SCALE_DEFAULT);
 				li.getJMediaComponent().setIcon(new ImageIcon(scaledImageForLabeled));
 				li.setNuclosImage(nuclosImage);
-
-				BufferedImage buff = ImageIO.read(file);
-				BufferedImage bdest = new BufferedImage(20, 20, BufferedImage.TYPE_INT_RGB);
-				Graphics2D g = bdest.createGraphics();
-			    AffineTransform at = AffineTransform.getScaleInstance((double)20/buff.getWidth(), (double)20/buff.getHeight());
-			    g.drawRenderedImage(buff,at);
-			    File scaled = new File(IOUtils.getDefaultTempDir() + "tmp.jpg");
-			    scaled.deleteOnExit();
-			    ImageIO.write(bdest,"JPG", scaled);
-
-				BufferedInputStream bisscaled = new BufferedInputStream(new FileInputStream(scaled));
-				byte bscaled[] = new byte[bisscaled.available()];
-				int cscaled = 0;
-				int counterscaled = 0;
-				while((cscaled = bisscaled.read()) != -1) {
-					bscaled[counterscaled++] = (byte)cscaled;
-				}
-				bisscaled.close();
-
-				nuclosImage.setThmubnail(bscaled);
-
+				nuclosImage.setThmubnail(getScaled(file, 20, 20));					
 			}
 			try {
 				viewToModel();
@@ -349,7 +361,28 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 			Errors.getInstance().showExceptionDialog(this.getControlComponent(), e1);
 		}
 	}
+	
+	private byte[] getScaled(File file, int width, int height) throws FileNotFoundException, IOException {
 
+		BufferedImage buff = ImageIO.read(file);
+		BufferedImage bdest = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = bdest.createGraphics();
+	    AffineTransform at = AffineTransform.getScaleInstance((double)width/buff.getWidth(), (double)height/buff.getHeight());
+	    g.drawRenderedImage(buff,at);
+	    File scaled = new File(IOUtils.getDefaultTempDir() + new Double(Math.random()).toString() + "tmp.png");
+	    scaled.deleteOnExit();
+	    ImageIO.write(bdest,"PNG", scaled);
+
+		BufferedInputStream bisscaled = new BufferedInputStream(new FileInputStream(scaled));
+		byte bscaled[] = new byte[bisscaled.available()];
+		int cscaled = 0;
+		int counterscaled = 0;
+		while((cscaled = bisscaled.read()) != -1) {
+			bscaled[counterscaled++] = (byte)cscaled;
+		}
+		bisscaled.close();
+		return bscaled;
+	}
 
 	@Override
    public void setColumns(int iColumns) {
@@ -368,10 +401,12 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
    @Override
    public TableCellRenderer getTableCellRenderer() {
 
-	   return new TableCellRenderer() {
+	   return new DefaultTableCellRenderer() {
 	        @Override
 			public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
 
+	        	Component comp = super.getTableCellRendererComponent(tbl,oValue, bSelected, bHasFocus, iRow, iColumn);
+	        	
 	            JLabel lbComp = new JLabel();
 	            if(oValue instanceof CollectableMasterDataField) {
 	            	CollectableMasterDataField field = (CollectableMasterDataField)oValue;
@@ -429,9 +464,14 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 	            	}
 	            }
 
-	            lbComp.setHorizontalAlignment(JLabel.CENTER);
-
-	            return lbComp;
+	            if (comp instanceof JLabel) {
+	            	((JLabel)comp).setSize(lbComp.getSize());
+	            	((JLabel)comp).setIcon(lbComp.getIcon());
+	            	((JLabel)comp).setText(lbComp.getText());
+	            	((JLabel)comp).setHorizontalAlignment(JLabel.CENTER);
+	            }
+	            
+	            return comp;
 	         }
 
 
@@ -508,8 +548,9 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 						else {
 							dtde.rejectDrag();
 						}
-					}
-					else {
+					} else if (trans.getTransferData(flavor[0]) instanceof ImageIcon) {
+						dtde.acceptDrag(dtde.getDropAction());
+					} else {
 						dtde.rejectDrag();
 					}
 				}
@@ -537,6 +578,10 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 								loadImageFromFile(file);
 							}
 						}
+					} else if(obj instanceof ImageIcon) {
+						ImageIcon icon = (ImageIcon) trans.getTransferData(flavor[i]);
+						
+						loadImageFromIcon(icon);
 					}
 				}
 			} catch (Exception e) {

@@ -37,6 +37,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
+import org.nuclos.common.NuclosImage;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.client.gef.AbstractShapeViewer;
 import org.nuclos.client.gef.shapes.AbstractConnector;
@@ -117,7 +118,11 @@ public class StateShape extends ContainerShape implements ImageObserver {
 		gfx.setPaint(new Color(160, 160, 160));
 		gfx.setStroke(new BasicStroke(1f));
 		gfx.draw(line);
-		gfx.drawImage(((ImageIcon) icon).getImage(), (int) dimension.getX() + 2, (int) dimension.getY() + 2, this);
+		if (getIcon() == null || getIcon().getContent() == null) {
+			gfx.drawImage(((ImageIcon) icon).getImage(), (int) dimension.getX() + 2, (int) dimension.getY() + 3, this);			
+		} else {
+			gfx.drawImage(new ImageIcon(getIcon().getContent()).getImage(), (int) dimension.getX() + 2, (int) dimension.getY() + 3, this);
+		}
 		gfx.setColor(Color.BLACK);
 		if (statevo.getStatename() != null) {
 			gfx.setFont(new Font("Arial", Font.BOLD, 12));
@@ -209,6 +214,20 @@ public class StateShape extends ContainerShape implements ImageObserver {
 	/**
 	 * {@inheritDoc}
 	 */
+	public NuclosImage getIcon() {
+		return statevo.getIcon();
+	}
+
+	/**
+	 * @param bIcon
+	 */
+	public void setIcon(NuclosImage bIcon) {
+		statevo.setIcon(bIcon);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getDescription() {
 		return statevo.getDescription();
 	}
@@ -226,7 +245,7 @@ public class StateShape extends ContainerShape implements ImageObserver {
 
 	@Override
 	public void afterCreate() {
-		statevo = new StateVO(new Integer(-getId()), null, CommonLocaleDelegate.getMessage("StateShape.1", "Neuer Status"), "", null);
+		statevo = new StateVO(new Integer(-getId()), null, CommonLocaleDelegate.getMessage("StateShape.1", "Neuer Status"), "", null, null);
 		super.afterCreate();
 	}
 

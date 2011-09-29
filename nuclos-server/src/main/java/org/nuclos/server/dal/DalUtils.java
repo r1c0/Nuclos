@@ -34,8 +34,10 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.server.dal.specification.IDalVersionSpecification;
 import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.structure.DbColumn;
 import org.nuclos.server.dblayer.structure.DbColumnType;
+import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.nuclos.server.report.ByteArrayCarrier;
 import org.nuclos.server.resource.valueobject.ResourceFile;
@@ -76,7 +78,23 @@ public class DalUtils {
 			entityFields.add(NuclosEOField.LOGGICALDELETED.getMetaData());
 			entityFields.add(NuclosEOField.STATE.getMetaData());
 			entityFields.add(NuclosEOField.STATENUMBER.getMetaData());
+			if (checkIfColumnExists(NuclosEOField.STATEICON.getMetaData(), eMeta)) {
+				entityFields.add(NuclosEOField.STATEICON.getMetaData());
+			}
 		}
+	}
+	
+	// @TODO can this be refactored to an better class?!
+	private static boolean checkIfColumnExists(EntityFieldMetaDataVO efMeta, EntityMetaDataVO eMeta) {
+		DbTable table = DataBaseHelper.getDbAccess().getTableMetaData(eMeta.getDbEntity().toLowerCase());
+		if (table != null) {
+			 List<DbColumn> tblColumns = table.getTableColumns();
+			 for (DbColumn dbColumn : tblColumns) {
+				if (dbColumn.getColumnName().equalsIgnoreCase(efMeta.getDbColumn()))
+					return true;
+			}
+		}
+		return false;
 	}
 
 	public static boolean isNucletEOSystemField(EntityFieldMetaDataVO voField) {

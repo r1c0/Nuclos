@@ -47,6 +47,7 @@ import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.popupmenu.JPopupMenuFactory;
 import org.nuclos.client.ui.popupmenu.JTableJPopupMenuListener;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.csvparser.ExcelCSVPrinter;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -321,10 +322,15 @@ public class MultiCollectablesActionController <T extends Collectable,R> extends
 
 	public static String getCollectableLabel(String entityname, Collectable clct) {
 		String label = CommonLocaleDelegate.getTreeViewLabel(clct, entityname, MetaDataClientProvider.getInstance());
-		if (label != null) {
-			return label;
+		
+		String tmp = label != null ? label : clct.getIdentifierLabel();
+		
+		int idx = -1;
+		while ((idx = tmp.indexOf("[$" + CollectableFieldFormat.class.getName() + ",")) != -1)
+		{					
+			tmp = tmp.substring(0, idx) + tmp.substring(tmp.indexOf("$]") + 2);
 		}
-		return clct.getIdentifierLabel();
+		return tmp;
 	}
 
 	private class MultiObjectsActionRunnable implements Runnable {

@@ -21,6 +21,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.Icon;
@@ -655,6 +657,10 @@ public class Icons {
 		return this.getIconByName("states.transition-auto");
 	}
 
+	public Icon getIconStateTransitionDefault() {
+		return this.getIconByName("states.transition-default");
+	}
+
 	public Icon getIconApplicationGeneric() {
 		return this.getIconByName("mimetypes.application-x-generic");
 	}
@@ -702,6 +708,92 @@ public class Icons {
 	public ImageIcon getIconShowList() {
 		return this.getIconByName("showList");
 	}
+
+	public Icon getStateViewState() {
+		return this.getIconByName("state-view-state");
+	}
+
+	public Icon getStateViewTransition() {
+		return this.getIconByName("state-view-transition");
+	}
+	
+	public Icon[] getStateIcons() {
+		List<Icon> stateIcons = new LinkedList<Icon>();
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_(.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_).png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_@.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_#.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_=.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_A.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_Ae.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_B.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_C.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_D.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_E.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_F.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_G.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_H.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_I.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_J.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_K.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_L.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_M.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_N.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_O.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_Oe.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_P.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_Q.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_r.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_S.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_T.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_U.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_Ue.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_V.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_W.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_X.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_Y.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_Z.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Farb_grau3.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Farbe_gelb.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Farbe_grau1.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Farbe_grau2.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Farbe_gruen.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Farbe_hellblau.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Farbe_nachtblau.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Farbe_neon.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Farbe_orange.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Farbe_rot.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Sybol_Stern2.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Symbol__.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Symbol_!.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Symbol_08.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Symbol_09.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Symbol_Fadenkreuz.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Symbol_Flieger.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Symbol_Halt.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Symbol_karo.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Symbol_Muell.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Symbol_Muell3.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Symbol_Schloss_auf.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Symbol_Schloss_zu.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Symbol_smily.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Symbol_Sniley.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Symbol_Stern3.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Symbol_Sternsw.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Zahl_0.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Zahl_1.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Zahl_2.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Zahl_3.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Zahl_4.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Zahl_5.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Zahl_6.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Zahl_7.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Zahl_8.png"));
+		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Zahl_9.png"));
+		return stateIcons.toArray(new Icon[0]);
+	}
+	
 
 	/**
 	 * Properties with the icon theme (mapping from names to resources)

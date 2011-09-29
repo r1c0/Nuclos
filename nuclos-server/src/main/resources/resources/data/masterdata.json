@@ -2667,6 +2667,19 @@
         "descriptionres": "nuclos.entityfield.statetransition.automatic.description"
       },
       {
+        "name": "default",
+        "dbfield": "BLNDEFAULT",
+        "label": "Standard Transition",
+        "description": "Standard Transition",
+        "datatype": "java.lang.Boolean",
+        "nullable": true,
+        "searchable": true,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.statetransition.default.label",
+        "descriptionres": "nuclos.entityfield.statetransition.default.description"
+      },
+      {
         "name": "description",
         "dbfield": "STRDESCRIPTION",
         "label": "Beschreibung",
@@ -5648,7 +5661,21 @@
         "logbook": false,
         "unique": false,
         "labelres": "nuclos.entityfield.state.tabres.label"
-      }
+      },
+      {
+        "name": "icon",
+        "dbfield": "OBJICON",
+        "label": "Statusicon",
+        "description": "Statusicon",
+        "datatype": "org.nuclos.common.NuclosImage",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.state.icon.label",
+        "descriptionres": "nuclos.entityfield.state.icon.description"
+      },
     ]
   },
   {

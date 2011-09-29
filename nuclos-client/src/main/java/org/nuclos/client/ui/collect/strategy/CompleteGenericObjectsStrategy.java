@@ -118,6 +118,7 @@ public class CompleteGenericObjectsStrategy implements
 		result.add(NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getField());
 		result.add(NuclosEOField.STATE.getMetaData().getField());
 		result.add(NuclosEOField.STATENUMBER.getMetaData().getField());
+		result.add(NuclosEOField.STATEICON.getMetaData().getField());
 		result.addAll(GenericObjectCollectController.getUsageCriteriaFieldNames());
 		return result;
 	}

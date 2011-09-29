@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.nuclos.common.NuclosImage;
 import org.nuclos.common.collection.multimap.MultiListHashMap;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 
@@ -39,6 +40,7 @@ public class StateVO extends NuclosValueObject {
 	private String sStatename;
 	private String sDescription;
 	private Integer iModelId;
+	private NuclosImage bIcon;
 	private String sTab;
 	private UserRights userrights = new UserRights();
 	private UserFieldRights userfieldrights = new UserFieldRights();
@@ -53,10 +55,11 @@ public class StateVO extends NuclosValueObject {
 	 * @param sStatename			state name of underlying database record
 	 * @param sDescription		model description of underlying database record
 	 */
-	public StateVO(NuclosValueObject nvo, Integer iNumeral, String sStatename, String sDescription, Integer iModelId) {
+	public StateVO(NuclosValueObject nvo, Integer iNumeral, String sStatename, String sDescription, NuclosImage bIcon, Integer iModelId) {
 		super(nvo);
 		this.iClientId = nvo.getId();
 		this.iNumeral = iNumeral;
+		this.bIcon = bIcon;
 		this.sStatename = sStatename;
 		this.sDescription = sDescription;
 		this.iModelId = iModelId;
@@ -70,10 +73,11 @@ public class StateVO extends NuclosValueObject {
 	 * @param sStatename		 state name of underlying database record
 	 * @param sDescription	 model description of underlying database record
 	 */
-	public StateVO(Integer iClientId, Integer iNumeral, String sStatename, String sDescription, Integer iModelId) {
+	public StateVO(Integer iClientId, Integer iNumeral, String sStatename, String sDescription, NuclosImage bIcon, Integer iModelId) {
 		super();
 		this.iClientId = iClientId;
 		this.iNumeral = iNumeral;
+		this.bIcon = bIcon;
 		this.sStatename = sStatename;
 		this.sDescription = sDescription;
 		this.iModelId = iModelId;
@@ -104,6 +108,24 @@ public class StateVO extends NuclosValueObject {
 	 */
 	public void setNumeral(Integer iNumeral) {
 		this.iNumeral = iNumeral;
+	}
+
+	/**
+	 * get icon of underlying database record
+	 *
+	 * @return icon of underlying database record
+	 */
+	public NuclosImage getIcon() {
+		return bIcon;
+	}
+
+	/**
+	 * set icon of underlying database record
+	 *
+	 * @param bIcon icon of underlying database record
+	 */
+	public void setIcon(NuclosImage bIcon) {
+		this.bIcon = bIcon;
 	}
 
 	/**

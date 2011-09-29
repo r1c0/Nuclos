@@ -149,6 +149,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
       collExcludedAttributeIds.add(NuclosEOField.PROCESS.getMetaData().getId().intValue());
       collExcludedAttributeIds.add(NuclosEOField.STATE.getMetaData().getId().intValue());
       collExcludedAttributeIds.add(NuclosEOField.STATENUMBER.getMetaData().getId().intValue());
+      collExcludedAttributeIds.add(NuclosEOField.STATEICON.getMetaData().getId().intValue());
 
       /*iExcludedAttributeIds = getAttributeIdsFromNames(asExcludedAttributes);
       for(int i = 0; i < iExcludedAttributeIds.length; i++){

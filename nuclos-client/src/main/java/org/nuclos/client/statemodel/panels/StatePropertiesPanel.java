@@ -28,11 +28,20 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.IllegalComponentStateException;
 import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -49,9 +58,13 @@ import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -59,9 +72,13 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.TransferHandler;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionListener;
 
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.security.SecurityCache;
@@ -78,6 +95,7 @@ import org.nuclos.client.statemodel.panels.rights.RightTransfer;
 import org.nuclos.client.statemodel.panels.rights.RightTransfer.RoleRight;
 import org.nuclos.client.statemodel.panels.rights.RightTransfer.RoleRights;
 import org.nuclos.client.statemodel.panels.rights.SelectionListener;
+import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.Icons;
@@ -119,6 +137,130 @@ import org.nuclos.server.statemodel.valueobject.SubformPermissionVO;
  */
 
 public class StatePropertiesPanel extends JPanel {
+
+	/**
+	 * 
+	 */
+	public class ResourceIconChooser extends JPanel {
+		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		final JList list;
+		
+		public ResourceIconChooser() {
+			setLayout(new BorderLayout());
+			
+			Icon[] icons = Icons.getInstance().getStateIcons();
+			
+			list = new JList(icons) {
+	            /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+	
+				@Override
+				public int getScrollableUnitIncrement(Rectangle visibleRect,
+	                                                  int orientation,
+	                                                  int direction) {
+	                int row;
+	                if (orientation == SwingConstants.VERTICAL &&
+	                      direction < 0 && (row = getFirstVisibleIndex()) != -1) {
+	                    Rectangle r = getCellBounds(row, row);
+	                    if ((r.y == visibleRect.y) && (row != 0))  {
+	                        Point loc = r.getLocation();
+	                        loc.y--;
+	                        int prevIndex = locationToIndex(loc);
+	                        Rectangle prevR = getCellBounds(prevIndex, prevIndex);
+	
+	                        if (prevR == null || prevR.y >= r.y) {
+	                            return 0;
+	                        }
+	                        return prevR.height;
+	                    }
+	                }
+	                return super.getScrollableUnitIncrement(
+	                                visibleRect, orientation, direction);
+	            }
+	        };
+	        
+	        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	        list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+	        list.setCellRenderer(new ListCellRenderer() {
+				@Override
+				public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+					JPanel btnPanel = new JPanel(new BorderLayout());
+					btnPanel.setOpaque(false);
+					
+					JButton btn = new JButton((ImageIcon) value);
+					btn.setBorderPainted(false);
+					btn.setContentAreaFilled(true);
+					
+					if (isSelected && index > 0) {
+						btn.setOpaque(true);
+						btn.setBackground(NuclosSyntheticaConstants.BACKGROUND_SPOT);
+						btnPanel.setBorder(BorderFactory.createLineBorder(NuclosSyntheticaConstants.BACKGROUND_DARKER, 1));
+					} else {
+						btn.setOpaque(false);
+						btnPanel.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+					}
+					btnPanel.add(btn, BorderLayout.CENTER);
+					
+					return btnPanel;
+				}
+			});
+	        list.setVisibleRowCount(-1);
+	        
+	        list.setDragEnabled(true);
+	        list.setTransferHandler(new TransferHandler(""){
+            	private final DataFlavor DATA_FLAVOUR = new DataFlavor(ImageIcon.class, "Images");
+                public int getSourceActions(JComponent c) {
+                    return TransferHandler.COPY_OR_MOVE;
+                }
+
+	        	@Override
+	        	protected Transferable createTransferable(JComponent c) {
+	                return new Transferable() {
+
+	                    public DataFlavor[] getTransferDataFlavors() {
+	                        return new DataFlavor[] {DATA_FLAVOUR};
+	                    }
+
+	                    public boolean isDataFlavorSupported(DataFlavor flavor) {
+	                        return flavor.equals(DATA_FLAVOUR);
+	                    }
+
+	                    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+	                        return list.getSelectedValue();
+	                    }
+	                };
+
+	        	}
+	        });
+	        
+	        JScrollPane listScroller = new JScrollPane(list);
+	        listScroller.setPreferredSize(new Dimension(250, 80));
+	        listScroller.setAlignmentX(LEFT_ALIGNMENT);
+	        
+	        add(listScroller, BorderLayout.CENTER);
+		}
+		
+		public int getSelectedIndex() {
+			return list.getSelectedIndex();
+		}
+		
+		public void addDoubleClickAction(MouseListener ml) {
+			list.addMouseListener(ml);
+		}
+		public void addListSelectionListener(ListSelectionListener lsl) {
+			list.addListSelectionListener(lsl);
+		}
+		
+		public void removeListSelectionListener(ListSelectionListener lsl) {
+			list.removeListSelectionListener(lsl);
+		}
+	}
 
 	/**
 	 * 
@@ -1373,6 +1515,44 @@ public class StatePropertiesPanel extends JPanel {
 		tfMnemonic.setDocument(model.docMnemonic);
 		tfMnemonic.setEnabled(SecurityCache.getInstance().isWriteAllowedForMasterData(NuclosEntity.STATEMODEL));
 
+		final JLabel labIcon = new JLabel(CommonLocaleDelegate.getMessage("StatePropertiesPanel.20","Statusicon"));
+		final JComponent tfIcon = model.clctImage.getImageLabel();
+		model.clctImage.getLabeledComponent().setSize(new Dimension(100, 21));
+		model.clctImage.setInputWidth(16);
+		model.clctImage.setInputHeight(16);
+		model.clctImage.clear();
+		
+		labIcon.setAlignmentY((float) 0.0);
+		labIcon.setHorizontalAlignment(SwingConstants.LEADING);
+		labIcon.setHorizontalTextPosition(SwingConstants.TRAILING);
+		labIcon.setLabelFor(tfMnemonic);
+		labIcon.setVerticalAlignment(SwingConstants.CENTER);
+		labIcon.setVerticalTextPosition(SwingConstants.CENTER);
+
+		tfIcon.setAlignmentX((float) 0.0);
+		tfIcon.setAlignmentY((float) 0.0);
+		tfIcon.setPreferredSize(new Dimension(100, 21));
+		tfIcon.setEnabled(SecurityCache.getInstance().isWriteAllowedForMasterData(NuclosEntity.STATEMODEL));
+		
+		final ResourceIconChooser tfIconSet = new ResourceIconChooser();
+		tfIconSet.addDoubleClickAction(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					ImageIcon icon = (ImageIcon) tfIconSet.list.getSelectedValue();
+					if (icon != null) {
+						model.clctImage.loadImageFromIcon(icon);
+					}
+				}
+			}
+		});
+		
+		tfIconSet.setAlignmentX((float) 0.0);
+		tfIconSet.setAlignmentY((float) 0.0);
+		tfIconSet.setSize(new Dimension(100, 230));
+		tfIconSet.setPreferredSize(new Dimension(100, 230));
+		tfIconSet.setEnabled(SecurityCache.getInstance().isWriteAllowedForMasterData(NuclosEntity.STATEMODEL));
+		
 		final JLabel labDescription = new JLabel(CommonLocaleDelegate.getMessage("StatePropertiesPanel.5","Beschreibung"));
 		final JTextArea taDescription = new JTextArea();
 		labDescription.setAlignmentY((float) 0.0);
@@ -1426,17 +1606,26 @@ public class StatePropertiesPanel extends JPanel {
 		pnlStateProperties.add(tfMnemonic,
 				new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
 						new Insets(2, 5, 0, 0), 0, 0));
+		pnlStateProperties.add(labIcon,
+				new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+						new Insets(2, 0, 0, 5), 0, 0));
+		pnlStateProperties.add(tfIcon,
+				new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+						new Insets(2, 5, 0, 0), 0, 0));
+		pnlStateProperties.add(tfIconSet,
+				new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+						new Insets(2, 5, 0, 0), 0, 0));
 		pnlStateProperties.add(labDescription,
-				new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.VERTICAL,
+				new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.VERTICAL,
 						new Insets(2, 0, 0, 5), 0, 0));
 		pnlStateProperties.add(scrlpn,
-				new GridBagConstraints(1, 3, 1, 1, 1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,
+				new GridBagConstraints(1, 5, 1, 1, 1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,
 						new Insets(2, 5, 0, 0), 0, 0));
 		pnlStateProperties.add(labTabbedPaneName,
-			new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+			new GridBagConstraints(0, 9, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
 					new Insets(2, 0, 0, 5), 0, 0));
 		pnlStateProperties.add(cmbbxTabbedPaneName,
-			new GridBagConstraints(1, 7, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+			new GridBagConstraints(1, 9, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
 					new Insets(2, 5, 0, 0), 0, 0));
 		return pnlStateProperties;
 	}

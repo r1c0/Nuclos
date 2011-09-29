@@ -460,6 +460,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 	        lstAttribute.add(NuclosEntityNameStep.wrapEntityMetaFieldVO(NuclosEOField.CREATEDBY.getMetaData()));
 	        if(this.model.isStateModel()) {
 	        	lstAttribute.add(NuclosEntityNameStep.wrapEntityMetaFieldVO(NuclosEOField.STATENUMBER.getMetaData()));
+	        	lstAttribute.add(NuclosEntityNameStep.wrapEntityMetaFieldVO(NuclosEOField.STATEICON.getMetaData()));
 	        	lstAttribute.add(NuclosEntityNameStep.wrapEntityMetaFieldVO(NuclosEOField.STATE.getMetaData()));
 	        	lstAttribute.add(NuclosEntityNameStep.wrapEntityMetaFieldVO(NuclosEOField.PROCESS.getMetaData()));
 	        	lstAttribute.add(NuclosEntityNameStep.wrapEntityMetaFieldVO(NuclosEOField.SYSTEMIDENTIFIER.getMetaData()));

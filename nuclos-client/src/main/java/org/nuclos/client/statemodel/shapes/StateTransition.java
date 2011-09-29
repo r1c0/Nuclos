@@ -17,6 +17,7 @@
 package org.nuclos.client.statemodel.shapes;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Stroke;
@@ -34,6 +35,8 @@ import org.nuclos.client.gef.shapes.ConnectionPoint;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
+
+import com.lowagie.text.Font;
 
 /**
  * Shape for displaying a state transition in the state model editor.
@@ -57,7 +60,7 @@ public class StateTransition extends ArrowConnector implements ImageObserver {
 
 	public StateTransition() {
 		super();
-		this.transitionvo = new StateTransitionVO(-getId(), null, null, null, false);
+		this.transitionvo = new StateTransitionVO(-getId(), null, null, null, false, false);
 	}
 
 	/**
@@ -96,13 +99,27 @@ public class StateTransition extends ArrowConnector implements ImageObserver {
 		else {
 			setStroke(strokeRegular);
 		}
+		if (transitionvo != null && transitionvo.isDefault()) {
+			setPaint(Color.BLACK);
+		}
+		else {
+			setPaint(Color.GRAY);
+		}
+		
 		super.paint(gfx);
 		if (transitionvo.getRuleIdsWithRunAfterwards().size() > 0) {
 			ImageIcon icon = (ImageIcon) Icons.getInstance().getIconStateTransitionRules();
 			gfx.drawImage(icon.getImage(), (int) (dimension.getX() + dimension.getWidth() / 2 - 8),
 					(int) (dimension.getY() + dimension.getHeight() / 2 - 8), this);
-
-		}
+		}		
+		/*if (transitionvo != null && transitionvo.isDefault()) {
+			//gfx.setFont(gfx.getFont().deriveFont(Font.BOLD));
+			//gfx.drawString("d", (int) (dimension.getX() + dimension.getWidth() / 2 - 8),
+				//	(int) (dimension.getY() + dimension.getHeight() / 2 - 8));
+			ImageIcon icon = (ImageIcon) Icons.getInstance().getIconStateTransitionDefault();
+			gfx.drawImage(icon.getImage(), (int) (dimension.getX() + dimension.getWidth() / 2),
+					(int) (dimension.getY() + dimension.getHeight() / 2 - 16), this);
+		}*/
 	}
 
 	public void addRule(Integer ruleId, Boolean bRunAfterwards) {
