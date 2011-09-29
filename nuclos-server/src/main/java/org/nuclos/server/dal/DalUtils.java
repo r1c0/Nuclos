@@ -65,8 +65,10 @@ public class DalUtils {
 		}
 		return result;
 	}
-
 	public static void addNucletEOSystemFields(List<EntityFieldMetaDataVO> entityFields, EntityMetaDataVO eMeta) {
+		addNucletEOSystemFields(entityFields, eMeta, false);
+	}
+	public static void addNucletEOSystemFields(List<EntityFieldMetaDataVO> entityFields, EntityMetaDataVO eMeta, boolean addWithoutCheck) {
 		entityFields.add(NuclosEOField.CHANGEDAT.getMetaData());
 		entityFields.add(NuclosEOField.CHANGEDBY.getMetaData());
 		entityFields.add(NuclosEOField.CREATEDAT.getMetaData());
@@ -78,7 +80,7 @@ public class DalUtils {
 			entityFields.add(NuclosEOField.LOGGICALDELETED.getMetaData());
 			entityFields.add(NuclosEOField.STATE.getMetaData());
 			entityFields.add(NuclosEOField.STATENUMBER.getMetaData());
-			if (checkIfColumnExists(NuclosEOField.STATEICON.getMetaData(), eMeta)) {
+			if (addWithoutCheck || checkIfColumnExists(NuclosEOField.STATEICON.getMetaData(), eMeta)) {
 				entityFields.add(NuclosEOField.STATEICON.getMetaData());
 			}
 		}

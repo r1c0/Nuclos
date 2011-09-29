@@ -648,7 +648,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		List<EntityFieldMetaDataVO> lstFields = new ArrayList<EntityFieldMetaDataVO>();
 
 		List<EntityFieldMetaDataVO> lstSystemFields = new ArrayList<EntityFieldMetaDataVO>();
-		DalUtils.addNucletEOSystemFields(lstSystemFields, updatedMDEntity);
+		DalUtils.addNucletEOSystemFields(lstSystemFields, updatedMDEntity, true);
 
 		for(EntityFieldMetaDataTO to : toFields) {
 			if(!to.getEntityFieldMeta().isFlagRemoved()) {
