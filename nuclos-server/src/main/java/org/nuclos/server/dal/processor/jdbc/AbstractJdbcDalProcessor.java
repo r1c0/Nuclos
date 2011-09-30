@@ -20,12 +20,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.CloneUtils;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.DalCallResult;
@@ -57,10 +60,32 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 
    // This must be clone and hence cannot be final.
    protected List<IColumnToVOMapping<? extends Object>> allColumns;
+   private Set<IColumnToVOMapping<? extends Object>> allColumnsAsSet;
 
    public AbstractJdbcDalProcessor(Class<DalVO> type, List<IColumnToVOMapping<? extends Object>> allColumns) {
       super(type);
       this.allColumns = allColumns;
+      this.allColumnsAsSet = new HashSet<IColumnToVOMapping<? extends Object>>(allColumns);
+      checkColumns();
+   }
+   
+	public Object clone() {
+		final AbstractJdbcDalProcessor clone;
+		try {
+			clone = (AbstractJdbcDalProcessor) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException(e.toString());
+		}
+		clone.allColumns = (List<IColumnToVOMapping<? extends Object>>) CloneUtils.cloneCollection(allColumns);
+		clone.allColumnsAsSet = (Set<IColumnToVOMapping<? extends Object>>) CloneUtils.cloneCollection(allColumnsAsSet);
+		return clone;
+	}
+
+   private void checkColumns() {
+      if (allColumns.size() != allColumnsAsSet.size()) {
+    	  LOG.warn("Duplicates in columns, size is "  + allColumns.size() + " but only " + allColumnsAsSet.size() + " unique elements");
+    	  assert false;
+      }
    }
 
    protected abstract String getDbSourceForDML();
@@ -313,12 +338,19 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
    }
 
 	public void addToColumns(IColumnToVOMapping<? extends Object> column) {
-		allColumns.add(column);
+		if (allColumnsAsSet.add(column)) {
+			allColumns.add(column);
+		}
 	}
 	
 	public void setAllColumns(List<IColumnToVOMapping<? extends Object>> columns) {
 		allColumns.clear();
 		allColumns.addAll(columns);
+		
+		allColumnsAsSet.clear();
+		allColumnsAsSet.addAll(columns);
+		
+		checkColumns();
 	}
 	
 }

@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuclos.common.CloneUtils;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -128,17 +127,6 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		} catch (Exception e) {
 			throw new CommonFatalException(e);
 		}
-	}
-
-	public Object clone() {
-		final EntityObjectProcessor clone;
-		try {
-			clone = (EntityObjectProcessor) super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new IllegalStateException(e.toString());
-		}
-		clone.allColumns = (List<IColumnToVOMapping<? extends Object>>) CloneUtils.cloneCollection(allColumns);
-		return clone;
 	}
 
 	@Override

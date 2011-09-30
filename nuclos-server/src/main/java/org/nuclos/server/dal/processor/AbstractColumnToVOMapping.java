@@ -76,6 +76,23 @@ abstract class AbstractColumnToVOMapping<T> implements IColumnToVOMapping<T> {
 	public final Class<T> getDataType() {
 		return dataType;
 	}
+	
+	/*
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) return true;
+		if (!(other instanceof IColumnToVOMapping)) return false;
+		final IColumnToVOMapping<T> o = (IColumnToVOMapping<T>) other;
+		return getTableAlias().equals(o.getTableAlias()) && getColumn().equals(o.getColumn());
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = tableAlias.hashCode();
+		result += 3 * column.hashCode() + 173;
+		return result;
+	}
+	 */
 
 	static <S> S convertFromDbValue(Object value, String column, final Class<S> dataType, final Long recordId) {
 		if (dataType == ByteArrayCarrier.class) {

@@ -99,4 +99,19 @@ public class PivotJoinEntityFieldVOMapping<T> extends AbstractColumnToVOMapping<
 		return joinEntity + "." + field;
 	}
 
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) return true;
+		if (!(other instanceof PivotJoinEntityFieldVOMapping)) return false;
+		final PivotJoinEntityFieldVOMapping<T> o = (PivotJoinEntityFieldVOMapping<T>) other;
+		return getTableAlias().equals(o.getTableAlias()) && getColumn().equals(o.getColumn());
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = getTableAlias().hashCode();
+		result += 3 * getColumn().hashCode() + 173;
+		return result;
+	}
+	
 }

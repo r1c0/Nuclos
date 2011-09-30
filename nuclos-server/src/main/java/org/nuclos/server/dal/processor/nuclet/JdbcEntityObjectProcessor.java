@@ -37,6 +37,10 @@ public interface JdbcEntityObjectProcessor extends
 	
 	Object clone();
 	
+	/**
+	 * Attention:
+	 * Column will only be added if it is not already present.
+	 */
 	void addToColumns(IColumnToVOMapping<? extends Object> column);
 	
 	void setAllColumns(List<IColumnToVOMapping<? extends Object>> columns);
