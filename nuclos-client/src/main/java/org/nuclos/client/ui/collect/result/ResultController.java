@@ -47,6 +47,7 @@ import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.TableColumn;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.NuclosCollectableEntityProvider;
@@ -714,27 +715,23 @@ public class ResultController<Clct extends Collectable> {
 				final CollectableEOEntityField sf = (CollectableEOEntityField) sortField;
 				final EntityFieldMetaDataVO mdField = sf.getMeta();
 				final PivotInfo pinfo = mdField.getPivotInfo();
-				assert pinfo.getSubform().equals(sortField.getEntityName());
-				if (pinfo != null && sortKey.getSortOrder() != SortOrder.UNSORTED) {
-					// The join table alias must be unique in the SQL
-					final String joinAlias = pinfo.getPivotTableAlias(mdField.getField());
-
-					sort = new CollectableSorting(joinAlias, pinfo.getSubform(), baseEntity.equals(pinfo.getSubform()),
-							pinfo.getValueField(), sortKey.getSortOrder() == SortOrder.ASCENDING);
-				}
-				else {
+				if (pinfo != null) {
+					assert pinfo.getSubform().equals(sortField.getEntityName());
 					if (sortKey.getSortOrder() != SortOrder.UNSORTED) {
-						// ???
-						sort = new CollectableSorting(SystemFields.BASE_ALIAS, baseEntity, baseEntity.equals(sortField.getEntityName()),
-							sortField.getName(), sortKey.getSortOrder() == SortOrder.ASCENDING);
-					} else {
+						sort = new CollectableSorting(mdField, baseEntity.equals(pinfo.getSubform()),
+								sortKey.getSortOrder() == SortOrder.ASCENDING);
+					}
+					else {
 						continue;
 					}
+				}
+				else {
+					throw new NotImplementedException();
 				}
 			}
 			else if (sortField.getEntityName().equals(baseEntity)) {
 				if (sortKey.getSortOrder() != SortOrder.UNSORTED) {
-					sort = new CollectableSorting(SystemFields.BASE_ALIAS, baseEntity, baseEntity.equals(sortField.getEntityName()),
+					sort = new CollectableSorting(baseEntity, baseEntity.equals(sortField.getEntityName()),
 							sortField.getName(), sortKey.getSortOrder() == SortOrder.ASCENDING);
 				} else {
 					continue;

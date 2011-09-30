@@ -248,7 +248,7 @@ public class ResPlanController extends CustomComponentController {
 	private CollectableSearchExpression getInternalResourceSearchExpression() {
 		List<CollectableSorting> sorting = new ArrayList<CollectableSorting>();
 		if (configVO.getResourceSortField() != null) {
-			sorting.add(new CollectableSorting(SystemFields.BASE_ALIAS, configVO.getResourceEntity(), true, configVO.getResourceSortField(), true));
+			sorting.add(new CollectableSorting(configVO.getResourceEntity(), true, configVO.getResourceSortField(), true));
 		}
 		return new CollectableSearchExpression(component.getSearchCondition(), sorting);
 	}

@@ -16,9 +16,10 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.dal.vo;
 
+import java.io.ObjectStreamException;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.nuclos.common.collection.Pair;
@@ -33,7 +34,19 @@ import org.nuclos.common2.StringUtils;
  */
 public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 	
-	private static final AtomicInteger AI = new AtomicInteger(0);
+	private static final transient AtomicInteger AI = new AtomicInteger(0);
+	
+	/**
+	 * The table alias for each pivot (subform, key) pair must be unique (and repeatable).
+	 * Hence we store this class-wise.
+	 * <p>
+	 * (Pair (subform, key) -> tableAlias) mapping.
+	 * </p><p>
+	 * TODO:
+	 * Is PivotInfo the right place to store this information?
+	 * </p>
+	 */
+	private static final transient Map<Pair<String,String>,String> TABLE_ALIASES = new ConcurrentHashMap<Pair<String,String>, String>();
 	
 	private final String subform;
 	
@@ -43,27 +56,21 @@ public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 	
 	private final Class<?> valueType;
 	
-	/**
-	 * The table alias for each pivot (subform, key) pair must be unique (and repeatable).
-	 * Hence we store this class-wise.
-	 * <p>
-	 * (Pair (subform, key) -> tableAlias) mapping.
-	 * </p><p>
-	 * TODO:
-	 * Is the HashMap really enough or is ConcurrentHashMap just enough?
-	 * </p><p>
-	 * TODO:
-	 * Is PivotInfo the right place to store this information?
-	 * </p>
-	 */
-	private static final Map<Pair<String,String>,String> TABLE_ALIASES = new HashMap<Pair<String,String>, String>();
-	
 	public PivotInfo(String subform, String keyField, String valueField, Class<?> valueType) {
 		if (subform == null) throw new NullPointerException();
 		this.subform = subform;
 		this.keyField = keyField;
 		this.valueField = valueField;
 		this.valueType = valueType;
+	}
+	
+	/**
+	 * Special serialization handling.
+	 */
+	Object readResolve() throws ObjectStreamException {
+		// save handling of static final fields...
+		assert AI != null && TABLE_ALIASES != null;
+		return new PivotInfo(subform, keyField, valueField, valueType);
 	}
 
 	public String getSubform() {
@@ -82,7 +89,20 @@ public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 		return valueType;
 	}
 	
+	/**
+	 * Attention: A call to this method is only valid on the <em>server</em> side!
+	 * <p>
+	 * TODO:
+	 * This seems not 100% thread-safe at present!
+	 * </p>
+	 */
 	public String getPivotTableAlias(String keyValue) {
+		try {
+			assert AI != null && Class.forName("org.nuclos.server.dal.processor.ProcessorFactorySingleton") != null;
+		}
+		catch (ClassNotFoundException e) {
+			throw new IllegalStateException("getPivotTableAlias can only be called on the server side!");
+		}
 		if (keyValue == null) throw new IllegalArgumentException();
 		final Pair<String,String> pair = new Pair<String,String>(subform, keyValue);
 		String result = TABLE_ALIASES.get(pair);

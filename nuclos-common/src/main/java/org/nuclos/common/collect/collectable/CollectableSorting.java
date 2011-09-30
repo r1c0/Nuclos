@@ -18,6 +18,10 @@ package org.nuclos.common.collect.collectable;
 
 import java.io.Serializable;
 
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common.dal.vo.PivotInfo;
+import org.nuclos.common.dal.vo.SystemFields;
+
 /**
  * Sorting (German: "Sortierung") of a <code>Collectable</code>, consisting of a field name and a direction.
  * Typically, this is an element in a <code>List</code> containing the complete sorting order.
@@ -36,13 +40,14 @@ public class CollectableSorting implements Serializable {
 	
 	private static final long serialVersionUID = 1002927873365829614L;
 
-	private final String tableAlias;
-	
 	private final String entity;
 	
 	private final boolean isBaseEntity;
 	
 	private final String field;
+	
+	// maybe null
+	private final EntityFieldMetaDataVO mdField;
 	
 	private final boolean asc;
 
@@ -51,14 +56,29 @@ public class CollectableSorting implements Serializable {
 	 * @param asc Sort ascending? (false: sort descending)
 	 * @precondition sFieldName != null
 	 */
-	public CollectableSorting(String tableAlias, String entity, boolean isBaseEntity, String field, boolean asc) {
-		if (tableAlias == null || entity == null || field == null) throw new NullPointerException();
-		this.tableAlias = tableAlias;
+	public CollectableSorting(String entity, boolean isBaseEntity, String field, boolean asc) {
+		if (entity == null || field == null) throw new NullPointerException();
 		this.entity = entity;
 		this.isBaseEntity = isBaseEntity;
 		this.field = field;
+		this.mdField = null;
 		this.asc = asc;
 	}
+	
+	public CollectableSorting(EntityFieldMetaDataVO mdField, boolean isBaseEntity, boolean asc) {
+		if (mdField == null) throw new NullPointerException();
+		
+		final PivotInfo pinfo = mdField.getPivotInfo();
+		if (pinfo == null) {
+			throw new IllegalArgumentException("Constructor only defined for pivot fields");
+		}
+		
+		this.entity = pinfo.getSubform();
+		this.isBaseEntity = isBaseEntity;
+		this.field = pinfo.getValueField();
+		this.mdField = mdField;
+		this.asc = asc;
+	}	
 
 	/**
 	 * @return name of the field to sort.
@@ -75,8 +95,25 @@ public class CollectableSorting implements Serializable {
 		return this.asc;
 	}
 	
+	/**
+	 * Attention: A call to this method is only valid on the <em>server</em> side!
+	 */
 	public String getTableAlias() {
-		return tableAlias;
+		final String result;
+		if (mdField == null) {
+			result = SystemFields.BASE_ALIAS;
+		}
+		else {
+			final PivotInfo pinfo = mdField.getPivotInfo();
+			if (pinfo == null) {
+				result = SystemFields.BASE_ALIAS;
+			}
+			else {
+				// The join table alias must be unique in the SQL
+				result = pinfo.getPivotTableAlias(mdField.getField());
+			}
+		}
+		return result;
 	}
 	
 	public String getEntity() {
@@ -104,7 +141,6 @@ public class CollectableSorting implements Serializable {
     public String toString() {
     	final StringBuilder result = new StringBuilder();
     	result.append("CollectableSorting[");
-    	result.append("entity=").append(tableAlias);
     	result.append(", field=").append(field);
     	result.append(", isBase=").append(isBaseEntity);
     	result.append(",");

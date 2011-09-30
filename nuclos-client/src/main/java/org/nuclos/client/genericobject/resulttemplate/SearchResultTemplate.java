@@ -349,7 +349,7 @@ public class SearchResultTemplate {
 		else {
 			final List<CollectableSorting> sorting = new ArrayList<CollectableSorting>();
 			for (String n: PreferencesUtils.getStringList(prefs, PREFS_NODE_SORTINGCOLUMNS)) {
-				sorting.add(new CollectableSorting(SystemFields.BASE_ALIAS, entity, true, n, true));
+				sorting.add(new CollectableSorting(entity, true, n, true));
 			}
 			result.setSortingOrder(sorting);
 		}

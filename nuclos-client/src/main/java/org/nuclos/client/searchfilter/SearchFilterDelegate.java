@@ -282,7 +282,7 @@ public class SearchFilterDelegate {
 			else {
 				final List<CollectableSorting> sorting = new ArrayList<CollectableSorting>();
 				for (String n: PreferencesUtils.getStringList(prefs, PREFS_NODE_SORTINGCOLUMNS)) {
-					sorting.add(new CollectableSorting(SystemFields.BASE_ALIAS, sEntityName, true, n, true));
+					sorting.add(new CollectableSorting(sEntityName, true, n, true));
 				}
 				f.setSortingOrder(sorting);
 			}
