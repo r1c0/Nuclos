@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -307,7 +308,7 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 						try {
 							return performImpl(conn, sql, params);
 						} catch (SQLException e) {
-							log.trace("Restore to savepoint");
+							log.warn("Restore to savepoint because SQL failed with " + e.toString() + ":\n\t" + sql + "\n\t" + Arrays.asList(params));
 							pgsqlConn.rollback(savepoint);
 							throw e;
 						} finally {

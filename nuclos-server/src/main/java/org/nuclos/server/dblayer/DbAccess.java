@@ -25,6 +25,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -132,6 +133,9 @@ public abstract class DbAccess {
 							}
 						}
 						return resolvedSchemaName;
+	                } catch (SQLException e) {
+	            		log.error("resolveSchema failed with " + e.toString() + ":\n\t" + givenSchema);
+	                	throw e;
 					} finally {
 						rs.close();
 					}

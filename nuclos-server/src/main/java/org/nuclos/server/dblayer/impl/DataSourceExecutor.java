@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 
 import javax.sql.DataSource;
 
@@ -67,7 +68,7 @@ public class DataSourceExecutor implements DbExecutor {
 				DataSourceUtils.releaseConnection(conn, dataSource);
 			}
 		} catch (SQLException e) {
-			log.error("SQL exception", e);
+			// log.error("SQL exception", e);
 			throw wrapSQLException(e);
 		} catch (Exception e) {
 			log.error(e);
@@ -88,6 +89,9 @@ public class DataSourceExecutor implements DbExecutor {
 					} finally {
 						rs.close();
 					}
+                } catch (SQLException e) {
+            		log.error("SQL query failed with " + e.toString() + ":\n\t" + sql);
+                	throw e;
 				} finally {
 					stmt.close();
 				}
@@ -103,6 +107,9 @@ public class DataSourceExecutor implements DbExecutor {
 				Statement stmt = conn.createStatement();
 				try {
 					return stmt.executeUpdate(sql);
+                } catch (SQLException e) {
+            		log.error("SQL update failed with " + e.toString() + ":\n\t" + sql);
+                	throw e;
 				} finally {
 					stmt.close();
 				}

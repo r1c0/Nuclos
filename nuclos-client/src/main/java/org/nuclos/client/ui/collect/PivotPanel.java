@@ -504,10 +504,15 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 					c.fill = GridBagConstraints.BOTH;
 					c.gridx = 3;
 					lm.setConstraints(v, c);
+					
+					ch.revalidate();
+					k.revalidate();
+					a.revalidate();
+					v.revalidate();
 				}
 			}
 			// force repaint
-			invalidate();
+			validate();
 		}
 
 		private void setState(boolean selected, String subform, EntityFieldMetaDataVO keyItem, EntityFieldMetaDataVO valueItem) {

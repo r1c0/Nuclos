@@ -76,6 +76,7 @@ import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.PredicateUtils;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
@@ -711,10 +712,12 @@ public class ResultController<Clct extends Collectable> {
 			final CollectableSorting sort;
 			if (sortField instanceof CollectableEOEntityField) {
 				final CollectableEOEntityField sf = (CollectableEOEntityField) sortField;
-				final PivotInfo pinfo = sf.getMeta().getPivotInfo();
+				final EntityFieldMetaDataVO mdField = sf.getMeta();
+				final PivotInfo pinfo = mdField.getPivotInfo();
+				assert pinfo.getSubform().equals(sortField.getEntityName());
 				if (pinfo != null && sortKey.getSortOrder() != SortOrder.UNSORTED) {
 					// The join table alias must be unique in the SQL
-					final String joinAlias = pinfo.getPivotTableAlias(sf.getMeta().getField());
+					final String joinAlias = pinfo.getPivotTableAlias(mdField.getField());
 
 					sort = new CollectableSorting(joinAlias, pinfo.getSubform(), baseEntity.equals(pinfo.getSubform()),
 							pinfo.getValueField(), sortKey.getSortOrder() == SortOrder.ASCENDING);

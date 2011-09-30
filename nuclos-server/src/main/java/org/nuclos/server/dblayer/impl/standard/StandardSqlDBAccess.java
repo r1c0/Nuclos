@@ -44,6 +44,7 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.CryptUtil;
 import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.ParameterProvider;
@@ -114,8 +115,13 @@ import org.nuclos.server.report.valueobject.ResultVO;
 
 public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 
-    public static String MAX_ROWS_HINT = "maxRows";
-    public static String QUERY_TIMEOUT_HINT = "queryTimeout";
+    public static final String MAX_ROWS_HINT = "maxRows";
+    public static final String QUERY_TIMEOUT_HINT = "queryTimeout";
+    
+    private static final Logger LOG = Logger.getLogger(StandardSqlDBAccess.class);
+    
+    protected StandardSqlDBAccess() {
+    }
 
     @Override
     public int execute(List<? extends DbBuildableStatement> statements) throws DbException {
@@ -174,7 +180,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     public <T, R> List<R> executeQuery(DbQuery<T> query, Transformer<? super T, R> transformer) throws DbException {
         QueryBuilder queryBuilder = (QueryBuilder) query.getBuilder();
         PreparedString ps = queryBuilder.getPreparedString(query);
-        logSql("execute SQL query", ps.toString(), ps.getParameters());
+        // logSql("execute SQL query", ps.toString(), ps.getParameters());
         // Create runner
         ResultSetRunner<List<R>> runner = queryBuilder.createListResultSetRunner(query, transformer);
         return executeQuery(ps.toString(), null, runner, ps.getParameters());
@@ -190,6 +196,9 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     }
 
     protected <T> T executeQuery(final String sql, final Map<String, Object> hints, final ResultSetRunner<T> runner, final Object...parameters) throws DbException {
+    	if (LOG.isDebugEnabled()) {
+    		LOG.debug("Query to execute:\n\t" + sql + "\n\t" + Arrays.asList(parameters));
+    	}
         return executor.execute(new ConnectionRunner<T>() {
             @Override
             public T perform(Connection conn) throws SQLException {
@@ -205,6 +214,9 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
                     } finally {
                         rs.close();
                     }
+                } catch (SQLException e) {
+            		LOG.error("SQL query failed with " + e.toString() + ":\n\t" + sql + "\n\t" + Arrays.asList(parameters));
+                	throw e;
                 } finally {
                     stmt.close();
                 }
@@ -245,10 +257,11 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         return executor.execute(new ConnectionRunner<T>() {
             @Override
             public T perform(Connection conn) throws SQLException {
-                boolean hasOut = resultType != Void.class;
-                CallableStatement stmt = conn.prepareCall(String.format("{%scall %s(%s)}",
-                    hasOut ? "? = " : "", name,
-                        StringUtils.join(", ", CollectionUtils.replicate("?", args.length))));
+                final boolean hasOut = resultType != Void.class;
+                final String call = String.format("{%scall %s(%s)}",
+                        hasOut ? "? = " : "", name,
+                                StringUtils.join(", ", CollectionUtils.replicate("?", args.length)));
+                final CallableStatement stmt = conn.prepareCall(call);
                 try {
                     prepareStatementParameters(stmt, hasOut ? 2 : 1, Arrays.asList(args));
                     if (hasOut)
@@ -259,6 +272,9 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
                     } else {
                         return null;
                     }
+                } catch (SQLException e) {
+            		LOG.error("executeCallable failed with " + e.toString() + ":\n\t" + call + "\n\t" + Arrays.asList(args));
+                	throw e;
                 } finally {
                     stmt.close();
                 }
@@ -292,7 +308,13 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         return executor.execute(new ConnectionRunner<Set<String>>() {
             @Override
             public Set<String> perform(Connection conn) throws SQLException {
-                return getMetaDataExtractor().setup(conn, catalog, schema).getTableNames(tableType);
+            	try {
+            		return getMetaDataExtractor().setup(conn, catalog, schema).getTableNames(tableType);
+            	} catch (SQLException e) {
+            		LOG.error("getTableNames failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema
+            				+ " table: " + tableType);
+            		throw e;
+            	}
             }
         });
     }
@@ -302,7 +324,13 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         return executor.execute(new ConnectionRunner<DbTable>() {
             @Override
             public DbTable perform(Connection conn) throws SQLException {
-                return getMetaDataExtractor().setup(conn, catalog, schema).getTableMetaData(tableName);
+            	try {
+            		return getMetaDataExtractor().setup(conn, catalog, schema).getTableMetaData(tableName);
+            	} catch (SQLException e) {
+            		LOG.error("getTableMetaData failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema
+            				+ " table: " + tableName);
+            		throw e;
+            	}
             }
         });
     }
@@ -312,7 +340,12 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         return executor.execute(new ConnectionRunner<Set<String>>() {
             @Override
             public Set<String> perform(Connection conn) throws SQLException {
-                return getMetaDataExtractor().setup(conn, catalog, schema).getCallableNames();
+            	try {
+            		return getMetaDataExtractor().setup(conn, catalog, schema).getCallableNames();
+            	} catch (SQLException e) {
+            		LOG.error("getCallableNames failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema);
+            		throw e;
+            	}
             }
         });
     }
@@ -322,7 +355,12 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         return executor.execute(new ConnectionRunner<Collection<DbArtifact>>() {
             @Override
             public Collection<DbArtifact> perform(Connection conn) throws SQLException {
-                return getMetaDataExtractor().setup(conn, catalog, schema).getAllMetaData();
+            	try {
+            		return getMetaDataExtractor().setup(conn, catalog, schema).getAllMetaData();
+            	} catch (SQLException e) {
+            		LOG.error("getAllMetaData failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema);
+            		throw e;
+            	}
             }
         });
     }
@@ -332,7 +370,12 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         return executor.execute(new ConnectionRunner<Map<String, Object>>() {
             @Override
             public Map<String, Object> perform(Connection conn) throws SQLException {
-                return getMetaDataExtractor().setup(conn, catalog, schema).getMetaDataInfo();
+            	try {
+            		return getMetaDataExtractor().setup(conn, catalog, schema).getMetaDataInfo();
+            	} catch (SQLException e) {
+            		LOG.error("getMetaDataInfo failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema);
+            		throw e;
+            	}
             }
         });
     }
@@ -342,7 +385,12 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         return executor.execute(new ConnectionRunner<Map<String, String>>() {
             @Override
             public Map<String, String> perform(Connection conn) throws SQLException {
-                return getMetaDataExtractor().setup(conn, catalog, schema).getDatabaseParameters();
+            	try {
+            		return getMetaDataExtractor().setup(conn, catalog, schema).getDatabaseParameters();
+            	} catch (SQLException e) {
+            		LOG.error("getDatabaseParameters failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema);
+            		throw e;
+            	}
             }
         });
     }
@@ -509,6 +557,9 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
                     setStatementHint(stmt, MAX_ROWS_HINT, 1);
                     setStatementHint(stmt, QUERY_TIMEOUT_HINT, 300);
                     stmt.execute(sql);
+                } catch (SQLException e) {
+            		LOG.error("checkSyntax failed with " + e.toString() + ":\n\t" + sql);
+                	throw e;
                 } finally {
                     stmt.close();
                 }
@@ -718,6 +769,9 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
                         try {
                             prepareStatementParameters(stmt, params);
                             return stmt.executeUpdate();
+                        } catch (SQLException e) {
+                    		LOG.error("executePreparedStatement failed with " + e.toString() + ":\n\t" + sql + "\n\t" + Arrays.asList(params));
+                        	throw e;
                         } finally {
                             stmt.close();
                         }
