@@ -76,6 +76,10 @@ public class RuleObjectContainerCVO implements Serializable {
 		public String getName() {
 			return this.name;
 		}
+
+		public boolean isFollowUp() {
+			return name.endsWith("_after");
+		}
 	}
 
 	private Integer iTargetStateId;

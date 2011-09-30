@@ -838,7 +838,10 @@ public class RuleInterface extends CustomCodeInterface {
 		if (sFieldName == null) {
 			throw new NullArgumentException("sFieldName");
 		}
-		if (iObjectId.equals(getObjectId())) {
+		if (iObjectId.equals(getObjectId())
+				&& (getRuleObjectContainerCVOIfAny() == null
+					|| getRuleObjectContainerCVOIfAny().getEvent() == null
+					|| !getRuleObjectContainerCVOIfAny().getEvent().isFollowUp() )) {
 			setField(sEntityName, sFieldName, iValueId, oValue);
 		}
 		else {
