@@ -80,6 +80,7 @@ import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.dal.DalSupportForGO;
+import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -1237,7 +1238,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			GenericObjectFacadeLocal goFacade = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
 			goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATE.getMetaData().getField(), stateVO.getId(), stateVO.getStatename());
 			goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATENUMBER.getMetaData().getField(), stateVO.getId(), stateVO.getNumeral());
-			goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATEICON.getMetaData().getField(), stateVO.getId(), stateVO.getIcon());
+			//goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATEICON.getMetaData().getField(), stateVO.getId(), stateVO.getIcon());
 		}
 		catch (CommonValidationException ex) {
 			throw new NuclosFatalException(ex);
