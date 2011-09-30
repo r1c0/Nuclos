@@ -500,9 +500,9 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 				} catch (ClassNotFoundException e) {
 					throw new NuclosFatalException(e);
 				}
-				c.alias(meta.getField());
 
 				if (function == null || "group by".equals(function)) {
+					c.alias(meta.getField());
 					selection.add(c);
 					groupby.add(c);
 					if (meta.getForeignEntity() != null && meta.getForeignEntityField() != null) {
@@ -521,9 +521,6 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 				}
 				else if ("maximum value".equals(function)) {
 					selection.add(builder.max(c).alias(meta.getField()));
-				}
-				else {
-					selection.add(c);
 				}
 			}
 		}
@@ -547,6 +544,10 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		result.getFields().put(NuclosEOField.LOGGICALDELETED.getMetaData().getField(), Boolean.FALSE);
 
 		for (MasterDataVO attribute : attributes) {
+			final String type = (String) attribute.getField("sourceType");
+			if (!StringUtils.isNullOrEmpty(type)) {
+				continue;
+			}
 			final String source = (String) attribute.getField("attributeSource");
 			final String target = (String) attribute.getField("attributeTarget");
 
@@ -562,7 +563,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 
 	private void aggregateDependants(Collection<Integer> sourceIds, GeneratorActionVO gavo, MasterDataVO subentity, GenericObjectVO target, DependantMasterDataMap dependants) {
 		final Collection<MasterDataVO> attributes = getMasterDataFacade().getDependantMasterData(NuclosEntity.GENERATIONSUBENTITYATTRIBUTE.getEntityName(), "entity", subentity.getId());
-		if (attributes.size() == 1) {
+		if (attributes.size() == 0) {
 			return;
 		}
 
@@ -574,7 +575,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from(sTable).alias(SystemFields.BASE_ALIAS);
 
-		List<DbExpression<?>> selection = new ArrayList<DbExpression<?>>();
+		List<DbSelection<?>> selection = new ArrayList<DbSelection<?>>();
 		List<DbExpression<?>> groupby = new ArrayList<DbExpression<?>>();
 
 		for (MasterDataVO attribute : attributes) {
@@ -589,9 +590,9 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 			} catch (ClassNotFoundException e) {
 				throw new NuclosFatalException(e);
 			}
-			c.alias(meta.getField());
 
 			if ("group by".equals(function)) {
+				c.alias(meta.getField());
 				selection.add(c);
 				groupby.add(c);
 				if (meta.getForeignEntity() != null && meta.getForeignEntityField() != null) {
@@ -603,16 +604,13 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 				}
 			}
 			else if ("summate".equals(function)) {
-				selection.add(builder.sum(c));
+				selection.add(builder.sum(c).alias(source));
 			}
 			else if ("minimum value".equals(function)) {
-				selection.add(builder.min(c));
+				selection.add(builder.min(c).alias(source));
 			}
 			else if ("maximum value".equals(function)) {
-				selection.add(builder.max(c));
-			}
-			else {
-				selection.add(c);
+				selection.add(builder.max(c).alias(source));
 			}
 		}
 
@@ -628,7 +626,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 
 		ArrayList<DbCondition> conditions = new ArrayList<DbCondition>();
 		for (Integer sourceId : sourceIds) {
-			conditions.add(builder.equal(t.baseColumn("dbColumn", Long.class), sourceId.longValue()));
+			conditions.add(builder.equal(t.baseColumn(dbColumn, Long.class), sourceId.longValue()));
 		}
 		query.where(builder.or(conditions.toArray(new DbCondition[conditions.size()])));
 
@@ -640,8 +638,8 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 				result.setEntity(targetEntity.getEntity());
 
 				for (MasterDataVO attribute : attributes) {
-					final String source = (String) attribute.getField("attributeSource");
-					final String target = (String) attribute.getField("attributeTarget");
+					final String source = (String) attribute.getField("subentityAttributeSource");
+					final String target = (String) attribute.getField("subentityAttributeTarget");
 
 					result.getFields().put(target, tuple.get(source));
 					EntityFieldMetaDataVO meta = MetaDataServerProvider.getInstance().getEntityField(sourceEntity.getEntity(), source);
