@@ -1670,6 +1670,11 @@ public class MainController {
 		MainFrame.setSelectedTab(ctl.getFrame());
 	}
 
+	public void showList(String entity, List<Object> ids) throws CommonBusinessException {
+		NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(MainFrame.getPredefinedEntityOpenLocation(entity), entity, null);
+		controller.runViewResults(ids);
+	}
+
 	/**
 	 * Open a new embedded (not in separate tab) dialog to create a new collectable.
 	 * The embedded window will be closed later.

@@ -23,14 +23,14 @@ public interface IMultiActionProgressResultHandler {
 	public String getSuccessLabel();
 
 	public String getExceptionLabel();
-	
+
 	public String getStateHeaderLabel();
 
 	public String getSingleSelectionMenuLabel();
 
 	public String getMultiSelectionMenuLabel();
-	
+
 	//public void handleSingleSelection();
-	
-	public void handleMultiSelection(Collection<Integer> collLeasedObjectIds);
+
+	public void handleMultiSelection(Collection<MultiActionProgressLine> selection);
 }

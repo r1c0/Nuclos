@@ -32,7 +32,6 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.Collator;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,7 +44,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
@@ -96,7 +94,6 @@ import org.nuclos.client.common.EntityCollectController;
 import org.nuclos.client.common.KeyBindingProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.MultiUpdateOfDependants;
-import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.NuclosCollectableStateComboBox;
 import org.nuclos.client.common.NuclosFocusTraversalPolicy;
 import org.nuclos.client.common.NuclosResultPanel;
@@ -115,12 +112,9 @@ import org.nuclos.client.genericobject.resulttemplate.SearchResultTemplate;
 import org.nuclos.client.genericobject.statehistory.StateHistoryController;
 import org.nuclos.client.genericobject.valuelistprovider.GenericObjectCollectableFieldsProviderFactory;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterData;
-import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
@@ -139,7 +133,6 @@ import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
@@ -155,10 +148,6 @@ import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
 import org.nuclos.client.ui.collect.component.CollectableComponentWithValueListProvider;
 import org.nuclos.client.ui.collect.component.CollectableDateChooser;
-import org.nuclos.client.ui.collect.component.EntityListOfValues;
-import org.nuclos.client.ui.collect.component.ICollectableListOfValues;
-import org.nuclos.client.ui.collect.component.LookupEvent;
-import org.nuclos.client.ui.collect.component.LookupListener;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelAdapter;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
@@ -172,7 +161,6 @@ import org.nuclos.client.ui.collect.component.model.EditModel;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModel;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchEditModel;
-import org.nuclos.client.ui.collect.detail.DetailsCollectableEventListener;
 import org.nuclos.client.ui.collect.detail.DetailsPanel;
 import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.collect.model.GenericObjectsResultTableModel;
@@ -185,6 +173,7 @@ import org.nuclos.client.ui.collect.search.ISearchStrategy;
 import org.nuclos.client.ui.collect.search.SearchPanel;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
+import org.nuclos.client.ui.multiaction.MultiActionProgressLine;
 import org.nuclos.client.ui.multiaction.MultiActionProgressPanel;
 import org.nuclos.client.ui.multiaction.MultiActionProgressResultHandler;
 import org.nuclos.client.ui.multiaction.MultiCollectablesActionController;
@@ -199,7 +188,6 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosImage;
 import org.nuclos.common.ParameterProvider;
-import org.nuclos.common.PointerCollection;
 import org.nuclos.common.PointerException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.UsageCriteria;
@@ -241,6 +229,7 @@ import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.EntityAndFieldName;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -692,27 +681,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					mi.setVisible(lstActions.size() != 0);
 					for(final GeneratorActionVO actionVO : lstActions) {
 						JMenuItem action = new JMenuItem(new AbstractAction(actionVO.toString()) {
-
-							/**
-							 *
-							 */
 							private static final long serialVersionUID = 1L;
 
 							@Override
 							public void actionPerformed(ActionEvent e) {
-								final AtomicReference<Integer> parameterObjectIdRef = new AtomicReference<Integer>();
-								if(GenericObjectCollectController.this.getSelectedCollectables().size() == 1){
-
-									try {
-										generateGenericObjectsFromSingleSources(parameterObjectIdRef.get(), actionVO);
-									}
-									catch(CommonBusinessException ex) {
-										throw new NuclosFatalException(ex);
-									}
-								}
-								else {
-									GenericObjectCollectController.this.generateGenericObjectFromMultipleSources(parameterObjectIdRef.get(), actionVO);
-								}
+								cmdGenerateGenericObject(actionVO);
 							}
 
 						});
@@ -2868,7 +2841,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @return a new <code>CollectableGenericObjectWithDependants</code> wrapping <code>govo</code>.
 	 */
 	private static CollectableGenericObjectWithDependants newCollectableGenericObject(GenericObjectVO govo) {
-		return CollectableGenericObjectWithDependants.newCollectableGenericObject(govo);
+		return CollectableGenericObjectWithDependants.newCollectableGenericObjectWithDependants(govo);
 	}
 
 	/**
@@ -3496,7 +3469,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				cmbbxCurrentState.addActionListener(al);
 			}
 		}
-		
+
 		cmbbxCurrentState.setEnabled(cmbbxCurrentState.getItemCount() != 0);
 	}
 	private void showCustomActions(int iDetailsMode) {
@@ -3526,7 +3499,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				}
 
 				toolbarCustomActionsDetails.add(new BlackLabel(cmbbxCurrentState, CommonLocaleDelegate.getMessage("GenericObjectCollectController.106","Status")));
-				
+
 				// buttons/actions for "generate leased object":
 				try {
 					if (!isSelectedCollectableMarkedAsDeleted())
@@ -3554,7 +3527,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				UIUtils.ensureMinimumSize(getFrame());
 			}
 		}
-		
+
 		//if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_USE_INVALID_MASTERDATA)) {
 			//toolbarCustomActionsDetails.add(Box.createHorizontalStrut(5));
 			//toolbarCustomActionsDetails.add(chkbxUseInvalidMasterData);
@@ -3998,7 +3971,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private void changeStateForMultipleObjects(final StateWrapper stateNew) throws CommonBusinessException {
 		new ChangeStateForSelectedCollectablesController(this, stateNew, new LinkedList<StateWrapper>(Collections.singleton(stateNew))).run(getMultiActionProgressPanel(getSelectedCollectables().size()));
 	}
-	
+
 	private void changeStatesForMultipleObjects(final StateWrapper stateFinal, final List<StateWrapper> statesNew) throws CommonBusinessException {
 		new ChangeStateForSelectedCollectablesController(this, stateFinal, statesNew).run(getMultiActionProgressPanel(getSelectedCollectables().size()));
 	}
@@ -4009,135 +3982,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	private void cmdGenerateGenericObject(final GeneratorActionVO generatoractionvo) {
 		assert !isHistoricalView();
-		try {
-			final String sTargetModuleName = getModuleLabel(generatoractionvo.getTargetModuleId());
-
-			final boolean bMulti = CollectState.isDetailsModeMultiViewOrEdit(getCollectState().getInnerState());
-			final String sSourceModuleName = getModuleLabel(getSelectedCollectableModuleId());
-
-			final int iBtn = confirmGenerationType(bMulti, sSourceModuleName, sTargetModuleName, generatoractionvo);
-
-			if (iBtn != JOptionPane.CANCEL_OPTION && iBtn != JOptionPane.CLOSED_OPTION) {
-				final AtomicReference<Integer> parameterObjectIdRef = new AtomicReference<Integer>();
-				final CommonRunnable generateRunnable = new CommonRunnable() {
-					@Override
-					public void run() throws CommonBusinessException {
-						Integer parameterObjectId = parameterObjectIdRef.get();
-						if (bMulti && iBtn == JOptionPane.YES_OPTION)
-							generateGenericObjectFromMultipleSources(parameterObjectId, generatoractionvo);
-						else
-							generateGenericObjectsFromSingleSources(parameterObjectId, generatoractionvo);
-					}
-				};
-				if (generatoractionvo.getParameterEntityId() != null) {
-					UIUtils.runShortCommand(getFrame(), new CommonRunnable() {
-						@Override
-						public void run() throws CommonBusinessException {
-							final EntityMetaDataVO parameterEntity =
-								MetaDataClientProvider.getInstance().getEntity(generatoractionvo.getParameterEntityId().longValue());
-							final String pEntityStr = parameterEntity.getEntity();
-							/*
-							final CollectableEntity pEntitiy =
-								DefaultCollectableEntityProvider.getInstance().getCollectableEntity(pEntityStr);
-							 */
-
-							final MainFrameTab tab = GenericObjectCollectController.this.getFrame();
-							final ICollectableListOfValues lov = new EntityListOfValues(tab);
-							final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(
-								tab, pEntityStr, null);
-							lov.addLookupListener(new LookupListener() {
-								@Override
-								public void lookupSuccessful(LookupEvent ev) {
-									Collectable clct = ev.getSelectedCollectable();
-									if (clct != null) {
-										parameterObjectIdRef.set((Integer) clct.getId());
-									}
-									UIUtils.runShortCommand(getFrame(), generateRunnable);
-								}
-								@Override
-								public int getPriority() {
-									return 1;
-								}
-							});
-							ctl.runLookupCollectable(lov);
-						}
-					});
-				} else {
-					UIUtils.runShortCommand(getFrame(), generateRunnable);
-				}
-			}
+		Map<Integer, UsageCriteria> sources = new HashMap<Integer, UsageCriteria>();
+		for (CollectableGenericObjectWithDependants clct : getSelectedCollectables()) {
+			sources.put(clct.getId(), getUsageCriteria(clct));
 		}
-		catch (Exception ex) {
-			Errors.getInstance().showExceptionDialog(getFrame(), ex);
-		}
-	}
-
-	/**
-	 * Execute object generation once for every single selected leased object.
-	 * Performed in an own thread.
-	 * @param generatoractionvo
-	 */
-	private void generateGenericObjectsFromSingleSources(final Integer parameterObjectId, final GeneratorActionVO generatoractionvo) throws CommonBusinessException {
-		final List<CollectableGenericObjectWithDependants> lstClct = GenericObjectCollectController.this.getCompleteSelectedCollectables();
-
-		if (lstClct.size() == 1) {
-			final Integer sourceId = lstClct.get(0).getId();
-			CommonMultiThreader.getInstance().execute(
-				new CommonClientWorkerAdapter<CollectableGenericObjectWithDependants>(GenericObjectCollectController.this) {
-					private volatile GenericObjectVO generatedGo;
-
-					@Override
-					public void work() throws CommonBusinessException {
-						generatedGo = generatordelegate.generateGenericObject(sourceId, parameterObjectId, generatoractionvo);
-					}
-
-					@Override
-					public void paint() throws CommonBusinessException {
-						if (generatedGo == null)
-							return;
-
-						Integer generatedGoId = generatedGo.getId();
-						if (SecurityCache.getInstance().isWriteAllowedForModule(Modules.getInstance().getEntityNameByModuleId(generatoractionvo.getTargetModuleId()), generatedGoId))
-							if (generatedGoId != null)
-								showGenericObject(generatedGoId, generatoractionvo.getTargetModuleId(), false);
-							else {
-								GenericObjectCollectController goclct = showIncompleteGenericObject(sourceId, generatedGo);
-
-								if (showObjectGenerationWarningIfNewObjectIsNotSaveable()) {
-									final String message = CommonLocaleDelegate.getMessage("R00022889", "Der Datensatz konnte nicht erstellt werden.\n\u00dcberpr\u00fcfen Sie alle Pflichtfelder.");
-									goclct.setPointerInformation(new PointerCollection(message), null);
-									//JOptionPane.showMessageDialog(goclct.parent,
-									//	CommonLocaleDelegate.getMessage("R00022889", "Der Datensatz konnte nicht erstellt werden.\n\u00dcberpr\u00fcfen Sie alle Pflichtfelder."),
-									//	CommonLocaleDelegate.getMessage("R00022892", "Objektgenerierung"),
-									//	JOptionPane.ERROR_MESSAGE);
-								}
-							}
-						super.paint();
-					}
-
-					@Override
-					public void handleError(Exception ex) {
-						if (handlePointerException(ex))
-							GenericObjectCollectController.this.forceUnlockFrame();
-						else
-							super.handleError(ex);
-					}
-
-
-				});
-		} else if (lstClct.size() > 1) {
-			MultiActionProgressPanel panel = new MultiActionProgressPanel(lstClct.size());
-			panel.setResultHandler(new MultiActionProgressResultHandler(this) {
-				@Override
-				public void handleMultiSelection(Collection<Integer> objectIds) {
-					((GenericObjectCollectController) controller).openGenericObjectController(objectIds);
-				}
-			});
-			new MultiCollectablesActionController<CollectableGenericObjectWithDependants, GenericObjectVO>(
-				this, CommonLocaleDelegate.getMessage("R00022892", "Objektgenerierung"),
-				new MultiGenerateAction(this, parameterObjectId, generatoractionvo), lstClct
-			).run(panel);
-		}
+		GenerationController controller = new GenerationController(sources, generatoractionvo, this, getFrame());
+		controller.generateGenericObject();
 	}
 
 	protected boolean showObjectGenerationWarningIfNewObjectIsNotSaveable() {
@@ -4147,7 +3997,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	@Override
 	public void save() throws CommonBusinessException {
 		super.save();
-		if (bGenerated) {
+		if (bGenerated && iGenericObjectIdSource != null) {
 			if (getSelectedGenericObjectId() != null) { // could be null if save is not possible (e.g. mandatory fields)
 				lodelegate.relate(iGenericObjectIdSource, GenericObjectTreeNode.SystemRelationType.PREDECESSOR_OF.getValue(), getSelectedGenericObjectId(), getModuleId(), null, null, null);
 				bGenerated = false;
@@ -4160,158 +4010,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	private void resetTransferedDetailsData() {
 		transferredDetailsData.clear();
-	}
-
-	/**
-	 * Execute object generation once for all selected leased objects.
-	 * Performed in an own thread.
-	 * @param generatoractionvo
-	 */
-	private void generateGenericObjectFromMultipleSources(final Integer parameterObjectId, final GeneratorActionVO generatoractionvo) {
-		CommonMultiThreader.getInstance().execute(new CommonClientWorkerAdapter<CollectableGenericObjectWithDependants>(GenericObjectCollectController.this) {
-			private Collection<Integer> collSelectedIds;
-			private Collection<Integer> collTargetIds;
-
-			@Override
-			public void init() throws CommonBusinessException {
-				super.init();
-				// Get a collection of the ids of all selected collectables
-				collSelectedIds = CollectionUtils.transform(getSelectedCollectables(), new Transformer<Collectable, Integer>() {
-					@Override
-					public Integer transform(Collectable o) {
-						return (Integer) o.getId();
-					}
-				});
-			}
-
-			@Override
-			public void work() throws CommonBusinessException {
-				if(generatoractionvo.isGroupAttributes())
-					collTargetIds = generatordelegate.generateGenericObjectFromMultipleSourcesWithAttributeGrouping(collSelectedIds, parameterObjectId, generatoractionvo);
-				else {
-					collTargetIds.add(generatordelegate.generateGenericObjectFromMultipleSources(collSelectedIds, parameterObjectId, generatoractionvo));
-				}
-			}
-
-			@Override
-			public void paint() throws CommonBusinessException {
-				if(collTargetIds != null) {
-					for(Integer iGen : collTargetIds) {
-						showGenericObject(iGen, generatoractionvo.getTargetModuleId(), true);
-					}
-					super.paint();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Open the generated leased object in an own controller, if possible.
-	 * @param iGeneratedObjectId
-	 * @param iModuleId
-	 * @throws CommonBusinessException
-	 */
-	@SuppressWarnings("deprecation")
-	private void showGenericObject(Integer iGeneratedObjectId, final Integer iModuleId, boolean multiEdit) throws CommonBusinessException {
-		if (iGeneratedObjectId != null) {
-			// one object was generated - show it:
-			final GenericObjectVO govo = lodelegate.get(iModuleId, iGeneratedObjectId);
-			final GenericObjectCollectController ctl = GenericObjectCollectController.this;
-
-			String entity = Modules.getInstance().getEntityNameByModuleId(iModuleId);
-			JTabbedPane openInTabbed;
-			MainFrameTab tabIfAny = null;
-			if (MainFrame.isPredefinedEntityOpenLocationSet(entity))
-				openInTabbed = MainFrame.getPredefinedEntityOpenLocation(entity);
-			else {
-				final MainFrameTabbedPane mfTabbedPane = MainFrame.getTabbedPane(GenericObjectCollectController.this.getFrame());
-				openInTabbed = mfTabbedPane;
-				tabIfAny = new MainFrameTab();
-				final int indexSource = mfTabbedPane.getTabIndex(GenericObjectCollectController.this.getFrame());
-				final int indexTarget = indexSource -1;
-				mfTabbedPane.addTab(tabIfAny, indexTarget);
-			}
-
-			GenericObjectCollectController newController = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(
-				openInTabbed, iModuleId, tabIfAny);
-			if (tabIfAny != null) MainController.initMainFrameTab(newController, tabIfAny);
-			if(this.getCollectState().getOuterState() == CollectState.OUTERSTATE_DETAILS && !multiEdit)
-				newController.addCollectableEventListener(new DetailsCollectableEventListener(ctl, newController));
-			newController.runViewSingleCollectable(newCollectableGenericObject(govo));
-		}
-	}
-
-	/**
-	 * Open an incomplete generated object in its own controller.
-	 * @throws CommonBusinessException
-	 */
-	GenericObjectCollectController showIncompleteGenericObject(Integer sourceId, GenericObjectVO generatedGo) throws CommonBusinessException {
-		String entity = Modules.getInstance().getEntityNameByModuleId(generatedGo.getModuleId());
-		JTabbedPane openInTabbed;
-		MainFrameTab tabIfAny = null;
-		if (MainFrame.isPredefinedEntityOpenLocationSet(entity))
-			openInTabbed = MainFrame.getPredefinedEntityOpenLocation(entity);
-		else {
-			final MainFrameTabbedPane mfTabbedPane = MainFrame.getTabbedPane(GenericObjectCollectController.this.getFrame());
-			openInTabbed = mfTabbedPane;
-			tabIfAny = new MainFrameTab();
-			final int indexSource = mfTabbedPane.getTabIndex(GenericObjectCollectController.this.getFrame());
-			final int indexTarget = indexSource -1;
-			mfTabbedPane.addTab(tabIfAny, indexTarget);
-		}
-		GenericObjectCollectController goclct = NuclosCollectControllerFactory.getInstance().
-				newGenericObjectCollectController(openInTabbed, generatedGo.getModuleId(), tabIfAny);
-		goclct.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW_CHANGED);
-		goclct.bGenerated = true;
-		goclct.iGenericObjectIdSource = sourceId;
-		goclct.unsafeFillDetailsPanel(new CollectableGenericObjectWithDependants((GenericObjectWithDependantsVO) generatedGo));
-		goclct.addCollectableEventListener(new DetailsCollectableEventListener(GenericObjectCollectController.this, goclct));
-		if (tabIfAny != null) MainController.initMainFrameTab(goclct, tabIfAny);
-		goclct.showFrame();
-		return goclct;
-	}
-
-	/**
-	 * Ask the user for type of desired generation and confirmation of object generation.
-	 * @param bShowDetails
-	 * @param bMulti
-	 * @param sSourceModuleName
-	 * @param sTargetModuleName
-	 * @param generatoractionvo
-	 * @return selected option
-	 */
-	private int confirmGenerationType(boolean bMulti, String sSourceModuleName, String sTargetModuleName, GeneratorActionVO generatoractionvo) {
-		final int iBtn;
-		if (generatoractionvo.getTargetProcessId() != null) {
-			try {
-				sTargetModuleName = MessageFormat.format("{0} ({1})", sTargetModuleName, MasterDataCache.getInstance().get(NuclosEntity.PROCESS.getEntityName(), generatoractionvo.getTargetProcessId()).getField("name", String.class));
-			} catch (CommonFinderException e) {
-				log.error("Unable to determine target process name.", e);
-			}
-		}
-		if (bMulti) {
-			if(generatoractionvo.isGroupAttributes()) {
-				final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.71a","Soll aus den aktuellen {0} mehrere {1} erzeugt werden?", sSourceModuleName, sTargetModuleName);
-				iBtn = JOptionPane.showConfirmDialog(getFrame(), sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName),
-					JOptionPane.OK_CANCEL_OPTION);
-			}
-			else {
-				final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.72","Soll aus den markierten Objekten vom Typ \"{0}\" eine oder mehrere Objekte vom Typ \"{1}\" erzeugt werden?", sSourceModuleName, sTargetModuleName);
-				final Object[] aoOptions = {CommonLocaleDelegate.getMessage("GenericObjectCollectController.39","Eine einzige"), CommonLocaleDelegate.getMessage("GenericObjectCollectController.47","F\u00fcr jeden eine"), CommonLocaleDelegate.getMessage("GenericObjectCollectController.6","Abbrechen")};
-				iBtn = JOptionPane.showOptionDialog(parent, sMessage, sTargetModuleName + " erzeugen", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-					null, aoOptions, aoOptions[0]);
-			}
-		}
-		else {
-			CollectableField cf = getSelectedCollectable().getField(NuclosEOField.PROCESS.getName());
-			if (cf != null && cf.getValue() != null) {
-				sSourceModuleName = MessageFormat.format("{0} ({1})", sSourceModuleName, getSelectedCollectable().getField(NuclosEOField.PROCESS.getName()).getValue());
-			}
-			final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.71","Soll aus dem/der aktuellen {0} ein(e) {1} erzeugt werden?", sSourceModuleName, sTargetModuleName);
-			iBtn = JOptionPane.showConfirmDialog(getFrame(), sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName),
-				JOptionPane.OK_CANCEL_OPTION);
-		}
-		return iBtn;
 	}
 
 	/**
@@ -5232,12 +4930,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	private String getTreeViewIdentifier(CollectableGenericObjectWithDependants clct) {
 		MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
-		
+
 		String tmp = CommonLocaleDelegate.getTreeViewLabel(clct, getEntity(), metaprovider);
-		
+
 		int idx = -1;
 		while ((idx = tmp.indexOf("[$" + CollectableFieldFormat.class.getName() + ",")) != -1)
-		{					
+		{
 			tmp = tmp.substring(0, idx) + tmp.substring(tmp.indexOf("$]") + 2);
 		}
 		return tmp;
@@ -5360,7 +5058,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			// find search result template by name:
 			searchResultTemplatesController.setSelectedSearchResultTemplate(sTemplateName);
 	}
-	
+
 	/**
 	 * inner class ChangeStateForSelectedCollectablesController
 	 *
@@ -5721,8 +5419,20 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		MultiActionProgressPanel multiActionProgressPanel = new MultiActionProgressPanel(iCount);
 		multiActionProgressPanel.setResultHandler(new MultiActionProgressResultHandler(this) {
 			@Override
-			public void handleMultiSelection(Collection<Integer> collGenericObjectIds) {
-				((GenericObjectCollectController) controller).openGenericObjectController(collGenericObjectIds);
+			public void handleMultiSelection(Collection<MultiActionProgressLine> selection) {
+				Collection<Integer> ids = CollectionUtils.transform(selection, new Transformer<MultiActionProgressLine, Integer>() {
+					@Override
+					public Integer transform(MultiActionProgressLine i) {
+						if (i.getSourceObject() instanceof Collectable) {
+							return IdUtils.unsafeToId(((Collectable) i).getId());
+						}
+						else if (i.getSourceObject() instanceof Integer) {
+							return (Integer)i.getSourceObject();
+						}
+						return null;
+					}
+				});
+				((GenericObjectCollectController) controller).openGenericObjectController(ids);
 			}
 		});
 		return multiActionProgressPanel;
@@ -6146,5 +5856,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		return this.mpsubformctlDetails;
 	}
 
+	protected void setGenerationSourceId(Integer id) {
+		iGenericObjectIdSource = id;
+		bGenerated = true;
+	}
 
 }	// class GenericObjectCollectController

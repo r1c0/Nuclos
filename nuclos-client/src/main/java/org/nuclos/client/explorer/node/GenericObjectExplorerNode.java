@@ -24,23 +24,25 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.explorer.ExplorerNode;
+import org.nuclos.client.genericobject.GenerationController;
 import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.Modules;
@@ -48,9 +50,8 @@ import org.nuclos.client.genericobject.RelateGenericObjectsController;
 import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess;
 import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess.HasModuleId;
 import org.nuclos.client.genericobject.datatransfer.TransferableGenericObjects;
-import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
-import org.nuclos.client.masterdata.MasterDataCache;
+import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.CommonClientWorkerAdapter;
@@ -64,16 +65,13 @@ import org.nuclos.common.AttributeProvider;
 import org.nuclos.common.MutableBoolean;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
-import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SpringApplicationContextHolder;
-import org.nuclos.common.attribute.DynamicAttributeVO;
+import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.Collectable;
-import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
@@ -524,40 +522,6 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 			CommonMultiThreader.getInstance().execute(searchWorker);
 		}
 
-		protected final String getModuleLabel(Integer iModuleId) {
-			return Modules.getInstance().getEntityLabelByModuleId(iModuleId);
-		}
-
-		/**
-		 * Ask the user for type of desired generation and confirmation of object generation.
-		 * @param bShowDetails
-		 * @param bMulti
-		 * @param sSourceModuleName
-		 * @param sTargetModuleName
-		 * @param generatoractionvo
-		 * @return selected option
-		 */
-		private int confirmGenerationType(String sSourceModuleName, String sTargetModuleName, GenericObjectVO genericobjectvo, GeneratorActionVO generatoractionvo) {
-			final int iBtn;
-			if (generatoractionvo.getTargetProcessId() != null) {
-				try {
-					sTargetModuleName = MessageFormat.format("{0} ({1})", sTargetModuleName, MasterDataCache.getInstance().get(NuclosEntity.PROCESS.getEntityName(), generatoractionvo.getTargetProcessId()).getField("name", String.class));
-				} catch (CommonFinderException e) {
-					log.error("Unable to determine target process name.", e);
-				}
-			}
-
-			DynamicAttributeVO dAttrProcess = genericobjectvo.getAttribute(NuclosEOField.PROCESS.getMetaData().getField(), SpringApplicationContextHolder.getBean(AttributeProvider.class));
-			if (dAttrProcess != null && dAttrProcess.getValue() != null) {
-				sSourceModuleName = MessageFormat.format("{0} ({1})", sSourceModuleName, dAttrProcess.getValue());
-			}
-			final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectExplorerNode.6","Soll aus dieser/diesem {0} ein(e) {1} erzeugt werden?", sSourceModuleName, sTargetModuleName);
-			iBtn = JOptionPane.showConfirmDialog(MainFrame.getHomePane(), sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.7","{0} erzeugen", sTargetModuleName),
-				JOptionPane.OK_CANCEL_OPTION);
-
-			return iBtn;
-		}
-
 		/**
 		 * removes the relation between this node and its parent.
 		 * @param tree
@@ -565,46 +529,16 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		 */
 		private void cmdGenerateGenericObject(final JTree tree, final GenericObjectExplorerNode goexplorernode) {
 			try {
-				final String sTargetModuleName = getModuleLabel(generatoractionvo.getTargetModuleId());
-				final String sSourceModuleName = getModuleLabel(goexplorernode.getTreeNode().getModuleId());
+				Map<Integer, UsageCriteria> sources = new HashMap<Integer, UsageCriteria>();
+				sources.put(getTreeNode().getId(), getTreeNode().getUsageCriteria());
 
-				final int iBtn = confirmGenerationType(sSourceModuleName, sTargetModuleName, genericobjectvo, generatoractionvo);
-
-				if (iBtn != JOptionPane.CANCEL_OPTION && iBtn != JOptionPane.CLOSED_OPTION) {
-					final AtomicReference<Integer> parameterObjectIdRef = new AtomicReference<Integer>();
-					final CommonRunnable generateRunnable = new CommonRunnable() {
-						@Override
-						public void run() throws CommonBusinessException {
-							Integer parameterObjectId = parameterObjectIdRef.get();
-							if (iBtn == JOptionPane.YES_OPTION) {
-								GenericObjectVO generatedGo = GenericObjectDelegate.getInstance().generateGenericObject(genericobjectvo.getId(), parameterObjectId, generatoractionvo);
-
-								if (generatedGo == null)
-									return;
-
-								Integer generatedGoId = generatedGo.getId();
-								if (SecurityCache.getInstance().isWriteAllowedForModule(Modules.getInstance().getEntityNameByModuleId(generatoractionvo.getTargetModuleId()), generatedGoId))
-									if (generatedGoId != null) {
-										//showGenericObject(generatedGoId, generatoractionvo.getTargetModuleId(), false);
-										Main.getMainController().showDetails(sTargetModuleName, generatedGoId);
-									} else {
-										//GenericObjectCollectController goclct = showIncompleteGenericObject(sourceId, generatedGo);
-										//final String message = CommonLocaleDelegate.getMessage("R00022889", "Der Datensatz konnte nicht erstellt werden.\n\u00dcberpr\u00fcfen Sie alle Pflichtfelder.");
-										//goclct.setPointerInformation(new PointerCollection(message), null);
-
-										JOptionPane.showMessageDialog(MainFrame.getHomePane(),
-											CommonLocaleDelegate.getMessage("R00022889", "Der Datensatz konnte nicht erstellt werden.\n\u00dcberpr\u00fcfen Sie alle Pflichtfelder."),
-											CommonLocaleDelegate.getMessage("R00022892", "Objektgenerierung"),
-											JOptionPane.ERROR_MESSAGE);
-
-										Main.getMainController().showDetails(sSourceModuleName, genericobjectvo.getId());
-									}
-
-								goexplorernode.refresh(tree);							}
-						}
-					};
-					UIUtils.runShortCommand(MainFrame.getHomePane(), generateRunnable);
+				String targetEntity = MetaDataClientProvider.getInstance().getEntity(generatoractionvo.getTargetModuleId().longValue()).getEntity();
+				JTabbedPane pane = MainFrame.getHomePane();
+				if (MainFrame.isPredefinedEntityOpenLocationSet(targetEntity)) {
+					pane = MainFrame.getPredefinedEntityOpenLocation(targetEntity);
 				}
+				GenerationController controller = new GenerationController(sources, generatoractionvo, null, MainFrameTab.getMainFrameTabForComponent(getJTree()), pane);
+				controller.generateGenericObject();
 			}
 			catch (Exception ex) {
 				Errors.getInstance().showExceptionDialog(MainFrame.getHomePane(), ex);

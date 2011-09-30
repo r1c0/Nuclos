@@ -21,7 +21,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -62,7 +61,7 @@ import org.nuclos.common2.exception.CommonBusinessException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
  */
-public class MultiCollectablesActionController <T extends Collectable,R> extends Controller {
+public class MultiCollectablesActionController <T,R> extends Controller {
 
 	/**
 	 * defines the action to perform on each object.
@@ -296,16 +295,16 @@ public class MultiCollectablesActionController <T extends Collectable,R> extends
 		pnl.tblResult.addMouseListener(new JTableJPopupMenuListener(pnl.tblResult, new JPopupMenuFactory() {
 			@Override
 			public JPopupMenu newJPopupMenu() {
-				final List<Integer> ids = pnl.getSelectedIds();
+				final List<MultiActionProgressLine> selection = pnl.getSelection();
 				final JPopupMenu result = new JPopupMenu();
-				final String text = (ids.size() > 1) ? pnl.getMultiSelectionMenuLabel() : pnl.getSingleSelectionMenuLabel();
+				final String text = (selection.size() > 1) ? pnl.getMultiSelectionMenuLabel() : pnl.getSingleSelectionMenuLabel();
 				final JMenuItem item = new JMenuItem(text);
 				item.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent ev) {
 //						System.out.println("***** in "+getClass().getName());
 //						System.out.println("***** handleMultiSelection : "+ids.toString());
-						pnl.handleMultiSelection(ids);
+						pnl.handleMultiSelection(selection);
 					}
 				});
 				result.add(item);
@@ -322,12 +321,12 @@ public class MultiCollectablesActionController <T extends Collectable,R> extends
 
 	public static String getCollectableLabel(String entityname, Collectable clct) {
 		String label = CommonLocaleDelegate.getTreeViewLabel(clct, entityname, MetaDataClientProvider.getInstance());
-		
+
 		String tmp = label != null ? label : clct.getIdentifierLabel();
-		
+
 		int idx = -1;
 		while ((idx = tmp.indexOf("[$" + CollectableFieldFormat.class.getName() + ",")) != -1)
-		{					
+		{
 			tmp = tmp.substring(0, idx) + tmp.substring(tmp.indexOf("$]") + 2);
 		}
 		return tmp;
@@ -375,12 +374,6 @@ public class MultiCollectablesActionController <T extends Collectable,R> extends
 				}
 				final T t = iter.next();
 				final String tId;
-				Object idObj = ((Collectable)t).getId();
-				if(idObj instanceof Integer){
-					tId = ((Integer)idObj).toString();
-				} else {
-					tId = null;
-				}
 
 				final int j = i + 1;
 
@@ -391,31 +384,18 @@ public class MultiCollectablesActionController <T extends Collectable,R> extends
 					}
 				});
 
-				ArrayList<String> rowTxt = new ArrayList<String>();
-				rowTxt.add(tId);
+				String result;
+				String state;
+				R oResult = null;
 				try {
-					final R rResult = action.perform(t);
-					final String successfulMessage = action.getSuccessfulMessage(t, rResult);
-					rowTxt.add(successfulMessage);
-					String successLabel = pnl.getSuccessLabel();
-					if(successLabel != null){
-						rowTxt.add(successLabel);
-					}
-					else {
-						rowTxt.add("");
-					}
+					oResult = action.perform(t);
+					result = action.getSuccessfulMessage(t, oResult);
+					state = pnl.getSuccessLabel();
 				}
 				catch (final Exception ex) {
 					MultiCollectablesActionController.this.error = true;
-					final String exceptionMessage = action.getExceptionMessage(t, ex);
-					rowTxt.add(exceptionMessage);
-					String exceptionLabel = pnl.getExceptionLabel();
-					if(exceptionLabel != null){
-						rowTxt.add(exceptionLabel);
-					}
-					else {
-						rowTxt.add("");
-					}
+					result = action.getExceptionMessage(t, ex);
+					state = pnl.getExceptionLabel();
 				}
 				finally {
 					SwingUtilities.invokeLater(new Runnable() {
@@ -425,7 +405,7 @@ public class MultiCollectablesActionController <T extends Collectable,R> extends
 						}
 					});
 				}
-				addProtocolLineRun(rowTxt);
+				addProtocolLineRun(t, oResult, result, state);
 			}  // for
 
 			SwingUtilities.invokeLater(new Runnable() {
@@ -442,12 +422,11 @@ public class MultiCollectablesActionController <T extends Collectable,R> extends
 			});
 		}
 
-		public void addProtocolLineRun(ArrayList<String> rowTxt){
-			final Object[] rowValues = rowTxt.toArray();
+		public void addProtocolLineRun(final Object source, final Object oResult, final String result, final String state){
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					pnl.addProtocolLine(rowValues);
+					pnl.addProtocolLine(source, oResult, result, state);
 				}
 			});
 		}

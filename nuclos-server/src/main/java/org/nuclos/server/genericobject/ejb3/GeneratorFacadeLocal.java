@@ -42,6 +42,7 @@ public interface GeneratorFacadeLocal {
 	 * @param sGenerator						name of object generation to determine what to do
 	 * @return id of generated generic object (if exactly one object was generated)
 	 */
+	@RolesAllowed("Login")
 	public abstract Integer generateGenericObject(
 		Integer iSourceGenericObjectId, String sGenerator)
 		throws CommonFinderException, CommonPermissionException,
@@ -56,12 +57,12 @@ public interface GeneratorFacadeLocal {
 	 * @return id of generated generic object (if exactly one object was generated)
 	 * @nucleus.permission mayWrite(generatoractionvo.getTargetModuleId())
 	 */
-	@RolesAllowed("Login")
+	/*@RolesAllowed("Login")
 	public abstract GenericObjectVO generateGenericObject(
 		Integer iSourceGenericObjectId, Integer paramterObjectId, GeneratorActionVO generatoractionvo)
 		throws CommonFinderException, CommonPermissionException,
 		NuclosBusinessRuleException, CommonStaleVersionException,
-		CommonValidationException;
+		CommonValidationException;*/
 
 	/**
 	 * generate one or more generic objects from an existing generic object (copying selected attributes and subforms)
@@ -70,6 +71,7 @@ public interface GeneratorFacadeLocal {
 	 * @param sGenerator	 name of generator action to determine what to do
 	 * @return id of generated generic object (if exactly one object was generated)
 	 */
+	@RolesAllowed("Login")
 	public abstract Integer generateGenericObject(
 		RuleObjectContainerCVO loccvoSource, String sGenerator)
 		throws CommonFinderException, CommonPermissionException,

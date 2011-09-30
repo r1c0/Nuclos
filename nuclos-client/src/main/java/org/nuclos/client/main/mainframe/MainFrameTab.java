@@ -105,45 +105,45 @@ import org.nuclos.common2.exception.CommonBusinessException;
 
 public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDropTargetVisitor {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	public static final String IMAGE_ICON_PROPERTY = "NOVABIT_DESKTOP_ICON";
-	
+
 	private static final Logger log = Logger.getLogger(MainFrameTab.class);
-	
+
 	private final List<MainFrameTabListener> mainFrameTabListeners = new ArrayList<MainFrameTabListener>();
-	
+
 	private ITabStoreController storeController;
-	
+
 	private boolean neverClose;
-	
+
 	private String title;
-	
+
 	private ImageIcon icon;
-	
+
 	private TabTitle tabTitle = new TabTitle();
 
 	private JXLayer<JComponent> layer;
 	private Color layerBusyColor = new Color(128, 128, 128, 128);
 	private Color layerBusyColorDarker = new Color(72, 72, 72, 196);
-	
+
 	private static final Color overlayLockColor = new Color(255, 255, 255, 180);
 	private static final Color overlayBorderColor = new Color(
 		NuclosSyntheticaConstants.BACKGROUND_DARKER.getRed(),
-		NuclosSyntheticaConstants.BACKGROUND_DARKER.getGreen(), 
+		NuclosSyntheticaConstants.BACKGROUND_DARKER.getGreen(),
 		NuclosSyntheticaConstants.BACKGROUND_DARKER.getBlue(),
 		200);
-	
+
 	private final JLayeredPane layered = new JLayeredPane();
 	private OverlayComponent overlay;
-	
+
 	private final List<IOverlayChangeListener> overlayChangeListeners = new ArrayList<IOverlayChangeListener>(1);
-	
+
 	private final AbstractAction actMaximize = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.5","Maximieren"), Icons.getInstance().getIconTabbedPaneMax()) {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		@Override
@@ -158,7 +158,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	};
 	private final AbstractAction actRestore = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.6","Wiederherstellen"), Icons.getInstance().getIconTabbedPaneSplit()) {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		@Override
@@ -174,7 +174,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	};
 	private final AbstractAction actNeverClose = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.7","Niemals Schließen")) {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		@Override
@@ -183,9 +183,9 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 		@Override
 		public Object getValue(String key) {
-			if (Action.SELECTED_KEY.equals(key)) 
+			if (Action.SELECTED_KEY.equals(key))
 				return !_isClosable() || neverClose;
-			else 
+			else
 				return super.getValue(key);
 		}
 		@Override
@@ -195,7 +195,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	};
 	private final AbstractAction actClose = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.4","Schließen")) {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		@Override
@@ -209,7 +209,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	};
 	private final AbstractAction actCloseAll = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.3","Alle Schließen")) {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -222,7 +222,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	};
 	private final AbstractAction actCloseOthers = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.2","Andere Schließen")) {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -235,29 +235,29 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	public MainFrameTab() {
 		this(null);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param sTitle
 	 */
 	public MainFrameTab(String sTitle) {
 		super();
 		setLayout(new BorderLayout());
-		
+
 		add(layered, BorderLayout.CENTER);
 		this.setTitle(sTitle);
 		this.layer = null;
-		
+
 		layered.setOpaque(false);
-		
+
 		addComponentListener(new ComponentAdapter() {
 			@Override
-			public void componentResized(final ComponentEvent e) {			
+			public void componentResized(final ComponentEvent e) {
 				final Dimension size = MainFrameTab.this.getBounds().getSize();
 				if (layer != null) {
 					layer.setBounds(0, 0, size.width, size.height);
@@ -269,33 +269,33 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			}
 		});
 		setupDragDrop();
-		
-		
+
+
 	}
-	
-	protected void setupDragDrop() {			
+
+	protected void setupDragDrop() {
 		DropTarget drop = new DropTarget(this.tabTitle, new NuclosDropTargetListener(this));
-		drop.setActive(true);		
+		drop.setActive(true);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean hasTabStoreController() {
 		return this.storeController != null;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param storeController
 	 */
 	public void setTabStoreController(ITabStoreController storeController) {
 		this.storeController = storeController;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public ITabStoreController getTabStoreController() {
@@ -303,7 +303,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	}
 
 	/**
-	 * 
+	 *
 	 * @param layerComponent
 	 */
 	public void setLayeredComponent(final JComponent layerComponent){
@@ -312,13 +312,13 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			layer.setName("JXLayerGlasspane");
 			layer.setOpaque(false);
 			layer.setLocation(0, 0);
-			
+
 			layered.add(layer, new Integer(1));
 		}
 	}
 
 	/**
-	 * 
+	 *
 	 * @param layerComponent
 	 * @param layoutPosition
 	 */
@@ -328,7 +328,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	      add(layer, layoutPosition);
 		}
 	}
-	
+
 	/**
 	 * adjusts the ill JInternalFrame.getMinimumSize() behavior
 	 * {@inheritDoc}
@@ -347,7 +347,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Color getLayerBusyColor() {
@@ -355,37 +355,37 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	}
 
 	/**
-	 * 
+	 *
 	 * @param layerBusyColor
 	 */
 	public void setLayerBusyColor(Color layerBusyColor) {
 		this.layerBusyColor = layerBusyColor;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void lockLayer() {
 		lockLayer(new TranslucentLockableUI(layerBusyColor));
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param correlationId
 	 */
 	public void lockLayerWithProgress(String correlationId) {
 		lockLayer(new TranslucentLockableWithProgressUI(layerBusyColorDarker, correlationId));
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void lockLayerBusy() {
 		lockLayer(new BusyLockableUI(layerBusyColor));
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param lockableUI
 	 */
 	protected void lockLayer(LockableUI lockableUI) {
@@ -399,9 +399,9 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			lockableUI.setLocked(true);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void unlockLayer() {
 		if (layer != null) {
@@ -412,9 +412,9 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			try {layer.setUI(null);} catch (Exception ignore) {}
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	protected void addImpl(Component comp, Object constraints, int index) {
@@ -426,7 +426,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	}
 
 	/**
-	 * 
+	 *
 	 * @param oc
 	 */
 	public void setOverlayComponent(IOverlayComponent oc) {
@@ -436,31 +436,31 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			Errors.getInstance().showExceptionDialog(this, e);
 			return;
 		}
-		
+
 		final Component c = (Component) oc;
-		
+
 		overlay = new OverlayComponent(oc);
 		oc.addOverlayChangeListener(overlay);
-		
+
 		overlay.setSizes(getSize());
-		
+
 		layered.add(overlay.getLockPanel(), new Integer(2));
 		layered.add(overlay, new Integer(3));
-	} 
-	
+	}
+
 	/**
-	 * 
+	 *
 	 * @param oc
-	 * @throws CommonBusinessException 
+	 * @throws CommonBusinessException
 	 */
-	public void removeOverlayComponent(final IOverlayComponent oc) throws CommonBusinessException {		
+	public void removeOverlayComponent(final IOverlayComponent oc) throws CommonBusinessException {
 		if (oc instanceof MainFrameTab) {
 			((MainFrameTab)oc).notifyClosing();
 		}
-		
+
 		if (overlay != null) {
 			UIUtils.runCommand(layered, new Runnable() {
-				
+
 				@Override
 				public void run() {
 					oc.removeOverlayChangeListener(overlay);
@@ -469,7 +469,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 					overlay = null;
 					layered.revalidate();
 					layered.repaint();
-					
+
 					if (oc instanceof MainFrameTab) {
 						((MainFrameTab)oc).notifyClosed();
 					}
@@ -477,68 +477,68 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			});
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 *
 	 */
 	private class OverlayComponent extends JPanel implements IOverlayChangeListener {
-		
+
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
 		public static final int HEADER_HEIGHT = 18;
-		
+
 		public static final int BORDER_SIZE = 2;
-		
+
 		public static final int OUTER_INSET_TOP = 20;
 		public static final int OUTER_INSET_LEFT = 20;
 		public static final int OUTER_INSET_BOTTOM = 10;
 		public static final int OUTER_INSET_RIGHT = 20;
-		
+
 		private final Component c;
-		
+
 		private final IOverlayComponent oc;
-		
+
 		private final JLabel title = new JLabel() {
 
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
 			/**@Override
 			public void paint(Graphics g) {
 				final Graphics2D g2 = (Graphics2D) g;
-				
+
 				final Rectangle bounds = getBounds();
 				final BufferedImage bi = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_INT_ARGB);
 				final BufferedImage biShadowDst = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_INT_ARGB);
-				final Graphics2D g2bi = bi.createGraphics();		
-				
+				final Graphics2D g2bi = bi.createGraphics();
+
 				super.paint(g2bi);
-				
+
 				GaussianBlurFilter gbf = new GaussianBlurFilter(4);
 				gbf.filter(bi, biShadowDst);
-				
+
 				g2bi.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN));
 				g2bi.setColor(Color.WHITE);
 				g2bi.fillRect(0, 0,bounds.width, bounds.height);
-				
+
 				g2bi.dispose();
 
 		        g2.drawRenderedImage(biShadowDst, null);
 		        g2.drawRenderedImage(biShadowDst, null);
 		        g2.drawRenderedImage(bi, null);
 			}*/
-			
+
 		};
-		
+
 		private final JPanel lockPanel = new JPanel() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -550,22 +550,22 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		};
 
 		/**
-		 * 
+		 *
 		 * @param oc
 		 */
 		public OverlayComponent(final IOverlayComponent oc) {
 			super(new BorderLayout());
 			this.oc = oc;
 			this.c = (Component) oc;
-			
+
 			setOpaque(false);
 			setBorder(BorderFactory.createEmptyBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE));
-			
+
 			final JPanel header = new JPanel(new BorderLayout());
 			header.setOpaque(false);
 			header.setMinimumSize(new Dimension(new Dimension(0, HEADER_HEIGHT)));
 			header.setMaximumSize(new Dimension(new Dimension(Integer.MAX_VALUE, HEADER_HEIGHT)));
-			
+
 			final JLabel close = new JLabel(CommonLocaleDelegate.getMessage("MainFrameTab.1","Close"), Icons.getInstance().getIconTabCloseButton(), JLabel.RIGHT);
 			close.addMouseListener(new MouseAdapter() {
 				@Override
@@ -591,59 +591,59 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			close.setAlignmentX(Component.RIGHT_ALIGNMENT);
 			close.setHorizontalTextPosition(JLabel.LEFT);
 			close.setForeground(Color.WHITE);
-			
+
 			title.setForeground(Color.WHITE);
 			header.add(title, BorderLayout.WEST);
 			header.add(close, BorderLayout.EAST);
-			
+
 			add(header, BorderLayout.NORTH);
 			add(c, BorderLayout.CENTER);
-			
+
 			setupLockPanel();
 		}
-		
+
 		/**
-		 * 
+		 *
 		 * @param size
 		 * @return
 		 */
 		protected Dimension getOverlayInnerSize(Dimension size) {
 			final Rectangle outerBounds = getOverlayOuterBounds(size);
 			return new Dimension(outerBounds.width-BORDER_SIZE-BORDER_SIZE,
-				outerBounds.height-BORDER_SIZE-BORDER_SIZE-HEADER_HEIGHT);	
+				outerBounds.height-BORDER_SIZE-BORDER_SIZE-HEADER_HEIGHT);
 		}
-		
+
 		/**
-		 * 
+		 *
 		 * @param size
 		 * @return
 		 */
 		protected Rectangle getOverlayOuterBounds(Dimension size) {
 			return new Rectangle(OUTER_INSET_LEFT, OUTER_INSET_TOP, size.width-OUTER_INSET_LEFT-OUTER_INSET_RIGHT, size.height-OUTER_INSET_TOP-OUTER_INSET_BOTTOM);
 		}
-		
+
 		/**
-		 * 
+		 *
 		 * @param size
 		 */
 		private void setSizes(Dimension size) {
 			lockPanel.setSize(size);
 			setBounds(getOverlayOuterBounds(size));
-			
+
 			oc.transferSize(getOverlayInnerSize(size));
 		}
 
 		/**
-		 * 
+		 *
 		 */
 		private void setupLockPanel() {
 			lockPanel.setOpaque(false);
 			lockPanel.addMouseListener(new MouseAdapter() {});
 			lockPanel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		}
-		
+
 		/**
-		 * 
+		 *
 		 * @return
 		 */
 		public JPanel getLockPanel() {
@@ -658,7 +658,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 
 		/**
-		 * 
+		 *
 		 * @param newTitle
 		 * @param newIcon
 		 */
@@ -669,7 +669,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 
 		/**
-		 * 
+		 *
 		 */
 		@Override
 		public void closeOverlay() {
@@ -680,19 +680,19 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 				return;
 			}
 		}
-		
-		
+
+
 	}
 
 	// class TranslucentLockableUI --->
 	public static class TranslucentLockableUI extends LockableUI {
-		
+
 		protected final Color busyColor;
-		
+
 		public TranslucentLockableUI(Color busyColor) {
 			this.busyColor = busyColor;
 		}
-		
+
 		@Override
 		protected void paintLayer(Graphics2D g2, JXLayer<JComponent> l) {
 			super.paintLayer(g2, l);
@@ -702,17 +702,17 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
         }
 		}
    } // class TranslucentLockableUI
-	
+
 	public static class TranslucentLockableWithProgressUI extends TranslucentLockableUI implements MessageListener {
-		
+
 		private static final Logger log = Logger.getLogger(TranslucentLockableWithProgressUI.class);
-		
+
 		private final TextPainter textProgress;
 		private final TextPainter textMessage;
 		private final String correlationId;
-		
+
 		private final MutableBoolean mutLocked = new MutableBoolean(false);
-		
+
 		public TranslucentLockableWithProgressUI(Color busyColor, String correlationId) {
 			super(busyColor);
 			this.correlationId = correlationId;
@@ -744,7 +744,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			}
 			super.setLocked(locked);
 		}
-		
+
 		@Override
 		public void onMessage(Message message) {
 			try {
@@ -761,7 +761,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 				log.error(ex);
 			}
 		}
-		
+
 		private void setText(String message, int percent) {
 			if (mutLocked.getValue() && isLocked()) {
 				percent = percent < 0 ? 0 : percent > 100 ? 100 : percent;
@@ -776,14 +776,14 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 				if (percent < 10) sbProgress.append(' ');
 				sbProgress.append(percent);
 				sbProgress.append('%');
-				
+
 				textProgress.setText(sbProgress.toString());
 				textMessage.setText(message);
 				// this will repaint the layer
 				setDirty(true);
 			}
 		}
-		
+
 		@Override
 		protected void paintLayer(Graphics2D g2, JXLayer<JComponent> l) {
 			super.paintLayer(g2, l);
@@ -794,7 +794,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 
 	}
-		
+
 	public static class BusyLockableUI extends TranslucentLockableUI implements ActionListener {
 		private BusyPainter busyPainter;
 		private Timer timer;
@@ -830,7 +830,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 
 		// Change the frame for the busyPainter
-		// and mark BusyPainterUI as dirty 
+		// and mark BusyPainterUI as dirty
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			frameNumber = (frameNumber + 1) % 8;
@@ -839,20 +839,20 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			setDirty(true);
 		}
 	}
-	
-	
+
+
 	/*
 	* moves this frame to the specified position with offset (20,20).
-	* 
+	*
 	*/
     public void setAnchorLocation(Point anchorLocation){
     	Point newAnchorLocation = new Point(anchorLocation);
     	newAnchorLocation.setLocation(anchorLocation.getX()+20, anchorLocation.getY()+20);
     	this.setLocation(newAnchorLocation);
     }
-	
+
     /**
-     * 
+     *
      * @param listener
      */
 	public void addMainFrameTabListener(MainFrameTabListener listener) {
@@ -860,33 +860,33 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	}
 
 	/**
-	 * 
+	 *
 	 * @param listener
 	 */
 	public void removeMainFrameTabListener(MainFrameTabListener listener) {
 		mainFrameTabListeners.remove(listener);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void notifySelected() {
 		for (MainFrameTabListener listener : new ArrayList<MainFrameTabListener>(mainFrameTabListeners)) {
 			listener.tabSelected(this);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void notifyAdded() {
 		for (MainFrameTabListener listener : new ArrayList<MainFrameTabListener>(mainFrameTabListeners)) {
 			listener.tabAdded(this);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 * @throws CommonBusinessException
 	 */
@@ -899,18 +899,18 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void notifyClosed() {
 		for (MainFrameTabListener listener : new ArrayList<MainFrameTabListener>(mainFrameTabListeners)) {
 			listener.tabClosed(this);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void notifyHidden() {
 		for (MainFrameTabListener listener : new ArrayList<MainFrameTabListener>(mainFrameTabListeners)) {
@@ -919,16 +919,16 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void notifyRestoredFromHidden() {
 		for (MainFrameTabListener listener : new ArrayList<MainFrameTabListener>(mainFrameTabListeners)) {
 			listener.tabRestoredFromHidden(this);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param icon
 	 */
 	public void setTabIcon(Icon icon) {
@@ -941,7 +941,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public String getTitle() {
@@ -962,7 +962,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public MainFrameTabbedPane getHomePane() {
@@ -970,15 +970,15 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public ImageIcon getTabIcon() {
 		return this.icon;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param sTitle
 	 */
 	public void setTitle(String sTitle) {
@@ -987,9 +987,9 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		setToolTip(sTitle);
 		notifyTitleChanged();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param sToolTip
 	 */
 	public void setToolTip(String sToolTip) {
@@ -1001,29 +1001,29 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			}
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	private int getTabIndex() {
 		JTabbedPane tabPane = getTabbedPane();
 		if (tabPane == null) return -1;
-		
+
 		for (int i = 0; i < tabPane.getTabCount() ; i++) {
 			if (this == tabPane.getComponentAt(i)) {
 				return i;
 			}
 		}
-		
+
 		return -1;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
-	private MainFrameTabbedPane getTabbedPane() {
+	public MainFrameTabbedPane getTabbedPane() {
 		Container parent = getParent();
 		if (parent instanceof MainFrameTabbedPane) {
 			MainFrameTabbedPane tabbedPane = (MainFrameTabbedPane) parent;
@@ -1031,20 +1031,20 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 		return null;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public void transferSize(Dimension size) {
 		if (layer != null) {
 			layer.setBounds(0, 0, size.width, size.height);
 		}
-		
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void postAdd() {
 		transferSize(getBounds().getSize());
@@ -1055,9 +1055,9 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			}
 		});
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Component getContent() {
@@ -1066,17 +1066,17 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 		return null;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public boolean isClosable() {
 		return _isClosable() && !isNeverClose();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	private boolean _isClosable() {
@@ -1087,7 +1087,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public void setVisible(boolean visible) {
@@ -1106,23 +1106,23 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			}
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public TabTitle getTabTitle() {
 		return tabTitle;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 *
 	 */
 	public class TabTitle extends JLayeredPane{
-		
+
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -1130,37 +1130,37 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		 * sum of: look & feel, insets, empty Component...
 		 */
 		public final static int TAB_WIDTH_CONSTRUCT = 23;
-		
+
 		/**
 		 * inset of tab component
 		 */
 		public final static int MOUSE_POS_X_OFFSET = 3;
-		
+
 		private final JLabel lbTitle = new JLabel("");
-		
+
 		private final ImageIcon closeHoverIcon = Icons.getInstance().getIconTabCloseButton_hover();
 		private final ImageIcon closeIcon = Icons.getInstance().getIconTabCloseButton();
-		
+
 		private Point mouseOverPosition;
-		
+
 		/**
-		 * 
+		 *
 		 */
 		public TabTitle() {
 			setOpaque(false);
 			add(lbTitle, 1);
-			
+
 			// +20 = draw cut of "..." outside, so we can fade out the label...
 			lbTitle.setBounds(0, 0, MainFrameTabbedPane.TAB_WIDTH_MAX+20, MainFrameTabbedPane.DEFAULT_TAB_COMPONENT_HEIGHT);
 		}
-		
+
 		/**
-		 * 
+		 *
 		 * @param position
 		 */
 		public void setMouseOverPosition(Point position) {
 			final Rectangle closeBounds = getCloseBoundsAbsolute();
-			final boolean repaint = 
+			final boolean repaint =
 				(this.mouseOverPosition == null && position != null) ||
 				(this.mouseOverPosition != null && position == null) ||
 				(this.mouseOverPosition != null && position != null && closeBounds.contains(this.mouseOverPosition) != closeBounds.contains(position));
@@ -1169,9 +1169,9 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 				repaint();
 			}
 		}
-		
+
 		/**
-		 * 
+		 *
 		 * @param position
 		 * @return boolean true if click is consumed
 		 */
@@ -1189,13 +1189,13 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			}
 			return false;
 		}
-		
+
 		/**
-		 * 
+		 *
 		 */
 		private void showContextMenu() {
 			JPopupMenu popup = new JPopupMenu();
-			
+
 			popup.add(new JMenuItem(actMaximize));
 			popup.add(new JMenuItem(actRestore));
 			popup.addSeparator();
@@ -1204,12 +1204,12 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			popup.add(new JMenuItem(actCloseOthers));
 			popup.addSeparator();
 			popup.add(new JCheckBoxMenuItem(actNeverClose));
-			
+
 			popup.show(TabTitle.this, 10, 10);
 		}
-		
+
 		/**
-		 * 
+		 *
 		 * @return
 		 */
 		Rectangle getCloseBoundsAbsolute() {
@@ -1218,9 +1218,9 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 				bounds.x+bounds.width-closeIcon.getIconWidth()+MOUSE_POS_X_OFFSET, 0, closeIcon.getIconWidth(), bounds.height+6);
 			return result;
 		}
-		
+
 		/**
-		 * 
+		 *
 		 * @param width
 		 */
 		void setWidth(int width) {
@@ -1228,27 +1228,27 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			revalidate();
 			repaint();
 		}
-		
+
 		/**
-		 * 
+		 *
 		 * @param icon
 		 */
 		void updateIcon(Icon icon) {
 			lbTitle.setIcon(icon);
 			repaint();
 		}
-		
+
 		/**
-		 * 
+		 *
 		 * @param title
 		 */
 		void updateTitle(String title) {
 			lbTitle.setText(title);
 			repaint();
 		}
-		
+
 		/**
-		 * 
+		 *
 		 * @param title
 		 * @param icon
 		 */
@@ -1257,24 +1257,24 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			lbTitle.setIcon(icon);
 			repaint();
 		}
-		
+
 		/**
-		 * 
+		 *
 		 */
 		@Override
 		public String getToolTipText() {
 			return lbTitle.getText();
 		}
-		
+
 		@Override
 		public void paint(Graphics g) {
 			final Graphics2D g2 = (Graphics2D) g;
-			
+
 			final Rectangle bounds = getBounds();
 			final BufferedImage bi = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_INT_ARGB);
 			//final BufferedImage biShadowDst = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_INT_ARGB);
-			final Graphics2D g2bi = bi.createGraphics();	
-			
+			final Graphics2D g2bi = bi.createGraphics();
+
 			if (mouseOverPosition != null) {
 				final BufferedImage biMouseOverBackground = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_INT_ARGB);
 				final Graphics2D g2bimob = biMouseOverBackground.createGraphics();
@@ -1288,11 +1288,11 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 				g2bimob.dispose();
 				g2.drawRenderedImage(biMouseOverBackground, null);
 			}
-			
+
 			super.paint(g2bi);
-			
+
 			final int fade = 8;
-			
+
 			g2bi.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_IN));
 			if (mouseOverPosition != null) {
 				final boolean closable = isClosable();
@@ -1303,15 +1303,15 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
                     new Color(0.0f, 0.0f, 0.0f, 0.0f)));
 
 				g2bi.fillRect(bounds.width-iconWidth-fade, 0, iconWidth+fade, bounds.height);
-				
+
 				/*GaussianBlurFilter gbf = new GaussianBlurFilter(4);
 				gbf.filter(bi, biShadowDst);
-				
+
 				g2bi.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN));
 				g2bi.setColor(Color.WHITE);
 				g2bi.fillRect(0, 0,bounds.width, bounds.height);
 				*/
-				
+
 				// draw close button
 				if (closable) {
 					final ImageIcon closeIconToDraw;
@@ -1320,7 +1320,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 					} else {
 						closeIconToDraw = closeIcon;
 					}
-					
+
 					g2bi.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC));
 					g2bi.drawImage(closeIconToDraw.getImage(), bounds.width-closeIconToDraw.getIconWidth(), 1, null);
 				}
@@ -1332,19 +1332,19 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 
 				g2bi.fillRect(bounds.width-fade, 0, fade, bounds.height);
 			}
-			
+
 	        g2bi.dispose();
 
 	        //g2.drawRenderedImage(biShadowDst, null);
 	        //g2.drawRenderedImage(biShadowDst, null);
 	        g2.drawRenderedImage(bi, null);
 		}
-		
-		
+
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return true if close is send to listeners; false if no listener is registered
 	 */
 	private boolean closeOuterOverlay() {
@@ -1354,9 +1354,9 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 		return ocls.size()>0;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private void notifyTitleChanged() {
 		for (MainFrameTabListener listener : new ArrayList<MainFrameTabListener>(mainFrameTabListeners)) {
@@ -1368,7 +1368,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public void addOverlayChangeListener(IOverlayChangeListener tcl) {
@@ -1376,7 +1376,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public void removeOverlayChangeListener(IOverlayChangeListener tcl) {
@@ -1384,7 +1384,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	}
 
 	/**
-	 * 
+	 *
 	 * @return neverClos (user decision)
 	 */
 	public boolean isNeverClose() {
@@ -1392,15 +1392,15 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	}
 
 	/**
-	 * 
+	 *
 	 * @param neverClose (is user decision)
 	 */
 	public void setNeverClose(boolean neverClose) {
 		this.neverClose = neverClose;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param parentComponent
 	 * @return
 	 */
@@ -1420,7 +1420,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 
 	@Override
 	public void visitDragOver(DropTargetDragEvent dtde) {
-		MainFrame.setSelectedTab(MainFrameTab.this);		
+		MainFrame.setSelectedTab(MainFrameTab.this);
 		dtde.rejectDrag();
 	}
 
@@ -1429,5 +1429,5 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 
 	@Override
 	public void visitDropActionChanged(DropTargetDragEvent dtde) {}
-    
+
 }  // class CommonJInternalFrame

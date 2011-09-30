@@ -4796,6 +4796,20 @@
         "unique": false,
         "labelres": "nuclos.entityfield.generationAttribute.attributeTarget.label",
         "descriptionres": "nuclos.entityfield.generationAttribute.attributeTarget.description"
+      },
+      {
+        "name": "groupfunction",
+        "dbfield": "STRGROUPFUNCTION",
+        "label": "Gruppierungsfunktion",
+        "description": "Gruppierungsfunktion",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.generationAttribute.groupfunction.label",
+        "descriptionres": "nuclos.entityfield.generationAttribute.groupfunction.description"
       }
     ]
   },

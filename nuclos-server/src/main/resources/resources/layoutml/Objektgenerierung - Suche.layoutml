@@ -141,7 +141,7 @@
   </panel>
 </layout>
   <rules>
-    <rule name="Abhängigkeit Zielmodul -> Zielprozess">
+    <rule name="AbhÃ¤ngigkeit Zielmodul -> Zielprozess">
       <event type="value-changed" sourcecomponent="targetModule"/>
       <actions>
         <refresh-valuelist targetcomponent="targetProcess" parameter-for-sourcecomponent="moduleId"/>

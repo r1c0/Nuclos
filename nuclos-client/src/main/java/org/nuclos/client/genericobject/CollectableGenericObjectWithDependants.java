@@ -44,7 +44,7 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
  * @version 01.00.00
  */
 public class CollectableGenericObjectWithDependants extends CollectableGenericObject implements CollectableWithDependants {
-	
+
 	private static final Logger LOG = Logger.getLogger(CollectableGenericObjectWithDependants.class);
 
 	/**
@@ -113,9 +113,9 @@ public class CollectableGenericObjectWithDependants extends CollectableGenericOb
 			assert result != null;
 			return result;
 		}
-		
+
 	}
-	
+
 	/**
 	 * inner class MakeCollectable
 	 */

@@ -35,6 +35,7 @@ import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
@@ -55,9 +56,9 @@ public class GenerationCollectController extends MasterDataCollectController {
 	private GenerationRulesController generationRulesController;
 
 	/**
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -110,9 +111,10 @@ public class GenerationCollectController extends MasterDataCollectController {
 	@Override
 	protected CollectableMasterDataWithDependants insertCollectable(CollectableMasterDataWithDependants clctNew) throws CommonBusinessException {
 		final DependantMasterDataMap mpmdvoDependants = org.nuclos.common.Utils.clearIds(this.getAllSubFormData(null).toDependantMasterDataMap());
-		validateAttributes(mpmdvoDependants.getValues(NuclosEntity.GENERATIONATTRIBUTE.getEntityName()));
+		Boolean grouping = LangUtils.defaultIfNull((Boolean)clctNew.getField("groupattributes").getValue(), Boolean.FALSE);
+		validateAttributes(grouping, mpmdvoDependants.getValues(NuclosEntity.GENERATIONATTRIBUTE.getEntityName()));
 		validateSubformAttributes(mpmdvoDependants.getValues(NuclosEntity.GENERATIONSUBENTITY.getEntityName()));
-		
+
 		final CollectableMasterDataWithDependants result = super.insertCollectable(clctNew);
 		GeneratorDelegate.getInstance().updateRuleUsages((Integer) result.getId(), generationRulesController.getRuleUsages());
 
@@ -124,20 +126,21 @@ public class GenerationCollectController extends MasterDataCollectController {
 	@Override
 	protected CollectableMasterDataWithDependants updateCollectable(CollectableMasterDataWithDependants clct, Object oDependantData) throws CommonBusinessException {
 		final DependantMasterDataMap mpDependantMasterData = getAllSubFormData(clct.getId()).toDependantMasterDataMap();
-		validateAttributes(mpDependantMasterData.getValues(NuclosEntity.GENERATIONATTRIBUTE.getEntityName()));
+		Boolean grouping = LangUtils.defaultIfNull((Boolean)clct.getField("groupattributes").getValue(), Boolean.FALSE);
+		validateAttributes(grouping, mpDependantMasterData.getValues(NuclosEntity.GENERATIONATTRIBUTE.getEntityName()));
 		validateSubformAttributes(mpDependantMasterData.getValues(NuclosEntity.GENERATIONSUBENTITY.getEntityName()));
-		
+
 		final CollectableMasterDataWithDependants result = super.updateCollectable(clct, oDependantData);
 		GeneratorDelegate.getInstance().updateRuleUsages((Integer) clct.getId(), generationRulesController.getRuleUsages());
 		GeneratorActions.invalidateCache();
 		return result;
 	}
-	
+
 	private void validateSubformAttributes(Collection<MasterDataVO> coll) throws CommonBusinessException {
 		for(MasterDataVO vo : coll) {
 			if(vo.getField("groupAttributes") != null && (Boolean)vo.getField("groupAttributes") == false)
 				continue;
-			
+
 			DependantMasterDataMap mp = vo.getDependants();
 			for(MasterDataVO voAttribute : mp.getAllValues()) {
 				if(voAttribute.getField("subentityAttributeGrouping") == null){
@@ -152,39 +155,50 @@ public class GenerationCollectController extends MasterDataCollectController {
 			}
 		}
 	}
-	
-	private void validateAttributes(Collection<MasterDataVO> coll) throws CommonBusinessException {
+
+	private void validateAttributes(boolean grouping, Collection<MasterDataVO> coll) throws CommonBusinessException {
 		HashSet<String> stAllTargetAttributes = new HashSet<String>(coll.size());
-		
+
 		for(MasterDataVO mdVOTarget : coll){
 			if (mdVOTarget.isRemoved())
 				continue;
-			
+
 			String sTargetAttribute = (String) mdVOTarget.getField("attributeTarget");
 			if( !(stAllTargetAttributes.add(sTargetAttribute)) ){
-				throw new CommonBusinessException(CommonLocaleDelegate.getMessage("GenerationCollectController.1", 
+				throw new CommonBusinessException(CommonLocaleDelegate.getMessage("GenerationCollectController.1",
 					"Das Zielattribut '{0}' darf nicht mehrfach vorkommen. W\u00e4hlen Sie bitte ein anderes Zielattribut aus.", sTargetAttribute));
 			}
-			
+
+			boolean hasSourceType = mdVOTarget.getField("sourceType") != null;
+			boolean hasFunction = mdVOTarget.getField("groupfunction") != null;
+			if (grouping && !hasSourceType && !hasFunction) {
+				throw new CommonBusinessException("GenerationCollectController.groupfunction.mandatory");
+			}
+			else if (hasFunction && !grouping) {
+				throw new CommonBusinessException("GenerationCollectController.groupfunction.notallowed");
+			}
+			else if (hasFunction && hasSourceType) {
+				throw new CommonBusinessException("GenerationCollectController.groupfunction.notallowed.sourcetype");
+			}
 		}
 	}
-	
+
 	public void runWithNewCollectableWithSomeFields(MasterDataVO vo) {
 		try {
 			this.runNew();
 			for(CollectableComponent cc : this.getDetailCollectableComponentsFor("sourceModule")) {
-				CollectableValueIdField valueId = new CollectableValueIdField(vo.getField("sourceModuleId"),vo.getField("sourceModule")); 
-				cc.setField(valueId);				
+				CollectableValueIdField valueId = new CollectableValueIdField(vo.getField("sourceModuleId"),vo.getField("sourceModule"));
+				cc.setField(valueId);
 			}
 			for(CollectableComponent cc : this.getDetailCollectableComponentsFor("targetModule")) {
-				CollectableValueIdField valueId = new CollectableValueIdField(vo.getField("targetModuleId"),vo.getField("targetModule")); 
-				cc.setField(valueId);				
+				CollectableValueIdField valueId = new CollectableValueIdField(vo.getField("targetModuleId"),vo.getField("targetModule"));
+				cc.setField(valueId);
 			}
 		}
 		catch(CommonBusinessException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/**

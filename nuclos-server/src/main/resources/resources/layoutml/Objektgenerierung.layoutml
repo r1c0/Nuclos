@@ -206,6 +206,8 @@
                 <valuelist-provider type="generationAttribute">
                   <parameter name="column" value="target" />
                 </valuelist-provider></subform-column>
+              <subform-column name="groupfunction" enabled="yes" visible="yes" insertable="yes" controltype="combobox">
+                <valuelist-provider type="attributeGroupFunction"/></subform-column>
             </subform>
           </panel>
         </panel>
@@ -269,7 +271,7 @@
   </panel>
 </layout>
   <rules>
-    <rule name="Abhängigkeit Quellmodul -> Quellaktion">
+    <rule name="AbhÃ¤ngigkeit Quellmodul -> Quellaktion">
       <event type="value-changed" sourcecomponent="sourceModule"/>
       <actions>
         <refresh-valuelist entity="nuclos_generationUsage" targetcomponent="process" parameter-for-sourcecomponent="moduleId"/>
@@ -278,13 +280,13 @@
         <refresh-valuelist entity="nuclos_generationSubentity" targetcomponent="entitySource" parameter-for-sourcecomponent="module"/>
       </actions>
     </rule>
-    <rule name="Abhängigkeit Quellaktion -> Status">
+    <rule name="AbhÃ¤ngigkeit Quellaktion -> Status">
       <event type="value-changed" entity="nuclos_generationUsage" sourcecomponent="process"/>
       <actions>
         <refresh-valuelist entity="nuclos_generationUsage" targetcomponent="state" parameter-for-sourcecomponent="process"/>
       </actions>
     </rule>
-    <rule name="Abhängigkeit Zielmodul -> Zielprozess">
+    <rule name="AbhÃ¤ngigkeit Zielmodul -> Zielprozess">
       <event type="value-changed" sourcecomponent="targetModule"/>
       <actions>
         <refresh-valuelist targetcomponent="targetProcess" parameter-for-sourcecomponent="moduleId"/>
@@ -292,7 +294,7 @@
         <refresh-valuelist entity="nuclos_generationSubentity" targetcomponent="entityTarget" parameter-for-sourcecomponent="module"/>
       </actions>
     </rule>
-    <rule name="Abhängigkeit Parameterentität -> Quellobjekttyp">
+    <rule name="AbhÃ¤ngigkeit Parameterentitï¿½t -> Quellobjekttyp">
       <event type="value-changed" sourcecomponent="parameterEntity"/>
       <actions>
         <refresh-valuelist entity="nuclos_generationAttribute" targetcomponent="sourceType" parameter-for-sourcecomponent="parameterEntity"/>
@@ -301,25 +303,25 @@
         <refresh-valuelist entity="nuclos_generationSubentity" targetcomponent="entitySource" parameter-for-sourcecomponent="parameterEntity"/>
       </actions>
     </rule>
-    <rule name="Abhängigkeit Quellobjekttyp -> Quellattribut">
+    <rule name="AbhÃ¤ngigkeit Quellobjekttyp -> Quellattribut">
       <event type="value-changed" entity="nuclos_generationAttribute" sourcecomponent="sourceType"/>
       <actions>
         <refresh-valuelist entity="nuclos_generationAttribute" targetcomponent="attributeSource" parameter-for-sourcecomponent="sourceType"/>
       </actions>
     </rule>
-    <rule name="Abhängigkeit Quellattribut -> Zielattribut">
+    <rule name="AbhÃ¤ngigkeit Quellattribut -> Zielattribut">
       <event type="value-changed" entity="nuclos_generationAttribute" sourcecomponent="attributeSource"/>
       <actions>
         <refresh-valuelist entity="nuclos_generationAttribute" targetcomponent="attributeTarget" parameter-for-sourcecomponent="sourceattribute"/>
       </actions>
     </rule>
-    <rule name="Abhängigkeit Zielattribut -> Quellattribut">
+    <rule name="AbhÃ¤ngigkeit Zielattribut -> Quellattribut">
       <event type="value-changed" entity="nuclos_generationAttribute" sourcecomponent="attributeTarget"/>
       <actions>
         <refresh-valuelist entity="nuclos_generationAttribute" targetcomponent="attributeSource" parameter-for-sourcecomponent="targetattribute"/>
       </actions>
     </rule>
-    <rule name="Abhängigkeit Quellobjekttyp -> Quellattribut">
+    <rule name="AbhÃ¤ngigkeit Quellobjekttyp -> Quellattribut">
       <event type="value-changed" entity="nuclos_generationSubentity" sourcecomponent="sourceType"/>
       <actions>
         <refresh-valuelist entity="nuclos_generationSubentity" targetcomponent="entitySource" parameter-for-sourcecomponent="sourceType"/>
@@ -341,6 +343,12 @@
       <event type="value-changed" entity="nuclos_generationSubentity" sourcecomponent="entityTarget"/>
       <actions>
         <refresh-valuelist entity="nuclos_generationSubentityAttribute" targetcomponent="subentityAttributeTarget" />
+      </actions>
+    </rule>
+    <rule name="Regel 1">
+      <event type="value-changed" sourcecomponent="groupattributes"/>
+      <actions>
+        <refresh-valuelist entity="nuclos_generationAttribute" targetcomponent="groupfunction" parameter-for-sourcecomponent="relatedId" />
       </actions>
     </rule>
   </rules>

@@ -16,71 +16,48 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.genericobject;
 
-import java.util.concurrent.Callable;
+import java.util.Collection;
 
-import javax.swing.JOptionPane;
-
-import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.ui.multiaction.MultiCollectablesActionController.Action;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.server.genericobject.ejb3.GenerationResult;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 
 /**
  * Action used by the controller for creating multiple generic objects
  */
-class MultiGenerateAction implements Action<CollectableGenericObjectWithDependants, GenericObjectVO> {
+class MultiGenerateAction implements Action<Collection<GenericObjectVO>, GenerationResult> {
 
-	private final GenericObjectCollectController parent;
 	private final Integer parameterObjectId;
 	private final GeneratorActionVO generatoractionvo;
-	private volatile Boolean showIncompleteObjects; 
 
-	MultiGenerateAction(GenericObjectCollectController parent, Integer parameterObjectId, GeneratorActionVO generatoractionvo) {
-		this.parent = parent;
+	MultiGenerateAction(Integer parameterObjectId, GeneratorActionVO generatoractionvo) {
 		this.parameterObjectId = parameterObjectId;
 		this.generatoractionvo = generatoractionvo;
 	}
 
 	/**
 	 * performs the action on the given object.
+	 *
 	 * @param clct
 	 * @throws CommonBusinessException
 	 */
 	@Override
-	public GenericObjectVO perform(final CollectableGenericObjectWithDependants clct) throws CommonBusinessException {
-		final Integer sourceId = clct.getId();
-		final GenericObjectVO generatedGo = GeneratorDelegate.getInstance().generateGenericObject(sourceId, parameterObjectId, generatoractionvo);
-		
-		if (generatedGo.getId() == null) {
-			// NUCLEUSINT-733: asking the user if the generated object is incomplete 				
-			UIUtils.invokeOnDispatchThread(new Callable<Void>() {
-				@Override
-				public Void call() throws Exception {
-					if (showIncompleteObjects == null) {
-						int opt = JOptionPane.showConfirmDialog(
-							parent.getFrame(),
-							CommonLocaleDelegate.getMessage("R00022871",
-								"Der Datensatz konnte nicht erstellt werden, da nicht alle Pflichtfelder gef\u00fcllt werden konnten.\n\nM\u00f6chten Sie die unvollst\u00e4ndigen Datens\u00e4tze manuell nachbearbeiten?"),
-							getText(clct),
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-						showIncompleteObjects = (opt == JOptionPane.YES_OPTION);
-					}
-					if (showIncompleteObjects) {
-						parent.showIncompleteGenericObject(sourceId, generatedGo);
-					}
-					return null;
-				}
-			});
-
-			// this is a little bit hackish but guarantees that the generated object
-			// is counted as failure
-			throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("R00022874", "Nicht alle Pflichtfelder konnten gef\u00fcllt werden."));
+	public GenerationResult perform(final Collection<GenericObjectVO> sources) throws CommonBusinessException {
+		if (generatoractionvo.isGroupAttributes()) {
+			return GeneratorDelegate.getInstance().generateGenericObject(sources, parameterObjectId, generatoractionvo);
 		}
-		
-		return generatedGo;
+		else {
+			if (sources.size() > 1) {
+				throw new NuclosFatalException();
+			}
+			return GeneratorDelegate.getInstance().generateGenericObject(sources.iterator().next().getId(), parameterObjectId, generatoractionvo);
+		}
 	}
 
 	/**
@@ -88,18 +65,34 @@ class MultiGenerateAction implements Action<CollectableGenericObjectWithDependan
 	 * @return the text to display for the action on the given object.
 	 */
 	@Override
-	public String getText(CollectableGenericObjectWithDependants clct) {
-		return CommonLocaleDelegate.getMessage("R00022877", "Objektgenerierung f\u00fcr {0} ...", clct.getIdentifierLabel());
+	public String getText(Collection<GenericObjectVO> sources) {
+		if (sources.size() == 1) {
+			String entity = MetaDataClientProvider.getInstance().getEntity(generatoractionvo.getTargetModuleId().longValue()).getEntity();
+			return CommonLocaleDelegate.getTreeViewLabel(sources.iterator().next(), entity, MetaDataClientProvider.getInstance());
+		}
+		else {
+			return CommonLocaleDelegate.getMessage("generation.multiple", "Objektgenerierung f\u00fcr {0} Objekte ...", sources.size());
+		}
 	}
 
 	/**
 	 * @param clct
-	 * @return the text to display after successful execution of the action for the given object.
+	 * @return the text to display after successful execution of the action for
+	 *         the given object.
 	 */
 	@Override
-	//public String getSuccessfulMessage(CollectableGenericObjectWithDependants clct, Integer iResult) {
-	public String getSuccessfulMessage(CollectableGenericObjectWithDependants clct, GenericObjectVO rResult) {
-		return CommonLocaleDelegate.getMessage("R00022880", "Objektgenerierung f\u00fcr {0} erfolgreich", clct.getIdentifierLabel());
+	public String getSuccessfulMessage(Collection<GenericObjectVO> sources, GenerationResult rResult) {
+		if (!StringUtils.isNullOrEmpty(rResult.getError())) {
+			return CommonLocaleDelegate.getMessage("generation.unsaved",
+					"Generated obect could not be saved: \\n{0} \\nPlease edit object in details view (see context menu).",
+					CommonLocaleDelegate.getMessageFromResource(rResult.getError()));
+		}
+		else {
+			String entity = MetaDataClientProvider.getInstance().getEntity(generatoractionvo.getTargetModuleId().longValue()).getEntity();
+			return CommonLocaleDelegate.getMessage("R00022880",
+					"Object \"{0}\" successfully generated.",
+					CommonLocaleDelegate.getTreeViewLabel(rResult.getGeneratedObject(), entity, MetaDataClientProvider.getInstance()));
+		}
 	}
 
 	@Override
@@ -108,9 +101,8 @@ class MultiGenerateAction implements Action<CollectableGenericObjectWithDependan
 	}
 
 	@Override
-	public String getExceptionMessage(CollectableGenericObjectWithDependants clct, Exception ex) {
-		return CommonLocaleDelegate.getMessage("R00022883", "Objektgenerierung f\u00fcr {0} fehlgeschlagen.\n{1}",
-			clct.getIdentifierLabel(), ex.getMessage());
+	public String getExceptionMessage(Collection<GenericObjectVO> sources, Exception ex) {
+		return CommonLocaleDelegate.getMessage("R00022883", "Objektgenerierung fehlgeschlagen. \\n{1}", ex.getMessage());
 	}
 
 	@Override

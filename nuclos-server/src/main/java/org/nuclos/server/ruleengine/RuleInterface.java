@@ -72,6 +72,7 @@ import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
+import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.fileimport.NuclosFileImport;
@@ -154,9 +155,9 @@ public class RuleInterface extends CustomCodeInterface {
 	private RuleObjectContainerCVO roccvo;
 
 	/**
-	 * the source object for rule generation, null in any other case
+	 * the source objects for rule generation, null in any other case
 	 */
-	private RuleObjectContainerCVO roccvoSource;
+	private Collection<RuleObjectContainerCVO> roccvoSource;
 
 	/**
 	 * the parameter object (object generation), or null
@@ -196,8 +197,8 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @param roccvoCurrent RuleObjectContainerCVO (RuleObjectContainerCVO)roccvo in the Rule
 	 * @param roccvoTargetObject if not null this one is the current object
 	 */
-	public RuleInterface(RuleVO ruleVO, RuleObjectContainerCVO roccvoCurrent, RuleObjectContainerCVO roccvoTargetObject) {
-		this(ruleVO, roccvoCurrent, roccvoTargetObject, null, null);
+	public RuleInterface(RuleVO ruleVO, RuleObjectContainerCVO roccvoCurrent) {
+		this(ruleVO, roccvoCurrent, null, null, null);
 	}
 
 	/**
@@ -208,14 +209,9 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @param roccvoCurrent GenericObjectContainerCVO (GenericObjectContainerCVO)roccvo in the Rule
 	 * @param roccvoTargetObject if not null this one is the current object
 	 */
-	public RuleInterface(RuleVO ruleVO, RuleObjectContainerCVO roccvoCurrent, RuleObjectContainerCVO roccvoTargetObject, RuleObjectContainerCVO roccvoParameterObject, List<String> lstActions) {
-		if (roccvoTargetObject != null) {
-			this.roccvo = roccvoTargetObject;
-			this.roccvoSource = roccvoCurrent;
-		}
-		else {
-			this.roccvo = roccvoCurrent;
-		}
+	public RuleInterface(RuleVO ruleVO, RuleObjectContainerCVO roccvoCurrent, Collection<RuleObjectContainerCVO> roccvoSourceObjects, RuleObjectContainerCVO roccvoParameterObject, List<String> lstActions) {
+		this.roccvo = roccvoCurrent;
+		this.roccvoSource = roccvoSourceObjects;
 		this.roccvoParameter = roccvoParameterObject;
 		this.lstActions = lstActions;
 		this.rulevo = ruleVO;
@@ -333,14 +329,28 @@ public class RuleInterface extends CustomCodeInterface {
 	}
 
 	/**
-	 * may be called by rules to get the source object for object generation rules
+	 * may be called by rules to get the source object for object generation rules.
+	 * Convenience method if object generation has only one source object.
+	 *
 	 * @return the target object of rule generation
 	 * @throws NuclosFatalRuleException if there is no target object.
 	 */
+	@Deprecated
 	public RuleObjectContainerCVO getSourceObjectContainerCVO() {
+		if (this.roccvoSource == null || this.roccvoSource.size() == 0) {
+			throw new NuclosFatalRuleException("rule.interface.error.2");
+		}
+		return this.roccvoSource.iterator().next();
+	}
+
+	/**
+	 * may be called by rules to get all source objects for object generation rules
+	 * @return the source objects of rule generation
+	 * @throws NuclosFatalRuleException if there is no source object.
+	 */
+	public Collection<RuleObjectContainerCVO> getSourceObjectContainerCVOs() {
 		if (this.roccvoSource == null) {
 			throw new NuclosFatalRuleException("rule.interface.error.2");
-				//"Der Zugriff auf das Zielobjekt einer Objektgenerierung ist in dieser Regel nicht m\u00f6glich - es gibt kein Zielobjekt.");
 		}
 		return this.roccvoSource;
 	}
@@ -947,12 +957,12 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @return the value of the attribute.
 	 */
 	public Object getSourceAttributeValue(String sAttributeName) {
-		if (this.roccvoSource != null && this.roccvoSource.getMasterData() != null) {
+		if (this.roccvoSource != null && this.getSourceObjectContainerCVO().getMasterData() != null) {
 			throw new NuclosFatalException("rule.interface.error.4");//"Die Objektgenerierung bei Stammdaten ist nicht m\u00f6glich.");
 		}
 		Object result = null;
 		if (this.roccvoSource != null) {
-			final DynamicAttributeVO attrvo = this.roccvoSource.getGenericObject().getAttribute(sAttributeName, AttributeCache.getInstance());
+			final DynamicAttributeVO attrvo = this.getSourceObjectContainerCVO().getGenericObject().getAttribute(sAttributeName, AttributeCache.getInstance());
 			/** @todo what if attrvo.isRemoved()? */
 			result = getValueOrNull(attrvo);
 		}
@@ -2018,8 +2028,8 @@ public class RuleInterface extends CustomCodeInterface {
 		final AttributeCache attrprovider = AttributeCache.getInstance();
 
 		if (roccvoSource != null) {
-			message.setSourceIdentifier((String) getValueOrNull(roccvoSource.getGenericObject().getAttribute(sAttributeNameSystemIdentifier, attrprovider)));
-			message.setSourceId(roccvoSource.getGenericObject().getId());
+			message.setSourceIdentifier((String) getValueOrNull(getSourceObjectContainerCVO().getGenericObject().getAttribute(sAttributeNameSystemIdentifier, attrprovider)));
+			message.setSourceId(getSourceObjectContainerCVO().getGenericObject().getId());
 
 			message.setTargetIdentifier((String) getValueOrNull(roccvo.getGenericObject().getAttribute(sAttributeNameSystemIdentifier, attrprovider)));
 			message.setTargetId(roccvo.getGenericObject().getId());

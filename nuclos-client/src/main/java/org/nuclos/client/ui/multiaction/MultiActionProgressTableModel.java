@@ -28,7 +28,7 @@ import org.nuclos.common2.CommonLocaleDelegate;
 class MultiActionProgressTableModel extends AbstractListTableModel<MultiActionProgressLine> {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	public static final int COLUMN_ID = 0;
@@ -67,7 +67,7 @@ class MultiActionProgressTableModel extends AbstractListTableModel<MultiActionPr
 			return Object.class;
 		}
 	}
-	
+
 	@Override
 	public int getColumnCount() {
 		return aColumnNames.length;
@@ -78,7 +78,7 @@ class MultiActionProgressTableModel extends AbstractListTableModel<MultiActionPr
 			aColumnNames = columnNames;
 		}
 	}
-	
+
 	protected int addRow(MultiActionProgressLine newLine){
 		int rowIndex = this.getRows().size();
 		this.getRows().add(newLine);
@@ -102,7 +102,7 @@ class MultiActionProgressTableModel extends AbstractListTableModel<MultiActionPr
 		final MultiActionProgressLine line = getRow(iRow);
 		switch (iColumn) {
 			case COLUMN_ID:
-				result = line.getId();
+				result = line.getSourceObject();
 				break;
 			case COLUMN_RESULT:
 				result = line.getResult();

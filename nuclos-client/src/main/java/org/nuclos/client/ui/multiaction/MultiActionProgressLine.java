@@ -15,23 +15,29 @@
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * 
+ *
  */
 package org.nuclos.client.ui.multiaction;
 
 public class MultiActionProgressLine {
-	final String id;
+	final Object sourceObject;
+	final Object resultObject;
 	final String result;
 	final String state;
-	
-	public MultiActionProgressLine(String id, String result, String state){
-		this.id = id;
+
+	public MultiActionProgressLine(Object sourceObject, Object resultObject, String result, String state){
+		this.sourceObject = sourceObject;
+		this.resultObject = resultObject;
 		this.result = result;
 		this.state = state;
 	}
 
-	public String getId() {
-		return id;
+	public Object getSourceObject() {
+		return sourceObject;
+	}
+
+	public Object getResultObject() {
+		return resultObject;
 	}
 
 	public String getResult() {

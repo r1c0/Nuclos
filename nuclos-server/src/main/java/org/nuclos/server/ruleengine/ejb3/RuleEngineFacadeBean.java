@@ -205,7 +205,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * fires the rules for a specific object generation.
 	 */
 	@Override
-	public RuleObjectContainerCVO fireGenerationRules(Integer iGenerationId, RuleObjectContainerCVO srcRuleObject, RuleObjectContainerCVO tgtRuleObject, RuleObjectContainerCVO parameterRuleObject, List<String> actions, PropertiesMap properties, Boolean after) throws NuclosBusinessRuleException {
+	public RuleObjectContainerCVO fireGenerationRules(Integer iGenerationId, RuleObjectContainerCVO tgtRuleObject, Collection<RuleObjectContainerCVO> srcRuleObjects, RuleObjectContainerCVO parameterRuleObject, List<String> actions, PropertiesMap properties, Boolean after) throws NuclosBusinessRuleException {
 		RuleObjectContainerCVO result = null;
 
 		try {
@@ -213,7 +213,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 			// We can now execute the rules in their order:
 			info("BEGIN executing business rules for generator id " + iGenerationId + "...");
-			result = this.executeBusinessRules(rules, srcRuleObject, tgtRuleObject, parameterRuleObject, false, actions, properties);
+			result = this.executeBusinessRules(rules, tgtRuleObject, srcRuleObjects, parameterRuleObject, false, actions, properties);
 			info("FINISHED executing business rules for generator id " + iGenerationId + "...");
 		}
 		catch (CommonPermissionException e) {
@@ -239,9 +239,9 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	/**
 	 * Convenience method for preserving calls without mpProperties
 	 */
-	private RuleObjectContainerCVO executeBusinessRules(List<RuleVO> lstRules, RuleObjectContainerCVO loccvoSourceObject, RuleObjectContainerCVO loccvoTargetObject,
+	private RuleObjectContainerCVO executeBusinessRules(List<RuleVO> lstRules, RuleObjectContainerCVO loccvoCurrent, Collection<RuleObjectContainerCVO> roccvoSourceObjects,
 		boolean bIgnoreExceptions, List<String> lstActions) throws NuclosBusinessRuleException {
-		return executeBusinessRules(lstRules, loccvoSourceObject, loccvoTargetObject, null, bIgnoreExceptions, lstActions, null);
+		return executeBusinessRules(lstRules, loccvoCurrent, roccvoSourceObjects, null, bIgnoreExceptions, lstActions, null);
 	}
 
 	/**
@@ -255,8 +255,8 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return the possibly change current object.
 	 * @throws NuclosBusinessRuleException
 	 */
-	private RuleObjectContainerCVO executeBusinessRules(Collection<RuleVO> lstRules, RuleObjectContainerCVO loccvoSourceObject, RuleObjectContainerCVO loccvoTargetObject, RuleObjectContainerCVO loccvoParameterObject, boolean bIgnoreExceptions, List<String> lstActions, PropertiesMap mpProperties) throws NuclosBusinessRuleException {
-		RuleObjectContainerCVO result = loccvoTargetObject != null ? loccvoTargetObject : loccvoSourceObject;
+	private RuleObjectContainerCVO executeBusinessRules(Collection<RuleVO> lstRules, RuleObjectContainerCVO loccvoCurrent, Collection<RuleObjectContainerCVO> roccvoSourceObjects, RuleObjectContainerCVO loccvoParameterObject, boolean bIgnoreExceptions, List<String> lstActions, PropertiesMap mpProperties) throws NuclosBusinessRuleException {
+		RuleObjectContainerCVO result = loccvoCurrent;
 		if (!lstRules.isEmpty()) {
 			final Iterator<RuleVO> iter = lstRules.iterator();
 			final List<RuleNotification> lstRuleNotifications = new ArrayList<RuleNotification>();
@@ -274,7 +274,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 						final NuclosRule ruleInstance = ccm.getInstance(generator);
 						iHeaderLinesCount = generator.getHeaderLineCount();
 
-						final RuleInterface ri = new RuleInterface(rulevo, loccvoSourceObject, loccvoTargetObject, loccvoParameterObject, lstActions);
+						final RuleInterface ri = new RuleInterface(rulevo, loccvoCurrent, roccvoSourceObjects, loccvoParameterObject, lstActions);
 						ri.setProperties(mpProperties);
 						ruleInstance.rule(ri);
 						result = ri.getRuleObjectContainerCVOIfAny();

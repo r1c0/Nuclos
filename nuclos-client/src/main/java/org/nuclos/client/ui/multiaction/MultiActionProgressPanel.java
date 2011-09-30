@@ -70,7 +70,7 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 public class MultiActionProgressPanel extends JPanel {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	public final JToggleButton btnPause = new JToggleButton(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.2","Pause"), Icons.getInstance().getIconPause16());
@@ -82,7 +82,7 @@ public class MultiActionProgressPanel extends JPanel {
 	private MultiActionProgressTableModel tblmdl;
 	protected final JTable tblResult = new CommonJTable() {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -253,12 +253,8 @@ public class MultiActionProgressPanel extends JPanel {
 		this.labAction.setText(sText);
 	}
 
-	public void addProtocolLine(String sText) {
-		addProtocolLine(new Object[]{sText});
-	}
-
-	public void addProtocolLine(Object[] rowTxt) {
-		MultiActionProgressLine newLine = new MultiActionProgressLine((String)rowTxt[0], (String)rowTxt[1], (String)rowTxt[2]);
+	public void addProtocolLine(Object id, Object oResult, String result, String state) {
+		MultiActionProgressLine newLine = new MultiActionProgressLine(id, oResult, result, state);
 		tblmdl.addRow(newLine);
 		int viewIndex = tblResult.getRowCount() - 1;
 		if (viewIndex != -1) {
@@ -330,15 +326,15 @@ public class MultiActionProgressPanel extends JPanel {
 		return multiSelectionMenuLabel;
 	}
 
-	public void handleMultiSelection(Collection<Integer> ids){
+	public void handleMultiSelection(Collection<MultiActionProgressLine> selection){
 		if(getResultHandler() != null){
-			getResultHandler().handleMultiSelection(ids);
+			getResultHandler().handleMultiSelection(selection);
 		}
 	}
 
 	private class ColorRenderer extends DefaultTableCellRenderer {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -374,15 +370,13 @@ public class MultiActionProgressPanel extends JPanel {
 
 	}
 
-	public List<Integer> getSelectedIds() {
-		List<Integer> ids = new ArrayList<Integer>();
+	public List<MultiActionProgressLine> getSelection() {
+		List<MultiActionProgressLine> selection = new ArrayList<MultiActionProgressLine>();
 		int[] selectedRows = tblResult.getSelectedRows();
-		for(int i=0; i< selectedRows.length; i++){
-			int idColumn = this.tblmdl.findColumn("ID");
-			String strId = this.tblmdl.getValueAt(selectedRows[i],idColumn).toString();
-			ids.add(new Integer(strId));
+		for(int i=0; i < selectedRows.length; i++){
+			selection.add(this.tblmdl.getRow(selectedRows[i]));
 		}
-		return ids;
+		return selection;
 	}
 
 }  // class MultiActionProgressPanel

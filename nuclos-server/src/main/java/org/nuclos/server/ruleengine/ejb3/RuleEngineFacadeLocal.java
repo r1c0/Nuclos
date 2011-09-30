@@ -61,10 +61,7 @@ public interface RuleEngineFacadeLocal {
 	/**
 	 * fires the rules for a specific object generation.
 	 */
-	public abstract RuleObjectContainerCVO fireGenerationRules(
-		Integer iGenerationId, RuleObjectContainerCVO srcRuleObject,
-		RuleObjectContainerCVO tgtRuleObject, RuleObjectContainerCVO parameterRuleObject,
-		List<String> actions, PropertiesMap properties, Boolean after) throws NuclosBusinessRuleException;
+	public abstract RuleObjectContainerCVO fireGenerationRules(Integer iGenerationId, RuleObjectContainerCVO tgtRuleObject, Collection<RuleObjectContainerCVO> srcRuleObjects, RuleObjectContainerCVO parameterRuleObject, List<String> actions, PropertiesMap properties, Boolean after) throws NuclosBusinessRuleException;
 
 	/**
 	 * executes the given lstRules of business rules.

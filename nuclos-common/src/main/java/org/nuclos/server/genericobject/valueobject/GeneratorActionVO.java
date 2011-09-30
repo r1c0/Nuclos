@@ -31,7 +31,7 @@ import org.nuclos.common.PropertiesMap;
  */
 public class GeneratorActionVO implements java.io.Serializable {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private Integer iId;
@@ -46,7 +46,7 @@ public class GeneratorActionVO implements java.io.Serializable {
 	private boolean blnCreateRelationBetweenObjects;
 
 	private PropertiesMap mpProperties = null;
-	
+
 	private Collection<GeneratorUsageVO> collUsages;
 
 	/**
@@ -78,7 +78,7 @@ public class GeneratorActionVO implements java.io.Serializable {
 		this.iCaseTransitionId = iCaseTransitionId;
 		this.collUsages = collUsages;
 	}
-	
+
 	public boolean isGroupAttributes() {
 		return blnGroupAttributes;
 	}
@@ -86,7 +86,7 @@ public class GeneratorActionVO implements java.io.Serializable {
 	public void setGroupAttributes(boolean blnGroupAttributes) {
 		this.blnGroupAttributes = blnGroupAttributes;
 	}
-	
+
 	public boolean isCreateRelationBetweenObjects() {
 		return blnCreateRelationBetweenObjects;
 	}
@@ -142,7 +142,7 @@ public class GeneratorActionVO implements java.io.Serializable {
 	public Integer getTargetProcessId() {
 		return iTargetProcessId;
 	}
-	
+
 	public Integer getParameterEntityId() {
 		return iParameterEntityId;
 	}
@@ -151,27 +151,19 @@ public class GeneratorActionVO implements java.io.Serializable {
 		return collUsages;
 	}
 
-	public Integer getObjectCount() {
-		return new Integer(1);
-	}
-
-	public Integer getContainerCount() {
-		return new Integer(0);
-	}
-
 	@Override
 	public String toString() {
 		return (this.getLabel() == null? this.getName() : this.getLabel());
 	}
-	
+
 	public void setProperties(PropertiesMap mpProperties) {
 		this.mpProperties = mpProperties;
 	}
-	
+
 	public PropertiesMap getProperties() {
 		return this.mpProperties;
 	}
-	
+
 	public Integer getCaseTransitionId() {
 		return iCaseTransitionId;
 	}

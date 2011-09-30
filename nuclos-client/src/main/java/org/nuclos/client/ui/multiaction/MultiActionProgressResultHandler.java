@@ -16,23 +16,22 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.multiaction;
 
-import org.nuclos.client.ui.collect.CollectController;
-import org.nuclos.common2.CommonLocaleDelegate;
 import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
-
 
 import java.util.Collection;
 
+import org.nuclos.client.ui.collect.CollectController;
+import org.nuclos.common2.CommonLocaleDelegate;
 
-public abstract class MultiActionProgressResultHandler implements
-		IMultiActionProgressResultHandler {
+
+public abstract class MultiActionProgressResultHandler implements IMultiActionProgressResultHandler {
 
 	protected final CollectController<?> controller;
-	
+
 	public MultiActionProgressResultHandler(CollectController<?> pCollectController){
 		this.controller = pCollectController;
 	}
-	
+
 	@Override
 	public String getSuccessLabel() {
 		return CommonLocaleDelegate.getMessage("MultiActionProgressResultHandler.3","erfolgreich");
@@ -59,6 +58,6 @@ public abstract class MultiActionProgressResultHandler implements
 	}
 
 	@Override
-	public abstract void handleMultiSelection(Collection<Integer> collLeasedObjectIds);
+	public abstract void handleMultiSelection(Collection<MultiActionProgressLine> selection);
 
 }

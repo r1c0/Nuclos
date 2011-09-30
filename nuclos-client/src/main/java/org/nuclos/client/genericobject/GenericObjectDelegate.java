@@ -24,7 +24,12 @@ import java.util.Set;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
-
+import org.nuclos.client.attribute.AttributeCache;
+import org.nuclos.client.masterdata.MasterDataDelegate;
+import org.nuclos.common.GenericObjectMetaDataVO;
+import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.attribute.DynamicAttributeVO;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.TruncatableCollection;
@@ -35,19 +40,11 @@ import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
-import org.nuclos.client.attribute.AttributeCache;
-import org.nuclos.client.masterdata.MasterDataDelegate;
-import org.nuclos.common.GenericObjectMetaDataVO;
-import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.attribute.DynamicAttributeVO;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.server.attribute.BadGenericObjectException;
 import org.nuclos.server.common.NuclosUpdateException;
 import org.nuclos.server.genericobject.ProxyList;
-import org.nuclos.server.genericobject.ejb3.GeneratorFacadeRemote;
 import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeRemote;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
-import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.genericobject.valueobject.LogbookVO;
@@ -70,7 +67,6 @@ public class GenericObjectDelegate {
 	private static GenericObjectDelegate singleton;
 
 	private final GenericObjectFacadeRemote gofacade;
-	private final GeneratorFacadeRemote generatorFacade;
 
 	private static Map<Integer, String> resourceMapCache;
 
@@ -80,7 +76,6 @@ public class GenericObjectDelegate {
 	private GenericObjectDelegate() {
 		try {
 			this.gofacade = ServiceLocator.getInstance().getFacade(GenericObjectFacadeRemote.class);
-			this.generatorFacade = ServiceLocator.getInstance().getFacade(GeneratorFacadeRemote.class);
 		}
 		catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);
@@ -98,13 +93,9 @@ public class GenericObjectDelegate {
 		return this.gofacade;
 	}
 
-	private GeneratorFacadeRemote getGeneratorFacade() {
-		return this.generatorFacade;
-	}
-
 	/**
 	 * @return the leased object meta data
-	 * 
+	 *
 	 * @deprecated As GenericObjectMetaDataVO is deprecated.
 	 */
 	public synchronized GenericObjectMetaDataVO getMetaDataCVO() {
@@ -461,23 +452,6 @@ public class GenericObjectDelegate {
 	public void restore(GenericObjectWithDependantsVO gowdvo) throws CommonBusinessException {
 		try {
 			this.getGenericObjectFacade().restore(gowdvo.getId());
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-
-	/**
-	 * generates a leased object from another.
-	 * @param iSourceGenericObjectId the id of the source leased object
-	 * @param generatoractionvo generator action vo to be used for generation
-	 * @return the id of the generated leased object
-	 * @throws NuclosFatalException
-	 */
-	public GenericObjectVO generateGenericObject(Integer iSourceGenericObjectId, Integer parameterObjectId, GeneratorActionVO generatoractionvo)
-			throws CommonBusinessException {
-		try {
-			return this.getGeneratorFacade().generateGenericObject(iSourceGenericObjectId, parameterObjectId, generatoractionvo);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);

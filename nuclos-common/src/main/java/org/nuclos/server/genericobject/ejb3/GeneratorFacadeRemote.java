@@ -17,6 +17,7 @@
 package org.nuclos.server.genericobject.ejb3;
 
 import java.util.Collection;
+import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJBException;
@@ -28,7 +29,6 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
-import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.server.common.valueobject.GeneratorRuleVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorVO;
@@ -54,33 +54,17 @@ public interface GeneratorFacadeRemote {
     * @nucleus.permission mayWrite(generatoractionvo.getTargetModuleId())
     */
    @RolesAllowed("Login")
-   public GenericObjectVO generateGenericObject(Integer iSourceGenericObjectId, Integer parameterObjectId, GeneratorActionVO generatoractionvo)
+   public GenerationResult generateGenericObject(Integer iSourceGenericObjectId, Integer parameterObjectId, GeneratorActionVO generatoractionvo)
    	throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException,
       CommonStaleVersionException, CommonValidationException;
 
    @RolesAllowed("Login")
-   public Collection<Integer> generateGenericObjectFromMultipleSourcesWithAttributeGrouping(Collection<Integer> collSourceGenericObjectId,
-       Integer parameterObjectId, GeneratorActionVO generatoractionvo)throws CommonPermissionException, CommonFinderException;
-   
-	/**
-	 * Generates one target object and fires the generation rules for a collection of source objects
-	 * @param collSourceGenericObjectId
-	 * @param generatoractionvo
-	 * @return
-	 * @throws CommonFinderException
-	 * @throws CommonPermissionException
-	 * @throws NuclosBusinessRuleException
-	 * @throws CommonStaleVersionException
-	 * @throws CommonValidationException
-	 * @nucleus.permission mayWrite(generatoractionvo.getTargetModuleId())
-	 */
-	@RolesAllowed("Login")
-	public abstract Integer generateGenericObjectFromMultipleSources(
-		Collection<Integer> collSourceGenericObjectId,
-		Integer parameterObjectId,
-		GeneratorActionVO generatoractionvo) throws CommonFinderException,
-		CommonPermissionException, NuclosBusinessException, NuclosBusinessRuleException,
-		CommonStaleVersionException, CommonValidationException;
+   public Map<String, Collection<GenericObjectVO>> groupObjects(Collection<Integer> sourceIds, GeneratorActionVO generatoractionvo);
+
+   @RolesAllowed("Login")
+   public GenerationResult generateGenericObject(Collection<GenericObjectVO> sourceObjects, Integer parameterObjectId, GeneratorActionVO generatoractionvo)
+   	throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException,
+      CommonStaleVersionException, CommonValidationException;
 
 	/**
 	 * update usages of rules

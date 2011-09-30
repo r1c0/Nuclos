@@ -21987,17 +21987,17 @@
   {
     "resourceID": "GenericObjectCollectController.72",
     "locale": "i-default",
-    "text": "Create one or more {1} from the currently selected {0}?"
+    "text": "Create one {1} from each currently selected {0}?"
   },
   {
     "resourceID": "GenericObjectCollectController.72",
     "locale": "en",
-    "text": "Create one or more {1} from the currently selected {0}?"
+    "text": "Create one {1} from each currently selected {0}?"
   },
   {
     "resourceID": "GenericObjectCollectController.72",
     "locale": "de",
-    "text": "Soll aus den markierten Objekten vom Typ \"{0}\" eine oder mehrere Objekte vom Typ \"{1}\" erzeugt werden?"
+    "text": "Soll aus den markierten Objekten vom Typ \"{0}\" jeweils ein Objekt vom Typ \"{1}\" erzeugt werden?"
   },
   {
     "resourceID": "RuleNode.12",
@@ -22032,22 +22032,17 @@
   {
     "resourceID": "GenericObjectCollectController.71a",
     "locale": "i-default",
-    "text": "Create a {1} from the current {0}?"
-  },
-  {
-    "resourceID": "GenericObjectCollectController.71a",
-    "locale": "i-default",
-    "text": "Create a {1} from the current {0}?"
+    "text": "Create one or more grouped objects of type \"{1}\" from the selected objects of type \"{0}\"?"
   },
   {
     "resourceID": "GenericObjectCollectController.71a",
     "locale": "en",
-    "text": "Create a {1} from the current {0}?"
+    "text": "Create one or more grouped objects of type \"{1}\" from the selected objects of type \"{0}\"?"
   },
   {
     "resourceID": "GenericObjectCollectController.71a",
     "locale": "de",
-    "text": "Soll aus den aktuellen {0} mehrere {1} erzeugt werden?"
+    "text": "Soll aus den selektierten Objekten vom Typ \"{0}\" ein oder mehrere gruppierte Objekte vom Typ \"{1}\" erzeugt werden?"
   },
   {
     "resourceID": "GenericObjectCollectController.70",
@@ -35220,6 +35215,21 @@
     "text": "Nicht alle Pflichtfelder konnten gefüllt werden."
   },
   {
+    "resourceID": "generation.multiple",
+    "locale": "i-default",
+    "text": "Object generation for {0} objects ..."
+  },
+  {
+    "resourceID": "generation.multiple",
+    "locale": "en",
+    "text": "Object generation for {0} objects ..."
+  },
+  {
+    "resourceID": "generation.multiple",
+    "locale": "de",
+    "text": "Objektgenerierung für {0} Objekte ..."
+  },
+  {
     "resourceID": "R00022877",
     "locale": "i-default",
     "text": "Object generation for {0} ..."
@@ -35237,32 +35247,47 @@
   {
     "resourceID": "R00022880",
     "locale": "i-default",
-    "text": "Object generation for {0} successful"
+    "text": "Object \"{0}\" successfully generated."
   },
   {
     "resourceID": "R00022880",
     "locale": "en",
-    "text": "Object generation for {0} successful"
+    "text": "Object \"{0}\" successfully generated."
   },
   {
     "resourceID": "R00022880",
     "locale": "de",
-    "text": "Objektgenerierung für {0} erfolgreich"
+    "text": "Objekt \"{0}\" erfolgreich generiert"
+  },
+  {
+    "resourceID": "generation.unsaved",
+    "locale": "i-default",
+    "text": "Generated obect could not be saved: \\n{0} \\nPlease edit object in details view (see context menu)."
+  },
+  {
+    "resourceID": "generation.unsaved",
+    "locale": "en",
+    "text": "Generated obect could not be saved: \\n{0} \\nPlease edit object in details view (see context menu)."
+  },
+  {
+    "resourceID": "generation.unsaved",
+    "locale": "de",
+    "text": "Generiertes Objekt konnte nicht gespeichert werden: \\n{0} \\nBitte bearbeiten Sie das Objekt in der Detailansicht (Aufruf über Kontextmenü)."
   },
   {
     "resourceID": "R00022883",
     "locale": "i-default",
-    "text": "Object generation for {0} failed.\\n{1}"
+    "text": "Object generation failed. \\n{0}"
   },
   {
     "resourceID": "R00022883",
     "locale": "en",
-    "text": "Object generation for {0} failed.\\n{1}"
+    "text": "Object generation failed. \\n{0}"
   },
   {
     "resourceID": "R00022883",
     "locale": "de",
-    "text": "Objektgenerierung für {0} fehlgeschlagen.\\n{1}"
+    "text": "Objektgenerierung fehlgeschlagen. \\n{0}"
   },
   {
     "resourceID": "R00022886",
@@ -61732,5 +61757,80 @@
     "resourceID": "ExplorerSettings.ObjectNodeAction.ShowDetailsInNewTab",
     "locale": "de",
     "text": "Details in neuem Tab anzeigen"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generationAttribute.groupfunction.label",
+    "locale": "i-default",
+    "text": "Grouping function"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generationAttribute.groupfunction.label",
+    "locale": "en",
+    "text": "Grouping function"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generationAttribute.groupfunction.label",
+    "locale": "de",
+    "text": "Gruppierungsfunktion"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generationAttribute.groupfunction.description",
+    "locale": "i-default",
+    "text": "Grouping function"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generationAttribute.groupfunction.description",
+    "locale": "en",
+    "text": "Grouping function"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generationAttribute.groupfunction.description",
+    "locale": "de",
+    "text": "Gruppierungsfunktion"
+  },
+  {
+    "resourceID": "GenerationCollectController.groupfunction.mandatory",
+    "locale": "i-default",
+    "text": "Please choose a grouping function for every source entity attribute."
+  },
+  {
+    "resourceID": "GenerationCollectController.groupfunction.mandatory",
+    "locale": "en",
+    "text": "Please choose a grouping function for every source entity attribute."
+  },
+  {
+    "resourceID": "GenerationCollectController.groupfunction.mandatory",
+    "locale": "de",
+    "text": "Bitte wählen für jedes Attribut der Quellentität eine Gruppierungsfunktion."
+  },
+  {
+    "resourceID": "GenerationCollectController.groupfunction.notallowed",
+    "locale": "i-default",
+    "text": "Grouping functions are not allowed if attribute grouping is disabled."
+  },
+  {
+    "resourceID": "GenerationCollectController.groupfunction.notallowed",
+    "locale": "en",
+    "text": "Grouping functions are not allowed if attribute grouping is disabled."
+  },
+  {
+    "resourceID": "GenerationCollectController.groupfunction.notallowed",
+    "locale": "de",
+    "text": "Gruppierungsfunktion sind nicht erlaubt wenn die Gruppierung nach Attributen deaktiviert ist."
+  },
+  {
+    "resourceID": "GenerationCollectController.groupfunction.notallowed.sourcetype",
+    "locale": "i-default",
+    "text": "Grouping functions are not allowed for parameter entity attributes."
+  },
+  {
+    "resourceID": "GenerationCollectController.groupfunction.notallowed.sourcetype",
+    "locale": "en",
+    "text": "Grouping functions are not allowed if attribute grouping is disabled."
+  },
+  {
+    "resourceID": "GenerationCollectController.groupfunction.notallowed.sourcetype",
+    "locale": "de",
+    "text": "Gruppierungsfunktion sind nicht erlaubt für Attribute der Parameterentität."
   }
 ]
