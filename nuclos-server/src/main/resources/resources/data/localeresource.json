@@ -17370,6 +17370,36 @@
     "text": "Zwei Status dürfen nicht durch mehr als einen Statuswechsel miteinander verbunden sein."
   },
   {
+    "resourceID": "statemachine.error.validation.graph.defaulttransition",
+    "locale": "i-default",
+    "text": "There is no absolute standard path from an start state to an end state."
+  },
+  {
+    "resourceID": "statemachine.error.validation.graph.defaulttransition",
+    "locale": "en",
+    "text": "There is no absolute standard path from an start state to an end state."
+  },
+  {
+    "resourceID": "statemachine.error.validation.graph.defaulttransition",
+    "locale": "de",
+    "text": "Es kann kein eindeutiger Standardpfad von einem Startstatus zu einem Endstatus bestimmt werden."
+  },
+  {
+    "resourceID": "statemachine.error.validation.graph.duplicatedefaulttransition",
+    "locale": "i-default",
+    "text": "A state may not be connected by more than one outgoing standard state transition."
+  },
+  {
+    "resourceID": "statemachine.error.validation.graph.duplicatedefaulttransition",
+    "locale": "en",
+    "text": "A state may not be connected by more than one outgoing standard state transition."
+  },
+  {
+    "resourceID": "statemachine.error.validation.graph.duplicatedefaulttransition",
+    "locale": "de",
+    "text": "Für einen Status dürfen nicht mehrfach ausgehende Standardpfade angegeben werden."
+  },
+  {
     "resourceID": "statemachine.error.validation.graph.invalidstart",
     "locale": "i-default",
     "text": "Please remove state transition not connected to a start state."
@@ -55419,6 +55449,51 @@
     "text": "Dieses Unterformular enthält keine Referenzspalte zur Entität {0}."
   },
   {
+    "resourceID": "GenericObjectCollectController.105",
+    "locale": "i-default",
+    "text": "default state path"
+  },
+  {
+    "resourceID": "GenericObjectCollectController.105",
+    "locale": "en",
+    "text": "default state path"
+  },
+  {
+    "resourceID": "GenericObjectCollectController.105",
+    "locale": "de",
+    "text": "Standard Statuspfad"
+  },
+  {
+    "resourceID": "GenericObjectCollectController.106",
+    "locale": "i-default",
+    "text": "state"
+  },
+  {
+    "resourceID": "GenericObjectCollectController.106",
+    "locale": "en",
+    "text": "state"
+  },
+  {
+    "resourceID": "GenericObjectCollectController.106",
+    "locale": "de",
+    "text": "Status"
+  },
+  {
+    "resourceID": "GenericObjectCollectController.107",
+    "locale": "i-default",
+    "text": "standard path"
+  },
+  {
+    "resourceID": "GenericObjectCollectController.107",
+    "locale": "en",
+    "text": "standard path"
+  },
+  {
+    "resourceID": "GenericObjectCollectController.107",
+    "locale": "de",
+    "text": "Standardpfad"
+  },
+  {
     "resourceID": "SubFormExplorerNode.1",
     "locale": "i-default",
     "text": "<html>Editor opened, save without user intervention is not possible.<br>Please check message: {0}<\/html>"
@@ -56837,6 +56912,21 @@
     "resourceID": "StateModelEditor.18",
     "locale": "de",
     "text": "Berechtigungen & Pflichtfelder einfügen"
+  },
+  {
+    "resourceID": "StateModelEditor.19",
+    "locale": "i-default",
+    "text": "Define as standard path"
+  },
+  {
+    "resourceID": "StateModelEditor.19",
+    "locale": "en",
+    "text": "Define as standard path"
+  },
+  {
+    "resourceID": "StateModelEditor.19",
+    "locale": "de",
+    "text": "Als Standardpfad definieren"
   },
   {
     "resourceID": "StatePropertiesPanel.11",
@@ -61832,5 +61922,20 @@
     "resourceID": "GenerationCollectController.groupfunction.notallowed.sourcetype",
     "locale": "de",
     "text": "Gruppierungsfunktion sind nicht erlaubt für Attribute der Parameterentität."
+  }
+  {
+    "resourceID": "StateViewComponent.01",
+    "locale": "i-default",
+    "text": "Possible state transitions:"
+  },
+  {
+    "resourceID": "StateViewComponent.01",
+    "locale": "en",
+    "text": "Possible state transitions:"
+  },
+  {
+    "resourceID": "StateViewComponent.01",
+    "locale": "de",
+    "text": "M\u00f6gliche Statuswechsel:"
   }
 ]
