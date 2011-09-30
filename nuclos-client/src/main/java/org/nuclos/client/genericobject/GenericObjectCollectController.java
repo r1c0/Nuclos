@@ -3218,8 +3218,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (clct == null)
 			result = null;
 		else
-			result = (NuclosImage) clct.getValue(NuclosEOField.STATEICON.getMetaData().getField());
-
+			try {
+				result = (NuclosImage) clct.getValue(NuclosEOField.STATEICON
+						.getMetaData().getField());
+			} catch (CommonFatalException e) {
+				// ignore here.
+				return null;
+			}
 		return result;
 	}
 
