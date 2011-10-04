@@ -1748,14 +1748,14 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		mainFramePrefs.put(PREFS_NODE_DEFAULT_WORKSPACE, defaultWorkspace);
 		mainFramePrefs.put(PREFS_NODE_LAST_WORKSPACE, getWorkspace());
 
+		mainFramePrefs.node(PREFS_NODE_BOOKMARK).removeNode();
 		Preferences prefsBookmark = mainFramePrefs.node(PREFS_NODE_BOOKMARK);
-		prefsBookmark.clear();
 		for (String entity : bookmark.keySet()) {
 			PreferencesUtils.putSerializableListXML(prefsBookmark, entity, bookmark.getValues(entity));
 		}
 
+		mainFramePrefs.node(PREFS_NODE_HISTORY).removeNode();
 		Preferences prefsHistory = mainFramePrefs.node(PREFS_NODE_HISTORY);
-		prefsHistory.clear();
 		for (String entity : history.keySet()) {
 			PreferencesUtils.putSerializableListXML(prefsHistory, entity, history.getValues(entity));
 		}
