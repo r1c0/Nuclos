@@ -49,7 +49,6 @@ import org.nuclos.client.ui.multiaction.MultiActionProgressLine;
 import org.nuclos.client.ui.multiaction.MultiActionProgressPanel;
 import org.nuclos.client.ui.multiaction.MultiActionProgressResultHandler;
 import org.nuclos.client.ui.multiaction.MultiCollectablesActionController;
-import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.PointerCollection;
 import org.nuclos.common.UsageCriteria;
@@ -186,7 +185,7 @@ public class GenerationController {
 				Integer processId = sources.values().iterator().next().getProcessId();
 				String process;
 				try {
-					process = MasterDataDelegate.getInstance().get(NuclosEntity.PROCESS.getEntityName(), processId).getField(NuclosEOField.PROCESS.getName(), String.class);
+					process = MasterDataDelegate.getInstance().get(NuclosEntity.PROCESS.getEntityName(), processId).getField("name", String.class);
 					sSourceModuleName = MessageFormat.format("{0} ({1})", sSourceModuleName, process);
 				} catch (CommonBusinessException e) {
 					LOG.error(e);

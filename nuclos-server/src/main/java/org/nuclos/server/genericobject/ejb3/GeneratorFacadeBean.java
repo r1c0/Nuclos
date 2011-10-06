@@ -915,13 +915,21 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 
 	@SuppressWarnings("deprecation")
 	private GenericObjectVO getNewGenericObject(Collection<GenericObjectVO> sourceObjects, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonValidationException, CommonPermissionException {
+		final GenericObjectVO result = new GenericObjectVO(generatoractionvo.getTargetModuleId(), null, null, GenericObjectMetaDataCache.getInstance());
+
 		final EntityObjectVO object = getGroupedGeneratedObject(generatoractionvo, CollectionUtils.transform(sourceObjects, new Transformer<GenericObjectVO, Integer>() {
 			@Override
 			public Integer transform(GenericObjectVO i) {
 				return i.getId();
 			}
 		}));
-		return DalSupportForGO.getGenericObjectVO(object);
+
+		for (DynamicAttributeVO att : DalSupportForGO.getGenericObjectVO(object).getAttributes()) {
+			if (att.getValue() != null || att.getValueId() != null) {
+				result.addAndSetAttribute(att);
+			}
+		}
+		return result;
 	}
 
 	private void copyParameterAttributes(EntityObjectVO sourceVO, String sourceEntityName, GenericObjectVO target, GeneratorActionVO generatoractionvo) {
