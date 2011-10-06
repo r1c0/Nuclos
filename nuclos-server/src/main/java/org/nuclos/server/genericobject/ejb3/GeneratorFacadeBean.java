@@ -245,8 +245,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 
 			// link target with source object if possible
 			if (generatoractionvo.isCreateRelationBetweenObjects()) {
-				Integer iTargetAttributeId = null;
-				iTargetAttributeId = getTargetFieldIdIfAny(generatoractionvo, iTargetAttributeId);
+				 Integer iTargetAttributeId = getTargetFieldIdIfAny(generatoractionvo, generatoractionvo.getSourceModuleId());
 				if (iTargetAttributeId != null) {
 					Integer iSourceId = source.getId();
 					DynamicAttributeVO voIntid = new DynamicAttributeVO(null, iTargetAttributeId, iSourceId, "");
@@ -274,6 +273,15 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 				// TODO: exception that parameter object is missing
 				throw new NuclosFatalException("Missing parameter object");
 			}
+
+			if (generatoractionvo.isCreateRelationToParameterObject()) {
+				Integer iTargetAttributeId = getTargetFieldIdIfAny(generatoractionvo, generatoractionvo.getParameterEntityId());
+				if (iTargetAttributeId != null) {
+					DynamicAttributeVO voIntid = new DynamicAttributeVO(null, iTargetAttributeId, parameterObjectId, "");
+					target.setAttribute(voIntid);
+				}
+			}
+
 			parameterEntityName = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(generatoractionvo.getParameterEntityId())).getEntity();
 			parameterObject = NucletDalProvider.getInstance().getEntityObjectProcessor(parameterEntityName).getByPrimaryKey(IdUtils.toLongId(parameterObjectId));
 			try {
@@ -352,20 +360,20 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		}
 	}
 
-	private Integer getTargetFieldIdIfAny(GeneratorActionVO generatoractionvo, Integer iTargetAttributeId) {
-		Integer iSourceModuleId = generatoractionvo.getSourceModuleId();
-		String sSourceEntity = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iSourceModuleId)).getEntity();
+	private Integer getTargetFieldIdIfAny(GeneratorActionVO generatoractionvo, Integer sourceEntityId) {
+		Integer result = null;
+		String sSourceEntity = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(sourceEntityId)).getEntity();
 		Integer iTargetModuleId = generatoractionvo.getTargetModuleId();
 		String sTargetEntity = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iTargetModuleId)).getEntity();
 		Map<String, EntityFieldMetaDataVO> mp = MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(sTargetEntity);
 		for (String sFieldName : mp.keySet()) {
 			EntityFieldMetaDataVO voField = mp.get(sFieldName);
 			if (sSourceEntity.equals(voField.getForeignEntity())) {
-				iTargetAttributeId = voField.getId().intValue();
+				result = voField.getId().intValue();
 				break;
 			}
 		}
-		return iTargetAttributeId;
+		return result;
 	}
 
 	/**

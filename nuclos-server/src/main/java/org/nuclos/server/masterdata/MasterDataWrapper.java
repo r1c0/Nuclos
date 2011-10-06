@@ -181,6 +181,8 @@ public class MasterDataWrapper {
 			vo.setGroupAttributes((Boolean)mdVO.getField("groupattributes"));
 		if(mdVO.getField("createRelation") != null)
 			vo.setCreateRelationBetweenObjects((Boolean)mdVO.getField("createRelation"));
+		if(mdVO.getField("createParameterRelation") != null)
+			vo.setCreateRelationToParameterObject((Boolean)mdVO.getField("createParameterRelation"));
 		return vo;
 	}
 
@@ -193,6 +195,8 @@ public class MasterDataWrapper {
 		mpFields.put("targetProcessId", gaVO.getTargetProcessId());
 		mpFields.put("parameterEntityId", gaVO.getParameterEntityId());
 		mpFields.put("subProcessTransition", gaVO.getCaseTransitionId());
+		mpFields.put("createRelation", gaVO.isCreateRelationBetweenObjects());
+		mpFields.put("createParameterRelation", gaVO.isCreateRelationToParameterObject());
 
 		return new MasterDataVO(gaVO.getId(), null, null, null, null, null, mpFields);
 	}

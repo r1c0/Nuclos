@@ -12,7 +12,7 @@
         <minimum-size height="40" width="180" />
         <preferred-size height="100" width="300" />
         <panel visible="yes" opaque="yes">
-        <tabbedpane-constraints title="Work step" enabled="yes">
+        <tabbedpane-constraints title="Work step" enabled="yes" internalname="Work step">
           <translations>
             <translation lang="de" text="Arbeitsschritt"/>
             <translation lang="en" text="Work step"/>
@@ -21,7 +21,7 @@
           <tablelayout columns="-1.0" rows="-1.0" />
           <panel>
             <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
-            <tablelayout columns="12.0|309.0|5.0|220.0|-1.0" rows="12.0|22.0|5.0|22.0|5.0|22.0|5.0|22.0|5.0|22.0|5.0|150.0|22.0|79.0|55.0|22.0|5.0|22.0|-1.0" />
+            <tablelayout columns="12.0|309.0|5.0|220.0|-1.0" rows="12.0|22.0|5.0|22.0|5.0|22.0|5.0|22.0|5.0|22.0|5.0|150.0|22.0|79.0|79.0|22.0|5.0|22.0|-1.0" />
             <collectable-component fill-control-horizontally="yes" name="description" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
               <tablelayout-constraints col1="1" col2="1" row1="15" row2="15" hAlign="2" vAlign="1" />
               <minimum-size height="22" width="15" />
@@ -72,15 +72,7 @@
               </titled-border>
               <panel>
                 <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
-                <tablelayout columns="0.0|200.0|-1.0|200.0" rows="0.0|23.0|5.0|-1.0" />
-                <collectable-component fill-control-horizontally="yes" name="sourceModule" insertable="no" opaque="yes" visible="yes" enabled="yes" controltype="combobox" show-only="control">
-                  <tablelayout-constraints col1="3" col2="3" row1="1" row2="1" hAlign="2" vAlign="1" />
-                  <minimum-size height="23" width="35" />
-                  <preferred-size height="23" width="70" />
-                  <valuelist-provider type="entityId">
-                    <parameter name="restriction" value="entities with statemodel" />
-                  </valuelist-provider>
-                </collectable-component>
+                <tablelayout columns="0.0|309.0|218.0|-1.0" rows="0.0|23.0|5.0|-1.0" />
                 <subform name="SubForm_1" entity="nuclos_generationUsage" foreignkeyfield-to-parent="generation" toolbarorientation="vertical" enabled="yes" >
                   <tablelayout-constraints col1="1" col2="3" row1="3" row2="3" hAlign="2" vAlign="2" />
                   <minimum-size height="40" width="180" />
@@ -95,6 +87,14 @@
                   <minimum-size height="22" width="15" />
                   <preferred-size height="22" width="50" />
                 </collectable-component>
+                <collectable-component fill-control-horizontally="yes" name="sourceModule" insertable="no" opaque="yes" visible="yes" enabled="yes" controltype="combobox" show-only="control">
+                  <tablelayout-constraints col1="2" col2="2" row1="1" row2="1" hAlign="2" vAlign="1" />
+                  <minimum-size height="23" width="35" />
+                  <preferred-size height="23" width="70" />
+                  <valuelist-provider type="entityId">
+                    <parameter name="restriction" value="entities with statemodel" />
+                  </valuelist-provider>
+                </collectable-component>
               </panel>
             </panel>
             <panel visible="yes" opaque="yes">
@@ -108,14 +108,14 @@
               </titled-border>
               <panel>
                 <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
-                <tablelayout columns="0.0|200.0|-1.0|200.0" rows="0.0|23.0|5.0|23.0" />
+                <tablelayout columns="0.0|200.0|97.0|11.0|219.0" rows="0.0|23.0|5.0|23.0" />
                 <collectable-component fill-control-horizontally="yes" name="targetModule" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
                   <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="1" />
                   <minimum-size height="22" width="15" />
                   <preferred-size height="22" width="50" />
                 </collectable-component>
                 <collectable-component fill-control-horizontally="yes" name="targetModule" insertable="no" opaque="yes" visible="yes" enabled="yes" controltype="combobox" show-only="control">
-                  <tablelayout-constraints col1="3" col2="3" row1="1" row2="1" hAlign="2" vAlign="1" />
+                  <tablelayout-constraints col1="4" col2="4" row1="1" row2="1" hAlign="2" vAlign="1" />
                   <minimum-size height="23" width="35" />
                   <preferred-size height="23" width="70" />
                   <valuelist-provider type="entityId">
@@ -123,7 +123,7 @@
                   </valuelist-provider>
                 </collectable-component>
                 <collectable-component fill-control-horizontally="yes" name="targetProcess" insertable="no" opaque="yes" visible="yes" enabled="yes" controltype="combobox" show-only="control">
-                  <tablelayout-constraints col1="3" col2="3" row1="3" row2="3" hAlign="2" vAlign="1" />
+                  <tablelayout-constraints col1="4" col2="4" row1="3" row2="3" hAlign="2" vAlign="1" />
                   <minimum-size height="23" width="35" />
                   <preferred-size height="23" width="70" />
                   <valuelist-provider type="process"/>
@@ -146,7 +146,7 @@
               </titled-border>
               <panel>
                 <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
-                <tablelayout columns="0.0|200.0|-1.0|200.0" rows="0.0|23.0|5.0|23.0" />
+                <tablelayout columns="0.0|200.0|107.0|220.0" rows="0.0|23.0|5.0|23.0" />
                 <collectable-component fill-control-horizontally="yes" name="parameterEntity" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
                   <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="1" />
                   <minimum-size height="22" width="15" />
@@ -156,6 +156,16 @@
                   <tablelayout-constraints col1="3" col2="3" row1="1" row2="1" hAlign="2" vAlign="1" />
                   <minimum-size height="23" width="35" />
                   <preferred-size height="23" width="70" />
+                </collectable-component>
+                <collectable-component fill-control-horizontally="yes" name="createParameterRelation" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+                  <tablelayout-constraints col1="1" col2="2" row1="3" row2="3" hAlign="2" vAlign="1" />
+                  <minimum-size height="22" width="15" />
+                  <preferred-size height="22" width="50" />
+                </collectable-component>
+                <collectable-component fill-control-horizontally="yes" name="createParameterRelation" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="checkbox" show-only="control">
+                  <tablelayout-constraints col1="3" col2="3" row1="3" row2="3" hAlign="2" vAlign="1" />
+                  <minimum-size height="22" width="19" />
+                  <preferred-size height="22" width="20" />
                 </collectable-component>
               </panel>
             </panel>
@@ -182,7 +192,7 @@
           </panel>
         </panel>
         <panel visible="yes" opaque="yes">
-        <tabbedpane-constraints title="Attributes to copy" enabled="yes">
+        <tabbedpane-constraints title="Attributes to copy" enabled="yes" internalname="Attributes to copy">
           <translations>
             <translation lang="de" text="Zu &#x00fc;bernehmende Attribute"/>
             <translation lang="en" text="Attributes to copy"/>
@@ -212,7 +222,7 @@
           </panel>
         </panel>
         <panel visible="yes" opaque="yes">
-        <tabbedpane-constraints title="Subforms to copy" enabled="yes">
+        <tabbedpane-constraints title="Subforms to copy" enabled="yes" internalname="Subforms to copy">
           <translations>
             <translation lang="de" text="Zu &#x00fc;bernehmende Unterformulare"/>
             <translation lang="en" text="Subforms to copy"/>
@@ -254,7 +264,7 @@
           </panel>
         </panel>
         <panel name="pnlRules" visible="yes" opaque="yes">
-        <tabbedpane-constraints title="Rules to execute" enabled="yes">
+        <tabbedpane-constraints title="Rules to execute" enabled="yes" internalname="Rules to execute">
           <translations>
             <translation lang="de" text="Auszuf&#x00fc;hrende Regeln"/>
             <translation lang="en" text="Rules to execute"/>
@@ -271,6 +281,12 @@
   </panel>
 </layout>
   <rules>
+    <rule name="Abhängigkeit Quellaktion -> Status">
+      <event type="value-changed" entity="nuclos_generationUsage" sourcecomponent="process"/>
+      <actions>
+        <refresh-valuelist entity="nuclos_generationUsage" targetcomponent="state" parameter-for-sourcecomponent="process"/>
+      </actions>
+    </rule>
     <rule name="Abhängigkeit Quellmodul -> Quellaktion">
       <event type="value-changed" sourcecomponent="sourceModule"/>
       <actions>
@@ -278,12 +294,6 @@
         <refresh-valuelist entity="nuclos_generationUsage" targetcomponent="state" parameter-for-sourcecomponent="moduleId"/>
         <refresh-valuelist entity="nuclos_generationAttribute" targetcomponent="attributeSource" parameter-for-sourcecomponent="sourcemodule"/>
         <refresh-valuelist entity="nuclos_generationSubentity" targetcomponent="entitySource" parameter-for-sourcecomponent="module"/>
-      </actions>
-    </rule>
-    <rule name="Abhängigkeit Quellaktion -> Status">
-      <event type="value-changed" entity="nuclos_generationUsage" sourcecomponent="process"/>
-      <actions>
-        <refresh-valuelist entity="nuclos_generationUsage" targetcomponent="state" parameter-for-sourcecomponent="process"/>
       </actions>
     </rule>
     <rule name="Abhängigkeit Zielmodul -> Zielprozess">
@@ -301,6 +311,12 @@
         <refresh-valuelist entity="nuclos_generationAttribute" targetcomponent="attributeSource" parameter-for-sourcecomponent="parameterEntity"/>
         <refresh-valuelist entity="nuclos_generationSubentity" targetcomponent="sourceType" parameter-for-sourcecomponent="parameterEntity"/>
         <refresh-valuelist entity="nuclos_generationSubentity" targetcomponent="entitySource" parameter-for-sourcecomponent="parameterEntity"/>
+      </actions>
+    </rule>
+    <rule name="Regel 1">
+      <event type="value-changed" sourcecomponent="groupattributes"/>
+      <actions>
+        <refresh-valuelist entity="nuclos_generationAttribute" targetcomponent="groupfunction" parameter-for-sourcecomponent="relatedId"/>
       </actions>
     </rule>
     <rule name="Abhängigkeit Quellobjekttyp -> Quellattribut">
@@ -343,12 +359,6 @@
       <event type="value-changed" entity="nuclos_generationSubentity" sourcecomponent="entityTarget"/>
       <actions>
         <refresh-valuelist entity="nuclos_generationSubentityAttribute" targetcomponent="subentityAttributeTarget" />
-      </actions>
-    </rule>
-    <rule name="Regel 1">
-      <event type="value-changed" sourcecomponent="groupattributes"/>
-      <actions>
-        <refresh-valuelist entity="nuclos_generationAttribute" targetcomponent="groupfunction" parameter-for-sourcecomponent="relatedId" />
       </actions>
     </rule>
   </rules>

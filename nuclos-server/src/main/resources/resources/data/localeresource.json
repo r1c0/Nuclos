@@ -3390,6 +3390,36 @@
     "text": "Zielobjekt mit Quellobjekt verknüpfen"
   },
   {
+    "resourceID": "nuclos.entityfield.generation.createParameterRelation.label",
+    "locale": "i-default",
+    "text": "Link target object with parameter object"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.createParameterRelation.label",
+    "locale": "en",
+    "text": "Link target object with parameter object"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.createParameterRelation.label",
+    "locale": "de",
+    "text": "Zielobjekt mit Parameterobjekt verknüpfen"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.createParameterRelation.description",
+    "locale": "i-default",
+    "text": "Link target object with parameter object"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.createParameterRelation.description",
+    "locale": "en",
+    "text": "Link target object with parameter object"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.createParameterRelation.description",
+    "locale": "de",
+    "text": "Zielobjekt mit Parameterobjekt verknüpfen"
+  },
+  {
     "resourceID": "R00012149",
     "locale": "i-default",
     "text": "Target table"

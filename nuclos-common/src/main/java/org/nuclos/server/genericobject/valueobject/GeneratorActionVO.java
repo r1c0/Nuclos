@@ -44,6 +44,7 @@ public class GeneratorActionVO implements java.io.Serializable {
 	private Integer iCaseTransitionId;
 	private boolean blnGroupAttributes;
 	private boolean blnCreateRelationBetweenObjects;
+	private boolean blnCreateRelationToParameterObject;
 
 	private PropertiesMap mpProperties = null;
 
@@ -93,6 +94,14 @@ public class GeneratorActionVO implements java.io.Serializable {
 
 	public void setCreateRelationBetweenObjects(boolean blnMakeRelationBetweenObjects) {
 		this.blnCreateRelationBetweenObjects = blnMakeRelationBetweenObjects;
+	}
+
+	public boolean isCreateRelationToParameterObject() {
+		return blnCreateRelationToParameterObject;
+	}
+
+	public void setCreateRelationToParameterObject(boolean blnMakeRelationToParameterObject) {
+		this.blnCreateRelationToParameterObject = blnMakeRelationToParameterObject;
 	}
 
 	/**

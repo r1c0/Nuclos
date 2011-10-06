@@ -8124,6 +8124,19 @@
         "foreignentityfield": "name",
         "unique": false,
         "labelres": "nuclet.foreign.label"
+      },
+      {
+        "name": "createParameterRelation",
+        "dbfield": "BLNCREATEPARAMETERREL",
+        "label": "Objekte verknüpfen",
+        "description": "Objekte verknüpfen",
+        "datatype": "java.lang.Boolean",
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.generation.createParameterRelation.label",
+        "descriptionres": "nuclos.entityfield.generation.createParameterRelation.description"
       }
     ]
   },
