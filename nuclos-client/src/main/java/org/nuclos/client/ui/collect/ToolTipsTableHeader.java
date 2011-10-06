@@ -31,12 +31,12 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
-import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
 import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -45,10 +45,6 @@ import org.nuclos.common.collection.Predicate;
 
 public class ToolTipsTableHeader extends JTableHeader {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private CollectableEntityFieldBasedTableModel entityTableModel;
 	private final Icon ascendingSortIcon;
 	private final Icon descendingSortIcon;
@@ -70,7 +66,7 @@ public class ToolTipsTableHeader extends JTableHeader {
 
 	@Override
 	public String getToolTipText(MouseEvent ev) {
-		String result = "";
+		String result = null;
 		final int iIndex = getColumnModel().getColumnIndexAtX(ev.getPoint().x);
 		if (iIndex >= 0 && entityTableModel != null) {
 			final int iModelColumn = adjustColumnIndex(table.convertColumnIndexToModel(iIndex));
@@ -91,9 +87,11 @@ public class ToolTipsTableHeader extends JTableHeader {
 		TableCellRenderer tcr = new TableCellRenderer() {
 			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-				Component comp = tcrDefault.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+				final Component comp = tcrDefault.getTableCellRendererComponent(
+						table, value, isSelected, hasFocus, row, column);
 				
 				if(comp instanceof JLabel) {
+					final JLabel jlabel = (JLabel) comp;
 					List<? extends SortKey> sortKeys = null;
 					if (entityTableModel instanceof SortableTableModel) {
 						sortKeys = ((SortableTableModel) entityTableModel).getSortKeys();
@@ -153,11 +151,19 @@ public class ToolTipsTableHeader extends JTableHeader {
 							}
 						}
 
-						((JLabel) comp).setHorizontalAlignment(JLabel.CENTER);
-						((JLabel) comp).setHorizontalTextPosition(JLabel.LEADING);
-						((JLabel) comp).setIcon(sortIcon);
+						jlabel.setHorizontalAlignment(SwingConstants.CENTER);
+						jlabel.setHorizontalTextPosition(SwingConstants.LEADING);
+						
+						/*
+						 * This prevents (strange) <em>vertical</em> alignment of table header cells filled with 
+						 * HTML JLabels when the user clicks on the header.  
+						 */
+						jlabel.setVerticalAlignment(SwingConstants.TOP);
+						jlabel.setVerticalTextPosition(SwingConstants.TOP);
+						
+						jlabel.setIcon(sortIcon);
 					}
-					((JLabel) comp).setPreferredSize(new Dimension(ascendingSortIcon.getIconWidth(), ascendingSortIcon.getIconWidth()));
+					jlabel.setPreferredSize(new Dimension(ascendingSortIcon.getIconWidth(), ascendingSortIcon.getIconWidth()));
 				}
 				
 				return comp;

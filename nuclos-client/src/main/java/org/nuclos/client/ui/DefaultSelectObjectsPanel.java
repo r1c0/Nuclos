@@ -72,13 +72,11 @@ public class DefaultSelectObjectsPanel<T> extends SelectObjectsPanel<T> {
 		this.btnDown.setEnabled(false);
 		this.scrlpnSelectedColumns.setPreferredSize(new Dimension(200, 300));
 		if (header != null) {
-			// add(header, BorderLayout.NORTH);
 			final JTabbedPane tabbed = new JTabbedPane();
 			tabbed.add(CommonLocaleDelegate.getMessage("select.panel.column", "Spalten"), pnlMain);
-			final JPanel panel = new JPanel();
-			panel.setLayout(new BorderLayout());
+			final JPanel panel = new JPanel(new BorderLayout());
 			panel.add(header, BorderLayout.NORTH);
-			tabbed.add(CommonLocaleDelegate.getMessage("select.panel.pivot", "Pivot"), panel);
+			tabbed.add(CommonLocaleDelegate.getMessage("select.panel.pivot", "Pivot"), new JScrollPane(panel));
 			add(tabbed, BorderLayout.CENTER);
 		}
 		else {

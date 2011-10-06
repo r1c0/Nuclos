@@ -23,10 +23,12 @@ import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellRenderer;
 
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.model.FixedTableModel;
 import org.nuclos.client.ui.model.MutableListModel;
+import org.nuclos.client.ui.renderer.TopTableCellRendererDelegate;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 
@@ -65,11 +67,16 @@ public class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel<Collectab
 	protected void init() {
 		super.init();
 
-		this.tblSelectedColumn = new JTable();
-		this.tblSelectedColumn.setShowHorizontalLines(false);
-		this.scrlpnSelectedColumns.getViewport().add(tblSelectedColumn, null);
+		tblSelectedColumn = new JTable() {
+			@Override
+		    public TableCellRenderer getCellRenderer(int row, int column) {
+				return new TopTableCellRendererDelegate(super.getCellRenderer(row, column));
+		    }
+		};
+		tblSelectedColumn.setShowHorizontalLines(false);
+		
+		scrlpnSelectedColumns.getViewport().add(tblSelectedColumn, null);
 		scrlpnSelectedColumns.getViewport().setBackground(tblSelectedColumn.getBackground());
-
 	}
 
 	@SuppressWarnings("unchecked")
