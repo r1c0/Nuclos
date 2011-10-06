@@ -148,6 +148,8 @@ public interface CollectableEntityField {
 	String getLabel();
 
 	/**
+	 * This bean property is used for the tool tip text in Nuclos.
+	 * 
 	 * @return a description of this field, if any
 	 */
 	String getDescription();

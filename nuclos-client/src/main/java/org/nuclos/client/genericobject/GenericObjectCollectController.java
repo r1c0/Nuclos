@@ -819,9 +819,24 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		header.setDefaultRenderer(new TableCellRenderer() {
 			@Override
 			public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
-				final CollectableEntityField clctef = GenericObjectCollectController.this.getResultTableModel().getCollectableEntityField(tbl.convertColumnIndexToModel(iColumn));
-				final Object oFormattedValue = clctef.toString();
-				return headerrendererDefault.getTableCellRendererComponent(tbl, oFormattedValue, bSelected, bHasFocus, iRow, iColumn);
+				final CollectableEntityField f = GenericObjectCollectController.this.getResultTableModel().getCollectableEntityField(tbl.convertColumnIndexToModel(iColumn));
+				final String value;
+				if (f instanceof CollectableEOEntityField) {
+					// In the pivot case, we want to separate the column name 
+					// from the tool top.
+					final CollectableEOEntityField field = (CollectableEOEntityField) f;
+					final EntityFieldMetaDataVO ef = field.getMeta();
+					if (ef.getPivotInfo() != null) {
+						value = ef.getField() + ":" + ef.getPivotInfo().getValueField();
+					}
+					else {
+						value = f.getLabel();
+					}
+				}
+				else {
+					value = f.getLabel();
+				}
+				return headerrendererDefault.getTableCellRendererComponent(tbl, value, bSelected, bHasFocus, iRow, iColumn);
 			}
 		});
 	}
