@@ -66,7 +66,9 @@ public class NuclosMailSender {
 			throw new CommonBusinessException(StringUtils.getParameterizedExceptionMessage("mailsender.error.2", smtpPort.trim()));
 		}
 
-		mail.setFrom(sender);
+		if (StringUtils.isNullOrEmpty(mail.getFrom())) {
+			mail.setFrom(sender);
+		}
 		sendMail(smtpHost, iSmtpPort, auth?login:null, password,  mail);
 	}
 
@@ -163,7 +165,7 @@ public class NuclosMailSender {
 
 			Transport.send(msg);
 		} catch (Exception e) {
-			Log.error("Sending email failed.", e);
+			LOG.error("Sending email failed.", e);
 			throw new CommonBusinessException(StringUtils.getParameterizedExceptionMessage("mailsender.error.1", e.getMessage()));
 		}
 	}
