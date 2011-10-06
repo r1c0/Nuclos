@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.genericobject.CollectableGenericObjectEntity;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
@@ -27,22 +28,43 @@ import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.masterdata.CollectableMasterDataForeignKeyEntityField;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.PreferencesUtils;
+import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 
 public class CollectableEntityFieldPreferencesUtil {
 	
+	private static final Logger LOG = Logger.getLogger(CollectableEntityFieldPreferencesUtil.class);
+	
 	private CollectableEntityFieldPreferencesUtil(MetaDataProvider mdProv) {
 		// Never invoked.
 	}
 	
-	public static List<CollectableEntityField> readList(Preferences prefs, String node) throws PreferencesException {
-		final List<CollectableEntityFieldPref> raw = (List<CollectableEntityFieldPref>) PreferencesUtils.getSerializableListXML(prefs, node, true);
+	public static List<CollectableEntityField> readList(Preferences prefs, String node, boolean ignoreErrors) throws PreferencesException {
+		final List<CollectableEntityFieldPref> raw = (List<CollectableEntityFieldPref>) PreferencesUtils.getSerializableListXML(prefs, node, ignoreErrors);
 		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>(raw.size());
 		// backward hack
 		for (Object p: raw) {
 			if (p instanceof CollectableEntityFieldPref) {
-				result.add(fromPref((CollectableEntityFieldPref) p));
+				try {
+					result.add(fromPref((CollectableEntityFieldPref) p));
+				}
+				catch (PreferencesException e) {
+					if (ignoreErrors) {
+						LOG.warn("readList: fromPref fails " + e);
+					}
+					else {
+						throw e;
+					}
+				}
+				catch (CommonFatalException e) {
+					if (ignoreErrors) {
+						LOG.warn("readList: fromPref fails " + e);
+					}
+					else {
+						throw new PreferencesException("readList: fromPref fails", e);
+					}
+				}
 			}
 		}
 		return result;

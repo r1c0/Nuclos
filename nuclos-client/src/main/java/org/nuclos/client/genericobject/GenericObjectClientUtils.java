@@ -91,7 +91,7 @@ public class GenericObjectClientUtils {
 		try {
 			beans = (List<CollectableEntityField>)
 					// PreferencesUtils.getSerializableListXML(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS);
-					CollectableEntityFieldPreferencesUtil.readList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS);
+					CollectableEntityFieldPreferencesUtil.readList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS, true);
 		} catch (PreferencesException e) {
 			// do nothing
 			LOG.error("XMLEncoder/XMLDecoder Fehler", e);
