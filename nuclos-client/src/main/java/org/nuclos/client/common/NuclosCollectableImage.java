@@ -310,7 +310,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		BufferedImage buff = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB); 
 		buff.getGraphics().drawImage(icon.getImage(), 0,0, null);
 		
-		File scaled = new File(IOUtils.getDefaultTempDir() + new Double(Math.random()).toString() + "tmp.png");
+		File scaled = new File(IOUtils.getDefaultTempDir(), new Double(Math.random()).toString() + "tmp.png");
 	    scaled.deleteOnExit();
 	    try {
 			ImageIO.write(buff,"PNG", scaled);
@@ -369,7 +369,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		Graphics2D g = bdest.createGraphics();
 	    AffineTransform at = AffineTransform.getScaleInstance((double)width/buff.getWidth(), (double)height/buff.getHeight());
 	    g.drawRenderedImage(buff,at);
-	    File scaled = new File(IOUtils.getDefaultTempDir() + new Double(Math.random()).toString() + "tmp.png");
+	    File scaled = new File(IOUtils.getDefaultTempDir(), new Double(Math.random()).toString() + "tmp.png");
 	    scaled.deleteOnExit();
 	    ImageIO.write(bdest,"PNG", scaled);
 

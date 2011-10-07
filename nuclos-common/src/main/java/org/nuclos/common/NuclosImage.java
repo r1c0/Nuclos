@@ -139,7 +139,7 @@ public class NuclosImage implements Serializable, NuclosAttributeExternalValue {
 				Graphics2D g = bdest.createGraphics();
 			    AffineTransform at = AffineTransform.getScaleInstance((double)iWidth/buff.getWidth(), (double)iHeight/buff.getHeight());
 			    g.drawRenderedImage(buff,at);
-			    File scaled = new File(IOUtils.getDefaultTempDir() + new Double(Math.random()).toString() + "tmp.png");
+			    File scaled = new File(IOUtils.getDefaultTempDir(), new Double(Math.random()).toString() + "tmp.png");
 			    scaled.deleteOnExit();
 			    ImageIO.write(bdest,"PNG", scaled);
 
