@@ -38152,7 +38152,7 @@
   {
     "resourceID": "NuclosCollectControllerFactory.2",
     "locale": "de",
-    "text": "Die Entität kann nicht geöffnet werden, da noch kein Statusmodell definiert wurde.\\nDie Statusmodellverwaltung finden Sie im Menü Administration."
+    "text": "Die Entität kann nicht geöffnet werden, da noch kein Statusmodell definiert wurde.\\nDie Statusmodellverwaltung finden Sie im Menü Konfiguration."
   },
   {
     "resourceID": "NuclosResultPanel.1",
