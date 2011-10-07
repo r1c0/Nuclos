@@ -60,6 +60,7 @@ import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.ShutdownActions;
 import org.nuclos.client.common.security.SecurityDelegate;
 import org.nuclos.client.main.ChangePasswordPanel;
+import org.nuclos.client.main.Main;
 import org.nuclos.client.main.SwingLocaleSwitcher;
 import org.nuclos.client.security.NuclosRemoteServerSession;
 import org.nuclos.client.ui.Controller;
@@ -120,11 +121,11 @@ public class LoginController extends Controller {
 
 		try {
 	        ServerMetaFacadeRemote sm = ServiceLocator.getInstance().getFacade(ServerMetaFacadeRemote.class);
-	        
+
 	        // little time zone tests:
 	        //TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
 	        //TimeZone.setDefault(TimeZone.getTimeZone("Europe/Moscow"));
-	        
+
 	        final TimeZone serverDefaultTimeZone = sm.getServerDefaultTimeZone();
 			System.out.println("Default local  time zone is: " + TimeZone.getDefault().getID());
 			System.out.println("Default server time zone is: " + serverDefaultTimeZone.getID());
@@ -132,7 +133,8 @@ public class LoginController extends Controller {
 				TimeZone.setDefault(serverDefaultTimeZone);
 				System.out.println("Local default time zone is set to server default!");
 			}
-	        
+			System.out.println("Initial local  time zone is: " + Main.getInitialTimeZone().getID());
+
 	        passwordSaveAllowed = Boolean.valueOf(
 	        	StringUtils.defaultIfNull(
 	        		StringUtils.nullIfEmpty(

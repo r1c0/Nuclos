@@ -19,6 +19,7 @@ package org.nuclos.client.main;
 import java.awt.Frame;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.jnlp.ServiceManager;
 import javax.jnlp.SingleInstanceService;
@@ -47,9 +48,11 @@ import org.nuclos.common2.StringUtils;
  * @version 01.00.00
  */
 public class Main {
-	
+
 	private static boolean macOSX = false;
-	
+
+	private static final TimeZone initialTimeZone = TimeZone.getDefault();
+
 	public static enum ExitResult {
 		NORMAL,
 		LOGIN_FAILED,
@@ -117,25 +120,25 @@ public class Main {
 				String runtimeVersion = System.getProperty("java.version");
 				String[] fragments1 = runtimeVersion.split("_"); //e.g. "1.6.0", "22"
 				String[] fragments2 = fragments1[0].split("\\."); //e.g. "1", "6", "0"
-				
+
 		        int minorVers = Integer.parseInt(fragments2[1]);
 		        if (minorVers < 6) {
-		        		JOptionPane.showMessageDialog(null, 
-		        			isMacOSXSnowLeopardOrBetter() ? 
-		        				"Nuclos Client requires Java for Mac OS X 10.6, Update 3+" : 
+		        		JOptionPane.showMessageDialog(null,
+		        			isMacOSXSnowLeopardOrBetter() ?
+		        				"Nuclos Client requires Java for Mac OS X 10.6, Update 3+" :
 		        					"Nuclos Client requires Java for Mac OS X 10.5, Update 8+");
 		        		Main.exit(Main.ExitResult.ABNORMAL);
 		        } else if (minorVers == 6) {
 		        		int bugfixVers = Integer.parseInt(fragments1[1]);
 		        		if (bugfixVers < 22) {
-		        			JOptionPane.showMessageDialog(null, 
-		        				isMacOSXSnowLeopardOrBetter() ? 
-		        				"Nuclos Client requires Java for Mac OS X 10.6, Update 3+" : 
+		        			JOptionPane.showMessageDialog(null,
+		        				isMacOSXSnowLeopardOrBetter() ?
+		        				"Nuclos Client requires Java for Mac OS X 10.6, Update 3+" :
 		        					"Nuclos Client requires Java for Mac OS X 10.5, Update 8+");
 			        		Main.exit(Main.ExitResult.ABNORMAL);
 		        		}
 		        }
-				
+
 				Class<?> macAppClass = Class.forName("com.apple.eawt.Application");
 				Object macAppObject = macAppClass.getConstructor().newInstance();
 				// set Nuclos dock icon
@@ -147,10 +150,10 @@ public class Main {
 				Main.exit(Main.ExitResult.ABNORMAL);
 			}
 		}
-		
+
 		System.out.println(System.getProperty("java.version"));
 		System.out.println(System.getProperty("java.vendor"));
-		
+
 		if ("true".equals(System.getProperty("nuclos.client.singleinstance"))) {
 			// register instance as single instance
 			try {
@@ -210,7 +213,7 @@ public class Main {
 	public static boolean isMacOSX() {
 		return macOSX;
 	}
-	
+
 	public static boolean isMacOSXSnowLeopardOrBetter() {
 	    String osName = System.getProperty("os.name");
 	    if (!osName.startsWith("Mac OS X")) return false;
@@ -232,6 +235,15 @@ public class Main {
 	    }
 
 	    return false;
+	}
+
+	/**
+	 * @deprecated Workaround
+	 * @return Initial vm timezone.
+	 */
+	@Deprecated
+	public static TimeZone getInitialTimeZone() {
+		return initialTimeZone;
 	}
 
 }	// class Main
