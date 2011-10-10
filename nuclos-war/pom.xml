@@ -21,6 +21,8 @@
 			<plugin>
 				<groupId>org.codehaus.mojo.webstart</groupId>
 				<artifactId>webstart-maven-plugin</artifactId>
+				<!-- version must be updated from time-to-time, use http://search.maven.org for finding the newest (tp) -->
+				<version>1.0-beta-2</version>
 				<executions>
 					<execution>
 						<phase>package</phase>

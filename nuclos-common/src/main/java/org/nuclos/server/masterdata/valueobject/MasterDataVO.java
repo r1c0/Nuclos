@@ -396,15 +396,19 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 		MasterDataMetaProvider cache = SpringApplicationContextHolder.getBean(MasterDataMetaProvider.class);
 		if (cache != null) {
 			//NUCLEUSINT-754
-			Object labelOrResource = mdmetafield.getResourceSIdForLabel() != null ? mdmetafield.getResourceSIdForLabel() : mdmetafield.getLabel();
+			final Object labelOrResource = mdmetafield.getResourceSIdForLabel() != null ? mdmetafield.getResourceSIdForLabel() : mdmetafield.getLabel();
+			final String msg = "validateField failed, entity=" + sEntity + " field=" + mdmetafield.getFieldName() 
+					+ " ref=" + mdmetafield.getForeignEntity() + " value=" + oValue + ":\n"; 
 			if (mdmetafield.getForeignEntity() != null) {
 				if ((oValueId == null) && !mdmetafield.isNullable()) {
-					throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.value",
+					throw new CommonValidationException(msg + "valueId is null but not nullable: "
+							+ StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.value",
 						cache.getMetaData(sEntity).getResourceSIdForLabel(), labelOrResource));
 				}
 			} else {
 				if ((oValue == null || "".equals(oValue)) && !mdmetafield.isNullable()) {
-					throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.value",
+					throw new CommonValidationException(msg + "value is null or empty but not nullable"
+							+ StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.value",
 						cache.getMetaData(sEntity).getResourceSIdForLabel(), labelOrResource));
 				}
 			}
@@ -413,30 +417,35 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 					Date.class.isAssignableFrom(oValue.getClass())) {
 					// InternalTimestamp can be mapped to Date
 				} else {
-					throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.datatype",
+					throw new CommonValidationException(msg + "type expected" + mdmetafield.getJavaClass() + " given " + oValue.getClass()
+							+ StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.datatype",
 						labelOrResource, cache.getMetaData(sEntity).getResourceSIdForLabel()));
 				}
 			}
 			// check against data scale, for string values at least:
 			if (oValueId == null && oValue != null && oValue instanceof String && mdmetafield.getDataScale() != null && ((String) oValue).length() > mdmetafield.getDataScale())
 			{
-				throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.datascale",
+				throw new CommonValidationException(msg
+						+ StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.datascale",
 					labelOrResource, cache.getMetaData(sEntity).getResourceSIdForLabel()));
 			}
 			//check against data precision
 			/** todo integrate correct check here */
 			if (false) {
-				throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.dataprecision",
+				throw new CommonValidationException(msg
+						+ StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.dataprecision",
 					labelOrResource, cache.getMetaData(sEntity).getResourceSIdForLabel()));
 			}
 			//check against input format
 			final String sInputFormat = mdmetafield.getInputFormat();
 			if (!ValueValidationHelper.validateInputFormat(oValue, sInputFormat)) {
-				throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.formatinput",
+				throw new CommonValidationException(msg
+						+ StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.formatinput",
 					labelOrResource, cache.getMetaData(sEntity).getResourceSIdForLabel(), sInputFormat));
 			}
 			if (!ValueValidationHelper.validateBoundaries(oValue, sInputFormat)) {
-				throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.boundaries",
+				throw new CommonValidationException(msg
+						+ StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.boundaries",
 					labelOrResource, cache.getMetaData(sEntity).getResourceSIdForLabel()));
 			}
 		}

@@ -43,8 +43,8 @@
 		</dependency>
 		<dependency>
 			<groupId>de.novabit</groupId>
-			<artifactId>syntheticaBlackMoon</artifactId>
-			<version>2.13.0</version>
+			<artifactId>syntheticaBlackMoonNuclos</artifactId>
+			<version>2.9.1.1</version>
 		</dependency>
 	</dependencies>
 
