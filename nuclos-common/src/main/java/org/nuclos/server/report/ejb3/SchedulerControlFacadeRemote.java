@@ -29,5 +29,13 @@ public interface SchedulerControlFacadeRemote {
 
 	public abstract String[] getJobNames();
 
+	/**
+	 * Check if job is scheduled
+	 *
+	 * @param jobName
+	 * @return
+	 */
+	public boolean isScheduled(String jobName);
+
 	public abstract String getSchedulerSummary();
 }

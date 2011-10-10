@@ -44,6 +44,13 @@ public class JobControllerNucletContent extends DefaultNucletContent {
 			EntityObjectVO job = NucletDalProvider.getInstance().getEntityObjectProcessor(getEntity().getEntityName()).getByPrimaryKey(ncObject.getId());
 			unschedule(job);
 		}
+		ncObject.getFields().put("laststate", "Deaktiviert");
+		ncObject.getFields().put("running", false);
+		ncObject.getFields().put("lastfiretime", null);
+		ncObject.getFields().put("result", null);
+		ncObject.getFields().put("resultdetails", null);
+		ncObject.getFields().put("nextfiretime", null);
+
 		return super.insertOrUpdateNcObject(ncObject, isNuclon);
 	}
 

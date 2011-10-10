@@ -25,7 +25,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Set;
 
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
@@ -67,7 +66,6 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelLis
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
-import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.job.IntervalUnit;
 import org.nuclos.common.job.JobType;
 import org.nuclos.common.job.JobUtils;
@@ -425,10 +423,9 @@ public class JobControlCollectController extends MasterDataCollectController {
 
 	private void checkNameWithAlreadyScheduledJobs(CollectableMasterDataWithDependants clct) throws CommonValidationException {
 		final SchedulerControlFacadeRemote schedulercontrol = ServiceLocator.getInstance().getFacade(SchedulerControlFacadeRemote.class);
-		final Set<String> asJobs = CollectionUtils.asSet(schedulercontrol.getJobNames());
-		if (asJobs.contains(clct.getValue("name"))) {
+		if (schedulercontrol.isScheduled((String)clct.getValue("name"))) {
 			throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage(
-				"jobcontroller.error.validation.name", clct.getValue("name")));
+					"jobcontroller.error.validation.name", clct.getValue("name")));
 		}
 	}
 

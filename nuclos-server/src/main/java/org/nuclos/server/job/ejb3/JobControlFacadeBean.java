@@ -95,8 +95,16 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 		// try to generate cron expression and validate
 		validate(job);
 
+		MasterDataVO mdVO = job.toMasterDataVO();
+		mdVO.setField("laststate", "Deaktiviert");
+		mdVO.setField("running", false);
+		mdVO.setField("lastfiretime", null);
+		mdVO.setField("result", null);
+		mdVO.setField("resultdetails", null);
+		mdVO.setField("nextfiretime", null);
+
 		MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
-		MasterDataVO result = mdFacade.create(NuclosEntity.JOBCONTROLLER.getEntityName(), job.toMasterDataVO(), job.getDependants());
+		MasterDataVO result = mdFacade.create(NuclosEntity.JOBCONTROLLER.getEntityName(), mdVO, job.getDependants());
 		getScheduler().addJob(new JobVO(result));
 		return result;
 	}
