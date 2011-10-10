@@ -59,6 +59,7 @@ import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.statemodel.Statemodel;
 import org.nuclos.common.statemodel.StatemodelClosure;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonCreateException;
@@ -219,7 +220,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 				result = createStateGraph(stategraphcvo);
 				if (mpDependants != null) {
 					for (EntityObjectVO mdvoDependant : mpDependants.getAllData()) {
-						mdvoDependant.getFields().put("statemodelId", result);
+						mdvoDependant.getFieldIds().put("statemodel", IdUtils.toLongId(result));
 					}
 				}
 			}
