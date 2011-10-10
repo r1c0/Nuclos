@@ -26,7 +26,6 @@ import java.net.URLDecoder;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -118,6 +117,7 @@ import org.nuclos.server.report.valueobject.SubreportVO;
 import org.nuclos.server.resource.ResourceCache;
 import org.nuclos.server.resource.valueobject.ResourceVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -492,8 +492,8 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
 
          JasperPrint jprint = null;
          if (reportoutput.getDatasourceId() != null) {
-
-			Connection conn = DataBaseHelper.getConnection(NuclosDataSources.getDefaultDS());
+        	// get existing connection (enlisted in current transaction)
+        	Connection conn = DataSourceUtils.getConnection(NuclosDataSources.getDefaultDS());//DataBaseHelper.getConnection(NuclosDataSources.getDefaultDS());
             try {
                DatasourceFacadeLocal facade = ServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
 
@@ -520,13 +520,14 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
             catch (CommonPermissionException ex) {
                throw new NuclosReportException(ex);
             }
-            finally {
+            // connection will be closed by container after commit/rollback.
+            /*finally {
             	try {
             		conn.close();
             	} catch (SQLException ex) {
             		error(ex);
             	}
-            }
+            }*/
          }
          else {
             jprint = JasperFillManager.fillReport(jr, mpParams2, new JREmptyDataSource(1));
