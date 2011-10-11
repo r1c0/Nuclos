@@ -16,11 +16,13 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.statemodel;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -42,105 +44,135 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import org.nuclos.client.ui.Icons;
+import org.nuclos.common2.CommonLocaleDelegate;
 
-public class StateViewComponent extends JPanel {
 
-	
+public class StateViewComponent extends JPanel {	
 	private final List<StateWrapper> items = new LinkedList<StateWrapper>();
 	private StateWrapper selectedItem = null;
 	
 	private static class StateWrapperLabel extends JButton {
 		private final StateWrapper state;
 		private final StateViewComponent component;
-		private final Icon icon = Icons.getInstance().getStateViewState();
 		public StateWrapperLabel(StateWrapper state, StateViewComponent component) {
 			this.state = state;
 			this.component = component;
 			
-			if (state.getIcon() == null || state.getIcon().getContent() == null)
-				setIcon(icon);
-			else
-				setIcon(new ImageIcon(state.getIcon().getContent()));
+			if (component.isSelected(state)) {
+				setSelected(true);
+			}
 			
-			setPreferredSize(new Dimension(icon.getIconWidth(), icon.getIconHeight()));
 			setMargin(new Insets(-2, -3, -3, -3)); //sets the margin so buttons touch
 			setFocusPainted(false);
 			setBorderPainted(false);//turns off the borders
 			setContentAreaFilled(true);
 			setFocusable(false);
+			setRolloverEnabled(true);
 			
 			setName(state.getCombinedStatusText());
-			if (component.isSelected(state)) {
-				setSelected(true);
-			}
+			setToolTipText(state.getDescription());
 		}
+		
+		@Override
+		public Dimension getSize() {
+			return getPreferredSize();
+		}
+		
+		@Override
+		public Dimension getPreferredSize() {
+			int height = 41;
+			if (component.getItemCount() == 0) {
+				height = 0;
+			}
+			if (getParent() == null)
+				return new Dimension(0, height);
+			return new Dimension(200, height);
+		}
+		
 		@Override
 		public void paint(Graphics g) {
-			super.paint(g);
+			//super.paint(g);
+
 			Graphics2D g2d = (Graphics2D)g;
-			if (state.getIcon() == null || state.getIcon().getContent() == null) {
-				String numeral = state.getNumeral().toString();
-				g2d.drawString(numeral, (icon.getIconWidth() / 2)
-						- (SwingUtilities.computeStringWidth(g2d.getFontMetrics(), numeral) / 2) + 1,
-						(icon.getIconHeight() / 2) + (int)(g2d.getFontMetrics().getHeight() / 3.5) + 1);
+			
+			Icon firstIcon;
+			Icon secondIcon;
+			Icon thirdIcon;
+			
+			if (isEnabled()) {
+				firstIcon = Icons.getInstance().getStateViewStateNormal("first");
+				secondIcon = Icons.getInstance().getStateViewStateNormal("second");
+				thirdIcon = Icons.getInstance().getStateViewStateNormal("third");
+			} else {
+				firstIcon = Icons.getInstance().getStateViewStateDisabled("first");
+				secondIcon = Icons.getInstance().getStateViewStateDisabled("second");
+				thirdIcon = Icons.getInstance().getStateViewStateDisabled("third");
 			}
 			
-			if (component.isSelected(state)) {
-				g2d.drawString("selected", (icon.getIconWidth() / 2)
-						- (SwingUtilities.computeStringWidth(g2d.getFontMetrics(), "selected") / 2) + 1,
-						(icon.getIconHeight() / 2) + (int)(g2d.getFontMetrics().getHeight() / 3.5) + 1);
+			if (isSelected() || getModel().isRollover()) {
+				firstIcon = Icons.getInstance().getStateViewStateSelected("first");
+				secondIcon = Icons.getInstance().getStateViewStateSelected("second");
+				thirdIcon = Icons.getInstance().getStateViewStateSelected("third");
 			}
+			
+			String statusText = state.getCombinedStatusText();
+			
+			Icon statusIcon;
+			if (state.getIcon() == null || state.getIcon().getContent() == null)
+				statusIcon = Icons.getInstance().getStateViewDefaultStateIcon();
+			else
+				statusIcon = new ImageIcon(state.getIcon().getContent());
+			
+			int width = super.getSize().width - firstIcon.getIconWidth() - thirdIcon.getIconWidth();
+
+			g.drawImage(((ImageIcon)firstIcon).getImage(), 0,0, null);
+			g.drawImage(((ImageIcon)secondIcon).getImage(), firstIcon.getIconWidth(),0, width, secondIcon.getIconHeight(), null);
+			g.drawImage(((ImageIcon)thirdIcon).getImage(), firstIcon.getIconWidth() + width, 0, null);
+									
+			g2d.drawImage(((ImageIcon)statusIcon).getImage(), statusIcon.getIconWidth(),
+					(statusIcon.getIconHeight() / 2) + (int)(g2d.getFontMetrics().getHeight() / 3.5) + 1, null);
+
+			g2d.drawString(statusText, (statusIcon.getIconWidth() * 2) + getIconTextGap(),
+					(firstIcon.getIconHeight() / 2) + (int)(g2d.getFontMetrics().getHeight() / 3.5) + 1);
 		}
 	}
-	private static class StateTransitionLabel extends JLabel {
-		private final Icon icon = Icons.getInstance().getStateViewTransition();
-		public StateTransitionLabel() {
-			setIcon(icon);
-		}
-	}
-	private boolean bStandardTransitionsView = false;
-	private boolean bEnableStandardTransitionsView = false;
-    
-	private boolean bHasStandardTransitions = false;
 	
 	private JPanel container;
 	
-	public StateViewComponent(boolean bEnableStandardTransitionsView) {
-		this.bEnableStandardTransitionsView = bEnableStandardTransitionsView;
-		
+	public StateViewComponent() {
 		init();
-	}
-	
-	public boolean hasStandardTransitions() {
-		return bHasStandardTransitions;
-	}
-	
-	public void setStandardTransitionsView(boolean bStandardTransitionsView) {
-		if (bEnableStandardTransitionsView) {
-			this.bStandardTransitionsView = bStandardTransitionsView;
-		}
 	}
 	
 	private void init() {
 		container = new JPanel() {
+			
 			@Override
 			public Dimension getPreferredSize() {
-				if (super.getPreferredSize() == null)
-				{
-					return new Dimension(0, 18);
+				int height = 41;
+				if (getItemCount() == 0) {
+					height = 0;
 				}
-				return new Dimension(super.getPreferredSize().width, 18);
+				Dimension prefSize = super.getPreferredSize();
+				if (prefSize == null)
+				{
+					return new Dimension(0, height);
+				}
+				return new Dimension(prefSize.width, height);
 			}
 			@Override
 			public boolean isOpaque() {
 				return true;
 			}	
+			
+			@Override
+			public void paint(Graphics g) {
+				super.paint(g);
+			}
 		};
-		setLayout(new FlowLayout());
-		add(container);
-		container.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		setLayout(new BorderLayout());
+		add(container, BorderLayout.CENTER);
 		container.setOpaque(false);
-		setBorder(new EmptyBorder(new Insets(-4, 0, 0, 0)));
+		setBorder(new EmptyBorder(new Insets(0, 5, 0, 5)));
 	}
 	@Override
 	public boolean isOpaque() {
@@ -149,36 +181,33 @@ public class StateViewComponent extends JPanel {
 	
 	@Override
 	public Dimension getPreferredSize() {
-		if (super.getPreferredSize() == null)
-		{
-			return new Dimension(0, 20);
+		int height = 44;
+		if (getItemCount() == 0) {
+			height = 0;
 		}
-		return new Dimension(container.getPreferredSize().width+2, 20);
+		Dimension prefSize= super.getPreferredSize();
+		if (prefSize == null)
+		{
+			return new Dimension(0, height);
+		}
+		return new Dimension(prefSize.width, height);
 	}
 	
 	private void initStates() {
 		container.removeAll();
+		container.setLayout(new GridLayout(1, items.size()));
 		for (Iterator<StateWrapper> iterator = items.iterator(); iterator.hasNext();) {
 			StateWrapper item = iterator.next();
-			
 			container.add(new StateWrapperLabel(item, this));
-			if (iterator.hasNext()) {
-				container.add(new StateTransitionLabel());
-			}
 		}
+		
 		container.setBorder(new EmptyBorder(new Insets(-1, 2, 0, 0)));
+		revalidate();
+		repaint();
 	}
 	
 	private boolean isSelected(StateWrapper wrapper) {
 		return getSelectedItem() != null && wrapper.getNumeral().equals(((StateWrapper)getSelectedItem()).getNumeral());
-	}
-	
-	public boolean isStandardTransitionsView() {
-		return bStandardTransitionsView;
-	}
-	
-	public boolean isStandardTransitionsViewEnabled() {
-		return bEnableStandardTransitionsView;
 	}
 	
 	private void enableStateLabels() {
@@ -192,6 +221,14 @@ public class StateViewComponent extends JPanel {
 			{
 				afterSelected = true;
 			}
+		}
+	}
+	
+	private void disableStateLabels() {
+		for (Iterator<StateWrapper> iterator = items.iterator(); iterator.hasNext();) {
+			StateWrapper item = iterator.next();
+			StateWrapperLabel label = findComponent(item);
+			label.setEnabled(false);
 		}
 	}
 	
@@ -227,6 +264,10 @@ public class StateViewComponent extends JPanel {
 	@Override
 	public void setEnabled(boolean b) {
 		super.setEnabled(b);
+		if (!b)
+			disableStateLabels();
+		else
+			enableStateLabels();
 	}
 	
 	@Override
@@ -248,8 +289,13 @@ public class StateViewComponent extends JPanel {
     
     public void addSubsequentStatesActionListener(StateWrapper item, Map<StateWrapper, Action> mpSubsequentStatesAction) {
 		StateWrapperLabel label = findComponent(item);
-		
 		final JPopupMenu popup = new JPopupMenu();
+
+		if (mpSubsequentStatesAction.size() > 0) {
+			JLabel lbl = new JLabel(CommonLocaleDelegate.getResource("StateViewComponent.01", "M\u00f6gliche Statuswechsel:"));
+			lbl.setFont(lbl.getFont().deriveFont(Font.BOLD));
+			popup.add(lbl);
+		}
 		for (Iterator iterator = mpSubsequentStatesAction.keySet().iterator(); iterator.hasNext();) {
 			StateWrapper state = (StateWrapper) iterator.next();
 			JMenuItem menuItem = new JMenuItem(mpSubsequentStatesAction.get(state));
@@ -258,7 +304,7 @@ public class StateViewComponent extends JPanel {
 		}
 		label.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-            	if (popup.getComponentCount() > 0)
+            	if (popup.getComponentCount() > 0 && SwingUtilities.isRightMouseButton(e))
                 popup.show(e.getComponent(), e.getX(), e.getY());
             }
         });

@@ -23,13 +23,15 @@ public class StateWrapper implements Comparable<StateWrapper> {
 	private final Integer iId;
 	private final Integer iNumeral;
 	private final String sName;
+	private final String sDescription;
 	private final NuclosImage icon;
 
-	public StateWrapper(Integer iId, Integer iNumeral, String sName, NuclosImage icon) {
+	public StateWrapper(Integer iId, Integer iNumeral, String sName, NuclosImage icon, String sDescription) {
 		this.iId = iId;
 		this.iNumeral = iNumeral;
 		this.sName = sName;
 		this.icon = icon;
+		this.sDescription = sDescription;
 	}
 
 	public Integer getId() {
@@ -42,6 +44,10 @@ public class StateWrapper implements Comparable<StateWrapper> {
 
 	public String getName() {
 		return sName;
+	}
+
+	public String getDescription() {
+		return sDescription;
 	}
 
 	public NuclosImage getIcon() {

@@ -709,14 +709,38 @@ public class Icons {
 		return this.getIconByName("showList");
 	}
 
-	public Icon getStateViewState() {
-		return this.getIconByName("state-view-state");
+	public Icon getStateViewStateNormal(String type) {
+		if (type.equals("first"))
+			return this.getIconByName("state-view-state-normal-first");
+		if (type.equals("second"))
+			return this.getIconByName("state-view-state-normal-second");
+		if (type.equals("third"))
+			return this.getIconByName("state-view-state-normal-third");
+		throw new IllegalArgumentException("only first, second, third is allowed as argument here.");
 	}
-
-	public Icon getStateViewTransition() {
-		return this.getIconByName("state-view-transition");
+	public Icon getStateViewStateDisabled(String type) {
+		if (type.equals("first"))
+			return this.getIconByName("state-view-state-disabled-first");
+		if (type.equals("second"))
+			return this.getIconByName("state-view-state-disabled-second");
+		if (type.equals("third"))
+			return this.getIconByName("state-view-state-disabled-third");
+		throw new IllegalArgumentException("only first, second, third is allowed as argument here.");
+	}
+	public Icon getStateViewStateSelected(String type) {
+		if (type.equals("first"))
+			return this.getIconByName("state-view-state-selected-first");
+		if (type.equals("second"))
+			return this.getIconByName("state-view-state-selected-second");
+		if (type.equals("third"))
+			return this.getIconByName("state-view-state-selected-third");
+		throw new IllegalArgumentException("only first, second, third is allowed as argument here.");
 	}
 	
+	public Icon getStateViewDefaultStateIcon() {
+		return this.getIconByName("state-view-state-default");
+	}
+
 	public Icon[] getStateIcons() {
 		List<Icon> stateIcons = new LinkedList<Icon>();
 		stateIcons.add(getCachedImageIcon("org/nuclos/client/ui/images/status/Alpha_.png"));

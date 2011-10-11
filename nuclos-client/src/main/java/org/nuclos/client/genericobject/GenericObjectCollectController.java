@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.genericobject;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -124,6 +125,7 @@ import org.nuclos.client.searchfilter.EntitySearchFilter;
 import org.nuclos.client.searchfilter.SearchFilter;
 import org.nuclos.client.searchfilter.SearchFilters;
 import org.nuclos.client.statemodel.StateDelegate;
+import org.nuclos.client.statemodel.StateViewComponent;
 import org.nuclos.client.statemodel.StateWrapper;
 import org.nuclos.client.ui.BlackLabel;
 import org.nuclos.client.ui.CommonAbstractAction;
@@ -442,6 +444,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	//protected final JButton btnShowResultInExplorer = new JButton();
 	protected final JMenuItem btnShowResultInExplorer = new JMenuItem();
 	private final JComboBox cmbbxCurrentState = new JComboBox();
+	private final StateViewComponent cmpStateStandardView = new StateViewComponent();
 	//private final JToolBar toolbarCustomActionsDetails = UIUtils.createNonFloatableToolBar();
 	private final List<Component> toolbarCustomActionsDetails = new ArrayList<Component>();
 	private int toolbarCustomActionsDetailsIndex = -1;
@@ -1782,6 +1785,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		cmbbxCurrentState.setVisible(false);
 		cmbbxCurrentState.setToolTipText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.8","Aktueller Status"));
 
+		cmpStateStandardView.setName("cmpStateStandardView");
+		cmpStateStandardView.setVisible(false);
+		cmpStateStandardView.setToolTipText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.105","Standard Statuspfad"));
+
 		toolbarCustomActionsDetailsIndex = this.getDetailsPanel().getToolBarNextIndex();
 
 		this.getDetailsPanel().addToolBarComponent(btnPointer);
@@ -3045,6 +3052,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		assert result != null;
 		assert getSearchStrategy().isCollectableComplete(result);
 		setSubsequentStatesVisible(false, false);
+		setStatesDefaultPathVisible(false, false);
 		return result;
 	}
 
@@ -3207,8 +3215,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			result = null;
 		else
 			try {
-				result = (NuclosImage) clct.getValue(NuclosEOField.STATEICON
-						.getMetaData().getField());
+				result = (NuclosImage) clct.getValue(NuclosEOField.STATEICON.getMetaData().getField());
 			} catch (CommonFatalException e) {
 				// ignore here.
 				return null;
@@ -3440,7 +3447,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				final List<StateWrapper> lstComboEntries = new ArrayList<StateWrapper>();
 
 				final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(),
-					getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon());
+					getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
 				lstComboEntries.add(stateCurrent);
 
 				UsageCriteria uc = getUsageCriteria(getSelectedCollectable());
@@ -3452,12 +3459,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					if (statevo == null)
 						// we don't want to throw an exception here, so we just log the error:
 						log.error("Die Liste der Folgestati enth\u00e4lt ein null-Objekt.");
-					else if (!lstComboEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon())))
+					else if (!lstComboEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon(), statevo.getDescription())))
 						lstComboEntries.add(new StateWrapper(statevo.getId(), statevo.getNumeral(),
 							CommonLocaleDelegate.getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
 								StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()
 								),
-								statevo.getStatename()), statevo.getIcon()));
+								statevo.getStatename()), statevo.getIcon(), statevo.getDescription()));
 
 				// Sort and finally enter the items into the combo box:
 				Collections.sort(lstComboEntries);
@@ -3487,6 +3494,113 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		cmbbxCurrentState.setEnabled(cmbbxCurrentState.getItemCount() != 0);
 	}
+
+
+
+	/**
+	 * shows/hides the buttons for switching to states default path
+	 * @param bVisible
+	 * @param bEnableButtons
+	 */
+	private void setStatesDefaultPathVisible(boolean bVisible, boolean bEnableButtons) {
+		// remove all previous listeners:
+		cmpStateStandardView.removeActionListeners();
+
+		// initialize:
+		cmpStateStandardView.removeAllItems();
+
+		if (!bVisible)
+			cmpStateStandardView.setVisible(false);
+		else {
+			cmpStateStandardView.setVisible(true);
+			cmpStateStandardView.setEnabled(bEnableButtons);
+			final Integer iGenericObjectId = getSelectedGenericObjectId();
+			if (iGenericObjectId != null) {
+				// Create a temporary list for sorting the entries before entering into combo box
+				final List<StateWrapper> lstDefaultPathEntries = new ArrayList<StateWrapper>();
+
+				final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(),
+					getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
+
+				UsageCriteria uc = getUsageCriteria(getSelectedCollectable());
+				DynamicAttributeVO av = getSelectedCollectable().getGenericObjectCVO().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue());
+				List<StateVO> lstDefaultPathStates = StateDelegate.getInstance().getStatemodel(uc).getDefaultStatePath();
+
+				// Copy all subsequent states to the sorting list:
+				for (StateVO statevo : lstDefaultPathStates)
+					if (statevo == null)
+						// we don't want to throw an exception here, so we just log the error:
+						log.error("Die Liste der Folgestati enth\u00e4lt ein null-Objekt.");
+					else if (!lstDefaultPathEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon(), statevo.getDescription())))
+						lstDefaultPathEntries.add(new StateWrapper(statevo.getId(), statevo.getNumeral(),
+							CommonLocaleDelegate.getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
+								StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()
+								),
+								statevo.getStatename()), statevo.getIcon(), statevo.getDescription()));
+
+				cmpStateStandardView.setSelectedItem(stateCurrent);
+				cmpStateStandardView.addItems(lstDefaultPathEntries);
+				
+				for (Iterator iterator = lstDefaultPathEntries.iterator(); iterator.hasNext();) {
+					final StateWrapper item = (StateWrapper) iterator.next();
+					final ActionListener al = new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent ev) {
+							UIUtils.runCommandLater(parent, new CommonRunnable() {
+								@Override
+								public void run() {
+									if (item != stateCurrent && item != null && item.getId() != null) {
+										final boolean bUserPressedOk = cmdChangeStates(item, cmpStateStandardView.getStatesBefore(item));
+										if (!bUserPressedOk)
+											cmpStateStandardView.setSelectedItem(stateCurrent);
+									}
+								}
+							});
+						}
+					};
+					cmpStateStandardView.addActionListener(al, item);
+					
+					if (LangUtils.equals(stateCurrent.getNumeral(), item.getNumeral())) {
+						final List<StateWrapper> lstSubsequentEntries = new ArrayList<StateWrapper>();
+						List<StateVO> lstSubsequentStates = StateDelegate.getInstance().getStatemodel(uc).getSubsequentStates(item.getId(), false);
+	
+						// Copy all subsequent states to the sorting list:
+						for (StateVO statevo : lstSubsequentStates)
+							if (statevo == null)
+								// we don't want to throw an exception here, so we just log the error:
+								log.error("Die Liste der Folgestati enth\u00e4lt ein null-Objekt.");
+							else if (!lstSubsequentEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon(), statevo.getDescription())))
+								lstSubsequentEntries.add(new StateWrapper(statevo.getId(), statevo.getNumeral(),
+									CommonLocaleDelegate.getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
+										StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()
+										),
+										statevo.getStatename()), statevo.getIcon(), statevo.getDescription()));
+	
+						Map<StateWrapper, Action> mpSubsequentStatesAction = new HashMap<StateWrapper, Action>();
+						for (Iterator iterator2 = lstSubsequentEntries.iterator(); iterator2.hasNext();) {
+							final StateWrapper subsequentState = (StateWrapper) iterator2.next();
+							if (!subsequentState.getNumeral().equals(item.getNumeral())) {
+								Action act = new AbstractAction() {
+								
+									@Override
+									public void actionPerformed(ActionEvent e) {
+										final boolean bUserPressedOk = cmdChangeState(subsequentState);
+										if (!bUserPressedOk)
+											cmpStateStandardView.setSelectedItem(stateCurrent);
+									}
+								};
+								mpSubsequentStatesAction.put(subsequentState, act);
+							}
+						}
+						cmpStateStandardView.addSubsequentStatesActionListener(item, mpSubsequentStatesAction);
+					}
+				}
+			}
+		}
+		
+		cmpStateStandardView.setEnabled(cmpStateStandardView.getItemCount() != 0);
+	}
+
 	private void showCustomActions(int iDetailsMode) {
 		final boolean bSingle = CollectState.isDetailsModeViewOrEdit(iDetailsMode);
 		final boolean bMulti = CollectState.isDetailsModeMultiViewOrEdit(iDetailsMode);
@@ -3550,6 +3664,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		//}
 
 		//toolbarCustomActionsDetails.revalidate();
+		
+		/*if (cmpStateStandardView.getItemCount() != 0) {
+			toolbarCustomActionsDetails.add(Box.createHorizontalStrut(2000));
+			toolbarCustomActionsDetails.add(new BlackLabel(cmpStateStandardView, CommonLocaleDelegate.getMessage("GenericObjectCollectController.107","Standardpfad")));
+		}*/
 		this.getDetailsPanel().addToolBarComponents(toolbarCustomActionsDetails, toolbarCustomActionsDetailsIndex);
 	}
 
@@ -3709,7 +3828,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		stopEditingInDetails();
 
-		final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon());
+		final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
 
 		if (result)	{
 			changeState(stateNew);
@@ -3763,7 +3882,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		stopEditingInDetails();
 
-		final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon());
+		final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
 
 		UIUtils.runShortCommand(getFrame(), new CommonRunnable() {
 			@Override
@@ -3787,6 +3906,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 							// redisplay the old status
 							cmbbxCurrentState.setSelectedItem(stateCurrent);
+							cmpStateStandardView.setSelectedItem(stateCurrent);
 						}
 					} else {
 						GenericObjectCollectController.this.changeStateForSingleObjectAndSave(stateNew);
@@ -3814,7 +3934,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		stopEditingInDetails();
 
-		final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon());
+		final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
 
 		UIUtils.runShortCommand(getFrame(), new CommonRunnable() {
 			@Override
@@ -3838,6 +3958,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 								// redisplay the old status
 								cmbbxCurrentState.setSelectedItem(stateCurrent);
+								cmpStateStandardView.setSelectedItem(stateCurrent);
 							}
 						} else {
 							GenericObjectCollectController.this.changeStatesForSingleObjectAndSave(statesNew);
@@ -3868,7 +3989,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				iModuleId = getSelectedCollectableModuleId();
 				assert iGenericObjectId != null;
 
-				stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon());
+				stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
 				clct = GenericObjectCollectController.this.getCompleteSelectedCollectable();
 			}
 
@@ -3912,6 +4033,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 				// redisplay the old status
 				cmbbxCurrentState.setSelectedItem(stateCurrent);
+				cmpStateStandardView.setSelectedItem(stateCurrent);
 			}
 		});
 	}
@@ -3932,7 +4054,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				iModuleId = getSelectedCollectableModuleId();
 				assert iGenericObjectId != null;
 
-				stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon());
+				stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
 				clct = GenericObjectCollectController.this.getCompleteSelectedCollectable();
 			}
 
@@ -3978,6 +4100,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 				// redisplay the old status
 				cmbbxCurrentState.setSelectedItem(stateCurrent);
+				cmpStateStandardView.setSelectedItem(stateCurrent);
 			}
 		});
 	}
@@ -4525,7 +4648,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 
 			final JComponent compEditNew = getDetailsPanel().newEditComponent(layoutroot.getRootComponent());
-			getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(compEditNew, layoutroot, layoutroot.getInitialFocusEntityAndFieldName()));
+			//if (cmpStateStandardView.getItemCount() != 0) {
+				JPanel pnl = new JPanel(new BorderLayout());
+			    pnl.add(cmpStateStandardView, BorderLayout.NORTH);
+			    pnl.add(compEditNew, BorderLayout.CENTER);
+				getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(pnl, layoutroot, layoutroot.getInitialFocusEntityAndFieldName()));
+			//} else {
+				//getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(compEditNew, layoutroot, layoutroot.getInitialFocusEntityAndFieldName()));
+			//}
 
 			// layoutrootDetails is used for the ordered field names:
 			layoutrootDetails = layoutroot;
@@ -5220,6 +5350,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				final boolean bWritable = ctl.isCurrentRecordWritable();
 				// show subsequent state buttons only in current (non-historical) view and only if the current record is writable:
 				setSubsequentStatesVisible(bWritable, bViewingExistingRecord);
+				setStatesDefaultPathVisible(bWritable, bViewingExistingRecord);
 				break;
 
 			case CollectState.DETAILSMODE_MULTIVIEW:
@@ -5227,14 +5358,17 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				// show the buttons for subsequent states only if all objects are in the same state:
 				if (doTheSelectedGenericObjectsShareACommonState()) {
 					setSubsequentStatesVisible(true, iDetailsMode == CollectState.DETAILSMODE_MULTIVIEW);
+					setStatesDefaultPathVisible(true, iDetailsMode == CollectState.DETAILSMODE_MULTIVIEW);
 				} else {
 					setSubsequentStatesVisible(false, false);
+					setStatesDefaultPathVisible(false, false);
 				}
 				break;
 
 			default:
 				// hide the buttons for subsequent states:
 				setSubsequentStatesVisible(false, false);
+				setStatesDefaultPathVisible(false, false);
 			}	// switch
 
 			setDeleteButtonToggleInDetails();

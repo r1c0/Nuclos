@@ -70,17 +70,19 @@ public class ChangeStateButtonAction<Clct extends Collectable> implements Collec
 			Collection<StateVO> possibleStates = StateDelegate.getInstance().getStatesByModule(moduleId);
 			String stateName = null;
 			Integer stateID = null;
+			String stateDescription = null;
 			NuclosImage stateIcon = null;
 			for(StateVO possibleState : possibleStates) {
 				if(possibleState.getNumeral().equals(targetState)) {
 					stateName = possibleState.getStatename();
 					stateID = possibleState.getId();
 					stateIcon = possibleState.getIcon();
+					stateDescription = possibleState.getDescription();
 					break;
 				}
 			}
 			
-			StateWrapper newState = new StateWrapper(stateID, targetState, stateName, stateIcon);
+			StateWrapper newState = new StateWrapper(stateID, targetState, stateName, stateIcon, stateDescription);
 			gController.cmdChangeState(newState);
 		}
 		else {
