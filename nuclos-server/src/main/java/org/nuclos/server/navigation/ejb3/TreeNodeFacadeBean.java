@@ -52,6 +52,7 @@ import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.TruncatableCollection;
@@ -272,7 +273,8 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 			final EntityTreeViewVO etv = it2.next();
 			assert etv.getEntity().equals(mdvoSub.getField(EntityTreeViewVO.SUBFORM_ENTITY_FIELD))
 				&& etv.getField().equals(mdvoSub.getField(EntityTreeViewVO.SUBFORM2ENTITY_REF_FIELD))
-				&& etv.getOriginentityid().equals(mdvoSub.getField(EntityTreeViewVO.ENTITY_FIELD));
+				&& IdUtils.equals(etv.getOriginentityid(), mdvoSub.getId());
+				// && etv.getOriginentityid().equals(mdvoSub.getField(EntityTreeViewVO.ENTITY_FIELD));
 
 			final String entity = etv.getEntity();
 			final String field = etv.getField();
