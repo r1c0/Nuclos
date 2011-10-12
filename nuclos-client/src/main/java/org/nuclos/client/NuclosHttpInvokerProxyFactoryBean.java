@@ -14,27 +14,24 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.server.common;
+package org.nuclos.client;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.TimeZone;
-
+import org.aopalliance.intercept.MethodInvocation;
+import org.nuclos.client.main.Main;
+import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 import org.springframework.remoting.support.RemoteInvocation;
-import org.springframework.remoting.support.RemoteInvocationExecutor;
+import org.springframework.remoting.support.RemoteInvocationResult;
 
-public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor {
+public class NuclosHttpInvokerProxyFactoryBean extends
+		HttpInvokerProxyFactoryBean {
 
 	@Override
-	public Object invoke(RemoteInvocation invoke, Object param) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-		try {
-			NuclosUserDetailsContextHolder.setTimeZone((TimeZone) invoke.getAttribute("user.timezone"));
-			NuclosRemoteContextHolder.setRemotly(true);
-			return invoke.invoke(param);			
-		}		
-		finally {
-			NuclosUserDetailsContextHolder.clear();
-			NuclosRemoteContextHolder.clear();			
-		}
+	protected RemoteInvocationResult executeRequest(RemoteInvocation invocation)
+			throws Exception {
+		
+		invocation.addAttribute("user.timezone", Main.getInitialTimeZone());
+		return super.executeRequest(invocation);
 	}
 
+	
 }

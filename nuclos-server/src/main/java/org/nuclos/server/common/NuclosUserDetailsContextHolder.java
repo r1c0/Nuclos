@@ -16,25 +16,24 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.TimeZone;
 
-import org.springframework.remoting.support.RemoteInvocation;
-import org.springframework.remoting.support.RemoteInvocationExecutor;
 
-public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor {
 
-	@Override
-	public Object invoke(RemoteInvocation invoke, Object param) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-		try {
-			NuclosUserDetailsContextHolder.setTimeZone((TimeZone) invoke.getAttribute("user.timezone"));
-			NuclosRemoteContextHolder.setRemotly(true);
-			return invoke.invoke(param);			
-		}		
-		finally {
-			NuclosUserDetailsContextHolder.clear();
-			NuclosRemoteContextHolder.clear();			
-		}
+public class NuclosUserDetailsContextHolder {
+	
+	private static final ThreadLocal<TimeZone> threadLocal = new ThreadLocal<TimeZone>();
+	
+	public static void setTimeZone(TimeZone tz) {
+		threadLocal.set(tz);
+	}
+	
+	public static TimeZone getTimeZone() {
+		return threadLocal.get();
+	}
+	
+	public static void clear() {
+		threadLocal.remove();
 	}
 
 }

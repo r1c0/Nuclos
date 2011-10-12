@@ -137,7 +137,7 @@
 	<!-- Security end -->
 
 	<!-- remoting start -->
-	<bean id="httpInvokerProxyFactoryBean" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean" abstract="true">
+	<bean id="httpInvokerProxyFactoryBean" class="org.nuclos.client.NuclosHttpInvokerProxyFactoryBean" abstract="true">
 		<property name="httpInvokerRequestExecutor" ref="authHttpInvokerRequestExecutor" />
 	</bean>
 

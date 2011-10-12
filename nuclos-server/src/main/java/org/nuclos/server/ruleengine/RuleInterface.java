@@ -37,6 +37,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.mail.Address;
 import javax.mail.Flags;
@@ -72,7 +73,6 @@ import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
-import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.fileimport.NuclosFileImport;
@@ -99,6 +99,7 @@ import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ModuleConstants;
+import org.nuclos.server.common.NuclosUserDetailsContextHolder;
 import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.calendar.CommonDate;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
@@ -135,6 +136,8 @@ import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO.Event;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.security.NuclosLocalServerSession;
 import org.nuclos.server.statemodel.ejb3.StateFacadeLocal;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 /**
  * Interface for rule developers. Delegates all calls to RuleInterfaceBean.
@@ -2427,6 +2430,10 @@ public class RuleInterface extends CustomCodeInterface {
 
 	private Integer getSessionId() {
 		return this.iSessionId;
+	}
+	
+	public TimeZone getCurrentUserTimeZone() {
+		return NuclosUserDetailsContextHolder.getTimeZone();
 	}
 
 	/**
