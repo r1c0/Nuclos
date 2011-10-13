@@ -1295,7 +1295,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 				final CollectableEntityField clctef = subformtblmdl.getCollectableEntityField(iColumnNr);
 				final String sColumnName = clctef.getName();
 
-				if (this.isColumnEnabled(sColumnName) && !this.isDynamicTableCellEditorNeeded(sColumnName)) {
+				if (!this.isDynamicTableCellEditorNeeded(sColumnName)) {
 					// It may be wrong not to set a cell editor if the subform is invisible or disabled.
 					// If the subform is shown or enabled later, the cell editor may be missing.
 					// Note that we do not set a cell editor jfor the foreign key field name, as this is never shown.
@@ -1304,9 +1304,10 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 					// A static CellEditor is sufficient and can be set right here:
 					final CollectableComponentTableCellEditor clctcompcelleditor =
 							this.newTableCellEditor(clcte, sColumnName, bSearchable, prefs, subformtblmdl);
-
+					
 					// set a (static) value list provider for ComboBoxes:
 					final CollectableComponent clctcomp = clctcompcelleditor.getCollectableComponent();
+					clctcomp.setEnabled(isColumnEnabled(sColumnName));
 					clctcomp.setToolTipText(clctef.getDescription());
 					if (clctcomp instanceof LabeledCollectableComponentWithVLP) {
 						final LabeledCollectableComponentWithVLP clctWithVLP = (LabeledCollectableComponentWithVLP) clctcomp;
