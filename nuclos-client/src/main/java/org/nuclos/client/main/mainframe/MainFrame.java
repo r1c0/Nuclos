@@ -1957,7 +1957,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 * @return
 	 */
 	public static boolean isWorkspaceManagementAvaiable() {
-		return ApplicationProperties.getInstance().isFunctionBlockDev();
+		return true; //ApplicationProperties.getInstance().isFunctionBlockDev();
 	}
 
 	/**
