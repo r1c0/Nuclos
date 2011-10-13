@@ -41,7 +41,7 @@ public class CollectableEntityFieldPreferencesUtil {
 	}
 	
 	public static List<CollectableEntityField> readList(Preferences prefs, String node, boolean ignoreErrors) throws PreferencesException {
-		final List<CollectableEntityFieldPref> raw = (List<CollectableEntityFieldPref>) PreferencesUtils.getSerializableListXML(prefs, node, ignoreErrors);
+		final List<?> raw = PreferencesUtils.getSerializableListXML(prefs, node, ignoreErrors);
 		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>(raw.size());
 		// backward hack
 		for (Object p: raw) {
@@ -65,6 +65,10 @@ public class CollectableEntityFieldPreferencesUtil {
 						throw new PreferencesException("readList: fromPref fails", e);
 					}
 				}
+			}
+			// compatibility case
+			else if (p instanceof CollectableEntityField) {
+				result.add((CollectableEntityField) p);
 			}
 		}
 		return result;
