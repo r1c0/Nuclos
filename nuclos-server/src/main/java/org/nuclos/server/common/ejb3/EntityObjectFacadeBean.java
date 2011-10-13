@@ -42,8 +42,13 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonFinderException;
+import org.nuclos.common2.exception.CommonPermissionException;
+import org.nuclos.server.common.MasterDataPermission;
+import org.nuclos.server.common.MasterDataPermissions;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
@@ -263,6 +268,34 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		composite.addOperand(condKey);
 		return NucletDalProvider.getInstance().getEntityObjectProcessor(subform).getBySearchExpression(
 				new CollectableSearchExpression(composite));
+	}
+
+	@Override
+	public void removeEntity(String name, Long id) throws CommonPermissionException {
+		final Integer intid = IdUtils.unsafeToId(id);
+		final String user = getCurrentUserName();
+		final MetaDataServerProvider mdProv = MetaDataServerProvider.getInstance();
+		final EntityMetaDataVO mdEntity = mdProv.getEntity(name);
+		final SecurityCache sc = SecurityCache.getInstance();
+		
+		if (mdEntity.isStateModel().booleanValue()) {
+			if (!sc.isDeleteAllowedForModule(user, name, intid, true)) {
+				throw new CommonPermissionException("User " + user + " has no permission to delete module instance of " + name);
+			}
+		}
+		else {
+			if (!sc.isDeleteAllowedForMasterData(user, name)) {
+				throw new CommonPermissionException("User " + user + " has no permission to delete md instance of " + name);
+			}
+		}
+		
+		final JdbcEntityObjectProcessor processor = NucletDalProvider.getInstance().getEntityObjectProcessor(name);
+		processor.delete(id);
+	}
+
+	@Override
+	public void remove(EntityObjectVO entity) throws CommonPermissionException {
+		removeEntity(entity.getEntity(), entity.getId());
 	}
 	
 }

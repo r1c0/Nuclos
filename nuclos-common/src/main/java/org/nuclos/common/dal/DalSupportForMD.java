@@ -31,6 +31,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -106,6 +107,7 @@ public class DalSupportForMD {
 
 	public static EntityTreeViewVO wrapEntityObjectVOAsSubNode(EntityObjectVO eo) {
 		EntityTreeViewVO vo = new EntityTreeViewVO(eo.getId(), 
+			IdUtils.toLongId(eo.getField(EntityTreeViewVO.ENTITY_FIELD, Object.class)),
 			eo.getField(EntityTreeViewVO.SUBFORM_ENTITY_FIELD, String.class),
 			eo.getField(EntityTreeViewVO.SUBFORM2ENTITY_REF_FIELD, String.class),
 			eo.getField(EntityTreeViewVO.FOLDERNAME_FIELD, String.class),

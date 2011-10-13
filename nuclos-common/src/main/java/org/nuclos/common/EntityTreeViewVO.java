@@ -41,7 +41,9 @@ import org.nuclos.common2.LangUtils;
  * </p>
  * @author Thomas Pasch (javadocs)
  */
-public class EntityTreeViewVO implements Serializable, Comparable<EntityTreeViewVO> {
+public class EntityTreeViewVO implements Serializable, Comparable<EntityTreeViewVO>, HasId<Long> {
+	
+	public static final String INTID = "intid";
 	
 	public static final String ENTITY_FIELD = "originentityid";
 	
@@ -70,6 +72,14 @@ public class EntityTreeViewVO implements Serializable, Comparable<EntityTreeView
 	public static final String ACTIVE_COLUMN = "BLNACTIVE";
 	
 	public static final String SORTORDER_COLUMN = "INTSORTORDER";
+	
+	/**
+	 * Primary key (intid) in DB table t_md_entity.
+	 * 
+	 * @author Thomas Pasch
+	 * @since Nuclos 3.2.0 
+	 */
+	private Long intId;
 	
 	/**
 	 * Reference to (user defined) entity meta data in DB table t_md_entity of the 
@@ -116,11 +126,9 @@ public class EntityTreeViewVO implements Serializable, Comparable<EntityTreeView
 	 */
 	private Integer sortOrder;
 	
-	public EntityTreeViewVO() {		
-	}
-	
-	public EntityTreeViewVO(Long originentityid, String entity, String field,
+	public EntityTreeViewVO(Long intId, Long originentityid, String entity, String field,
 		String foldername, Boolean active, Integer sortOrder) {
+		this.intId = intId;
 		this.originentityid = originentityid;
 		this.entity = LangUtils.nullIfBlank(entity);
 		this.field = LangUtils.nullIfBlank(field);
@@ -129,6 +137,12 @@ public class EntityTreeViewVO implements Serializable, Comparable<EntityTreeView
 		this.sortOrder = sortOrder;
 		
 		makeConsistent();
+	}
+
+	/**
+	 * @deprecated For serialization only.
+	 */
+	public EntityTreeViewVO() {
 	}
 	
 	public final void makeConsistent() {
@@ -142,6 +156,14 @@ public class EntityTreeViewVO implements Serializable, Comparable<EntityTreeView
 		if (StringUtils.isBlank(entity) || StringUtils.isBlank(field)) {
 			active = Boolean.FALSE;
 		}
+	}
+	
+	public Long getId() {
+		return intId;
+	}
+	
+	public void setId(Long intId) {
+		this.intId = intId;
 	}
 	
 	public Long getOriginentityid() {
@@ -195,7 +217,7 @@ public class EntityTreeViewVO implements Serializable, Comparable<EntityTreeView
 	@Override
 	public String toString() {
 		final ToStringBuilder b = new ToStringBuilder(this);
-		b.append(originentityid).append(entity).append(foldername);
+		b.append(intId).append(originentityid).append(entity).append(foldername);
 		b.append(active).append(sortOrder);
 		return b.toString();
 	}

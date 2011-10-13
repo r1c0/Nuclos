@@ -52,7 +52,9 @@ import javax.swing.table.TableColumn;
 import javax.swing.text.BadLocationException;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.entityobject.EntityObjectDelegate;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
+import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.dnd.IReorderable;
@@ -65,6 +67,7 @@ import org.nuclos.common.EntityTreeViewVO;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -657,14 +660,14 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 	}
 
 	private void loadSubforms() {
+		final GenericObjectMetaDataCache goCache = GenericObjectMetaDataCache.getInstance();
 		subForms = new ArrayList<String>();
 		Long id = MetaDataDelegate.getInstance().getEntityIdByName(model.getEntityName());
 		SortedSet<EntityTreeViewVO> lst = new TreeSet<EntityTreeViewVO>();
-		int row = 0;
 		refNameCellEditor.clear();
 
 		// For all subforms in the entity layout...
-		for(String subform : GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(id.intValue())) {
+		for (String subform : goCache.getSubFormEntityNamesByModuleId(IdUtils.unsafeToId(id))) {
 			subForms.add(subform);
 			EntityTreeViewVO voTmp = null;
 			// find if there are already tree view preferences for this subform in the model
@@ -674,15 +677,13 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 					break;
 				}
 			}
-			if(voTmp == null) {
+			if (voTmp == null) {
 				// create a new tree view preferences table line if a (former) preference have not been found
-				lst.add(new EntityTreeViewVO(id, subform, getRefFieldTo(subform).iterator().next(), null, Boolean.FALSE, 0));
+				lst.add(new EntityTreeViewVO(null, id, subform, getRefFieldTo(subform).iterator().next(), null, Boolean.FALSE, 0));
 			}
 			else {
 				lst.add(voTmp);
 			}
-
-			row++;
 		}
 		paneTreeView.setVisible(subForms.size() > 0);
 		lbTreeViewSubform.setVisible(subForms.size() > 0);
@@ -694,6 +695,20 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 			refNameCellEditor.initCellEditors(vo.getEntity());
 		}
 		tableModel.setRows(lst);
+		
+		// NUCLOSINT-1089:
+		// Delete all object from table t_md_entity_subnodes that are not present in lst.
+		final EntityObjectDelegate eod = EntityObjectDelegate.getInstance();
+		final Set<EntityTreeViewVO> toDelete = new HashSet<EntityTreeViewVO>(model.getTreeView());
+		toDelete.removeAll(lst);
+		for (EntityTreeViewVO tv: toDelete) {
+			try {
+				eod.removeEntity(NuclosEntity.ENTITYSUBNODES.getEntityName(), tv.getId());
+			}
+			catch (CommonPermissionException e) {
+				LOG.error("Unable to remove (obsolete) " + tv, e); 
+			}
+		}
 	}
 
 	@Override

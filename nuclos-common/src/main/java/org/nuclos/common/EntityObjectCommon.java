@@ -23,6 +23,7 @@ import javax.annotation.security.RolesAllowed;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.genericobject.ProxyList;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 
@@ -91,6 +92,12 @@ public interface EntityObjectCommon {
 	
 	@RolesAllowed("Login")
 	Collection<EntityObjectVO> getDependentPivotEntityObjects(
-		EntityFieldMetaDataVO pivot, String sForeignKeyField, Long oRelatedId);	
-
+		EntityFieldMetaDataVO pivot, String sForeignKeyField, Long oRelatedId);
+	
+	@RolesAllowed("Login")
+	void removeEntity(String name, Long id) throws CommonPermissionException;
+	
+	@RolesAllowed("Login")
+	void remove(EntityObjectVO entity) throws CommonPermissionException;
+	
 }

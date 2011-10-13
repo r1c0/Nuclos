@@ -9,6 +9,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.common.ejb3.EntityObjectFacadeRemote;
 import org.nuclos.server.genericobject.ProxyList;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
@@ -64,6 +65,16 @@ public class EntityObjectDelegate implements EntityObjectCommon {
 	public Collection<EntityObjectVO> getDependentPivotEntityObjects(EntityFieldMetaDataVO pivot, String sForeignKeyField,
 			Long oRelatedId) {
 		return facade.getDependentPivotEntityObjects(pivot, sForeignKeyField, oRelatedId);
+	}
+
+	@Override
+	public void removeEntity(String name, Long id) throws CommonPermissionException {
+		facade.removeEntity(name, id);
+	}
+
+	@Override
+	public void remove(EntityObjectVO entity) throws CommonPermissionException {
+		facade.remove(entity);
 	}
 
 }

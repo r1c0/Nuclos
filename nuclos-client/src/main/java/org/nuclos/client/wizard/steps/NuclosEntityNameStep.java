@@ -64,6 +64,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
@@ -538,12 +539,16 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 		}
 	}
 
+	/**
+	 * Load subnodes from t_md_entity_subnodes table.
+	 */
 	private void loadTreeView() {
+		final MasterDataDelegate mdd = MasterDataDelegate.getInstance();
 		int so = 0;
 		final NavigableSet<EntityTreeViewVO> views = new TreeSet<EntityTreeViewVO>();
-		for(MasterDataVO vo : MasterDataDelegate.getInstance().getMasterData(NuclosEntity.ENTITYSUBNODES.getEntityName())) {
-			final Long lEntity = new Long((Integer)vo.getField(EntityTreeViewVO.ENTITY_FIELD + "Id"));
-			if(MetaDataDelegate.getInstance().getEntityById(lEntity).getEntity().equals(model.getEntityName())) {
+		for(MasterDataVO vo : mdd.getMasterData(NuclosEntity.ENTITYSUBNODES.getEntityName())) {
+			final Long lEntity = IdUtils.toLongId(vo.getField(EntityTreeViewVO.ENTITY_FIELD + "Id"));
+			if (MetaDataDelegate.getInstance().getEntityById(lEntity).getEntity().equals(model.getEntityName())) {
 				final String entity = (String)vo.getField(EntityTreeViewVO.SUBFORM_ENTITY_FIELD);
 				final String field = (String)vo.getField(EntityTreeViewVO.SUBFORM2ENTITY_REF_FIELD);
 				final String foldername = (String)vo.getField(EntityTreeViewVO.FOLDERNAME_FIELD);
@@ -556,7 +561,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 					sortOrder = Integer.valueOf(++so);
 				}
 
-				views.add(new EntityTreeViewVO(lEntity, entity, field, foldername, active, sortOrder));
+				views.add(new EntityTreeViewVO(IdUtils.toLongId(vo.getId()), lEntity, entity, field, foldername, active, sortOrder));
 				so = sortOrder.intValue();
 			}
 		}
