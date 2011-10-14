@@ -81,10 +81,10 @@ public class GenericObjectTreeNodeFactory {
 	public GenericObjectTreeNode newTreeNode(GenericObjectWithDependantsVO gowdvo,
 			AttributeProvider attrprovider, ParameterProvider paramprovider,
 			Integer iRelationId, SystemRelationType relationtype, RelationDirection direction,
-			String sUserName) {
+			String sUserName, Integer parentId) {
 		String label = getIdentifier(gowdvo, attrprovider, sUserName);
 		String description = getDescription(gowdvo, attrprovider, gowdvo.getChangedAt(), sUserName);
-		return new GenericObjectTreeNode(gowdvo, attrprovider, iRelationId, relationtype, direction, sUserName, label, description);
+		return new GenericObjectTreeNode(gowdvo, attrprovider, iRelationId, relationtype, direction, sUserName, label, description, parentId);
 	}
 
 	/**

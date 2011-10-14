@@ -70,7 +70,7 @@ public interface TreeNodeFacadeRemote {
 	 */
 	public abstract GenericObjectTreeNode newGenericObjectTreeNode(
 		Integer iGenericObjectId, Integer moduleId, Integer iRelationId,
-		SystemRelationType relationtype, RelationDirection direction)
+		SystemRelationType relationtype, RelationDirection direction, Integer parentId)
 		throws CommonFinderException;
 
 	/**
@@ -92,7 +92,7 @@ public interface TreeNodeFacadeRemote {
 	 */
 	public abstract GroupTreeNode getGroupTreeNode(final Integer iId,
 		final boolean bLoadSubNodes) throws CommonFinderException;
-	
+
 	/**
 	 * method to get a nuclet tree node for a specific nuclet
 	 * @param iId id of nuclet to get tree node for
@@ -118,23 +118,23 @@ public interface TreeNodeFacadeRemote {
 	 * @postcondition result != null
 	 */
 	public abstract List<GenericObjectTreeNode> getSubNodes(GroupTreeNode node);
-	
+
 	/**
 	 * @param node
 	 * @return the subnodes for the given node.
 	 * @postcondition result != null
 	 */
 	public abstract List<TreeNode> getSubNodes(NucletTreeNode node);
-	
+
 	/**
 	 * @param node
 	 * @return the subnodes for the given node.
 	 * @postcondition result != null
 	 */
 	public abstract List<AbstractNucletContentEntryTreeNode> getSubNodes(NucletContentTreeNode node);
-	
+
 	/**
-	 * 
+	 *
 	 * @return the available nodes.
 	 * @postcondition result != null
 	 */
@@ -162,9 +162,9 @@ public interface TreeNodeFacadeRemote {
 	 */
 	public abstract List<TreeNode> getSubNodesForDynamicTreeNode(TreeNode node,
 		MasterDataVO mdVO);
-	
+
 	/**
-	 * 
+	 *
 	 * @param node
 	 * @param mdVO
 	 * @return
@@ -198,7 +198,7 @@ public interface TreeNodeFacadeRemote {
 	public abstract List<TreeNode> getSubNodes(EntitySearchResultTreeNode node);
 
 	/**
-	 * 
+	 *
 	 * @param iId
 	 * @param sEntity
 	 * @param bLoadSubNodes
@@ -211,7 +211,7 @@ public interface TreeNodeFacadeRemote {
         CommonPermissionException;
 
 	/**
-	 * 
+	 *
 	 * @param node
 	 * @param mdVO
 	 * @return
@@ -219,37 +219,37 @@ public interface TreeNodeFacadeRemote {
 	public abstract SubFormTreeNode getSubFormTreeNode(GenericObjectTreeNode node, MasterDataVO mdVO);
 
 	/**
-	 * 
+	 *
 	 * @param nucletId
 	 * @param contents
 	 * @throws NuclosBusinessException
 	 */
 	public void addNucletContents(Long nucletId, Set<AbstractNucletContentEntryTreeNode> contents) throws NuclosBusinessException;
-	
+
 	/**
-	 * 
+	 *
 	 * @param entity
 	 * @param eoId
 	 * @return
 	 */
 	public AbstractNucletContentEntryTreeNode getNucletContentEntryNode(NuclosEntity entity, Long eoId);
-	
+
 	/**
-	 * 
+	 *
 	 * @param contents
 	 * @return true if at least one content is removed from nuclet
 	 */
 	public boolean removeNucletContents(Set<AbstractNucletContentEntryTreeNode> contents);
-	
+
 	/**
-	 * 
+	 *
 	 * @param node
 	 * @return
 	 */
 	public List<AbstractNucletContentEntryTreeNode> getNucletContent(NucletTreeNode node);
-	
+
 	/**
-	 * 
+	 *
 	 * @param node
 	 * @return
 	 */

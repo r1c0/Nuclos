@@ -117,9 +117,9 @@ public class GenericObjectTreeNode extends AbstractTreeNode<Integer> implements
 	protected GenericObjectTreeNode(GenericObjectWithDependantsVO gowdvo,
 		AttributeProvider attrprovider, Integer iRelationId,
 		SystemRelationType relationtype, RelationDirection direction,
-		String sUserName, String label, String description) {
+		String sUserName, String label, String description, Integer parentId) {
 		this(gowdvo.getId(), gowdvo.getUsageCriteria(attrprovider),
-			gowdvo.getSystemIdentifier(), gowdvo.getParentId(), iRelationId,
+			gowdvo.getSystemIdentifier(), parentId, iRelationId,
 			relationtype, direction, sUserName, gowdvo.getStatusId());
 		this.setLabel(label);
 		this.setChangedAt(gowdvo.getChangedAt());

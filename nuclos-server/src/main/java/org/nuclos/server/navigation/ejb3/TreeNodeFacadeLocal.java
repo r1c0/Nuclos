@@ -43,7 +43,7 @@ public interface TreeNodeFacadeLocal {
 	 */
 	public abstract GenericObjectTreeNode newGenericObjectTreeNode(
 		Integer iGenericObjectId, Integer moduleId, Integer iRelationId,
-		SystemRelationType relationtype, RelationDirection direction)
+		SystemRelationType relationtype, RelationDirection direction, Integer parentId)
 		throws CommonFinderException;
 
 	/**

@@ -131,7 +131,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 */
 	@Override
 	public GenericObjectTreeNode getGenericObjectTreeNode(Integer iGenericObjectId, Integer moduleId) throws CommonFinderException {
-		final GenericObjectTreeNode result = newGenericObjectTreeNode(iGenericObjectId, moduleId, null, null, null);
+		final GenericObjectTreeNode result = newGenericObjectTreeNode(iGenericObjectId, moduleId, null, null, null, null);
 		assert result != null;
 		return result;
 	}
@@ -149,7 +149,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 */
 	@Override
 	public GenericObjectTreeNode newGenericObjectTreeNode(Integer iGenericObjectId,
-			Integer moduleId, Integer iRelationId, SystemRelationType relationtype, RelationDirection direction) throws CommonFinderException {
+			Integer moduleId, Integer iRelationId, SystemRelationType relationtype, RelationDirection direction, Integer parentId) throws CommonFinderException {
 
 		// @todo 1. write/use LOFB method that doesn't require the module id
 		// @todo 2. Fix BUG: getWithDependants() throws a CommonPermissionException, even if bIgnoreUser == true
@@ -160,7 +160,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 
 		final GenericObjectWithDependantsVO gowdvo = getWithDependants(gofacade, moduleId, iGenericObjectId);
 
-		final GenericObjectTreeNode result = GenericObjectTreeNodeFactory.getInstance().newTreeNode(gowdvo, AttributeCache.getInstance(), ServerParameterProvider.getInstance(), iRelationId, relationtype, direction, getCurrentUserName());
+		final GenericObjectTreeNode result = GenericObjectTreeNodeFactory.getInstance().newTreeNode(gowdvo, AttributeCache.getInstance(), ServerParameterProvider.getInstance(), iRelationId, relationtype, direction, getCurrentUserName(), parentId);
 
 		assert result != null;
 		return result;
@@ -324,7 +324,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 */
 	private List<TreeNode> getModuleSubNodes(TreeNode node, final String sEntity, final String sField) throws NoSuchElementException {
 		final Integer moduleId = Modules.getInstance().getModuleIdByEntityName(sEntity);
-		Integer nodeId = (Integer)node.getId();
+		final Integer nodeId = (Integer)node.getId();
 		if(nodeId == null)
 			return Collections.emptyList();
 		CollectableComparison cond = SearchConditionUtils.newEOidComparison(sEntity, sField, ComparisonOperator.EQUAL, LangUtils.convertId(nodeId), MetaDataServerProvider.getInstance());
@@ -336,7 +336,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 			@Override
 			public TreeNode transform(Integer genericObjectId) {
 				try {
-					GenericObjectTreeNode node = newGenericObjectTreeNode(genericObjectId, moduleId, null, null, null);
+					GenericObjectTreeNode node = newGenericObjectTreeNode(genericObjectId, moduleId, null, null, null, nodeId);
 					return node;
 				}
 				catch(CommonFinderException e) {
@@ -374,6 +374,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 			l.baseColumn("INTID_T_MD_MODULE", Integer.class));
 		query.where(builder.and(
 			builder.equal(genericObject2, l.baseColumn("INTID", Integer.class)),
+			node.getParentId() != null ? builder.equal(genericObject2, node.getParentId()).not() : builder.alwaysTrue(),
 			builder.equal(genericObject1, node.getId())//,
 		//	builder.equal(l.column("BLNDELETED", Boolean.class), false)));
 			));
@@ -390,7 +391,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 			if (systemRelationType != null) {
 				// predecessor or part-of relation:
 				try {
-					result.add(newGenericObjectTreeNode(iGenericObjectId, moduleId, iRelationId, systemRelationType, direction));
+					result.add(newGenericObjectTreeNode(iGenericObjectId, moduleId, iRelationId, systemRelationType, direction, node.getId()));
 				}
 				catch (CommonFinderException ex) {
 					// the object doesn't exist anymore - ignore.
@@ -398,7 +399,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 			}
 			else {
 				try {
-					final GenericObjectTreeNode nodeRelatedObject = newGenericObjectTreeNode(iGenericObjectId, moduleId, null, null, null);
+					final GenericObjectTreeNode nodeRelatedObject = newGenericObjectTreeNode(iGenericObjectId, moduleId, null, null, null, node.getId());
 					String label = getRelationTypeLabel(relationType);
 					result.add(new RelationTreeNode(iRelationId, label, relationType, direction, nodeRelatedObject));
 				}
@@ -1019,7 +1020,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 							getAttributeIdsRequiredForGenericObjectTreeNode(iModuleId), getSubEntityNamesRequiredForGenericObjectTreeNode(iModuleId), iMaxRowCount);
 
 			for (GenericObjectWithDependantsVO gowdvo : collgowdvo) {
-				result.add(GenericObjectTreeNodeFactory.getInstance().newTreeNode(gowdvo, attrprovider, paramprovider, null, null, null, getCurrentUserName()));
+				result.add(GenericObjectTreeNodeFactory.getInstance().newTreeNode(gowdvo, attrprovider, paramprovider, null, null, null, getCurrentUserName(), null));
 			}
 
 			String sLabel = MessageFormat.format(getLocaleFacade().getResourceById(getLocaleFacade().getUserLocale(), "treenode.subnode.label"), node.getLabel(), collgowdvo.size(), collgowdvo.totalSize());
