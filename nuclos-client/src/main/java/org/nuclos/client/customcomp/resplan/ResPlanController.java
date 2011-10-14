@@ -69,7 +69,6 @@ import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collection.Pair;
-import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.time.LocalTime;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.DateUtils;

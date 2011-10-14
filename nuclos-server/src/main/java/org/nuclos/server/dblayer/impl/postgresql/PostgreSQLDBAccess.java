@@ -91,7 +91,7 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	public Long getNextId(String sequenceName) throws DbException {
+	public Long getNextId(String sequenceName) throws SQLException {
 		return executor.executeQuery("SELECT NEXTVAL('" + SQLUtils2.escape(sequenceName) + "')", new ResultSetRunner<Long>() {
 			@Override
 			public Long perform(ResultSet rs) throws SQLException { return rs.next() ? rs.getLong(1) : null; }
@@ -158,7 +158,7 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	protected List<String> getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) {
+	protected List<String> getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) throws SQLException {
 		List<String> lstSQL = new ArrayList<String>();
 		String sColumnSpec = getColumnSpecForAlterTableColumn(column2, column1);
 		if(sColumnSpec == null)
@@ -292,7 +292,7 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 	class PostgreSQLStatementVisitor extends StatementVisitor {
 
 		@Override
-		protected int executePreparedStatement(final PreparedString ps) {
+		protected int executePreparedStatement(final PreparedString ps) throws SQLException {
 			return executor.execute(new ConnectionRunner<Integer>() {
 				@Override
 				public Integer perform(Connection conn) throws SQLException {

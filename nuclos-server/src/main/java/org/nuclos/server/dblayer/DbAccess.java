@@ -25,7 +25,6 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -97,12 +96,15 @@ public abstract class DbAccess {
 	public void init(DbType type, DataSource dataSource, Map<String, String> config) {
 		this.type = type;
 		this.config = new HashMap<String, String>(config);
-		this.executor = new DataSourceExecutor(dataSource, config.get(USERNAME), config.get(PASSWORD)) {
+		this.executor = new DataSourceExecutor(dataSource, config.get(USERNAME), config.get(PASSWORD)); 
+		/*
+		{
 			@Override
-			protected DbException wrapSQLException(SQLException ex) {
-				return DbAccess.this.wrapSQLException(ex);
+			protected DbException wrapSQLException(String message, SQLException ex) {
+				return DbAccess.this.wrapSQLException(message, ex);
 			}
 		};
+		 */
 		if (config.containsKey(STRUCTURE_CHANGELOG_DIR)) {
 			structureChangeLogDir = new File(config.get(STRUCTURE_CHANGELOG_DIR));
 		}
@@ -148,7 +150,7 @@ public abstract class DbAccess {
 				log.error(String.format("Schema name '%s' not found", givenSchema));
 				return givenSchema;
 			}
-		} catch (DbException e) {
+		} catch (SQLException e) {
 			log.warn("Exception during resolving schema names", e);
 			return givenSchema;
 		}
@@ -201,7 +203,7 @@ public abstract class DbAccess {
 	// Queries
 	//
 
-	public abstract Long getNextId(String sequenceName) throws DbException;
+	public abstract Long getNextId(String sequenceName) throws SQLException;
 
 	public abstract DbQueryBuilder getQueryBuilder() throws DbException;
 
@@ -231,7 +233,7 @@ public abstract class DbAccess {
 	// Useful informational functions (e.g. for debugging) 
 	//
 
-	public abstract List<PreparedString> getPreparedSqlFor(DbStatement stmt) throws DbException;
+	public abstract List<PreparedString> getPreparedSqlFor(DbStatement stmt) throws SQLException;
 
 	//
 	// Database schema metadata
@@ -250,7 +252,7 @@ public abstract class DbAccess {
 	public abstract Map<String, String> getDatabaseParameters() throws DbException;
 
 	/** Tries to (re)validate all invalid database objects. */
-	public abstract boolean validateObjects() throws DbException;
+	public abstract boolean validateObjects() throws SQLException;
 
 	/** Tries to validate the given sql string. */
 	public abstract boolean checkSyntax(String sql) throws DbException;
@@ -269,11 +271,11 @@ public abstract class DbAccess {
 	 * then executes the given {@link Runnable}'s run method, and finally tries 
 	 * to re-enable the all disabled constraints and triggers again.
 	 */
-	public abstract void runWithDisabledChecksAndTriggers(Runnable runnable) throws DbException;
+	public abstract void runWithDisabledChecksAndTriggers(Runnable runnable) throws SQLException;
 
 	protected abstract String getDataType(DbColumnType columnType);
 
-	protected abstract DbException wrapSQLException(SQLException ex);
+	protected abstract DbException wrapSQLException(Long id, String message, SQLException ex);
 
 	protected String getConfigParameter(String name, String defaultValue) {
 		String value = StringUtils.nullIfEmpty(config.get(name));

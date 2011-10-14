@@ -54,7 +54,6 @@ import javax.swing.text.BadLocationException;
 import org.apache.log4j.Logger;
 import org.nuclos.client.entityobject.EntityObjectDelegate;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
-import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.dnd.IReorderable;

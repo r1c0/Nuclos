@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dblayer.statements;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 
@@ -42,7 +43,7 @@ public class DbUpdateStatement extends DbTableStatement {
 	}
 
 	@Override
-	public <T> T accept(DbStatementVisitor<T> visitor) {
+	public <T> T accept(DbStatementVisitor<T> visitor) throws SQLException {
 		return visitor.visitUpdate(this);
 	}
 	

@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.console.ejb3;
 
+import java.sql.SQLException;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.Remote;
 
@@ -47,7 +49,7 @@ public interface ConsoleFacadeRemote {
 	/**
 	 * check for VIEWS and FUNCTIONS which are invalid and compile them
 	 */
-	public abstract void compileInvalidDbObjects();
+	public abstract void compileInvalidDbObjects() throws SQLException;
 
 	/**
 	 * finds attribute values which should be assigned to a value list entry and creates a script to assign them if possible

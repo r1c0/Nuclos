@@ -36,8 +36,6 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 
-import com.lowagie.text.Font;
-
 /**
  * Shape for displaying a state transition in the state model editor.
  * <br>

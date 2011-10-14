@@ -26,7 +26,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.dal.DalCallResult;
-import org.nuclos.common.dal.exception.DalBusinessException;
 import org.nuclos.common.dal.vo.EOGenericObjectVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.server.dal.DalUtils;
@@ -127,13 +126,8 @@ public class ImportObjectProcessor extends EntityObjectProcessor {
 				}
 			}
 			catch(DbException ex) {
-				try {
-					dcr.addBusinessException(new DalBusinessException(dalVO.getId(), getReadableMessage(ex), ex));
-				}
-				catch(Exception e) {
-					LOG.error(e);
-					dcr.addBusinessException(new DalBusinessException(dalVO.getId(), getReadableMessage(ex), ex));
-				}
+            	ex.setIdIfNull(dalVO.getId());
+				dcr.addBusinessException(ex);
 			}
 		}
 		return dcr;

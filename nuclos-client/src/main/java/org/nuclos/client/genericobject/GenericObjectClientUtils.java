@@ -59,7 +59,6 @@ import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;

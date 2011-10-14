@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.nuclos.server.dblayer.DbTuple;
-import org.nuclos.server.dblayer.query.DbColumnExpression;
 import org.nuclos.server.dblayer.query.DbSelection;
 
 public class DbTupleImpl implements DbTuple, Serializable {

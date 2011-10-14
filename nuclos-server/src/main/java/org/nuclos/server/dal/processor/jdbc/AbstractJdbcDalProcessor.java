@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dal.processor.jdbc;
 
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,7 +34,6 @@ import org.nuclos.common.CloneUtils;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.DalCallResult;
-import org.nuclos.common.dal.exception.DalBusinessException;
 import org.nuclos.common.dal.vo.IDalVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -171,12 +172,9 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
                DataBaseHelper.getDbAccess().execute(stmt);
             } catch (DbException ex) {
             	// TODO: readable message
-				try {
-					dcr.addBusinessException(new DalBusinessException(dalVO.getId(), getReadableMessage(ex), getLogStatements(DataBaseHelper.getDbAccess().getPreparedSqlFor(stmt)), ex));
-				} catch (Exception e) {
-					LOG.error(e);
-					dcr.addBusinessException(new DalBusinessException(dalVO.getId(), getReadableMessage(ex), ex));
-				}
+            	ex.setIdIfNull(dalVO.getId());
+            	ex.setStatementsIfNull(getLogStatements(stmt));
+				dcr.addBusinessException(ex);
             }
          }
       }
@@ -191,12 +189,9 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 				DataBaseHelper.getDbAccess().execute(stmt);
 			} catch(DbException ex) {
 				// TODO: readable message
-				try {
-					dcr.addBusinessException(new DalBusinessException(id, getReadableMessage(ex), getLogStatements(DataBaseHelper.getDbAccess().getPreparedSqlFor(stmt)), ex));
-				} catch (Exception e) {
-					LOG.error(e);
-					dcr.addBusinessException(new DalBusinessException(id, getReadableMessage(ex), ex));
-				}
+            	ex.setIdIfNull(id);
+            	ex.setStatementsIfNull(getLogStatements(stmt));
+				dcr.addBusinessException(ex);
 			}
 		}
       return dcr;
@@ -282,16 +277,17 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 		};
 	}
 
-   protected DalBusinessException checkLogicalUniqueConstraint(final Map<IColumnToVOMapping<?>, Object> values, final Long id) {
-      DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+	protected SQLIntegrityConstraintViolationException checkLogicalUniqueConstraint(
+			final Map<IColumnToVOMapping<?>, Object> values, final Long id) {
+		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
-      DbFrom from = query.from(getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
-      query.select(query.getBuilder().countRows());
-      List<DbCondition> conditions = new ArrayList<DbCondition>();
+		DbFrom from = query.from(getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
+		query.select(query.getBuilder().countRows());
+		List<DbCondition> conditions = new ArrayList<DbCondition>();
 
-      boolean bFullIsNullCondition = true;
-      for (Map.Entry<IColumnToVOMapping<?>, Object> e : values.entrySet()) {
-      	Object value = e.getValue();
+		boolean bFullIsNullCondition = true;
+		for (Map.Entry<IColumnToVOMapping<?>, Object> e : values.entrySet()) {
+			Object value = e.getValue();
 			DbExpression<?> c = getDbColumn(from, e.getKey());
 			if (DbNull.isNull(value)) {
 				conditions.add(builder.isNull(c));
@@ -299,31 +295,39 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 				conditions.add(builder.equal(c, value));
 				bFullIsNullCondition = false;
 			}
-      }
+		}
 
-      if (bFullIsNullCondition) {
-      	// If all unique key fields are null, no exception is thrown (Reference: Oracle)
-      	return null;
-      }
+		if (bFullIsNullCondition) {
+			// If all unique key fields are null, no exception is thrown (Reference: Oracle)
+			return null;
+		}
 
-      query.where(builder.and(conditions.toArray(new DbCondition[conditions.size()])));
-      Long count = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
-      if (count > 1L) {
-      	return new DalBusinessException(id, "dal.logical.unique.constraint.violated");
-      }
-      return null;
-   }
+		query.where(builder.and(conditions.toArray(new DbCondition[conditions.size()])));
+		Long count = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+		if (count > 1L) {
+			return new SQLIntegrityConstraintViolationException("Unique constraint violated in query '" 
+					+ query + "' with id=" + id + ", number of result is " + count);
+		}
+		return null;
+	}
 
-   private List<String> getLogStatements(List<PreparedString> statements) {
-	   if (statements == null)
-		   return null;
+	private List<String> getLogStatements(DbStatement stmt) {
+		List<PreparedString> statements = null;
+		try {
+			statements = DataBaseHelper.getDbAccess().getPreparedSqlFor(stmt);
+		} catch (SQLException e) {
+			LOG.warn("getLogStatements failed", e);
+		}
+		if (statements == null)
+			return null;
 
-	   return CollectionUtils.transform(statements, new Transformer<PreparedString, String>(){
-		@Override
-        public String transform(PreparedString ps) {
-	        return ps.toString() + " <[" + Arrays.toString(ps.getParameters()) + "]>";
-        }});
-   }
+		return CollectionUtils.transform(statements, new Transformer<PreparedString, String>() {
+			@Override
+			public String transform(PreparedString ps) {
+				return ps.toString() + " <[" + Arrays.toString(ps.getParameters()) + "]>";
+			}
+		});
+	}
 
    protected <S> DbExpression<S> getDbColumn(DbFrom table, IColumnToVOMapping<?> mapping) {
 	   if(mapping.isCaseSensitive())
@@ -334,7 +338,8 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 
    // TODO:
    protected String getReadableMessage(DbException ex) {
-      return ex.getMessage();
+      // return ex.getMessage();
+      return ex.toString();
    }
 
 	public void addToColumns(IColumnToVOMapping<? extends Object> column) {

@@ -37,6 +37,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectabl
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
+import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
@@ -45,8 +46,6 @@ import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
-import org.nuclos.server.common.MasterDataPermission;
-import org.nuclos.server.common.MasterDataPermissions;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
@@ -290,7 +289,8 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		}
 		
 		final JdbcEntityObjectProcessor processor = NucletDalProvider.getInstance().getEntityObjectProcessor(name);
-		processor.delete(id);
+		final DalCallResult result = processor.delete(id);
+		
 	}
 
 	@Override

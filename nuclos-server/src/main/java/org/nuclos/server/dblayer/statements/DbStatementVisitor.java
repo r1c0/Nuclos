@@ -16,17 +16,19 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dblayer.statements;
 
+import java.sql.SQLException;
+
 public interface DbStatementVisitor<T> {
 
-	T visitStructureChange(DbStructureChange structureChange);
+	T visitStructureChange(DbStructureChange structureChange) throws SQLException;
 
-	T visitInsert(DbInsertStatement insert);
+	T visitInsert(DbInsertStatement insert) throws SQLException;
 
-	T visitUpdate(DbUpdateStatement update);
+	T visitUpdate(DbUpdateStatement update) throws SQLException;
 
-	T visitDelete(DbDeleteStatement delete);
+	T visitDelete(DbDeleteStatement delete) throws SQLException;
 
-	T visitPlain(DbPlainStatement command);
+	T visitPlain(DbPlainStatement command) throws SQLException;
 
-	T visitBatch(DbBatchStatement batch);
+	T visitBatch(DbBatchStatement batch) throws SQLException;
 }

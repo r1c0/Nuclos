@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dblayer.statements;
 
+import java.sql.SQLException;
+
 import org.nuclos.server.dblayer.structure.DbArtifact;
 
 /**
@@ -82,7 +84,7 @@ public class DbStructureChange extends DbStatement {
 	}
 	
 	@Override
-	public <T> T accept(DbStatementVisitor<T> visitor) {
+	public <T> T accept(DbStatementVisitor<T> visitor) throws SQLException {
 		return visitor.visitStructureChange(this);
 	}
 }

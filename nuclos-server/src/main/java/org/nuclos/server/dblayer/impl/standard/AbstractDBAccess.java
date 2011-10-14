@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dblayer.impl.standard;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +52,7 @@ import org.nuclos.server.dblayer.structure.DbTable;
 public abstract class AbstractDBAccess extends DbAccess {
 
 	@Override
-	public List<PreparedString> getPreparedSqlFor(DbStatement stmt) throws DbException {
+	public List<PreparedString> getPreparedSqlFor(DbStatement stmt) throws SQLException {
 		return stmt.build().accept(sqlForStatementVisitor);
 	}
 
@@ -71,7 +72,7 @@ public abstract class AbstractDBAccess extends DbAccess {
 
 	protected abstract List<String> getSqlForCreateTable(DbTable table);
 
-	protected abstract List<String> getSqlForCreateColumn(DbColumn column);
+	protected abstract List<String> getSqlForCreateColumn(DbColumn column) throws SQLException;
 
 	protected abstract List<String> getSqlForCreatePrimaryKey(DbPrimaryKeyConstraint constraint);
 
@@ -87,7 +88,7 @@ public abstract class AbstractDBAccess extends DbAccess {
 
 	protected abstract List<String> getSqlForCreateCallable(DbCallable sequence);	
 
-	protected abstract List<String> getSqlForAlterTableColumn(DbColumn column1, DbColumn column2);
+	protected abstract List<String> getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) throws SQLException;
 	
 	protected abstract List<String> getSqlForAlterTableNotNullColumn(DbColumn column);
 
@@ -114,7 +115,7 @@ public abstract class AbstractDBAccess extends DbAccess {
 	private final DbStatementVisitor<List<PreparedString>> sqlForStatementVisitor = new DbStatementVisitor<List<PreparedString>>() {
 
 		@Override
-		public List<PreparedString> visitStructureChange(DbStructureChange structureChange) {
+		public List<PreparedString> visitStructureChange(DbStructureChange structureChange) throws SQLException {
 			DbArtifact artifact1 = structureChange.getArtifact1();
 			DbArtifact artifact2 = structureChange.getArtifact2();
 			List<String> sqls;
@@ -167,7 +168,7 @@ public abstract class AbstractDBAccess extends DbAccess {
 		}
 
 		@Override
-		public List<PreparedString> visitBatch(DbBatchStatement batch) {
+		public List<PreparedString> visitBatch(DbBatchStatement batch) throws SQLException {
 			List<PreparedString> list = new ArrayList<PreparedString>();
 			for (DbStatement stmt : batch.getStatements()) {
 				list.addAll(stmt.accept(this));
@@ -184,7 +185,11 @@ public abstract class AbstractDBAccess extends DbAccess {
 
 		@Override
 		public List<String> visitColumn(DbColumn column) {
-			return getSqlForCreateColumn(column);
+			try {
+				return getSqlForCreateColumn(column);
+			} catch (SQLException e) {
+				throw wrapSQLException(null, "visitColumn fails on " + column, e);
+			}
 		}
 
 		@Override

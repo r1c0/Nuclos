@@ -57,7 +57,6 @@ import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.ServerParameterProvider;
-import org.nuclos.server.dblayer.DbBatchException;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbIdent;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
@@ -123,14 +122,19 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     protected StandardSqlDBAccess() {
     }
 
-    @Override
-    public int execute(List<? extends DbBuildableStatement> statements) throws DbException {
-        int result = 0;
-        DbStatementVisitor<Integer> visitor = createCommandVisitor();
-        for (DbBuildableStatement statement : statements)
-            result += statement.build().accept(visitor);
-        return result;
-    }
+	@Override
+	public int execute(List<? extends DbBuildableStatement> statements) throws DbException {
+		int result = 0;
+		DbStatementVisitor<Integer> visitor = createCommandVisitor();
+		for (DbBuildableStatement statement : statements) {
+			try {
+				result += statement.build().accept(visitor);
+			} catch (SQLException e) {
+				throw wrapSQLException(null, "execute DbBuildableStatement " + statement + " failed", e);
+			}
+		}
+		return result;
+	}
 
     @Override
     public <T> List<T> executeQuery(DbQuery<? extends T> query) throws DbException {
@@ -190,7 +194,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     public <T> T executeQuerySingleResult(DbQuery<? extends T> query) throws DbException, DbInvalidResultSizeException {
         List<T> result = executeQuery(query.maxResults(2));
         if (result.size() != 1) {
-            throw new DbInvalidResultSizeException("Invalid result set size", result.size());
+            throw new DbInvalidResultSizeException(null, "Invalid result set size", result.size());
         }
         return result.get(0);
     }
@@ -199,29 +203,31 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     	if (LOG.isDebugEnabled()) {
     		LOG.debug("Query to execute:\n\t" + sql + "\n\t" + Arrays.asList(parameters));
     	}
-        return executor.execute(new ConnectionRunner<T>() {
-            @Override
-            public T perform(Connection conn) throws SQLException {
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                if (hints != null) {
-                    setStatementHints(stmt, hints);
-                }
-                try {
-                    prepareStatementParameters(stmt, parameters);
-                    ResultSet rs = stmt.executeQuery();
-                    try {
-                        return runner.perform(rs);
-                    } finally {
-                        rs.close();
-                    }
-                } catch (SQLException e) {
-            		LOG.error("SQL query failed with " + e.toString() + ":\n\t" + sql + "\n\t" + Arrays.asList(parameters));
-                	throw e;
-                } finally {
-                    stmt.close();
-                }
-            }
-        });
+        try {
+			return executor.execute(new ConnectionRunner<T>() {
+			    @Override
+			    public T perform(Connection conn) throws SQLException {
+			        PreparedStatement stmt = conn.prepareStatement(sql);
+			        if (hints != null) {
+			            setStatementHints(stmt, hints);
+			        }
+			        try {
+			            prepareStatementParameters(stmt, parameters);
+			            ResultSet rs = stmt.executeQuery();
+			            try {
+			                return runner.perform(rs);
+			            } finally {
+			                rs.close();
+			            }
+			        } finally {
+			            stmt.close();
+			        }
+			    }
+			});
+		} catch (SQLException e) {
+    		LOG.error("SQL query failed with " + e.toString() + ":\n\t" + sql + "\n\t" + Arrays.asList(parameters));
+    		throw wrapSQLException(null, "executeQuery(" + sql + ") failed", e);
+		}
     }
 
     protected final void setStatementHints(Statement stmt, Map<String, Object> hints) throws SQLException {
@@ -254,32 +260,34 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     }
 
     protected <T> T executeCallable(final String name, final Class<T> resultType, final Object...args) throws DbException {
-        return executor.execute(new ConnectionRunner<T>() {
-            @Override
-            public T perform(Connection conn) throws SQLException {
-                final boolean hasOut = resultType != Void.class;
-                final String call = String.format("{%scall %s(%s)}",
-                        hasOut ? "? = " : "", name,
-                                StringUtils.join(", ", CollectionUtils.replicate("?", args.length)));
-                final CallableStatement stmt = conn.prepareCall(call);
-                try {
-                    prepareStatementParameters(stmt, hasOut ? 2 : 1, Arrays.asList(args));
-                    if (hasOut)
-                        stmt.registerOutParameter(1, getPreferredSqlTypeFor(resultType));
-                    stmt.execute();
-                    if (hasOut) {
-                        return getCallableResultValue(stmt, 1, resultType);
-                    } else {
-                        return null;
-                    }
-                } catch (SQLException e) {
-            		LOG.error("executeCallable failed with " + e.toString() + ":\n\t" + call + "\n\t" + Arrays.asList(args));
-                	throw e;
-                } finally {
-                    stmt.close();
-                }
-            }
-        });
+        final boolean hasOut = resultType != Void.class;
+        final String call = String.format("{%scall %s(%s)}",
+                hasOut ? "? = " : "", name,
+                        StringUtils.join(", ", CollectionUtils.replicate("?", args.length)));
+        try {
+			return executor.execute(new ConnectionRunner<T>() {
+			    @Override
+			    public T perform(Connection conn) throws SQLException {
+			        final CallableStatement stmt = conn.prepareCall(call);
+			        try {
+			            prepareStatementParameters(stmt, hasOut ? 2 : 1, Arrays.asList(args));
+			            if (hasOut)
+			                stmt.registerOutParameter(1, getPreferredSqlTypeFor(resultType));
+			            stmt.execute();
+			            if (hasOut) {
+			                return getCallableResultValue(stmt, 1, resultType);
+			            } else {
+			                return null;
+			            }
+			        } finally {
+			            stmt.close();
+			        }
+			    }
+			});
+		} catch (SQLException e) {
+    		LOG.error("executeCallable failed with " + e.toString() + ":\n\t" + call + "\n\t" + Arrays.asList(args));
+    		throw wrapSQLException(null, "executeCallable failed", e);
+		}
     }
 
     protected void logSql(String text, String sql, Object[] parameters) {
@@ -305,94 +313,94 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 
     @Override
     public Set<String> getTableNames(final DbTableType tableType) throws DbException {
-        return executor.execute(new ConnectionRunner<Set<String>>() {
-            @Override
-            public Set<String> perform(Connection conn) throws SQLException {
-            	try {
-            		return getMetaDataExtractor().setup(conn, catalog, schema).getTableNames(tableType);
-            	} catch (SQLException e) {
-            		LOG.error("getTableNames failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema
-            				+ " table: " + tableType);
-            		throw e;
-            	}
-            }
-        });
+        try {
+			return executor.execute(new ConnectionRunner<Set<String>>() {
+			    @Override
+			    public Set<String> perform(Connection conn) throws SQLException {
+		    		return getMetaDataExtractor().setup(conn, catalog, schema).getTableNames(tableType);
+			    }
+			});
+		} catch (SQLException e) {
+    		LOG.error("getTableNames failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema
+    				+ " table: " + tableType);
+    		throw wrapSQLException(null, "getTableNames failed", e);
+		}
     }
 
     @Override
     public DbTable getTableMetaData(final String tableName) throws DbException {
-        return executor.execute(new ConnectionRunner<DbTable>() {
-            @Override
-            public DbTable perform(Connection conn) throws SQLException {
-            	try {
-            		return getMetaDataExtractor().setup(conn, catalog, schema).getTableMetaData(tableName);
-            	} catch (SQLException e) {
-            		LOG.error("getTableMetaData failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema
-            				+ " table: " + tableName);
-            		throw e;
-            	}
-            }
-        });
+        try {
+			return executor.execute(new ConnectionRunner<DbTable>() {
+			    @Override
+			    public DbTable perform(Connection conn) throws SQLException {
+		    		return getMetaDataExtractor().setup(conn, catalog, schema).getTableMetaData(tableName);
+			    }
+			});
+		} catch (SQLException e) {
+    		LOG.error("getTableMetaData failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema
+    				+ " table: " + tableName);
+    		throw wrapSQLException(null, "getTableMetaData(" + tableName + ") failed", e);
+		}
     }
 
     @Override
     public Set<String> getCallableNames() throws DbException {
-        return executor.execute(new ConnectionRunner<Set<String>>() {
-            @Override
-            public Set<String> perform(Connection conn) throws SQLException {
-            	try {
-            		return getMetaDataExtractor().setup(conn, catalog, schema).getCallableNames();
-            	} catch (SQLException e) {
-            		LOG.error("getCallableNames failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema);
-            		throw e;
-            	}
-            }
-        });
+        try {
+			return executor.execute(new ConnectionRunner<Set<String>>() {
+			    @Override
+			    public Set<String> perform(Connection conn) throws SQLException {
+		    		return getMetaDataExtractor().setup(conn, catalog, schema).getCallableNames();
+			    }
+			});
+		} catch (SQLException e) {
+    		LOG.error("getCallableNames failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema);
+    		throw wrapSQLException(null, "getCallableNames failed", e);
+		}
     }
 
     @Override
     public Collection<DbArtifact> getAllMetaData() throws DbException {
-        return executor.execute(new ConnectionRunner<Collection<DbArtifact>>() {
-            @Override
-            public Collection<DbArtifact> perform(Connection conn) throws SQLException {
-            	try {
-            		return getMetaDataExtractor().setup(conn, catalog, schema).getAllMetaData();
-            	} catch (SQLException e) {
-            		LOG.error("getAllMetaData failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema);
-            		throw e;
-            	}
-            }
-        });
+        try {
+			return executor.execute(new ConnectionRunner<Collection<DbArtifact>>() {
+			    @Override
+			    public Collection<DbArtifact> perform(Connection conn) throws SQLException {
+		    		return getMetaDataExtractor().setup(conn, catalog, schema).getAllMetaData();
+			    }
+			});
+		} catch (SQLException e) {
+    		LOG.error("getAllMetaData failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema);
+			throw wrapSQLException(null, "getAllMetaData fails", e);
+		}
     }
 
     @Override
     public Map<String, Object> getMetaDataInfo() throws DbException {
-        return executor.execute(new ConnectionRunner<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> perform(Connection conn) throws SQLException {
-            	try {
-            		return getMetaDataExtractor().setup(conn, catalog, schema).getMetaDataInfo();
-            	} catch (SQLException e) {
-            		LOG.error("getMetaDataInfo failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema);
-            		throw e;
-            	}
-            }
-        });
+        try {
+			return executor.execute(new ConnectionRunner<Map<String, Object>>() {
+			    @Override
+			    public Map<String, Object> perform(Connection conn) throws SQLException {
+			    	return getMetaDataExtractor().setup(conn, catalog, schema).getMetaDataInfo();
+			    }
+			});
+		} catch (SQLException e) {
+    		LOG.error("getMetaDataInfo failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema);
+			throw wrapSQLException(null, "getMetaDataInfo fails", e);
+		}
     }
 
     @Override
     public Map<String, String> getDatabaseParameters() throws DbException {
-        return executor.execute(new ConnectionRunner<Map<String, String>>() {
-            @Override
-            public Map<String, String> perform(Connection conn) throws SQLException {
-            	try {
-            		return getMetaDataExtractor().setup(conn, catalog, schema).getDatabaseParameters();
-            	} catch (SQLException e) {
-            		LOG.error("getDatabaseParameters failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema);
-            		throw e;
-            	}
-            }
-        });
+        try {
+			return executor.execute(new ConnectionRunner<Map<String, String>>() {
+			    @Override
+			    public Map<String, String> perform(Connection conn) throws SQLException {
+			    	return getMetaDataExtractor().setup(conn, catalog, schema).getDatabaseParameters();
+			    }
+			});
+		} catch (SQLException e) {
+    		LOG.error("getDatabaseParameters failed with " + e.toString() + ":\n\tcatalog: " + catalog + " schema: " + schema);
+			throw wrapSQLException(null, "getDatabaseParameters fails", e);
+		}
     }
 
     protected void setStatementParameter(PreparedStatement stmt, int index, Object value, Class<?> javaType) throws SQLException {
@@ -537,8 +545,8 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     }
 
     @Override
-    protected DbException wrapSQLException(SQLException ex) {
-        return new DbException(ex);
+    protected DbException wrapSQLException(Long id, String message, SQLException ex) {
+        return new DbException(id, message, ex);
     }
 
     protected DbStatementVisitor<Integer> createCommandVisitor() {
@@ -549,23 +557,25 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 
     @Override
     public boolean checkSyntax(final String sql) throws DbException {
-        executor.execute(new ConnectionRunner<Void>() {
-            @Override
-            public Void perform(Connection conn) throws SQLException {
-                final Statement stmt = conn.createStatement();
-                try {
-                    setStatementHint(stmt, MAX_ROWS_HINT, 1);
-                    setStatementHint(stmt, QUERY_TIMEOUT_HINT, 300);
-                    stmt.execute(sql);
-                } catch (SQLException e) {
-            		LOG.error("checkSyntax failed with " + e.toString() + ":\n\t" + sql);
-                	throw e;
-                } finally {
-                    stmt.close();
-                }
-                return null;
-            }
-        });
+        try {
+			executor.execute(new ConnectionRunner<Void>() {
+			    @Override
+			    public Void perform(Connection conn) throws SQLException {
+			        final Statement stmt = conn.createStatement();
+			        try {
+			            setStatementHint(stmt, MAX_ROWS_HINT, 1);
+			            setStatementHint(stmt, QUERY_TIMEOUT_HINT, 300);
+			            stmt.execute(sql);
+			        } finally {
+			            stmt.close();
+			        }
+			        return null;
+			    }
+			});
+		} catch (SQLException e) {
+    		LOG.error("checkSyntax failed with " + e.toString() + ":\n\t" + sql);
+			throw wrapSQLException(null, "checkSyntax fails on '" + sql + "'", e);
+		}
         return true;
     }
 
@@ -709,28 +719,28 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     public class StatementVisitor implements DbStatementVisitor<Integer> {
 
         @Override
-        public Integer visitInsert(final DbInsertStatement insertStmt) {
+        public Integer visitInsert(final DbInsertStatement insertStmt) throws SQLException {
             return executePreparedStatements(getPreparedSqlFor(insertStmt));
         }
 
         @Override
-        public Integer visitDelete(final DbDeleteStatement deleteStmt) {
+        public Integer visitDelete(final DbDeleteStatement deleteStmt) throws SQLException {
             return executePreparedStatements(getPreparedSqlFor(deleteStmt));
         }
 
         @Override
-        public Integer visitUpdate(final DbUpdateStatement updateStmt) {
+        public Integer visitUpdate(final DbUpdateStatement updateStmt) throws SQLException {
             return executePreparedStatements(getPreparedSqlFor(updateStmt));
         }
 
         @Override
-        public Integer visitStructureChange(DbStructureChange command) {
+        public Integer visitStructureChange(DbStructureChange command) throws SQLException {
             int result = -1;
             String message = "Unknown error";
             try {
                 result = executePreparedStatements(getPreparedSqlFor(command));
                 message = "Success";
-            } catch (DbException e) {
+            } catch (SQLException e) {
                 message = "Error: " + e;
                 throw e;
             } finally {
@@ -741,17 +751,21 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 
         @Override
         public Integer visitPlain(DbPlainStatement command) {
-            return executePreparedStatements(getPreparedSqlFor(command));
+            try {
+				return executePreparedStatements(getPreparedSqlFor(command));
+			} catch (SQLException e) {
+				throw wrapSQLException(null, "visitPlain fails on " + command, e);
+			}
         }
 
-        protected Integer executePreparedStatements(List<PreparedString> pss) {
+        protected Integer executePreparedStatements(List<PreparedString> pss) throws SQLException {
             int result = 0;
             for (PreparedString ps : pss)
                 result += executePreparedStatement(ps);
             return result;
         }
 
-        protected int executePreparedStatement(final PreparedString ps) {
+        protected int executePreparedStatement(final PreparedString ps) throws SQLException {
             if (!ps.hasParameters()) {
                 String sql = ps.toString();
                 logSql("execute SQL statement", sql, null);
@@ -781,24 +795,25 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         }
 
         @Override
-        public Integer visitBatch(DbBatchStatement batch) {
+        public Integer visitBatch(DbBatchStatement batch) throws SQLException {
             // TODO: reuse PreparedStatement if two consecutive statements are compatible
             int result = 0;
-            int index = 0;
-            TreeMap<Integer, DbException> exceptions = new TreeMap<Integer, DbException>();
+            final List<SQLException> exceptions = new ArrayList<SQLException>();
             for (DbStatement stmt : batch.getStatements()) {
                 try {
                     result += stmt.accept(this);
-                } catch (DbException e) {
-                    exceptions.put(index, e);
+                } catch (SQLException e) {
+                	LOG.error("visitBatch failed on " + stmt, e);
                     if (batch.isFailFirst()) {
-                        throw new DbBatchException(exceptions);
+                        throw e;
+                    }
+                    else {
+                        exceptions.add(e);
                     }
                 }
-                index++;
             }
             if (!exceptions.isEmpty()) {
-                throw new DbBatchException(exceptions);
+                throw exceptions.get(0);
             }
             return result;
         }
@@ -960,7 +975,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 	protected abstract List<String> getSqlForAlterTableNotNullColumn(DbColumn column);
 
     @Override
-    protected List<String> getSqlForCreateColumn(DbColumn column) {
+    protected List<String> getSqlForCreateColumn(DbColumn column) throws SQLException {
     	List<String> lstCreateColumn = new ArrayList<String>();
     	lstCreateColumn.add(String.format("ALTER TABLE %s ADD %s",
             getQualifiedName(column.getTableName()),
@@ -982,7 +997,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 
     }
 
-	protected String getSqlForUpdateNotNullColumn(final DbColumn column) {
+	protected String getSqlForUpdateNotNullColumn(final DbColumn column) throws SQLException {
 		DbUpdateStatement stmt = DbStatementUtils.getDbUpdateStatementWhereFieldIsNull(getQualifiedName(column.getTableName()), column.getColumnName(), column.getDefaultValue());
 		final String sUpdate = this.getSqlForUpdate(stmt).get(0).toString();
 
@@ -1191,7 +1206,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     }
 
     @Override
-    protected abstract List<String> getSqlForAlterTableColumn(DbColumn column1, DbColumn column2);
+    protected abstract List<String> getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) throws SQLException;
 
     @Override
     protected List<String> getSqlForAlterSequence(DbSequence sequence1, DbSequence sequence2) {

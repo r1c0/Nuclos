@@ -23,6 +23,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -806,7 +807,7 @@ public class NuclosConsole extends ConsoleConstants {
 		}
 	}
 
-	private static void compileDBObjects() throws RemoteException {
+	private static void compileDBObjects() throws RemoteException, SQLException {
 		getConsoleFacade().compileInvalidDbObjects();
 	}
 

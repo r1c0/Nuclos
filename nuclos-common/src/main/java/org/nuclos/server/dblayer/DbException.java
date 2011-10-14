@@ -16,51 +16,65 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dblayer;
 
-import java.io.ObjectStreamException;
 import java.sql.SQLException;
+import java.util.List;
 
-import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.dal.exception.DalBusinessException;
 
 /**
  * Exception class for database-specific (fatal) exceptions. 
  */
-public class DbException extends NuclosFatalException {
+public class DbException extends DalBusinessException {
 
-   private static final long serialVersionUID = 1L;
+	private Long id;
+	
+	private List<String> statements;
 	
 	private int errorCode;
-	// A transient copy of the real SQLException
-	private transient SQLException sqlException;
 	
 	public DbException(String message) {
-		super(message);
-	}
-	
-	public DbException(String message, Throwable cause) {
-		super(message != null ? message : cause.getMessage());
-		if (cause != null)
-			initCause(cause);
-	}
-	
-	public DbException(Exception cause) {
-		super(cause != null ? cause.getMessage() : null);
-		initCause(cause);
+		this(null, message, null, null);
 	}
 
+	public DbException(Long id, String message, Throwable cause) {
+		this(id, message, null, cause);
+	}
+
+	public DbException(Long id, String message, List<String> statements) {
+		this(id, message, statements, null);
+	}
+	
+	public DbException(Long id, String message, List<String> statements, Throwable cause) {
+		super(message, cause);
+		this.id = id;
+		this.statements = statements;
+		initCause(cause);
+	}
+	
+	public Long getId() {
+		return id;
+	}
+	
+	public void setIdIfNull(Long id) {
+		if (this.id != null) {
+			this.id = id;
+		}
+	}
+
+	public List<String> getStatements() {
+    	return statements;
+    }
+	
+	public void setStatementsIfNull(List<String> statements) {
+		if (this.statements == null) {
+			this.statements = statements;
+		}
+	}
+	
 	public int getErrorCode() {
 		return errorCode;
 	}
 	
-	public SQLException getSQLException() {
-		return sqlException;
-	}
-	
-	@Override
-	public Throwable getCause() {
-		Throwable cause = super.getCause();
-		return (cause != null) ? cause : sqlException;
-	
-	}	
 	@Override
 	public synchronized Throwable initCause(Throwable cause) {
 		// Because of serialization troubles with driver-specific SQLExceptions, 
@@ -68,7 +82,7 @@ public class DbException extends NuclosFatalException {
 		// a plain copy (without chained exceptions etc. but with the original
 		// stacktrace).
 		if (cause instanceof SQLException) {
-			sqlException = ((SQLException) cause);
+			final SQLException sqlException = ((SQLException) cause);
 			errorCode = sqlException.getErrorCode();
 			cause = new SQLException(sqlException.getMessage(), sqlException.getSQLState(), sqlException.getErrorCode());
 			cause.setStackTrace(sqlException.getStackTrace());
@@ -77,10 +91,4 @@ public class DbException extends NuclosFatalException {
 		return this;
 	}
 
-	private Object readResolve() throws ObjectStreamException {
-		if (sqlException == null && (getCause() instanceof SQLException)) {
-			sqlException = (SQLException) getCause();
-		}
-		return this;
-	}
 }

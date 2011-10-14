@@ -667,7 +667,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	            return values;
 				}
 			});
-		} catch (DbException e) {
+		} catch (SQLException e) {
 			return null;
 		} finally {
 			executor.release();

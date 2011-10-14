@@ -16,27 +16,13 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.masterdata.valuelistprovider;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.entityobject.EntityFacadeDelegate;
-import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
-import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
-import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common.genericobject.MakeGenericObjectValueIdField;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
-import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 
 /**
  * generic valuelistprovider for all entities (genericobject and masterdata).

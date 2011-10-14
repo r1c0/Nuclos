@@ -26,7 +26,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.prefs.Preferences;
@@ -38,11 +37,6 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
-
-import org.nuclos.common.collect.collectable.Collectable;
-import org.nuclos.common.collect.collectable.CollectableEntity;
-import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common.collect.collectable.CollectableValueField;
 
 public class TableRowIndicator extends MouseInputAdapter { 
     public static Cursor resizeCursor = Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR);

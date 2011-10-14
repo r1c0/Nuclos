@@ -24,16 +24,12 @@ import java.sql.SQLException;
  */
 public class DbNotNullableException extends DbException {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final String schemaName;
 	private final String tableName;
 	private final String columnName;
 
-	public DbNotNullableException(String schemaName, String tableName, String columnName, SQLException ex) {
-		super(ex);
+	public DbNotNullableException(Long id, String schemaName, String tableName, String columnName, SQLException ex) {
+		super(id, "schema=" + schemaName + " table=" + tableName + " column=" + columnName, ex);
 		this.schemaName = schemaName;
 		this.tableName = tableName;
 		this.columnName = columnName;

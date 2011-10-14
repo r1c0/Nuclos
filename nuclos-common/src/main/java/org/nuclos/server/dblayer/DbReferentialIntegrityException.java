@@ -24,15 +24,11 @@ import java.sql.SQLException;
  */
 public class DbReferentialIntegrityException extends DbException {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final String schemaName;
 	private final String constraintName;
 
-	public DbReferentialIntegrityException(String schemaName, String constraintName, SQLException ex) {
-		super(ex);
+	public DbReferentialIntegrityException(Long id, String schemaName, String constraintName, SQLException ex) {
+		super(id, "schema=" + schemaName + " constraint=" + constraintName, ex);
 		this.schemaName = schemaName;
 		this.constraintName = constraintName;
 	}

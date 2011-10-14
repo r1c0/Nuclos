@@ -82,7 +82,7 @@ public class MSSQLDBAccess extends TransactSqlDbAccess {
 	}
 
 	@Override
-	protected List<String> getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) {
+	protected List<String> getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) throws SQLException {
 		List<String> lstSQL = new ArrayList<String>();
 		lstSQL.add(String.format("ALTER TABLE %s ALTER COLUMN %s",
 			getQualifiedName(column2.getTableName()),
@@ -195,7 +195,7 @@ public class MSSQLDBAccess extends TransactSqlDbAccess {
 	}
 	
 	@Override
-	protected String getSqlForUpdateNotNullColumn(final DbColumn column) {
+	protected String getSqlForUpdateNotNullColumn(final DbColumn column) throws SQLException {
 		DbUpdateStatement stmt = DbStatementUtils.getDbUpdateStatementWhereFieldIsNull(getQualifiedName(column.getTableName()), column.getColumnName(), column.getDefaultValue());
 		final String sUpdate = this.getSqlForUpdate(stmt).get(0).toString();
 

@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dblayer.statements;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class DbBatchStatement extends DbStatement {
 	}
 	
 	@Override
-	public <T> T accept(DbStatementVisitor<T> visitor) {
+	public <T> T accept(DbStatementVisitor<T> visitor) throws SQLException {
 		return visitor.visitBatch(this);
 	}
 }

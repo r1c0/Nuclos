@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,7 +128,7 @@ public class JRDefaultNuclosDataSource implements JRNuclosDataSource {
 			}
 		}
 		catch (SQLException ex) {
-			throw new DbException(ex);
+			throw new DbException(null, "getData() fails", Collections.singletonList(query), ex);
 		}
 	}
 

@@ -17,15 +17,16 @@
 package org.nuclos.common.dal;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.dal.exception.DalBusinessException;
+import org.nuclos.server.dblayer.DbException;
 
-public class DalCallResult implements Serializable{
-	private static final long serialVersionUID = 1012920874365879641L;
-	
+public class DalCallResult implements Serializable {
+
 	private static final int OKAY = 1;
 	private static final int HAS_EXCEPTION = 0;
 	
@@ -33,14 +34,36 @@ public class DalCallResult implements Serializable{
 	
 	private List<DalBusinessException> lstException;
 		
-	public void addBusinessException(DalBusinessException dbe) {
+	/*
+	public void addBusinessException(Long id, String message, List<String> statements, SQLException e) {
 		resultType = HAS_EXCEPTION;
 		if (lstException == null) {
 			lstException = new ArrayList<DalBusinessException>();
 		}
-		lstException.add(dbe);
+		lstException.add(new DbException(id, message, statements, e));
+	}
+	 */
+	
+	public void addBusinessException(Long id, List<String> statements, SQLException e) {
+		resultType = HAS_EXCEPTION;
+		if (lstException == null) {
+			lstException = new ArrayList<DalBusinessException>();
+		}
+		lstException.add(new DbException(id, getReadableMessage(e), statements, e));
 	}
 	
+	public void addBusinessException(DbException e) {
+		resultType = HAS_EXCEPTION;
+		if (lstException == null) {
+			lstException = new ArrayList<DalBusinessException>();
+		}
+		lstException.add(e);
+	}
+	
+	protected String getReadableMessage(SQLException ex) {
+		return ex.toString();
+	}
+
 	public List<DalBusinessException> getExceptions() {
 		return lstException;
 	}

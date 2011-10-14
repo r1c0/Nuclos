@@ -207,7 +207,13 @@ public class DataBaseHelper {
 	}
 
 	public static Integer getNextIdAsInteger(String sSequenceName) {
-		return getDbAccess().getNextId(sSequenceName).intValue();
+		try {
+			return getDbAccess().getNextId(sSequenceName).intValue();
+		}
+		catch (SQLException e) {
+			// Wrap in non-check exception for convenience.
+			throw new IllegalStateException(e);
+		}
 	}
 
 	public static boolean isTableAvailable(String sTable) {

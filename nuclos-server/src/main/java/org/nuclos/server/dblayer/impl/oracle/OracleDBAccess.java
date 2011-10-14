@@ -78,7 +78,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	public Long getNextId(String sequenceName) throws DbException {
+	public Long getNextId(String sequenceName) throws SQLException {
 		return executor.executeQuery("SELECT " + sequenceName + ".NEXTVAL FROM DUAL",
 			new ResultSetRunner<Long>() {
 			@Override
@@ -133,7 +133,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	protected List<String> getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) {
+	protected List<String> getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) throws SQLException {
 
 		List<String> lstSQL = new ArrayList<String>();
 		lstSQL.add(String.format("ALTER TABLE %s MODIFY (%s)",
@@ -160,7 +160,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	protected String getSqlForUpdateNotNullColumn(final DbColumn column) {
+	protected String getSqlForUpdateNotNullColumn(final DbColumn column) throws SQLException {
 		DbUpdateStatement stmt = DbStatementUtils.getDbUpdateStatementWhereFieldIsNull(getQualifiedName(column.getTableName()), column.getColumnName(), column.getDefaultValue());
 		final String sUpdate = this.getSqlForUpdate(stmt).get(0).toString();
 
@@ -399,7 +399,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	public boolean validateObjects() throws DbException {
+	public boolean validateObjects() throws SQLException {
 		Set<String> invalidObjects = executor.executeQuery(
 			"select object_name, object_type from user_objects where object_type in ('FUNCTION', 'VIEW') and status = 'INVALID'",
 			new ResultSetRunner<Set<String>>() {
@@ -445,7 +445,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	protected DbException wrapSQLException(SQLException ex) {
+	protected DbException wrapSQLException(Long id, String message, SQLException ex) {
 		try {
 			if ("23000".equals(ex.getSQLState())) {
 				Matcher matcher;
@@ -453,21 +453,21 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 				case 1: // unique constraint
 					matcher = EXCEPTION_IDENTS_2.matcher(ex.getMessage());
 					if (matcher.find()) {
-						return new DbNotUniqueException(
+						return new DbNotUniqueException(id, 
 							makeIdent(matcher.group(1)), makeIdent(matcher.group(2)), ex);
 					}
 					break;
 				case 1400: // insert null
 					matcher = EXCEPTION_IDENTS_3.matcher(ex.getMessage());
 					if (matcher.find()) {
-						return new DbNotNullableException(
+						return new DbNotNullableException(id, 
 							makeIdent(matcher.group(1)), makeIdent(matcher.group(2)), makeIdent(matcher.group(3)), ex);
 					}
 					break;
 				case 2292: // delete referential entry
 					matcher = EXCEPTION_IDENTS_2.matcher(ex.getMessage());
 					if (matcher.find()) {
-						return new DbReferentialIntegrityException(
+						return new DbReferentialIntegrityException(id, 
 							makeIdent(matcher.group(1)), makeIdent(matcher.group(2)), ex);
 					}
 					break;
@@ -478,7 +478,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 			log.warn("Exception thrown during wrapSQLException", ex2);
 			// ...but throw the original SQLException
 		}
-		return super.wrapSQLException(ex);
+		return super.wrapSQLException(id, message, ex);
 	}
 
 	private static String IDENT_REGEX = "(\\w+|\\\"[^\\\"]+\\\")";
@@ -490,7 +490,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 	//
 
 	@Override
-	public void runWithDisabledChecksAndTriggers(Runnable runnable) throws DbException {
+	public void runWithDisabledChecksAndTriggers(Runnable runnable) throws SQLException {
 		// Deactive constraints & triggers
 		List<String> triggers = disableTriggers();
 		List<Constraint> constraints = disableConstraints();
@@ -522,7 +522,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 	private static final String ORACLE_ALTER_CONSTRAINT =
 		"dbms_utility.exec_ddl_statement('alter table %s.%s %s constraint %s');\n";
 
-	private List<Constraint> disableConstraints() {
+	private List<Constraint> disableConstraints() throws SQLException {
 		LinkedList<Constraint> constraints = getEnabledConstraints();
 
 		if (constraints.size() == 0) {
@@ -534,7 +534,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 		return constraints;
 	}
 
-	private void enableConstraints(List<Constraint> constraints) {
+	private void enableConstraints(List<Constraint> constraints) throws SQLException {
 		if (constraints.size() == 0) {
 			return;
 		}
@@ -557,7 +557,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 		return cmds.toString();
 	}
 
-	private LinkedList<Constraint> getEnabledConstraints() {
+	private LinkedList<Constraint> getEnabledConstraints() throws SQLException {
 		return executor.executeQuery(ORACLE_ENABLED_CONSTRAINTS,
 			new ResultSetRunner<LinkedList<Constraint>>() {
 			@Override
@@ -584,7 +584,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 		"dbms_utility.exec_ddl_statement('alter trigger %s %s');\n";
 
 
-	private List<String> disableTriggers() {
+	private List<String> disableTriggers() throws SQLException {
 		List<String> triggers = getEnabledTriggers();
 
 		if (triggers.size() == 0) {
@@ -596,7 +596,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 		return triggers;
 	}
 
-	private void enableTriggers(List<String> triggers) {
+	private void enableTriggers(List<String> triggers) throws SQLException {
 		if (triggers.size() == 0) {
 			return;
 		}
@@ -616,7 +616,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 		return cmds.toString();
 	}
 
-	private List<String> getEnabledTriggers() {
+	private List<String> getEnabledTriggers() throws SQLException {
 		return executor.executeQuery(ORACLE_ENABLED_TRIGGERS,
 			new ResultSetRunner<List<String>>() {
 			@Override

@@ -55,7 +55,7 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 	public static final String HINT_SEQUENCE_TABLE = "sequenceTable";
 
 	@Override
-	public Long getNextId(String sequenceName) throws DbException {
+	public Long getNextId(String sequenceName) throws SQLException {
 		return executor.executeQuery("EXECUTE " + sequenceName, new ResultSetRunner<Long>() {
 			@Override
 			public Long perform(ResultSet rs) throws SQLException { return rs.next() ? rs.getLong(1) : null; }
@@ -83,7 +83,7 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	protected DbException wrapSQLException(SQLException ex) {
+	protected DbException wrapSQLException(Long id, String message, SQLException ex) {
 		try {
 			if ("23000".equals(ex.getSQLState())) {
 				Matcher matcher;
@@ -91,13 +91,13 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 				case 2627: // unique constraint
 					matcher = EXCEPTION_IDENT.matcher(ex.getMessage());
 					if (matcher.find()) {
-						return new DbNotUniqueException(null, makeIdent(matcher.group(1)), ex);
+						return new DbNotUniqueException(id, null, makeIdent(matcher.group(1)), ex);
 					}
 					break;
 				case 547: // delete referential entry
 					matcher = EXCEPTION_IDENT.matcher(ex.getMessage());
 					if (matcher.find()) {
-						return new DbReferentialIntegrityException(null, makeIdent(matcher.group(1)), ex);
+						return new DbReferentialIntegrityException(id, null, makeIdent(matcher.group(1)), ex);
 					}
 					break;
 				}
@@ -107,14 +107,14 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 			log.warn("Exception thrown during wrapSQLException", ex2);
 			// ...but throw the original SQLException
 		}
-		return super.wrapSQLException(ex);
+		return super.wrapSQLException(id, message, ex);
 	}	
 
 	private static String IDENT_REGEX = "(\\w+)";
 	private static Pattern EXCEPTION_IDENT = Pattern.compile("'" + IDENT_REGEX + "'");
 
 	@Override
-	public boolean validateObjects() throws DbException {
+	public boolean validateObjects() throws SQLException {
 		List<String> validateStmts = executor.executeQuery(
 			"select table_name, table_type from information_schema.tables where table_schema = '" + getSchemaName() + "'",
 			new ResultSetRunner<List<String>>() {

@@ -136,8 +136,6 @@ import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO.Event;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.security.NuclosLocalServerSession;
 import org.nuclos.server.statemodel.ejb3.StateFacadeLocal;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 /**
  * Interface for rule developers. Delegates all calls to RuleInterfaceBean.

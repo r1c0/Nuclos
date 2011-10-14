@@ -22,12 +22,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.autosync.SystemMasterDataMetaVO;
 import org.nuclos.server.autosync.XMLEntities;

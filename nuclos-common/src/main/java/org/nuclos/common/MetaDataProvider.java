@@ -17,12 +17,10 @@
 package org.nuclos.common;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common.dal.vo.PivotInfo;
 
 /**
  * Interface implemented by MetaDataProviders for accessing meta data information.

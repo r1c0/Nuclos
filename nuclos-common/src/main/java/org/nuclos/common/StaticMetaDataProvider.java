@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common2.exception.CommonFatalException;
 
 /**

@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dal.processor.jdbc.impl;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,7 +35,6 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.DalCallResult;
-import org.nuclos.common.dal.exception.DalBusinessException;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
@@ -185,7 +185,9 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 
 	@Override
 	public DalCallResult insertOrUpdate(EntityObjectVO dalVO) {
-		return checkLogicalUniqueConstraint(super.insertOrUpdate(dalVO), dalVO);
+		final DalCallResult result = super.insertOrUpdate(dalVO);
+		checkLogicalUniqueConstraint(result, dalVO);
+		return result;
 	}
 
 	@Override
@@ -196,9 +198,9 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 	@Override
 	public DalCallResult batchInsertOrUpdate(Collection<EntityObjectVO> colDalVO) {
 		if (!logicalUniqueConstraintCombinations.isEmpty()) {
-			DalCallResult result = super.batchInsertOrUpdate(colDalVO);
+			final DalCallResult result = super.batchInsertOrUpdate(colDalVO);
 			for(EntityObjectVO dalVO : colDalVO) {
-				result = checkLogicalUniqueConstraint(result, dalVO);
+				checkLogicalUniqueConstraint(result, dalVO);
 			}
 			return result;
 		} else
@@ -363,16 +365,15 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		}
 	}
 
-	private DalCallResult checkLogicalUniqueConstraint(DalCallResult result, EntityObjectVO dalVO) {
+	private void checkLogicalUniqueConstraint(DalCallResult result, EntityObjectVO dalVO) {
 		if (!logicalUniqueConstraintCombinations.isEmpty()) {
 			for (List<IColumnToVOMapping<?>> columns : logicalUniqueConstraintCombinations) {
 				final Map<IColumnToVOMapping<?>, Object> checkValues = super.getColumnValuesMapWithMapping(columns, dalVO, false);
-				final DalBusinessException checkResult = super.checkLogicalUniqueConstraint(checkValues, dalVO.getId());
+				final SQLIntegrityConstraintViolationException checkResult = super.checkLogicalUniqueConstraint(checkValues, dalVO.getId());
 				if (checkResult != null)
-					result.addBusinessException(checkResult);
+					result.addBusinessException(dalVO.getId(), null, checkResult);
 			}
 		}
-		return result;
 	}
 
 	private List<IColumnToVOMapping<? extends Object>> getColumns(final Collection<String> fields, final boolean bSearchInDMLSource) {

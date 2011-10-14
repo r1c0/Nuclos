@@ -632,7 +632,9 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	}
 
 	@Override
-    public String createOrModifyEntity(EntityMetaDataVO oldMDEntity, EntityMetaDataTO updatedTOEntity, MasterDataVO voEntity, List<EntityFieldMetaDataTO> toFields, boolean blnExecute, String user, String password) throws NuclosBusinessException {
+    public String createOrModifyEntity(EntityMetaDataVO oldMDEntity, EntityMetaDataTO updatedTOEntity, 
+    		MasterDataVO voEntity, List<EntityFieldMetaDataTO> toFields, boolean blnExecute, 
+    		String user, String password) throws NuclosBusinessException {
 		String resultMessage = null;
 		EntityMetaDataVO updatedMDEntity = updatedTOEntity.getEntityMetaVO();
 
@@ -705,11 +707,18 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			}
 		}
 
+		// Error handling
 		if(!dbchangeOkay) {
 			if(updatedMDEntity.getId() != null) {
 				rollBackDBChanges(updatedTOEntity, toFields);
 				StringBuffer sb = new StringBuffer();
-				List<PreparedString> lstStrings = DataBaseHelper.getDbAccess().getPreparedSqlFor(lstDbChangesNotOkay.get(0));
+				List<PreparedString> lstStrings = Collections.emptyList();
+				try {
+					lstStrings = DataBaseHelper.getDbAccess().getPreparedSqlFor(lstDbChangesNotOkay.get(0));
+				}
+				catch (SQLException e) {
+					sb.append("Failed on getPreparedSqlFor(" + lstDbChangesNotOkay.get(0) + "): " + e);
+				}
 				sb.append("Entit\u00e4t " + updatedMDEntity.getEntity() + " konnte nicht ver\u00e4ndert werden.\n");
 				sb.append("Grund:\n");
 				sb.append(lstStrings.get(0));
@@ -730,13 +739,17 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 					}
 				}
 				StringBuffer sb = new StringBuffer();
-				List<PreparedString> lstStrings = DataBaseHelper.getDbAccess().getPreparedSqlFor(lstDbChangesNotOkay.get(0));
+				List<PreparedString> lstStrings = Collections.emptyList();
+				try {
+					lstStrings = DataBaseHelper.getDbAccess().getPreparedSqlFor(lstDbChangesNotOkay.get(0));
+				}
+				catch (SQLException e) {
+					sb.append("Failed on getPreparedSqlFor(" + lstDbChangesNotOkay.get(0) + "): " + e);
+				}
 				sb.append("Entit\u00e4t " + updatedMDEntity.getEntity() + " konnte nicht angelegt werden.\n");
 				sb.append("Grund:\n");
 				sb.append(lstStrings.get(0));
-
 				resultMessage = sb.toString();
-
 			}
 
 			return resultMessage;

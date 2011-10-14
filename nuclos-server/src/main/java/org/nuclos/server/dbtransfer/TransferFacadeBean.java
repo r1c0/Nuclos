@@ -25,6 +25,7 @@ import static org.nuclos.server.dbtransfer.TransferUtils.getUserEntityFields;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -86,6 +87,7 @@ import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbAccess;
+import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbObjectHelper;
 import org.nuclos.server.dblayer.DbObjectHelper.DbObject;
 import org.nuclos.server.dblayer.DbObjectHelper.DbObjectType;
@@ -553,7 +555,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		List<INucletContent> contentTypes,
 		Map<String, List<EntityObjectVO>> mpImportData,
 		TransferOption.Map transferOptions,
-		TransferNotifierHelper notifierHelper) {
+		TransferNotifierHelper notifierHelper) throws SQLException {
 
 		Map<String, PreviewPart> preview = new HashMap<String, PreviewPart>();
 
@@ -639,8 +641,9 @@ public class TransferFacadeBean extends NuclosFacadeBean
 
 			pp.setEntity(getEntityNameFromTable(pp.getTable(), provForEntityName));
 
-			for (PreparedString ps : dbAccess.getPreparedSqlFor(dbChangeStmt))
+			for (PreparedString ps : dbAccess.getPreparedSqlFor(dbChangeStmt)) {
 				pp.addStatement(ps.toString());
+			}
 		}
 
 		List<PreviewPart> result = new ArrayList<PreviewPart>();
@@ -972,15 +975,19 @@ public class TransferFacadeBean extends NuclosFacadeBean
 
 	private void logDalCallResult(DalCallResult dcr, StringBuffer sbErrorMessage) {
 		if (dcr.hasException()) {
-			for (DalBusinessException dbe : dcr.getExceptions())
-			logDMLError(sbErrorMessage, dbe.getMessage(), dbe.getStatements());
+			for (DalBusinessException dbe : dcr.getExceptions()) {
+				final List<String> statements;
+				if (dbe instanceof DbException) {
+					statements = ((DbException) dbe).getStatements();
+				}
+				else {
+					statements = Collections.emptyList();
+				}
+				logDMLError(sbErrorMessage, dbe.getMessage(), statements);
+			}
 		}
 	}
 
-	/**
-	 *
-	 *
-	 */
 	private static class DbObjectsPredicate implements Predicate<DbObject>{
 
 		private static final int MODE_ONLY_USED_CALC_ATTR = 1;
@@ -1025,7 +1032,8 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	 * @param bExecuteDDL
 	 * @param sbResultMessage
 	 */
-	private void updateDB(DbAccess dbAccess, Collection<DbTable> currentSchema, Collection<DbTable> transferredSchema, boolean bExecuteDDL, List<String> script, StringBuffer sbResultMessage) {
+	private void updateDB(DbAccess dbAccess, Collection<DbTable> currentSchema, Collection<DbTable> transferredSchema, 
+			boolean bExecuteDDL, List<String> script, StringBuffer sbResultMessage) throws SQLException {
 		for (DbStructureChange dbChangeStmt : SchemaUtils.modify(currentSchema, transferredSchema)) {
 			logScript(script, dbAccess.getPreparedSqlFor(dbChangeStmt));
 			if (bExecuteDDL)

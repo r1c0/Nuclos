@@ -17,10 +17,11 @@
 package org.nuclos.server.dblayer.statements;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 
 public abstract class DbStatement implements DbBuildableStatement, Serializable {
 
-	public abstract <T> T accept(DbStatementVisitor<T> visitor);
+	public abstract <T> T accept(DbStatementVisitor<T> visitor) throws SQLException;
 	
 	@Override
 	public final DbStatement build() {

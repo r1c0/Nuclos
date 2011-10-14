@@ -17,6 +17,7 @@
 package org.nuclos.server.dblayer.statements;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 
 public class DbPlainStatement extends DbStatement implements Serializable {
 
@@ -31,7 +32,7 @@ public class DbPlainStatement extends DbStatement implements Serializable {
 	}
 	
 	@Override
-	public <T> T accept(DbStatementVisitor<T> visitor) {
+	public <T> T accept(DbStatementVisitor<T> visitor) throws SQLException {
 		return visitor.visitPlain(this);
 	}
 

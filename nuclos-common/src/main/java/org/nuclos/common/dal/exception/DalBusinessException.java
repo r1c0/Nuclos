@@ -17,36 +17,17 @@
 package org.nuclos.common.dal.exception;
 
 import java.io.Serializable;
-import java.util.List;
 
-public class DalBusinessException extends Exception implements Serializable{
-	private static final long serialVersionUID = 1012920874365879641L;
-	private final Long id;
-	private final List<String> statements;
+import org.nuclos.common.NuclosFatalException;
+
+public class DalBusinessException extends NuclosFatalException implements Serializable {
 	
-	public DalBusinessException(Long id, String message) {
-		this(id, message, (Throwable) null);
+	public DalBusinessException(String message) {
+		super(message);
 	}
 
-	public DalBusinessException(Long id, String message, Throwable cause) {
-		this(id, message, null, cause);
-	}
-
-	public DalBusinessException(Long id, String message, List<String> statements) {
-		this(id, message, statements, null);
-	}
-	
-	public DalBusinessException(Long id, String message, List<String> statements, Throwable cause) {
+	public DalBusinessException(String message, Throwable cause) {
 		super(message, cause);
-		this.id = id;
-		this.statements = statements;
 	}
 	
-	public Long getId() {
-		return id;
-	}
-
-	public List<String> getStatements() {
-    	return statements;
-    }	
 }

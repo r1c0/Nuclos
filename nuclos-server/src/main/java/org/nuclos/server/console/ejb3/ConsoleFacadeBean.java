@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.console.ejb3;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -107,9 +108,10 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 
 	/**
 	 * check for VIEWS and FUNCTIONS which are invalid and compile them
+	 * @throws SQLException 
 	 */
 	@Override
-	public void compileInvalidDbObjects() {
+	public void compileInvalidDbObjects() throws SQLException {
 		info("compiling invalid db objects (views and functions)");
 		DataBaseHelper.getDbAccess().validateObjects();
 	}

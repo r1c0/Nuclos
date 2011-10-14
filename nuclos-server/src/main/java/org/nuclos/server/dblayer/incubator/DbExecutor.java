@@ -47,9 +47,9 @@ public interface DbExecutor {
 		T perform(ResultSet rs) throws SQLException;
 	}
 		
-	int executeUpdate(String sql) throws DbException;
+	int executeUpdate(String sql) throws SQLException;
 	
-	<T> T executeQuery(String sql, ResultSetRunner<T> runner) throws DbException;
+	<T> T executeQuery(String sql, ResultSetRunner<T> runner) throws SQLException;
 	
-	<T> T execute(ConnectionRunner<T> runner) throws DbException;
+	<T> T execute(ConnectionRunner<T> runner) throws SQLException;
 }

@@ -59,25 +59,17 @@ public class DataSourceExecutor implements DbExecutor {
 	}
 
 	@Override
-	public <T> T execute(ConnectionRunner<T> runner) throws DbException {
+	public <T> T execute(ConnectionRunner<T> runner) throws SQLException {
+		final Connection conn = getConnection();
 		try {
-			Connection conn = getConnection();
-			try {
-				return runner.perform(conn);
-			} finally {
-				DataSourceUtils.releaseConnection(conn, dataSource);
-			}
-		} catch (SQLException e) {
-			// log.error("SQL exception", e);
-			throw wrapSQLException(e);
-		} catch (Exception e) {
-			log.error(e);
-			throw new DbException(e.toString(), e);
+			return runner.perform(conn);
+		} finally {
+			DataSourceUtils.releaseConnection(conn, dataSource);
 		}
 	}
 
 	@Override
-	public <T> T executeQuery(final String sql, final ResultSetRunner<T> runner) throws DbException {
+	public <T> T executeQuery(final String sql, final ResultSetRunner<T> runner) throws SQLException {
 		return execute(new ConnectionRunner<T>() {
 			@Override
 			public T perform(Connection conn) throws SQLException {
@@ -100,7 +92,7 @@ public class DataSourceExecutor implements DbExecutor {
 	}
 
 	@Override
-	public int executeUpdate(final String sql) throws DbException {
+	public int executeUpdate(final String sql) throws SQLException {
 		return execute(new ConnectionRunner<Integer>() {
 			@Override
 			public Integer perform(Connection conn) throws SQLException {
@@ -126,8 +118,10 @@ public class DataSourceExecutor implements DbExecutor {
 		}
 		return null;
 	}
-	
-	protected DbException wrapSQLException(SQLException ex) {
+
+	/*
+	protected DbException wrapSQLException(String message, SQLException ex) {
 		return new DbException(ex);
 	}
+	 */
 }
