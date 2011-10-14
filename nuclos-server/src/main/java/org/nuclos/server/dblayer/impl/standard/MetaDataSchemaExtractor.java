@@ -111,7 +111,7 @@ public abstract class MetaDataSchemaExtractor {
 		map.put("maxConnections", metaData.getMaxConnections());
 		map.put("maxTablesInSelect", metaData.getMaxTablesInSelect());
 		map.put("procedureTerm", metaData.getProcedureTerm());
-		return map;   	
+		return map;
 	}
 
 	public Set<String> getTableNames(DbTableType tableType) throws SQLException {
@@ -126,7 +126,21 @@ public abstract class MetaDataSchemaExtractor {
 		return tableNames;
 	}
 
+	/**
+	 * Retrieve table metadata.
+	 * Implementation takes care of converting tablename to upper or lower case according to meta information.
+	 *
+	 * @param tableName the tablename (mixed case)
+	 * @return table metadata
+	 * @throws SQLException
+	 */
 	public DbTable getTableMetaData(String tableName) throws SQLException {
+		if (metaData.storesLowerCaseIdentifiers()) {
+			tableName = tableName.toLowerCase();
+		}
+		else if (metaData.storesUpperCaseIdentifiers()) {
+			tableName = tableName.toUpperCase();
+		}
 		ResultSet rs = metaData.getTables(catalog, schema, tableName, new String[] {"TABLE", "VIEW"});
 		DbTableType tableType;
 		String remarks;
@@ -218,7 +232,7 @@ public abstract class MetaDataSchemaExtractor {
 				boolean onDeleteCascade = false;
 				int nextKeySeq = 0;
 				do {
-					boolean sameSchema = 
+					boolean sameSchema =
 						ObjectUtils.equals(rs.getString("PKTABLE_CAT"), rs.getString("FKTABLE_CAT")) &&
 						ObjectUtils.equals(rs.getString("PKTABLE_SCHEM"), rs.getString("FKTABLE_SCHEM"));
 					if (!sameSchema)
@@ -301,7 +315,7 @@ public abstract class MetaDataSchemaExtractor {
 	}
 
 	protected Map<String, DbCallable> getCallables(boolean withCode) throws SQLException {
-		Map<String, DbCallable> callables = new LinkedHashMap<String, DbCallable>();      
+		Map<String, DbCallable> callables = new LinkedHashMap<String, DbCallable>();
 		ResultSet rs;
 		rs = metaData.getProcedures(catalog, schema, null);
 		try {
@@ -340,7 +354,7 @@ public abstract class MetaDataSchemaExtractor {
 				callable.setCode(getCode(callable));
 			}
 		}
-		return callables;   	
+		return callables;
 	}
 
 	protected String normalizeCallableName(String name) {

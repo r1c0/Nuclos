@@ -453,21 +453,21 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 				case 1: // unique constraint
 					matcher = EXCEPTION_IDENTS_2.matcher(ex.getMessage());
 					if (matcher.find()) {
-						return new DbNotUniqueException(id, 
+						return new DbNotUniqueException(id,
 							makeIdent(matcher.group(1)), makeIdent(matcher.group(2)), ex);
 					}
 					break;
 				case 1400: // insert null
 					matcher = EXCEPTION_IDENTS_3.matcher(ex.getMessage());
 					if (matcher.find()) {
-						return new DbNotNullableException(id, 
+						return new DbNotNullableException(id,
 							makeIdent(matcher.group(1)), makeIdent(matcher.group(2)), makeIdent(matcher.group(3)), ex);
 					}
 					break;
 				case 2292: // delete referential entry
 					matcher = EXCEPTION_IDENTS_2.matcher(ex.getMessage());
 					if (matcher.find()) {
-						return new DbReferentialIntegrityException(id, 
+						return new DbReferentialIntegrityException(id,
 							makeIdent(matcher.group(1)), makeIdent(matcher.group(2)), ex);
 					}
 					break;
@@ -627,5 +627,14 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 				return triggers;
 			}
 		});
+	}
+
+	@Override
+	protected String getSqlForCast(String x, DbColumnType columnType) {
+		// Oracle's CAST does not support LOB's, but this should not be necessary
+		if (DbGenericType.BLOB.equals(columnType.getGenericType()) || DbGenericType.CLOB.equals(columnType.getGenericType())) {
+			return x;
+		}
+		return super.getSqlForCast(x, columnType);
 	}
 }

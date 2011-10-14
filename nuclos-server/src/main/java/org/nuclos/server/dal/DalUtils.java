@@ -85,10 +85,10 @@ public class DalUtils {
 			}
 		}
 	}
-	
+
 	// @TODO can this be refactored to an better class?!
 	private static boolean checkIfColumnExists(EntityFieldMetaDataVO efMeta, EntityMetaDataVO eMeta) {
-		DbTable table = DataBaseHelper.getDbAccess().getTableMetaData(eMeta.getDbEntity().toLowerCase());
+		DbTable table = DataBaseHelper.getDbAccess().getTableMetaData(eMeta.getDbEntity());
 		if (table != null) {
 			 List<DbColumn> tblColumns = table.getTableColumns();
 			 for (DbColumn dbColumn : tblColumns) {
