@@ -115,6 +115,7 @@ public final class CustomComponentFacadeBean extends NuclosFacadeBean implements
 		mpFields.put("componenttype", vo.getComponentType());
 		mpFields.put("componentversion", vo.getComponentVersion());
 		mpFields.put("data", vo.getData());
+		mpFields.put("nucletId", vo.getNucletId()==null?null:vo.getNucletId().intValue());
 
 		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
@@ -134,6 +135,7 @@ public final class CustomComponentFacadeBean extends NuclosFacadeBean implements
 		vo.setComponentType(mdVO.getField("componenttype", String.class));
 		vo.setComponentVersion(mdVO.getField("componentversion", String.class));
 		vo.setData(mdVO.getField("data", byte[].class));
+		vo.setNucletId(mdVO.getField("nucletId", Integer.class)==null?null:mdVO.getField("nucletId", Integer.class).longValue());
 		return vo;
 	}
 

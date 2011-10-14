@@ -31,6 +31,8 @@ public class CustomComponentVO extends NuclosValueObject implements Cloneable {
 	String componentType;
 	String componentVersion;
 	byte[] data;
+	
+	Long nucletId;
 
 	public CustomComponentVO() {
 	}
@@ -85,6 +87,14 @@ public class CustomComponentVO extends NuclosValueObject implements Cloneable {
 
 	public byte[] getData() {
 		return data;
+	}
+
+	public Long getNucletId() {
+		return nucletId;
+	}
+
+	public void setNucletId(Long nucletId) {
+		this.nucletId = nucletId;
 	}
 
 	@Override

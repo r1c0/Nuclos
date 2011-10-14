@@ -60201,12 +60201,12 @@
   {
     "resourceID": "NucletCollectController.6",
     "locale": "i-default",
-    "text": "Nuclet dependences"
+    "text": "Nuclet dependencies"
   },
   {
     "resourceID": "NucletCollectController.6",
     "locale": "en",
-    "text": "Nuclet dependences"
+    "text": "Nuclet dependencies"
   },
   {
     "resourceID": "NucletCollectController.6",
@@ -60291,12 +60291,12 @@
   {
     "resourceID": "nuclos.entity.NucletDependence.label",
     "locale": "i-default",
-    "text": "Dependence"
+    "text": "Dependency"
   },
   {
     "resourceID": "nuclos.entity.NucletDependence.label",
     "locale": "en",
-    "text": "Dependence"
+    "text": "Dependency"
   },
   {
     "resourceID": "nuclos.entity.NucletDependence.label",
