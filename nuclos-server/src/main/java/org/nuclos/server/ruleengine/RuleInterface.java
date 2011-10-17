@@ -81,6 +81,7 @@ import org.nuclos.common.fileimport.NuclosFileImportStructureUsage;
 import org.nuclos.common.mail.NuclosMail;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.DateUtils;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.ServiceLocator;
@@ -2429,7 +2430,7 @@ public class RuleInterface extends CustomCodeInterface {
 	private Integer getSessionId() {
 		return this.iSessionId;
 	}
-	
+
 	public TimeZone getCurrentUserTimeZone() {
 		return NuclosUserDetailsContextHolder.getTimeZone();
 	}
@@ -2718,11 +2719,12 @@ public class RuleInterface extends CustomCodeInterface {
 			CollectableSearchCondition condition = SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.IMPORT), "name", ComparisonOperator.EQUAL, structure);
 			Collection<Object> structures = getMasterDataIds(NuclosEntity.IMPORT.getEntityName(), new CollectableSearchExpression(condition));
 			if (structures != null && structures.size() > 0) {
-				Map<String, Object> usagefields = new HashMap<String, Object>();
-				usagefields.put("importId", structures.iterator().next());
-				usagefields.put("import", structure);
-				usagefields.put("order", usage.getOrder());
-				usages.add(new EntityObjectVO());
+				EntityObjectVO usagevo = new EntityObjectVO();
+				usagevo.initFields(3, 3);
+				usagevo.getFieldIds().put("import", IdUtils.toLongId(structures.iterator().next()));
+				usagevo.getFields().put("import", structure);
+				usagevo.getFields().put("order", usage.getOrder());
+				usages.add(usagevo);
 			}
 		}
 
