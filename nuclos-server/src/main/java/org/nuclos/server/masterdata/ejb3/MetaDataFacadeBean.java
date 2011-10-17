@@ -798,10 +798,10 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 							DalUtils.updateVersionInformation(process, getCurrentUserName());
 						}
 						process.getFieldIds().put("module", updatedMDEntity.getId());
-						processor.insertOrUpdate(process).throwFirstBusinessExceptionIfAny();
+						processor.insertOrUpdate(process);
 					}
 					else if (process.getId() != null && process.isFlagRemoved()) {
-						processor.delete(process.getId()).throwFirstBusinessExceptionIfAny();
+						processor.delete(process.getId());
 					}
 				}
 			}
@@ -829,11 +829,11 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 							resourceId = getLocaleFacade().setResourceForLocale(resourceId, li, menu.getField("menupath_" + li.getTag(), String.class));
 						}
 						menu.getFields().put("menupath", resourceId);
-						menuProcessor.insertOrUpdate(menu).throwFirstBusinessExceptionIfAny();
+						menuProcessor.insertOrUpdate(menu);
 
 					}
 					else if (menu.getId() != null && menu.isFlagRemoved()) {
-						menuProcessor.delete(menu.getId()).throwFirstBusinessExceptionIfAny();
+						menuProcessor.delete(menu.getId());
 						getLocaleFacade().deleteResource(menu.getField("menupath", String.class));
 					}
 				}
@@ -873,6 +873,9 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 			changeModuleDirectory(sOldPath, updatedMDEntity.getDocumentPath(), updatedMDEntity);
 
+		}
+		catch (CommonFatalException e) {
+			throw e;
 		}
 		catch (Exception e) {
 			throw new CommonFatalException(e);
@@ -1035,8 +1038,8 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	}
 
 
-	private DalCallResult insertOrUpdateEntityMetaData(EntityMetaDataVO vo) {
-		return NucletDalProvider.getInstance().getEntityMetaDataProcessor().insertOrUpdate(vo);
+	private void insertOrUpdateEntityMetaData(EntityMetaDataVO vo) {
+		NucletDalProvider.getInstance().getEntityMetaDataProcessor().insertOrUpdate(vo);
 	}
 
 	private DalCallResult insertOrUpdateEntityFieldMetaData(List<EntityFieldMetaDataTO> lstFields) {
@@ -1550,7 +1553,12 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 	@Override
 	public void tryRemoveProcess(EntityObjectVO process) throws NuclosBusinessException {
-		NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.PROCESS).delete(process.getId()).throwFirstBusinessExceptionIfAny();
+		try {
+			NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.PROCESS).delete(process.getId());
+		}
+		catch (DbException e) {
+			throw new NuclosBusinessException("tryRemoveProcess failed", e);
+		}
 		TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 	}
 

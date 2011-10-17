@@ -109,7 +109,7 @@ public class DataSourceExecutor implements DbExecutor {
 		});
 	}
 	
-	public void release() throws DbException {
+	public void release() {
 	}
 	
 	protected Connection getConnection() throws SQLException {

@@ -58,7 +58,6 @@ import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.DalCallResult;
-import org.nuclos.common.dal.exception.DalBusinessException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
@@ -402,12 +401,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 						DalUtils.updateVersionInformation(uidObject, getCurrentUserName());
 						uidObject.flagUpdate();
 						info("uid object version \"" + uidObject.getField("objectversion", Integer.class) + "\" differs from object version \"" + ncObject.getVersion() + "\" --> update version in existing uid");
-						DalCallResult dcr = getProcessor(NuclosEntity.NUCLETCONTENTUID).insertOrUpdate(uidObject);
-						try {
-							dcr.throwFirstBusinessExceptionIfAny();
-						} catch(NuclosBusinessException e) {
-							throw new NuclosFatalException(e);
-						}
+						getProcessor(NuclosEntity.NUCLETCONTENTUID).insertOrUpdate(uidObject);
 					}
 				}
 			}
@@ -975,7 +969,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 
 	private void logDalCallResult(DalCallResult dcr, StringBuffer sbErrorMessage) {
 		if (dcr.hasException()) {
-			for (DalBusinessException dbe : dcr.getExceptions()) {
+			for (DbException dbe : dcr.getExceptions()) {
 				final List<String> statements;
 				if (dbe instanceof DbException) {
 					statements = ((DbException) dbe).getStatements();
@@ -1301,6 +1295,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		}
 
 		info("process nuclet content");
+		final DalCallResult result = new DalCallResult();
 		for (NucletContentProcessor ncp : contentProcessors) {
 			info(ncp.getEntity().getEntityName() + " import eo: " + getIdentifier(ncp.getNC(), ncp.getNcObject()));
 			if (!contentSkipped.getValues(ncp.getEntity()).contains(ncp.getNcObject())) {
@@ -1309,14 +1304,26 @@ public class TransferFacadeBean extends NuclosFacadeBean
 				if (ncp.isCreateUID()) {
 					info("is not nuclon --> store uid");
 					if (!testMode) {
-						logDalCallResult(createUIDRecord(ncp.getUID(), ncp.getEntity(), ncp.getNcObject().getId()), t.result.sbWarning);
+						try {
+							createUIDRecord(ncp.getUID(), ncp.getEntity(), ncp.getNcObject().getId());
+						}
+						catch (DbException e) {
+							result.addBusinessException(e);
+						}
+						// logDalCallResult(, t.result.sbWarning);
 					}
 				}
 
 				else if (ncp.isUpdateUID()) {
 					info("uid version \"" + ncp.getUID().version + "\" differs from import eo version \"" + ncp.getNcObject().getVersion() + "\" --> update version in existing uid");
 					if (!testMode) {
-						logDalCallResult(updateUIDRecord(ncp.getUID().id, ncp.getNcObject().getVersion()), t.result.sbWarning);
+						try {
+							updateUIDRecord(ncp.getUID().id, ncp.getNcObject().getVersion());
+						}
+						catch (DbException e) {
+							result.addBusinessException(e);
+						}
+						// logDalCallResult(, t.result.sbWarning);
 					}
 
 					Integer existingEOversion = getProcessor(ncp.getEntity()).getVersion(ncp.getNcObject().getId());
@@ -1329,10 +1336,12 @@ public class TransferFacadeBean extends NuclosFacadeBean
 				info("insert or update");
 				if (!testMode) {
 					// no update of version information here
-					logDalCallResult(ncp.getNC().insertOrUpdateNcObject(ncp.getNcObject(), t.isNuclon()), t.result.sbWarning);
+					ncp.getNC().insertOrUpdateNcObject(result, ncp.getNcObject(), t.isNuclon());
+					// logDalCallResult(, t.result.sbWarning);
 				}
 			}
 		}
+		logDalCallResult(result, t.result.sbWarning);
 	}
 
 	private void deleteContent(
@@ -1402,8 +1411,10 @@ public class TransferFacadeBean extends NuclosFacadeBean
 							// if entity could not be deleted but field is nullable set it null
 							if (!nc.canDelete() && efMeta.isNullable()) {
 								info("delete of nuclet content is not allowed but user field dependence is nullable --> set it null");
-								nc.setNcObjectFieldNull(existingEO.getId(), efMeta.getField());
-
+								final DalCallResult result = new DalCallResult();
+								nc.setNcObjectFieldNull(result, existingEO.getId(), efMeta.getField());
+								// TODO: What to do in case of errors?
+								logDalCallResult(result, t.result.sbWarning);
 							} else {
 								Pair<String, String> ref = new Pair<String, String>(
 									getEntity(efMeta),
@@ -1472,6 +1483,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		} while (oldUntouchedContentSize != contentUntouched.getAllValues().size());
 
 		info("process nuclet content");
+		final DalCallResult result = new DalCallResult();
 		for (NucletContentProcessor ncp : contentProcessors) {
 			info(ncp.getEntity().getEntityName() + " existing eo: " + getIdentifier(ncp.getNC(), ncp.getNcObject()));
 			if (getIds(contentUntouched.getValues(ncp.getEntity())).contains(ncp.getNcObject().getId())) {
@@ -1479,17 +1491,18 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			} else {
 				info("--> delete existing eo");
 				if (!testMode) {
-					logDalCallResult(ncp.getNC().deleteNcObject(ncp.getNcObject().getId()), t.result.sbWarning);
+					ncp.getNC().deleteNcObject(result, ncp.getNcObject().getId());
 				}
 				if (ncp.isDeleteUID()) {
 					info("delete existing uid");
 					if (!testMode) {
 						uidExistingMap.remove(uidExistingMap.getKey(ncp.getNcObject()));
-						logDalCallResult(getProcessor(NuclosEntity.NUCLETCONTENTUID).delete(ncp.getUID().id), t.result.sbWarning);
+						getProcessor(NuclosEntity.NUCLETCONTENTUID).delete(ncp.getUID().id);
 					}
 				}
 			}
 		}
+		logDalCallResult(result, t.result.sbWarning);
 	}
 
 	private void cleanupUIDs() {
@@ -1671,13 +1684,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	 */
 	private EntityObjectVO createUIDRecordForNcObject(EntityObjectVO ncObject) {
 		EntityObjectVO uidObject = createUIDObject(new NucletContentUID(ncObject), NuclosEntity.getByName(ncObject.getEntity()), ncObject.getId());
-
-		DalCallResult dcr = getProcessor(NuclosEntity.NUCLETCONTENTUID).insertOrUpdate(uidObject);
-		try {
-			dcr.throwFirstBusinessExceptionIfAny();
-		} catch(NuclosBusinessException e) {
-			throw new NuclosFatalException(e);
-		}
+		getProcessor(NuclosEntity.NUCLETCONTENTUID).insertOrUpdate(uidObject);
 		return uidObject;
 	}
 
@@ -1689,8 +1696,8 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	 * @param Integer objectVersion
 	 * @return
 	 */
-	private DalCallResult createUIDRecord(NucletContentUID uid, NuclosEntity entity, Long objectId) {
-		return getProcessor(NuclosEntity.NUCLETCONTENTUID).insertOrUpdate(createUIDObject(uid, entity, objectId));
+	private void createUIDRecord(NucletContentUID uid, NuclosEntity entity, Long objectId) {
+		getProcessor(NuclosEntity.NUCLETCONTENTUID).insertOrUpdate(createUIDObject(uid, entity, objectId));
 	}
 
 	/**
@@ -1738,7 +1745,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	 * @param Integer version
 	 * @return
 	 */
-	private DalCallResult updateUIDRecord(Long id, Integer version) {
+	private void updateUIDRecord(Long id, Integer version) {
 		if (id == null) {
 			throw new IllegalArgumentException("id must not be null");
 		}
@@ -1749,7 +1756,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		uidEO.getFields().put("objectversion", version);
 		uidEO.flagUpdate();
 		DalUtils.updateVersionInformation(uidEO, getCurrentUserName());
-		return getProcessor(NuclosEntity.NUCLETCONTENTUID).insertOrUpdate(uidEO);
+		getProcessor(NuclosEntity.NUCLETCONTENTUID).insertOrUpdate(uidEO);
 	}
 
 	/*

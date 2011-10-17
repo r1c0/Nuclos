@@ -51,7 +51,7 @@ public class MSSQLDBAccess extends TransactSqlDbAccess {
 	static final String EXPROP_NUCLOS_SEQUENCE_TABLE = "Nuclos Sequence Table";
 
 	@Override
-	protected String getDataType(DbColumnType columnType) {
+	protected String getDataType(DbColumnType columnType) throws DbException {
 		if (columnType.getTypeName() != null) {
 			return columnType.getTypeName() + columnType.getParametersString();
 		} else {

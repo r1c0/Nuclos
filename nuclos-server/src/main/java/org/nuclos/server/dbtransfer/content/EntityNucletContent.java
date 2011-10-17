@@ -32,6 +32,7 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.dal.provider.NucletDalProvider;
+import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dbtransfer.NucletContentMap;
 import org.nuclos.server.dbtransfer.TransferUtils;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
@@ -98,29 +99,30 @@ public class EntityNucletContent extends DefaultNucletContent {
 	}
 
 	@Override
-	public List<DalCallResult> insertOrUpdateNcObject(EntityObjectVO ncObject, boolean isNuclon) {
+	public void insertOrUpdateNcObject(DalCallResult result, EntityObjectVO ncObject, boolean isNuclon) {
 		restoreLocaleResources(ncObject);
-		return super.insertOrUpdateNcObject(ncObject, isNuclon);
+		super.insertOrUpdateNcObject(result, ncObject, isNuclon);
 	}
 
 	@Override
-	public List<DalCallResult> deleteNcObject(Long id) {
-		List<DalCallResult> result = new ArrayList<DalCallResult>();
-		
+	public void deleteNcObject(DalCallResult result, Long id) {
 		for (Long goId : getReferencingEOids(NuclosEntity.GENERICOBJECT, "module", id)) {
-			removeReferencingEOs(NuclosEntity.STATEHISTORY, "genericObject", goId, result);
-			removeReferencingEOs(NuclosEntity.GENERICOBJECTLOGBOOK, "genericObject", goId, result);
-			removeReferencingEOs(NuclosEntity.GENERICOBJECTGROUP, "genericObject", goId, result);
-			removeReferencingEOs(NuclosEntity.TIMELIMITTASK, "genericobject", goId, result);
-			removeReferencingEOs(NuclosEntity.GENERICOBJECTRELATION, "source", goId, result);
-			removeReferencingEOs(NuclosEntity.GENERICOBJECTRELATION, "destination", goId, result);
-			removeReferencingEOs(NuclosEntity.GENERALSEARCHCOMMENT, "genericObject", goId, result);
-			removeReferencingEOs(NuclosEntity.GENERALSEARCHDOCUMENT, "genericObject", goId, result);
-			NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.GENERICOBJECT).delete(goId);
+			result.add(removeReferencingEOs(NuclosEntity.STATEHISTORY, "genericObject", goId));
+			result.add(removeReferencingEOs(NuclosEntity.GENERICOBJECTLOGBOOK, "genericObject", goId));
+			result.add(removeReferencingEOs(NuclosEntity.GENERICOBJECTGROUP, "genericObject", goId));
+			result.add(removeReferencingEOs(NuclosEntity.TIMELIMITTASK, "genericobject", goId));
+			result.add(removeReferencingEOs(NuclosEntity.GENERICOBJECTRELATION, "source", goId));
+			result.add(removeReferencingEOs(NuclosEntity.GENERICOBJECTRELATION, "destination", goId));
+			result.add(removeReferencingEOs(NuclosEntity.GENERALSEARCHCOMMENT, "genericObject", goId));
+			result.add(removeReferencingEOs(NuclosEntity.GENERALSEARCHDOCUMENT, "genericObject", goId));
+			try {
+				NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.GENERICOBJECT).delete(goId);
+			}
+			catch (DbException e) {
+				result.addBusinessException(e);
+			}
 		}
-		
-		result.addAll(super.deleteNcObject(id));
-		return result;
+		super.deleteNcObject(result, id);
 	}
 
 	@Override
@@ -134,7 +136,7 @@ public class EntityNucletContent extends DefaultNucletContent {
 		return result;
 	}
 
-	private void removeReferencingEOs(NuclosEntity entity, String referencingField, Long id, List<DalCallResult> logging) {
+	private DalCallResult removeReferencingEOs(NuclosEntity entity, String referencingField, Long id) {
 		List<Long> refIds = getReferencingEOids(entity, referencingField, id);
 		if (NuclosEntity.GENERALSEARCHDOCUMENT.equals(entity))
 			for (Long refId : refIds)
@@ -143,7 +145,7 @@ public class EntityNucletContent extends DefaultNucletContent {
 				} catch (Exception ex) {
 					error(ex);
 				}
-		logging.add(NucletDalProvider.getInstance().getEntityObjectProcessor(entity).batchDelete(refIds));
+		return NucletDalProvider.getInstance().getEntityObjectProcessor(entity).batchDelete(refIds, true);
 	}
 	
 	private List<Long> getReferencingEOids(NuclosEntity entity, String referencingField, Long id) {

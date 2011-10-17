@@ -92,12 +92,12 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	public DbQueryBuilder getQueryBuilder() throws DbException {
+	public DbQueryBuilder getQueryBuilder() {
 		return new OracleQueryBuilder();
 	}
 
 	@Override
-	protected String getDataType(DbColumnType columnType) {
+	protected String getDataType(DbColumnType columnType) throws DbException {
 		if (columnType.getTypeName() != null) {
 			return columnType.getTypeName() + columnType.getParametersString();
 		} else {
@@ -420,7 +420,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	public boolean checkSyntax(String sql) throws DbException {
+	public boolean checkSyntax(String sql) {
 		try {
 			return super.checkSyntax(sql);
 		} catch (DbException e) {

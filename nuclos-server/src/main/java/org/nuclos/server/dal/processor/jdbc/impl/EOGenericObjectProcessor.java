@@ -24,6 +24,7 @@ import org.nuclos.common.dal.vo.EOGenericObjectVO;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.IEOGenericObjectProcessor;
+import org.nuclos.server.dblayer.DbException;
 
 public class EOGenericObjectProcessor extends AbstractJdbcDalProcessor<EOGenericObjectVO>
 	implements IEOGenericObjectProcessor {
@@ -54,23 +55,23 @@ public class EOGenericObjectProcessor extends AbstractJdbcDalProcessor<EOGeneric
 	}
 
 	@Override
-	public DalCallResult batchDelete(Collection<Long> colId) {
-		return super.batchDelete(colId);
+	public DalCallResult batchDelete(Collection<Long> colId, boolean failAfterBatch) {
+		return super.batchDelete(colId, failAfterBatch);
 	}
 
 	@Override
-	public DalCallResult batchInsertOrUpdate(Collection<EOGenericObjectVO> colDalVO) {
-		return super.batchInsertOrUpdate(colDalVO);
+	public DalCallResult batchInsertOrUpdate(Collection<EOGenericObjectVO> colDalVO, boolean failAfterBatch) {
+		return super.batchInsertOrUpdate(colDalVO, failAfterBatch);
 	}
 
 	@Override
-	public DalCallResult delete(Long id) {
-		return super.delete(id);
+	public void delete(Long id) throws DbException {
+		super.delete(id);
 	}
 
 	@Override
-	public DalCallResult insertOrUpdate(EOGenericObjectVO dalVO) {
-		return super.insertOrUpdate(dalVO);
+	public void insertOrUpdate(EOGenericObjectVO dalVO) {
+		super.insertOrUpdate(dalVO);
 	}
 
 	@Override

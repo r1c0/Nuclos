@@ -541,9 +541,8 @@ public class MasterDataFacadeHelper {
 		eoVO.flagUpdate();
 
 		try {
-			DalCallResult dalResult = eoProcessor.insertOrUpdate(eoVO);
-			dalResult.throwFirstBusinessExceptionIfAny();
-		} catch (CommonBusinessException e) {
+			eoProcessor.insertOrUpdate(eoVO);
+		} catch (DbException e) {
 			throw new CommonCreateException(e.getMessage(), e);
 		}
 
@@ -601,9 +600,8 @@ public class MasterDataFacadeHelper {
 		eoVO.flagNew();
 
 		try {
-			DalCallResult dalResult = eoProcessor.insertOrUpdate(eoVO);
-			dalResult.throwFirstBusinessExceptionIfAny();
-		} catch (CommonBusinessException e) {
+			eoProcessor.insertOrUpdate(eoVO);
+		} catch (DbException e) {
 			throw new CommonCreateException(e.getMessage());
 		}
 

@@ -289,8 +289,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		}
 		
 		final JdbcEntityObjectProcessor processor = NucletDalProvider.getInstance().getEntityObjectProcessor(name);
-		final DalCallResult result = processor.delete(id);
-		
+		processor.delete(id);
 	}
 
 	@Override

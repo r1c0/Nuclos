@@ -48,6 +48,7 @@ import org.nuclos.server.dal.processor.ProcessorConfiguration;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcWithFieldsDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
 import org.nuclos.server.dblayer.query.DbCondition;
 import org.nuclos.server.dblayer.query.DbExpression;
@@ -145,8 +146,8 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 	}
 
 	@Override
-	public DalCallResult delete(Long id) {
-		return super.delete(id);
+	public void delete(Long id) throws DbException {
+		super.delete(id);
 	}
 
 	@Override
@@ -184,27 +185,28 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
     }
 
 	@Override
-	public DalCallResult insertOrUpdate(EntityObjectVO dalVO) {
-		final DalCallResult result = super.insertOrUpdate(dalVO);
+	public void insertOrUpdate(EntityObjectVO dalVO) {
+		super.insertOrUpdate(dalVO);
+		final DalCallResult result = new DalCallResult();
 		checkLogicalUniqueConstraint(result, dalVO);
-		return result;
+		result.throwFirstException();
 	}
 
 	@Override
-	public DalCallResult batchDelete(Collection<Long> colId) {
-		return super.batchDelete(colId);
+	public DalCallResult batchDelete(Collection<Long> colId, boolean failAfterBatch) {
+		return super.batchDelete(colId, failAfterBatch);
 	}
 
 	@Override
-	public DalCallResult batchInsertOrUpdate(Collection<EntityObjectVO> colDalVO) {
+	public DalCallResult batchInsertOrUpdate(Collection<EntityObjectVO> colDalVO, boolean failAfterBatch) {
 		if (!logicalUniqueConstraintCombinations.isEmpty()) {
-			final DalCallResult result = super.batchInsertOrUpdate(colDalVO);
+			final DalCallResult result = super.batchInsertOrUpdate(colDalVO, failAfterBatch);
 			for(EntityObjectVO dalVO : colDalVO) {
 				checkLogicalUniqueConstraint(result, dalVO);
 			}
 			return result;
 		} else
-			return super.batchInsertOrUpdate(colDalVO);
+			return super.batchInsertOrUpdate(colDalVO, failAfterBatch);
 	}
 
 	@Override

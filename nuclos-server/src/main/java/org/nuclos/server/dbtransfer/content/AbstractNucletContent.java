@@ -51,6 +51,7 @@ import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.provider.NucletDalProvider;
+import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dbtransfer.NucletContentMap;
 import org.nuclos.server.dbtransfer.TransferUtils;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
@@ -213,23 +214,38 @@ public abstract class AbstractNucletContent implements INucletContent {
 	}
 
 	@Override
-	public List<DalCallResult> setNcObjectFieldNull(Long id, String field) {
+	public void setNcObjectFieldNull(DalCallResult result, Long id, String field) {
 		EntityObjectVO eo = NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getByPrimaryKey(id);
 		eo.getFieldIds().put(field, null);
 		eo.getFields().put(field, null);
 		eo.flagUpdate();
 		DalUtils.updateVersionInformation(eo, eo.getChangedBy());
-		return Collections.singletonList(NucletDalProvider.getInstance().getEntityObjectProcessor(entity).insertOrUpdate(eo));
+		try {
+			NucletDalProvider.getInstance().getEntityObjectProcessor(entity).insertOrUpdate(eo);
+		}
+		catch (DbException e) {
+			result.addBusinessException(e);
+		}
 	}
 
 	@Override
-	public List<DalCallResult> deleteNcObject(Long id) {
-		return Collections.singletonList(NucletDalProvider.getInstance().getEntityObjectProcessor(entity).delete(id));
+	public void deleteNcObject(DalCallResult result, Long id) {
+		try {
+			NucletDalProvider.getInstance().getEntityObjectProcessor(entity).delete(id);
+		}
+		catch (DbException e) {
+			result.addBusinessException(e);
+		}
 	}
 
 	@Override
-	public List<DalCallResult> insertOrUpdateNcObject(EntityObjectVO ncObject, boolean isNuclon) {
-		return Collections.singletonList(NucletDalProvider.getInstance().getEntityObjectProcessor(entity).insertOrUpdate(ncObject));
+	public void insertOrUpdateNcObject(DalCallResult result, EntityObjectVO ncObject, boolean isNuclon) {
+		try {
+			NucletDalProvider.getInstance().getEntityObjectProcessor(entity).insertOrUpdate(ncObject);
+		}
+		catch (DbException e) {
+			result.addBusinessException(e);
+		}
 	}
 
 	@Override

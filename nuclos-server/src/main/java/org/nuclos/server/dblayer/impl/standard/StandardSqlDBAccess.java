@@ -431,7 +431,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         } else if (value == null) {
             stmt.setNull(index, getPreferredSqlTypeFor(javaType));
         } else {
-            throw new DbException("Java type " + javaType + " cannot be mapped to DB type");
+            throw new SQLException("Java type " + javaType + " cannot be mapped to DB type");
         }
     }
 
@@ -556,7 +556,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     protected abstract MetaDataSchemaExtractor getMetaDataExtractor();
 
     @Override
-    public boolean checkSyntax(final String sql) throws DbException {
+    public boolean checkSyntax(final String sql) {
         try {
 			executor.execute(new ConnectionRunner<Void>() {
 			    @Override
@@ -581,7 +581,8 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 
     public static abstract class QueryBuilder extends DbQueryBuilder {
 
-        protected <T, R> ResultSetRunner<List<R>> createListResultSetRunner(final DbQuery<? extends T> query, Transformer<? super T, R> transformer) {
+        protected <T, R> ResultSetRunner<List<R>> createListResultSetRunner(final DbQuery<? extends T> query, Transformer<? super T, R> transformer) 
+        		throws DbException {
             final List<? extends DbSelection<?>> selections = query.getSelections();
             final DbTupleElementImpl<?>[] elements = new DbTupleElementImpl<?>[selections.size()];
             for (int i = 0; i < selections.size(); i++) {
@@ -1101,7 +1102,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     }
 
     @Override
-    protected List<String> getSqlForCreateSimpleView(DbSimpleView view) {
+    protected List<String> getSqlForCreateSimpleView(DbSimpleView view) throws DbException {
         StringBuilder fromClause = new StringBuilder();
         fromClause.append(getName(view.getTableName()) + " " + SystemFields.BASE_ALIAS);
 
@@ -1187,7 +1188,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     }
 
     @Override
-    protected List<String> getSqlForCreateCallable(DbCallable callable) {
+    protected List<String> getSqlForCreateCallable(DbCallable callable) throws DbException {
         String code = callable.getCode();
         if (code == null)
             throw new DbException("No code for callable " + callable.getCallableName());

@@ -175,7 +175,7 @@ public abstract class DbAccess {
 		return configCopy;
 	}
 
-	public void close() throws DbException {
+	public void close() {
 	}
 
 	//
@@ -205,7 +205,7 @@ public abstract class DbAccess {
 
 	public abstract Long getNextId(String sequenceName) throws SQLException;
 
-	public abstract DbQueryBuilder getQueryBuilder() throws DbException;
+	public abstract DbQueryBuilder getQueryBuilder();
 
 	public abstract <T> List<T> executeQuery(DbQuery<? extends T> query) throws DbException;
 
@@ -255,7 +255,7 @@ public abstract class DbAccess {
 	public abstract boolean validateObjects() throws SQLException;
 
 	/** Tries to validate the given sql string. */
-	public abstract boolean checkSyntax(String sql) throws DbException;
+	public abstract boolean checkSyntax(String sql);
 
 	/**
 	 * Invalidates all assumptions about the database made by the access layer. 

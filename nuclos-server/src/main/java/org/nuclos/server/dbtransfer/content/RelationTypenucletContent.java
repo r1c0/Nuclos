@@ -40,8 +40,8 @@ public class RelationTypenucletContent extends DefaultNucletContent {
 	}
 
 	@Override
-	public List<DalCallResult> insertOrUpdateNcObject(EntityObjectVO ncObject, boolean isNuclon) {
+	public void insertOrUpdateNcObject(DalCallResult result, EntityObjectVO ncObject, boolean isNuclon) {
 		restoreLocaleResources(ncObject);
-		return super.insertOrUpdateNcObject(ncObject, isNuclon);
+		super.insertOrUpdateNcObject(result, ncObject, isNuclon);
 	}
 }

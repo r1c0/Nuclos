@@ -144,7 +144,7 @@ public class DbArtifactXmlWriter implements Closeable {
 		try {
 			writer.writeStartElement(name);
 		} catch(XMLStreamException e) {
-			throw new NuclosFatalException(e);
+			throw new DbException(null, "writeStart failed" , e);
 		}
 	}
 
@@ -152,7 +152,7 @@ public class DbArtifactXmlWriter implements Closeable {
 		try {
 			writer.writeEndElement();
 		} catch(XMLStreamException e) {
-			throw new NuclosFatalException(e);
+			throw new DbException(null, "writeEnd failed" , e);
 		}
 	}
 
@@ -160,7 +160,7 @@ public class DbArtifactXmlWriter implements Closeable {
 		try {
 			writer.writeEmptyElement(name);
 		} catch(XMLStreamException e) {
-			throw new NuclosFatalException(e);
+			throw new DbException(null, "writeEmpty failed" , e);
 		}
 	}
 	
@@ -169,7 +169,7 @@ public class DbArtifactXmlWriter implements Closeable {
 			if (value != null)
 				writer.writeAttribute(name, value.toString());
 		} catch(XMLStreamException e) {
-			throw new NuclosFatalException(e);
+			throw new DbException(null, "writeAttribute failed" , e);
 		}
 	}
 
@@ -178,7 +178,7 @@ public class DbArtifactXmlWriter implements Closeable {
 			if (text != null)
 				writer.writeCData(text);
 		} catch(XMLStreamException e) {
-			throw new NuclosFatalException(e);
+			throw new DbException(null, "writeCData failed" , e);
 		}
 	}		
 	
@@ -187,7 +187,7 @@ public class DbArtifactXmlWriter implements Closeable {
 			if (text != null)
 				writer.writeCharacters(text);
 		} catch(XMLStreamException e) {
-			throw new NuclosFatalException(e);
+			throw new DbException(null, "writeText failed" , e);
 		}
 	}
 	
@@ -196,7 +196,7 @@ public class DbArtifactXmlWriter implements Closeable {
 		private String tableName = "";
 		
 		@Override
-		public Void visitTable(DbTable table) throws DbException {
+		public Void visitTable(DbTable table) {
 			writeStart("table");
 			writeAttribute("name", table.getTableName());
 			this.tableName = table.getTableName();
@@ -208,7 +208,7 @@ public class DbArtifactXmlWriter implements Closeable {
 		}
 		
 		@Override
-		public Void visitColumn(DbColumn column) throws DbException {
+		public Void visitColumn(DbColumn column) {
 			writeStart("column");
 			writeAttribute("name", column.getColumnName());
 			writeTableNameAttrIfNeeded(column.getTableName());
@@ -221,13 +221,13 @@ public class DbArtifactXmlWriter implements Closeable {
 		}
 
 		@Override
-		public Void visitPrimaryKeyConstraint(DbPrimaryKeyConstraint constraint) throws DbException {
+		public Void visitPrimaryKeyConstraint(DbPrimaryKeyConstraint constraint) {
 			writeSimpleColumnGroup("primarykey", constraint);
 			return null;
 		}
 		
 		@Override
-		public Void visitForeignKeyConstraint(DbForeignKeyConstraint constraint) throws DbException {
+		public Void visitForeignKeyConstraint(DbForeignKeyConstraint constraint) {
 			writeStart("foreignkey");
 			writeAttribute("name", constraint.getConstraintName());
 			writeTableNameAttrIfNeeded(constraint.getTableName());
@@ -246,20 +246,20 @@ public class DbArtifactXmlWriter implements Closeable {
 		}
 
 		@Override
-		public Void visitUniqueConstraint(DbUniqueConstraint constraint) throws DbException {
+		public Void visitUniqueConstraint(DbUniqueConstraint constraint) {
 			writeSimpleColumnGroup("unique", constraint);
 			return null;
 		}
 		
 		@Override
-		public Void visitIndex(DbIndex index) throws DbException {
+		public Void visitIndex(DbIndex index) {
 			writeSimpleColumnGroup("index", index);
 			return null;
 		}
 
 
 		@Override
-		public Void visitSequence(DbSequence sequence) throws DbException {
+		public Void visitSequence(DbSequence sequence) {
 			writeStart("sequence");
 			writeAttribute("name", sequence.getSimpleName());
 			writeAttribute("startwith", sequence.getStartWith());
@@ -269,7 +269,7 @@ public class DbArtifactXmlWriter implements Closeable {
 		}
 
 		@Override
-		public Void visitView(DbSimpleView view) throws DbException {
+		public Void visitView(DbSimpleView view) {
 			writeStart("simpleview");
 			writeAttribute("name", view.getViewName());
 			writeTableNameAttrIfNeeded(view.getTableName());
@@ -328,7 +328,7 @@ public class DbArtifactXmlWriter implements Closeable {
 		}
 				
 		@Override
-		public Void visitCallable(DbCallable callable) throws DbException {
+		public Void visitCallable(DbCallable callable) {
 			writeStart(callable.getType() == DbCallableType.FUNCTION ? "function" : "procedure");
 			writeAttribute("name", callable.getCallableName());			
 			writeHints(callable);

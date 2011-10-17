@@ -119,12 +119,12 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	public DbQueryBuilder getQueryBuilder() throws DbException {
+	public DbQueryBuilder getQueryBuilder() {
 		return new PostgreSQLQueryBuilder();
 	}
 
 	@Override
-	protected String getDataType(DbColumnType columnType) {
+	protected String getDataType(DbColumnType columnType) throws DbException {
 		if (columnType.getTypeName() != null) {
 			return columnType.getTypeName() + columnType.getParametersString();
 		} else {
@@ -228,7 +228,7 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	protected List<String> getSqlForDropCallable(DbCallable callable) {
+	protected List<String> getSqlForDropCallable(DbCallable callable) throws DbException {
 		String code = callable.getCode();
 		if (code == null)
 			throw new DbException("No code for callable " + callable.getCallableName());

@@ -88,7 +88,7 @@ public class ImportObjectProcessor extends EntityObjectProcessor {
 	}
 
 	@Override
-	protected DalCallResult batchInsertOrUpdate(List<IColumnToVOMapping<? extends Object>> columns, Collection<EntityObjectVO> colDalVO) {
+	protected DalCallResult batchInsertOrUpdate(List<IColumnToVOMapping<? extends Object>> columns, Collection<EntityObjectVO> colDalVO, boolean failAfterBatch) {
 		DalCallResult dcr = new DalCallResult();
 		for(EntityObjectVO dalVO : colDalVO) {
 			Map<String, Object> columnValueMap = getColumnValuesMap(valueColumnsUpdate, dalVO, false);
@@ -126,6 +126,9 @@ public class ImportObjectProcessor extends EntityObjectProcessor {
 				}
 			}
 			catch(DbException ex) {
+				if (!failAfterBatch) {
+					throw ex;
+				}
             	ex.setIdIfNull(dalVO.getId());
 				dcr.addBusinessException(ex);
 			}

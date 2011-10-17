@@ -69,8 +69,4 @@ public class CommonFatalException extends RuntimeException {
 		return cause.toString();
 	}
 
-//	@Override
-//	public String getMessage() {
-//		return CommonLocaleDelegate.getMessageFromResource(super.getMessage());
-//	}
 }

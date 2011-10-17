@@ -145,19 +145,20 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
       return result;
    }
 
-   protected DalCallResult insertOrUpdate(final DalVO dalVO) {
-      return insertOrUpdate(allColumns, dalVO);
+   protected void insertOrUpdate(final DalVO dalVO) {
+      insertOrUpdate(allColumns, dalVO);
    }
 
-   protected <S> DalCallResult insertOrUpdate(final List<IColumnToVOMapping<? extends Object>> columns, final DalVO dalVO) {
-      return batchInsertOrUpdate(columns, CollectionUtils.asList(dalVO));
+   protected <S> void insertOrUpdate(final List<IColumnToVOMapping<? extends Object>> columns, final DalVO dalVO) {
+	   final DalCallResult result = batchInsertOrUpdate(columns, CollectionUtils.asList(dalVO), false);
+	   result.throwFirstException();
    }
 
-   protected DalCallResult batchInsertOrUpdate(final Collection<DalVO> colDalVO) {
-      return batchInsertOrUpdate(allColumns, colDalVO);
+   protected DalCallResult batchInsertOrUpdate(final Collection<DalVO> colDalVO, boolean failAfterBatch) {
+      return batchInsertOrUpdate(allColumns, colDalVO, failAfterBatch);
    }
 
-   protected DalCallResult batchInsertOrUpdate(final List<IColumnToVOMapping<? extends Object>> columns, final Collection<DalVO> colDalVO) {
+   protected DalCallResult batchInsertOrUpdate(final List<IColumnToVOMapping<? extends Object>> columns, final Collection<DalVO> colDalVO, boolean failAfterBatch) {
       DalCallResult dcr = new DalCallResult();
       for (DalVO dalVO : colDalVO) {
          Map<String, Object> columnValueMap = getColumnValuesMap(columns, dalVO, false);
@@ -171,6 +172,9 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
             try {
                DataBaseHelper.getDbAccess().execute(stmt);
             } catch (DbException ex) {
+            	if (!failAfterBatch) {
+            		throw ex;
+            	}
             	// TODO: readable message
             	ex.setIdIfNull(dalVO.getId());
             	ex.setStatementsIfNull(getLogStatements(stmt));
@@ -181,13 +185,16 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
       return dcr;
    }
 
-   protected DalCallResult batchDelete(final Collection<Long> colId) {
+   protected DalCallResult batchDelete(final Collection<Long> colId, boolean failAfterBatch) {
 		DalCallResult dcr = new DalCallResult();
 		for(Long id : colId) {
 			DbStatement stmt = new DbDeleteStatement(getDbSourceForDML(), getPrimaryKeyMap(id));
 			try {
 				DataBaseHelper.getDbAccess().execute(stmt);
 			} catch(DbException ex) {
+				if (!failAfterBatch) {
+					throw ex;
+				}
 				// TODO: readable message
             	ex.setIdIfNull(id);
             	ex.setStatementsIfNull(getLogStatements(stmt));
@@ -197,8 +204,9 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
       return dcr;
    }
 
-   protected DalCallResult delete(final Long id) {
-      return batchDelete(Collections.singletonList(id));
+   protected void delete(final Long id) throws DbException {
+	   final DalCallResult result = batchDelete(Collections.singletonList(id), false);
+	   result.throwFirstException();
    }
    
    protected DbQuery<Object[]> createQuery(List<IColumnToVOMapping<? extends Object>> columns) {

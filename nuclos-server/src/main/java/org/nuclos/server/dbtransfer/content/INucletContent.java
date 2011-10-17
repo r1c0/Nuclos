@@ -53,11 +53,11 @@ public interface INucletContent {
 	
 	public List<EntityObjectVO> getNcObjects(Set<Long> nucletIds, TransferOption.Map transferOptions);
 	
-	public List<DalCallResult> setNcObjectFieldNull(Long id, String field);
+	public void setNcObjectFieldNull(DalCallResult result, Long id, String field);
 	
-	public List<DalCallResult> insertOrUpdateNcObject(EntityObjectVO ncObject, boolean isNuclon);
+	public void insertOrUpdateNcObject(DalCallResult result, EntityObjectVO ncObject, boolean isNuclon);
 	
-	public List<DalCallResult> deleteNcObject(Long id);
+	public void deleteNcObject(DalCallResult result, Long id);
 	
 	public Set<EntityMetaDataVO> getForeignEntities();
 	

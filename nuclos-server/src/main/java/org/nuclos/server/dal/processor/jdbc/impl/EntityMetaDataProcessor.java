@@ -24,6 +24,7 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityMetaDataProcessor;
+import org.nuclos.server.dblayer.DbException;
 
 public class EntityMetaDataProcessor extends AbstractJdbcDalProcessor<EntityMetaDataVO> 
 implements JdbcEntityMetaDataProcessor {
@@ -52,8 +53,8 @@ implements JdbcEntityMetaDataProcessor {
 	}
 
 	@Override
-	public DalCallResult delete(Long id) {
-		return super.delete(id);
+	public void delete(Long id) throws DbException {
+		super.delete(id);
 	}
 
 	@Override
@@ -72,18 +73,18 @@ implements JdbcEntityMetaDataProcessor {
 	}
 
 	@Override
-	public DalCallResult insertOrUpdate(EntityMetaDataVO dalVO) {
-		return super.insertOrUpdate(dalVO);
+	public void insertOrUpdate(EntityMetaDataVO dalVO) {
+		super.insertOrUpdate(dalVO);
 	}
 
 	@Override
-	public DalCallResult batchInsertOrUpdate(Collection<EntityMetaDataVO> colDalVO) {
-		return super.batchInsertOrUpdate(colDalVO);
+	public DalCallResult batchInsertOrUpdate(Collection<EntityMetaDataVO> colDalVO, boolean failAfterBatch) {
+		return super.batchInsertOrUpdate(colDalVO, failAfterBatch);
 	}
 
 	@Override
-	public DalCallResult batchDelete(Collection<Long> colId) {
-		return super.batchDelete(colId);
+	public DalCallResult batchDelete(Collection<Long> colId, boolean failAfterBatch) {
+		return super.batchDelete(colId, failAfterBatch);
 	}	
 	
 }

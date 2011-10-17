@@ -48,18 +48,18 @@ public class ResourceNucletContent extends DefaultNucletContent {
 	}
 
 	@Override
-	public List<DalCallResult> deleteNcObject(Long id) {
+	public void deleteNcObject(DalCallResult result, Long id) {
 		ResourceFacadeBean.removeResource(ResourceCache.getInstance().getResourceById(id.intValue()).getFileName());
-		return super.deleteNcObject(id);
+		super.deleteNcObject(result, id);
 	}
 
 	@Override
-	public List<DalCallResult> insertOrUpdateNcObject(EntityObjectVO ncObject, boolean isNuclon) {
+	public void insertOrUpdateNcObject(DalCallResult result, EntityObjectVO ncObject, boolean isNuclon) {
 		ResourceFile resfile = ncObject.getField("file", ResourceFile.class);
 		if (resfile != null) {
 			ResourceFacadeBean.storeResource(resfile);
 		}
-		return super.insertOrUpdateNcObject(ncObject, isNuclon);
+		super.insertOrUpdateNcObject(result, ncObject, isNuclon);
 	}
 	
 	

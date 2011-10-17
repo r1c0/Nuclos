@@ -79,7 +79,7 @@ public class JRDefaultNuclosDataSource implements JRNuclosDataSource {
 		this.conn = conn;
 	}
 
-	private void getData() {
+	private void getData() throws DbException {
 		Map<String, Object> currentparams = new HashMap<String, Object>();
 		currentparams.putAll(this.params);
 

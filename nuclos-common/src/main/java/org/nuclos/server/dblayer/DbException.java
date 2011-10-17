@@ -19,12 +19,12 @@ package org.nuclos.server.dblayer;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.nuclos.common.dal.exception.DalBusinessException;
+import org.nuclos.common.NuclosFatalException;
 
 /**
  * Exception class for database-specific (fatal) exceptions. 
  */
-public class DbException extends DalBusinessException {
+public class DbException extends NuclosFatalException {
 
 	private Long id;
 	

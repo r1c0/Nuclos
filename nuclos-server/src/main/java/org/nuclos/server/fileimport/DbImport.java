@@ -214,7 +214,7 @@ public class DbImport extends AbstractImport {
 						eo.getFields().put(NuclosEOField.LOGGICALDELETED.getMetaData().getField(), false);
 						DalUtils.updateVersionInformation(eo, "import");
 
-						processor.insertOrUpdate(eo).throwFirstBusinessExceptionIfAny();
+						processor.insertOrUpdate(eo);
 					}
 					catch (Exception ex) {
 						getLogger().error(lines.getCurrentLine(), "import.exception.dbimport", ex);

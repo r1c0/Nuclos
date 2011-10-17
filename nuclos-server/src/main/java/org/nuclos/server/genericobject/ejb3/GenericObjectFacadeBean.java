@@ -48,7 +48,6 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.MasterDataToEntityObjectTransformer;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.DalSupportForMD;
-import org.nuclos.common.dal.exception.DalBusinessException;
 import org.nuclos.common.dal.vo.EOGenericObjectVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
@@ -85,6 +84,7 @@ import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
@@ -669,9 +669,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		assert !StringUtils.isNullOrEmpty(sCanonicalValueSystemIdentifier);
 		dalVO.getFields().put(NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getField(), sCanonicalValueSystemIdentifier);
 
-		DalCallResult dcr = NucletDalProvider.getInstance().getEntityObjectProcessor(dalVO.getEntity()).insertOrUpdate(dalVO);
 		try {
-			dcr.throwFirstBusinessExceptionIfAny();
+			NucletDalProvider.getInstance().getEntityObjectProcessor(dalVO.getEntity()).insertOrUpdate(dalVO);
 
 			Date sysdate = new Date();
 			/**
@@ -890,8 +889,12 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		DalUtils.updateVersionInformation(eoUpdated, getCurrentUserName());
 		eoUpdated.flagUpdate();
-		DalCallResult dcr = NucletDalProvider.getInstance().getEntityObjectProcessor(eoUpdated.getEntity()).insertOrUpdate(eoUpdated);
-		dcr.throwFirstBusinessExceptionIfAny();
+		try {
+			NucletDalProvider.getInstance().getEntityObjectProcessor(eoUpdated.getEntity()).insertOrUpdate(eoUpdated);
+		}
+		catch (DbException e) {
+			throw new NuclosBusinessException(e);
+		}
 
 		helper.trackChangesToLogbook(dbEoVO, eoUpdated);
 
@@ -1062,10 +1065,13 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 				helper.removeDependantTaskObjects(dbGoVO.getId());
 				helper.removeGroupBelonging(dbGoVO.getId());
 //				getMasterDataFacade().remove(NuclosEntity.GENERICOBJECT.getEntityName(), MasterDataWrapper.wrapGenericObjectVO(dbGoVO), false);
-				dalResult = NucletDalProvider.getInstance().getEOGenericObjectProcessor().delete(LangUtils.convertId(dbGoVO.getId()));
-				dalResult.throwFirstBusinessExceptionIfAny();
-				dalResult = DalSupportForGO.getEntityObjectProcessor(dbGoVO.getModuleId()).delete(LangUtils.convertId(dbGoVO.getId()));
-				dalResult.throwFirstBusinessExceptionIfAny();
+				try {
+					NucletDalProvider.getInstance().getEOGenericObjectProcessor().delete(LangUtils.convertId(dbGoVO.getId()));
+					DalSupportForGO.getEntityObjectProcessor(dbGoVO.getModuleId()).delete(LangUtils.convertId(dbGoVO.getId()));
+				}
+				catch (DbException e) {
+					throw new NuclosBusinessException(e);
+				}
 			}
 			else {
 //				dbGoVO.setDeleted(true);
@@ -1078,8 +1084,12 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 				DalUtils.updateVersionInformation(eoToUpdate, getCurrentUserName());
 				eoToUpdate.flagUpdate();
 
-				dalResult = DalSupportForGO.getEntityObjectProcessor(dbGoVO.getModuleId()).insertOrUpdate(eoToUpdate);
-				dalResult.throwFirstBusinessExceptionIfAny();
+				try {
+					DalSupportForGO.getEntityObjectProcessor(dbGoVO.getModuleId()).insertOrUpdate(eoToUpdate);
+				}
+				catch (DbException e) {
+					throw new NuclosBusinessException(e);
+				}
 			}
 //		}
 //		catch (CommonValidationException ex) {
@@ -1775,11 +1785,11 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		eo.getFields().put(field, DalSupportForGO.convertFromCanonicalAttributeValue(attributeId, canonicalValue));
 		eo.flagUpdate();
 
-		DalCallResult dcr = DalSupportForGO.getEntityObjectProcesserForGenericObject(genericObjectId).insertOrUpdate(eo);
-		if (dcr.hasException()) {
-			for (DalBusinessException dbe : dcr.getExceptions()) {
-				badAttributes.add(new BadAttributeValueException(-1, genericObjectId, canonicalValue, attributeId, AttributeCache.getInstance().getAttribute(attributeId), dbe.getMessage()));
-			}
+		try {
+			DalSupportForGO.getEntityObjectProcesserForGenericObject(genericObjectId).insertOrUpdate(eo);
+		}
+		catch (DbException dbe) {
+			badAttributes.add(new BadAttributeValueException(-1, genericObjectId, canonicalValue, attributeId, AttributeCache.getInstance().getAttribute(attributeId), dbe.getMessage()));
 		}
 
 		if (logbookTracking) {
@@ -1807,8 +1817,12 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		eo.getFields().put(field, vo.getValue());
 		eo.flagUpdate();
 
-		DalCallResult dcr = NucletDalProvider.getInstance().getEntityObjectProcessor(eo.getEntity()).insertOrUpdate(eo);
-		dcr.throwFirstBusinessExceptionIfAny();
+		try {
+			NucletDalProvider.getInstance().getEntityObjectProcessor(eo.getEntity()).insertOrUpdate(eo);
+		}
+		catch (DbException e) {
+			throw new NuclosBusinessException(e);
+		}
 	}
 
 	/**

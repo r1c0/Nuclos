@@ -22,9 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuclos.common.NuclosBusinessException;
-import org.nuclos.common.dal.exception.DalBusinessException;
 import org.nuclos.server.dblayer.DbException;
 
+/**
+ * A wrapper class for a sequence of DbException.
+ * <p>
+ * Hence a type like List<DalCallResult> is strongly discouraged.
+ * </p>
+ */
 public class DalCallResult implements Serializable {
 
 	private static final int OKAY = 1;
@@ -32,31 +37,32 @@ public class DalCallResult implements Serializable {
 	
 	private int resultType = OKAY;
 	
-	private List<DalBusinessException> lstException;
-		
-	/*
-	public void addBusinessException(Long id, String message, List<String> statements, SQLException e) {
-		resultType = HAS_EXCEPTION;
-		if (lstException == null) {
-			lstException = new ArrayList<DalBusinessException>();
-		}
-		lstException.add(new DbException(id, message, statements, e));
-	}
-	 */
+	private List<DbException> lstException;
 	
-	public void addBusinessException(Long id, List<String> statements, SQLException e) {
+	public DalCallResult() {
+	}
+	
+	public void add(DalCallResult other) {
+		if (other.hasException()) {
+			_add();
+			lstException.addAll(other.lstException);
+		}
+	}
+	
+	private void _add() {
 		resultType = HAS_EXCEPTION;
 		if (lstException == null) {
-			lstException = new ArrayList<DalBusinessException>();
+			lstException = new ArrayList<DbException>();
 		}
+	}
+		
+	public void addBusinessException(Long id, List<String> statements, SQLException e) {
+		_add();
 		lstException.add(new DbException(id, getReadableMessage(e), statements, e));
 	}
 	
 	public void addBusinessException(DbException e) {
-		resultType = HAS_EXCEPTION;
-		if (lstException == null) {
-			lstException = new ArrayList<DalBusinessException>();
-		}
+		_add();
 		lstException.add(e);
 	}
 	
@@ -64,15 +70,24 @@ public class DalCallResult implements Serializable {
 		return ex.toString();
 	}
 
-	public List<DalBusinessException> getExceptions() {
+	public List<DbException> getExceptions() {
 		return lstException;
 	}
 	
-	public void throwFirstBusinessExceptionIfAny() throws NuclosBusinessException {
+	/**
+	 * @deprecated Use {@link #throwFirstException()} instead.
+	 */
+	public void throwFirstAsBusinessException() throws NuclosBusinessException {
 		if (hasException()) {
 			throw new NuclosBusinessException(
 				getExceptions().get(0).getMessage(),
 				getExceptions().get(0));
+		}
+	}
+	
+	public void throwFirstException() throws DbException {
+		if (hasException()) {
+			throw getExceptions().get(0);
 		}
 	}
 	

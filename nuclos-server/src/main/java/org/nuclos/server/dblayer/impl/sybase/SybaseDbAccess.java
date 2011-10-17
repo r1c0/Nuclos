@@ -54,7 +54,7 @@ public class SybaseDbAccess extends TransactSqlDbAccess {
 	static final Pattern SEQUENCE_COMMENT_PATTERN = Pattern.compile("Nuclos Sequence \\((\\w+),\\s*(\\w+)\\)");
 
 	@Override
-	protected String getDataType(DbColumnType columnType) {
+	protected String getDataType(DbColumnType columnType) throws DbException {
 		if (columnType.getTypeName() != null) {
 			return columnType.getTypeName() + columnType.getParametersString();
 		} else {

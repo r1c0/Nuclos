@@ -20,14 +20,15 @@ import java.util.Collection;
 
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.IDalVO;
+import org.nuclos.server.dblayer.DbException;
 
 public interface IDalWriteSpecification<DalVO extends IDalVO> {
 	
-	public DalCallResult insertOrUpdate(DalVO dalVO);
+	void insertOrUpdate(DalVO dalVO) throws DbException;
 	
-	public DalCallResult delete(Long id);
+	void delete(Long id) throws DbException;
 	
-	public DalCallResult batchInsertOrUpdate(Collection<DalVO> colDalVO);
+	DalCallResult batchInsertOrUpdate(Collection<DalVO> colDalVO, boolean failAfterBatch) throws DbException;
 	
-	public DalCallResult batchDelete(Collection<Long> colId);
+	DalCallResult batchDelete(Collection<Long> colId, boolean failAfterBatch) throws DbException;
 }

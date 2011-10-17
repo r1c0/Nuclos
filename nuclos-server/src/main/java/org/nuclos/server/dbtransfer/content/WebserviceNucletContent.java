@@ -31,17 +31,17 @@ public class WebserviceNucletContent extends DefaultNucletContent {
 	}
 
 	@Override
-	public List<DalCallResult> deleteNcObject(Long id) {
+	public void deleteNcObject(DalCallResult result, Long id) {
 		GenericObjectDocumentFile docfile = NucletDalProvider.getInstance().getEntityObjectProcessor(getEntity()).getByPrimaryKey(id).getField("wsdl", GenericObjectDocumentFile.class);
 		if (docfile != null) {
 			MasterDataFacadeHelper.remove(id.intValue(), docfile.getFilename(), NuclosSystemParameters.getDirectory(NuclosSystemParameters.DOCUMENT_PATH));
 		}
-		return super.deleteNcObject(id);
+		super.deleteNcObject(result, id);
 	}
 
 	@Override
-	public List<DalCallResult> insertOrUpdateNcObject(EntityObjectVO ncObject, boolean isNuclon) {
+	public void insertOrUpdateNcObject(DalCallResult result, EntityObjectVO ncObject, boolean isNuclon) {
 		MasterDataFacadeHelper.storeFiles(getEntity().getEntityName(), ncObject);
-		return super.insertOrUpdateNcObject(ncObject, isNuclon);
+		super.insertOrUpdateNcObject(result, ncObject, isNuclon);
 	}
 }

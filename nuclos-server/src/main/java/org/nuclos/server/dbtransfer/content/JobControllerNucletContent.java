@@ -32,14 +32,14 @@ public class JobControllerNucletContent extends DefaultNucletContent {
 	}
 
 	@Override
-	public List<DalCallResult> deleteNcObject(Long id) {
+	public void deleteNcObject(DalCallResult result, Long id) {
 		EntityObjectVO job = NucletDalProvider.getInstance().getEntityObjectProcessor(getEntity().getEntityName()).getByPrimaryKey(id);
 		unschedule(job);
-		return super.deleteNcObject(id);
+		super.deleteNcObject(result, id);
 	}
 
 	@Override
-	public List<DalCallResult> insertOrUpdateNcObject(EntityObjectVO ncObject, boolean isNuclon) {
+	public void insertOrUpdateNcObject(DalCallResult result, EntityObjectVO ncObject, boolean isNuclon) {
 		if (ncObject.isFlagUpdated()) {
 			EntityObjectVO job = NucletDalProvider.getInstance().getEntityObjectProcessor(getEntity().getEntityName()).getByPrimaryKey(ncObject.getId());
 			unschedule(job);
@@ -51,7 +51,7 @@ public class JobControllerNucletContent extends DefaultNucletContent {
 		ncObject.getFields().put("resultdetails", null);
 		ncObject.getFields().put("nextfiretime", null);
 
-		return super.insertOrUpdateNcObject(ncObject, isNuclon);
+		super.insertOrUpdateNcObject(result, ncObject, isNuclon);
 	}
 
 	private void unschedule(EntityObjectVO job) {
