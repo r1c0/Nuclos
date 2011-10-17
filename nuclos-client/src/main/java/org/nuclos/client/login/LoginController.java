@@ -401,10 +401,6 @@ public class LoginController extends Controller {
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 			if (selectedOption == JOptionPane.OK_OPTION) {
-				// make sure that username is in lowercase characters
-				if(loginPanel.tfUserName.getText() != null) {
-					loginPanel.tfUserName.setText(loginPanel.tfUserName.getText().toLowerCase());
-				}
 				final String sUserName = loginPanel.tfUserName.getText().trim();
 				final char[] acPassword = loginPanel.tfPassword.getPassword();
 				try {

@@ -127,7 +127,7 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 			throw new CommonValidationException("exception.password.empty");
 		}
 		else {
-			String passwdEncrypted = StringUtils.encryptBase64(user.getName() + user.getNewPassword());
+			String passwdEncrypted = StringUtils.encryptBase64(user.getName().toLowerCase() + user.getNewPassword());
 
 			// check min length first
 			String sMinLength = ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_SECURITY_PASSWORD_STRENGTH_LENGTH);

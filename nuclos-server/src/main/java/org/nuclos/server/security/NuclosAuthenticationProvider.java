@@ -115,7 +115,7 @@ public class NuclosAuthenticationProvider implements AuthenticationProvider, Mes
 				authenticated = true;
 			}
 
-			final String sPasswordFromUser = StringUtils.encryptBase64(username + ((password == null) ? "" : new String(password)));
+			final String sPasswordFromUser = StringUtils.encryptBase64(username.toLowerCase() + ((password == null) ? "" : new String(password)));
 			if(sPasswordFromUser.equals(userDetails.getPassword())) {
 				authenticated = true;
 			}
