@@ -55,6 +55,7 @@ public class ApplicationProperties implements Serializable {
 	private final String sCollectableComponentFactoryClassName;
 	private final String sGenericObjectTreeNodeFactoryClassName;
 	private final String sExplorerNodeFactoryClassName;
+	private final String sExplorerViewFactoryClassName;
 	private final String sFrameIconFileName;
 	private final String sBigIconFileName;
 	private final String sBigIcon512FileName;
@@ -79,7 +80,7 @@ public class ApplicationProperties implements Serializable {
 	private final long    splashProgressColor;
 	private final long    desktopPaneBackgroundColor;
 	private final String  desktopPaneBgImageFileName;
-	
+
 	public static synchronized ApplicationProperties getInstance() {
 		if (singleton == null) {
 			singleton = new ApplicationProperties();
@@ -119,6 +120,7 @@ public class ApplicationProperties implements Serializable {
 		this.sCollectableComponentFactoryClassName = getOptional(props, "collectablecomponentfactory");
 		this.sGenericObjectTreeNodeFactoryClassName = getOptional(props, "genericobjecttreenodefactory");
 		this.sExplorerNodeFactoryClassName = getOptional(props, "explorernodefactory");
+		this.sExplorerViewFactoryClassName = getOptional(props, "explorerviewfactory");
 		this.sFrameIconFileName = getOptional(props, "application.icon.frame");
 		this.sBigIconFileName = getOptional(props, "application.icon.big.transparent");
 		this.sBigIcon512FileName = getOptional(props, "application.icon.big.transparent.512");
@@ -145,7 +147,7 @@ public class ApplicationProperties implements Serializable {
 		this.splashProgressColor = parseColorHex(getOptional(props, "splashscreen.color.progress"));
 
 		this.desktopPaneBackgroundColor = parseColorHex(getOptional(props, "mainframe.desktoppane.background"));
-		this.desktopPaneBgImageFileName = getOptional(props, "mainframe.desktoppane.bgimage");		
+		this.desktopPaneBgImageFileName = getOptional(props, "mainframe.desktoppane.bgimage");
 	}
 
 	private static String getOptional(Properties props, String key) {
@@ -216,6 +218,13 @@ public class ApplicationProperties implements Serializable {
 	 */
 	public String getExplorerNodeFactoryClassName() {
 		return this.sExplorerNodeFactoryClassName;
+	}
+
+	/**
+	 * @return the class name of the ExplorerViewFactory to be used in this application.
+	 */
+	public String getExplorerViewFactoryClassName() {
+		return this.sExplorerViewFactoryClassName;
 	}
 
 	/**
@@ -362,7 +371,7 @@ public class ApplicationProperties implements Serializable {
 	public Boolean isFunctionBlockDev() {
 		return bFunctionBlockDev;
 	}
-	
+
 	/**
 	 * inner class Version
 	 */
