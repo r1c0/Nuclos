@@ -154,7 +154,7 @@ public abstract class CollectableFieldFormat {
 		@Override
 		public String format(String sOutputFormat, Object oValue) {
 			final NuclosImage image = (NuclosImage) oValue;
-			if (image == null) {
+			if (image == null || image.getContent() == null || image.getContent().length == 0) {
 				return "";
 			}
 			final String base64 = Base64.encodeBase64String(image.getContent());
