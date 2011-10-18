@@ -38,6 +38,8 @@ import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.dal.vo.PivotInfo;
+import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 
@@ -52,11 +54,44 @@ import org.nuclos.common2.exception.CommonFatalException;
 public class PDFHelper {
 
 	public static String getFieldName(CollectableEntityField field) {
-		return getFieldName(field.getEntityName() + "." + field.getName());
+		final String rawName;
+		if (field instanceof CollectableEOEntityField) {
+			final CollectableEOEntityField f = (CollectableEOEntityField) field;
+			final PivotInfo pinfo = f.getMeta().getPivotInfo();
+			if (pinfo != null) {
+				rawName = field.getEntityName() + ":" + pinfo.getKeyField() 
+					+ ":" + f.getName() + ":" + pinfo.getValueField();   
+			}
+			else {
+				rawName = field.getEntityName() + "." + field.getName();
+			}
+		}
+		else {
+			rawName = field.getEntityName() + "." + field.getName();
+		}
+		return getFieldName(rawName);
 	}
 
 	public static String getFieldName(String nuclosfieldname) {
 		final String result = "fld" + nuclosfieldname.replace('[', '_').replace(']', '_');
+		return result;
+	}
+	
+	public static String getLabel(CollectableEntityField field) {
+		final String result;
+		if (field instanceof CollectableEOEntityField) {
+			final CollectableEOEntityField f = (CollectableEOEntityField) field;
+			final PivotInfo pinfo = f.getMeta().getPivotInfo();
+			if (pinfo != null) {
+				result = f.getName() + ":" + pinfo.getValueField();
+			}
+			else {
+				result = field.getLabel();
+			}
+		}
+		else {
+			result = field.getLabel();
+		}
 		return result;
 	}
 
@@ -68,7 +103,7 @@ public class PDFHelper {
 	public static void createFields(JasperDesign jrdesign, List<? extends CollectableEntityField> lstclctefweSelected) {
 		List<FieldDefinition> fields = new ArrayList<PDFHelper.FieldDefinition>();
 		for (CollectableEntityField f : lstclctefweSelected) {
-			fields.add(new PDFHelper.FieldDefinition(getFieldName(f), f.getJavaClass(), f.getMaxLength() != null ? f.getMaxLength() : 0, f.getLabel()));
+			fields.add(new PDFHelper.FieldDefinition(getFieldName(f), f.getJavaClass(), f.getMaxLength() != null ? f.getMaxLength() : 0, getLabel(f)));
 		}
 		PDFHelper.createFieldsInternal(jrdesign, fields);
 	}

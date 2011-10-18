@@ -154,7 +154,12 @@ public class DbQuery<T extends Object> {
 	}
 	
 	public DbQuery<T> addToWhereAsAnd(DbCondition condition) {
-		this.condition = builder.and(this.condition, condition);
+		if (this.condition == null) {
+			this.condition = condition;
+		}
+		else {
+			this.condition = builder.and(this.condition, condition);
+		}
 		return this;
 	}	
 	

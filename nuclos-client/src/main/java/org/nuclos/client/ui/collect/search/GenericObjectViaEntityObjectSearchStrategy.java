@@ -115,7 +115,7 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 		}
 
 		private final CollectableEntityObjectProxyListAdapter list;
-
+		
 		private MyProxyListAdapter(CollectableEntityObjectProxyListAdapter list) {
 			this.list = list;
 		}
@@ -272,6 +272,8 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 
 	private ProxyList<CollectableGenericObjectWithDependants> proxylstclct;
 
+	private boolean includeSubModules = false;
+
 	// contructor
 
 	public GenericObjectViaEntityObjectSearchStrategy(CollectableEOEntity meta) {
@@ -297,6 +299,8 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 		clctexprInternal.setValueListProviderDatasourceParameter(getValueListProviderDatasourceParameter());
 		LOG.debug("Interne Suchbedingung: " + clctexprInternal.getSearchCondition());
 
+		includeSubModules = false;
+		final String baseEntity = meta.getName();
 		final Collection<EntityFieldMetaDataVO> fields = new ArrayList<EntityFieldMetaDataVO>();
 		for (CollectableEntityField f: getCollectController().getResultController().getFields().getSelectedFields()) {
 			// We need a EntityFieldMetaDataVO from the CollectableEntityField.
@@ -314,6 +318,9 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 			else {
 				final MetaDataProvider mdProv = MetaDataClientProvider.getInstance();
 				fields.add(mdProv.getEntityField(f.getEntityName(), f.getName()));
+			}
+			if (!baseEntity.equals(f.getEntityName())) {
+				includeSubModules = true;
 			}
 		}
 
@@ -421,4 +428,14 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 	public ProxyList<CollectableGenericObjectWithDependants> getCollectableProxyList() {
 		return proxylstclct;
 	}
+		
+	/*
+	 * The following methods have been defined only for a subset of strategies.
+	 */
+
+	@Override
+	public boolean getIncludeSubModulesForSearch() {
+		return includeSubModules;
+	}
+
 }

@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.report;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -27,12 +29,17 @@ import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.PDFHelper;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableFieldFormat;
+import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
+import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.PivotInfo;
+import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.genericobject.GenericObjectUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.common.AttributeCache;
@@ -51,6 +58,8 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO
  * @version 01.00.00
  */
 public class SearchResultDataSource implements JRDataSource {
+	
+	private static final Logger LOG = Logger.getLogger(SearchResultDataSource.class); 
 
 	private final Map<String, Class<?>> mpTypes;
 	private final Map<String, String> mpOutputFormats;
@@ -129,6 +138,11 @@ public class SearchResultDataSource implements JRDataSource {
 		return result;
 	}
 
+	/**
+	 * TODO:
+	 * This looks a lot like {@link org.nuclos.client.ui.collect.model.GenericObjectsResultTableModel#getValueAt(int, int)}.
+	 * Shouldn't be there only *one* implementation? (tp)
+	 */
 	private Object getData(GenericObjectWithDependantsVO lowdcvo, CollectableEntityField clctefwe) {
 		final String sFieldName = clctefwe.getName();
 		final String sFieldEntityName = clctefwe.getEntityName();
@@ -145,8 +159,45 @@ public class SearchResultDataSource implements JRDataSource {
 			result = davo != null ? davo.getValue() : null;
 		}
 		else {
+			final PivotInfo pinfo;
+			if (clctefwe instanceof CollectableEOEntityField) {
+				final CollectableEOEntityField f = (CollectableEOEntityField) clctefwe;
+				pinfo = f.getMeta().getPivotInfo();
+			}
+			else {
+				pinfo = null;
+			}
+			// pivot field:
+			if (pinfo != null) {
+				final List<Object> values = new ArrayList<Object>(1);
+				final Collection<EntityObjectVO> items = lowdcvo.getDependants().getData(sFieldEntityName);
+
+				for (EntityObjectVO k: items) {
+					if (sFieldName.equals(k.getRealField(pinfo.getKeyField(), String.class))) {
+						values.add(k.getRealField(pinfo.getValueField(), pinfo.getValueType()));
+					}
+				}
+				if (values.isEmpty()) {
+					result = null;
+				}
+				else {
+					assert values.size() == 1 : "Expected 1 value, got " + values;
+					result = values.get(0);
+				}
+			}
 			// subform field:
-			result = GenericObjectUtils.getConcatenatedValue(lowdcvo.getDependants().getData(sFieldEntityName), sFieldName);
+			else {
+				// result = GenericObjectUtils.getConcatenatedValue(lowdcvo.getDependants().getData(sFieldEntityName), sFieldName);
+				
+				final Collection<EntityObjectVO> collmdvo = lowdcvo.getDependants().getData(sFieldEntityName);
+				final List<Object> values = CollectionUtils.transform(collmdvo, new Transformer<EntityObjectVO, Object>() {
+					@Override
+					public Object transform(EntityObjectVO i) {
+						return i.getRealField(sFieldName);
+					}
+				});
+				return values;
+			}
 		}
 		return result;
 	}
@@ -155,11 +206,27 @@ public class SearchResultDataSource implements JRDataSource {
 	 * get a specific attribute value for search result report
 	 *
 	 * @param jrfield jasper reports field
-	 * @return specific attribute value
+	 * @return formated string representation of attribute
 	 */
 	@Override
 	public Object getFieldValue(JRField jrfield) throws JRException {
-		return CollectableFieldFormat.getInstance(mpTypes.get(jrfield.getName())).format(mpOutputFormats.get(jrfield.getName()), mpRows.get(jrfield.getName()));
+		final String name = jrfield.getName();
+		final Class<?> type = mpTypes.get(name);
+		final String outputFormat = mpOutputFormats.get(name);
+		final Object row = mpRows.get(name);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("getFieldValue: format field " + name + " value '" + row + "' type" + type + " with '" + outputFormat + "'");
+		}
+		final StringBuilder result = new StringBuilder();
+		if (row instanceof List) {
+			for (Object v: (List<?>) row) {
+				result.append(CollectableFieldFormat.getInstance(type).format(outputFormat, v));
+			}
+		}
+		else {
+			return CollectableFieldFormat.getInstance(type).format(outputFormat, row);
+		}
+		return result.toString();
 	}
 
 }	// class SearchResultDataSource

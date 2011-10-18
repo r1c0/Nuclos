@@ -144,6 +144,9 @@ public interface CollectableEntityField {
 	/**
 	 * @return the (default) label that is presented to the user.
 	 * It is shown in dialogs, column headers, search conditions etc.
+	 * <p>
+	 * Warning: Never return Html here!
+	 * </p>
 	 */
 	String getLabel();
 
@@ -251,7 +254,8 @@ public interface CollectableEntityField {
 	CollectableField getDefault();
 
 	/**
-	 * @return <code>this.getLabel()</code>
+	 * @return Some implementation return {@link #getLabel()} <em>but</em> other return
+	 * HTML suited for coloring JLabels.
 	 */
 	@Override
     String toString();
