@@ -153,7 +153,12 @@ public abstract class CollectableFieldFormat {
 	private static class CollectableNuclosImageFormat extends CollectableFieldFormat {
 		@Override
 		public String format(String sOutputFormat, Object oValue) {
-			return "[$" + CollectableFieldFormat.class.getName() + "," + oValue.getClass().getName() + "," + ((NuclosImage)oValue).getContent().length+ "," + Base64.encodeBase64String(((NuclosImage)oValue).getContent()) + "$]";
+			final NuclosImage image = (NuclosImage) oValue;
+			if (image == null) {
+				return "";
+			}
+			final String base64 = Base64.encodeBase64String(image.getContent());
+			return "[$" + CollectableFieldFormat.class.getName() + "," + oValue.getClass().getName() + "," + image.getContent().length+ "," + base64 + "$]";
 		}
 
 		@Override

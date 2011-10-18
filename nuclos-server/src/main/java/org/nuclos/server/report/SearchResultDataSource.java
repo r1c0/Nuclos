@@ -219,8 +219,12 @@ public class SearchResultDataSource implements JRDataSource {
 		}
 		final StringBuilder result = new StringBuilder();
 		if (row instanceof List) {
-			for (Object v: (List<?>) row) {
+			for (Iterator<?> it = ((List<?>) row).iterator(); it.hasNext();) {
+				final Object v = it.next();
 				result.append(CollectableFieldFormat.getInstance(type).format(outputFormat, v));
+				if (it.hasNext()) {
+					result.append(", ");
+				}
 			}
 		}
 		else {

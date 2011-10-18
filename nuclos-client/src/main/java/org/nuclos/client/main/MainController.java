@@ -377,6 +377,17 @@ public class MainController {
 				}
 			};
 			theadTaskController.start();
+			
+			/* Release note HACK:
+			Caused by: java.lang.NullPointerException
+            at org.nuclos.client.help.releasenotes.ReleaseNotesController.showNuclosReleaseNotesNotice(ReleaseNotesController.java:148)
+            at org.nuclos.client.help.releasenotes.ReleaseNotesController.showReleaseNotesIfNewVersion(ReleaseNotesController.java:161)
+            at org.nuclos.client.main.MainController.showReleaseNotesIfNewVersion(MainController.java:1752)
+            at org.nuclos.client.main.MainController.<init>(MainController.java:382)
+             */
+			while (getDesktopPane() == null) {
+				Thread.sleep(200);
+			}
 
 			// Show the release notes for this version, if the user hasn't seen it yet.
 			showReleaseNotesIfNewVersion();

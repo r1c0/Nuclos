@@ -45,7 +45,7 @@ public class DbException extends NuclosFatalException {
 	}
 	
 	public DbException(Long id, String message, List<String> statements, Throwable cause) {
-		super(message, cause);
+		super(message);
 		this.id = id;
 		this.statements = statements;
 		initCause(cause);
@@ -77,6 +77,7 @@ public class DbException extends NuclosFatalException {
 	
 	@Override
 	public synchronized Throwable initCause(Throwable cause) {
+		if (cause == null) return cause;
 		// Because of serialization troubles with driver-specific SQLExceptions, 
 		// we never store the original SQLException as cause.  Instead we make
 		// a plain copy (without chained exceptions etc. but with the original
