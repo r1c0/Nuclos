@@ -39,6 +39,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -90,6 +91,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				LOG.info("Enabler: item event " + e);
 				final JCheckBox src = (JCheckBox) e.getSource();
 				final boolean selected = src.isSelected();
+				final EntityFieldMetaDataVO keyItem = keyMds.get(index);
 				
 				final int size = valueCombos.size();
 				for (int i = 0; i < size; ++i) {
@@ -110,16 +112,28 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 					else {
 						add.setEnabled(selected);
 					}
+					
+					if (selected) {
+						// Re-enable all lines from this subform
+						final JComboBox cb = valueCombos.get(i);
+						if (cb.getClientProperty(SUBFORM_KEY).equals(subform)) {
+							setState(selected, subform, keyItem, (EntityFieldMetaDataVO) cb.getSelectedItem());
+						}
+					}
 				}
 				
 				final int s = subformNames.get(subform);
 				subformAddOrDelete.get(index).setEnabled(selected && s < valueCombos.get(index).getModel().getSize());
 				
 				final JComboBox value = valueCombos.get(index);
-				final EntityFieldMetaDataVO keyItem = keyMds.get(index);
-				final EntityFieldMetaDataVO valueItem = (EntityFieldMetaDataVO) value.getSelectedItem();
-				setState(selected, subform, keyItem, valueItem);
-				fireItemEvent(value, keyItem);
+				if (!selected) {
+					// remove all lines of this subform from state
+					deleteState(subform);
+					fireItemEvent(value, null, ItemEvent.DESELECTED);
+				}
+				else {
+					fireItemEvent(value, keyItem, ItemEvent.SELECTED);
+				}
 			}
 
 		}
@@ -144,8 +158,15 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 					final JComboBox value = valueCombos.get(index);
 					final EntityFieldMetaDataVO keyItem = keyMds.get(index);
 					final EntityFieldMetaDataVO valueItem = (EntityFieldMetaDataVO) value.getSelectedItem();
-					setState(true, subform, keyItem, valueItem);
-					fireItemEvent(value, keyItem);
+					
+					// set state
+					// setState(true, subform, keyItem, valueItem);
+					final PivotInfo pinfo = getPivotInfo(subform, keyItem, valueItem);
+					final int i = getPivotListIndexOf(subform, index);
+					final  List<PivotInfo> plist = state.get(subform);
+					plist.set(i, pinfo);
+					
+					fireItemEvent(value, keyItem, ItemEvent.SELECTED);
 				}
 			}
 
@@ -197,6 +218,12 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// delete state
+				final List<PivotInfo> plist = state.get(subform);
+				if (plist != null) {
+					plist.remove(getPivotListIndexOf(subform, index));
+				}
+
 				pivotLines.removeFromViewByMi(index);
 				
 				remove(subformCbs.get(index));
@@ -212,7 +239,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				CollectionUtils.trimTail(keyLabels);
 				
 				remove(valueCombos.get(index));
-				valueCombos.set(index, null);
+				final JComboBox old = valueCombos.set(index, null);
 				CollectionUtils.trimTail(valueCombos);
 								
 				// enable more lines for this subform if there are more values 
@@ -223,7 +250,8 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 					subformAddOrDelete.get(i).setEnabled(true);
 				}
 				
-				updateLayout();
+				updateLayout();	
+				fireItemEvent(old, null, ItemEvent.DESELECTED);				
 			}	
 			
 		}
@@ -302,10 +330,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				// copy state
 				List<PivotInfo> plist = state.get(subform);
 				if (plist == null) plist = Collections.emptyList();
-				if (plist.size() > 0) {
-					this.state.put(subform, plist);
-				}
-				else {
+				if (plist.size() == 0) {
 					// no pivot from this subform is in state
 					final PivotInfo pinfo = getDefaultPivotInfo(this, subform);
 					addLine(this, baseEntity, pinfo, index, index, fields, true, false);
@@ -340,13 +365,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			final MetaDataClientProvider mdProv = MetaDataClientProvider.getInstance();
 			final EntityFieldMetaDataVO field = me.subFormFields.get(subform).values().iterator().next();
 			final EntityFieldMetaDataVO keyField = mdProv.getPivotKeyField(me.baseEntity, subform);
-			final PivotInfo result;
-			try {
-				result = new PivotInfo(subform, keyField.getField(), field.getField(), Class.forName(field.getDataType()));
-			} catch (ClassNotFoundException e) {
-				throw new IllegalStateException(e.toString());
-			}
-			return result;
+			return getPivotInfo(subform, keyField, keyField);
 		}
 		
 		private static void addLine(Header me, String baseEntity, PivotInfo pinfo, int index, int viewIndex, 
@@ -407,18 +426,22 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 
 			final JComboBox combo = mkCombo(baseEntity, subform, keyField.getField(), collator, fields);
 			combo.setEnabled(enabled);
-			combo.setSelectedItem(fields.get(pinfo.getValueField()));
+			final EntityFieldMetaDataVO valueItem = fields.get(pinfo.getValueField()); 
+			combo.setSelectedItem(valueItem);
 			combo.addItemListener(changer);
 			me.valueCombos.add(combo);
 			c.gridx = 3;
 			me.add(combo, c);
 			
-			// disable add button if there is one value
-			if (enabled && first) {
-				if (combo.getModel().getSize() <= 1) {
+			if (enabled) {
+				// copy state
+				me.setState(enabled, subform, keyField, valueItem);
+				me.fireItemEvent(combo, keyField, ItemEvent.SELECTED);
+				// disable add button if there is one value
+				if (first && combo.getModel().getSize() <= 1) {
 					add.setEnabled(false);
 				}
-			}
+			}			
 		}
 
 		private static JComboBox mkCombo(final String baseEntity, String subform, String keyField, final Collator col, Map<String, EntityFieldMetaDataVO> fields) {
@@ -515,34 +538,45 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			validate();
 		}
 
+		private static PivotInfo getPivotInfo(String subform, EntityFieldMetaDataVO keyItem, EntityFieldMetaDataVO valueItem) {
+			final Class<?> type;
+			try {
+				type = Class.forName(valueItem.getDataType());
+			} catch (ClassNotFoundException e) {
+				throw new IllegalStateException(e);
+			}
+			return new PivotInfo(subform, keyItem.getField(), valueItem.getField(), type);
+		}
+		
 		private void setState(boolean selected, String subform, EntityFieldMetaDataVO keyItem, EntityFieldMetaDataVO valueItem) {
+			List<PivotInfo> plist = state.get(subform);
+			final PivotInfo pinfo = getPivotInfo(subform, keyItem, valueItem);
 			// set state
 			if (selected) {
-				final Class<?> type;
-				try {
-					type = Class.forName(valueItem.getDataType());
-				} catch (ClassNotFoundException e) {
-					throw new IllegalStateException(e);
-				}
-				List<PivotInfo> plist = state.get(subform);
 				if (plist == null) {
 					plist = new ArrayList<PivotInfo>();
 					state.put(subform, plist);
 				}
-				plist.add(new PivotInfo(subform, keyItem.getField(), valueItem.getField(), type));
+				plist.add(pinfo);
 			}
 			else {
-				state.put(subform, null);
+				if (plist != null) {
+					plist.remove(pinfo);
+				}
 			}
 		}
+		
+		private void deleteState(String subform) {
+			state.put(subform, null);
+		}
 
-		private void fireItemEvent(ItemSelectable source, EntityFieldMetaDataVO item) {
+		private void fireItemEvent(ItemSelectable source, EntityFieldMetaDataVO item, int state) {
 			final List<ItemListener> l;
 			synchronized (listener) {
 				if (listener.isEmpty()) return;
 				l = (List<ItemListener>) CloneUtils.cloneCollection(listener);
 			}
-			final ItemEvent event = new ItemEvent(source, ItemEvent.SELECTED, item, ItemEvent.SELECTED);
+			final ItemEvent event = new ItemEvent(source, state, item, state);
 			for (ItemListener i: l) {
 				i.itemStateChanged(event);
 			}
@@ -581,7 +615,20 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			}
 			return -1;
 		}
-
+		
+		private int getPivotListIndexOf(String subform, int modelIndex) {
+			final int size = valueCombos.size();
+			int result = -1;
+			for (int i = 0; i < size && i <= modelIndex; ++i) {
+				final JComboBox cb = valueCombos.get(i);
+				final String s = (String) cb.getClientProperty(SUBFORM_KEY);
+				if (subform.equals(s)) {
+					++result; 
+				}
+			}
+			return result;
+		}
+		
 	}
 	
 	public PivotPanel(String baseEntity, Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields, Map<String,List<PivotInfo>> state) {
@@ -606,8 +653,8 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 		return getHeader().state.get(subformName);
 	}
 
-	public String getSubformName(int index) {
-		return (String) getHeader().valueCombos.get(index).getClientProperty(SUBFORM_KEY);
+	public String getSubformName(ItemSelectable src) {
+		return (String) ((JComponent) src).getClientProperty(SUBFORM_KEY);
 	}
 	
 	public int indexFromValueComponent(ItemSelectable key) {

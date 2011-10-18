@@ -43,7 +43,7 @@ public class PivotController extends SelectFixedColumnsController {
 		public void itemStateChanged(ItemEvent e) {
 			final ItemSelectable src = e.getItemSelectable();
 			final int index = getPivotPanel().indexFromValueComponent(src);
-			final String subform = getPivotPanel().getSubformName(index);
+			final String subform = getPivotPanel().getSubformName(src);
 			final List<PivotInfo> newState = getPivotPanel().getState(subform);
 			final EntityFieldMetaDataVO item = (EntityFieldMetaDataVO) e.getItem();
 			LOG.info("index: " + index + " subform: " + subform + " newState: " + newState + " md: " + item);
