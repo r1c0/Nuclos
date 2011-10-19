@@ -1373,7 +1373,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			// We deliberately allow changing the GenericObjectVO from the rule in "state change" events
 			// so the rule writer doesn't have to distinguish them from other events (like "save").
 			// Note that the modification of the leased object does not fire another save event here:
-			GenericObjectVO modifiedGoVO = goFacade.modify(loccvoAfter.getGenericObject(), loccvoAfter.getDependants(), false);
+			GenericObjectVO modifiedGoVO = goFacade.modify(loccvoAfter.getGenericObject(), loccvoAfter.getDependants(true), false);
 
 			RuleObjectContainerCVO loccvoAfterModified = new RuleObjectContainerCVO(Event.CHANGE_STATE_AFTER, modifiedGoVO, loccvoAfter.getDependants());
 			loccvoAfterModified.setTargetStateId(iTargetStateId);

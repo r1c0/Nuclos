@@ -436,7 +436,7 @@ public class RuleInterface extends CustomCodeInterface {
 			roccvo.setDependants(sDependantEntityName, collmdvoDependants);
 
 			try {
-				getMasterDataFacade().modify(sEntityName, roccvo.getMasterData(), roccvo.getDependants());
+				getMasterDataFacade().modify(sEntityName, roccvo.getMasterData(), roccvo.getDependants(true));
 			}
 			catch (CommonBusinessException ex) {
 				throw new NuclosFatalRuleException(ex.getMessage(), ex);

@@ -82,7 +82,7 @@ public class GenericObjectWithDependantsVO extends GenericObjectVO {
 	 */
 	@Deprecated
 	public GenericObjectWithDependantsVO(RuleObjectContainerCVO loccvo) {
-		this(loccvo.getGenericObject(), loccvo.getDependants());
+		this(loccvo.getGenericObject(), loccvo.getDependants(true));
 	}
 
 	public DependantMasterDataMap getDependants() {

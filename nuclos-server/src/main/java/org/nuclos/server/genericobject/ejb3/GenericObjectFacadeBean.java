@@ -1728,7 +1728,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		final RuleObjectContainerCVO loccvo = facade.executeBusinessRules(lstRuleVO, new RuleObjectContainerCVO(Event.USER, govo, govo.getDependants()), false);
 		if (bSaveAfterRuleExecution) {
-			this.modify(loccvo.getGenericObject(), loccvo.getDependants(), true);
+			this.modify(loccvo.getGenericObject(), loccvo.getDependants(true), true);
 		}
 	}
 

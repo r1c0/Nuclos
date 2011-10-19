@@ -1034,7 +1034,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			new RuleObjectContainerCVO(Event.USER, mdvo, mdvo.getDependants()), false);
 		if(bSaveAfterRuleExecution) {
 			this.modify(sEntityName, loccvo.getMasterData(),
-				loccvo.getDependants());
+				loccvo.getDependants(true));
 		}
 	}
 
