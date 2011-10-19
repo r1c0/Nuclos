@@ -59901,62 +59901,62 @@
   {
     "resourceID": "WorkspaceChooserController.1",
     "locale": "i-default",
-    "text": "Create new workspace"
+    "text": "New"
   },
   {
     "resourceID": "WorkspaceChooserController.1",
     "locale": "en",
-    "text": "Create new workspace"
+    "text": "New"
   },
   {
     "resourceID": "WorkspaceChooserController.1",
     "locale": "de",
-    "text": "Neuen Arbeitsbereich anlegen"
+    "text": "Neu"
   },
   {
     "resourceID": "WorkspaceChooserController.2",
     "locale": "i-default",
-    "text": "Name"
+    "text": "Workspace"
   },
   {
     "resourceID": "WorkspaceChooserController.2",
     "locale": "en",
-    "text": "Name"
+    "text": "Workspace"
   },
   {
     "resourceID": "WorkspaceChooserController.2",
     "locale": "de",
-    "text": "Name"
+    "text": "Arbeitsumgebung"
   },
   {
     "resourceID": "WorkspaceChooserController.3",
     "locale": "i-default",
-    "text": "Name of new workspace"
+    "text": "Edit"
   },
   {
     "resourceID": "WorkspaceChooserController.3",
     "locale": "en",
-    "text": "Name of new workspace"
+    "text": "Edit"
   },
   {
     "resourceID": "WorkspaceChooserController.3",
     "locale": "de",
-    "text": "Name des neuen Arbeitsbereiches"
+    "text": "Bearbeiten"
   },
   {
     "resourceID": "WorkspaceChooserController.4",
     "locale": "i-default",
-    "text": "Save workspace as"
+    "text": "Clone"
   },
   {
     "resourceID": "WorkspaceChooserController.4",
     "locale": "en",
-    "text": "Save workspace as"
+    "text": "Clone"
   },
   {
     "resourceID": "WorkspaceChooserController.4",
     "locale": "de",
-    "text": "Arbeitsbereich sichern unter"
+    "text": "Klonen"
   },
   {
     "resourceID": "WorkspaceChooserController.5",
@@ -59976,47 +59976,47 @@
   {
     "resourceID": "WorkspaceChooserController.6",
     "locale": "i-default",
-    "text": "Save current workspace \"{0}\" as"
+    "text": "Clone workspace \"{0}\""
   },
   {
     "resourceID": "WorkspaceChooserController.6",
     "locale": "en",
-    "text": "Save urrent workspace \"{0}\" as"
+    "text": "Clone workspace \"{0}\""
   },
   {
     "resourceID": "WorkspaceChooserController.6",
     "locale": "de",
-    "text": "Aktuellen Arbeitsbereich \"{0}\" sichern unter"
+    "text": "Arbeitsumgebung \"{0}\" klonen"
   },
   {
     "resourceID": "WorkspaceChooserController.7",
     "locale": "i-default",
-    "text": "Remove current workspace"
+    "text": "Remove"
   },
   {
     "resourceID": "WorkspaceChooserController.7",
     "locale": "en",
-    "text": "Remove current workspace"
+    "text": "Remove"
   },
   {
     "resourceID": "WorkspaceChooserController.7",
     "locale": "de",
-    "text": "Aktuellen Arbeitsbereich löschen"
+    "text": "Löschen"
   },
   {
     "resourceID": "WorkspaceChooserController.8",
     "locale": "i-default",
-    "text": "Do you really want to remove the current workspace \"{0}\"?"
+    "text": "Do you really want to remove workspace \"{0}\"?"
   },
   {
     "resourceID": "WorkspaceChooserController.8",
     "locale": "en",
-    "text": "Do you really want to remove the current workspace \"{0}\"?"
+    "text": "Do you really want to remove workspace \"{0}\"?"
   },
   {
     "resourceID": "WorkspaceChooserController.8",
     "locale": "de",
-    "text": "Möchten Sie  den aktuellen Arbeitsbereich \"{0}\" wirklich löschen?"
+    "text": "Möchten Sie die Arbeitsumgebung \"{0}\" wirklich löschen?"
   },
   {
     "resourceID": "WorkspaceChooserController.9",
@@ -60032,6 +60032,111 @@
     "resourceID": "WorkspaceChooserController.9",
     "locale": "de",
     "text": "Sind Sie sicher?"
+  },
+  {
+    "resourceID": "WorkspaceEditor.1",
+    "locale": "i-default",
+    "text": "Edit workspace"
+  },
+  {
+    "resourceID": "WorkspaceEditor.1",
+    "locale": "en",
+    "text": "Edit workspace"
+  },
+  {
+    "resourceID": "WorkspaceEditor.1",
+    "locale": "de",
+    "text": "Arbeitsumgebung bearbeiten"
+  },
+  {
+    "resourceID": "WorkspaceEditor.2",
+    "locale": "i-default",
+    "text": "Name"
+  },
+  {
+    "resourceID": "WorkspaceEditor.2",
+    "locale": "en",
+    "text": "Name"
+  },
+  {
+    "resourceID": "WorkspaceEditor.2",
+    "locale": "de",
+    "text": "Name"
+  },
+  {
+    "resourceID": "WorkspaceEditor.3",
+    "locale": "i-default",
+    "text": "Hide name"
+  },
+  {
+    "resourceID": "WorkspaceEditor.3",
+    "locale": "en",
+    "text": "Hide name"
+  },
+  {
+    "resourceID": "WorkspaceEditor.3",
+    "locale": "de",
+    "text": "Name ausblenden"
+  },
+  {
+    "resourceID": "WorkspaceEditor.4",
+    "locale": "i-default",
+    "text": "Icon"
+  },
+  {
+    "resourceID": "WorkspaceEditor.4",
+    "locale": "en",
+    "text": "Icon"
+  },
+  {
+    "resourceID": "WorkspaceEditor.4",
+    "locale": "de",
+    "text": "Icon"
+  },
+  {
+    "resourceID": "WorkspaceEditor.5",
+    "locale": "i-default",
+    "text": "Save"
+  },
+  {
+    "resourceID": "WorkspaceEditor.5",
+    "locale": "en",
+    "text": "Save"
+  },
+  {
+    "resourceID": "WorkspaceEditor.5",
+    "locale": "de",
+    "text": "Speichern"
+  },
+  {
+    "resourceID": "WorkspaceEditor.6",
+    "locale": "i-default",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "WorkspaceEditor.6",
+    "locale": "en",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "WorkspaceEditor.6",
+    "locale": "de",
+    "text": "Abbrechen"
+  },
+  {
+    "resourceID": "WorkspaceEditor.7",
+    "locale": "i-default",
+    "text": "Please enter a name"
+  },
+  {
+    "resourceID": "WorkspaceEditor.7",
+    "locale": "en",
+    "text": "Please enter a name"
+  },
+  {
+    "resourceID": "WorkspaceEditor.7",
+    "locale": "de",
+    "text": "Bitte geben Sie einen Namen an"
   },
   {
     "resourceID": "MainMenuAdministration",

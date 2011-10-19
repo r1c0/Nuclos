@@ -708,7 +708,31 @@ public class Icons {
 	public ImageIcon getIconShowList() {
 		return this.getIconByName("showList");
 	}
+	
+	public ImageIcon getWorkspaceChooser_bg() {
+		return this.getIconByName("workspaceChooser_bg");
+	}
 
+	public ImageIcon getWorkspaceChooser_buttonBG() {
+		return this.getIconByName("workspaceChooser_buttonBG");
+	}
+	
+	public ImageIcon getWorkspaceChooser_buttonLeft() {
+		return this.getIconByName("workspaceChooser_buttonLeft");
+	}
+	
+	public ImageIcon getWorkspaceChooser_buttonRight() {
+		return this.getIconByName("workspaceChooser_buttonRight");
+	}
+	
+	public ImageIcon getWorkspaceChooser_left() {
+		return this.getIconByName("workspaceChooser_left");
+	}
+	
+	public ImageIcon getWorkspaceChooser_right() {
+		return this.getIconByName("workspaceChooser_right");
+	}
+	
 	public Icon getStateViewStateNormal(String type) {
 		if (type.equals("first"))
 			return this.getIconByName("state-view-state-normal-first");

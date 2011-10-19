@@ -20,6 +20,8 @@ import javax.swing.SwingConstants;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import org.nuclos.common2.StringUtils;
+
 public class PopupButton extends JToggleButton implements PopupMenuListener, ActionListener {
 
 	private static final long serialVersionUID = 1L;
@@ -35,6 +37,10 @@ public class PopupButton extends JToggleButton implements PopupMenuListener, Act
 		}
 	};
 
+	public PopupButton() {
+		this("");
+	}
+	
 	public PopupButton(String text) {
 		super(text);
 		setSelected(false);
@@ -76,19 +82,34 @@ public class PopupButton extends JToggleButton implements PopupMenuListener, Act
 	@Override
 	public Dimension getPreferredSize() {
 		Dimension defaultPrefSize = super.getPreferredSize();
-		return new Dimension(defaultPrefSize.width + Icons.getInstance().getArrowButtonX().getIconWidth() + 1, defaultPrefSize.height);
+		return new Dimension(
+				defaultPrefSize.width
+				+ Icons.getInstance().getArrowButtonX().getIconWidth()
+				+ (StringUtils.looksEmpty(getText())?-4:1), 
+				defaultPrefSize.height
+				+ (StringUtils.looksEmpty(getText())?Icons.getInstance().getArrowButtonX().getIconHeight()-2:0));
 	}
 
 	@Override
 	public Dimension getMaximumSize() {
 		Dimension defaultMaxSize = super.getMaximumSize();
-		return new Dimension(defaultMaxSize.width + Icons.getInstance().getArrowButtonX().getIconWidth() + 1, defaultMaxSize.height);
+		return new Dimension(
+				defaultMaxSize.width
+				+ Icons.getInstance().getArrowButtonX().getIconWidth()
+				+ (StringUtils.looksEmpty(getText())?-4:1), 
+				defaultMaxSize.height
+				+ (StringUtils.looksEmpty(getText())?Icons.getInstance().getArrowButtonX().getIconHeight()-2:0));
 	}
 
 	@Override
 	public Dimension getMinimumSize() {
 		Dimension defaultMinSize = super.getMinimumSize();
-		return new Dimension(defaultMinSize.width + Icons.getInstance().getArrowButtonX().getIconWidth() + 1, defaultMinSize.height);
+		return new Dimension(
+				defaultMinSize.width
+				+ Icons.getInstance().getArrowButtonX().getIconWidth()
+				+ (StringUtils.looksEmpty(getText())?-4:1), 
+				defaultMinSize.height
+				+ (StringUtils.looksEmpty(getText())?Icons.getInstance().getArrowButtonX().getIconHeight()-2:0));
 	}
 
 	@Override

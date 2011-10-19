@@ -99,6 +99,7 @@ import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.ComparatorUtils;
 import org.nuclos.common.collection.Pair;
@@ -136,6 +137,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private static final String PREFS_NODE_SPLITTING_DEACTIVATED = "splittingdeactivated";
 	private static final String PREFS_NODE_DEFAULT_WORKSPACE = "defaultworkspace";
 	private static final String PREFS_NODE_LAST_WORKSPACE = "lastworkspace";
+	private static final String PREFS_NODE_WORKSPACE_ORDER = "workspaceorder";
 
 	public final static boolean SPLIT_CONTINUOS_LAYOUT = false;
 	public final static boolean SPLIT_ONE_TOUCH_EXPANDABLE = true;
@@ -583,7 +585,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 								CommonLocaleDelegate.getMessage("MainFrame.restoreDefaultWorkspace.2","Möchten Sie wirklich die Fenstereinteilung auf den Standard zurücksetzen?\nTabs werden nicht geschlossen, aber Fenstereinteilungen und Erweiterungsfenster werden zurückgesetzt.\nMöchten Sie fortfahren?"),
 								CommonLocaleDelegate.getMessage("MainFrame.restoreDefaultWorkspace.1","Arbeitsbereich wiederherstellen"),
 								JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE)) {
-								RestoreUtils.restoreToDefaultWorkspace(getWorkspace());
+								RestoreUtils.restoreToDefaultWorkspace(getWorkspace().getName());
 							}
 						}
 					}
@@ -1746,8 +1748,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		mainFramePrefs.putBoolean(PREFS_NODE_SPLITTING_DEACTIVATED, splittingDeactivated);
 		mainFramePrefs.putInt(PREFS_NODE_HISTORY_SIZE_INDEX, selectedHistorySize);
 		mainFramePrefs.put(PREFS_NODE_DEFAULT_WORKSPACE, defaultWorkspace);
-		mainFramePrefs.put(PREFS_NODE_LAST_WORKSPACE, getWorkspace());
-
+		mainFramePrefs.put(PREFS_NODE_LAST_WORKSPACE, getWorkspace().getName());
+		PreferencesUtils.putStringList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER, WorkspaceChooserController.getWorkspaceOrder());
+		
 		mainFramePrefs.node(PREFS_NODE_BOOKMARK).removeNode();
 		Preferences prefsBookmark = mainFramePrefs.node(PREFS_NODE_BOOKMARK);
 		for (String entity : bookmark.keySet()) {
@@ -1774,7 +1777,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		selectedHistorySize = mainFramePrefs.getInt(PREFS_NODE_HISTORY_SIZE_INDEX, 0);
 		defaultWorkspace = mainFramePrefs.get(PREFS_NODE_DEFAULT_WORKSPACE, CommonLocaleDelegate.getMessage("Workspace.Default","Standard"));
 		lastWorkspace = mainFramePrefs.get(PREFS_NODE_LAST_WORKSPACE, CommonLocaleDelegate.getMessage("Workspace.Default","Standard"));
-		workspaceChooserController.setupItems();
+		workspaceChooserController.setupWorkspaces(PreferencesUtils.getStringList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER));
 
 		Preferences prefsBookmark = mainFramePrefs.node(PREFS_NODE_BOOKMARK);
 		for (String entity : prefsBookmark.childrenNames()) {
@@ -1933,8 +1936,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 *
 	 * @return
 	 */
-	public static String getWorkspace() {
-		return workspaceChooserController.getSelectedWorkspace();
+	public static WorkspaceDescription getWorkspace() {
+		return WorkspaceChooserController.getSelectedWorkspace();
 	}
 
 	/**

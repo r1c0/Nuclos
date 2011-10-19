@@ -20,6 +20,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -164,16 +166,49 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 	 * @return
 	 */
 	@Override
-	public List<String> getWorkspaceNames() {
+	public Collection<WorkspaceDescription> getWorkspaceMetadataOnly() {
 		Integer userId = SecurityCache.getInstance().getUserId(getCurrentUserName());
 		
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("T_MD_WORKSPACE").alias(SystemFields.BASE_ALIAS);
-		query.select(t.baseColumn("STRNAME", String.class));
+		query.select(t.baseColumn("CLBWORKSPACE", String.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_MD_USER", Integer.class), userId));
 		
-		return DataBaseHelper.getDbAccess().executeQuery(query);
+		List<String> xmls = DataBaseHelper.getDbAccess().executeQuery(query);
+		Collection<WorkspaceDescription> result = new ArrayList<WorkspaceDescription>();
+		
+		for (String xml : xmls) {
+			try {
+				WorkspaceDescription wd = (WorkspaceDescription) (new XStream(new DomDriver())).fromXML(xml);
+				wd.getFrames().clear(); // no need for frames, only metadata
+				result.add(wd);
+			} 
+			catch (XStreamException e) {
+				error(e.getMessage());
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @param wd
+	 * @throws CommonFinderException
+	 */
+	@Override
+	public void storeWorkspaceMetadataOnly(String originName, WorkspaceDescription wd) throws CommonFinderException {
+		WorkspaceDescription wddb = getWorkspace(originName);
+		
+		if (!LangUtils.equals(wd.getName(), originName)) {
+			removeWorkspace(originName);
+		}
+		
+		wddb.setName(wd.getName());
+		wddb.setHideName(wd.isHideName());
+		wddb.setNuclosResource(wd.getNuclosResource());
+		storeWorkspace(wddb);
 	}
 	
 	/**
@@ -205,6 +240,25 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		catch (XStreamException e) {
 			throw new CommonFinderException("There is no workspace stored for the current user and given name. (" 
 					+ getCurrentUserName() + ", " + name + "): " + e.toString());
+		}
+	}
+	
+	public WorkspaceDescription getWorkspace(Integer id) throws CommonFinderException {
+		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQuery<String> query = builder.createQuery(String.class);
+		DbFrom t = query.from("T_MD_WORKSPACE").alias(SystemFields.BASE_ALIAS);
+		query.select(t.baseColumn("CLBWORKSPACE", String.class));
+		query.where(builder.equal(t.baseColumn(SystemFields.ID, SystemFields.ID_CLASS), id.longValue()));
+		
+		try {
+			String xml = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+			return (WorkspaceDescription) (new XStream(new DomDriver())).fromXML(xml);
+		} 
+		catch (DbInvalidResultSizeException e) {
+			throw new CommonFinderException(e.getMessage());
+		}
+		catch (XStreamException e) {
+			throw new CommonFinderException(e.getMessage());
 		}
 	}
 	
@@ -244,6 +298,10 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 			DalUtils.updateVersionInformation(eo, getCurrentUserName());
 			NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.WORKSPACE).insertOrUpdate(eo);
 		}
+	}
+	
+	public void updateWorkspaceMetadata(Integer id, String name, Boolean hideName, Integer resourceId, String nuclosResource) {
+		
 	}
 	
 	/**

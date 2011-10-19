@@ -16,7 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common.ejb3;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
@@ -83,7 +83,7 @@ public interface PreferencesFacadeRemote {
 	 * 
 	 * @return
 	 */
-	public List<String> getWorkspaceNames();
+	public Collection<WorkspaceDescription> getWorkspaceMetadataOnly();
 	
 	/**
 	 * 
@@ -98,6 +98,13 @@ public interface PreferencesFacadeRemote {
 	 * @param wd
 	 */
 	public void storeWorkspace(WorkspaceDescription wd);
+	
+	/**
+	 * 
+	 * @param wd
+	 * @throws CommonFinderException
+	 */
+	public void storeWorkspaceMetadataOnly(String originName, WorkspaceDescription wd) throws CommonFinderException;
 	
 	/**
 	 * 

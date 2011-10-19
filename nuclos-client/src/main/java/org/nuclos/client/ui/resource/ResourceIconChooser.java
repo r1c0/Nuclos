@@ -44,6 +44,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionListener;
 
+import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 import org.nuclos.client.ui.Icons;
@@ -70,6 +71,10 @@ public class ResourceIconChooser extends JPanel {
 	};
 	
 	public ResourceIconChooser() {
+		this(0);
+	}
+	
+	public ResourceIconChooser(final int iconMaxSize) {
 		setLayout(new BorderLayout());
 		
 		List<ImageIcon> icons = new ArrayList<ImageIcon>();
@@ -121,7 +126,7 @@ public class ResourceIconChooser extends JPanel {
 				JPanel btnPanel = new JPanel(new BorderLayout());
 				btnPanel.setOpaque(false);
 				
-				JButton btn = new JButton((ImageIcon) value);
+				JButton btn = new JButton(MainFrame.resizeAndCacheIcon((ImageIcon) value, iconMaxSize));
 				btn.setBorderPainted(false);
 				btn.setContentAreaFilled(true);
 				btn.addActionListener(iconActionListener);

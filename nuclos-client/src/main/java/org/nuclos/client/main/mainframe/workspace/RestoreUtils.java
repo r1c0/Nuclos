@@ -334,14 +334,13 @@ public class RestoreUtils {
 	 *
 	 * @param name
 	 */
-	public synchronized static void storeWorkspace(String name) {
+	public synchronized static void storeWorkspace(WorkspaceDescription wd) {
 		if (isRestoreRunning()) {
 			// do not store workspace if restore is running...
 			return;
 		}
 
-		final WorkspaceDescription wd = new WorkspaceDescription();
-		wd.setName(name);
+		wd.getFrames().clear();
 
 		MainFrame.restoreAllTabbedPaneContainingArea();
 		for (CommonJFrame frame : MainFrame.getOrderedFrames()) {

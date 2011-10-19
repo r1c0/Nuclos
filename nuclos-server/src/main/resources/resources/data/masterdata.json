@@ -9326,7 +9326,7 @@
     "importexport": true,
     "systementity": true,
     "labelres": "nuclos.entity.workspace.label",
-    "uniquefields": [
+    "logicaluniquefields": [
       [
         "name",
         "user"
@@ -9343,7 +9343,6 @@
         "nullable": false,
         "searchable": false,
         "logbook": false,
-        "unique": true,
         "labelres": "nuclos.entityfield.workspace.name.label",
         "descriptionres": "nuclos.entityfield.workspace.name.description"
       },
@@ -9356,7 +9355,6 @@
         "nullable": false,
         "searchable": false,
         "logbook": false,
-        "unique": false,
         "labelres": "nuclos.entityfield.workspace.clbworkspace.label",
         "descriptionres": "nuclos.entityfield.workspace.clbworkspace.description"
       },
@@ -9368,11 +9366,10 @@
         "foreignentity": "nuclos_user",
         "datatype": "java.lang.String",
         "datascale": 255,
-        "nullable": false,
+        "nullable": true,
         "searchable": false,
         "logbook": false,
         "foreignentityfield": "name",
-        "unique": true,
         "ondeletecascade": true,
         "labelres": "nuclos.entityfield.workspace.user.label",
         "descriptionres": "nuclos.entityfield.workspace.user.description"

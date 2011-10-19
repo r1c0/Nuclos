@@ -24,10 +24,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.httpclient.util.LangUtils;
+
 public class WorkspaceDescription implements Serializable {
 	private static final long serialVersionUID = 6637996725938917463L;
 
 	private String name;
+	private boolean hideName;
+	private String nuclosResource;
 	private final List<Frame> frames = new ArrayList<Frame>();
 	
 	public WorkspaceDescription() {
@@ -39,6 +43,22 @@ public class WorkspaceDescription implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public boolean isHideName() {
+		return hideName;
+	}
+
+	public void setHideName(boolean hideName) {
+		this.hideName = hideName;
+	}
+
+	public String getNuclosResource() {
+		return nuclosResource;
+	}
+
+	public void setNuclosResource(String nuclosResource) {
+		this.nuclosResource = nuclosResource;
 	}
 
 	public List<Frame> getFrames() {
@@ -297,4 +317,43 @@ public class WorkspaceDescription implements Serializable {
 	}
 
 	public static interface NestedContent extends Serializable {}
+
+	public WorkspaceDescription copyMetadata() {
+		WorkspaceDescription copy = new WorkspaceDescription();
+		copy.setName(getName());
+		copy.setHideName(isHideName());
+		copy.setNuclosResource(getNuclosResource());
+		return copy;
+	}
+	
+	public void importMetadata(WorkspaceDescription importWD) {
+		setName(importWD.getName());
+		setHideName(importWD.isHideName());
+		setNuclosResource(importWD.getNuclosResource());
+	}
+	
+	@Override
+	public int hashCode() {
+		if (name == null)
+			return 0;
+		return name.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof WorkspaceDescription) {
+			WorkspaceDescription other = (WorkspaceDescription) obj;
+			LangUtils.equals(getName(), other.getName());
+		}
+		return super.equals(obj);
+	}
+
+	@Override
+	public String toString() {
+		if (name == null)
+			return "null";
+		return name.toString();
+	}
+	
+	
 }
