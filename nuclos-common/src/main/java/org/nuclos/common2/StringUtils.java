@@ -169,7 +169,7 @@ public class StringUtils {
 
 		if (params != null) {
 			for (Object param : params)
-				sb.append("{").append(param == null ? "" : param.toString()).append("}");
+				sb.append(" {").append(param == null ? "" : param.toString()).append("}");
 		}
 
 		return sb.toString();

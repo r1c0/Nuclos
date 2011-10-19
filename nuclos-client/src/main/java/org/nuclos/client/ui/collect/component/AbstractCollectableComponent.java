@@ -80,6 +80,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
+import org.nuclos.common.collect.collectable.CollectableEntityField.CollectableEntityFieldSecurityAgent;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparisonWithOtherField;
@@ -1632,10 +1633,6 @@ public abstract class AbstractCollectableComponent
 
 	protected static class CollectableComponentDetailTableCellRenderer extends javax.swing.table.DefaultTableCellRenderer implements TableCellRenderer {
 
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 		// blurfilter to hide data on which the user has no read permission
 		BoxBlurFilter filter = new BoxBlurFilter(20, 10, 1);
 		BufferedImageOpEffect blurEffect = new BufferedImageOpEffect(filter);
@@ -1656,15 +1653,22 @@ public abstract class AbstractCollectableComponent
 
 			// check whether the data of the component is readable for current user, by asking the security agent of the actual field
 			if (tbl.getModel() instanceof SortableCollectableTableModel<?>) {
-				SortableCollectableTableModel<Collectable> tblModel = (SortableCollectableTableModel<Collectable>)tbl.getModel();
+				final SortableCollectableTableModel<Collectable> tblModel = (SortableCollectableTableModel<Collectable>)tbl.getModel();
 				if (tblModel.getRowCount() >= iRow+1) {
-					Collectable clct = tblModel.getCollectable(iRow);
-					Integer iTColumn = tbl.getColumnModel().getColumn(iColumn).getModelIndex();
-					CollectableEntityField clctef = tblModel.getCollectableEntityField(iTColumn);
-					clctef.getSecurityAgent().setCollectable(clct);
+					final Collectable clct = tblModel.getCollectable(iRow);
+					final Integer iTColumn = tbl.getColumnModel().getColumn(iColumn).getModelIndex();
+					final CollectableEntityField clctef = tblModel.getCollectableEntityField(iTColumn);
+					if (clctef == null) {
+						throw new NullPointerException("getTableCellRendererComponent failed to find field: " + clct + " tm index " + iTColumn);
+					}
+					final CollectableEntityFieldSecurityAgent sa = clctef.getSecurityAgent();
+					if (sa == null) {
+						throw new NullPointerException("No security agent set on " + clctef);
+					}
+					sa.setCollectable(clct);
 					if (!clctef.isReadable()) {
-						BufferedLayerUI<JComponent> layerUI = new BufferedLayerUI<JComponent>();
-						JXLayer<JComponent> layer = new JXLayer<JComponent>(this, layerUI);
+						final BufferedLayerUI<JComponent> layerUI = new BufferedLayerUI<JComponent>();
+						final JXLayer<JComponent> layer = new JXLayer<JComponent>(this, layerUI);
 						layerUI.setLayerEffects(blurEffect);
 						return layer;
 					}

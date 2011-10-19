@@ -56,6 +56,7 @@ import javax.swing.plaf.basic.BasicScrollPaneUI.VSBChangeListener;
 import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.genericobject.ChangeListenerForResultTableVerticalScrollBar;
 import org.nuclos.client.main.mainframe.MainFrameTab;
@@ -77,6 +78,7 @@ import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.client.ui.table.TableUtils;
+import org.nuclos.client.ui.util.SwingUtils;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
@@ -103,9 +105,10 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 
 	private static final String PREFS_KEY_LASTXMLTRANSFERPATH = "lastXMLTransferPath";
 	
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(NuclosResultPanel.class);
 	
 	private JTable tblFixedResult;
+
 	private Set<CollectableEntityField> stFixedColumns;
 
 	public NuclosResultPanel() {
@@ -250,19 +253,26 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 
 		final Map<String, Integer> mpWidths = new HashMap<String, Integer>(lstclctefSelected.size());
 		for (CollectableEntityField clctef : lstclctefSelected) {
+			final String label = clctef.getLabel();
 			TableColumn column = null;
 			try {
-				column = getResultTable().getColumn(clctef.getLabel());
+				column = getResultTable().getColumn(label);
 			}
 			catch (IllegalArgumentException ex) {
 				// ignore
-				column = tblFixedResult.getColumn(clctef.getLabel());
+				try {
+					column = tblFixedResult.getColumn(label);
+				}
+				catch (IllegalArgumentException e) {
+					LOG.warn("getVisibleColumnWidth failed on field with label " + label + ", " + clctef + "\n" +
+							"\ttable: " + SwingUtils.headerString(getResultTable()) + "\n" +
+							"\tfixed: " + SwingUtils.headerString(tblFixedResult));
+				}
 			}
 			if (column != null) {
 				mpWidths.put(clctef.getName(), column.getWidth());
 			}
 		}
-
 		return mpWidths;
 	}
 

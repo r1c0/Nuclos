@@ -28,6 +28,7 @@ import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.collect.collectable.AbstractCollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.VirtualCollectableEntityField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
@@ -80,82 +81,7 @@ public class CollectableGenericObjectEntityForAllAttributes implements Collectab
 				final String sEntityName = modules.getEntityNameByModuleId(iModuleId);
 				final String sFieldName = CollectableGenericObjectEntity.getParentObjectFieldName(sEntityName);
 				final String sReferencedEntityName = Modules.getParentModuleName(mdvoModule);
-				this.mpVirtualFields.put(sFieldName, new AbstractCollectableEntityField() {
-
-					@Override
-					public String getDescription() {
-						return "Verweis auf \u00fcbergeordneten Datensatz";
-					}
-
-					@Override
-					public int getFieldType() {
-						return CollectableEntityField.TYPE_VALUEIDFIELD;
-					}
-
-					@Override
-					public Class<?> getJavaClass() {
-						return String.class;
-					}
-
-					@Override
-					public String getLabel() {
-						return "Referenz auf Vaterobjekt";
-					}
-
-					@Override
-					public Integer getMaxLength() {
-						return null;
-					}
-					
-					@Override
-					public Integer getPrecision() {
-						return null;
-					}
-
-					@Override
-					public String getName() {
-						return sFieldName;
-					}
-					
-					@Override
-					public String getFormatInput() {
-						return null;
-					}
-					
-					@Override
-					public String getFormatOutput() {
-						return null;
-					}
-
-					@Override
-					public String getReferencedEntityName() {
-						return sReferencedEntityName;
-					}
-
-					@Override
-					public boolean isNullable() {
-						return false;
-					}
-
-					@Override
-					public boolean isReferencing() {
-						return true;
-					}
-
-					@Override
-					public CollectableEntity getCollectableEntity() {
-						return null;
-					}
-
-					@Override
-					public void setCollectableEntity(CollectableEntity clent) {
-					}
-
-					@Override
-					public String getEntityName() {
-						return sEntityName;
-					}
-				});
+				this.mpVirtualFields.put(sFieldName, new VirtualCollectableEntityField(sEntityName, sFieldName, sReferencedEntityName));
 			}
 		}
 	}

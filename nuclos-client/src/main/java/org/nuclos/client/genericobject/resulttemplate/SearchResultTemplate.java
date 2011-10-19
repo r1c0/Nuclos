@@ -158,7 +158,8 @@ public class SearchResultTemplate {
 	 * @param lstclctefweVisible the columns to be shown in the search result.
 	 */
 	public void setVisibleColumns(List<CollectableEntityField> lstclctefweVisible) {
-		this.visibleFields = lstclctefweVisible;
+		// Make a defensive copy (because collection is unmodifiable). (tp)
+		this.visibleFields = new ArrayList<CollectableEntityField>(lstclctefweVisible);
 	}
 
 	public List<CollectableSorting> getSortingOrder() {

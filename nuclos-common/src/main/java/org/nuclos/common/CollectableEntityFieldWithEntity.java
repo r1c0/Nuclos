@@ -27,6 +27,7 @@ import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
+import org.nuclos.common.collect.collectable.DoNotUseCollectableEntity;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 
@@ -74,6 +75,8 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	 * @param sFieldName
 	 * @precondition clcte != null
 	 * @precondition sFieldName != null
+	 * 
+	 * @deprecated Should be protected and not be used for further development (tp).
 	 */
 	public CollectableEntityFieldWithEntity(CollectableEntity clcte, String sFieldName) {
 		this.clcte = clcte;
@@ -307,20 +310,29 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 		}
 	}
 
+	/**
+	 * TODO: This is total crap and only left here because we need backward compatibility for 
+	 * user preferences. (Thomas Pasch)
+	 */
 	private void writeObject(ObjectOutputStream oos) throws IOException {
 		oos.defaultWriteObject();
+		
 		// CollectableEntityField generally is not serializable, but DefaultCollectableEntityField is:
 		oos.writeObject(new DefaultCollectableEntityField(this.clctef, entityName));
-
 		oos.writeObject(clcte != null ? clcte.getName() : "");
 		oos.writeObject(clcte != null ? clcte.getLabel() : "");
 	}
 
+	/**
+	 * TODO: This is total crap and only left here because we need backward compatibility for 
+	 * user preferences. (Thomas Pasch)
+	 */
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
+		
 		// CollectableEntityField is not serializable:
 		this.clctef = (CollectableEntityField) ois.readObject();
-		this.clcte = new AbstractCollectableEntity((String)ois.readObject(),(String)ois.readObject()) {};
+		this.clcte = new DoNotUseCollectableEntity((String)ois.readObject(),(String)ois.readObject());
 	}
 
 	/**

@@ -13,12 +13,14 @@ import org.nuclos.client.genericobject.CollectableGenericObjectEntity;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.masterdata.MasterDataDelegate;
+import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableEntityFieldPref;
 import org.nuclos.common.collect.collectable.CollectableEntityPref;
+import org.nuclos.common.collect.collectable.DoNotUseCollectableEntity;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
@@ -26,6 +28,7 @@ import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.masterdata.CollectableMasterDataForeignKeyEntityField;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -46,12 +49,13 @@ public class CollectableEntityFieldPreferencesUtil {
 		// backward hack
 		for (Object p: raw) {
 			if (p instanceof CollectableEntityFieldPref) {
+				final CollectableEntityFieldPref pref = (CollectableEntityFieldPref) p;
 				try {
-					result.add(fromPref((CollectableEntityFieldPref) p));
+					result.add(fromPref(pref));
 				}
 				catch (PreferencesException e) {
 					if (ignoreErrors) {
-						LOG.warn("readList: fromPref fails " + e);
+						LOG.warn("readList: fromPref fails on " + pref + ", " + e, e);
 					}
 					else {
 						throw e;
@@ -59,10 +63,10 @@ public class CollectableEntityFieldPreferencesUtil {
 				}
 				catch (CommonFatalException e) {
 					if (ignoreErrors) {
-						LOG.warn("readList: fromPref fails " + e);
+						LOG.warn("readList: fromPref fails on " + pref + ", " + e, e);
 					}
 					else {
-						throw new PreferencesException("readList: fromPref fails", e);
+						throw new PreferencesException("readList: fromPref fails on " + pref, e);
 					}
 				}
 			}
@@ -134,6 +138,15 @@ public class CollectableEntityFieldPreferencesUtil {
 			final CollectableEntity ce = mkCe(cep);
 			result = new CollectableEntityFieldWithEntityForExternal(ce, p.getField(), p.getBelongsToSubEntity(), p.getBelongsToMainEntity());
 		}
+		// probably not needed (tp)
+		else if (CollectableEntityFieldWithEntity.class.getName().equals(p.getType())) {
+			final CollectableEntityPref cep = p.getCollectableEntity();
+			if (cep == null) {
+				throw new PreferencesException("No CollectableEntityPref for CollectableEntityFieldWithEntityForExternal: " + p);
+			}
+			final CollectableEntity ce = mkCe(cep);
+			result = new CollectableEntityFieldWithEntity(ce, p.getField());
+		}
 		else {
 			throw new PreferencesException("Unknown CollectableEntityField of type " + p.getType());
 		}
@@ -166,6 +179,10 @@ public class CollectableEntityFieldPreferencesUtil {
 			MasterDataMetaVO metaData = MasterDataDelegate.getInstance().getMetaData(cep.getEntity());
 			ce = new CollectableMasterDataEntity(metaData);			
 		}
+		else if (DoNotUseCollectableEntity.class.getName().equals(cep.getType())) {
+			final EntityMetaDataVO mdEntity = mdProv.getEntity(cep.getEntity());
+			ce = new DoNotUseCollectableEntity(cep.getEntity(), CommonLocaleDelegate.getLabelFromMetaDataVO(mdEntity));
+		}
 		else {
 			throw new PreferencesException("Unknown CollectableEntity of type " + cep.getType());
 		}
@@ -185,6 +202,10 @@ public class CollectableEntityFieldPreferencesUtil {
 		}
 		else if (f instanceof CollectableEntityFieldWithEntityForExternal) {
 			result = toPref((CollectableEntityFieldWithEntityForExternal) f);
+		}
+		// probably not needed (tp)
+		else if (f instanceof CollectableEntityFieldWithEntity) {
+			result = toPref((CollectableEntityFieldWithEntity) f);
 		}
 		else {
 			throw new PreferencesException("Unknown CollectableEntityField of type " + f);
@@ -224,6 +245,16 @@ public class CollectableEntityFieldPreferencesUtil {
 		final CollectableEntityFieldPref p = new CollectableEntityFieldPref(
 				CollectableEntityFieldWithEntityForExternal.class.getName(), cep, f.getName(), 
 				f.fieldBelongsToSubEntity(), f.fieldBelongsToMainEntity());
+		return p;
+	}
+	
+	public static CollectableEntityFieldPref toPref(CollectableEntityFieldWithEntity f) throws PreferencesException {
+		final CollectableEntity ce = f.getCollectableEntity();
+		final CollectableEntityPref cep = new CollectableEntityPref(ce.getClass().getName(), ce.getName());
+		final CollectableEntityFieldPref p = new CollectableEntityFieldPref(
+				CollectableEntityFieldWithEntity.class.getName(), cep, f.getName(),
+				// ???
+				false, false);
 		return p;
 	}
 	

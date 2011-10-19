@@ -28,4 +28,13 @@ public class CollectableEntityPref {
 		return entity;
 	}
 	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append("CEPref[").append(entity);
+		result.append(", ").append(type);
+		result.append(']');
+		return result.toString();
+	}
+	
 }

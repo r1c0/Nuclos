@@ -80,4 +80,21 @@ public class CollectableEntityFieldPref implements Serializable {
 		return belongsToMainEntity;
 	}
 	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append("CollectableEntityPref[").append(entity).append('.').append(field);
+		result.append(", ").append(type);
+		if (pivot != null) {
+			result.append(", ").append(pivot);
+		}
+		if (ce != null) {
+			result.append(", ").append(ce);
+		}
+		result.append(", main=").append(belongsToMainEntity);
+		result.append(", sub=").append(belongsToSubEntity);
+		result.append(']');
+		return result.toString();
+	}
+	
 }
