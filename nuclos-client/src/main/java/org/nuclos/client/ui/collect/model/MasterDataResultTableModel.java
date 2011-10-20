@@ -21,7 +21,7 @@ public class MasterDataResultTableModel<Clct extends Collectable> extends Sortab
 
 	private final CollectableEntity entity;
 	
-	public MasterDataResultTableModel(CollectableEntity entity) {
+	private MasterDataResultTableModel(CollectableEntity entity) {
 		super(entity.getName());
 		this.entity = entity;
 	}
@@ -38,7 +38,7 @@ public class MasterDataResultTableModel<Clct extends Collectable> extends Sortab
 		final String sFieldName = clctefwe.getName();
 
 		final String sFieldEntityName = clctefwe.getCollectableEntityName();
-		final String sMainEntityName = getEntityName();
+		final String sMainEntityName = getBaseEntityName();
 
 		CollectableField result;
 		if (sFieldEntityName.equals(sMainEntityName)) {

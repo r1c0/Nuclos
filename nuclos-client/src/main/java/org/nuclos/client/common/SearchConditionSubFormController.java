@@ -106,14 +106,29 @@ public class SearchConditionSubFormController extends SubFormController {
 	 * implementation of <code>SearchConditionTableModel</code>.
 	 */
 	private class SearchConditionTableModelImpl extends DefaultTableModel implements SearchConditionTableModel {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-		/**
-		 * List<CollectableEntityField>
-		 */
+
+		private final String subformName;
+		
 		private List<CollectableEntityField> lstclctefColumns;
+		
+		private SearchConditionTableModelImpl(String subformName) {
+			this.subformName = subformName;
+		}
+		
+		@Override
+		public String getBaseEntityName() {
+			return subformName;
+		}
+
+		@Override
+		public int getColumn(CollectableEntityField field) {
+			final int size = lstclctefColumns.size();
+			for (int i = 0; i < size; ++i) {
+				final CollectableEntityField f = lstclctefColumns.get(i);
+				if (field.equals(f)) return i;
+			}
+			return -1;
+		}
 
 		/**
 		 * @param lstclctefColumns List<CollectableEntityField>
@@ -123,9 +138,7 @@ public class SearchConditionSubFormController extends SubFormController {
 		@Override
 		public void setColumns(List<? extends CollectableEntityField> lstclctefColumns) {
 			this.lstclctefColumns = new ArrayList<CollectableEntityField>(lstclctefColumns);
-
 			super.fireTableStructureChanged();
-
 			assert this.getColumnCount() == lstclctefColumns.size();
 		}
 
@@ -142,6 +155,8 @@ public class SearchConditionSubFormController extends SubFormController {
 		/**
 		 * @param iColumn
 		 * @return the name of column <code>iColumn</code>, as shown in the table header
+		 * 
+		 * @deprecated Strongly consider to use {@link #getCollectableEntityField(int)} instead.
 		 */
 		@Override
 		public String getColumnName(int iColumn) {
@@ -157,14 +172,14 @@ public class SearchConditionSubFormController extends SubFormController {
 			return this.getCollectableEntityField(columnIndex).getName();
 		}
 
+		/**
+		 * @deprecated Strongly consider to use {@link #getCollectableEntityField(int)} instead.
+		 */
 		@Override
 		public Class<?> getColumnClass(int iColumn) {
 			return CollectableSearchCondition.class;
 		}
 
-		/**
-		 * {$inheritDoc}
-		 */
 		@Override
 		public CollectableSearchCondition getCollectableSearchCondition() {
 			final CompositeCollectableSearchCondition condOr = new CompositeCollectableSearchCondition(LogicalOperator.OR);
@@ -200,7 +215,6 @@ public class SearchConditionSubFormController extends SubFormController {
 					//condOr.addOperand(SearchConditionUtils.simplified(condAnd));
 				}
 			}
-
 			return lst;
 		}
 
@@ -309,6 +323,8 @@ public class SearchConditionSubFormController extends SubFormController {
 		/**
 		 * @param sFieldName
 		 * @return the index of the column with the given fieldname. -1 if none was found.
+		 * 
+		 * @deprecated Strongly consider to use {@link #getColumn(CollectableEntityField)} instead.
 		 */
 		@Override
 		public int findColumnByFieldName(String sFieldName) {
@@ -411,7 +427,7 @@ public class SearchConditionSubFormController extends SubFormController {
 		subform.setToolbarFunctionState(SubForm.ToolbarFunction.MULTIEDIT.name(), SubForm.ToolbarFunctionState.HIDDEN);
 
 		// initialize table model:
-		this.tblmdl = new SearchConditionTableModelImpl();
+		this.tblmdl = new SearchConditionTableModelImpl(subform.getEntityName());
 		this.getSubFormTableModel().setColumns(getColumnsFromPrefs());
 
 		final JTable tbl = subform.getJTable();
@@ -425,7 +441,6 @@ public class SearchConditionSubFormController extends SubFormController {
 
 		this.setupTableModelListener();
 		this.setupColumnModelListener();
-
 	}
 
 	/**

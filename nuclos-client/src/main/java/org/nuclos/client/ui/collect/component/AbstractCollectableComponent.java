@@ -1663,7 +1663,7 @@ public abstract class AbstractCollectableComponent
 					}
 					final CollectableEntityFieldSecurityAgent sa = clctef.getSecurityAgent();
 					if (sa == null) {
-						throw new NullPointerException("No security agent set on " + clctef);
+						throw new NullPointerException("No security agent set on " + clctef + " (" + clctef.getClass().getName() + ")");
 					}
 					sa.setCollectable(clct);
 					if (!clctef.isReadable()) {

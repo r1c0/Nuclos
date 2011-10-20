@@ -312,11 +312,6 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 			implements DetailsSubFormTableModel<T> {
 
 		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-
-		/**
 		 * @param lstclct
 		 */
 		DetailsSubFormTableModelImpl(List<T> lstclct) {
@@ -343,6 +338,9 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 			return AbstractDetailsSubFormController.this.isColumnEnabled(sColumnName);
 		}
 
+		/**
+		 * @deprecated Strongly consider to use {@link #getCollectableEntityField(int)} instead.
+		 */
 		@Override
 		public String getColumnName(int iColumn) {
 			String sLabel = AbstractDetailsSubFormController.this.getSubForm().getColumnLabel(this.getCollectableEntityField(iColumn).getName());

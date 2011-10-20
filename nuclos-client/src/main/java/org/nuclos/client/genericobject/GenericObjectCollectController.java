@@ -5632,25 +5632,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	/**
-	 * sets search result format accordng to selected SearchResultTemplate
-	 * @param templateSelected
-	 *
-	 * @deprecated Remove if possible.
-	 */
-	protected void setSearchResultFormatAccordingToTemplate(SearchResultTemplate templateSelected) {
-		makeSureSelectedFieldsAreNonEmpty(getCollectableEntity(), templateSelected.getVisibleColumns());
-		final List<CollectableEntityField> lstSelectedNew = templateSelected.getVisibleColumns();
-		final Set<CollectableEntityField> fixedColumns = new HashSet<CollectableEntityField>(
-				templateSelected.getListColumnsFixed());
-		Map<String, Integer> listColumnsWidths = templateSelected.getListColumnsWidths();
-		Map<String, Integer> clefListColumnsWidths = new HashMap<String, Integer>();
-		for(CollectableEntityField clFiled : lstSelectedNew)
-			if(listColumnsWidths.containsKey(clFiled.getName()))
-				clefListColumnsWidths.put(clFiled.getName(), listColumnsWidths.get(clFiled.getName()));
-		getResultController().initializeFields(getFields(), this, lstSelectedNew);
-	}
-
-	/**
 	 * creates a SearchResultTemplate accordng to selected columns in search result
 	 * @throws CommonBusinessException
 	 */

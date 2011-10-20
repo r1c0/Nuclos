@@ -43,7 +43,7 @@ public class GenericObjectsResultTableModel<Clct extends Collectable> extends So
 
 	private final CollectableEntity entity;
 
-	public GenericObjectsResultTableModel(CollectableEntity entity) {
+	private GenericObjectsResultTableModel(CollectableEntity entity) {
 		super(entity.getName());
 		this.entity = entity;
 	}
@@ -79,7 +79,7 @@ public class GenericObjectsResultTableModel<Clct extends Collectable> extends So
 		final String sFieldName = clctefwe.getName();
 
 		final String sFieldEntityName = clctefwe.getEntityName();
-		final String sMainEntityName = getEntityName();
+		final String sMainEntityName = getBaseEntityName();
 
 		CollectableField result;
 		// field of base entity

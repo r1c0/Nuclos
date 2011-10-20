@@ -47,11 +47,6 @@ public class CollectableTableModelImpl <Clct extends Collectable>
 		implements CollectableTableModel<Clct> {
 
 	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
 	 * the list of columns.
 	 */
 	private List<CollectableEntityField> lstclctefColumns;
@@ -59,20 +54,7 @@ public class CollectableTableModelImpl <Clct extends Collectable>
 	/*
 	 * entity name
 	 */
-	private final String sEntityName;
-
-	/**
-	 * constructs an empty table model.
-	 * @postcondition this.getRowCount == 0
-	 * @postcondition this.getColumnCount == 0
-	 * @postcondition this.getSortedColumn() == -1
-	 */
-	public CollectableTableModelImpl(String sEntityName) {
-		this(sEntityName, new ArrayList<Clct>());
-
-		assert this.getRowCount() == 0;
-		assert this.getColumnCount() == 0;
-	}
+	private final String baseEntityName;
 
 	/**
 	 * constructs a table model, using lstRows as implementation.
@@ -87,7 +69,7 @@ public class CollectableTableModelImpl <Clct extends Collectable>
 		/** @todo check precondition */
 		super(lstclct);
 		this.lstclctefColumns = new ArrayList<CollectableEntityField>();
-		this.sEntityName = sEntityName;
+		this.baseEntityName = sEntityName;
 
 		// assert we don't copy the list:
 		assert this.getRows() == lstclct;
@@ -95,8 +77,9 @@ public class CollectableTableModelImpl <Clct extends Collectable>
 		assert this.getColumnCount() == 0;
 	}
 
-	public String getEntityName() {
-		return sEntityName;
+	@Override
+	public String getBaseEntityName() {
+		return baseEntityName;
 	}
 
 	/**
@@ -110,11 +93,8 @@ public class CollectableTableModelImpl <Clct extends Collectable>
 		if(lstclctefColumns == null) {
 			throw new NullArgumentException("lstclctefColumns");
 		}
-
 		this.lstclctefColumns = new ArrayList<CollectableEntityField>(lstclctefColumns);
-
 		super.fireTableStructureChanged();
-
 		assert this.getColumnCount() == lstclctefColumns.size();
 	}
 
@@ -161,12 +141,24 @@ public class CollectableTableModelImpl <Clct extends Collectable>
 	 */
 	@Override
 	public CollectableEntityField getCollectableEntityField(int iColumn) {
-		return this.lstclctefColumns.get(iColumn);
+		return lstclctefColumns.get(iColumn);
+	}
+	
+	@Override
+	public int getColumn(CollectableEntityField field) {
+		final int size = lstclctefColumns.size();
+		for (int i = 0; i < size; ++i) {
+			final CollectableEntityField f = lstclctefColumns.get(i);
+			if (field.equals(f)) return i;
+		}
+		return -1;
 	}
 
 	/**
 	 * @param sFieldName
 	 * @return the index of the column with the given fieldname. -1 if none was found.
+	 * 
+	 * @deprecated Strongly consider to use {@link #getColumn(CollectableEntityField)} instead.
 	 */
 	@Override
 	public int findColumnByFieldName(String sFieldName) {
@@ -203,14 +195,21 @@ public class CollectableTableModelImpl <Clct extends Collectable>
 	}
 
 	/**
+	 * Return the label of the underlying CollecableEntityField.
+	 * 
 	 * @param iColumn
 	 * @return the name of column <code>iColumn</code>, as shown in the table header
+	 * 
+	 * @deprecated Strongly consider to use {@link #getCollectableEntityField(int)} instead.
 	 */
 	@Override
 	public String getColumnName(int iColumn) {
-		return this.getCollectableEntityField(iColumn).getLabel();
+		return getCollectableEntityField(iColumn).getLabel();
 	}
 
+	/**
+	 * @deprecated Strongly consider to use {@link #getCollectableEntityField(int)} instead.
+	 */
 	@Override
 	public Class<?> getColumnClass(int iColumn) {
 		return CollectableField.class;
@@ -219,6 +218,8 @@ public class CollectableTableModelImpl <Clct extends Collectable>
 	/**
 	 * @param iRow
 	 * @return the <code>Collectable</code> contained in row number <code>iRow</code>
+	 * 
+	 * @deprecated Use {@link #getRow(int)}.
 	 */
 	@Override
 	public Clct getCollectable(int iRow) {
@@ -300,4 +301,5 @@ public class CollectableTableModelImpl <Clct extends Collectable>
 
 		return clct.getField(sFieldName);
 	}
+	
 }  //  class CollectableTableModelImpl

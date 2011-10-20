@@ -21,7 +21,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
 
 import javax.swing.Action;
 import javax.swing.DefaultComboBoxModel;
@@ -42,8 +47,10 @@ import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.result.NuclosResultController;
 import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -51,7 +58,7 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.exception.PreferencesException;
 
 /**
- * Controller for handling <code>SearchResultTemplate</code>s.
+ * Controller for handling {@link SearchResultTemplate}s of GenericObjects.
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
@@ -60,14 +67,11 @@ import org.nuclos.common2.exception.PreferencesException;
  * @version 01.00.00
  */
 public class SearchResultTemplateController {
-	protected static final Logger log = Logger.getLogger(SearchResultTemplateController.class);
+	
+	private static final Logger log = Logger.getLogger(SearchResultTemplateController.class);
 	
 	private final Action actSaveTemplate = new CommonAbstractAction(CommonLocaleDelegate.getMessage("SearchResultTemplateController.1", "Suchergebnisvorlage speichern"), Icons.getInstance().getIconSave16(),
 			CommonLocaleDelegate.getMessage("SearchResultTemplateController.2", "Eingestelltes Ergebnisformat als Suchergebnisvorlage speichern")) {
-		/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -77,10 +81,6 @@ public class SearchResultTemplateController {
 
 	private final Action actRemoveTemplate = new CommonAbstractAction(CommonLocaleDelegate.getMessage("SearchResultTemplateController.3", "Suchergebnisvorlage l\u00f6schen"), Icons.getInstance().getIconDelete16(),
 		CommonLocaleDelegate.getMessage("SearchResultTemplateController.4", "Ausgew\u00e4hlte Suchergebnisvorlage l\u00f6schen")) {
-		/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -285,7 +285,28 @@ public class SearchResultTemplateController {
 			public void run() {
 				final SearchResultTemplate templateSelected = getSelectedSearchResultTemplate();
 				if(templateSelected != null && !templateSelected.isDefaultTemplate()){
-					ctl.setSearchResultFormatAccordingToTemplate(templateSelected);
+					ctl.makeSureSelectedFieldsAreNonEmpty(ctl.getCollectableEntity(), templateSelected.getVisibleColumns());
+					final List<CollectableEntityField> lstSelectedNew = templateSelected.getVisibleColumns();
+					final Set<CollectableEntityField> fixedColumns = new HashSet<CollectableEntityField>(
+							templateSelected.getListColumnsFixed());
+					final Map<String, Integer> listColumnsWidths = templateSelected.getListColumnsWidths();
+					final Map<String, Integer> clefListColumnsWidths = new HashMap<String, Integer>();
+					for(CollectableEntityField clFiled : lstSelectedNew) {
+						if(listColumnsWidths.containsKey(clFiled.getName())) {
+							clefListColumnsWidths.put(clFiled.getName(), listColumnsWidths.get(clFiled.getName()));
+						}
+					}
+					// historic code:
+					// ctl.getResultController().initializeFields(ctl.getFields(), ctl, lstSelectedNew);
+					
+					final NuclosResultController<CollectableGenericObjectWithDependants> resultController = (NuclosResultController)
+							ctl.getResultController();
+					/*
+					final SortedSet<CollectableEntityField> available = resultController.getFieldsAvailableForResult(
+							ctl.getCollectableEntity(), resultController.getCollectableEntityFieldComparator());
+					resultController.setSelectColumns(ctl.getFields(), ctl, available, lstSelectedNew, fixedColumns);
+					 */
+					resultController.initializeFields(ctl.getFields(), ctl, lstSelectedNew, fixedColumns, clefListColumnsWidths);
 				}
 			}
 		});	

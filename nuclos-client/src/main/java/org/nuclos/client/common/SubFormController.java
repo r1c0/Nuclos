@@ -174,10 +174,7 @@ public abstract class SubFormController extends Controller
 				listener.actionPerformed(new SizeKnownEvent(subform, null));
 			}
 		}
-
-
 		subform.addFocusActionListener(this);
-
 	}
 
 	public void close() {

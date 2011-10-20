@@ -43,12 +43,13 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 		extends CollectableTableModelImpl<Clct> 
 		implements SortableCollectableTableModel<Clct> {
 
-	private static final long serialVersionUID = 1L;
-
 	private List<SortKey> sortKeys = Collections.emptyList();
 
 	private final transient List<ChangeListener> lstSortingListeners = new LinkedList<ChangeListener>();
 	
+	/**
+	 * @deprecated Use {@link #SortableCollectableTableModelImpl(String, List)}.
+	 */
 	public SortableCollectableTableModelImpl(String entityName) {
 		this(entityName, new ArrayList<Clct>());
 	}
@@ -155,7 +156,8 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 	 * @param bSortedAscending
 	 * @deprecated refactor to use regular setSortKeys 
 	 */
-	@Deprecated public void restoreSortingOrder(int iSortedColumn, boolean bSortedAscending) {
+	@Deprecated 
+	public void restoreSortingOrder(int iSortedColumn, boolean bSortedAscending) {
 		if (!(iSortedColumn >= -1 && iSortedColumn < this.getColumnCount())) {
 			throw new IllegalArgumentException("iSortedColumn");
 		}
@@ -171,7 +173,7 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 	 */
 	@SuppressWarnings("unchecked")
 	protected Comparator<Clct> getComparator(int column) {
-		return (Comparator<Clct>) CollectableComparatorFactory.getInstance().newCollectableComparator(getEntityName(), this.getCollectableEntityField(column));
+		return (Comparator<Clct>) CollectableComparatorFactory.getInstance().newCollectableComparator(getBaseEntityName(), this.getCollectableEntityField(column));
 		//new CollectableComparator<Clct>(this.getCollectableEntityField(iColumn));
 	}
 
@@ -244,4 +246,5 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 			listener.stateChanged(ev);
 		}
 	}
+	
 }  //  class CollectableTableModelImpl

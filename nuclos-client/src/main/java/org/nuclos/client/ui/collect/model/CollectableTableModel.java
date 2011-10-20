@@ -25,14 +25,22 @@ import org.nuclos.common.collect.collectable.CollectableField;
 
 /**
  * <code>TableModel</code> for <code>Collectable</code>s. Each row in this table model is a <code>Collectable</code>.
+ * <p>
+ * In Nuclos this is e.g. used to display result list. But at present result lists can display more than just
+ * attributes/field from <em>one</em> entity. (Subform columns and Pivot columns are also possible.)
+ * </p>
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
  */
 public interface CollectableTableModel <Clct extends Collectable> extends CollectableEntityFieldBasedTableModel {
+	
+	/**
+	 * @deprecated Strongly consider to use {@link #getCollectableEntityField(int)} instead.
+	 */
+	String getColumnName(int iColumn);
 
 	/**
 	 * Returns the value for the cell at <code>iColumn</code> and <code>iRow</code>.
@@ -42,13 +50,21 @@ public interface CollectableTableModel <Clct extends Collectable> extends Collec
 	 * @return the value at the specified cell
 	 */
 	@Override
-	public CollectableField getValueAt(int iRow, int iColumn);
+	CollectableField getValueAt(int iRow, int iColumn);
 
 	/**
 	 * @param iRow
 	 * @return the <code>Collectable</code> stored at row <code>iRow</code> in this model.
+	 * 
+	 * @deprecated Use {@link #getRow(int)}.
 	 */
 	Clct getCollectable(int iRow);
+	
+	/**
+	 * @param iRow
+	 * @return the <code>Collectable</code> stored at row <code>iRow</code> in this model.
+	 */
+	Clct getRow(int row);
 
 	/**
 	 * sets the collectable in the given row
@@ -133,6 +149,8 @@ public interface CollectableTableModel <Clct extends Collectable> extends Collec
 	/**
 	 * @param sFieldName
 	 * @return the index of the column with the given fieldname. -1 if none was found.
+	 * 
+	 * @deprecated Strongly consider to use {@link #getColumn(CollectableEntityField)} instead.
 	 */
 	int findColumnByFieldName(String sFieldName);
 

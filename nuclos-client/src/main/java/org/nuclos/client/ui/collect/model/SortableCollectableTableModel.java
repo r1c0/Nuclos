@@ -41,7 +41,7 @@ public interface SortableCollectableTableModel <Clct extends Collectable> extend
 	 * Returns the current sort keys, or an empty list.
 	 */
 	@Override
-	public List<? extends SortKey> getSortKeys();
+	List<? extends SortKey> getSortKeys();
 	
 	/** 
 	 * Sets the current sort keys.
@@ -49,13 +49,13 @@ public interface SortableCollectableTableModel <Clct extends Collectable> extend
 	 * @throws IllegalArgumentException if a column index is outside the range of the model
 	 */
 	@Override
-	public void setSortKeys(List<? extends SortKey> sortKeys, boolean sortImmediately) throws IllegalArgumentException;
+	void setSortKeys(List<? extends SortKey> sortKeys, boolean sortImmediately) throws IllegalArgumentException;
 	
 	/**
 	 * Toggles the sort order of the given column or make the column the primary sort column.
 	 */
 	@Override
-	public void toggleSortOrder(int column, boolean sortImmediately);
+	void toggleSortOrder(int column, boolean sortImmediately);
 	
 	/**
 	 * sorts the table model and notifies table model listeners by firing a {@link SortableTableModelEvent}.

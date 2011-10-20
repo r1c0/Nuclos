@@ -39,7 +39,8 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.PreferencesException;
 
 /**
- * Search result template for storing of selected set of result columns.
+ * Search result template for storing of selected set of result columns
+ * (german: Suchergebnisvorlage).
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>

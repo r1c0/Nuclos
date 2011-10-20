@@ -20,14 +20,16 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.prefs.Preferences;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.collect.collectable.AbstractCollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
-import org.nuclos.common.collect.collectable.DoNotUseCollectableEntity;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 
@@ -50,8 +52,28 @@ import org.nuclos.common.collection.Transformer;
  * @deprecated CollectableEntityField now knows the entity name.
  */
 public class CollectableEntityFieldWithEntity implements CollectableEntityField, Serializable {
+	
+	private static final Logger LOG = Logger.getLogger(CollectableEntityFieldWithEntity.class);
 
 	private static final long serialVersionUID = 6352766708611387488L;
+	
+	private static final Constructor<? extends CollectableEntity> DO_NOT_USE;
+	
+	static {
+		Constructor<? extends CollectableEntity> constr = null;
+		try {
+			final Class<? extends CollectableEntity> clazz = (Class<? extends CollectableEntity>) 
+					Class.forName("org.nuclos.client.common.DoNotUseCollectableEntity");
+			constr = clazz.getConstructor(String.class, String.class);
+		} catch (ClassNotFoundException e) {
+			constr = null;
+		} catch (SecurityException e) {
+			constr = null;
+		} catch (NoSuchMethodException e) {
+			constr = null;
+		}
+		DO_NOT_USE = constr;
+	}
 
 	private final String entityName;
 
@@ -332,7 +354,30 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 		
 		// CollectableEntityField is not serializable:
 		this.clctef = (CollectableEntityField) ois.readObject();
-		this.clcte = new DoNotUseCollectableEntity((String)ois.readObject(),(String)ois.readObject());
+		
+		final String name = (String) ois.readObject();
+		final String label = (String) ois.readObject();
+		if (DO_NOT_USE != null) {
+			try {
+				this.clcte = DO_NOT_USE.newInstance(name, label);
+			} catch (IllegalArgumentException e) {
+				LOG.error("CollectableEntityFieldWithEntity deserialization failed: " + e, e);
+				this.clcte = null;
+			} catch (InstantiationException e) {
+				LOG.error("CollectableEntityFieldWithEntity deserialization failed: " + e, e);
+				this.clcte = null;
+			} catch (IllegalAccessException e) {
+				LOG.error("CollectableEntityFieldWithEntity deserialization failed: " + e, e);
+				this.clcte = null;
+			} catch (InvocationTargetException e) {
+				LOG.error("CollectableEntityFieldWithEntity deserialization failed (InvocationTargetException): " + e.getCause(), e.getCause());
+				this.clcte = null;
+			}
+		}
+		else {
+			LOG.error("CollectableEntityFieldWithEntity can only be serialized on the *client* side");
+			this.clcte = null;
+		}
 	}
 
 	/**

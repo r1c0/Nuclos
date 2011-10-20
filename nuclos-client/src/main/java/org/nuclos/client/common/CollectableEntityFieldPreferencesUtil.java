@@ -20,7 +20,6 @@ import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableEntityFieldPref;
 import org.nuclos.common.collect.collectable.CollectableEntityPref;
-import org.nuclos.common.collect.collectable.DoNotUseCollectableEntity;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;

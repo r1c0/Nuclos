@@ -40,11 +40,20 @@ public interface CollectableEntityFieldBasedTableModel extends TableModel {
 	CollectableEntityField getCollectableEntityField(int iColumn);
 
 	/**
+	 * @param field
+	 * @return the column index associated with the given <code>CollectableEntityField</code>.
+	 * @since Nuclos 3.2.0
+	 */
+	int getColumn(CollectableEntityField field);
+
+	/**
 	 * Converts the given value (which must be of the type stored in the table model) as a CollectableField.
  	 * @param oValue
 	 * @return the given value as CollectableField
 	 */
-	public CollectableField getValueAsCollectableField(Object oValue);
+	CollectableField getValueAsCollectableField(Object oValue);
 
 
+	String getBaseEntityName();
+	
 }  // interface CollectableEntityFieldBasedTableModel
