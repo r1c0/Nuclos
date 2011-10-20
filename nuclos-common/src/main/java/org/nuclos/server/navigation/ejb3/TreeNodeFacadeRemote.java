@@ -55,7 +55,7 @@ public interface TreeNodeFacadeRemote {
 	 * @postcondition result != null
 	 */
 	public abstract GenericObjectTreeNode getGenericObjectTreeNode(
-		Integer iGenericObjectId, Integer moduleId) throws CommonFinderException;
+		Integer iGenericObjectId, Integer moduleId, Integer parentId) throws CommonFinderException;
 
 	/**
 	 * Note that user rights are ignored here.

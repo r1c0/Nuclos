@@ -130,8 +130,8 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 * @postcondition result != null
 	 */
 	@Override
-	public GenericObjectTreeNode getGenericObjectTreeNode(Integer iGenericObjectId, Integer moduleId) throws CommonFinderException {
-		final GenericObjectTreeNode result = newGenericObjectTreeNode(iGenericObjectId, moduleId, null, null, null, null);
+	public GenericObjectTreeNode getGenericObjectTreeNode(Integer iGenericObjectId, Integer moduleId, Integer parentId) throws CommonFinderException {
+		final GenericObjectTreeNode result = newGenericObjectTreeNode(iGenericObjectId, moduleId, null, null, null, parentId);
 		assert result != null;
 		return result;
 	}
@@ -552,7 +552,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		final List<GenericObjectTreeNode> result = new ArrayList<GenericObjectTreeNode>();
 		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
 			try {
-				result.add(getGenericObjectTreeNode(tuple.get(0, Integer.class), tuple.get(1, Integer.class)));
+				result.add(getGenericObjectTreeNode(tuple.get(0, Integer.class), tuple.get(1, Integer.class), null));
 			}
 			catch (CommonFinderException ex) {
 				// the object doesn't exist anymore - ignore.

@@ -1605,7 +1605,15 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	public final void runViewSingleCollectableWithId(Object oId, boolean bShow) throws CommonBusinessException {
 		this.runViewSingleCollectable(this.findCollectableByIdWithoutDependants(this.getEntityName(), oId), bShow);
 	}
-	
+
+	public final void runViewMultipleCollectablesWithIds(List<Object> ids) throws CommonBusinessException {
+		getSearchStrategy().setCollectableIdListCondition(new CollectableIdListCondition(ids));
+		fillResultPanel(getSearchStrategy().getSearchResult());
+		getResultTable().getSelectionModel().addSelectionInterval(0, getResultTable().getRowCount() - 1);
+		setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_MULTIVIEW);
+		showFrame();
+	}
+
 	/**
 	 * Show the frame for the first time.
 	 * @deprecated This method is misused as a listener. Use an InternalFrameListener or CollectableStateListener instead.

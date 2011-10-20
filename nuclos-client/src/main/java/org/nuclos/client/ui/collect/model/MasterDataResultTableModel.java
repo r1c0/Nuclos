@@ -20,17 +20,17 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 public class MasterDataResultTableModel<Clct extends Collectable> extends SortableCollectableTableModelImpl<Clct> {
 
 	private final CollectableEntity entity;
-	
+
 	private MasterDataResultTableModel(CollectableEntity entity) {
 		super(entity.getName());
 		this.entity = entity;
 	}
-	
+
 	public MasterDataResultTableModel(CollectableEntity entity, List<? extends CollectableEntityField> list) {
 		this(entity);
 		setColumns(list);
 	}
-	
+
 	@Override
 	public CollectableField getValueAt(int iRow, int iColumn) {
 		final Collectable clct = this.getCollectable(iRow);
@@ -74,5 +74,5 @@ public class MasterDataResultTableModel<Clct extends Collectable> extends Sortab
 
 		return result;
 	}
-	
+
 }

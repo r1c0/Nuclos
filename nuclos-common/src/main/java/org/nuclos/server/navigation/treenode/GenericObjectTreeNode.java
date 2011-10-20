@@ -240,7 +240,7 @@ public class GenericObjectTreeNode extends AbstractTreeNode<Integer> implements
 	@Override
 	public GenericObjectTreeNode refreshed() throws CommonFinderException {
 		return getTreeNodeFacade().getGenericObjectTreeNode(this.getId(),
-			usagecriteria.getModuleId());
+			usagecriteria.getModuleId(), this.getParentId());
 	}
 
 	@Override

@@ -377,7 +377,7 @@ public class MainController {
 				}
 			};
 			theadTaskController.start();
-			
+
 			/* Release note HACK:
 			Caused by: java.lang.NullPointerException
             at org.nuclos.client.help.releasenotes.ReleaseNotesController.showNuclosReleaseNotesNotice(ReleaseNotesController.java:148)
@@ -1686,6 +1686,27 @@ public class MainController {
 		controller.runViewResults(ids);
 	}
 
+	public void showDetails(String entity, List<Object> ids) throws CommonBusinessException {
+		showDetails(entity, ids, false);
+	}
+
+	public void showDetails(String entity, List<Object> ids, boolean newTab) throws CommonBusinessException {
+		CollectController<?> ctl = null;
+		if (!newTab) {
+			ctl = this.findCollectControllerDisplayingDetails(entity);
+			if (ctl != null) {
+				if (!ctl.askAndSaveIfNecessary()) {
+					// action was cancelled
+					return;
+				}
+			}
+		}
+		if (ctl == null) {
+			ctl = NuclosCollectControllerFactory.getInstance().newCollectController(MainFrame.getPredefinedEntityOpenLocation(entity), entity, null);
+		}
+		ctl.runViewMultipleCollectablesWithIds(ids);
+	}
+
 	/**
 	 * Open a new embedded (not in separate tab) dialog to create a new collectable.
 	 * The embedded window will be closed later.
@@ -1975,7 +1996,7 @@ public class MainController {
 			if (ctl instanceof CollectController) {
 				CollectController<?> clctctl = (CollectController<?>) ctl;
 				return this.sEntityName.equals(clctctl.getEntityName()) &&
-					clctctl.getCollectState().isDetailsModeViewOrEdit();
+					(clctctl.getCollectState().isDetailsModeViewOrEdit() || clctctl.getCollectState().isDetailsModeMultiViewOrEdit());
 			}
 			return false;
 		}

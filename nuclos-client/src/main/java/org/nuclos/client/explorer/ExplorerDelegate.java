@@ -66,9 +66,9 @@ public class ExplorerDelegate {
 	 * @param modukeId           the generic object's module
 	 * @return the tree for the leased object with the given id
 	 */
-	public GenericObjectTreeNode getGenericObjectTreeNode(int genericObjectId, int moduleId) throws CommonFinderException {
+	public GenericObjectTreeNode getGenericObjectTreeNode(int genericObjectId, int moduleId, Integer parentId) throws CommonFinderException {
 		try {
-			return this.getFacade().getGenericObjectTreeNode(genericObjectId, moduleId);
+			return this.getFacade().getGenericObjectTreeNode(genericObjectId, moduleId, parentId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -87,9 +87,9 @@ public class ExplorerDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param iNucletId
 	 * @return the tree for the nuclet with the given id
 	 * @throws CommonFinderException

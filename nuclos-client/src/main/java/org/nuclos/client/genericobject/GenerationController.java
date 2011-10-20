@@ -20,6 +20,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -74,6 +75,11 @@ public class GenerationController {
 	private final MainFrameTab parent;
 	private final JTabbedPane pane;
 
+	private final List<GenerationListener> listeners = new ArrayList<GenerationController.GenerationListener>();
+
+	private boolean confirmationEnabled = true;
+	private boolean showResult = true;
+
 	public GenerationController(Map<Integer, UsageCriteria> sources, GeneratorActionVO action, GenericObjectCollectController parentController, MainFrameTab parent) {
 		this(sources, action, parentController, parent, parent.getTabbedPane());
 	}
@@ -87,6 +93,30 @@ public class GenerationController {
 		this.pane = pane;
 	}
 
+	public boolean isConfirmationEnabled() {
+		return confirmationEnabled;
+	}
+
+	public void setConfirmationEnabled(boolean confirmationEnabled) {
+		this.confirmationEnabled = confirmationEnabled;
+	}
+
+	public boolean isShowResult() {
+		return showResult;
+	}
+
+	public void setShowResult(boolean showResult) {
+		this.showResult = showResult;
+	}
+
+	public void addGenerationListener(GenerationListener l) {
+		listeners.add(l);
+	}
+
+	public void removeGenerationListener(GenerationListener l) {
+		listeners.remove(l);
+	}
+
 	/**
 	 * generates one or more object(s) from current.
 	 * @param generatoractionvo generator action vo to be used for generation
@@ -98,7 +128,7 @@ public class GenerationController {
 
 			final boolean bMulti = sources.size() > 1;
 
-			final int iBtn = confirmGenerationType(bMulti, sSourceModuleName, sTargetModuleName, action);
+			final int iBtn = isConfirmationEnabled() ? confirmGenerationType(bMulti, sSourceModuleName, sTargetModuleName, action) : JOptionPane.OK_OPTION;
 
 			if (iBtn != JOptionPane.CANCEL_OPTION && iBtn != JOptionPane.CLOSED_OPTION) {
 				final AtomicReference<Integer> parameterObjectIdRef = new AtomicReference<Integer>();
@@ -233,11 +263,14 @@ public class GenerationController {
 						for (MultiActionProgressLine o : selection) {
 							if (o.getResultObject() instanceof GenerationResult) {
 								GenerationResult result = (GenerationResult) o.getResultObject();
-								if (result.getGeneratedObject().getId() != null) {
-									showGenericObject(result.getGeneratedObject(), action.getTargetModuleId());
-								}
-								else {
-									showIncompleteGenericObject(null, result.getGeneratedObject(), result.getError());
+								fireGenerationEvent(result);
+								if (isShowResult()) {
+									if (result.getGeneratedObject().getId() != null) {
+										showGenericObject(result.getGeneratedObject(), action.getTargetModuleId());
+									}
+									else {
+										showIncompleteGenericObject(null, result.getGeneratedObject(), result.getError());
+									}
 								}
 							}
 						}
@@ -254,10 +287,18 @@ public class GenerationController {
 		}
 		else {
 			GenerationResult result = GeneratorDelegate.getInstance().generateGenericObject(sources.iterator().next(), parameterObjectId, action);
-			showResult(result);
+			fireGenerationEvent(result);
+			if (isShowResult()) {
+				showResult(result);
+			}
 		}
 	}
 
+	private void fireGenerationEvent(GenerationResult result) {
+		for (GenerationListener l : listeners) {
+			l.generated(result);
+		}
+	}
 
 	private void showResult(GenerationResult result) {
 		try {
@@ -329,5 +370,9 @@ public class GenerationController {
 		public void work() throws CommonBusinessException {
 			generateImpl(parameterObjectId);
 		}
+	}
+
+	public interface GenerationListener {
+		public void generated(GenerationResult result);
 	}
 }

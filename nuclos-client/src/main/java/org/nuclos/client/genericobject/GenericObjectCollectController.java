@@ -3303,7 +3303,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				if(cgo != null)
 					getExplorerController().showInOwnTab(
 						ExplorerDelegate.getInstance().getGenericObjectTreeNode(cgo.getId(),
-							cgo.getGenericObjectWithDependantsCVO().getModuleId()));
+							cgo.getGenericObjectWithDependantsCVO().getModuleId(), null));
 			}
 		});
 	}
