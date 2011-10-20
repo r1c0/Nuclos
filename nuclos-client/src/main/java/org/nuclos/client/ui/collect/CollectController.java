@@ -1605,7 +1605,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	public final void runViewSingleCollectableWithId(Object oId, boolean bShow) throws CommonBusinessException {
 		this.runViewSingleCollectable(this.findCollectableByIdWithoutDependants(this.getEntityName(), oId), bShow);
 	}
-
+	
 	/**
 	 * Show the frame for the first time.
 	 * @deprecated This method is misused as a listener. Use an InternalFrameListener or CollectableStateListener instead.
@@ -2892,12 +2892,17 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * <it>this.validate(Collectable)</it>
 	 * <it>this.updateCurrentCollectable(Collectable)</it>
 	 * </ol>
+	 *
+	 * tsc: parameter in old signature <code>Clct updateCurrentCollectable(boolean dbUpdate)</code> was
+	 *      useless, because a lot of business logic in subsequent updateCurrentCollectable()-methods was
+	 *      skipped by setting the parameter to false.
+	 *
 	 * @return the updated <code>Collectable</code>, as returned by the server.
 	 * @throws CommonBusinessException
 	 * @postcondition result != null
 	 * @postcondition isCollectableComplete(result)
 	 */
-	protected Clct updateCurrentCollectable(boolean dbUpdate) throws CommonBusinessException {
+	protected Clct updateCurrentCollectable() throws CommonBusinessException {
 		final boolean bWasDetailsChangedIgnored = this.isDetailsChangedIgnored();
 		this.setDetailsChangedIgnored(true);
 		try {
@@ -2906,7 +2911,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			this.readValuesFromEditPanel(clctCurrent, false);
 			this.prepareCollectableForSaving(clctCurrent, this.getCollectableEntityForDetails());
 			this.validate(clctCurrent);
-			final Clct result = dbUpdate? this.updateCurrentCollectable(clctCurrent) : clctCurrent;
+			final Clct result = this.updateCurrentCollectable(clctCurrent);
 			assert result != null;
 			assert ss.isCollectableComplete(result);
 			return result;
@@ -3164,7 +3169,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			switch (this.statemodel.getDetailsMode()) {
 				case CollectState.DETAILSMODE_EDIT:
 					log.debug("START save updateCurrentCollectable");
-					clct = this.updateCurrentCollectable(true);
+					clct = this.updateCurrentCollectable();
 					log.debug("FINISHED save updateCurrentCollectable");
 
 					// update the selected collectable in the table model:

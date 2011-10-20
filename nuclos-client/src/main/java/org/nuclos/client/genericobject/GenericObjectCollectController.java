@@ -584,6 +584,16 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private SearchResultTemplateController searchResultTemplatesController;
 
 	/**
+	 * is current thread (multi-update?) processing a state change?
+	 */
+	private final ThreadLocal<Boolean> isProcessingStateChange = new ThreadLocal<Boolean>() {
+		@Override
+		protected Boolean initialValue() {
+			return Boolean.FALSE;
+		}
+	};
+
+	/**
 	 * Use the static method <code>newGenericObjectCollectController</code> to create new instances.
 	 *
 	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
@@ -825,7 +835,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				final CollectableEntityField f = GenericObjectCollectController.this.getResultTableModel().getCollectableEntityField(tbl.convertColumnIndexToModel(iColumn));
 				final String value;
 				if (f instanceof CollectableEOEntityField) {
-					// In the pivot case, we want to separate the column name 
+					// In the pivot case, we want to separate the column name
 					// from the tool top.
 					final CollectableEOEntityField field = (CollectableEOEntityField) f;
 					final EntityFieldMetaDataVO ef = field.getMeta();
@@ -2833,7 +2843,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final CollectableGenericObjectWithDependants result = updateCollectable(clctCurrent, getAllSubFormData(clctCurrent));
 
 		// remember if the layout needs to be reloaded afterwards:
-		if (getUsageCriteria(result).equals(getUsageCriteria(clctCurrent)))
+		if (!isProcessingStateChange.get() && getUsageCriteria(result).equals(getUsageCriteria(clctCurrent)))
 			bReloadLayout = false;
 
 		return result;
@@ -2851,8 +2861,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final GenericObjectWithDependantsVO lowdcvo = clct.getGenericObjectWithDependantsCVO();
 		final GenericObjectWithDependantsVO lowdcvoCurrent = new GenericObjectWithDependantsVO(lowdcvo, mpclctDependants.toDependantMasterDataMap());
 
-		// update the whole thing:
-		final GenericObjectWithDependantsVO lowdcvoUpdated = lodelegate.update(lowdcvoCurrent);
+		// update the whole thing (only if no state change is processing):
+		final GenericObjectWithDependantsVO lowdcvoUpdated = !isProcessingStateChange.get()? lodelegate.update(lowdcvoCurrent) : lowdcvoCurrent;
 
 		// and return the updated version:
 		return new CollectableGenericObjectWithDependants(lowdcvoUpdated);
@@ -3540,7 +3550,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 				cmpStateStandardView.setSelectedItem(stateCurrent);
 				cmpStateStandardView.addItems(lstDefaultPathEntries);
-				
+
 				for (Iterator iterator = lstDefaultPathEntries.iterator(); iterator.hasNext();) {
 					final StateWrapper item = (StateWrapper) iterator.next();
 					final ActionListener al = new ActionListener() {
@@ -3559,11 +3569,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						}
 					};
 					cmpStateStandardView.addActionListener(al, item);
-					
+
 					if (LangUtils.equals(stateCurrent.getNumeral(), item.getNumeral())) {
 						final List<StateWrapper> lstSubsequentEntries = new ArrayList<StateWrapper>();
 						List<StateVO> lstSubsequentStates = StateDelegate.getInstance().getStatemodel(uc).getSubsequentStates(item.getId(), false);
-	
+
 						// Copy all subsequent states to the sorting list:
 						for (StateVO statevo : lstSubsequentStates)
 							if (statevo == null)
@@ -3575,13 +3585,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 										StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()
 										),
 										statevo.getStatename()), statevo.getIcon(), statevo.getDescription()));
-	
+
 						Map<StateWrapper, Action> mpSubsequentStatesAction = new HashMap<StateWrapper, Action>();
 						for (Iterator iterator2 = lstSubsequentEntries.iterator(); iterator2.hasNext();) {
 							final StateWrapper subsequentState = (StateWrapper) iterator2.next();
 							if (!subsequentState.getNumeral().equals(item.getNumeral())) {
 								Action act = new AbstractAction() {
-								
+
 									@Override
 									public void actionPerformed(ActionEvent e) {
 										final boolean bUserPressedOk = cmdChangeState(subsequentState);
@@ -3597,7 +3607,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				}
 			}
 		}
-		
+
 		cmpStateStandardView.setEnabled(cmpStateStandardView.getItemCount() != 0);
 	}
 
@@ -3664,7 +3674,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		//}
 
 		//toolbarCustomActionsDetails.revalidate();
-		
+
 		/*if (cmpStateStandardView.getItemCount() != 0) {
 			toolbarCustomActionsDetails.add(Box.createHorizontalStrut(2000));
 			toolbarCustomActionsDetails.add(new BlackLabel(cmpStateStandardView, CommonLocaleDelegate.getMessage("GenericObjectCollectController.107","Standardpfad")));
@@ -3995,22 +4005,30 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 			@Override
 			public void work() throws CommonBusinessException {
-				if (GenericObjectCollectController.this.changesArePending()) {
-					// NUCLOSINT-1114:
-					// Value must be 'true' to save the changed SubForm data to DB. (Thomas Pasch)
-					CollectableGenericObjectWithDependants updated = GenericObjectCollectController.this.updateCurrentCollectable(true);
+				try {
+					isProcessingStateChange.set(true);
+					if (GenericObjectCollectController.this.changesArePending()) {
+						// NUCLOSINT-1114:
+						// Value must be 'true' to save the changed SubForm data to DB. (Thomas Pasch)
+						// tsc: the implementation with dbUpdate-parameter skipped a lot of data collection logic, which was the reason for the NUCLOSINT-1114.
+						//      Final servercall for database update is now skipped by setting a ThreadLocal variable.
+						//      TODO Best solution would be to refactor and call all data collection logic in prepareCollectableForSaving(), but this would take some time.
+						CollectableGenericObjectWithDependants updated = GenericObjectCollectController.this.updateCurrentCollectable();
+						StateDelegate.getInstance().changeStateAndModify(iModuleId, updated.getGenericObjectWithDependantsCVO(), stateNew.getId());
+					} else {
+						StateDelegate.getInstance().changeState(iModuleId, iGenericObjectId, stateNew.getId());
+					}
+					broadcastCollectableEvent(clct, MessageType.STATECHANGE_DONE);
 
-					StateDelegate.getInstance().changeStateAndModify(iModuleId, updated.getGenericObjectWithDependantsCVO(), stateNew.getId());
-				} else {
-					StateDelegate.getInstance().changeState(iModuleId, iGenericObjectId, stateNew.getId());
+					// We have to reload the current leased object, as some fields might have changed:
+					// . nuclosState because of the status change
+					// . other fields because of business rules
+					if (!errorOccurred)
+						GenericObjectCollectController.this.refreshCurrentCollectable(false);
 				}
-				broadcastCollectableEvent(clct, MessageType.STATECHANGE_DONE);
-
-				// We have to reload the current leased object, as some fields might have changed:
-				// . nuclosState because of the status change
-				// . other fields because of business rules
-				if (!errorOccurred)
-					GenericObjectCollectController.this.refreshCurrentCollectable(false);
+				finally {
+					isProcessingStateChange.set(false);
+				}
 			}
 
 			@Override
@@ -4060,24 +4078,30 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 			@Override
 			public void work() throws CommonBusinessException {
-				for (StateWrapper stateNew : statesNew) {
-					if (GenericObjectCollectController.this.changesArePending()) {
-						// NUCLOSINT-1114:
-						// Value must be 'true' to save the changed SubForm data to DB. (Thomas Pasch)
-						CollectableGenericObjectWithDependants updated = GenericObjectCollectController.this.updateCurrentCollectable(true);
+				try {
+					isProcessingStateChange.set(true);
+					for (StateWrapper stateNew : statesNew) {
+						if (GenericObjectCollectController.this.changesArePending()) {
+							// NUCLOSINT-1114:
+							// Value must be 'true' to save the changed SubForm data to DB. (Thomas Pasch)
+							CollectableGenericObjectWithDependants updated = GenericObjectCollectController.this.updateCurrentCollectable();
 
-						StateDelegate.getInstance().changeStateAndModify(iModuleId, updated.getGenericObjectWithDependantsCVO(), stateNew.getId());
-					} else {
-						StateDelegate.getInstance().changeState(iModuleId, iGenericObjectId, stateNew.getId());
+							StateDelegate.getInstance().changeStateAndModify(iModuleId, updated.getGenericObjectWithDependantsCVO(), stateNew.getId());
+						} else {
+							StateDelegate.getInstance().changeState(iModuleId, iGenericObjectId, stateNew.getId());
+						}
 					}
-				}
-				broadcastCollectableEvent(clct, MessageType.STATECHANGE_DONE);
+					broadcastCollectableEvent(clct, MessageType.STATECHANGE_DONE);
 
-				// We have to reload the current leased object, as some fields might have changed:
-				// . nuclosState because of the status change
-				// . other fields because of business rules
-				if (!errorOccurred)
-					GenericObjectCollectController.this.refreshCurrentCollectable(false);
+					// We have to reload the current leased object, as some fields might have changed:
+					// . nuclosState because of the status change
+					// . other fields because of business rules
+					if (!errorOccurred)
+						GenericObjectCollectController.this.refreshCurrentCollectable(false);
+				}
+				finally {
+					isProcessingStateChange.set(false);
+				}
 			}
 
 			@Override
