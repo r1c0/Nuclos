@@ -19,6 +19,8 @@ package org.nuclos.client.report.reportrunner.export;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
+
+import org.apache.log4j.Logger;
 import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.valueobject.ResultVO;
@@ -34,6 +36,8 @@ import org.nuclos.server.report.valueobject.ResultVO;
  * @todo don't extend AbstractReportExporter
  */
 public class PDFExport extends AbstractReportExporter {
+	
+	private static final Logger LOG = Logger.getLogger(PDFExport.class);
 
 	/**
 	 * @param sReportName
@@ -46,7 +50,7 @@ public class PDFExport extends AbstractReportExporter {
 
 		final String sDir = createExportDir(parameter);
 		final String sFileName = getFileName(sDir, sReportName, ".pdf");
-
+		LOG.debug("export to PDF as " + sFileName);
 		try {
 			JasperExportManager.exportReportToPdfFile(printObj, sFileName);
 

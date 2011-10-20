@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.report.reportrunner;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -28,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.SystemUtils;
 import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
@@ -192,16 +192,14 @@ public abstract class AbstractReportExporter implements ReportExporter {
 	public static void openFile(String sFileName, boolean bOpenFile) throws NuclosReportException {
 		if (bOpenFile) {
 			try {
-				if (Desktop.isDesktopSupported()) {
-					Desktop desktop = Desktop.getDesktop();
-					desktop.open(new File(sFileName));
-				} else {
-					Runtime.getRuntime().exec("cmd /c " + " \"" + sFileName + "\"");
-				}
+				SystemUtils.open(sFileName);
 			}
 			catch (IOException ex) {
 				throw new NuclosReportException(CommonLocaleDelegate.getMessage("AbstractReportExporter.4", "Die Datei {0} konnte nicht ge\u00f6ffnet werden.", sFileName), ex);
 			}
+		}
+		else {
+			log.debug("NOT opening " + sFileName);
 		}
 	}
 
