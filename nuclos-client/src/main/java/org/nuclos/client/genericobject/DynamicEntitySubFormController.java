@@ -35,10 +35,13 @@ import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.datasource.DatasourceDelegate;
+import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
@@ -54,6 +57,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -182,56 +186,17 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 				final Collectable clct = getSelectedCollectable();
 				assert clct != null;
 				String entityName = null;
-				
+
 				entityName = getEntityNameForDyamicLookup(entityName);
-				
-				if(entityName != null) {
-					if(MetaDataClientProvider.getInstance().getEntity(entityName).isStateModel()) {
-						showGenericobject(clct);
-					}
-					else {
-						showMasterData(clct, entityName);
-					}
+				if (StringUtils.isNullOrEmpty(entityName)) {
+					GenericObjectVO govo = GenericObjectDelegate.getInstance().get((Integer) clct.getId());
+					entityName = MetaDataClientProvider.getInstance().getEntity(Integer.valueOf(govo.getModuleId()).longValue()).getEntity();
 				}
-				else {				
-					showGenericobject(clct);
-				}
-			}
+				MainFrameTab tab = UIUtils.getInternalFrameForComponent(getSubForm().getJTable());
+				CollectController<?> controller = Main.getMainController().getControllerForInternalFrame(tab);
 
-			private void showMasterData(final Collectable clct,	String entityName) throws CommonBusinessException {
-				Object iMasterdataId = clct.getId();
-				MasterDataCollectController ctlMasterdata = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(MainFrame.getPredefinedEntityOpenLocation(entityName), entityName, null);
-				// TODO TABS getSelectedFrame() does not exists any more
-				/*
-				CollectController<?> controller = Main.getMainController().getControllerForInternalFrame(Main.getMainFrame().getDesktopPane().getSelectedFrame());
-				if (controller != null) {
-					ctlMasterdata.addCollectableEventListener(new DetailsCollectableEventListener(controller, ctlMasterdata));
-				}*/
-				ctlMasterdata.runViewSingleCollectableWithId(iMasterdataId);
+				Main.getMainController().showDetails(entityName, clct.getId(), false, controller);
 			}
-
-			private void showGenericobject(final Collectable clct) throws CommonFinderException, CommonPermissionException {
-				final Object iGenericObjectId = clct.getId();
-				try {
-					final GenericObjectVO govo = GenericObjectDelegate.getInstance().get((Integer) iGenericObjectId);
-					final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-							newGenericObjectCollectController(MainFrame.getPredefinedEntityOpenLocation(MetaDataClientProvider.getInstance().getEntity(Integer.valueOf(govo.getModuleId()).longValue()).getEntity()), govo.getModuleId(), null);
-	
-					// TODO TABS getSelectedFrame() does not exists any more
-					/*
-					CollectController<?> controller = Main.getMainController().getControllerForInternalFrame(Main.getMainFrame().getDesktopPane().getSelectedFrame());
-					if (controller != null) {
-						ctlGenericObject.addCollectableEventListener(new DetailsCollectableEventListener(controller, ctlGenericObject));
-					}
-					*/
-					ctlGenericObject.runViewSingleCollectable(CollectableGenericObjectWithDependants.newCollectableGenericObject(govo));
-				}
-				catch(CommonFatalException ex){
-					throw new CommonFatalException(CommonLocaleDelegate.getMessage("DynamicEntitySubFormController.2", "Der Datensatz kann nicht angezeigt werden. Bitte tragen Sie in der Datenquelle für die dynamische Entität, die Entität ein, die angezeigt werden soll!"));
-				}
-			}
-			
-			
 		});
 	}
 
@@ -242,11 +207,11 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 				final Collection<Collectable> collclct = CollectionUtils.typecheck(getSelectedCollectables(), Collectable.class);
 
 				assert CollectionUtils.isNonEmpty(collclct);
-				final CollectableSearchCondition cond = getCollectableSearchCondition(collclct);				
-				
+				final CollectableSearchCondition cond = getCollectableSearchCondition(collclct);
+
 				String entityName = null;
 				entityName = getEntityNameForDyamicLookup(entityName);
-				
+
 				if(entityName != null) {
 					if(MetaDataClientProvider.getInstance().getEntity(entityName).isStateModel()) {
 						showGenericobjectInResult(collclct, cond);
@@ -255,9 +220,9 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 						showMasterDataInResult(cond, entityName);
 					}
 				}
-				else {				
+				else {
 					showGenericobjectInResult(collclct, cond);
-				}				
+				}
 			}
 
 			private void showMasterDataInResult(
@@ -294,7 +259,7 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 				entity = entity.substring(4, entity.length());
 				DynamicEntityVO voDyn = DatasourceDelegate.getInstance().getDynamicEntityByName(entity);
 				entityName = voDyn.getEntity();
-			}					
+			}
 		}
 		return entityName;
 	}
