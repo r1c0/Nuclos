@@ -28,12 +28,15 @@ import org.nuclos.server.genericobject.ProxyList;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 
 /**
- * Common interface implemented by EntityObject -Delegates, -Facades, and -Providers. 
- * 
+ * Common interface implemented by EntityObject -Delegates, -Facades, and -Providers.
+ *
  * @author Thomas Pasch
  * @since Nuclos 3.1.01
  */
 public interface EntityObjectCommon {
+
+	@RolesAllowed("Login")
+	EntityObjectVO get(String entity, Long id) throws CommonPermissionException;
 
 	/**
 	 * gets the ids of all leased objects that match a given search expression (ordered, when necessary)
@@ -43,7 +46,7 @@ public interface EntityObjectCommon {
 	 */
 	@RolesAllowed("Login")
 	List<Long> getEntityObjectIds(Long id, CollectableSearchExpression cse);
-	
+
 	/**
 	 * gets all generic objects along with its dependents, that match a given search condition
 	 * @param iModuleId id of module to search for generic objects in
@@ -57,9 +60,9 @@ public interface EntityObjectCommon {
 	 * @todo rename to getGenericObjectProxyList?
 	 */
 	@RolesAllowed("Login")
-	ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr, 
+	ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr,
 			Collection<EntityFieldMetaDataVO> fields);
-	
+
 	/**
 	 * gets more leased objects that match a given search condition
 	 * @param iModuleId					id of module to search for leased objects in
@@ -89,15 +92,15 @@ public interface EntityObjectCommon {
 	@RolesAllowed("Login")
 	Collection<EntityObjectVO> getDependentEntityObjects(
 		String sEntityName, String sForeignKeyField, Long oRelatedId);
-	
+
 	@RolesAllowed("Login")
 	Collection<EntityObjectVO> getDependentPivotEntityObjects(
 		EntityFieldMetaDataVO pivot, String sForeignKeyField, Long oRelatedId);
-	
+
 	@RolesAllowed("Login")
 	void removeEntity(String name, Long id) throws CommonPermissionException;
-	
+
 	@RolesAllowed("Login")
 	void remove(EntityObjectVO entity) throws CommonPermissionException;
-	
+
 }

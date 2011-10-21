@@ -71,6 +71,7 @@ import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
@@ -529,8 +530,8 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		 */
 		private void cmdGenerateGenericObject(final JTree tree, final GenericObjectExplorerNode goexplorernode) {
 			try {
-				Map<Integer, UsageCriteria> sources = new HashMap<Integer, UsageCriteria>();
-				sources.put(getTreeNode().getId(), getTreeNode().getUsageCriteria());
+				Map<Long, UsageCriteria> sources = new HashMap<Long, UsageCriteria>();
+				sources.put(IdUtils.toLongId(getTreeNode().getId()), getTreeNode().getUsageCriteria());
 
 				String targetEntity = MetaDataClientProvider.getInstance().getEntity(generatoractionvo.getTargetModuleId().longValue()).getEntity();
 				JTabbedPane pane = MainFrame.getHomePane();

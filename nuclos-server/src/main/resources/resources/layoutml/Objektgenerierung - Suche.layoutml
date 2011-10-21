@@ -63,9 +63,7 @@
             <tablelayout-constraints col1="3" col2="3" row1="1" row2="1" hAlign="2" vAlign="1" />
             <minimum-size height="23" width="35" />
             <preferred-size height="23" width="70" />
-            <valuelist-provider type="entityId">
-              <parameter name="restriction" value="entities with statemodel" />
-            </valuelist-provider>
+            <valuelist-provider type="entityId"/>
           </collectable-component>
         </panel>
       </panel>
@@ -90,9 +88,7 @@
             <tablelayout-constraints col1="3" col2="3" row1="1" row2="1" hAlign="2" vAlign="1" />
             <minimum-size height="23" width="35" />
             <preferred-size height="23" width="70" />
-            <valuelist-provider type="entityId">
-              <parameter name="restriction" value="entities with statemodel" />
-            </valuelist-provider>
+            <valuelist-provider type="entityId"/>
           </collectable-component>
           <collectable-component fill-control-horizontally="yes" name="targetProcess" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
             <tablelayout-constraints col1="1" col2="1" row1="3" row2="3" hAlign="2" vAlign="1" />

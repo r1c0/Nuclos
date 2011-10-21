@@ -28,9 +28,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.EntityCollectController;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.dal.DalSupportForGO;
+import org.nuclos.client.entityobject.EntityObjectDelegate;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
@@ -54,24 +57,26 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.PointerCollection;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.genericobject.ejb3.GenerationResult;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
-import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
-import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 
 public class GenerationController {
 
 	private static final Logger LOG = Logger.getLogger(GenerationController.class);
 
-	private final Map<Integer, UsageCriteria> sources;
+	private final Map<Long, UsageCriteria> sources;
 	private final GeneratorActionVO action;
 
-	private final GenericObjectCollectController parentController;
+	private final EntityCollectController<?> parentController;
 	private final MainFrameTab parent;
 	private final JTabbedPane pane;
 
@@ -80,11 +85,11 @@ public class GenerationController {
 	private boolean confirmationEnabled = true;
 	private boolean showResult = true;
 
-	public GenerationController(Map<Integer, UsageCriteria> sources, GeneratorActionVO action, GenericObjectCollectController parentController, MainFrameTab parent) {
+	public GenerationController(Map<Long, UsageCriteria> sources, GeneratorActionVO action, EntityCollectController<?> parentController, MainFrameTab parent) {
 		this(sources, action, parentController, parent, parent.getTabbedPane());
 	}
 
-	public GenerationController(Map<Integer, UsageCriteria> sources, GeneratorActionVO action, GenericObjectCollectController parentController, MainFrameTab parent, JTabbedPane pane) {
+	public GenerationController(Map<Long, UsageCriteria> sources, GeneratorActionVO action, EntityCollectController<?> parentController, MainFrameTab parent, JTabbedPane pane) {
 		super();
 		this.sources = sources;
 		this.action = action;
@@ -131,11 +136,11 @@ public class GenerationController {
 			final int iBtn = isConfirmationEnabled() ? confirmGenerationType(bMulti, sSourceModuleName, sTargetModuleName, action) : JOptionPane.OK_OPTION;
 
 			if (iBtn != JOptionPane.CANCEL_OPTION && iBtn != JOptionPane.CLOSED_OPTION) {
-				final AtomicReference<Integer> parameterObjectIdRef = new AtomicReference<Integer>();
+				final AtomicReference<Long> parameterObjectIdRef = new AtomicReference<Long>();
 				final CommonRunnable generateRunnable = new CommonRunnable() {
 					@Override
 					public void run() throws CommonBusinessException {
-						Integer parameterObjectId = parameterObjectIdRef.get();
+						Long parameterObjectId = parameterObjectIdRef.get();
 						generate(parameterObjectId);
 					}
 				};
@@ -155,7 +160,7 @@ public class GenerationController {
 								public void lookupSuccessful(LookupEvent ev) {
 									Collectable clct = ev.getSelectedCollectable();
 									if (clct != null) {
-										parameterObjectIdRef.set((Integer) clct.getId());
+										parameterObjectIdRef.set(IdUtils.toLongId((Integer) clct.getId()));
 									}
 									UIUtils.runShortCommand(parent, generateRunnable);
 								}
@@ -178,7 +183,7 @@ public class GenerationController {
 		}
 	}
 
-	private static String getModuleLabel(Integer id) {
+	public static String getModuleLabel(Integer id) {
 		return Modules.getInstance().getEntityLabelByModuleId(id);
 	}
 
@@ -232,7 +237,7 @@ public class GenerationController {
 	 * Performed in an own thread.
 	 * @param generatoractionvo
 	 */
-	private void generate(final Integer parameterObjectId) throws CommonBusinessException {
+	private void generate(final Long parameterObjectId) throws CommonBusinessException {
 		if (parentController != null) {
 			CommonMultiThreader.getInstance().execute(new GenerationClientWorker(parentController, parameterObjectId));
 		}
@@ -241,16 +246,17 @@ public class GenerationController {
 		}
 	}
 
-	private void generateImpl(final Integer parameterObjectId) throws CommonBusinessException {
-		final Collection<Collection<GenericObjectVO>> sources;
+	private void generateImpl(final Long parameterObjectId) throws CommonBusinessException {
+		final Collection<Collection<EntityObjectVO>> sources;
 
 		if (action.isGroupAttributes()) {
 			sources = GeneratorDelegate.getInstance().groupObjects(this.sources.keySet(), action).values();
 		}
 		else {
-			sources = new ArrayList<Collection<GenericObjectVO>>();
-			for (Integer i : this.sources.keySet()) {
-				sources.add(Collections.singleton(GenericObjectDelegate.getInstance().get(i)));
+			String sourceEntity = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(action.getSourceModuleId())).getEntity();
+			sources = new ArrayList<Collection<EntityObjectVO>>();
+			for (Long i : this.sources.keySet()) {
+				sources.add(Collections.singleton(EntityObjectDelegate.getInstance().get(sourceEntity, i)));
 			}
 		}
 
@@ -280,7 +286,7 @@ public class GenerationController {
 					}
 				}
 			});
-			new MultiCollectablesActionController<Collection<GenericObjectVO>, GenerationResult>(
+			new MultiCollectablesActionController<Collection<EntityObjectVO>, GenerationResult>(
 				parent, sources, CommonLocaleDelegate.getMessage("R00022892", "Objektgenerierung"), parent.getTabIcon(),
 				new MultiGenerateAction(parameterObjectId, action)
 			).run(panel);
@@ -302,7 +308,7 @@ public class GenerationController {
 
 	private void showResult(GenerationResult result) {
 		try {
-			Integer generatedGoId = result.getGeneratedObject().getId();
+			Integer generatedGoId = IdUtils.unsafeToId(result.getGeneratedObject().getId());
 			if (SecurityCache.getInstance().isWriteAllowedForModule(Modules.getInstance().getEntityNameByModuleId(action.getTargetModuleId()), generatedGoId)) {
 				if (generatedGoId != null) {
 					showGenericObject(result.getGeneratedObject(), action.getTargetModuleId());
@@ -323,8 +329,8 @@ public class GenerationController {
 	 * @param iModuleId
 	 * @throws CommonBusinessException
 	 */
-	private void showGenericObject(GenericObjectVO result, final Integer iModuleId) throws CommonBusinessException {
-		Integer iGeneratedObjectId = result.getId();
+	private void showGenericObject(EntityObjectVO result, final Integer iModuleId) throws CommonBusinessException {
+		Long iGeneratedObjectId = result.getId();
 
 		String entity = Modules.getInstance().getEntityNameByModuleId(iModuleId);
 		Main.getMainController().showDetails(entity, iGeneratedObjectId);
@@ -334,8 +340,8 @@ public class GenerationController {
 	 * Open an incomplete generated object in its own controller.
 	 * @throws CommonBusinessException
 	 */
-	private void showIncompleteGenericObject(Integer sourceId, GenericObjectVO result, String message) throws CommonBusinessException {
-		String entity = Modules.getInstance().getEntityNameByModuleId(result.getModuleId());
+	private void showIncompleteGenericObject(Integer sourceId, EntityObjectVO result, String message) throws CommonBusinessException {
+		String entity = result.getEntity();
 		JTabbedPane pane;
 		if (MainFrame.isPredefinedEntityOpenLocationSet(entity)) {
 			pane = MainFrame.getPredefinedEntityOpenLocation(entity);
@@ -343,20 +349,24 @@ public class GenerationController {
 		else {
 			pane = this.pane;
 		}
-		GenericObjectCollectController goclct = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(pane, result.getModuleId(), null);
+		EntityMetaDataVO metaVO = MetaDataClientProvider.getInstance().getEntity(entity);
+		Map<String, EntityFieldMetaDataVO> mpFields = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(entity);
+
+		GenericObjectCollectController goclct = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(pane, IdUtils.unsafeToId(metaVO.getId()), null);
 		goclct.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW_CHANGED);
 		goclct.setGenerationSourceId(sourceId);
-		goclct.unsafeFillDetailsPanel(new CollectableGenericObjectWithDependants((GenericObjectWithDependantsVO) result));
+		CollectableEOEntity meta = new CollectableEOEntity(metaVO, mpFields);
+		goclct.unsafeFillDetailsPanel(new CollectableGenericObjectWithDependants(DalSupportForGO.getGenericObjectWithDependantsVO(result, meta)));
 		goclct.showFrame();
 		MainFrame.setSelectedTab(goclct.getFrame());
 		goclct.setPointerInformation(new PointerCollection(CommonLocaleDelegate.getMessageFromResource(message)), null);
 	}
 
-	private class GenerationClientWorker extends CommonClientWorkerAdapter<CollectableGenericObjectWithDependants> {
+	private class GenerationClientWorker<T extends Collectable> extends CommonClientWorkerAdapter<T> {
 
-		private final Integer parameterObjectId;
+		private final Long parameterObjectId;
 
-		public GenerationClientWorker(GenericObjectCollectController ctl, Integer parameterObjectId) {
+		public GenerationClientWorker(EntityCollectController<T> ctl, Long parameterObjectId) {
 			super(ctl);
 			this.parameterObjectId = parameterObjectId;
 		}

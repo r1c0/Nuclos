@@ -42,7 +42,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class DalSupportForMD {
-	
+
 	private DalSupportForMD() {
 		// Never invoked.
 	}
@@ -106,15 +106,15 @@ public class DalSupportForMD {
 	}
 
 	public static EntityTreeViewVO wrapEntityObjectVOAsSubNode(EntityObjectVO eo) {
-		EntityTreeViewVO vo = new EntityTreeViewVO(eo.getId(), 
+		EntityTreeViewVO vo = new EntityTreeViewVO(eo.getId(),
 			IdUtils.toLongId(eo.getField(EntityTreeViewVO.ENTITY_FIELD, Object.class)),
 			eo.getField(EntityTreeViewVO.SUBFORM_ENTITY_FIELD, String.class),
 			eo.getField(EntityTreeViewVO.SUBFORM2ENTITY_REF_FIELD, String.class),
 			eo.getField(EntityTreeViewVO.FOLDERNAME_FIELD, String.class),
 			eo.getField(EntityTreeViewVO.ACTIVE_FIELD, Boolean.class),
-			eo.getField(EntityTreeViewVO.SORTORDER_FIELD, Integer.class)			
+			eo.getField(EntityTreeViewVO.SORTORDER_FIELD, Integer.class)
 		);
-		
+
 		return vo;
 	}
 

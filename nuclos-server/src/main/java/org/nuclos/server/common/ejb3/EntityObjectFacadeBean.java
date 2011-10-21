@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.security.RolesAllowed;
+
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.common.MetaDataProvider;
@@ -37,7 +39,6 @@ import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectabl
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
-import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
@@ -47,6 +48,7 @@ import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.common.RecordGrantUtils;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
@@ -67,11 +69,21 @@ import org.springframework.transaction.annotation.Transactional;
  * @since Nuclos 3.1.01
  */
 @Transactional
+@RolesAllowed("Login")
 public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityObjectFacadeRemote {
-	
+
 	private static final Logger LOG = Logger.getLogger(EntityObjectFacadeBean.class);
-	
+
 	public EntityObjectFacadeBean() {
+	}
+
+	@Override
+	public EntityObjectVO get(String entity, Long id) throws CommonPermissionException {
+		EntityMetaDataVO meta = MetaDataServerProvider.getInstance().getEntity(entity);
+		checkReadAllowedForModule(IdUtils.unsafeToId(meta.getId()), IdUtils.unsafeToId(id));
+		RecordGrantUtils.checkInternal(entity, id);
+		JdbcEntityObjectProcessor eop = NucletDalProvider.getInstance().getEntityObjectProcessor(entity);
+		return eop.getByPrimaryKey(id);
 	}
 
 	@Override
@@ -94,10 +106,10 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 	public Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds, Collection<EntityFieldMetaDataVO> fields) {
 		final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
 		final EntityMetaDataVO eMeta = mdProv.getEntity(id);
-			
+
 		JdbcEntityObjectProcessor eop = NucletDalProvider.getInstance().getEntityObjectProcessor(
 				eMeta.getEntity());
-		// 
+		//
 		final ProcessorFactorySingleton processorFac = ProcessorFactorySingleton.getInstance();
 		eop = (JdbcEntityObjectProcessor) eop.clone();
 		for (EntityFieldMetaDataVO f: fields) {
@@ -105,11 +117,11 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 				processorFac.addToColumns(eop, f);
 			}
 		}
-		
+
 		final CollectableSearchExpression search = new CollectableSearchExpression(getSearchCondition(null, fields));
 		final List<EntityObjectVO> eos = eop.getBySearchExpressionAndPrimaryKeys(
 				appendRecordGrants(search, eMeta), lstIds);
-				
+
 		final Set<String> subforms = new HashSet<String>();
 		// final Collection<EntityFieldMetaDataVO> pivots = new ArrayList<EntityFieldMetaDataVO>();
 		for (EntityFieldMetaDataVO f: fields) {
@@ -123,8 +135,8 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 				subforms.add(subform);
 			}
 		}
-		
-		// fill in (dependent) subforms 
+
+		// fill in (dependent) subforms
 		for (EntityObjectVO eo : eos) {
 			try {
 				fillDependants(eo, subforms);
@@ -136,7 +148,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		}
 		return eos;
 	}
-	
+
 	private CollectableSearchCondition getSearchCondition(CollectableSearchCondition constrain, Collection<EntityFieldMetaDataVO> fields) {
 		final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
 		final List<CollectableSearchCondition> join = new ArrayList<CollectableSearchCondition>();
@@ -179,7 +191,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 	 * @param subEntities
 	 * @precondition stRequiredSubEntityNames != null
 	 */
-	private void fillDependants(EntityObjectVO base, Set<String> stRequiredSubEntityNames) 
+	private void fillDependants(EntityObjectVO base, Set<String> stRequiredSubEntityNames)
 			throws CommonFinderException {
 
 		if (stRequiredSubEntityNames == null) {
@@ -198,11 +210,11 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		}
 		// base.setDependants(dmdm);
 	}
-	
+
 	/**
 	 * @deprecated Not in use any more.
 	 */
-	private void fillPivots(EntityObjectVO base, Collection<EntityFieldMetaDataVO> pivots) 
+	private void fillPivots(EntityObjectVO base, Collection<EntityFieldMetaDataVO> pivots)
 			throws CommonFinderException {
 
 		if (pivots == null) {
@@ -224,7 +236,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		}
 		// base.setDependants(dmdm);
 	}
-	
+
 	private String findRefField(EntityObjectVO base, String subform) {
 		final MetaDataServerProvider mdProv = MetaDataServerProvider.getInstance();
 		final Map<String, EntityFieldMetaDataVO> fields = mdProv.getAllEntityFieldsByEntity(subform);
@@ -250,7 +262,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 	@Override
 	public Collection<EntityObjectVO> getDependentPivotEntityObjects(EntityFieldMetaDataVO pivot, String sForeignKeyField,
 			Long oRelatedId) {
-		
+
 		final MetaDataServerProvider mdProv = MetaDataServerProvider.getInstance();
 		final EntityMetaDataVO mdEntity = mdProv.getEntity(pivot.getEntityId());
 		final PivotInfo info = pivot.getPivotInfo();
@@ -259,8 +271,8 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		final CollectableSearchCondition condJoin = SearchConditionUtils.newEOidComparison(
 				subform, sForeignKeyField, ComparisonOperator.EQUAL, oRelatedId, mdProv);
 		final CollectableSearchCondition condKey = new CollectableComparison(
-				new CollectableEOEntityField(mdProv.getEntityField(subform, info.getKeyField()), subform), 
-				ComparisonOperator.EQUAL, 
+				new CollectableEOEntityField(mdProv.getEntityField(subform, info.getKeyField()), subform),
+				ComparisonOperator.EQUAL,
 				new CollectableValueField(pivot.getField()));
 		final CompositeCollectableSearchCondition composite = new CompositeCollectableSearchCondition(LogicalOperator.AND);
 		composite.addOperand(condJoin);
@@ -276,7 +288,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		final MetaDataServerProvider mdProv = MetaDataServerProvider.getInstance();
 		final EntityMetaDataVO mdEntity = mdProv.getEntity(name);
 		final SecurityCache sc = SecurityCache.getInstance();
-		
+
 		if (mdEntity.isStateModel().booleanValue()) {
 			if (!sc.isDeleteAllowedForModule(user, name, intid, true)) {
 				throw new CommonPermissionException("User " + user + " has no permission to delete module instance of " + name);
@@ -287,7 +299,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 				throw new CommonPermissionException("User " + user + " has no permission to delete md instance of " + name);
 			}
 		}
-		
+
 		final JdbcEntityObjectProcessor processor = NucletDalProvider.getInstance().getEntityObjectProcessor(name);
 		processor.delete(id);
 	}
@@ -296,5 +308,5 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 	public void remove(EntityObjectVO entity) throws CommonPermissionException {
 		removeEntity(entity.getEntity(), entity.getId());
 	}
-	
+
 }

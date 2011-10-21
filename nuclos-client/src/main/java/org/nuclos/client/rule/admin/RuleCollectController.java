@@ -21,6 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +82,7 @@ import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
+import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
@@ -645,5 +647,15 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	@Override
 	public Map<String, DetailsSubFormController<CollectableEntityObject>> getDetailsSubforms() {
 		return null;
+	}
+
+	@Override
+	protected void cmdGenerateObject(GeneratorActionVO generatoractionvo) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	protected List<GeneratorActionVO> getGeneratorActions() {
+		return Collections.emptyList();
 	}
 }	// class RuleCollectController

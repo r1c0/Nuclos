@@ -39,6 +39,11 @@ public class EntityObjectDelegate implements EntityObjectCommon {
 	}
 
 	@Override
+	public EntityObjectVO get(String entity, Long id) throws CommonPermissionException {
+		return facade.get(entity, id);
+	}
+
+	@Override
 	public List<Long> getEntityObjectIds(Long id, CollectableSearchExpression cse) {
 		return facade.getEntityObjectIds(id, cse);
 	}

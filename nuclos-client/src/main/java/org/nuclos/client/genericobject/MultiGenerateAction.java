@@ -21,22 +21,22 @@ import java.util.Collection;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.ui.multiaction.MultiCollectablesActionController.Action;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.genericobject.ejb3.GenerationResult;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
-import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 
 /**
  * Action used by the controller for creating multiple generic objects
  */
-class MultiGenerateAction implements Action<Collection<GenericObjectVO>, GenerationResult> {
+class MultiGenerateAction implements Action<Collection<EntityObjectVO>, GenerationResult> {
 
-	private final Integer parameterObjectId;
+	private final Long parameterObjectId;
 	private final GeneratorActionVO generatoractionvo;
 
-	MultiGenerateAction(Integer parameterObjectId, GeneratorActionVO generatoractionvo) {
+	MultiGenerateAction(Long parameterObjectId, GeneratorActionVO generatoractionvo) {
 		this.parameterObjectId = parameterObjectId;
 		this.generatoractionvo = generatoractionvo;
 	}
@@ -48,7 +48,7 @@ class MultiGenerateAction implements Action<Collection<GenericObjectVO>, Generat
 	 * @throws CommonBusinessException
 	 */
 	@Override
-	public GenerationResult perform(final Collection<GenericObjectVO> sources) throws CommonBusinessException {
+	public GenerationResult perform(final Collection<EntityObjectVO> sources) throws CommonBusinessException {
 		if (generatoractionvo.isGroupAttributes()) {
 			return GeneratorDelegate.getInstance().generateGenericObject(sources, parameterObjectId, generatoractionvo);
 		}
@@ -65,7 +65,7 @@ class MultiGenerateAction implements Action<Collection<GenericObjectVO>, Generat
 	 * @return the text to display for the action on the given object.
 	 */
 	@Override
-	public String getText(Collection<GenericObjectVO> sources) {
+	public String getText(Collection<EntityObjectVO> sources) {
 		if (sources.size() == 1) {
 			String entity = MetaDataClientProvider.getInstance().getEntity(generatoractionvo.getTargetModuleId().longValue()).getEntity();
 			return CommonLocaleDelegate.getTreeViewLabel(sources.iterator().next(), entity, MetaDataClientProvider.getInstance());
@@ -81,7 +81,7 @@ class MultiGenerateAction implements Action<Collection<GenericObjectVO>, Generat
 	 *         the given object.
 	 */
 	@Override
-	public String getSuccessfulMessage(Collection<GenericObjectVO> sources, GenerationResult rResult) {
+	public String getSuccessfulMessage(Collection<EntityObjectVO> sources, GenerationResult rResult) {
 		if (!StringUtils.isNullOrEmpty(rResult.getError())) {
 			return CommonLocaleDelegate.getMessage("generation.unsaved",
 					"Generated obect could not be saved: \\n{0} \\nPlease edit object in details view (see context menu).",
@@ -101,7 +101,7 @@ class MultiGenerateAction implements Action<Collection<GenericObjectVO>, Generat
 	}
 
 	@Override
-	public String getExceptionMessage(Collection<GenericObjectVO> sources, Exception ex) {
+	public String getExceptionMessage(Collection<EntityObjectVO> sources, Exception ex) {
 		return CommonLocaleDelegate.getMessage("R00022883", "Objektgenerierung fehlgeschlagen. \\n{1}", ex.getMessage());
 	}
 

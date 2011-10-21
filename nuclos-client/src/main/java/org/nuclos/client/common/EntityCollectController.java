@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.common;
 
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.IllegalComponentStateException;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -34,17 +36,22 @@ import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 
 import org.nuclos.client.common.AbstractDetailsSubFormController.DetailsSubFormTableModel;
 import org.nuclos.client.entityobject.CollectableEntityObject;
+import org.nuclos.client.genericobject.GenerationController;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.MetaDataCache;
@@ -80,6 +87,7 @@ import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
 public abstract class EntityCollectController<Clct extends Collectable> extends NuclosCollectController<Clct> {
@@ -1071,4 +1079,71 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		}
 	}
 
+	protected void addGeneratorActions(boolean bEnableButtons, List<Component> components) {
+		final List<GeneratorActionVO> lstActions = getGeneratorActions();
+		if (lstActions.size() > 0) {
+			final JComboBox cmbbxActions = new JComboBox(lstActions.toArray());
+			cmbbxActions.setSelectedItem(null);
+			cmbbxActions.setEnabled(bEnableButtons);
+			//toolbarCustomActionsDetails.addSeparator();
+			// workaround for cellrenderer
+			int w = cmbbxActions.getPreferredSize().width;
+			if(w < 100)
+				w = 100;
+			cmbbxActions.setPreferredSize(new Dimension(w, cmbbxActions.getPreferredSize().height));
+			UIUtils.setMaximumSizeToPreferredSize(cmbbxActions);
+
+			components.add(cmbbxActions);
+			if (cmbbxActions.isEnabled())
+				cmbbxActions.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent ev) {
+						UIUtils.runCommandLater(parent, new CommonRunnable() {
+							@Override
+							public void run() {
+								if (cmbbxActions.getSelectedItem() instanceof GeneratorActionVO)
+									try {
+										cmdGenerateObject((GeneratorActionVO) cmbbxActions.getSelectedItem());
+									}
+								finally {
+									cmbbxActions.setSelectedItem(null);
+								}
+							}
+						});
+					}
+				});
+			final ListCellRenderer originalRenderer = cmbbxActions.getRenderer();
+			cmbbxActions.setRenderer(new DefaultListCellRenderer() {
+				/**
+				 *
+				 */
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public Component getListCellRendererComponent(JList jlst, Object oValue, int iIndex, boolean bSelected,
+					boolean bHasFocus) {
+					final JLabel result = (JLabel) originalRenderer.getListCellRendererComponent(jlst, oValue, iIndex, bSelected,
+						bHasFocus);
+					result.setOpaque(false);
+
+					if (oValue == null) {
+						result.setText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.9","Arbeitsschritt"));
+						result.setToolTipText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.17","Bitte w\u00e4hlen Sie einen Arbeitsschritt aus."));
+					}
+					else {
+						assert oValue instanceof GeneratorActionVO;
+						final GeneratorActionVO actvo = (GeneratorActionVO) oValue;
+						final String sSourceModuleName = GenerationController.getModuleLabel(actvo.getSourceModuleId());
+						final String sTargetModuleName = GenerationController.getModuleLabel(actvo.getTargetModuleId());
+						result.setToolTipText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.46","Erzeugt einen {0} aus dem/der aktuellen {1}", sTargetModuleName, sSourceModuleName));
+					}
+					return result;
+				}
+			});
+		}
+	}
+
+	protected abstract void cmdGenerateObject(GeneratorActionVO generatoractionvo);
+
+	protected abstract List<GeneratorActionVO> getGeneratorActions();
 }

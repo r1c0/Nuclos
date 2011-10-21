@@ -21,6 +21,7 @@ import java.util.Collection;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Local;
 
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -43,26 +44,11 @@ public interface GeneratorFacadeLocal {
 	 * @return id of generated generic object (if exactly one object was generated)
 	 */
 	@RolesAllowed("Login")
-	public abstract Integer generateGenericObject(
-		Integer iSourceGenericObjectId, String sGenerator)
+	public abstract Long generateGenericObject(
+			Long iSourceObjectId, String sGenerator)
 		throws CommonFinderException, CommonPermissionException,
 		NuclosBusinessRuleException, CommonStaleVersionException,
 		CommonValidationException;
-
-	/**
-	 * generate one or more generic objects from an existing generic object (copying selected attributes and subforms)
-	 *
-	 * @param iSourceGenericObjectId source generic object id to generate from
-	 * @param generatoractionvo		 generator action value object to determine what to do
-	 * @return id of generated generic object (if exactly one object was generated)
-	 * @nucleus.permission mayWrite(generatoractionvo.getTargetModuleId())
-	 */
-	/*@RolesAllowed("Login")
-	public abstract GenericObjectVO generateGenericObject(
-		Integer iSourceGenericObjectId, Integer paramterObjectId, GeneratorActionVO generatoractionvo)
-		throws CommonFinderException, CommonPermissionException,
-		NuclosBusinessRuleException, CommonStaleVersionException,
-		CommonValidationException;*/
 
 	/**
 	 * generate one or more generic objects from an existing generic object (copying selected attributes and subforms)
@@ -72,7 +58,7 @@ public interface GeneratorFacadeLocal {
 	 * @return id of generated generic object (if exactly one object was generated)
 	 */
 	@RolesAllowed("Login")
-	public abstract Integer generateGenericObject(
+	public abstract Long generateGenericObject(
 		RuleObjectContainerCVO loccvoSource, String sGenerator)
 		throws CommonFinderException, CommonPermissionException,
 		NuclosBusinessRuleException, CommonStaleVersionException,
@@ -102,7 +88,7 @@ public interface GeneratorFacadeLocal {
 	public abstract Collection<GeneratorUsageVO> getGeneratorUsages(Integer id)
 		throws CommonFatalException;
 
-	public GenericObjectVO generateGenericObjectWithoutCheckingPermission(Integer iSourceGenericObjectId, GeneratorActionVO generatoractionvo)
+	public EntityObjectVO generateGenericObjectWithoutCheckingPermission(Long iSourceObjectId, GeneratorActionVO generatoractionvo)
 		throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException,
 		CommonStaleVersionException, CommonValidationException ;
 }

@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -35,7 +36,6 @@ import org.nuclos.server.genericobject.ejb3.GenerationResult;
 import org.nuclos.server.genericobject.ejb3.GeneratorFacadeRemote;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorVO;
-import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
 /**
@@ -92,7 +92,7 @@ public class GeneratorDelegate {
 	 * @return id of generated leased object (if exactly one object was
 	 *         generated)
 	 */
-	public GenerationResult generateGenericObject(Integer iSourceGenericObjectId, Integer parameterObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, NuclosBusinessException, CommonStaleVersionException, CommonValidationException {
+	public GenerationResult generateGenericObject(Long iSourceGenericObjectId, Long parameterObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, NuclosBusinessException, CommonStaleVersionException, CommonValidationException {
 		try {
 			return generatorFacade.generateGenericObject(iSourceGenericObjectId, parameterObjectId, generatoractionvo);
 		} catch (RuntimeException ex) {
@@ -100,15 +100,15 @@ public class GeneratorDelegate {
 		}
 	}
 
-	public Map<String, Collection<GenericObjectVO>> groupObjects(Collection<Integer> sources, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, NuclosBusinessException, CommonStaleVersionException, CommonValidationException {
+	public Map<String, Collection<EntityObjectVO>> groupObjects(Collection<Long> sources, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, NuclosBusinessException, CommonStaleVersionException, CommonValidationException {
 		try {
-			return generatorFacade.groupObjects(new ArrayList<Integer>(sources), generatoractionvo);
+			return generatorFacade.groupObjects(new ArrayList<Long>(sources), generatoractionvo);
 		} catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);
 		}
 	}
 
-	public GenerationResult generateGenericObject(Collection<GenericObjectVO> sources, Integer parameterObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, NuclosBusinessException, CommonStaleVersionException, CommonValidationException {
+	public GenerationResult generateGenericObject(Collection<EntityObjectVO> sources, Long parameterObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, NuclosBusinessException, CommonStaleVersionException, CommonValidationException {
 		try {
 			return generatorFacade.generateGenericObject(sources, parameterObjectId, generatoractionvo);
 		} catch (RuntimeException ex) {

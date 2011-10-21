@@ -19,7 +19,6 @@ package org.nuclos.client.genericobject;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.datatransfer.Transferable;
@@ -52,15 +51,12 @@ import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultBoundedRangeModel;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -72,7 +68,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
-import javax.swing.ListCellRenderer;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.TransferHandler;
 import javax.swing.event.ChangeEvent;
@@ -698,7 +693,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 							@Override
 							public void actionPerformed(ActionEvent e) {
-								cmdGenerateGenericObject(actionVO);
+								cmdGenerateObject(actionVO);
 							}
 
 						});
@@ -3640,28 +3635,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				toolbarCustomActionsDetails.add(new BlackLabel(cmbbxCurrentState, CommonLocaleDelegate.getMessage("GenericObjectCollectController.106","Status")));
 
 				// buttons/actions for "generate leased object":
-				try {
-					if (!isSelectedCollectableMarkedAsDeleted())
-						if (bSingle) {
-							final UsageCriteria usagecriteria = getUsageCriteriaFromView(false);
-							final Integer iStateNumeral = getSelectedGenericObjectStateNumeral();
-							if (iStateNumeral == null)
-								log.info("Keinen aktuellen Zustand gefunden f\u00fcr GenericObject mit Id " + getSelectedGenericObjectId() + ".");
-							else
-								showGeneratorActions(bView, getModuleId(), iStateNumeral, usagecriteria.getProcessId());
-						}
-						else
-							try {
-								final Integer iProcessId = getSelectedGenericObjectsCommonFieldIdByFieldName(NuclosEOField.PROCESS.getMetaData().getField());
-								final Integer iStateNumeral = getSelectedGenericObjectsCommonStateNumeral();
-								showGeneratorActions(bView, getModuleId(), iStateNumeral, iProcessId);
-							}
-					catch (NoSuchElementException ex) {
-						log.info("Keinen aktuellen Zustand gefunden f\u00fcr GenericObject mit Id " + getSelectedGenericObjectId() + ".");
-					}
-				}
-				catch (CollectableFieldFormatException ex) {
-					throw new NuclosFatalException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.61","Prozess-Id ist ung\u00fcltig."), ex);
+				if (!isSelectedCollectableMarkedAsDeleted()) {
+					addGeneratorActions(bView, toolbarCustomActionsDetails);
 				}
 				UIUtils.ensureMinimumSize(getFrame());
 			}
@@ -3744,70 +3719,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		return result;
 	}
 
-	private void showGeneratorActions(boolean bEnableButtons, Integer iModuleId, Integer iStateNumeral,
-		Integer iProcessId) {
-		final List<GeneratorActionVO> lstActions = GeneratorActions.getActions(iModuleId, iStateNumeral, iProcessId);
-		if (lstActions.size() > 0) {
-			final JComboBox cmbbxActions = new JComboBox(lstActions.toArray());
-			cmbbxActions.setSelectedItem(null);
-			cmbbxActions.setEnabled(bEnableButtons);
-			//toolbarCustomActionsDetails.addSeparator();
-			// workaround for cellrenderer
-			int w = cmbbxActions.getPreferredSize().width;
-			if(w < 100)
-				w = 100;
-			cmbbxActions.setPreferredSize(new Dimension(w, cmbbxActions.getPreferredSize().height));
-			UIUtils.setMaximumSizeToPreferredSize(cmbbxActions);
 
-			toolbarCustomActionsDetails.add(cmbbxActions);
-			if (cmbbxActions.isEnabled())
-				cmbbxActions.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent ev) {
-						UIUtils.runCommandLater(parent, new CommonRunnable() {
-							@Override
-							public void run() {
-								if (cmbbxActions.getSelectedItem() instanceof GeneratorActionVO)
-									try {
-										cmdGenerateGenericObject((GeneratorActionVO) cmbbxActions.getSelectedItem());
-									}
-								finally {
-									cmbbxActions.setSelectedItem(null);
-								}
-							}
-						});
-					}
-				});
-			final ListCellRenderer originalRenderer = cmbbxActions.getRenderer();
-			cmbbxActions.setRenderer(new DefaultListCellRenderer() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public Component getListCellRendererComponent(JList jlst, Object oValue, int iIndex, boolean bSelected,
-					boolean bHasFocus) {
-					final JLabel result = (JLabel) originalRenderer.getListCellRendererComponent(jlst, oValue, iIndex, bSelected,
-						bHasFocus);
-					result.setOpaque(false);
-
-					if (oValue == null) {
-						result.setText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.9","Arbeitsschritt"));
-						result.setToolTipText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.17","Bitte w\u00e4hlen Sie einen Arbeitsschritt aus."));
-					}
-					else {
-						assert oValue instanceof GeneratorActionVO;
-						final GeneratorActionVO actvo = (GeneratorActionVO) oValue;
-						final String sSourceModuleName = getModuleLabel(getSelectedCollectableModuleId());
-						final String sTargetModuleName = getModuleLabel(actvo.getTargetModuleId());
-						result.setToolTipText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.46","Erzeugt einen {0} aus dem/der aktuellen {1}", sTargetModuleName, sSourceModuleName));
-					}
-					return result;
-				}
-			});
-		}
-	}
 
 	/**
 	 * @param stateNew
@@ -4136,20 +4048,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	private void changeStatesForMultipleObjects(final StateWrapper stateFinal, final List<StateWrapper> statesNew) throws CommonBusinessException {
 		new ChangeStateForSelectedCollectablesController(this, stateFinal, statesNew).run(getMultiActionProgressPanel(getSelectedCollectables().size()));
-	}
-
-	/**
-	 * generates one or more leased object(s) from current.
-	 * @param generatoractionvo generator action vo to be used for generation
-	 */
-	private void cmdGenerateGenericObject(final GeneratorActionVO generatoractionvo) {
-		assert !isHistoricalView();
-		Map<Integer, UsageCriteria> sources = new HashMap<Integer, UsageCriteria>();
-		for (CollectableGenericObjectWithDependants clct : getSelectedCollectables()) {
-			sources.put(clct.getId(), getUsageCriteria(clct));
-		}
-		GenerationController controller = new GenerationController(sources, generatoractionvo, this, getFrame());
-		controller.generateGenericObject();
 	}
 
 	protected boolean showObjectGenerationWarningIfNewObjectIsNotSaveable() {
@@ -6015,4 +5913,36 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		bGenerated = true;
 	}
 
+	@Override
+	protected List<GeneratorActionVO> getGeneratorActions() {
+		try {
+			if (CollectState.isDetailsModeViewOrEdit(getCollectStateModel().getDetailsMode())) {
+				final UsageCriteria usagecriteria = getUsageCriteriaFromView(false);
+				final Integer iStateNumeral = getSelectedGenericObjectStateNumeral();
+				return GeneratorActions.getActions(getModuleId(), iStateNumeral, usagecriteria.getProcessId());
+			}
+			else {
+				final Integer iProcessId = getSelectedGenericObjectsCommonFieldIdByFieldName(NuclosEOField.PROCESS.getMetaData().getField());
+				final Integer iStateNumeral = getSelectedGenericObjectsCommonStateNumeral();
+				return GeneratorActions.getActions(getModuleId(), iStateNumeral, iProcessId);
+			}
+		}
+		catch (NoSuchElementException ex) {
+			log.info("Keinen aktuellen Zustand gefunden f\u00fcr GenericObject mit Id " + getSelectedGenericObjectId() + ".");
+			return Collections.emptyList();
+		}
+		catch (CollectableFieldFormatException ex) {
+			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.61","Prozess-Id ist ung\u00fcltig."), ex);
+		}
+	}
+
+	@Override
+	protected void cmdGenerateObject(GeneratorActionVO generatoractionvo) {
+		Map<Long, UsageCriteria> sources = new HashMap<Long, UsageCriteria>();
+		for (CollectableGenericObjectWithDependants clct : getSelectedCollectables()) {
+			sources.put(IdUtils.toLongId(clct.getId()), getUsageCriteria(clct));
+		}
+		GenerationController controller = new GenerationController(sources, generatoractionvo, this, getFrame());
+		controller.generateGenericObject();
+	}
 }	// class GenericObjectCollectController

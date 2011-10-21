@@ -23,6 +23,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJBException;
 import javax.ejb.Remote;
 
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -32,7 +33,6 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.valueobject.GeneratorRuleVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorVO;
-import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
 @Remote
@@ -54,15 +54,15 @@ public interface GeneratorFacadeRemote {
     * @nucleus.permission mayWrite(generatoractionvo.getTargetModuleId())
     */
    @RolesAllowed("Login")
-   public GenerationResult generateGenericObject(Integer iSourceGenericObjectId, Integer parameterObjectId, GeneratorActionVO generatoractionvo)
+   public GenerationResult generateGenericObject(Long iSourceObjectId, Long parameterObjectId, GeneratorActionVO generatoractionvo)
    	throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException,
       CommonStaleVersionException, CommonValidationException;
 
    @RolesAllowed("Login")
-   public Map<String, Collection<GenericObjectVO>> groupObjects(Collection<Integer> sourceIds, GeneratorActionVO generatoractionvo);
+   public Map<String, Collection<EntityObjectVO>> groupObjects(Collection<Long> sourceIds, GeneratorActionVO generatoractionvo);
 
    @RolesAllowed("Login")
-   public GenerationResult generateGenericObject(Collection<GenericObjectVO> sourceObjects, Integer parameterObjectId, GeneratorActionVO generatoractionvo)
+   public GenerationResult generateGenericObject(Collection<EntityObjectVO> sourceObjects, Long parameterObjectId, GeneratorActionVO generatoractionvo)
    	throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException,
       CommonStaleVersionException, CommonValidationException;
 

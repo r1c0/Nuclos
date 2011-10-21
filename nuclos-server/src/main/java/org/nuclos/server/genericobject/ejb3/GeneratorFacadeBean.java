@@ -40,6 +40,7 @@ import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SearchConditionUtils;
+import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
@@ -75,6 +76,7 @@ import org.nuclos.server.common.valueobject.GeneratorRuleVO;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.DalUtils;
+import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
@@ -120,6 +122,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	private static final Integer iAttributeIdOrigin = NuclosEOField.ORIGIN.getMetaData().getId().intValue();
 	private static final Integer iAttributeIdIdentifier = NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getId().intValue();
 
+	private List<String> systemAttributes;
 	private final Collection<Integer> collExcludedAttributeIds = new HashSet<Integer>();
 
 	@PostConstruct
@@ -127,6 +130,13 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	@Override
 	public void postConstruct() {
 		super.postConstruct();
+
+		systemAttributes = CollectionUtils.transform(NuclosEOField.values(), new Transformer<NuclosEOField, String>() {
+			@Override
+			public String transform(NuclosEOField i) {
+				return i.getName();
+			}
+		});
 
 		collExcludedAttributeIds.add(NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getId().intValue());
 		collExcludedAttributeIds.add(NuclosEOField.ORIGIN.getMetaData().getId().intValue());
@@ -137,7 +147,6 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		collExcludedAttributeIds.add(NuclosEOField.PROCESS.getMetaData().getId().intValue());
 		collExcludedAttributeIds.add(NuclosEOField.STATE.getMetaData().getId().intValue());
 		collExcludedAttributeIds.add(NuclosEOField.STATENUMBER.getMetaData().getId().intValue());
-		collExcludedAttributeIds.add(NuclosEOField.STATEICON.getMetaData().getId().intValue());
 	}
 
 	/**
@@ -167,8 +176,8 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	 *         generated)
 	 */
 	@Override
-	public Integer generateGenericObject(Integer iSourceGenericObjectId, String sGenerator) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException, CommonValidationException {
-		return generateGenericObject(iSourceGenericObjectId, null, getGeneratorActionByName(sGenerator)).getGeneratedObject().getId();
+	public Long generateGenericObject(Long iSourceObjectId, String sGenerator) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException, CommonValidationException {
+		return generateGenericObject(iSourceObjectId, null, getGeneratorActionByName(sGenerator)).getGeneratedObject().getId();
 	}
 
 	/**
@@ -185,30 +194,41 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	 */
 	@Override
 	@RolesAllowed("Login")
-	public GenerationResult generateGenericObject(Integer iSourceGenericObjectId, Integer parameterObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException, CommonValidationException {
-		this.checkWriteAllowed(Modules.getInstance().getEntityNameByModuleId(generatoractionvo.getTargetModuleId()));
+	public GenerationResult generateGenericObject(Long iSourceObjectId, Long parameterObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException, CommonValidationException {
+		EntityMetaDataVO meta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generatoractionvo.getTargetModuleId()));
+		this.checkWriteAllowed(meta.getEntity());
 
-		GenericObjectVO go = getGenericObjectFacade().get(iSourceGenericObjectId);
-		return generateGenericObject(Collections.singletonList(go), parameterObjectId, generatoractionvo);
+		JdbcEntityObjectProcessor proc = NucletDalProvider.getInstance().getEntityObjectProcessor(meta.getEntity());
+		EntityObjectVO eo = proc.getByPrimaryKey(iSourceObjectId);
+		return generateGenericObject(Collections.singletonList(eo), parameterObjectId, generatoractionvo);
 	}
 
 	@Override
 	@RolesAllowed("Login")
-	public Integer generateGenericObject(RuleObjectContainerCVO loccvoSource, String sGenerator) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException, CommonValidationException {
-		return generateGenericObject(Collections.singletonList(loccvoSource.getGenericObject()), null, getGeneratorActionByName(sGenerator)).getGeneratedObject().getId();
+	public Long generateGenericObject(RuleObjectContainerCVO loccvoSource, String sGenerator) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException, CommonValidationException {
+		GeneratorActionVO generator = getGeneratorActionByName(sGenerator);
+		EntityMetaDataVO meta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generator.getSourceModuleId()));
+
+		final EntityObjectVO source;
+		if (meta.isStateModel()) {
+			source = DalSupportForGO.wrapGenericObjectVO(loccvoSource.getGenericObject());
+		}
+		else {
+			source = DalSupportForMD.getEntityObjectVO(loccvoSource.getMasterData());
+			source.setEntity(meta.getEntity());
+		}
+		return generateGenericObject(Collections.singletonList(source), null, generator).getGeneratedObject().getId();
 	}
 
 	@Override
 	@RolesAllowed("Login")
-	public Map<String, Collection<GenericObjectVO>> groupObjects(Collection<Integer> sourceIds, GeneratorActionVO generatoractionvo) {
-		Collection<GenericObjectVO> objects = CollectionUtils.transform(sourceIds, new Transformer<Integer, GenericObjectVO>() {
+	public Map<String, Collection<EntityObjectVO>> groupObjects(Collection<Long> sourceIds, GeneratorActionVO generatoractionvo) {
+		final EntityMetaDataVO meta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generatoractionvo.getSourceModuleId()));
+
+		Collection<EntityObjectVO> objects = CollectionUtils.transform(sourceIds, new Transformer<Long, EntityObjectVO>() {
 			@Override
-			public GenericObjectVO transform(Integer i) {
-				try {
-					return getGenericObjectFacade().get(i);
-				} catch (CommonBusinessException e) {
-					throw new NuclosFatalException(e);
-				}
+			public EntityObjectVO transform(Long i) {
+				return NucletDalProvider.getInstance().getEntityObjectProcessor(meta.getEntity()).getByPrimaryKey(i);
 			}
 		});
 
@@ -227,29 +247,31 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	 */
 	@Override
 	@RolesAllowed("Login")
-	public GenerationResult generateGenericObject(Collection<GenericObjectVO> sourceObjects, Integer parameterObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException, CommonValidationException {
-		final String sourceEntityName = Modules.getInstance().getEntityNameByModuleId(generatoractionvo.getSourceModuleId());
+	public GenerationResult generateGenericObject(Collection<EntityObjectVO> sourceObjects, Long parameterObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException, CommonValidationException {
+		final EntityMetaDataVO sourceMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generatoractionvo.getSourceModuleId()));
+		final EntityMetaDataVO targetMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generatoractionvo.getTargetModuleId()));
+
+		final String sourceEntityName = sourceMeta.getEntity();
 
 		// Create a template for the target object (from single or multiple objects)
-		final GenericObjectVO target;
+		final EntityObjectVO target;
 		if (sourceObjects.size() > 1) {
-			target = getNewGenericObject(sourceObjects, generatoractionvo);
+			target = getNewObject(sourceObjects, generatoractionvo);
 		}
 		else if (sourceObjects.size() == 1) {
-			GenericObjectVO source = sourceObjects.iterator().next();
-			target = getNewGenericObject(source, generatoractionvo);
+			EntityObjectVO source = sourceObjects.iterator().next();
+			target = getNewObject(source, generatoractionvo);
 
 			// Create target origin
-			final DynamicAttributeVO davoSourceId = source.getAttribute(iAttributeIdIdentifier);
-			target.setAttribute(DynamicAttributeVO.createGenericObjectAttributeVOCanonical(iAttributeIdOrigin, null, (String) davoSourceId.getValue(), AttributeCache.getInstance()));
+			if (targetMeta.isStateModel() && sourceMeta.isStateModel()) {
+				target.getFields().put(NuclosEOField.ORIGIN.getName(), source.getField(NuclosEOField.SYSTEMIDENTIFIER.getName()));
+			}
 
 			// link target with source object if possible
 			if (generatoractionvo.isCreateRelationBetweenObjects()) {
-				 Integer iTargetAttributeId = getTargetFieldIdIfAny(generatoractionvo, generatoractionvo.getSourceModuleId());
-				if (iTargetAttributeId != null) {
-					Integer iSourceId = source.getId();
-					DynamicAttributeVO voIntid = new DynamicAttributeVO(null, iTargetAttributeId, iSourceId, "");
-					target.setAttribute(voIntid);
+				String targetAttribute = getTargetFieldIdIfAny(generatoractionvo, generatoractionvo.getSourceModuleId());
+				if (targetAttribute != null) {
+					target.getFieldIds().put(targetAttribute, source.getId());
 				}
 			}
 		}
@@ -258,10 +280,9 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		}
 
 		// Create target process
-		if (generatoractionvo.getTargetProcessId() != null) {
-			final Integer iProcessAttributeId = NuclosEOField.PROCESS.getMetaData().getId().intValue();
-			final String sTargetProcess = getMasterDataFacade().get(NuclosEntity.PROCESS.getEntityName(), generatoractionvo.getTargetProcessId()).getField("name").toString();
-			target.setAttribute(DynamicAttributeVO.createGenericObjectAttributeVOCanonical(iProcessAttributeId, generatoractionvo.getTargetProcessId(), sTargetProcess, AttributeCache.getInstance()));
+		if (targetMeta.isStateModel() && generatoractionvo.getTargetProcessId() != null) {
+			//final String sTargetProcess = getMasterDataFacade().get(NuclosEntity.PROCESS.getEntityName(), generatoractionvo.getTargetProcessId()).getField("name").toString();
+			target.getFields().put(NuclosEOField.PROCESS.getName(), generatoractionvo.getTargetProcessId().longValue());
 		}
 
 		// Load parameter object (if available)
@@ -275,10 +296,9 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 			}
 
 			if (generatoractionvo.isCreateRelationToParameterObject()) {
-				Integer iTargetAttributeId = getTargetFieldIdIfAny(generatoractionvo, generatoractionvo.getParameterEntityId());
-				if (iTargetAttributeId != null) {
-					DynamicAttributeVO voIntid = new DynamicAttributeVO(null, iTargetAttributeId, parameterObjectId, "");
-					target.setAttribute(voIntid);
+				String targetAttribute = getTargetFieldIdIfAny(generatoractionvo, generatoractionvo.getParameterEntityId());
+				if (targetAttribute != null) {
+					target.getFieldIds().put(targetAttribute, parameterObjectId);
 				}
 			}
 
@@ -290,6 +310,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 				throw new CommonFinderException(e);
 			}
 		}
+		target.setEntity(targetMeta.getEntity());
 
 		// Copy parameter attributes
 		if (parameterObject != null) {
@@ -313,18 +334,18 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 			if (!LangUtils.defaultIfNull(subentity.getField("groupAttributes", Boolean.class), Boolean.FALSE)) {
 				continue;
 			}
-			Collection<Integer> sourceObjectIds = CollectionUtils.transform(sourceObjects, new Transformer<GenericObjectVO, Integer>() {
+			Collection<Long> sourceObjectIds = CollectionUtils.transform(sourceObjects, new Transformer<EntityObjectVO, Long>() {
 				@Override
-				public Integer transform(GenericObjectVO i) {
+				public Long transform(EntityObjectVO i) {
 					return i.getId();
 				}
 			});
 			aggregateDependants(sourceObjectIds, generatoractionvo, subentity, target, dependants);
 		}
 
-		Collection<RuleObjectContainerCVO> sourceContainers = CollectionUtils.transform(sourceObjects, new Transformer<GenericObjectVO, RuleObjectContainerCVO>() {
+		Collection<RuleObjectContainerCVO> sourceContainers = CollectionUtils.transform(sourceObjects, new Transformer<EntityObjectVO, RuleObjectContainerCVO>() {
 			@Override
-			public RuleObjectContainerCVO transform(GenericObjectVO i) {
+			public RuleObjectContainerCVO transform(EntityObjectVO i) {
 				try {
 					return getRuleObjectContainerCVO(Event.GENERATION_BEFORE, sourceEntityName, i.getId());
 				} catch (CommonBusinessException e) {
@@ -333,35 +354,80 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 			}
 		});
 
-		RuleObjectContainerCVO container = new RuleObjectContainerCVO(Event.GENERATION_BEFORE, target, dependants);
+		if (targetMeta.isStateModel()) {
+			target.getFields().put(NuclosEOField.LOGGICALDELETED.getName(), Boolean.FALSE);
+			final GenericObjectVO go = DalSupportForGO.getGenericObjectVO(target);
 
-		// Create the new object
-		try {
-			// execute rules (before)
-			final List<String> lstActions = new ArrayList<String>();
-			container = executeGenerationRules(generatoractionvo, container, sourceContainers, parameterCVO, lstActions, false);
+			final GenericObjectVO result = new GenericObjectVO(generatoractionvo.getTargetModuleId(), null, null, GenericObjectMetaDataCache.getInstance());
+			final Set<String> targetAttributes = MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(targetMeta.getEntity()).keySet();
 
-			GenericObjectVO created = getGenericObjectFacade().create(new GenericObjectWithDependantsVO(container));
-
-			performDeferredActionsFromRules(lstActions, created.getId(), getGenericObjectFacade());
-
-			for (GenericObjectVO source : sourceObjects) {
-				relateCreatedGenericObjectToParent(source, getGenericObjectFacade(), generatoractionvo, created.getId());
+			for (String targetAttribute : targetAttributes) {
+				Integer attributeId = AttributeCache.getInstance().getAttribute(targetMeta.getEntity(), targetAttribute).getId();
+				DynamicAttributeVO davo = go.getAttribute(targetAttribute, AttributeCache.getInstance());
+				if (davo != null) {
+					result.setAttribute(new DynamicAttributeVO(attributeId, davo.getValueId(), davo.getValue()));
+				}
 			}
 
-			// execute rules (after)
-			container = new RuleObjectContainerCVO(Event.GENERATION_AFTER, created, dependants);
-			container = executeGenerationRules(generatoractionvo, container, sourceContainers, parameterCVO, new ArrayList<String>(), true);
+			RuleObjectContainerCVO container = new RuleObjectContainerCVO(Event.GENERATION_BEFORE, result, dependants);
 
-			return new GenerationResult(CollectionUtils.transform(sourceObjects, new ExtractIdTransformer()), getGenericObjectFacade().get(created.getId()), null) ;
+			// Create the new object
+			try {
+				// execute rules (before)
+				final List<String> lstActions = new ArrayList<String>();
+				container = executeGenerationRules(generatoractionvo, container, sourceContainers, parameterCVO, lstActions, false);
+
+				GenericObjectVO created = getGenericObjectFacade().create(new GenericObjectWithDependantsVO(container));
+
+				performDeferredActionsFromRules(lstActions, created.getId(), getGenericObjectFacade());
+
+				for (EntityObjectVO source : sourceObjects) {
+					relateCreatedGenericObjectToParent(IdUtils.unsafeToId(source.getId()), getGenericObjectFacade(), generatoractionvo, created.getId());
+				}
+
+				// execute rules (after)
+				container = new RuleObjectContainerCVO(Event.GENERATION_AFTER, created, dependants);
+				container = executeGenerationRules(generatoractionvo, container, sourceContainers, parameterCVO, new ArrayList<String>(), true);
+
+				return new GenerationResult(CollectionUtils.transform(sourceObjects, new ExtractIdTransformer()), DalSupportForGO.wrapGenericObjectVO(getGenericObjectFacade().get(created.getId())), null) ;
+			}
+			catch (CommonBusinessException ex) {
+				EntityObjectVO temp = DalSupportForGO.wrapGenericObjectVO(container.getGenericObject());
+				temp.setEntity(targetMeta.getEntity());
+				temp.setDependants(container.getDependants());
+				return new GenerationResult(CollectionUtils.transform(sourceObjects, new ExtractIdTransformer()), temp, ex.getMessage()) ;
+			}
 		}
-		catch (CommonBusinessException ex) {
-			return new GenerationResult(CollectionUtils.transform(sourceObjects, new ExtractIdTransformer()), new GenericObjectWithDependantsVO(container.getGenericObject(), container.getDependants()), ex.getMessage()) ;
+		else {
+			final MasterDataVO md = DalSupportForMD.wrapEntityObjectVO(target);
+
+			RuleObjectContainerCVO container = new RuleObjectContainerCVO(Event.GENERATION_BEFORE, md, dependants);
+
+			// Create the new object
+			try {
+				// execute rules (before)
+				final List<String> lstActions = new ArrayList<String>();
+				container = executeGenerationRules(generatoractionvo, container, sourceContainers, parameterCVO, lstActions, false);
+
+				MasterDataVO created = getMasterDataFacade().create(targetMeta.getEntity(), container.getMasterData(), container.getDependants());
+
+				// execute rules (after)
+				container = new RuleObjectContainerCVO(Event.GENERATION_AFTER, created, container.getDependants());
+				container = executeGenerationRules(generatoractionvo, container, sourceContainers, parameterCVO, new ArrayList<String>(), true);
+
+				return new GenerationResult(CollectionUtils.transform(sourceObjects, new ExtractIdTransformer()), DalSupportForMD.getEntityObjectVO(getMasterDataFacade().get(targetMeta.getEntity(), created.getId())), null) ;
+			}
+			catch (CommonBusinessException ex) {
+				EntityObjectVO temp = DalSupportForMD.getEntityObjectVO(container.getMasterData());
+				temp.setEntity(targetMeta.getEntity());
+				temp.setDependants(container.getDependants());
+				return new GenerationResult(CollectionUtils.transform(sourceObjects, new ExtractIdTransformer()), temp, ex.getMessage()) ;
+			}
 		}
 	}
 
-	private Integer getTargetFieldIdIfAny(GeneratorActionVO generatoractionvo, Integer sourceEntityId) {
-		Integer result = null;
+	private String getTargetFieldIdIfAny(GeneratorActionVO generatoractionvo, Integer sourceEntityId) {
+		String result = null;
 		String sSourceEntity = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(sourceEntityId)).getEntity();
 		Integer iTargetModuleId = generatoractionvo.getTargetModuleId();
 		String sTargetEntity = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iTargetModuleId)).getEntity();
@@ -369,7 +435,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		for (String sFieldName : mp.keySet()) {
 			EntityFieldMetaDataVO voField = mp.get(sFieldName);
 			if (sSourceEntity.equals(voField.getForeignEntity())) {
-				result = voField.getId().intValue();
+				result = voField.getField();
 				break;
 			}
 		}
@@ -386,11 +452,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	 * @param iTargetGenericObjectId
 	 * @throws CommonFinderException
 	 */
-	private void relateCreatedGenericObjectToParent(GenericObjectVO govoSource, GenericObjectFacadeLocal lofacade, GeneratorActionVO generatoractionvo, Integer iTargetGenericObjectId) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException {
-
-		// todo: \u00dcber Objekttyp differenzieren? (Rechnungsabschnitte in
-		// Reklamationen?)
-		final Integer iSourceId = govoSource.getId();
+	private void relateCreatedGenericObjectToParent(Integer iSourceId, GenericObjectFacadeLocal lofacade, GeneratorActionVO generatoractionvo, Integer iTargetGenericObjectId) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException {
 		if (iSourceId != null) {
 			try {
 				lofacade.relate(generatoractionvo.getTargetModuleId(), iTargetGenericObjectId, iSourceId, GenericObjectTreeNode.SystemRelationType.PREDECESSOR_OF.getValue());
@@ -440,8 +502,8 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		return col;
 	}
 
-	private Map<String, Collection<GenericObjectVO>> groupGenerationSources(Collection<GenericObjectVO> col, GeneratorActionVO generatoractionvo) {
-		Set<Integer> groupingAttributes = new HashSet<Integer>();
+	private Map<String, Collection<EntityObjectVO>> groupGenerationSources(Collection<EntityObjectVO> col, GeneratorActionVO generatoractionvo) {
+		Set<String> groupingAttributes = new HashSet<String>();
 
 		Collection<MasterDataVO> attributes = getMasterDataFacade().getDependantMasterData(NuclosEntity.GENERATIONATTRIBUTE.getEntityName(), "generation", generatoractionvo.getId());
 		for (MasterDataVO attribute : attributes) {
@@ -452,35 +514,36 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 			if (!StringUtils.isNullOrEmpty(groupFunction) && !"group by".equals(groupFunction)) {
 				continue;
 			}
-			Integer sourceId = attribute.getField("attributeSourceId", Integer.class);
-			if (getExcludedAttributeIds().contains(sourceId))
+			String source = attribute.getField("attributeSource", String.class);
+			if (systemAttributes.contains(source)) {
 				continue;
-			groupingAttributes.add(sourceId);
+			}
+			groupingAttributes.add(source);
 		}
 
-		Map<String, Collection<GenericObjectVO>> mp = new Hashtable<String, Collection<GenericObjectVO>>();
+		Map<String, Collection<EntityObjectVO>> mp = new Hashtable<String, Collection<EntityObjectVO>>();
 
-		for (GenericObjectVO gvo : col) {
+		for (EntityObjectVO eo : col) {
 			StringBuffer sb = new StringBuffer();
-			for (Integer attribute : groupingAttributes) {
-				Object obj = gvo.getAttribute(attribute).getValue();
+			for (String attribute : groupingAttributes) {
+				Object obj = eo.getRealField(attribute);
 				sb.append(obj);
 				sb.append(".");
 			}
 			final String key = sb.toString();
 			if (!mp.containsKey(key)) {
-				mp.put(key, new ArrayList<GenericObjectVO>());
-				mp.get(key).add(gvo);
+				mp.put(key, new ArrayList<EntityObjectVO>());
+				mp.get(key).add(eo);
 			}
 			else {
-				mp.get(key).add(gvo);
+				mp.get(key).add(eo);
 			}
 		}
 
 		return mp;
 	}
 
-	private EntityObjectVO getGroupedGeneratedObject(GeneratorActionVO generator, Collection<Integer> sourceIds) {
+	private EntityObjectVO getGroupedGeneratedObject(GeneratorActionVO generator, Collection<Long> sourceIds) {
 		final String sourceEntity = Modules.getInstance().getEntityNameByModuleId(generator.getSourceModuleId());
 		final String targetEntity = Modules.getInstance().getEntityNameByModuleId(generator.getTargetModuleId());
 		final Collection<MasterDataVO> attributes = getMasterDataFacade().getDependantMasterData(NuclosEntity.GENERATIONATTRIBUTE.getEntityName(), "generation", generator.getId());
@@ -539,8 +602,8 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		}
 
 		ArrayList<DbCondition> conditions = new ArrayList<DbCondition>();
-		for (Integer sourceId : sourceIds) {
-			conditions.add(builder.equal(t.baseColumn("INTID", Long.class), sourceId.longValue()));
+		for (Long sourceId : sourceIds) {
+			conditions.add(builder.equal(t.baseColumn("INTID", Long.class), sourceId));
 		}
 		query.where(builder.or(conditions.toArray(new DbCondition[conditions.size()])));
 
@@ -569,7 +632,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		return result;
 	}
 
-	private void aggregateDependants(Collection<Integer> sourceIds, GeneratorActionVO gavo, MasterDataVO subentity, GenericObjectVO target, DependantMasterDataMap dependants) {
+	private void aggregateDependants(Collection<Long> sourceIds, GeneratorActionVO gavo, MasterDataVO subentity, EntityObjectVO target, DependantMasterDataMap dependants) {
 		final Collection<MasterDataVO> attributes = getMasterDataFacade().getDependantMasterData(NuclosEntity.GENERATIONSUBENTITYATTRIBUTE.getEntityName(), "entity", subentity.getId());
 		if (attributes.size() == 0) {
 			return;
@@ -633,8 +696,8 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		dbColumn = dbColumn.replaceFirst("STRVALUE", "INTID");
 
 		ArrayList<DbCondition> conditions = new ArrayList<DbCondition>();
-		for (Integer sourceId : sourceIds) {
-			conditions.add(builder.equal(t.baseColumn(dbColumn, Long.class), sourceId.longValue()));
+		for (Long sourceId : sourceIds) {
+			conditions.add(builder.equal(t.baseColumn(dbColumn, Long.class), sourceId));
 		}
 		query.where(builder.or(conditions.toArray(new DbCondition[conditions.size()])));
 
@@ -680,11 +743,12 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	 *            DependantMasterDataMap for the the result
 	 * @throws CommonPermissionException
 	 */
-	private void copyDependants(Collection<GenericObjectVO> sources, EntityObjectVO parameterObject, GeneratorActionVO gavo, MasterDataVO subentity, GenericObjectVO target, DependantMasterDataMap dependants) throws CommonPermissionException, CommonFinderException {
+	private void copyDependants(Collection<EntityObjectVO> sources, EntityObjectVO parameterObject, GeneratorActionVO gavo, MasterDataVO subentity, EntityObjectVO target, DependantMasterDataMap dependants) throws CommonPermissionException, CommonFinderException {
 		final GenericObjectMetaDataCache lometacache = GenericObjectMetaDataCache.getInstance();
 		final AttributeProvider attrprovider = AttributeCache.getInstance();
 
-		final int iLayoutIdTarget = lometacache.getBestMatchingLayoutId(target.getUsageCriteria(attrprovider), false);
+		final UsageCriteria criteria = new UsageCriteria(gavo.getTargetModuleId(), IdUtils.unsafeToId(target.getFieldId(NuclosEOField.PROCESS.getName())));
+		final int iLayoutIdTarget = lometacache.getBestMatchingLayoutId(criteria, false);
 		final Set<String> setEntityNamesTarget = lometacache.getSubFormEntityNamesByLayoutId(iLayoutIdTarget);
 
 		final EntityMetaDataVO sourceMeta = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId((Integer) subentity.getField("entitySourceId")));
@@ -703,8 +767,9 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		final Collection<MasterDataVO> attributes = getMasterDataFacade().getDependantMasterData(NuclosEntity.GENERATIONSUBENTITYATTRIBUTE.getEntityName(), "entity", subentity.getId());
 
 		if (StringUtils.isNullOrEmpty(subentity.getField("sourceType", String.class))) {
-			for (GenericObjectVO source : sources) {
-				final int iLayoutIdSource = lometacache.getBestMatchingLayoutId(source.getUsageCriteria(attrprovider), false);
+			for (EntityObjectVO source : sources) {
+				final UsageCriteria sourcecriteria = new UsageCriteria(gavo.getSourceModuleId(), IdUtils.unsafeToId(source.getFieldId(NuclosEOField.PROCESS.getName())));
+				final int iLayoutIdSource = lometacache.getBestMatchingLayoutId(criteria, false);
 				final Set<String> setEntityNamesSource = lometacache.getSubFormEntityNamesByLayoutId(iLayoutIdSource);
 
 				if (!setEntityNamesSource.contains(sSource)) {
@@ -892,20 +957,27 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	 *            generator vo to determine attributes
 	 * @throws CommonPermissionException
 	 */
-	private GenericObjectVO getNewGenericObject(GenericObjectVO govoSource, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonValidationException, CommonPermissionException {
-		final GenericObjectVO result = new GenericObjectVO(generatoractionvo.getTargetModuleId(), null, govoSource.getInstanceId(), GenericObjectMetaDataCache.getInstance());
+	private EntityObjectVO getNewObject(EntityObjectVO eoSource, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonValidationException, CommonPermissionException {
+		final EntityMetaDataVO sourceMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generatoractionvo.getSourceModuleId()));
+		final EntityMetaDataVO targetMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generatoractionvo.getTargetModuleId()));
 
-		final List<Pair<Integer, Integer>> includedAttributes = getIncludedAttributeIds(generatoractionvo, null);
+		final EntityObjectVO result = new EntityObjectVO();
+		result.setEntity(targetMeta.getEntity());
+		result.initFields(10, 10);
 
-		final Collection<Integer> stSourceAttributeIds = getAttributeIdsByModuleId(govoSource.getModuleId());
-		final Collection<Integer> stTargetAttributesIds = getAttributeIdsByModuleId(result.getModuleId());
+		final List<Pair<String, String>> includedAttributes = getIncludedAttributes(generatoractionvo, null);
 
-		for (Pair<Integer, Integer> p : includedAttributes) {
-			if (stSourceAttributeIds.contains(p.x)) {
-				if (stTargetAttributesIds.contains(p.y)) {
-					DynamicAttributeVO davo_source = govoSource.getAttribute(p.x);
-					if (davo_source != null) {
-						result.setAttribute(new DynamicAttributeVO(p.y, davo_source.getValueId(), davo_source.getValue()));
+		final Set<String> stSourceAttributes = MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(sourceMeta.getEntity()).keySet();
+		final Set<String> stTargetAttribute = MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(targetMeta.getEntity()).keySet();
+
+		for (Pair<String, String> p : includedAttributes) {
+			if (stSourceAttributes.contains(p.x)) {
+				if (stTargetAttribute.contains(p.y)) {
+					if (eoSource.getField(p.x) != null) {
+						result.getFields().put(p.y, eoSource.getField(p.x));
+					}
+					if (eoSource.getFieldId(p.x) != null) {
+						result.getFieldIds().put(p.y, eoSource.getFieldId(p.x));
 					}
 				}
 			}
@@ -914,45 +986,37 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	}
 
 	@SuppressWarnings("deprecation")
-	private GenericObjectVO getNewGenericObject(Collection<GenericObjectVO> sourceObjects, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonValidationException, CommonPermissionException {
-		final GenericObjectVO result = new GenericObjectVO(generatoractionvo.getTargetModuleId(), null, null, GenericObjectMetaDataCache.getInstance());
-
-		final EntityObjectVO object = getGroupedGeneratedObject(generatoractionvo, CollectionUtils.transform(sourceObjects, new Transformer<GenericObjectVO, Integer>() {
+	private EntityObjectVO getNewObject(Collection<EntityObjectVO> sourceObjects, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonValidationException, CommonPermissionException {
+		final EntityObjectVO object = getGroupedGeneratedObject(generatoractionvo, CollectionUtils.transform(sourceObjects, new Transformer<EntityObjectVO, Long>() {
 			@Override
-			public Integer transform(GenericObjectVO i) {
+			public Long transform(EntityObjectVO i) {
 				return i.getId();
 			}
 		}));
-
-		for (DynamicAttributeVO att : DalSupportForGO.getGenericObjectVO(object).getAttributes()) {
-			if (att.getValue() != null || att.getValueId() != null) {
-				result.addAndSetAttribute(att);
-			}
-		}
-		return result;
+		return object;
 	}
 
-	private void copyParameterAttributes(EntityObjectVO sourceVO, String sourceEntityName, GenericObjectVO target, GeneratorActionVO generatoractionvo) {
-		final List<Pair<Integer, Integer>> includedAttributes = getIncludedAttributeIds(generatoractionvo, "parameter");
+	private void copyParameterAttributes(EntityObjectVO sourceVO, String sourceEntityName, EntityObjectVO target, GeneratorActionVO generatoractionvo) {
+		final List<Pair<String, String>> includedAttributes = getIncludedAttributes(generatoractionvo, "parameter");
 
-		final Collection<Integer> stTargetAttributesIds = getAttributeIdsByModuleId(target.getModuleId());
+		final EntityMetaDataVO sourceMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generatoractionvo.getSourceModuleId()));
+		final EntityMetaDataVO targetMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generatoractionvo.getTargetModuleId()));
 
-		for (Pair<Integer, Integer> p : includedAttributes) {
-			if (stTargetAttributesIds.contains(p.y)) {
-				EntityFieldMetaDataVO sourceField = MetaDataServerProvider.getInstance().getEntityField(sourceEntityName, p.x.longValue());
-				Long valueId = sourceVO.getFieldId(sourceField.getField());
-				Object value = sourceVO.getField(sourceField.getField());
-				target.setAttribute(new DynamicAttributeVO(p.y, IdUtils.unsafeToId(valueId), value));
+		final Set<String> stSourceAttributes = MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(sourceMeta.getEntity()).keySet();
+		final Set<String> stTargetAttribute = MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(targetMeta.getEntity()).keySet();
+
+		for (Pair<String, String> p : includedAttributes) {
+			if (stSourceAttributes.contains(p.x)) {
+				if (stTargetAttribute.contains(p.y)) {
+					if (sourceVO.getField(p.x) != null) {
+						target.getFields().put(p.y, sourceVO.getField(p.x));
+					}
+					if (sourceVO.getFieldId(p.x) != null) {
+						target.getFieldIds().put(p.y, sourceVO.getFieldId(p.x));
+					}
+				}
 			}
 		}
-	}
-
-	private Collection<Integer> getAttributeIdsByModuleId(Integer iModuleId) {
-		final Collection<Integer> stAttributesIds = new HashSet<Integer>();
-		for (AttributeCVO attrcvo : GenericObjectMetaDataCache.getInstance().getAttributeCVOsByModuleId(iModuleId, false)) {
-			stAttributesIds.add(attrcvo.getId());
-		}
-		return stAttributesIds;
 	}
 
 	/**
@@ -963,17 +1027,17 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	 * @param sourceType
 	 * @return list of pairs (source id, target id)
 	 */
-	private List<Pair<Integer, Integer>> getIncludedAttributeIds(GeneratorActionVO generatoractionvo, String sourceType) {
+	private List<Pair<String, String>> getIncludedAttributes(GeneratorActionVO generatoractionvo, String sourceType) {
 		Collection<MasterDataVO> colmdvo = getMasterDataFacade().getDependantMasterData(NuclosEntity.GENERATIONATTRIBUTE.getEntityName(), "generation", generatoractionvo.getId());
-		List<Pair<Integer, Integer>> result = new ArrayList<Pair<Integer, Integer>>(colmdvo.size());
+		List<Pair<String, String>> result = new ArrayList<Pair<String, String>>(colmdvo.size());
 		for (MasterDataVO mdvo : colmdvo) {
 			if (!ObjectUtils.equals(sourceType, mdvo.getField("sourceType")))
 				continue;
-			Integer sourceId = mdvo.getField("attributeSourceId", Integer.class);
-			Integer targetId = mdvo.getField("attributeTargetId", Integer.class);
-			if (getExcludedAttributeIds().contains(sourceId) || getExcludedAttributeIds().contains(targetId))
+			String source = mdvo.getField("attributeSource", String.class);
+			String target = mdvo.getField("attributeTarget", String.class);
+			if (systemAttributes.contains(source) || systemAttributes.contains(target))
 				continue;
-			result.add(Pair.makePair(sourceId, targetId));
+			result.add(Pair.makePair(source, target));
 		}
 		return result;
 	}
@@ -1085,25 +1149,33 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	 * @ejb.permission role-name="Login"
 	 */
 	@Override
-	public GenericObjectVO generateGenericObjectWithoutCheckingPermission(Integer iSourceGenericObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException, CommonValidationException {
-		return generateGenericObject(iSourceGenericObjectId, null, generatoractionvo).getGeneratedObject();
+	public EntityObjectVO generateGenericObjectWithoutCheckingPermission(Long iSourceObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException, CommonValidationException {
+		return generateGenericObject(iSourceObjectId, null, generatoractionvo).getGeneratedObject();
 	}
 
-	private RuleObjectContainerCVO getRuleObjectContainerCVO(Event event, String entity, Integer intId) throws CommonBusinessException {
+	private RuleObjectContainerCVO getRuleObjectContainerCVO(Event event, String entity, Long intId) throws CommonBusinessException {
 		EntityMetaDataVO entityVO = MetaDataServerProvider.getInstance().getEntity(entity);
 		if (entityVO.isStateModel()) {
-			GenericObjectVO govo = getGenericObjectFacade().get(intId);
+			GenericObjectVO govo = getGenericObjectFacade().get(intId.intValue());
 			DependantMasterDataMap dependants = getGenericObjectFacade().reloadDependants(govo, null, true);
 			return new RuleObjectContainerCVO(event, govo, dependants);
 		} else {
-			MasterDataWithDependantsVO mdvo = getMasterDataFacade().getWithDependants(entity, intId);
+			MasterDataWithDependantsVO mdvo = getMasterDataFacade().getWithDependants(entity, intId.intValue());
 			return new RuleObjectContainerCVO(event, mdvo, mdvo.getDependants());
 		}
 	}
 
-	private class ExtractIdTransformer implements Transformer<GenericObjectVO, Integer> {
+	private Collection<Integer> getAttributeIdsByModuleId(Integer iModuleId) {
+		final Collection<Integer> stAttributesIds = new HashSet<Integer>();
+		for (AttributeCVO attrcvo : GenericObjectMetaDataCache.getInstance().getAttributeCVOsByModuleId(iModuleId, false)) {
+			stAttributesIds.add(attrcvo.getId());
+		}
+		return stAttributesIds;
+	}
+
+	private class ExtractIdTransformer implements Transformer<EntityObjectVO, Long> {
 		@Override
-		public Integer transform(GenericObjectVO i) {
+		public Long transform(EntityObjectVO i) {
 			return i.getId();
 		}
 	}

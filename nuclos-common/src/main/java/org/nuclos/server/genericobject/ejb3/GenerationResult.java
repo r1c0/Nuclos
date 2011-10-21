@@ -19,28 +19,28 @@ package org.nuclos.server.genericobject.ejb3;
 import java.io.Serializable;
 import java.util.Collection;
 
-import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 
 public class GenerationResult implements Serializable {
 
 	private static final long serialVersionUID = -7029927784968415450L;
 
-	private final Collection<Integer> sourceIds;
-	private final GenericObjectVO generatedObject;
+	private final Collection<Long> sourceIds;
+	private final EntityObjectVO generatedObject;
 	private final String error;
 
-	public GenerationResult(Collection<Integer> sourceIds, GenericObjectVO generatedObject, String error) {
+	public GenerationResult(Collection<Long> sourceIds, EntityObjectVO generatedObject, String error) {
 		super();
 		this.sourceIds = sourceIds;
 		this.generatedObject = generatedObject;
 		this.error = error;
 	}
 
-	public Collection<Integer> getSourceIds() {
+	public Collection<Long> getSourceIds() {
 		return sourceIds;
 	}
 
-	public GenericObjectVO getGeneratedObject() {
+	public EntityObjectVO getGeneratedObject() {
 		return generatedObject;
 	}
 

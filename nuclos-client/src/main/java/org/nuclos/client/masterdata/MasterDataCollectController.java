@@ -59,6 +59,8 @@ import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.explorer.ExplorerController;
 import org.nuclos.client.explorer.ExplorerDelegate;
+import org.nuclos.client.genericobject.GenerationController;
+import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.ReportController;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
@@ -100,6 +102,7 @@ import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
@@ -116,6 +119,7 @@ import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.EntityAndFieldName;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -123,6 +127,7 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.layoutml.exception.LayoutMLException;
 import org.nuclos.server.genericobject.ProxyList;
+import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -1601,6 +1606,22 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	@Override
 	public Map<String, DetailsSubFormController<CollectableEntityObject>> getDetailsSubforms() {
 		return this.mpsubformctlDetails;
+	}
+
+	@Override
+	protected void cmdGenerateObject(GeneratorActionVO generatoractionvo) {
+		Map<Long, UsageCriteria> sources = new HashMap<Long, UsageCriteria>();
+		for (CollectableMasterDataWithDependants clct : getSelectedCollectables()) {
+			sources.put(IdUtils.toLongId(clct.getId()), null);
+		}
+		GenerationController controller = new GenerationController(sources, generatoractionvo, this, getFrame());
+		controller.generateGenericObject();
+	}
+
+	@Override
+	protected List<GeneratorActionVO> getGeneratorActions() {
+		Integer entityId = IdUtils.unsafeToId(MetaDataClientProvider.getInstance().getEntity(getEntity()).getId());
+		return GeneratorActions.getActions(entityId, null, null);
 	}
 
 }	 // class MasterDataCollectController

@@ -49,6 +49,7 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.IOUtils;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.communication.MailCommunicator;
 import org.nuclos.common2.communication.exception.CommonCommunicationException;
@@ -194,7 +195,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	@Override
 	public Integer createObject(Integer iGenericObjectId, String sGenerator) throws NuclosBusinessRuleException {
 		try {
-			return getFacade(GeneratorFacadeLocal.class).generateGenericObject(iGenericObjectId, sGenerator);
+			return IdUtils.unsafeToId(getFacade(GeneratorFacadeLocal.class).generateGenericObject(IdUtils.toLongId(iGenericObjectId), sGenerator));
 		}
 		catch (CommonBusinessException ex) {
 			throw new NuclosFatalRuleException(ex);
@@ -203,18 +204,13 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 
 	@Override
 	public Integer createObject(String sEntityName, Integer iObjectId, String sGenerator) throws NuclosBusinessRuleException {
-		try {
-			return getFacade(GeneratorFacadeLocal.class).generateGenericObject(iObjectId, sGenerator);
-		}
-		catch (CommonBusinessException ex) {
-			throw new NuclosFatalRuleException(ex);
-		}
+		return createObject(iObjectId, sGenerator);
 	}
 
 	@Override
 	public Integer createObject(RuleObjectContainerCVO loccvo, String sGenerator) throws NuclosBusinessRuleException {
 		try {
-			return getFacade(GeneratorFacadeLocal.class).generateGenericObject(loccvo, sGenerator);
+			return IdUtils.unsafeToId(getFacade(GeneratorFacadeLocal.class).generateGenericObject(loccvo, sGenerator));
 		}
 		catch (CommonBusinessException ex) {
 			throw new NuclosBusinessRuleException(ex);
