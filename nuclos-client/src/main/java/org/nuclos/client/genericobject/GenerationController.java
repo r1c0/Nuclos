@@ -184,7 +184,8 @@ public class GenerationController {
 	}
 
 	public static String getModuleLabel(Integer id) {
-		return Modules.getInstance().getEntityLabelByModuleId(id);
+		EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(id));
+		return CommonLocaleDelegate.getLabelFromMetaDataVO(meta);
 	}
 
 	/**
