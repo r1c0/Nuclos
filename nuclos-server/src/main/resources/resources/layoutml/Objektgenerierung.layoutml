@@ -259,7 +259,7 @@
             </subform>
           </panel>
         </panel>
-        <panel name="pnlRules" visible="yes" opaque="yes">
+        <panel name="tabRules" visible="yes" opaque="yes">
         <tabbedpane-constraints title="Rules to execute" enabled="yes" internalname="Rules to execute">
           <translations>
             <translation lang="de" text="Auszuf&#x00fc;hrende Regeln"/>
@@ -270,6 +270,14 @@
           <panel>
             <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
             <tablelayout columns="0.0|-1.0" rows="0.0|-1.0" />
+            <panel name="pnlRules" visible="yes" opaque="yes">
+              <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="2" />
+              <tablelayout columns="-1.0" rows="-1.0" />
+              <panel>
+                <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
+                <tablelayout columns="12.0|-1.0" rows="12.0|-1.0" />
+              </panel>
+            </panel>
           </panel>
         </panel>
       </tabbedpane>
