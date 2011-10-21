@@ -57,6 +57,9 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.PointerCollection;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Pair;
+import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
@@ -83,7 +86,7 @@ public class GenerationController {
 	private final List<GenerationListener> listeners = new ArrayList<GenerationController.GenerationListener>();
 
 	private boolean confirmationEnabled = true;
-	private boolean showResult = true;
+	private boolean headless = false;
 
 	public GenerationController(Map<Long, UsageCriteria> sources, GeneratorActionVO action, EntityCollectController<?> parentController, MainFrameTab parent) {
 		this(sources, action, parentController, parent, parent.getTabbedPane());
@@ -106,12 +109,12 @@ public class GenerationController {
 		this.confirmationEnabled = confirmationEnabled;
 	}
 
-	public boolean isShowResult() {
-		return showResult;
+	public boolean isHeadless() {
+		return headless;
 	}
 
-	public void setShowResult(boolean showResult) {
-		this.showResult = showResult;
+	public void setHeadless(boolean headless) {
+		this.headless = headless;
 	}
 
 	public void addGenerationListener(GenerationListener l) {
@@ -136,11 +139,11 @@ public class GenerationController {
 			final int iBtn = isConfirmationEnabled() ? confirmGenerationType(bMulti, sSourceModuleName, sTargetModuleName, action) : JOptionPane.OK_OPTION;
 
 			if (iBtn != JOptionPane.CANCEL_OPTION && iBtn != JOptionPane.CLOSED_OPTION) {
-				final AtomicReference<Long> parameterObjectIdRef = new AtomicReference<Long>();
+				final AtomicReference<List<Long>> parameterObjectIdRef = new AtomicReference<List<Long>>();
 				final CommonRunnable generateRunnable = new CommonRunnable() {
 					@Override
 					public void run() throws CommonBusinessException {
-						Long parameterObjectId = parameterObjectIdRef.get();
+						List<Long> parameterObjectId = parameterObjectIdRef.get();
 						generate(parameterObjectId);
 					}
 				};
@@ -158,9 +161,21 @@ public class GenerationController {
 							lov.addLookupListener(new LookupListener() {
 								@Override
 								public void lookupSuccessful(LookupEvent ev) {
-									Collectable clct = ev.getSelectedCollectable();
-									if (clct != null) {
-										parameterObjectIdRef.set(IdUtils.toLongId((Integer) clct.getId()));
+									if (ev.getAdditionalCollectables() != null && ev.getAdditionalCollectables().size() > 0) {
+										List<Long> parameterIds = CollectionUtils.transform(ev.getAdditionalCollectables(), new Transformer<Collectable, Long>() {
+											@Override
+											public Long transform(Collectable i) {
+												return IdUtils.toLongId(i.getId());
+											}
+										});
+										parameterIds.add(IdUtils.toLongId(ev.getSelectedCollectable().getId()));
+										parameterObjectIdRef.set(parameterIds);
+									}
+									else {
+										Collectable clct = ev.getSelectedCollectable();
+										if (clct != null) {
+											parameterObjectIdRef.set(Collections.singletonList(IdUtils.toLongId((Integer) clct.getId())));
+										}
 									}
 									UIUtils.runShortCommand(parent, generateRunnable);
 								}
@@ -238,16 +253,16 @@ public class GenerationController {
 	 * Performed in an own thread.
 	 * @param generatoractionvo
 	 */
-	private void generate(final Long parameterObjectId) throws CommonBusinessException {
+	private void generate(final List<Long> parameterObjectIds) throws CommonBusinessException {
 		if (parentController != null) {
-			CommonMultiThreader.getInstance().execute(new GenerationClientWorker(parentController, parameterObjectId));
+			CommonMultiThreader.getInstance().execute(new GenerationClientWorker(parentController, parameterObjectIds));
 		}
 		else  {
-			generateImpl(parameterObjectId);
+			generateImpl(parameterObjectIds);
 		}
 	}
 
-	private void generateImpl(final Long parameterObjectId) throws CommonBusinessException {
+	private void generateImpl(final List<Long> parameterObjectIds) throws CommonBusinessException {
 		final Collection<Collection<EntityObjectVO>> sources;
 
 		if (action.isGroupAttributes()) {
@@ -261,8 +276,36 @@ public class GenerationController {
 			}
 		}
 
-		if (sources.size() > 1) {
-			MultiActionProgressPanel panel = new MultiActionProgressPanel(sources.size());
+		final Collection<Pair<Collection<EntityObjectVO>, Long>> sourceWithParameters = new ArrayList<Pair<Collection<EntityObjectVO>,Long>>();
+
+		for (Collection<EntityObjectVO> sourceGroup : sources) {
+			for (Long parameterObjectId : parameterObjectIds) {
+				sourceWithParameters.add(new Pair<Collection<EntityObjectVO>, Long>(sourceGroup, parameterObjectId));
+			}
+		}
+
+		if (sourceWithParameters.size() == 1 || isHeadless()) {
+			UIUtils.runCommandLater(parent, new Runnable() {
+
+				@Override
+				public void run() {
+					for (Pair<Collection<EntityObjectVO>, Long> pair : sourceWithParameters) {
+						GenerationResult result;
+						try {
+							result = GeneratorDelegate.getInstance().generateGenericObject(pair.x, pair.y, action);
+							fireGenerationEvent(result);
+							if (!isHeadless()) {
+								showResult(result);
+							}
+						} catch (CommonBusinessException e) {
+							Errors.getInstance().showExceptionDialog(parent, e);
+						}
+					}
+				}
+			});
+		}
+		else {
+			MultiActionProgressPanel panel = new MultiActionProgressPanel(sourceWithParameters.size());
 			panel.setResultHandler(new MultiActionProgressResultHandler(null) {
 				@Override
 				public void handleMultiSelection(Collection<MultiActionProgressLine> selection) {
@@ -270,14 +313,11 @@ public class GenerationController {
 						for (MultiActionProgressLine o : selection) {
 							if (o.getResultObject() instanceof GenerationResult) {
 								GenerationResult result = (GenerationResult) o.getResultObject();
-								fireGenerationEvent(result);
-								if (isShowResult()) {
-									if (result.getGeneratedObject().getId() != null) {
-										showGenericObject(result.getGeneratedObject(), action.getTargetModuleId());
-									}
-									else {
-										showIncompleteGenericObject(null, result.getGeneratedObject(), result.getError());
-									}
+								if (result.getGeneratedObject().getId() != null) {
+									showGenericObject(result.getGeneratedObject(), action.getTargetModuleId());
+								}
+								else {
+									showIncompleteGenericObject(null, result.getGeneratedObject(), result.getError());
 								}
 							}
 						}
@@ -287,17 +327,10 @@ public class GenerationController {
 					}
 				}
 			});
-			new MultiCollectablesActionController<Collection<EntityObjectVO>, GenerationResult>(
-				parent, sources, CommonLocaleDelegate.getMessage("R00022892", "Objektgenerierung"), parent.getTabIcon(),
-				new MultiGenerateAction(parameterObjectId, action)
+			new MultiCollectablesActionController<Pair<Collection<EntityObjectVO>, Long>, GenerationResult>(
+				parent, sourceWithParameters, CommonLocaleDelegate.getMessage("R00022892", "Objektgenerierung"), parent.getTabIcon(),
+				new MultiGenerateAction(action)
 			).run(panel);
-		}
-		else {
-			GenerationResult result = GeneratorDelegate.getInstance().generateGenericObject(sources.iterator().next(), parameterObjectId, action);
-			fireGenerationEvent(result);
-			if (isShowResult()) {
-				showResult(result);
-			}
 		}
 	}
 
@@ -365,11 +398,11 @@ public class GenerationController {
 
 	private class GenerationClientWorker<T extends Collectable> extends CommonClientWorkerAdapter<T> {
 
-		private final Long parameterObjectId;
+		private final List<Long> parameterObjectIds;
 
-		public GenerationClientWorker(EntityCollectController<T> ctl, Long parameterObjectId) {
+		public GenerationClientWorker(EntityCollectController<T> ctl, List<Long> parameterObjectIds) {
 			super(ctl);
-			this.parameterObjectId = parameterObjectId;
+			this.parameterObjectIds = parameterObjectIds;
 		}
 
 		@Override
@@ -379,7 +412,7 @@ public class GenerationController {
 
 		@Override
 		public void work() throws CommonBusinessException {
-			generateImpl(parameterObjectId);
+			generateImpl(parameterObjectIds);
 		}
 	}
 

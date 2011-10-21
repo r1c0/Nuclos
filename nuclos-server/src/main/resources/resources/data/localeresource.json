@@ -62057,7 +62057,7 @@
     "resourceID": "GenerationCollectController.groupfunction.notallowed.sourcetype",
     "locale": "de",
     "text": "Gruppierungsfunktion sind nicht erlaubt für Attribute der Parameterentität."
-  }
+  },
   {
     "resourceID": "StateViewComponent.01",
     "locale": "i-default",
@@ -62072,5 +62072,35 @@
     "resourceID": "StateViewComponent.01",
     "locale": "de",
     "text": "M\u00f6gliche Statuswechsel:"
+  },
+  {
+    "resourceID": "CollectController.lookup.generation",
+    "locale": "i-default",
+    "text": "Select objects"
+  },
+  {
+    "resourceID": "CollectController.lookup.generation",
+    "locale": "en",
+    "text": "Select objects"
+  },
+  {
+    "resourceID": "CollectController.lookup.generation",
+    "locale": "de",
+    "text": "Objekte ausw\u00e4hlen"
+  },
+  {
+    "resourceID": "CollectController.lookup.generation.description",
+    "locale": "i-default",
+    "text": "Select parameter objects for object generation."
+  },
+  {
+    "resourceID": "CollectController.lookup.generation.description",
+    "locale": "en",
+    "text": "Select parameter objects for object generation."
+  },
+  {
+    "resourceID": "CollectController.lookup.generation.description",
+    "locale": "de",
+    "text": "Parameterobjekte für die Objektgenerierung auswählen."
   }
 ]

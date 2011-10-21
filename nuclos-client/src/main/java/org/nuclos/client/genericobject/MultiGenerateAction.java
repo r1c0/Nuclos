@@ -21,6 +21,7 @@ import java.util.Collection;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.ui.multiaction.MultiCollectablesActionController.Action;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.StringUtils;
@@ -31,13 +32,11 @@ import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 /**
  * Action used by the controller for creating multiple generic objects
  */
-class MultiGenerateAction implements Action<Collection<EntityObjectVO>, GenerationResult> {
+class MultiGenerateAction implements Action<Pair<Collection<EntityObjectVO>, Long>, GenerationResult> {
 
-	private final Long parameterObjectId;
 	private final GeneratorActionVO generatoractionvo;
 
-	MultiGenerateAction(Long parameterObjectId, GeneratorActionVO generatoractionvo) {
-		this.parameterObjectId = parameterObjectId;
+	MultiGenerateAction(GeneratorActionVO generatoractionvo) {
 		this.generatoractionvo = generatoractionvo;
 	}
 
@@ -48,15 +47,15 @@ class MultiGenerateAction implements Action<Collection<EntityObjectVO>, Generati
 	 * @throws CommonBusinessException
 	 */
 	@Override
-	public GenerationResult perform(final Collection<EntityObjectVO> sources) throws CommonBusinessException {
+	public GenerationResult perform(final Pair<Collection<EntityObjectVO>, Long> sources) throws CommonBusinessException {
 		if (generatoractionvo.isGroupAttributes()) {
-			return GeneratorDelegate.getInstance().generateGenericObject(sources, parameterObjectId, generatoractionvo);
+			return GeneratorDelegate.getInstance().generateGenericObject(sources.x, sources.y, generatoractionvo);
 		}
 		else {
-			if (sources.size() > 1) {
+			if (sources.x.size() > 1) {
 				throw new NuclosFatalException();
 			}
-			return GeneratorDelegate.getInstance().generateGenericObject(sources.iterator().next().getId(), parameterObjectId, generatoractionvo);
+			return GeneratorDelegate.getInstance().generateGenericObject(sources.x.iterator().next().getId(), sources.y, generatoractionvo);
 		}
 	}
 
@@ -65,13 +64,13 @@ class MultiGenerateAction implements Action<Collection<EntityObjectVO>, Generati
 	 * @return the text to display for the action on the given object.
 	 */
 	@Override
-	public String getText(Collection<EntityObjectVO> sources) {
-		if (sources.size() == 1) {
+	public String getText(Pair<Collection<EntityObjectVO>, Long> sources) {
+		if (sources.x.size() == 1) {
 			String entity = MetaDataClientProvider.getInstance().getEntity(generatoractionvo.getTargetModuleId().longValue()).getEntity();
-			return CommonLocaleDelegate.getTreeViewLabel(sources.iterator().next(), entity, MetaDataClientProvider.getInstance());
+			return CommonLocaleDelegate.getTreeViewLabel(sources.x.iterator().next(), entity, MetaDataClientProvider.getInstance());
 		}
 		else {
-			return CommonLocaleDelegate.getMessage("generation.multiple", "Objektgenerierung f\u00fcr {0} Objekte ...", sources.size());
+			return CommonLocaleDelegate.getMessage("generation.multiple", "Objektgenerierung f\u00fcr {0} Objekte ...", sources.x.size());
 		}
 	}
 
@@ -81,7 +80,7 @@ class MultiGenerateAction implements Action<Collection<EntityObjectVO>, Generati
 	 *         the given object.
 	 */
 	@Override
-	public String getSuccessfulMessage(Collection<EntityObjectVO> sources, GenerationResult rResult) {
+	public String getSuccessfulMessage(Pair<Collection<EntityObjectVO>, Long> sources, GenerationResult rResult) {
 		if (!StringUtils.isNullOrEmpty(rResult.getError())) {
 			return CommonLocaleDelegate.getMessage("generation.unsaved",
 					"Generated obect could not be saved: \\n{0} \\nPlease edit object in details view (see context menu).",
@@ -101,7 +100,7 @@ class MultiGenerateAction implements Action<Collection<EntityObjectVO>, Generati
 	}
 
 	@Override
-	public String getExceptionMessage(Collection<EntityObjectVO> sources, Exception ex) {
+	public String getExceptionMessage(Pair<Collection<EntityObjectVO>, Long> sources, Exception ex) {
 		return CommonLocaleDelegate.getMessage("R00022883", "Objektgenerierung fehlgeschlagen. \\n{1}", ex.getMessage());
 	}
 

@@ -11,7 +11,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCo
 
 /**
  * The 'list of value' (LOV) representation used for object generation
- * (working step) with parameter object. 
+ * (working step) with parameter object.
  * <p>
  * If the working step is triggered, the parameter entity is displayed as overlay.
  * The representation is controlled by its own CollectController. The user can chose
@@ -19,11 +19,11 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCo
  * chosen.
  * </p><p>
  * This implementation of LOV is always a search component. The LOV is <em>not</em>
- * associated with a corresponding GUI component on the triggering tab. Hence it is 
+ * associated with a corresponding GUI component on the triggering tab. Hence it is
  * <em>not</em> a CollectableComponent.
- * </p>  
+ * </p>
  * @author Thomas Pasch
- * @since 3.1.01 
+ * @since 3.1.01
  */
 public class EntityListOfValues implements ICollectableListOfValues {
 
@@ -35,11 +35,11 @@ public class EntityListOfValues implements ICollectableListOfValues {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param eventSrc EventObjects need a non-null source of the event, normally
 	 * 		representing the (GUI) component the event stems from. In this is case
 	 * 		this is rather esoteric - as this LOV is <em>not</em> associated with
-	 * 		a corresponding GUI component. 
+	 * 		a corresponding GUI component.
 	 */
 	public EntityListOfValues(JComponent eventSrc) {
 		this.eventSrc = eventSrc;
@@ -94,7 +94,7 @@ public class EntityListOfValues implements ICollectableListOfValues {
 
 	@Override
 	public boolean isSearchComponent() {
-		return true;
+		return false;
 	}
 
 	@Override

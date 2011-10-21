@@ -101,6 +101,7 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.component.CollectableCheckBox;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableListOfValues;
+import org.nuclos.client.ui.collect.component.EntityListOfValues;
 import org.nuclos.client.ui.collect.component.ICollectableListOfValues;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
@@ -1441,20 +1442,28 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		ifrm.setVisible(true);
 
 		if (!clctlovSource.isSearchComponent()) {
-			final CollectableListOfValues clov = (CollectableListOfValues) clctlovSource;
-			if (clov.getValueListProvider() instanceof DatasourceBasedCollectableFieldsProvider) {
-				ss.setValueListProviderDatasource(((DatasourceBasedCollectableFieldsProvider) clov.getValueListProvider()).getDatasourceVO());
-				ss.setValueListProviderDatasourceParameter(((DatasourceBasedCollectableFieldsProvider) clov.getValueListProvider()).getValueListParameter());
-			} else if (clov.getValueListProvider() instanceof CollectableFieldsProviderCache.CachingCollectableFieldsProvider) {
-				CollectableFieldsProvider delegate = ((CollectableFieldsProviderCache.CachingCollectableFieldsProvider) clov.getValueListProvider()).getDelegate();
-				if (delegate instanceof DatasourceBasedCollectableFieldsProvider) {
-					ss.setValueListProviderDatasource(((DatasourceBasedCollectableFieldsProvider)delegate).getDatasourceVO());
-					ss.setValueListProviderDatasourceParameter(((DatasourceBasedCollectableFieldsProvider)delegate).getValueListParameter());
+			String label = CommonLocaleDelegate.getMessage("CollectController.41","Auswahl übernehmen");
+			String description = CommonLocaleDelegate.getMessage("CollectController.42","Findet die Übernahme in einem Unterformular statt werden mittels Mehrfachauswahl zusätzliche Datensätze im Unterformular erzeugt.");
+			if (clctlovSource instanceof CollectableListOfValues) {
+				final CollectableListOfValues clov = (CollectableListOfValues) clctlovSource;
+				if (clov.getValueListProvider() instanceof DatasourceBasedCollectableFieldsProvider) {
+					ss.setValueListProviderDatasource(((DatasourceBasedCollectableFieldsProvider) clov.getValueListProvider()).getDatasourceVO());
+					ss.setValueListProviderDatasourceParameter(((DatasourceBasedCollectableFieldsProvider) clov.getValueListProvider()).getValueListParameter());
+				} else if (clov.getValueListProvider() instanceof CollectableFieldsProviderCache.CachingCollectableFieldsProvider) {
+					CollectableFieldsProvider delegate = ((CollectableFieldsProviderCache.CachingCollectableFieldsProvider) clov.getValueListProvider()).getDelegate();
+					if (delegate instanceof DatasourceBasedCollectableFieldsProvider) {
+						ss.setValueListProviderDatasource(((DatasourceBasedCollectableFieldsProvider)delegate).getDatasourceVO());
+						ss.setValueListProviderDatasourceParameter(((DatasourceBasedCollectableFieldsProvider)delegate).getValueListParameter());
+					}
 				}
 			}
+			else if (clctlovSource instanceof EntityListOfValues) {
+				label = CommonLocaleDelegate.getMessage("CollectController.lookup.generation","Objekte ausw\u00e4hlen");
+				description = CommonLocaleDelegate.getMessage("CollectController.lookup.generation.description", "Parameterobjekte für die Objektgenerierung ausw\u00e4hlen.");
+			}
+			final JMenuItem miPopupApplySelection = new JMenuItem(label);
+			miPopupApplySelection.setToolTipText(description);
 
-			final JMenuItem miPopupApplySelection = new JMenuItem(CommonLocaleDelegate.getMessage("CollectController.41","Auswahl übernehmen"));
-			miPopupApplySelection.setToolTipText(CommonLocaleDelegate.getMessage("CollectController.42","Findet die Übernahme in einem Unterformular statt werden mittels Mehrfachauswahl zusätzliche Datensätze im Unterformular erzeugt."));
 			getResultPanel().popupmenuRow.addSeparator();
 			getResultPanel().popupmenuRow.add(miPopupApplySelection);
 			miPopupApplySelection.addActionListener(new ActionListener() {
