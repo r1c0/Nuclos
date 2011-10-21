@@ -340,6 +340,10 @@ public class RestoreUtils {
 			return;
 		}
 
+		if (wd == null) {
+			wd = new WorkspaceDescription();
+			wd.setName(MainFrame.getDefaultWorkspace());
+		}
 		wd.getFrames().clear();
 
 		MainFrame.restoreAllTabbedPaneContainingArea();

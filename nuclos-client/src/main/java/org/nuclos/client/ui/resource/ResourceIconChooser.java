@@ -126,7 +126,9 @@ public class ResourceIconChooser extends JPanel {
 				JPanel btnPanel = new JPanel(new BorderLayout());
 				btnPanel.setOpaque(false);
 				
-				JButton btn = new JButton(MainFrame.resizeAndCacheIcon((ImageIcon) value, iconMaxSize));
+				JButton btn = new JButton(iconMaxSize==0?
+						(ImageIcon) value:
+						MainFrame.resizeAndCacheIcon((ImageIcon) value, iconMaxSize));
 				btn.setBorderPainted(false);
 				btn.setContentAreaFilled(true);
 				btn.addActionListener(iconActionListener);

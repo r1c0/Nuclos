@@ -1748,7 +1748,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		mainFramePrefs.putBoolean(PREFS_NODE_SPLITTING_DEACTIVATED, splittingDeactivated);
 		mainFramePrefs.putInt(PREFS_NODE_HISTORY_SIZE_INDEX, selectedHistorySize);
 		mainFramePrefs.put(PREFS_NODE_DEFAULT_WORKSPACE, defaultWorkspace);
-		mainFramePrefs.put(PREFS_NODE_LAST_WORKSPACE, getWorkspace().getName());
+		mainFramePrefs.put(PREFS_NODE_LAST_WORKSPACE, getWorkspace()==null?defaultWorkspace:getWorkspace().getName());
 		PreferencesUtils.putStringList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER, WorkspaceChooserController.getWorkspaceOrder());
 		
 		mainFramePrefs.node(PREFS_NODE_BOOKMARK).removeNode();
