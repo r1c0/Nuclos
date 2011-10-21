@@ -891,7 +891,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 			@Override
 			public void run() {
 				try {
-					(new Bubble(comp, "<html>"+htmlMessage.replaceAll("\n", "<br/>")+"</html>", 8, Bubble.Position.SE)).setVisible(true);
+					(new Bubble(comp, "<html>"+htmlMessage.replaceAll("\n", "<br/>")+"</html>", 8, Bubble.Position.SW_CONTAINER_RELATIVE)).setVisible(true);
 				} catch (IllegalComponentStateException e) {
 					// do nothing. it is not shown
 				}
