@@ -22,13 +22,16 @@ import java.util.Set;
 import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.model.FixedTableModel;
 import org.nuclos.client.ui.model.MutableListModel;
 import org.nuclos.client.ui.renderer.TopTableCellRendererDelegate;
+import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 
@@ -74,9 +77,11 @@ public class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel<Collectab
 		    }
 		};
 		tblSelectedColumn.setShowHorizontalLines(false);
+		tblSelectedColumn.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		
 		scrlpnSelectedColumns.getViewport().add(tblSelectedColumn, null);
 		scrlpnSelectedColumns.getViewport().setBackground(tblSelectedColumn.getBackground());
+		scrlpnSelectedColumns.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -122,9 +127,17 @@ public class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel<Collectab
 	@SuppressWarnings("unchecked")
 	public void setFixedColumns(Set<CollectableEntityField> fixedColumns) {
 		((FixedTableModel<CollectableEntityField>) this.tblSelectedColumn.getModel()).setFixedObjSet(fixedColumns);
-		this.tblSelectedColumn.getColumnModel().getColumn(0).setPreferredWidth(200);
-		this.tblSelectedColumn.getColumnModel().getColumn(1).setPreferredWidth(50);
-		this.tblSelectedColumn.getColumnModel().getColumn(1).setMaxWidth(50);
+		final TableColumnModel cm = tblSelectedColumn.getColumnModel();
+		// cm.getColumn(1).setPreferredWidth(2000);
+		cm.getColumn(1).setMinWidth(50);
+		cm.getColumn(0).setPreferredWidth(50);
+		cm.getColumn(0).setMaxWidth(50);
+		cm.getColumn(0).setMinWidth(50);
+		fitFixedTable();
+	}
+	
+	private void fitFixedTable() {
+		TableUtils.setOptimalColumnWidth(tblSelectedColumn, 1);
 	}
 
 }	// inner class SelectColumnsPanel

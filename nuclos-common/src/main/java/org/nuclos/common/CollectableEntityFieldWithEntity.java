@@ -91,7 +91,7 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	/**
 	 * @deprecated Why is this transient? How is a value after serialization enforced?
 	 */
-	private transient CefSecurityAgent securityAgent = new CefAllowAllSecurityAgentImpl();
+	private transient CefSecurityAgent securityAgent;
 
 	/**
 	 * @param clcte

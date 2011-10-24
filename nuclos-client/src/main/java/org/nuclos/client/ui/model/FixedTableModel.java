@@ -84,19 +84,19 @@ public class FixedTableModel<T> extends AbstractTableModel {
 
 	@Override
 	public String getColumnName(int col) {
-		return (col == 0) ? "Spalte" : "Fixiert";
+		return (col == 1) ? "Spalte" : "Fixiert";
 	}
 
 	@Override
 	public Object getValueAt(int row, int col) {
-		return (col == 0) ? objectListModel.getElementAt(row)
+		return (col == 1) ? objectListModel.getElementAt(row)
 				: isObjectFixed(objectListModel.getElementAt(row));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		if (columnIndex == 1 && aValue instanceof Boolean) {
+		if (columnIndex == 0 && aValue instanceof Boolean) {
 			if (((Boolean) aValue).booleanValue()) {
 				if (this.fixedObjSet.size() + 1 >= objectListModel.getSize()) {
 					JOptionPane.showMessageDialog(
@@ -116,12 +116,12 @@ public class FixedTableModel<T> extends AbstractTableModel {
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return (columnIndex != 0);
+		return (columnIndex != 1);
 	}
 
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
-		return (columnIndex == 0) ? Object.class : Boolean.class;
+		return (columnIndex == 1) ? Object.class : Boolean.class;
 	}
 
 	private Boolean isObjectFixed(Object rowObj) {

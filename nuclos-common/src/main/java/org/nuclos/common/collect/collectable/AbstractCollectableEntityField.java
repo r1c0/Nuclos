@@ -53,7 +53,7 @@ public abstract class AbstractCollectableEntityField implements CollectableEntit
 	/**
 	 * @deprecated Why is this transient? How is a value after serialization enforced?
 	 */
-	private transient CefSecurityAgent securityAgent = new CefAllowAllSecurityAgentImpl();
+	private transient CefSecurityAgent securityAgent;
 
 	@Override
     public boolean isIdField() {
