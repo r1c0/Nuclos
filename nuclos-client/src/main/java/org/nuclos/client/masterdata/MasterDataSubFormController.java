@@ -147,7 +147,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			@Override
             public void valueChanged(ListSelectionEvent e) {
 				final ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-				final boolean bEnabled = !lsm.isSelectionEmpty() && MasterDataSubFormController.this.isEnabled();
+				final boolean bEnabled = !lsm.isSelectionEmpty() && lsm.getMaxSelectionIndex() == lsm.getMinSelectionIndex() && MasterDataSubFormController.this.isEnabled();
 				UIUtils.invokeOnDispatchThread(new Runnable() {
 					@Override
 					public void run() {
@@ -598,10 +598,21 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		@Override
         public void valueChanged(ListSelectionEvent event) {
 			if (!isMultiEdit()) {
-				for (MasterDataSubFormController controller : getChildSubFormController()) {
-					CollectableEntityObject clct = getSelectedCollectable();
-					controller.fillAsSubFormChild(clct);
-					controller.selectFirstRow();
+				if (!event.getValueIsAdjusting()) {
+					for (MasterDataSubFormController controller : getChildSubFormController()) {
+						if (getJTable().getSelectedRows() != null && getJTable().getSelectedRows().length == 1) {
+							// single selection
+							controller.getSubForm().setEnabled(true);
+							CollectableEntityObject clct = getSelectedCollectable();
+							controller.fillAsSubFormChild(clct);
+							controller.selectFirstRow();
+						}
+						else {
+							// multi-selection
+							controller.fillAsSubFormChild(null);
+							controller.getSubForm().setEnabled(false);
+						}
+					}
 				}
 			}
 		}
@@ -730,10 +741,12 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 
 
 	@Override
-	protected void removeSelectedRow() {
+	protected void removeSelectedRows() {
 		// this is necessary for rows that have been added and again removed before saving
-		this.getSelectedCollectable().markRemoved();
-		super.removeSelectedRow();
+		for (CollectableEntityObject clct : this.getSelectedCollectables()) {
+			clct.markRemoved();
+		}
+		super.removeSelectedRows();
 	}
 
 	/**

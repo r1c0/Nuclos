@@ -476,7 +476,8 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		// Configure table
 		scrollPane.getViewport().setBackground(subformtbl.getBackground());
 		subformtbl.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		subformtbl.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		subformtbl.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+//		subformtbl.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		scrollPane.getViewport().setView(subformtbl);
 		JLabel labCorner = new JLabel();
@@ -1304,7 +1305,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 					// A static CellEditor is sufficient and can be set right here:
 					final CollectableComponentTableCellEditor clctcompcelleditor =
 							this.newTableCellEditor(clcte, sColumnName, bSearchable, prefs, subformtblmdl);
-					
+
 					// set a (static) value list provider for ComboBoxes:
 					final CollectableComponent clctcomp = clctcompcelleditor.getCollectableComponent();
 					clctcomp.setEnabled(isColumnEnabled(sColumnName));
@@ -1888,6 +1889,8 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		int findColumnByFieldName(String sFieldName);
 
 		void remove(int iRow);
+
+		void remove(int[] rows);
 
 	}	// interface SubFormTableModel
 

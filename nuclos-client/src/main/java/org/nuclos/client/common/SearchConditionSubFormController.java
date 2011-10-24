@@ -18,6 +18,7 @@ package org.nuclos.client.common;
 
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 import java.util.prefs.Preferences;
@@ -108,13 +109,13 @@ public class SearchConditionSubFormController extends SubFormController {
 	private class SearchConditionTableModelImpl extends DefaultTableModel implements SearchConditionTableModel {
 
 		private final String subformName;
-		
+
 		private List<CollectableEntityField> lstclctefColumns;
-		
+
 		private SearchConditionTableModelImpl(String subformName) {
 			this.subformName = subformName;
 		}
-		
+
 		@Override
 		public String getBaseEntityName() {
 			return subformName;
@@ -155,7 +156,7 @@ public class SearchConditionSubFormController extends SubFormController {
 		/**
 		 * @param iColumn
 		 * @return the name of column <code>iColumn</code>, as shown in the table header
-		 * 
+		 *
 		 * @deprecated Strongly consider to use {@link #getCollectableEntityField(int)} instead.
 		 */
 		@Override
@@ -238,6 +239,28 @@ public class SearchConditionSubFormController extends SubFormController {
 		@Override
 		public void remove(int iRow) {
 			this.removeRow(iRow);
+		}
+
+		@Override
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		public void remove(int[] rows) {
+			Collection objectsToRemove = new ArrayList();
+			int first = -1;
+			int last = -1;
+			for (int index : rows) {
+				objectsToRemove.add(this.getDataVector().get(index));
+				if (first == -1) {
+					first = index;
+				}
+				else if (index < first) {
+					first = index;
+				}
+				if (index > last) {
+					last = index;
+				}
+			}
+			this.getDataVector().removeAll(objectsToRemove);
+			fireTableRowsDeleted(first, last);
 		}
 
 		/**
@@ -323,7 +346,7 @@ public class SearchConditionSubFormController extends SubFormController {
 		/**
 		 * @param sFieldName
 		 * @return the index of the column with the given fieldname. -1 if none was found.
-		 * 
+		 *
 		 * @deprecated Strongly consider to use {@link #getColumn(CollectableEntityField)} instead.
 		 */
 		@Override

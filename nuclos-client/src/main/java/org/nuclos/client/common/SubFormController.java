@@ -467,25 +467,25 @@ public abstract class SubFormController extends Controller
 			@Override
             public void run() {
 				if (stopEditing()) {
-					removeSelectedRow();
+					removeSelectedRows();
 				}
 			}
 		});
 	}
 
-	protected void removeSelectedRow() {
+	protected void removeSelectedRows() {
 		final JTable tbl = this.getJTable();
-		int modelIndex = tbl.convertRowIndexToModel(tbl.getSelectedRow());
+		int[] viewIndices = tbl.getSelectedRows();
+		int[] modelIndices = new int[viewIndices.length];
+		for (int i = 0; i < viewIndices.length; i++) {
+			modelIndices[i] = tbl.convertRowIndexToModel(viewIndices[i]);
+		}
 
-		this.getSubFormTableModel().remove(modelIndex);
+		this.getSubFormTableModel().remove(modelIndices);
 
 		// Select the nearest row if any (that may then be deleted next etc.)
-		if (tbl.getRowCount() <= modelIndex) {
-			modelIndex = tbl.getRowCount() - 1;
-		}
-		if (modelIndex > -1) {
-			int viewIndex = tbl.convertRowIndexToView(modelIndex);
-			tbl.setRowSelectionInterval(viewIndex, viewIndex);
+		if (viewIndices.length > 0 && tbl.getRowCount() <= viewIndices[0]) {
+			tbl.setRowSelectionInterval(viewIndices[0] - 1, viewIndices[0] - 1);
 		}
 	}
 

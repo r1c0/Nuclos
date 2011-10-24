@@ -191,19 +191,20 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 		}
 
 		@Override
-		protected void removeSelectedRow() {
-			CollectableEntityObject process = getSelectedCollectable();
-			if (process.getId() != null) {
-				try {
-					MetaDataDelegate.getInstance().tryRemoveProcess(process.getEntityObjectVO());
-				}
-				catch (NuclosBusinessException e) {
-					JOptionPane.showMessageDialog(NuclosEntityProcessStep.this, getMessage("wizard.step.processes.error.removeprocess", "Aktion {0} ist bereits in Verwendung und kann nicht entfernt werden.", process.getField("name")),
-			    			getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
-					return;
+		protected void removeSelectedRows() {
+			for (CollectableEntityObject process : this.getSelectedCollectables()) {
+				if (process.getId() != null) {
+					try {
+						MetaDataDelegate.getInstance().tryRemoveProcess(process.getEntityObjectVO());
+					}
+					catch (NuclosBusinessException e) {
+						JOptionPane.showMessageDialog(NuclosEntityProcessStep.this, getMessage("wizard.step.processes.error.removeprocess", "Aktion {0} ist bereits in Verwendung und kann nicht entfernt werden.", process.getField("name")),
+				    			getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
+						return;
+					}
 				}
 			}
-			super.removeSelectedRow();
+			super.removeSelectedRows();
 		}
 
 		@Override

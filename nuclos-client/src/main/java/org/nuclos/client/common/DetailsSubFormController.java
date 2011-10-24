@@ -48,6 +48,7 @@ import java.util.prefs.Preferences;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
@@ -209,42 +210,42 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					Collectable clct = DetailsSubFormController.this.getSelectedCollectable();
-					if (clct != null) {	
-						boolean blnChanged = false;
-						for (Iterator iterator = lstFieldNames.iterator(); iterator.hasNext();) {
-							String sFieldName = (String) iterator.next();
-							if (DetailsSubFormController.this.getSubForm().isColumnEnabled(sFieldName)) {
-								clct.setField(sFieldName, new CollectableValueField(Boolean.TRUE));
-								blnChanged = true;
+					boolean blnChanged = false;
+					for (Collectable clct : DetailsSubFormController.this.getSelectedCollectables()) {
+						if (clct != null) {
+							for (Iterator iterator = lstFieldNames.iterator(); iterator.hasNext();) {
+								String sFieldName = (String) iterator.next();
+								if (DetailsSubFormController.this.getSubForm().isColumnEnabled(sFieldName)) {
+									clct.setField(sFieldName, new CollectableValueField(Boolean.TRUE));
+									blnChanged = true;
+								}
 							}
 						}
-						if (blnChanged)
-						{
-							((AbstractTableModel)DetailsSubFormController.this.getSubForm().getJTable().getModel()).fireTableDataChanged();
-						}
+					}
+					if (blnChanged) {
+						fireDataUpdatedForSelectedRows();
 					}
 				}
 			});
-			JMenuItem mi2 = new JMenuItem(getMessage("DetailsSubFormController.2", "Alle zur√ºcksetzen"));
+			JMenuItem mi2 = new JMenuItem(getMessage("DetailsSubFormController.2", "Alle zurücksetzen"));
 			mi2.addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					Collectable clct = DetailsSubFormController.this.getSelectedCollectable();
-					if (clct != null) {
-						boolean blnChanged = false;
-						for (Iterator iterator = lstFieldNames.iterator(); iterator.hasNext();) {
-							String sFieldName = (String) iterator.next();
-							if (DetailsSubFormController.this.getSubForm().isColumnEnabled(sFieldName)) {
-								clct.setField(sFieldName, new CollectableValueField(Boolean.FALSE));
-								blnChanged = true;
+					boolean blnChanged = false;
+					for (Collectable clct : DetailsSubFormController.this.getSelectedCollectables()) {
+						if (clct != null) {
+							for (Iterator iterator = lstFieldNames.iterator(); iterator.hasNext();) {
+								String sFieldName = (String) iterator.next();
+								if (DetailsSubFormController.this.getSubForm().isColumnEnabled(sFieldName)) {
+									clct.setField(sFieldName, new CollectableValueField(Boolean.FALSE));
+									blnChanged = true;
+								}
 							}
 						}
-						if (blnChanged)
-						{
-							((AbstractTableModel)DetailsSubFormController.this.getSubForm().getJTable().getModel()).fireTableDataChanged();
-						}
+					}
+					if (blnChanged) {
+						fireDataUpdatedForSelectedRows();
 					}
 				}
 			});
@@ -282,14 +283,14 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 					clct.setField(clctef.getName(), new CollectableValueField(Boolean.TRUE));
 					blnChanged = true;
 				}
-				if (blnChanged)
-				{
-					((AbstractTableModel)DetailsSubFormController.this.getSubForm().getJTable().getModel()).fireTableDataChanged();
+				if (blnChanged) {
+					int last = DetailsSubFormController.this.getSubForm().getJTable().getRowCount();
+					((AbstractTableModel)DetailsSubFormController.this.getSubForm().getJTable().getModel()).fireTableRowsUpdated(0, last);
 				}
 			}
 		});
 		mi1.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive());
-		JMenuItem mi2 = new JMenuItem(getMessage("DetailsSubFormController.2", "Alle zur√ºcksetzen"));
+		JMenuItem mi2 = new JMenuItem(getMessage("DetailsSubFormController.2", "Alle zurücksetzen"));
 		mi2.addActionListener(new ActionListener() {
 
 			@Override
@@ -300,9 +301,9 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 					clct.setField(clctef.getName(), new CollectableValueField(Boolean.FALSE));
 					blnChanged = true;
 				}
-				if (blnChanged)
-				{
-					((AbstractTableModel)DetailsSubFormController.this.getSubForm().getJTable().getModel()).fireTableDataChanged();
+				if (blnChanged) {
+					int last = DetailsSubFormController.this.getSubForm().getJTable().getRowCount();
+					((AbstractTableModel)DetailsSubFormController.this.getSubForm().getJTable().getModel()).fireTableRowsUpdated(0, last);
 				}
 			}
 		});
@@ -310,8 +311,51 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 		result.add(mi1);
 		result.add(mi2);
+		result.add(new JSeparator());
+
+		JMenuItem mi3 = new JMenuItem(getMessage("DetailsSubFormController.setselected", "Selektierte Zeilen setzen"));
+		mi3.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				List<Clct> clcts = DetailsSubFormController.this.getSelectedCollectables();
+				boolean blnChanged = false;
+				for (Clct clct : clcts) {
+					clct.setField(clctef.getName(), new CollectableValueField(Boolean.TRUE));
+					blnChanged = true;
+				}
+				if (blnChanged) {
+					fireDataUpdatedForSelectedRows();
+				}
+			}
+		});
+		mi3.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive() && getSelectedCollectables().size() > 0);
+		JMenuItem mi4 = new JMenuItem(getMessage("DetailsSubFormController.resetselected", "Selektierte Zeilen zurücksetzen"));
+		mi4.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				boolean blnChanged = false;
+				List<Clct> clcts = DetailsSubFormController.this.getSelectedCollectables();
+				for (Clct clct : clcts) {
+					clct.setField(clctef.getName(), new CollectableValueField(Boolean.FALSE));
+					blnChanged = true;
+				}
+				if (blnChanged) {
+					fireDataUpdatedForSelectedRows();
+				}
+			}
+		});
+		mi4.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive() && getSelectedCollectables().size() > 0);
+
+		result.add(mi3);
+		result.add(mi4);
 
 		return result;
+	}
+
+	private void fireDataUpdatedForSelectedRows() {
+		int first = DetailsSubFormController.this.getSubForm().getJTable().getSelectionModel().getMinSelectionIndex();
+		int last = DetailsSubFormController.this.getSubForm().getJTable().getSelectionModel().getMinSelectionIndex();
+		((AbstractTableModel)DetailsSubFormController.this.getSubForm().getJTable().getModel()).fireTableRowsUpdated(first, last);
 	}
 
 	/**

@@ -62102,5 +62102,35 @@
     "resourceID": "CollectController.lookup.generation.description",
     "locale": "de",
     "text": "Parameterobjekte für die Objektgenerierung auswählen."
+  },
+  {
+    "resourceID": "DetailsSubFormController.setselected",
+    "locale": "i-default",
+    "text": "Set selected rows"
+  },
+  {
+    "resourceID": "DetailsSubFormController.setselected",
+    "locale": "en",
+    "text": "Set selected rows"
+  },
+  {
+    "resourceID": "DetailsSubFormController.setselected",
+    "locale": "de",
+    "text": "Selektierte Zeilen setzen"
+  },
+  {
+    "resourceID": "DetailsSubFormController.resetselected",
+    "locale": "i-default",
+    "text": "Reset selected rows"
+  },
+  {
+    "resourceID": "DetailsSubFormController.resetselected",
+    "locale": "en",
+    "text": "Reset selected rows"
+  },
+  {
+    "resourceID": "DetailsSubFormController.resetselected",
+    "locale": "de",
+    "text": "Selektierte Zeilen zurücksetzen"
   }
 ]

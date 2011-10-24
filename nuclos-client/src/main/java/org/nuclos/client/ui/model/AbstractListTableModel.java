@@ -38,7 +38,7 @@ public abstract class AbstractListTableModel<R> extends AbstractTableModel imple
 	public AbstractListTableModel() {
 		setRows(new ArrayList<R>());
 	}
-	
+
 	/**
 	 * Constructs a table model, using lstRows as implementation.
 	 * @param lstRows is taken directly, not copied.
@@ -81,15 +81,35 @@ public abstract class AbstractListTableModel<R> extends AbstractTableModel imple
 	public void addAll(Collection<R> rows) {
 		addAll(this.getRows().size(), rows);
 	}
-	
+
 	public void addAll(int index, Collection<R> rows) {
 		this.getRows().addAll(index, rows);
 		this.fireTableRowsInserted(index, index + rows.size() - 1);
 	}
-	
+
 	public void remove(int index) {
 		this.getRows().remove(index);
 		fireTableRowsDeleted(index, index);
+	}
+
+	public void remove(int[] indices) {
+		List<R> objectsToRemove = new ArrayList<R>();
+		int first = -1;
+		int last = -1;
+		for (int index : indices) {
+			objectsToRemove.add(this.getRow(index));
+			if (first == -1) {
+				first = index;
+			}
+			else if (index < first) {
+				first = index;
+			}
+			if (index > last) {
+				last = index;
+			}
+		}
+		this.getRows().removeAll(objectsToRemove);
+		fireTableRowsDeleted(first, last);
 	}
 
 	public void clear() {
@@ -104,7 +124,7 @@ public abstract class AbstractListTableModel<R> extends AbstractTableModel imple
 	public final Iterator<R> iterator() {
 		return Collections.unmodifiableList(getRows()).iterator();
 	}
-	
+
 	/**
 	 * @return the number of rows
 	 */
