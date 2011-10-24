@@ -25,7 +25,6 @@ import java.util.Set;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.common.NuclosEOField;
-import org.nuclos.common.collect.collectable.AbstractCollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.VirtualCollectableEntityField;

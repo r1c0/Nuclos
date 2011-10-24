@@ -20,8 +20,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.nuclos.server.dblayer.DbException;
-
 /**
  * Generic low-level interface for performing actions on the database.  
  */

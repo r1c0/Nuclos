@@ -77,7 +77,7 @@ public class CollectableGenericObject extends AbstractCollectable implements Rem
 		return result;
 	}
 
-	protected CollectableEntity getCollectableEntity() {
+	public CollectableEntity getCollectableEntity() {
 		return CollectableGenericObjectEntity.getByModuleId(this.govo.getModuleId());
 	}
 

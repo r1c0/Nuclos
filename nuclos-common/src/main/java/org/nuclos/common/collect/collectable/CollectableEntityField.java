@@ -20,6 +20,7 @@ import java.text.Collator;
 import java.util.Comparator;
 import java.util.prefs.Preferences;
 
+import org.nuclos.common.collect.collectable.access.CefSecurityAgent;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.LangUtils;
@@ -286,66 +287,16 @@ public interface CollectableEntityField {
 	}	// inner class GetName
 
 	/**
-	 * inner class <code>CollectableEntityFieldSecurityAgent</code>:
-	 * checks the permission (read, write, delete) for this <code>CollectableEntityField</code> according to the <code>Collectable</code>.
-	 */
-	public class CollectableEntityFieldSecurityAgent {
-		private Collectable clct;
-
-		/**
-		 * sets the <code>Collectable</code> for the <code>CollectableEntityField</code>
-		 * @param Collectable
-		 */
-		public void setCollectable(Collectable clct) {
-			this.clct = clct;
-		}
-
-		/**
-		 * @return the <code>Collectable</code> of the <code>CollectableEntityField</code>
-		 */
-		public Collectable getCollectable() {
-			return clct;
-		}
-
-		/**
-		 * you may use and overwrite this method for your own purpose
-		 * @return true if read permission is granted to this field according to the <code>Collectable</code> otherwise false;
-		 * in this default implementation return always true
-		 */
-		public boolean isReadable() {
-			return true;
-		}
-
-		/**
-		 * you may use and overwrite this method for your own purpose
-		 * @return true if write permission is granted to this field according to the <code>Collectable</code> otherwise false;
-		 * in this default implementation return always true
-		 */
-		public boolean isWritable() {
-			return true;
-		}
-
-		/**
-		 * you may use and overwrite this method for your own purpose
-		 * @return true if delete permission is granted to this field according to the <code>Collectable</code> otherwise false;
-		 * in this default implementation return always true
-		 */
-		public boolean isRemovable() {
-			return true;
-		}
-	} // inner class CollectableEntityFieldSecurityAgent
-
-	/**
 	 * sets the security agent for this <code>CollectableEntityField</code>
-	 * @param CollectableEntityFieldSecurityAgent
+	 * @param CefSecurityAgent
 	 */
-	void setSecurityAgent(CollectableEntityFieldSecurityAgent sa);
+	void setSecurityAgent(CefSecurityAgent sa);
 
 	/**
 	 * get the security agent for this <code>CollectableEntityField</code>
 	 * @return CollectableEntityFieldSecurityAgent
 	 */
-	CollectableEntityFieldSecurityAgent getSecurityAgent();
+	CefSecurityAgent getSecurityAgent();
 
 	/**
 	 * checks whether read permission is granted to this field or not

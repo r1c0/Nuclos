@@ -27,20 +27,16 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.nuclos.client.main.Main;
-import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.resource.ResourceIconChooser;
 import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common2.CommonLocaleDelegate;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
-import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 
 public class WorkspaceEditor  {
 	

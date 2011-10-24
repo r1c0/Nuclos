@@ -23,6 +23,7 @@ import java.util.NoSuchElementException;
 import java.util.prefs.Preferences;
 
 import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -107,7 +108,7 @@ public class SearchResultTemplate {
 
 	private final int moduleId;
 
-
+	//
 
 	public SearchResultTemplate(int moduleId){
 		this.moduleId = moduleId;
@@ -388,7 +389,7 @@ public class SearchResultTemplate {
 		assert result != null;
 		return result;
 	}
-
+	
 	/**
 	 * creates the default search result template with a specific name.
 	 * @return new default search result template

@@ -190,7 +190,8 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 				// restore the widths of the still present columns
 				panel.restoreColumnWidths(lstSelectedNew, lstColumnWiths);
 
-				panel.invalidateFixedTable();
+				// panel.invalidateFixedTable();
+				panel.setupTableCellRenderers(tblResult);
 			}
 
 			private void refreshResult(final CollectController<Clct> clctctl) throws CommonBusinessException {

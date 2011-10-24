@@ -56,7 +56,6 @@ import javax.swing.plaf.basic.BasicScrollPaneUI.VSBChangeListener;
 import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
-import org.jfree.util.Log;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.genericobject.ChangeListenerForResultTableVerticalScrollBar;
 import org.nuclos.client.main.mainframe.MainFrameTab;

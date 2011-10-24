@@ -20,12 +20,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
-import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.incubator.DbExecutor;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 

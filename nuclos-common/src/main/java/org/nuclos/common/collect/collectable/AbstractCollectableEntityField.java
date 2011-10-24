@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.prefs.Preferences;
 
+import org.nuclos.common.collect.collectable.access.CefSecurityAgent;
+import org.nuclos.common.collect.collectable.access.CefAllowAllSecurityAgentImpl;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.RelativeDate;
 
@@ -51,7 +53,7 @@ public abstract class AbstractCollectableEntityField implements CollectableEntit
 	/**
 	 * @deprecated Why is this transient? How is a value after serialization enforced?
 	 */
-	private transient CollectableEntityFieldSecurityAgent securityAgent = new CollectableEntityFieldSecurityAgent();
+	private transient CefSecurityAgent securityAgent = new CefAllowAllSecurityAgentImpl();
 
 	@Override
     public boolean isIdField() {
@@ -165,7 +167,7 @@ public abstract class AbstractCollectableEntityField implements CollectableEntit
 	 * set security agent
 	 */
 	@Override
-    public void setSecurityAgent(CollectableEntityFieldSecurityAgent sa) {
+    public void setSecurityAgent(CefSecurityAgent sa) {
 		this.securityAgent = sa;
 	}
 
@@ -173,7 +175,7 @@ public abstract class AbstractCollectableEntityField implements CollectableEntit
 	 * get security agent
 	 */
 	@Override
-    public CollectableEntityFieldSecurityAgent getSecurityAgent() {
+    public CefSecurityAgent getSecurityAgent() {
 		return this.securityAgent;
 	}
 

@@ -43,6 +43,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
@@ -56,6 +57,7 @@ import org.jdesktop.swingx.renderer.DefaultListRenderer;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 import org.nuclos.client.ui.ColorProvider;
@@ -80,7 +82,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
-import org.nuclos.common.collect.collectable.CollectableEntityField.CollectableEntityFieldSecurityAgent;
+import org.nuclos.common.collect.collectable.access.CefSecurityAgent;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparisonWithOtherField;
@@ -1631,11 +1633,11 @@ public abstract class AbstractCollectableComponent
 		}
 	}
 
-	protected static class CollectableComponentDetailTableCellRenderer extends javax.swing.table.DefaultTableCellRenderer implements TableCellRenderer {
+	protected static class CollectableComponentDetailTableCellRenderer extends DefaultTableCellRenderer {
 
 		// blurfilter to hide data on which the user has no read permission
-		BoxBlurFilter filter = new BoxBlurFilter(20, 10, 1);
-		BufferedImageOpEffect blurEffect = new BufferedImageOpEffect(filter);
+		private final BoxBlurFilter filter = new BoxBlurFilter(20, 10, 1);
+		private final BufferedImageOpEffect blurEffect = new BufferedImageOpEffect(filter);
 
 		public CollectableComponentDetailTableCellRenderer() {
 			setVerticalAlignment(SwingConstants.TOP);
@@ -1661,11 +1663,13 @@ public abstract class AbstractCollectableComponent
 					if (clctef == null) {
 						throw new NullPointerException("getTableCellRendererComponent failed to find field: " + clct + " tm index " + iTColumn);
 					}
-					final CollectableEntityFieldSecurityAgent sa = clctef.getSecurityAgent();
+					final CefSecurityAgent sa = clctef.getSecurityAgent();
 					if (sa == null) {
-						throw new NullPointerException("No security agent set on " + clctef + " (" + clctef.getClass().getName() + ")");
+						// lazy set the security agent
+						GenericObjectClientUtils.setSecurityAgent(clct, clctef, !tblModel.getBaseEntityName().equals(clctef.getEntityName()));
+						// throw new NullPointerException("No security agent set on " + clctef + " (" + clctef.getClass().getName() + ")");
 					}
-					sa.setCollectable(clct);
+					// sa.setCollectable(clct);
 					if (!clctef.isReadable()) {
 						final BufferedLayerUI<JComponent> layerUI = new BufferedLayerUI<JComponent>();
 						final JXLayer<JComponent> layer = new JXLayer<JComponent>(this, layerUI);

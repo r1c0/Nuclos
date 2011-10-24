@@ -32,18 +32,20 @@ import org.nuclos.client.common.CollectableEntityFieldPreferencesUtil;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.entityobject.CollectableEntityObject;
+import org.nuclos.client.genericobject.access.CgoWithDependantsSecurityAgentImpl;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
-import org.nuclos.common.NuclosEOField;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common.collect.collectable.CollectableEntityField.CollectableEntityFieldSecurityAgent;
 import org.nuclos.common.collect.collectable.CollectableEntityProvider;
-import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
+import org.nuclos.common.collect.collectable.access.CefAllowAllSecurityAgentImpl;
+import org.nuclos.common.collect.collectable.access.CefSecurityAgent;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
@@ -59,7 +61,6 @@ import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common.security.Permission;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -107,7 +108,7 @@ public class GenericObjectClientUtils {
 				}
 				else {
 					f = bean;
-					setSecurityAgent(clcte, f, !(clcte.getName().equals(f.getEntityName())));
+					// setSecurityAgent(clcte, f, !(clcte.getName().equals(f.getEntityName())));
 				}
 				result.add(f);
 			}
@@ -190,7 +191,8 @@ public class GenericObjectClientUtils {
 		final CollectableEntityFieldWithEntityForExternal clctefwefe = new CollectableEntityFieldWithEntityForExternal(clcte, sFieldName, bFieldBelongsToSubEntity, bFieldBelongsToMainEntity);
 
 		// set security agent, to check whether the user has the right to see the data in the result panel
-		setSecurityAgent(clcte, clctefwefe, bFieldBelongsToSubEntity);
+		// setSecurityAgent(clcte, clctefwefe, bFieldBelongsToSubEntity);
+		
 		return clctefwefe;
 	}
 
@@ -201,35 +203,25 @@ public class GenericObjectClientUtils {
 	 * @param field to set the SecurityAgent on
 	 * @param bFieldBelongsToSubEntity true if fields belongs to a subform
 	 */
-	private static void setSecurityAgent(final CollectableEntity entity, final CollectableEntityField field, final boolean bFieldBelongsToSubEntity) {
-		field.setSecurityAgent(new CollectableEntityFieldSecurityAgent() {
-			@Override
-			public boolean isReadable() {
-				Permission permission = null;
-				if (getCollectable() == null || !(getCollectable() instanceof CollectableGenericObject)) {
-					return true;
-				}
-
-				if (getCollectable() instanceof CollectableGenericObjectWithDependants) {
-					getCollectable();
-
-					CollectableField clctfield = getCollectable().getField(NuclosEOField.STATE.getMetaData().getField() );
-					Integer iStatusId = (clctfield != null) ? (Integer)clctfield.getValueId() : null;
-
-					// check subform data
-					if (bFieldBelongsToSubEntity) {
-						String sEntityName = field.getEntityName();
-
-						permission = SecurityCache.getInstance().getSubFormPermission(sEntityName, iStatusId);
-					}
-					// check attribute data
-					else {
-						permission = SecurityCache.getInstance().getAttributePermission(entity.getName(), field.getName(), iStatusId);
-					}
-				}
-				return (permission == null) ? false : permission.includesReading();
+	public static void setSecurityAgent(final Collectable instance, final CollectableEntityField field, final boolean bFieldBelongsToSubEntity) {
+		final CefSecurityAgent sa;
+		if (instance instanceof CollectableGenericObject) {
+			// If instance is not CollectableGenericObjectWithDependants
+			// but only CollectableGenericObject we could not find the state of the GenericObject.
+			// Hence it is impossible to get the rights. (tp)
+			// 
+			try {
+				sa = new CgoWithDependantsSecurityAgentImpl((CollectableGenericObjectWithDependants) instance, field, bFieldBelongsToSubEntity);
 			}
-		});
+			catch (ClassCastException e) {
+				throw new NuclosFatalException("Permission can only be deduced from CollectableGenericObjectWithDependants, not from "
+						+ instance.getClass().getName() + ": " + instance);
+			}
+		}
+		else {
+			sa = new CefAllowAllSecurityAgentImpl();
+		}
+		field.setSecurityAgent(sa);
 	}
 
 	/**

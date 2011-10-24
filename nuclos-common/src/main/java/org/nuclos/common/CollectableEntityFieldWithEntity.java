@@ -25,11 +25,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.prefs.Preferences;
 
 import org.apache.log4j.Logger;
-import org.nuclos.common.collect.collectable.AbstractCollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
+import org.nuclos.common.collect.collectable.access.CefSecurityAgent;
+import org.nuclos.common.collect.collectable.access.CefAllowAllSecurityAgentImpl;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 
@@ -90,7 +91,7 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	/**
 	 * @deprecated Why is this transient? How is a value after serialization enforced?
 	 */
-	private transient CollectableEntityFieldSecurityAgent securityAgent = new CollectableEntityFieldSecurityAgent();
+	private transient CefSecurityAgent securityAgent = new CefAllowAllSecurityAgentImpl();
 
 	/**
 	 * @param clcte
@@ -384,7 +385,7 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	 * set security agent
 	 */
 	@Override
-	public void setSecurityAgent(CollectableEntityFieldSecurityAgent sa) {
+	public void setSecurityAgent(CefSecurityAgent sa) {
 		this.securityAgent = sa;
 	}
 
@@ -392,7 +393,7 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	 * get security agent
 	 */
 	@Override
-	public CollectableEntityFieldSecurityAgent getSecurityAgent() {
+	public CefSecurityAgent getSecurityAgent() {
 		return this.securityAgent;
 	}
 
