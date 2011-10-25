@@ -33,6 +33,7 @@ import org.nuclos.common.collection.multimap.MultiListHashMap;
 import org.nuclos.common.collection.multimap.MultiListMap;
 import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.server.common.ModuleConstants;
 
 /**
@@ -228,6 +229,7 @@ public final class DependantMasterDataMap implements Serializable {
 		if (iGenericObjectId == null) {
 			throw new NullArgumentException("iGenericObjectId");
 		}
+		Long longId = IdUtils.toLongId(iGenericObjectId);
 		/** @todo eliminate this workaround: */
 		for (String sEntityName : this.getEntityNames()) {
 			MasterDataMetaProvider cache = SpringApplicationContextHolder.getBean(MasterDataMetaProvider.class);
@@ -235,13 +237,13 @@ public final class DependantMasterDataMap implements Serializable {
 				final MasterDataMetaVO mdmetavo = cache.getMetaData(sEntityName);
 				if (mdmetavo.isEditable()) {
 					for (EntityObjectVO mdvo : this.getData(sEntityName)) {
-						String foreignKeyIdField = getForeignKeyField(mdmetavo, moduleEntityName);
-						final Integer iOldGenericObjectId = mdvo.getField(foreignKeyIdField, Integer.class);
-						if (iOldGenericObjectId != null && !iGenericObjectId.equals(iOldGenericObjectId)) {
-							log.warn("Bad parent id in dependant masterdata record; old id: " + iOldGenericObjectId + ", new id: " + iGenericObjectId + ".");
+						String foreignKeyIdField = getForeignKeyField(mdmetavo, moduleEntityName, false);
+						final Long iOldGenericObjectId = mdvo.getFieldId(foreignKeyIdField);
+						if (iOldGenericObjectId != null && !longId.equals(iOldGenericObjectId)) {
+							log.warn("Bad parent id in dependant masterdata record; old id: " + iOldGenericObjectId + ", new id: " + longId + ".");
 						}
-						if (iOldGenericObjectId == null || (!iGenericObjectId.equals(iOldGenericObjectId) && mdvo.isFlagUpdated())) {
-							mdvo.getFields().put(foreignKeyIdField, iGenericObjectId);
+						if (iOldGenericObjectId == null || (!longId.equals(iOldGenericObjectId) && mdvo.isFlagUpdated())) {
+							mdvo.getFieldIds().put(foreignKeyIdField, longId);
 						}
 					}
 				}
@@ -281,5 +283,5 @@ public final class DependantMasterDataMap implements Serializable {
 		result.append("]");
 		return result.toString();
 	}
-	
+
 }	// class DependantMasterDataMap
