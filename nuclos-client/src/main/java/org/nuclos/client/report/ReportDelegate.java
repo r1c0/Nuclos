@@ -224,6 +224,10 @@ public class ReportDelegate {
 		}
 	}
 
+	/**
+	 * TODO: Don't serialize CollectableEntityField and/or CollectableEntity! (tp)
+	 * Refer to {@link org.nuclos.common.CollectableEntityFieldWithEntity#readObject(ObjectInputStream)} for details.
+	 */
 	public JasperPrint prepareSearchResult(CollectableSearchExpression clctexpr,
 		List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules) throws NuclosReportException {
 		try {

@@ -25,12 +25,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.prefs.Preferences;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.collect.collectable.AbstractCollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
 import org.nuclos.common.collect.collectable.access.CefSecurityAgent;
-import org.nuclos.common.collect.collectable.access.CefAllowAllSecurityAgentImpl;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 
@@ -102,8 +102,12 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	 * @deprecated Should be protected and not be used for further development (tp).
 	 */
 	public CollectableEntityFieldWithEntity(CollectableEntity clcte, String sFieldName) {
+		if (clcte == null || sFieldName == null) throw new NullPointerException();
 		this.clcte = clcte;
 		this.clctef = clcte.getEntityField(sFieldName);
+		if (clctef == null) {
+			throw new IllegalArgumentException("Unknown field " + sFieldName + " in entity " + clcte);
+		}
 		this.entityName = clcte.getName();
 	}
 
@@ -120,6 +124,8 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	/**
 	 * @return the label of the <code>CollectableEntity</code> this field belongs to.
 	 * @postcondition result != null
+	 *
+	 * @deprecated Not always set. Use {@link #getEntityName()} instead.
 	 */
 	public String getCollectableEntityLabel() {
 		return clcte.getLabel();
@@ -134,6 +140,7 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 		return this.getField().getName();
 	}
 
+	
 	@Override
 	public String getFormatInput() {
 		return this.clctef.getFormatInput();
@@ -194,16 +201,25 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 		return this.getField().isReferencing();
 	}
 
+	/**
+	 * @deprecated There is no such thing like a "referenced field" - only a whole Collectable can be referenced.
+	 */
 	@Override
 	public String getReferencedEntityName() {
 		return this.getField().getReferencedEntityName();
 	}
 
+	/**
+	 * @deprecated There is no such thing like a "referenced field" - only a whole Collectable can be referenced.
+	 */
 	@Override
 	public String getReferencedEntityFieldName() {
 		return this.getField().getReferencedEntityFieldName();
 	}
 
+	/**
+	 * @deprecated Not functional after client/common split - always returns false.
+	 */
 	@Override
 	public boolean isReferencedEntityDisplayable() {
 		/** @TODO Keine Client Classen in Common! */
@@ -228,7 +244,7 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 
 	@Override
 	public String toString() {
-		return this.getCollectableEntityLabel() + "." + this.getField().getLabel();
+		return getCollectableEntityLabel() + "." + getField().getLabel();
 	}
 
 	@Override
@@ -349,6 +365,8 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 	/**
 	 * TODO: This is total crap and only left here because we need backward compatibility for 
 	 * user preferences. (Thomas Pasch)
+	 * 
+	 * TODO: Don't serialize CollectableEntityField and/or CollectableEntity! (tp)
 	 */
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
@@ -376,8 +394,10 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 			}
 		}
 		else {
-			LOG.error("CollectableEntityFieldWithEntity can only be serialized on the *client* side");
-			this.clcte = null;
+			LOG.error("CollectableEntityFieldWithEntity can only be serialized on the *client* side: " + clctef + ", *faking* CollectableEntity");
+			// EVIL HACK
+			// TODO: Don't serialize CollectableEntityField and/or CollectableEntity! (tp)
+			this.clcte = new AbstractCollectableEntity(name, label) {};
 		}
 	}
 
@@ -439,7 +459,7 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 
 	@Override
 	public String getEntityName() {
-		return clcte.getName();
+		return entityName;
 	}
 
 }	// class CollectableEntityFieldWithEntity

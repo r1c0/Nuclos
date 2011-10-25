@@ -139,6 +139,10 @@ public interface ReportFacadeRemote {
 
 	/**
 	 * gets search result report filled with data
+	 * <p>
+	 * TODO: Don't serialize CollectableEntityField and/or CollectableEntity! (tp)
+	 * Refer to {@link org.nuclos.common.CollectableEntityFieldWithEntity#readObject(ObjectInputStream)} for details.
+	 * </p>
 	 * @param jrDesign prepared design template
 	 * @param clctexpr search expression
 	 * @param iModuleId module id of module to be displayed
