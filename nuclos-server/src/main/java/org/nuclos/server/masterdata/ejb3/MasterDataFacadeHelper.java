@@ -755,7 +755,10 @@ public class MasterDataFacadeHelper {
 						if(mdvoDependant.isFlagNew()) {
 							goLocal.create(new GenericObjectWithDependantsVO(govo, mdvoDependant.getDependants()));
 						}
-						else if (!mdvoDependant.isFlagRemoved()) {
+						else if(mdvoDependant.isFlagRemoved()) {
+							goLocal.remove(new GenericObjectWithDependantsVO(govo, mdvoDependant.getDependants()), true);
+						}
+						else if (mdvoDependant.isFlagUpdated()) {
 							goLocal.modify(govo, mdvoDependant.getDependants(), false);
 						}
 					}
