@@ -43,7 +43,7 @@ public class ImportFileLineIterator implements Iterator<String[]> {
 
 	public ImportFileLineIterator(GenericObjectDocumentFile importfile, int headerlines, String delimiter) throws IOException {
 		this.lineCount = ImportUtils.countLines(importfile, delimiter);
-		reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(importfile.getContents())));
+		reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(importfile.getContents()), "UTF8"));
 
 		if (!StringUtils.looksEmpty(delimiter)) {
 			parser = new CSVParser(reader, delimiter.charAt(0));

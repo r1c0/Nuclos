@@ -467,7 +467,9 @@ public class NuclosImport extends AbstractImport {
 		else {
 			MasterDataVO md = DalSupportForMD.wrapEntityObjectVO(vo);
 			md = getMasterDataFacade().create(entityname, md, null);
-			return DalSupportForMD.getEntityObjectVO(md);
+			EntityObjectVO result = DalSupportForMD.getEntityObjectVO(md);
+			result.setEntity(entityname);
+			return result;
 		}
 	}
 
@@ -480,7 +482,9 @@ public class NuclosImport extends AbstractImport {
 		else {
 			MasterDataVO md = DalSupportForMD.wrapEntityObjectVO(vo);
 			md.setId(getMasterDataFacade().modify(entityname, md, null));
-			return DalSupportForMD.getEntityObjectVO(md);
+			EntityObjectVO result = DalSupportForMD.getEntityObjectVO(md);
+			result.setEntity(entityname);
+			return result;
 		}
 	}
 
