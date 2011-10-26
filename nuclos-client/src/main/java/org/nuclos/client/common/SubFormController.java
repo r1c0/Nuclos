@@ -484,8 +484,13 @@ public abstract class SubFormController extends Controller
 		this.getSubFormTableModel().remove(modelIndices);
 
 		// Select the nearest row if any (that may then be deleted next etc.)
-		if (viewIndices.length > 0 && tbl.getRowCount() <= viewIndices[0]) {
-			tbl.setRowSelectionInterval(viewIndices[0] - 1, viewIndices[0] - 1);
+		if (tbl.getRowCount() > 0 && viewIndices.length > 0) {
+			if (tbl.getRowCount() > viewIndices[0]) {
+				tbl.setRowSelectionInterval(viewIndices[0], viewIndices[0]);
+			}
+			else {
+				tbl.setRowSelectionInterval(tbl.getRowCount() - 1, tbl.getRowCount() - 1);
+			}
 		}
 	}
 
