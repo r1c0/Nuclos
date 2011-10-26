@@ -60,7 +60,7 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 public class MultiUpdateOfDependants {
 
 	private final IdMapping idmapping;
-	
+
 	/**
 	 * the color to be used as background for multi editable subforms that don't share a common value.
 	 */
@@ -95,7 +95,7 @@ public class MultiUpdateOfDependants {
 				final String sSubEntityName = subformctl.getSubForm().getEntityName();
 				final String sForeignKeyFieldName = subformctl.getForeignKeyFieldName();
 				final Object oParentId = clctwd.getId();
-				
+
 				String parentSubform = subformctl.getSubForm().getParentSubForm();
 
 				// special handling for child subforms
@@ -115,8 +115,8 @@ public class MultiUpdateOfDependants {
 
 				// the "old" subform data of the given Collectable:
 				//final Collection<EntityObjectVO> collmdvoOld = new ArrayList<EntityObjectVO>();
-				final Collection<EntityObjectVO> collmdvoOld = CollectionUtils.transform(clctwd.getDependants(sSubEntityName), new CollectableEntityObject.ExtractAbstractCollectableVO()); 
-					//CollectionUtils.transform(clctwd.getDependants(sSubEntityName), new CollectableEntityObject.ExtractMasterDataVO()); 
+				final Collection<EntityObjectVO> collmdvoOld = CollectionUtils.transform(clctwd.getDependants(sSubEntityName), new CollectableEntityObject.ExtractAbstractCollectableVO());
+					//CollectionUtils.transform(clctwd.getDependants(sSubEntityName), new CollectableEntityObject.ExtractMasterDataVO());
 
 				// 2. Removed objects: first get the prototypes for removal, then get the objects of the old record that are to be removed:
 				final Collection<EntityObjectVO> collmdvoRemoved = getFromPrototypes(new GetRemovedFromPrototype(), collmdvoOld, getPrototypesForRemoval(valuobjectlist), sSubEntityName, oParentId, this.idmapping);
@@ -164,9 +164,9 @@ public class MultiUpdateOfDependants {
 			subformctl.clear();
 			final String sSubEntityName = subformctl.getSubForm().getEntityName();
 			final String sParentFieldName = subformctl.getForeignKeyFieldName();
-			
+
 			String parentSubform = subformctl.getSubForm().getParentSubForm();
-			
+
 			final Collection<CollectableEntityObject> collclctCommon;
 			// load data of subforms of the first hierarchie
 			if (StringUtils.isNullOrEmpty(parentSubform)) {
@@ -177,7 +177,7 @@ public class MultiUpdateOfDependants {
 				// to be done
 				continue;
 			}
-			
+
 			if (areDependantsEmpty(collclctwd, sSubEntityName, sParentFieldName) || !collclctCommon.isEmpty()) {
 				/** @todo try to use MasterDataSubFormController.fillSubForm instead */
 				subformctl.updateTableModel(new ArrayList<CollectableEntityObject>(collclctCommon));
@@ -186,7 +186,7 @@ public class MultiUpdateOfDependants {
 			else {
 				subformctl.getSubForm().getJTable().setBackground(colorCommonValues);
 			}
-			
+
 			result.put(sSubEntityName, IdMapping.createMap(collclctwd, sSubEntityName, sParentFieldName, collclctCommon));
 		}
 		return result;
@@ -202,7 +202,7 @@ public class MultiUpdateOfDependants {
 
 		// compare all fields except the parent field:
 		List<Collection<CollectableEntityObject>> dependants = new ArrayList<Collection<CollectableEntityObject>>();
-		
+
 		// reload subform data from the database instead of using the tablemodel data like it was made before
 		for (CollectableWithDependants clctWithDependants : collclct) {
 			final Collection<EntityObjectVO> collmdcvo = (clctWithDependants.getId() == null) ?
@@ -218,22 +218,22 @@ public class MultiUpdateOfDependants {
                   dependants.add(list);
             }
 		}
-		
+
 		return CollectionUtils.intersectionAll(dependants,
 				new IdMapping.AreFieldsEqual(IdMapping.getAllFieldsExceptParentField(sSubEntityName, sParentFieldName)));
 	}
-	
+
 	private static boolean areDependantsEmpty(Collection<? extends CollectableWithDependants> collclct,
 		String sSubEntityName, String sParentFieldName) {
-		
+
 		List<EntityObjectVO> dependants = new ArrayList<EntityObjectVO>();
-		
+
 		for (CollectableWithDependants clctWithDependants : collclct) {
 			if (clctWithDependants.getId() != null)
 				dependants.addAll(MasterDataDelegate.getInstance().getDependantMasterData(sSubEntityName, sParentFieldName, clctWithDependants.getId()));
 		}
 		 return dependants.isEmpty();
-		
+
 	}
 
 	/** @todo document! */
@@ -278,10 +278,10 @@ public class MultiUpdateOfDependants {
 	private static void setParentIds(Collection<EntityObjectVO> collmdvo, String sForeignKeyFieldName, Object iParentId) {
 		for (EntityObjectVO mdvo : collmdvo) {
 			mdvo.getFields().put(sForeignKeyFieldName + "Id", iParentId);
-			
+
 			if(iParentId instanceof Integer) {
 				Long id = new Long((Integer)iParentId);
-				mdvo.getFieldIds().put(sForeignKeyFieldName, id);				
+				mdvo.getFieldIds().put(sForeignKeyFieldName, id);
 			}
 			else {
 				mdvo.getFieldIds().put(sForeignKeyFieldName, (Long)iParentId);
@@ -291,12 +291,12 @@ public class MultiUpdateOfDependants {
 
 	private static Collection<EntityObjectVO> extractClonedMasterDataCVOs(Collection<CollectableEntityObject> collmdclct) {
 		return CollectionUtils.transform(collmdclct, new CollectableEntityObject.ExtractMasterDataVO());
-		
+
 //		return CollectionUtils.transform(collmdclct, new Transformer<CollectableEntityObject, EntityObjectVO>() {
 //			@Override
 //			public EntityObjectVO transform(CollectableEntityObject clctmd) {
-//				
-//				return new EntityObjectVO(); 
+//
+//				return new EntityObjectVO();
 //			}
 //		});
 	}
@@ -324,6 +324,7 @@ public class MultiUpdateOfDependants {
 		public void apply(EntityObjectVO mdvo, EntityObjectVO mdvoPrototype) {
 			mdvo.getFields().putAll(mdvoPrototype.getFields());
 			mdvo.getFieldIds().putAll(mdvoPrototype.getFieldIds());
+			mdvo.flagUpdate();
 		}
 	}
 
@@ -346,7 +347,7 @@ public class MultiUpdateOfDependants {
 	private static class IdMapping extends HashMap<String, Map<IdMapping.Key, Collection<Object>>> {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -363,7 +364,7 @@ public class MultiUpdateOfDependants {
 				id = ((Long)oPrototypeId).intValue();
 				return this.get(sSubEntityName).get(new Key(oParentId, id));
 			}
-				
+
 			return this.get(sSubEntityName).get(new Key(oParentId, oPrototypeId));
 		}
 
@@ -392,7 +393,7 @@ public class MultiUpdateOfDependants {
 			result.remove(sParentFieldName);
 			return result;
 		}
-		
+
 		/**
 		 * @return Collection<String> of field names, which define the equality of masterdata entities. This can be set in the masterdata entity.
  		 */
