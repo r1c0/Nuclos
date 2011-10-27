@@ -658,6 +658,16 @@ public class SearchConditionSubFormController extends SubFormController {
 		return this.isEnabled();
 	}
 
+	@Override
+	public boolean isRowEditable(int row) {
+		return true;
+	}
+
+	@Override
+	public boolean isRowRemovable(int row) {
+		return true;
+	}
+
 	private static class CanSearchConditionBeDisplayed implements Predicate<CollectableSearchCondition> {
 		private final int iLevel;
 

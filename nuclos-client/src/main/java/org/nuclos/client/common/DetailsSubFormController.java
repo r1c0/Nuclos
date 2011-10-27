@@ -53,6 +53,7 @@ import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
@@ -119,6 +120,11 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	private EntityCollectController<?> cltctl;
 
 	private boolean multiEdit = false;
+
+	/**
+	 * required for determination of editable rows (and in the future probably for editing sub-subforms)
+	 */
+	private MultiUpdateOfDependants multiUpdateOfDependants;
 
 	/**
 	 * @param parent
@@ -665,6 +671,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	 * removes all rows from this subform.
 	 */
 	public void clear() {
+		this.setMultiUpdateOfDependants(null);
 		this.updateTableModel(new ArrayList<Clct>());
 	}
 
@@ -722,6 +729,55 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 	public boolean isMultiEdit() {
 		return this.multiEdit;
+	}
+	public MultiUpdateOfDependants getMultiUpdateOfDependants() {
+		return multiUpdateOfDependants;
+	}
+
+	public void setMultiUpdateOfDependants(MultiUpdateOfDependants multiUpdateOfDependants) {
+		this.multiUpdateOfDependants = multiUpdateOfDependants;
+	}
+
+	@Override
+	public boolean isRowEditable(int row) {
+		if (getMultiUpdateOfDependants() != null) {
+			Collectable clct = getCollectables().get(row);
+			if (clct.getId() != null && !getMultiUpdateOfDependants().isCollectableEditable(getEntityAndForeignKeyFieldName().getEntityName(), clct)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public boolean isRowRemovable(int row) {
+		if (getMultiUpdateOfDependants() != null) {
+			Collectable clct = getCollectables().get(row);
+			if (clct.getId() != null && !getMultiUpdateOfDependants().isCollectableEditable(getEntityAndForeignKeyFieldName().getEntityName(), clct)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public TableCellRenderer getTableCellRenderer(CollectableEntityField clctefTarget) {
+		final TableCellRenderer result = super.getTableCellRenderer(clctefTarget);
+		if (isMultiEdit()) {
+			return new TableCellRenderer() {
+				@Override
+				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+					Component c = result.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+					if (!isRowEditable(row)) {
+						c.setBackground(MultiUpdateOfDependants.colorCommonValues);
+					}
+					return c;
+				}
+			};
+		}
+		else {
+			return result;
+		}
 	}
 
 	protected void setupDragDrop() {

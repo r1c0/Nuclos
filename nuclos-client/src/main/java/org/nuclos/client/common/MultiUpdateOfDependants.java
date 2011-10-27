@@ -21,8 +21,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
 import org.nuclos.client.entityobject.CollectableEntityObject;
@@ -35,6 +37,7 @@ import org.nuclos.common.collect.collectable.Collectable.GetId;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.PredicateUtils;
 import org.nuclos.common.collection.SymmetricBinaryPredicate;
@@ -151,43 +154,53 @@ public class MultiUpdateOfDependants {
 		return new DependantCollectableMasterDataMap(mpDependants);
 	}
 
+	public boolean isCollectableEditable(String entity, Collectable clct) {
+		for (IdMapping.Key key : idmapping.get(entity).keySet()) {
+			if (LangUtils.equals(clct.getId(), key.oPrototypeId)) {
+				return true;
+			}
+		}
+		for (Collection<Object> collIds : idmapping.get(entity).values()) {
+			if (CollectionUtils.contains(clct.getId(), collIds)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * prepares the subforms for multi edit. Creates the id mapping for multi edit.
 	 * @param collsubformctl
 	 * @param collclctwd
 	 * @return the id mapping for multi edit, which is needed when updating is started.
 	 */
-	private static IdMapping prepareSubFormsForMultiEdit(Collection<? extends DetailsSubFormController<CollectableEntityObject>> collsubformctl,
+	private IdMapping prepareSubFormsForMultiEdit(Collection<? extends DetailsSubFormController<CollectableEntityObject>> collsubformctl,
 			Collection<? extends CollectableWithDependants> collclctwd) {
 		final IdMapping result = new IdMapping();
 		for (DetailsSubFormController<CollectableEntityObject> subformctl : collsubformctl) {
 			subformctl.clear();
+			subformctl.setMultiUpdateOfDependants(this);
 			final String sSubEntityName = subformctl.getSubForm().getEntityName();
 			final String sParentFieldName = subformctl.getForeignKeyFieldName();
 
 			String parentSubform = subformctl.getSubForm().getParentSubForm();
 
-			final Collection<CollectableEntityObject> collclctCommon;
 			// load data of subforms of the first hierarchie
 			if (StringUtils.isNullOrEmpty(parentSubform)) {
-				collclctCommon = getCommonSubCollectables(collclctwd, sSubEntityName, sParentFieldName);
+				Pair<Collection<CollectableEntityObject>, Collection<CollectableEntityObject>> intersection = getCommonSubCollectables(collclctwd, sSubEntityName, sParentFieldName);
+				List<CollectableEntityObject> data = new ArrayList<CollectableEntityObject>();
+				data.addAll(intersection.x);
+				data.addAll(intersection.y);
+				/** @todo try to use MasterDataSubFormController.fillSubForm instead */
+				subformctl.updateTableModel(data);
+
+				result.put(sSubEntityName, IdMapping.createMap(collclctwd, sSubEntityName, sParentFieldName, intersection.x));
 			}
 			// load data of child subforms
 			else {
 				// to be done
 				continue;
 			}
-
-			if (areDependantsEmpty(collclctwd, sSubEntityName, sParentFieldName) || !collclctCommon.isEmpty()) {
-				/** @todo try to use MasterDataSubFormController.fillSubForm instead */
-				subformctl.updateTableModel(new ArrayList<CollectableEntityObject>(collclctCommon));
-				subformctl.getSubForm().getJTable().setBackground(null);
-			}
-			else {
-				subformctl.getSubForm().getJTable().setBackground(colorCommonValues);
-			}
-
-			result.put(sSubEntityName, IdMapping.createMap(collclctwd, sSubEntityName, sParentFieldName, collclctCommon));
 		}
 		return result;
 	}
@@ -197,12 +210,15 @@ public class MultiUpdateOfDependants {
 	 * @param sSubEntityName
 	 * @return dependant data records of the given sub entity that are identical for all given Collectables
 	 */
-	private static Collection<CollectableEntityObject> getCommonSubCollectables(Collection<? extends CollectableWithDependants> collclct,
+	private static Pair<Collection<CollectableEntityObject>, Collection<CollectableEntityObject>> getCommonSubCollectables(Collection<? extends CollectableWithDependants> collclct,
 			String sSubEntityName, String sParentFieldName) {
 
 		// compare all fields except the parent field:
 		List<Collection<CollectableEntityObject>> dependants = new ArrayList<Collection<CollectableEntityObject>>();
 
+		IdMapping.AreFieldsEqual predicate = new IdMapping.AreFieldsEqual(IdMapping.getAllFieldsExceptParentField(sSubEntityName, sParentFieldName));
+
+		Collection<CollectableEntityObject> allDependants = new ArrayList<CollectableEntityObject>();
 		// reload subform data from the database instead of using the tablemodel data like it was made before
 		for (CollectableWithDependants clctWithDependants : collclct) {
 			final Collection<EntityObjectVO> collmdcvo = (clctWithDependants.getId() == null) ?
@@ -211,16 +227,25 @@ public class MultiUpdateOfDependants {
 			CollectableEOEntityProvider provider = CollectableEOEntityClientProvider.getInstance();
 			CollectableEOEntity eo = (CollectableEOEntity) provider.getCollectableEntity(sSubEntityName);
 			List<CollectableEntityObject> list = CollectionUtils.transform(collmdcvo, new CollectableEntityObject.MakeCollectable(eo));
+			allDependants.addAll(list);
             if (dependants.isEmpty()) {
-                  dependants.add(CollectionUtils.distinct(list, new IdMapping.AreFieldsEqual(IdMapping.getAllFieldsExceptParentField(sSubEntityName, sParentFieldName))));
+                  dependants.add(CollectionUtils.distinct(list, predicate));
             }
             else {
                   dependants.add(list);
             }
 		}
 
-		return CollectionUtils.intersectionAll(dependants,
-				new IdMapping.AreFieldsEqual(IdMapping.getAllFieldsExceptParentField(sSubEntityName, sParentFieldName)));
+		Set<CollectableEntityObject> distinct = CollectionUtils.distinct(allDependants, predicate);
+		Set<CollectableEntityObject> intersection =  CollectionUtils.intersectionAll(dependants, predicate);
+
+		for (Iterator<CollectableEntityObject> iter = distinct.iterator(); iter.hasNext();) {
+			if (CollectionUtils.contains(intersection, iter.next(), predicate)) {
+				iter.remove();
+			}
+		}
+
+		return new Pair<Collection<CollectableEntityObject>, Collection<CollectableEntityObject>>(intersection, distinct);
 	}
 
 	private static boolean areDependantsEmpty(Collection<? extends CollectableWithDependants> collclct,
@@ -241,15 +266,18 @@ public class MultiUpdateOfDependants {
 			Collection<EntityObjectVO> collmdvoPrototype, String sSubEntityName, Object oParentId, IdMapping idmapping) {
 		final Collection<EntityObjectVO> result = new ArrayList<EntityObjectVO>();
 		for (EntityObjectVO mdvoPrototype : collmdvoPrototype) {
-			for (Object oMappedId : idmapping.getMappedIds(mdvoPrototype.getId(), sSubEntityName, oParentId)) {
-				Object Id = oMappedId;
-				if(oMappedId instanceof Integer) {
-					Id = new Long(((Integer)oMappedId).intValue());
+			Collection<Object> mappedIds = idmapping.getMappedIds(mdvoPrototype.getId(), sSubEntityName, oParentId);
+			if (mappedIds != null) {
+				for (Object oMappedId : mappedIds) {
+					Object Id = oMappedId;
+					if(oMappedId instanceof Integer) {
+						Id = new Long(((Integer)oMappedId).intValue());
+					}
+					final EntityObjectVO mdvo = CollectionUtils.findFirst(collmdvoOld, PredicateUtils.transformedInputEquals(new EntityObjectVO.GetId(), /*oMapped*/Id));
+					assert mdvo != null;
+					getFromPrototype.apply(mdvo, mdvoPrototype);
+					result.add(mdvo);
 				}
-				final EntityObjectVO mdvo = CollectionUtils.findFirst(collmdvoOld, PredicateUtils.transformedInputEquals(new EntityObjectVO.GetId(), /*oMapped*/Id));
-				assert mdvo != null;
-				getFromPrototype.apply(mdvo, mdvoPrototype);
-				result.add(mdvo);
 			}
 		}
 		return result;

@@ -544,7 +544,12 @@ public abstract class SubFormController extends Controller
 		@Override
         public void valueChanged(ListSelectionEvent ev) {
 			final ListSelectionModel lsm = (ListSelectionModel) ev.getSource();
-			final boolean bEnabled = !lsm.isSelectionEmpty() && SubFormController.this.isEnabled();
+			boolean bEnabled = !lsm.isSelectionEmpty() && SubFormController.this.isEnabled();
+			for (int i : tbl.getSelectedRows()) {
+				if (!isRowRemovable(getSubForm().getSubformTable().convertRowIndexToModel(i))) {
+					bEnabled = false;
+				}
+			}
 			subform.setToolbarFunctionState(SubForm.ToolbarFunction.REMOVE.name(), bEnabled ? SubForm.ToolbarFunctionState.ACTIVE : SubForm.ToolbarFunctionState.DISABLED);
 
 			// scroll table if necessary:
@@ -694,6 +699,10 @@ public abstract class SubFormController extends Controller
 	 * @postcondition !this.isEnabled() --> !result
 	 */
 	public abstract boolean isColumnEnabled(String sColumnName);
+
+	public abstract boolean isRowEditable(int row);
+
+	public abstract boolean isRowRemovable(int row);
 
 	public void setCollectableComponentFactory(CollectableComponentFactory collectableComponentFactory) {
 		this.getSubForm().setCollectableComponentFactory(collectableComponentFactory);

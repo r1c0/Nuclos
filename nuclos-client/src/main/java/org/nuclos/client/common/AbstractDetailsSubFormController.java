@@ -202,7 +202,6 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 		return this.isEnabled() && this.getSubForm().isColumnEnabled(sColumnName);
 	}
 
-
 	/**
 	 * lets the user add/remove multiple rows at once. This requires the subform to define a unique master data column.
 	 */
@@ -335,7 +334,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 		@Override
 		public boolean isCellEditable(int iRow, int iColumn) {
 			final String sColumnName = this.getCollectableEntityField(iColumn).getName();
-			return AbstractDetailsSubFormController.this.isColumnEnabled(sColumnName);
+			return AbstractDetailsSubFormController.this.isColumnEnabled(sColumnName) && AbstractDetailsSubFormController.this.isRowEditable(iRow);
 		}
 
 		/**
