@@ -245,6 +245,7 @@ public class ExplorerController extends Controller {
 			}
 
 			ExplorerView view = Main.getMainController().getExplorerController().addOrReplaceExplorerViewFor(tab, rp.treenodeRoot, false, false, true);
+			view.getRootNode().refresh(view.getJTree());
 			ExplorerNode.expandTreeAsync(rp.lstExpandedPaths, view.getJTree());
 		}
 
