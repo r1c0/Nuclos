@@ -38,7 +38,7 @@ import org.nuclos.common.CloneUtils;
  * @since Nuclos 3.1.01 this is a top-level class.
  */
 public class ChoiceList<T> implements Cloneable {
-	
+
 	/**
 	 * the list of available (currently not selected) fields
 	 */
@@ -48,12 +48,14 @@ public class ChoiceList<T> implements Cloneable {
 	 * the list of selected fields
 	 */
 	private List<T> lstclctefSelected;
-	
+
 	private Comparator<? super T> compAvailable;
-	
+
+	private Collection<T> fixed;
+
 	public ChoiceList() {
 	}
-	
+
 	public Object clone() {
 		try {
 			final ChoiceList<T> clone = (ChoiceList<T>) super.clone();
@@ -64,7 +66,7 @@ public class ChoiceList<T> implements Cloneable {
 			throw new IllegalStateException("clone() not supported", e);
 		}
 	}
-	
+
 	/**
 	 * sets the available and selected fields, respectively.
 	 * @param lstclctefAvailable available (currently not selected) fields
@@ -84,9 +86,10 @@ public class ChoiceList<T> implements Cloneable {
 		}
 		this.lstclctefAvailable = lstclctefAvailable;
 		this.lstclctefSelected = lstclctefSelected;
+		this.fixed = new ArrayList<T>();
 		this.compAvailable = comp;
 	}
-	
+
 	public void set(Collection<T> available, Comparator<? super T> comp) {
 		if (comp == null) {
 			throw new NullArgumentException("compAvailable");
@@ -96,6 +99,14 @@ public class ChoiceList<T> implements Cloneable {
 		set(set, new ArrayList<T>(), comp);
 	}
 
+	public Collection<T> getFixed() {
+		return fixed;
+	}
+
+	public void setFixed(Collection<T> fixed) {
+		this.fixed = fixed;
+	}
+
 	/**
 	 * @return the available (currently not selected) fields
 	 * @postcondition result != null
@@ -103,7 +114,7 @@ public class ChoiceList<T> implements Cloneable {
 	public SortedSet<T> getAvailableFields() {
 		return Collections.unmodifiableSortedSet(this.lstclctefAvailable);
 	}
-	
+
 	public Comparator<? super T> getComparatorForAvaible() {
 		return compAvailable;
 	}
@@ -115,7 +126,7 @@ public class ChoiceList<T> implements Cloneable {
 	public List<T> getSelectedFields() {
 		return Collections.unmodifiableList(this.lstclctefSelected);
 	}
-	
+
 	/**
 	 * sets the selected fields. The available fields are adjusted accordingly.
 	 * @param lstclctefSelected

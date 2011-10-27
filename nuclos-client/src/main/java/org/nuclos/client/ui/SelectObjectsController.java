@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -69,6 +71,7 @@ public class SelectObjectsController<T> extends Controller {
 		super(parent);
 		this.panel = panel;
 		setupListeners();
+		setupRenderers();
 	}
 
 	/**
@@ -89,7 +92,14 @@ public class SelectObjectsController<T> extends Controller {
 			public void valueChanged(ListSelectionEvent ev) {
 				final ListSelectionModel lsm = (ListSelectionModel) ev.getSource();
 
-				final boolean bEnable = !lsm.isSelectionEmpty();
+				boolean bEnable = !lsm.isSelectionEmpty();
+
+				for (Object o : getPanel().getJListAvailableObjects().getSelectedValues()) {
+					if (model.getFixed().contains(o)) {
+						bEnable = false;
+						break;
+					}
+				}
 
 				SelectObjectsController.this.getPanel().btnRight.setEnabled(bEnable);
 			}  // valueChanged
@@ -101,11 +111,19 @@ public class SelectObjectsController<T> extends Controller {
 			public void valueChanged(ListSelectionEvent ev) {
 				final ListSelectionModel lsm = (ListSelectionModel) ev.getSource();
 
-				final boolean bEnable = !lsm.isSelectionEmpty();
+				boolean bEnable = !lsm.isSelectionEmpty();
 
-				SelectObjectsController.this.getPanel().btnLeft.setEnabled(bEnable);
 				SelectObjectsController.this.getPanel().btnUp.setEnabled(bEnable);
 				SelectObjectsController.this.getPanel().btnDown.setEnabled(bEnable);
+
+				for (Object o : getPanel().getJListSelectedObjects().getSelectedValues()) {
+					if (model.getFixed().contains(o)) {
+						bEnable = false;
+						break;
+					}
+				}
+
+				SelectObjectsController.this.getPanel().btnLeft.setEnabled(bEnable);
 			}  // valueChanged
 		});
 
@@ -192,7 +210,7 @@ public class SelectObjectsController<T> extends Controller {
 				final int iIndex = jlstSelectedColumns.getSelectedIndex();
 				final int iNewIndex = iIndex + this.iDirection;
 				final MutableListModel<T> m = (MutableListModel<T>) getPanel().getJListSelectedObjects().getModel();
-				
+
 				if (iNewIndex >= 0 && iNewIndex < m.getSize()) {
 					final Object o = m.getElementAt(iIndex);
 					m.remove(iIndex);
@@ -204,6 +222,22 @@ public class SelectObjectsController<T> extends Controller {
 
 		this.getPanel().btnUp.addActionListener(new MoveUpDownActionListener(-1));
 		this.getPanel().btnDown.addActionListener(new MoveUpDownActionListener(+1));
+	}
+
+	@SuppressWarnings("serial")
+	protected void setupRenderers() {
+		this.getPanel().getJListSelectedObjects().setCellRenderer(new DefaultListCellRenderer() {
+
+			@Override
+			public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+				setBackground(null);
+				Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				if (getModel().getFixed().contains(value)) {
+					setBackground(Color.LIGHT_GRAY);
+				}
+				return c;
+			}
+		});
 	}
 
 	/**

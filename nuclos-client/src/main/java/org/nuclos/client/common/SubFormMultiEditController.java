@@ -17,6 +17,7 @@
 package org.nuclos.client.common;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.SortedSet;
@@ -51,12 +52,12 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 	private final Logger log = Logger.getLogger(this.getClass());
 
 	private final SubForm subform;
-	private final CollectableFactory<Clct> clctfactory;
+	private final AbstractDetailsSubFormController<Clct> controller;
 
-	SubFormMultiEditController(SubForm subform, CollectableFactory<Clct> clctfactory) {
+	SubFormMultiEditController(SubForm subform, AbstractDetailsSubFormController<Clct> ctl) {
 		super(subform, new DefaultSelectObjectsPanel());
 		this.subform = subform;
-		this.clctfactory = clctfactory;
+		this.controller = ctl;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -83,6 +84,7 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 		final Comparator<CollectableField> comp = CollectableComparator.getFieldComparator(comboBox.getEntityField());
 		final SortedSet<CollectableField> oldAvailableObjects = getNonNullValues(comboBox, comp);
 		final List<CollectableField> oldSelectedObjects = new ArrayList<CollectableField>();
+		final Collection<CollectableField> fixed = new ArrayList<CollectableField>();
 
 		// iterate through the table and compute selected fields:
 		for (int row = 0; row < model.getRowCount(); ++row) {
@@ -97,11 +99,16 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 			else {
 				log.debug("Value " + value + " not found in available objects.");
 			}
+
+			if (!controller.isRowRemovable(row)) {
+				fixed.add(value);
+			}
 		}
 
 		// perform the dialog:
 		ChoiceList<CollectableField> ro = new ChoiceList<CollectableField>();
 		ro.set(oldAvailableObjects, oldSelectedObjects, comp);
+		ro.setFixed(fixed);
 		setModel(ro);
 		final boolean bOK = run(
 				CommonLocaleDelegate.getMessage("SubFormMultiEditController.3", "Mehrere Datens\u00e4tze in Unterformular einf\u00fcgen/l\u00f6schen"));
@@ -121,7 +128,7 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 			for (Object oSelected : lstNewSelectedObjects) {
 				if (!isContainedInTableModel(oSelected, model, colIndex)) {
 					// add row
-					final Clct clctNew = clctfactory.newCollectable();
+					final Clct clctNew = controller.newCollectable();
 					clctNew.setField(columnName, (CollectableField) oSelected);
 					model.add(clctNew);
 				}
