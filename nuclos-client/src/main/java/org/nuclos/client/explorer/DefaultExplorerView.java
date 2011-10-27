@@ -102,9 +102,6 @@ public class DefaultExplorerView extends JPanel implements ExplorerView {
 		this.content.setBorder(BorderFactory.createEmptyBorder(FADE, 0, 0, 0));
 		this.content.add(this.scrlpn, BorderLayout.CENTER);
 
-		for (JComponent c : getToolBarComponents()) {
-			this.toolBar.add(c);
-		}
 		this.add(this.toolBar, BorderLayout.NORTH);
 		this.add(this.content, BorderLayout.CENTER);
 
@@ -134,6 +131,12 @@ public class DefaultExplorerView extends JPanel implements ExplorerView {
 		this.tree.addTreeWillExpandListener(new DefaultTreeWillExpandListener(tree));
 
 		this.scrlpn.getViewport().add(tree, null);
+	}
+	
+	protected void init() {
+		for (JComponent c : getToolBarComponents()) {
+			toolBar.add(c);
+		}	
 	}
 
 	protected List<JComponent> getToolBarComponents() {

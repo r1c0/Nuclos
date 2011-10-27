@@ -60,10 +60,15 @@ public class ExplorerViewFactory {
 	}
 
 	public ExplorerView newExplorerView(TreeNode treenode) {
+		final DefaultExplorerView result;
 		if (treenode instanceof NucletTreeNode) {
-			return new NucletExplorerView((NucletTreeNode) treenode);
+			result = new NucletExplorerView((NucletTreeNode) treenode);
 		}
-		return new DefaultExplorerView(treenode);
+		else {
+			result = new DefaultExplorerView(treenode);
+		}
+		result.init();
+		return result;
 	}
 
 }	// class ExplorerNodeFactory
