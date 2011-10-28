@@ -46,7 +46,7 @@ import org.pietschy.wizard.InvalidStateException;
 public class ServerConfigurationWizardStep extends AbstractWizardStep implements Constants {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private JTextField txtJavaHomePath = new JTextField();
@@ -96,7 +96,6 @@ public class ServerConfigurationWizardStep extends AbstractWizardStep implements
 		this.add(label, "0,1, 1,1");
 
 		this.txtInstance.getDocument().addDocumentListener(this);
-		this.txtInstance.setEnabled(!ConfigContext.isUpdate());
 		this.add(txtInstance, "2,1");
 
 		optHttp.addActionListener(this);
@@ -168,6 +167,7 @@ public class ServerConfigurationWizardStep extends AbstractWizardStep implements
 
 	@Override
 	public void prepare() {
+		this.txtInstance.setEnabled(!ConfigContext.isUpdate());
 		modelToView(JAVA_HOME, txtJavaHomePath);
 		modelToView(NUCLOS_INSTANCE, txtInstance);
 		optHttp.setSelected("true".equals(ConfigContext.getProperty(HTTP_ENABLED)));
