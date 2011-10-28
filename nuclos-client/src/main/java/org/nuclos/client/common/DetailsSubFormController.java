@@ -18,6 +18,7 @@ package org.nuclos.client.common;
 
 import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
@@ -52,6 +53,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -62,6 +64,7 @@ import org.nuclos.client.genericobject.datatransfer.TransferableGenericObjects;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
+import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader;
 import org.nuclos.client.ui.collect.SubForm;
@@ -768,8 +771,8 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				@Override
 				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 					Component c = result.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-					if (!isRowEditable(row)) {
-						c.setBackground(MultiUpdateOfDependants.colorCommonValues);
+					if (!isRowEditable(row) && !isSelected) {
+						c.setBackground(NuclosSyntheticaConstants.BACKGROUND_INACTIVEROW);
 					}
 					return c;
 				}

@@ -20,20 +20,22 @@ import java.awt.Color;
 import java.awt.Dimension;
 
 public interface NuclosSyntheticaConstants {
-	
+
 	public static final Dimension TOOLBAR_BUTTON_SIZE = new Dimension(24,24);
 
 	public static final Dimension TOOLBAR_SEPARATOR_H_MINIMUM = new Dimension(8, 24);
 	public static final Dimension TOOLBAR_SEPARATOR_V_MINIMUM = new Dimension(24, 8);
-	
+
 	public static final Color DEFAULT_BACKGROUND = new Color(242, 243, 246);
 	public static final Color DEFAULT_TABBED_PANE_CONTENT_BORDER = new Color(112, 120, 132);
-	
+
 	public static final Color BACKGROUND_DARKER = new Color(72, 76, 83);
-	public static final Color BACKGROUND_DARK = new Color(109, 115, 126);	
-	public static final Color BACKGROUND_SPOT = new Color(169, 184, 212);	
+	public static final Color BACKGROUND_DARK = new Color(109, 115, 126);
+	public static final Color BACKGROUND_SPOT = new Color(169, 184, 212);
 	public static final Color BACKGROUND_SELECTION = new Color(71, 80, 94);
-	
+
+	public static final Color BACKGROUND_INACTIVEROW = new Color(232, 233, 236);
+
 	public static final Color ICON_BLUE = new Color(97, 171, 215);
-	
+
 }
