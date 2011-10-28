@@ -41,7 +41,6 @@ public final class CollectableIdCondition extends AbstractCollectableSearchCondi
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public int getType() {
 		return TYPE_ID;
 	}

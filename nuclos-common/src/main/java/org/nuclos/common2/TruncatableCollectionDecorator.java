@@ -29,15 +29,12 @@ import java.util.Collection;
  *
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
+ * @deprecated Use Apache Commons Collections.
  */
 public class TruncatableCollectionDecorator<E>
 		extends GenericCollectionDecorator<E, Collection<E>>
 		implements TruncatableCollection<E>, Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final boolean bTruncated;
 	private final int iTotalSize;
 

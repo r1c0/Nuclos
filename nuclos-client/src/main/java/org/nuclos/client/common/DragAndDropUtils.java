@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.jawin.DispatchPtr;
 import org.jawin.win32.Ole32;
 import org.nuclos.client.report.reportrunner.AbstractReportExporter;
@@ -34,6 +35,8 @@ import org.nuclos.common2.StringUtils;
 
 public abstract class DragAndDropUtils {
 
+	private static final Logger LOG = Logger.getLogger(DragAndDropUtils.class);
+	
 	/**
 	 * takes all selected mails from outlook over jawin interface
 	 * save in tempory file
@@ -97,8 +100,12 @@ public abstract class DragAndDropUtils {
 					}
 				}
 			}
-			catch(UnsupportedFlavorException e) {}
-			catch(IOException e) {}
+			catch(UnsupportedFlavorException e) {
+				LOG.warn("getIndexOfFileList failed: " + e);
+			}
+			catch(IOException e) {
+				LOG.warn("getIndexOfFileList failed: " + e);
+			}
 		}
 		
 		return index;

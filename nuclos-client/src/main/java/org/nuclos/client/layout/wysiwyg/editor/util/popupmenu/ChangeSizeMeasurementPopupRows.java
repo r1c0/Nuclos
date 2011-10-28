@@ -35,6 +35,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.CHANGE_SIZE_ROW_POPUP;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.MEASUREMENT_DESCRIPTIONS;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
@@ -62,6 +63,8 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPane
  * @version 01.00.00
  */
 public class ChangeSizeMeasurementPopupRows implements ActionListener {
+
+	private static final Logger LOG = Logger.getLogger(ChangeSizeMeasurementPopupRows.class);
 
 	private JPopupMenu changeSizeMeasurementPopupRow;
 
@@ -307,6 +310,7 @@ public class ChangeSizeMeasurementPopupRows implements ActionListener {
 				}
 				catch(NumberFormatException e1) {
 					// nothing to do
+					LOG.debug("actionPerformed: " + e1);
 				}
 			}
 		} else if (actionCommand.equals("DELETE")) {

@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 
 public interface UpdateJobs {
 
-	public static Logger logger = Logger.getLogger("NuclosUpdateJob");
+	public static Logger LOG = Logger.getLogger("NuclosUpdateJob");
 	
 	public boolean execute();
 	

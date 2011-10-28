@@ -29,11 +29,6 @@ import org.nuclos.common.NuclosBusinessException;
  */
 public class NuclosSubsequentStateNotLegalException extends NuclosBusinessException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public NuclosSubsequentStateNotLegalException() {
 		super("statemachine.error.exception.nucleussubsequentstatenotlegalexception");
 	}

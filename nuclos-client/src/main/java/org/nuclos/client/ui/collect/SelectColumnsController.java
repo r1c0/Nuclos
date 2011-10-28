@@ -34,9 +34,7 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 public class SelectColumnsController extends SelectObjectsController<CollectableEntityField> {
 
-	private static class SelectColumnsPanel extends DefaultSelectObjectsPanel {
-
-		private static final long serialVersionUID = 1L;
+	private static class SelectColumnsPanel<T> extends DefaultSelectObjectsPanel<T> {
 
 		SelectColumnsPanel() {
 			super();

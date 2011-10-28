@@ -32,7 +32,7 @@ import org.nuclos.client.statemodel.panels.StatePropertiesPanel;
 @Deprecated
 public class StatePropertiesController {
 	private final StatePropertiesPanel pnlState;
-	@SuppressWarnings("unused")
+	// @SuppressWarnings("unused")
 	private final StatePropertiesPanelModel model;
 
 	public StatePropertiesController(StatePropertiesPanel panel) {

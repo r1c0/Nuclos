@@ -39,14 +39,8 @@ import org.nuclos.common.collect.collectable.CollectableComponentTypes;
  * @author <a href="mailto:maik.stueker@novabit.de">maik.stueker</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class WYSIWYGCollectableOptionGroup extends WYSIWYGUniversalComponent {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public WYSIWYGCollectableOptionGroup(WYSIWYGMetaInformation meta) {
 		super(meta);
 		

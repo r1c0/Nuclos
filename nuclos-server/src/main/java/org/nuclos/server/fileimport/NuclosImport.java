@@ -60,7 +60,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class NuclosImport extends AbstractImport {
 
-	private static final Logger nucloslog = Logger.getLogger(NuclosImport.class);
+	private static final Logger LOG = Logger.getLogger(NuclosImport.class);
 
 	/**
 	 * Stores all existing object id's of all imported entities to find out the
@@ -90,7 +90,8 @@ public class NuclosImport extends AbstractImport {
 		        i = ImportUtils.countLines(getFile(), getStructures().get(0).getDelimiter());
 	        }
 	        catch(IOException e1) {
-	        	nucloslog.error(e1);
+	        	LOG.info("doImport: " + e1);
+	        	LOG.error(e1);
 	        	this.notifier.setMessage("import.notification.progresscalculationerror");
 	        }
 
@@ -114,7 +115,7 @@ public class NuclosImport extends AbstractImport {
 						asLineValues = lines.next();
 					}
 					catch (RuntimeException ex) {
-						nucloslog.error(ex);
+						LOG.error(ex);
 
 						getLogger().error(lines.getCurrentLine(), "import.exception.read", ex);
 						if (isAtomic()) {
@@ -126,7 +127,7 @@ public class NuclosImport extends AbstractImport {
 						putObject(getObject(importstructure, asLineValues, lines.getCurrentLine()));
 					}
 					catch (Exception ex) {
-						nucloslog.error(ex);
+						LOG.error(ex);
 
 						getLogger().error(lines.getCurrentLine(), "import.exception.read", ex);
 						if (isAtomic()) {

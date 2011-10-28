@@ -71,19 +71,16 @@ public abstract class UnmodifiableListAdapter<I, E> extends UnmodifiableList<E> 
 	}
 
 	@Override
-	@SuppressWarnings({"unchecked"})
 	public boolean contains(Object o) {
 		return lst.contains(wrap((I) o));
 	}
 
 	@Override
-	@SuppressWarnings({"unchecked"})
 	public int indexOf(Object o) {
 		return lst.indexOf(wrap((I) o));
 	}
 
 	@Override
-	@SuppressWarnings({"unchecked"})
 	public int lastIndexOf(Object o) {
 		return lst.lastIndexOf(wrap((I) o));
 	}

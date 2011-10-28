@@ -49,8 +49,6 @@ import org.springframework.security.core.AuthenticationException;
 
 public class ChangePasswordPanel extends BackgroundPanel implements DocumentListener {
 
-	private static final long serialVersionUID = 1L;
-
 	private final JLabel lbOld = new JLabel();
 	private final JLabel lbNew1 = new JLabel();
 	private final JLabel lbNew2 = new JLabel();

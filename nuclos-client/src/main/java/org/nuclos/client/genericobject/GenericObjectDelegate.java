@@ -63,7 +63,9 @@ import org.nuclos.server.ruleengine.valueobject.RuleVO;
  * @version 01.00.00
  */
 public class GenericObjectDelegate {
-	private static final Logger log = Logger.getLogger(GenericObjectDelegate.class);
+	
+	private static final Logger LOG = Logger.getLogger(GenericObjectDelegate.class);
+	
 	private static GenericObjectDelegate singleton;
 
 	private final GenericObjectFacadeRemote gofacade;
@@ -115,14 +117,14 @@ public class GenericObjectDelegate {
 	 */
 	public List<GenericObjectWithDependantsVO> getCompleteGenericObjectsWithDependants(Integer iModuleId, CollectableSearchCondition clctcond, Set<String> stRequiredSubEntityNames) {
 		try {
-			log.debug("START getCompleteGenericObjectsWithDependants");
+			LOG.debug("START getCompleteGenericObjectsWithDependants");
 			return this.getGenericObjectFacade().getGenericObjectsWithDependants(iModuleId, new CollectableSearchExpression(clctcond), null, stRequiredSubEntityNames, false, true);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
 		finally {
-			log.debug("FINISHED getCompleteGenericObjectsWithDependants");
+			LOG.debug("FINISHED getCompleteGenericObjectsWithDependants");
 		}
 	}
 
@@ -138,14 +140,14 @@ public class GenericObjectDelegate {
 	public ProxyList<GenericObjectWithDependantsVO> getGenericObjectsWithDependants(Integer iModuleId, CollectableSearchExpression clctexpr,
 			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntities, boolean bIncludeParentObjects, boolean bIncludeSubModules) {
 		try {
-			log.debug("START getGenericObjects");
+			LOG.debug("START getGenericObjects");
 			return this.getGenericObjectFacade().getGenericObjectsWithDependants(iModuleId, clctexpr, stRequiredAttributeIds, stRequiredSubEntities, bIncludeParentObjects, bIncludeSubModules);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
 		finally {
-			log.debug("FINISHED getGenericObjects");
+			LOG.debug("FINISHED getGenericObjects");
 		}
 	}
 
@@ -163,14 +165,14 @@ public class GenericObjectDelegate {
 	public ProxyList<GenericObjectWithDependantsVO> getPrintableGenericObjectsWithDependants(Integer iModuleId, CollectableSearchExpression clctexpr,
 			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntities, boolean bIncludeParentObjects, boolean bIncludeSubModules) {
 		try {
-			log.debug("START getGenericObjects");
+			LOG.debug("START getGenericObjects");
 			return this.getGenericObjectFacade().getPrintableGenericObjectsWithDependants(iModuleId, clctexpr, stRequiredAttributeIds, stRequiredSubEntities, bIncludeParentObjects, bIncludeSubModules);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
 		finally {
-			log.debug("FINISHED getGenericObjects");
+			LOG.debug("FINISHED getGenericObjects");
 		}
 	}
 
@@ -227,9 +229,9 @@ public class GenericObjectDelegate {
 	@Deprecated
 	public GenericObjectVO get(int iModuleId, int iGenericObjectId) throws CommonBusinessException {
 		try {
-			log.debug("get start");
+			LOG.debug("get start");
 			final GenericObjectVO result = this.getGenericObjectFacade().get(iGenericObjectId);
-			log.debug("get done");
+			LOG.debug("get done");
 			return result;
 		}
 		catch (RuntimeException ex) {
@@ -245,9 +247,9 @@ public class GenericObjectDelegate {
 	 */
 	public GenericObjectWithDependantsVO getWithDependants(int iGenericObjectId) throws CommonBusinessException {
 		try {
-			log.debug("get start");
+			LOG.debug("get start");
 			final GenericObjectWithDependantsVO result = this.getGenericObjectFacade().getWithDependants(iGenericObjectId, null);
-			log.debug("get done");
+			LOG.debug("get done");
 			return result;
 		}
 		catch (RuntimeException ex) {
@@ -310,9 +312,9 @@ public class GenericObjectDelegate {
 			throw new IllegalArgumentException("lowdcvo");
 		}
 		try {
-			log.debug("update start");
+			LOG.debug("update start");
 			final GenericObjectWithDependantsVO result = this.getGenericObjectFacade().modify(lowdcvo.getModuleId(), lowdcvo);
-			log.debug("update done");
+			LOG.debug("update done");
 			return result;
 		}
 		catch (RuntimeException ex) {
@@ -349,9 +351,9 @@ public class GenericObjectDelegate {
 		}
 		debug(lowdcvo);
 		try {
-			log.debug("create start");
+			LOG.debug("create start");
 			final GenericObjectWithDependantsVO result = this.getGenericObjectFacade().create(lowdcvo, stRequiredSubEntityNames);
-			log.debug("create done");
+			LOG.debug("create done");
 			return result;
 		}
 		catch (CommonFatalException ex) {
@@ -391,9 +393,9 @@ public class GenericObjectDelegate {
 
 		debug(lowdcvo);
 		try {
-			log.debug("create start");
+			LOG.debug("create start");
 			final GenericObjectVO result = this.getGenericObjectFacade().create(lowdcvo);
-			log.debug("create done");
+			LOG.debug("create done");
 			return result;
 		}
 		catch (CommonFatalException ex) {
@@ -425,7 +427,7 @@ public class GenericObjectDelegate {
 			if (attrvo.isRemoved()) {
 				sb.append(" - REMOVED");
 			}
-			log.debug(sb);
+			LOG.debug(sb);
 		}
 	}
 
@@ -645,14 +647,14 @@ public class GenericObjectDelegate {
 
 	private Map<Integer, String> getResourceMapCache() throws RuntimeException {
 		if(resourceMapCache == null) {
-			log.debug("Initializing resourceMap cache");
+			LOG.debug("Initializing resourceMap cache");
 			resourceMapCache = getGenericObjectFacade().getResourceMap();
 		}
 		return resourceMapCache;
 	}
 
 	public void invalidateCaches() {
-		log.debug("Invalidating resourceMap cache.");
+		LOG.debug("Invalidating resourceMap cache.");
 		resourceMapCache = null;
 	}
 

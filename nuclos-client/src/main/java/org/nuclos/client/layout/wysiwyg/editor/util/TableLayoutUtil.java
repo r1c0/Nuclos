@@ -87,6 +87,8 @@ import org.nuclos.common.NuclosBusinessException;
  */
 public class TableLayoutUtil {
 
+	private static final Logger LOG = Logger.getLogger(TableLayoutUtil.class);
+
 	private TableLayout tableLayout;
 	private TableLayoutPanel container;
 	private LayoutCell cellForEditing = null;
@@ -96,8 +98,6 @@ public class TableLayoutUtil {
 	
 	public static final int ACTION_TOGGLE_STANDARDBORDER = -1302;
 	
-	private static final Logger log = Logger.getLogger(TableLayoutUtil.class);
-
 	/**
 	 * Constructor
 	 * 
@@ -496,11 +496,11 @@ public class TableLayoutUtil {
 			controller = tableLayoutUtil.getContainer().getParentEditorPanel().getController();
 		}
 		catch(NuclosBusinessException e) {
+			LOG.info("moveComponentTo: " + e);
 			try {
 				controller = ((WYSIWYGLayoutEditorPanel)c).getController();
 			}
 			catch(NuclosBusinessException e1) {
-				log.error(e1);
 				Errors.getInstance().showExceptionDialog(null, e1);
 			}
 		}
@@ -598,7 +598,7 @@ public class TableLayoutUtil {
 			}
 		}
 		catch (Exception ex) {
-			log.error(ex);
+			LOG.error(ex);
 			Errors.getInstance().showExceptionDialog((Component)c, ex);
 			return;
 		}
@@ -857,13 +857,13 @@ public class TableLayoutUtil {
 		toAdd = getLayoutCell(mousePosition);
 
 		if (toAdd.getCellDimensions().width + InterfaceGuidelines.TOLERANCE_WIDTH_EXISTING_CELL < componentBounds.width) {
-			log.debug("cell is not huge enough - slicing");
+			LOG.debug("cell is not huge enough - slicing");
 
 			/** cell to the right */
 			toAdd = getLayoutCellByPosition(toAdd.getCellX() + 1, toAdd.getCellY());
 
 			if (toAdd.getCellDimensions().width + InterfaceGuidelines.TOLERANCE_WIDTH_EXISTING_CELL < componentBounds.width) {
-				log.debug("cell to the right is also too small");
+				LOG.debug("cell to the right is also too small");
 
 				toAdd.setCellX(toAdd.getCellX());
 				toAdd.setCellWidth(componentBounds.getWidth());
@@ -874,22 +874,22 @@ public class TableLayoutUtil {
 
 			}
 		} else if (toAdd.getCellDimensions().width > componentBounds.width + InterfaceGuidelines.TOLERANCE_WIDTH_EXISTING_CELL) {
-			log.debug("cell is oversized");
+			LOG.debug("cell is oversized");
 
 			if (!containesItemInColumn(toAdd.getCellX())) {
-				log.debug("cell can be modified without messing up the layout");
+				LOG.debug("cell can be modified without messing up the layout");
 
 				int cellsizeOriginal = toAdd.getCellDimensions().width;
 
 				int cell1 = mousePosition.x - toAdd.getCellDimensions().x;
 
 				if (cell1 < InterfaceGuidelines.MINIMUM_SIZE) {
-					log.debug("cell to the left is smaller than minimum size");
+					LOG.debug("cell to the left is smaller than minimum size");
 					if (cell1 < 0) {
-						log.debug("the cell is negative size");
+						LOG.debug("the cell is negative size");
 						cell1 = 0;
 					} else {
-						log.debug("the cell is just smaller than the minimum size, correcting");
+						LOG.debug("the cell is just smaller than the minimum size, correcting");
 						cell1 = InterfaceGuidelines.MINIMUM_SIZE;
 					}
 				}
@@ -897,7 +897,7 @@ public class TableLayoutUtil {
 				int cell2 = cellsizeOriginal - cell1 - componentBounds.width;
 
 				if (cell1 > 0) {
-					log.debug("normal slicing");
+					LOG.debug("normal slicing");
 					modifyTableLayoutSizes(cell1, true, toAdd, true);
 
 					toAdd.setCellWidth(componentBounds.width);
@@ -910,7 +910,7 @@ public class TableLayoutUtil {
 
 					toAdd = getLayoutCellByPosition(toAdd.getCellX() - 2, toAdd.getCellY());
 				} else {
-					log.debug("just modify the cell and add another");
+					LOG.debug("just modify the cell and add another");
 					modifyTableLayoutSizes(componentBounds.width, true, toAdd, true);
 
 					toAdd.setCellWidth(cell2);

@@ -20,9 +20,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.SystemFields;
@@ -42,8 +39,8 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Remote(WikiFacadeRemote.class)
+// @Stateless
+// @Remote(WikiFacadeRemote.class)
 @Transactional
 public class WikiFacadeBean extends MasterDataFacadeBean implements WikiFacadeRemote {
 

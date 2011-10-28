@@ -39,6 +39,12 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.text.NumberFormatter;
 
+import org.apache.log4j.Logger;
+import org.nuclos.client.genericobject.valuelistprovider.GenericObjectCollectableFieldsProviderFactory;
+import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
+import org.nuclos.client.ui.DateChooser;
+import org.nuclos.client.ui.Errors;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collection.CollectionUtils;
@@ -47,11 +53,6 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
-import org.nuclos.client.genericobject.valuelistprovider.GenericObjectCollectableFieldsProviderFactory;
-import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
-import org.nuclos.client.ui.DateChooser;
-import org.nuclos.client.ui.Errors;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 
 /**
@@ -65,11 +66,8 @@ import org.nuclos.server.report.valueobject.DatasourceParameterVO;
  */
 public class ParameterPanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
+	private static final Logger LOG = Logger.getLogger(ParameterPanel.class);
+	
 	private static final int iComponentWidth = 200;
 
 	private final Map<String, JComponent> mpFields = CollectionUtils.newHashMap();

@@ -51,13 +51,8 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class WYSIWYGStaticTextfield extends JTextField implements WYSIWYGComponent {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static final String PROPERTY_EDITABLE = PROPERTY_LABELS.EDITABLE;
 
@@ -233,7 +228,7 @@ public class WYSIWYGStaticTextfield extends JTextField implements WYSIWYGCompone
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#setProperty(java.lang.String, org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue, java.lang.Class)
 	 */
 	@Override
-	public void setProperty(String property, PropertyValue value, Class<?> valueClass) throws CommonBusinessException {
+	public void setProperty(String property, PropertyValue<?> value, Class<?> valueClass) throws CommonBusinessException {
 		properties.setProperty(property, value, valueClass);
 	}
 	

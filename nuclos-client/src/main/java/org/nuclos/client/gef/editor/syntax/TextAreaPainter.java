@@ -44,6 +44,7 @@ import javax.swing.text.Segment;
 import javax.swing.text.TabExpander;
 import javax.swing.text.Utilities;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.gef.editor.syntax.tokenmarker.Token;
 import org.nuclos.client.gef.editor.syntax.tokenmarker.TokenMarker;
 
@@ -54,10 +55,8 @@ import org.nuclos.client.gef.editor.syntax.tokenmarker.TokenMarker;
  * @version $Id: TextAreaPainter.java,v 1.2 2007-05-30 08:47:31 radig Exp $
  */
 public class TextAreaPainter extends JComponent implements TabExpander {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final Logger LOG = Logger.getLogger(TextAreaPainter.class);
 
 	/**
 	 * Creates a new repaint manager. This should be not be called
@@ -357,7 +356,6 @@ public class TextAreaPainter extends JComponent implements TabExpander {
 	 * cached font metrics and to recalculate which lines are visible.
 	 * @param font The font
 	 */
-	@SuppressWarnings("deprecation")
 	@Override
 	public void setFont(Font font) {
 		super.setFont(font);
@@ -405,10 +403,7 @@ public class TextAreaPainter extends JComponent implements TabExpander {
 			}
 		}
 		catch (Exception e) {
-			System.err.println("Error repainting line"
-					+ " range {" + firstInvalid + ","
-					+ lastInvalid + "}:");
-			e.printStackTrace();
+			LOG.warn("Error repainting line" + " range {" + firstInvalid + "," + lastInvalid + "}", e);
 		}
 	}
 

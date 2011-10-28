@@ -33,10 +33,7 @@ import javax.swing.JPanel;
  * @version 01.00.00
  */
 public class TextAreaInfoPanel extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private final JLabel labelOverwrite;
 	private final JLabel labelCaretPos;
 

@@ -40,11 +40,6 @@ import org.pietschy.wizard.InvalidStateException;
  */
 public class ChooseDatabaseWizardStep extends AbstractWizardStep implements ActionListener, Constants {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private JLabel label = new JLabel();
 
 	private JRadioButton optInstall = new JRadioButton();

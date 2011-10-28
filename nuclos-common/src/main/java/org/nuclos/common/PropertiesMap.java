@@ -19,11 +19,9 @@ package org.nuclos.common;
 import java.io.Serializable;
 import java.util.HashMap;
 
+/**
+ * @deprecated Use a Map instead.
+ */
 public class PropertiesMap extends HashMap<String, Serializable> {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 }

@@ -58,13 +58,8 @@ import org.xml.sax.Attributes;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class PropertyValueBorder implements PropertyValue<Border> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private Border border;
 	private boolean clearBorder = false;
 
@@ -237,10 +232,6 @@ public class PropertyValueBorder implements PropertyValue<Border> {
 	 */
 	public class PropertyEditorBorder extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private JPanel panel = new JPanel();
 		private WYSIWYGComponent c;
 		

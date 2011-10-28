@@ -57,11 +57,8 @@ import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentTreeNod
  * @version 01.00.00
  */
 public class NucletContentExplorerNode extends ExplorerNode<NucletContentTreeNode> {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(NucletContentExplorerNode.class);
+
+	private static final Logger LOG = Logger.getLogger(NucletContentExplorerNode.class);
 
 	public NucletContentExplorerNode(TreeNode treenode) {
 		super(treenode);
@@ -73,7 +70,6 @@ public class NucletContentExplorerNode extends ExplorerNode<NucletContentTreeNod
 		return tree.isCollapsed(treePath) ? ACTIONCOMMAND_EXPAND : ACTIONCOMMAND_COLLAPSE;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean importTransferData(Component parent,	Transferable transferable, JTree tree) throws IOException, UnsupportedFlavorException {
 

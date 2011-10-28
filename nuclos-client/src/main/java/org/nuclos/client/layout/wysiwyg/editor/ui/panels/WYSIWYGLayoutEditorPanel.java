@@ -94,13 +94,8 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class WYSIWYGLayoutEditorPanel extends JPanel implements WYSIWYGComponent, MouseListener, LayoutMLConstants, WYSIWYGEditorModes {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static String PROPERTY_VISIBLE = PROPERTY_LABELS.VISIBLE;
 	public static String PROPERTY_OPAQUE = PROPERTY_LABELS.OPAQUE;
@@ -401,7 +396,7 @@ public class WYSIWYGLayoutEditorPanel extends JPanel implements WYSIWYGComponent
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#setProperty(java.lang.String, org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue, java.lang.Class)
 	 */
 	@Override
-	public void setProperty(String property, PropertyValue value, Class<?> valueClass) throws CommonBusinessException {
+	public void setProperty(String property, PropertyValue<?> value, Class<?> valueClass) throws CommonBusinessException {
 		properties.setProperty(property, value, valueClass);
 		this.tableLayoutPanel.getTableLayoutUtil().notifyThatSomethingChanged();
 	}
@@ -906,7 +901,7 @@ public class WYSIWYGLayoutEditorPanel extends JPanel implements WYSIWYGComponent
 	public void getWYSIWYGComponentsWithValuelistProviders(Container container, List<Object> list) {
 		for (Component c : container.getComponents()) {
 			if (c instanceof WYSIWYGComponent) {
-				PropertyValue value = ((WYSIWYGComponent) c).getProperties().getProperty(PROPERTY_VALUELISTPROVIDER);
+				PropertyValue<?> value = ((WYSIWYGComponent) c).getProperties().getProperty(PROPERTY_VALUELISTPROVIDER);
 				if (value != null)
 					if (value.getValue() != null)
 						if (!(StringUtils.isNullOrEmpty(((WYSIWYGValuelistProvider) value.getValue()).getType())))

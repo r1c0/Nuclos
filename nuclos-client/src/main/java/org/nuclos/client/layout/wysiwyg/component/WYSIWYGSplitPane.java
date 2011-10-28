@@ -53,13 +53,8 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  * @author <a href="mailto:maik.stueker@novabit.de">maik.stueker</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class WYSIWYGSplitPane extends JPanel implements WYSIWYGComponent{
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static final String PROPERTY_PREFFEREDSIZE = PROPERTY_LABELS.PREFFEREDSIZE;
 	public static final String PROPERTY_ORIENTATION = PROPERTY_LABELS.ORIENTATION;
@@ -148,7 +143,6 @@ public class WYSIWYGSplitPane extends JPanel implements WYSIWYGComponent{
 		this.secondEditor.getTableLayoutPanel().setEditorChangeDescriptor(this.wysiwygLayoutEditorChangeDescriptor);
 
 		this.setLayout(new BorderLayout());
-		@SuppressWarnings("unused")
 		String orientation = null;
 		if(properties != null){
 			orientation = (String) properties.getProperty(PROPERTY_ORIENTATION).getValue();
@@ -228,7 +222,7 @@ public class WYSIWYGSplitPane extends JPanel implements WYSIWYGComponent{
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#setProperty(java.lang.String, org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue, java.lang.Class)
 	 */
 	@Override
-	public void setProperty(String property, PropertyValue value, Class<?> valueClass) throws CommonBusinessException {
+	public void setProperty(String property, PropertyValue<?> value, Class<?> valueClass) throws CommonBusinessException {
 		properties.setProperty(property, value, valueClass);
 	}
 

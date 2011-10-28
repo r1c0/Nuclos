@@ -164,22 +164,15 @@ import org.nuclos.client.gef.shapes.ContainerShape;
  * @version 01.00.00
  */
 public class GridBagLayout implements ILayout2, java.io.Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	class GridBagLayoutInfo implements java.io.Serializable {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		int width, height;		/* number of cells horizontally, vertically */
-		double startx, starty;	/* starting point for layout */
-		double minWidth[];		/* largest minWidth in each column */
-		double minHeight[];		/* largest minHeight in each row */
-		double weightX[];		/* largest weight in each column */
-		double weightY[];		/* largest weight in each row */
+
+		private int width, height;		/* number of cells horizontally, vertically */
+		private double startx, starty;	/* starting point for layout */
+		private double minWidth[];		/* largest minWidth in each column */
+		private double minHeight[];		/* largest minHeight in each row */
+		private double weightX[];		/* largest weight in each column */
+		private double weightY[];		/* largest weight in each row */
 
 		GridBagLayoutInfo() {
 			minWidth = new double[GridBagLayout.MAXGRIDSIZE];
@@ -613,75 +606,6 @@ public class GridBagLayout implements ILayout2, java.io.Serializable {
 	public String toString() {
 		return getClass().getName();
 	}
-
-	/**
-	 * Print the layout information.  Useful for debugging.
-	 */
-
-	/* DEBUG
-			*
-			*  protected void dumpLayoutInfo(GridBagLayoutInfo s) {
-			*    int x;
-			*
-			*    System.out.println("Col\tWidth\tWeight");
-			*    for (x=0; x<s.width; x++) {
-			*      System.out.println(x + "\t" +
-			*			 s.minWidth[x] + "\t" +
-			*			 s.weightX[x]);
-			*    }
-			*    System.out.println("Row\tHeight\tWeight");
-			*    for (x=0; x<s.height; x++) {
-			*      System.out.println(x + "\t" +
-			*			 s.minHeight[x] + "\t" +
-			*			 s.weightY[x]);
-			*    }
-			*  }
-			*/
-
-	/**
-	 * Print the layout constraints.  Useful for debugging.
-	 */
-
-	/* DEBUG
-			*
-			*  protected void dumpConstraints(GridBagConstraints constraints) {
-			*    System.out.println(
-			*		       "wt " +
-			*		       constraints.weightx +
-			*		       " " +
-			*		       constraints.weighty +
-			*		       ", " +
-			*
-			*		       "box " +
-			*		       constraints.gridx +
-			*		       " " +
-			*		       constraints.gridy +
-			*		       " " +
-			*		       constraints.gridwidth +
-			*		       " " +
-			*		       constraints.gridheight +
-			*		       ", " +
-			*
-			*		       "min " +
-			*		       constraints.minWidth +
-			*		       " " +
-			*		       constraints.minHeight +
-			*		       ", " +
-			*
-			*		       "pad " +
-			*		       constraints.insets.bottom +
-			*		       " " +
-			*		       constraints.insets.left +
-			*		       " " +
-			*		       constraints.insets.right +
-			*		       " " +
-			*		       constraints.insets.top +
-			*		       " " +
-			*		       constraints.ipadx +
-			*		       " " +
-			*		       constraints.ipady);
-			*  }
-			*/
 
 	/**
 	 * Fills in an instance of <code>GridBagLayoutInfo</code> for the
@@ -1336,24 +1260,10 @@ public class GridBagLayout implements ILayout2, java.io.Serializable {
 		r.height = (int) Math.round(d.height);
 
 		/*
-					 * DEBUG
-					 *
-					 * DumpLayoutInfo(info);
-					 * for (compindex = 0 ; compindex < components.length ; compindex++) {
-					 * comp = components[compindex];
-					 * if (!comp.isVisible())
-					 *	continue;
-					 * constraints = lookupConstraints(comp);
-					 * DumpConstraints(constraints);
-					 * }
-					 * System.out.println("minSize " + r.width + " " + r.height);
-					 */
-
-		/*
-					 * If the current dimensions of the window don't match the desired
-					 * dimensions, then adjust the minWidth and minHeight arrays
-					 * according to the weights.
-					 */
+		 * If the current dimensions of the window don't match the desired
+		 * dimensions, then adjust the minWidth and minHeight arrays
+		 * according to the weights.
+		 */
 
 		diffw = (int) Math.round(parent.getWidth() - r.width);
 		if (diffw != 0) {
@@ -1401,17 +1311,11 @@ public class GridBagLayout implements ILayout2, java.io.Serializable {
 			diffh = 0;
 		}
 
-		/*
-					 * DEBUG
-					 *
-					 * System.out.println("Re-adjusted:");
-					 * DumpLayoutInfo(info);
-					 */
 
 		/*
-					 * Now do the actual layout of the slaves using the layout information
-					 * that has been collected.
-					 */
+		 * Now do the actual layout of the slaves using the layout information
+		 * that has been collected.
+		 */
 
 		info.startx = diffw / 2 + insets.left;
 		info.starty = diffh / 2 + insets.top;

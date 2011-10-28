@@ -18,8 +18,6 @@ package org.nuclos.server.statemodel.ejb3;
 
 import java.util.Collection;
 
-import javax.ejb.Remote;
-
 import org.nuclos.common.statemodel.Statemodel;
 import org.nuclos.common.statemodel.StatemodelClosure;
 import org.nuclos.common2.exception.CommonCreateException;
@@ -41,7 +39,7 @@ import org.nuclos.server.statemodel.valueobject.StateHistoryVO;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 
-@Remote
+// @Remote
 public interface StateFacadeRemote {
 
 	/**
@@ -50,7 +48,7 @@ public interface StateFacadeRemote {
 	 * @return state graph cvo containing the state graph information for the model with the given id
 	 * @throws CommonPermissionException
 	 */
-	public abstract StateGraphVO getStateGraph(Integer iModelId)
+	StateGraphVO getStateGraph(Integer iModelId)
 		throws CommonFinderException, CommonPermissionException,
 		NuclosBusinessException;
 
@@ -60,7 +58,7 @@ public interface StateFacadeRemote {
 	 * @return state model id
 	 * @throws CommonPermissionException
 	 */
-	public abstract Integer setStateGraph(StateGraphVO stategraphcvo,
+	Integer setStateGraph(StateGraphVO stategraphcvo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonValidationException, CommonStaleVersionException,
@@ -71,7 +69,7 @@ public interface StateFacadeRemote {
 	 * @param statemodelvo state model value object
 	 * @throws CommonPermissionException
 	 */
-	public abstract void removeStateGraph(StateModelVO statemodelvo)
+	void removeStateGraph(StateModelVO statemodelvo)
 		throws CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonPermissionException,
 		NuclosBusinessRuleException, NuclosBusinessException;
@@ -80,25 +78,25 @@ public interface StateFacadeRemote {
 	 * @param usagecriteria
 	 * @return the id of the initial state of the statemodel corresponding to <code>usagecriteria</code>.
 	 */
-	public abstract Integer getInitialStateId(UsageCriteria usagecriteria);
+	Integer getInitialStateId(UsageCriteria usagecriteria);
 
 	/**
 	 * @param usagecriteria
 	 * @return the id of the statemodel corresponding to <code>usagecriteria</code>.
 	 */
-	public abstract Integer getStateModelId(UsageCriteria usagecriteria);
+	Integer getStateModelId(UsageCriteria usagecriteria);
 
 	/**
 	 * @param iStateModelId
 	 * @return the id of the statemodel corresponding to <code>usagecriteria</code>.
 	 */
-	public abstract Collection<StateVO> getStatesByModel(Integer iStateModelId);
+	Collection<StateVO> getStatesByModel(Integer iStateModelId);
 
 	/**
 	 * method to get all state models
 	 * @return collection of state model vo
 	 */
-	public abstract Collection<StateModelVO> getStateModels();
+	Collection<StateModelVO> getStateModels();
 
 	/**
 	 * method to return the sorted list of state history entries for a given leased object
@@ -107,7 +105,7 @@ public interface StateFacadeRemote {
 	 * @return set of state history entries
 	 * @nucleus.permission mayRead(module)
 	 */
-	public abstract Collection<StateHistoryVO> getStateHistory(
+	Collection<StateHistoryVO> getStateHistory(
 		Integer iModuleId, Integer iGenericObjectId)
 		throws CommonFinderException, CommonPermissionException;
 
@@ -116,17 +114,19 @@ public interface StateFacadeRemote {
 	 * @param iModuleId id of module to retrieve states for
 	 * @return Collection of all states for the given module
 	 */
-	public abstract Collection<StateVO> getStatesByModule(Integer iModuleId);
+	Collection<StateVO> getStatesByModule(Integer iModuleId);
 
 	/**
 	 * method to return the possible subsequent states for a given leased object
 	 * @param iModuleId module id for plausibility check
 	 * @param iGenericObjectId id of leased object to get subsequent states for
-	 * @param bGetAutomaticStatesAlso should method also return states for automatic only transitions? false for returning subsequent states to client, which generates buttons for manual state changes
+	 * @param bGetAutomaticStatesAlso should method also return states for automatic only 
+	 * 	transitions? false for returning subsequent states to client, which generates buttons 
+	 * 	for manual state changes
 	 * @return set of possible subsequent states for given leased object
 	 * @nucleus.permission mayRead(module)
 	 */
-	public abstract Collection<StateVO> getSubsequentStates(Integer iModuleId,
+	Collection<StateVO> getSubsequentStates(Integer iModuleId,
 		Integer iGenericObjectId, boolean bGetAutomaticStatesAlso)
 		throws NuclosNoAdequateStatemodelException, CommonFinderException;
 
@@ -137,7 +137,7 @@ public interface StateFacadeRemote {
 	 * @param iTargetStateId legal subsequent status id to set for given leased object
 	 * @nucleus.permission mayWrite(module)
 	 */
-	public abstract void changeStateByUser(Integer iModuleId,
+	void changeStateByUser(Integer iModuleId,
 		Integer iGenericObjectId, Integer iTargetStateId)
 		throws NuclosBusinessException, CommonPermissionException,
 		CommonPermissionException, CommonCreateException,
@@ -151,20 +151,20 @@ public interface StateFacadeRemote {
 	 * @param iTargetStateId legal subsequent status id to set for given object
 	 * @nucleus.permission mayWrite(module)
 	 */
-	public abstract void changeStateAndModifyByUser(Integer iModuleId, 
+	void changeStateAndModifyByUser(Integer iModuleId, 
 		GenericObjectWithDependantsVO gowdvo, Integer iTargetStateId)
 		throws NuclosBusinessException, CommonPermissionException,
 		CommonPermissionException, CommonCreateException, NuclosNoAdequateStatemodelException,
 		NuclosSubsequentStateNotLegalException, CommonFinderException, CommonRemoveException, 
 		CommonStaleVersionException, CommonValidationException, CommonFatalException;
 
-	public abstract void invalidateCache();
+	void invalidateCache();
 	
-	public String getResourceSIdForName(Integer iStateId);
+	String getResourceSIdForName(Integer iStateId);
 	
-	public String getResourceSIdForDescription(Integer iStateId);
+	String getResourceSIdForDescription(Integer iStateId);
 
-	public Statemodel getStatemodel(UsageCriteria usageCriteria);
+	Statemodel getStatemodel(UsageCriteria usageCriteria);
 
-	public StatemodelClosure getStatemodelClosureForModule(Integer moduleId);
+	StatemodelClosure getStatemodelClosureForModule(Integer moduleId);
 }

@@ -74,7 +74,8 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  * @version 01.00.00
  */
 public class ExplorerController extends Controller {
-	private final Logger log = Logger.getLogger(this.getClass());
+	
+	private static final Logger LOG = Logger.getLogger(ExplorerController.class);
 
 	@Deprecated
 	public
@@ -329,15 +330,15 @@ public class ExplorerController extends Controller {
 					viewForWorker.getViewComponent().setCursor(null);
 					try {
 						tab.setTitle(sLabel);
-					}
-					catch(Exception ex) {
+					} catch (Exception e) {
 						// Do nothing; user may have closed the tab pane or similar
+						LOG.warn("paint failed: " + e);
 					}
 				}
 
 				@Override
 				public void handleError(Exception ex) {
-					log.error(ex);
+					LOG.error(ex);
 
 					if (ex instanceof ExplorerNodeRefreshException) {
 						String sMessage = ex.getMessage() + "\n\n" + CommonLocaleDelegate.getMessage("ExplorerController.13","Der Reiter des Knotens wird automatisch geschlossen.");
@@ -360,16 +361,18 @@ public class ExplorerController extends Controller {
 
 				tab.setTitle(sLabel);
 			}
-			catch(Exception ex) {
-				log.error(ex);
+			catch(Exception e) {
+				LOG.error("addOrReplaceExplorerViewFor failed" + e, e);
 
-				if (ex instanceof ExplorerNodeRefreshException) {
-					String sMessage = ex.getMessage() + "\n\n" + CommonLocaleDelegate.getMessage("ExplorerController.13","Der Reiter des Knotens wird automatisch geschlossen.");
-					JOptionPane.showMessageDialog(null, sMessage, CommonLocaleDelegate.getMessage("ExplorerController.30","Wiederherstellen der Baumansicht"), JOptionPane.ERROR_MESSAGE);
+				if (e instanceof ExplorerNodeRefreshException) {
+					String sMessage = e.getMessage() + "\n\n" + CommonLocaleDelegate.getMessage(
+							"ExplorerController.13","Der Reiter des Knotens wird automatisch geschlossen.");
+					JOptionPane.showMessageDialog(null, sMessage, CommonLocaleDelegate.getMessage(
+							"ExplorerController.30","Wiederherstellen der Baumansicht"), JOptionPane.ERROR_MESSAGE);
 					closeExplorerView(viewForWorker);
 				}
 				else {
-					Errors.getInstance().showExceptionDialog(null, CommonLocaleDelegate.getMessage("ExplorerController.17","Fehler beim Anzeigen des Explorerfensters"), ex);
+					Errors.getInstance().showExceptionDialog(null, CommonLocaleDelegate.getMessage("ExplorerController.17","Fehler beim Anzeigen des Explorerfensters"), e);
 				}
 			}
 		}
@@ -530,7 +533,7 @@ public class ExplorerController extends Controller {
 						tWorkerThread.join();
 					}
 					catch (InterruptedException e) {
-						log.error(e);
+						LOG.error(e);
 					}
 					SwingUtilities.invokeLater(inAWT);
 				}

@@ -45,10 +45,7 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
  * of possible user transitions.
  */
 public class Statemodel implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private UsageCriteria	                            usageCriteria;
 	private Set<StateVO>	                            allStates;
 	private Integer	                                    initialStateId;

@@ -24,6 +24,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JEditorPane;
 import javax.swing.text.html.HTMLEditorKit;
 
+import org.apache.log4j.Logger;
 import org.nuclos.installer.ConfigContext;
 import org.nuclos.installer.L10n;
 import org.pietschy.wizard.InvalidStateException;
@@ -37,10 +38,7 @@ import org.pietschy.wizard.WizardModel;
  */
 public class UninstallInformationWizardStep extends AbstractWizardStep {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(UninstallInformationWizardStep.class);
 
 	private JEditorPane pane = new JEditorPane();
 

@@ -49,12 +49,7 @@ import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 
 public class CommonJFrame extends JFrame {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	private final Logger log = Logger.getLogger(this.getClass());
+	private static final Logger log = Logger.getLogger(CommonJFrame.class);
 	
 	private Map<Object, Object> clientProperties = new HashMap<Object, Object>();
 	
@@ -104,14 +99,16 @@ public class CommonJFrame extends JFrame {
 	private final MouseListener mouselistener = new MouseInputAdapter(){  
         @Override  
         public void mouseClicked(MouseEvent e) {  
-            isResizing=true;  
-            System.out.println(isResizing);
+            isResizing=true;
+            if (log.isDebugEnabled())
+            	log.debug("isResizing on clicked: " + isResizing);
         }  
         @Override  
         public void mouseReleased(MouseEvent e) {  
             isResizing=false;  
-            System.out.println(isResizing);
-        }  
+            if (log.isDebugEnabled())
+            	log.debug("isResizing on released: " + isResizing);
+       }  
     };
 
 	public CommonJFrame() throws HeadlessException {

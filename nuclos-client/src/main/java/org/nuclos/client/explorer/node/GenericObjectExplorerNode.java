@@ -99,11 +99,6 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 //	private static final String ACTIONCOMMAND_ADD_TO_GROUP = "ADD TO GROUP";
 
 	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
 	 * action: remove from parent group
 	 */
 	private static final String ACTIONCOMMAND_REMOVE_FROM_PARENT_GROUP = "REMOVE FROM PARENT GROUP";
@@ -190,8 +185,8 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 
 		final List<GeneratorActionVO> lstActions = GeneratorActions.getActions(iModuleId, iStateNumeral, iProcessId);
 		if (lstActions.size() > 0) {
-			for (Iterator iterator = lstActions.iterator(); iterator.hasNext();) {
-				GeneratorActionVO generatorActionVO = (GeneratorActionVO) iterator.next();
+			for (Iterator<GeneratorActionVO> iterator = lstActions.iterator(); iterator.hasNext();) {
+				GeneratorActionVO generatorActionVO = iterator.next();
 				result.add(new GeneratorAction(tree, genericObjectVO, generatorActionVO));
 			}
 		}
@@ -264,7 +259,6 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		return new TransferableGenericObjects(Arrays.asList(new GenericObjectIdModuleProcess[] {goimp}));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean importTransferData(final Component parent, Transferable transferable, final JTree tree) throws IOException,
 			UnsupportedFlavorException {
@@ -296,7 +290,6 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	protected boolean cmdRelate(Component parent, Transferable transferable, final JTree tree, String sEntityName,
 			final String relationType) throws UnsupportedFlavorException, IOException {
 
@@ -335,10 +328,6 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 	 * inner class RemoveFromParentGroupAction. Removes this leased object from its parent (group).
 	 */
 	private class RemoveFromParentGroupAction extends TreeNodeAction {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		/**
 		 * @param tree
@@ -364,7 +353,6 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 
 			UIUtils.runCommand(tree, new Runnable() {
 				@Override
-				@SuppressWarnings("unchecked")
 				public void run() {
 					final GenericObjectTreeNode lotreenode = loexplorernode.getTreeNode();
 					final int iGenericObjectId = lotreenode.getId();
@@ -390,10 +378,6 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 	 * inner class RemoveRelationAction. Removes the relation between this node and its parent.
 	 */
 	private class RemoveRelationAction extends TreeNodeAction {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		/**
 		 * @param tree
@@ -477,10 +461,7 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 	 * inner class GeneratorAction. Removes the relation between this node and its parent.
 	 */
 	private class GeneratorAction extends TreeNodeAction {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
+
 		private final GenericObjectVO genericobjectvo;
 		private final GeneratorActionVO generatoractionvo;
 

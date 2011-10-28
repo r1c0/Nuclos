@@ -106,7 +106,8 @@ import org.nuclos.server.common.valueobject.TimelimitTaskVO;
  */
 
 public class TimelimitTaskController extends RefreshableTaskController {
-	private static final Logger log = Logger.getLogger(TimelimitTaskController.class);
+	
+	private static final Logger LOG = Logger.getLogger(TimelimitTaskController.class);
 
 	private final static String PREFS_NODE_TIMELIMITTASKS = "timelimitTasks";
 	private static final String PREFS_NODE_SELECTEDFIELDS = CollectController.PREFS_NODE_SELECTEDFIELDS;
@@ -129,10 +130,6 @@ public class TimelimitTaskController extends RefreshableTaskController {
 
 	private final Action actPerformTask = new CommonAbstractAction("Zugeordnete Objekte anzeigen", Icons.getInstance().getIconModule(),
 		CommonLocaleDelegate.getMessage("TimelimitTaskController.16","Zugeordnete Objekte anzeigen")) {
-		/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -142,10 +139,6 @@ public class TimelimitTaskController extends RefreshableTaskController {
 
 	private final Action actRemoveTask = new CommonAbstractAction("L\u00f6schen...", Icons.getInstance().getIconDelete16(),
 		CommonLocaleDelegate.getMessage("TimelimitTaskController.2","Ausgew\u00e4hlte Frist l\u00f6schen")) {
-		/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -155,10 +148,6 @@ public class TimelimitTaskController extends RefreshableTaskController {
 
 	private final Action actFinishTask = new CommonAbstractAction("Erledigt", Icons.getInstance().getIconProperties16(),
 		CommonLocaleDelegate.getMessage("TimelimitTaskController.1","Ausgew\u00e4hlte Frist als erledigt/unerledigt markieren")) {
-		/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -168,10 +157,6 @@ public class TimelimitTaskController extends RefreshableTaskController {
 
 	final Action actPrint = new CommonAbstractAction(CommonLocaleDelegate.getMessage("TimelimitTaskController.11","Fristenliste drucken"), 
 		Icons.getInstance().getIconPrintReport16(), null) {
-		/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -201,10 +186,6 @@ public class TimelimitTaskController extends RefreshableTaskController {
 		KeyBinding keybinding = KeyBindingProvider.REFRESH;
 		this.timelimittaskview.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(keybinding.getKeystroke(), keybinding.getKey());
 		this.timelimittaskview.getActionMap().put(keybinding.getKey(), new AbstractAction() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -296,10 +277,6 @@ public class TimelimitTaskController extends RefreshableTaskController {
 
 		final Action actRefresh = new CommonAbstractAction(Icons.getInstance().getIconRefresh16(),
 			CommonLocaleDelegate.getMessage("TimelimitTaskController.10","Fristenliste aktualisieren")) {
-			/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -311,11 +288,11 @@ public class TimelimitTaskController extends RefreshableTaskController {
 		actRemoveTask.setEnabled(false);
 		actFinishTask.setEnabled(false);
 
-		timelimittaskview.btnRefresh.setAction(actRefresh);
-		timelimittaskview.btnPerform.setAction(actPerformTask);
-		timelimittaskview.btnRemove.setAction(actRemoveTask);
-		timelimittaskview.btnFinish.setAction(actFinishTask);
-		timelimittaskview.btnPrint.setAction(actPrint);
+		timelimittaskview.getRefreshButton().setAction(actRefresh);
+		timelimittaskview.getPerformMenuItem().setAction(actPerformTask);
+		timelimittaskview.getRemoveMenuItem().setAction(actRemoveTask);
+		timelimittaskview.getFinishButton().setAction(actFinishTask);
+		timelimittaskview.getPrintMenuItem().setAction(actPrint);
 
 		// use only action listener for "show finished" button:
 		timelimittaskview.btnShowAllTasks.addActionListener(actRefresh);
@@ -347,7 +324,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 					actRemoveTask.setEnabled(bTaskSelected);
 					actPerformTask.setEnabled(bTaskSelected && bHasGenericObject.booleanValue());
 					actFinishTask.setEnabled(bTaskSelected);
-					timelimittaskview.btnFinish.setSelected(bFinishedTaskSelected);
+					timelimittaskview.getFinishButton().setSelected(bFinishedTaskSelected);
 				}
 			}
 		});
@@ -369,7 +346,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 			lstFieldNameOrderTemp = PreferencesUtils.getStringList(this.prefs, PREFS_NODE_SELECTEDFIELDS);
 		}
 		catch (PreferencesException ex) {
-			log.error("Failed to retrieve list of selected fields from the preferences. They will be empty.");
+			LOG.error("Failed to retrieve list of selected fields from the preferences. They will be empty.");
 			lstFieldNameOrderTemp = new ArrayList<String>();
 		}
 		final List<String> lstFieldNameOrder = lstFieldNameOrderTemp;
@@ -498,7 +475,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 			}
 			else {
 				// undo selection of the button:
-				timelimittaskview.btnFinish.setSelected(false);
+				timelimittaskview.getFinishButton().setSelected(false);
 			}
 		}
 	}
@@ -607,7 +584,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 			lstColumnWidths = PreferencesUtils.getIntegerList(this.prefs, PREFS_NODE_SELECTEDFIELDWIDTHS);
 		}
 		catch (PreferencesException ex) {
-			log.error("Die Spaltenbreite konnte nicht aus den Preferences geladen werden.", ex);
+			LOG.error("Die Spaltenbreite konnte nicht aus den Preferences geladen werden.", ex);
 			return lstColumnWidths;
 		}
 
@@ -722,10 +699,6 @@ public class TimelimitTaskController extends RefreshableTaskController {
 	 */
 	private class TimelimitTasksPopupMenu extends JPopupMenu {
 		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		/**
 		 * menu item: perform task (jump to leased object)
 		 * todo must be disabled when there is no leased object
 		 */
@@ -823,10 +796,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 	 * inner class TransferHandler. Handles drag&drop, copy&paste for the Timelimit task list.
 	 */
 	private class TransferHandler extends javax.swing.TransferHandler {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		private final Component parent;
 
 		public TransferHandler(Component parent) {
@@ -837,16 +807,6 @@ public class TimelimitTaskController extends RefreshableTaskController {
 		public int getSourceActions(JComponent comp) {
 			return NONE;
 		}
-
-//		protected Transferable createTransferable(JComponent comp) {
-//			Transferable result = null;
-//			if (comp instanceof JTree) {
-//				final JTree tree = (JTree) comp;
-//				final ExplorerNode explorernode = (ExplorerNode) tree.getSelectionPath().getLastPathComponent();
-//				result = explorernode.createTransferable();
-//			}
-//			return result;
-//		}
 
 		@Override
 		public boolean canImport(JComponent comp, DataFlavor[] aflavors) {

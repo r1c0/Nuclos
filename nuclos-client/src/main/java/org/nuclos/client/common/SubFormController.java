@@ -73,6 +73,8 @@ import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collection.ComparatorUtils;
+import org.nuclos.common.entityobject.CollectableEOEntity;
+import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.PreferencesUtils;
@@ -93,14 +95,9 @@ import org.nuclos.common2.exception.PreferencesException;
 public abstract class SubFormController extends Controller
 		implements TableCellRendererProvider, TableCellEditorProvider, SubFormParameterProvider, FocusActionListener {
 
-	protected static final Logger log = Logger.getLogger(DetailsSubFormController.class);
+	private static final Logger LOG = Logger.getLogger(SubFormController.class);
 
-//	private static String[] systemColumns = {NuclosEOField.CHANGEDAT.getMetaData().getField(),
-//		NuclosEOField.CREATEDBY.getMetaData().getField(), NuclosEOField.CHANGEDBY.getMetaData().getField(),
-//		NuclosEOField.CREATEDAT.getMetaData().getField()};
-
-
-	private final KeyStroke tabKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0);
+	private static final KeyStroke tabKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0);
 
 	/**
 	 * this controller's subform
@@ -216,7 +213,25 @@ public abstract class SubFormController extends Controller
 	 * @return the <code>CollectableEntity</code> for the data that is to be collected or searched for via this subform.
 	 */
 	public final CollectableEntity getCollectableEntity() {
-		return this.clcte;
+		return clcte;
+	}
+	
+	/**
+	 * @deprecated This is a evil hack - use with care! (tp)
+	 */
+	public CollectableEOEntity getCollectableEntityAsEO() {
+		final CollectableEOEntity result;
+		if (clcte instanceof CollectableEOEntity) {
+			result = (CollectableEOEntity) clcte;
+		}
+		else if (clcte instanceof CollectableMasterDataEntity) {
+			result = Utils.transformCollectableMasterDataEntityTOCollectableEOEntity((CollectableMasterDataEntity) clcte);
+		}
+		else {
+			throw new IllegalStateException("getCollectableEntityAsEO: CollectableEntity " + clcte + " of " 
+					+ clcte.getClass().getName() + ": unexpected type");
+		}
+		return result;
 	}
 
 	/**
@@ -249,7 +264,7 @@ public abstract class SubFormController extends Controller
 	 * sets all column widths to user preferences; set optimal width if no preferences yet saved
 	 */
 	protected final void setColumnWidths() {
-		log.debug("setColumnWidths");
+		LOG.debug("setColumnWidths");
 		getSubForm().setColumnWidths(this.getTableColumnWidthsFromPreferences());
 	}
 
@@ -263,14 +278,14 @@ public abstract class SubFormController extends Controller
 			result = PreferencesUtils.getIntegerList(this.getPrefs(), PREFS_NODE_SELECTEDFIELDWIDTHS);
 		}
 		catch (PreferencesException ex) {
-			log.error("Failed to retrieve table column widths from the preferences. They are reset.");
+			LOG.error("Failed to retrieve table column widths from the preferences. They are reset.");
 			result = new ArrayList<Integer>();
 		}
 
-		if (log.isDebugEnabled()) {
-			log.debug("getTableColumnWidthsFromPreferences for entity " + this.getSubForm().getEntityName());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("getTableColumnWidthsFromPreferences for entity " + this.getSubForm().getEntityName());
 			for (Object o : result) {
-				log.debug("getTableColumnWidthsFromPreferences: column width = " + o);
+				LOG.debug("getTableColumnWidthsFromPreferences: column width = " + o);
 			}
 		}
 
@@ -303,10 +318,10 @@ public abstract class SubFormController extends Controller
 	 * stores the widths of the selected columns (fields) in user preferences
 	 */
 	private void storeFieldWidthsInPreferences(List<Integer> lstFieldWidths) throws PreferencesException {
-		if (log.isDebugEnabled()) {
-			log.debug("storeFieldWidthsInPreferences for entity " + this.getSubForm().getEntityName());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("storeFieldWidthsInPreferences for entity " + this.getSubForm().getEntityName());
 			for (Integer i : lstFieldWidths) {
-				log.debug("storeFieldWidthsInPreferences: column width = " + i);
+				LOG.debug("storeFieldWidthsInPreferences: column width = " + i);
 			}
 		}
 		PreferencesUtils.putIntegerList(this.prefs, PREFS_NODE_SELECTEDFIELDWIDTHS, lstFieldWidths);
@@ -334,7 +349,7 @@ public abstract class SubFormController extends Controller
 			comparator = ComparatorUtils.compoundComparator(new GivenFieldOrderComparator(storedFieldNames), comparator);
 		}
 		catch (PreferencesException ex) {
-			log.warn("Failed to retrieve the field names from the preferences. They will be empty.");
+			LOG.warn("Failed to retrieve the field names from the preferences. They will be empty.");
 		}
 		Collections.sort(result, comparator);
 
@@ -438,23 +453,16 @@ public abstract class SubFormController extends Controller
 	 */
 	public void cmdInsert() {
 		// TODO: check if this really must be encapsuled with runCommand
-//		UIUtils.runCommand(this.getParent(), new CommonRunnable() {
-//			public void run() throws CommonBusinessException {
-				try {
-					if(stopEditing()) {
-						JTable tbl = getJTable();
-						insertNewRow();
-						// TODO: und wenn die neue Zeile wg. Sortierung NICHT am Ende liegt???
-						tbl.addRowSelectionInterval(tbl.getRowCount()-1, tbl.getRowCount()-1);
-//						tbl.setEditingColumn(0);
-//						tbl.requestFocusInWindow();
-					}
-				}
-				catch(CommonBusinessException e) {
-					Errors.getInstance().showExceptionDialog(getParent(), e);
-				}
-//			}
-//		});
+		try {
+			if (stopEditing()) {
+				JTable tbl = getJTable();
+				insertNewRow();
+				// TODO: und wenn die neue Zeile wg. Sortierung NICHT am Ende liegt???
+				tbl.addRowSelectionInterval(tbl.getRowCount() - 1, tbl.getRowCount() - 1);
+			}
+		} catch (CommonBusinessException e) {
+			Errors.getInstance().showExceptionDialog(getParent(), e);
+		}
 	}
 
 	protected abstract Collectable insertNewRow() throws CommonBusinessException;
@@ -582,7 +590,7 @@ public abstract class SubFormController extends Controller
 	}
 
 	protected final void setupTableModelListener() {
-		this.getSubForm().setupTableModelListener(log);
+		this.getSubForm().setupTableModelListener(LOG);
 	}
 
 	protected void removeTableModelListener() {

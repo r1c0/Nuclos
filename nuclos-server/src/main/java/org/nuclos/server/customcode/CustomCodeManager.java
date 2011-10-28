@@ -37,7 +37,6 @@ public class CustomCodeManager implements ApplicationContextAware {
 		//this.context = context;
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> T getInstance(RuleCodeGenerator<T> generator) throws NuclosCompileException {
 		try {
 			if (NuclosJavaCompiler.validate()) {

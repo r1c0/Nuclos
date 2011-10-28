@@ -55,11 +55,6 @@ public class SplashScreen extends JPanel {
     */
    //private static final Color COLOR_EPLUS_GREEN = new Color(0, 112, 84);
 
-   /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 /**
     * the color of the current project logo
     */

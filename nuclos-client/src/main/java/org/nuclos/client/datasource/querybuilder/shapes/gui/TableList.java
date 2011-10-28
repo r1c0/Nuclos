@@ -16,18 +16,38 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.datasource.querybuilder.shapes.gui;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.InvalidDnDOperationException;
+import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.AbstractListModel;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+import javax.swing.SwingUtilities;
+
+import org.apache.log4j.Logger;
 import org.nuclos.client.datasource.querybuilder.QueryBuilderIcons;
 import org.nuclos.client.datasource.querybuilder.controller.QueryBuilderController;
 import org.nuclos.client.datasource.querybuilder.shapes.TableShape;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.database.query.definition.Table;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.dnd.*;
-import java.awt.geom.Rectangle2D;
-import java.io.Serializable;
-import java.util.*;
-import java.util.List;
 
 /**
  * @todo enter class description.
@@ -40,53 +60,29 @@ import java.util.List;
  */
 public class TableList extends JList implements DragGestureListener, Serializable {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(TableList.class);
+
 	protected Color background = new Color(220, 235, 250);
 
 	private class TableListModel extends AbstractListModel implements Serializable {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private final List<Object> lstRows = new ArrayList<Object>();
 
-		/**
-		 *
-		 * @return size
-		 */
 		@Override
         public int getSize() {
 			return lstRows.size();
 		}
 
-		/**
-		 *
-		 * @param index
-		 * @return element at
-		 */
 		@Override
         public Object getElementAt(int index) {
 			return lstRows.get(index);
 		}
 
-		/**
-		 *
-		 * @param obj
-		 */
 		public void addRows(List<?> obj) {
 			lstRows.addAll(obj);
 			fireContentsChanged(this, 0, lstRows.size());
 		}
 
-		/**
-		 *
-		 * @param index
-		 * @param bValue
-		 */
 		public void markElementAt(int index, boolean bValue) {
 			final ConstraintColumn col = (ConstraintColumn) model.getElementAt(index);
 			col.setMark(bValue);
@@ -95,24 +91,12 @@ public class TableList extends JList implements DragGestureListener, Serializabl
 	}
 
 	class TableListCellRenderer implements ListCellRenderer, Serializable {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		private JLabel label = new JLabel();
 		private Font regularFont = new Font("Dialog", Font.PLAIN, 10);
 		private Font boldFont = new Font("Dialog", Font.BOLD, 10);
 		private Font italicFont = new Font("Dialog", Font.ITALIC, 10);
 
-		/**
-		 *
-		 * @param list
-		 * @param value
-		 * @param index
-		 * @param isSelected
-		 * @param cellHasFocus
-		 * @return list cell renderer component
-		 */
 		@Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
@@ -159,28 +143,18 @@ public class TableList extends JList implements DragGestureListener, Serializabl
 	protected int currentMark = -1;
 	protected boolean bDragSource = false;
 
-	/**
-	 *
-	 */
 	public TableList(TableShape embeddingShape) {
 		super();
 		this.embeddingShape = embeddingShape;
 		init();
 	}
 
-	/**
-	 *
-	 * @param listData
-	 */
 	public TableList(TableShape embeddingShape, final Object[] listData) {
 		super(listData);
 		this.embeddingShape = embeddingShape;
 		init();
 	}
 
-	/**
-	 *
-	 */
 	protected void init() {
 		setModel(model);
 		dragSource = DragSource.getDefaultDragSource();
@@ -188,10 +162,6 @@ public class TableList extends JList implements DragGestureListener, Serializabl
 		setCellRenderer(new TableListCellRenderer());
 	}
 
-	/**
-	 *
-	 * @return embedding shape
-	 */
 	public TableShape getEmbeddingShape() {
 		return embeddingShape;
 	}
@@ -206,16 +176,16 @@ public class TableList extends JList implements DragGestureListener, Serializabl
 			dge.startDrag(null, new ColumnTransferable((ConstraintColumn) ((TableList) dge.getComponent()).getSelectedValue()),
 					((QueryBuilderController) embeddingShape.getView().getController()).getDragSourceListener());
 		}
-		catch (final InvalidDnDOperationException ex) {
+		catch (final InvalidDnDOperationException e) {
 			//@todo find the right way to handle this case
-			ex.printStackTrace();
+			LOG.warn("dragGestureRecognized failed: " + e, e);
 			dge.getSourceAsDragGestureRecognizer().resetRecognizer();
 		}
 		catch (final Exception ex) {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
                 public void run() {
-					System.out.println(ex.getMessage());
+					LOG.error("dragGestureRecognized failed: " + ex, ex);
 					Errors.getInstance().showExceptionDialog(TableList.this, ex);
 				}
 			});

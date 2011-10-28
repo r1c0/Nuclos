@@ -50,10 +50,6 @@ import org.nuclos.server.report.valueobject.ReportVO;
 
 public class DatasourceReportExplorerNode extends AbstractDatasourceExplorerNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private static final String ACTIONCOMMAND_SHOW_DETAILS = "SHOW DETAILS";
 
 	public DatasourceReportExplorerNode(TreeNode treenode) {
@@ -103,11 +99,6 @@ public class DatasourceReportExplorerNode extends AbstractDatasourceExplorerNode
 	 * Shows the details for the Report
 	 */
 	private static class ShowDetailsAction extends TreeNodeAction {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public ShowDetailsAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("RuleExplorerNode.1","Details anzeigen"), tree);

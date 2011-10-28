@@ -96,7 +96,6 @@ public class SearchResultStrategy<Clct extends Collectable> implements ISearchRe
 	 * Common implementation for cmdSearch() and cmdRefreshResult().
 	 * @param bRefreshOnly Refresh only? (false: perform a new search)
 	 */
-	@SuppressWarnings("deprecation")
 	private void cmdSearch(boolean bRefreshOnly) {
 		final CollectController<Clct> cc = getCollectController();
 		LOG.debug("START cmdSearch");
@@ -282,9 +281,11 @@ public class SearchResultStrategy<Clct extends Collectable> implements ISearchRe
 				}
 			}
 		}
-		catch(CollectableFieldFormatException e1) {
+		catch(CollectableFieldFormatException e) {
+        	LOG.warn("saveSearchTerms failed: " + e, e);
 		}
 		catch(PreferencesException e) {
+        	LOG.warn("saveSearchTerms failed: " + e, e);
 		}
 	}
 

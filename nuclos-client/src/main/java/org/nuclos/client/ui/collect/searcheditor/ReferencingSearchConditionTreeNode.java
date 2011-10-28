@@ -50,10 +50,6 @@ import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollecta
  */
 public class ReferencingSearchConditionTreeNode extends SearchConditionTreeNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final CollectableEntityField clctefReferencing;
 
 	/**

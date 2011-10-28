@@ -44,16 +44,11 @@ import org.nuclos.common2.CommonLocaleDelegate;
 
 public class DatasourceHeaderPanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private final JPanel pnlTextFields = new JPanel();
 
-	final CollectableTextField clcttfName;
-	final CollectableComboBox clbxEntity;
-	final CollectableTextField clcttfDescription;
+	private final CollectableTextField clcttfName;
+	private final CollectableComboBox clbxEntity;
+	private final CollectableTextField clcttfDescription;
 
 	public DatasourceHeaderPanel(
 			CollectableEntityField clctefName,
@@ -123,6 +118,18 @@ public class DatasourceHeaderPanel extends JPanel {
 			return new DefaultCollectableComponentsProvider(clcttfName, clbxEntity, clcttfDescription);
 		else
 			return new DefaultCollectableComponentsProvider(clcttfName, clcttfDescription);
+	}
+	
+	CollectableTextField getNameField() {
+		return clcttfName;
+	}
+	
+	CollectableTextField getDescriptionField() {
+		return clcttfName;
+	}
+	
+	CollectableComboBox getEntityComboBox() {
+		return clbxEntity;
 	}
 
 }	// class StateModelHeaderPanel

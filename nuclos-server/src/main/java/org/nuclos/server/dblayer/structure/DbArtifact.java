@@ -43,7 +43,6 @@ import org.nuclos.server.dblayer.structure.DbConstraint.DbUniqueConstraint;
  */
 public abstract class DbArtifact implements Serializable {
 
-	@SuppressWarnings("unchecked")
 	public static Comparator<DbArtifact> COMPARATOR = ComparatorUtils.byClassComparator(
 		DbSequence.class,
 		DbTable.class,	DbColumn.class,

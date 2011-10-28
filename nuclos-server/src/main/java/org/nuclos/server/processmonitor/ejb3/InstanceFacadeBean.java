@@ -20,10 +20,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
@@ -46,7 +42,6 @@ import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.InstanceConstants;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
-import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.query.DbCondition;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -76,9 +71,9 @@ import org.springframework.transaction.annotation.Transactional;
  * @version 00.01.000
  * @todo restrict
  */
-@Stateless
-@Local(InstanceFacadeLocal.class)
-@Remote(InstanceFacadeRemote.class)
+// @Stateless
+// @Local(InstanceFacadeLocal.class)
+// @Remote(InstanceFacadeRemote.class)
 @Transactional
 public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFacadeLocal, InstanceFacadeRemote, InstanceConstants{
 

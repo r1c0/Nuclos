@@ -27,10 +27,7 @@ package org.nuclos.common.database.query.definition;
  * @version 01.00
  */
 public class ReferentialContraint extends Constraint {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private String referencedSchema;
 	private String referencedConstraint;
 

@@ -34,6 +34,7 @@ import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.log4j.Logger;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
 import org.nuclos.common.NuclosEntity;
@@ -51,6 +52,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 
 public class XMLEntities {
+
+	private static final Logger LOG = Logger.getLogger(XMLEntities.class);
 
 	public static boolean DEV = true;
 
@@ -111,7 +114,7 @@ public class XMLEntities {
 
 	public static void main(String[] args) {
 		Map<NuclosEntity, SystemDataCache> internalDataCaches = XMLEntities.internalDataCaches;
-		System.err.println(internalDataCaches);
+		LOG.debug("internalDataCaches: " + internalDataCaches);
 	}
 
 	public static Map<String, SystemMasterDataMetaVO> getSystemEntities() {

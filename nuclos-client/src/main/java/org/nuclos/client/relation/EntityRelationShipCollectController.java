@@ -242,7 +242,7 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 	
 	private String getXML() {
 		mxCodec codec = new mxCodec();
-		String xml = mxUtils.getXml(codec.encode(this.pnlEdit.graphComponent.getGraph().getModel()));
+		String xml = mxUtils.getXml(codec.encode(pnlEdit.getGraphComponent().getGraph().getModel()));
 		return xml;
 	}
 
@@ -280,10 +280,6 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 
 	
 	private class EntityRelationshipCollectPanel extends CollectPanel<EntityRelationshipModel> {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		EntityRelationshipCollectPanel(boolean bSearchPanelAvailable) {
 			super(bSearchPanelAvailable);

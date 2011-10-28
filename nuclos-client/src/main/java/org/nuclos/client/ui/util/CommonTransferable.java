@@ -55,7 +55,6 @@ public class CommonTransferable<V> implements Transferable {
 		}
 		
 		@Override
-		@SuppressWarnings("unchecked")
 		public Class<T> getRepresentationClass() {
 			return super.getRepresentationClass();
 		}

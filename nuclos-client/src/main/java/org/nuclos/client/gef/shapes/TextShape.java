@@ -36,17 +36,11 @@ import java.text.AttributedString;
  * @version 01.00.00
  */
 public class TextShape extends RectangularShape {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	protected String sText;
 	protected AttributedString attrString;
 	protected Font textFont = new Font("Arial", Font.PLAIN, 10);
 
-	/**
-	 *
-	 */
 	public TextShape() {
 		this("", 0d, 0d, 0d, 0d);
 	}

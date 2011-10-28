@@ -29,11 +29,6 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 public class NuclosBusinessException extends CommonBusinessException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public NuclosBusinessException() {
 		super("common.error.exception.nucleusbusinessexception");
 		//super(NuclosServerResources.getString("common.error.exception.nucleusbusinessexception"));

@@ -42,8 +42,6 @@ import org.nuclos.common2.CommonLocaleDelegate;
 
 public class DefaultSelectObjectsPanel<T> extends SelectObjectsPanel<T> {
 
-	private static final long serialVersionUID = 1L;
-	
 	protected final JComponent header;
 
 	public DefaultSelectObjectsPanel() {

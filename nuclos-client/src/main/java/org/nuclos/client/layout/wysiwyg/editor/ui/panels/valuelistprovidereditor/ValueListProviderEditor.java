@@ -87,15 +87,12 @@ import org.nuclos.server.report.valueobject.ValuelistProviderVO;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class ValueListProviderEditor extends JDialog implements SaveAndCancelButtonPanelControllable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	final int height = 300;
-	final int width = 650;
+	private static final Logger LOG = Logger.getLogger(ValueListProviderEditor.class);
+
+	private final int height = 300;
+	private final int width = 650;
 
 	private final JLabel lblType = new JLabel(VALUELIST_PROVIDER_EDITOR.LABEL_VALUELIST_PROVIDER_NAME);
 	private final JComboBox cbxType = new JComboBox();
@@ -140,10 +137,6 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 		cbxType.setPreferredSize(new Dimension(250, 20));
 		cbxType.setEditable(true);
 		cbxType.setRenderer(new BasicComboBoxRenderer(){
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public Component getListCellRendererComponent(JList list,
@@ -161,10 +154,6 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 			}
 		});
 		cbxType.setModel(new DefaultComboBoxModel(){
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void setSelectedItem(Object anObject) {
@@ -650,10 +639,6 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 	 */
 	class ParameterPanel extends JPanel implements AddRemoveButtonControllable {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		WYSIYWYGParameter wysiwygParameter = null;
 		private JTextField txtName = null;
 		private JTextField txtValue = null;

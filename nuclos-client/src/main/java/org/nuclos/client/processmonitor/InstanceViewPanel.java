@@ -35,12 +35,6 @@ import javax.swing.JSplitPane;
  */
 public class InstanceViewPanel extends JPanel {
 	
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private final JPanel pnlInstanceViewer = new JPanel(new BorderLayout());
 	
 	final InstanceViewHeaderPanel pnlHeader = new InstanceViewHeaderPanel();

@@ -17,24 +17,14 @@
 package org.nuclos.server.attribute.ejb3;
 
 import java.util.Collection;
-import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.CreateException;
-import javax.ejb.Local;
 
-import org.nuclos.common.collection.Pair;
-import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
-import org.nuclos.common2.exception.CommonRemoveException;
-import org.nuclos.common2.exception.CommonStaleVersionException;
-import org.nuclos.common2.exception.CommonValidationException;
-import org.nuclos.server.attribute.NuclosSystemAttributeNotModifiableException;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
-import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 
-@Local
+// @Local
 public interface AttributeFacadeLocal {
 
 	/**
@@ -43,22 +33,22 @@ public interface AttributeFacadeLocal {
 	 * @throws CommonPermissionException
 	 * @precondition iAttributeId != null
 	 */
-	public abstract AttributeCVO get(Integer iAttributeId)
+	AttributeCVO get(Integer iAttributeId)
 		throws CommonFinderException, CommonPermissionException;
 
-	/**
+	/*
 	 * creates a new attribute in the database. External values will not be added, they must be added in the referenced master data table directly.
 	 * @param attrcvo contains the attribute data
 	 * @return same attribute as value object
 	 * @throws CommonPermissionException
 	 * @postcondition result != null
-	 */
 	@RolesAllowed("Login")
-	public abstract AttributeCVO create(AttributeCVO attrcvo,
+	AttributeCVO create(AttributeCVO attrcvo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonValidationException,
 		CommonPermissionException;
+	 */
 
 	/**
 	 * updates an existing attribute in the database.
@@ -68,73 +58,72 @@ public interface AttributeFacadeLocal {
 	 * @return new attribute id
 	 * @throws CommonPermissionException
 	 * @throws CreateException
-	 */
 	@RolesAllowed("Login")
-	public abstract Integer modify(AttributeCVO attrcvo,
+	Integer modify(AttributeCVO attrcvo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonValidationException,
-		NuclosSystemAttributeNotModifiableException, CommonPermissionException,
-		CreateException;
+		NuclosSystemAttributeNotModifiableException, CommonPermissionException;
+	 */
 
 	/**
 	 * deletes the given attribute from the database.
 	 * External values will not be deleted, they must be deleted in the referenced master data table directly.
 	 * @param attrcvo the attribute to be deleted
 	 * @throws CommonPermissionException
-	 */
 	@RolesAllowed("Login")
-	public abstract void remove(AttributeCVO attrcvo)
+	void remove(AttributeCVO attrcvo)
 		throws CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException,
 		NuclosSystemAttributeNotModifiableException, CommonPermissionException;
+	 */
 
 	/**
 	 * invalidates the attribute cache (console function)
 	 */
 	@RolesAllowed("Login")
-	public abstract void invalidateCache();
+	void invalidateCache();
 
 	/**
 	 * invalidates the attribute cache
 	 */
-	public abstract void invalidateCache(Integer iAttributeId);
+	void invalidateCache(Integer iAttributeId);
 
 	/**
 	 * makes attributes consistent which have a reference to a field of a foreignentity
 	 * @param sEntityName name of the entity which was changed
 	 * @param iCollectableId id of entity which was changed
 	 * @param mpChangedFields map of fieldnames and their values which were (potential) changed
-	 */
 	@RolesAllowed("Login")
-	public abstract void makeConsistent(String sEntityName,
+	void makeConsistent(String sEntityName,
 		Integer iCollectableId, Map<String, Object> mpChangedFields)
-		throws CreateException, CommonFinderException;
+		throws CommonFinderException;
+	 */
 
 	/**
 	 * makes attributes consistent which have a reference to a field of a foreignentity
 	 * @param sEntityName name of the entity which was changed
 	 * @param iCollectableId id of entity which was changed
 	 * @param changedField fieldname and its value which was (potential) changed
-	 */
 	@RolesAllowed("Login")
-	public abstract void makeConsistent(String sEntityName,
+	void makeConsistent(String sEntityName,
 		Integer iCollectableId, Pair<String, String> changedField)
-		throws CreateException, CommonFinderException;
+		throws CommonFinderException;
+	 */
 
 	/**
 	 * makes attributes consistent which have a references to an attributevalue (Werteliste)
 	 * @param iAttributeValueId id of attributevalue which has changed
 	 * @param sAttributeValue the changed value
-	 */
 	@RolesAllowed("Login")
-	public abstract void makeConsistent(Integer iAttributeId,
+	void makeConsistent(Integer iAttributeId,
 		Integer iAttributeValueId, String sAttributeValue)
-		throws CreateException, CommonFinderException;
+		throws CommonFinderException;
+	 */
 
 	/**
 	 * @return the available calculation functions for calculated attributes
 	 */
 	@RolesAllowed("Login")
-	public Collection<String> getCalculationFunctions();
+	Collection<String> getCalculationFunctions();
 }

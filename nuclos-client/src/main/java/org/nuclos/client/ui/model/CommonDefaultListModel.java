@@ -33,10 +33,6 @@ import javax.swing.DefaultListModel;
  */
 
 public class CommonDefaultListModel<E> extends DefaultListModel implements MutableListModel<E> {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	public CommonDefaultListModel() {
 		super();
@@ -54,7 +50,6 @@ public class CommonDefaultListModel<E> extends DefaultListModel implements Mutab
 		this.addElement(o);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public E remove(int i) {
 		return (E) super.remove(i);

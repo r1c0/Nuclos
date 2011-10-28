@@ -83,17 +83,13 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
  */
 public class GenericObjectImportCollectController extends MasterDataCollectController implements MessageListener {
 
-	protected static final Logger log = Logger.getLogger(GenericObjectImportCollectController.class);
+	private static final Logger LOG = Logger.getLogger(GenericObjectImportCollectController.class);
 
 	public static final String COMPONENTNAME_PROGRESSPANEL = "progressPanel";
 
 	private ImportDelegate delegate = ImportDelegate.getInstance();
 
 	private final Action actImport = new CommonAbstractAction(Icons.getInstance().getIconPlay16(), CommonLocaleDelegate.getMessage("GenericObjectImportCollectController.import", "Importieren")) {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -102,10 +98,6 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 	};
 
 	private final Action actStop = new CommonAbstractAction(Icons.getInstance().getIconStop16(), CommonLocaleDelegate.getMessage("GenericObjectImportCollectController.stopimport", "Import abbrechen")) {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -203,7 +195,6 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 		return result;
     }
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public CollectableMasterDataWithDependants insertCollectable(CollectableMasterDataWithDependants clctNew) throws CommonBusinessException {
 		if(clctNew.getId() != null) {
@@ -321,6 +312,7 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 			ImportDelegate.getInstance().stopImport(importfileId);
         }
         catch(NuclosFileImportException e) {
+			LOG.error("cmdCancelImport failed: " + e, e);
         	JOptionPane.showMessageDialog(GenericObjectImportCollectController.this.getDetailsPanel(), CommonLocaleDelegate.getMessageFromResource(e.getMessage()), "", JOptionPane.ERROR_MESSAGE);
         }
 	}
@@ -391,23 +383,18 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 							refreshCurrentCollectable(false);
 						}
 						catch(CommonBusinessException e) {
-							log.error(e);
+							LOG.error("onMessage failed: " + e, e);
 						}
 		    		}
 		    	}
 		    }
 		}
 		catch (JMSException ex) {
-			log.error(ex);
+			LOG.error(ex);
 		}
     }
 
 	private class TrafficLightCellRenderer extends DefaultTableCellRenderer {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object oValue, boolean bSelected, boolean bHasFocus,int iRow, int iColumn) {

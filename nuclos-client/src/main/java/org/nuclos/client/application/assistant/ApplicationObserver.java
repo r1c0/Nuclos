@@ -19,17 +19,18 @@ package org.nuclos.client.application.assistant;
 import java.util.HashMap;
 import java.util.Map;
 
-
+import org.apache.log4j.Logger;
 
 public class ApplicationObserver {
+	
+	private static final Logger LOG = Logger.getLogger(ApplicationObserver.class);
 	
 	public static final String NEWENTITY = "newEntity";
 	public static final String STARTUPPANEL = "startupPanel";
 	
 	static ApplicationObserver observer;
 	
-	Map<String,ApplicationAssistantListener> mp;
-	
+	private Map<String,ApplicationAssistantListener> mp;
 	
 	protected ApplicationObserver() {
 		mp = new HashMap<String,ApplicationAssistantListener>();
@@ -47,6 +48,7 @@ public class ApplicationObserver {
 		}
 		catch(Exception e) {
 			// do noting here
+			LOG.info("fireApplicationChangedEvent failed: " + e);
 		}
 	}
 	

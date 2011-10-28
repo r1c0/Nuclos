@@ -33,10 +33,6 @@ import org.nuclos.common2.Localizable;
  */
 public class ResourceIdMapper<V> extends ObjectToStringConverter implements StringValue, Comparator<V> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final Map<Object, String> translations;
 
 	public ResourceIdMapper(Map<V, String> map) {

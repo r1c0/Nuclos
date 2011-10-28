@@ -45,7 +45,7 @@ public abstract class NuclosLocalServerSession {
 
 	public static final String STATIC_SUPERUSER = "(superuser)";
 
-	private static final Logger log = Logger.getLogger(NuclosLocalServerSession.class);
+	private static final Logger LOG = Logger.getLogger(NuclosLocalServerSession.class);
 
 	private static Integer sessionId;
 
@@ -99,7 +99,7 @@ public abstract class NuclosLocalServerSession {
 			SecurityContextHolder.getContext().setAuthentication(null);
 		}
 		catch(Exception e) {
-			log.error(e);
+			LOG.error(e);
 		}
 	}
 

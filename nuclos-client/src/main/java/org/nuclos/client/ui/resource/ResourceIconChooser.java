@@ -51,12 +51,8 @@ import org.nuclos.client.ui.Icons;
 
 public class ResourceIconChooser extends JPanel {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	final JList list;
-	final List<String> iconNames = new ArrayList<String>();
+	private final JList list;
+	private final List<String> iconNames = new ArrayList<String>();
 	
 	final ActionListener iconActionListener = new ActionListener() {
 		@Override
@@ -86,10 +82,6 @@ public class ResourceIconChooser extends JPanel {
 		}
 		
 		list = new JList(icons.toArray()) {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public int getScrollableUnitIncrement(Rectangle visibleRect,

@@ -48,7 +48,7 @@ import org.quartz.SchedulerException;
  */
 public class NuclosUpdateJob extends NuclosQuartzJob{
 	
-	private static Logger logger = Logger.getLogger("NuclosUpdateJob");		
+	private static final Logger LOG = Logger.getLogger("NuclosUpdateJob");		
 	
 	public NuclosUpdateJob() {
 		super(new NuclosUpdateJobImpl());
@@ -60,7 +60,7 @@ public class NuclosUpdateJob extends NuclosQuartzJob{
 	private static class NuclosUpdateJobImpl implements Job{
 		@Override
 		public void execute(JobExecutionContext context) throws JobExecutionException {
-			logger.debug("Start executing NuclosUpdateJob");
+			LOG.debug("Start executing NuclosUpdateJob");
 			
 			if(System.getProperty("restricted") == null) {
 				//allow only quartz-user to log on server, while the job executes
@@ -79,11 +79,11 @@ public class NuclosUpdateJob extends NuclosQuartzJob{
 			ArrayList<Pair<Integer, String>> lstJavaClassNames = new ArrayList<Pair<Integer, String>>();
 			try {
 				for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
-					logger.info("Job to execute: " + tuple.get(1, String.class));
+					LOG.info("Job to execute: " + tuple.get(1, String.class));
 					lstJavaClassNames.add(new Pair<Integer, String>(tuple.get(0, Integer.class), tuple.get(1, String.class)));
 				}
 			} catch (DbException ex) {
-				logger.error(ex);
+				LOG.error(ex);
 			}
 			
 			for(Pair<Integer, String> javaClass : lstJavaClassNames) {
@@ -93,11 +93,11 @@ public class NuclosUpdateJob extends NuclosQuartzJob{
 					if (isSuccessfulExecuted) {
 						DataBaseHelper.execute(DbStatementUtils.updateValues("T_AD_UPDATEJOBS",
 							"DATEXECUTED", DbCurrentDate.CURRENT_DATE).where("INTID", javaClass.getX()));
-						logger.info("END executing Job: "+javaClass.getY());
+						LOG.info("END executing Job: "+javaClass.getY());
 					}
 				}
 				catch (Exception e) {
-					logger.error(e);
+					LOG.error(e);
 				}
 			}		
 			
@@ -110,12 +110,12 @@ public class NuclosUpdateJob extends NuclosQuartzJob{
 			final Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
 			try {
 				scheduler.deleteJob(sJobName, sJobGroup);
-				logger.debug("NuclosUpdateJob deleted");
+				LOG.debug("NuclosUpdateJob deleted");
 			}
 			catch(SchedulerException ex) {
-				logger.error("Failed to delete NuclosUpdateJob ",ex);
-			}
-			
+				LOG.error("Failed to delete NuclosUpdateJob ",ex);
+			}		
 		}
 	}
+	
 }

@@ -19,15 +19,13 @@ package org.nuclos.server.transfer.ejb3;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.ejb.CreateException;
-import javax.ejb.Remote;
-
+import org.nuclos.common2.File;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
-@Remote
+// @Remote
 public interface XmlExportFacadeRemote {
 
 	/**
@@ -44,14 +42,14 @@ public interface XmlExportFacadeRemote {
 	 * @throws Exception
 	 * @jboss.method-attributes read-only = "true"
 	 */
-	public abstract org.nuclos.common2.File xmlExport(
+	File xmlExport(
 		Map<Integer, String> exportEntities, boolean deepexport, String sFileName)
 		throws CommonFinderException, CommonPermissionException, IOException,
-		CommonCreateException, CreateException, NuclosBusinessRuleException;
+		CommonCreateException, NuclosBusinessRuleException;
 
 	/**
 	 * get the count of the processed exported entities
 	 */
-	public abstract Integer getProcessedEntities();
+	Integer getProcessedEntities();
 
 }

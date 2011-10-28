@@ -101,7 +101,8 @@ import org.nuclos.common2.PreferencesUtils;
  */
 
 public class UIUtils {
-	private static final Logger log = Logger.getLogger(UIUtils.class);
+	
+	private static final Logger LOG = Logger.getLogger(UIUtils.class);
 
 	private static CommandHandler commandhandler = new DefaultCommandHandler();
 
@@ -548,7 +549,6 @@ public class UIUtils {
 	 * @param cls
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T extends Component> Collection<T> findAllInstancesOf(Component comp, Class<T> cls) {
 		final Collection<T> result;
 		if(comp == null) {
@@ -649,7 +649,7 @@ public class UIUtils {
 
 	public static void showWaitCursorForFrame(Component parent, boolean bShow) {
 		if (parent == null) {
-			log.debug("Cannot set wait cursor, as component is null");
+			LOG.debug("Cannot set wait cursor, as component is null");
 			return;
 		}
 
@@ -686,10 +686,6 @@ public class UIUtils {
 		//override copy Action for both tables
 		final ActionMap am = new ActionMap();
 		am.put("copy", new AbstractAction() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -1277,7 +1273,10 @@ public class UIUtils {
 			GraphicsConfiguration gc = gs.getDefaultConfiguration();
 			bimage = gc.createCompatibleImage(image.getWidth(null), image.getHeight(null), transparency);
 		}
-		catch(HeadlessException e) {} //No screen
+		catch(HeadlessException e) {
+			//No screen
+			LOG.error("toBufferedImage failed: " + e, e);
+		} 
 
 		if(bimage == null) {
 			// Create a buffered image using the default color model
@@ -1307,7 +1306,9 @@ public class UIUtils {
 		try {
 			pg.grabPixels();
 		}
-		catch(InterruptedException e) {}
+		catch(InterruptedException e) {
+			LOG.warn("hasAlpha failed: " + e, e);
+		}
 
 		// Get the image's color model
 		return pg.getColorModel() != null && pg.getColorModel().hasAlpha();
@@ -1474,7 +1475,7 @@ public class UIUtils {
 			setWindowOpaqueMethod.invoke(null, window, false);
 			setWindowOpacityMethod.invoke(null, window, opacity);
 		} catch (Exception ex) {
-			log.debug("com.sun.awt.AWTUtilities not avaiable or error during method calls: ", ex);
+			LOG.debug("com.sun.awt.AWTUtilities not avaiable or error during method calls: ", ex);
 		}
 	}
 

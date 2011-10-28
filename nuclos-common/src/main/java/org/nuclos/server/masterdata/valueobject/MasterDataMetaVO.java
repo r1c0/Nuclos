@@ -45,10 +45,6 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
 @Deprecated
 public class MasterDataMetaVO extends NuclosValueObject implements Localizable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final String sEntityName;
 	private final String sDBEntityName;
 	private final String sMenuPath;

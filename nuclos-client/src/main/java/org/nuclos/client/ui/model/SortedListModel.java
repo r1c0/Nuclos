@@ -37,11 +37,6 @@ import org.apache.commons.lang.NullArgumentException;
  */
 public class SortedListModel<E> extends AbstractListModel implements MutableListModel<E> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private final List<E> lst;
 
 	private final Comparator<? super E> comparator;
@@ -119,7 +114,6 @@ public class SortedListModel<E> extends AbstractListModel implements MutableList
 	 * @param o
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public void add(Object o) {
 		this.lst.add((E) o);
 		final int iIndex = this.lst.size() - 1;
@@ -133,7 +127,6 @@ public class SortedListModel<E> extends AbstractListModel implements MutableList
 	 * @param o
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public void add(int index, Object o) {
 		this.lst.add(index, (E) o);
 		super.fireIntervalAdded(this, index, index);

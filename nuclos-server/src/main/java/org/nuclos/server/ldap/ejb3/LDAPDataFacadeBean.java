@@ -26,9 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
@@ -71,9 +68,9 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Local(LDAPDataFacadeLocal.class)
-@Remote(LDAPDataFacadeRemote.class)
+// @Stateless
+// @Local(LDAPDataFacadeLocal.class)
+// @Remote(LDAPDataFacadeRemote.class)
 @Transactional
 public class LDAPDataFacadeBean extends NuclosFacadeBean implements LDAPDataFacadeLocal, LDAPDataFacadeRemote {
 

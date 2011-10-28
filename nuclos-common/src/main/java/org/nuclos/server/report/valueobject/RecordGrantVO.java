@@ -20,10 +20,6 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
 
 public class RecordGrantVO extends DatasourceVO {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private String sEntity;
 
 	public RecordGrantVO(NuclosValueObject evo, String sName,

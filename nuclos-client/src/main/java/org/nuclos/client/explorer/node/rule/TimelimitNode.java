@@ -28,10 +28,6 @@ import java.util.List;
  */
 public class TimelimitNode extends AbstractRuleTreeNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private boolean isInsertRuleAllowed;
 
 	public TimelimitNode(String aLabel, String aDescription, boolean aIsInsertRuleAllowedFlag) {

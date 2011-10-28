@@ -32,11 +32,7 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
  */
 public class OrShape extends OvalShape {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	StateVO stateVO;
+	private StateVO stateVO;
 
 	/**
 	 * @param centerX

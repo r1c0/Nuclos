@@ -227,7 +227,6 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public boolean contains(Object o) {
 		if(o instanceof AbstractNuclosValueObject<?>) {
 			return lstIds.contains(((AbstractNuclosValueObject<T>)o).getId());
@@ -268,7 +267,6 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public boolean remove(Object o) {
 		if(o instanceof AbstractNuclosValueObject<?>) {
 			AbstractNuclosValueObject<T> aevo = (AbstractNuclosValueObject<T>) o;

@@ -34,18 +34,13 @@ import java.awt.*;
  */
 public class ProcessMonitorEditHeaderPanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private final JPanel pnlTextFields = new JPanel();
 
-	final CollectableTextField clcttfName = new CollectableTextField(
+	private final CollectableTextField clcttfName = new CollectableTextField(
 			CollectableProcessMonitorModel.clcte.getEntityField("name"));
 	
 
-	final CollectableTextField clcttfDescription = new CollectableTextField(
+	private final CollectableTextField clcttfDescription = new CollectableTextField(
 			CollectableProcessMonitorModel.clcte.getEntityField("description"));
 
 	public ProcessMonitorEditHeaderPanel() {

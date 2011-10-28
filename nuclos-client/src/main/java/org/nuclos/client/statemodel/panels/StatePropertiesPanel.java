@@ -80,6 +80,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.entityobject.CollectableEntityObject;
@@ -138,16 +139,11 @@ import org.nuclos.server.statemodel.valueobject.SubformPermissionVO;
 
 public class StatePropertiesPanel extends JPanel {
 
-	/**
-	 * 
-	 */
+	private static final Logger LOG = Logger.getLogger(StatePropertiesPanel.class);
+
 	public class ResourceIconChooser extends JPanel {
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		final JList list;
+		private final JList list;
 		
 		public ResourceIconChooser() {
 			setLayout(new BorderLayout());
@@ -155,10 +151,6 @@ public class StatePropertiesPanel extends JPanel {
 			Icon[] icons = Icons.getInstance().getStateIcons();
 			
 			list = new JList(icons) {
-	            /**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
 	
 				@Override
 				public int getScrollableUnitIncrement(Rectangle visibleRect,
@@ -262,18 +254,8 @@ public class StatePropertiesPanel extends JPanel {
 		}
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public static class StateDependantRightsPanel extends JPanel implements RightAndMandatoryConstants{
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		public static final int LEFT_BORDER = 5;
 		
 		public final static String PREFS_NODE_SELECTEDROLES = "selectedRoles";
@@ -362,7 +344,7 @@ public class StatePropertiesPanel extends JPanel {
 				initMain(usages);
 			}
 			catch(CommonBusinessException e) {
-				e.printStackTrace();
+				LOG.error("setup failed: " + e, e);
 			}
 			revalidate();
 			repaint();
@@ -526,7 +508,8 @@ public class StatePropertiesPanel extends JPanel {
 								try {
 									 Thread.currentThread().sleep(2000);
 								}
-								catch(InterruptedException e1) {
+								catch(InterruptedException e) {
+									LOG.warn("initMain: " + e, e);
 									tryAgain = false;
 								}
 								try {
@@ -535,6 +518,7 @@ public class StatePropertiesPanel extends JPanel {
 									(new Bubble(roleSelection, CommonLocaleDelegate.getMessage("StatePropertiesPanel.15", "Einige Benutzergruppen sind ausgeblendet."), 5, Bubble.Position.SE)).setVisible(true);
 								} catch (IllegalComponentStateException e) {
 									// do nothing. it is not shown
+									LOG.warn("initMain: " + e, e);
 								}
 							}
 						}
@@ -553,10 +537,6 @@ public class StatePropertiesPanel extends JPanel {
 				iCol++;
 			}
 			JPanel lastGridOnTheRight = new JPanel() {
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
 				protected void paintComponent(Graphics g) {
@@ -571,10 +551,6 @@ public class StatePropertiesPanel extends JPanel {
 			header.add(lastGridOnTheRight, iCol + ",0");
 			
 			class LastGridOfGroup extends JPanel {
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
 				protected void paintComponent(Graphics g) {
@@ -961,7 +937,7 @@ public class StatePropertiesPanel extends JPanel {
 							PreferencesUtils.putIntegerList(prefs, PREFS_NODE_SELECTEDROLES, new ArrayList<Integer>(selectedRoles));
 						}
 						catch(PreferencesException e1) {
-							e1.printStackTrace();
+							LOG.warn("actionPerformed: " + e1, e1);
 						}
 					}
 				}
@@ -1066,7 +1042,7 @@ public class StatePropertiesPanel extends JPanel {
 					result[i] = CELL_HEIGHT;
 					i++;
 					
-					for (@SuppressWarnings("unused") Attribute efMeta : attributes.get(attributeGroupsSorted.get(group))) {
+					for (Attribute efMeta : attributes.get(attributeGroupsSorted.get(group))) {
 						result[i] = CELL_HEIGHT-1;
 						i++;
 					}
@@ -1089,7 +1065,7 @@ public class StatePropertiesPanel extends JPanel {
 				result[i] = CELL_HEIGHT;
 				i++;
 				
-				if (DEV_MODUS) for (@SuppressWarnings("unused") Attribute efMeta : subFormWithColumns.get(subform)) {
+				if (DEV_MODUS) for (Attribute efMeta : subFormWithColumns.get(subform)) {
 					result[i] = CELL_HEIGHT-1;
 					i++;
 				}
@@ -1411,10 +1387,6 @@ public class StatePropertiesPanel extends JPanel {
 	
 	public static class HorizontalLabel extends JLabel {
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private boolean needsRotate;
 		
 		public HorizontalLabel(String text) {

@@ -18,11 +18,14 @@ package org.nuclos.client.ui;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.beans.PropertyVetoException;
 
 import javax.swing.DesktopManager;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
+
+import org.apache.log4j.Logger;
 
 /**
  * class for <b>UIDesktopUtils.java</b>...
@@ -31,6 +34,9 @@ import javax.swing.JInternalFrame;
  * @version	$Revision$
  */
 public class UIDesktopUtils {
+	
+	private static final Logger LOG = Logger.getLogger(UIDesktopUtils.class);
+
 	protected static final int UNUSED_HEIGHT = 48;
 	protected static int nextX; // Next X position
 	protected static int nextY; // Next Y position
@@ -206,8 +212,8 @@ public class UIDesktopUtils {
 					try {
 						jif.setIcon(true);
 					}
-					catch (java.beans.PropertyVetoException e) {
-						e.printStackTrace();
+					catch (PropertyVetoException e) {
+						LOG.warn("minimizeAll failed: " + e, e);
 					}
 				}
 			}

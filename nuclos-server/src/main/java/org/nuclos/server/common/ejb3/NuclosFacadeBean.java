@@ -19,8 +19,6 @@ package org.nuclos.server.common.ejb3;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Level;
@@ -51,7 +49,7 @@ import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-@Stateless
+// @Stateless
 public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 	private Logger log;
 
@@ -63,7 +61,7 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 	private boolean local;
 	
 	//@Resource
-	private SessionContext sctx;
+	// private SessionContext sctx;
 	
 	@PostConstruct
 	@RolesAllowed("Login")

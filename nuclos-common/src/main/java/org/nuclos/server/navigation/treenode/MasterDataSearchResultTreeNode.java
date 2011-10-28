@@ -33,10 +33,6 @@ import org.nuclos.common.Utils;
  */
 public class MasterDataSearchResultTreeNode extends AbstractSearchResultTreeNode {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final String sEntity;
 	
 	public String getEntity() {

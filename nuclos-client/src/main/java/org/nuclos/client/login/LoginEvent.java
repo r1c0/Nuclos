@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.login;
 
+import java.util.EventObject;
+
 /**
  * Event occuring on a user login.
  * <br>
@@ -26,11 +28,8 @@ package org.nuclos.client.login;
  * @version 01.00.00
  */
 
-public class LoginEvent extends java.util.EventObject {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class LoginEvent extends EventObject {
+
 	private final String sUserName;
 	private final String sServerName;
 

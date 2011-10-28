@@ -36,8 +36,6 @@ import org.apache.log4j.Logger;
  * @author	<a href="mailto:Lars.Rueckemann@novabit.de">Lars Rueckemann</a>
  * @version	01.00.00
  */
-
-//@SuppressWarnings("unchecked")
 public abstract class MBeanAgent  {
 	private static final Logger log = Logger.getLogger(MBeanAgent.class);
 

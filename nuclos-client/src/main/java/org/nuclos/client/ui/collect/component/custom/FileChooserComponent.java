@@ -46,18 +46,10 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 
 public class FileChooserComponent extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	private final JLabel labIcon = new JLabel();
 	
 	private final TextFieldWithButton cmpFileName = new TextFieldWithButton(Icons.getInstance().getIconTextFieldButtonFile()) {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public String getToolTipText(MouseEvent ev) {

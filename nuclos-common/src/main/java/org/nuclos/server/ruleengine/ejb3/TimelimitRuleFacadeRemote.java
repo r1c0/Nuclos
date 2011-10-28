@@ -18,9 +18,6 @@ package org.nuclos.server.ruleengine.ejb3;
 
 import java.util.Collection;
 
-import javax.ejb.CreateException;
-import javax.ejb.Remote;
-
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -33,7 +30,7 @@ import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 
-@Remote
+// @Remote
 public interface TimelimitRuleFacadeRemote {
 
 	/**
@@ -41,14 +38,14 @@ public interface TimelimitRuleFacadeRemote {
 	 * @return Collection<RuleVO> all TimelimitRule definitions
 	 * @throws CommonFinderException
 	 */
-	public abstract Collection<RuleVO> getAllTimelimitRules();
+	Collection<RuleVO> getAllTimelimitRules();
 
 	/**
 	 * get all active records
 	 * @return Collection<RuleVO> all active TimelimitRule definitions
 	 * @throws CommonFinderException
 	 */
-	public abstract Collection<RuleVO> getActiveTimelimitRules()
+	Collection<RuleVO> getActiveTimelimitRules()
 		throws CommonFinderException;
 
 	/**
@@ -63,7 +60,7 @@ public interface TimelimitRuleFacadeRemote {
 	 * @throws CommonValidationException
 	 * @throws CommonPermissionException
 	 */
-	public abstract MasterDataVO create(MasterDataVO mdcvo)
+	MasterDataVO create(MasterDataVO mdcvo)
 		throws CommonCreateException, CommonFinderException,
 		CommonRemoveException, CommonValidationException,
 		CommonStaleVersionException, NuclosCompileException,
@@ -81,7 +78,7 @@ public interface TimelimitRuleFacadeRemote {
 	 * @throws CommonValidationException
 	 * @throws CommonPermissionException
 	 */
-	public abstract MasterDataVO modify(MasterDataVO mdcvo)
+	MasterDataVO modify(MasterDataVO mdcvo)
 		throws CommonCreateException, CommonFinderException,
 		CommonRemoveException, CommonStaleVersionException,
 		CommonValidationException, NuclosCompileException,
@@ -93,7 +90,7 @@ public interface TimelimitRuleFacadeRemote {
 	 * @throws CommonCreateException
 	 * @throws CommonPermissionException
 	 */
-	public abstract void remove(MasterDataVO mdcvo)
+	void remove(MasterDataVO mdcvo)
 		throws CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonCreateException,
 		CommonPermissionException, NuclosBusinessRuleException, NuclosCompileException;
@@ -103,36 +100,33 @@ public interface TimelimitRuleFacadeRemote {
 	 * @param mdcvo
 	 * @throws NuclosCompileException
 	 */
-	public abstract void check(MasterDataVO mdcvo)
+	void check(MasterDataVO mdcvo)
 		throws NuclosCompileException;
 
 	/**
 	 * @return String containing functions the user has to implement
 	 */
-	public abstract String getClassTemplate();
+	String getClassTemplate();
 
 	/**
 	 * imports the given timelimit rules, adding new and overwriting existing. The other existing timelimit rules remain untouched.
 	 * @param collRuleVO
 	 * @throws CreateException
 	 */
-	public abstract void importTimelimitRules(Collection<RuleVO> collRuleVO)
-		throws CommonBusinessException, CreateException;
+	void importTimelimitRules(Collection<RuleVO> collRuleVO) throws CommonBusinessException;
 
 	/**
 	 * executes all active timlimit rules.
 	 * First we get the list of all relevant generic objects, then we execute the rule for each one in an own transaction.
 	 * @return InvoiceInspectorResultRun
 	 */
-	public abstract void executeTimelimitRule(String sRuleName)
-		throws CreateException;
+	void executeTimelimitRule(String sRuleName);
 
 	/**
 	 * @param sRuleName
 	 * @throws CreateException
 	 * @author corina.mandoki
 	 */
-	public abstract void executeRule(String sRuleName, Integer iSessionId)
-		throws CreateException;
+	void executeRule(String sRuleName, Integer iSessionId);
 
 }

@@ -75,10 +75,6 @@ import org.nuclos.server.report.valueobject.DatasourceParameterValuelistprovider
  */
 public class ParameterPanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final JScrollPane scrlpn = new JScrollPane();
 	private final JTable tblParams = new CommonJTable();
 	private final JTable rowindicatortbl = new RowIndicatorTable(null, tblParams);
@@ -172,10 +168,6 @@ public class ParameterPanel extends JPanel {
 	}
 
 	public class NewParameterAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public NewParameterAction(String name, Icon icon) {
 			super(name, icon);
@@ -188,10 +180,6 @@ public class ParameterPanel extends JPanel {
 	}
 
 	public class DeleteParameterAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public DeleteParameterAction(String name, Icon icon) {
 			super(name, icon);
@@ -260,10 +248,6 @@ public class ParameterPanel extends JPanel {
 
 	private class ValuelistproviderEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private JLabel valuelistprovider = null;
 		private DatasourceParameterValuelistproviderVO vo;
 

@@ -19,6 +19,7 @@ package org.nuclos.client.ui;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -32,6 +33,9 @@ import org.nuclos.common2.exception.CommonBusinessException;
  * @version 01.00.00
  */
 public abstract class CommonClientWorkerAdapter<T extends Collectable> implements CommonClientWorkerSelfExecutable {
+	
+	private static final Logger LOG = Logger.getLogger(CommonClientWorkerAdapter.class);
+	
 	private CollectController<T> ctl;
 
 	public CommonClientWorkerAdapter(CollectController<T> ctl) {
@@ -89,6 +93,7 @@ public abstract class CommonClientWorkerAdapter<T extends Collectable> implement
 				paint();
 			}
 			catch(CommonBusinessException e) {
+				LOG.warn("PaintRunner.run failed: " + e, e);
 				occurredBusinessException = e;
 			}
 		}

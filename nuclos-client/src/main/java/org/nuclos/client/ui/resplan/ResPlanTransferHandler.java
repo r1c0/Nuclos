@@ -33,11 +33,7 @@ import org.nuclos.common.collection.CollectionUtils;
 
 public class ResPlanTransferHandler extends TransferHandler{
 
-	private static final long serialVersionUID = 1L;
-
 	public static class EntryWrapper implements Serializable {
-
-		private static final long serialVersionUID = 1L;
 
 		private final Object entry;
 		
@@ -45,7 +41,6 @@ public class ResPlanTransferHandler extends TransferHandler{
 			this.entry = entry;
 		}
 		
-		@SuppressWarnings("unchecked")
 		public <E> E unwrap(Class<E> clazz) {
 			if (clazz.isInstance(entry)) {
 				// we checked ourselves, so an "unchecked" cast is ok and faster
@@ -69,7 +64,6 @@ public class ResPlanTransferHandler extends TransferHandler{
 	}
 	
 	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected Transferable createTransferable(JComponent c) {
 		if (c instanceof JResPlanComponent<?, ?, ?>) {
 			return createResPlanTransferable((JResPlanComponent) c);
@@ -93,7 +87,6 @@ public class ResPlanTransferHandler extends TransferHandler{
 	}
 	
 	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void exportDone(JComponent source, Transferable data, int action) {
 		if (action == MOVE) {
 			JResPlanComponent resPlan = (JResPlanComponent) source;

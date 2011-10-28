@@ -79,7 +79,6 @@ public class CollectableComparatorFactory <Clct extends Collectable> {
 		return new Comparator<Clct>() {
 
 			@Override
-			@SuppressWarnings("unchecked")
 			public int compare(Clct clct1, Clct clct2) {
 				int result = 0;
 

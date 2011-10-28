@@ -61,6 +61,8 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterDataMetaProvider, InitializingBean {
 	
+	private static final Logger LOG = Logger.getLogger(MasterDataMetaCache.class);
+	
 	private final Logger log = Logger.getLogger(this.getClass());
 
 	private Map<String, MasterDataMetaVO> mp;
@@ -242,16 +244,17 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 			try {
 				this.validate(mdmetavo);
 			}
-			catch (Exception ex) {
-				ex.printStackTrace();
+			catch (Exception e) {
+				LOG.warn("validateMetaDataInDB failed: " + e, e);
 				// continue with the loop...
 			}
 		}
 	}
 
 	private void validate(final MasterDataMetaVO mdmetavo) throws SQLException {
+		final boolean log = LOG.isDebugEnabled();
 		final String sEntityName = mdmetavo.getEntityName();
-		System.out.println("sEntityName = " + sEntityName);
+		if (log) LOG.debug("sEntityName = " + sEntityName);
 		final String sDbEntityName = mdmetavo.getDBEntity();
 		DbTable table = DataBaseHelper.getDbAccess().getTableMetaData(sDbEntityName);
 
@@ -262,12 +265,15 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 			final String sColumnName = mdmetafieldvos.getDBFieldName();
 			final DbColumn column = columnsByName.get(sColumnName);
 			if (column != null) {
-				System.out.println("  sColumnName = " + sColumnName);
-				System.out.println("  rsmd.getColumnTypeName(iColumn) = " + column.getColumnType().getTypeName());
-				System.out.println("  rsmd.getScale(iColumn) = " + column.getColumnType().getScale());
-				System.out.println("  rsmd.getPrecision(iColumn) = " + column.getColumnType().getPrecision());
+				if (log) {
+					LOG.debug("  sColumnName = " + sColumnName);
+					LOG.debug("  rsmd.getColumnTypeName(iColumn) = " + column.getColumnType().getTypeName());
+					LOG.debug("  rsmd.getScale(iColumn) = " + column.getColumnType().getScale());
+					LOG.debug("  rsmd.getPrecision(iColumn) = " + column.getColumnType().getPrecision());
+				}
 			} else {
-				System.out.println("Ung\u00fcltiger Spaltenname " + sColumnName + " in Entit\u00e4t " + sEntityName + ", Feld " + sFieldName + ".");
+				if (log)
+					LOG.debug("Ung\u00fcltiger Spaltenname " + sColumnName + " in Entit\u00e4t " + sEntityName + ", Feld " + sFieldName + ".");
 			}
 		}
 	}

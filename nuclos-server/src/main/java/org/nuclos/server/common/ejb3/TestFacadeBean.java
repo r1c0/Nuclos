@@ -17,8 +17,6 @@
 package org.nuclos.server.common.ejb3;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.server.jms.NuclosJMSUtils;
@@ -30,8 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-@Stateless
-@Remote(TestFacadeRemote.class)
+// @Stateless
+// @Remote(TestFacadeRemote.class)
 @Transactional
 @RolesAllowed("PerformTests")
 public class TestFacadeBean extends NuclosFacadeBean implements TestFacadeRemote {

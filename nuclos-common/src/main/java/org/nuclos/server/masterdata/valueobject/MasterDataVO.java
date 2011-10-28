@@ -391,7 +391,6 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 		this.validateValidityInterval();
 	}
 
-	@SuppressWarnings("all")
 	private static void validateField(final Object oValueId, final Object oValue, MasterDataMetaFieldVO mdmetafield, String sEntity) throws CommonValidationException {
 		MasterDataMetaProvider cache = SpringApplicationContextHolder.getBean(MasterDataMetaProvider.class);
 		if (cache != null) {
@@ -430,12 +429,7 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 					labelOrResource, cache.getMetaData(sEntity).getResourceSIdForLabel()));
 			}
 			//check against data precision
-			/** todo integrate correct check here */
-			if (false) {
-				throw new CommonValidationException(msg
-						+ StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.dataprecision",
-					labelOrResource, cache.getMetaData(sEntity).getResourceSIdForLabel()));
-			}
+			// TODO: integrate correct check here 
 			//check against input format
 			final String sInputFormat = mdmetafield.getInputFormat();
 			if (!ValueValidationHelper.validateInputFormat(oValue, sInputFormat)) {

@@ -29,11 +29,6 @@ import org.nuclos.common.NuclosBusinessException;
  */
 public class NuclosNoAdequateStatemodelException extends NuclosBusinessException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public NuclosNoAdequateStatemodelException() {
 		super("statemachine.error.exception.nucleusnoadequatestatemodelexception");
 	}

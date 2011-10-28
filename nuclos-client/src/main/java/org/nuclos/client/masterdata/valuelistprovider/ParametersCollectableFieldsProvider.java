@@ -30,7 +30,7 @@ import org.nuclos.common2.exception.CommonBusinessException;
 
 public class ParametersCollectableFieldsProvider implements CollectableFieldsProvider {
 
-	private static final Logger log = Logger.getLogger(ParametersCollectableFieldsProvider.class);
+	private static final Logger LOG = Logger.getLogger(ParametersCollectableFieldsProvider.class);
 	
 	private final String parameterClassName = "showClass";
 	private final String parameterValueName = "showValue";
@@ -56,7 +56,7 @@ public class ParametersCollectableFieldsProvider implements CollectableFieldsPro
 
 	@Override
 	public List<CollectableField> getCollectableFields() throws CommonBusinessException {
-		log.debug("getCollectableFields");
+		LOG.debug("getCollectableFields");
 
 		List<CollectableField> result = new ArrayList<CollectableField>();
 		try {
@@ -67,30 +67,30 @@ public class ParametersCollectableFieldsProvider implements CollectableFieldsPro
 				result.add(new CollectableValueField(clazz.getConstructor(constructorAttrs).newInstance(i)));
 			}			
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			LOG.info("getCollectableFields failed: " + e, e);
 			throw new CommonBusinessException("Invalid parameter: "+e.getMessage());
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			LOG.info("getCollectableFields failed: " + e, e);
 			throw new CommonBusinessException("Invalid parameter: "+e.getMessage());
 		} catch (SecurityException e) {
-			e.printStackTrace();
+			LOG.info("getCollectableFields failed: " + e, e);
 			throw new CommonBusinessException("Invalid parameter: "+e.getMessage());
 		} catch (InstantiationException e) {
-			e.printStackTrace();
+			LOG.info("getCollectableFields failed: " + e, e);
 			throw new CommonBusinessException("Invalid parameter: "+e.getMessage());
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			LOG.info("getCollectableFields failed: " + e, e);
 			throw new CommonBusinessException("Invalid parameter: "+e.getMessage());
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			LOG.info("getCollectableFields failed: " + e, e);
 			throw new CommonBusinessException("Invalid parameter: "+e.getMessage());
 		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
+			LOG.info("getCollectableFields failed: " + e, e);
 			throw new CommonBusinessException("Invalid parameter: "+e.getMessage());
 		}
 
 		Collections.sort(result);
-
-		return result;	}
+		return result;	
+		}
 
 }

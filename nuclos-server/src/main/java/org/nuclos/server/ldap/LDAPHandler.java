@@ -49,7 +49,8 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @version 01.00
  */
 public class LDAPHandler {
-	private static final Logger log = Logger.getLogger(LDAPHandler.class);
+	
+	private static final Logger LOG = Logger.getLogger(LDAPHandler.class);
 
 	private Hashtable<String, String> env = null;
 	private LdapContext ctx = null;
@@ -72,9 +73,9 @@ public class LDAPHandler {
 
 		try {
 			ctx = new InitialLdapContext(env, null);
-			log.debug("Connection to ldap server established (" + env.toString() + ")");
+			LOG.debug("Connection to ldap server established (" + env.toString() + ")");
 		} catch (NamingException e) {
-			e.printStackTrace();
+			LOG.info("init failed: " + e, e);
 			throw new CommonFatalException("Could not establish connection to : " + providerURL);
 		}
 	}
@@ -85,11 +86,11 @@ public class LDAPHandler {
 		int pageSize = 1000; // 1000 entries per page
 		byte[] cookie = null;
 
-		log.debug("Search LDAP directory for ");
-		log.debug("SEARCH_CONTEXT : " + context);
-		log.debug("SEARCH_FILTER : " + filterExpr);
-		log.debug("SEARCH_ARGS : " + filterArgs);
-		log.debug("CONSTRAINTS :" + constraints.toString());
+		LOG.debug("Search LDAP directory for ");
+		LOG.debug("SEARCH_CONTEXT : " + context);
+		LOG.debug("SEARCH_FILTER : " + filterExpr);
+		LOG.debug("SEARCH_ARGS : " + filterArgs);
+		LOG.debug("CONSTRAINTS :" + constraints.toString());
 
 		try {
 			ctx.setRequestControls(new Control[] { new PagedResultsControl(pageSize, Control.CRITICAL) });
@@ -102,7 +103,7 @@ public class LDAPHandler {
 				while (persons != null && persons.hasMoreElements()) {
 					// Display an entry
 					SearchResult sr = persons.next();
-					log.debug("SearchResult: " + sr.getName());
+					LOG.debug("SearchResult: " + sr.getName());
 					result.add(transformer.transform(sr));
 				}
 
@@ -123,10 +124,10 @@ public class LDAPHandler {
 
 			ctx.close();
 
-			log.debug("Search returned " + result.size() + " results.");
+			LOG.debug("Search returned " + result.size() + " results.");
 		}
 		catch (Exception ex) {
-			log.error("An error occured during ldap search.", ex);
+			LOG.error("An error occured during ldap search.", ex);
 			throw new CommonBusinessException("ldap.exception.search", ex);
 		}
 		return result;

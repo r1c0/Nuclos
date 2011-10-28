@@ -55,6 +55,7 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXFindPanel;
 import org.jdesktop.swingx.combobox.ListComboBoxModel;
 import org.jdesktop.swingx.painter.Painter;
@@ -98,24 +99,21 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.exception.PreferencesException;
 
 public class ResPlanPanel extends JPanel {
-
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+	
+	private static final Logger LOG = Logger.getLogger(ResPlanPanel.class);
 
 	public static final String TIME_HORIZON_PROPERTY = "timeHorizon";
 
 	public static final String SEARCH_CONDITION_PROPERTY = "searchCondition";
 
-	ResPlanController controller;
+	private ResPlanController controller;
 
-	DateChooser startDateChooser;
-	DateChooser endDateChooser;
+	private DateChooser startDateChooser;
+	private DateChooser endDateChooser;
 
-	JResPlanComponent<Collectable, Date, Collectable> resPlan;
-	CollectableResPlanModel resPlanModel;
-	DateTimeModel timeModel;
+	private JResPlanComponent<Collectable, Date, Collectable> resPlan;
+	private CollectableResPlanModel resPlanModel;
+	private DateTimeModel timeModel;
 
 	private CollectableSearchCondition searchCondition;
 	private Interval<Date> timeHorizon;
@@ -142,11 +140,6 @@ public class ResPlanPanel extends JPanel {
 		JToolBar tb = UIUtils.createNonFloatableToolBar();
 		tb.setFloatable(false);
 		tb.add(new AbstractAction(getText("nuclos.resplan.action.refresh", null), Icons.getInstance().getIconRefresh16()) {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				controller.refresh();
@@ -253,7 +246,6 @@ public class ResPlanPanel extends JPanel {
 		KeyBindingProvider.bindActionToComponent(KeyBindingProvider.ACTIVATE_SEARCH_PANEL_2, findAction, this);
 	}
 
-	@SuppressWarnings("unchecked")
 	public ListComboBoxModel<EntitySearchFilter> getSearchFilterModel() {
 		return (ListComboBoxModel<EntitySearchFilter>) searchFilterComboBox.getModel();
 	}
@@ -446,11 +438,6 @@ public class ResPlanPanel extends JPanel {
 				if (clct != null) {
 					JPopupMenu popupMenu = new JPopupMenu();
 					popupMenu.add(new AbstractAction(getText("nuclos.resplan.action.showDetails", null)) {
-						/**
-						 *
-						 */
-						private static final long serialVersionUID = 1L;
-
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							runDetailsCollectable(resPlanModel.getResourceEntity().getEntityName(), clct);
@@ -490,15 +477,9 @@ public class ResPlanPanel extends JPanel {
 		setCustomSearchFilter(searchCondition);
 
 		try {
-			@SuppressWarnings({ "rawtypes" })
 			final NuclosCollectController ctl = NuclosCollectControllerFactory.getInstance().newCollectController(
 					Main.getMainFrame().getHomePane(), resPlanModel.getResourceEntity().getEntityName(), null);
 			ctl.getSearchPanel().btnSearch.setAction(new CommonAbstractAction(Icons.getInstance().getIconFind16(), CommonLocaleDelegate.getText("CollectController.30", "Suchen")) {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
-
 				@Override
 				public void actionPerformed(ActionEvent ev) {
 					UIUtils.runCommand(getParent(), new CommonRunnable() {
@@ -517,8 +498,8 @@ public class ResPlanPanel extends JPanel {
 				}
 			});
 			ctl.runSearch();
-		} catch (CommonBusinessException ex) {
-			ex.printStackTrace();
+		} catch (CommonBusinessException e) {
+			LOG.warn("runCustomSearch failed: " + e, e);
 		}
 	}
 
@@ -620,11 +601,6 @@ public class ResPlanPanel extends JPanel {
 	}
 
 	private Action switchOrientationAction = new AbstractAction(getText("nuclos.resplan.action.switchOrientation", null), Icons.getInstance().getIconRelate()) {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Runnable runnable = createScrollToCurrentAreaRunnable();
@@ -644,11 +620,6 @@ public class ResPlanPanel extends JPanel {
 	};
 
 	private Action removeAction = new AbstractAction(getText("nuclos.resplan.action.remove", null)) {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			ResPlanModel<Collectable, Date, Collectable> model = resPlan.getModel();
@@ -675,11 +646,6 @@ public class ResPlanPanel extends JPanel {
 	};
 
 	private Action detailsAction = new AbstractAction(getText("nuclos.resplan.action.showDetails", null)) {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			final List<Collectable> selectedEntries = resPlan.getSelectedEntries();
@@ -690,11 +656,6 @@ public class ResPlanPanel extends JPanel {
 	};
 
 	private Action infoAction = new AbstractAction(null, Icons.getInstance().getIconAbout16()) {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			showInfoMessages();
@@ -705,10 +666,6 @@ public class ResPlanPanel extends JPanel {
 
 	class FindAction extends AbstractAction implements AncestorListener {
 
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 		private final JXFindPanel findPanel;
 
 		public FindAction() {
@@ -743,11 +700,6 @@ public class ResPlanPanel extends JPanel {
 
 	class RemoveAction extends AbstractAction {
 
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-
 		public RemoveAction() {
 			super(getText("nuclos.resplan.action.remove", null));
 		}
@@ -779,12 +731,8 @@ public class ResPlanPanel extends JPanel {
 
 	class AddAction extends AbstractAction {
 
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-		Collectable resource;
-		Interval<Date> interval;
+		private Collectable resource;
+		private Interval<Date> interval;
 
 		public AddAction(Collectable resource, Interval<Date> interval) {
 			super(getText("nuclos.resplan.action.add", null));
@@ -796,7 +744,6 @@ public class ResPlanPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			UIUtils.runShortCommand(resPlan, new CommonRunnable() {
-				@SuppressWarnings({ "rawtypes", "unchecked" })
 				@Override
 				public void run() throws CommonBusinessException {
 					NuclosCollectController cntrl = NuclosCollectControllerFactory.getInstance().newCollectController(
@@ -819,7 +766,6 @@ public class ResPlanPanel extends JPanel {
 
 		UIUtils.runCommand(Main.getMainFrame(), new CommonRunnable() {
 			@Override
-			@SuppressWarnings("rawtypes")
 			public void run() throws CommonBusinessException {
 				NuclosCollectController cntrl = NuclosCollectControllerFactory.getInstance().newCollectController(
 						controller.getFrame(), entityName, null);

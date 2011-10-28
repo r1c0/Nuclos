@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.main;
 
-
-
 import java.awt.EventQueue;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -72,6 +70,8 @@ import org.springframework.util.Log4jConfigurer;
  * @version 01.00.00
  */
 public class StartUp  {
+
+	private static final Logger LOG = Logger.getLogger(StartUp.class);
 
 	// These progress constants sum up to to 100:
 	static final int PROGRESS_COMPARE_VERSIONS = 5;
@@ -159,6 +159,7 @@ public class StartUp  {
 				return;
 			}
 			catch(Throwable e) {
+		        // Ok! (tp)
 				System.out.println("Failed to configure logging from " + sLog4jUrl + ": " + e.getMessage());
 			}
 		}
@@ -366,7 +367,6 @@ public class StartUp  {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private void createMainController(String sUserName, String sNucleusServerName, LoginController lc)
 			throws CommonPermissionException {
 

@@ -27,8 +27,6 @@ package org.nuclos.server.fileimport.ejb3;
 
 import java.util.List;
 
-import javax.ejb.Local;
-
 import org.nuclos.common.fileimport.ImportResult;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.fileimport.FileImportResult;
@@ -45,7 +43,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Local
+// @Local
 public interface ImportFacadeLocal {
 
 	/**
@@ -63,7 +61,7 @@ public interface ImportFacadeLocal {
 	 * @return
 	 * @throws NuclosFileImportException
 	 */
-	public List<FileImportResult> doImport(ImportContext context) throws NuclosFileImportException;
+	List<FileImportResult> doImport(ImportContext context) throws NuclosFileImportException;
 
 	/**
 	 * Internal use only (used by <code>doImport(ImportContext context)</code> for transaction control).
@@ -72,7 +70,7 @@ public interface ImportFacadeLocal {
 	 * @return
 	 * @throws NuclosFileImportException
 	 */
-	public List<FileImportResult> doAtomicImport(AbstractImport instance) throws NuclosFileImportException;
+	List<FileImportResult> doAtomicImport(AbstractImport instance) throws NuclosFileImportException;
 
 	/**
 	 * Internal use only (used by <code>doImport(ImportContext context)</code> for transaction control).
@@ -81,8 +79,8 @@ public interface ImportFacadeLocal {
 	 * @return
 	 * @throws NuclosFileImportException
 	 */
-	public List<FileImportResult> doNonAtomicImport(AbstractImport instance) throws NuclosFileImportException;
+	List<FileImportResult> doNonAtomicImport(AbstractImport instance) throws NuclosFileImportException;
 
-	public void setImportResult(Integer importfileId, ImportResult result, String summary);
+	void setImportResult(Integer importfileId, ImportResult result, String summary);
 
 }

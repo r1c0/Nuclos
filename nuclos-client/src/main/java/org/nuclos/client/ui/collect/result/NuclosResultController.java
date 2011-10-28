@@ -160,7 +160,6 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 			},
 			new CommonRunnable() {
 			@Override
-			@SuppressWarnings("unchecked")
 			public void run() throws CommonBusinessException {
 				final int iSelRow = tblResult.getSelectedRow();
 				NuclosResultController.super.initializeFields(fields, clctctl, lstSelectedNew);
@@ -260,7 +259,6 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 				},
 				new CommonRunnable() {
 				@Override
-				@SuppressWarnings("unchecked")
 				public void run() throws CommonBusinessException {
 					final int iSelRow = tblResult.getSelectedRow();
 					final List<CollectableEntityField> lstSelectedOld = (List<CollectableEntityField>) fields.getSelectedFields();

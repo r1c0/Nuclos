@@ -49,22 +49,14 @@ import org.nuclos.client.ui.Icons;
  * @version	01.00.00
  */
 public class RowIndicatorTable extends JTable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	public class RowIndicatorCellRenderer extends DefaultTableCellRenderer {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		ImageIcon icon = (ImageIcon) Icons.getInstance().getIconRowSelection16();
-		JPanel panel = new JPanel();
-		JLabel bgLabel = new JLabel();
+
+		private ImageIcon icon = (ImageIcon) Icons.getInstance().getIconRowSelection16();
+		private JPanel panel = new JPanel();
+		private JLabel bgLabel = new JLabel();
 
 		public RowIndicatorCellRenderer() {
-//			bgLabel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
 			bgLabel.setBackground(Color.LIGHT_GRAY);
 			panel.setLayout(new BorderLayout());
 			panel.add(bgLabel, BorderLayout.CENTER);
@@ -84,10 +76,7 @@ public class RowIndicatorTable extends JTable {
 	}
 
 	public class RowIndicatorTableModel extends DefaultTableModel {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		private Object[] rows;
 
 		public void setRows(Object[] oArray) {

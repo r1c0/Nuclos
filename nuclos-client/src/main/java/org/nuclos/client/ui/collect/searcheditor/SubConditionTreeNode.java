@@ -48,10 +48,6 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondi
  */
 public class SubConditionTreeNode extends SearchConditionTreeNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final CollectableEntity clcteSub;
 	private final String sForeignKeyFieldName;
 

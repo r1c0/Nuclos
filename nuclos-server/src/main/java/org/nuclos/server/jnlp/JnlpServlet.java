@@ -61,9 +61,7 @@ import org.w3c.dom.Node;
  */
 public class JnlpServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 1L;
-
-	private static final Logger log = Logger.getLogger(JnlpServlet.class);
+	private static final Logger LOG = Logger.getLogger(JnlpServlet.class);
 
 	private boolean singleinstance = false;
 	private File appDir = null;
@@ -99,7 +97,7 @@ public class JnlpServlet extends HttpServlet {
 					for (String filename : files) {
 						File f = new File(extensionDir, filename);
 						if (f.isFile()) {
-							log.info("Found client extension jar: " + filename + "; LastModified: " + df.format(new Date(f.lastModified())));
+							LOG.info("Found client extension jar: " + filename + "; LastModified: " + df.format(new Date(f.lastModified())));
 							if (l < f.lastModified()) {
 								l = f.lastModified();
 							}
@@ -110,7 +108,7 @@ public class JnlpServlet extends HttpServlet {
 			}
 		}
 		catch(Exception e) {
-			log.error("Failed to initialize JnlpServlet.", e);
+			LOG.error("Failed to initialize JnlpServlet.", e);
 		}
 	}
 
@@ -157,20 +155,21 @@ public class JnlpServlet extends HttpServlet {
 			}
 
 			Result output = new StreamResult(response.getOutputStream());
+			// TODO: This is the same as in XmlUtils (tp)
 			transformer.setErrorListener(new ErrorListener() {
 				@Override
 				public void error(TransformerException exception) throws TransformerException {
-					System.err.println("error: " + exception);
+					LOG.error("error: " + exception, exception);
 				}
 
 				@Override
 				public void fatalError(TransformerException exception) throws TransformerException {
-					System.err.println("fatalError: " + exception);
+					LOG.fatal("fatalError: " + exception, exception);
 				}
 
 				@Override
 				public void warning(TransformerException exception) throws TransformerException {
-					System.err.println("warning: " + exception);
+					LOG.warn("warning: " + exception, exception);
 				}
 			});
 

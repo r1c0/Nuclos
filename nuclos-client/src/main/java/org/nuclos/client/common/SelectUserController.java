@@ -41,12 +41,7 @@ public class SelectUserController<T extends MasterDataVO> extends SelectObjectsC
 	 * </dl>
 	 * </p>
 	 */
-	private static class SelectUserPanel extends DefaultSelectObjectsPanel {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+	private static class SelectUserPanel<T> extends DefaultSelectObjectsPanel<T> {
 
 		SelectUserPanel(String text1, String text2, String text3, String text4) {
 			super();
@@ -86,7 +81,6 @@ public class SelectUserController<T extends MasterDataVO> extends SelectObjectsC
 	/**
 	 * @deprecated Use getSelectedObjects(). 
 	 */
-	@SuppressWarnings("unchecked")
 	public List<MasterDataWithDependantsVOWrapper> getSelectedColumns() {
 		return (List<MasterDataWithDependantsVOWrapper>) this.getSelectedObjects();
 	}
@@ -94,7 +88,6 @@ public class SelectUserController<T extends MasterDataVO> extends SelectObjectsC
 	/**
 	 * @deprecated Use getAvailableObjects(). 
 	 */
-	@SuppressWarnings("unchecked")
 	public List<MasterDataVO> getAvailableColumns() {
 		return (List<MasterDataVO>) this.getAvailableObjects();
 	}

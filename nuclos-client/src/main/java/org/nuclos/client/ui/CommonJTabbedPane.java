@@ -63,6 +63,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 
+import org.apache.log4j.Logger;
+
 /**
  * class for <b>CommonJTabbedPane.java</b>...
  * <br>
@@ -71,11 +73,9 @@ import javax.swing.TransferHandler;
  */
 public class CommonJTabbedPane extends DnDTabbedPane {
 
-   /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-private static final DataFlavor TAB_COMPONENT_DATAFLAVOR = new DataFlavor(TabComponent.class, "Tab");
+	private static final Logger LOG = Logger.getLogger(CommonJTabbedPane.class);
+
+	private static final DataFlavor TAB_COMPONENT_DATAFLAVOR = new DataFlavor(TabComponent.class, "Tab");
 
    /** Constructor of this object...
     */
@@ -124,11 +124,6 @@ private static final DataFlavor TAB_COMPONENT_DATAFLAVOR = new DataFlavor(TabCom
 
    private final class TransferHandlerExtension extends TransferHandler {
    	
-   	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	@Override
    	protected Transferable createTransferable(JComponent c) {
    		return super.createTransferable(c);
@@ -155,49 +150,25 @@ private static final DataFlavor TAB_COMPONENT_DATAFLAVOR = new DataFlavor(TabCom
          return transferable.isDataFlavorSupported(TAB_COMPONENT_DATAFLAVOR);
       }
 
-      @Override
-      public boolean importData(TransferSupport support) {
-//         Transferable transferable = support.getTransferable();
-         try {
-//            TabComponent tc = (TabComponent) transferable.getTransferData(TAB_COMPONENT_DATAFLAVOR);
-            return true;
-         } catch(Exception e) {
-         }
-         return false;
-      }
+		/**
+		 * @deprecated Always returns true.
+		 */
+		@Override
+		public boolean importData(TransferSupport support) {
+			return true;
+		}
    }
-
-//   private int findComponentByTabComponent(TabComponent tc) {
-//      for (int i = 0; i < getTabCount(); i++) {
-//         if (tc == getTabComponentAt(i))
-//            return i;
-//      }
-//      return -1;
-//   }
 
    private class TabComponent extends JComponent implements Transferable {
 
-      /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	JLabel label;
-      JButton button;
+	   private JLabel label;
+	   private JButton button;
 
       public TabComponent(String title, Icon icon, String tip) {
          setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
          label = new JLabel();
          button = new JButton();
          
-//         button.setIcon(UIManager.getLookAndFeel().getDisabledIcon(this, Icons.getInstance().getIconCancel16()));
-//         button.setRolloverIcon(Icons.getInstance().getIconCancel16());
-//         button.addActionListener(new ActionListener() {
-//            public void actionPerformed(ActionEvent e) {
-//               int index = findComponentByTabComponent(TabComponent.this);
-//               if (index != -1)
-//                  removeTabAt(index);
-//            };         	
-//         });
          button.setMargin(new Insets(0, 0, 0, 0));
          button.setFocusable(false);
          button.setContentAreaFilled(false);
@@ -211,22 +182,7 @@ private static final DataFlavor TAB_COMPONENT_DATAFLAVOR = new DataFlavor(TabCom
          button.setVisible(false);
 
          setTitle(title, icon, tip);
-
-         //addMouseListener(new MouseAdapter() {
-         //});
-         /*
-         addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseDragged(MouseEvent evt) {
-               getTransferHandler().exportAsDrag(TabComponent.this, evt, TransferHandler.MOVE);
-            }
-         });
-         */
       }
-
-//      public void setClosable(boolean b) {
-//         button.setVisible(b);
-//      }
 
       public void setTitle(String text, Icon icon, String toolTip) {
          label.setText(text);
@@ -259,11 +215,10 @@ private static final DataFlavor TAB_COMPONENT_DATAFLAVOR = new DataFlavor(TabCom
 // Code from http://java-swing-tips.blogspot.com/2008/04/drag-and-drop-tabs-in-jtabbedpane.html
 //
 class DnDTabbedPane extends JTabbedPane {
-   /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-private static final int LINEWIDTH = 3;
+	
+	private static final Logger LOG = Logger.getLogger(DnDTabbedPane.class);
+
+	private static final int LINEWIDTH = 3;
    private static final String NAME = "test";
    private final GhostGlassPane glassPane = new GhostGlassPane();
    private final Rectangle lineRect  = new Rectangle();
@@ -294,10 +249,8 @@ private static final int LINEWIDTH = 3;
            rForward.setBounds(r.x, r.y+r.height-rwh-buttonsize, r.width, rwh+buttonsize);
        }
        if(rBackward.contains(glassPt)) {
-           //System.out.println(new java.util.Date() + "Backward");
            clickArrowButton("scrollTabsBackwardAction");
        }else if(rForward.contains(glassPt)) {
-           //System.out.println(new java.util.Date() + "Forward");
            clickArrowButton("scrollTabsForwardAction");
        }
    }
@@ -371,8 +324,8 @@ private static final int LINEWIDTH = 3;
                initGlassPane(e.getComponent(), e.getDragOrigin());
                try{
                    e.startDrag(DragSource.DefaultMoveDrop, t, dsl);
-               }catch(InvalidDnDOperationException idoe) {
-                   idoe.printStackTrace();
+               }catch(InvalidDnDOperationException e1) {
+            	   LOG.warn("dragGestureRecognized failed: " + e1, e1);
                }
            }
        };
@@ -553,12 +506,10 @@ private static final int LINEWIDTH = 3;
        tabbedRect.grow(2, 2);
        return tabbedRect;
    }
+   
    class GhostGlassPane extends JPanel {
-       /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private final AlphaComposite composite;
+
+	   private final AlphaComposite composite;
        private Point location = new Point(0, 0);
        private BufferedImage draggingGhost = null;
        public GhostGlassPane() {

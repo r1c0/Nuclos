@@ -19,11 +19,10 @@ package org.nuclos.server.attribute.ejb3;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
 
 import org.nuclos.common2.EntityAndFieldName;
 
-@Local
+// @Local
 public interface LayoutFacadeLocal {
 
 	/**
@@ -31,21 +30,21 @@ public interface LayoutFacadeLocal {
 	 * @return true, if detail layout is available for the given entity name, otherwise false
 	 */
 	@RolesAllowed("Login")
-	public abstract boolean isMasterDataLayoutAvailable(String sEntity);
+	boolean isMasterDataLayoutAvailable(String sEntity);
 
 	/**
 	 * @param sEntity
 	 * @return the detail layout for the given entity name if any, otherwise null
 	 */
 	@RolesAllowed("Login")
-	public abstract String getMasterDataLayout(String sEntity);
+	String getMasterDataLayout(String sEntity);
 
 	/**
 	 * @param sEntity
 	 * @return the layout for the given entity name if any, otherwise null
 	 */
 	@RolesAllowed("Login")
-	public abstract String getMasterDataLayout(String sEntity,
+	String getMasterDataLayout(String sEntity,
 		boolean bSearchMode);
 
 	/**
@@ -55,7 +54,7 @@ public interface LayoutFacadeLocal {
 	 * @param iLayoutId
 	 */
 	@RolesAllowed("Login")
-	public abstract Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesByLayoutId(
+	Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesByLayoutId(
 		Integer iLayoutId);
 
 	/**
@@ -66,9 +65,9 @@ public interface LayoutFacadeLocal {
 	 * @param forImportOrExport, true if it is used for import- or export-routines
 	 */
 	@RolesAllowed("Login")
-	public abstract Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNames(
+	Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNames(
 		String entityName, Integer id, boolean forImportOrExport);
 
 	@RolesAllowed("Login")
-	public Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesById(Integer iLayoutId);
+	Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesById(Integer iLayoutId);
 }

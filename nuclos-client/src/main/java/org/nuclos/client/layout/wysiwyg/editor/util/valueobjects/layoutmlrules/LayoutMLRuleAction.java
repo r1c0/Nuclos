@@ -38,12 +38,8 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class LayoutMLRuleAction implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	public static final String TRANSFER_LOOKEDUP_VALUE = LayoutMLConstants.ELEMENT_TRANSFERLOOKEDUPVALUE;
 	public static final String CLEAR = LayoutMLConstants.ELEMENT_CLEAR;
 	public static final String ENABLE = LayoutMLConstants.ELEMENT_ENABLE;

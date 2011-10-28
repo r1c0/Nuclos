@@ -17,12 +17,15 @@
 package org.nuclos.common;
 
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 public class SpringApplicationContextHolder implements ApplicationContextAware {
 
+	private static final Logger LOG = Logger.getLogger(SpringApplicationContextHolder.class);
+	
 	private static ApplicationContext applicationContext;
 	private static SpringApplicationContextHolder holder;
 	
@@ -59,7 +62,7 @@ public class SpringApplicationContextHolder implements ApplicationContextAware {
 	
 	@Override
 	public void setApplicationContext(ApplicationContext context) {
-		System.out.println("ApplicationContext set");
+		LOG.info("ApplicationContext set to " + context);
 		if(applicationContext != null)
 			return;
 		applicationContext = context;

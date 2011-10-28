@@ -70,11 +70,8 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  * @version 01.00.00
  */
 public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends ExplorerNode<TN> {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(SubFormEntryExplorerNode.class);
+
+	private static final Logger LOG = Logger.getLogger(SubFormEntryExplorerNode.class);
 
 	public SubFormEntryExplorerNode(TreeNode treenode) {
 		super(treenode);
@@ -102,18 +99,12 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 
     protected class RemoveAction extends TreeNodeAction {
 
-    	/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-
 		public static final int KEY = KeyEvent.VK_DELETE;
 
     	private Integer iObjectId = null;
     	private Integer iModuleId = null;
-    	String sSubFormEntity = null;
+    	private String sSubFormEntity = null;
 
-		@SuppressWarnings("rawtypes")
         public RemoveAction(JTree tree) {
 			super(ACTIONCOMMAND_REMOVE, CommonLocaleDelegate.getMessage("MasterDataExplorerNode.1", "L\u00f6schen")+ "...", tree);
 
@@ -169,7 +160,6 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 			}
 		}
 
-		@SuppressWarnings("rawtypes")
 	    private void remove(JTree tree){
 			if (iObjectId != null && iModuleId != null && sSubFormEntity != null) {
 				try {
@@ -186,6 +176,7 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 					}
 	            }
 	            catch(CommonBusinessException e) {
+	            	LOG.warn("remove failed: " + e);
 		            showBubble(tree, "<html>"+Errors.formatErrorForBubble(e.getMessage())+"</html>");
 	            }
 			}
@@ -200,7 +191,6 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 	    }
     }
 
-	@SuppressWarnings("rawtypes")
     private Map<String, Integer> getForeignReferences(){
 		Map<String, Integer> result = new HashMap<String, Integer>();
 
@@ -222,10 +212,12 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
                     	Object oId = mdVO.getField(efMeta.getField()+"Id");
                     	if (oId != null)
                     		result.put(efMeta.getForeignEntity(), (Integer) oId);
-                    } catch(CommonFinderException e) {
+                    } catch (CommonFinderException e) {
 	                    // do nothing
-                    } catch(CommonPermissionException e) {
+    	            	LOG.warn("getForeignReferences failed: " + e);
+                   } catch (CommonPermissionException e) {
 	                    // do nothing
+                	   LOG.warn("getForeignReferences failed: " + e);
                     }
 				}
 			}
@@ -236,12 +228,8 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 
 	private class ShowReferenceAction extends TreeNodeAction {
 
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-		final String entityName;
-		final Integer id;
+		private final String entityName;
+		private final Integer id;
 
 		ShowReferenceAction(final String entityName, final Integer id, JTree tree, String action) {
 			super(action, CommonLocaleDelegate.getMessage("SubFormEntryExplorerNode.1", "{0} öffnen", CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(entityName))), tree);

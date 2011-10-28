@@ -28,11 +28,6 @@ package org.nuclos.common2.exception;
  */
 public class CommonValidationException extends CommonBusinessException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public CommonValidationException() {
 		super(CommonBusinessException.VALIDATION);
 	}

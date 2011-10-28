@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PreviewPart implements Serializable{
-	private static final long serialVersionUID = 1L;
 
 	public static final int NEW = 1, CHANGE = 2, DELETE = 3, WARNING = 4, FAULT = 5;
 	

@@ -61,10 +61,6 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 
 	private final Action actDeleteCurrentCollectable = new CommonAbstractAction("L\u00f6schen", Icons.getInstance().getIconRealDelete16(),
 		CommonLocaleDelegate.getMessage("CollectController.15","Diesen Datensatz l\u00f6schen")) {
-		/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
         public void actionPerformed(ActionEvent ev) {

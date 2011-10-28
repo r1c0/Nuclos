@@ -20,8 +20,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Date;
 
-import javax.ejb.Local;
-
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.dal.vo.EntityObjectVO;
@@ -38,30 +36,30 @@ import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 
-@Local
+// @Local
 public interface RuleInterfaceFacadeLocal {
 
-	public abstract Integer getModuleId(Integer iGenericObjectId);
+	Integer getModuleId(Integer iGenericObjectId);
 
-	public abstract GenericObjectVO getGenericObject(Integer iGenericObjectId)
+	GenericObjectVO getGenericObject(Integer iGenericObjectId)
 		throws CommonFinderException, CommonPermissionException;
 
-	public abstract boolean isStateEqual(Integer iGenericObjectId, int iNumeral)
+	boolean isStateEqual(Integer iGenericObjectId, int iNumeral)
 		throws CommonFinderException;
 
-	public abstract boolean isAttributeEqual(Integer iGenericObjectId,
+	boolean isAttributeEqual(Integer iGenericObjectId,
 		String sAttribute, Object oValue);
 
-	public abstract boolean isAttributeNull(Integer iGenericObjectId,
+	boolean isAttributeNull(Integer iGenericObjectId,
 		String sAttribute);
 
-	public abstract void sendMessage(String[] asRecipients, String sSubject,
+	void sendMessage(String[] asRecipients, String sSubject,
 		String sMessage) throws NuclosBusinessRuleException;
 
-	public abstract Integer createObject(Integer iGenericObjectId,
+	Integer createObject(Integer iGenericObjectId,
 		String sGenerator) throws NuclosBusinessRuleException;
 
-	public abstract Integer createObject(String sEntityName, Integer iObjectId,
+	Integer createObject(String sEntityName, Integer iObjectId,
 		String sGenerator) throws NuclosBusinessRuleException;
 
 	public abstract Integer createObject(RuleObjectContainerCVO loccvo,
@@ -72,7 +70,7 @@ public interface RuleInterfaceFacadeLocal {
 	 * @postcondition result != null
 	 * @postcondition !result.isRemoved()
 	 */
-	public abstract DynamicAttributeVO getAttribute(Integer iGenericObjectId,
+	DynamicAttributeVO getAttribute(Integer iGenericObjectId,
 		String sAttribute);
 
 	/**
@@ -80,7 +78,7 @@ public interface RuleInterfaceFacadeLocal {
 	 * The leased object is read from the database and stored later (after the change).
 	 * @precondition iGenericObjectId != null
 	 */
-	public abstract void setAttribute(RuleVO ruleVO, Integer iGenericObjectId,
+	void setAttribute(RuleVO ruleVO, Integer iGenericObjectId,
 		String sAttribute, Integer iValueId, Object oValue)
 		throws NuclosBusinessRuleException;
 
@@ -88,14 +86,14 @@ public interface RuleInterfaceFacadeLocal {
 	 * sets the attribute with the given name value in the given GenericObjectVO to the given value id and value.
 	 * This method does not apply any changes to the database.
 	 */
-	public abstract void setAttribute(RuleVO ruleVO, GenericObjectVO govo,
+	void setAttribute(RuleVO ruleVO, GenericObjectVO govo,
 		String sAttribute, Integer iValueId, Object oValue);
 
 	/**
 	 * sets the field with the given name value in the given MasterDataVO to the given value id and value.
 	 * This method does not apply any changes to the database.
 	 */
-	public abstract void setMasterDataField(String sEntityName,
+	void setMasterDataField(String sEntityName,
 		MasterDataVO mdvo, String sFieldName, Integer iValueId, Object oValue);
 
 	/**
@@ -103,20 +101,20 @@ public interface RuleInterfaceFacadeLocal {
 	 * The masterdata object is read from the database and stored later (after the change).
 	 * @precondition iId != null
 	 */
-	public abstract void setMasterDataField(String sEntityName, Integer iId,
+	void setMasterDataField(String sEntityName, Integer iId,
 		String sFieldName, Integer iValueId, Object oValue);
 
 	/**
 	 * @precondition iGenericObjectId != null
 	 */
-	public abstract GenericObjectVO changeState(GenericObjectVO govoCurrent,
+	GenericObjectVO changeState(GenericObjectVO govoCurrent,
 		Integer iGenericObjectId, int iNumeral)
 		throws NuclosBusinessRuleException;
 
 	/**
 	 * @precondition iGenericObjectId != null
 	 */
-	public abstract void changeState(Integer iGenericObjectId, int iNumeral)
+	void changeState(Integer iGenericObjectId, int iNumeral)
 		throws NuclosBusinessRuleException;
 
 	/**
@@ -130,7 +128,7 @@ public interface RuleInterfaceFacadeLocal {
 	 * @precondition iGenericObjectId != null
 	 * @throws NuclosBusinessRuleException if the transition from the current state to the new state is not possible for the given object.
 	 */
-	public abstract GenericObjectVO scheduleStateChange(
+	GenericObjectVO scheduleStateChange(
 		GenericObjectVO govoCurrent, Integer iGenericObjectId, int iNewState,
 		Date dateToSchedule) throws NuclosBusinessRuleException,
 		CommonFinderException;
@@ -138,14 +136,14 @@ public interface RuleInterfaceFacadeLocal {
 	/**
 	 * schedules a test job once for ten seconds later.
 	 */
-	public abstract void scheduleTestJob();
+	void scheduleTestJob();
 
 	/**
 	 * @param iModuleId
 	 * @param cond
 	 * @return Collection<Integer>
 	 */
-	public abstract Collection<Integer> getGenericObjectIds(Integer iModuleId,
+	Collection<Integer> getGenericObjectIds(Integer iModuleId,
 		CollectableSearchCondition cond);
 
 	/**
@@ -153,7 +151,7 @@ public interface RuleInterfaceFacadeLocal {
 	 * @param cond
 	 * @return Collection<Integer>
 	 */
-	public abstract Collection<Object> getMasterDataIds(String sEntityName,
+	Collection<Object> getMasterDataIds(String sEntityName,
 		CollectableSearchExpression cond);
 
 	/**
@@ -161,7 +159,7 @@ public interface RuleInterfaceFacadeLocal {
 	 * @param cond
 	 * @return Collection<Integer>
 	 */
-	public abstract Collection<Object> getMasterDataIds(String sEntityName);
+	Collection<Object> getMasterDataIds(String sEntityName);
 
 	/**
 	 * @param iModuleId
@@ -173,17 +171,17 @@ public interface RuleInterfaceFacadeLocal {
 	 * @postcondition (iModuleId == null) --> result.isEmpty()
 	 * @postcondition (iGenericObjectId == null) --> result.isEmpty()
 	 */
-	public abstract Collection<Integer> getRelatedGenericObjectIds(
+	Collection<Integer> getRelatedGenericObjectIds(
 		Integer iModuleId, Integer iGenericObjectId, RelationDirection direction,
 		String relationType);
 
-	public abstract void relate(Integer iGenericObjectIdSource,
+	void relate(Integer iGenericObjectIdSource,
 		Integer iGenericObjectIdTarget, String relationType, Date dateValidFrom,
 		Date dateValidUntil, String sDescription) throws CommonFinderException,
 		CommonCreateException, CommonPermissionException,
 		NuclosBusinessRuleException;
 
-	public abstract void unrelate(Integer iGenericObjectIdSource,
+	void unrelate(Integer iGenericObjectIdSource,
 		Integer iGenericObjectIdTarget, String relationType)
 		throws CommonFinderException, CommonPermissionException,
 		NuclosBusinessRuleException, CommonRemoveException;
@@ -191,12 +189,12 @@ public interface RuleInterfaceFacadeLocal {
 	/**
 	 * invalidates the given relations by setting "validUntil" to the current date, if necessary
 	 */
-	public abstract void invalidateRelations(Integer iGenericObjectIdSource,
+	void invalidateRelations(Integer iGenericObjectIdSource,
 		Integer iGenericObjectIdTarget, String relationType)
 		throws CommonFinderException, CommonBusinessException,
 		NuclosBusinessRuleException;
 
-	public abstract boolean isStateChangePossible(Integer iGenericObjectId,
+	boolean isStateChangePossible(Integer iGenericObjectId,
 		int iNewState) throws CommonFinderException;
 
 	/**
@@ -205,7 +203,7 @@ public interface RuleInterfaceFacadeLocal {
 	 * @param oParams the parameters (note that it is not possible to use null as a parameter use {@code DbNull} instead)
 	 * @throws NuclosBusinessRuleException
 	 */
-	public abstract void callDbProcedure(String sProcedureName,
+	void callDbProcedure(String sProcedureName,
 		Object ... oParams) throws NuclosBusinessRuleException;
 
 	/**
@@ -216,7 +214,7 @@ public interface RuleInterfaceFacadeLocal {
 	 * @return the result of the function the object is of the java type corresponding to iResultType
 	 * @throws NuclosBusinessRuleException
 	 */
-	public abstract <T> T callDbFunction(String sFunctionName, Class<T> resultType,
+	<T> T callDbFunction(String sFunctionName, Class<T> resultType,
 		Object ... oParams) throws NuclosBusinessRuleException;
 
 	/**
@@ -226,22 +224,24 @@ public interface RuleInterfaceFacadeLocal {
 	 * @return a {@link Collection} with {@link MasterDataVO} (easier to work with in a rule, columnames are the fields)
 	 * @throws NuclosBusinessRuleException if the ds was not found
 	 */
-	public abstract Collection<MasterDataVO> executeSelectOnJCADatasource(String jndiName, String selectStatement) throws NuclosBusinessRuleException;
+	Collection<MasterDataVO> executeSelectOnJCADatasource(String jndiName, String selectStatement) 
+			throws NuclosBusinessRuleException;
 
-	public abstract void setConnectionSettingsForWebservice(Object stub, String serviceName) throws NuclosBusinessRuleException;
+	void setConnectionSettingsForWebservice(Object stub, String serviceName) 
+			throws NuclosBusinessRuleException;
 	
-	public abstract File createTempFile(String fileName, byte[] data) throws NuclosBusinessRuleException;
+	File createTempFile(String fileName, byte[] data) throws NuclosBusinessRuleException;
 	
-	public EntityObjectVO getEntityObject(String entity, Long id);
+	EntityObjectVO getEntityObject(String entity, Long id);
 	
-	public abstract MasterDataVO getMasterData(String sEntityName, Integer iId);
+	MasterDataVO getMasterData(String sEntityName, Integer iId);
 
-	public abstract void logInfo(Integer iSessionId, String sMessage,
+	void logInfo(Integer iSessionId, String sMessage,
 		String sRuleName) throws NuclosBusinessRuleException;
 
-	public abstract void logWarning(Integer iSessionId, String sMessage,
+	void logWarning(Integer iSessionId, String sMessage,
 		String sRuleName) throws NuclosBusinessRuleException;
 
-	public abstract void logError(Integer iSessionId, String sMessage,
+	void logError(Integer iSessionId, String sMessage,
 		String sRuleName) throws NuclosBusinessRuleException;
 }

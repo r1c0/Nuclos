@@ -56,10 +56,7 @@ import org.nuclos.server.navigation.treenode.nuclet.content.AbstractNucletConten
  * @version 01.00.00
  */
 public class NucletContentEntryExplorerNode extends ExplorerNode<AbstractNucletContentEntryTreeNode> {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private static final Logger log = Logger.getLogger(NucletContentEntryExplorerNode.class);
 
 	public NucletContentEntryExplorerNode(TreeNode treenode) {
@@ -74,10 +71,6 @@ public class NucletContentEntryExplorerNode extends ExplorerNode<AbstractNucletC
 	@Override
 	public Transferable createTransferable(final JTree tree) {
 		Action actRemove = new AbstractAction() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -115,11 +108,6 @@ public class NucletContentEntryExplorerNode extends ExplorerNode<AbstractNucletC
 	 */
 	private class ShowDetailsAction extends TreeNodeAction {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		ShowDetailsAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
 		}
@@ -144,11 +132,6 @@ public class NucletContentEntryExplorerNode extends ExplorerNode<AbstractNucletC
 	}	// inner class ShowDetailsAction
 	
 	private class RemoveFromNucletAction extends TreeNodeAction {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public RemoveFromNucletAction(JTree tree) {
 			super(ACTIONCOMMAND_REMOVE, CommonLocaleDelegate.getMessage("NucletContentEntryExplorerNode.1","Vom Nuclet entfernen"), tree);

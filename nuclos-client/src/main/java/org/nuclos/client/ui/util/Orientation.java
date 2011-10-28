@@ -75,15 +75,10 @@ public enum Orientation {
 	}
 	
 	public Range rangeFrom(Rectangle rect, Range range) {
-		if (range == null) {
-			range = new Range();
-		}
 		if (isHorizontal()) {
-			range.coord = rect.x;
-			range.extent = rect.width;
+			range = new Range(rect.x, rect.width);
 		} else {
-			range.coord = rect.y;
-			range.extent = rect.height;
+			range = new Range(rect.y, rect.height);
 		}
 		return range;
 	}
@@ -113,7 +108,7 @@ public enum Orientation {
 	}
 	
 	public Rectangle updateRange(Rectangle rect, Range range) {
-		return updateExtent(updateCoord(rect, range.coord), range.extent);
+		return updateExtent(updateCoord(rect, range.getCoord()), range.getExtent());
 	}
 	
 	public <T> T select(T horiz, T vert) {

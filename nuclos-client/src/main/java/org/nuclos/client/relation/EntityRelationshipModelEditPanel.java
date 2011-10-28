@@ -53,6 +53,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.application.assistant.ApplicationAssistantListener;
 import org.nuclos.client.application.assistant.ApplicationChangedEvent;
 import org.nuclos.client.application.assistant.ApplicationObserver;
@@ -108,10 +109,8 @@ import com.mxgraph.view.mxGraph;
  */
 public class EntityRelationshipModelEditPanel extends JPanel implements ApplicationAssistantListener {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(EntityRelationshipModelEditPanel.class);
+
 	public static String[] labels = TranslationVO.labelsField;
 	public static String ENTITYSTYLE = "rounded=1";
 	public static String DIAMONDARROW = "endArrow=diamond";
@@ -121,30 +120,30 @@ public class EntityRelationshipModelEditPanel extends JPanel implements Applicat
 	public static String ELBOWCONNECTOR = "mxEdgeStyle.ElbowConnector";
 	public static String SYMBOLCOLOR = "#6482B9";
 	
-	int xPos; 
-	int yPos;
+	private int xPos; 
+	private int yPos;
 	
-	JPanel mainPanel;
+	private JPanel mainPanel;
 	
-	JPanel panelHeader;
+	private JPanel panelHeader;
 	
-	CollectableTextField clcttfName = new CollectableTextField(
+	private CollectableTextField clcttfName = new CollectableTextField(
 		EntityRelationshipModel.clcte.getEntityField("name"));
 	
-	CollectableTextField clcttfDescription = new CollectableTextField(
+	private CollectableTextField clcttfDescription = new CollectableTextField(
 		EntityRelationshipModel.clcte.getEntityField("description"));
 	
-	mxGraphComponent graphComponent;
+	private mxGraphComponent graphComponent;
 	
 	private MainFrame mf;
 	
-	List<ChangeListener> lstChangeListener;
+	private List<ChangeListener> lstChangeListener;
 	
-	List<mxCell> lstRelations;
+	private List<mxCell> lstRelations;
 	
-	Map<EntityMetaDataVO, Set<EntityFieldMetaDataVO>> mpRemoveRelation;
+	private Map<EntityMetaDataVO, Set<EntityFieldMetaDataVO>> mpRemoveRelation;
 	
-	boolean isPopupShown;
+	private boolean isPopupShown;
 	
 
 	public EntityRelationshipModelEditPanel(MainFrame mf) {
@@ -340,7 +339,7 @@ public class EntityRelationshipModelEditPanel extends JPanel implements Applicat
 		
 	}
 	
-	public mxGraphComponent getGraphComponent() {
+	mxGraphComponent getGraphComponent() {
 		return graphComponent;
 	}
 	
@@ -355,7 +354,7 @@ public class EntityRelationshipModelEditPanel extends JPanel implements Applicat
 			fireChangeListenEvent();
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			LOG.warn("clearRelationModel failed: " + e, e);
 		}
 	}
 	
@@ -486,10 +485,18 @@ public class EntityRelationshipModelEditPanel extends JPanel implements Applicat
 									gcc.runWithNewCollectableWithSomeFields(vo);
 								}
 							}
-							catch(NuclosBusinessException e1) { }
-							catch(CommonPermissionException e1) { }
-							catch(CommonFatalException e1) { }
-							catch(CommonBusinessException e1) { }				
+							catch(NuclosBusinessException e1) { 
+								LOG.warn("mousePressed failed: " + e1, e1);
+							}
+							catch(CommonPermissionException e1) { 
+								LOG.warn("mousePressed failed: " + e1, e1);
+							}
+							catch(CommonFatalException e1) { 
+								LOG.warn("mousePressed failed: " + e1, e1);
+							}
+							catch(CommonBusinessException e1) { 
+								LOG.warn("mousePressed failed: " + e1, e1);
+							}				
 						}
 					}
 				}
@@ -778,16 +785,16 @@ public class EntityRelationshipModelEditPanel extends JPanel implements Applicat
 					}
 				}
 				catch(NuclosBusinessException e1) {
-					e1.printStackTrace();
+					LOG.warn("actionPerformed failed: " + e1, e1);
 				}
 				catch(CommonPermissionException e1) {
-					e1.printStackTrace();
+					LOG.warn("actionPerformed failed: " + e1, e1);
 				}
 				catch(CommonFatalException e1) {
-					e1.printStackTrace();
+					LOG.warn("actionPerformed failed: " + e1, e1);
 				}
 				catch(CommonBusinessException e1) {
-					e1.printStackTrace();
+					LOG.warn("actionPerformed failed: " + e1, e1);
 				}				
 			}
 		});
@@ -796,29 +803,21 @@ public class EntityRelationshipModelEditPanel extends JPanel implements Applicat
 			i1.setSelected(true);
 			pop.add(i1);
 		}
-//		else if(cell.getStyle() != null && cell.getStyle().indexOf("endArrow=oval") >= 0) {
-//			i3.setSelected(true);
-//			pop.add(i3);
-//		}
 		else if(cell.getStyle() != null && cell.getStyle().indexOf(DIAMONDARROW) >= 0) {
 			i2.setSelected(true);
 			pop.add(i2);
-		}
-		
+		}	
 		
 		if(objectGeneration) {
 			//pop.addSeparator();
 			pop.add(i5);
-		}
-		
+		}		
 		
 		if(delete) {
 			pop.addSeparator();
 			pop.add(i4);
-		}
-		
+		}	
 		return pop;	
-		
 	}
 
 	public Map<EntityMetaDataVO, Set<EntityFieldMetaDataTO>> getMetaDataModel() {
@@ -1003,10 +1002,10 @@ public class EntityRelationshipModelEditPanel extends JPanel implements Applicat
 							EntityMetaDataVO vo = MetaDataClientProvider.getInstance().getEntity(sValue);
 							wizard.setEntityToEdit(vo);
 						}
-						catch(Exception ex) {
+						catch(Exception e1) {
 							// neue Entity
-						}
-						
+							LOG.info("actionPerformed: " + e1 + " (new entity?)");
+						}			
 					}
 				}
 				wizard.showWizard(mf.getHomePane(), mf);
@@ -1275,7 +1274,7 @@ public class EntityRelationshipModelEditPanel extends JPanel implements Applicat
 			}
 		}
 		catch(CommonFinderException e) {
-			e.printStackTrace();
+			LOG.info("showDataModel: " + e);
 		}		
 		this.fireChangeListenEvent();
 		
@@ -1328,8 +1327,8 @@ public class EntityRelationshipModelEditPanel extends JPanel implements Applicat
 							voField = MetaDataDelegate.getInstance().getEntityField(voSource.getEntity(), voField.getField());
 							cell.setValue(voField);
 						}
-						catch(Exception ex) {
-							
+						catch(Exception e) {
+							LOG.info("loadReferenz: " + e);
 						}
 					}
 				}

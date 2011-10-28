@@ -28,7 +28,6 @@ import org.nuclos.common2.KeyEnum;
  */
 public class Join implements Serializable {
 
-	private static final long serialVersionUID = 1L;
 	private final Column srcColumn;
 	private final JoinType type;
 	private final Column dstColumn;

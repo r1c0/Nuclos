@@ -31,12 +31,6 @@ import org.pietschy.wizard.WizardModel;
 public class NuclosEntityAttributeWizard extends Wizard {
 
 	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-
-	/**
 	 * @param model
 	 */
 	public NuclosEntityAttributeWizard(WizardModel model) {

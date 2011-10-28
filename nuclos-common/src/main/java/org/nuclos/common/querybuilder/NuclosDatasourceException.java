@@ -29,11 +29,6 @@ import org.nuclos.common.NuclosBusinessException;
  */
 public class NuclosDatasourceException extends NuclosBusinessException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public NuclosDatasourceException() {
 		super("datasource.error.exception.nucleusdatasourceexception");
 	}

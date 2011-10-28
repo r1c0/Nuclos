@@ -44,16 +44,17 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
+import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXPanel;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.BORDER_EDITOR;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COMMON_LABELS;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.AddRemoveRowsFromPanel;
-import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.MovePanelUpAndDown;
-import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.SaveAndCancelButtonPanel;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.AddRemoveRowsFromPanel.AddRemoveButtonControllable;
+import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.MovePanelUpAndDown;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.MovePanelUpAndDown.MovePanelUpAndDownControllable;
+import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.SaveAndCancelButtonPanel;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.SaveAndCancelButtonPanel.SaveAndCancelButtonPanelControllable;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.common.NuclosBusinessException;
@@ -75,14 +76,12 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class BorderEditor extends JDialog implements SaveAndCancelButtonPanelControllable, ListDataListener {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	int width = 850;
-	int height = 400;
+	
+	private static final Logger LOG = Logger.getLogger(BorderEditor.class);
+
+	private int width = 850;
+	private int height = 400;
 
 	private JCheckBox checkBox = new JCheckBox();
 	private JScrollPane scrollPane = null;
@@ -240,7 +239,9 @@ public class BorderEditor extends JDialog implements SaveAndCancelButtonPanelCon
 		if (viewToModel()) {
 			try {
 			model.remove(index);
-			} catch (ArrayIndexOutOfBoundsException e){}
+			} catch (ArrayIndexOutOfBoundsException e) {
+				LOG.warn("performRemoveBorderAction failed: " + e);
+			}
 		}
 	}
 	
@@ -418,11 +419,6 @@ public class BorderEditor extends JDialog implements SaveAndCancelButtonPanelCon
 	 * @version 01.00.00
 	 */
 	private class CompleteSingleBorderPanel extends JPanel implements AddRemoveButtonControllable, MovePanelUpAndDownControllable {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		private int index;
 

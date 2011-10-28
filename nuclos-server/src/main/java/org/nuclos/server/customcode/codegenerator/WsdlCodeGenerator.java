@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.LangUtils;
@@ -44,6 +45,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
 public class WsdlCodeGenerator implements CodeGenerator {
+
+	private static final Logger LOG = Logger.getLogger(WsdlCodeGenerator.class);
 
 	public static final String DEFAULT_PACKAGE_WEBSERVICES = "org.nuclos.webservices";
 
@@ -205,7 +208,9 @@ public class WsdlCodeGenerator implements CodeGenerator {
 						addURL(new URL(jarFile.toURI().toString()));
 					}
 					catch(MalformedURLException e) {
+						// Ok! (tp)
 						e.printStackTrace();
+						LOG.warn("AxisCodeGenerationClassLoader failed: " + e);
 					}
 				}
 			}

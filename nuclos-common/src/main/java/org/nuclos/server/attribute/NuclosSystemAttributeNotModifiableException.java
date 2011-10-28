@@ -29,11 +29,6 @@ import org.nuclos.common.NuclosBusinessException;
  */
 public class NuclosSystemAttributeNotModifiableException extends NuclosBusinessException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public NuclosSystemAttributeNotModifiableException() {
 		super("attribute.error.exception.nucleussystemattributenotmodifiableexception");
 	}

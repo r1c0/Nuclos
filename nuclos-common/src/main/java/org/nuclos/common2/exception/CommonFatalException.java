@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common2.exception;
 
-import javax.ejb.EJBException;
-
 /**
  * General Novabit runtime (fatal, unchecked) exception.
  * <br>
@@ -60,9 +58,6 @@ public class CommonFatalException extends RuntimeException {
 
 	protected static String getMessage(Throwable cause) {
 		Throwable t = cause;
-		if (t instanceof EJBException && t.getCause() != null) {
-			t = t.getCause();
-		}
 		if (t.getMessage() != null && (t instanceof CommonBusinessException || t instanceof CommonFatalException)) {
 			return t.getMessage();
 		}

@@ -29,13 +29,10 @@ import java.util.Iterator;
  *
  * @author	<a href="mailto:christoph.radig@novabit.de">christoph.radig</a>
  * @version 01.00.00
+ * @deprecated Use Apache Commons Collections.
  */
 public class GenericCollectionDecorator<E, Coll extends Collection<E>> implements Collection<E>, Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final Coll coll;
 
 	/**

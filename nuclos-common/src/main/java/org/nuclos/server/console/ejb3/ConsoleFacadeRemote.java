@@ -19,16 +19,15 @@ package org.nuclos.server.console.ejb3;
 import java.sql.SQLException;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.Remote;
 
 import org.nuclos.common.Priority;
 import org.nuclos.common2.exception.CommonBusinessException;
 
-@Remote
+// @Remote
 public interface ConsoleFacadeRemote {
 
 	@PostConstruct
-	public abstract void postConstruct();
+	void postConstruct();
 
 	/**
 	 *
@@ -37,47 +36,40 @@ public interface ConsoleFacadeRemote {
 	 * @param priority
 	 * @param sAuthor the author of the message
 	 */
-	public abstract void sendClientNotification(String sMessage, String sUser,
+	void sendClientNotification(String sMessage, String sUser,
 		Priority priority, String sAuthor);
 
 	/**
 	 * end all the clients of sUser
 	 * @param sUser if null for all users
 	 */
-	public abstract void killSession(String sUser);
+	void killSession(String sUser);
 
 	/**
 	 * check for VIEWS and FUNCTIONS which are invalid and compile them
 	 */
-	public abstract void compileInvalidDbObjects() throws SQLException;
-
-	/**
-	 * finds attribute values which should be assigned to a value list entry and creates a script to assign them if possible
-	 * @return the number of bad attribute values found
-	 */
-//	public abstract int updateAttributeValueListAssignment(
-//		final String sOutputFileName);
+	void compileInvalidDbObjects() throws SQLException;
 
 	/**
 	 * invalidateAllServerSide Caches
 	 */
-	public abstract String invalidateAllCaches();
+	String invalidateAllCaches();
 
 	/**
 	 * get Infomation about the database in use
 	 */
-	public abstract String getDatabaseInformationAsHtml();
+	String getDatabaseInformationAsHtml();
 
 	/**
 	 * get the system properties of the server
 	 */
-	public abstract String getSystemPropertiesAsHtml();
+	String getSystemPropertiesAsHtml();
 	
 	/**
 	 * 
 	 * @param sCommand
 	 * @throws CommonBusinessException
 	 */
-	public void executeCommand(String sCommand) throws CommonBusinessException;
+	void executeCommand(String sCommand) throws CommonBusinessException;
 
 }

@@ -21,10 +21,6 @@ import javax.swing.border.TitledBorder;
 
 public class TitledBorderWithTranslations extends TitledBorder {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private TranslationMap translations;
 
 	public TitledBorderWithTranslations(String title) {

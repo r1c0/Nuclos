@@ -31,10 +31,6 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
  */
 public class RuleVO extends NuclosValueObject {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
 	private String sName;
 	private String sDescription;
 	private String sRuleSource;

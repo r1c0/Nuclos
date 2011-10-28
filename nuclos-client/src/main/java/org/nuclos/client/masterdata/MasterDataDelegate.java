@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ejb.CreateException;
-
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosBusinessException;
@@ -67,6 +65,8 @@ import org.nuclos.server.ruleengine.valueobject.RuleVO;
  */
 public class MasterDataDelegate {
 
+	private static final Logger LOG = Logger.getLogger(MasterDataDelegate.class);
+
 	private static MasterDataDelegate singleton;
 
 	private final Logger log = Logger.getLogger(this.getClass());
@@ -82,7 +82,7 @@ public class MasterDataDelegate {
 	/**
 	 * Use getInstance() to create an (the) instance of this class
 	 */
-	private MasterDataDelegate() throws RuntimeException, CreateException {
+	private MasterDataDelegate() throws RuntimeException {
 		this.facade = ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
 			//ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
 	}
@@ -94,9 +94,6 @@ public class MasterDataDelegate {
 			}
 			catch (RuntimeException ex) {
 				throw new CommonFatalException(ex);
-			}
-			catch (CreateException ex) {
-				throw new NuclosFatalException(ex);
 			}
 		}
 		return singleton;

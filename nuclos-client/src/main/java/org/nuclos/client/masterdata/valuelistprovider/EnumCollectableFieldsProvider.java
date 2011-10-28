@@ -43,15 +43,14 @@ public class EnumCollectableFieldsProvider implements CollectableFieldsProvider 
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
 	public List<CollectableField> getCollectableFields() throws CommonBusinessException {
 		List<CollectableField> result = new ArrayList<CollectableField>();
 
 		try {
 			// asSubclass does not work with wild cards types (i.e. Enum<?>)...
-			Class<? extends Enum> clazz = Class.forName(this.showEnum).asSubclass(Enum.class);
-			for (Enum e : clazz.getEnumConstants()) {
-				Object value = (e instanceof KeyEnum) ? ((KeyEnum) e).getValue() : e.name();
+			Class<? extends Enum<?>> clazz = (Class<? extends Enum<?>>) Class.forName(this.showEnum).asSubclass(Enum.class);
+			for (Enum<?> e : clazz.getEnumConstants()) {
+				Object value = (e instanceof KeyEnum) ? ((KeyEnum<?>) e).getValue() : e.name();
 				String text = (e instanceof Localizable) ? CommonLocaleDelegate.getText((Localizable) e) : e.toString();
 				CollectableField cf = new LocalizedCollectableValueField(value, text);
 				result.add(cf);

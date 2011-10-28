@@ -91,7 +91,7 @@ public interface WYSIWYGComponent extends LayoutMLConstants, WYSIWYGEditorModes 
 	 * @param valueClass the Class for this Value (e.g. String.class)
 	 * @throws CommonBusinessException if something went wrong
 	 */
-	public void setProperty(String property, PropertyValue value, Class<?> valueClass) throws CommonBusinessException;
+	public void setProperty(String property, PropertyValue<?> value, Class<?> valueClass) throws CommonBusinessException;
 	
 	/**
 	 * Setting a complete {@link ComponentProperties} set of Values

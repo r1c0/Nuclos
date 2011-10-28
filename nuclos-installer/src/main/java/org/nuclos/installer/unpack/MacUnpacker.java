@@ -32,7 +32,7 @@ import org.nuclos.installer.util.PropUtils;
 
 public class MacUnpacker extends UnixoidUnpacker {
 
-	private static final Logger log = Logger.getLogger(MacUnpacker.class);
+	private static final Logger LOG = Logger.getLogger(MacUnpacker.class);
 
 	private static final String PG_NSTALLER_IMAGE = "postgresql-9.0.4-1-osx.dmg";
 
@@ -69,7 +69,7 @@ public class MacUnpacker extends UnixoidUnpacker {
 						p.waitFor();
 					}
 					catch (Exception ex) {
-						log.error("Error stopping server", ex);
+						LOG.error("Error stopping server", ex);
 						cb.warn("error.stop.server");
 					}
 				}
@@ -82,7 +82,7 @@ public class MacUnpacker extends UnixoidUnpacker {
 			}
 		}
 		catch (Exception ex) {
-			log.error("Failed to stop server", ex);
+			LOG.error("Failed to stop server", ex);
 			cb.warn("error.stop.server");
 		}
 	}
@@ -105,7 +105,7 @@ public class MacUnpacker extends UnixoidUnpacker {
 			}
 		}
 		catch (Exception ex) {
-			log.error("Failed to start server", ex);
+			LOG.error("Failed to start server", ex);
 			cb.warn("error.start.server");
 		}
 	}
@@ -120,7 +120,7 @@ public class MacUnpacker extends UnixoidUnpacker {
 			return isPrivileged() && getPostgresInstallerUrl() != null;
 		}
 		catch (InstallException ex) {
-			log.error(ex);
+			LOG.error(ex);
 			return false;
 		}
 	}
@@ -139,7 +139,7 @@ public class MacUnpacker extends UnixoidUnpacker {
 			FileUtils.copyInputStreamToFile(installerurl.openStream(), f, false);
 		}
 		catch(IOException e) {
-			log.error(e);
+			LOG.error("installPostgres failed: " + e, e);
 			cb.error("error.unpack.postgresql.installer");
 		}
 		f.setExecutable(true);
@@ -158,7 +158,7 @@ public class MacUnpacker extends UnixoidUnpacker {
 			"--datadir", ConfigContext.getProperty(POSTGRES_DATADIR),
 			"--serverport", ConfigContext.getProperty(DATABASE_PORT),
 			"--superpassword", ConfigContext.getProperty(POSTGRES_SUPERPWD));
-		log.info(command);
+		LOG.info(command);
 
 		InputStreamReader reader = null;
 		try {
@@ -172,7 +172,7 @@ public class MacUnpacker extends UnixoidUnpacker {
             while ((n = reader.read(buffer, 0, 1024)) > -1) {
             	val.append(buffer, 0, n);
             }
-		    log.info("PostgreSQL Installation result: " + val);
+		    LOG.info("PostgreSQL Installation result: " + val);
 		    String result = val.toString();
 
 		    // Simply check for two texts to ensure that we have the expected result
@@ -192,10 +192,10 @@ public class MacUnpacker extends UnixoidUnpacker {
 				try {
 					reader.close();
 				} catch (IOException e) {
-					log.warn(e);
+					LOG.warn(e);
 				}
 			}
-			log.error(ex);
+			LOG.error(ex);
 			cb.warn("error.postgres.installation");
 		}
 
@@ -205,7 +205,7 @@ public class MacUnpacker extends UnixoidUnpacker {
 
 	private void mount(Installer cb, File f) {
 		List<String> command = Arrays.asList("hdiutil", "attach", f.getAbsolutePath());
-		log.info(command);
+		LOG.info(command);
 
 		try {
 			ProcessBuilder pb = new ProcessBuilder(command);
@@ -215,14 +215,14 @@ public class MacUnpacker extends UnixoidUnpacker {
 			}
 		}
 		catch (Exception ex) {
-			log.error(ex);
+			LOG.error(ex);
 			cb.error("error.postgres.mount");
 		}
 	}
 
 	private void unmount(Installer cb) {
 		List<String> command = Arrays.asList("hdiutil", "detach", "/Volumes/PostgreSQl 9.0.4-1");
-		log.info(command);
+		LOG.info(command);
 
 		try {
 			ProcessBuilder pb = new ProcessBuilder(command);
@@ -232,7 +232,7 @@ public class MacUnpacker extends UnixoidUnpacker {
 			}
 		}
 		catch (Exception ex) {
-			log.error(ex);
+			LOG.error(ex);
 			cb.warn("error.postgres.unmount");
 		}
 	}
@@ -248,13 +248,13 @@ public class MacUnpacker extends UnixoidUnpacker {
 			FileUtils.copyFile(new File(ConfigContext.getFileProperty(NUCLOS_HOME), "extra/template-launchd.plist"), serviceconfiguration, true, cb);
 			PropUtils.replaceTextParameters(serviceconfiguration, ConfigContext.getCurrentConfig(), "UTF-8");
 		} catch (IOException e) {
-			log.error("Failed to install service.", e);
+			LOG.error("Failed to install service.", e);
 			cb.warn("error.install.service");
 		}
 
 		// load service by launchctl
 		List<String> command = Arrays.asList("launchctl", "load", serviceconfiguration.getAbsolutePath());
-		log.info(command);
+		LOG.info(command);
 
 		try {
 			ProcessBuilder pb = new ProcessBuilder(command);
@@ -264,7 +264,7 @@ public class MacUnpacker extends UnixoidUnpacker {
 			}
 		}
 		catch (Exception ex) {
-			log.error("Failed to install service.", ex);
+			LOG.error("Failed to install service.", ex);
 			cb.warn("error.install.service");
 		}
 	}
@@ -277,7 +277,7 @@ public class MacUnpacker extends UnixoidUnpacker {
 
 			// unload service by launchctl
 			List<String> command = Arrays.asList("launchctl", "unload", serviceconfiguration.getAbsolutePath());
-			log.info(command);
+			LOG.info(command);
 
 			try {
 				ProcessBuilder pb = new ProcessBuilder(command);
@@ -287,7 +287,7 @@ public class MacUnpacker extends UnixoidUnpacker {
 				}
 			}
 			catch (Exception ex) {
-				log.error("Failed to uninstall service.", ex);
+				LOG.error("Failed to uninstall service.", ex);
 				cb.warn("error.uninstall.service");
 			}
 
@@ -298,7 +298,7 @@ public class MacUnpacker extends UnixoidUnpacker {
 				}
 			}
 			catch (SecurityException ex) {
-				log.error("Failed to uninstall service.", ex);
+				LOG.error("Failed to uninstall service.", ex);
 				cb.warn("error.uninstall.service");
 			}
 		}

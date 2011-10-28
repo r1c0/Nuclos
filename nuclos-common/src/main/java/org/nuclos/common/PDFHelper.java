@@ -108,7 +108,6 @@ public class PDFHelper {
 		PDFHelper.createFieldsInternal(jrdesign, fields);
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void createFieldsInternal(JasperDesign jrdesign, List<FieldDefinition> fields) {
 		final int DIN_A4_HEIGHT = 842;
 		final int DIN_A4_WIDTH = 595;
@@ -268,10 +267,6 @@ public class PDFHelper {
 
 	public static class FieldDefinition implements Serializable {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private String name;
 		private Class<?> clazz;
 		private int maxlength;

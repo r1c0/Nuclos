@@ -44,23 +44,20 @@ import org.nuclos.server.report.NuclosReportException;
  * @version 01.00.00
  */
 public class ChoiceListOrReportExportPanel extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	Border border1;
-	GridBagLayout gridBagLayout1 = new GridBagLayout();
-	JLabel lblHeadline = new JLabel();
 
-	ButtonGroup bgPrechoice = new ButtonGroup();
-	JRadioButton rbList = new JRadioButton();
-	JRadioButton rbReport = new JRadioButton();
+	private Border border1;
+	private GridBagLayout gridBagLayout1 = new GridBagLayout();
+	private JLabel lblHeadline = new JLabel();
 
-	JPanel pnlPrechoice = new JPanel();
-	JPanel pnlPrechoiceHelp = new JPanel(new FlowLayout(FlowLayout.CENTER));
-	JPanel pnlSelection = new JPanel(new CardLayout());
-	ReportFormatPanel pnlList;
-	ReportSelectionPanel pnlReport = new ReportSelectionPanel();
+	private ButtonGroup bgPrechoice = new ButtonGroup();
+	private JRadioButton rbList = new JRadioButton();
+	private JRadioButton rbReport = new JRadioButton();
+
+	private JPanel pnlPrechoice = new JPanel();
+	private JPanel pnlPrechoiceHelp = new JPanel(new FlowLayout(FlowLayout.CENTER));
+	private JPanel pnlSelection = new JPanel(new CardLayout());
+	private ReportFormatPanel pnlList;
+	private ReportSelectionPanel pnlReport = new ReportSelectionPanel();
 
 	public ChoiceListOrReportExportPanel(ReportFormatPanel pnlList) {
 		setLayout(new BorderLayout());
@@ -102,5 +99,21 @@ public class ChoiceListOrReportExportPanel extends JPanel {
 		catch (NuclosReportException ex) {
 			throw new NuclosBusinessException(ex);
 		}
+	}
+	
+	ReportSelectionPanel getSelectionPanel() {
+		return pnlReport;
+	}
+	
+	JPanel getPanel() {
+		return pnlSelection;
+	}
+	
+	JRadioButton getReportButton() {
+		return rbReport;
+	}
+	
+	JRadioButton getListButton() {
+		return rbList;
 	}
 }

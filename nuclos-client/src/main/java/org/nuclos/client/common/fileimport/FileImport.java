@@ -157,6 +157,7 @@ public class FileImport implements CommonInterruptibleProcess {
 						iCountCreated++;
 					}
 					catch (NuclosBusinessException ex) {
+						// Ok (tp)
 						System.out.println("INSERT-Fehler bei: " + mdvoRecord.getField("mnemonic"));
 						this.lstErrorMessages.add(ex.getMessage());
 						iCountError++;

@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.security.Permission;
@@ -40,6 +41,9 @@ import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
  * @version 01.00.00
  */
 public class SecurityDelegate {
+	
+	private static final Logger LOG = Logger.getLogger(SecurityDelegate.class);
+	
 	private static SecurityDelegate singleton;
 
 	private SecurityFacadeRemote facade;

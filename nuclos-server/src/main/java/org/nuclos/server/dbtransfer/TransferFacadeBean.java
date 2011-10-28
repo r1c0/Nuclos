@@ -39,10 +39,8 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.MetaDataProvider;
@@ -142,14 +140,16 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 
-@Stateless
-@Remote(TransferFacadeRemote.class)
-@Local(TransferFacadeLocal.class)
+// @Stateless
+// @Remote(TransferFacadeRemote.class)
+// @Local(TransferFacadeLocal.class)
 @Transactional
 @RolesAllowed("UseManagementConsole")
 public class TransferFacadeBean extends NuclosFacadeBean
 	implements TransferFacadeRemote, TransferFacadeLocal
 {
+
+	private static final Logger LOG = Logger.getLogger(TransferFacadeBean.class);
 
 	private static final Integer TRANSFER_VERSION = 1;
 
@@ -693,8 +693,8 @@ public class TransferFacadeBean extends NuclosFacadeBean
 				pp.addStatement("Unique Constraint kann nicht gesetzt werden!");
 			}
 		}
-		catch(Exception ex) {
-			//ex.printStackTrace();
+		catch (Exception e) {
+			LOG.warn("checkIfNewUniqueConstraintIsAllowed: " + e, e);
 		}
 	}
 
@@ -705,7 +705,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	private MetaDataRoot readBytes(byte[] bytes,
 			Collection<EntityObjectVO> parameter,
 			boolean protectParameter,
@@ -923,6 +922,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 				NuclosJavaCompiler.compile();
 			}
 			catch(NuclosCompileException e) {
+				LOG.info("runTransfer: " + e);
 				t.result.sbWarning.append("\nError compiling rule: " + e.getMessage());
 				if (e.getErrorMessages() != null) {
 					for (ErrorMessage em : e.getErrorMessages()) {

@@ -27,10 +27,6 @@ package org.nuclos.common2;
  */
 public class ExtendedRelativeDate extends RelativeDate {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final String NEGATIVE_OPERAND = "-";
 	public static final String POSITIVE_OPERAND = "+";
 	

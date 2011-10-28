@@ -22,6 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
 import org.nuclos.installer.InstallException;
 import org.nuclos.installer.L10n;
 import org.pietschy.wizard.AbstractWizardModel;
@@ -36,10 +37,8 @@ import org.pietschy.wizard.WizardModel;
  */
 public class RemoveWizardStep extends AbstractWizardStep {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(RemoveWizardStep.class);
+
 	private JTextArea text = new JTextArea();
 	private Thread unpackThread;
 
@@ -78,7 +77,9 @@ public class RemoveWizardStep extends AbstractWizardStep {
 					getUnpacker().remove(getModel().getCallback());
 				}
 				catch(InstallException e) {
+					// Ok! (tp)
 					e.printStackTrace();
+					LOG.error("prepare failed: " + e, e);
 					getModel().getCallback().error("error.installation.failed", e.getMessage());
 				}
 				finally {

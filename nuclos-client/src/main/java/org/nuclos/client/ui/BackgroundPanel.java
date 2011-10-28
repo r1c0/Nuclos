@@ -30,12 +30,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.common.ApplicationProperties;
 
 public class BackgroundPanel extends JPanel {
 
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(BackgroundPanel.class);
 
 	private final Color bg = ApplicationProperties.getInstance().getLoginPanelBgColor(Color.WHITE);
 	private final ImageIcon bgImg = new ImageIcon(NuclosIcons.getInstance().getBigTransparentApplicationIcon512().getImage().getScaledInstance(250, -1, java.awt.Image.SCALE_SMOOTH));
@@ -76,7 +77,9 @@ public class BackgroundPanel extends JPanel {
 						Thread.sleep(delay);
 						move(w, point);
 						Thread.sleep(delay);
-					} catch(InterruptedException ex) {}
+					} catch(InterruptedException e) {
+						LOG.warn("shake failed: " + e, e);
+					}
 				}
 			}
 		};

@@ -42,13 +42,8 @@ import org.nuclos.client.ui.UIUtils;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class WYSIWYGEditorsToolbar extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private JToolBar wysiwygToolbar = null;
 
 	/**

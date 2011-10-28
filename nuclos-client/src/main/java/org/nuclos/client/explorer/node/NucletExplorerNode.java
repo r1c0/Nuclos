@@ -26,6 +26,7 @@ import java.util.Set;
 
 import javax.swing.JTree;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
 import org.nuclos.client.ui.Errors;
@@ -48,8 +49,8 @@ import org.nuclos.server.navigation.treenode.nuclet.content.AbstractNucletConten
  */
 public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 
-	private static final long serialVersionUID = 1L;
-
+	private static final Logger LOG = Logger.getLogger(NucletExplorerNode.class);
+	
 	public NucletExplorerNode(TreeNode treenode) {
 		super(treenode);
 	}
@@ -59,7 +60,6 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 		return ACTIONCOMMAND_EXPAND;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean importTransferData(Component parent, Transferable transferable, JTree tree) throws IOException, UnsupportedFlavorException {
 

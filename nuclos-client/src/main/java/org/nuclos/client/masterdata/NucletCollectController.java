@@ -26,6 +26,7 @@ import javax.swing.JComponent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.dbtransfer.DBTransferExport;
 import org.nuclos.client.dbtransfer.DBTransferImport;
@@ -50,6 +51,8 @@ import org.nuclos.server.navigation.treenode.nuclet.NuclosInstanceTreeNode;
  * @version 01.00.00
  */
 public class NucletCollectController extends MasterDataCollectController {
+
+	private static final Logger LOG = Logger.getLogger(NucletCollectController.class);
 
 	private JButton btnExport;
 	private JButton btnImport;
@@ -144,7 +147,9 @@ public class NucletCollectController extends MasterDataCollectController {
 							getResultController().getSearchResultStrategy().refreshResult();
 							NucletCollectController.this.getNewAction().setEnabled(NucletCollectController.this.isNewAllowed());
 						}
-						catch(CommonBusinessException e1) {}
+						catch(CommonBusinessException e1) {
+							LOG.warn("actionPerformed: " + e1);
+						}
 					}
 				}).showWizard(Main.getMainFrame().getHomePane());
 			}
@@ -166,7 +171,9 @@ public class NucletCollectController extends MasterDataCollectController {
 				try {
 					getResultController().getSearchResultStrategy().refreshResult();
 				}
-				catch(CommonBusinessException e1) {}
+				catch(CommonBusinessException e1) {
+					LOG.warn("actionPerformed: " + e1);
+				}
 			}
 		});
 		updateExportButtonState();

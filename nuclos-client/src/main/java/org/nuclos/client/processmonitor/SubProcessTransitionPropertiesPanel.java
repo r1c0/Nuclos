@@ -56,12 +56,7 @@ import org.nuclos.common.NuclosBusinessException;
 
 public class SubProcessTransitionPropertiesPanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final SubProcessTransitionPanelModel model = new SubProcessTransitionPanelModel();
-
 
 	public SubProcessTransitionPropertiesPanel() {
 		super(new BorderLayout());

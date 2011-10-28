@@ -30,13 +30,9 @@ import java.util.ListIterator;
  *
  * @author	<a href="mailto:christoph.radig@novabit.de">christoph.radig</a>
  * @version 01.00.00
+ * @deprecated Use Apache Commons Collections.
  */
 public class ListDecorator<E> extends GenericCollectionDecorator<E, List<E>> implements List<E> {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Note that it's not useful to create direct instances of this class.

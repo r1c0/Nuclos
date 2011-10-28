@@ -151,13 +151,11 @@ import org.nuclos.common2.exception.CommonFinderException;
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
 public class SubForm extends JPanel implements TableCellRendererProvider, ActionListener {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final Logger LOG = Logger.getLogger(SubForm.class);
 
 	public static interface SubFormToolListener {
-		public void toolbarAction(String actionCommand);
+		void toolbarAction(String actionCommand);
 	};
 
 	public static enum ToolbarFunction {
@@ -206,6 +204,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 				return ToolbarFunction.valueOf(actionCommand);
 			}
 			catch(Exception e) {
+				LOG.info("fromCommandString failed on " + actionCommand, e);
 				return null;
 			}
 		}
@@ -1217,7 +1216,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 									id = ((CollectableValueIdField) value).getValueId();
 								}
 							} catch(CollectableFieldFormatException e1) {
-								e1.printStackTrace();
+								LOG.warn("collectableFieldChangedInModel failed: " + e1, e1);
 							}
 							Collectable clct = null;
 							String referencedEntity = clctcomp.getEntityField().getReferencedEntityName();
@@ -1574,10 +1573,6 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		@Override
 		protected TableColumnModel createDefaultColumnModel() {
 			return new DefaultTableColumnModel() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void addColumn(TableColumn column) {
@@ -1747,6 +1742,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 				}
 				catch(NuclosFieldNotInModelException e) {
 					// expected exception
+					LOG.info("getCellEditor: " + e);
 					result = null;
 				}
 			}

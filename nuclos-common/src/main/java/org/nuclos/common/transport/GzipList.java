@@ -40,7 +40,6 @@ import java.util.zip.GZIPOutputStream;
 public class GzipList<T> implements List<T>, Serializable, Externalizable {
 	private ArrayList<T>  delegate;
 	
-	@SuppressWarnings("unchecked")
     @Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		int len = in.readInt();
@@ -139,7 +138,6 @@ public class GzipList<T> implements List<T>, Serializable, Externalizable {
 	    return delegate.listIterator(index);
     }
 
-	@SuppressWarnings("hiding")
     @Override
     public <T> T[] toArray(T[] a) {
 	    return delegate.toArray(a);

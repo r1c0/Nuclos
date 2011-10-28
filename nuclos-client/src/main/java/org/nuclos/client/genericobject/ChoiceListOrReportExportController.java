@@ -65,8 +65,8 @@ public class ChoiceListOrReportExportController extends ReportFormatController {
 
 				bFirstTime = false;
 			}
-			final CardLayout cardlayoutSelection = (CardLayout) pnlChoiceExport.pnlSelection.getLayout();
-			cardlayoutSelection.show(pnlChoiceExport.pnlSelection, sSelectedFormat);
+			final CardLayout cardlayoutSelection = (CardLayout) pnlChoiceExport.getPanel().getLayout();
+			cardlayoutSelection.show(pnlChoiceExport.getPanel(), sSelectedFormat);
 		}
 	}
 
@@ -80,8 +80,8 @@ public class ChoiceListOrReportExportController extends ReportFormatController {
 	@Override
 	public boolean run(String sDialogTitle) {
 		final ActionListener actionChoiceListener = new ChoiceActionListener();
-		pnlChoiceExport.rbList.addActionListener(actionChoiceListener);
-		pnlChoiceExport.rbReport.addActionListener(actionChoiceListener);
+		pnlChoiceExport.getListButton().addActionListener(actionChoiceListener);
+		pnlChoiceExport.getReportButton().addActionListener(actionChoiceListener);
 
 //		final int btnValue = JOptionPane.showConfirmDialog(this.parent, pnlChoiceExport, sDialogTitle,
 //				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);

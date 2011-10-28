@@ -29,15 +29,15 @@ import org.apache.commons.lang.NullArgumentException;
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
+ * <p>
+ * TODO: There is also org.nuclos.common.NuclosFile.
+ * Perhaps there should be only one. (tp)
+ * </p>
  * @author	<a href="mailto:ramin.goettlich@novabit.de">ramin.goettlich</a>
  * @version	00.01.000
  */
 public class File implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	public static final String TYPE_PDF = "PDF";
 	public static final String TYPE_XLS = "XLS";
 	public static final String TYPE_DOC = "DOC";
@@ -101,9 +101,6 @@ public class File implements Serializable {
 	public boolean equals(Object o) {
 		final boolean result;
 		if(!(o instanceof File)) {
-			result = false;
-		}
-		else if (o == null) {
 			result = false;
 		}
 		else if (this == o) {

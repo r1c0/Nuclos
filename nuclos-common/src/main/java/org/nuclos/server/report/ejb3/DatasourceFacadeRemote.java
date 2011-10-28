@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Remote;
 
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -43,7 +42,7 @@ import org.nuclos.server.report.valueobject.ResultVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
-@Remote
+// @Remote
 public interface DatasourceFacadeRemote {
 
 	/**
@@ -52,7 +51,7 @@ public interface DatasourceFacadeRemote {
 	 * @return set of datasources
 	 * @throws CommonPermissionException
 	 */
-	public abstract Collection<DatasourceVO> getDatasources()
+	Collection<DatasourceVO> getDatasources()
 		throws CommonPermissionException;
 
 	/**
@@ -60,7 +59,7 @@ public interface DatasourceFacadeRemote {
 	 *
 	 * @return set of datasources
 	 */
-	public abstract Collection<DatasourceVO> getDatasourcesForCurrentUser();
+	Collection<DatasourceVO> getDatasourcesForCurrentUser();
 
 	/**
 	 * get datasource value object
@@ -70,7 +69,7 @@ public interface DatasourceFacadeRemote {
 	 * @return datasource value object
 	 */
 	@RolesAllowed("Login")
-	public abstract DatasourceVO get(Integer iId) throws CommonFinderException,
+	DatasourceVO get(Integer iId) throws CommonFinderException,
 		CommonPermissionException;
 
 	/**
@@ -81,7 +80,7 @@ public interface DatasourceFacadeRemote {
 	 * @return datasource value object
 	 */
 	@RolesAllowed("Login")
-	public abstract DatasourceVO get(String sDatasourceName)
+	DatasourceVO get(String sDatasourceName)
 		throws CommonFinderException, CommonPermissionException;
 
 	/**
@@ -91,7 +90,7 @@ public interface DatasourceFacadeRemote {
 	 * @throws CommonPermissionException
 	 */
 	@RolesAllowed("Login")
-	public abstract DatasourceVO getDatasourceById(Integer iDatasourceId);
+	DatasourceVO getDatasourceById(Integer iDatasourceId);
 
 	/**
 	 * create new datasource
@@ -100,7 +99,7 @@ public interface DatasourceFacadeRemote {
 	 *                value object
 	 * @return new datasource
 	 */
-	public abstract DatasourceVO create(DatasourceVO datasourcevo,
+	DatasourceVO create(DatasourceVO datasourcevo,
 		List<String> lstUsedDatasources) throws CommonCreateException,
 		CommonValidationException, NuclosBusinessRuleException,
 		CommonPermissionException;
@@ -114,7 +113,7 @@ public interface DatasourceFacadeRemote {
 	 * @throws CommonStaleVersionException
 	 * @throws CommonValidationException
 	 */
-	public abstract void modify(DatasourceVO datasourcevo)
+	void modify(DatasourceVO datasourcevo)
 		throws CommonFinderException, CommonPermissionException,
 		CommonStaleVersionException, CommonValidationException,
 		NuclosBusinessRuleException;
@@ -126,7 +125,7 @@ public interface DatasourceFacadeRemote {
 	 *                value object
 	 * @return modified datasource
 	 */
-	public abstract DatasourceVO modify(DatasourceVO datasourcevo,
+	DatasourceVO modify(DatasourceVO datasourcevo,
 		List<String> lstUsedDatasources) throws CommonFinderException,
 		CommonPermissionException, CommonStaleVersionException,
 		CommonValidationException, NuclosBusinessRuleException,
@@ -142,7 +141,7 @@ public interface DatasourceFacadeRemote {
 	 * @throws CommonPermissionException
 	 */
 	@RolesAllowed("Login")
-	public abstract List<DatasourceVO> getUsagesForDatasource(
+	List<DatasourceVO> getUsagesForDatasource(
 		final Integer iDatasourceId) throws CommonFinderException,
 		CommonPermissionException;
 
@@ -158,7 +157,7 @@ public interface DatasourceFacadeRemote {
     * @throws CommonFinderException
     */
    @RolesAllowed("Login")
-   public List<DatasourceVO> getUsagesForDatasource(DatasourceVO datasourceVO) throws
+   List<DatasourceVO> getUsagesForDatasource(DatasourceVO datasourceVO) throws
    CommonFinderException, CommonPermissionException;
 
 	/**
@@ -170,7 +169,7 @@ public interface DatasourceFacadeRemote {
 	 * @throws CommonFinderException
 	 * @throws CommonPermissionException
 	 */
-	public abstract List<DatasourceVO> getUsingByForDatasource(
+	List<DatasourceVO> getUsingByForDatasource(
 		final Integer iDatasourceId) throws CommonFinderException,
 		CommonPermissionException;
 
@@ -180,7 +179,7 @@ public interface DatasourceFacadeRemote {
 	 * @param datasourcevo
 	 *                value object
 	 */
-	public abstract void remove(DatasourceVO datasourcevo)
+	void remove(DatasourceVO datasourcevo)
 		throws CommonFinderException, CommonRemoveException,
 		CommonPermissionException, CommonStaleVersionException,
 		NuclosBusinessRuleException;
@@ -193,7 +192,7 @@ public interface DatasourceFacadeRemote {
 	 * @throws NuclosDatasourceException
 	 */
 	@RolesAllowed("Login")
-	public abstract List<DatasourceParameterVO> getParameters(
+	List<DatasourceParameterVO> getParameters(
 		String sDatasourceXML) throws NuclosFatalException,
 		NuclosDatasourceException;
 
@@ -205,7 +204,7 @@ public interface DatasourceFacadeRemote {
 	 * @throws NuclosDatasourceException
 	 */
 	@RolesAllowed("Login")
-	public abstract List<DatasourceParameterVO> getParameters(
+	List<DatasourceParameterVO> getParameters(
 		Integer iDatasourceId) throws NuclosFatalException,
 		NuclosDatasourceException;
 
@@ -217,7 +216,7 @@ public interface DatasourceFacadeRemote {
     * @throws NuclosReportException
     */
    @RolesAllowed("Login")
-   public void validateSqlFromXML(String sDatasourceXML)
+   void validateSqlFromXML(String sDatasourceXML)
 		throws CommonValidationException, NuclosDatasourceException;
 
    /**
@@ -228,15 +227,15 @@ public interface DatasourceFacadeRemote {
     * @throws NuclosReportException
     */
    @RolesAllowed("Login")
-   public void validateSql(String sql)
-   	throws CommonValidationException, NuclosDatasourceException;
+   void validateSql(String sql)
+		   throws CommonValidationException, NuclosDatasourceException;
 
 	/**
 	 * get sql string for datasource definition
 	 * @param iDatasourceId id of datasource
 	 * @return string containing sql
 	 */
-	public abstract String createSQL(Integer iDatasourceId,
+	String createSQL(Integer iDatasourceId,
 		Map<String, Object> mpParams) throws NuclosDatasourceException;
 
 	/**
@@ -247,7 +246,7 @@ public interface DatasourceFacadeRemote {
 	 * @return string containing sql
 	 */
 	@RolesAllowed("Login")
-	public abstract String createSQL(String sDatasourceXML)
+	String createSQL(String sDatasourceXML)
 		throws NuclosDatasourceException;
 
 	/**
@@ -258,7 +257,7 @@ public interface DatasourceFacadeRemote {
 	 * @return string containing sql
 	 */
 	@RolesAllowed("Login")
-	public abstract String createSQL(String sDatasourceXML,
+	String createSQL(String sDatasourceXML,
 		Map<String, Object> mpParams) throws NuclosDatasourceException;
 
 	/**
@@ -269,23 +268,23 @@ public interface DatasourceFacadeRemote {
 	 * @return string containing sql
 	 */
 	@RolesAllowed("Login")
-	public abstract String createSQLOriginalParameter(String sDatasourceXML) throws NuclosDatasourceException;
+	String createSQLOriginalParameter(String sDatasourceXML) throws NuclosDatasourceException;
 
 
 	/**
 	 * invalidate datasource cache
 	 */
 	@RolesAllowed("Login")
-	public abstract void invalidateCache();
+	void invalidateCache();
 
-   /**
-    * get all DynamicEntities
-    *
-    * @return set of DynamicEntityVO
-    * @throws CommonPermissionException
-    */
+	/**
+	 * get all DynamicEntities
+	 *
+	 * @return set of DynamicEntityVO
+	 * @throws CommonPermissionException
+	 */
 	@RolesAllowed("Login")
-   public Collection<DynamicEntityVO> getDynamicEntities();
+	Collection<DynamicEntityVO> getDynamicEntities();
 
    /**
     * get dynamic entity value object
@@ -295,7 +294,7 @@ public interface DatasourceFacadeRemote {
     * @return DynamicEntityVO
     */
    @RolesAllowed("Login")
-   public DynamicEntityVO getDynamicEntity(Integer iDynamicEntityId) throws CommonPermissionException;
+   DynamicEntityVO getDynamicEntity(Integer iDynamicEntityId) throws CommonPermissionException;
 
    /**
     * get all ValuelistProvider
@@ -304,7 +303,7 @@ public interface DatasourceFacadeRemote {
     * @throws CommonPermissionException
     */
    @RolesAllowed("Login")
-   public Collection<ValuelistProviderVO> getValuelistProvider() throws CommonPermissionException;
+   Collection<ValuelistProviderVO> getValuelistProvider() throws CommonPermissionException;
 
    /**
     * get valuelist provider value object
@@ -314,7 +313,7 @@ public interface DatasourceFacadeRemote {
     * @return ValuelistProviderVO
     */
    @RolesAllowed("Login")
-   public ValuelistProviderVO getValuelistProvider(Integer iValuelistProviderId) throws CommonPermissionException;
+   ValuelistProviderVO getValuelistProvider(Integer iValuelistProviderId) throws CommonPermissionException;
 
    /**
     * create new dynamic entity
@@ -326,7 +325,8 @@ public interface DatasourceFacadeRemote {
     * @return new dynamic entity
     */
    @RolesAllowed("Login")
-   public DynamicEntityVO createDynamicEntity(DynamicEntityVO dynamicEntityVO, List<String> lstUsedDynamicEntities) throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException;
+   DynamicEntityVO createDynamicEntity(DynamicEntityVO dynamicEntityVO, List<String> lstUsedDynamicEntities) 
+		   throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException;
 
    /**
     * create new valuelist provider
@@ -338,7 +338,8 @@ public interface DatasourceFacadeRemote {
     * @return new valuelist provider
     */
    @RolesAllowed("Login")
-   public ValuelistProviderVO createValuelistProvider(ValuelistProviderVO valuelistProviderVO, List<String> lstUsedValuelistProvider) throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException;
+   ValuelistProviderVO createValuelistProvider(ValuelistProviderVO valuelistProviderVO, List<String> lstUsedValuelistProvider) 
+		   throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException;
 
    /**
     * delete an existing dynamic entity
@@ -347,7 +348,8 @@ public interface DatasourceFacadeRemote {
     *                value object
     */
    @RolesAllowed("Login")
-   public void removeDynamicEntity(DynamicEntityVO dynamicEntityVO) throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException ;
+   void removeDynamicEntity(DynamicEntityVO dynamicEntityVO) 
+		   throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException ;
 
    /**
     * delete an existing valuelist provider
@@ -356,7 +358,8 @@ public interface DatasourceFacadeRemote {
     *                value object
     */
    @RolesAllowed("Login")
-   public void removeValuelistProvider(ValuelistProviderVO valuelistProviderVO) throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException;
+   void removeValuelistProvider(ValuelistProviderVO valuelistProviderVO) 
+		   throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException;
 
    /**
     * modify an existing dynamic entity
@@ -370,7 +373,8 @@ public interface DatasourceFacadeRemote {
     * @throws CommonValidationException
     */
    @RolesAllowed("Login")
-   public DynamicEntityVO modifyDynamicEntity(DynamicEntityVO dynamicEntityVO, List<String> lstUsedDynamicEntities) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException;
+   DynamicEntityVO modifyDynamicEntity(DynamicEntityVO dynamicEntityVO, List<String> lstUsedDynamicEntities) 
+		   throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException;
 
    /**
     * modify an existing valuelist provider
@@ -384,7 +388,8 @@ public interface DatasourceFacadeRemote {
     * @throws CommonValidationException
     */
    @RolesAllowed("Login")
-   public ValuelistProviderVO modifyValuelistProvider(ValuelistProviderVO valuelistProviderVO, List<String> lstUsedValuelistProvider) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException;
+   ValuelistProviderVO modifyValuelistProvider(ValuelistProviderVO valuelistProviderVO, List<String> lstUsedValuelistProvider) 
+		   throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException;
 
 	/**
 	 * get a datasource result by datasource id
@@ -395,10 +400,9 @@ public interface DatasourceFacadeRemote {
 	 * @throws NuclosReportException
 	 * @throws CommonFinderException
 	 */
-   @RolesAllowed("Login")
-	public abstract ResultVO executeQuery(Integer iDatasourceId,
-		Map<String, Object> mpParams, Integer iMaxRowCount)
-		throws NuclosDatasourceException, CommonFinderException;
+	@RolesAllowed("Login")
+	ResultVO executeQuery(Integer iDatasourceId, Map<String, Object> mpParams, Integer iMaxRowCount)
+			throws NuclosDatasourceException, CommonFinderException;
 
 	/**
 	 * gets a datasource result by datasource xml
@@ -407,21 +411,20 @@ public interface DatasourceFacadeRemote {
 	 * @param iMaxRowCount
 	 * @return report/form filled with data
 	 */
-   @RolesAllowed("Login")
-	public abstract ResultVO executeQuery(String sDatasourceXML,
-		Map<String, Object> mpParams, Integer iMaxRowCount)
-		throws CommonFinderException, NuclosDatasourceException;
+	@RolesAllowed("Login")
+	ResultVO executeQuery(String sDatasourceXML, Map<String, Object> mpParams, Integer iMaxRowCount)
+			throws CommonFinderException, NuclosDatasourceException;
 
-   /**
-    *
-    * @return
-    */
-	public abstract Schema getSchemaTables();
+	/**
+	 *
+	 * @return
+	 */
+	Schema getSchemaTables();
 
 	/**
 	 * @throws CommonPermissionException
 	 */
-	public abstract Table getSchemaColumns(Table table);
+	Table getSchemaColumns(Table table);
 
 	/**
     * get valuelist provider value object
@@ -431,7 +434,7 @@ public interface DatasourceFacadeRemote {
     * @return valuelist provider value object
     */
    @RolesAllowed("Login")
-   public ValuelistProviderVO getValuelistProvider(String sValuelistProvider) throws CommonFinderException, CommonPermissionException;
+   ValuelistProviderVO getValuelistProvider(String sValuelistProvider) throws CommonFinderException, CommonPermissionException;
 
    /**
     * get dynamic entity value object
@@ -441,7 +444,7 @@ public interface DatasourceFacadeRemote {
     * @return dynamic entity value object
     */
    @RolesAllowed("Login")
-   public DynamicEntityVO getDynamicEntity(String sDynamicEntity) throws CommonFinderException, CommonPermissionException;
+   DynamicEntityVO getDynamicEntity(String sDynamicEntity) throws CommonFinderException, CommonPermissionException;
 
    /**
     * get all RecordGrant
@@ -469,7 +472,7 @@ public interface DatasourceFacadeRemote {
 	 *                name of RecordGrant
 	 * @return RecordGrant value object
 	 */
-   @RolesAllowed("Login")
+	@RolesAllowed("Login")
 	RecordGrantVO getRecordGrant(String sRecordGrant) throws CommonFinderException, CommonPermissionException;
 
    /**
@@ -479,7 +482,8 @@ public interface DatasourceFacadeRemote {
     *                value object
     */
    @RolesAllowed("Login")
-   public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException;
+   void removeRecordGrant(RecordGrantVO recordGrantVO) 
+		   throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException;
 
    /**
     * modify an existing RecordGrant
@@ -493,7 +497,8 @@ public interface DatasourceFacadeRemote {
     * @throws CommonValidationException
     */
    @RolesAllowed("Login")
-   public RecordGrantVO modifyRecordGrant(RecordGrantVO recordGrantVO, List<String> lstUsedRecordGrant) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException;
+   RecordGrantVO modifyRecordGrant(RecordGrantVO recordGrantVO, List<String> lstUsedRecordGrant) 
+		   throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException;
 
    /**
     * create new RecordGrant
@@ -505,6 +510,7 @@ public interface DatasourceFacadeRemote {
     * @return new RecordGrant
     */
    @RolesAllowed("Login")
-   public RecordGrantVO createRecordGrant(RecordGrantVO recordGrantVO, List<String> lstUsedRecordGrant) throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException;
+   RecordGrantVO createRecordGrant(RecordGrantVO recordGrantVO, List<String> lstUsedRecordGrant) 
+		   throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException;
 
 }

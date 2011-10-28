@@ -41,10 +41,7 @@ import org.nuclos.common2.CommonLocaleDelegate;
  * @version 01.00.00
  */
 public class TransitionRolesPanel extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private final JToolBar toolbar = new JToolBar();
 	private final JButton btnAdd = new JButton();
 	private final JButton btnDelete = new JButton();

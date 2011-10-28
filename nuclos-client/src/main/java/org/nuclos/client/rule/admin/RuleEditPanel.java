@@ -37,6 +37,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.Element;
 
+import org.apache.log4j.Logger;
 import org.jdesktop.swingx.combobox.ListComboBoxModel;
 import org.jdesktop.swingx.renderer.DefaultListRenderer;
 import org.jdesktop.swingx.renderer.IconValue;
@@ -60,10 +61,8 @@ import org.nuclos.server.ruleengine.NuclosCompileException.ErrorMessage;
  * @version 01.00.00
  */
 public class RuleEditPanel extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final Logger LOG = Logger.getLogger(RuleEditPanel.class);
 
 	private final List<ChangeListener> changeListeners = new ArrayList<ChangeListener>();
 
@@ -202,10 +201,7 @@ public class RuleEditPanel extends JPanel {
 	}
 
 	static class ErrorMessageConverter implements StringValue, IconValue {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		@Override
 		public String getString(Object value) {
 			ErrorMessage error = (ErrorMessage) value;
@@ -216,6 +212,7 @@ public class RuleEditPanel extends JPanel {
 				return error.getMessage(null);
 			}
 		}
+		
 		@Override
 		public Icon getIcon(Object value) {
 			switch (((ErrorMessage) value).getKind()) {

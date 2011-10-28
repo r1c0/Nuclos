@@ -18,8 +18,6 @@ package org.nuclos.server.navigation.ejb3;
 
 import java.util.List;
 
-import javax.ejb.Local;
-
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
@@ -27,7 +25,7 @@ import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode.RelationDirection;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode.SystemRelationType;
 
-@Local
+// @Local
 public interface TreeNodeFacadeLocal {
 
 	/**
@@ -41,7 +39,7 @@ public interface TreeNodeFacadeLocal {
 	 * @throws CommonFinderException if the object doesn't exist (anymore).
 	 * @postcondition result != null
 	 */
-	public abstract GenericObjectTreeNode newGenericObjectTreeNode(
+	GenericObjectTreeNode newGenericObjectTreeNode(
 		Integer iGenericObjectId, Integer moduleId, Integer iRelationId,
 		SystemRelationType relationtype, RelationDirection direction, Integer parentId)
 		throws CommonFinderException;
@@ -54,7 +52,6 @@ public interface TreeNodeFacadeLocal {
 	 * @throws CommonPermissionException
 	 * @postcondition result != null
 	 */
-	public abstract List<TreeNode> getSubNodesIgnoreUser(
-		org.nuclos.server.navigation.treenode.GenericObjectTreeNode node);
+	List<TreeNode> getSubNodesIgnoreUser(GenericObjectTreeNode node);
 
 }

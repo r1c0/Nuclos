@@ -1327,7 +1327,6 @@ public abstract class AbstractCollectableComponent
 	 * @precondition getEntityField().isReferencing()
 	 * @return true, if the referenced entity is displayable
 	 */
-	@SuppressWarnings("deprecation")
 	private boolean isReferencedEntityDisplayable() {
 		final CollectableEntityField clctef = getEntityField();
 		return clctef.isReferencedEntityDisplayable() && isEntityDisplayable(clctef.getReferencedEntityName());
@@ -1414,7 +1413,6 @@ public abstract class AbstractCollectableComponent
 	 * @return
 	 * @throws CollectableFieldFormatException
 	 */
-	@SuppressWarnings("deprecation")
 	protected CollectableSearchCondition getSearchConditionFromViewImpl(String sLikeComparand) throws CollectableFieldFormatException {
 		if (viewSupportsComparisonWith()) {
 			if (getComparisonOtherField() != null) {
@@ -1643,7 +1641,6 @@ public abstract class AbstractCollectableComponent
 			setVerticalAlignment(SwingConstants.TOP);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
 

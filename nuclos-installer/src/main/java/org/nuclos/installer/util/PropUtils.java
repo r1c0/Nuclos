@@ -123,8 +123,6 @@ public class PropUtils {
 	 */
 	private static class SortedProperties extends Properties {
 
-		private static final long serialVersionUID = 1L;
-
 		@Override
 		public synchronized Enumeration<Object> keys() {
 			TreeSet<Object> sortedKeys = new TreeSet<Object>();

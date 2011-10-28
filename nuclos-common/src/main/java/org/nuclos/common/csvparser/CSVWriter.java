@@ -18,6 +18,8 @@ package org.nuclos.common.csvparser;
 
 import java.io.*;
 
+import org.apache.log4j.Logger;
+
 /**
  * Write CSV (Comma Separated Value)
  * files.
@@ -51,6 +53,9 @@ import java.io.*;
  *          before writing.
  */
 public class CSVWriter {
+
+	private static final Logger LOG = Logger.getLogger(CSVWriter.class);
+	
 	static final boolean DEBUGGING = false;
 
 	/**
@@ -231,8 +236,7 @@ public class CSVWriter {
 				csv.close();
 			}
 			catch (IOException e) {
-				e.printStackTrace();
-				System.out.println(e.getMessage());
+				LOG.error("CSVWriter failed", e);
 			}
 		} // end if
 	} // end main

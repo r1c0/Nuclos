@@ -38,10 +38,6 @@ import org.nuclos.common2.exception.CommonFatalException;
  */
 public class DateTime implements Serializable{
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final String DATE_FORMAT_STRING = "dd.MM.yyyy HH:mm";
 	public static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
 	

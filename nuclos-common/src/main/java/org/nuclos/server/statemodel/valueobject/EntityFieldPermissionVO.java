@@ -29,10 +29,6 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
  */
 public class EntityFieldPermissionVO extends NuclosValueObject {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private Integer fieldId;
 	private Integer roleId;
 	private Integer stateId;

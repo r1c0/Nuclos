@@ -22,11 +22,7 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
-import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.LocaleInfo;
-import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonFinderException;
-import org.nuclos.common2.exception.CommonPermissionException;
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
@@ -36,20 +32,27 @@ import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common2.LocaleInfo;
+import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.common2.exception.CommonFinderException;
+import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 
 public class LocaleCollectController extends MasterDataCollectController {
 
+	private static final Logger LOG = Logger.getLogger(LocaleCollectController.class);
+	
 	private static final String F_PARENT = "parent";
 	private static final String F_RESOURCEID = "resourceID";
 	private static final String F_TEXT = "text";
 	private static final String F_LOCALETEXT = "localetext";
 
-	Collection<String> collresid;
+	private Collection<String> collresid;
 
-	LocaleDelegate delegate = LocaleDelegate.getInstance();
+	private LocaleDelegate delegate = LocaleDelegate.getInstance();
 
 
 	/**
@@ -127,7 +130,7 @@ public class LocaleCollectController extends MasterDataCollectController {
 	@Override
 	protected void unsafeFillDetailsPanel(CollectableMasterDataWithDependants clct) throws NuclosBusinessException {
 		for (String sFieldName : this.getDetailsPanel().getLayoutRoot().getOrderedFieldNames()) {
-			log.debug("sFieldName = " + sFieldName);
+			LOG.debug("sFieldName = " + sFieldName);
 
 			// iterate over the models rather than over the components:
 			final CollectableComponentModel clctcompmodel = this.getDetailsPanel().getLayoutRoot().getCollectableComponentModelFor(sFieldName);

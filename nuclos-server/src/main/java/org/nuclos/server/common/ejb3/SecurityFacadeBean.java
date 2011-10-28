@@ -24,9 +24,6 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 import javax.security.auth.login.LoginException;
 
 import org.nuclos.common.ApplicationProperties;
@@ -60,9 +57,9 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-@Stateless
-@Local(SecurityFacadeLocal.class)
-@Remote(SecurityFacadeRemote.class)
+// @Stateless
+// @Local(SecurityFacadeLocal.class)
+// @Remote(SecurityFacadeRemote.class)
 @Transactional
 public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFacadeLocal, SecurityFacadeRemote {
 

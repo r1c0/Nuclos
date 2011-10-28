@@ -59,10 +59,6 @@ import org.nuclos.common.database.query.definition.Table;
  */
 public class TableShape extends ComponentAdapter implements Comparable<TableShape> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final TableHeader header;
 	private Table table;
 	private TableList list;
@@ -70,9 +66,6 @@ public class TableShape extends ComponentAdapter implements Comparable<TableShap
 	private final Map<String, ConstraintColumn> columnMap = CollectionUtils.newHashMap();
 	private final List<ConstraintColumn> columns = new ArrayList<ConstraintColumn>();
 
-	/**
-	 *
-	 */
 	public TableShape() {
 		super();
 		header = new TableHeader("");

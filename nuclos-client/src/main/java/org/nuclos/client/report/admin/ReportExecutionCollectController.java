@@ -73,16 +73,9 @@ import org.nuclos.server.report.valueobject.ReportVO.OutputType;
  */
 public class ReportExecutionCollectController extends MasterDataCollectController {
 
-	final ExecutorService cachedThreadPoolExecutor = Executors.newCachedThreadPool();
+	private final ExecutorService cachedThreadPoolExecutor = Executors.newCachedThreadPool();
 
-	/**
-	 *
-	 */
 	protected class ExecuteAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public ExecuteAction() {
 			super(CommonLocaleDelegate.getMessage("ReportExecutionCollectController.2","Ausf\u00fchren..."));

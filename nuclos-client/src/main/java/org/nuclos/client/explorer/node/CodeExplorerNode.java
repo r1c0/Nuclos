@@ -43,8 +43,6 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public class CodeExplorerNode extends AbstractRuleExplorerNode {
 
-	private static final long serialVersionUID = 1L;
-
 	private static final String ACTIONCOMMAND_SHOW_DETAILS = "SHOW_DETAILS";
 
 	public CodeExplorerNode(TreeNode treenode) {
@@ -81,8 +79,6 @@ public class CodeExplorerNode extends AbstractRuleExplorerNode {
 	 * Shows the details for the Rule in tis collect controller
 	 */
 	private class ShowDetailsAction extends TreeNodeAction {
-
-		private static final long serialVersionUID = 1L;
 
 		public ShowDetailsAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("RuleExplorerNode.1","Details anzeigen"), tree);

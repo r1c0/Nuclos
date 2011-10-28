@@ -37,10 +37,6 @@ import org.nuclos.server.processmonitor.valueobject.SubProcessVO;
  */
 public class SubProcessViewShape extends SubProcessShape {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private AbstractAction forwardAction;
 
 	public SubProcessViewShape() {

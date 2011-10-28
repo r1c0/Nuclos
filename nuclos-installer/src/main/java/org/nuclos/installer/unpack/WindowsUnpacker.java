@@ -46,7 +46,7 @@ import at.jta.Regor;
  */
 public class WindowsUnpacker extends AbstractUnpacker {
 
-	private static final Logger log = Logger.getLogger(WindowsUnpacker.class);
+	private static final Logger LOG = Logger.getLogger(WindowsUnpacker.class);
 
 	private static final String X86_INSTALLER = "postgresql-9.0.4-1-windows.exe";
 	private static final String X64_INSTALLER = "postgresql-9.0.4-1-windows_x64.exe";
@@ -99,7 +99,7 @@ public class WindowsUnpacker extends AbstractUnpacker {
 						p.waitFor();
 					}
 					catch (Exception ex) {
-						log.error("Error stopping server", ex);
+						LOG.error("Error stopping server", ex);
 						cb.warn("error.stop.server");
 					}
 				}
@@ -139,7 +139,7 @@ public class WindowsUnpacker extends AbstractUnpacker {
 				}
 			}
 			catch (Exception ex) {
-				log.error("Error stopping server", ex);
+				LOG.error("Error stopping server", ex);
 				cb.warn("error.stop.server");
 			}
 		}
@@ -173,7 +173,7 @@ public class WindowsUnpacker extends AbstractUnpacker {
 			}
 		}
 		catch (Exception ex) {
-			log.error("Error starting server", ex);
+			LOG.error("Error starting server", ex);
 			cb.warn("error.start.server");
 		}
 	}
@@ -229,7 +229,6 @@ public class WindowsUnpacker extends AbstractUnpacker {
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
 	public List<PostgresService> getPostgresServices() {
 		List<PostgresService> installedServices = new ArrayList<PostgresService>();
 		try {
@@ -237,17 +236,17 @@ public class WindowsUnpacker extends AbstractUnpacker {
 			if (regor.openKey(Regor.HKEY_LOCAL_MACHINE, HKLM_SOFTWARE_POSTGRES_INSTALLATIONS) == null) {
 				return Collections.emptyList();
 			}
-			log.info(HKLM_SOFTWARE_POSTGRES_INSTALLATIONS + " found.");
+			LOG.info(HKLM_SOFTWARE_POSTGRES_INSTALLATIONS + " found.");
 
 			String serviceId = null;
 			String baseDirectory = null;
 			String version = null;
 
-			List installations = regor.listKeys(Regor.HKEY_LOCAL_MACHINE, HKLM_SOFTWARE_POSTGRES_INSTALLATIONS);
+			List<String> installations = regor.listKeys(Regor.HKEY_LOCAL_MACHINE, HKLM_SOFTWARE_POSTGRES_INSTALLATIONS);
 			if (installations != null) {
-				for (Object instkey : installations) {
-					log.info(instkey);
-					String instkeyname = (String) instkey;
+				for (String instkeyname : installations) {
+					LOG.info(instkeyname);
+					// String instkeyname = (String) instkey;
 					Key installation = regor.openKey(Regor.HKEY_LOCAL_MACHINE, HKLM_SOFTWARE_POSTGRES_INSTALLATIONS + "\\" + instkeyname);
 
 					for (Object instval : regor.listValueNames(installation)) {
@@ -289,13 +288,13 @@ public class WindowsUnpacker extends AbstractUnpacker {
 						pgservice.baseDirectory = baseDirectory;
 						pgservice.dataDirectory = dataDirectory;
 						installedServices.add(pgservice);
-						log.info("Service found: " + pgservice);
+						LOG.info("Service found: " + pgservice);
 					}
 				}
 			}
 		}
 		catch (Exception e) {
-			log.error("Error listing postgresql services.", e);
+			LOG.error("Error listing postgresql services.", e);
 			return Collections.emptyList();
 		}
 		Collections.sort(installedServices);
@@ -327,7 +326,7 @@ public class WindowsUnpacker extends AbstractUnpacker {
 		            }
 				}
 	        	catch (Exception ex) {
-	        		log.warn(ex);
+	        		LOG.warn(ex);
 	        		privileged = false;
 	        	}
 	        	finally {
@@ -336,7 +335,7 @@ public class WindowsUnpacker extends AbstractUnpacker {
 	        				f.delete();
 	        			}
 	        			catch (Exception ex) {
-	        				log.warn(ex);
+	        				LOG.warn(ex);
 	        			}
 	        		}
 	        	}
@@ -367,7 +366,7 @@ public class WindowsUnpacker extends AbstractUnpacker {
 			return isPrivileged() && getPostgresInstallerUrl() != null;
 		}
 		catch (InstallException ex) {
-			log.error(ex);
+			LOG.error(ex);
 			return false;
 		}
 	}
@@ -386,7 +385,7 @@ public class WindowsUnpacker extends AbstractUnpacker {
 			FileUtils.copyInputStreamToFile(installerurl.openStream(), f, false);
 		}
 		catch(IOException e) {
-			log.error(e);
+			LOG.error("installPostgres failed: " + e, e);
 			cb.error("error.unpack.postgresql.installer");
 		}
 
@@ -398,7 +397,7 @@ public class WindowsUnpacker extends AbstractUnpacker {
 			"--datadir", ConfigContext.getProperty(POSTGRES_DATADIR),
 			"--serverport", ConfigContext.getProperty(DATABASE_PORT),
 			"--superpassword", ConfigContext.getProperty(POSTGRES_SUPERPWD));
-		log.info(command);
+		LOG.info(command);
 
 		InputStreamReader reader = null;
 		try {
@@ -414,7 +413,7 @@ public class WindowsUnpacker extends AbstractUnpacker {
 	            while ((n = reader.read(buffer, 0, 1024)) > -1) {
 	            	val.append(buffer, 0, n);
 	            }
-			    log.info("PostgreSQL Installation result: " + val);
+			    LOG.info("PostgreSQL Installation result: " + val);
 			    cb.warn(val.toString());
 			}
 		}
@@ -423,10 +422,10 @@ public class WindowsUnpacker extends AbstractUnpacker {
 				try {
 					reader.close();
 				} catch (IOException e) {
-					log.warn(e);
+					LOG.warn(e);
 				}
 			}
-			log.error(ex);
+			LOG.error(ex);
 			cb.warn("error.postgres.installation");
 		}
 	}
@@ -434,7 +433,7 @@ public class WindowsUnpacker extends AbstractUnpacker {
 	@Override
 	public void register(Installer cb, boolean systemlaunch) throws InstallException {
 		try {
-			log.info("Register uninstaller in registry...");
+			LOG.info("Register uninstaller in registry...");
 			cb.info("unpack.step.register.product");
 			String uninstallname = "Nuclos (" + ConfigContext.getProperty(NUCLOS_INSTANCE) + ")";
 	        String keyname = HKLM_UNINSTALL_ROOT + uninstallname;
@@ -462,7 +461,7 @@ public class WindowsUnpacker extends AbstractUnpacker {
 	        regor.closeKey(uninstallkey);
 		}
 		catch (Exception ex) {
-			log.error(ex);
+			LOG.error(ex);
 			throw new InstallException(ex);
         }
 
@@ -478,7 +477,7 @@ public class WindowsUnpacker extends AbstractUnpacker {
 					"--Description=Nuclos Server (Instanz: " + ConfigContext.getProperty(NUCLOS_INSTANCE) + ")",
 					"--Install=" + bin,
 					"--Startup=" + startup);
-				log.info(command);
+				LOG.info(command);
 
 				ProcessBuilder pb = new ProcessBuilder(command);
 				Process p = pb.start();
@@ -487,7 +486,7 @@ public class WindowsUnpacker extends AbstractUnpacker {
 				}
 			}
 			catch (Exception ex) {
-				log.error(ex);
+				LOG.error(ex);
 				cb.error("error.install.service");
 			}
 		}
@@ -513,7 +512,7 @@ public class WindowsUnpacker extends AbstractUnpacker {
 				"--JavaHome=" + ConfigContext.getProperty(JAVA_HOME),
 				"--JvmMs=256",
 				"--JvmMx=" + ConfigContext.getProperty(HEAP_SIZE));
-			log.info(command);
+			LOG.info(command);
 
 			ProcessBuilder pb = new ProcessBuilder(command);
 			Process p = pb.start();
@@ -522,7 +521,7 @@ public class WindowsUnpacker extends AbstractUnpacker {
 			}
 		}
 		catch (Exception ex) {
-			log.error(ex);
+			LOG.error(ex);
 			cb.error("error.install.service");
 		}
 	}
@@ -535,7 +534,7 @@ public class WindowsUnpacker extends AbstractUnpacker {
 
 			List<String> command = Arrays.asList(
 				bin, "//DS//nuclos." + ConfigContext.getProperty(NUCLOS_INSTANCE));
-			log.info(command);
+			LOG.info(command);
 
 			ProcessBuilder pb = new ProcessBuilder(command);
 			Process p = pb.start();
@@ -558,7 +557,7 @@ public class WindowsUnpacker extends AbstractUnpacker {
 	        }
 		}
 		catch (Exception ex) {
-			log.error(ex);
+			LOG.error(ex);
 			cb.error("error.uninstall.product");
         }
 	}

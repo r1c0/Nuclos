@@ -34,15 +34,8 @@ import org.nuclos.server.statemodel.valueobject.StateModelVO;
  */
 public class SubProcess implements Serializable {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	SubProcessVO subprocessVO;
+	private SubProcessVO subprocessVO;
 
-	/**
-	 * 
-	 */
 	public SubProcess(StateModelVO stateModelVO) {
 		subprocessVO = new SubProcessVO(new Integer(-1), null, null, null, null, "", "", "", "", null, null, null, null, null);
 		subprocessVO.setStateModelVO(stateModelVO);

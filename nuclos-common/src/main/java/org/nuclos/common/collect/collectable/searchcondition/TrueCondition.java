@@ -36,7 +36,6 @@ public final class TrueCondition extends AbstractCollectableSearchCondition {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public int getType() {
 		return TYPE_TRUE;
 	}

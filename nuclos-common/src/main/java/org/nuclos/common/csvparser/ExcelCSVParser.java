@@ -19,7 +19,11 @@ package org.nuclos.common.csvparser;
 import java.io.*;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 public class ExcelCSVParser extends CSVReader {
+
+	private static final Logger LOG = Logger.getLogger(ExcelCSVParser.class);
 
 	public ExcelCSVParser(Reader r, char delimiter) {
 		super(r, delimiter, '\"', true, true);
@@ -41,10 +45,10 @@ public class ExcelCSVParser extends CSVReader {
 			}
 		}
 		catch (EOFException e) {
-			e.printStackTrace();
+			LOG.warn("getAllValues failed: " + e, e);
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			LOG.warn("getAllValues failed: " + e, e);
 		}
 		if (v.size() == 0) {
 			return null;

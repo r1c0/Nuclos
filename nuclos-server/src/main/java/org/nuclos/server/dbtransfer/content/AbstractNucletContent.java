@@ -395,7 +395,6 @@ public abstract class AbstractNucletContent implements INucletContent {
 	protected void restoreLocaleResources(EntityObjectVO ncObject) {
 		LocaleFacadeLocal localeFacade = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
 
-		@SuppressWarnings("unchecked")
 		Map<LocaleInfo, Map<String, String>> localeResources = (Map<LocaleInfo, Map<String, String>>) ncObject.getFields().get(LOCALE_RESOURCE_MAPPING_FIELD_NAME);
 		if (localeResources != null) {
 			Map<String, String> newResourceIds = new HashMap<String, String>();

@@ -302,8 +302,6 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 				item.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent ev) {
-//						System.out.println("***** in "+getClass().getName());
-//						System.out.println("***** handleMultiSelection : "+ids.toString());
 						pnl.handleMultiSelection(selection);
 					}
 				});
@@ -312,7 +310,6 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 			}
 		}));
 
-		//JOptionPane.getDesktopPaneForComponent(MultiCollectablesActionController.this.getParent()).add(ifrm, JLayeredPane.MODAL_LAYER);
 		((MainFrameTab) getParent()).add(ifrm);
 		ifrm.setVisible(true);
 

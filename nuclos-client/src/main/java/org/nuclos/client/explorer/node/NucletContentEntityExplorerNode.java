@@ -54,10 +54,7 @@ import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentEntityT
  * @version 01.00.00
  */
 public class NucletContentEntityExplorerNode extends ExplorerNode<NucletContentEntityTreeNode> {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private static final Logger log = Logger.getLogger(NucletContentEntityExplorerNode.class);
 
 	public NucletContentEntityExplorerNode(TreeNode treenode) {
@@ -87,11 +84,6 @@ public class NucletContentEntityExplorerNode extends ExplorerNode<NucletContentE
 	 */
 	private class ShowDetailsAction extends TreeNodeAction {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		ShowDetailsAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("NucletContentEntityExplorerNode.1","Entitaetenwizard starten"), tree);
 		}
@@ -118,11 +110,6 @@ public class NucletContentEntityExplorerNode extends ExplorerNode<NucletContentE
 	}	// inner class ShowDetailsAction
 	
 	private class RemoveFromNucletAction extends TreeNodeAction {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public RemoveFromNucletAction(JTree tree) {
 			super(ACTIONCOMMAND_REMOVE, CommonLocaleDelegate.getMessage("NucletContentEntryExplorerNode.1","Vom Nuclet entfernen"), tree);

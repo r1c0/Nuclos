@@ -31,10 +31,6 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
  */
 public class LayoutVO extends NuclosValueObject {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final String sName;
 	private final String sDescription;
 	private final String sLayoutML;

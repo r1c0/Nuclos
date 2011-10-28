@@ -38,10 +38,7 @@ import org.nuclos.client.statemodel.models.SelectRuleTableModel;
  * @version 01.00.00
  */
 public class InsertRulePanel extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private final JTable tblRules = new JTable();
 
 	public InsertRulePanel() {

@@ -18,8 +18,6 @@ package org.nuclos.server.common.ejb3;
 
 import java.util.Collection;
 
-import javax.ejb.Local;
-
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
@@ -27,7 +25,7 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.server.common.valueobject.TimelimitTaskVO;
 
-@Local
+// @Local
 public interface TimelimitTaskFacadeLocal {
 
 	/**
@@ -35,14 +33,14 @@ public interface TimelimitTaskFacadeLocal {
 	 * @param bOnlyUnfinishedTasks get only unfinished tasks
 	 * @return collection of task value objects
 	 */
-	public abstract Collection<TimelimitTaskVO> getTimelimitTasks(
+	Collection<TimelimitTaskVO> getTimelimitTasks(
 		boolean bOnlyUnfinishedTasks);
 
 	/**
 	 * create a new TimelimitTask in the database
 	 * @return same task as value object
 	 */
-	public abstract TimelimitTaskVO create(TimelimitTaskVO voTimelimitTask)
+	TimelimitTaskVO create(TimelimitTaskVO voTimelimitTask)
 		throws CommonValidationException, NuclosBusinessException;
 
 	/**
@@ -50,7 +48,7 @@ public interface TimelimitTaskFacadeLocal {
 	 * @param voTimelimitTask containing the task data
 	 * @return new task id
 	 */
-	public abstract TimelimitTaskVO modify(TimelimitTaskVO voTimelimitTask)
+	TimelimitTaskVO modify(TimelimitTaskVO voTimelimitTask)
 		throws CommonFinderException, CommonStaleVersionException,
 		CommonValidationException, NuclosBusinessException;
 
@@ -58,7 +56,7 @@ public interface TimelimitTaskFacadeLocal {
 	 * delete TimelimitTask from database
 	 * @param voTimelimitTask containing the task data
 	 */
-	public abstract void remove(TimelimitTaskVO voTimelimitTask)
+	void remove(TimelimitTaskVO voTimelimitTask)
 		throws CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, NuclosBusinessException;
 

@@ -275,10 +275,6 @@ public class DBTransferExport {
 		
 		final PanelWizardStep step = new PanelWizardStep(getMessage("dbtransfer.import.step5.4", "Ergebnis"), 
 			getMessage("dbtransfer.export.step2.1", "Hier wird Ihnen das Ergebnis des Exports angezeigt.")){
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void prepare() {

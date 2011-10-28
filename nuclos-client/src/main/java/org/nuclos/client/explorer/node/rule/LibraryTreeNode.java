@@ -25,8 +25,6 @@ import org.nuclos.server.customcode.valueobject.CodeVO;
 
 public class LibraryTreeNode extends AbstractRuleTreeNode {
 
-	private static final long serialVersionUID = 1L;
-
 	public LibraryTreeNode(String sLabel, String sDescription) {
 		super(null, sLabel, sDescription, null, RuleNodeType.DIRECTORY);
 	}

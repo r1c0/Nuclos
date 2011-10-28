@@ -184,8 +184,6 @@ public class DefaultMouseListener extends MouseAdapter {
 
 			final Action actShowInList = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ExplorerController.22","In Liste anzeigen"), null, CommonLocaleDelegate.getMessage("ExplorerController.4","Ausgew\u00e4hlte Objekte in Ergebnisliste anzeigen")) {
 
-				private static final long serialVersionUID = 1L;
-
 				@Override
                 public void actionPerformed(ActionEvent ev) {
 					UIUtils.runCommand(UIUtils.getFrameForComponent(tree), new CommonRunnable() {
@@ -215,10 +213,6 @@ public class DefaultMouseListener extends MouseAdapter {
 
 			if (bShowRemoveRelationAction) {
 				final Action actRemoveRelation = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ExplorerController.5","Beziehungen entfernen"), null, CommonLocaleDelegate.getMessage("ExplorerController.9","Beziehung von ausgew\u00e4hlten Objekten zu \u00fcbergordnetem Object entfernen")) {
-					/**
-					 *
-					 */
-					private static final long serialVersionUID = 1L;
 
 					@Override
                     public void actionPerformed(ActionEvent ev) {
@@ -229,7 +223,6 @@ public class DefaultMouseListener extends MouseAdapter {
 						if (iBtn == JOptionPane.OK_OPTION) {
 							SwingUtilities.invokeLater(new Runnable() {
 
-								@SuppressWarnings("unchecked")
 								@Override
 								public void run() {
 									UIUtils.setWaitCursor(tree);
@@ -287,10 +280,6 @@ public class DefaultMouseListener extends MouseAdapter {
 
 			if (bShowRemoveFromParentGroupAction) {
 				final Action actRemoveRelation = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ExplorerController.3","Aus der Gruppe entfernen"), null, CommonLocaleDelegate.getMessage("ExplorerController.8","Beziehung von ausgew\u00e4hlten Objekten zur Objektgruppe entfernen")) {
-					/**
-					 *
-					 */
-					private static final long serialVersionUID = 1L;
 
 					@Override
                     public void actionPerformed(ActionEvent ev) {

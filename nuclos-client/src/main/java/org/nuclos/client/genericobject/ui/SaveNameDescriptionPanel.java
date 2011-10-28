@@ -30,15 +30,11 @@ import java.awt.*;
  */
 public class SaveNameDescriptionPanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final Box pnlMain = Box.createVerticalBox();
 	private final ButtonGroup bg = new ButtonGroup();
 
-	final JRadioButton rbOverwrite = new JRadioButton();
-	final JRadioButton rbNew = new JRadioButton();
+	private final JRadioButton rbOverwrite = new JRadioButton();
+	private final JRadioButton rbNew = new JRadioButton();
 
 	public SaveNameDescriptionPanel() {
 		super(new BorderLayout());

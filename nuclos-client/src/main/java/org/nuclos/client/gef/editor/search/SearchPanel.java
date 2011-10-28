@@ -18,34 +18,36 @@ package org.nuclos.client.gef.editor.search;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+
+import org.apache.log4j.Logger;
+
 import java.awt.*;
 
 public class SearchPanel extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	GridBagLayout gridBagLayout1 = new GridBagLayout();
-	JLabel lblSearch = new JLabel();
-	JLabel lblReplace = new JLabel();
-	JTextField edSearch = new JTextField();
-	JTextField edReplace = new JTextField();
-	JPanel pnlParent = new JPanel();
-	GridBagLayout gridBagLayout2 = new GridBagLayout();
-	JPanel pnlOptions = new JPanel();
-	JPanel pnlDirection = new JPanel();
-	JRadioButton rbForward = new JRadioButton();
-	JRadioButton rbBackward = new JRadioButton();
-	JCheckBox cbCase = new JCheckBox();
-	JCheckBox cbWholeWord = new JCheckBox();
-	TitledBorder titleOption;
-	TitledBorder titleDirection;
-	ButtonGroup bgDirection = new ButtonGroup();
-	JCheckBox cbCurrentPos = new JCheckBox();
-	JCheckBox cbReplaceAll = new JCheckBox();
-	JCheckBox cbApprove = new JCheckBox();
-	GridBagLayout gridBagLayout3 = new GridBagLayout();
-	GridBagLayout gridBagLayout4 = new GridBagLayout();
+	
+	private static final Logger LOG = Logger.getLogger(SearchPanel.class);
+
+	private GridBagLayout gridBagLayout1 = new GridBagLayout();
+	private JLabel lblSearch = new JLabel();
+	private JLabel lblReplace = new JLabel();
+	private JTextField edSearch = new JTextField();
+	private JTextField edReplace = new JTextField();
+	private JPanel pnlParent = new JPanel();
+	private GridBagLayout gridBagLayout2 = new GridBagLayout();
+	private JPanel pnlOptions = new JPanel();
+	private JPanel pnlDirection = new JPanel();
+	private JRadioButton rbForward = new JRadioButton();
+	private JRadioButton rbBackward = new JRadioButton();
+	private JCheckBox cbCase = new JCheckBox();
+	private JCheckBox cbWholeWord = new JCheckBox();
+	private TitledBorder titleOption;
+	private TitledBorder titleDirection;
+	private ButtonGroup bgDirection = new ButtonGroup();
+	private JCheckBox cbCurrentPos = new JCheckBox();
+	private JCheckBox cbReplaceAll = new JCheckBox();
+	private JCheckBox cbApprove = new JCheckBox();
+	private GridBagLayout gridBagLayout3 = new GridBagLayout();
+	private GridBagLayout gridBagLayout4 = new GridBagLayout();
 
 	public SearchPanel(TextSearch search) {
 		try {
@@ -70,7 +72,7 @@ public class SearchPanel extends JPanel {
 
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			LOG.warn("SearchPanel failed: " + e, e);
 		}
 	}
 

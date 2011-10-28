@@ -27,13 +27,7 @@ import org.nuclos.common2.Localizable;
  * A localizable CollectableValueField which contains a value and additionally a useful
  * representation. 
  */
-
 public class LocalizedCollectableValueIdField extends CollectableValueIdField implements Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	public static LocalizedCollectableValueIdField fromResourceId(Integer oValueId, Object oValue, String resId) {
 		final String text = CommonLocaleDelegate.getTextFallback(resId, "<[" + oValue + "]>");

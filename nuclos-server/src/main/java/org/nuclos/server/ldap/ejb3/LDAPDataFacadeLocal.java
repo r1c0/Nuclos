@@ -19,12 +19,11 @@ package org.nuclos.server.ldap.ejb3;
 import java.util.Collection;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
 
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVOWrapper;
 
-@Local
+// @Local
 public interface LDAPDataFacadeLocal {
 
 	/**
@@ -35,6 +34,6 @@ public interface LDAPDataFacadeLocal {
 	 * TODO restrict permissions
 	 */
 	@RolesAllowed("Login")
-	public Collection<MasterDataWithDependantsVOWrapper> getUsers(String filterExpr, Object[] filterArgs) throws CommonBusinessException;
+	Collection<MasterDataWithDependantsVOWrapper> getUsers(String filterExpr, Object[] filterArgs) throws CommonBusinessException;
 
 }

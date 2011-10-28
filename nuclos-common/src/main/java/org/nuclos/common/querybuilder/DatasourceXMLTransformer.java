@@ -37,6 +37,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common.NuclosFatalException;
 
@@ -52,6 +53,8 @@ import org.nuclos.common.NuclosFatalException;
  * @version 00.01.000
  */
 public class DatasourceXMLTransformer {
+
+	private static final Logger LOG = Logger.getLogger(DatasourceXMLTransformer.class);
 
 	private static final String SYSTEMID = "http://www.novabit.de/technologies/querybuilder/querybuildermodel.dtd";
 	private static final String RESOURCE_PATH = "org/nuclos/common/querybuilder/querybuildermodel.dtd";
@@ -113,7 +116,7 @@ public class DatasourceXMLTransformer {
 			transformer.transform(source, result);
 			return sw.toString();
 		} catch (TransformerException e) {
-			e.printStackTrace();
+			LOG.warn("getDatasourceXMLAsString failed: " + e, e);
 			return null;
 		}
 	}

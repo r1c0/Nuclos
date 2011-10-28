@@ -31,10 +31,7 @@ import javax.swing.JDesktopPane;
 import org.nuclos.client.NuclosIcons;
 
 public class BackgroundImageDesktopPane extends JDesktopPane {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private ImageIcon baseImage;
 	private Image     fullSizeBackground;
 	private Dimension fullSizeBackgroundSize;

@@ -26,10 +26,6 @@ package org.nuclos.common;
  */
 public class RuleNotification extends SimpleClientNotification {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	/** @todo for backward compatibility with rules only - eliminate these */
 	@Deprecated
 	public static final Priority PRIORITY_HIGH = Priority.HIGH;

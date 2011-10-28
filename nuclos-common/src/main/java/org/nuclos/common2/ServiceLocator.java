@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common2;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -37,6 +38,8 @@ import org.springframework.context.ApplicationContext;
  */
 public class ServiceLocator {
 
+	private static final Logger LOG = Logger.getLogger(ServiceLocator.class);
+
 	private boolean enableLoggingProxy;
 	private String  stackTraceMatchRegexp;
 
@@ -55,7 +58,6 @@ public class ServiceLocator {
 		return SpringApplicationContextHolder.getBean(ServiceLocator.class);
 	}
 
-	@SuppressWarnings("unchecked")
 	private <T> T getFacade(Class<T> c, String bean, boolean server) {
 		try {
 			if(server) {
@@ -67,12 +69,12 @@ public class ServiceLocator {
 					return SpringApplicationContextHolder.getBean(c);
 				}
 				catch(Exception e) {
+					LOG.info("getFacade: " + e);
 					return (T)SpringApplicationContextHolder.getBean(bean);
 				}
 			}
 		}
 		catch(Exception ex) {
-			ex.printStackTrace();
 			throw new NuclosFatalException(ex);
 		}
 	}

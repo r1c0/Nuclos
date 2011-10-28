@@ -17,15 +17,14 @@
 
 package org.nuclos.server.webservice.ejb3;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 
 @WebService
-@Local
+// @Local
 public interface WebAccessWS {
 	/**
 	 * List all readable entities in the system.
@@ -33,7 +32,7 @@ public interface WebAccessWS {
 	 * @return a list of readable entities, including system entities
 	 */
 	@RolesAllowed("Login")
-	public ArrayList<String> listEntities();
+	List<String> listEntities();
 	
 	/**
 	 * List the objects of an entity.
@@ -42,7 +41,7 @@ public interface WebAccessWS {
 	 * @return a list of object ids
 	 */
 	@RolesAllowed("Login")
-	public ArrayList<Long> list(@WebParam(name="entityName") String entityName);
+	List<Long> list(@WebParam(name="entityName") String entityName);
 	
 	/**
 	 * Read a given object of a given entity
@@ -53,7 +52,7 @@ public interface WebAccessWS {
 	 * readable attributes of the given object
 	 */
 	@RolesAllowed("Login")
-	public ArrayList<String> read(@WebParam(name="entityName") String entityName, @WebParam(name="id") Long id);
+	List<String> read(@WebParam(name="entityName") String entityName, @WebParam(name="id") Long id);
 	
 	/**
 	 * Execute a business rule on a given object
@@ -63,5 +62,5 @@ public interface WebAccessWS {
 	 * @param rulename the rule to execute
 	 */
 	@RolesAllowed("Login")
-	public void executeBusinessRule(@WebParam(name="entityName") String entityName, @WebParam(name="id") Long id, @WebParam(name="ruleName") String rulename);
+	void executeBusinessRule(@WebParam(name="entityName") String entityName, @WebParam(name="id") Long id, @WebParam(name="ruleName") String rulename);
 }

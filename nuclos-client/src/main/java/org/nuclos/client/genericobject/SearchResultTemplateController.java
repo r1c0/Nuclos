@@ -99,7 +99,7 @@ public class SearchResultTemplateController {
 	private final JComboBox cmbbxSearchResultTemplate = new JComboBox();
 	private final GenericObjectCollectController ctl;
 	
-	SearchResultTemplateController(ResultPanel resultPanel, GenericObjectCollectController ctl){
+	SearchResultTemplateController(ResultPanel<?> resultPanel, GenericObjectCollectController ctl){
 		this.ctl = ctl;
 		//toolbar.add(getSearchResultTemplateComboBox());
 		///*btnSaveTemplate =*/ toolbar.add(actSaveTemplate);
@@ -129,10 +129,6 @@ public class SearchResultTemplateController {
 
 		// set tool tips dynamically:
 		this.getSearchResultTemplateComboBox().setRenderer(new DefaultListCellRenderer() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public Component getListCellRendererComponent(JList lst, Object oValue, int index, boolean bSelected,

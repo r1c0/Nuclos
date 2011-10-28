@@ -52,17 +52,12 @@ import org.nuclos.client.ui.Icons;
  */
 public class BackgroundProcessStatusPanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private final BackgroundProcessStatusTableModel tblmodel = new BackgroundProcessStatusTableModel();
 
 	private final JTable tblStatus = new JTable(tblmodel);
 
-	final JButton btnClear = new JButton(CommonLocaleDelegate.getMessage("BackgroundProcessStatusPanel.4","Zur\u00fccksetzen"));
-	final JButton btnStopProcess = new JButton(CommonLocaleDelegate.getMessage("BackgroundProcessStatusPanel.2","Prozess beenden"));
+	private final JButton btnClear = new JButton(CommonLocaleDelegate.getMessage("BackgroundProcessStatusPanel.4","Zur\u00fccksetzen"));
+	private final JButton btnStopProcess = new JButton(CommonLocaleDelegate.getMessage("BackgroundProcessStatusPanel.2","Prozess beenden"));
 
 	public BackgroundProcessStatusPanel() {
 		super(new BorderLayout());

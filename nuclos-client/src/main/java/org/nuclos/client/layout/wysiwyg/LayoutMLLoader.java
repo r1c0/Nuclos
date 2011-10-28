@@ -117,6 +117,9 @@ import org.xml.sax.XMLReader;
  * @version 01.00.00
  */
 public class LayoutMLLoader implements LayoutMLConstants {
+	
+	private static final Logger LOG = Logger.getLogger(LayoutMLLoader.class);
+	
 	private static final String SYSTEMID = "http://www.novabit.de/technologies/layoutml/layoutml.dtd";
 	private static final String RESOURCE_PATH = "org/nuclos/common2/layoutml/layoutml.dtd";
 	//NUCLEUSINT-1137
@@ -170,10 +173,6 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			Date startDate = new Date();
 			parser.parse(new InputSource(new StringReader(layoutML)));
 			Date endDate = new Date();
-
-			if (warning != null) {
-				throw new CommonBusinessException(warning);
-			}
 		} catch (IOException e) {
 			log.error(e);
 			throw new CommonFatalException(e);
@@ -200,7 +199,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 
 		private WYSIWYGLayoutEditorPanel editorPanel;
 
-		@SuppressWarnings("unused")
+		// @SuppressWarnings("unused")
 		private String warning;
 
 		private LayoutMLRule actualRule = null;
@@ -523,7 +522,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 						try {
 							c.getProperties().setProperty(WYSIWYGUniversalComponent.PROPERTY_SHOWONLY, new PropertyValueString(WYSIWYGUniversalComponent.ATTRIBUTEVALUE_LABEL_AND_CONTROL), String.class);
 						} catch (CommonBusinessException e) {
-							e.printStackTrace();
+							LOG.warn("startElement failed: " + e, e);
 						}
 					stack.push(c);
 					if (c.getLayoutMLRulesIfCapable() != null)
@@ -655,7 +654,6 @@ public class LayoutMLLoader implements LayoutMLConstants {
 		 * {@link ElementProcessor} for WYSIYWYGStaticTextfield
 		 * @see WYSIWYGStaticTextfield
 		 */
-		@SuppressWarnings("unused")
 		private class StaticElementImageProcessor implements ElementProcessor {
 
 			@Override
@@ -859,9 +857,11 @@ public class LayoutMLLoader implements LayoutMLConstants {
 						RuleVO ruleToExecute;
 						try {
 							ruleToExecute = RuleDelegate.getInstance().get(Integer.parseInt(ruleId));
-							peekComponent().getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_RULE).setValue(ruleToExecute.getName());
+							final PropertyValue<String> pv = (PropertyValue<String>) 
+									peekComponent().getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_RULE);
+							pv.setValue(ruleToExecute.getName());
 						} catch (Exception e) {
-							e.printStackTrace();
+							LOG.warn("startElement failed: " + e, e);
 						}
 					} else {
 						peekComponent().getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_COLLECTABLECOMPONENTPROPERTY).setValue(ELEMENT_PROPERTY, atts);
@@ -880,7 +880,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				try {
-					PropertyValue value = PropertyUtils.getPropertyValue(peekComponent(), WYSIWYGCollectableComponent.PROPERTY_PREFFEREDSIZE);
+					PropertyValue<?> value = PropertyUtils.getPropertyValue(peekComponent(), WYSIWYGCollectableComponent.PROPERTY_PREFFEREDSIZE);
 					value.setValue(ELEMENT_PREFERREDSIZE, atts);
 
 					peekComponent().setProperty(WYSIWYGCollectableComponent.PROPERTY_PREFFEREDSIZE, value, PropertyUtils.getValueClass(peekComponent(), WYSIWYGCollectableComponent.PROPERTY_PREFFEREDSIZE));
@@ -1184,7 +1184,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			public void startElement(Attributes atts) throws SAXException {
 				try {
 					WYSIWYGComponent c = peekComponent();
-					PropertyValue value = PropertyUtils.getPropertyValue(c, WYSIWYGComponent.PROPERTY_BACKGROUNDCOLOR);
+					PropertyValue<?> value = PropertyUtils.getPropertyValue(c, WYSIWYGComponent.PROPERTY_BACKGROUNDCOLOR);
 					value.setValue(ELEMENT_BACKGROUND, atts);
 
 					c.setProperty(WYSIWYGComponent.PROPERTY_BACKGROUNDCOLOR, value, PropertyUtils.getValueClass(c, WYSIWYGComponent.PROPERTY_BACKGROUNDCOLOR));
@@ -1208,7 +1208,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				WYSIWYGComponent c = peekComponent();
-				PropertyValue value;
+				PropertyValue<?> value;
 				if (c.getProperties() != null && c.getProperties().getProperty(WYSIWYGComponent.PROPERTY_BORDER) != null) {
 					value = c.getProperties().getProperty(WYSIWYGComponent.PROPERTY_BORDER);
 				} else {
@@ -1243,7 +1243,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				WYSIWYGComponent c = peekComponent();
-				PropertyValue value;
+				PropertyValue<?> value;
 				if (c.getProperties() != null && c.getProperties().getProperty(WYSIWYGComponent.PROPERTY_BORDER) != null) {
 					value = c.getProperties().getProperty(WYSIWYGComponent.PROPERTY_BORDER);
 				} else {
@@ -1710,7 +1710,6 @@ public class LayoutMLLoader implements LayoutMLConstants {
 	/**
 	 * Migrates existing resource ids into the translation map.
 	 */
-	@SuppressWarnings("deprecation")
 	public void migrateLocaleResourceId(WYSIWYGComponent c, Attributes atts) {
 		String resId = atts.getValue(ATTRIBUTE_LOCALERESOURCEID);
 		if (resId != null) {

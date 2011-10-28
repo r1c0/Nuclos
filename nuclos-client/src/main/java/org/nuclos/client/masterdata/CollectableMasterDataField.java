@@ -21,6 +21,7 @@ import java.util.Date;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.log4j.Logger;
 
 import org.nuclos.common.collect.collectable.AbstractCollectableField;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -48,6 +49,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class CollectableMasterDataField extends AbstractCollectableField {
 	
+	private static final Logger LOG = Logger.getLogger(CollectableMasterDataField.class);
+
 	private final Object oValue;
 	private final Object oValueId;
 	private final int iFieldType;

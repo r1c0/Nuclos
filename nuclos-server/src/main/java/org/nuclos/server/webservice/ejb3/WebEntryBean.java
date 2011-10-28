@@ -18,10 +18,8 @@
 package org.nuclos.server.webservice.ejb3;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
@@ -32,10 +30,11 @@ import javax.security.auth.login.LoginException;
 
 import org.nuclos.common2.exception.CommonFatalException;
 
-@Stateless
-//@WebService(serviceName = "webEntry", endpointInterface = "org.nuclos.server.webservice.ejb3.WebEntryWS")
+// @Stateless
+// @WebService(serviceName = "webEntry", endpointInterface = "org.nuclos.server.webservice.ejb3.WebEntryWS")
 public class WebEntryBean implements WebEntryWS {
-	@EJB private WebAccessWS webAccess;
+	
+	private WebAccessWS webAccess;
 	
 	/**
 	 * The function that must be called by EVERY public service function here.
@@ -77,19 +76,19 @@ public class WebEntryBean implements WebEntryWS {
 	}
 	
 	@Override
-	public ArrayList<String> listEntities_A(String user, String pass) {
+	public List<String> listEntities_A(String user, String pass) {
 		authenticate(user, pass);
 		return webAccess.listEntities();
 	}
 	
 	@Override
-    public ArrayList<Long> list_A(String user, String pass, String entityName) {
+    public List<Long> list_A(String user, String pass, String entityName) {
 		authenticate(user, pass);
 		return webAccess.list(entityName);
     }
 
 	@Override
-    public ArrayList<String> read_A(String user, String pass, String entityName, Long id) {
+    public List<String> read_A(String user, String pass, String entityName, Long id) {
 		authenticate(user, pass);
 		return webAccess.read(entityName, id);
     }

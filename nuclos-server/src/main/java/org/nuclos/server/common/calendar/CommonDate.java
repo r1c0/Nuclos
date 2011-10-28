@@ -30,10 +30,7 @@ import java.util.TimeZone;
  * @version 01.00.00
  */
 public class CommonDate extends BigDate {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	public static final int SUNDAY = 1;
 	public static final int MONDAY = 2;
 	public static final int TUESDAY = 3;

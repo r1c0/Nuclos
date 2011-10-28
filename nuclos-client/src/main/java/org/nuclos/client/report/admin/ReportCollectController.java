@@ -396,7 +396,6 @@ public class ReportCollectController extends MasterDataCollectController {
 	 * @return
 	 * @throws CommonBusinessException
 	 */
-	@SuppressWarnings("deprecation")
 	@Override
 	protected CollectableMasterDataWithDependants insertCollectable(CollectableMasterDataWithDependants clctNew) throws CommonBusinessException {
 		if (clctNew.getId() != null)

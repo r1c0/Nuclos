@@ -18,20 +18,18 @@ package org.nuclos.client.wizard.util;
 
 import javax.swing.text.PlainDocument;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common2.CommonLocaleDelegate;
 
 public class DoubleFormatDocument extends PlainDocument {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final Logger LOG = Logger.getLogger(DoubleFormatDocument.class);
 
 	@Override
 	public void insertString(int offset, String str, javax.swing.text.AttributeSet a)  throws javax.swing.text.BadLocationException {
 		try {
 			String lang = CommonLocaleDelegate.getLocale().getLanguage();
 			if(str.length() == 1) {
-				
 				String comma = ",";
 				if("de".equals(lang))
 					comma = ".";
@@ -47,13 +45,12 @@ public class DoubleFormatDocument extends PlainDocument {
 				if("de".equals(lang)) {
 					str = str.replace('.', ',');
 				}
-					
 			}
 		}
-		catch(NumberFormatException ex) {
+		catch(NumberFormatException e) {
+			LOG.info("insertString: " + e);
 			return;
 		}
-
 		super.insertString(offset, str, a);
     }
 }

@@ -16,7 +16,10 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.ruleengine.jobs;
 
-import org.quartz.*;
+import org.apache.log4j.Logger;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 
 /**
  * Quartz job for testing purposes.
@@ -29,11 +32,13 @@ import org.quartz.*;
  */
 public class TestJob implements Job {
 
+	private static final Logger LOG = Logger.getLogger(TestJob.class);
+	
 	public TestJob() {
 	}
 
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
-		System.out.println("Successfully executed TestJob.");
+		LOG.info("Successfully executed TestJob.");
 	}
 }

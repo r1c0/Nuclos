@@ -29,10 +29,6 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
  */
 public class RuleEngineGenerationVO extends NuclosValueObject {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private Integer iRuleId;
 	private Integer iGenerationId;
 	private Integer iOrder;

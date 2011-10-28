@@ -41,7 +41,6 @@ public class GzipMap<K, V> implements Map<K, V>, Serializable, Externalizable {
 		delegate = new HashMap<K, V>();
 	}
 	
-	@SuppressWarnings("unchecked")
     @Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		int len = in.readInt();

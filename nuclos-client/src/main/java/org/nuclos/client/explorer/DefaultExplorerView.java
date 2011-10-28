@@ -56,19 +56,13 @@ import org.nuclos.server.navigation.treenode.TreeNode;
 
 public class DefaultExplorerView extends JPanel implements ExplorerView {
 
-	private static final long serialVersionUID = 1L;
-
 	public static final int FADE = 2;
 
 	private final JToolBar toolBar = UIUtils.createNonFloatableToolBar();
 
-	List<JComponent> additionalToolBarContents;
+	private List<JComponent> additionalToolBarContents;
 
 	private final JPanel content = new JPanel(new BorderLayout()) {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void paint(Graphics g) {
@@ -142,8 +136,6 @@ public class DefaultExplorerView extends JPanel implements ExplorerView {
 	protected List<JComponent> getToolBarComponents() {
 		List<JComponent> components = new ArrayList<JComponent>();
 		components.add(new JButton(new AbstractAction("", Icons.getInstance().getIconRefresh16()) {
-
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {

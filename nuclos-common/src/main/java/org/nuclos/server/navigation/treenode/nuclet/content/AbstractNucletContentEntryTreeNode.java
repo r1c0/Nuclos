@@ -42,27 +42,13 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public abstract class AbstractNucletContentEntryTreeNode implements TreeNode {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
 	protected final NuclosEntity entity;
 	protected final EntityObjectVO eo;
 
-	/**
-	 *
-	 */
 	public static final String FOREIGN_FIELD_TO_NUCLET = "nuclet";
 
-	/**
-	 *
-	 */
 	public static final String NAME_FIELD = "name";
 
-	/**
-	 *
-	 * @return
-	 */
 	public static List<NuclosEntity> getNucletContentEntities() {
 		List<NuclosEntity> result = new ArrayList<NuclosEntity>();
 		result.add(NuclosEntity.ENTITY);

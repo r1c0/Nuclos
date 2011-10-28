@@ -41,7 +41,6 @@ public class KeyEnumComboBoxModel<T extends KeyEnum<?>> extends DefaultComboBoxM
 		super.setSelectedItem(new Element(value));
 	}
 
-	@SuppressWarnings("unchecked")
 	public T getSelectedValue() {
 		return ((Element)getSelectedItem()).getValue();
 	}
@@ -76,7 +75,6 @@ public class KeyEnumComboBoxModel<T extends KeyEnum<?>> extends DefaultComboBoxM
 			return result;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj)

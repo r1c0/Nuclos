@@ -91,7 +91,7 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 public class CollectableComboBox extends LabeledCollectableComponentWithVLP implements CollectableEventListener {
 
-	private static final Logger log = Logger.getLogger(CollectableComboBox.class);
+	private static final Logger LOG = Logger.getLogger(CollectableComboBox.class);
 
 	/**
 	 * an additional entry that is dynamically added when a value is to be set that is not contained
@@ -278,7 +278,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 	 */
 	@Override
     public void refreshValueList(boolean async) {
-		log.debug("CollectableComboBox.refreshValueList called for field " + getFieldName());
+		LOG.debug("CollectableComboBox.refreshValueList called for field " + getFieldName());
 
 		releasePreviousRefreshs();
 
@@ -407,7 +407,6 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 	}
 
 	@Override
-    @SuppressWarnings("deprecation")
 	public CollectableField getFieldFromView() throws CollectableFieldFormatException {
 		final Object oCurrentItem = getCurrentItem();
 
@@ -526,7 +525,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 				sbWarning.append(clctfValue.toDescription());
 				sbWarning.append(")");
 			}
-			log.warn(sbWarning.toString());
+			LOG.warn(sbWarning.toString());
 
 			if (isInsertable() && (oValueId == null) && (clctfValue.getValue() != null)) {
 				final String sText = clctfValue.toString();
@@ -586,7 +585,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 		try {
 			getDefaultComboBoxModel().removeElement(clctfExtra);
 		} catch (IllegalStateException e) {
-			log.info(e);
+			LOG.info(e);
 		}
 
 		clctfExtra = null;
@@ -706,10 +705,6 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 	public TableCellRenderer getTableCellRenderer() {
 		if (!isSearchComponent() && getValueListProvider() != null) {
 			return new CollectableComponentDetailTableCellRenderer() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
 				public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
@@ -755,10 +750,6 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 		} else if (isSearchComponent()){
 			//NOAINT-215
 			return new CollectableComponentDetailTableCellRenderer() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
 				protected void setValue(Object value) {
@@ -776,10 +767,6 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 		}
 		else {
 			return new CollectableComponentDetailTableCellRenderer() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
 				protected void setValue(Object value) {
@@ -832,10 +819,6 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 	}
 
 	public class CollectableFieldRenderer extends DefaultListCellRenderer {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public Component getListCellRendererComponent(JList list, Object oValue, int iIndex, boolean bSelected, boolean bCellHasFocus) {
@@ -847,7 +830,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 			final CollectableField clctf = (CollectableField) oValue;
 			Color colorForeground = bSelected ? list.getSelectionForeground() : list.getForeground();
 			if (clctf == null) {
-				log.warn("CollectableFieldRenderer.getListCellRendererComponent: oValue == null");
+				LOG.warn("CollectableFieldRenderer.getListCellRendererComponent: oValue == null");
 			}
 			else {
 				String sText = null;

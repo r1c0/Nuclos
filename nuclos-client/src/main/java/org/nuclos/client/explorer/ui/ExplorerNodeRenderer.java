@@ -45,8 +45,6 @@ import org.nuclos.common2.StringUtils;
  */
 public class ExplorerNodeRenderer extends DefaultTreeCellRenderer {
 
-	private static final long serialVersionUID = 1L;
-
 	private final static Logger LOG = Logger.getLogger(ExplorerNodeRenderer.class);
 
 	class PaintImage {

@@ -18,40 +18,36 @@ package org.nuclos.client.entityobject;
 
 import java.util.Map;
 
+import org.nuclos.client.common.Utils;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.common.collect.collectable.AbstractCollectable;
-import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityProvider;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Removable;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
-import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class CollectableEntityObject extends CollectableMasterData implements Removable {
 
-	private CollectableEntity ceoe;
+	private final CollectableEOEntity ceoe;
 
 	private final Map<String, CollectableField> mpFields = CollectionUtils.newHashMap();
 
-	private EntityObjectVO vo;
+	private final EntityObjectVO vo;
 
-	public CollectableEntityObject(CollectableMasterDataEntity clcte, MasterDataVO mdvo) {
-		super(clcte, mdvo);
-	}
-
-	public CollectableEntityObject(CollectableEntity cee, EntityObjectVO vo) {
+	public CollectableEntityObject(CollectableEOEntity cee, EntityObjectVO vo) {
 		super(null, null);
 		this.ceoe = cee;
 		this.vo = vo;
 	}
 
-	public CollectableEntity getCollectableEOEntity(){
+	public CollectableEOEntity getCollectableEOEntity(){
 		return ceoe;
 	}
 
@@ -140,13 +136,21 @@ public class CollectableEntityObject extends CollectableMasterData implements Re
 	 * inner class MakeCollectable: makes a <code>MasterDataVO</code> <code>Collectable</code>.
 	 */
 	public static class MakeCollectable implements Transformer<EntityObjectVO, CollectableEntityObject> {
-		final CollectableEntity clctmde;
+		
+		private final CollectableEOEntity clctmde;
 
-		public MakeCollectable(CollectableEntityProvider clcteprovider, String sEntityName) {
-			this(clcteprovider.getCollectableEntity(sEntityName));
+		/**
+		 * @deprecated Unsave as the provider does not guaranty getting a CollectableEOEntity.
+		 */
+		private MakeCollectable(CollectableEntityProvider clcteprovider, String sEntityName) {
+			this((CollectableEOEntity) clcteprovider.getCollectableEntity(sEntityName));
+		}
+		
+		public MakeCollectable(CollectableMasterDataEntity clctmde) {
+			this.clctmde = Utils.transformCollectableMasterDataEntityTOCollectableEOEntity(clctmde);
 		}
 
-		public MakeCollectable(CollectableEntity clctmde) {
+		public MakeCollectable(CollectableEOEntity clctmde) {
 			this.clctmde = clctmde;
 		}
 

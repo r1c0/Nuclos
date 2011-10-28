@@ -30,14 +30,12 @@ import javax.swing.Timer;
 import org.jdesktop.swingx.painter.BusyPainter;
 
 public class BusyComponent extends JComponent implements ActionListener {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private Dimension    fixedSize;
 	private int          pointsize;
 	private BusyPainter         bp;
 	private Timer timer;
+	
 	public BusyComponent(int pointsize, int radius) {
 		this.pointsize = pointsize;
 		fixedSize = new Dimension((radius + pointsize) * 2, (radius + pointsize) * 2);

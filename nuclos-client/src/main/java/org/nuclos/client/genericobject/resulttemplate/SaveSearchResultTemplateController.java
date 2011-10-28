@@ -21,6 +21,7 @@ import java.util.prefs.BackingStoreException;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ClientPreferences;
@@ -41,6 +42,8 @@ import org.nuclos.common.NuclosFatalException;
  * @version	01.00.00
  */
 public class SaveSearchResultTemplateController {
+	
+	private static final Logger LOG = Logger.getLogger(SaveSearchResultTemplateController.class);
 	
 	public static enum Command {
 		None, Overwrite, New
@@ -111,10 +114,6 @@ public class SaveSearchResultTemplateController {
 			final Command resultFinal = result;
 
 			final ValidatingJOptionPane optpn = new ValidatingJOptionPane(parent, sTitleEnterTemplate, pnlEnterTemplate) {
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
 				protected void validateInput() throws ErrorInfo {

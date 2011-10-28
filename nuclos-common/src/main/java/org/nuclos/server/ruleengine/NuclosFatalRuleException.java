@@ -29,11 +29,6 @@ import org.nuclos.common.NuclosFatalException;
  */
 public class NuclosFatalRuleException extends NuclosFatalException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public NuclosFatalRuleException() {
 		super("ruleengine.error.exception.nucleusfatalruleexception");
 	}

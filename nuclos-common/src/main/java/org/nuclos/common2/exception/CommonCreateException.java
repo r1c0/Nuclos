@@ -30,11 +30,6 @@ package org.nuclos.common2.exception;
 
 public class CommonCreateException extends CommonBusinessException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public CommonCreateException() {
 		super(CommonBusinessException.CREATE);
 	}

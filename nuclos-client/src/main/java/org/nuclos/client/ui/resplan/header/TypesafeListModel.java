@@ -33,8 +33,6 @@ public interface TypesafeListModel<E> extends ListModel {
 
 	public static class StaticListModel<T> extends AbstractListModel implements TypesafeListModel<T> {
 	
-		private static final long serialVersionUID = 1L;
-
 		private T[] data;
 		
 		public StaticListModel() {
@@ -56,7 +54,6 @@ public interface TypesafeListModel<E> extends ListModel {
 			return data[index];
 		}
 		
-		@SuppressWarnings("unchecked")
 		public void setData(List<? extends T> items) {
 			int oldSize = getSize();
 			this.data = null;

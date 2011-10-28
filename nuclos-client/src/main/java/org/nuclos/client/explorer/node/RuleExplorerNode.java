@@ -27,6 +27,7 @@ import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.explorer.node.rule.RuleNode;
 import org.nuclos.client.main.Main;
@@ -59,10 +60,8 @@ import org.nuclos.server.ruleengine.valueobject.RuleVO;
 
 public class RuleExplorerNode extends AbstractRuleExplorerNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(RuleExplorerNode.class);
+	
 	private static final String ACTIONCOMMAND_SHOW_DETAILS = "SHOW DETAILS";
 	private static final String ACTIONCOMMAND_REMOVE_USAGE = "REMOVE_USAGE";
 
@@ -134,11 +133,6 @@ public class RuleExplorerNode extends AbstractRuleExplorerNode {
 	 */
 	private class ShowDetailsAction extends TreeNodeAction {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		public ShowDetailsAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
 		}
@@ -181,11 +175,6 @@ public class RuleExplorerNode extends AbstractRuleExplorerNode {
 	 * Remove the selected Rule if it is a RuleUsage
 	 */
 	private class RemoveUsageAction extends TreeNodeAction {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public RemoveUsageAction(JTree tree) {
 			super(ACTIONCOMMAND_REMOVE_USAGE, CommonLocaleDelegate.getMessage("RuleExplorerNode.3","Verwendung l\u00f6schen"), tree);

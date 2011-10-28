@@ -29,10 +29,6 @@ import org.nuclos.common2.exception.CommonValidationException;
  */
 
 public class CollectableFieldValidationException extends CommonValidationException {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	public CollectableFieldValidationException() {
 	}

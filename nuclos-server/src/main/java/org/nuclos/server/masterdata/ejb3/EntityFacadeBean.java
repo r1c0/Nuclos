@@ -23,9 +23,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-
 import org.apache.log4j.Logger;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.SearchConditionUtils;
@@ -71,8 +68,8 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Remote(EntityFacadeRemote.class)
+// @Stateless
+// @Remote(EntityFacadeRemote.class)
 @Transactional
 public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRemote {
 

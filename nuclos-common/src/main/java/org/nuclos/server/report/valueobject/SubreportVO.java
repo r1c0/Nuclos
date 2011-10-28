@@ -33,10 +33,6 @@ import org.nuclos.server.report.ByteArrayCarrier;
  */
 public class SubreportVO extends NuclosValueObject {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private Integer reportOutputId;
 	private String parameter;
 	private String sourcefileName;

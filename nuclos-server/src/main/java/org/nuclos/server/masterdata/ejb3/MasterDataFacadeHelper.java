@@ -197,7 +197,6 @@ public class MasterDataFacadeHelper {
 		}
 
 		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(mdmetavo.getEntityName());
-
 		EntityObjectVO eoResult = eoProcessor.getByPrimaryKey(LangUtils.convertId((Integer)oId));
 		try {
 			RecordGrantUtils.checkInternal(mdmetavo.getEntityName(), LangUtils.convertId((Integer)oId));

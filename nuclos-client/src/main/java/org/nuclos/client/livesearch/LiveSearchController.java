@@ -46,6 +46,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
@@ -84,6 +85,9 @@ import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.livesearch.ejb3.LiveSearchFacadeRemote;
 
 public class LiveSearchController implements LiveSearchSearchPaneListener, LiveSearchResultPaneListener {
+	
+	private static final Logger LOG = Logger.getLogger(LiveSearchController.class);
+
 	private static final int MAX_RESULTS = 500;
 
 	private JFrame                              parentFrame;
@@ -190,7 +194,6 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 
         currentSearchText = newSearchText;
 
-        //System.out.println("Starting new search for " + newSearchText);
         searchQueue.clear();
         currentResult.clear();
 
@@ -267,7 +270,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
         	CollectionUtils.addAll(savedDeselected, savedDeselectedArray);
         }
         catch(PreferencesException e) {
-        	e.printStackTrace();
+        	LOG.warn("getSearchEntities failed: " + e);
         }
 
         // Put it all together
@@ -556,7 +559,9 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
             try {
                 t = q.take();
             }
-            catch(InterruptedException e) {}
+            catch(InterruptedException e) {
+    			LOG.info("pollInfinite: " + e);
+            }
         }
         return t;
     }
@@ -598,12 +603,17 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
             while(true) {
                 SearchDef nowSearching = pollInfinite(searchQueue);
 
-                if(nowSearching.type == SearchDefType.DELAY) {
-                    setProgress(nowSearching.index, nowSearching.groupSize, true);
-                    try { Thread.sleep(nowSearching.delay); } catch(InterruptedException e) {}
-                    preparationQueue.offer(new Pair<SearchDef, List<Pair<EntityObjectVO, Set<String>>>>(nowSearching, null));
-                    continue;
-                }
+				if (nowSearching.type == SearchDefType.DELAY) {
+					setProgress(nowSearching.index, nowSearching.groupSize, true);
+					try {
+						Thread.sleep(nowSearching.delay);
+					} catch (InterruptedException e) {
+						LOG.info("SearchThread.run: " + e);
+					}
+					preparationQueue.offer(new Pair<SearchDef, List<Pair<EntityObjectVO, Set<String>>>>(
+							nowSearching, null));
+					continue;
+				}
 
                 LiveSearchFacadeRemote searchService
                     = ServiceLocator.getInstance().getFacade(LiveSearchFacadeRemote.class);

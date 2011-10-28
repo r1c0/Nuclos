@@ -73,7 +73,7 @@ import org.springframework.core.io.Resource;
 
 public class NuclosJavaCompiler implements Closeable {
 
-	private static final Logger log = Logger.getLogger(NuclosJavaCompiler.class);
+	private static final Logger LOG = Logger.getLogger(NuclosJavaCompiler.class);
 
 	private static final String JAVAC_CLASSNAME = "com.sun.tools.javac.api.JavacTool";
 
@@ -96,9 +96,10 @@ public class NuclosJavaCompiler implements Closeable {
 			try {
 				return (JavaCompiler) clazz.newInstance();
 			} catch (Exception ex) {
-				log.error(ex);
+				LOG.error(ex);
 			}
 		} catch(ClassNotFoundException e) {
+			LOG.warn("getJavaCompilerTool failed: " + e);
 		}
 		return null;
 	}
@@ -160,7 +161,7 @@ public class NuclosJavaCompiler implements Closeable {
 	}
 
 	private synchronized Map<String, byte[]> javac(List<CodeGenerator> generators, boolean save) throws NuclosCompileException {
-		log.info("Compiler Classpath: " + stdFileManager.getLocation(StandardLocation.CLASS_PATH));
+		LOG.info("Compiler Classpath: " + stdFileManager.getLocation(StandardLocation.CLASS_PATH));
 		final Set<JavaFileObject> sources = new HashSet<JavaFileObject>();
 		for (CodeGenerator generator : generators) {
 			for (JavaFileObject jfo : generator.getSourceFiles()) {
@@ -169,7 +170,7 @@ public class NuclosJavaCompiler implements Closeable {
 				}
 			}
 		}
-		log.info("Execute Java compiler for source files: " + sources);
+		LOG.info("Execute Java compiler for source files: " + sources);
 
 		if (save) {
 			try {
@@ -177,7 +178,7 @@ public class NuclosJavaCompiler implements Closeable {
 			}
 			catch(IOException e1) {
 				// Source is saved to disk just for debugging purposes
-				log.warn(e1);
+				LOG.warn("javac failed: " + e1);
 			}
 		}
 
@@ -193,7 +194,7 @@ public class NuclosJavaCompiler implements Closeable {
 
 			List<ErrorMessage> errors = diagnosticListener.clearErrors();
 			if (!success) {
-				log.info(errors);
+				LOG.info(errors);
 				throw new NuclosCompileException(errors);
 			}
 
@@ -284,7 +285,7 @@ public class NuclosJavaCompiler implements Closeable {
 				c.close();
 			}
 			catch(IOException e) {
-				log.warn(e.getMessage(), e);
+				LOG.warn("getFile failed: " + e, e);
 			}
 		}
 	}
@@ -313,7 +314,7 @@ public class NuclosJavaCompiler implements Closeable {
 				c.close();
 			}
 			catch(IOException e) {
-				log.warn(e.getMessage(), e);
+				LOG.warn("check failed: " + e, e);
 			}
 		}
 	}
@@ -332,7 +333,6 @@ public class NuclosJavaCompiler implements Closeable {
 			this.errors = new ArrayList<NuclosCompileException.ErrorMessage>();
 		}
 
-		@SuppressWarnings("rawtypes")
 		@Override
 		public synchronized void report(Diagnostic<? extends JavaFileObject> diag) {
 			if (diag.getKind() == Diagnostic.Kind.ERROR) {
@@ -504,6 +504,7 @@ public class NuclosJavaCompiler implements Closeable {
 				}
 			}
 			catch(IOException e) {
+				LOG.debug("validate: " + e);
 				compile();
 			}
 		}

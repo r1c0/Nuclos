@@ -32,10 +32,6 @@ import java.util.Arrays;
  */
 public class RelationTreeNode extends StaticTreeNode<Integer> implements Comparable<TreeNode> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final RelationDirection direction;
 
 	/**

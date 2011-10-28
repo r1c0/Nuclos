@@ -24,8 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.CreateException;
-
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.ServiceLocator;
@@ -49,18 +47,18 @@ public class RuleRepository {
 
 	private final Map<Integer, StateModelRuleVO> mpRules = CollectionUtils.newHashMap();
 
-	public static synchronized RuleRepository getInstance() throws CreateException, RemoteException {
+	public static synchronized RuleRepository getInstance() throws RemoteException {
 		if (singleton == null) {
 			singleton = new RuleRepository();
 		}
 		return singleton;
 	}
 
-	private RuleRepository() throws CreateException, RemoteException {
+	private RuleRepository() throws RemoteException {
 		updateRules();
 	}
 
-	public void updateRules() throws CreateException, RemoteException {
+	public void updateRules() throws RemoteException {
 		mpRules.clear();
 
 		final RuleEngineFacadeRemote ruleFacade = ServiceLocator.getInstance().getFacade(RuleEngineFacadeRemote.class);

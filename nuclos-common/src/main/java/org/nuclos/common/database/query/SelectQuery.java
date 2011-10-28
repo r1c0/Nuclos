@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common.collection.CollectionUtils;
@@ -50,6 +51,8 @@ import org.nuclos.server.report.ejb3.DatasourceFacadeRemote;
  * @version 01.00
  */
 public class SelectQuery {
+
+	private static final Logger LOG = Logger.getLogger(SelectQuery.class);
 
 	private final List<Column> lstSelect = new ArrayList<Column>();
 	private final List<Table> lstFrom = new ArrayList<Table>();
@@ -151,15 +154,10 @@ public class SelectQuery {
 		}
 
 		appendSelectClause(sb, isDynamicEntity);
-
 		appendFromClause(sb);
-
 		appendWhereClause(sb);
-
 		appendGroupByClause(sb);
-
 		appendOrderByClause(sb);
-
 		return sb.toString();
 	}
 
@@ -167,7 +165,7 @@ public class SelectQuery {
 		for (Column column : lstSelect) {
 			final Table table = column.getTable();
 			if (table.getAlias() == null) {
-				System.err.println("Processing error: table " + table.getName() + " is referenced in SELECT clause, but does not have alias");
+				LOG.error("Processing error: table " + table.getName() + " is referenced in SELECT clause, but does not have alias");
 			}
 			else if ((!lstGroupBy.isEmpty() || !mpGroupBy.isEmpty()) && !column.isHidden() && !column.isExpression()) {
 				final String sGroupBy = mpGroupBy.get(column);
@@ -243,7 +241,7 @@ public class SelectQuery {
 			while (iterFrom.hasNext()) {
 				final Table table = iterFrom.next();
 				if (table.getAlias() == null) {
-					System.err.println("Processing error: table " + table.getName() + " is referenced in FROM clause, but does not have alias");
+					LOG.error("Processing error: table " + table.getName() + " is referenced in FROM clause, but does not have alias");
 				}
 				else if (processed.contains(table.getAlias())) {
 					continue;
@@ -357,7 +355,7 @@ public class SelectQuery {
 					final Column column = orderBy.getColumn();
 					final Table table = column.getTable();
 					if (table.getAlias() == null) {
-						System.err.println("Processing error: table " + table.getName() + " is referenced in ORDER BY clause, but not added as alias");
+						LOG.error("Processing error: table " + table.getName() + " is referenced in ORDER BY clause, but not added as alias");
 					}
 					else {
 						if (column.getAlias() != null) {

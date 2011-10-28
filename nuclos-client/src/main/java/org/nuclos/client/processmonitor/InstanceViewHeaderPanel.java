@@ -44,28 +44,23 @@ import org.nuclos.common.masterdata.MakeMasterDataValueIdField;
  */
 public class InstanceViewHeaderPanel extends JPanel {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private final JPanel pnlTextFields = new JPanel();
 
-	final CollectableTextField clcttfName = new CollectableTextField(
+	private final CollectableTextField clcttfName = new CollectableTextField(
 			CollectableInstanceModel.clcte.getEntityField(CollectableInstanceModel.FIELDNAME_NAME));
 
-	final CollectableComboBox clctcomboProcessmodel = newProcessmodelCombobox();
+	private final CollectableComboBox clctcomboProcessmodel = newProcessmodelCombobox();
 
-	final CollectableTextField clcttfPlanstart = new CollectableTextField(
+	private final CollectableTextField clcttfPlanstart = new CollectableTextField(
 			CollectableInstanceModel.clcte.getEntityField(CollectableInstanceModel.FIELDNAME_PLANSTART));
 
-	final CollectableTextField clcttfPlanend = new CollectableTextField(
+	private final CollectableTextField clcttfPlanend = new CollectableTextField(
 			CollectableInstanceModel.clcte.getEntityField(CollectableInstanceModel.FIELDNAME_PLANEND));
 
-	final CollectableTextField clcttfRealstart = new CollectableTextField(
+	private final CollectableTextField clcttfRealstart = new CollectableTextField(
 			CollectableInstanceModel.clcte.getEntityField(CollectableInstanceModel.FIELDNAME_REALSTART));
 
-	final CollectableTextField clcttfRealend = new CollectableTextField(
+	private final CollectableTextField clcttfRealend = new CollectableTextField(
 			CollectableInstanceModel.clcte.getEntityField(CollectableInstanceModel.FIELDNAME_REALEND));
 
 	public InstanceViewHeaderPanel() {

@@ -31,10 +31,6 @@ import org.apache.log4j.Logger;
  * @version 01.00.00
  */
 public abstract class DocumentFileBase extends File {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	private final static Logger log = Logger.getLogger(DocumentFileBase.class);
 
@@ -125,10 +121,7 @@ public abstract class DocumentFileBase extends File {
 			result = super.equals(o);
 		}
 		else {
-			if (o == null) {
-				result = false;
-			}
-			else if (this == o) {
+			if (this == o) {
 				result = true;
 			}
 			else {

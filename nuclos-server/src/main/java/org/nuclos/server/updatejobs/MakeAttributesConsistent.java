@@ -18,9 +18,6 @@ package org.nuclos.server.updatejobs;
 
 import java.util.List;
 
-import javax.ejb.CreateException;
-
-import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -56,31 +53,42 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  *
  * @author	<a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version 01.00.00
+ * 
+ * @deprecated Does nothing/unneeded? (Please re-check!) (tp)
  */
-
 public class MakeAttributesConsistent implements UpdateJobs{
 
 	public static final String sRelease = "Nucleus Release 2.1.2";
+	
 	private boolean isSuccessfulExecuted = true;
 
 	private MasterDataFacadeLocal mdfacadelocal;
 	private GenericObjectFacadeLocal gofacadelocal;
 	private AttributeFacadeLocal attrfacadelocal;
 
-	final AttributeCache attrprovider = AttributeCache.getInstance();
+	private final AttributeCache attrprovider = AttributeCache.getInstance();
+	
+	/**
+	 * @deprecated Does nothing/unneeded? (Please re-check!) (tp)
+	 */
+	public MakeAttributesConsistent() {
+	}
 
 	@Override
 	public boolean execute() {
-		logger.debug("START executing MakeAttributesConsistent");
+		LOG.debug("START executing MakeAttributesConsistent");
 
 		makeAttributesConsistent();
 		makeAttributeValuesConsistent();
 
-		logger.debug("END executing MakeAttributesConsistent");
+		LOG.debug("END executing MakeAttributesConsistent");
 
 		return isSuccessfulExecuted;
 	}
 
+	/**
+	 * @deprecated Does nothing/unneeded? (Please re-check!) (tp)
+	 */
 	private void makeAttributesConsistent() {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
@@ -108,26 +116,23 @@ public class MakeAttributesConsistent implements UpdateJobs{
 							}
 							String sValue_new = oValue_new.toString();
 
+							// not needed/available
 							// make attributes consistent
-							getAttributeFacade().makeConsistent(attrcvo.getExternalEntity(), intid_external, new Pair<String, String>(sExternalEntityFieldName, sValue_new));
+							// getAttributeFacade().makeConsistent(attrcvo.getExternalEntity(), intid_external, new Pair<String, String>(sExternalEntityFieldName, sValue_new));
 						}
 						catch (CommonPermissionException ex) {
 							isSuccessfulExecuted = false;
-							logger.error(ex, ex.getCause());
+							LOG.error(ex, ex.getCause());
 						}
 						catch (CommonFinderException ex) {
 							isSuccessfulExecuted = false;
-							logger.error(ex, ex.getCause());
-						}
-						catch (CreateException ex) {
-							isSuccessfulExecuted = false;
-							logger.error(ex, ex.getCause());
+							LOG.error(ex, ex.getCause());
 						}
 					}
 				}
 				catch (DbException ex) {
 					isSuccessfulExecuted = false;
-					logger.error(ex, ex.getCause());
+					LOG.error(ex, ex.getCause());
 				}
 			}
 		}
@@ -152,66 +157,57 @@ public class MakeAttributesConsistent implements UpdateJobs{
 							}
 							String sValue_new = oValue_new.toString();
 
+							// not needed/available
 							// make attributes consistent
-							getAttributeFacade().makeConsistent(attrcvo.getExternalEntity(), intid_external, new Pair<String, String>(sExternalEntityFieldName, sValue_new));
+							// getAttributeFacade().makeConsistent(attrcvo.getExternalEntity(), intid_external, new Pair<String, String>(sExternalEntityFieldName, sValue_new));
 						}
 						catch (CommonPermissionException ex) {
 							isSuccessfulExecuted = false;
-							logger.error(ex, ex.getCause());
+							LOG.error(ex, ex.getCause());
 						}
 						catch (CommonFinderException ex) {
 							isSuccessfulExecuted = false;
-							logger.error(ex, ex.getCause());
-						}
-						catch (CreateException ex) {
-							isSuccessfulExecuted = false;
-							logger.error(ex, ex.getCause());
+							LOG.error(ex, ex.getCause());
 						}
 					}
 				}
 				catch (DbException ex) {
 					isSuccessfulExecuted = false;
-					logger.error(ex, ex.getCause());
+					LOG.error(ex, ex.getCause());
 				}
 			}
 		}
 	}
 
+	/**
+	 * @deprecated Does nothing/unneeded.
+	 */
 	private void makeAttributeValuesConsistent() {
 		// get all attributes
 		for (AttributeCVO attrcvo : AttributeCache.getInstance().getAttributes()) {
-			// gett all attribute values
+			// get all attribute values
 			for (AttributeValueVO attrvaluevo : attrcvo.getValues()) {
-				try {
-					// make attributes consistent
-					final String sValue_new = (attrcvo.isShowMnemonic()) ? attrvaluevo.getMnemonic() : attrvaluevo.getValue();
-					getAttributeFacade().makeConsistent(attrcvo.getId(), attrvaluevo.getId(), sValue_new);
-				}
-				catch (CommonFinderException ex) {
-					isSuccessfulExecuted = false;
-					logger.error(ex, ex.getCause());
-				}
-				catch (CreateException ex) {
-					isSuccessfulExecuted = false;
-					logger.error(ex, ex.getCause());
-				}
+				// make attributes consistent
+				final String sValue_new = (attrcvo.isShowMnemonic()) ? attrvaluevo.getMnemonic() : attrvaluevo.getValue();
+				// not needed/available
+				// getAttributeFacade().makeConsistent(attrcvo.getId(), attrvaluevo.getId(), sValue_new);
 			}
 		}
 	}
 
-	private MasterDataFacadeLocal getMasterDataFacade() throws CreateException {
+	private MasterDataFacadeLocal getMasterDataFacade() {
 		if (mdfacadelocal == null)
 			mdfacadelocal = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 		return mdfacadelocal;
 	}
 
-	private AttributeFacadeLocal getAttributeFacade() throws CreateException {
+	private AttributeFacadeLocal getAttributeFacade() {
 		if (attrfacadelocal == null)
 			attrfacadelocal = ServiceLocator.getInstance().getFacade(AttributeFacadeLocal.class);
 		return attrfacadelocal;
 	}
 
-	private GenericObjectFacadeLocal getGenericObjectFacade() throws CreateException {
+	private GenericObjectFacadeLocal getGenericObjectFacade() {
 		if (gofacadelocal == null)
 			gofacadelocal = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
 		return gofacadelocal;

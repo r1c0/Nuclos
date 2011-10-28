@@ -46,10 +46,8 @@ import org.nuclos.client.gef.layout.Insets2D;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public abstract class AbstractShape implements Serializable, Cloneable, Shape, Connectable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	
+	private static final Logger LOG = Logger.getLogger(AbstractShape.class);
 
 	/**
 	 *	Unique system generated shape id
@@ -88,9 +86,6 @@ public abstract class AbstractShape implements Serializable, Cloneable, Shape, C
 
 	protected int iId;
 
-	/**
-	 *
-	 */
 	public AbstractShape() {
 		for (int i = 0; i < CONNECTION_COUNT; connectionsEnabled[i++] = true) {
 			;
@@ -286,11 +281,10 @@ public abstract class AbstractShape implements Serializable, Cloneable, Shape, C
 					int iConnectionPoint = connector.getSourceConnection().getTargetPoint();
 					if (iConnectionPoint < 0) {
 						try {
-							Logger.getLogger(this.getClass()).error(
-									"Startpunkt ist f\u00e4lschlicherweise < 0 (" + iConnectionPoint + ", setDimension())");
+							LOG.error("Startpunkt ist f\u00e4lschlicherweise < 0 (" + iConnectionPoint + ", setDimension())");
 						}
 						catch (Exception e) {
-							e.printStackTrace();
+							LOG.warn("setDimension failed: " + e, e);
 						}
 						iConnectionPoint = 0;
 					}
@@ -302,11 +296,10 @@ public abstract class AbstractShape implements Serializable, Cloneable, Shape, C
 					int iConnectionPoint = connector.getDestinationConnection().getTargetPoint();
 					if (iConnectionPoint < 0) {
 						try {
-							Logger.getLogger(this.getClass()).error(
-									"Endpunkt ist f\u00e4lschlicherweise < 0 (" + iConnectionPoint + ", setDimension())");
+							LOG.error("Endpunkt ist f\u00e4lschlicherweise < 0 (" + iConnectionPoint + ", setDimension())");
 						}
 						catch (Exception e) {
-							e.printStackTrace();
+							LOG.warn("setDimension failed: " + e, e);
 						}
 						iConnectionPoint = 0;
 					}

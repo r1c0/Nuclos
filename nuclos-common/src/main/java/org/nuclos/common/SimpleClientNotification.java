@@ -30,10 +30,6 @@ import java.util.Date;
  */
 public class SimpleClientNotification implements ClientNotification {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final Priority priority;
 	private final String sMessage;
 	private final Date dateSent;

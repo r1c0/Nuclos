@@ -36,21 +36,17 @@ import org.nuclos.client.ui.table.CommonJTable;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-
 @Deprecated
 public class ManageSearchFiltersPanel extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private final JPanel pnlMain = new JPanel(new BorderLayout());
 	private final JScrollPane scrlpn = new JScrollPane();
-	final JTable tbl = new CommonJTable();
+	private final JTable tbl = new CommonJTable();
 	private final JPanel pnlButtons = new JPanel(new GridBagLayout());
 	private final JPanel pnlButtons1 = new JPanel(new GridLayout(0, 1, 10, 5));
-	final JButton btnAdd = new JButton();
-	final JButton btnEdit = new JButton();
-	final JButton btnRemove = new JButton();
+	private final JButton btnAdd = new JButton();
+	private final JButton btnEdit = new JButton();
+	private final JButton btnRemove = new JButton();
 
 	public ManageSearchFiltersPanel() {
 		super(new BorderLayout());

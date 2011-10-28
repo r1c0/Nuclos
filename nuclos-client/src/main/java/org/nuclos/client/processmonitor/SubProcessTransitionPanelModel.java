@@ -47,10 +47,6 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
  */
 public class SubProcessTransitionPanelModel implements Serializable {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final int GENERATIONSTATEID_NOT_SET = -1;
 	public static final int SUBPROCESSTRANSITIONID_NOT_SET = -2;
 	public static final int GENERATIONID_NOT_SET = -3;
@@ -72,9 +68,6 @@ public class SubProcessTransitionPanelModel implements Serializable {
 	
 	protected static final Logger log = Logger.getLogger(SubProcessTransitionPanelModel.class);
 
-	/**
-	 * 
-	 */
 	public SubProcessTransitionPanelModel() {
 		// TODO Auto-generated constructor stub		
 	}

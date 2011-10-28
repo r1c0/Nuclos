@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
 
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -33,7 +32,7 @@ import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 
-@Local
+// @Local
 public interface DatasourceFacadeLocal {
 
 	/**
@@ -44,7 +43,7 @@ public interface DatasourceFacadeLocal {
 	 * @return datasource value object
 	 */
 	@RolesAllowed("Login")
-	public abstract DatasourceVO get(Integer iId) throws CommonFinderException,
+	DatasourceVO get(Integer iId) throws CommonFinderException,
 		CommonPermissionException;
 
 	/**
@@ -55,7 +54,7 @@ public interface DatasourceFacadeLocal {
 	 * @return datasource value object
 	 */
 	@RolesAllowed("Login")
-	public abstract DatasourceVO get(String sDatasourceName)
+	DatasourceVO get(String sDatasourceName)
 		throws CommonFinderException, CommonPermissionException;
 
 	/**
@@ -65,14 +64,14 @@ public interface DatasourceFacadeLocal {
 	 * @throws CommonPermissionException
 	 */
 	@RolesAllowed("Login")
-	public abstract DatasourceVO getDatasourceById(Integer iDatasourceId);
+	DatasourceVO getDatasourceById(Integer iDatasourceId);
 
 	/**
 	 * get sql string for datasource definition
 	 * @param iDatasourceId id of datasource
 	 * @return string containing sql
 	 */
-	public abstract String createSQL(Integer iDatasourceId,
+	String createSQL(Integer iDatasourceId,
 		Map<String, Object> mpParams) throws NuclosDatasourceException;
 
 	/**
@@ -82,7 +81,7 @@ public interface DatasourceFacadeLocal {
 	 * @param iDatasourceId id of datasource
 	 * @return string containing sql
 	 */
-	public abstract String createSQLForReportExecution(String name, Map<String, Object> mpParams) throws NuclosDatasourceException;
+	String createSQLForReportExecution(String name, Map<String, Object> mpParams) throws NuclosDatasourceException;
 
 	/**
 	 * get sql string for datasource definition
@@ -92,7 +91,7 @@ public interface DatasourceFacadeLocal {
 	 * @return string containing sql
 	 */
 	@RolesAllowed("Login")
-	public abstract String createSQL(String sDatasourceXML,
+	String createSQL(String sDatasourceXML,
 		Map<String, Object> mpParams) throws NuclosDatasourceException;
 
    /**
@@ -103,7 +102,7 @@ public interface DatasourceFacadeLocal {
     * @param script
     */
 	@RolesAllowed("Login")
-   public abstract void processChangingDynamicEntities(Collection<DynamicEntityVO> newDEs, Collection<DynamicEntityVO> oldDEs, boolean bExecute, List<String> script);
+	void processChangingDynamicEntities(Collection<DynamicEntityVO> newDEs, Collection<DynamicEntityVO> oldDEs, boolean bExecute, List<String> script);
 
 	/**
 	 * get a datasource result by datasource id
@@ -114,8 +113,8 @@ public interface DatasourceFacadeLocal {
 	 * @throws NuclosReportException
 	 * @throws CommonFinderException
 	 */
-   @RolesAllowed("Login")
-	public abstract ResultVO executeQuery(Integer iDatasourceId,
+	@RolesAllowed("Login")
+	ResultVO executeQuery(Integer iDatasourceId,
 		Map<String, Object> mpParams, Integer iMaxRowCount)
 		throws NuclosDatasourceException, CommonFinderException;
 
@@ -127,10 +126,10 @@ public interface DatasourceFacadeLocal {
 	 * @throws NucleusDatasourceException
 	 */
 	@RolesAllowed("Login")
-	public abstract List<DatasourceParameterVO> getParameters(
+	List<DatasourceParameterVO> getParameters(
 		Integer iDatasourceId) throws NuclosFatalException,
 		NuclosDatasourceException;
 
 	@RolesAllowed("Login")
-	public Collection<DynamicEntityVO> getDynamicEntities();
+	Collection<DynamicEntityVO> getDynamicEntities();
 }

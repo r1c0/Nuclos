@@ -73,6 +73,7 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.gef.editor.syntax.tokenmarker.Token;
 import org.nuclos.client.gef.editor.syntax.tokenmarker.TokenMarker;
 
@@ -107,10 +108,9 @@ import org.nuclos.client.gef.editor.syntax.tokenmarker.TokenMarker;
  * @version $Id: JEditTextArea.java,v 1.1 2007-05-11 08:18:09 radig Exp $
  */
 public class JEditTextArea extends JComponent {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final Logger LOG = Logger.getLogger(JEditTextArea.class);
+
 	/**
 	 * Adding components with this name to the text area will place
 	 * them left of the horizontal scroll bar. In jEdit, the status
@@ -834,8 +834,8 @@ public class JEditTextArea extends JComponent {
 		try {
 			return document.getText(0, document.getLength());
 		}
-		catch (BadLocationException bl) {
-			bl.printStackTrace();
+		catch (BadLocationException e) {
+			LOG.warn("getText failed: " + e, e);
 			return null;
 		}
 	}
@@ -852,8 +852,8 @@ public class JEditTextArea extends JComponent {
 			// new text length may have an impact on scrollbar settings etc. / UA
 			recalculateVisibleLines();
 		}
-		catch (BadLocationException bl) {
-			bl.printStackTrace();
+		catch (BadLocationException e) {
+			LOG.warn("setText failed: " + e, e);
 		}
 		finally {
 			document.endCompoundEdit();
@@ -871,8 +871,8 @@ public class JEditTextArea extends JComponent {
 		try {
 			return document.getText(start, len);
 		}
-		catch (BadLocationException bl) {
-			bl.printStackTrace();
+		catch (BadLocationException e) {
+			LOG.warn("getText failed: " + e, e);
 			return null;
 		}
 	}
@@ -889,8 +889,8 @@ public class JEditTextArea extends JComponent {
 		try {
 			document.getText(start, len, segment);
 		}
-		catch (BadLocationException bl) {
-			bl.printStackTrace();
+		catch (BadLocationException e) {
+			LOG.warn("getText failed: " + e, e);
 			segment.offset = segment.count = 0;
 		}
 	}
@@ -1281,8 +1281,8 @@ public class JEditTextArea extends JComponent {
 				}
 			}
 		}
-		catch (BadLocationException bl) {
-			bl.printStackTrace();
+		catch (BadLocationException e) {
+			LOG.info("setSelectedText failed: " + e, e);
 			throw new InternalError("Cannot replace selection");
 		}
 		// No matter what happends... stops us from leaving document
@@ -1375,8 +1375,8 @@ public class JEditTextArea extends JComponent {
 			document.remove(caret, str.length());
 			document.insertString(caret, str, null);
 		}
-		catch (BadLocationException bl) {
-			bl.printStackTrace();
+		catch (BadLocationException e) {
+			LOG.info("overwriteSetSelectedText failed: " + e, e);
 		}
 		finally {
 			document.endCompoundEdit();
@@ -1508,7 +1508,7 @@ public class JEditTextArea extends JComponent {
 			}
 			catch (Exception e) {
 				getToolkit().beep();
-				System.err.println("Clipboard does not contain a string");
+				LOG.warn("Clipboard does not contain a string", e);
 			}
 		}
 	}
@@ -1624,8 +1624,8 @@ public class JEditTextArea extends JComponent {
 				return;
 			}
 		}
-		catch (BadLocationException bl) {
-			bl.printStackTrace();
+		catch (BadLocationException e) {
+			LOG.info("updateBracketHighlight failed: " + e, e);
 		}
 
 		bracketLine = bracketPosition = -1;
@@ -1787,10 +1787,6 @@ public class JEditTextArea extends JComponent {
 	}
 
 	class MutableCaretEvent extends CaretEvent {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		MutableCaretEvent() {
 			super(JEditTextArea.this);
@@ -1836,7 +1832,8 @@ public class JEditTextArea extends JComponent {
 		public void componentResized(ComponentEvent evt) {
 			recalculateVisibleLines();
 			scrollBarsInitialized = true;
-			System.out.println("Comp: " + evt.getComponent().toString() + "Id: " + evt.getID());
+			if (LOG.isDebugEnabled())
+				LOG.debug("Comp: " + evt.getComponent().toString() + "Id: " + evt.getID());
 		}
 	}
 
@@ -2004,8 +2001,8 @@ public class JEditTextArea extends JComponent {
 					return;
 				}
 			}
-			catch (BadLocationException bl) {
-				bl.printStackTrace();
+			catch (BadLocationException e) {
+				LOG.info("doDoubleClick failed: " + e, e);
 			}
 
 			// Ok, it's not a bracket... select the word
@@ -2060,10 +2057,7 @@ public class JEditTextArea extends JComponent {
 	}
 
 	class CaretUndo extends AbstractUndoableEdit {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		private int start;
 		private int end;
 

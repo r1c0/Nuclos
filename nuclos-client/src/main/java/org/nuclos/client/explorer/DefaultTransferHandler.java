@@ -43,7 +43,6 @@ import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 
 public class DefaultTransferHandler extends TransferHandler {
 
-	private static final long serialVersionUID = 1L;
 	private final Component parent;
 	private boolean result = false;
 

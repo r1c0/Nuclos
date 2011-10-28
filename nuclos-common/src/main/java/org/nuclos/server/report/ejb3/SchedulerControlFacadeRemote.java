@@ -16,18 +16,16 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.report.ejb3;
 
-import javax.ejb.Remote;
-
 import org.nuclos.common2.exception.CommonBusinessException;
 
-@Remote
+// @Remote
 public interface SchedulerControlFacadeRemote {
 
-	public abstract void deleteJob(String jobName) throws CommonBusinessException;
+	void deleteJob(String jobName) throws CommonBusinessException;
 
-	public abstract void unscheduleJob(String jobName) throws CommonBusinessException;
+	void unscheduleJob(String jobName) throws CommonBusinessException;
 
-	public abstract String[] getJobNames();
+	String[] getJobNames();
 
 	/**
 	 * Check if job is scheduled
@@ -35,7 +33,7 @@ public interface SchedulerControlFacadeRemote {
 	 * @param jobName
 	 * @return
 	 */
-	public boolean isScheduled(String jobName);
+	boolean isScheduled(String jobName);
 
-	public abstract String getSchedulerSummary();
+	String getSchedulerSummary();
 }

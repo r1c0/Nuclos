@@ -28,11 +28,6 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
  */
 public class NucletContentCustomComponentTreeNode extends DefaultNucletContentEntryTreeNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public NucletContentCustomComponentTreeNode(EntityObjectVO eo) {
 		super(eo);
 	}

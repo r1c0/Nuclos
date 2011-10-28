@@ -81,8 +81,6 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAbstractStep implements ChangeListener, ActionListener {
 
-	private static final long serialVersionUID = 1L;
-
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeCommonPropertiesStep.class);
 
 	private final static String[] JAVA_TYPES = { String.class.getName(),
@@ -356,7 +354,6 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 		});
 
 		btnDataTyp.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
@@ -586,11 +583,11 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
         }
         catch(CommonValidationException e) {
 	        Errors.getInstance().showExceptionDialog(this, e);
-	        throw new InvalidStateException();
+	        throw new InvalidStateException(e.toString());
         }
         catch (Exception e) {
         	Errors.getInstance().showExceptionDialog(this, e);
-        	throw new InvalidStateException();
+        	throw new InvalidStateException(e.toString());
 		}
 		super.applyState();
 		model.setName(tfName.getText());

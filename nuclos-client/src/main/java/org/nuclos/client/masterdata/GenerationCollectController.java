@@ -24,6 +24,7 @@ import java.util.HashSet;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.GeneratorDelegate;
 import org.nuclos.client.main.mainframe.MainFrameTab;
@@ -53,6 +54,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class GenerationCollectController extends MasterDataCollectController {
 
+	private static final Logger LOG = Logger.getLogger(GenerationCollectController.class);
+
 	private GenerationRulesController generationRulesController;
 
 	/**
@@ -75,7 +78,6 @@ public class GenerationCollectController extends MasterDataCollectController {
 		//getSelectedCollectable().getField("targetModule").   //?!
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void setupEditPanelForDetailsTab() {
 		super.setupEditPanelForDetailsTab();
@@ -107,7 +109,6 @@ public class GenerationCollectController extends MasterDataCollectController {
 	 * @return
 	 * @throws NuclosBusinessException
 	 */
-	@SuppressWarnings("deprecation")
 	@Override
 	protected CollectableMasterDataWithDependants insertCollectable(CollectableMasterDataWithDependants clctNew) throws CommonBusinessException {
 		final DependantMasterDataMap mpmdvoDependants = org.nuclos.common.Utils.clearIds(this.getAllSubFormData(null).toDependantMasterDataMap());
@@ -196,9 +197,8 @@ public class GenerationCollectController extends MasterDataCollectController {
 			}
 		}
 		catch(CommonBusinessException e) {
-			e.printStackTrace();
+			LOG.warn("runWithNewCollectableWithSomeFields: " + e);
 		}
-
 	}
 
 	/**

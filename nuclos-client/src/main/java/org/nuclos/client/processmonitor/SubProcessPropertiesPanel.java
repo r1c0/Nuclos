@@ -51,12 +51,7 @@ import org.nuclos.server.statemodel.valueobject.StateModelVO;
 
 public class SubProcessPropertiesPanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final SubProcessPanelModel model = new SubProcessPanelModel();
-
 
 	public SubProcessPropertiesPanel() {
 		super(new BorderLayout());
@@ -132,7 +127,8 @@ public class SubProcessPropertiesPanel extends JPanel {
 			public void itemStateChanged(ItemEvent e) {
 				Object obj = cmbSubProcessUsageCriteria.getSelectedItem();
 				if(obj instanceof SubProcessUsageCriteriaVO) {
-					model.setSubProcessUsageCriteria(((SubProcessUsageCriteriaVO)obj).getId());
+					// TODO: Is this really needed? (tp)
+					model.setSubProcessUsageCriteria(null);
 				}
 			}
 			

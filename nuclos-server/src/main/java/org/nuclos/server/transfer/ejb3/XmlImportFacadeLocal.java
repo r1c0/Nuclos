@@ -18,9 +18,6 @@ package org.nuclos.server.transfer.ejb3;
 
 import java.io.IOException;
 
-import javax.ejb.CreateException;
-import javax.ejb.Local;
-
 import org.dom4j.DocumentException;
 
 import org.nuclos.common2.exception.CommonCreateException;
@@ -28,7 +25,7 @@ import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common.NuclosBusinessException;
 
-@Local
+// @Local
 public interface XmlImportFacadeLocal {
 
 	/**
@@ -44,9 +41,9 @@ public interface XmlImportFacadeLocal {
 	 * @throws ElisaBusinessException
 	 * @jboss.method-attributes read-only = "true"
 	 */
-	public abstract void xmlImport(String sEntityName,
+	void xmlImport(String sEntityName,
 		org.nuclos.common2.File importFile) throws IOException, DocumentException,
-		CommonCreateException, CommonPermissionException, CreateException,
+		CommonCreateException, CommonPermissionException,
 		NuclosBusinessException, CommonFinderException;
 
 }

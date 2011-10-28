@@ -384,7 +384,6 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @param sEntity
 	 * @param collmdvoDependants
 	 */
-	@SuppressWarnings("deprecation")
 	private void setDependants(Integer iModuleId, Integer iGenericObjectId, String sEntity, Collection<MasterDataVO> collmdvoDependants) {
 		final RuleObjectContainerCVO roccvo;
 		try {
@@ -1359,7 +1358,6 @@ public class RuleInterface extends CustomCodeInterface {
 	 * changes the state for the current generic object
 	 * @param iNumeral requested subsequent state
 	 */
-	@SuppressWarnings("deprecation")
 	public void changeState(int iNumeral) throws NuclosBusinessRuleException, CommonFinderException {
 		if (this.getMasterData() != null) {
 			throw new NuclosFatalException("rule.interface.error.6");
@@ -1388,7 +1386,6 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @param iGenericObjectId generic object value object
 	 * @param iNumeral requested subsequent state
 	 */
-	@SuppressWarnings("deprecation")
 	public void changeState(Integer iGenericObjectId, int iNumeral) throws NuclosBusinessRuleException, CommonFinderException {
 		try {
 			this.getGenericObject(iGenericObjectId);
@@ -1506,7 +1503,6 @@ public class RuleInterface extends CustomCodeInterface {
 			throw new NuclosFatalException("rule.interface.error.6");
 				//"Statuswecksel innerhalb der Stammdaten ist unzul\u00e4ssig. Die Stammdaten haben kein Statusmodell.");
 		}
-
 		return this.getRuleInterface().isStateChangePossible(iGenericObjectId, state);
 	}
 
@@ -2512,7 +2508,6 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @param attachment
 	 * @param comment
 	 */
-	@SuppressWarnings("unchecked")
 	public void storeAttachment(final String entity, final Integer iObjectId, final NuclosFile attachment, final String comment) {
 		this.storeAttachment(entity, iObjectId, NuclosEntity.GENERALSEARCHDOCUMENT.getEntityName(), "genericObject", "file", attachment, new Pair<String, Object>("comment", comment));
 	}
@@ -2745,7 +2740,6 @@ public class RuleInterface extends CustomCodeInterface {
         catch(NuclosFileImportException e) {
 	        throw new NuclosBusinessRuleException(e);
         }
-
 		return new NuclosFileImportResult();
 	}
 

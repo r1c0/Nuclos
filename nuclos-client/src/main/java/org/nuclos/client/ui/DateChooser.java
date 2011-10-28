@@ -90,11 +90,6 @@ import org.nuclos.common2.exception.CommonValidationException;
  */
 public class DateChooser extends JComponent implements Serializable {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private static final Logger log = Logger.getLogger(DateChooser.class);
 
 	/**
@@ -300,10 +295,6 @@ public class DateChooser extends JComponent implements Serializable {
 	private void setupControl(int iColumns) {
 		this.setLayout(new BorderLayout(2, 0));
 		this.tfDate = new TextFieldWithButton(Icons.getInstance().getIconTextFieldButtonCalendar()) {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			/**
 			 * shows the dynamic tooltip text, if a tooltiptextprovider was set.
@@ -335,10 +326,6 @@ public class DateChooser extends JComponent implements Serializable {
 		pnlHolder.add(this.tfDate, BorderLayout.CENTER);
 		this.btnDropDown = newArrowButton();
 		final AbstractAction actOpenCalendar = new AbstractAction() {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
             public void actionPerformed(ActionEvent ev) {
@@ -584,10 +571,7 @@ public class DateChooser extends JComponent implements Serializable {
 	 * Inner class representing the calendar popup window
 	 */
 	private class PopupCalendar extends JDialog {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
+
 		private JLabel[] alabDay = null;
 		private GregorianCalendar todaysCalendar;
 		private JLabel labMonth;
@@ -705,10 +689,6 @@ public class DateChooser extends JComponent implements Serializable {
 			final String sKeyCTRLRight = "CTRLRight";
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.CTRL_MASK), sKeyCTRLRight);
 			pnlMain.getActionMap().put(sKeyCTRLRight, new AbstractAction() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
                 public void actionPerformed(ActionEvent e) {
@@ -718,10 +698,6 @@ public class DateChooser extends JComponent implements Serializable {
 			final String sKeyALTRight = "ALTRight";
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_MASK), sKeyALTRight);
 			pnlMain.getActionMap().put(sKeyALTRight, new AbstractAction() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
                 public void actionPerformed(ActionEvent e) {
@@ -731,10 +707,6 @@ public class DateChooser extends JComponent implements Serializable {
 			final String sKeyRight = "Right";
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), sKeyRight);
 			pnlMain.getActionMap().put(sKeyRight, new AbstractAction() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
                 public void actionPerformed(ActionEvent e) {
@@ -744,10 +716,6 @@ public class DateChooser extends JComponent implements Serializable {
 			final String sKeyCTRLLeft = "CTRLLeft";
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.CTRL_MASK), sKeyCTRLLeft);
 			pnlMain.getActionMap().put(sKeyCTRLLeft, new AbstractAction() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
                 public void actionPerformed(ActionEvent e) {
@@ -757,10 +725,6 @@ public class DateChooser extends JComponent implements Serializable {
 			final String sKeyALTLeft = "ALTLeft";
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_MASK), sKeyALTLeft);
 			pnlMain.getActionMap().put(sKeyALTLeft, new AbstractAction() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
                 public void actionPerformed(ActionEvent e) {
@@ -770,10 +734,6 @@ public class DateChooser extends JComponent implements Serializable {
 			final String sKeyLeft = "Left";
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), sKeyLeft);
 			pnlMain.getActionMap().put(sKeyLeft, new AbstractAction() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
                 public void actionPerformed(ActionEvent e) {
@@ -783,10 +743,6 @@ public class DateChooser extends JComponent implements Serializable {
 			final String sKeyUp = "Up";
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), sKeyUp);
 			pnlMain.getActionMap().put(sKeyUp, new AbstractAction() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
                 public void actionPerformed(ActionEvent e) {
@@ -796,10 +752,6 @@ public class DateChooser extends JComponent implements Serializable {
 			final String sKeyDown = "Down";
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), sKeyDown);
 			pnlMain.getActionMap().put(sKeyDown, new AbstractAction() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
                 public void actionPerformed(ActionEvent e) {
@@ -809,10 +761,6 @@ public class DateChooser extends JComponent implements Serializable {
 			final String sKeyEnter = "Enter";
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), sKeyEnter);
 			pnlMain.getActionMap().put(sKeyEnter, new AbstractAction() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
                 public void actionPerformed(ActionEvent e) {
@@ -824,10 +772,6 @@ public class DateChooser extends JComponent implements Serializable {
 			final String sKeyEscape = "Escape";
 			pnlMain.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), sKeyEscape);
 			pnlMain.getActionMap().put(sKeyEscape, new AbstractAction() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
                 public void actionPerformed(ActionEvent e) {

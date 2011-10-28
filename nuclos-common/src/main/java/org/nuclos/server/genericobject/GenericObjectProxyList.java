@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeRemote;
@@ -38,6 +39,8 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO
  * @version 00.01.000
  */
 public class GenericObjectProxyList extends AbstractProxyList<Integer, GenericObjectWithDependantsVO> {
+
+	private static final Logger LOG = Logger.getLogger(GenericObjectProxyList.class);
 
 	private static GenericObjectFacadeRemote facade;
 

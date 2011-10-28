@@ -31,8 +31,6 @@ import javax.swing.table.AbstractTableModel;
  */
 public abstract class AbstractListTableModel<R> extends AbstractTableModel implements Iterable<R> {
 
-	private static final long serialVersionUID = 1L;
-
 	private List<R> lstRows;
 
 	public AbstractListTableModel() {

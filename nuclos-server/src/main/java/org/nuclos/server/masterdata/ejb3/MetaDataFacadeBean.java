@@ -38,10 +38,8 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.EntityTreeViewVO;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosBusinessException;
@@ -134,15 +132,15 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 * <br>Created by Novabit Informationssysteme GmbH
 * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-@Stateless
-@Local(MetaDataFacadeLocal.class)
-@Remote(MetaDataFacadeRemote.class)
+// @Stateless
+// @Local(MetaDataFacadeLocal.class)
+// @Remote(MetaDataFacadeRemote.class)
 @Transactional
 public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFacadeRemote, MetaDataFacadeLocal {
 
-	private final MasterDataFacadeHelper helper = new MasterDataFacadeHelper();
+	private static final Logger LOG = Logger.getLogger(MetaDataFacadeBean.class);
 
-	//LocaleFacadeLocal localefacade = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class, "localServiceLocal", true);
+	private final MasterDataFacadeHelper helper = new MasterDataFacadeHelper();
 
 	private final static String ENTITYFIELD_TABLE = "t_ad_masterdata_field";
 
@@ -701,7 +699,8 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				DataBaseHelper.getDbAccess().execute(ds);
 				lstDbChangesOkay.add(ds);
 			}
-			catch(DbException ex) {
+			catch(DbException e) {
+				LOG.debug("createOrModifyEntity: " + e);
 				dbchangeOkay = false;
 				lstDbChangesNotOkay.add(ds);
 			}
@@ -734,8 +733,9 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 					try {
 						DataBaseHelper.getDbAccess().execute(db);
 					}
-					catch(DbException ex)  {
+					catch(DbException e)  {
 						// ignore
+						LOG.info("createOrModifyEntity: " + e);
 					}
 				}
 				StringBuffer sb = new StringBuffer();
@@ -1018,8 +1018,9 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			try {
 				DataBaseHelper.getDbAccess().execute(ds);
 			}
-			catch(DbException ex) {
+			catch(DbException e) {
 				// ignore
+				LOG.info("rollBackDBChanges: " + e);
 			}
 		}
 	}
@@ -1167,6 +1168,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				}
 				catch(SQLException e) {
 					// do noting here
+					LOG.info("getTablesFromSchema: " + e);
 				}
 		}
 
@@ -1220,15 +1222,12 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				mdFieldVO.setField("foreignentityfield", null);
 				lstFields.add(mdFieldVO);
 			}
-
 			rsCols.close();
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			LOG.info("transformTable: " + e, e);
 		}
-
 		return lstFields;
-
 	}
 
 	/**
@@ -1326,7 +1325,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 		}
 		catch(SQLException e) {
-			e.printStackTrace();
+			LOG.info("transferTable: " + e, e);
 		}
 		finally {
 			if(connect != null)
@@ -1335,6 +1334,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				}
 				catch(SQLException e) {
 					// do noting here
+					LOG.info("transferTable: " + e);
 				}
 		}
 		return metaNew;
@@ -1416,8 +1416,9 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			Long count = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 			return count == 0L;
 		}
-		catch(Exception ex) {
-				return false;
+		catch(Exception e) {
+			LOG.info("isChangeDatabaseColumnToNotNullableAllowed: " + e);	
+			return false;
 		}
 	}
 
@@ -1445,8 +1446,9 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			List<Long> result = DataBaseHelper.getDbAccess().executeQuery(query);
 			return result.isEmpty();
 		}
-		catch(Exception ex) {
-				return false;
+		catch(Exception e) {
+			LOG.info("isChangeDatabaseColumnToUniqueAllowed: " + e);	
+			return false;
 		}
 	}
 

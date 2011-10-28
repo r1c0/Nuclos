@@ -34,7 +34,6 @@ import org.nuclos.server.autosync.XMLEntities;
  * An implementation for accessing the system (i.e. JSON, like 'masterdata.json')
  * meta data information on the server side.
  */
-@SuppressWarnings("deprecation")
 public class SystemMetaDataProvider implements MetaDataProvider {
 
 	private Map<String, SystemEntityMetaDataVO> entities = new HashMap<String, SystemEntityMetaDataVO>();

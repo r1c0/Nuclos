@@ -96,17 +96,14 @@ import org.nuclos.common2.exception.PreferencesException;
  */
 public class GenericObjectTaskView extends TaskView implements IMainFrameTabClosableController, NuclosDropTargetVisitor{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
-	final JButton btnRefresh = new JButton();
-	final JMenuItem btnPrint = new JMenuItem();
-	final JMenuItem btnRename = new JMenuItem();
-//	final JButton btnSelectColumns = new JButton();
+	private static final Logger LOG = Logger.getLogger(GenericObjectTaskView.class);
 
-	final PopupButton popupExtras = new PopupButton(CommonLocaleDelegate.getMessage("PopupButton.Extras","Extras"));
+	private final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
+	private final JButton btnRefresh = new JButton();
+	private final JMenuItem btnPrint = new JMenuItem();
+	private final JMenuItem btnRename = new JMenuItem();
+
+	private final PopupButton popupExtras = new PopupButton(CommonLocaleDelegate.getMessage("PopupButton.Extras","Extras"));
 
 	private final JScrollPane scrlpn = new JScrollPane();
 	private final JTable tbl = new CommonJTable();
@@ -156,6 +153,18 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 		setupDragDrop();
 	}
 	
+	JButton getRefreshButton() {
+		return btnRefresh;
+	}
+	
+	JMenuItem getPrintMenuItem() {
+		return btnPrint;
+	}
+	
+	JMenuItem getRenameMenuItem() {
+		return btnRename;
+	}
+	
 	protected void setupDragDrop() {		
 		OneDropNuclosDropTargetListener listener = new OneDropNuclosDropTargetListener(this, ClientParameterProvider.getInstance().getIntValue(ParameterProvider.KEY_DRAG_CURSOR_HOLDING_TIME, 600));		
 		DropTarget drop = new DropTarget(tbl, listener);
@@ -169,7 +178,6 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 		return this.tbl;
 	}
 
-	@SuppressWarnings("unchecked")
 	public CollectableTableModel<Collectable> getTableModel() {
 		return (CollectableTableModel<Collectable>) this.tbl.getModel();
 	}
@@ -368,8 +376,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 		}
 		catch(Exception e) {
 			throw new NuclosFatalException(e);
-		}
-		
+		}	
 	}
 
 	@Override

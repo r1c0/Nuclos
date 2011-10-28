@@ -50,6 +50,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.ui.Errors;
@@ -73,10 +74,8 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttributeAbstractStep {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeRelationShipStep.class);
+
 	JLabel lbEntity;
 	JComboBox cbxEntity;
 
@@ -204,7 +203,8 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 						try {
 							checkReferenceField();
 						}
-						catch(Exception ex) {
+						catch(Exception e1) {
+							LOG.info("itemStateChanged failed: " + e1, e1);
 							tfAlternativeLabel.setText("");
 							NuclosEntityAttributeRelationShipStep.this.model.getAttribute().setField(null);
 						}

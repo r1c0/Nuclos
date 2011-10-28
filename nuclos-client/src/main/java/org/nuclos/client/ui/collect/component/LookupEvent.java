@@ -33,10 +33,6 @@ import org.nuclos.common.collect.collectable.Collectable;
  */
 
 public class LookupEvent extends CollectableComponentEvent {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	private final Collectable clctSelected;
 	

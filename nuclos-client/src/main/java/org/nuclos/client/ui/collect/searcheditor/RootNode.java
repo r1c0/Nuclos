@@ -50,11 +50,6 @@ import javax.swing.tree.MutableTreeNode;
  */
 public class RootNode extends SearchConditionTreeNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public RootNode() {
 	}
 
@@ -150,7 +145,6 @@ public class RootNode extends SearchConditionTreeNode {
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void add(MutableTreeNode newChild) {
 		if(this.getChildCount() == 0) {

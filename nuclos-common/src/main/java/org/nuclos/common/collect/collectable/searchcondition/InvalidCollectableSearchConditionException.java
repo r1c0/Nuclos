@@ -29,10 +29,6 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 
 public class InvalidCollectableSearchConditionException extends CommonBusinessException {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	public InvalidCollectableSearchConditionException(String sMessage) {
 		super(sMessage);

@@ -41,10 +41,6 @@ import org.pietschy.wizard.InvalidStateException;
  */
 public class TargetPathWizardStep extends AbstractWizardStep implements ActionListener, Constants {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private JTextField txtTargetPath = new JTextField();
 	private JButton btnSelectPath = new JButton();
 

@@ -1,4 +1,4 @@
-//Copyright (C) 2010  Novabit Informationssysteme GmbH
+//Copyright (C) 2011  Novabit Informationssysteme GmbH
 //
 //This file is part of Nuclos.
 //

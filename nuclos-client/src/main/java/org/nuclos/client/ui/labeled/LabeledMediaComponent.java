@@ -33,11 +33,6 @@ import org.jdesktop.jxlayer.JXLayer;
 
 public abstract class LabeledMediaComponent extends LabeledComponent {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public LabeledMediaComponent() {
 		super();
 	}

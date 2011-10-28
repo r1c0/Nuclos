@@ -23,11 +23,6 @@ import org.nuclos.server.resource.ejb3.ResourceFacadeRemote;
 
 public class ResourceFile extends DocumentFileBase {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public ResourceFile(String sFileName, Integer iDocumentFileId) {
 		super(sFileName, iDocumentFileId);
 	}

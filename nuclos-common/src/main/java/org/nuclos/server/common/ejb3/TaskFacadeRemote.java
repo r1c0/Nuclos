@@ -20,8 +20,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import javax.ejb.Remote;
-
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -32,7 +30,7 @@ import org.nuclos.server.common.valueobject.TaskVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 
-@Remote
+// @Remote
 public interface TaskFacadeRemote {
 
 	/**
@@ -41,7 +39,7 @@ public interface TaskFacadeRemote {
 	 * @param bUnfinishedOnly get only unfinished tasks
 	 * @return collection of task value objects
 	 */
-	public abstract Collection<TaskVO> getTasksByOwner(String sOwner,
+	Collection<TaskVO> getTasksByOwner(String sOwner,
 		boolean bUnfinishedOnly, Integer iPriority)
 		throws NuclosBusinessException;
 
@@ -51,7 +49,7 @@ public interface TaskFacadeRemote {
 	 * @param bDelegatedOnly get only delegated tasks
 	 * @return collection of task value objects
 	 */
-	public abstract Collection<TaskVO> getTasksByDelegator(String sDelegator,
+	Collection<TaskVO> getTasksByDelegator(String sDelegator,
 		boolean bUnfinishedOnly, Integer iPriority)
 		throws NuclosBusinessException;
 
@@ -61,24 +59,16 @@ public interface TaskFacadeRemote {
 	 * @param bUnfinishedOnly get only unfinished tasks
 	 * @return collection of task value objects
 	 */
-	public abstract Collection<TaskVO> getTasks(String sUser,
+	Collection<TaskVO> getTasks(String sUser,
 		boolean bUnfinishedOnly, Integer iPriority)
 		throws NuclosBusinessException;
-
-//	/**
-//	 * get task vo for a given task id
-//	 * @param iId id of task
-//	 * @return task value object
-//	 */
-//	public abstract TaskVO get(Integer iId) throws CommonFinderException,
-//		CommonPermissionException, NuclosBusinessException;
 
 	/**
 	 * create a new task in the database
 	 * @param taskvo containing the task data
 	 * @return same task as value object
 	 */
-	public abstract TaskVO create(TaskVO taskvo, Set<Long> stOwners)
+	TaskVO create(TaskVO taskvo, Set<Long> stOwners)
 		throws CommonValidationException, NuclosBusinessException,
 		CommonPermissionException;
 
@@ -88,7 +78,7 @@ public interface TaskFacadeRemote {
 	 * @param splitforowners true/false - shows if this task will be transformed to tasks for each owner
 	 * @return new task ids
 	 */
-	public abstract Collection<TaskVO> create(TaskVO taskvo, Set<Long> stOwners, boolean splitforowners)
+	Collection<TaskVO> create(TaskVO taskvo, Set<Long> stOwners, boolean splitforowners)
 		throws CommonValidationException, NuclosBusinessException,
 		CommonPermissionException;
 
@@ -98,7 +88,7 @@ public interface TaskFacadeRemote {
 	 * @param splitforowners true/false - shows if this task will be transformed to tasks for each owner
 	 * @return new task ids
 	 */
-	public abstract Collection<TaskVO> create(MasterDataWithDependantsVO mdvo, Set<Long> stOwners, boolean splitforowners)
+	Collection<TaskVO> create(MasterDataWithDependantsVO mdvo, Set<Long> stOwners, boolean splitforowners)
 		throws CommonValidationException, NuclosBusinessException,
 		CommonPermissionException;
 
@@ -108,7 +98,7 @@ public interface TaskFacadeRemote {
 	 * @param splitforowners true/false - shows if this task will be transformed to tasks for each owner
 	 * @return new task id
 	 */
-	public abstract Collection<TaskVO> modify(TaskVO taskvo, Set<Long> collOwners, boolean splitforowners)
+	Collection<TaskVO> modify(TaskVO taskvo, Set<Long> collOwners, boolean splitforowners)
 		throws CommonFinderException, CommonStaleVersionException,
 		CommonValidationException, NuclosBusinessException;
 
@@ -118,7 +108,7 @@ public interface TaskFacadeRemote {
 	 * @param splitforowners true/false - shows if this task will be transformed to tasks for each owner
 	 * @return new task id
 	 */
-	public abstract Collection<TaskVO> modify(MasterDataWithDependantsVO mdvo, Set<Long> collOwners, boolean splitforowners)
+	Collection<TaskVO> modify(MasterDataWithDependantsVO mdvo, Set<Long> collOwners, boolean splitforowners)
 		throws CommonFinderException, CommonStaleVersionException,
 		CommonValidationException, NuclosBusinessException;
 
@@ -127,7 +117,7 @@ public interface TaskFacadeRemote {
 	 * @param taskvo containing the task data
 	 * @return new task id
 	 */
-	public abstract TaskVO modify(TaskVO taskvo, Set<Long> collOwners)
+	TaskVO modify(TaskVO taskvo, Set<Long> collOwners)
 		throws CommonFinderException, CommonStaleVersionException,
 		CommonValidationException, NuclosBusinessException;
 
@@ -135,26 +125,26 @@ public interface TaskFacadeRemote {
 	 * delete task from database
 	 * @param taskvo containing the task data
 	 */
-	public abstract void remove(TaskVO taskvo) throws CommonFinderException,
+	void remove(TaskVO taskvo) throws CommonFinderException,
 		CommonRemoveException, CommonStaleVersionException,
 		NuclosBusinessException;
 
-	public abstract List<String> getOwnerNamesByTask(TaskVO taskvo);
+	List<String> getOwnerNamesByTask(TaskVO taskvo);
 
-	public abstract Set<Long> getOwnerIdsByTask(final Long iTaskId);
+	Set<Long> getOwnerIdsByTask(final Long iTaskId);
 
 	/**
 	 * get user id by user name
 	 * @param sUserName
 	 * @return id user id
 	 */
-	public abstract List<String> getUserNamesById(Set<Long> stUserIds);
+	List<String> getUserNamesById(Set<Long> stUserIds);
 
 	/**
 	 * get user as MasterDataVO
 	 * @param oId user id
 	 */
-	public abstract MasterDataVO getUserAsVO(Object oId)
+	MasterDataVO getUserAsVO(Object oId)
 		throws CommonFinderException;
 
    /**
@@ -164,7 +154,7 @@ public interface TaskFacadeRemote {
     * @param visibility
     * @return collection of task value objects
     */
-	public Collection<TaskVO> getTasksByVisibilityForOwners(List<String> owners,
+	Collection<TaskVO> getTasksByVisibilityForOwners(List<String> owners,
 		Integer visibility, boolean bUnfinishedOnly, Integer iPriority)
 		throws NuclosBusinessException;
 
@@ -173,6 +163,6 @@ public interface TaskFacadeRemote {
 	 * @param sUserName
 	 * @return id user id
 	 */
-	public abstract Long getUserId(String sUserName);
+	Long getUserId(String sUserName);
 
 }

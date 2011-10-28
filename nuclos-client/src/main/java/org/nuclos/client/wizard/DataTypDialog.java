@@ -39,37 +39,35 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.wizard.model.DataTyp;
 
 public class DataTypDialog extends JDialog{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(DataTypDialog.class);
 
-	DataTyp dataTyp;
+	private DataTyp dataTyp;
 	
-	JLabel lbBaseDatatyp;
-	JComboBox cbxBaseDatatyp;
-	JLabel lbDatatyp;
-	JTextField tfDatatyp;
-	JLabel lbFieldWidth;
-	JTextField tfFieldWidth;
-	JLabel lbFieldPrecision;
-	JTextField tfFieldPrecision;
-	JLabel lbInputFormat;
-	JTextField tfInputFormat;
-	JLabel lbOutputFormat;
-	JTextField tfOutputFormat;
-	List<DataTyp> lstDataTyp;
+	private JLabel lbBaseDatatyp;
+	private JComboBox cbxBaseDatatyp;
+	private JLabel lbDatatyp;
+	private JTextField tfDatatyp;
+	private JLabel lbFieldWidth;
+	private JTextField tfFieldWidth;
+	private JLabel lbFieldPrecision;
+	private JTextField tfFieldPrecision;
+	private JLabel lbInputFormat;
+	private JTextField tfInputFormat;
+	private JLabel lbOutputFormat;
+	private JTextField tfOutputFormat;
+	private List<DataTyp> lstDataTyp;
 	
-	JLabel lbInfo;
+	private JLabel lbInfo;
 	
-	JButton btnOK;
-	JButton btnCancel;
+	private JButton btnOK;
+	private JButton btnCancel;
 	
-	boolean blnOK;
+	private boolean blnOK;
 	
 	
 	public DataTypDialog (Dialog owner, String title, boolean modal) {
@@ -132,17 +130,13 @@ public class DataTypDialog extends JDialog{
 					}
 				}
 				catch(BadLocationException e1) {
+					LOG.warn("doSomeWork: " + e1);
 				}
 			}
 		});
 		
 		tfFieldWidth.setDocument(new PlainDocument() {
 			
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
 				if (str.matches("[0-9]")) {
@@ -156,11 +150,6 @@ public class DataTypDialog extends JDialog{
 		tfFieldPrecision.setHorizontalAlignment(SwingConstants.RIGHT);
 		tfFieldPrecision.setDocument(new PlainDocument() {
 			
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
 				DataTyp typ =  (DataTyp)cbxBaseDatatyp.getSelectedItem();

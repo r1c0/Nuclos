@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
@@ -104,12 +103,7 @@ import org.nuclos.server.statemodel.valueobject.TransitionLayout;
  */
 public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, FocusListener {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	private final Logger log = Logger.getLogger(this.getClass());
+	private static final Logger LOG = Logger.getLogger(ProcessMonitorEditor.class);
 
 	/**
 	 * id of the starting state
@@ -117,10 +111,6 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 	private static final Integer STARTING_STATE_ID = -666;
 
 	private class SelectAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		SelectAction() {
 			super("Auswahl", Icons.getInstance().getIconSelectObject());
@@ -138,10 +128,6 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 	 * action when a new SubProcess is inserted
 	 */
 	private class NewSubProcessAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		NewSubProcessAction() {
 			super("Neuer Teilprozess", Icons.getInstance().getIconState());
@@ -158,10 +144,6 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 	 * action when a new SubProcess Transition is inserted
 	 */
 	private class NewTransitionAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		NewTransitionAction() {
 			super("Neuer Prozess\u00fcbergang ", Icons.getInstance().getIconStateTransition());
@@ -176,10 +158,6 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 	
 
 	private class NewNoteAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		NewNoteAction() {
 			super("Neue Bemerkung", Icons.getInstance().getIconStateNewNote());
@@ -193,10 +171,6 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 	}
 
 	private class DeleteAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		DeleteAction() {
 			super("Auswahl l\u00f6schen", Icons.getInstance().getIconDelete16());
@@ -209,10 +183,6 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 	}
 
 	private class ZoomInAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		ZoomInAction() {
 			super("Zoom +", Icons.getInstance().getIconZoomIn());
@@ -225,10 +195,6 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 	}
 
 	private class ZoomOutAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		ZoomOutAction() {
 			super("Zoom -", Icons.getInstance().getIconZoomOut());
@@ -241,10 +207,6 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 	}
 
 	private class PrintAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		PrintAction() {
 			super("Drucken...", Icons.getInstance().getIconPrint16());
@@ -709,14 +671,11 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 
 	/**
 	 * adds listeners for the state (properties) panel.
-	 */
-	@SuppressWarnings("unused")
-	private void addStatePanelListeners() {
-		
+	private void addStatePanelListeners() {		
 		pnlProperties.getSubProcessPropertiesPanel().getModel().docName.addDocumentListener(nameDocumentListener);
 		pnlProperties.getSubProcessPropertiesPanel().getModel().docDescription.addDocumentListener(descriptionDocumentListener);
-		
 	}
+	 */
 	
 	/**
 	 * adds the listeners for the subprocess (properties) panel.
@@ -793,18 +752,18 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 
 		if (pnlShapeViewer.getModel().isMultiSelected()) {
 			/** @todo this seems never to be called */
-			log.debug("selectionChanged: multi selection");
+			LOG.debug("selectionChanged: multi selection");
 			/** @todo show rights editor for multiple states */
 			pnlProperties.setPanel("None");
 			shapeSelected = null;
 		}
 		else if (shape == null) {
-			log.debug("selectionChanged: nothing selected");
+			LOG.debug("selectionChanged: nothing selected");
 			pnlProperties.setPanel("None");
 			shapeSelected = null;
 		}
 		else if (shape instanceof NoteShape) {
-			log.debug("selectionChanged: single note shape selected");
+			LOG.debug("selectionChanged: single note shape selected");
 			pnlProperties.setPanel("Note");
 			shapeSelected = shape;
 
@@ -814,7 +773,7 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 			this.addNotePanelListeners();
 		}
 		else if (shape instanceof AbstractConnector) {
-			log.debug("selectionChanged: single transition shape selected");
+			LOG.debug("selectionChanged: single transition shape selected");
 			pnlProperties.setPanel("Transition");
 			shapeSelected = shape;
 			
@@ -859,7 +818,7 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 		 * when subprocessshape is selected
 		 */
 		else if(shape instanceof SubProcessShape) {
-			log.debug("selectionChanged: single state shape selected");
+			LOG.debug("selectionChanged: single state shape selected");
 			pnlProperties.setPanel("SubProcess");
 			shapeSelected = shape;
 			final SubProcessShape subshapeSelected = (SubProcessShape) shape;
@@ -881,7 +840,7 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 			addSubProcessPanelListeners();
 		}
 		else {
-			log.debug("selectionChanged: something unknown was selected");
+			LOG.debug("selectionChanged: something unknown was selected");
 			pnlProperties.setPanel("None");
 			shapeSelected = null;
 		}
@@ -889,7 +848,7 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 
 	private void handlePreviousSelection() {
 		if (shapeSelected instanceof StateShape) {
-			log.debug("State shape deselected.");
+			LOG.debug("State shape deselected.");
 
 			// get user rights from properties panel and store them in the selected state's vo:
 //			final StateShape stateshape = (StateShape) shapeSelected;
@@ -901,28 +860,27 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 			this.removeSubProcessPanelListeners(); 
 		}
 		else if (shapeSelected instanceof NoteShape) {
-			log.debug("Note shape deselected.");
+			LOG.debug("Note shape deselected.");
 			this.removeNotePanelListeners();
 		}
 		else {
-			log.debug("Something unknown was deselected.");
+			LOG.debug("Something unknown was deselected.");
 			// do nothing
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private void setupSubforms(StateVO statevo) {
-		log.debug("setup subforms");
+		LOG.debug("setup subforms");
 		/** @todo this is just a test - correct this */
 	}
 
 	private void closeSubForms() {
-		log.debug("close subforms");
+		LOG.debug("close subforms");
 	}
 
 	@Override
     public void multiSelectionChanged(Collection<Shape> collShapes) {
-		log.debug("multiSelectionChanged");
+		LOG.debug("multiSelectionChanged");
 
 		/** @todo this is always called when selecting a shape using "rubberbanding", even if a single shape
 		 * was selected. In the latter case, selectionChanged() should be called for the selected shape. */
@@ -1088,7 +1046,7 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 		}
 	}
 
-	public void removeRule(SortedRuleVO vo) throws CreateException, RemoteException {
+	public void removeRule(SortedRuleVO vo) throws RemoteException {
 		if (shapeSelected != null && shapeSelected instanceof StateTransition) {
 			((StateTransition) shapeSelected).removeRule(vo.getId());
 			pnlProperties.getTransitionRulePanel().getModel().setRules(RuleRepository.getInstance().selectRulesById(((StateTransition) shapeSelected).getRuleIdsWithRunAfterwards()));
@@ -1097,7 +1055,7 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 		}
 	}
 
-	public void addRule(SortedRuleVO vo) throws CreateException, RemoteException {
+	public void addRule(SortedRuleVO vo) throws RemoteException {
 		if (shapeSelected != null && shapeSelected instanceof StateTransition) {
 			((StateTransition) shapeSelected).addRule(vo.getId(), vo.isRunAfterwards());
 			pnlProperties.getTransitionRulePanel().getModel().setRules(RuleRepository.getInstance().selectRulesById(((StateTransition) shapeSelected).getRuleIdsWithRunAfterwards()));
@@ -1106,7 +1064,7 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 		}
 	}
 
-	public void addRole(MasterDataVO mdvo) throws CreateException, RemoteException {
+	public void addRole(MasterDataVO mdvo) throws RemoteException {
 		if (shapeSelected != null && shapeSelected instanceof StateTransition) {
 			((StateTransition) shapeSelected).addRole(mdvo.getIntId());
 			pnlProperties.getTransitionRolePanel().getModel().setRoles(RoleRepository.getInstance().selectRolesById(((StateTransition) shapeSelected).getRoles()));
@@ -1115,7 +1073,7 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 		}
 	}
 
-	public void removeRole(MasterDataVO mdvo) throws CreateException, RemoteException {
+	public void removeRole(MasterDataVO mdvo) throws RemoteException {
 		if (shapeSelected != null && shapeSelected instanceof StateTransition) {
 			((StateTransition) shapeSelected).removeRole(mdvo.getIntId());
 			pnlProperties.getTransitionRolePanel().getModel().setRoles(RoleRepository.getInstance().selectRolesById(((StateTransition) shapeSelected).getRoles()));
@@ -1216,7 +1174,7 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 				if (iSourceStateId != null) {
 					final SubProcessEntry entry = mpShapes.get(iSourceStateId);
 					if (start < 0) {
-						log.error("Startpunkt ist f\u00e4lschlicherweise < 0 (" + start + ", readModel())");
+						LOG.error("Startpunkt ist f\u00e4lschlicherweise < 0 (" + start + ", readModel())");
 						start = 0;
 					}
 					processtransition.setSourceConnection(new ConnectionPoint(entry.getShape(), start));
@@ -1224,7 +1182,7 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 				if (iTargetStateId != null) {
 					final SubProcessEntry entry = mpShapes.get(iTargetStateId);
 					if (end < 0) {
-						log.error("Endpunkt ist f\u00e4lschlicherweise < 0 (" + end + ", readModel())");
+						LOG.error("Endpunkt ist f\u00e4lschlicherweise < 0 (" + end + ", readModel())");
 						end = 0;
 					}
 					processtransition.setDestinationConnection(new ConnectionPoint(entry.getShape(), end));
@@ -1270,7 +1228,7 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 			model.setActiveLayer("Default");
 		}
 		catch (ShapeControllerException e) {
-			e.printStackTrace();
+			LOG.warn("createNewStateModel failed: " + e, e);
 		}
 		pnlShapeViewer.repaint();
 	}
@@ -1377,7 +1335,7 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 			pnlShapeViewer.getModel().setActiveLayer("Default");
 		}
 		catch (ShapeControllerException e) {
-			e.printStackTrace();
+			LOG.warn("setStateTool failed: " + e, e);
 		}
 	}
 	
@@ -1394,7 +1352,7 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 			pnlShapeViewer.getModel().setActiveLayer("Connectors");
 		}
 		catch (ShapeControllerException e) {
-			e.printStackTrace();
+			LOG.warn("setStateTool failed: " + e, e);
 		}
 	}
 
@@ -1407,8 +1365,7 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 			pnlShapeViewer.getModel().setActiveLayer("Notes");
 		}
 		catch (ShapeControllerException e) {
-			// @todo
-			e.printStackTrace();
+			LOG.warn("setNoteTool failed: " + e, e);
 		}
 	}
 

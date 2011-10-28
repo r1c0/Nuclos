@@ -53,14 +53,11 @@ import org.nuclos.server.genericobject.valueobject.LogbookVO;
  */
 
 public class LogbookPanel extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private LogbookTableModel tblmdl;
 	private final JToolBar toolbarDefault = UIUtils.createNonFloatableToolBar();
 	private final JScrollPane scrlpn = new JScrollPane();
-	final JTable tbl = new CommonJTable();
+	private final JTable tbl = new CommonJTable();
 	private final AttributeCVO attrcvoHeader;
 
 	public LogbookPanel(Collection<LogbookVO> colllogbookvo) {
@@ -90,6 +87,10 @@ public class LogbookPanel extends JPanel {
 			column.setWidth(iPreferredCellWidth);
 		}
 		tbl.revalidate();
+	}
+	
+	JTable getTable() {
+		return tbl;
 	}
 
 	public JToolBar getToolbar() {
@@ -124,10 +125,6 @@ public class LogbookPanel extends JPanel {
 	}
 
 	private class LogbookRenderer extends DefaultTableCellRenderer {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {

@@ -219,7 +219,6 @@ public class SecurityCache {
 	 * fills this cache.
 	 * @throws NuclosFatalException
 	 */
-	@SuppressWarnings("unchecked")
     private void validate() throws NuclosFatalException {
 		Map<String, Object> iniData = SecurityDelegate.getInstance().getInitialSecurityData();
 		this.username = (String) iniData.get(SecurityFacadeRemote.USERNAME);

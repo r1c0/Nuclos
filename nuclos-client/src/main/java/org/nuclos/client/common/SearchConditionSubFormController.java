@@ -27,6 +27,7 @@ import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader;
 import org.nuclos.client.ui.collect.SubForm;
@@ -69,7 +70,9 @@ import org.nuclos.common2.exception.PreferencesException;
  */
 public class SearchConditionSubFormController extends SubFormController {
 
-	private static String[] sEditFields = {"createdBy", "createdAt", "changedBy", "changedAt" };
+	private static final Logger LOG = Logger.getLogger(SearchConditionSubFormController.class);
+	
+	private static final String[] sEditFields = {"createdBy", "createdAt", "changedBy", "changedAt" };
 
 	/**
 	 * A <code>TableModel</code> representing a <code>CollectableSearchCondition</code>.
@@ -242,9 +245,8 @@ public class SearchConditionSubFormController extends SubFormController {
 		}
 
 		@Override
-		@SuppressWarnings({ "rawtypes", "unchecked" })
 		public void remove(int[] rows) {
-			Collection objectsToRemove = new ArrayList();
+			Collection<Object> objectsToRemove = new ArrayList<Object>();
 			int first = -1;
 			int last = -1;
 			for (int index : rows) {
@@ -259,14 +261,13 @@ public class SearchConditionSubFormController extends SubFormController {
 					last = index;
 				}
 			}
-			this.getDataVector().removeAll(objectsToRemove);
+			getDataVector().removeAll(objectsToRemove);
 			fireTableRowsDeleted(first, last);
 		}
 
 		/**
 		 * @param clctcond may be <code>null</code>.
 		 */
-		@SuppressWarnings("deprecation")
 		private void fillLastRowWithSearchCondition(CollectableSearchCondition clctcond) throws CommonBusinessException {
 			if (clctcond != null) {
 				/** @todo check if the search condition can be displayed in the fields at all,
@@ -310,7 +311,6 @@ public class SearchConditionSubFormController extends SubFormController {
 		 * @param compositecond
 		 * @precondition compositecond.getLogicalOperator() == LogicalOperator.AND
 		 */
-		@SuppressWarnings("deprecation")
 		private void fillLastRowWithFlatConjunction(CompositeCollectableSearchCondition compositecond) throws CommonBusinessException {
 			if (compositecond.getLogicalOperator() != LogicalOperator.AND) {
 				throw new CommonFatalException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.4", "Dieser logische Operator ist hier nicht erlaubt: {0}", compositecond.getLogicalOperator()));
@@ -478,14 +478,14 @@ public class SearchConditionSubFormController extends SubFormController {
 			result.addAll(PreferencesUtils.getIntegerList(this.getPrefs(), PREFS_NODE_SELECTEDFIELDWIDTHS));
 		}
 		catch (PreferencesException ex) {
-			log.error("Failed to retrieve table column widths from the preferences. They are reset.");
+			LOG.error("Failed to retrieve table column widths from the preferences. They are reset.");
 			result = new ArrayList<Integer>();
 		}
 
-		if (log.isDebugEnabled()) {
-			log.debug("getTableColumnWidthsFromPreferences for entity " + this.getSubForm().getEntityName());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("getTableColumnWidthsFromPreferences for entity " + this.getSubForm().getEntityName());
 			for (Object o : result) {
-				log.debug("getTableColumnWidthsFromPreferences: column width = " + o);
+				LOG.debug("getTableColumnWidthsFromPreferences: column width = " + o);
 			}
 		}
 
@@ -525,13 +525,12 @@ public class SearchConditionSubFormController extends SubFormController {
 				}
 			}
 		}
-		catch(PreferencesException e) {
+		catch (PreferencesException e) {
+			LOG.warn("getColumnsFromPrefs failed: " + e);
 			// display all columns on Exception
 			lstFieldsToDisplay = getTableColumns();
 		}
-
 		return lstFieldsToDisplay;
-
 	}
 
 	@Override
@@ -626,7 +625,6 @@ public class SearchConditionSubFormController extends SubFormController {
 
 			class IsAtomicAndCanBeDisplayed implements Predicate<CollectableSearchCondition> {
 				@Override
-				@SuppressWarnings("deprecation")
 				public boolean evaluate(CollectableSearchCondition cond) {
 					return (cond.getType() == CollectableSearchCondition.TYPE_ATOMIC) && canAtomicConditionBeDisplayed((AtomicCollectableSearchCondition) cond);
 				}

@@ -19,6 +19,7 @@ package org.nuclos.server.entityobject;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
@@ -38,6 +39,8 @@ import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpressi
  * @since Nuclos 3.1.01
  */
 public class EntityObjectProxyList extends AbstractProxyList<Long, EntityObjectVO> {
+
+	private static final Logger LOG = Logger.getLogger(EntityObjectProxyList.class);
 
 	private static EntityObjectFacadeRemote facade;
 

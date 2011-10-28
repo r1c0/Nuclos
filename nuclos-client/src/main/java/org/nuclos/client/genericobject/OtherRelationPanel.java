@@ -64,19 +64,15 @@ import org.nuclos.common2.StringUtils;
  */
 class OtherRelationPanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	final SwappableRelationPanel relationpanel;
-	final CenterPanel pnlCenter;
-	final CollectableComboBox clctcmbbxRelationType;
-	final DateChooser datechooserValidFrom = new DateChooser();
-	final DateChooser datechooserValidUntil = new DateChooser();
-	final JTextArea taDescription = new JTextArea(3, 20);
+	private final SwappableRelationPanel relationpanel;
+	private final CenterPanel pnlCenter;
+	private final CollectableComboBox clctcmbbxRelationType;
+	private final DateChooser datechooserValidFrom = new DateChooser();
+	private final DateChooser datechooserValidUntil = new DateChooser();
+	private final JTextArea taDescription = new JTextArea(3, 20);
 
-	final Collection<GenericObjectIdModuleProcess> collgoimpSource;
-	final GenericObjectIdModuleProcess goimpTarget;
+	private final Collection<GenericObjectIdModuleProcess> collgoimpSource;
+	private final GenericObjectIdModuleProcess goimpTarget;
 
 	private static CollectableComboBox newComboBox() {
 		final CollectableEntityField clctef = new DefaultCollectableEntityField(NuclosEntity.RELATIONTYPE.getEntityName(), String.class, 
@@ -150,13 +146,14 @@ class OtherRelationPanel extends JPanel {
 
 		});
 	}
+	
+	CollectableComboBox getRelationComboBox() {
+		return clctcmbbxRelationType;
+	}
 
 	private class CenterPanel extends JPanel {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		final CardLayout cardlayout = new CardLayout();
+
+		private final CardLayout cardlayout = new CardLayout();
 
 		CenterPanel() {
 			this.setLayout(this.cardlayout);
@@ -180,6 +177,30 @@ class OtherRelationPanel extends JPanel {
 			result.add(this.goimpTarget);
 		}
 		return result;
+	}
+	
+	Collection<GenericObjectIdModuleProcess> getGoSource() {
+		return collgoimpSource;
+	}
+	
+	DateChooser getValidFromDateChooser() {
+		return datechooserValidFrom;
+	}
+	
+	DateChooser getValidUntilDateChooser() {
+		return datechooserValidUntil;
+	}
+	
+	GenericObjectIdModuleProcess getGoTarget() {
+		return goimpTarget;
+	}
+	
+	SwappableRelationPanel getRelationPanel() {
+		return relationpanel;
+	}
+	
+	JTextArea getDescriptionTextArea() {
+		return taDescription;
 	}
 
 	void validateInput() throws ErrorInfo {

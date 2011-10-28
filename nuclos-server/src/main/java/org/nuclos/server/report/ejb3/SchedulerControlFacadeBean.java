@@ -193,7 +193,6 @@ public class SchedulerControlFacadeBean extends NuclosFacadeBean implements Sche
 	 * @return
 	 */
 	@Override
-	@SuppressWarnings("rawtypes")
 	public void triggerJob(JobVO jobVO) throws CommonBusinessException {
 		final Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
 		if (!exists(jobVO.getName())) {
@@ -201,7 +200,7 @@ public class SchedulerControlFacadeBean extends NuclosFacadeBean implements Sche
 		}
 
 		boolean running = false;
-		List executingJobs;
+		List<?> executingJobs;
 		try {
 			executingJobs = scheduler.getCurrentlyExecutingJobs();
 			for (Object o : executingJobs) {

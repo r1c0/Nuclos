@@ -32,6 +32,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableColumn;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.wizard.NuclosEntityWizardStaticModel;
@@ -55,18 +56,16 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class NuclosEntityAttributeTranslationStep extends NuclosEntityAttributeAbstractStep {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	JScrollPane scrolPane;
-	JTable tblAttributes;
+	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeTranslationStep.class);
+
+	private JScrollPane scrolPane;
+	private JTable tblAttributes;
 	
-	EntityAttributeTranslationTableModel tablemodel;
+	private EntityAttributeTranslationTableModel tablemodel;
 	
 	public static String[] labels = TranslationVO.labelsField;
 	
-	NuclosEntityWizardStaticModel parentWizardModel;
+	private NuclosEntityWizardStaticModel parentWizardModel;
 	
 	
 	public NuclosEntityAttributeTranslationStep() {	
@@ -160,14 +159,14 @@ public class NuclosEntityAttributeTranslationStep extends NuclosEntityAttributeA
 					}
 				}
 				else {				
-					EntityMetaDataVO voMeta = MetaDataClientProvider.getInstance().getEntity(this.parentWizardModel.getEntityName());
-					
+					EntityMetaDataVO voMeta = MetaDataClientProvider.getInstance().getEntity(parentWizardModel.getEntityName());			
 					if(voMeta != null) {
 						EntityFieldMetaDataVO voMetaField = null;
 						try {
 							voMetaField = MetaDataClientProvider.getInstance().getEntityField(voMeta.getEntity(), this.model.getAttribute().getInternalName());
 						}
 						catch(Exception e) {
+							LOG.info("initTransalationModel: " + e, e);
 							continue;
 						}
 						if(voMetaField != null) {

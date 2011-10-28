@@ -17,7 +17,6 @@
 package org.nuclos.server.masterdata.ejb3;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Remote;
 
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -29,7 +28,7 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
-@Remote
+// @Remote
 public interface MasterDataModuleFacadeRemote {
 
 	/**
@@ -44,7 +43,7 @@ public interface MasterDataModuleFacadeRemote {
 	 * @nucleus.permission checkWriteAllowed(sEntityName)
 	 */
 	@RolesAllowed("Login")
-	public abstract MasterDataVO create(String sEntityName, MasterDataVO mdvo,
+	MasterDataVO create(String sEntityName, MasterDataVO mdvo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
 		CommonPermissionException, NuclosBusinessRuleException;
 
@@ -60,7 +59,7 @@ public interface MasterDataModuleFacadeRemote {
 	 * @nucleus.permission checkWriteAllowed(sEntityName)
 	 */
 	@RolesAllowed("Login")
-	public abstract Object modify(String sEntityName, MasterDataVO mdvo,
+	Object modify(String sEntityName, MasterDataVO mdvo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonValidationException,
@@ -75,18 +74,18 @@ public interface MasterDataModuleFacadeRemote {
 	 * @nucleus.permission checkDeleteAllowed(sEntityName)
 	 */
 	@RolesAllowed("Login")
-	public abstract void remove(String sEntityName, MasterDataVO mdvo,
+	void remove(String sEntityName, MasterDataVO mdvo,
 		boolean bRemoveDependants) throws NuclosBusinessRuleException,
 		CommonPermissionException, CommonStaleVersionException,
 		CommonRemoveException, CommonFinderException;
 
-	public abstract String getResourceSIdForLabel(Integer iId);
+	String getResourceSIdForLabel(Integer iId);
 
-	public abstract String getResourceSIdForDescription(Integer iId);
+	String getResourceSIdForDescription(Integer iId);
 
-	public abstract String getResourceSIdForTreeView(Integer iId);
+	String getResourceSIdForTreeView(Integer iId);
 
-	public abstract String getResourceSIdForTreeViewDescription(Integer iId);
+	String getResourceSIdForTreeViewDescription(Integer iId);
 
-	public abstract String getResourceSIdForMenuPath(Integer iId);
+	String getResourceSIdForMenuPath(Integer iId);
 }

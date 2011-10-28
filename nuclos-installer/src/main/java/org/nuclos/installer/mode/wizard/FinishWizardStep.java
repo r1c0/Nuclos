@@ -33,10 +33,6 @@ import org.pietschy.wizard.WizardModel;
  */
 public class FinishWizardStep extends AbstractWizardStep {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private JLabel lblOpenWebstart = new JLabel();
 	private JCheckBox chkOpenWebstart = new JCheckBox();
 

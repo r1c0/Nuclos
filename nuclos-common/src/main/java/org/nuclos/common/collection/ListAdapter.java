@@ -62,7 +62,6 @@ public abstract class ListAdapter<W, E> implements List<E> {
 	}
 
 	@Override
-	@SuppressWarnings({"unchecked"})
 	public boolean containsAll(Collection<?> coll) {
 		return this.adaptee().containsAll(unwrap((Collection<? extends E>) coll));
 	}
@@ -70,7 +69,6 @@ public abstract class ListAdapter<W, E> implements List<E> {
 	/**
 	 * @see List#equals(Object)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object o) {
 		if(this == o) {
@@ -124,19 +122,16 @@ public abstract class ListAdapter<W, E> implements List<E> {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public boolean contains(Object o) {
 		return this.adaptee().contains(wrap((W) o));
 	}
 
 	@Override
-	@SuppressWarnings({"unchecked"})
 	public int indexOf(Object o) {
 		return this.adaptee().indexOf(wrap((W) o));
 	}
 
 	@Override
-	@SuppressWarnings({"unchecked"})
 	public int lastIndexOf(Object o) {
 		return this.adaptee().lastIndexOf(wrap((W) o));
 	}
@@ -196,7 +191,6 @@ public abstract class ListAdapter<W, E> implements List<E> {
 	}
 
 	@Override
-	@SuppressWarnings({"unchecked"})
 	public <T> T[] toArray(T[] at) {
 		final T[] result;
 		if (at.length < this.size()) {
@@ -232,19 +226,16 @@ public abstract class ListAdapter<W, E> implements List<E> {
 	}
 
 	@Override
-	@SuppressWarnings({"unchecked"})
 	public boolean remove(Object o) {
 		return this.adaptee().remove(wrap((W) o));
 	}
 
 	@Override
-	@SuppressWarnings({"unchecked"})
 	public boolean removeAll(Collection<?> coll) {
 		return this.adaptee().removeAll(unwrap((Collection<? extends E>) coll));
 	}
 
 	@Override
-	@SuppressWarnings({"unchecked"})
 	public boolean retainAll(Collection<?> coll) {
 		return this.adaptee().retainAll(unwrap((Collection<? extends E>) coll));
 	}

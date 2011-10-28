@@ -175,7 +175,6 @@ public class PutSearchConditionToPrefsVisitor implements Visitor<Void, Preferenc
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public static CollectableSearchCondition getSearchCondition(Preferences prefs, String sEntityName,
 			CollectableEntityProvider clcteprovider) throws PreferencesException {
 
@@ -222,7 +221,6 @@ public class PutSearchConditionToPrefsVisitor implements Visitor<Void, Preferenc
 	 * @throws PreferencesException
 	 * @todo This method is duplicated in CollectableTextComponentHelper and AtomicNodeController - try to merge
 	 */
-	@SuppressWarnings("deprecation")
 	private static AtomicCollectableSearchCondition getAtomicSearchCondition(Preferences prefs,
 			CollectableEntityProvider clcteprovider, String sEntityName) throws PreferencesException {
 		final AtomicCollectableSearchCondition result;
@@ -314,7 +312,6 @@ public class PutSearchConditionToPrefsVisitor implements Visitor<Void, Preferenc
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public Void visitAtomicCondition(AtomicCollectableSearchCondition atomiccond) throws PreferencesException {
 		prefs.put(PREFS_KEY_FIELDNAME, atomiccond.getFieldName());
 		final int iComparisonOperator = atomiccond.getComparisonOperator().getIntValue();

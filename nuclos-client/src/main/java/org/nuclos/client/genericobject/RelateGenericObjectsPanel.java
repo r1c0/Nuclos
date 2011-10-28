@@ -54,19 +54,14 @@ import org.nuclos.client.ui.UIUtils;
  */
 class RelateGenericObjectsPanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	static enum RelationType {
 		PREDECESSOROF, PARTOF, USERDEFINED
 	}
 
-	final JRadioButton rbSuccessorOf = new JRadioButton(CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.1", "Nachfolge-Beziehung"));
-	final JRadioButton rbPartOf = new JRadioButton(CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.2", "Teil-Beziehung"));
-	final JRadioButton rbOtherRelation = new JRadioButton(CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.3", "Andere Beziehung"));
-	final ButtonGroup bg = new ButtonGroup();
+	private final JRadioButton rbSuccessorOf = new JRadioButton(CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.1", "Nachfolge-Beziehung"));
+	private final JRadioButton rbPartOf = new JRadioButton(CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.2", "Teil-Beziehung"));
+	private final JRadioButton rbOtherRelation = new JRadioButton(CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.3", "Andere Beziehung"));
+	private final ButtonGroup bg = new ButtonGroup();
 	private final SuccessorOfPanel pnlSuccessorOf = new SuccessorOfPanel();
 	private final PartOfPanel pnlPartOf = new PartOfPanel();
 	private OtherRelationPanel pnlOtherRelation;
@@ -153,34 +148,51 @@ class RelateGenericObjectsPanel extends JPanel {
 	SuccessorOfPanel getSuccessorOfPanel() {
 		return this.pnlSuccessorOf;
 	}
+	
+	JRadioButton getSuccessorOfButton() {
+		return rbSuccessorOf;
+	}
 
 	PartOfPanel getPartOfPanel() {
 		return this.pnlPartOf;
 	}
+	
+	JRadioButton getPartOfButton() {
+		return rbPartOf;
+	}
 
 	OtherRelationPanel getCouplingPanel() {
 		return this.pnlOtherRelation;
+	}
+	
+	JRadioButton getCouplingButton() {
+		return rbOtherRelation;
 	}
 
 	/**
 	 * Displays a relation between objects.
 	 */
 	static abstract class RelationPanel extends JPanel {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		final JPanel pnlSourceObjects = new JPanel(new LineLayout(LineLayout.VERTICAL));
-		final JLabel labTargetObject = new JLabel();
 
-		final JPanel pnlLeft = new JPanel(new BorderLayout());
-		final JPanel pnlRight = new JPanel(new BorderLayout());
+		private final JPanel pnlSourceObjects = new JPanel(new LineLayout(LineLayout.VERTICAL));
+		private final JLabel labTargetObject = new JLabel();
+
+		private final JPanel pnlLeft = new JPanel(new BorderLayout());
+		private final JPanel pnlRight = new JPanel(new BorderLayout());
 
 		protected boolean bReversedDirection = false;
 
 		RelationPanel(String sLeftTitle, String sRightTitle) {
 			super(new GridBagLayout());
 			this.init(sLeftTitle, sRightTitle);
+		}
+		
+		JPanel getLeftPanel() {
+			return pnlLeft;
+		}
+		
+		JPanel getRightPanel() {
+			return pnlRight;
 		}
 
 		/**
@@ -245,10 +257,6 @@ class RelateGenericObjectsPanel extends JPanel {
 	 * Displays a relation between objects and lets the user swap the relation's direction.
 	 */
 	static class SwappableRelationPanel extends RelationPanel {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		SwappableRelationPanel(String sLeftTitle, String sRightTitle) {
 			super(sLeftTitle, sRightTitle);
@@ -281,11 +289,11 @@ class RelateGenericObjectsPanel extends JPanel {
 
 		public void swapLists() {
 			final GridBagConstraints gbc = new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(3, 3, 3, 3), 0, 0);
-			this.remove(this.pnlLeft);
-			this.remove(this.pnlRight);
+			remove(getLeftPanel());
+			remove(getRightPanel());
 
-			final JPanel pnlLeft = this.bReversedDirection ? this.pnlRight : this.pnlLeft;
-			final JPanel pnlRight = this.bReversedDirection ? this.pnlLeft : this.pnlRight;
+			final JPanel pnlLeft = bReversedDirection ? getRightPanel() : getLeftPanel();
+			final JPanel pnlRight = bReversedDirection ? getLeftPanel() : getRightPanel();
 
 			gbc.gridx = 0;
 			this.add(pnlRight, gbc);
@@ -298,21 +306,12 @@ class RelateGenericObjectsPanel extends JPanel {
 	}	// inner class SwappableRelationPanel
 
 	static class SuccessorOfPanel extends SwappableRelationPanel {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		SuccessorOfPanel() {
 			super(CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.5", "Vorg\u00e4nger"), CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.6", "Nachfolger"));
 		}
 	}
 
 	static class PartOfPanel extends RelationPanel {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		PartOfPanel() {
 			super(CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.7", "Teilobjekt(e)"), CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.8", "Zusammengesetztes Objekt"));

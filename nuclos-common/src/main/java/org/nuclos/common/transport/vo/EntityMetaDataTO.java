@@ -37,19 +37,14 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
  */
 public class EntityMetaDataTO implements Serializable {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+	private EntityMetaDataVO voEntityMetaVO;
 
-	EntityMetaDataVO voEntityMetaVO;
+	private List<TranslationVO> lstTranslation;
+	private List<EntityTreeViewVO> lstTreeView;
 
-	List<TranslationVO> lstTranslation;
-	List<EntityTreeViewVO> lstTreeView;
+	private Collection<EntityObjectVO> processes;
 
-	Collection<EntityObjectVO> processes;
-
-	Collection<EntityObjectVO> menus;
+	private Collection<EntityObjectVO> menus;
 
 	public EntityMetaDataVO getEntityMetaVO() {
 		return voEntityMetaVO;

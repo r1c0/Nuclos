@@ -171,13 +171,11 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 	 * Descending sorting is implemented by using the reverse comparator of <code>result</code>.
 	 * @precondition iColumn >= 0 && iColumn < this.getColumnCount()
 	 */
-	@SuppressWarnings("unchecked")
 	protected Comparator<Clct> getComparator(int column) {
 		return (Comparator<Clct>) CollectableComparatorFactory.getInstance().newCollectableComparator(getBaseEntityName(), this.getCollectableEntityField(column));
 		//new CollectableComparator<Clct>(this.getCollectableEntityField(iColumn));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void sort() {
 		if (!sortKeys.isEmpty()) {

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common2.PreferencesUtils;
@@ -32,6 +33,8 @@ import org.nuclos.server.customcomp.ejb3.CustomComponentFacadeRemote;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 
 public class CustomComponentDelegate {
+
+	private static final Logger LOG = Logger.getLogger(CustomComponentDelegate.class);
 
 	private static CustomComponentDelegate singleton;
 
@@ -80,7 +83,7 @@ public class CustomComponentDelegate {
 		} catch (PreferencesException ex) {
 			throw new NuclosFatalException(ex);
 		} catch (BackingStoreException e) {
-			e.printStackTrace();
+			LOG.warn("storeAll failed: " + e, e);
 		}
 	}
 

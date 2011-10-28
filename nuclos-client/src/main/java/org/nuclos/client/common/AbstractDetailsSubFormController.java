@@ -27,6 +27,7 @@ import javax.swing.JTable;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
@@ -60,6 +61,8 @@ import org.nuclos.common2.exception.PreferencesException;
 public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 		extends SubFormController
 		implements CollectableFactory<Clct> {
+	
+	private static final Logger LOG = Logger.getLogger(AbstractDetailsSubFormController.class);
 
 	/**
 	 * Successors must call postCreate.
@@ -120,7 +123,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 				}
 			}
 			catch (PreferencesException ex) {
-				log.error("Die Liste der Spalten f\u00fcr das Unterformular \"" + this.getEntityAndForeignKeyFieldName().getEntityName() +
+				LOG.error("Die Liste der Spalten f\u00fcr das Unterformular \"" + this.getEntityAndForeignKeyFieldName().getEntityName() +
 						"\" konnte nicht aus den Preferences gelesen werden.", ex);
 				// go on with all columns selected.
 			}
@@ -143,7 +146,6 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 	/**
 	 * @return the table model used for the subform. May be used to add/remove/change rows in the subform.
 	 */
-	@SuppressWarnings("unchecked")
     public final SortableCollectableTableModel<Clct> getCollectableTableModel() {
 		return (DetailsSubFormTableModel<Clct>) getJTable().getModel();
 	}
@@ -151,7 +153,6 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 	/**
 	 * @return the table model used for the subform. May be used to add/remove/change rows in the subform.
 	 */
-	@SuppressWarnings("unchecked")
     @Override
 	protected final SubForm.SubFormTableModel getSubFormTableModel() {
 		return (DetailsSubFormTableModel<Clct>) getJTable().getModel();
@@ -269,7 +270,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 			return CollectController.readSortKeysFromPrefs(getPrefs());
 		}
 		catch (PreferencesException ex) {
-			log.error("The column order could not be loaded from preferences.", ex);
+			LOG.error("The column order could not be loaded from preferences.", ex);
 			return Collections.emptyList();
 		}
 	}
@@ -278,13 +279,13 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 	 * sorts the TableModel by a given column if declared in preferences.
 	 */
 	protected void setColumnOrder() {
-		log.debug("setColumnOrder");
+		LOG.debug("setColumnOrder");
 		List<SortKey> sortKeys = readColumnOrderFromPreferences();
 		if (this.getCollectableTableModel().getColumnCount() > 0) {
 			try {
 				this.getCollectableTableModel().setSortKeys(sortKeys, false);
 			} catch (IllegalArgumentException e) {
-				log.warn("Sorting in subform \"" + this.getParentEntityName() + "." + this.getSubForm().getEntityName() +
+				LOG.warn("Sorting in subform \"" + this.getParentEntityName() + "." + this.getSubForm().getEntityName() +
 					"\" could not be restored. Column count has changed.", e);
 			}
 		}

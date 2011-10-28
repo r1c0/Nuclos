@@ -45,14 +45,12 @@ public enum TransferOption {
 	public static interface Map extends java.util.Map<TransferOption, Serializable> {}
 	
 	public static class HashMap extends java.util.HashMap<TransferOption, Serializable> implements TransferOption.Map {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		public HashMap() {
 			super();
 		}
 		public HashMap(Map src) {
 			super(src);
-		}}
+		}
+	}
 }

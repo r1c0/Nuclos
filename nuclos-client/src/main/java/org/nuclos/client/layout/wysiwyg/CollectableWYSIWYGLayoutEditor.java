@@ -64,6 +64,8 @@ import org.xml.sax.SAXException;
  */
 public class CollectableWYSIWYGLayoutEditor extends AbstractCollectableComponent {
 
+	private static final Logger LOG = Logger.getLogger(CollectableWYSIWYGLayoutEditor.class);
+
 	private WYSIWYGLayoutControllingPanel jpnWYSIWYGController;
 
 	private WYSIWYGLayoutEditorChangeDescriptor chgDescriptor;
@@ -192,6 +194,7 @@ public class CollectableWYSIWYGLayoutEditor extends AbstractCollectableComponent
 							getWYSIWYGEditorPanel().createStandartLayout();
                     }
                     catch(Exception e1) {
+            			LOG.info("updateView: " + e);
 	                    getWYSIWYGEditorPanel().createStandartLayout();
                     }
 					//NUCLEUSINT-398

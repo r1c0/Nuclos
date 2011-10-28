@@ -32,10 +32,6 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
  */
 public class AttributeValueVO extends NuclosValueObject {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private String sValue;
 	private String sMnemonic;
 	private String sDescription;

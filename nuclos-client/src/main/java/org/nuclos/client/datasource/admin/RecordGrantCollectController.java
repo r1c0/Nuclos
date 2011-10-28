@@ -139,7 +139,7 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 
 		datasourcedelegate.removeRecordGrant((RecordGrantVO) clct.getDatasourceVO());
 
-		pnlEdit.pnlQueryEditor.getController().refreshSchema();
+		pnlEdit.getQueryEditor().getController().refreshSchema();
 	}
 
 	/**
@@ -151,7 +151,7 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 	protected CollectableDataSource updateCurrentCollectable(CollectableDataSource clctEdited) throws CommonBusinessException {
 		//validateParameters();
 
-		final List<String> lstUsedDatasources = pnlEdit.pnlQueryEditor.getUsedDatasources();
+		final List<String> lstUsedDatasources = pnlEdit.getQueryEditor().getUsedDatasources();
 
 		final RecordGrantVO recordGrantVO = (RecordGrantVO) clctEdited.getDatasourceVO();
 
@@ -170,7 +170,7 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 		}
 		final RecordGrantVO recordGrantVOUpdated = datasourcedelegate.modifyRecordGrant(recordGrantVO, lstUsedDatasources);
 
-		pnlEdit.pnlQueryEditor.getController().refreshSchema();
+		pnlEdit.getQueryEditor().getController().refreshSchema();
 
 		return new CollectableDataSource(recordGrantVOUpdated);
 	}
@@ -192,11 +192,11 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 			throw new IllegalArgumentException("clctNew");
 		}
 		
-		pnlEdit.pnlQueryEditor.setParameter(QueryBuilderConstants.RECORDGRANT_SYSTEMPARAMETERS);
+		pnlEdit.getQueryEditor().setParameter(QueryBuilderConstants.RECORDGRANT_SYSTEMPARAMETERS);
 		final RecordGrantVO recordGrantVO = datasourcedelegate.createRecordGrant((RecordGrantVO) clctNew.getDatasourceVO(),
-				pnlEdit.pnlQueryEditor.getUsedDatasources());
+				pnlEdit.getQueryEditor().getUsedDatasources());
 
-		pnlEdit.pnlQueryEditor.getController().refreshSchema();
+		pnlEdit.getQueryEditor().getController().refreshSchema();
 
 		return new CollectableDataSource(recordGrantVO);
 	}
@@ -206,7 +206,7 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 	 */
 	@Override
 	protected boolean stopEditingInDetails() {
-		return pnlEdit.pnlQueryEditor.stopEditing();
+		return pnlEdit.getQueryEditor().stopEditing();
 	}
 
 	/**
@@ -217,7 +217,7 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 		ResultVO result = null;
 
 		try {
-			final String sDatasourceXML = this.pnlEdit.pnlQueryEditor.getXML(new DatasourceEntityOptions(false));
+			final String sDatasourceXML = this.pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(false));
 			final Map<String, Object> mpParams = CollectionUtils.newHashMap();
 
 			if (createParamMap(sDatasourceXML, mpParams, ifrm)) {
@@ -237,7 +237,7 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 	 */
 	@Override
 	public String generateSql() throws CommonBusinessException {
-		return datasourcedelegate.createSQL(this.pnlEdit.pnlQueryEditor.getXML(new DatasourceEntityOptions(false)));
+		return datasourcedelegate.createSQL(this.pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(false)));
 	}
 
 	/**
@@ -245,11 +245,11 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 	 */
 	@Override
 	protected void importXML(String sXML) throws NuclosBusinessException {
-		final String sWarnings = QueryBuilderEditor.getSkippedElements(pnlEdit.pnlQueryEditor.setXML(sXML));
+		final String sWarnings = QueryBuilderEditor.getSkippedElements(pnlEdit.getQueryEditor().setXML(sXML));
 		if (sWarnings.length() > 0) {
 			JOptionPane.showMessageDialog(parent, CommonLocaleDelegate.getMessage("DatasourceCollectController.12","Folgende Elemente existieren nicht mehr in dem aktuellen Datenbankschema\n und wurden daher entfernt:") + "\n" + sWarnings);
 		}
-		detailsChanged(pnlEdit.pnlQueryEditor);
+		detailsChanged(pnlEdit.getQueryEditor());
 	}
 
 	/**
@@ -259,7 +259,7 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 	 */
 	@Override
 	protected void exportXML(File file) throws IOException, CommonBusinessException {
-		final String sReportXML = pnlEdit.pnlQueryEditor.getXML(new DatasourceEntityOptions(false));
+		final String sReportXML = pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(false));
 		IOUtils.writeToTextFile(file, sReportXML, "UTF-8");
 	}
 
@@ -267,7 +267,7 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 	protected void validateSQL() {
 		try {
 			final DatasourceFacadeRemote dataSourceFacade = ServiceLocator.getInstance().getFacade(DatasourceFacadeRemote.class);
-			dataSourceFacade.validateSqlFromXML(pnlEdit.pnlQueryEditor.getXML(new DatasourceEntityOptions(false)));
+			dataSourceFacade.validateSqlFromXML(pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(false)));
 			JOptionPane.showMessageDialog(getFrame(), CommonLocaleDelegate.getMessage("DatasourceCollectController.10","Die SQL Abfrage ist syntaktisch korrekt."));
 		}
 		catch (Exception ex) {

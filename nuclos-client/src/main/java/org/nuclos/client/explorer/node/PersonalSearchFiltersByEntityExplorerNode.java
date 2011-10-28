@@ -51,10 +51,7 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  * @version 01.00.00
  */
 public class PersonalSearchFiltersByEntityExplorerNode extends ExplorerNode<PersonalSearchFiltersByEntityTreeNode> {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private static final String ACTIONCOMMAND_SEARCHINENTITY = "SEARCH IN ENTITY";
 
 	public PersonalSearchFiltersByEntityExplorerNode(TreeNode treenode) {
@@ -103,10 +100,6 @@ public class PersonalSearchFiltersByEntityExplorerNode extends ExplorerNode<Pers
 	}
 
 	private class SearchInEntityAction extends TreeNodeAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		SearchInEntityAction(JTree tree) {
 			super(ACTIONCOMMAND_SEARCHINENTITY, CommonLocaleDelegate.getMessage("PersonalSearchFiltersByEntityExplorerNode.1","Suchen") + "...", tree);

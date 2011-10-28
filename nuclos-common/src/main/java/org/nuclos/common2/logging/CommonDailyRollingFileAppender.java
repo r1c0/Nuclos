@@ -18,6 +18,7 @@ package org.nuclos.common2.logging;
 
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Layout;
+import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.LoggingEvent;
 
@@ -56,6 +57,9 @@ import java.util.*;
  * @version	01.00.00
  */
 public class CommonDailyRollingFileAppender extends FileAppender {
+	
+	private static final Logger LOG = Logger.getLogger(CommonDailyRollingFileAppender.class);
+	
 	// The code assumes that the following constants are in an increasing
 	// sequence.
 	static final int TOP_OF_TROUBLE=-1;
@@ -163,10 +167,10 @@ public class CommonDailyRollingFileAppender extends FileAppender {
 				try {
 					this.setFile(nakedFileName + sdf.format(new Date()), true, this.bufferedIO, this.bufferSize);
 				}
-				catch(IOException ex) {
+				catch(IOException e) {
+					LOG.info("activateOptions: " + e);
 					errorHandler.error("setFile(" + fileName + ", false) call failed.");
 				}
-
 				deleteOutdatedFiles();
 			}
 		}
@@ -261,6 +265,7 @@ public class CommonDailyRollingFileAppender extends FileAppender {
 			this.setFile(datedFilename, false, this.bufferedIO, this.bufferSize);
 		}
 		catch(IOException e) {
+			LOG.info("rollOver: " + e);
 			errorHandler.error("setFile(" + fileName + ", false) call failed.");
 		}
 		fileName = datedFilename;
@@ -297,7 +302,7 @@ public class CommonDailyRollingFileAppender extends FileAppender {
 			}
 		}
 		catch (Exception ex) {
-			System.err.println("Could not delete outdated log files:" + ex.getMessage());
+			LOG.error("Could not delete outdated log files:" + ex, ex);
 		}
 	}
 
@@ -329,11 +334,7 @@ public class CommonDailyRollingFileAppender extends FileAppender {
  * */
 class RollingCalendar extends GregorianCalendar {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	int type = CommonDailyRollingFileAppender.TOP_OF_TROUBLE;
+	private int type = CommonDailyRollingFileAppender.TOP_OF_TROUBLE;
 
 	RollingCalendar() {
 		super();

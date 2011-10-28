@@ -44,6 +44,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXTree;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import org.jdesktop.swingx.renderer.CellContext;
@@ -69,10 +70,8 @@ import org.nuclos.server.common.valueobject.PreferencesVO;
 
 public class CopyPreferencesPanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(CopyPreferencesPanel.class);
+
 	private final JComboBox userCollectableCbx;
 	private final JXTree tree;
 
@@ -206,10 +205,6 @@ public class CopyPreferencesPanel extends JPanel {
 	private static String[] SUBENTITY_MERGEPREFS = ENTITY_MERGEPREFS;
 
 	private static class PreferencesTreeModel extends DefaultTreeModel {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		private PreferencesTreeModel() {
 			super(new PreferencesExportNode(""));
@@ -229,10 +224,6 @@ public class CopyPreferencesPanel extends JPanel {
 
 	private static class PreferencesExportNode extends DefaultMutableTreeNode {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private final Map<String, Map<String, String>> prefs;
 		private final String name;
 
@@ -302,11 +293,6 @@ public class CopyPreferencesPanel extends JPanel {
 
 	private static class PreferencesNodeValueProvider extends CheckBoxProvider {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		@Override
 		protected void format(CellContext context) {
 			PreferencesExportNode node = (PreferencesExportNode) context.getValue();
@@ -317,10 +303,6 @@ public class CopyPreferencesPanel extends JPanel {
 
 		public DefaultCellEditor createEditor() {
 			return new DefaultCellEditor((JCheckBox) rendererComponent) {
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
 				public Component getTreeCellEditorComponent(JTree tree, Object value, boolean isSelected, boolean expanded, boolean leaf, int row) {

@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
 
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
@@ -63,14 +60,13 @@ import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO.Event;
 //config in jboss-4.2.2.GA/server/nuclos/deploy/jbossws.sar/META-INF
 //Must include JBOSS_HOME/server/default/deploy/jbossws.sar/jbossws-core.jar in classpath for build
 
-@Stateless
-//@EndpointConfig(configName="Standard WSSecurity Endpoint")
-//@WebService(serviceName = "webAccess", endpointInterface = "org.nuclos.server.webservice.ejb3.WebAccessWS")
-@Local(WebAccessWS.class)
+// @Stateless
+// @Local(WebAccessWS.class)
 public class WebAccessBean implements WebAccessWS {
-	@EJB private SecurityFacadeLocal securityFacade;
-	@EJB private RuleEngineFacadeLocal ruleEngineFacade;
-	@EJB private GenericObjectFacadeLocal genericObjectFacade;
+	
+	private SecurityFacadeLocal securityFacade;
+	private RuleEngineFacadeLocal ruleEngineFacade;
+	private GenericObjectFacadeLocal genericObjectFacade;
 
 	@RolesAllowed("Login")
 	@Override

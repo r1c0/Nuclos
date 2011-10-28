@@ -18,8 +18,6 @@ package org.nuclos.server.ruleengine.jobs;
 
 import java.util.Collection;
 
-import javax.ejb.CreateException;
-
 import org.apache.log4j.Logger;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.job.NuclosJob;
@@ -43,7 +41,7 @@ public class TimelimitJob extends SchedulableJob implements NuclosJob {//NuclosQ
 	private static Logger logger = Logger.getLogger(TimelimitJob.class);
 
 	@Override
-	public String execute(JobVO jobVO, Integer iSessionId) throws CreateException {
+	public String execute(JobVO jobVO, Integer iSessionId) {
 		//execute job rules
 
 		final TimelimitRuleFacadeLocal ruleFacade = ServiceLocator.getInstance().getFacade(TimelimitRuleFacadeLocal.class);

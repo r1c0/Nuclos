@@ -24,6 +24,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.wizard.steps.NuclosEntitySQLLayoutStep;
 import org.pietschy.wizard.ButtonBar;
@@ -43,15 +44,12 @@ import org.pietschy.wizard.WizardStep;
 */
 public class NuclosWizardButtonBar extends ButtonBar {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(NuclosWizardButtonBar.class);
 
-	Wizard mywizard;
+	private Wizard mywizard;
 	
-	JButton btFinish;
-	JButton btCancel;
+	private JButton btFinish;
+	private JButton btCancel;
 
 	/**
 	 * @param wizard
@@ -66,11 +64,6 @@ public class NuclosWizardButtonBar extends ButtonBar {
 	protected void post() {
 		btFinish.setAction(new WizardAction("finish", this.mywizard) {
 			
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void updateState() {
 		      WizardStep activeStep = getActiveStep();
@@ -97,6 +90,7 @@ public class NuclosWizardButtonBar extends ButtonBar {
 								finishStep.applyState();
 							} catch(InvalidStateException ex) {
 								// do nothing here
+								LOG.warn("run: " + ex);
 							} catch(Exception ex) {
 								Errors.getInstance().showExceptionDialog(NuclosWizardButtonBar.this, ex);
 								getWizard().getCloseAction().actionPerformed(e);

@@ -62,6 +62,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
+import org.apache.log4j.Logger;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.painter.Painter;
 import org.jdesktop.swingx.renderer.ComponentProvider;
@@ -78,16 +79,13 @@ import org.nuclos.common2.LangUtils;
 
 public class JResPlanComponent<R, T extends Comparable<? super T>, E> extends JComponent implements ResPlanModelListener, ChangeListener, Scrollable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(JResPlanComponent.class);
 
 	public interface Area<R, T extends Comparable<? super T>> {
 		
-		public R getResource();
+		R getResource();
 		
-		public Interval<T> getInterval();
+		Interval<T> getInterval();
 	}
 	
 	private class AreaImpl implements Area<R, T> {
@@ -518,9 +516,9 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E> extends JC
 			EntryWrapper transferredWrapper = ResPlanTransferHandler.RESPLAN_ENTRY_FLAVOR.extractTransferData(transferable);
 			E entry = transferredWrapper.unwrap(model.getEntryType());
 			transferredCellView = findCellView(entry);
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		} catch (Exception e) {
 			// ignore
+			LOG.warn("setDropLocation failed: " + e, e);
 		}
 		R resource = getResourceAt(p);
 		Interval<T> interval = getTimeIntervalAt(p);

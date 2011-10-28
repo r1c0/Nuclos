@@ -35,10 +35,7 @@ import org.nuclos.client.gef.layout.Extents2D;
  * @version 01.00.00
  */
 public class ComponentAdapter extends RectangularShape {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	/**
 	 *
 	 */

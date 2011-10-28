@@ -37,11 +37,6 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class SubFormEntryTreeNode extends DefaultMasterDataTreeNode {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public SubFormEntryTreeNode(String sEntity, MasterDataVO mdvo) {
 		super(sEntity, mdvo);
 	}

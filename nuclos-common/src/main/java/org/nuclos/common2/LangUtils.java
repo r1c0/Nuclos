@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  * Utility methods for java.lang.
@@ -35,6 +36,8 @@ import org.apache.commons.lang.StringUtils;
  * @version 01.00.00
  */
 public class LangUtils {
+
+	private static final Logger LOG = Logger.getLogger(LangUtils.class);
 
 	private LangUtils() {
 	}
@@ -59,8 +62,9 @@ public class LangUtils {
 			URI uri = new URI(sUri);
 			uri.toURL();
 		}
-		catch(Exception ex) {
+		catch(Exception e) {
 			// no valid URI Format
+			LOG.debug("isValiedURI: " + e);
 			return false;
 		}
 		String str = org.nuclos.common2.StringUtils.emptyIfNull(sUri).toLowerCase();
@@ -72,14 +76,13 @@ public class LangUtils {
 	 * @param o1 may be <code>null</code>
 	 * @param o2 may be <code>null</code>
 	 */
-	@SuppressWarnings("unchecked")
-	public static int compare(Object o1, Object o2) {
+	public static <T extends Comparable<T>> int compare(Object o1, Object o2) {
 		if (o1 == o2) {
 			// performance shortcut, esp. for o1 == o2 == null.
 			return 0;
 		}
-		else if (o1 instanceof Comparable<?>) {
-			return compareComparables((Comparable) o1, (Comparable) o2);
+		else if (o1 instanceof Comparable) {
+			return compareComparables((T) o1, (T) o2);
 		}
 		else {
 			return compareBasedOnToString(o1, o2);
@@ -440,8 +443,7 @@ public class LangUtils {
 	public static Integer convertId(Long id) {
 		if (id == null) {
 			return null;
-		}
-		
+		}	
 		return new Integer(id.intValue());
 	}
 

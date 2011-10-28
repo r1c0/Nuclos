@@ -46,7 +46,6 @@ public class TransformerUtils {
 	/**
 	 * Factory method for the id-transformer
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T> Transformer<T, T> id() {
 		return (Transformer<T, T>) IdentityTransformer.INSTANCE;
 	}

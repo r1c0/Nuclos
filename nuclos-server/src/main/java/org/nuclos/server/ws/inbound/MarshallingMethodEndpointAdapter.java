@@ -21,7 +21,6 @@ import org.springframework.oxm.Marshaller;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.endpoint.MethodEndpoint;
 
-@SuppressWarnings("deprecation")
 public class MarshallingMethodEndpointAdapter extends org.springframework.ws.server.endpoint.adapter.MarshallingMethodEndpointAdapter {
 
 	private static final Logger log = Logger.getLogger(MarshallingMethodEndpointAdapter.class);

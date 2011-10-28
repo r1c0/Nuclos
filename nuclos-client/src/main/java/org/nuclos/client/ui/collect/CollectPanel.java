@@ -58,10 +58,6 @@ import org.nuclos.common2.CommonLocaleDelegate;
  * @todo refactor tabbed pane methods
  */
 public class CollectPanel<Clct extends Collectable> extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * external index of the Search tab

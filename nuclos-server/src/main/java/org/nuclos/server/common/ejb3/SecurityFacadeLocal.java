@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
 import javax.security.auth.login.LoginException;
 
 import org.nuclos.common.security.Permission;
@@ -28,21 +27,21 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.MasterDataPermissions;
 import org.nuclos.server.common.ModulePermissions;
 
-@Local
+// @Local
 public interface SecurityFacadeLocal {
 
 	/**
 	 * @return information about the current version of the application installed on the server.
 	 */
 	@RolesAllowed("Login")
-	public abstract String getUserName();
+	String getUserName();
 
 	/**
 	 * Get all actions that are allowed for the current user.
 	 * @return set that contains the Actions objects (no duplicates).
 	 */
 	@RolesAllowed("Login")
-	public abstract Set<String> getAllowedActions();
+	Set<String> getAllowedActions();
 
 	/**
 	 * determine the permission of an attribute regarding the state of a module for the current user
@@ -51,31 +50,31 @@ public interface SecurityFacadeLocal {
 	 * @param iStatusNumeral
 	 * @return Permission
 	 */
-	public abstract Permission getAttributePermission(String sEntity, String sAttributeName,
+	Permission getAttributePermission(String sEntity, String sAttributeName,
 		Integer iState);
 
 	@RolesAllowed("Login")
-	public Map<String, Permission> getAttributePermissionsByEntity(String entity, Integer stateId);
+	Map<String, Permission> getAttributePermissionsByEntity(String entity, Integer stateId);
 
 	@RolesAllowed("Login")
-	public abstract ModulePermissions getModulePermissions();
+	ModulePermissions getModulePermissions();
 
 	@RolesAllowed("Login")
-	public abstract MasterDataPermissions getMasterDataPermissions();
+	MasterDataPermissions getMasterDataPermissions();
 
 	/**
 	 * logs the current user in.
 	 * @return session id for the current user
 	 */
-	public abstract Integer login();
+	Integer login();
 
 	/**
 	 * logs the current user out.
 	 * @param iSessionId session id for the current user
 	 */
-	public abstract void logout(Integer iSessionId) throws LoginException;
+	void logout(Integer iSessionId) throws LoginException;
 	
 	@RolesAllowed("Login")
-	public Integer getUserId(final String sUserName) throws CommonFatalException;
+	Integer getUserId(final String sUserName) throws CommonFatalException;
 	
 }

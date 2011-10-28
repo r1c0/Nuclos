@@ -32,6 +32,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellRenderer;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.common.security.SecurityDelegate;
@@ -61,6 +62,8 @@ import org.nuclos.server.common.valueobject.TaskVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 
 public class PersonalTaskCollectController extends MasterDataCollectController {
+
+	private static final Logger LOG = Logger.getLogger(PersonalTaskCollectController.class);
 
 	private static class CustomTableCellRendererProvider implements TableCellRendererProvider {
 
@@ -138,10 +141,6 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 		final String sSingletaskButtonName = CommonLocaleDelegate.getMessage("EditPersonalTaskDefinitionPanel.Button.Singletask",null);
 		sSingletaskButton = new JButton(
 			new AbstractAction(sSingletaskButtonName) {
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void actionPerformed(ActionEvent e) {

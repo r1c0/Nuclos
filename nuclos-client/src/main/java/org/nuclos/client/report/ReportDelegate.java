@@ -16,12 +16,12 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.report;
 
+import java.io.ObjectInputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.FinderException;
 import javax.swing.table.TableModel;
 
 import net.sf.jasperreports.engine.JRException;
@@ -37,7 +37,6 @@ import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectabl
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
@@ -241,9 +240,6 @@ public class ReportDelegate {
 	public JasperDesign getJrDesignForSearchResult() throws NuclosReportException {
 		try {
 			return getReportFacade().getJrDesignForSearchResult();
-		}
-		catch (FinderException ex) {
-			throw new CommonFatalException(CommonLocaleDelegate.getMessage("ReportDelegate.1", "Keine Vorlage f\u00fcr den Ausdruck von Suchergebnissen angegeben."), ex);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);

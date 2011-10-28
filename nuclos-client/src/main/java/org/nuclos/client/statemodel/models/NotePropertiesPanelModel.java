@@ -22,6 +22,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 
+import org.apache.log4j.Logger;
+
 /**
  * The model for <code>NotePropertiesPanel</code>.
  * <br>
@@ -33,10 +35,8 @@ import javax.swing.text.Document;
  * @version 01.00.00
  */
 public class NotePropertiesPanelModel implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final Logger LOG = Logger.getLogger(NotePropertiesPanelModel.class);
 
 	public static final String PROPERTY_NOTE_TEXT = "NoteText";
 
@@ -48,7 +48,8 @@ public class NotePropertiesPanelModel implements Serializable {
 			sResult = docText.getText(0, docText.getLength());
 		}
 		catch (BadLocationException e) {
-			e.printStackTrace();	// this should never happens
+			// this should never happens
+			LOG.warn("getText failed: " + e, e);
 		}
 		return sResult;
 	}
@@ -59,7 +60,8 @@ public class NotePropertiesPanelModel implements Serializable {
 			this.docText.insertString(0, sName, null);
 		}
 		catch (BadLocationException e) {
-			e.printStackTrace();	// this should never happens
+			// this should never happens
+			LOG.warn("setText failed: " + e, e);
 		}
 	}
 }

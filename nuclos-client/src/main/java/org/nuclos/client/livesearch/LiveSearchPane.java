@@ -51,11 +51,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.CommonLocaleDelegate;
 
-/*package*/ class LiveSearchPane extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+class LiveSearchPane extends JPanel {
 
 	private static final int    ROW_HEIGHT = 48;
 	
@@ -169,10 +165,6 @@ import org.nuclos.common2.CommonLocaleDelegate;
     };
     
     private Action openMultiAction = new AbstractAction(CommonLocaleDelegate.getResource("livesearch.reslist.open", "Open selected")) {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -181,10 +173,6 @@ import org.nuclos.common2.CommonLocaleDelegate;
 	};
 
     private Action openDetailsAction = new AbstractAction(CommonLocaleDelegate.getResource("livesearch.reslist.opendetails", "Open Details")) {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -250,10 +238,7 @@ import org.nuclos.common2.CommonLocaleDelegate;
 	};
 	
 	private class ResultTableModel extends AbstractTableModel {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		private List<LiveSearchResultRow> data;
 		
 		public ResultTableModel() {
@@ -318,10 +303,6 @@ import org.nuclos.common2.CommonLocaleDelegate;
 	}
 	
 	private class ComponentRenderer extends DefaultTableCellRenderer {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -332,14 +313,9 @@ import org.nuclos.common2.CommonLocaleDelegate;
 	}
 	
 	private class IconAndTextRenderer extends DefaultTableCellRenderer {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-			@SuppressWarnings("unchecked")
             Pair<Icon, String> p = (Pair<Icon, String>) value;
 			
 			String text = "<html><small><b>" + p.y + "</b></small></html>";

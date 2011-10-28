@@ -37,7 +37,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
-import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.report.api.JRNuclosDataSource;
 import org.nuclos.server.report.ejb3.DatasourceFacadeLocal;
@@ -52,7 +51,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 public class JRDefaultNuclosDataSource implements JRNuclosDataSource {
 
-	private static final Logger log = Logger.getLogger(DataBaseHelper.class);
+	private static final Logger LOG = Logger.getLogger(JRDefaultNuclosDataSource.class);
 
 	private final DatasourceFacadeLocal datasourcefacade = ServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
 
@@ -116,9 +115,9 @@ public class JRDefaultNuclosDataSource implements JRNuclosDataSource {
 		try {
 			statement = conn.createStatement();
 
-			log.debug("BEGIN executing SQL: " + query);
+			LOG.debug("BEGIN executing SQL: " + query);
 			data = statement.executeQuery(query);
-			log.debug("END executing SQL");
+			LOG.debug("END executing SQL");
 			datasource = new JRResultSetDataSource(data);
 
 			ResultSetMetaData metadata = data.getMetaData();
@@ -149,7 +148,7 @@ public class JRDefaultNuclosDataSource implements JRNuclosDataSource {
 				}
 			}
 			catch (SQLException ex) {
-				log.error(ex);
+				LOG.error(ex);
 			}
 		}
 		super.finalize();
@@ -173,7 +172,8 @@ public class JRDefaultNuclosDataSource implements JRNuclosDataSource {
 		catch (SQLException ex) {
 			throw new NuclosFatalException(ex);
 		}
-		catch(Throwable ex) {
+		catch(Throwable e) {
+			LOG.error("next: " + e);
 			return false;
 		}
 		return result;

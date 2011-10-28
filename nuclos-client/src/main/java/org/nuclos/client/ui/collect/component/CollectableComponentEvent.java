@@ -31,11 +31,6 @@ import javax.swing.JComponent;
 public class CollectableComponentEvent extends java.util.EventObject {
 
 	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
 	 * @param clctcompSource the <code>CollectableComponent</code> that triggered this event.
 	 * @precondition clctcompSource != null
 	 */

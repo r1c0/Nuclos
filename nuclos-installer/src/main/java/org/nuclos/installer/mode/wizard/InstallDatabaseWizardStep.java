@@ -41,10 +41,6 @@ import org.pietschy.wizard.InvalidStateException;
  */
 public class InstallDatabaseWizardStep extends AbstractWizardStep implements ActionListener, Constants {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private static String ACTION_SELECTINSTALLPATH = "installpath";
 	private static String ACTION_SELECTDATAPATH = "datapath";
 	private static String ACTION_SELECTTABLESPACEPATH = "tablespacepath";

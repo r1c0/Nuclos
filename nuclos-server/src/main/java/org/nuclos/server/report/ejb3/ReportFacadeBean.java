@@ -38,10 +38,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.FinderException;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 import javax.swing.table.TableModel;
 
 import net.sf.jasperreports.engine.JRDataSource;
@@ -128,9 +124,9 @@ import org.springframework.transaction.annotation.Transactional;
 * <br>Created by Novabit Informationssysteme GmbH
 * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-@Stateless
-@Local(ReportFacadeLocal.class)
-@Remote(ReportFacadeRemote.class)
+// @Stateless
+// @Local(ReportFacadeLocal.class)
+// @Remote(ReportFacadeRemote.class)
 @Transactional
 public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeLocal, ReportFacadeRemote {
 
@@ -652,9 +648,6 @@ public JasperPrint prepareEmptyReport(Integer iReportOutputId) throws CommonFind
          final JasperReport jr = JasperCompileManager.compileReport(jrdesign);
          return JasperFillManager.fillReport(jr, null, new SearchResultDataSource(clctexpr, lstclctefweSelected, iModuleId, bIncludeSubModules));
       }
-      catch (FinderException ex) {
-          throw new NuclosReportException("report.error.missing.template.3");//"Reportvorlage kann nicht gefunden werden.");
-       }
       catch (JRException ex) {
          throw new NuclosReportException(ex);
       }
@@ -672,9 +665,6 @@ public JasperPrint prepareEmptyReport(Integer iReportOutputId) throws CommonFind
          PDFHelper.createFields(jrdesign, tableModel);
          return JasperFillManager.fillReport(JasperCompileManager.compileReport(jrdesign), null, new TableModelDataSource(tableModel));
       }
-      catch (FinderException ex) {
-         throw new NuclosReportException("report.error.missing.template.3");//"Reportvorlage kann nicht gefunden werden.");
-      }
       catch (JRException ex) {
          throw new NuclosReportException(ex);
       }
@@ -687,8 +677,7 @@ public JasperPrint prepareEmptyReport(Integer iReportOutputId) throws CommonFind
     */
    @Override
    @RolesAllowed("Login")
-   @SuppressWarnings("deprecation")
-   public JasperDesign getJrDesignForSearchResult() throws JRException, NuclosReportException, FinderException {
+   public JasperDesign getJrDesignForSearchResult() throws JRException, NuclosReportException {
       InputStream input;
 
       byte[] data = ResourceCache.getInstance().getResource(ResourceVO.NCL_SEARCH_TEMPLATE);

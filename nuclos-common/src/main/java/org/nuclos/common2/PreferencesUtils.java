@@ -256,31 +256,24 @@ public class PreferencesUtils {
 
 		}
 		catch(TransformerException e) {
-			e.printStackTrace();
 			throw new NuclosBusinessException(e);
 		}
 		catch(XPathExpressionException e) {
-			e.printStackTrace();
 			throw new NuclosBusinessException(e);
 		}
 		catch(SAXException e) {
-			e.printStackTrace();
 			throw new NuclosBusinessException(e);
 		}
 		catch(IOException e) {
-			e.printStackTrace();
 			throw new NuclosBusinessException(e);
 		}
 		catch(ParserConfigurationException e) {
-			e.printStackTrace();
 			throw new NuclosBusinessException(e);
 		}
 		catch(CommonFinderException e) {
-			e.printStackTrace();
 			throw new NuclosBusinessException(e);
 		}
 		catch(InvalidPreferencesFormatException e) {
-			e.printStackTrace();
 			throw new NuclosBusinessException(e);
 		}
 	}
@@ -706,66 +699,7 @@ public class PreferencesUtils {
 		putRectangle(prefs, sName, comp.getBounds());
 	}
 
-//	unused
-//	/**
-//	 * reads the window state of a <code>frame</code> from the preferences.
-//	 * The state consists of the extendedState and bounds properties of the frame.
-//	 * @param prefs the preferences base path
-//	 * @param frame the frame whose state is to be restored
-//	 * @param iDefaultState the default state for the frame, if no entry was found
-//	 * @param iDefaultWidth the default width for the component, if no entry was found
-//	 * @param iDefaultHeight the default height for the component, if no entry was found
-//	 */
-//	public static void readWindowState(Preferences prefs, CommonJFrame frame, int iDefaultState, int iDefaultWidth, int iDefaultHeight) {
-//		/** @todo this should not build a node for a non-existing node! */
-//		try {
-//			final Preferences node = prefs.node(PREFS_NODE_WINDOWSTATE);
-//			final Rectangle rectNormalBounds = getRectangle(node, PREFS_KEY_NORMAL_BOUNDS, iDefaultWidth, iDefaultHeight);
-//
-//			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-//			if(rectNormalBounds.x > (screenSize.width - 100) || rectNormalBounds.y > (screenSize.height - 100)) {
-//				rectNormalBounds.x = 0;
-//				rectNormalBounds.y = 0;
-//			}
-//
-//			frame.setBounds(rectNormalBounds);
-//			frame.setNormalBounds(rectNormalBounds);
-//
-//			frame.setExtendedState(node.getInt(PREFS_KEY_WINDOW_EXTENDEDSTATE, iDefaultState));
-//		}
-//		catch(IllegalStateException e) {
-//			e.printStackTrace();
-//		}
-//	}
-//
-//	/**
-//	 * writes the window state of a <code>frame</code> to the preferences.
-//	 * The state consists of the extendedState and bounds properties of the frame.
-//	 * @param prefs the preferences base path
-//	 * @param frame the frame whose state is to be stored
-//	 */
-//	public static void writeWindowState(Preferences prefs, CommonJFrame frame) {
-//		final Preferences node = prefs.node(PREFS_NODE_WINDOWSTATE);
-//		node.putInt(PREFS_KEY_WINDOW_EXTENDEDSTATE, frame.getExtendedState());
-//
-//		/*
-//		 * LINDA-1912
-//		 * check abnormal values for width and height
-//		 */
-//		Rectangle rect = frame.getNormalBounds();
-//
-//		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-//		if(rect.height > dim.height) {
-//			rect.height = dim.height;
-//		}
-//
-//		if(rect.width > dim.width) {
-//			rect.width = dim.width;
-//		}
-//
-//		putRectangle(node, PREFS_KEY_NORMAL_BOUNDS, rect);
-//	}
-
+	
 	/**
 	 * reads the window state of a <code>frame</code> from the preferences.
 	 * The state consists of the "maximum", "icon" and "bounds" properties of the frame.
@@ -888,7 +822,10 @@ public class PreferencesUtils {
 			if(prefs.nodeExists(keyOrSubnode))
 				prefs.node(keyOrSubnode).removeNode();
 		}
-		catch(BackingStoreException e) {/*ign*/}
+		catch(BackingStoreException e) {
+			/*ign*/
+			LOG.info("removeChild: " + e);
+		}
 		prefs.remove(keyOrSubnode);
 	}
 

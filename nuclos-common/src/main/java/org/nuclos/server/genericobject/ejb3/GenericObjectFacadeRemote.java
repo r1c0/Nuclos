@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.CreateException;
-import javax.ejb.Remote;
 
 import org.nuclos.common.GenericObjectMetaDataVO;
 import org.nuclos.common.NuclosBusinessException;
@@ -48,14 +46,14 @@ import org.nuclos.server.navigation.treenode.GenericObjectTreeNode.RelationDirec
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 
-@Remote
+// @Remote
 public interface GenericObjectFacadeRemote {
 
 	@RolesAllowed("Login")
-	public abstract GenericObjectMetaDataVO getMetaData();
+	GenericObjectMetaDataVO getMetaData();
 
 	@RolesAllowed("Login")
-	public abstract Map<Integer, String> getResourceMap();
+	Map<Integer, String> getResourceMap();
 
 	/**
 	 * @param iGenericObjectId
@@ -66,7 +64,7 @@ public interface GenericObjectFacadeRemote {
 	 * @nucleus.permission mayRead(module)
 	 */
 	@RolesAllowed("Login")
-	public abstract GenericObjectVO get(Integer iGenericObjectId)
+	GenericObjectVO get(Integer iGenericObjectId)
 		throws CommonFinderException, CommonPermissionException;
 
 	/**
@@ -80,7 +78,7 @@ public interface GenericObjectFacadeRemote {
 	 * @postcondition result.isComplete()
 	 */
 	@RolesAllowed("Login")
-	public abstract GenericObjectWithDependantsVO getWithDependants(
+	GenericObjectWithDependantsVO getWithDependants(
 		Integer iGenericObjectId, Set<String> stRequiredSubEntityNames)
 		throws CommonPermissionException, CommonFinderException;
 
@@ -91,7 +89,7 @@ public interface GenericObjectFacadeRemote {
 	 * @throws CommonFinderException
 	 */
 	@RolesAllowed("Login")
-	public abstract Integer getVersion(int iGenericObjectId)
+	Integer getVersion(int iGenericObjectId)
 		throws CommonFinderException, CommonPermissionException;
 
 	/**
@@ -103,7 +101,7 @@ public interface GenericObjectFacadeRemote {
 	 * @throws CommonFinderException if no such object was found.
 	 */
 	@RolesAllowed("Login")
-	public abstract DependantMasterDataMap reloadDependants(
+	DependantMasterDataMap reloadDependants(
 		GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bAll)
 		throws CommonFinderException;
 
@@ -118,7 +116,7 @@ public interface GenericObjectFacadeRemote {
 	 * @nucleus.permission mayRead(module)
 	 */
 	@RolesAllowed("Login")
-	public abstract GenericObjectWithDependantsVO getHistorical(
+	GenericObjectWithDependantsVO getHistorical(
 		int iGenericObjectId, Date dateHistorical) throws CommonFinderException,
 		CommonPermissionException;
 
@@ -131,7 +129,7 @@ public interface GenericObjectFacadeRemote {
 	 * @todo restrict permission - check module id!
 	 */
 	@RolesAllowed("Login")
-	public abstract List<GenericObjectWithDependantsVO> getGenericObjects(
+	List<GenericObjectWithDependantsVO> getGenericObjects(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
 		Set<Integer> stRequiredAttributeIds);
 
@@ -148,7 +146,7 @@ public interface GenericObjectFacadeRemote {
 	 * @todo rename to getGenericObjectProxyList?
 	 */
 	@RolesAllowed("Login")
-	public abstract ProxyList<GenericObjectWithDependantsVO> getGenericObjectsWithDependants(
+	ProxyList<GenericObjectWithDependantsVO> getGenericObjectsWithDependants(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
 		Set<Integer> stRequiredAttributeIds,
 		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects,
@@ -169,7 +167,7 @@ public interface GenericObjectFacadeRemote {
 	 * @todo rename to getGenericObjectProxyList?
 	 */
 	@RolesAllowed("Login")
-	public abstract ProxyList<GenericObjectWithDependantsVO> getPrintableGenericObjectsWithDependants(
+	ProxyList<GenericObjectWithDependantsVO> getPrintableGenericObjectsWithDependants(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
 		Set<Integer> stRequiredAttributeIds,
 		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects,
@@ -188,7 +186,7 @@ public interface GenericObjectFacadeRemote {
 	 * @postcondition result.size() <= iMaxRowCount
 	 */
 	@RolesAllowed("Login")
-	public abstract TruncatableCollection<GenericObjectWithDependantsVO> getRestrictedNumberOfGenericObjects(
+	TruncatableCollection<GenericObjectWithDependantsVO> getRestrictedNumberOfGenericObjects(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
 		Set<Integer> stRequiredAttributeIds,
 		Set<String> stRequiredSubEntityNames,
@@ -200,7 +198,7 @@ public interface GenericObjectFacadeRemote {
 	 * @param cond condition that the leased objects to be found must satisfy
 	 * @return List<Integer> list of leased object ids
 	 */
-	public abstract List<Integer> getGenericObjectIds(Integer iModuleId,
+	List<Integer> getGenericObjectIds(Integer iModuleId,
 		CollectableSearchExpression cse);
 
 	/**
@@ -216,7 +214,7 @@ public interface GenericObjectFacadeRemote {
 	 * @return list of leased object value objects
 	 * @precondition stRequiredSubEntityNames != null
 	 */
-	public abstract Collection<GenericObjectWithDependantsVO> getGenericObjectsMore(
+	Collection<GenericObjectWithDependantsVO> getGenericObjectsMore(
 		Integer iModuleId, List<Integer> lstIds,
 		Set<Integer> stRequiredAttributeIds,
 		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects);
@@ -235,7 +233,7 @@ public interface GenericObjectFacadeRemote {
 	 * @nucleus.permission mayWrite(module)
 	 */
 	@RolesAllowed("Login")
-	public abstract GenericObjectWithDependantsVO create(
+	GenericObjectWithDependantsVO create(
 		GenericObjectWithDependantsVO gowdvo, Set<String> stRequiredSubEntityNames)
 		throws CommonPermissionException, NuclosBusinessRuleException,
 		CommonCreateException, CommonFinderException;
@@ -255,7 +253,7 @@ public interface GenericObjectFacadeRemote {
 	 * @nucleus.permission mayWrite(module)
 	 */
 	@RolesAllowed("Login")
-	public abstract GenericObjectVO create(GenericObjectWithDependantsVO gowdvo)
+	GenericObjectVO create(GenericObjectWithDependantsVO gowdvo)
 		throws CommonPermissionException, NuclosBusinessRuleException,
 		CommonCreateException;
 
@@ -269,7 +267,7 @@ public interface GenericObjectFacadeRemote {
 	 * @nucleus.permission mayWrite(module)
 	 */
 	@RolesAllowed("Login")
-	public abstract GenericObjectWithDependantsVO modify(Integer iModuleId,
+	GenericObjectWithDependantsVO modify(Integer iModuleId,
 		GenericObjectWithDependantsVO lowdcvo) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonPermissionException, CommonStaleVersionException,
@@ -284,7 +282,7 @@ public interface GenericObjectFacadeRemote {
 	 * @nucleus.permission mayDelete(module, bDeletePhysically)
 	 */
 	@RolesAllowed("Login")
-	public abstract void remove(GenericObjectWithDependantsVO gowdvo,
+	void remove(GenericObjectWithDependantsVO gowdvo,
 		boolean bDeletePhysically) throws NuclosBusinessException,
 		CommonFinderException,
 		CommonRemoveException, CommonPermissionException,
@@ -301,7 +299,7 @@ public interface GenericObjectFacadeRemote {
 	 * @throws NuclosBusinessRuleException
 	 * @throws CommonCreateException
 	 */
-	public abstract void restore(Integer iId) throws CommonFinderException,
+	void restore(Integer iId) throws CommonFinderException,
 		CommonPermissionException, CommonBusinessException;
 
 	/**
@@ -314,7 +312,7 @@ public interface GenericObjectFacadeRemote {
 	 * @nucleus.permission mayRead(module)
 	 */
 	@RolesAllowed("Login")
-	public abstract Collection<LogbookVO> getLogbook(int iGenericObjectId,
+	Collection<LogbookVO> getLogbook(int iGenericObjectId,
 		Integer iAttributeId) throws CommonFinderException,
 		CommonPermissionException;
 
@@ -327,7 +325,7 @@ public interface GenericObjectFacadeRemote {
 	 * @nucleus.permission mayWrite(module)
 	 */
 	@RolesAllowed("Login")
-	public abstract void addToGroup(int iGenericObjectId, int iGroupId,
+	void addToGroup(int iGenericObjectId, int iGroupId,
 		boolean blnCheckWriteAllowedForObject) throws CommonCreateException,
 		CommonFinderException, CommonPermissionException,
 		NuclosBusinessRuleException;
@@ -347,7 +345,7 @@ public interface GenericObjectFacadeRemote {
 	 * @nucleus.permission mayWrite(targetModule)
 	 */
 	@RolesAllowed("Login")
-	public abstract void removeFromGroup(Map<Integer, Integer> mpGOGroupRelation)
+	void removeFromGroup(Map<Integer, Integer> mpGOGroupRelation)
 		throws NuclosBusinessRuleException, CommonFinderException,
 		CommonPermissionException, CommonRemoveException,
 		CommonStaleVersionException, CommonCreateException;
@@ -366,7 +364,7 @@ public interface GenericObjectFacadeRemote {
 	 * @nucleus.permission mayWrite(module)
 	 */
 	@RolesAllowed("Login")
-	public abstract void removeFromGroup(int iGenericObjectId, int iGroupId)
+	void removeFromGroup(int iGenericObjectId, int iGroupId)
 		throws CommonFinderException, CommonPermissionException,
 		NuclosBusinessRuleException, CommonRemoveException,
 		CommonStaleVersionException, CommonCreateException;
@@ -382,7 +380,7 @@ public interface GenericObjectFacadeRemote {
 	 * @nucleus.permission mayWrite(targetModule)
 	 */
 	@RolesAllowed("Login")
-	public abstract void relate(Integer iModuleIdTarget,
+	void relate(Integer iModuleIdTarget,
 		Integer iGenericObjectIdTarget, Integer iGenericObjectIdSource,
 		String relationType) throws CommonFinderException, CommonCreateException,
 		CommonPermissionException, NuclosBusinessRuleException;
@@ -401,7 +399,7 @@ public interface GenericObjectFacadeRemote {
 	 * @nucleus.permission mayWrite(targetModule)
 	 */
 	@RolesAllowed("Login")
-	public abstract void relate(Integer iModuleIdTarget,
+	void relate(Integer iModuleIdTarget,
 		Integer iGenericObjectIdTarget, Integer iGenericObjectIdSource,
 		String relationType, Date dateValidFrom, Date dateValidUntil,
 		String sDescription) throws CommonFinderException,
@@ -417,7 +415,7 @@ public interface GenericObjectFacadeRemote {
 	 * @nucleus.permission mayWrite(targetModule)
 	 */
 	@RolesAllowed("Login")
-	public abstract void removeRelation(
+	void removeRelation(
 		Map<Integer, GenericObjectTreeNode> mpGOTreeNodeRelation)
 		throws CommonBusinessException, CommonRemoveException,
 		CommonFinderException;
@@ -435,7 +433,7 @@ public interface GenericObjectFacadeRemote {
 	 * @nucleus.permission mayWrite(targetModule)
 	 */
 	@RolesAllowed("Login")
-	public abstract void removeRelation(Integer iRelationId,
+	void removeRelation(Integer iRelationId,
 		Integer iGenericObjectIdTarget, Integer iModuleIdTarget)
 		throws CommonRemoveException, CommonFinderException,
 		CommonBusinessException;
@@ -446,7 +444,7 @@ public interface GenericObjectFacadeRemote {
 	 * @throws CommonFinderException if there is no generic object with the given id.
 	 */
 	@RolesAllowed("Login")
-	public abstract int getModuleContainingGenericObject(int iGenericObjectId)
+	int getModuleContainingGenericObject(int iGenericObjectId)
 		throws CommonFinderException;
 
 	/**
@@ -455,7 +453,7 @@ public interface GenericObjectFacadeRemote {
 	 * @throws CommonFinderException
 	 */
 	@RolesAllowed("Login")
-	public abstract int getStateIdByGenericObject(int iGenericObjectId)
+	int getStateIdByGenericObject(int iGenericObjectId)
 		throws CommonFinderException;
 
 	/**
@@ -474,7 +472,7 @@ public interface GenericObjectFacadeRemote {
 	 * @postcondition (iGenericObjectId == null) --> result.isEmpty()
 	 */
 	@RolesAllowed("Login")
-	public abstract Set<Integer> getRelatedGenericObjectIds(
+	Set<Integer> getRelatedGenericObjectIds(
 		final Integer iModuleId, final Integer iGenericObjectId,
 		final RelationDirection direction, final String relationType);
 
@@ -487,7 +485,7 @@ public interface GenericObjectFacadeRemote {
 	 * @todo restrict permission - check module id! requires the right to modify documents
 	 */
 	@RolesAllowed("Login")
-	public abstract void attachDocumentToObject(MasterDataVO mdvoDocument);
+	void attachDocumentToObject(MasterDataVO mdvoDocument);
 
 	/**
 	 * execute a list of rules for the given Object
@@ -498,21 +496,8 @@ public interface GenericObjectFacadeRemote {
 	 * @todo restrict permission - check module id!
 	 */
 	@RolesAllowed("ExecuteRulesManually")
-	public abstract void executeBusinessRules(List<RuleVO> lstRuleVO,
+	void executeBusinessRules(List<RuleVO> lstRuleVO,
 		GenericObjectWithDependantsVO govo, boolean bSaveAfterRuleExecution)
 		throws CommonBusinessException;
-
-	/**
-	 * @param usagecriteria
-	 * @return the collection of calculated attributes for leased object with the given usagecriteria
-	 * @throws CommonFinderException if no such object was found.
-	 * @throws CommonPermissionException if the user doesn't have the permission to view the leased object.
-	 * @throws IllegalArgumentException if the given module id doesn't match the leased object's module id.
-	 * @postcondition result != null
-	 * @postcondition result.isComplete()
-	 */
-//	public abstract Collection<DynamicAttributeVO> getCalculatedAttributeValuesForGenericObject(
-//		UsageCriteria usagecriteria, Integer iGenericObjectId)
-//		throws CommonFinderException, CommonPermissionException;
 
 }

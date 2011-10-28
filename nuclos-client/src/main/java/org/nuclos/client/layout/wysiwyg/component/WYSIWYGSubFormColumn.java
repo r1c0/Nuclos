@@ -57,13 +57,8 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Serializable, WYSIWYGEditorModes {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static final String PROPERTY_LABEL = PROPERTY_LABELS.LABEL;
 	public static final String PROPERTY_VISIBLE = PROPERTY_LABELS.VISIBLE;
@@ -187,7 +182,7 @@ public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Se
 		}
 	}
 	
-	public PropertyValue getDefaultPropertyValue(String p) {
+	public PropertyValue<?> getDefaultPropertyValue(String p) {
 		if (p.equals(PROPERTY_LABEL)) {
 			return new PropertyValueString(field.getLabel());
 		} else if (p.equals(PROPERTY_ENABLED)) {
@@ -237,7 +232,7 @@ public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Se
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#setProperty(java.lang.String, org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue, java.lang.Class)
 	 */
 	@Override
-	public void setProperty(String property, PropertyValue value, Class<?> valueClass) throws CommonBusinessException {
+	public void setProperty(String property, PropertyValue<?> value, Class<?> valueClass) throws CommonBusinessException {
 		properties.setProperty(property, value, valueClass);
 	}
 

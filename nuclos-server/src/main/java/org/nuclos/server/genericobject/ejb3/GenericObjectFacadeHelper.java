@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ejb.CreateException;
-
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.common.AttributeProvider;
@@ -94,7 +92,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
  */
 public class GenericObjectFacadeHelper {
 
-	private static final Logger log = Logger.getLogger(GenericObjectFacadeHelper.class);
+	private static final Logger LOG = Logger.getLogger(GenericObjectFacadeHelper.class);
 
 	/** @todo tune the DEFAULT_PAGESIZE (300 seems to be much better than 1000) */
 	public static final int DEFAULT_PAGESIZE = 300;
@@ -126,56 +124,6 @@ public class GenericObjectFacadeHelper {
 			layoutFacade = ServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
 		return layoutFacade;
 	}
-
-	/**
-	 * @param sSql
-	 * @return empty leased objects (without attributes)
-	 * @postcondition result != null
-	 */
-	 
-//	static List<GenericObjectWithDependantsVO> getEmptyGenericObjectsBySQL(Integer iModuleId, String sUserName, String sSql, final Set<Integer> stRequiredAttributeIds) {
-//		final List<GenericObjectWithDependantsVO> result = NuclosSQLUtils.runSelect(NuclosDataSources.getDefaultDS(), sSql,
-//				new NuclosSQLUtils.AbstractTransformResultSetIntoList<GenericObjectWithDependantsVO>() {
-//
-//			@Override
-//			public GenericObjectWithDependantsVO transform(ResultSet rs) throws SQLException {
-//				final NuclosValueObject nvo = new NuclosValueObject(SQLUtils.getInteger(rs, "intid"),
-//						rs.getTimestamp("datcreated"), rs.getString("strcreated"), rs.getTimestamp("datchanged"), rs.getString("strchanged"),
-//						SQLUtils.getInteger(rs, "intversion"));
-//
-//				/** @todo optimize don't create empty DependantMasterDataMaps here */
-//				return new GenericObjectWithDependantsVO(nvo, SQLUtils.getInteger(rs, "intid_t_md_module"),
-//						SQLUtils.getInteger(rs, "intid_t_ud_go_parent"), SQLUtils.getInteger(rs, "intid_t_md_instance"), stRequiredAttributeIds,
-//						rs.getBoolean("blndeleted"), new DependantMasterDataMap());
-//			}
-//		});
-//
-//		// detect all genericobjcts on which the user has read-permission ...
-//		final Set<Integer> stIds = SecurityCache.getInstance().getReadableGenericObjectIdsByModule(sUserName, iModuleId);
-//
-//		// ... and remove all others from the result list
-//		if (stIds != null) {
-//			CollectionUtils.retainAll(result, new Predicate<GenericObjectWithDependantsVO>() {
-//				public boolean evaluate(GenericObjectWithDependantsVO gowdvo) {
-//					return (gowdvo == null) ? false : stIds.contains(gowdvo.getId());
-//				}
-//			});
-//		}
-//
-//		assert result != null;
-//		return result;
-//	}
-	
-
-	/**
-	 * @param sSql
-	 * @return List<Integer> List of leased object ids found by the given SQL query.
-	 */
-	 /*
-	public static List<Integer> getGenericObjectIdsBySQL(Integer iModuleId, String sUserName, String sSql) {
-		return CollectionUtils.transform(getEmptyGenericObjectsBySQL(iModuleId, sUserName, sSql, Collections.<Integer>emptySet()), new NuclosValueObject.GetId());
-	}
-	*/
 
 	/**
 	 * efficiently creates an ArrayList by adding each element of the given Iterator to it.
@@ -224,6 +172,7 @@ public class GenericObjectFacadeHelper {
 					}
 					catch(NuclosAttributeNotFoundException e) {
 						// Attribute was deleted
+						LOG.debug("getHistoricalAttributes: " + e);
 						continue;
 					}
 					final Integer iValueId = (tuple.get(1) != null) ? tuple.get(1, Integer.class) : tuple.get(2, Integer.class);
@@ -411,71 +360,9 @@ public class GenericObjectFacadeHelper {
 			result.add(go);
 		}
 		
-//		final String sSql = getUnparser(username).unparseExpression(iModuleId, clctexpr, 0);
-//
-//		final KnownSizeIterator<GenericObjectWithDependantsVO> iter = getGenericObjectsIteratorBySQL(iModuleId, username, sSql,
-//				DEFAULT_PAGESIZE, stRequiredAttributeIds, stRequiredSubEntityNames, bIncludeParentObjects);
-//
-//		final List<GenericObjectWithDependantsVO> result = GenericObjectFacadeHelper.newArrayList(iter);
-
 		assert result != null;
 		return result;
 	}
-
-	/**
-	 * @param govo
-	 * @return the calculated attributes
-	 * @postcondition result != null
-	 */
-//	private static Collection<AttributeCVO> getCalculatedAttributes(GenericObjectVO govo) {
-//		final UsageCriteria usagecriteria = govo.getUsageCriteria(AttributeCache.getInstance());
-//		final Collection<AttributeCVO> result;
-//		try {
-//			final GenericObjectMetaDataProvider lometaprovider = GenericObjectMetaDataCache.getInstance();
-//			result = CollectionUtils.select(lometaprovider.getAttributeCVOsByLayoutId(lometaprovider.getBestMatchingLayoutId(usagecriteria, false)), new IsCalculated());
-//		}
-//		catch (CommonFinderException ex) {
-//			throw new NuclosFatalException(ex);
-//		}
-//		assert result != null;
-//		return result;
-//	}
-
-	/**
-	 * @return the calculated attribute values
-	 * @postcondition result != null
-	 */
-//	public Collection<DynamicAttributeVO> getCalculatedAttributeValues(final GenericObjectVO govo, String username) {
-//		// get calculated attributes, if any
-//		final Collection<AttributeCVO> collattrcvoCalculated = getCalculatedAttributes(govo);
-//		final List<DynamicAttributeVO> dcollattrcvo = new ArrayList<DynamicAttributeVO>(collattrcvoCalculated.size());
-//		if (!collattrcvoCalculated.isEmpty()) {
-//			final String sSql = "select " + getCommaSeparatedEscapedAttributeNames(collattrcvoCalculated) + " from v_ud_go_general where intid = " + govo.getId();
-//			Date startDate = new Date();
-//			NuclosSQLUtils.runSelect(NuclosDataSources.getDefaultDS(), sSql, new ResultSetRunner<Void>() {
-//				public Void perform(ResultSet rs) throws SQLException {
-//					if (!rs.next()) {
-//						throw new NuclosFatalException();
-//					}
-//					for (AttributeCVO attrcvo : collattrcvoCalculated) {
-//						dcollattrcvo.add(new DynamicAttributeVO(attrcvo.getId(), null, AttributeCVO.getAttributeValueFromGeneralGenericObjectView(attrcvo, rs)));
-//					}
-//					return null;
-//				}
-//			});
-//			Date endate = new Date();
-//			NuclosPerformanceLogger.performanceLog(
-//					startDate.getTime(),
-//					endate.getTime(),
-//					username,
-//					govo.getId(),
-//					govo.getModuleId(),
-//					"Reading the calculated attributes ("+getCommaSeparatedEscapedAttributeNames(collattrcvoCalculated)+") for an objekt of type "+govo.getModuleId(),
-//					"",
-//					"");
-//		}
-//		return dcollattrcvo;
-//	}
 
 	// copied from the formerly ejbPostCreate from GenericObjectBean
 	public void postCreate(GenericObjectVO govo) throws CommonCreateException {
@@ -493,7 +380,7 @@ public class GenericObjectFacadeHelper {
 			throw new CommonFatalException(ex);
 		}
 
-		// @todo try to refactor - the following is nearly duplicated in setValueObject
+		// TODO: try to refactor - the following is nearly duplicated in setValueObject
 		final Collection<BadAttributeValueException> collex = new ArrayList<BadAttributeValueException>();
 		// create leased object attributes not in exclude list:
 		for (DynamicAttributeVO attrvo : govo.getAttributes()) {
@@ -504,24 +391,19 @@ public class GenericObjectFacadeHelper {
 					final String sCanonicalValue = attrvo.getCanonicalValue(lometacache);
 
 					if (!StringUtils.isNullOrEmpty(sCanonicalValue)) {
-						/** @todo consider attribute group permissions here ! */
+						// TODO:consider attribute group permissions here ! */
 						/*attrcvo = AttributeCache.getInstance().getAttribute(attrvo.getAttributeId());
 											if (!SecurityCache.getInstance().getAttributegroupsRW(entityContext.getCallerPrincipal().getName()).contains(attrcvo.getAttributegroupId())) {*/
-						/** todo activate following line when client does not deliver readonly attributes anymore to server */
+						// TODO: activate following line when client does not deliver readonly attributes anymore to server */
 						//throw new CreateException(attrcvo.getName()); //is a permission exception
 						/*}*/
-
-						try {
-							getGenericObjectFacade().createGenericObjectAttribute(govo.getId(), iAttributeId, attrvo.getValueId(), sCanonicalValue, false);
-						}
-						catch (CreateException ex) {
-							throw new CommonFatalException(ex);
-						}
+						
+						getGenericObjectFacade().createGenericObjectAttribute(govo.getId(), iAttributeId, attrvo.getValueId(), sCanonicalValue, false);
 					}
 				}
 				else {
 					// attribute not in layout - issue message:
-					log.info("Es wird versucht, das Attribut " + sAttributeName +
+					LOG.info("Es wird versucht, das Attribut " + sAttributeName +
 							" in das Objekt mit der ID " + govo.getId() + " zu schreiben; es ist im Layout aber nicht verf\u00fcgbar.");
 				}
 			}
@@ -529,21 +411,14 @@ public class GenericObjectFacadeHelper {
 
 		if (!collex.isEmpty()) {
 			final BadGenericObjectException exCause = new BadGenericObjectException(govo.getId(), collex, govo.getAttributes().size());
-			final CreateException ex = new CreateException(exCause.getMessage());
-			ex.initCause(exCause);
-			throw new CommonFatalException(ex);
+			throw new CommonFatalException(exCause);
 		}
 
 		// generate system identifier:
 		final String sCanonicalValueSystemIdentifier = BusinessIDFactory.generateSystemIdentifier(govo.getModuleId());
 		assert !StringUtils.isNullOrEmpty(sCanonicalValueSystemIdentifier);
 
-		try {
-			getGenericObjectFacade().createGenericObjectAttribute(govo.getId(), NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getId().intValue(), null, sCanonicalValueSystemIdentifier, false);
-		}
-		catch (CreateException ex) {
-			throw new CommonFatalException(ex);
-		}
+		getGenericObjectFacade().createGenericObjectAttribute(govo.getId(), NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getId().intValue(), null, sCanonicalValueSystemIdentifier, false);
 
 		// store system attributes:
 		if (Modules.getInstance().isMainModule(govo.getModuleId())) {
@@ -573,9 +448,6 @@ public class GenericObjectFacadeHelper {
 			storeAttributeValue(govo, attrprovider.getAttribute(NuclosEOField.CHANGEDAT.getMetaData().getId().intValue()), govo.getChangedAt(), bLogbookTracking);
 			storeAttributeValue(govo, attrprovider.getAttribute(NuclosEOField.CHANGEDBY.getMetaData().getId().intValue()), govo.getChangedBy(), bLogbookTracking);
 		}
-		catch (CreateException ex) {
-			throw new NuclosFatalException(ex);
-		}
 		catch (CommonValidationException ex) {
 			throw new NuclosFatalException(ex);
 		}
@@ -593,94 +465,13 @@ public class GenericObjectFacadeHelper {
 	 * @precondition attrcvo != null
 	 * @precondition oValue != null
 	 */
-	private void storeAttributeValue(GenericObjectVO govo, AttributeCVO attrcvo, Object oValue, boolean bLogbookTracking) throws CreateException, CommonValidationException, NuclosBusinessException {
+	private void storeAttributeValue(GenericObjectVO govo, AttributeCVO attrcvo, Object oValue, boolean bLogbookTracking) throws CommonValidationException, NuclosBusinessException {
 		if (oValue == null) {
 			throw new NullArgumentException("oValue");
 		}
 		final DynamicAttributeVO attrvo = new DynamicAttributeVO(attrcvo.getId(), null, oValue);
-
-//		try {
-//			GenericObjectAttribute goa = getGenericObjectFacade().findAttributeByGoAndAttributeId(govo.getId(), attrcvo.getId());
-
-			// entry for goa exists - update it:
-//			getGenericObjectFacade().updateGenericObjectAttribute(goa, attrvo, govo.getId(), bLogbookTracking);
-			getGenericObjectFacade().updateGenericObjectAttribute(attrvo, govo.getId(), bLogbookTracking);
-//		}
-//		catch (CommonFinderException ex) {
-//			// entry for goa does not exist - create it:
-//			getGenericObjectFacade().createGenericObjectAttribute(govo.getId(), attrvo.getAttributeId(), attrvo.getValueId(), attrvo.getCanonicalValue(AttributeCache.getInstance()), true);
-//		}
 	}
-
-	// replaces the getValueObject() from GenericObjectBean
-//	public GenericObjectVO getValueObject(GenericObjectVO govo) {
-//		// 1. get the persistent attributes from the database:
-//		final Collection<GenericObjectAttribute> attributes;
-//		try {
-//			attributes = getGenericObjectFacade().findAttributesByGenericObjectId(govo.getId());
-//		}
-//		catch (CommonFinderException ex) {
-//			throw new NuclosFatalException(ex);
-//		}
-//
-//		final GenericObjectVO result = getValueObject(govo,attributes);
-//
-//		// 2. add the calculated attributes, if any, to the result:
-//		final Collection<AttributeCVO> collattrcvoCalculated = getCalculatedAttributes(result);
-//		if (!collattrcvoCalculated.isEmpty()) {
-//			this.addCalculatedValues(collattrcvoCalculated, result);
-//		}
-		
-//		assert result != null;
-//		return result;
-//	}
-
-	// replaces the getValueObject(Collection<DynamicAttributeVO> collattrvo) from GenericObjectBean
 	
-//	private GenericObjectVO getValueObject(GenericObjectVO govo, Collection<GenericObjectAttribute> attributes) {
-//		if (attributes == null) {
-//			throw new NullArgumentException("attributes");
-//		}
-//
-//		final GenericObjectVO result = govo;
-//
-//		final boolean bUseOptimization = true;
-//		if (bUseOptimization) {
-//			assert result.getAttributes().isEmpty();
-//			Collection<DynamicAttributeVO> attrVOList = new ArrayList<DynamicAttributeVO>();
-//
-//			for (GenericObjectAttribute attr : attributes) {
-//				if(attr.getExternalValue() == null) {				
-//					attrVOList.add(attr.getValueObject());
-//				}
-//				else {
-//					DynamicAttributeVO vo = attr.getValueObject();
-//					vo.setValue(attr.getExternalValue());
-//					attrVOList.add(vo);
-//				}
-//			}
-//			result.setAttributes(attrVOList);
-//		}
-//		else {
-//			//add leased object attributes to vo for which user has appropriate attribute group permissions
-//			for (GenericObjectAttribute attr : attributes) {
-//				//			AttributeCVO attribute = AttributeCache.getInstance().getAttribute(attrvo.getAttributeId());
-//				/** @todo consider attribute group permissions here ! */
-//				/*if ((SecurityCache.getInstance().getAttributegroupsRO(entityContext.getCallerPrincipal().getName()).contains(attribute.getAttributegroupId())) || (attribute.isSystemAttribute())) {*/
-////		this.mapAttributes.put(voGenericObjectAttribute.getAttributeId(), voGenericObjectAttribute);
-//				result.setAttribute(attr.getValueObject());
-//				/*}*/
-//			}
-//		}
-//
-//		assert result != null;
-//		return result;
-//	}
-	
-	
-	/**
-	 * 
-	 */
 	public void createLogBookEntryIfNecessary(final EntityObjectVO eoOld, final EntityObjectVO eoNew, final DynamicAttributeVO vo) {
 		
 		final String field = DalSupportForGO.getEntityFieldFromAttribute(vo.getAttributeId());

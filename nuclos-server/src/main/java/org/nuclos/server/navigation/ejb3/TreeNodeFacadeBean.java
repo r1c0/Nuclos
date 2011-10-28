@@ -343,11 +343,8 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 					throw new NuclosFatalException(e);
 				}
 			}
-
 		});
-
 		return result;
-
 	}
 
 	/**
@@ -1055,7 +1052,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 
 	private static class GenericObjectTreeNodeChildrenComparator implements Comparator<TreeNode> {
 		@Override
-		@SuppressWarnings("unchecked")
 		public int compare(TreeNode tn1, TreeNode tn2) {
 			int result = getOrder(tn1) - getOrder(tn2);
 			if (result == 0) {

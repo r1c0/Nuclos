@@ -95,7 +95,6 @@ public final class ReferencingCollectableSearchCondition extends AbstractCollect
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public int getType() {
 		return TYPE_REFERENCING;
 	}

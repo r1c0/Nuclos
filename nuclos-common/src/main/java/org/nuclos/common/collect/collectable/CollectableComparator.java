@@ -65,7 +65,6 @@ public class CollectableComparator<Clct extends Collectable> implements Comparat
 	 * fix. we do not sort by id. we have to add an compound comparator that respects the id. 
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public int compare(Clct clct1, Clct clct2) {
 		final CollectableField clctf1 = clct1.getField(this.sFieldName);
 		final CollectableField clctf2 = clct2.getField(this.sFieldName);

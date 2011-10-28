@@ -39,6 +39,7 @@ import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.NuclosCollectController;
@@ -96,6 +97,8 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
  */
 public class StateModelCollectController extends NuclosCollectController<CollectableStateModel> {
 
+	private static final Logger LOG = Logger.getLogger(StateModelCollectController.class);
+
 	private final CollectPanel<CollectableStateModel> pnlCollect = new StateModelCollectPanel(false);
 	private final MainFrameTab ifrm;
 	private final MasterDataSubFormController subformctlUsages;
@@ -108,8 +111,8 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 			StateModelCollectController smcc = StateModelCollectController.this;
 			final boolean bWriteAllowed = SecurityCache.getInstance().isWriteAllowedForMasterData(sEntity);
 
-			smcc.pnlEdit.pnlHeader.clcttfDescription.setEnabled(bWriteAllowed);
-			smcc.pnlEdit.pnlHeader.clcttfName.setEnabled(bWriteAllowed);
+			smcc.pnlEdit.getHeader().getDescriptionField().setEnabled(bWriteAllowed);
+			smcc.pnlEdit.getHeader().getNameField().setEnabled(bWriteAllowed);
 
 			StateModelEditorPropertiesPanel smepp = smcc.pnlEdit.getStateModelEditor().getStateModelEditorPropertiesPanel();
 			smepp.getTransitionRolePanel().getTblRoles().setEnabled(bWriteAllowed);
@@ -163,7 +166,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 
 		ifrm.setLayeredComponent(pnlCollect);
 
-		this.getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(pnlEdit, pnlEdit.pnlHeader.newCollectableComponentsProvider()));
+		this.getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(pnlEdit, pnlEdit.getHeader().newCollectableComponentsProvider()));
 
 		setupShortcutsForTabs(ifrm);
 
@@ -486,8 +489,8 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 		shapeTitle.setDimension(new Rectangle2D.Double(x, y, iWidth, iHeight));
 
 		// the screenvalues of the name and the description are used
-		final String sName = this.pnlEdit.pnlHeader.clcttfName.getJTextField().getText();
-		final String sDescription = this.pnlEdit.pnlHeader.clcttfDescription.getJTextField().getText();
+		final String sName = pnlEdit.getHeader().getNameField().getJTextField().getText();
+		final String sDescription = pnlEdit.getHeader().getDescriptionField().getJTextField().getText();
 
 		shapeTitle.setText(sName + " " + sDescription);
 		shapeTitle.setBorderSize(0);
@@ -511,10 +514,6 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 	}
 
 	private class StateModelCollectPanel extends CollectPanel<CollectableStateModel> {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		StateModelCollectPanel(boolean bSearchPanelAvailable) {
 			super(bSearchPanelAvailable);

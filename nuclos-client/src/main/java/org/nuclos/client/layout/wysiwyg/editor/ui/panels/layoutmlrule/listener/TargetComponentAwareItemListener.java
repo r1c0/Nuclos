@@ -24,6 +24,7 @@ import java.util.Vector;
 
 import javax.swing.JComboBox;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComponent;
@@ -49,6 +50,8 @@ import org.nuclos.server.report.valueobject.ValuelistProviderVO;
  *
  */
 public class TargetComponentAwareItemListener implements ItemListener {
+
+	private static final Logger LOG = Logger.getLogger(TargetComponentAwareItemListener.class);
 
 	private JComboBox						parameterForSourceComponent	= null;
 	private WYSIWYGLayoutEditorPanel	editorPanel							= null;
@@ -154,8 +157,8 @@ public class TargetComponentAwareItemListener implements ItemListener {
 				}
 			}
 		}
-		catch(Exception ex) {
-			
+		catch (Exception e) {
+			LOG.warn("initParameterForSourceComponent failed: " + e, e);
 		}
 	}
 }

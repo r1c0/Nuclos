@@ -48,7 +48,7 @@ public class TableRowIndicator extends MouseInputAdapter {
     private int mouseYOffset, resizingRow; 
     private Cursor otherCursor = resizeCursor; 
     private JTable table;
-    private DetailsSubFormController clctcontroller;
+    private DetailsSubFormController<?> clctcontroller;
     private Set<JTable> sTables;
     private Preferences prefs;
     
@@ -56,7 +56,7 @@ public class TableRowIndicator extends MouseInputAdapter {
     List<ListSelectionListener> lstListener;
     int mode;
 
-    public TableRowIndicator(JTable table, int mode, Preferences pref, DetailsSubFormController clctcontroller) { 
+    public TableRowIndicator(JTable table, int mode, Preferences pref, DetailsSubFormController<?> clctcontroller) { 
         this.table = table;
         this.mode = mode;
         this.prefs = pref;

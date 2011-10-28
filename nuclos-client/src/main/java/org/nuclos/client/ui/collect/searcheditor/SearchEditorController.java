@@ -89,16 +89,10 @@ public class SearchEditorController {
 
 	private void setupSearchEditorPanel() {
 		// enable drag (as in "drag&drop"):
-		this.setupDataTransfer(pnl.tree);
+		setupDataTransfer(pnl.getTree());
+		addMouseListenerTo(pnl.getTree());
 
-		this.addMouseListenerTo(pnl.tree);
-
-		pnl.tree.setCellRenderer(new DefaultTreeCellRenderer() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
+		pnl.getTree().setCellRenderer(new DefaultTreeCellRenderer() {
 			@Override
 			public Component getTreeCellRendererComponent(JTree tree, Object oValue, boolean bSelected, boolean bExpanded,
 					boolean bLeaf, int iRow, boolean bHasFocus) {
@@ -110,7 +104,7 @@ public class SearchEditorController {
 			}
 		});
 
-		pnl.btnSimplify.addActionListener(new ActionListener() {
+		pnl.getSimplifyButton().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				pnl.setSearchCondition(SearchConditionUtils.simplified(pnl.getSearchCondition()));
@@ -229,10 +223,7 @@ public class SearchEditorController {
 	 * inner class TransferHandler. Handles drag&drop, copy&paste for the tree.
 	 */
 	private class TransferHandler extends javax.swing.TransferHandler {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		private final Component parent;
 		/**
 		 * the source of the cut/copy or drag operation.

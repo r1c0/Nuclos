@@ -44,6 +44,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.genericobject.Modules;
@@ -86,10 +87,8 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(NuclosEntityNameStep.class);
+
 	JLabel lbName;
 	JTextField tfName;
 
@@ -315,9 +314,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 						catch(CommonPermissionException e1) {
 							Errors.getInstance().showExceptionDialog(NuclosEntityNameStep.this, e1);
 						}
-
 						btnRemove.setVisible(true);
-
 					}
 					else if(obj instanceof String) {
 						NuclosEntityNameStep.this.model.setEditMode(false);
@@ -327,11 +324,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 						NuclosEntityNameStep.this.setComplete(false);
 					}
 				}
-
-
 			}
-
-
 		});
 
 		btnRemove.addActionListener(new ActionListener() {

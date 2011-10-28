@@ -24,10 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SearchConditionUtils;
@@ -81,11 +79,13 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Local(DatasourceFacadeLocal.class)
-@Remote(DatasourceFacadeRemote.class)
+// @Stateless
+// @Local(DatasourceFacadeLocal.class)
+// @Remote(DatasourceFacadeRemote.class)
 @Transactional
 public class DatasourceFacadeBean extends NuclosFacadeBean implements DatasourceFacadeLocal, DatasourceFacadeRemote {
+
+	private static final Logger LOG = Logger.getLogger(DatasourceFacadeBean.class);
 
    private static enum DataSourceType {
 		DYNAMICENTITY(NuclosEntity.DYNAMICENTITY, NuclosEntity.DYNAMICENTITYUSAGE, "dynamicEntity"),
@@ -233,7 +233,8 @@ public Collection<DatasourceVO> getDatasourcesForCurrentUser() {
     * @return new datasource
     */
    @Override
-public DatasourceVO create(DatasourceVO datasourcevo, List<String> lstUsedDatasources) throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException {
+public DatasourceVO create(DatasourceVO datasourcevo, List<String> lstUsedDatasources) 
+		throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException {
    	datasourcevo.validate();
    	updateValidFlag(datasourcevo);
 
@@ -901,6 +902,7 @@ public void removeDynamicEntity(DynamicEntityVO dynamicEntityVO) throws CommonFi
 		}
 		catch(CommonValidationException e) {
 			// no validation here
+			LOG.info("removeDynamicEntity: " + e);
 		}
   		getMasterDataFacade().remove(NuclosEntity.DYNAMICENTITY.getEntityName(), MasterDataWrapper.wrapDatasourceVO(dbDynamicEntityVO), false);
   		getMasterDataFacade().notifyClients(NuclosEntity.DYNAMICENTITY.getEntityName());
@@ -980,10 +982,12 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
    		this.validateSqlFromXML(datasourcevo.getSource());
    		datasourcevo.setValid(Boolean.TRUE);
 		}
-		catch(CommonValidationException ex) {
+		catch(CommonValidationException e) {
+			LOG.info("updateValidFlag: " + e);
 			datasourcevo.setValid(Boolean.FALSE);
 		}
-		catch(NuclosDatasourceException ex) {
+		catch(NuclosDatasourceException e) {
+			LOG.info("updateValidFlag: " + e);
 			datasourcevo.setValid(Boolean.FALSE);
 		}
    }
@@ -1112,8 +1116,9 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
 		try {
 			lstParams = this.getParameters(sDatasourceXML);
 		}
-		catch(NuclosDatasourceException ex) {
+		catch(NuclosDatasourceException e) {
 			// No parameters defined?
+			LOG.info("getTestParameters: " + e);
 			return result;
 		}
 

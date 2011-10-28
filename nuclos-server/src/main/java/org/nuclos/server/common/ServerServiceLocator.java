@@ -25,7 +25,6 @@ import org.nuclos.common2.ServiceLocator;
 
 public class ServerServiceLocator extends ServiceLocator {
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getFacade(Class<T> c) {
 		final Object target = super.getFacade(c);

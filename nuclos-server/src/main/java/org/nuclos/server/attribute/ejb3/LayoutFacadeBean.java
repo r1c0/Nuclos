@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.nuclos.common.AttributeProvider;
 import org.nuclos.common.GenericObjectMetaDataProvider;
@@ -69,9 +66,9 @@ import org.xml.sax.InputSource;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Local(LayoutFacadeLocal.class)
-@Remote(LayoutFacadeRemote.class)
+// @Stateless
+// @Local(LayoutFacadeLocal.class)
+// @Remote(LayoutFacadeRemote.class)
 @Transactional
 public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFacadeLocal, LayoutFacadeRemote {
 

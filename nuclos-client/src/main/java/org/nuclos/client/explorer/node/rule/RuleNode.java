@@ -35,7 +35,6 @@ import java.util.*;
  */
 public class RuleNode extends AbstractRuleTreeNode {
 
-	private static final long serialVersionUID = 1L;
 	private RuleVO ruleVo;
 	private String entity;
 	private String eventName;

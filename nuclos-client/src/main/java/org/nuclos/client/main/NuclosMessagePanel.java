@@ -39,10 +39,6 @@ import org.nuclos.common2.CommonLocaleDelegate;
  * @version 01.00.00
  */
 public class NuclosMessagePanel extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	private final Logger log = Logger.getLogger(this.getClass());
 

@@ -296,8 +296,8 @@ public class StateViewComponent extends JPanel {
 			lbl.setFont(lbl.getFont().deriveFont(Font.BOLD));
 			popup.add(lbl);
 		}
-		for (Iterator iterator = mpSubsequentStatesAction.keySet().iterator(); iterator.hasNext();) {
-			StateWrapper state = (StateWrapper) iterator.next();
+		for (Iterator<StateWrapper> iterator = mpSubsequentStatesAction.keySet().iterator(); iterator.hasNext();) {
+			StateWrapper state = iterator.next();
 			JMenuItem menuItem = new JMenuItem(mpSubsequentStatesAction.get(state));
 			menuItem.setLabel(state.getCombinedStatusText());
 			popup.add(menuItem);

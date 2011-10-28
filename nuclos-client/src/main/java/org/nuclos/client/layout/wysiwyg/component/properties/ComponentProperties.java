@@ -48,7 +48,7 @@ public class ComponentProperties implements Serializable {
 
 	private static final long serialVersionUID = 8669223366017896044L;
 	
-	private Map<String, PropertyValue> properties;
+	private Map<String, PropertyValue<? extends Object>> properties;
 	private Map<String, String> labels;
 	private WYSIWYGComponent c;
 	private WYSIWYGMetaInformation metaInf;
@@ -60,10 +60,9 @@ public class ComponentProperties implements Serializable {
 	 * @param c the {@link WYSIWYGComponent} linked to this {@link ComponentProperties}
 	 * @param metaInf the {@link WYSIWYGMetaInformation}
 	 */
-	@SuppressWarnings("unchecked")
 	public ComponentProperties(WYSIWYGComponent c, WYSIWYGMetaInformation metaInf) {
 		this.properties = new ListOrderedMap();
-		this.labels = new HashMap();
+		this.labels = new HashMap<String,String>();
 		this.c = c;
 		this.metaInf = metaInf;
 	}
@@ -73,7 +72,7 @@ public class ComponentProperties implements Serializable {
 	 * @param properties {@link Map} with the {@link PropertyValue}
 	 * @param c the {@link WYSIWYGComponent} for this {@link PropertyValue} {@link Map}
 	 */
-	public ComponentProperties(Map<String, PropertyValue> properties, WYSIWYGComponent c) {
+	public ComponentProperties(Map<String, PropertyValue<? extends Object>> properties, WYSIWYGComponent c) {
 		this.properties = properties;
 		this.c = c;
 	}
@@ -85,7 +84,7 @@ public class ComponentProperties implements Serializable {
 	 * @param labels the {@link Map} with the Labels
 	 * @param metaInf the {@link WYSIWYGMetaInformation}
 	 */
-	public ComponentProperties(Map<String, PropertyValue> properties, WYSIWYGComponent c, Map<String, String> labels, WYSIWYGMetaInformation metaInf) {
+	public ComponentProperties(Map<String, PropertyValue<? extends Object>> properties, WYSIWYGComponent c, Map<String, String> labels, WYSIWYGMetaInformation metaInf) {
 		this(properties, c);
 		this.labels = labels;
 		this.metaInf = metaInf;
@@ -101,7 +100,7 @@ public class ComponentProperties implements Serializable {
 	/**
 	 * @return a {@link Map} with the Name of the Property and the {@link PropertyValue} Object
 	 */
-	public Map<String, PropertyValue> getProperties() {
+	public Map<String, PropertyValue<?>> getProperties() {
 		return properties;
 	}
 	
@@ -109,13 +108,13 @@ public class ComponentProperties implements Serializable {
 	 * Returns a filtered Set of {@link PropertyValue} depending on the {@link WYSIWYGEditorModes} currently in.
 	 * @return a {@link Map} with all the {@link PropertyValue}s allowed for the current {@link WYSIWYGEditorModes}
 	 */
-	public Map<String, PropertyValue> getFilteredProperties() {
-		Map<String, PropertyValue> result = getClonedProperties();
+	public Map<String, PropertyValue<?>> getFilteredProperties() {
+		Map<String, PropertyValue<?>> result = getClonedProperties();
 		
 		try {
 			WYSIWYGLayoutEditorPanel editor = (c instanceof WYSIWYGLayoutEditorPanel)?(WYSIWYGLayoutEditorPanel)c:c.getParentEditor();
 			int mode = editor.getController().getMode();
-			for (Map.Entry<String, PropertyValue> entry : properties.entrySet()) {
+			for (Map.Entry<String, PropertyValue<?>> entry : properties.entrySet()) {
 				if ((PropertyUtils.getPropertyMode(c, entry.getKey()) & mode) != mode) {
 					result.remove(entry.getKey());
 				}
@@ -129,14 +128,13 @@ public class ComponentProperties implements Serializable {
 	/**
 	 * @return a new {@link Map} with the PropertyNames and the {@link PropertyValue} Objects
 	 */
-	@SuppressWarnings("unchecked")
-	public Map<String, PropertyValue> getClonedProperties() {
-		Map<String, PropertyValue> cloneProperties = new ListOrderedMap();
+	public Map<String, PropertyValue<?>> getClonedProperties() {
+		Map<String, PropertyValue<?>> cloneProperties = new ListOrderedMap();
 
 		for (Iterator<String> it = properties.keySet().iterator(); it.hasNext();) {
 			String key = it.next();
 			try {
-				cloneProperties.put(key, (PropertyValue)properties.get(key).clone());
+				cloneProperties.put(key, (PropertyValue<?>) properties.get(key).clone());
 			} catch (CloneNotSupportedException e) {
 				log.error(e);
 			}
@@ -171,7 +169,7 @@ public class ComponentProperties implements Serializable {
 	 * @param property the Property to get the {@link PropertyValue} for
 	 * @return the {@link PropertyValue} found for the Property
 	 */
-	public PropertyValue getProperty(String property) {
+	public PropertyValue<? extends Object> getProperty(String property) {
 		return properties.get(property);
 	}
 
@@ -184,8 +182,7 @@ public class ComponentProperties implements Serializable {
 	 * @param valueClass the Class the Value is in
 	 * @throws CommonBusinessException
 	 */
-	@SuppressWarnings("unchecked")
-	public void setProperty(String property, PropertyValue value, Class<?> valueClass) throws CommonBusinessException {
+	public void setProperty(String property, PropertyValue<?> value, Class<?> valueClass) throws CommonBusinessException {
 		try {
 			if (c instanceof WYSIWYGLayoutEditorPanel)
 				((WYSIWYGLayoutEditorPanel) c).getUndoRedoFunction().loggingChangeComponentsProperties(c, getClonedInstance(), ((WYSIWYGLayoutEditorPanel) c).getTableLayoutUtil());
@@ -265,8 +262,7 @@ public class ComponentProperties implements Serializable {
 	 * @param newProperties
 	 * @throws CommonBusinessException
 	 */
-	@SuppressWarnings("unchecked")
-	public void setProperties(Map<String, PropertyValue> newProperties) throws CommonBusinessException {
+	public void setProperties(Map<String, PropertyValue<?>> newProperties) throws CommonBusinessException {
 		try {
 			if (c instanceof WYSIWYGLayoutEditorPanel)
 				((WYSIWYGLayoutEditorPanel) c).getUndoRedoFunction().loggingChangeComponentsProperties(c, getClonedInstance(), ((WYSIWYGLayoutEditorPanel) c).getTableLayoutUtil());
@@ -276,7 +272,7 @@ public class ComponentProperties implements Serializable {
 		catch (CommonFatalException ex) { } 
 		catch (NullPointerException ex) { }
 		
-		for (Map.Entry<String, PropertyValue> e : newProperties.entrySet()) {
+		for (Map.Entry<String, PropertyValue<?>> e : newProperties.entrySet()) {
 			properties.put(e.getKey(), e.getValue());
 			
 			if (PropertyUtils.getValueClass(c, e.getKey()) != null) {
@@ -319,7 +315,7 @@ public class ComponentProperties implements Serializable {
 			}
 		}
 		
-		for (Map.Entry<String, PropertyValue> e : newProperties.entrySet()) {
+		for (Map.Entry<String, PropertyValue<?>> e : newProperties.entrySet()) {
 			addStaticDependantProperties(e.getKey(), e.getValue());
 		}
 		
@@ -357,7 +353,7 @@ public class ComponentProperties implements Serializable {
 	 * @param value
 	 * @throws CommonBusinessException 
 	 */
-	private void addStaticDependantProperties(String property, @SuppressWarnings("rawtypes") PropertyValue value) throws CommonBusinessException {
+	private void addStaticDependantProperties(String property, PropertyValue<?> value) throws CommonBusinessException {
 		
 		/**
 		 * CollectableField:NuclosProcess --> ValueListProvider:ProcessCollectableFieldsProvider

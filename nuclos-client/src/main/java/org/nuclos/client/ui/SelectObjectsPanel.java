@@ -36,8 +36,6 @@ import org.nuclos.client.ui.model.MutableListModel;
  */
 public abstract class SelectObjectsPanel<T> extends JPanel {
 
-	private static final long serialVersionUID = 1L;
-	
 	/*
 	 * TODO: Make these protected (Thomas Pasch). 
 	 */

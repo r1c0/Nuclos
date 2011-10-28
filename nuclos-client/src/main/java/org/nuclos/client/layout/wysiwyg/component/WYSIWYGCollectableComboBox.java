@@ -43,13 +43,8 @@ import org.nuclos.common.NuclosBusinessException;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class WYSIWYGCollectableComboBox extends WYSIWYGCollectableComponent {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private LabeledComboBox component = new LabeledComboBox();
 	
 	public WYSIWYGCollectableComboBox() {

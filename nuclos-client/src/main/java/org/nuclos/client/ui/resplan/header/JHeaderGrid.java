@@ -62,11 +62,6 @@ import org.nuclos.client.ui.util.Range;
 
 public class JHeaderGrid<E> extends JComponent implements ListDataListener {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private static final Dimension DEFAULT_CELL_EXTENT = new Dimension(75, 20);
 
 	private static final Dimension MINIMUM_CELL_EXTENT = new Dimension(10, 10);
@@ -210,18 +205,11 @@ public class JHeaderGrid<E> extends JComponent implements ListDataListener {
 
 	protected ComponentProvider<?> createDefaultCellRendererProvider() {
 		return new LabelProvider(JLabel.CENTER) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected DefaultVisuals<JLabel> createDefaultVisuals() {
 				return new  DefaultVisuals<JLabel>() {
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
+
 					private final Painter<?> painter = new PainterUtils.HeaderPainter();
 					@Override
 					protected void configurePainter(JLabel renderingComponent, CellContext context) {
@@ -443,8 +431,8 @@ public class JHeaderGrid<E> extends JComponent implements ListDataListener {
 			return new int[] { 0, model.getSize()};
 		}
 		Range range = orientation.rangeFrom(rect);
-		int index1 = stripAtCoord(range.coord);
-		int index2 =  stripAtCoord(range.coord + range.extent);
+		int index1 = stripAtCoord(range.getCoord());
+		int index2 =  stripAtCoord(range.getCoord() + range.getExtent());
 		return new int[]{ index1 != -1 ? index1 : 0, index2 != -1 ? index2 + 1 : model.getSize() };
 	}
 
@@ -701,11 +689,6 @@ public class JHeaderGrid<E> extends JComponent implements ListDataListener {
 
 	public static class GridHeaderContext extends CellContext {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		@Override
 		public JHeaderGrid<?> getComponent() {
 			return (JHeaderGrid<?>) super.getComponent();
@@ -771,8 +754,8 @@ public class JHeaderGrid<E> extends JComponent implements ListDataListener {
 		private int extent;
 		
 		public CellResizingHandler(Range range) {
-			this.anchor = range.coord;
-			this.extent = range.extent;
+			this.anchor = range.getCoord();
+			this.extent = range.getExtent();
 		}
 
 		@Override

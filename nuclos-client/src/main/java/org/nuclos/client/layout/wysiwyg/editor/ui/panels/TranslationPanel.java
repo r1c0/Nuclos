@@ -40,10 +40,6 @@ import org.nuclos.common2.LocaleInfo;
 
 public class TranslationPanel extends JPanel {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
 	private final List<LocaleInfo> localeList;
 	private final Map<String, String> translations;
 	private final String defaultText;
@@ -84,11 +80,6 @@ public class TranslationPanel extends JPanel {
 	}
 
 	private class TranslationTableModel extends AbstractTableModel {
-
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public String getColumnName(int column) {
@@ -148,11 +139,6 @@ public class TranslationPanel extends JPanel {
 	}
 
 	private class TranslationLabelProvider extends LabelProvider {
-
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		protected void configureState(CellContext context) {

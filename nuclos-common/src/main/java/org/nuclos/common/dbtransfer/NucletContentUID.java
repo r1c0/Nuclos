@@ -26,10 +26,6 @@ import org.nuclos.common2.LangUtils;
 
 public class NucletContentUID implements Serializable{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public final Long id;
 	public final String uid;
 	public final Integer version;
@@ -83,10 +79,7 @@ public class NucletContentUID implements Serializable{
 	}
 
 	public static class Key extends Object implements Serializable{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		public final NuclosEntity entity;
 		public final Long id;
 		public Key(NuclosEntity entity, Long objectId) {
@@ -121,11 +114,6 @@ public class NucletContentUID implements Serializable{
 	}
 
 	public static class HashMap extends java.util.HashMap<NucletContentUID.Key, NucletContentUID> implements NucletContentUID.Map {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void add(EntityObjectVO uidObject) {

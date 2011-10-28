@@ -40,12 +40,9 @@ import org.nuclos.common2.CommonLocaleDelegate;
  * @version 01.00.00
  */
 public class StateModelEditPanel extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private final JPanel pnlStateModelEditor = new JPanel(new BorderLayout());
-	final StateModelHeaderPanel pnlHeader = new StateModelHeaderPanel();
+	private final StateModelHeaderPanel pnlHeader = new StateModelHeaderPanel();
 	private final StateModelEditor statemodeleditor = new StateModelEditor();
 	
 	public final JSplitPane splitpn;
@@ -77,6 +74,10 @@ public class StateModelEditPanel extends JPanel {
 
 		pnlStateModelEditor.add(pnlHeader, BorderLayout.NORTH);
 		pnlStateModelEditor.add(statemodeleditor, BorderLayout.CENTER);
+	}
+	
+	StateModelHeaderPanel getHeader() {
+		return pnlHeader;
 	}
 
 	private static JPanel newUsagePanel(JComponent subformUsages) {

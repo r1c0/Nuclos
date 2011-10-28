@@ -21,9 +21,13 @@ package org.nuclos.common.caching;
 
 import java.util.HashMap;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.collection.Pair;
 
 public class TimedCache<K, V> implements NBCache<K, V> {
+	
+	private static final Logger LOG = Logger.getLogger(TimedCache.class);
+		
 	private LookupProvider<K, V>                 look;
 	private long                                 maxAgeMillis;
 	private HashMap<K, Pair<V, Long>>            map;
@@ -41,19 +45,20 @@ public class TimedCache<K, V> implements NBCache<K, V> {
 
 	@Override
 	public V get(K key) {
+		boolean log = LOG.isDebugEnabled();
 		synchronized(map) {
 			long ct = System.currentTimeMillis();
 			if(map.containsKey(key)) {
 				Pair<V, Long> p = map.get(key);
 				if((ct - p.y) < maxAgeMillis) {
-					System.out.println("cache hit for key " + key);
+					if (log) LOG.debug("cache hit for key " + key);
 					return p.x;
 				}
 				else 
-					System.out.println("cache expired for key " + key + " (" + (ct - p.y) + " >= " + maxAgeMillis +  ")");
+					if (log) LOG.debug("cache expired for key " + key + " (" + (ct - p.y) + " >= " + maxAgeMillis +  ")");
 			}
 			else 
-				System.out.println("cache miss for key " + key);
+				if (log) LOG.debug("cache miss for key " + key);
 			// reached this point: either the key is not present, or the value is
 			// too old
 			V v = look.lookup(key);

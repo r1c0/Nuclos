@@ -240,10 +240,7 @@ public class SubformRowHeader {
 	 *
 	 */
 	public static class RowIndicatorTableModel extends AbstractTableModel {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		private int rowCount;
 
 		public void setExternalDataModel(TableModel externalModel) {
@@ -281,13 +278,10 @@ public class SubformRowHeader {
 	 */
 	private static final RowIndicatorCellRenderer RENDERER = new RowIndicatorCellRenderer(); 
 	private static final class RowIndicatorCellRenderer extends DefaultTableCellRenderer {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		ImageIcon icon = (ImageIcon) Icons.getInstance().getIconRowSelection16();
-		JPanel panel = new JPanel();
-		JLabel bgLabel = new JLabel();
+
+		private ImageIcon icon = (ImageIcon) Icons.getInstance().getIconRowSelection16();
+		private JPanel panel = new JPanel();
+		private JLabel bgLabel = new JLabel();
 
 		public RowIndicatorCellRenderer() {
 			bgLabel.setBackground(Color.LIGHT_GRAY);

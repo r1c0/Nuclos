@@ -29,6 +29,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFile;
 import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collection.CollectionUtils;
@@ -47,6 +48,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class ReportExportController {
+
+	private static final Logger LOG = Logger.getLogger(ReportExportController.class);
 
 	/**
 	 * Export a report via HTTP.
@@ -92,15 +95,14 @@ public class ReportExportController {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, "Requested report does not exist or permission was denied.");
 			return null;
 		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+		catch (Exception e) {
+			LOG.error("export failed: " + e, e);
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 		return null;
 	}
 
-	@SuppressWarnings("rawtypes")
-	private NuclosFile export(ReportVO report, ReportOutputVO output, Map parameters) throws CommonBusinessException, ClassNotFoundException {
+	private NuclosFile export(ReportVO report, ReportOutputVO output, Map<?,?> parameters) throws CommonBusinessException, ClassNotFoundException {
 		final Map<String, Object> params = CollectionUtils.newHashMap();
 		List<DatasourceParameterVO> lstParameters = ServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class).getParameters(report.getDatasourceId());
 		for (DatasourceParameterVO dspvo: lstParameters) {

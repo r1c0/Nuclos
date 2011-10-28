@@ -20,8 +20,6 @@ import org.nuclos.server.customcode.valueobject.CodeVO;
 
 public class CodeTreeNode extends AbstractRuleTreeNode {
 
-	private static final long serialVersionUID = 1L;
-
 	private final CodeVO obj;
 
 	public CodeTreeNode(CodeVO obj) {

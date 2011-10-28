@@ -58,7 +58,8 @@ import org.springframework.security.core.AuthenticationException;
  * @version 01.00.00
  */
 public class Errors {
-	private static final Logger log = Logger.getLogger(Errors.class);
+	
+	private static final Logger LOG = Logger.getLogger(Errors.class);
 
 	private static Errors singleton;
 
@@ -127,11 +128,11 @@ public class Errors {
 	}
 
 	public void showExceptionDialog(final Component parent, final String sErrorMsg, final Throwable t, final boolean forceDetailDialog) {
-		log.error("showExceptionDialog: " + t.toString(), t);
+		LOG.error("showExceptionDialog: " + t.toString(), t);
 		UIUtils.invokeOnDispatchThread(new Runnable() {
 			@Override
 			public void run() {
-				t.printStackTrace(System.err);
+				// LOG.warn("showExceptionDialog: " + t, t);
 				try {
 					// if the reason is a RemoteAccessException, check if user needs to re-authenticate
 					Throwable authexception = getCause(t, RemoteAccessException.class);
@@ -180,8 +181,8 @@ public class Errors {
 					}
 				}
 				catch (Exception ex2) {
-					log.fatal("Exception occured in showExceptionDialog:", ex2);
-					log.fatal("Original Throwable was:", t);
+					LOG.fatal("Exception occured in showExceptionDialog:", ex2);
+					LOG.fatal("Original Throwable was:", t);
 					// We don't rethrow the message as we don't want to make things worse...
 				}
 			}
@@ -201,7 +202,7 @@ public class Errors {
 
 			sErrorText = (resMessage != null ? resMessage : sErrorMsg) + "\n" + (localizedMessage != null ? localizedMessage : ex.getLocalizedMessage());
 		}
-		log.debug("Checked exception occured: ", ex);
+		LOG.debug("Checked exception occured: ", ex);
 		sErrorText = formatErrorMessage(sErrorText);
 
 		JOptionPane.showMessageDialog(parent, sErrorText, sTitle, iMessageType);
@@ -256,7 +257,7 @@ public class Errors {
 
 		dlg.setLocationRelativeTo(parent);
 
-		log.error("Runtime exception occured: ", t);
+		LOG.error("Runtime exception occured: ", t);
 
 		dlg.setVisible(true);
 	}
@@ -362,6 +363,7 @@ public class Errors {
 		// StackTrace:
 		final StringWriter sw = new StringWriter();
 		final PrintWriter pw = new PrintWriter(sw);
+		// Ok! (tp)
 		t.printStackTrace(pw);
 		pw.flush();
 		sb.append("<p><b>Stack Trace:</b>");
@@ -407,10 +409,12 @@ public class Errors {
 			return CommonLocaleDelegate.getMessage(resid, null, args);
 		}
 		catch(Exception e) {
+			LOG.info("failsafeGetMessage: " + e);
 			try {
 				return MessageFormat.format(def, args);
 			}
 			catch(Exception e2) {
+				LOG.info("failsafeGetMessage: " + e2);
 				return def;
 			}
 		}
@@ -423,7 +427,6 @@ public class Errors {
 		return cause.getMessage();
 	}
 
-	@SuppressWarnings("unchecked")
 	private <T> T getCause(Throwable t, Class<T> clazz) {
 		if (t == null) {
 			return null;

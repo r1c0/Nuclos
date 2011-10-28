@@ -20,6 +20,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,13 +34,9 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.log4j.Logger;
 import org.nuclos.common.EntityTreeViewVO;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosBusinessException;
@@ -132,11 +129,13 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Local(MasterDataFacadeLocal.class)
-@Remote(MasterDataFacadeRemote.class)
+// @Stateless
+// @Local(MasterDataFacadeLocal.class)
+// @Remote(MasterDataFacadeRemote.class)
 @Transactional
 public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterDataFacadeLocal, MasterDataFacadeRemote {
+
+	private static final Logger LOG = Logger.getLogger(MasterDataFacadeBean.class);
 
 	private final MasterDataFacadeHelper helper	= new MasterDataFacadeHelper();
 
@@ -691,7 +690,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 					MasterDataMetaCache.getInstance().getMetaData(sEntityName), iId);
 			}
 			catch(CommonFinderException ex) {
-
 				throw new CommonFatalException(ex);
 			}
 
@@ -1123,7 +1121,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
     public void modifyDependants(String entityName, Integer id, Boolean removed,
 		DependantMasterDataMap dependants) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException, CommonPermissionException,
-		CommonStaleVersionException, EJBException {
+		CommonStaleVersionException {
 		// todo: check and clean thrown exception types to necessary minimum
 
 		if(dependants == null) {
@@ -1244,27 +1242,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 				"labelres", String.class));
 		}
 		return mp;
-		/*
-		final String sSql = "select intid, strlocaleresourceid from t_ad_event";
-
-		return DataBaseHelper.runSQLSelect(NuclosDataSources.getDefaultDS(),
-			sSql, new NovabitDataBaseRunnable<Map<Integer, String>>() {
-				@Override
-				public Map<Integer, String> run(ResultSet rs) {
-					Map<Integer, String> mpActions = CollectionUtils.newHashMap();
-					try {
-						while(rs.next()) {
-							mpActions.put(rs.getInt("intid"),
-								rs.getString("strlocaleresourceid"));
-						}
-						return mpActions;
-					}
-					catch(SQLException ex) {
-						throw new CommonFatalException(ex);
-					}
-				}
-			});
-		*/
 	}
 
 	/**
@@ -1414,9 +1391,9 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 					}
 				}
 			}
-			catch(Exception ex) {
+			catch(Exception e) {
+				LOG.error("checkMasterDataValues failed: " + e, e);
 				error("Error while validating entity " + sEntityName);
-				ex.printStackTrace();
 			}
 		}
 		if(ps != null) {
@@ -1534,7 +1511,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		try {
 			return IOUtils.readFromBinaryFile(file);
 		}
-		catch(java.io.IOException e) {
+		catch(IOException e) {
 			throw new NuclosFatalException(e);
 		}
 	}

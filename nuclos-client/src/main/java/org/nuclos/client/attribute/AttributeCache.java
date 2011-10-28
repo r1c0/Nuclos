@@ -46,7 +46,6 @@ import org.nuclos.server.attribute.valueobject.AttributeCVO;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@SuppressWarnings("deprecation")
 public class AttributeCache implements AttributeProvider {
 	/**
 	 * the one (and only) instance of AttributeCache

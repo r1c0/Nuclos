@@ -18,9 +18,6 @@ package org.nuclos.server.ruleengine.ejb3;
 
 import java.util.Collection;
 
-import javax.ejb.CreateException;
-import javax.ejb.Local;
-
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -35,7 +32,7 @@ import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.nuclos.server.ruleengine.RuleInterface;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 
-@Local
+// @Local
 public interface TimelimitRuleFacadeLocal {
 
 	/**
@@ -43,14 +40,14 @@ public interface TimelimitRuleFacadeLocal {
 	 * @return Collection<RuleVO> all TimelimitRule definitions
 	 * @throws CommonFinderException
 	 */
-	public abstract Collection<RuleVO> getAllTimelimitRules();
+	Collection<RuleVO> getAllTimelimitRules();
 
 	/**
 	 * get all active records
 	 * @return Collection<RuleVO> all active TimelimitRule definitions
 	 * @throws CommonFinderException
 	 */
-	public abstract Collection<RuleVO> getActiveTimelimitRules()
+	Collection<RuleVO> getActiveTimelimitRules()
 		throws CommonFinderException;
 
 	/**
@@ -65,7 +62,7 @@ public interface TimelimitRuleFacadeLocal {
 	 * @throws CommonValidationException
 	 * @throws CommonPermissionException
 	 */
-	public abstract MasterDataVO create(MasterDataVO mdcvo)
+	MasterDataVO create(MasterDataVO mdcvo)
 		throws CommonCreateException, CommonFinderException,
 		CommonRemoveException, CommonValidationException,
 		CommonStaleVersionException, NuclosCompileException,
@@ -83,7 +80,7 @@ public interface TimelimitRuleFacadeLocal {
 	 * @throws CommonValidationException
 	 * @throws CommonPermissionException
 	 */
-	public abstract MasterDataVO modify(MasterDataVO mdcvo)
+	MasterDataVO modify(MasterDataVO mdcvo)
 		throws CommonCreateException, CommonFinderException,
 		CommonRemoveException, CommonStaleVersionException,
 		CommonValidationException, NuclosCompileException,
@@ -95,7 +92,7 @@ public interface TimelimitRuleFacadeLocal {
 	 * @throws CommonCreateException
 	 * @throws CommonPermissionException
 	 */
-	public abstract void remove(MasterDataVO mdcvo)
+	void remove(MasterDataVO mdcvo)
 		throws CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonCreateException,
 		CommonPermissionException, NuclosBusinessRuleException, NuclosCompileException;
@@ -103,7 +100,7 @@ public interface TimelimitRuleFacadeLocal {
 	/**
 	 * @return String containing functions the user has to implement
 	 */
-	public abstract String getClassTemplate();
+	String getClassTemplate();
 
 	/**
 	 * Get all job rules that have to be executed for a given job id.
@@ -111,14 +108,14 @@ public interface TimelimitRuleFacadeLocal {
 	 * @param oId Id of job.
 	 * @return Timelimit rule names
 	 */
-	public abstract Collection<String> getJobRules(Object oId);
+	Collection<String> getJobRules(Object oId);
 
 	/**
 	 * executes all active timlimit rules.
 	 * First we get the list of all relevant generic objects, then we execute the rule for each one in an own transaction.
 	 * @return InvoiceInspectorResultRun
 	 */
-	public abstract void executeTimelimitRule(String sRuleName) throws CreateException;
+	void executeTimelimitRule(String sRuleName);
 
 	/**
 	 * prepare the rule instance and the rule interface for executing a timelimit rule
@@ -126,7 +123,7 @@ public interface TimelimitRuleFacadeLocal {
 	 * @param sessionId the sessionId of the job execution
 	 * @return the instantiated rule instance and rule interface
 	 */
-	public abstract Pair<NuclosTimelimitRule, RuleInterface> prepareTimelimitRule(String ruleName, Integer sessionId);
+	Pair<NuclosTimelimitRule, RuleInterface> prepareTimelimitRule(String ruleName, Integer sessionId);
 
 	/**
 	 * executes the getIntIds()-part of a given timelimit rule in a separate transaction
@@ -134,7 +131,7 @@ public interface TimelimitRuleFacadeLocal {
 	 * @param ri the rule interface as parameter for executed method
 	 * @return the return value of <code>ruleInstance.getIntIds(ri)</code>
 	 */
-	public abstract Collection<Integer> executeTimelimitRule(final NuclosTimelimitRule ruleInstance, final RuleInterface ri);
+	Collection<Integer> executeTimelimitRule(final NuclosTimelimitRule ruleInstance, final RuleInterface ri);
 
 	/**
 	 * executes the given timelimit rule with the genericobject with given id in a separate transaction.
@@ -142,15 +139,13 @@ public interface TimelimitRuleFacadeLocal {
 	 * @param ri the rule interface as parameter for executed method
 	 * @param iGenericObjectId the leased object id as parameter for executed method
 	 */
-	public abstract void executeTimelimitRule(final NuclosTimelimitRule ruleInstance, final RuleInterface ri, final Integer iGenericObjectId);
+	void executeTimelimitRule(final NuclosTimelimitRule ruleInstance, final RuleInterface ri, final Integer iGenericObjectId);
 
 	/**
 	 * @param sRuleName
 	 * @throws CreateException
 	 * @author corina.mandoki
 	 */
-	public abstract void executeRule(String sRuleName, Integer iSessionId)
-		throws CreateException;
-
+	void executeRule(String sRuleName, Integer iSessionId);
 
 }

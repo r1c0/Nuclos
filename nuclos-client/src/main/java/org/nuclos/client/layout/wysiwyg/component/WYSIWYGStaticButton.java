@@ -54,13 +54,8 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WYSIWYGEditorModes {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static final String PROPERTY_ACTIONCOMMAND = PROPERTY_LABELS.ACTIONCOMMAND;
 	//NUCLEUSINT-1159
@@ -270,17 +265,17 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#setProperty(java.lang.String, org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue, java.lang.Class)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	public void setProperty(String property, PropertyValue value, Class<?> valueClass) throws CommonBusinessException {
+	public void setProperty(String property, PropertyValue<? extends Object> value, Class<?> valueClass) throws CommonBusinessException {
+		final PropertyValue<String> pv = (PropertyValue<String>) value;
 		//NUCLEUSINT-1159
 		//NUCLOSINT-743
 		if (PROPERTY_LABELS.ACTIONCOMMAND.equals(property)) {
 			if (STATIC_BUTTON.DUMMY_BUTTON_ACTION.equals(value.getValue()))
-				value.setValue(STATIC_BUTTON.DUMMY_BUTTON_ACTION_LABEL);
+				pv.setValue(STATIC_BUTTON.DUMMY_BUTTON_ACTION_LABEL);
 			else if (STATIC_BUTTON.STATE_CHANGE_ACTION.equals(value.getValue()))
-				value.setValue(STATIC_BUTTON.STATE_CHANGE_ACTION_LABEL);
+				pv.setValue(STATIC_BUTTON.STATE_CHANGE_ACTION_LABEL);
 			else if (STATIC_BUTTON.EXECUTE_RULE_ACTION.equals(value.getValue()))
-				value.setValue(STATIC_BUTTON.EXECUTE_RULE_ACTION_LABEL);
+				pv.setValue(STATIC_BUTTON.EXECUTE_RULE_ACTION_LABEL);
 		}
 		
 		properties.setProperty(property, value, valueClass);

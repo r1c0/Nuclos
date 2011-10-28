@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 
 /**
  * Constraint for database queries.
@@ -32,10 +34,8 @@ import java.util.List;
  */
 public class Constraint implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(Constraint.class);
+	
 	private final String name;
 	private final ConstraintEmumerationType type;
 	private final Table table;
@@ -68,11 +68,13 @@ public class Constraint implements Serializable {
 	}
 
 	public void show() {
-		System.out.println("Constraint: " + name);
-		type.show();
-		System.out.println("Columns that are part of constraint");
-		for (Column column : columns) {
-			System.out.println("Column: " + column.getName());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Constraint: " + name);
+			type.show();
+			LOG.debug("Columns that are part of constraint");
+			for (Column column : columns) {
+				LOG.debug("Column: " + column.getName());
+			}
 		}
 	}
 

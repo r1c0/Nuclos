@@ -31,11 +31,6 @@ import javax.swing.event.TableModelEvent;
  */
 public class SortableTableModelEvent extends TableModelEvent {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public SortableTableModelEvent(SortableTableModel source) {
 		super(source);
 	}

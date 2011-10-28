@@ -32,11 +32,6 @@ import org.nuclos.server.report.ByteArrayCarrier;
  */
 public class ReportOutputVO extends NuclosValueObject {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public static enum Destination implements KeyEnum<String>, Localizable {
 
 		SCREEN("Screen", "reportDestination.screen"),

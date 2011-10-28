@@ -20,27 +20,26 @@ package org.nuclos.server.customcomp.ejb3;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Remote;
 
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 
-@Remote
+// @Remote
 public interface CustomComponentFacadeRemote {
 
 	@RolesAllowed("Login")
-	public abstract List<CustomComponentVO> getAll();
+	List<CustomComponentVO> getAll();
 
 	@RolesAllowed("Login")
-	public abstract void create(CustomComponentVO vo, List<TranslationVO> translations) throws CommonBusinessException;
+	void create(CustomComponentVO vo, List<TranslationVO> translations) throws CommonBusinessException;
 
 	@RolesAllowed("Login")
-	public abstract void modify(CustomComponentVO vo, List<TranslationVO> translations) throws CommonBusinessException;
+	void modify(CustomComponentVO vo, List<TranslationVO> translations) throws CommonBusinessException;
 
 	@RolesAllowed("Login")
-	public abstract void remove(CustomComponentVO vo) throws CommonBusinessException;
+	void remove(CustomComponentVO vo) throws CommonBusinessException;
 
 	@RolesAllowed("Login")
-	public abstract List<TranslationVO> getTranslations(Integer ccid) throws CommonBusinessException;
+	List<TranslationVO> getTranslations(Integer ccid) throws CommonBusinessException;
 }

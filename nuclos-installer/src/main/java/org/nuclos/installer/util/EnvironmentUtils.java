@@ -24,9 +24,12 @@ import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.nuclos.installer.InstallException;
 
 public class EnvironmentUtils {
+
+	private static final Logger LOG = Logger.getLogger(EnvironmentUtils.class);
 
 	public static void validateJavaHome(String javahome) throws InstallException {
 		javahome = new File(javahome).getAbsolutePath();
@@ -111,7 +114,9 @@ public class EnvironmentUtils {
 					socket.close();
 				}
 				catch(IOException e) {
+					// Ok! (tp)
 					e.printStackTrace();
+					LOG.error("checkPort failed: " + e, e);
 				}
 		    }
 		}

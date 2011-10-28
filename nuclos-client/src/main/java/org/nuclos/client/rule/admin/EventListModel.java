@@ -33,10 +33,7 @@ import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
  * @version 01.00.00
  */
 public class EventListModel extends AbstractListModel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private final List<RuleEventUsageVO> lst = new ArrayList<RuleEventUsageVO>();
 
 	public void add(RuleEventUsageVO ruleeventusagevo) {

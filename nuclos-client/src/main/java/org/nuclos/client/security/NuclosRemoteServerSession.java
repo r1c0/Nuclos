@@ -30,7 +30,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public abstract class NuclosRemoteServerSession {
 
-	private static final Logger log = Logger.getLogger(NuclosRemoteServerSession.class);
+	private static final Logger LOG = Logger.getLogger(NuclosRemoteServerSession.class);
 
 	private static Integer sessionId;
 
@@ -40,7 +40,7 @@ public abstract class NuclosRemoteServerSession {
 			AuthenticationManager am = (AuthenticationManager)SpringApplicationContextHolder.getBean("authenticationManager");
 			SecurityContextHolder.getContext().setAuthentication(am.authenticate(new UsernamePasswordAuthenticationToken(username, new String(password))));
 			sessionId = ServiceLocator.getInstance().getFacade(SecurityFacadeRemote.class).login();
-			log.info("Logged in.");
+			LOG.info("Logged in.");
 		}
 		catch (AuthenticationException ex) {
 			SecurityContextHolder.getContext().setAuthentication(null);
@@ -52,7 +52,7 @@ public abstract class NuclosRemoteServerSession {
 		try {
 			AuthenticationManager am = (AuthenticationManager)SpringApplicationContextHolder.getBean("authenticationManager");
 			SecurityContextHolder.getContext().setAuthentication(am.authenticate(new UsernamePasswordAuthenticationToken(username, new String(password))));
-			log.info("Validated login.");
+			LOG.info("Validated login.");
 			SecurityCache.getInstance().revalidate();
 		}
 		catch (AuthenticationException ex) {
@@ -70,10 +70,10 @@ public abstract class NuclosRemoteServerSession {
 		try {
 			ServiceLocator.getInstance().getFacade(SecurityFacadeRemote.class).logout(sessionId);
 			SecurityContextHolder.getContext().setAuthentication(null);
-			log.info("Logged out.");
+			LOG.info("Logged out.");
 		}
 		catch(Exception e) {
-			log.error(e);
+			LOG.error("logout failed: " + e, e);
 		}
 	}
 }

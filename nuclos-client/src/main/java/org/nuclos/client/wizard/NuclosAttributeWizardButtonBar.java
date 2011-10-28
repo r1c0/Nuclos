@@ -24,6 +24,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.wizard.steps.NuclosEntitySQLLayoutStep;
 import org.pietschy.wizard.ButtonBar;
 import org.pietschy.wizard.InvalidStateException;
@@ -42,15 +43,12 @@ import org.pietschy.wizard.WizardStep;
 */
 public class NuclosAttributeWizardButtonBar extends ButtonBar {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(NuclosAttributeWizardButtonBar.class);
 
-	Wizard mywizard;
+	private Wizard mywizard;
 	
-	JButton btFinish;
-	JButton btCancel;
+	private JButton btFinish;
+	private JButton btCancel;
 
 	/**
 	 * @param wizard
@@ -66,11 +64,6 @@ public class NuclosAttributeWizardButtonBar extends ButtonBar {
 	protected void post() {
 		btFinish.setAction(new WizardAction("finish", this.mywizard) {
 			
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void updateState() {
 		      WizardStep activeStep = getActiveStep();
@@ -80,22 +73,22 @@ public class NuclosAttributeWizardButtonBar extends ButtonBar {
 			@Override
 			public void doAction(final ActionEvent e) throws InvalidStateException {
 				WizardStep finishStep = getModel().getActiveStep();
-		      try {
-		      	finishStep.applyState();
-		      }
-		      catch(InvalidStateException ex) {
-		      	updateState();
-		      	return;
-		      }
-		      int defaultCloseOperation = getWizard().getDefaultExitMode();
+				try {
+					finishStep.applyState();
+				} catch (InvalidStateException e1) {
+					LOG.warn("doAction: " + e1);
+					updateState();
+					return;
+				}
+				int defaultCloseOperation = getWizard().getDefaultExitMode();
 
-		      // todo (ap): should really consider making this more OO.
-		      if (defaultCloseOperation == Wizard.EXIT_ON_FINISH)
-		         getWizard().getCloseAction().actionPerformed(e);
-		      else if (defaultCloseOperation == Wizard.EXIT_ON_CLOSE)
-		         getWizard().getCloseAction().setEnabled(true);
-		      else
-		         throw new InvalidStateException("Invalid finish operaion: " + defaultCloseOperation);
+				// todo (ap): should really consider making this more OO.
+				if (defaultCloseOperation == Wizard.EXIT_ON_FINISH)
+					getWizard().getCloseAction().actionPerformed(e);
+				else if (defaultCloseOperation == Wizard.EXIT_ON_CLOSE)
+					getWizard().getCloseAction().setEnabled(true);
+				else
+					throw new InvalidStateException("Invalid finish operaion: " + defaultCloseOperation);
 			}
 		
 		});

@@ -102,7 +102,6 @@ public abstract class DelegatingCollectableComponent implements CollectableCompo
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public void setModel(CollectableComponentModel clctcompmodel) {
 		this.getWrappedCollectableComponent().setModel(clctcompmodel);
 	}

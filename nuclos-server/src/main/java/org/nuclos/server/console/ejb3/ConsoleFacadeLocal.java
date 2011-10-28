@@ -16,11 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.console.ejb3;
 
-import javax.ejb.Local;
-
 import org.nuclos.common.Priority;
 
-@Local
+// @Local
 public interface ConsoleFacadeLocal {
 
 	/**
@@ -30,7 +28,7 @@ public interface ConsoleFacadeLocal {
 	 * @param priority
 	 * @param sAuthor the author of the message
 	 */
-	public abstract void sendClientNotification(String sMessage, String sUser,
+	void sendClientNotification(String sMessage, String sUser,
 		Priority priority, String sAuthor);
 
 }

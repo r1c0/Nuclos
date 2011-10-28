@@ -21,17 +21,9 @@ import java.io.Serializable;
 
 public class Range implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private final int coord;
 
-	public int coord;
-
-	public int extent;
-
-	public Range() {
-	}
+	private final int extent;
 
 	public Range(int coord, int extent) {
 		this.coord = coord;
@@ -42,16 +34,8 @@ public class Range implements Serializable {
 		return coord;
 	}
 
-	public void setCoord(int coord) {
-		this.coord = coord;
-	}
-
 	public int getExtent() {
 		return extent;
-	}
-
-	public void setExtent(int extent) {
-		this.extent = extent;
 	}
 
 	@Override

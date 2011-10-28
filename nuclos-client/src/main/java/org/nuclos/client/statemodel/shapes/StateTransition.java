@@ -47,10 +47,6 @@ import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
  */
 public class StateTransition extends ArrowConnector implements ImageObserver {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final StateTransitionVO transitionvo;
 	private final float[] afDashes = {5f, 5f};
 	private final Stroke strokeAutomatic = new BasicStroke(1f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1f, afDashes, 1f);

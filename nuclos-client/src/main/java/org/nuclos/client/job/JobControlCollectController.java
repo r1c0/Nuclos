@@ -43,6 +43,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.SubFormController;
 import org.nuclos.client.main.mainframe.MainFrameTab;
@@ -92,6 +93,8 @@ import org.nuclos.server.report.ejb3.SchedulerControlFacadeRemote;
  */
 public class JobControlCollectController extends MasterDataCollectController {
 
+	private static final Logger LOG = Logger.getLogger(JobControlCollectController.class);
+	
 	private static final Object JOB_RESULT_SUCCESSFUL = "INFO";
 	private static final Object JOB_RESULT_WITH_ERROR = "ERROR";
 	private static final Object JOB_RESULT_WITH_WARNINGS = "WARNING";
@@ -99,8 +102,6 @@ public class JobControlCollectController extends MasterDataCollectController {
 	final private JobControlDelegate delegate = JobControlDelegate.getInstance();
 
 	private final Action actSchedule = new CommonAbstractAction(Icons.getInstance().getIconPlay16(), CommonLocaleDelegate.getMessage("JobControlCollectController.1","Aktivieren")) {
-
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -115,8 +116,6 @@ public class JobControlCollectController extends MasterDataCollectController {
 
 	private final Action actUnschedule = new CommonAbstractAction(Icons.getInstance().getIconStop16(), CommonLocaleDelegate.getMessage("JobControlCollectController.3","Deaktivieren")) {
 
-		private static final long serialVersionUID = 1L;
-
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			try {
@@ -129,8 +128,6 @@ public class JobControlCollectController extends MasterDataCollectController {
 	};
 
 	private final Action actStartImmediately = new CommonAbstractAction(Icons.getInstance().getIconNext16(), CommonLocaleDelegate.getMessage("JobControlCollectController.2","Ausf\u00fchren")) {
-
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -198,7 +195,7 @@ public class JobControlCollectController extends MasterDataCollectController {
 		                getDetailsEditView().getModel().getCollectableComponentModelFor("cronexpression").setField(new CollectableValueField(cronexpression));
 	                }
 	                catch(Exception e) {
-
+						LOG.warn("collectableFieldChangedInModel failed: " + e, e);
 	                }
 				}
 			}
@@ -384,7 +381,6 @@ public class JobControlCollectController extends MasterDataCollectController {
 		}
     }
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public CollectableMasterDataWithDependants insertCollectable(CollectableMasterDataWithDependants clctNew) throws CommonBusinessException {
 		if(clctNew.getId() != null) {
@@ -601,11 +597,6 @@ public class JobControlCollectController extends MasterDataCollectController {
 	private TableCellRenderer createResultLastRunRenderer() {
 
 		class TrafficLightCellRenderer extends DefaultTableCellRenderer {
-
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			public TrafficLightCellRenderer() {
 				super();

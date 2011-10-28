@@ -27,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.LayoutFocusTraversalPolicy;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.JInfoTabbedPane;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm;
@@ -35,13 +36,12 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
 
 public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 	
-	JComponent compRoot;
+	private static final Logger LOG = Logger.getLogger(NuclosFocusTraversalPolicy.class);
 	
-	Map<String, JComponent> mpComponentsBackwards;
+	private JComponent compRoot;
+	
+	private Map<String, JComponent> mpComponentsBackwards;
 
-	/**
-	 *  
-	 */
 	private static final long serialVersionUID = -5062809400980161409L;
 
 	public NuclosFocusTraversalPolicy(JComponent compRoot) {
@@ -94,8 +94,9 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 		try {
 			return bt.getParent().getParent().getParent().getParent();
 		}
-		catch(Exception ex) {
+		catch (Exception e) {
 			// no Subform return default
+			LOG.warn("getSubFormIfAny failed: " + e);
 		}
 		return bt;
 	}

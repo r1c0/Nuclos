@@ -16,26 +16,24 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.processmonitor.ejb3;
 
-import javax.ejb.Remote;
-
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonPermissionException;
 
-@Remote
+// @Remote
 public interface InstanceFacadeRemote {
 
-	public void createProcessInstance(Integer iProcessMonitorId, Integer iInstanceId) throws CommonBusinessException;
+	void createProcessInstance(Integer iProcessMonitorId, Integer iInstanceId) throws CommonBusinessException;
 	
-	public void createRunOfObjectGeneration(Integer iInstanceId, Integer iGenerationId, Boolean bResult) throws CommonCreateException, CommonPermissionException;
+	void createRunOfObjectGeneration(Integer iInstanceId, Integer iGenerationId, Boolean bResult) throws CommonCreateException, CommonPermissionException;
 	
-	public int getInstanceStatus(Integer iInstanceId, Integer iStateModelUsageId);
+	int getInstanceStatus(Integer iInstanceId, Integer iStateModelUsageId);
 	
-	public Integer getObjectId(Integer iInstanceId, Integer iStateModelUsageId);
+	Integer getObjectId(Integer iInstanceId, Integer iStateModelUsageId);
 	
-	public Boolean isObjectGenerated(Integer iInstanceId, Integer iGenerationId);
+	Boolean isObjectGenerated(Integer iInstanceId, Integer iGenerationId);
 	
-	public Boolean isProcessInstanceStarted(Integer iInstanceId);
+	Boolean isProcessInstanceStarted(Integer iInstanceId);
 	
-	public void notifyInstanceAboutStateChange(Integer genericObjectId, Integer targetStateId);
+	void notifyInstanceAboutStateChange(Integer genericObjectId, Integer targetStateId);
 }

@@ -27,6 +27,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellRenderer;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.CommonJTextField;
 import org.nuclos.client.ui.labeled.LabeledTextField;
 import org.nuclos.client.ui.message.MessageExchange;
@@ -49,7 +50,11 @@ import org.nuclos.common2.exception.PreferencesException;
  * @version 01.00.00
  */
 public class CollectableTextField extends CollectableTextComponent implements MessageExchangeListener {
+	
+	private static final Logger LOG = Logger.getLogger(CollectableTextField.class);
+
    private CollectableEntityField clctef;
+   
    /**
     * @param clctef
     * @postcondition this.isDetailsComponent()
@@ -126,7 +131,9 @@ public class CollectableTextField extends CollectableTextComponent implements Me
    		try {
    			items = PreferencesUtils.getStringList(prefs, clctef.getName());
    		}
-   		catch(PreferencesException e) {}
+   		catch(PreferencesException e) {
+   			LOG.warn("addAutoComplete: " + e);
+   		}
    		ntf.addAutoCompleteItems(items);
    	}
    }

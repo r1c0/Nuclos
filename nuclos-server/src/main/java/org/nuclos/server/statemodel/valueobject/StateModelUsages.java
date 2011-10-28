@@ -44,19 +44,10 @@ import org.nuclos.server.genericobject.Modules;
 public class StateModelUsages implements Serializable {
 
 	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
 	 * A state (model) usage.
 	 */
 	public static class StateModelUsage implements Serializable {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private final Integer iStateModel;
 		private final Integer iInitialState;
 		private final UsageCriteria usagecriteria;

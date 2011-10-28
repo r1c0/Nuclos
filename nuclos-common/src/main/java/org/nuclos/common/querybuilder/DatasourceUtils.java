@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -32,8 +33,13 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.report.ejb3.DatasourceFacadeRemote;
 
-	public class DatasourceUtils {
-		
+public class DatasourceUtils {
+	
+	private static final Logger LOG = Logger.getLogger(DatasourceUtils.class);
+	
+	private DatasourceUtils() {
+	}
+	
 	public static void validateDynEntityName(String sName) throws CommonValidationException {
 		final int iMaxNameLength = 30; //if you change this value, change the exception text <datasource.validation.dynamic.entity.name.1> too.
 		if ((sName.length() + MasterDataMetaVO.DYNAMIC_ENTITY_VIEW_PREFIX.length()) > iMaxNameLength) {
@@ -229,7 +235,7 @@ import org.nuclos.server.report.ejb3.DatasourceFacadeRemote;
 			"T1.\"ku_kundenname\" || T1.\"ku_kundenname\"as\"Tages,summen   \"" +
 			"FROM " + 
 			"NUCMAIK1.v_ud_go_KUNDE T1")) {
-			System.out.println("Column " + i++ + ": [" + column + "]");
+			LOG.debug("Column " + i++ + ": [" + column + "]");
 		}
 	}
 	

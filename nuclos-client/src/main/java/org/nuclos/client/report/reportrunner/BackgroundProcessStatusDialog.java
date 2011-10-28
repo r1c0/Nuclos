@@ -33,15 +33,9 @@ import javax.swing.JDialog;
  * @version 01.00.00
  */
 public class BackgroundProcessStatusDialog extends JDialog {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	BackgroundProcessStatusPanel pnlStatus = new BackgroundProcessStatusPanel();
 
-	/**
-	 *
-	 */
+	private BackgroundProcessStatusPanel pnlStatus = new BackgroundProcessStatusPanel();
+
 	public BackgroundProcessStatusDialog(Frame owner) {
 		super(owner, CommonLocaleDelegate.getMessage("BackgroundProcessStatusDialog.1","Hintergrundprozesse"), false);
 		setSize(400, 200);
@@ -53,17 +47,11 @@ public class BackgroundProcessStatusDialog extends JDialog {
 		this.setLocationRelativeTo(owner); //center on screen for first use in this session
 	}
 
-	/**
-	 *
-	 */
 	private void init() {
 		getContentPane().add(pnlStatus);
 		pack();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Dimension getMinimumSize() {
 		return new Dimension(300, 120);

@@ -48,6 +48,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.jdesktop.swingx.combobox.ListComboBoxModel;
 import org.nuclos.client.attribute.AttributeDelegate;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -82,10 +83,7 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttributeAbstractStep {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeCommonPropertiesStep.class);
 
 	static String[] forbiddenNames = {"INTID","DATCREATED", "STRCREATED", "DATCHANGED", "STRCHANGED", "INTVERSION",
 		"STRSYSTEMID", "INTID_T_MD_PROCESS", "STRORIGIN", "BLNDELETED", "INTID_T_MD_STATE"};
@@ -317,9 +315,9 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 					NuclosEntityAttributeCommonPropertiesStep.this.setComplete(false);
 				}
 				try {
-					NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setInternalName(e.getDocument().getText(0, e.getDocument().getLength()));
-					if(!NuclosEntityAttributeCommonPropertiesStep.this.model.isEditMode()) {
-						String sPrefix = Attribute.getDBPrefix(NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute());
+					NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setInternalName(e.getDocument().getText(0, e.getDocument().getLength()));
+					if(!NuclosEntityAttributeCommonPropertiesStep.this.getModel().isEditMode()) {
+						String sPrefix = Attribute.getDBPrefix(NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute());
 						tfDBFieldName.setText(sPrefix + e.getDocument().getText(0, e.getDocument().getLength()));
 					}
 
@@ -357,13 +355,13 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 			protected void doSomeWork(DocumentEvent e) {
 				try {
-					NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setDbName(e.getDocument().getText(0, e.getDocument().getLength()));
+					NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setDbName(e.getDocument().getText(0, e.getDocument().getLength()));
 
 					String s = e.getDocument().getText(0, e.getDocument().getLength());
-					if(model.getAttribute().getMetaVO() != null && model.getAttribute().getField() != null){
+					if(getModel().getAttribute().getMetaVO() != null && getModel().getAttribute().getField() != null){
 						s = "STRVALUE_" + s;
 					}
-					else if(model.getAttribute().getMetaVO() != null && model.getAttribute().getField() == null){
+					else if(getModel().getAttribute().getMetaVO() != null && getModel().getAttribute().getField() == null){
 						s = "INTID_" + s;
 					}
 					tfDBFieldNameComplete.setText(s);
@@ -380,7 +378,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				final JCheckBox cb = (JCheckBox)e.getItem();
-				NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setDistinct(cb.isSelected());
+				NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setDistinct(cb.isSelected());
 				if(!cb.isSelected()) {
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
@@ -396,7 +394,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cb = (JCheckBox)e.getItem();
-				NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setLogBook(cb.isSelected());
+				NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setLogBook(cb.isSelected());
 			}
 		});
 
@@ -404,9 +402,9 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				final JCheckBox cb = (JCheckBox)e.getItem();
-				NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setMandatory(cb.isSelected());
+				NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setMandatory(cb.isSelected());
 				if(NuclosEntityAttributeCommonPropertiesStep.this.parentWizardModel.isEditMode() && cb.isSelected() && !parentWizardModel.isVirtual()) {
-					if(NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().getMandatoryValue() == null) {
+					if(NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().getMandatoryValue() == null) {
 						(new Bubble(cb, getMessage("wizard.step.attributeproperties.tooltip.28", "Bitte tragen Sie einen Wert ein mit dem das Feld vorbelegt werden kann!"), 3, Position.UPPER)).setVisible(true);
 					}
 
@@ -418,7 +416,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cb = (JCheckBox)e.getItem();
-				NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setIndexed(cb.isSelected());
+				NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setIndexed(cb.isSelected());
 			}
 		});
 
@@ -427,7 +425,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange() == ItemEvent.SELECTED) {
-					model.getAttribute().setIdDefaultValue((DefaultValue)e.getItem());
+					getModel().getAttribute().setIdDefaultValue((DefaultValue)e.getItem());
 				}
 			}
 		});
@@ -437,7 +435,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange() == ItemEvent.SELECTED) {
-					model.getAttribute().setMandatoryValue(((DefaultValue)e.getItem()).getId());
+					getModel().getAttribute().setMandatoryValue(((DefaultValue)e.getItem()).getId());
 				}
 			}
 		});
@@ -463,7 +461,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 					if("Heute".equalsIgnoreCase(value)) {
 						value = RelativeDate.today().toString();
 					}
-					NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setDefaultValue(value);
+					NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setDefaultValue(value);
 				} catch (BadLocationException ex) {
 					Errors.getInstance().showExceptionDialog(NuclosEntityAttributeCommonPropertiesStep.this, ex);
 				}
@@ -476,10 +474,10 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cb = (JCheckBox)e.getItem();
 				if(cb.isSelected()) {
-					NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setDefaultValue("ja");
+					NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setDefaultValue("ja");
 				}
 				else {
-					NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setDefaultValue("nein");
+					NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setDefaultValue("nein");
 				}
 			}
 		});
@@ -489,10 +487,10 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cb = (JCheckBox)e.getItem();
 				if(cb.isSelected()) {
-					NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setMandatoryValue(Boolean.TRUE);
+					NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setMandatoryValue(Boolean.TRUE);
 				}
 				else {
-					NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setMandatoryValue(Boolean.FALSE);
+					NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setMandatoryValue(Boolean.FALSE);
 				}
 			}
 		});
@@ -502,7 +500,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange() == ItemEvent.SELECTED) {
-					NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setAttributeGroup((String)e.getItem());
+					NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setAttributeGroup((String)e.getItem());
 					NuclosEntityAttributeCommonPropertiesStep.this.setComplete(true);
 				}
 			}
@@ -513,7 +511,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange() == ItemEvent.SELECTED) {
-					NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setCalcFunction((String)e.getItem());
+					NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setCalcFunction((String)e.getItem());
 				}
 			}
 		});
@@ -578,7 +576,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			fillAttributeGroupBox();
 		}
 
-		if(this.model.getAttribute().getDatatyp().getJavaType().equals("java.lang.Integer")) {
+		if(getModel().getAttribute().getDatatyp().getJavaType().equals("java.lang.Integer")) {
 			final NumericFormatDocument nfd = new NumericFormatDocument();
 			nfd.addDocumentListener(new DefaultValueDocumentListener());
 			tfDefaultValue.setDocument(nfd);
@@ -587,7 +585,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			nfdMandatory.addDocumentListener(new MandatoryValueDocumentListener());
 			tfMandatory.setDocument(nfdMandatory);
 		}
-		else if(this.model.getAttribute().getDatatyp().getJavaType().equals("java.lang.Double")) {
+		else if(getModel().getAttribute().getDatatyp().getJavaType().equals("java.lang.Double")) {
 			final DoubleFormatDocument dfd = new DoubleFormatDocument();
 			dfd.addDocumentListener(new DefaultValueDocumentListener());
 			tfDefaultValue.setDocument(dfd);
@@ -598,23 +596,23 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 		}
 
-		if(this.model.isEditMode()) {
-			tfLabel.setText(this.model.getAttribute().getInternalName());
-			cbxCalcFunction.setSelectedItem(this.model.getAttribute().getCalcFunction());
-			cbxAttributeGroup.setSelectedItem(this.model.getAttribute().getAttributeGroup());
-			cbDistinct.setSelected(this.model.getAttribute().isDistinct());
+		if(getModel().isEditMode()) {
+			tfLabel.setText(getModel().getAttribute().getInternalName());
+			cbxCalcFunction.setSelectedItem(getModel().getAttribute().getCalcFunction());
+			cbxAttributeGroup.setSelectedItem(getModel().getAttribute().getAttributeGroup());
+			cbDistinct.setSelected(getModel().getAttribute().isDistinct());
 			ItemListener ilArray[] = cbMandatory.getItemListeners();
 			for(ItemListener il : ilArray) {
 				cbMandatory.removeItemListener(il);
 			}
-			cbMandatory.setSelected(this.model.getAttribute().isMandatory());
+			cbMandatory.setSelected(getModel().getAttribute().isMandatory());
 			for(ItemListener il : ilArray) {
 				cbMandatory.addItemListener(il);
 			}
-			cbLogBook.setSelected(this.model.getAttribute().isLogBook());
-			cbIndexed.setSelected(this.model.getAttribute().isIndexed());
-			if(this.model.getAttribute().getDatatyp().getJavaType().equals("java.util.Date")) {
-				String str = this.model.getAttribute().getDefaultValue();
+			cbLogBook.setSelected(getModel().getAttribute().isLogBook());
+			cbIndexed.setSelected(getModel().getAttribute().isIndexed());
+			if(getModel().getAttribute().getDatatyp().getJavaType().equals("java.util.Date")) {
+				String str = getModel().getAttribute().getDefaultValue();
 				if(RelativeDate.today().toString().equals(str)) {
 					dateDefaultValue.setDate(new Date(System.currentTimeMillis()));
 					dateDefaultValue.getJTextField().setText("Heute");
@@ -631,11 +629,12 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 					}
 					catch(Exception e) {
 						// set no day
+						LOG.warn("prepare failed: " + e, e);
 					}
 				}
 			}
-			else if(this.model.getAttribute().getDatatyp().getJavaType().equals("java.lang.Boolean")) {
-			   String value = this.model.getAttribute().getDefaultValue();
+			else if(getModel().getAttribute().getDatatyp().getJavaType().equals("java.lang.Boolean")) {
+			   String value = getModel().getAttribute().getDefaultValue();
 				if(value != null && value.equalsIgnoreCase("ja")) {
 					cbDefaultValue.setSelected(true);
 				}
@@ -644,60 +643,55 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 				}
 			}
 			else {
-				tfDefaultValue.setText(this.model.getAttribute().getDefaultValue());
+				tfDefaultValue.setText(getModel().getAttribute().getDefaultValue());
 			}
 
-			if(this.model.getAttribute().getDbName() != null) {
-				String sModifiedDBName = new String(this.model.getAttribute().getDbName());
+			if(getModel().getAttribute().getDbName() != null) {
+				String sModifiedDBName = new String(getModel().getAttribute().getDbName());
 
 				tfDBFieldName.setText(sModifiedDBName.replaceFirst("STRVALUE_", "").replaceFirst("INTID_", ""));
-				if(this.model.getAttribute().getMetaVO() != null && this.model.getAttribute().getField() != null){
-					tfDBFieldNameComplete.setText("STRVALUE_"+ this.model.getAttribute().getDbName());
+				if(getModel().getAttribute().getMetaVO() != null && getModel().getAttribute().getField() != null){
+					tfDBFieldNameComplete.setText("STRVALUE_"+ getModel().getAttribute().getDbName());
 				}
-				else if(this.model.getAttribute().getMetaVO() != null && this.model.getAttribute().getField() == null){
-					tfDBFieldNameComplete.setText("INTID_"+ this.model.getAttribute().getDbName());
+				else if(getModel().getAttribute().getMetaVO() != null && getModel().getAttribute().getField() == null){
+					tfDBFieldNameComplete.setText("INTID_"+ getModel().getAttribute().getDbName());
 				}
-
 			}
-
-
 		}
 		else {
 			if(!blnLabelModified)
-				tfLabel.setText(this.model.getName().toLowerCase());
+				tfLabel.setText(getModel().getName().toLowerCase());
 
-			if(this.model.getAttributeCount() == 0 && !blnDefaultSelected) {
+			if(getModel().getAttributeCount() == 0 && !blnDefaultSelected) {
 				cbDistinct.setSelected(true);
 				cbMandatory.setSelected(true);
 				blnDefaultSelected = true;
 			}
 			cbDistinct.setEnabled(!this.parentWizardModel.hasRows());
 
-			cbIndexed.setSelected(this.model.isRefernzTyp());
+			cbIndexed.setSelected(getModel().isRefernzTyp());
 
 			if(cbxAttributeGroup.getModel().getSize() > 1) {
 				if(this.parentWizardModel.isStateModel())
 					cbxAttributeGroup.setSelectedIndex(1);
 			}
 
-			if(this.model.getAttribute().getDbName() != null) {
-				String sModifiedDBName = new String(this.model.getAttribute().getDbName());
+			if(getModel().getAttribute().getDbName() != null) {
+				String sModifiedDBName = new String(getModel().getAttribute().getDbName());
 
 				tfDBFieldName.setText(sModifiedDBName.replaceFirst("STRVALUE_", "").replaceFirst("INTID_", ""));
-				if(this.model.getAttribute().getMetaVO() != null && this.model.getAttribute().getField() != null){
-					tfDBFieldNameComplete.setText("STRVALUE_"+ this.model.getAttribute().getDbName());
+				if(getModel().getAttribute().getMetaVO() != null && getModel().getAttribute().getField() != null){
+					tfDBFieldNameComplete.setText("STRVALUE_"+ getModel().getAttribute().getDbName());
 				}
-				else if(this.model.getAttribute().getMetaVO() != null && this.model.getAttribute().getField() == null){
-					tfDBFieldNameComplete.setText("INTID_"+ this.model.getAttribute().getDbName());
+				else if(getModel().getAttribute().getMetaVO() != null && getModel().getAttribute().getField() == null){
+					tfDBFieldNameComplete.setText("INTID_"+ getModel().getAttribute().getDbName());
 				}
-
 			}
-
 		}
 
 		Object objMandatoryValue = getModel().getAttribute().getMandatoryValue();
 
-		if(this.model.isRefernzTyp()) {
+		if(getModel().isRefernzTyp()) {
 
 			ItemListener listener[] = cbxDefaultValue.getItemListeners();
 			for(ItemListener il : listener){
@@ -722,9 +716,9 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			List<DefaultValue> mandatoryModel = new ArrayList<DefaultValue>();
 
 			DefaultValue mandatoryValue = null;
-			Collection<MasterDataVO> colVO = MasterDataDelegate.getInstance().getMasterData(this.model.getAttribute().getMetaVO().getEntity());
+			Collection<MasterDataVO> colVO = MasterDataDelegate.getInstance().getMasterData(getModel().getAttribute().getMetaVO().getEntity());
 			for (MasterDataVO vo : colVO) {
-				String sField = this.model.getAttribute().getField();
+				String sField = getModel().getAttribute().getField();
 				if (sField == null)
 					break;
 				Pattern referencedEntityPattern = Pattern.compile("[$][{][\\w\\[\\]]+[}]");
@@ -760,7 +754,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			mandatoryModel.add(0, new DefaultValue(null, null));
 
 			cbxDefaultValue.setModel(new ListComboBoxModel<DefaultValue>(defaultModel));
-			cbxDefaultValue.setSelectedItem(this.model.getAttribute().getIdDefaultValue());
+			cbxDefaultValue.setSelectedItem(getModel().getAttribute().getIdDefaultValue());
 
 			cbxMandatory.setModel(new ListComboBoxModel<DefaultValue>(mandatoryModel));
 			if (mandatoryValue != null) {
@@ -775,7 +769,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 				cbxMandatory.addItemListener(il);
 			}
 		}
-		else if(this.model.getAttribute().getDatatyp().getJavaType().equals("java.util.Date")) {
+		else if(getModel().getAttribute().getDatatyp().getJavaType().equals("java.util.Date")) {
 			dateDefaultValue.setVisible(true);
 			cbxDefaultValue.setVisible(false);
 			tfDefaultValue.setVisible(false);
@@ -790,7 +784,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 			cbMandatoryValue.setVisible(false);
 		}
-		else if(this.model.getAttribute().getDatatyp().getJavaType().equals("java.lang.Boolean")) {
+		else if(getModel().getAttribute().getDatatyp().getJavaType().equals("java.lang.Boolean")) {
 			cbxDefaultValue.setVisible(false);
 			tfDefaultValue.setVisible(false);
 			dateDefaultValue.setVisible(false);
@@ -804,7 +798,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 				cbMandatoryValue.setSelected((Boolean)objMandatoryValue);
 			}
 		}
-		else if(this.model.getAttribute().isValueList()) {
+		else if(getModel().getAttribute().isValueList()) {
 			ItemListener listener[] = cbxDefaultValue.getItemListeners();
 			for(ItemListener il : listener){
 				cbxDefaultValue.removeItemListener(il);
@@ -818,11 +812,11 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			cbxDefaultValue.removeAllItems();
 			cbxDefaultValue.addItem(new DefaultValue(null, null));
 			cbxMandatory.addItem(new DefaultValue(null, null));
-			for(ValueList valueList : this.model.getAttribute().getValueList()) {
+			for(ValueList valueList : getModel().getAttribute().getValueList()) {
 				cbxDefaultValue.addItem(new DefaultValue(valueList.getId() != null ? valueList.getId().intValue() : null, valueList.getLabel()));
 			}
 
-			cbxDefaultValue.setSelectedItem(this.model.getAttribute().getDefaultValue());
+			cbxDefaultValue.setSelectedItem(getModel().getAttribute().getDefaultValue());
 			for(ItemListener il : listener){
 				cbxDefaultValue.addItemListener(il);
 			}
@@ -832,7 +826,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 				cbxMandatory.removeItemListener(il);
 			}
 
-			for(ValueList valueList : this.model.getAttribute().getValueList()) {
+			for(ValueList valueList : getModel().getAttribute().getValueList()) {
 				DefaultValue dv = new DefaultValue(valueList.getId() != null ? valueList.getId().intValue() : null, valueList.getLabel());
 				cbxMandatory.addItem(dv);
 				if(dv.getId() != null && dv.getId().equals(objMandatoryValue)) {
@@ -844,13 +838,13 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 				cbxMandatory.addItemListener(il);
 			}
 
-			cbMandatory.setEnabled(model.getAttribute().getId() != null);
-			cbxMandatory.setVisible(this.parentWizardModel.isEditMode() && model.getAttribute().getId() != null);
+			cbMandatory.setEnabled(getModel().getAttribute().getId() != null);
+			cbxMandatory.setVisible(parentWizardModel.isEditMode() && getModel().getAttribute().getId() != null);
 			tfMandatory.setVisible(false);
 			dateMandatory.setVisible(false);
 			cbMandatoryValue.setVisible(false);
 		}
-		else if(model.getAttribute().isImage() || model.getAttribute().isPasswordField() || model.getAttribute().isFileType()) {
+		else if(getModel().getAttribute().isImage() || getModel().getAttribute().isPasswordField() || getModel().getAttribute().isFileType()) {
 			cbMandatory.setEnabled(false);
 			cbxMandatory.setVisible(false);
 			tfMandatory.setVisible(false);
@@ -872,7 +866,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			cbMandatoryValue.setVisible(false);
 		}
 
-		Attribute attr = NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute();
+		Attribute attr = NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute();
 		if(NuclosEntityAttributeCommonPropertiesStep.this.parentWizardModel.hasRows() && attr.getId() != null ) {
 			boolean blnAllowed = MetaDataDelegate.getInstance().isChangeDatabaseColumnToUniqueAllowed(
 				NuclosEntityAttributeCommonPropertiesStep.this.parentWizardModel.getEntityName(), attr.getInternalName());
@@ -909,11 +903,11 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 	@Override
 	public void applyState() throws InvalidStateException {
-		Attribute attr = this.model.getAttribute();
+		Attribute attr = getModel().getAttribute();
 
 		String sDBName = attr.getDbName();
 
-		if(!this.model.isEditMode()) {
+		if(!getModel().isEditMode()) {
 			for(Attribute attribute : this.parentWizardModel.getAttributeModel().getAttributes()) {
 				if(attribute.getDbName().equals(sDBName)) {
 					String sMessage = getMessage("wizard.step.attributeproperties.15", "<html>Der Spaltenname existiert schon in der Tabelle.<p> " +
@@ -926,7 +920,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			}
 		}
 
-		if(this.model.getAttribute().getInternalName().length() > 250) {
+		if(getModel().getAttribute().getInternalName().length() > 250) {
 			String sMessage = getMessage("wizard.step.attributeproperties.15", "<html>Der Feldname ist zu lang.<p> " +
 			"Bitte \u00e4ndern Sie den Namen.</html>");
 
@@ -946,7 +940,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		}
 
 		int iCheck = 30;
-		if(this.model.getAttribute().getMetaVO() != null) {
+		if(getModel().getAttribute().getMetaVO() != null) {
 			iCheck -= 9;
 		}
 
@@ -976,10 +970,11 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 				date = dateMandatory.getDate();
 			}
 			catch(CommonValidationException e) {
-				String sMessage = e.getMessage();
+				LOG.warn("applyState failed: " + e, e);
+				String sMessage = e.toString();
 				JLabel lb = new JLabel(sMessage);
 				JOptionPane.showMessageDialog(this, lb);
-				throw new InvalidStateException("");
+				throw new InvalidStateException(sMessage);
 			}
 			if(date == null) {
 				String sMessage = getMessage("wizard.step.attributeproperties.tooltip.29", "Sie haben keinen Wert für das Pflichtfeld angegeben!");
@@ -1020,7 +1015,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		}
 
 		if(this.parentWizardModel.isEditMode() && requiresDefault) {
-			Object obj = this.model.getAttribute().getMandatoryValue();
+			Object obj = getModel().getAttribute().getMandatoryValue();
 			String sMessage = null;
 			if(obj != null && obj instanceof String) {
 				String s = (String)obj;
@@ -1044,11 +1039,6 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 	}
 
 	static class LimitCharacterDocument extends PlainDocument {
-
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void insertString(int offset, String str, javax.swing.text.AttributeSet a)  throws javax.swing.text.BadLocationException {
@@ -1079,7 +1069,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 		protected void doSomeWork(DocumentEvent e) {
 			try {
-				NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setDefaultValue(e.getDocument().getText(0, e.getDocument().getLength()));
+				NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setDefaultValue(e.getDocument().getText(0, e.getDocument().getLength()));
 
 			} catch (BadLocationException ex) {
 				Errors.getInstance().showExceptionDialog(NuclosEntityAttributeCommonPropertiesStep.this, ex);
@@ -1112,25 +1102,26 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 				if(sJavaType.equals("java.lang.Integer")) {
 					try {
 						Integer i = new Integer(sValue);
-						NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setMandatoryValue(i);
+						NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setMandatoryValue(i);
 					}
-					catch(Exception ex){
-						NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setMandatoryValue(null);
+					catch(Exception e1){
+						LOG.warn("doSomeWork failed: " + e1, e1);
+						NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setMandatoryValue(null);
 					}
-
 				}
 				else if(sJavaType.equals("java.lang.Double")) {
 					sValue = sValue.replace(',', '.');
 					try {
 						Double d = new Double(sValue);
-						NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setMandatoryValue(d);
+						NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setMandatoryValue(d);
 					}
-					catch(Exception ex) {
-						NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setMandatoryValue(null);
+					catch(Exception e1) {
+						LOG.warn("doSomeWork failed: " + e1, e1);
+						NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setMandatoryValue(null);
 					}
 				}
 				else {
-					NuclosEntityAttributeCommonPropertiesStep.this.model.getAttribute().setMandatoryValue(sValue);
+					NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setMandatoryValue(sValue);
 				}
 
 			} catch (BadLocationException ex) {
@@ -1141,11 +1132,6 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 	}
 
 	static class SpecialCharacterDocument extends PlainDocument {
-
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void insertString(int offset, String str, javax.swing.text.AttributeSet a)  throws javax.swing.text.BadLocationException {

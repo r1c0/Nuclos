@@ -54,7 +54,6 @@ public class RuleClassLoader extends URLClassLoader {
 	 * @return classloader
 	 * @throws NuclosCompileException
 	 */
-	@SuppressWarnings("deprecation")
 	public static ClassLoader getInstance(ClassLoader parent) throws NuclosCompileException {
 		RuleClassLoader classLoader = new RuleClassLoader(parent);
 
@@ -75,10 +74,9 @@ public class RuleClassLoader extends URLClassLoader {
 				}
 			}
 			catch(IOException e) {
-				log.warn(e);
+				log.warn("getInstance: " + e);
 			}
 		}
-
 		return classLoader;
 	}
 
@@ -105,7 +103,7 @@ public class RuleClassLoader extends URLClassLoader {
 			}
 		}
 		catch(Exception e) {
-			log.warn(e.getMessage(), e);
+			log.warn("addJarsToClassPath" + e, e);
 		}
 	}
 }

@@ -39,12 +39,10 @@ public class PredicateUtils {
 	private PredicateUtils() {
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> Predicate<T> alwaysTrue() {
 		return (Predicate<T>) AlwaysTruePredicate.INSTANCE;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> Predicate<T> alwaysFalse() {
 		return (Predicate<T>) AlwaysFalsePredicate.INSTANCE;
 	}
@@ -161,7 +159,6 @@ public class PredicateUtils {
 	 * {@link StringUtils#wildcardToRegex(CharSequence)}).
 	 * If no inclusion pattern is specified, an implicit "match all" inclusion pattern is assumed.
 	 */
-	@SuppressWarnings("unchecked")
 	public static Predicate<String> wildcardFilterList(String filter) {
 		Set<String> inclusionRegexs = new LinkedHashSet<String>();
 		Set<String> exclusionRegexs = new LinkedHashSet<String>();

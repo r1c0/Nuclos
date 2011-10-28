@@ -19,12 +19,11 @@ package org.nuclos.server.attribute.ejb3;
 import java.util.Collection;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Remote;
 
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.attribute.valueobject.LayoutVO;
 
-@Remote
+// @Remote
 public interface LayoutFacadeRemote {
 
 	/**
@@ -33,20 +32,20 @@ public interface LayoutFacadeRemote {
 	 * @param colllayoutvo
 	 */
 	@RolesAllowed("UseManagementConsole")
-	public abstract void importLayouts(
+	void importLayouts(
 		Collection<LayoutVO> colllayoutvo) throws CommonBusinessException;
 
 	/**
 	 * refreshes the module attribute relation table and all generic object views (console function)
 	 */
 	@RolesAllowed("UseManagementConsole")
-	public abstract void refreshAll();
+	void refreshAll();
 	
 	/**
 	 * @param sEntity
 	 * @return true, if detail layout is available for the given entity name, otherwise false
 	 */
 	@RolesAllowed("Login")
-	public abstract boolean isMasterDataLayoutAvailable(String sEntity);
+	boolean isMasterDataLayoutAvailable(String sEntity);
 
 }

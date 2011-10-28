@@ -59,14 +59,8 @@ import org.nuclos.common.NuclosBusinessException;
  *
  * @author	<a href="mailto:thomas.schiffmann@novabit.de">thomas.schiffmann</a>
  */
-@SuppressWarnings("serial")
 public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	//NUCLEUSINT-288
 	public static final String ATTRIBUTEVALUE_LABEL_AND_CONTROL = "label and control";
 	
@@ -119,7 +113,6 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComponent#render()
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	protected void render() {		
 		this.removeMouseListener();
 		this.collectableComponent = null;
@@ -142,7 +135,7 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 					clsclctcomp = (Class<org.nuclos.client.ui.collect.component.CollectableComponent>) Class.forName(sControlTypeClass);
 				}
 				catch (ClassNotFoundException ex) {
-					@SuppressWarnings("unused")
+					// @SuppressWarnings("unused")
 					final String sMessage = "Unbekannte Klasse: " + sControlTypeClass;
 					//throw new SAXException(sMessage, ex);
 				}
@@ -321,7 +314,7 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 		return getControlType(this.properties.getProperty(PROPERTY_CONTROLTYPE));
 	}
 	
-	private int getControlType(PropertyValue property) {	
+	private int getControlType(PropertyValue<?> property) {	
 		String sControlType = null;
 		if (properties.getProperty(PROPERTY_CONTROLTYPE) != null){
 			//NUCLEUSINT-460
@@ -359,7 +352,6 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComponent#validateProperties(java.util.Map)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public void validateProperties(Map<String, PropertyValue<Object>> values) throws NuclosBusinessException {
 		PropertyUtils.validatePreferredSize((Dimension) values.get(PROPERTY_PREFFEREDSIZE).getValue(), 10, 10);
 

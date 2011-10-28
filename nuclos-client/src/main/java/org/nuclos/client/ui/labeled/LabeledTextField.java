@@ -43,15 +43,7 @@ import org.nuclos.common2.StringUtils;
 
 public class LabeledTextField extends LabeledTextComponent {
 		
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final JTextField tf = new CommonJTextField() {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public String getToolTipText(MouseEvent ev) {

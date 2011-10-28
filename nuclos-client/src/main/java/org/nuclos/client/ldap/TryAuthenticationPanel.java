@@ -29,10 +29,6 @@ import org.nuclos.common2.CommonLocaleDelegate;
 
 public class TryAuthenticationPanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final JTextField tfUsername	= new JTextField();
 	private final JPasswordField pfPassword	= new JPasswordField();
 

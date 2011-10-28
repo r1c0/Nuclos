@@ -34,8 +34,6 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 public class FixedTableModel<T> extends AbstractTableModel {
 
-	private static final long serialVersionUID = 1L;
-
 	private MutableListModel<T> objectListModel;
 
 	private final Set<T> fixedObjSet;
@@ -93,7 +91,6 @@ public class FixedTableModel<T> extends AbstractTableModel {
 				: isObjectFixed(objectListModel.getElementAt(row));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 		if (columnIndex == 0 && aValue instanceof Boolean) {

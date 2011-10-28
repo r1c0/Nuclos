@@ -194,7 +194,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class MainController {
 
-	private static final Logger log = Logger.getLogger(MainController.class);
+	private static final Logger LOG = Logger.getLogger(MainController.class);
 
 	/**
 	 * the preferences key for the frame state.
@@ -255,7 +255,7 @@ public class MainController {
 			/** @todo this is a workaround - because Main.getMainController() is called to get the user name */
 			Main.setMainController(this);
 
-			log.debug(">>> read user rights...");
+			LOG.debug(">>> read user rights...");
 			SecurityCache.initialize();
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_INIT_SECURITYCACHE);
 
@@ -271,7 +271,7 @@ public class MainController {
 
 				@Override
 				public void run() {
-					log.debug(">>> read metadata...");
+					LOG.debug(">>> read metadata...");
 					GenericObjectMetaDataCache.getInstance();
 				}
 			};
@@ -282,7 +282,7 @@ public class MainController {
 
 				@Override
 				public void run() {
-					log.debug(">>> read searchfilter...");
+					LOG.debug(">>> read searchfilter...");
 					SearchFilterCache.getInstance();
 				}
 			};
@@ -301,10 +301,11 @@ public class MainController {
 				}
 				catch(InterruptedException e) {
 					// do noting here
+					LOG.warn("MainController: " + e);
 				}
 			}
 
-			log.debug(">>> create mainframe...");
+			LOG.debug(">>> create mainframe...");
 			this.frm = new MainFrame(this.getUserName(), this.getNuclosServerName());
 
 			this.frm.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -316,25 +317,25 @@ public class MainController {
 			});
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_CREATE_MAINFRAME);
 
-			log.debug(">>> init client communication...");
+			LOG.debug(">>> init client communication...");
 			this.notificationdlg = new NuclosNotificationDialog(this.frm, this.getDesktopPane());
 			TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_RULENOTIFICATION, messagelistener);
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_INIT_NOTIFICATION);
 
-			log.debug(">>> setup menus...");
+			LOG.debug(">>> setup menus...");
 			this.setupMenus();
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_CREATE_MAINMENU);
 
-			log.debug(">>> create explorer controller...");
+			LOG.debug(">>> create explorer controller...");
 			this.ctlExplorer = new ExplorerController(frm);
 
-			log.debug(">>> create task controller...");
+			LOG.debug(">>> create task controller...");
 			this.ctlTasks = new TaskController(frm, getUserName());
 
 			this.ctlTasks.setExplorerController(ctlExplorer);
 			this.ctlExplorer.setTaskController(ctlTasks);
 
-			log.debug(">>> restore last workspace...");
+			LOG.debug(">>> restore last workspace...");
 			try {
 				MainFrame.readMainFramePreferences(prefs);
 				RestoreUtils.restoreWorkspaceThreaded(MainFrame.getLastWorkspaceFromPreferences());
@@ -347,11 +348,11 @@ public class MainController {
 				loginController.increaseLoginProgressBar(StartUp.PROGRESS_RESTORE_WORKSPACE);
 			}
 
-			log.debug(">>> show mainFrame...");
+			LOG.debug(">>> show mainFrame...");
 			frm.setVisible(true);
 
 			try {
-				log.debug(">>> restore last controllers (for migration only)...");
+				LOG.debug(">>> restore last controllers (for migration only)...");
 				reopenAllControllers(ClientPreferences.getUserPreferences());
 			}
 			catch (Exception ex) {
@@ -359,20 +360,20 @@ public class MainController {
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
 
-			log.debug(">>> restore task views (for migration only)...");
+			LOG.debug(">>> restore task views (for migration only)...");
 			try {
 				ctlTasks.restoreGenericObjectTaskViewsFromPreferences();
 			}
 			catch (Exception ex) {
 				final String sMessage = CommonLocaleDelegate.getMessage("tasklist.error.restore", "Die Aufgabenlisten konnten nicht wiederhergestellt werden.");
-				log.error(sMessage, ex);
+				LOG.error(sMessage, ex);
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
 
 			Thread theadTaskController = new Thread() {
 				@Override
 				public void run() {
-					log.debug(">>> refresh tasks...");
+					LOG.debug(">>> refresh tasks...");
 					ctlTasks.run();
 				}
 			};
@@ -408,11 +409,6 @@ public class MainController {
 			final String sKeyWindowShow = "CtlShiftF11";
 			frm.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F11, (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK)), sKeyWindowShow);
 			frm.getRootPane().getActionMap().put(sKeyWindowShow, new AbstractAction() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
-
 				@Override
 				public void actionPerformed(ActionEvent ev) {
 					debugFrame.showComponentDetails(frm.findComponentAt(frm.getMousePosition()));
@@ -436,7 +432,7 @@ public class MainController {
 			});
 		}
 		catch (Throwable e) {
-			log.fatal("Creating MainController failed, this is fatal: " + e.toString(), e);
+			LOG.fatal("Creating MainController failed, this is fatal: " + e.toString(), e);
 			throw new ExceptionInInitializerError(e);
 		}
 	}
@@ -456,10 +452,7 @@ public class MainController {
 	private Action cmdShowTimelimitTasks = new AbstractAction(
 		CommonLocaleDelegate.getMessage("miShowTimelimitTasks","Fristen anzeigen"),
 		Icons.getInstance().getIconTabTimtlimit()) {
-		/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
+		
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			MainController.this.getTaskController().getTimelimitTaskController().cmdShowTimelimitTasks();
@@ -473,10 +466,7 @@ public class MainController {
 	private Action cmdShowPersonalTasks = new AbstractAction(
 		CommonLocaleDelegate.getMessage("miShowPersonalTasks","Meine Aufgaben anzeigen"),
 		Icons.getInstance().getIconTabTask()) {
-		/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			MainController.this.getTaskController().getPersonalTaskController().cmdShowPersonalTasks();
@@ -490,10 +480,6 @@ public class MainController {
 	private Action cmdShowPersonalSearchFilters = new AbstractAction(
 		CommonLocaleDelegate.getMessage("ExplorerPanel.3","Meine Suchfilter anzeigen"),
 		Icons.getInstance().getIconFilter16()) {
-		/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -502,8 +488,6 @@ public class MainController {
 	};
 
 	private Action cmdChangePassword = new AbstractAction() {
-
-		private static final long serialVersionUID = 1L;
 
 		private Boolean enabled;
 
@@ -519,7 +503,7 @@ public class MainController {
 					try {
 						MainController.this.prefs.flush();
 					} catch (BackingStoreException e) {
-						e.printStackTrace();
+						LOG.fatal("actionPerformed failed: " + e, e);
 					}
 					LocalUserProperties props = LocalUserProperties.getInstance();
 					props.setUserPasswd("");
@@ -540,10 +524,6 @@ public class MainController {
 	private Action cmdOpenManagementConsole = new AbstractAction(
 		CommonLocaleDelegate.getMessage("miManagementConsole", "Management Console"),
 		MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.158-wrench-2.png"))) {
-		/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
@@ -558,10 +538,6 @@ public class MainController {
 	private Action cmdOpenEntityWizard = new AbstractAction(
 			CommonLocaleDelegate.getMessage("miEntityWizard", "Entity Wizard"),
 			MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.81-dashboard.png"))) {
-		/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
@@ -577,10 +553,6 @@ public class MainController {
 	private Action cmdOpenCustomComponentWizard = new AbstractAction(
 			CommonLocaleDelegate.getMessage("miResPlanWizard", "Ressourcenplanung"),
 			MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.83-calendar.png"))) {
-		/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(final ActionEvent evt) {
@@ -595,13 +567,9 @@ public class MainController {
 	private Action cmdOpenRelationEditor = new AbstractAction(
 		CommonLocaleDelegate.getMessage("miRelationEditor", "Relationeneditor"),
 		MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.55-network.png"))) {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void actionPerformed(ActionEvent evt) {
+			public void actionPerformed(final ActionEvent evt) {
 				UIUtils.runCommand(frm, new Runnable() {
 					@Override
 					public void run() {
@@ -614,15 +582,11 @@ public class MainController {
 								result.runViewSingleCollectableWithId(vo.getId());
 							}
 							else {
-
 								result.runNew();
 							}
-
 						}
 						catch(CommonBusinessException e1) {
-						}
-						finally {
-
+							LOG.warn("actionPerformed " + evt + ": " + e1);
 						}
 					}
 				});
@@ -631,10 +595,6 @@ public class MainController {
 	private Action cmdOpenNucletWizard = new AbstractAction(
 		CommonLocaleDelegate.getMessage("miNucletWizard", "Nuclet Wizard"),
 		MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.73-radar.png"))) {
-		/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
@@ -647,10 +607,6 @@ public class MainController {
 		}};
 
 	private Action cmdOpenSettings = new AbstractAction() {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -683,10 +639,6 @@ public class MainController {
 	}
 
 	public Action cmdRefreshClientCaches = new AbstractAction() {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
@@ -704,10 +656,6 @@ public class MainController {
 	};
 
 	private Action cmdSelectAll = new AbstractAction() {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
@@ -731,10 +679,6 @@ public class MainController {
 	};
 
 	private Action cmdHelpContents = new AbstractAction() {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
@@ -743,10 +687,6 @@ public class MainController {
 	};
 
 	private Action cmdShowAboutDialog  = new AbstractAction() {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
@@ -777,10 +717,10 @@ public class MainController {
 					if (e.getEventType() == EventType.ACTIVATED) {
 						try {
 							Desktop.getDesktop().browse(e.getURL().toURI());
-						} catch(IOException ex) {
-							ex.printStackTrace();
-						} catch(URISyntaxException ex) {
-							ex.printStackTrace();
+						} catch(IOException e1) {
+							LOG.warn("cmdShowAboutDialog " + e1 + ": " + e1, e1);
+						} catch(URISyntaxException e1) {
+							LOG.warn("cmdShowAboutDialog " + e1 + ": " + e1, e1);
 						}
 					}
 				}
@@ -795,10 +735,6 @@ public class MainController {
 	}
 
 	private Action cmdShowProjectReleaseNotes  = new AbstractAction() {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
@@ -807,10 +743,6 @@ public class MainController {
 	};
 
 	private Action cmdShowNuclosReleaseNotes  = new AbstractAction() {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
@@ -819,10 +751,6 @@ public class MainController {
 	};
 
 	private Action cmdWindowClosing = new AbstractAction() {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -831,10 +759,6 @@ public class MainController {
 	};
 
 	private Action cmdLogoutExit = new AbstractAction() {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -850,10 +774,6 @@ public class MainController {
 	}
 
 	private Action cmdShowInternalInfo = new AbstractAction() {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -864,11 +784,8 @@ public class MainController {
 	private Action cmdExecuteRport = createEntityAction(NuclosEntity.REPORTEXECUTION);
 
    private static class UIDefTableModel extends AbstractTableModel {
-      /**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-	private ArrayList<Pair<String, Object>> values;
+
+	  private ArrayList<Pair<String, Object>> values;
 
       public UIDefTableModel() {
          values = new ArrayList<Pair<String, Object>>();
@@ -922,10 +839,6 @@ public class MainController {
    }
 
    private static class UIDefaultsRenderer extends DefaultTableCellRenderer {
-      /**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
 
 	@Override
       public Component getTableCellRendererComponent(JTable table, Object val, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -996,10 +909,6 @@ public class MainController {
 				if(pt.length == 0 || (pt.length == 1 && pt[0].isAssignableFrom(ActionEvent.class))) {
 					final Method fm = m;
 					Action a = new AbstractAction(m.getName()) {
-						/**
-						 *
-						 */
-						private static final long serialVersionUID = 1L;
 
 						@Override
 						public void actionPerformed(ActionEvent e) {
@@ -1023,10 +932,6 @@ public class MainController {
 		HashMap<String, Action> dev = new HashMap<String, Action>();
 		dev.put("jmsNotification",
 			new AbstractAction("Test JMS notification") {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -1044,10 +949,6 @@ public class MainController {
 			});
 
 		dev.put("webPrefs", new AbstractAction("Test Web Prefs-Access") {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1068,10 +969,6 @@ public class MainController {
 			}});
 
 		dev.put("uiDefaults", new AbstractAction("UIDefaults") {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1102,10 +999,6 @@ public class MainController {
 		});
 
 		dev.put("checkJawin", new AbstractAction("Check Jawin") {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1363,7 +1256,6 @@ public class MainController {
 		}
 
 		Action action = new AbstractAction() {
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent evt) {
@@ -1414,10 +1306,10 @@ public class MainController {
 				if (this.ctlTasks != null)	{
 					this.ctlTasks.close();
 				} else {
-					log.debug("TaskController is null!");
+					LOG.debug("TaskController is null!");
 				}
 
-				log.debug("removes unused preferences...");
+				LOG.debug("removes unused preferences...");
 				removeUnusedPreferences();
 			}
 			catch (Exception ex) {
@@ -1427,7 +1319,7 @@ public class MainController {
 				Errors.getInstance().showExceptionDialog(frm, sMessage, ex);
 			}
 			catch (Error error) {
-				log.error("Beim Beenden des Clients ist ein fataler Fehler aufgetreten.", error);
+				LOG.error("Beim Beenden des Clients ist ein fataler Fehler aufgetreten.", error);
 			}
 			finally {
 				// exit even on <code>Error</code>s, especially <code>NoClassDefFoundError</code>s,
@@ -1528,7 +1420,6 @@ public class MainController {
 		for(MainFrameTab tab : mpActiveControllers.keySet()) {
 			TopController tp = mpActiveControllers.get(tab);
 			if(tp instanceof CollectController<?>) {
-				@SuppressWarnings("unchecked")
 				CollectController<Collectable> ctrl = (CollectController<Collectable>)tp;
 				String sEntity = ctrl.getEntityName();
 				if(mp.containsKey(sEntity)) {
@@ -1855,7 +1746,7 @@ public class MainController {
 							getNotificationDialog().setVisible(true);
 							break;
 						default:
-							log.warn("Undefined message priority: " + notification.getPriority());
+							LOG.warn("Undefined message priority: " + notification.getPriority());
 					}
 				}
 				else if (objMessage.getClass().equals(CommandMessage.class)) {
@@ -1907,11 +1798,11 @@ public class MainController {
 				}
 			}
 			else {
-				log.warn(CommonLocaleDelegate.getMessage("MainController.14","Message of type {0} received, while an ObjectMessage was expected.", msg.getClass().getName()));
+				LOG.warn(CommonLocaleDelegate.getMessage("MainController.14","Message of type {0} received, while an ObjectMessage was expected.", msg.getClass().getName()));
 			}
 		}
 		catch (JMSException ex) {
-			log.warn("Exception thrown in JMS message listener.", ex);
+			LOG.warn("Exception thrown in JMS message listener.", ex);
 		}
 	}
 
@@ -2033,10 +1924,7 @@ public class MainController {
 	} //DirectHelpActionListener
 
 	private static class MemoryMonitor extends JPanel implements Runnable {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
+
 		private JLabel  content;
 		private JButton gc;
 		private long inuse;
@@ -2069,10 +1957,6 @@ public class MainController {
 		}
 
 		private AbstractAction gcAction = new AbstractAction("GC") {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -2086,7 +1970,9 @@ public class MainController {
 				try {
 					Thread.sleep(2000);
 				}
-				catch(InterruptedException e) {}
+				catch(InterruptedException e) {
+					LOG.warn("MemoryMonitor.run: " + e, e);
+				}
 				Runtime r = Runtime.getRuntime();
 				total = r.totalMemory();
 				free = r.freeMemory();
@@ -2125,7 +2011,7 @@ public class MainController {
 		try {
 			ClientPreferences.getUserPreferences().node(PREFS_NODE_MDIWINDOWS).removeNode();
 		} catch(BackingStoreException e) {
-			log.error(e.getMessage(), e);
+			LOG.error("removeUnusedPreferences failed: " + e, e);
 		}
 	}
 

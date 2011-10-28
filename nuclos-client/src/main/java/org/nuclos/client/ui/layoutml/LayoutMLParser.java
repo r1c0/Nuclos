@@ -166,7 +166,6 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					handler.getInitialFocusEntityAndFieldName());
 		}
 		catch (SAXParseException ex) {
-			ex.printStackTrace();
 			throw new LayoutMLParseException(ex);
 		}
 		catch (SAXException ex) {
@@ -1036,7 +1035,6 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		 * @return the CollectableComponentType for the given parameters.
 		 * @throws SAXException
 		 */
-		@SuppressWarnings("unchecked")
 		private CollectableComponentType getCollectableComponentType(String sControlType, String sControlTypeClass)
 				throws SAXException {
 			final Integer iEnumeratedControlType;
@@ -1514,7 +1512,6 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			 * @param attributes
 			 */
 			@Override
-            @SuppressWarnings("deprecation")
 			public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes)
 					throws SAXException {
 				final String sFieldName = attributes.getValue(ATTRIBUTE_NAME);
@@ -2156,11 +2153,6 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					throws SAXException {
 				final JLabel lb = new JLabel() {
 					/**
-					 *
-					 */
-					private static final long serialVersionUID = 1L;
-
-					/**
 					 * set the minimum size equal to the preferred size in order to avoid
 					 * GridBagLayout flaws.
 					 * @return the value of the <code>preferredSize</code> property
@@ -2193,7 +2185,6 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				lb.setEnabled(bEnabled);
 
 				// editable:
-				@SuppressWarnings("unused")
 				boolean bEditable = true;
 				final String sEditable = attributes.getValue(ATTRIBUTE_EDITABLE);
 				if (sEditable != null) {
@@ -2222,11 +2213,6 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
             public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes)
 					throws SAXException {
 				final JTextField tf = new JTextField() {
-					/**
-					 *
-					 */
-					private static final long serialVersionUID = 1L;
-
 					/**
 					 * set the minimum size equal to the preferred size in order to avoid
 					 * GridBagLayout flaws.

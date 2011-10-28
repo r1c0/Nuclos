@@ -19,7 +19,6 @@ package org.nuclos.server.ldap.ejb3;
 import java.util.Collection;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Remote;
 
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -27,7 +26,7 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVOWrapper;
 
-@Remote
+// @Remote
 public interface LDAPDataFacadeRemote {
 
 	/**
@@ -38,7 +37,7 @@ public interface LDAPDataFacadeRemote {
 	 * @return created valueobject
 	 * @throws CommonBusinessException
 	 */
-	public MasterDataVO create(MasterDataVO vo, DependantMasterDataMap mpDependants) throws CommonBusinessException;
+	MasterDataVO create(MasterDataVO vo, DependantMasterDataMap mpDependants) throws CommonBusinessException;
 
 	/**
 	 * validate and modify an existing ldap server configuration.
@@ -48,7 +47,7 @@ public interface LDAPDataFacadeRemote {
 	 * @return modified valueobject
 	 * @throws CommonBusinessException
 	 */
-	public MasterDataVO modify(MasterDataVO vo, DependantMasterDataMap mpDependants) throws CommonBusinessException;
+	MasterDataVO modify(MasterDataVO vo, DependantMasterDataMap mpDependants) throws CommonBusinessException;
 
 	/**
 	 * Find all LDAP users.
@@ -58,7 +57,7 @@ public interface LDAPDataFacadeRemote {
 	 * TODO restrict permissions
 	 */
 	@RolesAllowed("Login")
-	public Collection<MasterDataWithDependantsVOWrapper> getUsers(String filterExpr, Object[] filterArgs) throws CommonBusinessException;
+	Collection<MasterDataWithDependantsVOWrapper> getUsers(String filterExpr, Object[] filterArgs) throws CommonBusinessException;
 
-	public boolean tryAuthentication(String ldapserver, String username, String password) throws CommonPermissionException, CommonBusinessException;
+	boolean tryAuthentication(String ldapserver, String username, String password) throws CommonPermissionException, CommonBusinessException;
 }

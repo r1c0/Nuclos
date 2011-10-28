@@ -44,7 +44,7 @@ public class ImportJob extends NuclosInterruptableJob {
 
 	private static class ImportJobImpl implements InterruptableJob {
 
-		private static final Logger log = Logger.getLogger(MasterDataFacadeHelper.class);
+		private static final Logger LOG = Logger.getLogger(MasterDataFacadeHelper.class);
 
 		private ImportContext context;
 
@@ -60,13 +60,13 @@ public class ImportJob extends NuclosInterruptableJob {
 				this.context = new ImportContext(importFileId, correlationId, localeId, username);
 			}
 			catch(Exception ex) {
-				log.error("Object import job could not be started.", ex);
+				LOG.error("Object import job could not be started.", ex);
 			}
 			try {
 				getImportExecutionFacade().doImport(this.context);
 			}
 			catch (NuclosFileImportException ex) {
-				log.error("Import job " + sId + " terminated.", ex);
+				LOG.error("Import job " + sId + " terminated.", ex);
 			}
         }
 

@@ -37,10 +37,7 @@ import javax.swing.JPanel;
  */
 
 public class ImagePanel extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private final ImageIcon icon;
 
 	public ImagePanel(Image image) {
@@ -55,9 +52,7 @@ public class ImagePanel extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-//		paintOneTile(g);
 		paintTiles(g);
-//		paintStretched(g);
 	}
 
 	private void paintTiles(Graphics g) {

@@ -32,10 +32,6 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
 @Deprecated
 public class MasterDataMetaFieldVO extends NuclosValueObject {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private String sFieldName;
 	private String sDBFieldName;
 	private String sLabel;

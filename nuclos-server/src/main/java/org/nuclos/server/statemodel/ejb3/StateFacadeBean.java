@@ -26,12 +26,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosBusinessException;
@@ -69,7 +65,6 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
-import org.nuclos.server.attribute.ejb3.AttributeFacadeLocal;
 import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.LocaleUtils;
 import org.nuclos.server.common.MasterDataMetaCache;
@@ -131,12 +126,15 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  * @todo restrict
  */
-@Stateless
-@Local(StateFacadeLocal.class)
-@Remote(StateFacadeRemote.class)
+// @Stateless
+// @Local(StateFacadeLocal.class)
+// @Remote(StateFacadeRemote.class)
 @Transactional
 @RolesAllowed("Login")
 public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemote, StateFacadeLocal {
+	
+	private static final Logger LOG = Logger.getLogger(StateFacadeBean.class);
+		
 	private LocaleFacadeLocal locale;
 	private final static String STATE_TABLE = "t_md_state";
 	//private ClientNotifier clientnotifier = new ClientNotifier(JMSConstants.TOPICNAME_STATEMODEL);
@@ -206,50 +204,42 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
     public Integer setStateGraph(StateGraphVO stategraphcvo, DependantMasterDataMap mpDependants) throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonValidationException, CommonStaleVersionException, CommonPermissionException, NuclosBusinessRuleException {
 		Integer result;
 
-		try {
-			// check state graph for validity:
-			StateModelVO statemodelvo = stategraphcvo.getStateModel();
-			if (!statemodelvo.isRemoved()) {
-				stategraphcvo.validate();	// throws CommonValidationException
-			}
+		// check state graph for validity:
+		StateModelVO statemodelvo = stategraphcvo.getStateModel();
+		if (!statemodelvo.isRemoved()) {
+			stategraphcvo.validate();	// throws CommonValidationException
+		}
 
-			// set state model:
-			if (statemodelvo.getId() == null) {
-				checkWriteAllowed(NuclosEntity.STATEMODEL);
-				result = createStateGraph(stategraphcvo);
-				if (mpDependants != null) {
-					for (EntityObjectVO mdvoDependant : mpDependants.getAllData()) {
-						mdvoDependant.getFieldIds().put("statemodel", IdUtils.toLongId(result));
-					}
+		// set state model:
+		if (statemodelvo.getId() == null) {
+			checkWriteAllowed(NuclosEntity.STATEMODEL);
+			result = createStateGraph(stategraphcvo);
+			if (mpDependants != null) {
+				for (EntityObjectVO mdvoDependant : mpDependants.getAllData()) {
+					mdvoDependant.getFieldIds().put("statemodel", IdUtils.toLongId(result));
 				}
+			}
+		}
+		else {
+			StateModelVO dbStateModel = findStateModelById(statemodelvo.getId());
+			result = dbStateModel.getId();
+
+			checkForStaleVersion(dbStateModel, statemodelvo);
+
+			if (statemodelvo.isRemoved()) {
+				// remove state model graph:
+				checkDeleteAllowed(NuclosEntity.STATEMODEL);
+				removeStateGraph(stategraphcvo, dbStateModel);
 			}
 			else {
-				StateModelVO dbStateModel = findStateModelById(statemodelvo.getId());
-				result = dbStateModel.getId();
-
-				checkForStaleVersion(dbStateModel, statemodelvo);
-
-				if (statemodelvo.isRemoved()) {
-					// remove state model graph:
-					checkDeleteAllowed(NuclosEntity.STATEMODEL);
-					removeStateGraph(stategraphcvo, dbStateModel);
-				}
-				else {
-					// update state model graph:
-					checkWriteAllowed(NuclosEntity.STATEMODEL);
-					updateStateGraph(stategraphcvo, dbStateModel);
-				}
+				// update state model graph:
+				checkWriteAllowed(NuclosEntity.STATEMODEL);
+				updateStateGraph(stategraphcvo, dbStateModel);
 			}
 
 			if (mpDependants != null) {
 				getMasterDataFacade().modifyDependants(NuclosEntity.STATEMODEL.getEntityName(),stategraphcvo.getStateModel().getId(),stategraphcvo.getStateModel().isRemoved(),mpDependants);
 			}
-		}
-		catch (CreateException ex) {
-			throw new CommonCreateException(ex);
-		}
-		catch (FinderException ex) {
-			throw new CommonFinderException(ex);
 		}
 
 		SecurityCache.getInstance().invalidate();
@@ -264,7 +254,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
    	return locale;
    }
 
-	private Integer createStateGraph(StateGraphVO stategraphvo) throws CreateException, NuclosBusinessRuleException, CommonPermissionException, CommonCreateException, CommonFinderException {
+	private Integer createStateGraph(StateGraphVO stategraphvo) throws NuclosBusinessRuleException, CommonPermissionException, CommonCreateException, CommonFinderException {
 		StateModelVO statemodelvo = stategraphvo.getStateModel();
 
 		MasterDataVO mdVO = getMasterDataFacade().create(NuclosEntity.STATEMODEL.getEntityName(), MasterDataWrapper.wrapStateModelVO(statemodelvo), null);
@@ -326,7 +316,8 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		return dbStateModel.getId();
 	}
 
-	private void removeStateGraph(StateGraphVO stateGraphVO, StateModelVO stateModelVO) throws FinderException, CommonRemoveException, CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException {
+	private void removeStateGraph(StateGraphVO stateGraphVO, StateModelVO stateModelVO) 
+			throws CommonRemoveException, CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException {
 
 		// remove the transitions
 		for (StateTransitionVO statetransitionvo : stateGraphVO.getTransitions())
@@ -356,180 +347,175 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		StateModelLayout layoutinfo = statemodelvo.getLayout();
 		String sXmlLayout = statemodelvo.getXMLLayout();
 
-		try {
-			validateUniqueConstraint(statemodelvo, dbStateModel);
+		validateUniqueConstraint(statemodelvo, dbStateModel);
 
 
-			// remove transitions:
-			for(StateTransitionVO statetransitionvo : stategraphcvo.getTransitions()) {
-				if(statetransitionvo.isRemoved() && statetransitionvo.getId() != null) {
-					getMasterDataFacade().remove(NuclosEntity.STATETRANSITION.getEntityName(), MasterDataWrapper.wrapStateTransitionVO(statetransitionvo), true);
-				}
-				else if(statetransitionvo.getId() != null) {
-					// As old states must be deleted before new states can be
-					// inserted due to unique constraints on name an numeral, we
-					// have to temporarily delete the state references from the
-					// transitions. (Basically, we remove all transitions but keep
-					// the objects for the dependent stuff like rights and rules)
-					// The references will be re-inserted in the "update transitions"
-					// part below
-					MasterDataVO refClearMock = MasterDataWrapper.wrapStateTransitionVO(statetransitionvo);
-					for(String field : new String[] {"state1", "state2", "state1Id", "state2Id"})
-						refClearMock.setField(field, null);
-					getMasterDataFacade().modify(NuclosEntity.STATETRANSITION.getEntityName(), refClearMock, null);
-				}
+		// remove transitions:
+		for(StateTransitionVO statetransitionvo : stategraphcvo.getTransitions()) {
+			if(statetransitionvo.isRemoved() && statetransitionvo.getId() != null) {
+				getMasterDataFacade().remove(NuclosEntity.STATETRANSITION.getEntityName(), MasterDataWrapper.wrapStateTransitionVO(statetransitionvo), true);
 			}
-
-			// remove states:
-			for (StateVO statevo : stategraphcvo.getStates()) {
-				if (statevo.isRemoved() && statevo.getId() != null) {
-					UserSubformRights rights = statevo.getUserSubformRights();
-					for(Integer iKey : rights.asMap().keySet()) {
-						for(SubformPermissionVO voPermission : rights.asMap().get(iKey)) {
-							for(SubformColumnPermissionVO voColPermission : voPermission.getColumnPermissions()) {
-								voColPermission.remove();
-								getMasterDataFacade().remove(NuclosEntity.ROLESUBFORMCOLUMN.getEntityName(), MasterDataWrapper.wrapSubformColumnPermissionVO(voColPermission), false);
-							}
-							voPermission.remove();
-							getMasterDataFacade().remove(NuclosEntity.ROLESUBFORM.getEntityName(), MasterDataWrapper.wrapSubformPermissionVO(voPermission), false);
-						}
-					}
-
-					UserRights userRights = statevo.getUserRights();
-					for(Integer iKey : userRights.asMap().keySet()) {
-						for(AttributegroupPermissionVO voPermission : userRights.asMap().get(iKey)) {
-							voPermission.remove();
-							getMasterDataFacade().remove(NuclosEntity.ROLEATTRIBUTEGROUP.getEntityName(), MasterDataWrapper.wrapAttributegroupPermissionVO((voPermission)), false);
-						}
-					}
-
-					UserFieldRights userFieldRights = statevo.getUserFieldRights();
-					for(Integer iKey : userFieldRights.asMap().keySet()) {
-						for(EntityFieldPermissionVO voPermission : userFieldRights.asMap().get(iKey)) {
-							voPermission.remove();
-							getMasterDataFacade().remove(NuclosEntity.ROLEENTITYFIELD.getEntityName(), MasterDataWrapper.wrapEntityFieldPermissionVO((voPermission)), false);
-						}
-					}
-
-					for(MandatoryFieldVO mandatoryVO : statevo.getMandatoryFields()) {
-						mandatoryVO.remove();
-						getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYFIELD.getEntityName(), MasterDataWrapper.wrapMandatoryFieldVO(mandatoryVO), false);
-					}
-
-					for(MandatoryColumnVO mandatoryVO : statevo.getMandatoryColumns()) {
-						mandatoryVO.remove();
-						getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYCOLUMN.getEntityName(), MasterDataWrapper.wrapMandatoryColumnVO(mandatoryVO), false);
-					}
-
-					getMasterDataFacade().remove(NuclosEntity.STATE.getEntityName(), MasterDataWrapper.wrapStateVO(statevo), false);
-
-					getLocaleFacade().deleteResource(LocaleUtils.getResourceIdForField(STATE_TABLE, statevo.getId(), LocaleUtils.FIELD_LABEL));
-					getLocaleFacade().deleteResource(LocaleUtils.getResourceIdForField(STATE_TABLE, statevo.getId(), LocaleUtils.FIELD_DESCRIPTION));
-				}
+			else if(statetransitionvo.getId() != null) {
+				// As old states must be deleted before new states can be
+				// inserted due to unique constraints on name an numeral, we
+				// have to temporarily delete the state references from the
+				// transitions. (Basically, we remove all transitions but keep
+				// the objects for the dependent stuff like rights and rules)
+				// The references will be re-inserted in the "update transitions"
+				// part below
+				MasterDataVO refClearMock = MasterDataWrapper.wrapStateTransitionVO(statetransitionvo);
+				for(String field : new String[] {"state1", "state2", "state1Id", "state2Id"})
+					refClearMock.setField(field, null);
+				getMasterDataFacade().modify(NuclosEntity.STATETRANSITION.getEntityName(), refClearMock, null);
 			}
-
-
-
-			// update states:
-			Map<Integer, Integer> mpStates = new HashMap<Integer, Integer>();
-			for (StateVO statevo : stategraphcvo.getStates()) {
-				if (!statevo.isRemoved()) {
-					if (statevo.getId() == null) {
-						// insert state:
-						statevo.setModelId(statemodelvo.getId());
-						MasterDataVO createdState = getMasterDataFacade().create(NuclosEntity.STATE.getEntityName(), MasterDataWrapper.wrapStateVO(statevo), null);
-						mpStates.put(statevo.getClientId(), createdState.getIntId());		//prepare mapping table for state transition inserts/updates
-						layoutinfo.updateStateId(statevo.getClientId(), mpStates.get(statevo.getClientId()));
-						LocaleUtils.setResourceIdForField(STATE_TABLE, createdState.getIntId(), LocaleUtils.FIELD_LABEL, getLocaleFacade().setDefaultResource(null, statevo.getStatename()));
-						LocaleUtils.setResourceIdForField(STATE_TABLE, createdState.getIntId(), LocaleUtils.FIELD_DESCRIPTION, getLocaleFacade().setDefaultResource(null, statevo.getDescription()));
-					}
-					else {
-						// update state:
-						mpStates.put(statevo.getClientId(), statevo.getId());	//prepare mapping table for state transition inserts/updates
-
-						updateState(statevo,statemodelvo);
-
-						StateCache.getInstance().invalidate();
-
-						for (MandatoryFieldVO vo : findMandatoryFieldsByStateId(statevo.getId())) {
-							getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYFIELD.getEntityName(), MasterDataWrapper.wrapMandatoryFieldVO(vo), false);
-						}
-
-						for (MandatoryColumnVO vo : findMandatoryColumnsByStateId(statevo.getId())) {
-							getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYCOLUMN.getEntityName(), MasterDataWrapper.wrapMandatoryColumnVO(vo), false);
-						}
-
-						for (AttributegroupPermissionVO vo : findAttributegroupPermissionsByStateId(statevo.getId()))
-							getMasterDataFacade().remove(NuclosEntity.ROLEATTRIBUTEGROUP.getEntityName(), MasterDataWrapper.wrapAttributegroupPermissionVO(vo), false);
-
-						for (EntityFieldPermissionVO vo : findEntityFieldPermissionsByStateId(statevo.getId()))
-							getMasterDataFacade().remove(NuclosEntity.ROLEENTITYFIELD.getEntityName(), MasterDataWrapper.wrapEntityFieldPermissionVO(vo), false);
-
-						for (SubformPermissionVO vo : findSubformPermissionsByStateId(statevo.getId())) {
-							for (SubformColumnPermissionVO colVO : findSubformColumnPermissionsBySubformPermission(vo.getId())) {
-								getMasterDataFacade().remove(NuclosEntity.ROLESUBFORMCOLUMN.getEntityName(), MasterDataWrapper.wrapSubformColumnPermissionVO(colVO), false);
-							}
-							getMasterDataFacade().remove(NuclosEntity.ROLESUBFORM.getEntityName(), MasterDataWrapper.wrapSubformPermissionVO(vo), false);
-						}
-					}
-					createUserRights(statevo, mpStates);
-					createUserFieldRights(statevo, mpStates);
-					createUserSubformRights(statevo, mpStates);
-					createMandatoryFields(statevo, mpStates);
-					createMandatoryColumns(statevo, mpStates);
-				}
-			}
-
-			// update transitions:
-			Map<Integer, Integer> mpTransitions = new HashMap<Integer, Integer>();
-			for (StateTransitionVO statetransitionvo : stategraphcvo.getTransitions()) {
-				if (!statetransitionvo.isRemoved()) {
-					if (statetransitionvo.getId() == null) {
-						// insert transition:
-						StateTransitionVO newVO = createStateTransition(statetransitionvo,mpStates);
-						mpTransitions.put(statetransitionvo.getClientId(), newVO.getId());		//prepare mapping table for state transition inserts/updates
-						layoutinfo.updateTransitionId(statetransitionvo.getClientId(), mpTransitions.get(statetransitionvo.getClientId()));
-					}
-					else {
-						// update transition:
-						MasterDataVO mdVO = getMasterDataFacade().get(NuclosEntity.STATETRANSITION.getEntityName(), statetransitionvo.getId());
-						StateTransitionVO transitionVO = MasterDataWrapper.getStateTransitionVOWithoutDependants(mdVO);
-
-						Integer iStateSource = statetransitionvo.getStateSource();
-						if (iStateSource != null && iStateSource.intValue() < 0) {	//newly inserted state referenced?
-							statetransitionvo.setStateSource(mpStates.get(iStateSource));				//map newly inserted state temp id to real state id
-						}
-						Integer iStateTarget = statetransitionvo.getStateTarget();
-						if (iStateTarget.intValue() < 0) {														//newly inserted state referenced?
-							statetransitionvo.setStateTarget(mpStates.get(iStateTarget));				//map newly inserted state temp id to real state id
-						}
-
-						transitionVO.setAutomatic(statetransitionvo.isAutomatic());
-						transitionVO.setDefault(statetransitionvo.isDefault());
-						transitionVO.setDescription(statetransitionvo.getDescription());
-						transitionVO.setStateSource(statetransitionvo.getStateSource());
-						transitionVO.setStateTarget(statetransitionvo.getStateTarget());
-						getMasterDataFacade().modify(NuclosEntity.STATETRANSITION.getEntityName(), MasterDataWrapper.wrapStateTransitionVO(transitionVO),
-							createStateTransitionDependants(statetransitionvo));
-					}
-				}
-			}
-
-			StateCache.getInstance().invalidate();
-
-			dbStateModel.setName(statemodelvo.getName());
-			dbStateModel.setDescription(statemodelvo.getDescription());
-			dbStateModel.setLayout(layoutinfo);
-			dbStateModel.setXMLLayout(sXmlLayout);
-
-			getMasterDataFacade().modify(NuclosEntity.STATEMODEL.getEntityName(), MasterDataWrapper.wrapStateModelVO(dbStateModel), null);
 		}
-		catch (CreateException ex) {
-			throw new CommonCreateException(ex);
+
+		// remove states:
+		for (StateVO statevo : stategraphcvo.getStates()) {
+			if (statevo.isRemoved() && statevo.getId() != null) {
+				UserSubformRights rights = statevo.getUserSubformRights();
+				for(Integer iKey : rights.asMap().keySet()) {
+					for(SubformPermissionVO voPermission : rights.asMap().get(iKey)) {
+						for(SubformColumnPermissionVO voColPermission : voPermission.getColumnPermissions()) {
+							voColPermission.remove();
+							getMasterDataFacade().remove(NuclosEntity.ROLESUBFORMCOLUMN.getEntityName(), MasterDataWrapper.wrapSubformColumnPermissionVO(voColPermission), false);
+						}
+						voPermission.remove();
+						getMasterDataFacade().remove(NuclosEntity.ROLESUBFORM.getEntityName(), MasterDataWrapper.wrapSubformPermissionVO(voPermission), false);
+					}
+				}
+
+				UserRights userRights = statevo.getUserRights();
+				for(Integer iKey : userRights.asMap().keySet()) {
+					for(AttributegroupPermissionVO voPermission : userRights.asMap().get(iKey)) {
+						voPermission.remove();
+						getMasterDataFacade().remove(NuclosEntity.ROLEATTRIBUTEGROUP.getEntityName(), MasterDataWrapper.wrapAttributegroupPermissionVO((voPermission)), false);
+					}
+				}
+
+				UserFieldRights userFieldRights = statevo.getUserFieldRights();
+				for(Integer iKey : userFieldRights.asMap().keySet()) {
+					for(EntityFieldPermissionVO voPermission : userFieldRights.asMap().get(iKey)) {
+						voPermission.remove();
+						getMasterDataFacade().remove(NuclosEntity.ROLEENTITYFIELD.getEntityName(), MasterDataWrapper.wrapEntityFieldPermissionVO((voPermission)), false);
+					}
+				}
+
+				for(MandatoryFieldVO mandatoryVO : statevo.getMandatoryFields()) {
+					mandatoryVO.remove();
+					getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYFIELD.getEntityName(), MasterDataWrapper.wrapMandatoryFieldVO(mandatoryVO), false);
+				}
+
+				for(MandatoryColumnVO mandatoryVO : statevo.getMandatoryColumns()) {
+					mandatoryVO.remove();
+					getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYCOLUMN.getEntityName(), MasterDataWrapper.wrapMandatoryColumnVO(mandatoryVO), false);
+				}
+
+				getMasterDataFacade().remove(NuclosEntity.STATE.getEntityName(), MasterDataWrapper.wrapStateVO(statevo), false);
+
+				getLocaleFacade().deleteResource(LocaleUtils.getResourceIdForField(STATE_TABLE, statevo.getId(), LocaleUtils.FIELD_LABEL));
+				getLocaleFacade().deleteResource(LocaleUtils.getResourceIdForField(STATE_TABLE, statevo.getId(), LocaleUtils.FIELD_DESCRIPTION));
+			}
 		}
+
+
+
+		// update states:
+		Map<Integer, Integer> mpStates = new HashMap<Integer, Integer>();
+		for (StateVO statevo : stategraphcvo.getStates()) {
+			if (!statevo.isRemoved()) {
+				if (statevo.getId() == null) {
+					// insert state:
+					statevo.setModelId(statemodelvo.getId());
+					MasterDataVO createdState = getMasterDataFacade().create(NuclosEntity.STATE.getEntityName(), MasterDataWrapper.wrapStateVO(statevo), null);
+					mpStates.put(statevo.getClientId(), createdState.getIntId());		//prepare mapping table for state transition inserts/updates
+					layoutinfo.updateStateId(statevo.getClientId(), mpStates.get(statevo.getClientId()));
+					LocaleUtils.setResourceIdForField(STATE_TABLE, createdState.getIntId(), LocaleUtils.FIELD_LABEL, getLocaleFacade().setDefaultResource(null, statevo.getStatename()));
+					LocaleUtils.setResourceIdForField(STATE_TABLE, createdState.getIntId(), LocaleUtils.FIELD_DESCRIPTION, getLocaleFacade().setDefaultResource(null, statevo.getDescription()));
+				}
+				else {
+					// update state:
+					mpStates.put(statevo.getClientId(), statevo.getId());	//prepare mapping table for state transition inserts/updates
+
+					updateState(statevo,statemodelvo);
+
+					StateCache.getInstance().invalidate();
+
+					for (MandatoryFieldVO vo : findMandatoryFieldsByStateId(statevo.getId())) {
+						getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYFIELD.getEntityName(), MasterDataWrapper.wrapMandatoryFieldVO(vo), false);
+					}
+
+					for (MandatoryColumnVO vo : findMandatoryColumnsByStateId(statevo.getId())) {
+						getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYCOLUMN.getEntityName(), MasterDataWrapper.wrapMandatoryColumnVO(vo), false);
+					}
+
+					for (AttributegroupPermissionVO vo : findAttributegroupPermissionsByStateId(statevo.getId()))
+						getMasterDataFacade().remove(NuclosEntity.ROLEATTRIBUTEGROUP.getEntityName(), MasterDataWrapper.wrapAttributegroupPermissionVO(vo), false);
+
+					for (EntityFieldPermissionVO vo : findEntityFieldPermissionsByStateId(statevo.getId()))
+						getMasterDataFacade().remove(NuclosEntity.ROLEENTITYFIELD.getEntityName(), MasterDataWrapper.wrapEntityFieldPermissionVO(vo), false);
+
+					for (SubformPermissionVO vo : findSubformPermissionsByStateId(statevo.getId())) {
+						for (SubformColumnPermissionVO colVO : findSubformColumnPermissionsBySubformPermission(vo.getId())) {
+							getMasterDataFacade().remove(NuclosEntity.ROLESUBFORMCOLUMN.getEntityName(), MasterDataWrapper.wrapSubformColumnPermissionVO(colVO), false);
+						}
+						getMasterDataFacade().remove(NuclosEntity.ROLESUBFORM.getEntityName(), MasterDataWrapper.wrapSubformPermissionVO(vo), false);
+					}
+				}
+				createUserRights(statevo, mpStates);
+				createUserFieldRights(statevo, mpStates);
+				createUserSubformRights(statevo, mpStates);
+				createMandatoryFields(statevo, mpStates);
+				createMandatoryColumns(statevo, mpStates);
+			}
+		}
+
+		// update transitions:
+		Map<Integer, Integer> mpTransitions = new HashMap<Integer, Integer>();
+		for (StateTransitionVO statetransitionvo : stategraphcvo.getTransitions()) {
+			if (!statetransitionvo.isRemoved()) {
+				if (statetransitionvo.getId() == null) {
+					// insert transition:
+					StateTransitionVO newVO = createStateTransition(statetransitionvo,mpStates);
+					mpTransitions.put(statetransitionvo.getClientId(), newVO.getId());		//prepare mapping table for state transition inserts/updates
+					layoutinfo.updateTransitionId(statetransitionvo.getClientId(), mpTransitions.get(statetransitionvo.getClientId()));
+				}
+				else {
+					// update transition:
+					MasterDataVO mdVO = getMasterDataFacade().get(NuclosEntity.STATETRANSITION.getEntityName(), statetransitionvo.getId());
+					StateTransitionVO transitionVO = MasterDataWrapper.getStateTransitionVOWithoutDependants(mdVO);
+
+					Integer iStateSource = statetransitionvo.getStateSource();
+					if (iStateSource != null && iStateSource.intValue() < 0) {	//newly inserted state referenced?
+						statetransitionvo.setStateSource(mpStates.get(iStateSource));				//map newly inserted state temp id to real state id
+					}
+					Integer iStateTarget = statetransitionvo.getStateTarget();
+					if (iStateTarget.intValue() < 0) {														//newly inserted state referenced?
+						statetransitionvo.setStateTarget(mpStates.get(iStateTarget));				//map newly inserted state temp id to real state id
+					}
+
+					transitionVO.setAutomatic(statetransitionvo.isAutomatic());
+					transitionVO.setDefault(statetransitionvo.isDefault());
+					transitionVO.setDescription(statetransitionvo.getDescription());
+					transitionVO.setStateSource(statetransitionvo.getStateSource());
+					transitionVO.setStateTarget(statetransitionvo.getStateTarget());
+					getMasterDataFacade().modify(NuclosEntity.STATETRANSITION.getEntityName(), MasterDataWrapper.wrapStateTransitionVO(transitionVO),
+						createStateTransitionDependants(statetransitionvo));
+				}
+			}
+		}
+
+		StateCache.getInstance().invalidate();
+
+		dbStateModel.setName(statemodelvo.getName());
+		dbStateModel.setDescription(statemodelvo.getDescription());
+		dbStateModel.setLayout(layoutinfo);
+		dbStateModel.setXMLLayout(sXmlLayout);
+
+		getMasterDataFacade().modify(NuclosEntity.STATEMODEL.getEntityName(), MasterDataWrapper.wrapStateModelVO(dbStateModel), null);
 	}
 
-	private void updateState(StateVO clientStateVO, StateModelVO modelVO) throws CommonFinderException, CommonPermissionException, CreateException, NuclosBusinessRuleException, CommonCreateException, CommonRemoveException, CommonStaleVersionException, CommonValidationException {
+	private void updateState(StateVO clientStateVO, StateModelVO modelVO) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonCreateException, CommonRemoveException, CommonStaleVersionException, CommonValidationException {
 		StateVO dbStateVO = MasterDataWrapper.getStateVO(getMasterDataFacade().get(NuclosEntity.STATE.getEntityName(), clientStateVO.getId()));
 
 		// if the state name or the state numeral has changed make all attributes which have references
@@ -544,16 +530,8 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		if (!clientStateVO.getStatename().equals(dbStateVO.getStatename())) {
 			mpChangedFields.put(NuclosEOField.STATE.getMetaData().getField(), dbStateVO.getStatename());
 		}
-		ServiceLocator.getInstance().getFacade(AttributeFacadeLocal.class).makeConsistent(NuclosEntity.STATE.getEntityName(), dbStateVO.getId(), mpChangedFields);
-
-		// update all leased objects in this state with new state name:
-		// nicht mehr noetig! --> GO Refactoring
-//		if (clientStateVO.getNumeral() != null && !dbStateVO.getStatename().equals(clientStateVO.getStatename())) {
-//			updateGenericObjectAttributeValue(dbStateVO.getId(),clientStateVO.getStatename());
-//		}
-//		if ((dbStateVO.getNumeral() != null) && (!dbStateVO.getNumeral().equals(clientStateVO.getNumeral()))) {
-//			updateGenericObjectAttributeValue(dbStateVO.getId(),clientStateVO.getNumeral().toString());
-//		}
+		// not needed/available
+		// ServiceLocator.getInstance().getFacade(AttributeFacadeLocal.class).makeConsistent(NuclosEntity.STATE.getEntityName(), dbStateVO.getId(), mpChangedFields);
 
 		dbStateVO.setNumeral(clientStateVO.getNumeral());
 		dbStateVO.setStatename(clientStateVO.getStatename());
@@ -573,30 +551,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			getLocaleFacade().updateResource(descriptionResId, dbStateVO.getDescription());
 		}
 	}
-
-//	private void updateGenericObjectAttributeValue(Integer externalValueId, String value) {
-//		try {
-//			Collection<GenericObjectAttribute> goaList = getGenericObjectFacade().findAttributesByGoAndExternalValueId(
-//				AttributeCache.getInstance().getAttributeByParameter(ParameterProvider.KEY_SYSTEMATTRIBUTE_STATUS).getId(), externalValueId);
-//
-//			for (GenericObjectAttribute goa : goaList) {
-//				goa.setCanonicalValue(value);
-//				ServiceLocator.getInstance().getFacade(DboFacadeLocal.class).update(goa);//save(goa);
-//			}
-//		}
-//		catch (SQLException e) {
-//			throw new NuclosFatalException(e);
-//		}
-//		catch (CommonFinderException e) {
-//			throw new NuclosFatalException(e);
-//		}
-//		catch(CommonStaleVersionException e) {
-//			throw new NuclosFatalException(e);
-//		}
-//		catch(CommonFatalException e) {
-//			throw new NuclosFatalException(e);
-//		}
-//	}
 
     private void validateUniqueConstraint(StateModelVO statemodelvo, StateModelVO dbStateModel) throws CommonValidationException, CommonPermissionException {
 		try {
@@ -649,8 +603,10 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			for(SubformPermissionVO subformpermissionvo : statevo.getUserSubformRights().getValues(iRoleId)) {
 				SubformPermissionVO permissionVO = new SubformPermissionVO(subformpermissionvo.getSubform(),
 					iRoleId, null, mpStates.get(statevo.getClientId()) ,null, subformpermissionvo.isWriteable(), subformpermissionvo.getColumnPermissions());
-				System.out.println("SubformPermissionVO... stateId=" + permissionVO.getStateId() + " roleId=" + permissionVO.getRoleId() + " subform=" + permissionVO.getSubform());
-				MasterDataVO createdRoleSubformPermission = getMasterDataFacade().create(NuclosEntity.ROLESUBFORM.getEntityName(), MasterDataWrapper.wrapSubformPermissionVO(permissionVO), null);
+				LOG.info("SubformPermissionVO... stateId=" + permissionVO.getStateId() + " roleId=" + permissionVO.getRoleId() 
+						+ " subform=" + permissionVO.getSubform());
+				MasterDataVO createdRoleSubformPermission = getMasterDataFacade().create(
+						NuclosEntity.ROLESUBFORM.getEntityName(), MasterDataWrapper.wrapSubformPermissionVO(permissionVO), null);
 				for (SubformColumnPermissionVO subformcolumnpermissionvo : subformpermissionvo.getColumnPermissions()) {
 					getMasterDataFacade().create(NuclosEntity.ROLESUBFORMCOLUMN.getEntityName(), MasterDataWrapper.wrapSubformColumnPermissionVO(
 						new SubformColumnPermissionVO(

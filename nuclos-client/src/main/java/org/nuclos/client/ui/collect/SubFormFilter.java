@@ -44,6 +44,7 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.ListOfValues;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader.FixedRowIndicatorTableModel;
@@ -84,6 +85,8 @@ import org.nuclos.common2.exception.PreferencesException;
  * @version 01.00.00
  */
 public class SubFormFilter {
+
+	private static final Logger LOG = Logger.getLogger(SubFormFilter.class);
 
    private JToggleButton filterButton;
 
@@ -421,8 +424,6 @@ public class SubFormFilter {
             return true;
 
          CollectableField f = (CollectableField) v;
-         if(f == null)
-            return true;
 
          Object o1 = f.getValue();
          // NUCLOSINT-823: If the field references an optional foreign key, it could be null.
@@ -487,6 +488,7 @@ public class SubFormFilter {
             }
          }
           catch(CollectableFieldFormatException e) {
+        	LOG.warn("include failed: " + e, e);
             JOptionPane.showConfirmDialog(null, CommonLocaleDelegate.getMessage("subform.filter.exception", "Das Format der Suchkomponente '{0}' ist nicht korrekt.", cef.getLabel()), CommonLocaleDelegate.getMessage("subform.filter.exception.title", "Formatfehler"), JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
             return true;
          }
@@ -569,6 +571,7 @@ public class SubFormFilter {
    		}
    	}
    	catch(CollectableFieldFormatException e) {
+    	LOG.warn("getFilterValue failed: " + e, e);
    		JOptionPane.showConfirmDialog(null, CommonLocaleDelegate.getMessage("subform.filter.exception", "Das Format der Suchkomponente '{0}' ist nicht korrekt.", clctcomp.getEntityField().getLabel()), CommonLocaleDelegate.getMessage("subform.filter.exception.title", "Formatfehler"), JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
    	}
    	return null;
@@ -595,10 +598,14 @@ public class SubFormFilter {
    			catch(CollectableFieldFormatException e) {
    				throw new CommonFatalException(e);
    			}
-   			catch(PreferencesException e) {}
+   			catch(PreferencesException e) {
+   	        	LOG.info("storeTableFilter failed: " + e, e);
+   			}
    		}
    	}
-   	catch (BackingStoreException e) {}
+   	catch (BackingStoreException e) {
+       	LOG.info("storeTableFilter failed: " + e, e);
+   	}
    }
 
    /**
@@ -620,7 +627,9 @@ public class SubFormFilter {
    				}
    			}
    		}
-   		catch(PreferencesException e) {}
+   		catch(PreferencesException e) {
+	        LOG.info("loadTableFilter failed: " + e, e);
+   		}
    	}
    }
 }

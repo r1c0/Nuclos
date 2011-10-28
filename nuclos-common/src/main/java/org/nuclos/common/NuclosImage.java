@@ -28,21 +28,20 @@ import java.io.Serializable;
 
 import javax.imageio.ImageIO;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.LangUtils;
 
 public class NuclosImage implements Serializable, NuclosAttributeExternalValue {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	String sFileName;
-	byte[] content;
-	byte[] thumbnail;
-	int width = -1;
-	int height = -1;
-	boolean bProduce;
+	private static final Logger LOG = Logger.getLogger(NuclosImage.class);
+
+	private String sFileName;
+	private byte[] content;
+	private byte[] thumbnail;
+	private int width = -1;
+	private int height = -1;
+	private boolean bProduce;
 
 	public static int thumbsize = 20;
 
@@ -127,6 +126,7 @@ public class NuclosImage implements Serializable, NuclosAttributeExternalValue {
 				}
 				catch(Exception e) {
 					// do nothing here
+					LOG.info("produceThumbnail: " + e);
 				}
 
 				BufferedImage buff = ImageIO.read(new ByteArrayInputStream(this.content));
@@ -155,10 +155,10 @@ public class NuclosImage implements Serializable, NuclosAttributeExternalValue {
 				setThmubnail(bscaled);
 			}
 		}
-		catch(Exception ex) {
+		catch(Exception e) {
 			// thumbnail can't be set
+			LOG.warn("produceThumbnail failed: " + e);
 		}
 	}
-
 
 }

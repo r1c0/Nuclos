@@ -23,17 +23,13 @@ import java.util.Locale;
 
 public class LocaleInfo implements Serializable {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
 	/** The standardized (IETF) "i-default" language tag which represents our null locale */
 	public static LocaleInfo I_DEFAULT = new LocaleInfo("Null", null, null, "i-default", null);
 	public static final String I_DEFAULT_TAG = "i-default";
 
 	public static Comparator<LocaleInfo> DESCRIPTION_COMPARATOR = DescriptionComparator.INSTANCE;
 
-
+	
 	public final String name;
 	public final String title;
 	public final Integer localeId;

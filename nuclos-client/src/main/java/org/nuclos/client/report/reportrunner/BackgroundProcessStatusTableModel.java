@@ -39,10 +39,6 @@ import javax.swing.table.AbstractTableModel;
  */
 
 public class BackgroundProcessStatusTableModel extends AbstractTableModel implements Observer {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	private static final String[] captions = {CommonLocaleDelegate.getMessage("BackgroundProcessStatusTableModel.4","Status"), CommonLocaleDelegate.getMessage("BackgroundProcessStatusTableModel.1","Hintergrundprozess"), CommonLocaleDelegate.getMessage("BackgroundProcessStatusTableModel.3","Startzeit"), CommonLocaleDelegate.getMessage("BackgroundProcessStatusTableModel.2","Meldung")};
 

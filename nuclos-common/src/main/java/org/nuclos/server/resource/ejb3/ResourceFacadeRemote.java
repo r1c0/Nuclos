@@ -17,7 +17,6 @@
 package org.nuclos.server.resource.ejb3;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Remote;
 
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.exception.CommonCreateException;
@@ -31,41 +30,32 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.resource.valueobject.ResourceVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
-@Remote
+// @Remote
 public interface ResourceFacadeRemote {
 
-	/**
-	 * @param sResourceName
-	 */
 	@RolesAllowed("Login")
-	public abstract ResourceVO getResourceByName(String sResourceName);
-
-	/**
-	 * @param sResourceId
-	 */
-	@RolesAllowed("Login")
-	public abstract ResourceVO getResourceById(Integer iResourceId);
-
-	/**
-	 * @param sResourceName
-	 */
-	@RolesAllowed("Login")
-	public abstract Pair<ResourceVO, byte[]> getResource(String sResourceName);
+	ResourceVO getResourceByName(String sResourceName);
 
 	@RolesAllowed("Login")
-	public abstract Pair<ResourceVO, byte[]> getResource(Integer resourceId);
+	ResourceVO getResourceById(Integer iResourceId);
 
-	public abstract MasterDataVO create(String sEntityName, MasterDataVO mdvo,
+	@RolesAllowed("Login")
+	Pair<ResourceVO, byte[]> getResource(String sResourceName);
+
+	@RolesAllowed("Login")
+	Pair<ResourceVO, byte[]> getResource(Integer resourceId);
+
+	MasterDataVO create(String sEntityName, MasterDataVO mdvo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
 		CommonPermissionException, NuclosBusinessRuleException;
 
-	public abstract Object modify(String sEntityName, MasterDataVO mdvo,
+	Object modify(String sEntityName, MasterDataVO mdvo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonValidationException,
 		CommonPermissionException, NuclosBusinessRuleException;
 
-	public abstract void remove(String sEntityName, MasterDataVO mdvo)
+	void remove(String sEntityName, MasterDataVO mdvo)
 		throws CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonPermissionException,
 		CommonCreateException, NuclosBusinessRuleException;
@@ -78,7 +68,7 @@ public interface ResourceFacadeRemote {
 	 * @throws CommonFinderException
 	 */
 	@RolesAllowed("Login")
-	public abstract byte[] loadResource(Integer iResourceId, String sFileName)
+	byte[] loadResource(Integer iResourceId, String sFileName)
 		throws CommonFinderException;
 
 }

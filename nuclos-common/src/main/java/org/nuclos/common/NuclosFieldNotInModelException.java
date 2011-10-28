@@ -29,11 +29,6 @@ import org.nuclos.common2.exception.CommonFatalException;
  */
 public class NuclosFieldNotInModelException extends CommonFatalException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public NuclosFieldNotInModelException() {
 		super();
 	}

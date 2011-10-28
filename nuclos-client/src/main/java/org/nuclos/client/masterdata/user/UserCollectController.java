@@ -35,6 +35,7 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.SelectUserController;
 import org.nuclos.client.common.security.SecurityCache;
@@ -103,6 +104,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVOWrappe
  * @version 01.00.00
  */
 public class UserCollectController extends MasterDataCollectController {
+
+	private static final Logger LOG = Logger.getLogger(UserCollectController.class);
 
 	public final static String FIELD_PREFERENCES = "preferences";
 	public final static String FIELD_PASSWORD = "password";
@@ -320,8 +323,6 @@ public class UserCollectController extends MasterDataCollectController {
 			// action: Select Columns
 			btnSynchronizeWithLDAP.setAction(new CommonAbstractAction(btnSynchronizeWithLDAP) {
 
-				private static final long serialVersionUID = 1L;
-
 				@Override
 				public void actionPerformed(ActionEvent ev) {
 					uctl.cmdSynchronizeUser(uctl);
@@ -417,7 +418,7 @@ public class UserCollectController extends MasterDataCollectController {
 					filterOutLDAPUsers(mdwrapperlst);
 					synchronizedWithLDAP[0] = true;
 				} catch (CollectableFieldFormatException e) {
-					e.printStackTrace();
+					LOG.warn("synchronizeWithLDAP failed: " + e, e);
 					final String sMessage =CommonLocaleDelegate.getMessage("UserCollectController.4",
 						"LDAP Synchronisierung ist gescheitert.\nEine Liste der in LDAP registrierten Benutzer kann nicht dargestellt werden.");
 					Errors.getInstance().showExceptionDialog(getFrame(), sMessage, e);
@@ -487,7 +488,6 @@ public class UserCollectController extends MasterDataCollectController {
 
 	final Action copyPrefsAction = new AbstractAction() {
 
-		private static final long serialVersionUID = 1L;
 		{
 			putValue(Action.SHORT_DESCRIPTION, CommonLocaleDelegate.getMessage("nuclos.preferences.transfer", null));
 			putValue(Action.SMALL_ICON, Icons.getInstance().getIconPrefsCopy());

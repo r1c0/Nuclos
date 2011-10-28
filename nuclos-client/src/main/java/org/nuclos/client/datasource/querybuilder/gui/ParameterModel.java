@@ -43,10 +43,6 @@ import org.nuclos.server.report.valueobject.DatasourceParameterValuelistprovider
  */
 public class ParameterModel extends DefaultTableModel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final int COLUMN_NAME = 0;
 	public static final int COLUMN_TYPE = 1;
 	public static final int COLUMN_MESSAGE = 2;

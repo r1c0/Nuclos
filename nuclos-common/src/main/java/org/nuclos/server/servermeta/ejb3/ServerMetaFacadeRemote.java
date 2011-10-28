@@ -18,10 +18,10 @@ package org.nuclos.server.servermeta.ejb3;
 
 import java.util.TimeZone;
 
-import javax.ejb.Remote;
-
-@Remote
+// @Remote
 public interface ServerMetaFacadeRemote {
-	public String getServerProperty(String key);
-	public TimeZone getServerDefaultTimeZone();
+	
+	String getServerProperty(String key);
+	
+	TimeZone getServerDefaultTimeZone();
 }

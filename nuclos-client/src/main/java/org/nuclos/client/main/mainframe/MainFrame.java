@@ -124,12 +124,7 @@ import org.nuclos.common2.exception.PreferencesException;
  */
 public class MainFrame extends CommonJFrame implements WorkspaceFrame, ComponentNameSetter {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
-	private static final Logger log = Logger.getLogger(MainFrame.class);
+	private static final Logger LOG = Logger.getLogger(MainFrame.class);
 
 	private static final String PREFS_NODE_BOOKMARK = "bookmark";
 	private static final String PREFS_NODE_HISTORY = "history";
@@ -186,10 +181,6 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private static String lastWorkspace;
 
 	private static final AbstractAction actDeactivateSplitting = new AbstractAction() {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -345,7 +336,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		try {
 			tabbedPane.getLocationOnScreen();
 			return true;
-		} catch(IllegalComponentStateException e) {
+		} catch (IllegalComponentStateException e) {
+			LOG.info("isTabbedPaneVisible: " + e);
 			return false;
 		}
 	}
@@ -455,12 +447,12 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		try {
 			final Component comp = (Component) field.get(this);
 			if (comp != null) {
-				log.debug("Setting name for component " + sQualifiedFieldName);
+				LOG.debug("Setting name for component " + sQualifiedFieldName);
 				comp.setName(sFieldName);
 			}
 		}
 		catch (IllegalAccessException ex) {
-			log.warn("Cannot set name for component " + sQualifiedFieldName, ex);
+			LOG.warn("Cannot set name for component " + sQualifiedFieldName, ex);
 		}
 	}
 
@@ -513,10 +505,6 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 					CommonLocaleDelegate.getMessage("ExternalFrame.Title","Erweiterungsfenster {0}",((WorkspaceFrame) frame).getNumber()) :
 						CommonLocaleDelegate.getMessage("MainFrame.Title","Hauptfenster");
 				JMenuItem miFrameToFront = new JMenuItem(new AbstractAction("Nuclos " + title) {
-					/**
-					 *
-					 */
-					private static final long serialVersionUID = 1L;
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -730,7 +718,6 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 		addStaticsToMenu();
 		addEntitiesToMenu();
-
 		setupStartmenu();
 	}
 
@@ -993,9 +980,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			frameZOrder.remove(frame);
 			frameZOrder.add(frame);
 
-			log.debug("Frame Z-Order: ");
+			LOG.debug("Frame Z-Order: ");
 			for (JFrame frame : frameZOrder) {
-				log.debug(frame);
+				LOG.debug(frame);
 			}
 		}
 
@@ -1717,10 +1704,6 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	static void setupLiveSearchKey(JFrame frame) {
 		frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyBindingProvider.FOCUS_ON_LIVE_SEARCH.getKeystroke(), KeyBindingProvider.FOCUS_ON_LIVE_SEARCH.getKey());
 		frame.getRootPane().getActionMap().put(KeyBindingProvider.FOCUS_ON_LIVE_SEARCH	.getKey(), new AbstractAction() {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1770,9 +1753,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 * @throws BackingStoreException
 	 * @throws PreferencesException
 	 */
-	@SuppressWarnings("unchecked")
-	public
-	static void readMainFramePreferences(Preferences mainFramePrefs) throws BackingStoreException, PreferencesException {
+	public static void readMainFramePreferences(Preferences mainFramePrefs) 
+			throws BackingStoreException, PreferencesException {
 		setSplittingDeactivated(mainFramePrefs.getBoolean(PREFS_NODE_SPLITTING_DEACTIVATED, false));
 		selectedHistorySize = mainFramePrefs.getInt(PREFS_NODE_HISTORY_SIZE_INDEX, 0);
 		defaultWorkspace = mainFramePrefs.get(PREFS_NODE_DEFAULT_WORKSPACE, CommonLocaleDelegate.getMessage("Workspace.Default","Standard"));

@@ -37,7 +37,6 @@ public class SecuredBasicAuthHttpInvokerRequestExecutor extends CommonsHttpInvok
 
 	private HttpMethodRetryHandler retryHandler;
 
-	@SuppressWarnings("deprecation")
 	public SecuredBasicAuthHttpInvokerRequestExecutor() {
 		log.info("Register CustomSecureProtocolSocketFactory for HTTPS");
 		Protocol.registerProtocol("https", new Protocol("https", new CustomSecureProtocolSocketFactory(), 443));

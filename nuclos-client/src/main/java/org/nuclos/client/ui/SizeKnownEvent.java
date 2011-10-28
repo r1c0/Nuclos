@@ -28,11 +28,6 @@ import java.awt.event.ActionEvent;
  */
 public class SizeKnownEvent extends ActionEvent {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private static final int	SIZE_KNOWN_ID	= 927287;
 
 	private static final String	SIZE_KNOWN_STR	= "SizeKnown";

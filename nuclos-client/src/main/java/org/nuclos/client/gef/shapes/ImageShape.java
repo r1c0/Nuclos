@@ -32,17 +32,11 @@ import java.awt.image.ImageObserver;
 import java.net.URL;
 
 public class ImageShape extends RectangularShape implements ImageObserver {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	protected Image image = null;
 	protected double dImageWidth;
 	protected double dImageHeight;
 
-	/**
-	 *
-	 */
 	public ImageShape() {
 		this(0d, 0d, 0d, 0d);
 	}

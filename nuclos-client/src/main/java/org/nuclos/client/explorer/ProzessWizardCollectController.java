@@ -84,10 +84,6 @@ public class ProzessWizardCollectController extends NuclosCollectController<Enti
 	
 	
 	private class EntityRelationshipCollectPanel extends CollectPanel<EntityRelationshipModel> {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		EntityRelationshipCollectPanel(boolean bSearchPanelAvailable) {
 			super(bSearchPanelAvailable);

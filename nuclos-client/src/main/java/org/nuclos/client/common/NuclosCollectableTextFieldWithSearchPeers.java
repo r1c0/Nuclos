@@ -75,11 +75,6 @@ public class NuclosCollectableTextFieldWithSearchPeers extends CollectableTextFi
 			result.addSeparator();
 
 			final Action act = new AbstractAction(CommonLocaleDelegate.getMessage("NuclosCollectableTextFieldWithSearchPeers.1", "Suche erweitern")) {
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-
 				@Override
 				public void actionPerformed(ActionEvent ev) {
 					bUsePeers = !bUsePeers;

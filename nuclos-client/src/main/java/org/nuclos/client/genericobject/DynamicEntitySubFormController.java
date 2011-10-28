@@ -31,6 +31,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.Utils;
@@ -79,6 +80,8 @@ import org.nuclos.server.report.valueobject.DynamicEntityVO;
 
 public class DynamicEntitySubFormController extends MasterDataSubFormController {
 
+	private static final Logger LOG = Logger.getLogger(DynamicEntitySubFormController.class);
+	
 	private JMenuItem miDetails = new JMenuItem(CommonLocaleDelegate.getMessage("AbstractCollectableComponent.7","Details anzeigen..."));
 	private JMenuItem miDefineAsNewSearchResult = new JMenuItem(CommonLocaleDelegate.getMessage("DynamicEntitySubFormController.1", "In Liste anzeigen"));
 
@@ -288,7 +291,9 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
             public Integer transform(Collectable clct) {
 				try {
 					return GenericObjectDelegate.getInstance().get((Integer)clct.getId()).getModuleId();
-				}catch(CommonBusinessException ex){
+				}
+				catch (CommonBusinessException e) {
+					LOG.warn("getCommonModuleId failed: " + e);
 					return null;
 				}
 

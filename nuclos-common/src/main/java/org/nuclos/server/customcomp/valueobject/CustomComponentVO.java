@@ -21,18 +21,16 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
 
 public class CustomComponentVO extends NuclosValueObject implements Cloneable {
 
-	private static final long serialVersionUID = 1L;
+	private String internalName;
 
-	String internalName;
+	private String labelResourceId;
+	private String menupathResourceId;
 
-	String labelResourceId;
-	String menupathResourceId;
-
-	String componentType;
-	String componentVersion;
-	byte[] data;
+	private String componentType;
+	private String componentVersion;
+	private byte[] data;
 	
-	Long nucletId;
+	private Long nucletId;
 
 	public CustomComponentVO() {
 	}

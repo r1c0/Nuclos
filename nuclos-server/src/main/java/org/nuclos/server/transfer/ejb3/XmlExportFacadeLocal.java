@@ -35,15 +35,13 @@ package org.nuclos.server.transfer.ejb3;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.ejb.CreateException;
-import javax.ejb.Local;
-
+import org.nuclos.common2.File;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
-@Local
+// @Local
 public interface XmlExportFacadeLocal {
 
 	/**
@@ -59,20 +57,20 @@ public interface XmlExportFacadeLocal {
 	 * @throws Exception
 	 * @jboss.method-attributes read-only = "true"
 	 */
-	public abstract org.nuclos.common2.File xmlExport(
+	File xmlExport(
 		Map<Integer, String> exportEntities, boolean deepexport, String sFileName)
 		throws CommonFinderException, CommonPermissionException, IOException,
-		CommonCreateException, CreateException, NuclosBusinessRuleException;
+		CommonCreateException, NuclosBusinessRuleException;
 
-	public org.nuclos.common2.File xmlExport(
+	File xmlExport(
 		Map<Integer, String> exportEntities, boolean deepexport,
 		boolean withDependants, String sFileName) throws CommonFinderException,
 		CommonPermissionException, IOException, CommonCreateException,
-		CreateException, NuclosBusinessRuleException;
+		NuclosBusinessRuleException;
 
 	/**
 	 * get the count of the processed exported entities
 	 */
-	public abstract Integer getProcessedEntities();
+	Integer getProcessedEntities();
 
 }

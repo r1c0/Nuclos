@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.caching.GenCache;
@@ -55,8 +52,8 @@ import org.springframework.transaction.annotation.Transactional;
  * is required for the search results, a pluggable module architecture exists
  * via the server-side configuration and implementations of LiveSearchAddFilter. 
  */
-@Stateless
-@Remote(LiveSearchFacadeRemote.class)
+// @Stateless
+// @Remote(LiveSearchFacadeRemote.class)
 @Transactional
 public final class LiveSearchFacadeBean extends NuclosFacadeBean implements LiveSearchFacadeRemote {
 
@@ -214,8 +211,7 @@ public final class LiveSearchFacadeBean extends NuclosFacadeBean implements Live
             catch(IllegalAccessException e) {
             	throw new CommonFatalException(e);
             }
-		}
-		
+		}	
 		return in;
 	}
 }

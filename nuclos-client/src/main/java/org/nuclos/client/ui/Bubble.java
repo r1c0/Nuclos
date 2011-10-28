@@ -563,8 +563,6 @@ public class Bubble extends Window implements AncestorListener, WindowListener {
 
 	private static class RelativeBubbleShape extends java.awt.geom.RoundRectangle2D.Float {
 
-		private static final long serialVersionUID = 1L;
-
 		private Polygon arrow;
 
 		public RelativeBubbleShape(Position pos, int x, int y, int width, int height, int arcSize, int arrowoffsetx) {
@@ -755,10 +753,6 @@ public class Bubble extends Window implements AncestorListener, WindowListener {
 		f.add(
 			new JButton(
 				new AbstractAction("Show") {
-					/**
-					 *
-					 */
-					private static final long serialVersionUID = 1L;
 
 					@Override
                     public void actionPerformed(ActionEvent e) {

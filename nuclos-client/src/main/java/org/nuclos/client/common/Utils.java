@@ -333,7 +333,6 @@ public class Utils {
 	 * @param id id (valid types are Integer or Long)
 	 * @throws CommonFinderException
 	 */
-	@SuppressWarnings("deprecation")
 	public static Collectable getCollectable(String entityName, Object id) throws CommonFinderException {
 		if (entityName == null)
 			throw new IllegalArgumentException("entityName is null");

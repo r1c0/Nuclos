@@ -42,13 +42,8 @@ import org.nuclos.common.NuclosBusinessException;
  * @author <a href="mailto:maik.stueker@novabit.de">maik.stueker</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class WYSIWYGCollectableTextArea extends WYSIWYGCollectableComponent {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private LabeledTextArea component = new LabeledTextArea();
 	
 	public WYSIWYGCollectableTextArea() {

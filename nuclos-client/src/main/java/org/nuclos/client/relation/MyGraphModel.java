@@ -31,6 +31,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.application.assistant.ApplicationAssistantListener;
 import org.nuclos.client.application.assistant.ApplicationChangedEvent;
 import org.nuclos.client.application.assistant.ApplicationObserver;
@@ -67,10 +68,13 @@ import com.mxgraph.view.mxGraph;
 
 public class MyGraphModel extends mxGraphModel implements ApplicationAssistantListener {
 	
+	private static final Logger LOG = Logger.getLogger(MyGraphModel.class);
+
 	public static String[] labels = TranslationVO.labelsField;
-	mxGraphComponent graphComponent;
-	EntityRelationshipModelEditPanel editPanel;
-	MainFrame mf; 
+	
+	private mxGraphComponent graphComponent;
+	private EntityRelationshipModelEditPanel editPanel;
+	private MainFrame mf; 
 	
 	public static String ENTITYSTYLE = "rounded=1";
 	public static String SYMBOLCOLOR = "#6482B9";
@@ -196,9 +200,10 @@ public class MyGraphModel extends mxGraphModel implements ApplicationAssistantLi
 							
 						}
 					}
-					
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+					LOG.warn("add: " + e);
+				}
 			}
 		}
 		return obj;
@@ -393,14 +398,17 @@ public class MyGraphModel extends mxGraphModel implements ApplicationAssistantLi
 					}
 				}
 				catch(NuclosBusinessException e1) {
+					LOG.warn("actionPerformed: " + e1);
 				}
 				catch(CommonPermissionException e1) {
+					LOG.warn("actionPerformed: " + e1);
 				}
 				catch(CommonFatalException e1) {
+					LOG.warn("actionPerformed: " + e1);
 				}
 				catch(CommonBusinessException e1) {
+					LOG.warn("actionPerformed: " + e1);
 				}				
-
 			}
 		});
 		
@@ -482,8 +490,9 @@ public class MyGraphModel extends mxGraphModel implements ApplicationAssistantLi
 								EntityMetaDataVO vo = MetaDataClientProvider.getInstance().getEntity(sValue);
 								wizard.setEntityToEdit(vo);
 							}
-							catch(CommonFatalException ex) {
+							catch(CommonFatalException e1) {
 								// do noting here Entity does not exist
+								LOG.warn("actionPerformed: " + e1 + "(entity does not exist?)");
 							}
 						}
 					}

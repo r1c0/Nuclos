@@ -65,7 +65,8 @@ import org.quartz.JobExecutionException;
  *
  */
 public class NuclosReportJob extends NuclosQuartzJob {
-	private static final Logger logger = Logger.getLogger(NuclosReportJob.class);
+	
+	private static final Logger LOG = Logger.getLogger(NuclosReportJob.class);
 
 	public NuclosReportJob() {
 		super(new ReportJobImpl());
@@ -81,10 +82,10 @@ public class NuclosReportJob extends NuclosQuartzJob {
 			final String sReportName = (String) dataMap.get("ReportName");
 			final File reportOutputDir = NuclosSystemParameters.getDirectory(NuclosSystemParameters.REPORT_PATH);
 
-			logger.debug(new Date() + ": starting scheduled report: " + sReportName);
+			LOG.debug(new Date() + ": starting scheduled report: " + sReportName);
 
 			if (sReportName == null || reportOutputDir == null) {
-				logger.error("Not able to process 4PM Job: Report Name or Report Output Path is null");
+				LOG.error("Not able to process 4PM Job: Report Name or Report Output Path is null");
 			}
 			else {
 				try {
@@ -104,20 +105,19 @@ public class NuclosReportJob extends NuclosQuartzJob {
 					if (bFound) {
 						final ResultVO resultVO = datasourceFacade.executeQuery(reportVO.getDatasourceId(), new HashMap<String, Object>(), null);
 						final String sFileName = createXlsFile(sReportName, resultVO, null, reportOutputDir);
-						logger.debug("Successfully created file " + sFileName);
+						LOG.debug("Successfully created file " + sFileName);
 					}
 					else {
-						logger.error("Report " + sReportName + " not found");
+						LOG.error("Report " + sReportName + " not found");
 						writeErrorFile(reportOutputDir, "Report: " + sReportName + " not found");
 					}
 				}
-				catch (NuclosReportException ex) {
-					writeErrorFile(reportOutputDir, ex.getMessage());
-					ex.printStackTrace();
+				catch (NuclosReportException e) {
+					writeErrorFile(reportOutputDir, e.getMessage());
+					LOG.warn("execute failed: " + e, e);
 				}
-				catch (Exception ex) {
-					/** @todo this is not enough */
-					ex.printStackTrace();
+				catch (Exception e) {
+					LOG.warn("execute failed: " + e, e);
 				}
 			}
 		}
@@ -133,8 +133,7 @@ public class NuclosReportJob extends NuclosQuartzJob {
 				ps.println(sMessage);
 			}
 			catch (FileNotFoundException e) {
-				logger.error("Error while trying to create errorfile.");
-				e.printStackTrace();
+				LOG.error("Error while trying to create errorfile.", e);
 			}
 			finally {
 				/** @todo don't close if ps == null! */
@@ -330,20 +329,19 @@ public class NuclosReportJob extends NuclosQuartzJob {
 					try {
 						os.close();
 					}
-					catch (IOException ex) {
-						ex.printStackTrace();
+					catch (IOException e) {
+						LOG.warn("createXlsFile failed: " + e, e);
 					}
 				}
 				if (is != null) {
 					try {
 						is.close();
 					}
-					catch (IOException ex) {
-						ex.printStackTrace();
+					catch (IOException e) {
+						LOG.warn("createXlsFile failed: " + e, e);
 					}
 				}
 			}
-
 			return fileName;
 		}
 

@@ -33,7 +33,6 @@ import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 
-@SuppressWarnings("deprecation")
 public class SubFormFieldsCollectableFieldsProvider implements CollectableFieldsProvider {
 
 	private String entity;

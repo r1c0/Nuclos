@@ -120,6 +120,7 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 			location = template.lookup(JNDI_LOG4J_PATH, String.class);
 		}
 		catch (NamingException ex) {
+			// Ok! (tp)
 			System.out.println(JNDI_LOG4J_PATH + " not found.");
 		}
 
@@ -133,6 +134,7 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 			interval = template.lookup(JNDI_LOG4J_INTERVAL, Integer.class);
 		}
 		catch (NamingException ex) {
+			// Ok! (tp)
 			System.out.println(JNDI_LOG4J_INTERVAL + " not found.");
 		}
 

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.collection.Transformer;
 
 /**
@@ -35,6 +36,8 @@ import org.nuclos.common.collection.Transformer;
  * @author marc.jackisch
  */
 public class ResourceBundleResolverUtils {
+
+	private static final Logger LOG = Logger.getLogger(ResourceBundleResolverUtils.class);
 
 	private ResourceBundleResolverUtils() {}
 
@@ -64,7 +67,9 @@ public class ResourceBundleResolverUtils {
 		try {
 			resourceText = service.getResource(rid.toString());
 		}
-		catch(MissingResourceException e) {}
+		catch(MissingResourceException e) {
+			LOG.info("getMessageInternal: " + e);
+		}
 		if(resourceText == null)
 			throw new RuntimeException("Resource id " + rid + " not found!");
 

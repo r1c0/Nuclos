@@ -86,7 +86,8 @@ import org.nuclos.common.database.query.definition.Table;
  * @version 01.00.00
  */
 public class QueryBuilderController extends AbstractController implements ShapeModelListener {
-	private final Logger log = Logger.getLogger(this.getClass());
+	
+	private final Logger LOG = Logger.getLogger(this.getClass());
 	
 	private final Set<String> setQueryTypes;
 
@@ -221,15 +222,7 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 
 	}
 
-	/**
-	 *
-	 */
 	private class DeleteTableAction extends AbstractAction {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		DeleteTableAction() {
 			super(CommonLocaleDelegate.getMessage("QueryBuilderController.1", "Ausgew\u00e4hlte Tabelle l\u00f6schen"));
@@ -241,15 +234,7 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 		}
 	}
 
-	/**
-	 *
-	 */
 	private class DeleteRelationAction extends AbstractAction {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		DeleteRelationAction() {
 			super(CommonLocaleDelegate.getMessage("QueryBuilderController.2", "Relation l\u00f6schen"));
@@ -261,14 +246,8 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 		}
 	}
 
-	/**
-	 *
-	 */
 	private class EditRelationAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		private final RelationConnector connector;
 
 		EditRelationAction(RelationConnector shape) {
@@ -365,7 +344,8 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 
 				// remove columns for this alias:
 				final String sAlias = tableshape.getTable().getAlias();
-				System.out.println("sAlias = " + sAlias);
+				if (LOG.isDebugEnabled())
+					LOG.debug("removeShaped: sAlias = " + sAlias);
 				editor.getColumnSelectionPanel().getModel().removeColumnsForTable(sAlias);
 			}
 		}
@@ -467,8 +447,7 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-			//	dtde.rejectDrop();
+			LOG.warn("dropTable failed: " + e, e);
 		}
 	}
 
@@ -518,7 +497,7 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 			dtde.dropComplete(true);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			LOG.warn("dropColumnTable failed: " + e, e);
 			dtde.rejectDrop();
 		}
 	}
@@ -730,7 +709,7 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			LOG.warn("dropColumnTable failed: " + e, e);
 			dtde.rejectDrop();
 		}
 	}
@@ -751,7 +730,7 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 		final Table tableSchema = currentSchema.getTable(sEntity);
 		if (tableSchema == null) {
 			// @todo: throw exception
-			log.warn("Could not find table of entity " + sEntity + " in schema.");
+			LOG.warn("Could not find table of entity " + sEntity + " in schema.");
 		}
 		else {
 			final Table table = (Table) tableSchema.clone();

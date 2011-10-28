@@ -28,6 +28,8 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.apache.log4j.Logger;
+
 /**
  * Singleton that contains common icons.
  * This class uses some icons of the "Java Look & Feel Graphics Repository",
@@ -40,6 +42,8 @@ import javax.swing.ImageIcon;
  * @version 01.00.00
  */
 public class Icons {
+
+	private static final Logger LOG = Logger.getLogger(Icons.class);
 
 	/**
 	 * the one and only instance of this class

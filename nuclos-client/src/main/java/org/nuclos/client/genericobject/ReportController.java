@@ -446,15 +446,15 @@ public class ReportController extends Controller {
 			formatController = new ChoiceListOrReportExportController(this.getParent(), usagecriteria, lstclctlo.size());
 			final boolean bSearchDialog = formatController.run(CommonLocaleDelegate.getMessage("ReportController.12","Suchergebnis exportieren / Formulardruck"));
 			final ChoiceListOrReportExportPanel pnlChoiceExport = ((ChoiceListOrReportExportController) formatController).pnlChoiceExport;
-			if (bSearchDialog && pnlChoiceExport.rbReport.isSelected()) {
+			if (bSearchDialog && pnlChoiceExport.getReportButton().isSelected()) {
 				try {
-					executeForm(pnlChoiceExport.pnlReport, lstclctlo, sDocumentEntityName, documentFieldNames);
+					executeForm(pnlChoiceExport.getSelectionPanel(), lstclctlo, sDocumentEntityName, documentFieldNames);
 				}
 				catch (RuntimeException ex) {
 					throw new NuclosBusinessException("RemoteException: Collection of report outputs couldn't be created.", ex);
 				}
 			}
-			else if (bSearchDialog && pnlChoiceExport.rbList.isSelected()) {
+			else if (bSearchDialog && pnlChoiceExport.getListButton().isSelected()) {
 				export(clcteMain, searchexpr, lstclctefweSelected, bIncludeSubModules, formatController.getFormat());
 			}
 		}

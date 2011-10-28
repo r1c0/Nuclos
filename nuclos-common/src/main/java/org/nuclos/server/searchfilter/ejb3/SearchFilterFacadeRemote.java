@@ -20,8 +20,6 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.CreateException;
-import javax.ejb.Remote;
 
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -36,15 +34,15 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.searchfilter.valueobject.SearchFilterVO;
 
-@Remote
+// @Remote
 public interface SearchFilterFacadeRemote {
 
-	public Object modify(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants, List<TranslationVO> resources)
+	Object modify(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants, List<TranslationVO> resources)
 		throws CommonCreateException, CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException,	CommonValidationException, CommonPermissionException,
 		NuclosBusinessRuleException;
 
-	public List<TranslationVO> getResources(Integer id) throws CommonBusinessException;
+	List<TranslationVO> getResources(Integer id) throws CommonBusinessException;
 
 	/**
 	 * @return all searchfilters for the given user
@@ -53,8 +51,8 @@ public interface SearchFilterFacadeRemote {
 	 * @throws CommonFinderException
 	 */
 	@RolesAllowed("Login")
-	public abstract Collection<SearchFilterVO> getAllSearchFilterByUser(
-		String sUser) throws CreateException, CommonFinderException,
+	Collection<SearchFilterVO> getAllSearchFilterByUser(
+		String sUser) throws CommonFinderException,
 		CommonPermissionException;
 
 	/**
@@ -65,9 +63,9 @@ public interface SearchFilterFacadeRemote {
 	 * @throws NuclosBusinessRuleException
 	 */
 	@RolesAllowed("Login")
-	public abstract SearchFilterVO createSearchFilter(SearchFilterVO filterVO)
+	SearchFilterVO createSearchFilter(SearchFilterVO filterVO)
 		throws NuclosBusinessRuleException, CommonCreateException,
-		CommonPermissionException, CreateException;
+		CommonPermissionException;
 
 	/**
 	 * modifies the given searchfilter
@@ -82,31 +80,31 @@ public interface SearchFilterFacadeRemote {
 	 * @throws NuclosBusinessRuleException
 	 */
 	@RolesAllowed("Login")
-	public abstract SearchFilterVO modifySearchFilter(SearchFilterVO filterVO)
+	SearchFilterVO modifySearchFilter(SearchFilterVO filterVO)
 		throws NuclosBusinessRuleException, CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonValidationException,
-		CommonPermissionException, CreateException;
+		CommonPermissionException;
 
 	/**
 	 * deletes the given searchfilter
 	 */
 	@RolesAllowed("Login")
-	public abstract void removeSearchFilter(SearchFilterVO filterVO)
+	void removeSearchFilter(SearchFilterVO filterVO)
 		throws NuclosBusinessRuleException, CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonValidationException,
-		CommonPermissionException, CreateException;
+		CommonPermissionException;
 
 	/**
 	 * updates the createdBy field of the given searchfilter
 	 * ATTENTION: this is only used by the migration process
 	 */
 	@RolesAllowed("Login")
-	public abstract void changeCreatedUser(Integer iId, String sUserName)
+	void changeCreatedUser(Integer iId, String sUserName)
 		throws NuclosBusinessRuleException, CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonValidationException,
-		CommonPermissionException, CreateException;
+		CommonPermissionException;
 
 }

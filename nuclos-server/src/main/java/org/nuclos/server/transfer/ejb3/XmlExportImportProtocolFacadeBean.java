@@ -18,11 +18,6 @@ package org.nuclos.server.transfer.ejb3;
 
 import java.util.Date;
 
-import javax.ejb.CreateException;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.dal.vo.SystemFields;
@@ -53,9 +48,9 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Local(XmlExportImportProtocolFacadeLocal.class)
-@Remote(XmlExportImportProtocolFacadeRemote.class)
+// @Stateless
+// @Local(XmlExportImportProtocolFacadeLocal.class)
+// @Remote(XmlExportImportProtocolFacadeRemote.class)
 @Transactional(propagation=Propagation.REQUIRES_NEW)
 public class XmlExportImportProtocolFacadeBean extends NuclosFacadeBean implements XmlExportImportProtocolFacadeLocal, XmlExportImportProtocolFacadeRemote {
 
@@ -74,7 +69,8 @@ public class XmlExportImportProtocolFacadeBean extends NuclosFacadeBean implemen
 	 * @throws NuclosBusinessRuleException
 	 */
 	@Override
-	public Integer writeExportImportLogHeader(String sType, String sUserName, Date dImportDate, String sImportEntityName, String sImportFileName) throws CommonCreateException, CommonPermissionException, CreateException, NuclosBusinessRuleException {
+	public Integer writeExportImportLogHeader(String sType, String sUserName, Date dImportDate, String sImportEntityName, String sImportFileName) 
+			throws CommonCreateException, CommonPermissionException, NuclosBusinessRuleException {
 		MasterDataMetaVO mdmvo = getMasterDataFacade().getMetaData(NuclosEntity.IMPORTEXPORT.getEntityName());
 		MasterDataVO mdvo = new MasterDataVO(mdmvo, false);
 
@@ -100,7 +96,8 @@ public class XmlExportImportProtocolFacadeBean extends NuclosFacadeBean implemen
 	 * @throws NuclosBusinessRuleException
 	 */
 	@Override
-	public void writeExportImportLogEntry(Integer iParentId, String sMessageLevel, String sImportAction, String sImportMessage, Integer iActionNumber) throws CommonCreateException, CommonPermissionException, CreateException, NuclosBusinessRuleException {
+	public void writeExportImportLogEntry(Integer iParentId, String sMessageLevel, String sImportAction, String sImportMessage, Integer iActionNumber) 
+			throws CommonCreateException, CommonPermissionException, NuclosBusinessRuleException {
 		if (iParentId == null) {
 			return;
 		}

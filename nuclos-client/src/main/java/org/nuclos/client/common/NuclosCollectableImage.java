@@ -57,7 +57,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
-import org.jfree.util.Log;
+import org.apache.log4j.Logger;
 import org.nuclos.client.desktop.DesktopUtils;
 import org.nuclos.client.entityobject.CollectableEntityObjectField;
 import org.nuclos.client.genericobject.CollectableGenericObjectAttributeField;
@@ -85,6 +85,9 @@ import org.nuclos.common2.IOUtils;
  * @version 01.00.00
  */
 public class NuclosCollectableImage extends CollectableMediaComponent implements MessageExchangeListener {
+	
+	private static final Logger LOG = Logger.getLogger(NuclosCollectableImage.class);
+		
    private NuclosImage nuclosImage;
    private boolean bScalable;
    private int inputWidth = -1;
@@ -194,8 +197,6 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		final JPopupMenu result = new JPopupMenu();
 		result.add(new AbstractAction(getMessage("collectableimage.filechooser.1", "Bild \u00f6ffnen")) {
 
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser chosser = new JFileChooser();
@@ -212,8 +213,6 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		});
 
 		result.add(new AbstractAction(getMessage("collectableimage.filechooser.2","Bild speichern")) {
-
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -251,8 +250,6 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 
 		result.add(new AbstractAction(getMessage("collectableimage.filechooser.3","Bild anzeigen")) {
 
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -275,8 +272,6 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		});
 
 		result.add(new AbstractAction(getMessage("CollectableFileNameChooserBase.1", "zurücksetzen")) {
-
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -301,7 +296,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 				return readers.next().getFormatName();
 			}
 		} catch (IOException e1) {
-			Log.warn("Error determining image format name.", e1);
+			LOG.warn("Error determining image format name.", e1);
 		}
 		return defaultformat;
 	}
@@ -528,7 +523,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 			if(flavor != null && flavor.length > 0) {
 				try {
 					if(trans.getTransferData(flavor[0]) instanceof List) {
-						List files = (List) trans.getTransferData(flavor[0]);
+						List<?> files = (List<?>) trans.getTransferData(flavor[0]);
 						if(files.size() == 1) {
 							if(files.get(0) instanceof File) {
 								File fileDrag = (File)files.get(0);
@@ -554,8 +549,9 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 						dtde.rejectDrag();
 					}
 				}
-				catch(Exception ex) {
+				catch (Exception e) {
 					// do nothing here
+					LOG.warn("drapOver failed: " + e);
 				}
 			}
 		}
@@ -571,7 +567,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 				for(int i = 0; i < flavor.length; i++) {
 					Object obj = trans.getTransferData(flavor[i]);
 					if(obj instanceof List) {
-						List files = (List) trans.getTransferData(flavor[i]);
+						List<?> files = (List<?>) trans.getTransferData(flavor[i]);
 						if(files.size() == 1) {
 							if(files.get(0) instanceof File) {
 								File file = (File)files.get(0);

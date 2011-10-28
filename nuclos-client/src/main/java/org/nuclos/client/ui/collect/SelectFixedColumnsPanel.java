@@ -43,8 +43,6 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 public class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel<CollectableEntityField> {
 
-	private static final long serialVersionUID = 1L;
-	
 	private JTable tblSelectedColumn;
 
 	public SelectFixedColumnsPanel() {
@@ -84,17 +82,14 @@ public class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel<Collectab
 		scrlpnSelectedColumns.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	}
 
-	@SuppressWarnings("unchecked")
 	public MutableListModel<CollectableEntityField> getAvailableColumnsModel() {
 		return (MutableListModel<CollectableEntityField>) this.getJListAvailableObjects().getModel();
 	}
 
-	@SuppressWarnings("unchecked")
 	public MutableListModel<CollectableEntityField> getSelectedColumnsModel() {
 		return ((FixedTableModel<CollectableEntityField>) this.tblSelectedColumn.getModel()).getObjectListModel();
 	}
 
-	@SuppressWarnings("unchecked")
 	public Set<CollectableEntityField> getFixedColumns() {
 		return ((FixedTableModel<CollectableEntityField>) this.tblSelectedColumn.getModel()).getFixedObjSet();
 	}
@@ -124,7 +119,6 @@ public class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel<Collectab
 		return this.getJListAvailableObjects().getSelectionModel();
 	}
 
-	@SuppressWarnings("unchecked")
 	public void setFixedColumns(Set<CollectableEntityField> fixedColumns) {
 		((FixedTableModel<CollectableEntityField>) this.tblSelectedColumn.getModel()).setFixedObjSet(fixedColumns);
 		final TableColumnModel cm = tblSelectedColumn.getColumnModel();

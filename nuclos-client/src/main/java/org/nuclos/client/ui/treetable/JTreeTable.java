@@ -48,10 +48,6 @@ import org.nuclos.client.ui.table.CommonJTable;
 public class JTreeTable extends CommonJTable {
 
 	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	/**
 	 * used as renderer and editor for the tree column.
 	 */
 	private final TreeTableCellRenderer tree;
@@ -136,10 +132,7 @@ public class JTreeTable extends CommonJTable {
 	 * A TreeCellRenderer that displays a JTree.
 	 */
 	public class TreeTableCellRenderer extends JTree implements TableCellRenderer {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		/** Last table/tree row asked to renderer. */
 		protected int visibleRow;
 
@@ -270,10 +263,7 @@ public class JTreeTable extends CommonJTable {
 	 * in the DefaultTreeSelectionModel.
 	 */
 	class ListToTreeSelectionModelWrapper extends DefaultTreeSelectionModel {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		/** Set to true when we are updating the ListSelectionModel. */
 		protected boolean updatingListSelectionModel;
 

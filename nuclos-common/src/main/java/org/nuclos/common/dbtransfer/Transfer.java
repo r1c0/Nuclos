@@ -34,8 +34,6 @@ public class Transfer implements Serializable {
 	public static final String TOPIC_CORRELATIONID_PREPARE = Transfer.class.getName() + ".PREPARE";
 	public static final String TOPIC_CORRELATIONID_RUN = Transfer.class.getName() + ".RUN";
 
-	private static final long serialVersionUID = 1L;
-
 	private final boolean nuclon;
 	private byte[] transferFile;
 	private int newUserCount;
@@ -145,7 +143,6 @@ public class Transfer implements Serializable {
 	}
 
 	public static class Result implements Serializable {
-		private static final long serialVersionUID = 1L;
 
 		public final StringBuffer sbCritical = new StringBuffer();
 		public final StringBuffer sbWarning = new StringBuffer();

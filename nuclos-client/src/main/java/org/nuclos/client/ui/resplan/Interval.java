@@ -21,8 +21,6 @@ import java.io.Serializable;
 
 public final class Interval<T extends Comparable<? super T>> implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-
 	public static final int START = 0;
 	public static final int END = 1;
 

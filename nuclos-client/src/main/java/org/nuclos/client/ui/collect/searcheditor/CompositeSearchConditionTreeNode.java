@@ -51,11 +51,6 @@ import javax.swing.JTree;
  */
 public class CompositeSearchConditionTreeNode extends SearchConditionTreeNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private static final String ACTIONCOMMAND_CHANGE_NODE = "CHANGE NODE";
 
 	private LogicalOperator logicalOperator;
@@ -152,10 +147,7 @@ public class CompositeSearchConditionTreeNode extends SearchConditionTreeNode {
 	 * changes AND node into OR node and vice versa.
 	 */
 	private static class ChangeNodeAction extends TreeNodeAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		private final CompositeSearchConditionTreeNode node;
 
 		ChangeNodeAction(JTree tree, CompositeSearchConditionTreeNode node) {

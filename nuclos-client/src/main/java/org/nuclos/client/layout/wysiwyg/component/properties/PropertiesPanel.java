@@ -84,6 +84,9 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @version 01.00.00
  */
 public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelControllable, ActionListener {
+	
+	private static final Logger LOG = Logger.getLogger(PropertiesPanel.class);
+		
 	private static final long serialVersionUID = 7268088698639299981L;
 
 	private ComponentProperties componentProperties;
@@ -101,8 +104,6 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 	// NUCLOSINT-681
 	private static PropertiesPanel showingInstance = null;
 	
-	private static final Logger log = Logger.getLogger(PropertiesPanel.class);
-
 	/**
 	 * The Constructor 
 	 * @param c the {@link WYSIWYGComponent}
@@ -129,7 +130,7 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 			}
 			
 		} catch (CommonFatalException e) {
-			log.error(e);
+			LOG.error(e);
 		}
 		
 		if(compConstraints != null)
@@ -165,7 +166,7 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 			}
 		}
 		catch(NuclosBusinessException e) {
-			log.error(e);
+			LOG.warn("PropertiesPanel failed: " + e, e);
 		}
 		
 		TableLayoutConstraints constraint;
@@ -199,11 +200,11 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 			controller = tableLayoutUtil.getContainer().getParentEditorPanel().getController();
 		}
 		catch(Exception e) {
+			LOG.info("performCancelAction: controller not found: " + e + ", retrying...");
 			try {
 				controller = ((WYSIWYGLayoutEditorPanel)c).getController();
 			}
 			catch(NuclosBusinessException e1) {
-				log.error(e1);
 				Errors.getInstance().showExceptionDialog(null, e1);
 			}
 		} 
@@ -238,11 +239,12 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 				controller = tableLayoutUtil.getContainer().getParentEditorPanel().getController();
 			}
 			catch(Exception e) {
+				LOG.info("performSaveAction: controller not found: " + e + ", retrying...");
 				try {
 					controller = ((WYSIWYGLayoutEditorPanel)c).getController();
 				}
 				catch(NuclosBusinessException e1) {
-					log.error(e1);
+					LOG.error(e1);
 					Errors.getInstance().showExceptionDialog(null, e1);
 				}
 			} 
@@ -263,10 +265,10 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 			showingInstance = new PropertiesPanel(c, tableLayoutUtil, null);
 			//NUCLEUSINT-987
 		} catch (CommonFatalException e) {
-			log.info(e);
+			LOG.info(e);
 		} catch (NullPointerException e) {
 			//NUCLEUSINT-1022
-			log.info(e);
+			LOG.info(e);
 		}
 	}
 	// NUCLOSINT-681
@@ -323,7 +325,7 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 							}
 						} catch (NuclosBusinessException e1) {
 							Errors.getInstance().showExceptionDialog(null, e1);
-							log.error(e1);
+							LOG.error(e1);
 						}
 					}
 					dialog.properties.setEnabled(false);
@@ -344,7 +346,7 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 	 * @param constraints the {@link TableLayoutConstraints}
 	 */
 	private void copyComponentPropertiesToValueList(ComponentProperties properties, ListOrderedMap values, TableLayoutConstraints constraints) {
-		Map<String, PropertyValue> propertyValues = properties.getFilteredProperties();
+		Map<String, PropertyValue<?>> propertyValues = properties.getFilteredProperties();
 		Set<String> keys = propertyValues.keySet();
 
 		for (java.util.Iterator<String> it = keys.iterator(); it.hasNext();) {
@@ -372,10 +374,9 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 	 * @param checkOnly if true only checks for changes
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	private boolean changePropertyValues(boolean checkOnly) {
 		ComponentProperties properties = this.componentProperties;
-		Map<String, PropertyValue> propertyValues = properties.getClonedProperties();
+		Map<String, PropertyValue<?>> propertyValues = properties.getClonedProperties();
 		Set<String> keys = propertyValues.keySet();
 
 		int i = 0;
@@ -386,7 +387,7 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 			c.validateProperties(values);
 		} catch (CommonBusinessException e) {
 			Errors.getInstance().showExceptionDialog(this, e);
-			log.error(e);
+			LOG.error(e);
 			exceptionOccured = true;
 		}
 		
@@ -394,8 +395,8 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 			String key = it.next();
 
 			if (values.containsKey(key)) {
-				PropertyValue originValue = propertyValues.get(key);
-				PropertyValue changedValue = (PropertyValue) values.get(key);
+				PropertyValue<?> originValue = propertyValues.get(key);
+				PropertyValue<?> changedValue = (PropertyValue<?>) values.get(key);
 	
 				if (changedValue != null && !originValue.equals(changedValue)) {
 					if(!checkOnly) propertyValues.put(key, changedValue);
@@ -421,7 +422,7 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 				properties.setProperties(propertyValues);
 			} catch (CommonBusinessException e) {
 				Errors.getInstance().showExceptionDialog(this, e);
-				log.error(e);
+				LOG.error(e);
 				exceptionOccured = true;
 			}
 		}
@@ -462,7 +463,6 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 				}
 			} catch(CommonBusinessException e) {
 				Errors.getInstance().showExceptionDialog(this, e);
-				log.error(e);
 				exceptionOccured = true;
 			}
 		}
@@ -638,13 +638,7 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 	 * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
 	 * @version 01.00.00
 	 */
-	@SuppressWarnings("serial")
 	private class PropertiesTable extends JTable {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		/**
 		 * @param tableModel the {@link TableModel} for the {@link PropertiesTable}
@@ -662,7 +656,8 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 		public TableCellEditor getCellEditor(int row, int column) {
 			TableCellEditor tableCellEditor = null;
 			if (getModel().getValueAt(row, column) instanceof PropertyValue) {
-				tableCellEditor = ((PropertyValue) getModel().getValueAt(row, column)).getTableCellEditor(c, (String) getModel().getValueAt(row, 0), PropertiesPanel.this);
+				tableCellEditor = ((PropertyValue<?>) getModel().getValueAt(row, column)).getTableCellEditor(c, 
+						(String) getModel().getValueAt(row, 0), PropertiesPanel.this);
 			} else
 				tableCellEditor = super.getCellEditor(row, column);
 			
@@ -685,7 +680,8 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 		@Override
 		public TableCellRenderer getCellRenderer(int row, int column) {
 			if (getModel().getValueAt(row, column) instanceof PropertyValue) {
-				return ((PropertyValue) getModel().getValueAt(row, column)).getTableCellRenderer(c, (String) getModel().getValueAt(row, 0), PropertiesPanel.this);
+				return ((PropertyValue<?>) getModel().getValueAt(row, column)).getTableCellRenderer(c, 
+						(String) getModel().getValueAt(row, 0), PropertiesPanel.this);
 			} else if (column == 0) {
 				return new LabelTableCellRenderer();
 			}
@@ -742,7 +738,7 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 			} 
 
 		} catch (CommonBusinessException e1) {
-			log.error(e1);
+			LOG.error("actionPerformed failed: " + e1, e1);
 		}
 		
 		/** clear the valuelist to refill it */
@@ -752,10 +748,9 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 			if(tableLayoutUtil != null) {
 				compConstraints = tableLayoutUtil.getConstraintForComponent(c);
 			}
-
 		}
 		catch(CommonFatalException e1) {
-			log.error(e1);
+			LOG.error("actionPerformed failed: " + e1, e1);
 		}
 		if(compConstraints != null) {
 			copyComponentPropertiesToValueList(properties, values, compConstraints);

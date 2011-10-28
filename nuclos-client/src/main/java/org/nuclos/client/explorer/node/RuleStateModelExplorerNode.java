@@ -52,10 +52,6 @@ import org.nuclos.server.statemodel.valueobject.StateModelVO;
 
 public class RuleStateModelExplorerNode extends AbstractRuleExplorerNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private static final String ACTIONCOMMAND_SHOW_DETAILS = "SHOW DETAILS";
 
 	public RuleStateModelExplorerNode(TreeNode treenode) {
@@ -106,11 +102,6 @@ public class RuleStateModelExplorerNode extends AbstractRuleExplorerNode {
 	 * Shows the details for the state model in the collect controller
 	 */
 	private class ShowDetailsAction extends TreeNodeAction {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public ShowDetailsAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("RuleExplorerNode.1","Details anzeigen"), tree);

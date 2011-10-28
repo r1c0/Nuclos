@@ -71,11 +71,6 @@ import org.nuclos.common2.exception.CommonBusinessException;
 
 public class ListOfValues extends JPanel {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private static final int QUICKSEARCH_DELAY_TIME = 756;
 	
 	private static final int QUICKSEARCH_POPUP_ROWS = 16;
@@ -133,10 +128,6 @@ public class ListOfValues extends JPanel {
 	private Timer lastTimer = null;
 
 	private final TextFieldWithButton tf = new TextFieldWithButton(Icons.getInstance().getIconTextFieldButtonLOV()) {		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public String getToolTipText(MouseEvent ev) {
@@ -162,8 +153,6 @@ public class ListOfValues extends JPanel {
 		@Override
 		protected boolean processKeyBinding(KeyStroke ks, KeyEvent e,
 			int condition, boolean pressed) {
-			
-			//System.out.println(ks);
 			
 			if (e.getKeyCode() == ENTER.getKeyCode()) {
 				if (ks.getModifiers() == 0) {
@@ -223,11 +212,6 @@ public class ListOfValues extends JPanel {
 	
 	private final JComboBox cbxQuickChooser = new JComboBox() {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		@Override
 		public Dimension getSize() {
 			return ListOfValues.this.tf.getSize();
@@ -266,10 +250,6 @@ public class ListOfValues extends JPanel {
 		this.cbxQuickChooser.setMaximumRowCount(QUICKSEARCH_POPUP_ROWS);
 		this.cbxQuickChooser.addActionListener(new QuickSearchActionListener());
 		this.cbxQuickChooser.setRenderer(new DefaultListCellRenderer() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -471,16 +451,8 @@ public class ListOfValues extends JPanel {
 		}
 	}
 	
-	/**
-	 * 
-	 *
-	 */
 	class QuickSearchNavigationAction extends AbstractAction {
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private final boolean navUp;
 
 		public QuickSearchNavigationAction(boolean navUp) {
@@ -520,15 +492,7 @@ public class ListOfValues extends JPanel {
 		}		
 	}
 
-	/**
-	 * 
-	 *
-	 */
 	class QuickSearchAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {		
@@ -647,15 +611,7 @@ public class ListOfValues extends JPanel {
 		}
 	};
 	
-	/**
-	 * 
-	 *
-	 */
 	class QuickSearchCancelAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -671,17 +627,10 @@ public class ListOfValues extends JPanel {
 		}
 	}
 	
-	/**
-	 * 
-	 */
 	private void actionPerformedQuickSearchSelected() {
 		actionPerformedQuickSearchSelected(false);
 	}
 	
-	/**
-	 * 
-	 * @param forceClear
-	 */
 	private void actionPerformedQuickSearchSelected(boolean forceClear) {
 		if (this.quickSearchSelectedListener != null) {
 			if (forceClear) {
@@ -701,68 +650,36 @@ public class ListOfValues extends JPanel {
 			this.cbxQuickChooser.hidePopup();
 	}
 	
-	/**
-	 * 
-	 * @param qssl
-	 */
 	public void setQuickSearchSelectedListener(final QuickSearchSelectedListener qssl) {
 		this.quickSearchSelectedListener = qssl;
 	}
 	
-	/**
-	 * 
-	 * @param al
-	 */
 	public void setQuickSearchCanceledListener(final ActionListener al) {
 		this.quickSearchCanceledListener = al;
 	}
 	
-	/**
-	 * 	
-	 * @return
-	 */
 	public boolean isSearchOnLostFocus() {
 		return searchOnLostFocus;
 	}
 
-	/**
-	 * 
-	 * @param searchOnLostFocus
-	 */
 	public void setSearchOnLostFocus(boolean searchOnLostFocus) {
 		this.searchOnLostFocus = searchOnLostFocus;
 	}
 	
 	public static abstract class QuickSearchResulting {
-		/**
-		 * 
-		 * @param inputString
-		 * @return
-		 */
-		protected abstract List<CollectableValueIdField> getQuickSearchResult(String inputString);	
+		
+	protected abstract List<CollectableValueIdField> getQuickSearchResult(String inputString);	
 	}
 	
-	/**
-	 * 
-	 *
-	 */
 	public static abstract class QuickSearchSelectedListener {
 		public abstract void actionPerformed(CollectableValueIdField itemSelected);
 	}
 	
-	/**
-	 * 
-	 *
-	 */
-	private enum Alert {
+	private static enum Alert {
 		ONE_RESULT_SELECTION,
 		NO_RESULT_FOUND;
 	}
 	
-	/**
-	 * 
-	 * @param alert
-	 */
 	private void alertQuickSearch(Alert alert) {
 		alertRunning = true;
 		final Color color;

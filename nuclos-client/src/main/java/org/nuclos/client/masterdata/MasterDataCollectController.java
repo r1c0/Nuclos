@@ -42,6 +42,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.TransferHandler;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.application.assistant.ApplicationChangedEvent;
 import org.nuclos.client.application.assistant.ApplicationObserver;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
@@ -148,6 +149,8 @@ import org.xml.sax.InputSource;
  */
 public class MasterDataCollectController extends EntityCollectController<CollectableMasterDataWithDependants> {
 
+	private static final Logger LOG = Logger.getLogger(MasterDataCollectController.class);
+	
    private static int iFilter;
 
    public static final String FIELDNAME_ACTIVE = "active";
@@ -708,7 +711,6 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       return result;
    }
 
-   @SuppressWarnings("deprecation")
    @Override
    protected void showFrame() {
       super.showFrame();
@@ -838,7 +840,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	   /** @todo use super.unsafeFillDetailsPanel */
 
 	   for (String sFieldName : this.getDetailsPanel().getLayoutRoot().getOrderedFieldNames()) {
-		   log.debug("sFieldName = " + sFieldName);
+		   LOG.debug("sFieldName = " + sFieldName);
 
 		   // iterate over the models rather than over the components:
 		   final CollectableComponentModel clctcompmodel = this.getDetailsPanel().getLayoutRoot().getCollectableComponentModelFor(sFieldName);
@@ -1152,7 +1154,6 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       return this.mddelegate.getDependants(oId, this.getEntityAndForeignKeyFieldNamesFromSubForms());
    }
 
-   @SuppressWarnings("deprecation")
    @Override
    protected CollectableMasterDataWithDependants insertCollectable(CollectableMasterDataWithDependants clctNew) throws CommonBusinessException {
       if (clctNew.getId() != null) {
@@ -1209,10 +1210,6 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       final JTable tbl = this.getResultTable();
       tbl.setDragEnabled(true);
       tbl.setTransferHandler(new TransferHandler() {
-         /**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
          public int getSourceActions(JComponent comp) {
@@ -1252,7 +1249,6 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    }
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected void setupSubFormController(Map<String, SubForm> mpSubForm, Map<String, ? extends SubFormController> mpSubFormController) {
 		Map<SubForm, MasterDataSubFormController> mpSubFormController_tmp = new HashMap<SubForm, MasterDataSubFormController>();
 
@@ -1307,11 +1303,6 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
    class MasterDataCollectPanel extends CollectPanel<CollectableMasterDataWithDependants> {
 
-      /**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
 	MasterDataCollectPanel(boolean bSearchPanelAvailable) {
           super(bSearchPanelAvailable);
        }
@@ -1335,10 +1326,6 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
    protected class MasterDataSearchPanel extends SearchPanel {
 
-      /**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
 	private final JCheckBoxMenuItem chkbxHideInvalid = new JCheckBoxMenuItem();
 
       MasterDataSearchPanel() {
@@ -1388,10 +1375,6 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
    protected class MasterDataDetailsPanel extends DetailsPanel {
 
-      /**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
 	@Deprecated
       private final LayoutRoot layoutroot;
 

@@ -32,10 +32,6 @@ import java.util.Date;
  */
 public class BadAttributeValueException extends CommonValidationException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public final Integer iGenericObjectAttributeId;
 	public final Integer iGenericObjectId;
 	public final String sValue;

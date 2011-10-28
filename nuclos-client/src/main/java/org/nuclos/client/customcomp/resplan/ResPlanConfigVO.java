@@ -40,8 +40,6 @@ import org.nuclos.common2.StringUtils;
 @XmlRootElement(name="resplan")
 public class ResPlanConfigVO implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-
 	@XmlAttribute(name="version", required=true)
 	static final String VERSION = "0.1";
 

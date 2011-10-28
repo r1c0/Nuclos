@@ -146,10 +146,6 @@ public class FileImportController<Clct extends Collectable> {
 		});
 
 		final ValidatingJOptionPane optionPane = new ValidatingJOptionPane(clct.getFrame(), CommonLocaleDelegate.getMessage("FileImport.6", "Import"), pnlImport) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void validateInput() throws ValidatingJOptionPane.ErrorInfo {
@@ -272,10 +268,7 @@ public class FileImportController<Clct extends Collectable> {
 	}
 
 	private static class FileImportPanel extends JPanel {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		public final JTextField tfFile = new JTextField();
 		public final JComboBox cbImportStructure = new JComboBox();
 		private final JPanel pnlFileChooser = new JPanel(new BorderLayout(0, 0));

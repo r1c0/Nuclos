@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.fileimport.ejb3;
 
-import javax.ejb.Remote;
-
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.fileimport.NuclosFileImportException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -33,7 +31,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
  * @author	<a href="mailto:thomas.schiffmann@novabit.de">thomas.schiffmann</a>
  * @version 01.00.00
  */
-@Remote
+// @Remote
 public interface ImportFacadeRemote {
 
 	/**
@@ -89,7 +87,7 @@ public interface ImportFacadeRemote {
 	 * @return
 	 * @throws NuclosFileImportException
 	 */
-	public String doImport(Integer importfileId) throws NuclosFileImportException;
+	String doImport(Integer importfileId) throws NuclosFileImportException;
 
 	/**
 	 * Returns the correlation id of an import (if running)
@@ -97,7 +95,7 @@ public interface ImportFacadeRemote {
 	 * @param importfileId
 	 * @return
 	 */
-	public String getImportCorrelationId(Integer importfileId);
+	String getImportCorrelationId(Integer importfileId);
 
 	/**
 	 * Stop/Interrupt a running import
@@ -105,6 +103,6 @@ public interface ImportFacadeRemote {
 	 * @param importfileId
 	 * @throws NuclosFileImportException
 	 */
-	public void stopImport(Integer importfileId) throws NuclosFileImportException;
+	void stopImport(Integer importfileId) throws NuclosFileImportException;
 
 }

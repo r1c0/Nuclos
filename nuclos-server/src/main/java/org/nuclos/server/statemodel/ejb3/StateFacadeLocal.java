@@ -19,8 +19,6 @@ package org.nuclos.server.statemodel.ejb3;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.ejb.Local;
-
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.dal.vo.EntityObjectVO;
@@ -36,40 +34,40 @@ import org.nuclos.server.statemodel.valueobject.StateModelVO;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 
-@Local
+// @Local
 public interface StateFacadeLocal {
 
 	/**
 	 * @param usagecriteria
 	 * @return the initial state of the statemodel corresponding to <code>usagecriteria</code>.
 	 */
-	public abstract StateVO getInitialState(UsageCriteria usagecriteria);
+	StateVO getInitialState(UsageCriteria usagecriteria);
 
 	/**
 	 * method to return the initial state for a given generic object
 	 * @param iGenericObjectId id of leased object to get initial state for
 	 * @return state id of initial state for given generic object
 	 */
-	public abstract StateVO getInitialState(Integer iGenericObjectId);
+	StateVO getInitialState(Integer iGenericObjectId);
 
 	/**
 	 * @param iStateModelId
 	 * @return the id of the statemodel corresponding to <code>usagecriteria</code>.
 	 */
-	public abstract Collection<StateVO> getStatesByModel(Integer iStateModelId);
+	Collection<StateVO> getStatesByModel(Integer iStateModelId);
 
 	/**
 	 * method to get all state models
 	 * @return collection of state model vo
 	 */
-	public abstract Collection<StateModelVO> getStateModels();
+	Collection<StateModelVO> getStateModels();
 
 	/**
 	 * Retrieve all states in all state models for the module with the given id
 	 * @param iModuleId id of module to retrieve states for
 	 * @return Collection of all states for the given module
 	 */
-	public abstract Collection<StateVO> getStatesByModule(Integer iModuleId);
+	Collection<StateVO> getStatesByModule(Integer iModuleId);
 
 	/**
 	 * method to return the actual state for a given leased object
@@ -78,7 +76,7 @@ public interface StateFacadeLocal {
 	 * @return state id of actual state for given leased object
 	 * @nucleus.permission mayRead(module)
 	 */
-	public abstract StateVO getCurrentState(Integer iModuleId,
+	StateVO getCurrentState(Integer iModuleId,
 		Integer iGenericObjectId) throws CommonFinderException;
 
 	/**
@@ -89,7 +87,7 @@ public interface StateFacadeLocal {
 	 * @return set of possible subsequent states for given leased object
 	 * @nucleus.permission mayRead(module)
 	 */
-	public abstract Collection<StateVO> getSubsequentStates(Integer iModuleId,
+	Collection<StateVO> getSubsequentStates(Integer iModuleId,
 		Integer iGenericObjectId, boolean bGetAutomaticStatesAlso)
 		throws NuclosNoAdequateStatemodelException, CommonFinderException;
 
@@ -99,7 +97,7 @@ public interface StateFacadeLocal {
 	 * @param iGenericObjectId leased object id to change status for
 	 * @param iNumeral legal subsequent status numeral to set for given leased object
 	 */
-	public abstract void changeStateByRule(Integer iModuleId,
+	void changeStateByRule(Integer iModuleId,
 		Integer iGenericObjectId, int iNumeral)
 		throws NuclosNoAdequateStatemodelException,
 		NuclosSubsequentStateNotLegalException, NuclosBusinessException,
@@ -112,7 +110,7 @@ public interface StateFacadeLocal {
 	 * @param iGenericObjectId leased object id to change status for
 	 * @param iTargetStateId legal subsequent status id to set for given leased object
 	 */
-	public abstract void changeStateByRule(Integer iModuleId,
+	void changeStateByRule(Integer iModuleId,
 		Integer iGenericObjectId, Integer iTargetStateId)
 		throws NuclosNoAdequateStatemodelException,
 		NuclosSubsequentStateNotLegalException, NuclosBusinessException,
@@ -126,7 +124,7 @@ public interface StateFacadeLocal {
 	 * @param iTargetStateId legal subsequent status id to set for given leased object
 	 * @nucleus.permission mayWrite(module)
 	 */
-	public abstract void changeStateByUser(Integer iModuleId,
+	void changeStateByUser(Integer iModuleId,
 		Integer iGenericObjectId, Integer iTargetStateId)
 		throws NuclosBusinessException, CommonPermissionException,
 		CommonPermissionException, CommonCreateException,
@@ -136,55 +134,55 @@ public interface StateFacadeLocal {
 	/**
 	 * returns a StateTransitionVO for the given transitionId
 	 */
-	public abstract StateTransitionVO findStateTransitionById(
+	StateTransitionVO findStateTransitionById(
 		Integer transitionId);
 
 	/**
 	 * returns a StateTransitionVO for the given sourceStateId
 	 */
-	public abstract Collection<StateTransitionVO> findStateTransitionBySourceState(
+	Collection<StateTransitionVO> findStateTransitionBySourceState(
 		Integer sourceStateId);
 
 	/**
 	 * returns a StateTransitionVO for the given sourceStateId without automatic
 	 */
-	public abstract Collection<StateTransitionVO> findStateTransitionBySourceStateNonAutomatic(
+	Collection<StateTransitionVO> findStateTransitionBySourceStateNonAutomatic(
 		Integer sourceStateId);
 
 	/**
 	 * returns a StateTransitionVO for the given targetStateId without a sourceStateId
 	 */
-	public abstract StateTransitionVO findStateTransitionByNullAndTargetState(
+	StateTransitionVO findStateTransitionByNullAndTargetState(
 		Integer targetStateId);
 
 	/**
 	 * returns a StateTransitionVO for the given sourceStateId and targetStateId
 	 */
-	public abstract StateTransitionVO findStateTransitionBySourceAndTargetState(
+	StateTransitionVO findStateTransitionBySourceAndTargetState(
 		Integer sourceStateId, Integer targetStateId);
 
 	/**
 	 * returns the StateModelVO for the given Id
 	 */
-	public abstract StateModelVO findStateModelById(Integer id)
+	StateModelVO findStateModelById(Integer id)
 		throws CommonPermissionException, CommonFinderException;
 
 	/**
 	 * returns the StateModelVO for the given statemodel-name
 	 */
-	public abstract StateModelVO findStateModelByName(String name)
+	StateModelVO findStateModelByName(String name)
 		throws CommonPermissionException, CommonFinderException;
 
 	/**
 	 * returns a Collection of StateModelVO which contains rule-transitions with the given ruleId
 	 */
-	public abstract Collection<StateModelVO> findStateModelsByRuleId(
+	Collection<StateModelVO> findStateModelsByRuleId(
 		Integer ruleId) throws CommonPermissionException;
 
 	/**
 	 * returns a Collection of StateHistories for the given genericObjectId
 	 */
-	public abstract Collection<StateHistoryVO> findStateHistoryByGenericObjectId(
+	Collection<StateHistoryVO> findStateHistoryByGenericObjectId(
 		Integer genericObjectId);
 
 	/**
@@ -192,21 +190,21 @@ public interface StateFacadeLocal {
 	 * @param stateId
 	 * @return
 	 */
-	public Set<MandatoryFieldVO> findMandatoryFieldsByStateId(Integer stateId);
+	Set<MandatoryFieldVO> findMandatoryFieldsByStateId(Integer stateId);
 	
 	/**
 	 * 
 	 * @param stateId
 	 * @return
 	 */
-	public Set<MandatoryColumnVO> findMandatoryColumnsByStateId(Integer stateId);
+	Set<MandatoryColumnVO> findMandatoryColumnsByStateId(Integer stateId);
 	
 	/**
 	 * 
 	 * @param eoVO
 	 * @throws NuclosBusinessException
 	 */
-	public void checkMandatory(EntityObjectVO eoVO) throws NuclosBusinessException;
+	void checkMandatory(EntityObjectVO eoVO) throws NuclosBusinessException;
 	
 	/**
 	 * 
@@ -214,5 +212,5 @@ public interface StateFacadeLocal {
 	 * @param state
 	 * @throws NuclosBusinessException
 	 */
-	public void checkMandatory(EntityObjectVO eoVO, StateVO state) throws NuclosBusinessException;
+	void checkMandatory(EntityObjectVO eoVO, StateVO state) throws NuclosBusinessException;
 }

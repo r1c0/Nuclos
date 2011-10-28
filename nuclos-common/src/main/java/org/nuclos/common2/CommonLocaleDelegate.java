@@ -35,6 +35,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.SpringApplicationContextHolder;
@@ -62,6 +63,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @author marc.jackisch
  */
 public class CommonLocaleDelegate {
+	
+	private static final Logger LOG = Logger.getLogger(CommonLocaleDelegate.class);
 
 	public static interface LookupService {
 
@@ -219,6 +222,7 @@ public class CommonLocaleDelegate {
 			return ResourceBundleResolverUtils.getMessageInternal(keyLookup, resolver, rid, params);
 		}
 		catch(RuntimeException e) {
+			LOG.info("getMessageInternal: " + e);
 			return getTextFallback(rid, otext);
 		}
 	}

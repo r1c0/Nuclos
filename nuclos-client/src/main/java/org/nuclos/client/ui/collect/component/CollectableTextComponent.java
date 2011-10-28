@@ -107,7 +107,6 @@ public abstract class CollectableTextComponent extends LabeledCollectableCompone
 	}
 
 	@Override
-    @SuppressWarnings("deprecation")
 	public CollectableField getFieldFromView() throws CollectableFieldFormatException {
 		return CollectableTextComponentHelper.write(this.getJTextComponent(), this.getEntityField());
 	}

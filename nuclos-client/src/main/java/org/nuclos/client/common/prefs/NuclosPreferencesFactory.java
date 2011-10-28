@@ -24,16 +24,13 @@ import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
 import java.util.prefs.PreferencesFactory;
 
-import javax.ejb.CreateException;
-
 import org.apache.log4j.Logger;
-
+import org.nuclos.client.common.ShutdownActions;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
-import org.nuclos.client.common.ShutdownActions;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 import org.nuclos.server.common.valueobject.PreferencesVO;
 
@@ -52,6 +49,8 @@ import org.nuclos.server.common.valueobject.PreferencesVO;
  * @version 01.00.00
  */
 public class NuclosPreferencesFactory implements PreferencesFactory {
+	
+	private static final Logger LOG = Logger.getLogger(NuclosPreferencesFactory.class);
 
 	private PreferencesFacadeRemote facade;
 	private Preferences prefsUser;
@@ -61,12 +60,12 @@ public class NuclosPreferencesFactory implements PreferencesFactory {
 		// do nothing here
 	}
 
-	private synchronized PreferencesFacadeRemote getFacade() throws RemoteException, CreateException {
+	private synchronized PreferencesFacadeRemote getFacade() throws RemoteException {
 		if (this.facade == null) {
 			try {
 				facade = ServiceLocator.getInstance().getFacade(PreferencesFacadeRemote.class);
 			}
-			catch(RuntimeException e) {
+			catch (RuntimeException e) {
 				throw new CommonFatalException(e);
 			}
 		}
@@ -113,13 +112,8 @@ public class NuclosPreferencesFactory implements PreferencesFactory {
 				// was successfully performed.
 				throw new NuclosFatalException(sErrorMsg, ex);
 			}
-			catch (CreateException ex) {
-				// This might happen if somebody tries to access the userRoot() before a login
-				// was successfully performed.
-				throw new NuclosFatalException(sErrorMsg, ex);
-			}
 			catch (Exception e) {
-				System.out.println();
+				LOG.warn("userRoot failed: " + e, e);
 				prefsvo = null;
 			}
 			this.prefsUser = new NuclosPreferencesRoot(this.facade);

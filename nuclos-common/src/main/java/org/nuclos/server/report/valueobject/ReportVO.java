@@ -35,11 +35,6 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class ReportVO extends NuclosValueObject {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public static enum OutputType implements KeyEnum<String>, Localizable {
 		// Note that the order of these constants is significant.
 

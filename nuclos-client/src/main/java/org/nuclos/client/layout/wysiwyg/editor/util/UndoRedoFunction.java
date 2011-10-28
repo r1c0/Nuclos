@@ -93,7 +93,7 @@ public class UndoRedoFunction implements WYSIWYGToolbarAttachable {
 
 	public boolean isManualChange = true;
 	
-	@SuppressWarnings("unused")
+	// @SuppressWarnings("unused")
 	private WYSIWYGEditorsToolbar wysiwygEditorsToolbar;
 
 	private KeyStroke keyStrokeUndo = KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK);
@@ -101,7 +101,7 @@ public class UndoRedoFunction implements WYSIWYGToolbarAttachable {
 	
 	private static final Logger log = Logger.getLogger(UndoRedoFunction.class);
 
-	@SuppressWarnings("unused")
+	// @SuppressWarnings("unused")
 	private boolean compositeChange = false;
 
 	/**
@@ -710,13 +710,7 @@ public class UndoRedoFunction implements WYSIWYGToolbarAttachable {
 	/**
 	 * Implementing the Methods for {@link WYSIWYGToolbarAttachable}
 	 */
-	@SuppressWarnings("serial")
 	private class UndoAction extends AbstractAction {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -727,13 +721,7 @@ public class UndoRedoFunction implements WYSIWYGToolbarAttachable {
 	/**
 	 * Implementing the Methods for {@link WYSIWYGToolbarAttachable}
 	 */
-	@SuppressWarnings("serial")
 	private class RedoAction extends AbstractAction {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {

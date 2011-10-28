@@ -55,12 +55,8 @@ import org.nuclos.common2.StringUtils;
  */
 public class SubFormFilterPanel extends JXCollapsiblePane {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	JPanel filterPanel = new JPanel(new HorizontalLayout());
-	JPanel resetFilterButtonPanel = new JPanel(new BorderLayout());
+	private JPanel filterPanel = new JPanel(new HorizontalLayout());
+	private JPanel resetFilterButtonPanel = new JPanel(new BorderLayout());
 	private final JButton resetFilterButton = new JButton();
 	
 	private TableColumnModel columnModel;

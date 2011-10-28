@@ -25,10 +25,7 @@ import org.nuclos.common2.exception.CommonValidationException;
  * Value object representing a personal task.
  */
 public class TaskVO extends NuclosValueObject {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private String sName;
 	private Integer iVisibility;
 	private Integer iPriority;

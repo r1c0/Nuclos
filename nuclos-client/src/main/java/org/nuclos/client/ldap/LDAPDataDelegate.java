@@ -19,9 +19,6 @@ package org.nuclos.client.ldap;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
-import javax.ejb.CreateException;
-
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonRemoteException;
@@ -47,7 +44,7 @@ public class LDAPDataDelegate {
 	/**
 	 * Use getInstance() to create an (the) instance of this class
 	 */
-	private LDAPDataDelegate() throws RemoteException, CreateException {
+	private LDAPDataDelegate() throws RemoteException {
 		this.facade = ServiceLocator.getInstance().getFacade(LDAPDataFacadeRemote.class);
 	}
 
@@ -58,9 +55,6 @@ public class LDAPDataDelegate {
 			}
 			catch (RemoteException ex) {
 				throw new CommonRemoteException(ex);
-			}
-			catch (CreateException ex) {
-				throw new NuclosFatalException(ex);
 			}
 		}
 		return singleton;

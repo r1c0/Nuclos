@@ -43,15 +43,9 @@ import javax.swing.event.DocumentListener;
 import org.nuclos.client.ui.Icons;
 
 public class SearchComponent extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private ProgressTextField   progressTextField;
 	private JToggleButton       arrowButton;
-//	private Icon                up;
-//	private Icon                down;
-	
 	private List<LiveSearchSearchPaneListener>   listeners;
 	
 	public SearchComponent() {
@@ -60,17 +54,9 @@ public class SearchComponent extends JPanel {
 		listeners = new ArrayList<LiveSearchSearchPaneListener>();
 		
 		progressTextField = new ProgressTextField("", 15, 0, 100);
-//		up = Icons.getInstance().getSimpleArrowUp();
-//		down = Icons.getInstance().getSimpleArrowDown();
-		
 		Dimension buttonDim = new Dimension(16, progressTextField.getPreferredSize().height);
 		
 		arrowButton = new JToggleButton() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void paint(Graphics g) {
 				Graphics2D g2 = (Graphics2D) g;

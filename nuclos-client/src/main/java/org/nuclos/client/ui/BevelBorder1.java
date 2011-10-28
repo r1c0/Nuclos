@@ -35,10 +35,6 @@ import javax.swing.border.BevelBorder;
  */
 
 public final class BevelBorder1 extends javax.swing.border.AbstractBorder {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Raised bevel type.

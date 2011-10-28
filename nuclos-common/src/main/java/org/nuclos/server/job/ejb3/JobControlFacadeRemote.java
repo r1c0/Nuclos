@@ -18,14 +18,12 @@ package org.nuclos.server.job.ejb3;
 
 import java.util.Collection;
 
-import javax.ejb.Remote;
-
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.job.valueobject.JobVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
-@Remote
+// @Remote
 public interface JobControlFacadeRemote {
 
 	/**
@@ -57,24 +55,24 @@ public interface JobControlFacadeRemote {
 	 * @param jobVO
 	 * @throws CommonBusinessException
 	 */
-	public abstract void scheduleJob(Object oId) throws CommonBusinessException;
+	void scheduleJob(Object oId) throws CommonBusinessException;
 
 	/**
 	 * @param jobVO
 	 * @throws CommonBusinessException
 	 */
-	public abstract void unscheduleJob(Object oId) throws CommonBusinessException;
+	void unscheduleJob(Object oId) throws CommonBusinessException;
 
 	/**
 	 * @param oId - id of job to execute
 	 */
-	public abstract void startJobImmediately(Object oId) throws CommonBusinessException;
+	void startJobImmediately(Object oId) throws CommonBusinessException;
 
 	/**
 	 * get job procedures/functions
 	 * @param sType
 	 * @return
 	 */
-	public abstract Collection<String> getDBObjects() throws CommonPermissionException;
+	Collection<String> getDBObjects() throws CommonPermissionException;
 
 }

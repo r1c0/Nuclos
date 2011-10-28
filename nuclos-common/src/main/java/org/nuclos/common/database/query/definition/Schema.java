@@ -34,10 +34,6 @@ import org.nuclos.common.collection.CollectionUtils;
  */
 public class Schema implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final Map<String, Table> mpTables = CollectionUtils.newHashMap();
 
 	public Schema() {

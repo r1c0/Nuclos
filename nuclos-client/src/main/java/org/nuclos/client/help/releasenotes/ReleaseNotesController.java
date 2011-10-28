@@ -56,6 +56,9 @@ import org.nuclos.common2.LangUtils;
  */
 
 public class ReleaseNotesController extends Controller {
+	
+	private static final Logger LOG = Logger.getLogger(ReleaseNotesController.class);
+		
 	private static final String PREFS_KEY_VERSION = "version";
 	private static final String PREFS_KEY_BOUNDS = "bounds";
 	private static final String PREFS_NODE_RELEASENOTES = "releaseNotes";
@@ -79,9 +82,9 @@ public class ReleaseNotesController extends Controller {
 		try {
 			Desktop.getDesktop().browse(new URI(getNuclosReleaseNotesURL()));
 		} catch(URISyntaxException e) {
-			e.printStackTrace();
+			LOG.warn("openReleaseNotesInBrowser failed: " + e, e);
 		} catch(IOException e) {
-			e.printStackTrace();
+			LOG.warn("openReleaseNotesInBrowser failed: " + e, e);
 		}
 	}	
 	
@@ -120,10 +123,10 @@ public class ReleaseNotesController extends Controller {
 				if (e.getEventType() == EventType.ACTIVATED) {
 					try {
 						Desktop.getDesktop().browse(e.getURL().toURI());
-					} catch(IOException ex) {
-						ex.printStackTrace();
-					} catch(URISyntaxException ex) {
-						ex.printStackTrace();
+					} catch(IOException e1) {
+						LOG.warn("showNuclosReleaseNotesNotice failed: " + e1, e1);
+					} catch(URISyntaxException e1) {
+						LOG.warn("showNuclosReleaseNotesNotice failed: " + e1, e1);
 					}
 					ifrm.dispose();
 				}

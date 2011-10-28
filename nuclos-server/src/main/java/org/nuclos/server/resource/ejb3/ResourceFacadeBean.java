@@ -17,10 +17,9 @@
 package org.nuclos.server.resource.ejb3;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
@@ -49,14 +48,11 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Remote(ResourceFacadeRemote.class)
+// @Stateless
+// @Remote(ResourceFacadeRemote.class)
 @Transactional
 public class ResourceFacadeBean extends MasterDataFacadeBean implements ResourceFacadeRemote {
 
-	/**
-	 * @param sResourceName
-	 */
 	@Override
     @RolesAllowed("Login")
 	public ResourceVO getResourceByName(String sResourceName) {
@@ -64,9 +60,6 @@ public class ResourceFacadeBean extends MasterDataFacadeBean implements Resource
 	}
 	
 
-	/**
-	 * @param sResourceId
-	 */
 	@Override
     @RolesAllowed("Login")
 	public ResourceVO getResourceById(Integer iResourceId) {
@@ -191,7 +184,7 @@ public class ResourceFacadeBean extends MasterDataFacadeBean implements Resource
 		try {
 			return IOUtils.readFromBinaryFile(file);
 		}
-		catch(java.io.IOException e) {
+		catch(IOException e) {
 			throw new NuclosFatalException(e);
 		}
 	}

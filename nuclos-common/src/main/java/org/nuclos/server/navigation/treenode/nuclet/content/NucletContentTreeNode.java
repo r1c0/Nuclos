@@ -40,10 +40,6 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public class NucletContentTreeNode implements TreeNode {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
 	private final Long nucletId;
 	private final NuclosEntity content;
 

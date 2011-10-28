@@ -18,6 +18,7 @@ package org.nuclos.client.masterdata;
 
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.AbstractCollectable;
@@ -41,6 +42,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @version 01.00.00
  */
 public class CollectableMasterData extends AbstractCollectable implements Removable {
+
+	private static final Logger LOG = Logger.getLogger(CollectableMasterData.class);
 
 	public static final String FIELDNAME_NAME = MasterDataVO.FIELDNAME_NAME;
 	public static final String FIELDNAME_MNEMONIC = MasterDataVO.FIELDNAME_MNEMONIC;

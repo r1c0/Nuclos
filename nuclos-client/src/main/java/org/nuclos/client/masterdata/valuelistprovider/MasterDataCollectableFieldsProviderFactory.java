@@ -86,7 +86,6 @@ public class MasterDataCollectableFieldsProviderFactory implements CollectableFi
 		return new DependantMasterDataCollectableFieldsProvider(clcte.getName(), sFieldName);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
     public CollectableFieldsProvider newCustomCollectableFieldsProvider(String sCustomType, String sEntity, String sFieldName) {
 		final CollectableFieldsProvider result;
@@ -221,7 +220,6 @@ public class MasterDataCollectableFieldsProviderFactory implements CollectableFi
 	 * @return
 	 * @precondition sEntityName != null
 	 */
-	@SuppressWarnings("deprecation")
 	public static CollectableFieldsProvider newMasterDataCollectableFieldsProvider(String sEntityName, String sFieldName) {
 		if (sEntityName == null) {
 			throw new NullArgumentException("sEntityName");

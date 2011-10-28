@@ -33,10 +33,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 public class OvalShape extends AbstractShape {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	protected double centerX;
 	protected double centerY;
 	protected double horizontalRadius;

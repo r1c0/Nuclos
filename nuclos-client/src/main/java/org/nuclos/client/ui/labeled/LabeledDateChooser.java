@@ -38,23 +38,11 @@ import org.nuclos.common2.StringUtils;
  */
 public class LabeledDateChooser extends LabeledTextComponent {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final DateChooser datechooser;
 
 	public LabeledDateChooser() {
 		this(false);
 	}
-
-	/*public LabeledDateChooser(boolean bTodayIsRelative) {
-		super();
-
-		this.datechooser = new DateChooser(bTodayIsRelative);
-		this.addControl(this.datechooser);
-		this.getJLabel().setLabelFor(this.datechooser);
-	}*/
 
 	public LabeledDateChooser(boolean bTodayIsRelative) {
 		this(bTodayIsRelative, true, null, false);

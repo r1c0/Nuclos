@@ -20,13 +20,14 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Remote;
 
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 
-@Remote
+// @Remote
 public interface LiveSearchFacadeRemote {
+	
 	@RolesAllowed("Login")
-	public List<Pair<EntityObjectVO, Set<String>>> search(String entity, String searchString);
+	List<Pair<EntityObjectVO, Set<String>>> search(String entity, String searchString);
+	
 }

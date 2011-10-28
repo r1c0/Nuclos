@@ -388,18 +388,10 @@ public class RightAndMandatoryRow implements RightAndMandatoryConstants{
 	 */
 	public class View extends JPanel {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		RowHeader rowHeader = null;
-		Map<Integer, RightButton> rightButtons = new HashMap<Integer, RightButton>();
-		RevertButton revert = new RevertButton();
+		private RowHeader rowHeader = null;
+		private Map<Integer, RightButton> rightButtons = new HashMap<Integer, RightButton>();
+		private RevertButton revert = new RevertButton();
 		
-		/**
-		 * 
-		 * @param namewidth
-		 */
 		public View(double namewidth) {
 			double[] cols = new double[1 + 1 + roleRights.size() + 1 + 1];
 			cols[0] = TableLayoutConstants.PREFERRED;
@@ -438,10 +430,6 @@ public class RightAndMandatoryRow implements RightAndMandatoryConstants{
 			}
 			JPanel lastGridOnTheRight = new JPanel() {
 
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
 				protected void paintComponent(Graphics g) {
@@ -566,11 +554,6 @@ public class RightAndMandatoryRow implements RightAndMandatoryConstants{
 		 */
 		class RevertButton extends JLabel {
 			
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
 			public RevertButton() {
 				if (DEV_MODUS) setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));	
 				if (DEV_MODUS) 
@@ -614,13 +597,9 @@ public class RightAndMandatoryRow implements RightAndMandatoryConstants{
 		 */
 		class RightButton extends JLabel {
 			
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-			Integer role;
-			Boolean right;
-			boolean selected;
+			private Integer role;
+			private Boolean right;
+			private boolean selected;
 			
 			/**
 			 * 
@@ -738,13 +717,9 @@ public class RightAndMandatoryRow implements RightAndMandatoryConstants{
 		 */
 		class RowHeader extends JPanel {
 			
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 			private JLabel labExpandCollapse;
 			private MouseListener mlExpandCollapse;
-			final private JCheckBox checkbMandatory = new JCheckBox();
+			private final JCheckBox checkbMandatory = new JCheckBox();
 			
 			public RowHeader(Color colorBackground, double namewidth) {
 				double[] cols = new double[3];

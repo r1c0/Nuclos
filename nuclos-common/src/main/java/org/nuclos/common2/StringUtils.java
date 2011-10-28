@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.log4j.Logger;
 import org.apache.xml.security.utils.Base64;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.Pair;
@@ -47,6 +48,8 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @version 01.00.00
  */
 public class StringUtils {
+
+	private static final Logger LOG = Logger.getLogger(StringUtils.class);
 
 	/**
 	 * the Euro symbol in Unicode.

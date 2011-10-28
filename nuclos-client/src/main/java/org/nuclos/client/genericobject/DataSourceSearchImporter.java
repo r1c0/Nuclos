@@ -33,6 +33,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -57,6 +58,8 @@ import org.nuclos.server.report.valueobject.DatasourceVO;
  * @version 01.00.00
  */
 public class DataSourceSearchImporter implements ExtSourceSearchImporter {
+
+	private static final Logger LOG = Logger.getLogger(DataSourceSearchImporter.class);
 
 	private JComponent parentComponent = null;
 	private DatasourceVO datasource = null;
@@ -205,9 +208,9 @@ public class DataSourceSearchImporter implements ExtSourceSearchImporter {
 		try {
 			return new DatasourceVOValidator(dvo).isValidIntIdSubSelect();
 		} catch (NuclosFatalException e) {
-			e.printStackTrace();
+			LOG.warn("isValidDatasource failed: " + e, e);
 		} catch (NuclosDatasourceException e) {
-			e.printStackTrace();
+			LOG.warn("isValidDatasource failed: " + e, e);
 		}
 		return false;
 	}

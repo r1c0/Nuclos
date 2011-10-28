@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.database.query.definition;
 
+import org.apache.log4j.Logger;
+
 /**
  * Constraint type for database queries.
  * <br>
@@ -31,6 +33,8 @@ public enum ConstraintEmumerationType {
 	FOREIGN_KEY("ConstraintType: FOREIGN KEY"),
 	PRIMARY_KEY("ConstraintType: PRIMARY KEY");
 
+	private static final Logger LOG = Logger.getLogger(ConstraintEmumerationType.class);
+	
 	private final String sDebugString;
 
 	private ConstraintEmumerationType(String sDebugString) {
@@ -38,6 +42,7 @@ public enum ConstraintEmumerationType {
 	}
 
 	public void show() {
-		System.out.println(sDebugString);
+		if (LOG.isDebugEnabled())
+			LOG.debug(sDebugString);
 	}
 }

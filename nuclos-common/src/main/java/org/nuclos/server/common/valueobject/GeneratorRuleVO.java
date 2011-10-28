@@ -27,10 +27,6 @@ package org.nuclos.server.common.valueobject;
  */
 public class GeneratorRuleVO extends NuclosValueObject {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private Integer iOrder;
 	private Integer iId;
 	private String sName;

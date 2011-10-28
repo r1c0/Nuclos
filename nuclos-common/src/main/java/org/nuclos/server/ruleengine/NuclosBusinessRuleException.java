@@ -29,10 +29,6 @@ import org.nuclos.common.NuclosBusinessException;
  */
 public class NuclosBusinessRuleException extends NuclosBusinessException {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final String originMessage;
 
 	public NuclosBusinessRuleException() {

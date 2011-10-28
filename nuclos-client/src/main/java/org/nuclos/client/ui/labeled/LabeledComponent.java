@@ -42,10 +42,6 @@ import org.nuclos.common2.StringUtils;
  */
 
 public abstract class LabeledComponent extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * margin above and below the control component.

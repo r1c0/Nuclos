@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Map;
 
-import javax.ejb.CreateException;
-
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -29,8 +27,6 @@ import org.nuclos.common2.exception.CommonRemoteException;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.server.transfer.ejb3.XmlExportFacadeRemote;
-
-
 
 /**
  * Business Delegate for <code>XmlExportFacadeBean</code>.
@@ -52,7 +48,7 @@ public class XmlExportDelegate {
 	/**
 	 * Use getInstance() to create an (the) instance of this class
 	 */
-	private XmlExportDelegate() throws RemoteException, CreateException {
+	private XmlExportDelegate() throws RemoteException {
 		this.facade = ServiceLocator.getInstance().getFacade(XmlExportFacadeRemote.class);
 	}
 
@@ -63,9 +59,6 @@ public class XmlExportDelegate {
 			}
 			catch (RemoteException ex) {
 				throw new CommonRemoteException(ex);
-			}
-			catch (CreateException ex) {
-				throw new NuclosFatalException(ex);
 			}
 		}
 		return singleton;

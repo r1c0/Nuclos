@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common2.exception;
 
-import javax.ejb.EJBException;
-
 /**
  * General Novabit business (non-fatal, checked) exception.
  * <br>
@@ -30,17 +28,28 @@ import javax.ejb.EJBException;
 
 public class CommonBusinessException extends Exception {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	@Deprecated
 	static final String PERMISSION = "common.exception.novabitpermissionexception";
+
+	@Deprecated
 	static final String CREATE = "common.exception.novabitcreateexception";
+
+	@Deprecated
 	static final String FINDER = "common.exception.novabitfinderexception";
+
+	@Deprecated
 	static final String REMOVE = "common.exception.novabitremoveexception";
+
+	@Deprecated
 	static final String STALE_VERSION = "common.exception.novabitstaleversionexception";
+
+	@Deprecated
 	static final String SEARCH_CANCELLED = "common.exception.novabitsearchcancelledexception";
+
+	@Deprecated
 	static final String REMOTE = "common.exception.novabitremoteexception";
+
+	@Deprecated
 	static final String VALIDATION = "common.exception.novabitvalidationexception";
 
 	public CommonBusinessException() {
@@ -74,17 +83,10 @@ public class CommonBusinessException extends Exception {
 			return null;
 		}
 		Throwable t = cause;
-		if (t instanceof EJBException && t.getCause() != null) {
-			t = t.getCause();
-		}
 		if (t.getMessage() != null && (t instanceof CommonBusinessException || t instanceof CommonFatalException)) {
 			return t.getMessage();
 		}
 		return cause.toString();
 	}
 
-//	@Override
-//	public String getMessage() {
-//		return CommonLocaleDelegate.getMessageFromResource(super.getMessage());
-//	}
 }

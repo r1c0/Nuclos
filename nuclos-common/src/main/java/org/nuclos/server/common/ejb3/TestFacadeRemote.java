@@ -16,11 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common.ejb3;
 
-import javax.ejb.Remote;
-
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 
-@Remote
+// @Remote
 public interface TestFacadeRemote {
 
 	/**
@@ -28,7 +26,7 @@ public interface TestFacadeRemote {
 	 * @param clctcond
 	 * @return clctcond itself
 	 */
-	public abstract CollectableSearchCondition testSerialization(
+	CollectableSearchCondition testSerialization(
 		CollectableSearchCondition clctcond);
 
 	/**
@@ -36,6 +34,6 @@ public interface TestFacadeRemote {
 	 * @param topic    the topic
 	 * @param message  the message
 	 */
-	public abstract void testClientNotification(String topic, String message);
+	void testClientNotification(String topic, String message);
 
 }

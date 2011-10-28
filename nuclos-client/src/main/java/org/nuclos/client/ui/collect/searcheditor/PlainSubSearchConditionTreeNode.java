@@ -21,11 +21,7 @@ import org.nuclos.common.collect.collectable.searchcondition.PlainSubCondition;
 
 public class PlainSubSearchConditionTreeNode extends SearchConditionTreeNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	PlainSubCondition plain;
+	private PlainSubCondition plain;
 	
 	public PlainSubSearchConditionTreeNode(PlainSubCondition pPlain){
 		plain = pPlain;

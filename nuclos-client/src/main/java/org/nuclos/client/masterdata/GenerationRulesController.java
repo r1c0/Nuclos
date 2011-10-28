@@ -23,7 +23,6 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.List;
 
-import javax.ejb.CreateException;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -154,9 +153,6 @@ public class GenerationRulesController {
 				}
 			}
 			this.controller.detailsChanged(parent);
-		}
-		catch (CreateException ex) {
-			Errors.getInstance().showExceptionDialog(parent, ex.getMessage(), ex);
 		}
 		catch (RemoteException ex) {
 			Errors.getInstance().showExceptionDialog(parent, ex.getMessage(), ex);

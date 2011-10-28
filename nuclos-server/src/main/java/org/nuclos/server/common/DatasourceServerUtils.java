@@ -68,7 +68,7 @@ public class DatasourceServerUtils {
 			return createSQL(vo.getSource(), mpParams);
 		}
 		catch(CommonPermissionException e) {
-			throw new NuclosDatasourceException(e.getMessage(), e);
+			throw new NuclosDatasourceException("createSQL failed: " + e, e);
 		}
 	}
 

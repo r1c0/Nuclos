@@ -50,14 +50,9 @@ import org.pietschy.wizard.models.StaticModel;
  */
 public class NuclosEntityWizardStaticModelOverview extends JPanel implements PropertyChangeListener {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
 	private StaticModel model;
 	private HashMap<WizardStep, JLabel> labels = new HashMap<WizardStep, JLabel>();
 
-	@SuppressWarnings("unchecked")
 	public NuclosEntityWizardStaticModelOverview(StaticModel model) {
 		this.model = model;
 		this.model.addPropertyChangeListener(this);

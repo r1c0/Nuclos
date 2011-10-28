@@ -50,13 +50,8 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGInitialS
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class PropertyValueInitialSortingOrder implements PropertyValue<WYSIWYGInitialSortingOrder>, LayoutMLConstants {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private WYSIWYGInitialSortingOrder initialSortingOrder = null;
 
 	/**
@@ -152,10 +147,6 @@ public class PropertyValueInitialSortingOrder implements PropertyValue<WYSIWYGIn
 	 */
 	class PropertyEditorInitialSortingOrder extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private JComboBox textField = new JComboBox();
 		private JComboBox comboBox = new JComboBox();
 		private WYSIWYGSubForm subform;

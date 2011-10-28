@@ -21,6 +21,7 @@ import java.awt.Component;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.ui.EnterNameDescriptionPanel;
 import org.nuclos.client.genericobject.ui.SaveNameDescriptionPanel;
 import org.nuclos.client.ui.ValidatingJOptionPane;
@@ -42,6 +43,8 @@ import org.nuclos.server.searchfilter.valueobject.SearchFilterVO;
  * @version	01.00.00
  */
 public class SaveFilterController {
+
+	private static final Logger LOG = Logger.getLogger(SaveFilterController.class);
 
 	public static enum Command {
 		None, Overwrite, New
@@ -161,10 +164,6 @@ public class SaveFilterController {
 
 	public static int showDialog(Component parent, String sTitleEnterFilter, final EnterNameDescriptionPanel pnlEnterFilter, final String oldName, final Command cmd) {
 		final ValidatingJOptionPane optpn = new ValidatingJOptionPane(parent, sTitleEnterFilter, pnlEnterFilter) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void validateInput() throws ErrorInfo {

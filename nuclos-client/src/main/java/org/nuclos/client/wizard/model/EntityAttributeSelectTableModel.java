@@ -25,11 +25,7 @@ import javax.swing.table.AbstractTableModel;
 
 public class EntityAttributeSelectTableModel extends AbstractTableModel {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	List<Attribute> lstAttribute;
+	private List<Attribute> lstAttribute;
 	
 	public EntityAttributeSelectTableModel() {
 		super();

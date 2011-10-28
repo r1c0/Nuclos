@@ -22,6 +22,7 @@ package org.nuclos.client.common;
 
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SearchConditionUtils;
@@ -34,6 +35,8 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class EntityUtils {	
+	
+	private static final Logger LOG = Logger.getLogger(EntityUtils.class);
 	
 	public static boolean hasEntityDocumentType(String entity) {
 		boolean yes = false;
@@ -61,14 +64,11 @@ public class EntityUtils {
 					return true;
 			}
 			catch(CommonFinderException e) {
-				e.printStackTrace();
+				LOG.warn("hasEntityGeneralDocumentSubform failed: " + e, e);
 			}
 			catch(CommonPermissionException e) {
-				e.printStackTrace();
-			}
-			
-			
-				
+				LOG.warn("hasEntityGeneralDocumentSubform failed: " + e, e);
+			}				
 		}
 		return yes;
 	}

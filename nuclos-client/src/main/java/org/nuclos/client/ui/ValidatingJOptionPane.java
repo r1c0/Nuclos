@@ -46,18 +46,11 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 
 public abstract class ValidatingJOptionPane extends JOptionPane {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	
 	private final Component parent;
 	private final String sTitle;
 
 	public static class ErrorInfo extends CommonBusinessException {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		/**
 		 * error msg (with default value) [null]

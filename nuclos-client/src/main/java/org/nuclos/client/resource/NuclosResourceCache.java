@@ -24,6 +24,7 @@ import java.util.TreeSet;
 
 import javax.swing.ImageIcon;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.CollectionUtils;
 
@@ -38,6 +39,8 @@ import org.nuclos.common.collection.CollectionUtils;
  */
 public class NuclosResourceCache {
 	
+	private static final Logger LOG = Logger.getLogger(NuclosResourceCache.class);
+
 	public static SortedSet<String> getNuclosResourceIcons() {
 		return _getInstance()._getNuclosResourceIcons();
 	}

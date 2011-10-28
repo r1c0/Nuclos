@@ -50,13 +50,7 @@ import org.xml.sax.Attributes;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class PropertyValueString implements PropertyValue<String> {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	private String value;
 
@@ -221,10 +215,6 @@ public class PropertyValueString implements PropertyValue<String> {
 	 */
 	class PropertyEditorString extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private final List<String> list;
 		private final ResourceIdMapper<String> resourceIdMapper;
 		private JComboBox comboBox;

@@ -22,9 +22,6 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.nuclos.common.HashResourceBundle;
 import org.nuclos.common.NuclosEntity;
@@ -72,9 +69,9 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Remote(ImportFacadeRemote.class)
-@Local(ImportFacadeLocal.class)
+// @Stateless
+// @Remote(ImportFacadeRemote.class)
+// @Local(ImportFacadeLocal.class)
 @RolesAllowed("Login")
 @Transactional
 public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRemote, ImportFacadeLocal {
@@ -296,12 +293,11 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 	    return correlationId;
     }
 
-	@SuppressWarnings("rawtypes")
 	@Override
     public String getImportCorrelationId(Integer importfileId) {
 		Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
 		try {
-	        List executingJobs = scheduler.getCurrentlyExecutingJobs();
+	        List<?> executingJobs = scheduler.getCurrentlyExecutingJobs();
 	        for (Object o : executingJobs) {
 	        	if (o instanceof JobExecutionContext) {
 	        		JobExecutionContext job = (JobExecutionContext) o;

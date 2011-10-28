@@ -20,11 +20,13 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.io.Serializable;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common2.IOUtils;
 
-public class MarshalledValue implements Serializable, Externalizable {
+public class MarshalledValue implements Externalizable {
+
+	private static final Logger LOG = Logger.getLogger(MarshalledValue.class);
 
 	private static final long serialVersionUID = -1527598981234110311L;
 	

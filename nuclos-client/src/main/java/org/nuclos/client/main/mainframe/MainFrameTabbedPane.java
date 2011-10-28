@@ -87,12 +87,7 @@ import org.nuclos.common2.exception.CommonBusinessException;
 
 public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTargetVisitor {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
-	private static final Logger log = Logger.getLogger(MainFrameTabbedPane.class);
+	private static final Logger LOG = Logger.getLogger(MainFrameTabbedPane.class);
 
 	private static MainFrameTabbedPane.DragParameter dp = null;
 	private static MainFrameTabbedPane.DragWindow dw = null;
@@ -166,11 +161,6 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 	 *
 	 */
 	public class DragWindow extends Window {
-
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public DragWindow(Frame owner, Image image, Dimension imageSize) {
 			super(owner);
@@ -378,7 +368,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 								dp.mouseOverIndex = -1;
 							}
 
-							log.debug("MouseOverIndex: " + dp.mouseOverIndex);
+							LOG.debug("MouseOverIndex: " + dp.mouseOverIndex);
 
 							dp.currentMouseLocation = relativeToMouseOverTab;
 
@@ -413,8 +403,9 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 								}
 							}
 						}
-						catch(IllegalComponentStateException ex) {
+						catch(IllegalComponentStateException e1) {
 							// do nothing
+							LOG.info("mouseDragged: " + e1);
 						}
 
 						repaintTabOptimized(dp);
@@ -427,13 +418,13 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 						if (!isMousePositionNearOrInTabbedPane) {
 							// draw image and follow mouse
 						    if (dw == null) {
-						    log.debug("Creating Drag Window");
+						    LOG.debug("Creating Drag Window");
 						    	dw = new DragWindow(MainFrame.getFrame(MainFrameTabbedPane.this), dp.tabImage, dp.tabBounds.getSize());
 						    }
 
 						    int x = e.getXOnScreen()+dp.xOffset;
 						    int y = e.getYOnScreen()+10;
-						    log.debug("Drag Window follows mouse to " + x + " x " + y);
+						    LOG.debug("Drag Window follows mouse to " + x + " x " + y);
 						    dw.setLocation(x, y);
 
 						    if (!dw.isVisible()) {
@@ -492,7 +483,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 
 						final Rectangle doubleClickArea = new Rectangle(lastClickOnTabPosition.x-10, lastClickOnTabPosition.y-10, 20, 20);
 						if (doubleClickArea.contains(e.getPoint())) {
-							log.debug("DoubleClick on Tab. Maximized=" + maximizedTabs);
+							LOG.debug("DoubleClick on Tab. Maximized=" + maximizedTabs);
 							if (maximizedTabs) {
 								MainFrame.restoreTabbedPaneContainingArea(MainFrameTabbedPane.this);
 							} else {
@@ -742,11 +733,6 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 	 */
 	protected Action createHomeAction() {
 		AbstractAction result = new AbstractAction(null, homeIcon) {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cmdHome();
@@ -773,10 +759,6 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 	 */
 	protected Action createHomeTreeAction() {
 		AbstractAction result = new AbstractAction(null, homeTreeIcon) {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1226,7 +1208,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 				tab.notifyAdded();
 
 			} catch (ArrayIndexOutOfBoundsException ex) {
-				log.error(ex.getMessage(), ex);
+				LOG.error(ex.getMessage(), ex);
 			}
 		}
 	}
@@ -1283,6 +1265,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 					startTab.removeHiddenTab(tab);
 					tab.notifyClosed();
 				} catch(CommonBusinessException e) {
+					LOG.debug("Treat tab " + tab + " as non-closable because of " + e);
 					notClosableTabs.add(tab);
 				}
 			} else {
@@ -1309,10 +1292,10 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 				remove(tab);
 				tab.notifyClosed();
 			} catch(CommonBusinessException e) {
+				LOG.debug("Treat tab " + tab + " as non-closable because of " + e);
 				notClosableTabs.add(tab);
 			}
 		}
-
 		return notClosableTabs;
 	}
 
@@ -1449,7 +1432,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		if (countHiddenTabs() < restoreTabs) restoreTabs = countHiddenTabs();
 
 		final int contentTabWidth = (tabbedPaneWidth - firstTabWidth) / ((getTabCount()-1) - (hideTabs>0 ? hideTabs : 0) + (restoreTabs > 0 ? restoreTabs : 0));
-		log.debug("HideTabs="+hideTabs + " content tab width="+contentTabWidth);
+		LOG.debug("HideTabs="+hideTabs + " content tab width="+contentTabWidth);
 
 		if (restoreTabs > 0) {
 			for (MainFrameTab nuclosTab : startTab.removeHiddenTabs(restoreTabs)) {
@@ -1523,12 +1506,12 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		if (dp != null && dp.mouseOverTabbedPane != null) {
 			Rectangle tpBounds = dp.mouseOverTabbedPane.getBounds();
 			int height = dp.mouseOverTabbedPane.getHeight();
-			log.trace("SplitRange: " + dp.splitRangeBefore + " --> " + dp.splitRange);
+			LOG.trace("SplitRange: " + dp.splitRangeBefore + " --> " + dp.splitRange);
 
 			if (dp.splitRange == SplitRange.NONE && dp.splitRangeBefore == SplitRange.NONE)
 				height = 35;
 
-			log.trace("Repaint TabBar: " + tpBounds.width + " x " + height);
+			LOG.trace("Repaint TabBar: " + tpBounds.width + " x " + height);
 			dp.mouseOverTabbedPane.repaint(0, 0, tpBounds.width, height);
 		}
 	}
@@ -1573,7 +1556,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 
 			// Draw moving tab or split indicator only if this is mouseover tab pane
 			if (MainFrameTabbedPane.this != dp.mouseOverTabbedPane) {
-				log.trace("this is not the mouseOverTabbedPane " + tpBounds);
+				LOG.trace("this is not the mouseOverTabbedPane " + tpBounds);
 				return;
 			}
 
@@ -1799,11 +1782,6 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 	public void visitDropActionChanged(DropTargetDragEvent dtde) {}
 
 	private class ShowHideJCheckBoxMenuItem extends JCheckBoxMenuItem {
-
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public ShowHideJCheckBoxMenuItem(Action a) {
 			super(a);

@@ -38,6 +38,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.JTABBEDPANE;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.STATIC_BUTTON;
 import org.nuclos.client.layout.wysiwyg.component.TitledBorderWithTranslations;
@@ -114,6 +115,8 @@ import org.nuclos.server.ruleengine.valueobject.RuleVO;
  * @version 01.00.00
  */
 public class LayoutMLGenerator implements LayoutMLConstants {
+
+	private static final Logger LOG = Logger.getLogger(LayoutMLGenerator.class);
 
 	private LayoutMLRules layoutMLRules = new LayoutMLRules();
 
@@ -786,7 +789,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 				temp.addWYSIYWYGPropertySet(new WYSIYWYGPropertySet("ruletoexecute", ruleVO.getId() + ""));
 				block.append(getLayoutMLCollectableComponentProperty(temp, blockDeep + 1));
 			} catch (Exception e) {
-				e.printStackTrace();
+				LOG.warn("getLayoutMLForStaticButton failed: " + e, e);
 			}
 		}
 		
@@ -973,7 +976,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 	 * @param attributeName
 	 * @return {@link StringBuffer} with the LayoutML
 	 */
-	private synchronized StringBuffer getLayoutMLAttributeFromProperty(PropertyValue property, String attributeName) {
+	private synchronized StringBuffer getLayoutMLAttributeFromProperty(PropertyValue<?> property, String attributeName) {
 		StringBuffer sb = new StringBuffer();
 
 		if (property != null && property.getValue() != null) {

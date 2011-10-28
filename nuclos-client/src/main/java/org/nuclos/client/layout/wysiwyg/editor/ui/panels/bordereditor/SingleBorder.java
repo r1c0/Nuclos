@@ -71,13 +71,7 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class SingleBorder extends JPanel implements LayoutMLConstants {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	/** The bordertype that can be set */
 	private HashMap<String, String> borderTypes = new HashMap<String, String>();
@@ -221,11 +215,6 @@ public class SingleBorder extends JPanel implements LayoutMLConstants {
 	 */
 	private class EmptyBorderEditor extends JPanel implements SingleBorderEditor {
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		private CollectableFieldFormat format = CollectableFieldFormat.getInstance(Integer.class);
 		
 		private JTextField top = new JTextField();
@@ -312,11 +301,6 @@ public class SingleBorder extends JPanel implements LayoutMLConstants {
 	 */
 	private class EtchedBorderEditor extends JPanel implements SingleBorderEditor {
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		private JComboBox type = new JComboBox();
 		
 		private HashMap<String, String> types = new HashMap<String, String>();
@@ -385,11 +369,6 @@ public class SingleBorder extends JPanel implements LayoutMLConstants {
 	 */
 	private class BevelBorderEditor extends JPanel implements SingleBorderEditor {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		private JComboBox type = new JComboBox();
 		
 		private HashMap<String, String> types = new HashMap<String, String>();
@@ -456,10 +435,6 @@ public class SingleBorder extends JPanel implements LayoutMLConstants {
 	 * @version 01.00.00
 	 */
 	private class LineBorderEditor extends JPanel implements SingleBorderEditor {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		private CollectableFieldFormat format = CollectableFieldFormat.getInstance(Integer.class);
 		
@@ -540,10 +515,6 @@ public class SingleBorder extends JPanel implements LayoutMLConstants {
 	 */
 	private class TitledBorderEditor extends JPanel implements SingleBorderEditor {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private JTextField title = new JTextField();
 		private TranslationMap translations = null;
 		private JButton button;

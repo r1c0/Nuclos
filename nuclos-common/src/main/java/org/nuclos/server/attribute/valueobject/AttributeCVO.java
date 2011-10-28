@@ -49,11 +49,6 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
 @Deprecated
 public class AttributeCVO extends NuclosValueObject implements Cloneable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public static final int MAX_SCALE = 2000;
 
 	private Integer iAttributeGroupId;

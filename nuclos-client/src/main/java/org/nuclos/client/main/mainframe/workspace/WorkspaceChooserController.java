@@ -187,10 +187,6 @@ public class WorkspaceChooserController {
 					final JMenuItem miNew = new JMenuItem(new AbstractAction(
 						CommonLocaleDelegate.getMessage("WorkspaceChooserController.1","Neu"), 
 						MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconNew16(), ICON_SIZE)) {
-						/**
-							 * 
-							 */
-							private static final long serialVersionUID = 1L;
 
 						@Override
 						public void actionPerformed(ActionEvent e) {
@@ -212,10 +208,6 @@ public class WorkspaceChooserController {
 					final JMenuItem miEdit = new JMenuItem(new AbstractAction(
 							CommonLocaleDelegate.getMessage("WorkspaceChooserController.3","Bearbeiten"), 
 							MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconEdit16(), ICON_SIZE)) {
-							/**
-								 * 
-								 */
-								private static final long serialVersionUID = 1L;
 
 							@Override
 							public void actionPerformed(ActionEvent e) {
@@ -238,10 +230,6 @@ public class WorkspaceChooserController {
 					final JMenuItem miSaveAs = new JMenuItem(new AbstractAction(
 						CommonLocaleDelegate.getMessage("WorkspaceChooserController.4","Klonen"), 
 						MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconClone16(), ICON_SIZE)) {
-						/**
-							 * 
-							 */
-							private static final long serialVersionUID = 1L;
 
 						@Override
 						public void actionPerformed(ActionEvent e) {
@@ -279,10 +267,6 @@ public class WorkspaceChooserController {
 					final JMenuItem miRemove = new JMenuItem(new AbstractAction(
 						CommonLocaleDelegate.getMessage("WorkspaceChooserController.7","Löschen"), 
 						MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconRealDelete16(), ICON_SIZE)) {
-						/**
-							 * 
-							 */
-							private static final long serialVersionUID = 1L;
 
 						@Override
 						public void actionPerformed(ActionEvent e) {
@@ -317,10 +301,6 @@ public class WorkspaceChooserController {
 	}
 	
 	private static class ContentPanel extends JPanel {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		
 		public ContentPanel() {
 			super(new FlowLayout(FlowLayout.RIGHT, 0, 0));
@@ -328,10 +308,6 @@ public class WorkspaceChooserController {
 	}
 	
 	private static class WorkspacePanel extends JPanel{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		
 		private static final ImageIcon imgBG = Icons.getInstance().getWorkspaceChooser_bg();
 		private static final int imgBG_w = imgBG.getIconWidth();
@@ -363,10 +339,6 @@ public class WorkspaceChooserController {
 	}
 	
 	private static class WorkspaceLabel extends JLabel implements DragGestureListener {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		
 		private final WorkspaceDescription workspaceDescription;
 		
@@ -418,7 +390,6 @@ public class WorkspaceChooserController {
 			DragSource dragSource = DragSource.getDefaultDragSource();
 		    dragSource.createDefaultDragGestureRecognizer(WorkspaceLabel.this, DnDConstants.ACTION_COPY_OR_MOVE, WorkspaceLabel.this);
 		    setTransferHandler(new TransferHandler() {
-				private static final long serialVersionUID = 1L;
 				@Override
 				public boolean importData(JComponent comp, Transferable t) {
 					try {

@@ -63,7 +63,6 @@ public class ComparatorUtils {
 	 * Returns a compound comparator. The given comparators are applied from left-to-right.
 	 * The first result <> 0 is returned; or 0 if all comparators return 0.
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T> Comparator<T> compoundComparator(Comparator<? super T> comparator1, Comparator<? super T> comparator2) {
 		return new CompoundComparator<T>(comparator1, comparator2);
 	}
@@ -110,13 +109,8 @@ public class ComparatorUtils {
 
 	private static final class CompoundComparator<T> implements Comparator<T>, Serializable {
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private final Comparator<? super T>[] comparators;
 
-		@SuppressWarnings("unchecked")
 		private CompoundComparator(List<Comparator<T>> comparators) {
 			this.comparators = comparators.toArray(new Comparator[comparators.size()]);
 		}

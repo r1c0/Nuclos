@@ -30,6 +30,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -48,6 +49,8 @@ import org.nuclos.common.NuclosBusinessException;
  *
  */
 public class ResetToTemplateUserActionListener implements ActionListener{
+	
+	private static final Logger LOG = Logger.getLogger(ResetToTemplateUserActionListener.class);
 	
 	private final GenericObjectCollectController goCon;
 	

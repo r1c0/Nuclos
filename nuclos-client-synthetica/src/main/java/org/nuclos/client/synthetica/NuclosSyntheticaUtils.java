@@ -24,9 +24,13 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import org.apache.log4j.Logger;
+
 import de.javasoft.plaf.synthetica.SyntheticaBlackMoonLookAndFeel;
 
 public class NuclosSyntheticaUtils {
+
+	private static final Logger LOG = Logger.getLogger(NuclosSyntheticaUtils.class);
 
 	private static final String WRONG_PASSLEN_MESSAGE = "passphrase must be exactly 16 bytes";
 	private static final String AES_CBC_PAD = "AES/CBC/PKCS5Padding";

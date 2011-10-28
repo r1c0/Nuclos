@@ -17,7 +17,6 @@
 package org.nuclos.server.masterdata.ejb3;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
 
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -29,7 +28,7 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
-@Local
+// @Local
 public interface MasterDataModuleFacadeLocal {
 
 	/**
@@ -44,7 +43,7 @@ public interface MasterDataModuleFacadeLocal {
 	 * @nucleus.permission checkWriteAllowed(sEntityName)
 	 */
 	@RolesAllowed("Login")
-	public abstract Object modify(String sEntityName, MasterDataVO mdvo,
+	Object modify(String sEntityName, MasterDataVO mdvo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonValidationException,
@@ -59,7 +58,7 @@ public interface MasterDataModuleFacadeLocal {
 	 * @nucleus.permission checkDeleteAllowed(sEntityName)
 	 */
 	@RolesAllowed("Login")
-	public abstract void remove(String sEntityName, MasterDataVO mdvo,
+	void remove(String sEntityName, MasterDataVO mdvo,
 		boolean bRemoveDependants) throws NuclosBusinessRuleException,
 		CommonPermissionException, CommonStaleVersionException,
 		CommonRemoveException, CommonFinderException;

@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.nuclos.installer.icons.InstallerIcons;
 import org.nuclos.installer.mode.CliInstaller;
@@ -42,6 +43,8 @@ import org.nuclos.installer.unpack.WindowsUnpacker;
 import org.nuclos.installer.util.EnvironmentUtils;
 
 public abstract class AbstractLauncher {
+
+	private static final Logger LOG = Logger.getLogger(AbstractLauncher.class);
 
 	private List<String> args;
 
@@ -83,15 +86,18 @@ public abstract class AbstractLauncher {
 					});
 		            macAppSetQuitHandlerMethod.invoke(macAppObject, new Object[] { macQuitHandler });
 				}
-				catch (Exception ex) {
-					ex.printStackTrace();
+				catch (Exception e) {
+					// Ok! (tp)
+					e.printStackTrace();
+					LOG.error("run failed: " + e, e);
 				}
 			}
-
 			run(i, u);
 		}
-		catch (InstallException ex) {
-			ex.printStackTrace();
+		catch (InstallException e) {
+			// Ok! (tp)
+			e.printStackTrace();
+			LOG.error("run failed: " + e, e);
 		}
 	}
 

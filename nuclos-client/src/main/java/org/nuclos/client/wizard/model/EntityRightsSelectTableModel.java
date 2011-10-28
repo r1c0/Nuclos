@@ -36,14 +36,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class EntityRightsSelectTableModel extends AbstractTableModel {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	List<MasterDataVO> lstUserRights;
-	Map<String, Integer> mapPermission;
+	private List<MasterDataVO> lstUserRights;
+	private Map<String, Integer> mapPermission;
 	
-	int iType;
+	private int iType;
 	
 	public static int TYPE_STATEMODEL = 0;
 	public static int TYPE_MASTERDATA = 1;
@@ -143,7 +139,7 @@ public class EntityRightsSelectTableModel extends AbstractTableModel {
 
 			if(i.intValue() != ModulePermission.DELETE_PHYSICALLY.getValue().intValue()) {
 				MasterDataPermission permission = MasterDataPermission.getInstance(i);
-				Object value = (permission instanceof KeyEnum) ? ((KeyEnum) permission).getValue() : permission.name();
+				Object value = (permission instanceof KeyEnum) ? ((KeyEnum<?>) permission).getValue() : permission.name();
 				String text = (permission instanceof Localizable) ? CommonLocaleDelegate.getText((Localizable) permission) : permission.toString();
 				CollectableField cf = new LocalizedCollectableValueField(value, text);			
 				return cf;

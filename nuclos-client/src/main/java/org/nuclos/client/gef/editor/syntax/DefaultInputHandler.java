@@ -34,6 +34,7 @@ import java.util.StringTokenizer;
 
 import javax.swing.KeyStroke;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.KeyBindingProvider;
 
 /**
@@ -43,6 +44,9 @@ import org.nuclos.client.common.KeyBindingProvider;
  * @version $Id: DefaultInputHandler.java,v 1.2 2009-06-18 07:21:57 beckschulze Exp $
  */
 public class DefaultInputHandler extends InputHandler {
+	
+	private static final Logger LOG = Logger.getLogger(DefaultInputHandler.class);
+
 	/**
 	 * Creates a new input handler with no key bindings defined.
 	 */
@@ -330,7 +334,7 @@ public class DefaultInputHandler extends InputHandler {
 			}
 		}
 		else if (key.length() == 0) {
-			System.err.println("Invalid key stroke: " + keyStroke);
+			LOG.warn("Invalid key stroke: " + keyStroke);
 			return null;
 		}
 		else {
@@ -341,8 +345,7 @@ public class DefaultInputHandler extends InputHandler {
 						.getInt(null);
 			}
 			catch (Exception e) {
-				System.err.println("Invalid key stroke: "
-						+ keyStroke);
+				LOG.warn("Invalid key stroke: " + keyStroke);
 				return null;
 			}
 

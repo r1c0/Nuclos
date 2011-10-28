@@ -58,7 +58,7 @@ public class AssignSubformRightToRole implements UpdateJobs{
 
 	@Override
 	public boolean execute() {
-		logger.debug("START executing AssignSubformRightToRole");
+		LOG.debug("START executing AssignSubformRightToRole");
 
 		try {
 			StateFacadeLocal stateFacade = ServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
@@ -89,12 +89,11 @@ public class AssignSubformRightToRole implements UpdateJobs{
 			isSuccessfulExecuted = true;
 		}
 		catch(DbException ex) {
-			logger.error(ex, ex.getCause());
+			LOG.error(ex, ex.getCause());
 		}
 		catch(CommonFatalException ex) {
-			logger.error(ex, ex.getCause());
+			LOG.error(ex, ex.getCause());
 		}
-
 		return isSuccessfulExecuted;
 	}
 
@@ -104,7 +103,7 @@ public class AssignSubformRightToRole implements UpdateJobs{
 			result.addAll(GenericObjectMetaDataCache.getInstance().getMetaDataCVO().getBestMatchingLayoutSubformEntityNames(usagecriteria));
 		}
 		catch (CommonFinderException ex) {
-			logger.error(ex, ex.getCause());
+			LOG.error(ex, ex.getCause());
 		}
 		return result;
 	}

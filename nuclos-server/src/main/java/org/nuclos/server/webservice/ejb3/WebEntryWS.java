@@ -17,7 +17,7 @@
 
 package org.nuclos.server.webservice.ejb3;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -31,7 +31,7 @@ public interface WebEntryWS {
 	 * @param pass the password
 	 * @return a list of readable entities, including system entities
 	 */
-	public ArrayList<String> listEntities_A(@WebParam(name="user") String user, @WebParam(name="pass") String pass);
+	List<String> listEntities_A(@WebParam(name="user") String user, @WebParam(name="pass") String pass);
 	
 	/**
 	 * List the objects of an entity.
@@ -41,7 +41,7 @@ public interface WebEntryWS {
 	 * @param entityName the entity name to list
 	 * @return a list of object ids
 	 */
-	public ArrayList<Long> list_A(@WebParam(name="user") String user, @WebParam(name="pass") String pass, @WebParam(name="entityName") String entityName);
+	List<Long> list_A(@WebParam(name="user") String user, @WebParam(name="pass") String pass, @WebParam(name="entityName") String entityName);
 	
 	/**
 	 * Read a given object of a given entity
@@ -53,7 +53,7 @@ public interface WebEntryWS {
 	 * @return a list of string-represantations in the form "key=value" for all
 	 * readable attributes of the given object
 	 */
-	public ArrayList<String> read_A(@WebParam(name="user") String user, @WebParam(name="pass") String pass, @WebParam(name="entityName") String entityName, @WebParam(name="id") Long id);
+	List<String> read_A(@WebParam(name="user") String user, @WebParam(name="pass") String pass, @WebParam(name="entityName") String entityName, @WebParam(name="id") Long id);
 	
 	/**
 	 * Execute a business rule on a given object
@@ -64,5 +64,5 @@ public interface WebEntryWS {
 	 * @param id the object id to read
 	 * @param rulename the rule to execute
 	 */
-	public void executeBusinessRule_A(@WebParam(name="user") String user, @WebParam(name="pass") String pass, @WebParam(name="entityName") String entityName, @WebParam(name="id") Long id, @WebParam(name="rulename") String rulename);
+	void executeBusinessRule_A(@WebParam(name="user") String user, @WebParam(name="pass") String pass, @WebParam(name="entityName") String entityName, @WebParam(name="id") Long id, @WebParam(name="rulename") String rulename);
 }

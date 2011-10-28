@@ -48,6 +48,8 @@ import org.nuclos.common2.StringUtils;
  * @version 01.00.00
  */
 public class Main {
+	
+	private static final Logger LOG = Logger.getLogger(Main.class);
 
 	private static boolean macOSX = false;
 
@@ -143,34 +145,37 @@ public class Main {
 				Object macAppObject = macAppClass.getConstructor().newInstance();
 				// set Nuclos dock icon
 				macAppClass.getMethod("setDockIconImage", java.awt.Image.class).invoke(macAppObject, NuclosIcons.getInstance().getBigTransparentApplicationIcon512().getImage());
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				ErrorInfo ei = new ErrorInfo("Fatal Error", ex.getMessage(), null, null, ex, null, null);
+			} catch (Exception e) {
+				LOG.fatal("main failed: " + e, e);
+				ErrorInfo ei = new ErrorInfo("Fatal Error", e.getMessage(), null, null, e, null, null);
 				JXErrorPane.showDialog(null, ei);
 				Main.exit(Main.ExitResult.ABNORMAL);
 			}
 		}
 
-		System.out.println(System.getProperty("java.version"));
-		System.out.println(System.getProperty("java.vendor"));
-
+		String msg = "java version: " + System.getProperty("java.version") + "\n";
+		msg += "java vendor: " + System.getProperty("java.vendor") + "\n";
+		
 		if ("true".equals(System.getProperty("nuclos.client.singleinstance"))) {
 			// register instance as single instance
 			try {
 				SingleInstanceService service = (SingleInstanceService)ServiceManager.lookup("javax.jnlp.SingleInstanceService");
 				service.addSingleInstanceListener(new JWSSingleInstanceListener());
-				System.out.println("Client started in single instance mode.");
+				msg += "Client started in single instance mode.\n";
 		    }
 			catch (UnavailableServiceException ex) {
-				System.out.println("Client cannot be started in single instance mode because there is no webstart context available.");
+				msg += "Client cannot be started in single instance mode because there is no webstart context available.\n";
 			}
+	        // Ok! (tp)
+			System.out.println(msg);
+			LOG.info(msg);
 		}
 
 		try {
 			new StartUp(asArgs);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			ErrorInfo ei = new ErrorInfo("Fatal Error", ex.getMessage(), null, null, ex, null, null);
+		} catch (Exception e) {
+			LOG.fatal("main failed: " + e, e);
+			ErrorInfo ei = new ErrorInfo("Fatal Error", e.getMessage(), null, null, e, null, null);
 			JXErrorPane.showDialog(null, ei);
 			System.exit(1);
 		}

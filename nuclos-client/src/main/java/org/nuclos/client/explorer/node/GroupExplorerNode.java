@@ -48,11 +48,6 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public class GroupExplorerNode extends MasterDataExplorerNode<GroupTreeNode> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public GroupExplorerNode(TreeNode treenode) {
 		super(treenode);
 	}

@@ -34,10 +34,6 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class DatasourceVO extends NuclosValueObject {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	/** @todo refactor permissions - use typesafe enum */
 	public static final int PERMISSION_NONE = 0;
 	public static final int PERMISSION_READONLY = 1;

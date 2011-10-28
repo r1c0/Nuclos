@@ -71,7 +71,6 @@ public final class CompositeCollectableSearchCondition extends AbstractCollectab
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public int getType() {
 		return TYPE_COMPOSITE;
 	}

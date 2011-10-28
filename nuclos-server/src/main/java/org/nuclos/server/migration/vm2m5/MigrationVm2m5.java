@@ -1271,8 +1271,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 		return localeFacade.createResource(sText);
 	}
 
-	@SuppressWarnings("unchecked")
-	private void put(DbTuple rs, String columnSource, Map<String, Object> values, String columnTarget, Class javaClass) {
+	private void put(DbTuple rs, String columnSource, Map<String, Object> values, String columnTarget, Class<?> javaClass) {
 		Object value = rs.get(columnSource, javaClass);
 		put(value, values, columnTarget);
 	}
@@ -1339,7 +1338,6 @@ public class MigrationVm2m5 extends AbstractMigration{
 				}
 			}
 		}
-
 		return result;
 	}
 }

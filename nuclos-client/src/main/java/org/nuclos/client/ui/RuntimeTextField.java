@@ -30,10 +30,6 @@ package org.nuclos.client.ui;
  */
 public class RuntimeTextField extends CommonJTextField {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private static final double dOneMinute = 1000d * 60d;
 	private static final double dOneHour   = dOneMinute * 60d;
 	private static final double dOneDay    = dOneHour * 24d;

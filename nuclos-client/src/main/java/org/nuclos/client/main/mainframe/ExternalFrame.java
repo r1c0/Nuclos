@@ -33,11 +33,6 @@ import org.nuclos.common2.CommonLocaleDelegate;
 
 public class ExternalFrame extends CommonJFrame implements WorkspaceFrame{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private final int number;
 	
 	private final JPanel pnlDesktop = new JPanel(new BorderLayout());

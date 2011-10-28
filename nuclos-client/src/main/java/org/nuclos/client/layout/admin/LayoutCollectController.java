@@ -40,6 +40,7 @@ import javax.swing.JTextArea;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.filechooser.FileFilter;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
@@ -91,6 +92,8 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 public abstract class LayoutCollectController extends MasterDataCollectController {
 
+	private static final Logger LOG = Logger.getLogger(LayoutCollectController.class);
+	
 	protected static final String PREFS_KEY_LASTIMPORTEXPORTPATH = "lastImportExportPath";
 	protected static final String LAYOUTML_EXTENSION = ".layoutml";
 
@@ -434,7 +437,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 		w.write(sLayoutML);
 		w.close();
 		final String sMessage = "Written " + sLayoutML.length() + " characters to file " + file;
-		log.info(sMessage);
+		LOG.info(sMessage);
 
 		this.getDetailsPanel().setStatusBarText(sMessage);
 	}
@@ -501,6 +504,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 		try {
 			this.getPreferences().node("tmp").removeNode();
 		} catch(BackingStoreException e) {
+			LOG.info("newDetailsSubFormControllerForLayout failed: " + e);
 		}
 		final Preferences prefs = this.getPreferences().node("tmp");
 

@@ -20,7 +20,12 @@ import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import org.apache.log4j.Logger;
+
 public final class MessageExchange {
+	
+	private static final Logger LOG = Logger.getLogger(MessageExchange.class);
+	
 	private static LinkedList<WeakReference<MessageExchangeListener>> listeners = new LinkedList<WeakReference<MessageExchangeListener>>();
 
 	private MessageExchange() {
@@ -37,7 +42,7 @@ public final class MessageExchange {
 					try {
 						l.receive(id, type, msg);
 					} catch(Exception e) {
-						e.printStackTrace();
+						LOG.warn("send failed: " + e, e);
 					}
 			}
 		}

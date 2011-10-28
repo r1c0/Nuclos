@@ -29,10 +29,6 @@ package org.nuclos.client.gef;
 import java.util.Collection;
 
 public class DefaultShapeViewer extends AbstractShapeViewer {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void selectionChanged(Shape shape) {

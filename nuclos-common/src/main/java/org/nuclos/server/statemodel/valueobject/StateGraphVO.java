@@ -40,11 +40,6 @@ import org.nuclos.common2.exception.CommonValidationException;
  */
 public class StateGraphVO implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private final StateModelVO statemodel;
 
 	private Set<StateVO> mpStates = new HashSet<StateVO>();

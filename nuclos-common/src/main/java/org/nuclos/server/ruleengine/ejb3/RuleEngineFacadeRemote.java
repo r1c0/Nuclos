@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Remote;
 
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
@@ -40,14 +39,14 @@ import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.ruleengine.valueobject.RuleWithUsagesVO;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;
 
-@Remote
+// @Remote
 public interface RuleEngineFacadeRemote {
 
 	/**
 	 * @return Collection<RuleVO> all rule definitions
 	 * @throws CommonPermissionException
 	 */
-	public abstract Collection<RuleVO> getAllRules()
+	Collection<RuleVO> getAllRules()
 		throws CommonPermissionException;
 
 	/**
@@ -55,7 +54,7 @@ public interface RuleEngineFacadeRemote {
 	 * @return Collection<RuleVO> all rule for a given event Name
 	 * @throws CommonPermissionException
 	 */
-	public abstract List<RuleVO> getByEventOrdered(String sEventName)
+	List<RuleVO> getByEventOrdered(String sEventName)
 		throws CommonPermissionException;
 
 	/**
@@ -63,7 +62,7 @@ public interface RuleEngineFacadeRemote {
 	 * @return Collection<RuleVO> all rule for a given event Name
 	 * @throws CommonPermissionException
 	 */
-	public abstract List<RuleVO> getByEventAndEntityOrdered(String sEventName,
+	List<RuleVO> getByEventAndEntityOrdered(String sEventName,
 		String sEntity) throws CommonPermissionException;
 
 	/**
@@ -78,7 +77,7 @@ public interface RuleEngineFacadeRemote {
 	 * @throws CommonCreateException
 	 * @throws CommonPermissionException
 	 */
-	public abstract void createRuleUsageInEntity(String sEventname,
+	void createRuleUsageInEntity(String sEventname,
 		String sEntity, Integer ruleToInsertId, Integer ruleBeforeId)
 		throws CommonCreateException, CommonPermissionException;
 
@@ -93,8 +92,9 @@ public interface RuleEngineFacadeRemote {
 	 * @throws CommonFinderException
 	 * @throws NuclosBusinessRuleException
 	 */
-	public abstract void removeRuleUsage(String eventName, String entity,
-		Integer iRuleIdToRemove) throws CommonPermissionException, NuclosBusinessRuleException, CommonFinderException, CommonRemoveException, CommonStaleVersionException;
+	void removeRuleUsage(String eventName, String entity,
+		Integer iRuleIdToRemove) 
+				throws CommonPermissionException, NuclosBusinessRuleException, CommonFinderException, CommonRemoveException, CommonStaleVersionException;
 
 	/**
 	 *
@@ -105,7 +105,7 @@ public interface RuleEngineFacadeRemote {
 	 * @throws CommonCreateException
 	 * @throws CommonPermissionException
 	 */
-	public abstract void moveRuleUsageInEntity(String eventName,
+	void moveRuleUsageInEntity(String eventName,
 		String entity, Integer ruleToMoveId, Integer ruleBeforeId)
 		throws CommonCreateException, CommonPermissionException;
 
@@ -114,7 +114,7 @@ public interface RuleEngineFacadeRemote {
 	 * @return Collection<GeneratorActionVO>
 	 * @throws CommonPermissionException
 	 */
-	public abstract Collection<GeneratorActionVO> getAllGenerations()
+	Collection<GeneratorActionVO> getAllGenerations()
 		throws CommonPermissionException;
 
 	/**
@@ -122,7 +122,7 @@ public interface RuleEngineFacadeRemote {
 	 * @return Collection<GeneratorActionVO>
 	 * @throws CommonPermissionException
 	 */
-	public abstract Collection<GeneratorActionVO> getAllGenerationsWithRule()
+	Collection<GeneratorActionVO> getAllGenerationsWithRule()
 		throws CommonPermissionException;
 
 	/**
@@ -130,7 +130,7 @@ public interface RuleEngineFacadeRemote {
 	 * @return Collection<GeneratorActionVO>
 	 * @throws CommonPermissionException
 	 */
-	public abstract Collection<GeneratorActionVO> getAllGenerationsForRuleId(
+	Collection<GeneratorActionVO> getAllGenerationsForRuleId(
 		Integer iRuleId) throws CommonPermissionException;
 
 	/**
@@ -138,7 +138,7 @@ public interface RuleEngineFacadeRemote {
 	 * @return Collection<RuleEngineGenerationVO>
 	 * @throws CommonPermissionException
 	 */
-	public abstract Collection<RuleEngineGenerationVO> getAllRuleGenerationsForRuleId(
+	Collection<RuleEngineGenerationVO> getAllRuleGenerationsForRuleId(
 		Integer ruleId) throws CommonPermissionException;
 
 	/**
@@ -146,7 +146,7 @@ public interface RuleEngineFacadeRemote {
 	 * @return Collection<RuleEngineGenerationVO>
 	 * @throws CommonPermissionException
 	 */
-	public abstract Collection<RuleEngineGenerationVO> getAllRuleGenerationsForGenerationId(
+	Collection<RuleEngineGenerationVO> getAllRuleGenerationsForGenerationId(
 		Integer generationId) throws CommonPermissionException;
 
 	/**
@@ -154,7 +154,7 @@ public interface RuleEngineFacadeRemote {
 	 * @return Collection<RuleEngineTransitionVO>
 	 * @throws CommonPermissionException
 	 */
-	public abstract Collection<RuleEngineTransitionVO> getAllRuleTransitionsForRuleId(
+	Collection<RuleEngineTransitionVO> getAllRuleTransitionsForRuleId(
 		Integer ruleId) throws CommonPermissionException;
 
 	/**
@@ -162,7 +162,7 @@ public interface RuleEngineFacadeRemote {
 	 * @return Collection<RuleEngineTransitionVO>
 	 * @throws CommonPermissionException
 	 */
-	public abstract Collection<RuleEngineTransitionVO> getAllRuleTransitionsForTransitionId(
+	Collection<RuleEngineTransitionVO> getAllRuleTransitionsForTransitionId(
 		Integer transitionId) throws CommonPermissionException;
 
 	/**
@@ -170,7 +170,7 @@ public interface RuleEngineFacadeRemote {
 	 * @return collection of generation actions
 	 * @throws CommonPermissionException
 	 */
-	public abstract Collection<StateModelVO> getAllStateModelsForRuleId(
+	Collection<StateModelVO> getAllStateModelsForRuleId(
 		Integer aRuleId) throws CommonPermissionException;
 
 	/**
@@ -178,7 +178,7 @@ public interface RuleEngineFacadeRemote {
 	 * @return Collection<RuleEngineGenerationVO>
 	 * @throws CommonPermissionException
 	 */
-	public abstract Collection<RuleEngineGenerationVO> getAllRuleEngineGenerations()
+	Collection<RuleEngineGenerationVO> getAllRuleEngineGenerations()
 		throws CommonPermissionException;
 
 	/**
@@ -186,16 +186,15 @@ public interface RuleEngineFacadeRemote {
 	 * @return collection of state model vo
 	 * @throws CommonPermissionException
 	 */
-	public abstract Collection<RuleEventUsageVO> getByEventAndRule(
+	Collection<RuleEventUsageVO> getByEventAndRule(
 		String sEventName, Integer iRuleId) throws CommonPermissionException;
 
-   /**
-    * Get all referenced entity names for a certain rule event.
-    * @return collection of entity names
-    * @throws CommonPermissionException
-    */
-	public abstract Collection<String> getRuleUsageEntityNamesByEvent(
-		String sEventName) throws CommonPermissionException;
+	/**
+	 * Get all referenced entity names for a certain rule event.
+	 * @return collection of entity names
+	 * @throws CommonPermissionException
+	 */
+	Collection<String> getRuleUsageEntityNamesByEvent(String sEventName) throws CommonPermissionException;
 
 	/**
 	 * gets a rule definition from the database by primary key.
@@ -203,7 +202,7 @@ public interface RuleEngineFacadeRemote {
 	 * @return rule value object
 	 * @throws CommonPermissionException
 	 */
-	public abstract RuleVO get(Integer iId) throws CommonFinderException,
+	RuleVO get(Integer iId) throws CommonFinderException,
 		CommonPermissionException;
 
 	/**
@@ -213,7 +212,7 @@ public interface RuleEngineFacadeRemote {
 	 * @return rule value object
 	 * @throws CommonPermissionException
 	 */
-	public abstract RuleVO get(String ruleName) throws CommonFinderException,
+	RuleVO get(String ruleName) throws CommonFinderException,
 		CommonPermissionException;
 
 	/**
@@ -224,7 +223,7 @@ public interface RuleEngineFacadeRemote {
 	 * @throws CommonPermissionException
 	 * @precondition (mpDependants != null) -> mpDependants.dependantsAreNew()
 	 */
-	public abstract RuleVO create(RuleVO rulevo,
+	RuleVO create(RuleVO rulevo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonValidationException, CommonStaleVersionException,
@@ -238,7 +237,7 @@ public interface RuleEngineFacadeRemote {
 	 * @throws NuclosCompileException
 	 * @throws CommonPermissionException
 	 */
-	public abstract RuleVO modify(RuleVO rulevo,
+	RuleVO modify(RuleVO rulevo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonValidationException,
@@ -250,7 +249,7 @@ public interface RuleEngineFacadeRemote {
 	 * @throws CommonPermissionException
 	 * @throws NuclosBusinessRuleException
 	 */
-	public abstract void remove(RuleVO rulevo) throws CommonFinderException,
+	void remove(RuleVO rulevo) throws CommonFinderException,
 		CommonRemoveException, CommonStaleVersionException,
 		CommonPermissionException, NuclosBusinessRuleException, NuclosCompileException;
 
@@ -260,7 +259,7 @@ public interface RuleEngineFacadeRemote {
 	 * @param collRuleWithUsages
 	 */
 	@RolesAllowed("UseManagementConsole")
-	public abstract void importRules(
+	void importRules(
 		Collection<RuleWithUsagesVO> collRuleWithUsages)
 		throws CommonBusinessException;
 
@@ -270,24 +269,24 @@ public interface RuleEngineFacadeRemote {
 	 * @throws NuclosCompileException
 	 */
 	@RolesAllowed("Login")
-	public abstract void check(RuleVO ruleVO) throws NuclosCompileException;
+	void check(RuleVO ruleVO) throws NuclosCompileException;
 
 	/**
 	 * Returns a template for new rules to display in the rule editor.
 	 * @return String containing class template
 	 */
-	public abstract String getClassTemplate();
+	String getClassTemplate();
 
 	/**
-    * Delete the Output Path Directory.
-    */
+	 * Delete the Output Path Directory.
+	 */
 	@RolesAllowed("UseManagementConsole")
-   public abstract void deleteDirectoryOutputPath();
+	void deleteDirectoryOutputPath();
 
 	/**
 	 * invalidates the rule cache
 	 */
 	@RolesAllowed("Login")
-	public abstract void invalidateCache();
+	void invalidateCache();
 
 }

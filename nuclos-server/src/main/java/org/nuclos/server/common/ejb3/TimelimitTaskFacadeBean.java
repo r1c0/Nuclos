@@ -22,9 +22,6 @@ import java.util.Collections;
 import java.util.HashSet;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
@@ -54,9 +51,9 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Local(TimelimitTaskFacadeLocal.class)
-@Remote(TimelimitTaskFacadeRemote.class)
+// @Stateless
+// @Local(TimelimitTaskFacadeLocal.class)
+// @Remote(TimelimitTaskFacadeRemote.class)
 @Transactional
 @RolesAllowed("Login")
 public class TimelimitTaskFacadeBean extends NuclosFacadeBean implements TimelimitTaskFacadeLocal, TimelimitTaskFacadeRemote {
@@ -88,7 +85,6 @@ public class TimelimitTaskFacadeBean extends NuclosFacadeBean implements Timelim
 				throw new CommonFatalException(e);
 			}
 		}
-
 		return result;
 	}
 

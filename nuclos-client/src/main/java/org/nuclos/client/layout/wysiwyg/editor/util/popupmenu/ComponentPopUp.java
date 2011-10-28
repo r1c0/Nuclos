@@ -60,13 +60,14 @@ import org.nuclos.common.NuclosBusinessException;
  */
 public class ComponentPopUp {
 
+	private static final Logger LOG = Logger.getLogger(ComponentPopUp.class);
+
 	private JPopupMenu contextMenu = new JPopupMenu();
 	private JMenuItem deleteComponent;
 	private TableLayoutPanel contentPane = null;
 	private WYSIWYGComponent wysiwygcomponent = null;
 	private int xClick;
 	private TableLayoutUtil tableLayoutUtil;
-	private static final Logger log = Logger.getLogger(ComponentPopUp.class);
 
 	/**
 	 * 
@@ -271,7 +272,6 @@ public class ComponentPopUp {
 				tableLayoutUtil.getContainer().getParentEditorPanel().getController().hidePreferencesPanel();
 		}
 		catch(NuclosBusinessException e) {
-			log.error(e);
 			Errors.getInstance().showExceptionDialog(null, e);
 		}
 		tableLayoutUtil.removeComponentFromLayout(wysiwygcomponent);

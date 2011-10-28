@@ -76,7 +76,6 @@ public class DeleteSelectedCollectablesPhysicallyController
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public DeleteSelectedCollectablesPhysicallyController(GenericObjectCollectController ctl) {
 		super(ctl, CommonLocaleDelegate.getMessage("DeleteSelectedCollectablesPhysicallyController.5", "Datens\u00e4tze endg\u00fcltig l\u00f6schen"), new DeleteAction(ctl), ctl.getListOfSelectedCollectables());
 	}

@@ -19,6 +19,8 @@ package org.nuclos.common.csvparser;
 import java.io.*;
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 /**
  * Reads CSV (Comma Separated Value) files.
  *
@@ -72,6 +74,9 @@ import java.util.ArrayList;
  */
 
 public class CSVReader {
+	
+	private static final Logger LOG = Logger.getLogger(CSVReader.class);
+	
 	private static final boolean DEBUGGING = true;
 
 	/**
@@ -706,7 +711,7 @@ public class CSVReader {
 				CSVReader csv = new CSVReader(new FileReader("test.csv"), ',', '\"', true, false);
 				try {
 					while (true) {
-						System.out.println("--> " + csv.get());
+						LOG.debug("--> " + csv.get());
 					}
 				}
 				catch (EOFException e) {
@@ -714,8 +719,7 @@ public class CSVReader {
 				csv.close();
 			}
 			catch (IOException e) {
-				e.printStackTrace();
-				System.out.println(e.getMessage());
+				LOG.error("CSVReader failed", e);
 			}
 		}
 	}

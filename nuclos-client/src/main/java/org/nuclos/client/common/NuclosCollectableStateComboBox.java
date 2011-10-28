@@ -191,10 +191,6 @@ public class NuclosCollectableStateComboBox extends CollectableComboBox {
 	}
 
 	class MyComboBoxRenderer extends BasicComboBoxRenderer {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public Component getListCellRendererComponent(JList list, Object oValue, int index, boolean bSelected, boolean bCellHasFocus) {

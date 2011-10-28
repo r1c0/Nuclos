@@ -41,13 +41,10 @@ import javax.swing.tree.TreeModel;
  */
 
 public class SearchEditorPanel extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	final RootNode nodeRoot = new RootNode();
-	final JTree tree = new JTree(nodeRoot);
-	final JButton btnSimplify = new JButton(CommonLocaleDelegate.getMessage("SearchEditorPanel.1","Vereinfachen"));
+
+	private final RootNode nodeRoot = new RootNode();
+	private final JTree tree = new JTree(nodeRoot);
+	private final JButton btnSimplify = new JButton(CommonLocaleDelegate.getMessage("SearchEditorPanel.1","Vereinfachen"));
 
 	public SearchEditorPanel() {
 		super(new BorderLayout());
@@ -66,6 +63,14 @@ public class SearchEditorPanel extends JPanel {
 
 		pnlButtons.add(this.btnSimplify);
 		this.btnSimplify.setToolTipText(CommonLocaleDelegate.getMessage("SearchEditorPanel.2","Suchbedingung vereinfachen"));
+	}
+	
+	JButton getSimplifyButton() {
+		return btnSimplify;
+	}
+	
+	JTree getTree() {
+		return tree;
 	}
 
 	public CollectableSearchCondition getSearchCondition() {

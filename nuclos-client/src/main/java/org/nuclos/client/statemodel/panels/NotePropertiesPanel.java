@@ -32,11 +32,8 @@ import java.awt.*;
  * @version 01.00.00
  */
 public class NotePropertiesPanel extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	final NotePropertiesPanelModel model = new NotePropertiesPanelModel();
+
+	private final NotePropertiesPanelModel model = new NotePropertiesPanelModel();
 
 	public NotePropertiesPanel() {
 		super(new BorderLayout(4, 4));

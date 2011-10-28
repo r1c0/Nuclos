@@ -21,24 +21,22 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.ejb.Local;
-
 import org.nuclos.common.HashResourceBundle;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
-@Local
+// @Local
 public interface LocaleFacadeLocal {
 
-	public abstract void flushInternalCaches();
+	void flushInternalCaches();
 
 	/**
 	 * Fetch the user locale (server-internal)
 	 *
 	 * @return the user locale (or -1 if not set)
 	 */
-	public abstract LocaleInfo getUserLocale();
+	LocaleInfo getUserLocale();
 
 	/**
 	 * Return the complete resource bundle for a given localeId
@@ -46,48 +44,47 @@ public interface LocaleFacadeLocal {
 	 * @return the resulting resource bundle
 	 * @throws CommonFatalException
 	 */
-	public abstract HashResourceBundle getResourceBundle(LocaleInfo localeInfo) throws CommonFatalException;
+	HashResourceBundle getResourceBundle(LocaleInfo localeInfo) throws CommonFatalException;
 
-	public abstract Collection<LocaleInfo> getAllLocales(boolean includeNull)
-	throws CommonFatalException;
+	Collection<LocaleInfo> getAllLocales(boolean includeNull) throws CommonFatalException;
 
-	public abstract DateFormat getDateFormat();
+	DateFormat getDateFormat();
 
-	public abstract String getResourceById(LocaleInfo localeInfo, String sresourceId);
+	String getResourceById(LocaleInfo localeInfo, String sresourceId);
 
-	public abstract void deleteResource(String resourceId);
+	void deleteResource(String resourceId);
 
-	public abstract void deleteResourceFromLocale(String resourceId, LocaleInfo localeInfo);
+	void deleteResourceFromLocale(String resourceId, LocaleInfo localeInfo);
 
 	/**
 	 * get resource by the given id
 	 */
-	public abstract String getResource(String iId);
+	String getResource(String iId);
 
-	public abstract String setResourceForLocale(String sResourceId, LocaleInfo localeInfo, String sText);
+	String setResourceForLocale(String sResourceId, LocaleInfo localeInfo, String sText);
 
-	public abstract String setDefaultResource(String sResourceId, String stext);
+	String setDefaultResource(String sResourceId, String stext);
 
-	public abstract String createResource(String sText);
+	String createResource(String sText);
 
-	public abstract void updateResource(String resourceId, String text);
+	void updateResource(String resourceId, String text);
 
 	/**
 	 * Determine the default locale
 	 * @return the default locale
 	 * @throws CommonFatalException
 	 */
-	public abstract LocaleInfo getDefaultLocale() throws CommonFatalException;
+	LocaleInfo getDefaultLocale() throws CommonFatalException;
 
-	public Date getLastChange();
+	Date getLastChange();
 
-	public abstract MasterDataVO getLocaleVO(LocaleInfo localeInfo);
+	MasterDataVO getLocaleVO(LocaleInfo localeInfo);
 
-	public abstract List<LocaleInfo> getParentChain(LocaleInfo localeInfo);
+	List<LocaleInfo> getParentChain(LocaleInfo localeInfo);
 
-	public void update(String resourceId, LocaleInfo localeInfo, String text);
+	void update(String resourceId, LocaleInfo localeInfo, String text);
 
-	public String insert(String sResourceId, LocaleInfo localeInfo, String sText);
+	String insert(String sResourceId, LocaleInfo localeInfo, String sText);
 
-	public boolean isResourceId(String s);
+	boolean isResourceId(String s);
 }

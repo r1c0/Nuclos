@@ -35,10 +35,7 @@ import javax.swing.Timer;
  * @version 01.00.00
  */
 public class ImageStripPlayer extends JComponent {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private int size = 0;
 	private int stages = 0;
 	private int stagePlayed = -1;
@@ -54,10 +51,6 @@ public class ImageStripPlayer extends JComponent {
 		this.setMaximumSize(dimSize);
 		this.setMinimumSize(dimSize);
 		this.setPreferredSize(dimSize);
-
-		//this.setOpaque(false);
-		//this.setOpaque(true);
-		//this.setBackground(Color.BLACK);
 	}
 
 	public void play(int iDelay) {

@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.collection.CollectionUtils;
 
 /**
@@ -47,6 +48,9 @@ import org.nuclos.common.collection.CollectionUtils;
  * @version 01.00.00
  */
 public class SwingLocaleSwitcher {
+	
+	private static final Logger LOG = Logger.getLogger(SwingLocaleSwitcher.class);
+
 	private static List<String> supported =  Arrays.asList(
 				"de", "es", "fr", "it", "ja", "ko", "sv",
 				"zh_CN", "zh_HK", "zh_TW"
@@ -82,13 +86,13 @@ public class SwingLocaleSwitcher {
 					m.put(k, resources.getObject(k));
 			}
 			catch(InstantiationException e) {
-				e.printStackTrace();
+				LOG.warn("setLocale to " + locale + " failed: " + e, e);
 			}
 			catch(IllegalAccessException e) {
-				e.printStackTrace();
+				LOG.warn("setLocale to " + locale + " failed: " + e, e);
 			}
 			catch(ClassNotFoundException e) {
-				e.printStackTrace();
+				LOG.warn("setLocale to " + locale + " failed: " + e, e);
 			}
 		}
 		UIDefaults uiDefs = UIManager.getDefaults();

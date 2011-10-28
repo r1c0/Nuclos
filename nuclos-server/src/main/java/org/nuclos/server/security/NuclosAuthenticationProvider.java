@@ -55,7 +55,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public class NuclosAuthenticationProvider implements AuthenticationProvider, MessageListener {
 
-	private static final Logger log = Logger.getLogger(NuclosAuthenticationProvider.class);
+	private static final Logger LOG = Logger.getLogger(NuclosAuthenticationProvider.class);
 
 	private UserDetailsService userDetailsService;
 
@@ -68,7 +68,7 @@ public class NuclosAuthenticationProvider implements AuthenticationProvider, Mes
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		if (authentication instanceof NuclosLocalServerAuthenticationToken) {
-			log.debug("Local server authentication: ...");
+			LOG.debug("Local server authentication: ...");
 			return authentication;
 		}
 
@@ -76,7 +76,7 @@ public class NuclosAuthenticationProvider implements AuthenticationProvider, Mes
 
 		String username = authentication.getPrincipal().toString();
 		String password = authentication.getCredentials().toString();
-		log.debug("NuclosAuthenticationProvider.authenticate(" + username + "), locale:" + LocaleContextHolder.getLocale().toString());
+		LOG.debug("NuclosAuthenticationProvider.authenticate(" + username + "), locale:" + LocaleContextHolder.getLocale().toString());
 
 		UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
 
@@ -100,12 +100,12 @@ public class NuclosAuthenticationProvider implements AuthenticationProvider, Mes
 					// authentication not successful, continue
 				}
 				catch (Exception ex) {
-					log.error(ex);
+					LOG.error(ex);
 				}
 			}
 		}
 		catch (Exception ex) {
-			log.error("Configuration of ldap authenticators failed.", ex);
+			LOG.error("Configuration of ldap authenticators failed.", ex);
 		}
 
 		// if ldap authentication is not active or the user is a superuser, try authentication against db
@@ -184,12 +184,12 @@ public class NuclosAuthenticationProvider implements AuthenticationProvider, Mes
 			try {
 				String text = ((TextMessage) message).getText();
 				if (StringUtils.isNullOrEmpty(text) || text.equals(NuclosEntity.LDAPSERVER.getEntityName())) {
-					log.info("Invalidate ldap servers.");
+					LOG.info("Invalidate ldap servers.");
 					this.ldapAuthenticators = null;
 				}
 			}
-			catch(JMSException ex) {
-				log.error(ex);
+			catch(JMSException e) {
+				LOG.error("onMessage failed: " + e, e);
 			}
 		}
 	}

@@ -54,13 +54,8 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  * now the WYSIWYGStaticTextarea extends LabeledTextArea for scrollbar
  * 
  */
-@SuppressWarnings("serial")
 public class WYSIWYGStaticTextarea extends LabeledTextArea implements WYSIWYGComponent, LayoutMLConstants  {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static final String PROPERTY_EDITABLE = PROPERTY_LABELS.EDITABLE;
 	
@@ -243,7 +238,7 @@ public class WYSIWYGStaticTextarea extends LabeledTextArea implements WYSIWYGCom
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#setProperty(java.lang.String, org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue, java.lang.Class)
 	 */
 	@Override
-	public void setProperty(String property, PropertyValue value, Class<?> valueClass) throws CommonBusinessException {
+	public void setProperty(String property, PropertyValue<?> value, Class<?> valueClass) throws CommonBusinessException {
 		properties.setProperty(property, value, valueClass);
 	}
 	

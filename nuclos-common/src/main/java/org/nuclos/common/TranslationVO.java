@@ -21,15 +21,14 @@ import java.util.Map;
 
 public class TranslationVO implements Serializable {
 
-	private static final long serialVersionUID = 1L;
 	public static String labelsEntity[] = {"titel","menupath","treeview","treeviewdescription"};
 	public static String labelsField[] = {"label","description"};
 	public static String labelsCustomComponent[] = {"label","menupath"};
 
-	Integer iLanguage;
-	String sLanguage;
-	String sCountry;
-	Map<String, String> mpValues;
+	private Integer iLanguage;
+	private String sLanguage;
+	private String sCountry;
+	private Map<String, String> mpValues;
 
 	public TranslationVO(Integer iLanguage, String country, String sLanguage, Map<String, String> lstLanguage) {
 		super();

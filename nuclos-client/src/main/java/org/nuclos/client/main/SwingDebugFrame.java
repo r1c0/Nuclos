@@ -64,13 +64,10 @@ import org.nuclos.server.console.ejb3.ConsoleFacadeRemote;
  * @version 01.00.00
  */
 public class SwingDebugFrame extends JFrame {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	JScrollPane scrl;
-	JEditorPane text;
-	MainController ctrl;
+
+	private JScrollPane scrl;
+	private JEditorPane text;
+	private MainController ctrl;
 
 	SwingDebugFrame(MainController ctrl) {
 		super();
@@ -103,10 +100,6 @@ public class SwingDebugFrame extends JFrame {
 		epDbInfo.setEditable(false);
 		final JPanel pnlDbInfo = new JPanel(new BorderLayout());
 		final JButton btnDbInfo = new JButton(new AbstractAction() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
             public void actionPerformed(ActionEvent e) {
@@ -123,10 +116,6 @@ public class SwingDebugFrame extends JFrame {
 		epServerProps.setEditable(false);
 		final JPanel pnlServerProps = new JPanel(new BorderLayout());
 		final JButton btnServerProps = new JButton(new AbstractAction() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
             public void actionPerformed(ActionEvent e) {
@@ -246,7 +235,6 @@ public class SwingDebugFrame extends JFrame {
 		sb.append("  Parent class: ").append(comp.getParent().getClass().getName()).append("<br>");
 	}
 
-	@SuppressWarnings("deprecation")
 	private void addSubFormInfo(StringBuilder sb, SubForm.SubFormTable subFormTable) {
 		final int iColumn = subFormTable.columnAtPoint(subFormTable.getMousePosition());
 		final int iRow = subFormTable.rowAtPoint(subFormTable.getMousePosition());
@@ -312,7 +300,6 @@ public class SwingDebugFrame extends JFrame {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private void addFieldInfos(StringBuilder sb, Component comp) {
 		CollectController<?> clctctrl = getController(comp);
 		String sEntity = null;

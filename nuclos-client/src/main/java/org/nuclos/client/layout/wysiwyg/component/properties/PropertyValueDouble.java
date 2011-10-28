@@ -43,13 +43,8 @@ import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class PropertyValueDouble implements PropertyValue<Double> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private Double value;
 	
 	/**
@@ -173,28 +168,15 @@ public class PropertyValueDouble implements PropertyValue<Double> {
 	 */
 	class PropertyEditorDouble extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		private JTextField textField;
 		
 		private CollectableFieldFormat format = CollectableFieldFormat.getInstance(Double.class);
 		
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.CellEditor#getCellEditorValue()
-		 */
 		@Override
 		public Object getCellEditorValue() {
 			return PropertyValueDouble.this;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.AbstractCellEditor#stopCellEditing()
-		 */
 		@Override
 		public boolean stopCellEditing() {
 			if (textField != null) {

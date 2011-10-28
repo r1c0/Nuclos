@@ -16,11 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.resource;
 
-import javax.ejb.CreateException;
-
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosBusinessException;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.ServiceLocator;
@@ -44,15 +41,16 @@ import org.nuclos.server.resource.valueobject.ResourceVO;
  */
 public class ResourceDelegate {
 
+	private static final Logger LOG = Logger.getLogger(ResourceDelegate.class);
+
 	private static ResourceDelegate singleton;
 
 	private final ResourceFacadeRemote facade;
 
-
 	/**
 	 * Use getInstance() to create an (the) instance of this class
 	 */
-	private ResourceDelegate() throws RuntimeException, CreateException {
+	private ResourceDelegate() throws RuntimeException {
 		this.facade = ServiceLocator.getInstance().getFacade(ResourceFacadeRemote.class);
 	}
 
@@ -63,9 +61,6 @@ public class ResourceDelegate {
 			}
 			catch (RuntimeException ex) {
 				throw new CommonFatalException(ex);
-			}
-			catch (CreateException ex) {
-				throw new NuclosFatalException(ex);
 			}
 		}
 		return singleton;

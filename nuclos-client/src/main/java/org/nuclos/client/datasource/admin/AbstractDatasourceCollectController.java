@@ -34,6 +34,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.common.security.SecurityCache;
@@ -71,6 +72,8 @@ import org.nuclos.server.report.valueobject.RecordGrantVO;
 
 public abstract class AbstractDatasourceCollectController extends NuclosCollectController<CollectableDataSource>  {
 
+	private static final Logger LOG = Logger.getLogger(AbstractDatasourceCollectController.class);
+	
 	protected static final String PREFS_KEY_LASTIMPORTEXPORTPATH = "lastImportExportPath";
 	
 	protected final DatasourceDelegate datasourcedelegate = DatasourceDelegate.getInstance();
@@ -120,7 +123,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 
 		this.setupDetailsToolBar();
 
-		this.getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(pnlEdit, pnlEdit.pnlHeader.newCollectableComponentsProvider()));
+		this.getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(pnlEdit, pnlEdit.getHeader().newCollectableComponentsProvider()));
 
 		btnImport.setEnabled(true);
 		btnExport.setEnabled(true);
@@ -150,7 +153,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 		super.readValuesFromEditPanel(clct, bSearchTab);
 
 		try {
-			clct.getDatasourceVO().setSource(this.pnlEdit.pnlQueryEditor.getXML(new DatasourceEntityOptions(false)));
+			clct.getDatasourceVO().setSource(this.pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(false)));
 		}
 		catch (CommonBusinessException ex) {
 			throw new CollectableValidationException(this.getCollectableEntity().getEntityField("datasourceXML"), ex);
@@ -173,7 +176,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 	 *
 	 */
 	private void validateParameters() throws CommonValidationException {
-		for (final DatasourceParameterVO paramvo : pnlEdit.pnlQueryEditor.getParameters()) {
+		for (final DatasourceParameterVO paramvo : pnlEdit.getQueryEditor().getParameters()) {
 			paramvo.validate();
 		}
 	}
@@ -236,7 +239,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 	 */
 	@Override
 	public void addAdditionalChangeListenersForDetails() {
-		this.pnlEdit.pnlQueryEditor.addChangeListener(this.changelistenerDetailsChanged);
+		pnlEdit.getQueryEditor().addChangeListener(this.changelistenerDetailsChanged);
 	}
 
 	/**
@@ -244,7 +247,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 	 */
 	@Override
 	public void removeAdditionalChangeListenersForDetails() {
-		this.pnlEdit.pnlQueryEditor.removeChangeListener(this.changelistenerDetailsChanged);
+		pnlEdit.getQueryEditor().removeChangeListener(this.changelistenerDetailsChanged);
 	}
 	
 	protected static String getUsagesAsString(List<DatasourceVO> lstUsages) {
@@ -392,17 +395,17 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 		final DatasourceVO datasourceVO = clct.getDatasourceVO();
 
 		if (datasourceVO.getId() == null) {
-			this.pnlEdit.pnlQueryEditor.newDatasource(getDefaultColumns());
+			pnlEdit.getQueryEditor().newDatasource(getDefaultColumns());
 		}
 		else {
 			if (datasourceVO.getSource() != null) {
-				final Map<String, List<String>> mpWarnings = this.pnlEdit.pnlQueryEditor.setXML(datasourceVO.getSource());
+				final Map<String, List<String>> mpWarnings = pnlEdit.getQueryEditor().setXML(datasourceVO.getSource());
 				final String sWarnings = QueryBuilderEditor.getSkippedElements(mpWarnings);
 				if (sWarnings.length() > 0) {
 					JOptionPane.showMessageDialog(parent, CommonLocaleDelegate.getMessage("DatasourceCollectController.13","Folgende Elemente existieren nicht mehr in dem aktuellen Datenbankschema und wurden daher entfernt") + ":\n" + sWarnings);
 				}
 				final List<DatasourceParameterVO> lstParams = datasourcedelegate.getParametersFromXML(datasourceVO.getSource());
-				pnlEdit.pnlQueryEditor.setParameter(lstParams);
+				pnlEdit.getQueryEditor().setParameter(lstParams);
 
 				final Set<String> stColumnParameters = new HashSet<String>(DatasourceUtils.getParametersFromString(datasourceVO.getSource()));
 				final Set<String> stDefinedParameters = new HashSet<String>();
@@ -475,28 +478,28 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 			}
 			AbstractDatasourceCollectController dscc = AbstractDatasourceCollectController.this;
 			final boolean bWriteAllowed = SecurityCache.getInstance().isWriteAllowedForMasterData(sEntity);
+
+			final QueryBuilderEditor editor = dscc.pnlEdit.getQueryEditor(); 
 			if (iDetailsMode == CollectState.DETAILSMODE_EDIT || iDetailsMode == CollectState.DETAILSMODE_MULTIEDIT) {
-								dscc.pnlEdit.pnlQueryEditor.getTableSelectionPanel().getParameterPanel().getDeleteParameterAction().setEnabled(bWriteAllowed);
+				editor.getTableSelectionPanel().getParameterPanel().getDeleteParameterAction().setEnabled(bWriteAllowed);
 			}
 			dscc.btnImport.setEnabled(bWriteAllowed);
 			dscc.btnValidate.setEnabled(bWriteAllowed);
-			dscc.pnlEdit.pnlHeader.clcttfDescription.setEnabled(bWriteAllowed);
-			dscc.pnlEdit.pnlHeader.clcttfName.setEnabled(bWriteAllowed);
-			if (dscc.pnlEdit.pnlHeader.clbxEntity != null)
-				dscc.pnlEdit.pnlHeader.clbxEntity.setEnabled(bWriteAllowed);
-			dscc.pnlEdit.pnlQueryEditor.getTableSelectionPanel().getParameterPanel().getNewParameterAction().setEnabled(bWriteAllowed);
-
-			dscc.pnlEdit.pnlQueryEditor.getTableSelectionPanel().getParameterPanel().getParameterTable().setEnabled(bWriteAllowed);
-			dscc.pnlEdit.pnlQueryEditor.getColumnSelectionPanel().getTable().setEnabled(bWriteAllowed);
+			final DatasourceHeaderPanel header = dscc.pnlEdit.getHeader();
+			header.getDescriptionField().setEnabled(bWriteAllowed);
+			header.getNameField().setEnabled(bWriteAllowed);
+			if (header.getEntityComboBox() != null) {
+				header.getEntityComboBox().setEnabled(bWriteAllowed);
+			}
+			
+			editor.getTableSelectionPanel().getParameterPanel().getNewParameterAction().setEnabled(bWriteAllowed);
+			editor.getTableSelectionPanel().getParameterPanel().getParameterTable().setEnabled(bWriteAllowed);
+			editor.getColumnSelectionPanel().getTable().setEnabled(bWriteAllowed);
 			dscc.pnlEdit.sqlPanel.getBtnGenerateSql().setEnabled(bWriteAllowed);
 		}
 	}
 
 	private class DatasourceCollectPanel extends CollectPanel<CollectableDataSource> {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		DatasourceCollectPanel(boolean bSearchPanelAvailable) {
 			super(bSearchPanelAvailable);
@@ -505,11 +508,6 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 		@Override
 		public ResultPanel<CollectableDataSource> newResultPanel() {
 			return new NuclosResultPanel<CollectableDataSource>() {
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-
 				@Override
 				protected void postXMLImport(final CollectController<CollectableDataSource> clctctl) {
 					// initialize attribute cache on server side

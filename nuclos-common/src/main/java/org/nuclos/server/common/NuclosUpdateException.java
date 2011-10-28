@@ -29,11 +29,6 @@ import org.nuclos.common.NuclosBusinessException;
  */
 public class NuclosUpdateException extends NuclosBusinessException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public NuclosUpdateException() {
 		super("common.error.exception.nucleusupdateexception");
 	}

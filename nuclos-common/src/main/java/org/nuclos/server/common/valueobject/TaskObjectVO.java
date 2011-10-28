@@ -28,7 +28,6 @@ import java.util.Date;
  */
 public class TaskObjectVO extends NuclosValueObject {
 
-	private static final long serialVersionUID = 1L;
 	private Long iObjectId;
 	private Long iTaskId;
 	private String sIdentifier;

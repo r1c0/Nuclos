@@ -35,17 +35,9 @@ import java.awt.event.*;
  */
 public class CommonEditor extends JEditTextArea {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private int iTabSize;
 
 	public class SearchAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public SearchAction() {
 			super("Suchen");
@@ -59,10 +51,6 @@ public class CommonEditor extends JEditTextArea {
 	}
 
 	public class SearchAgainAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public SearchAgainAction() {
 			super("Weitersuchen");
@@ -76,10 +64,6 @@ public class CommonEditor extends JEditTextArea {
 	}
 
 	public class ReplaceAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public ReplaceAction() {
 			super("Ersetzen");
@@ -93,10 +77,6 @@ public class CommonEditor extends JEditTextArea {
 	}
 
 	public class SelectAllAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public SelectAllAction() {
 			super("Alles markieren");
@@ -110,10 +90,6 @@ public class CommonEditor extends JEditTextArea {
 	}
 
 	public class CutAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public CutAction() {
 			super("Ausschneiden");
@@ -127,10 +103,6 @@ public class CommonEditor extends JEditTextArea {
 	}
 
 	public class CopyAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public CopyAction() {
 			super("Kopieren");
@@ -144,10 +116,6 @@ public class CommonEditor extends JEditTextArea {
 	}
 
 	public class PasteAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public PasteAction() {
 			super("Einf\u00fcgen");
@@ -161,10 +129,6 @@ public class CommonEditor extends JEditTextArea {
 	}
 
 	public class UndoAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public UndoAction() {
 			super("R\u00fcckg\u00e4ngig");

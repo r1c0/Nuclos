@@ -48,20 +48,13 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 
 public class TimelimitTaskView extends TaskView {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
-	final JButton btnRefresh = new JButton();
-	final JMenuItem btnPerform = new JMenuItem();
-	final JMenuItem btnRemove = new JMenuItem();
-	final JMenuItem btnPrint = new JMenuItem();
-	final JToggleButton btnFinish = new JToggleButton() {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+	private final JButton btnRefresh = new JButton();
+	private final JMenuItem btnPerform = new JMenuItem();
+	private final JMenuItem btnRemove = new JMenuItem();
+	private final JMenuItem btnPrint = new JMenuItem();
+	private final JToggleButton btnFinish = new JToggleButton() {
 
 		/**
 		 * JToggleButton doesn't respect the "hideActionText" client property.
@@ -122,7 +115,27 @@ public class TimelimitTaskView extends TaskView {
 	 * @return the table containing time limit tasks
 	 */
 	JTable getTable() {
-		return this.tblTasks;
+		return tblTasks;
+	}
+	
+	JButton getRefreshButton() {
+		return btnRefresh;
+	}
+	
+	JMenuItem getPerformMenuItem() {
+		return btnPerform;
+	}
+	
+	JMenuItem getPrintMenuItem() {
+		return btnPrint;
+	}
+	
+	JMenuItem getRemoveMenuItem() {
+		return btnRemove;
+	}
+	
+	JToggleButton getFinishButton() {
+		return btnFinish;
 	}
 
 	/**

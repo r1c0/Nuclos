@@ -43,6 +43,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXLabel;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.customcomp.CustomComponentController;
@@ -86,18 +87,20 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class ResPlanController extends CustomComponentController {
 
+	private static final Logger LOG = Logger.getLogger(ResPlanController.class);
+	
 	private static final int DEFAULT_RESOURCE_LIMIT = 100;
 
-	CustomComponentVO componentVO;
-	ResPlanConfigVO configVO;
-	ResPlanResourceVO resourceVO;
-	ResPlanPanel component;
-	CollectableResPlanModel resPlanModel;
+	private CustomComponentVO componentVO;
+	private ResPlanConfigVO configVO;
+	private ResPlanResourceVO resourceVO;
+	private ResPlanPanel component;
+	private CollectableResPlanModel resPlanModel;
 
-	CollectableHelper<?> resEntity;
-	CollectableHelper<?> entryEntity;
+	private CollectableHelper<?> resEntity;
+	private CollectableHelper<?> entryEntity;
 
-	Rectangle viewRectFromPreferences;
+	private Rectangle viewRectFromPreferences;
 
 	public ResPlanController(JComponent parent, CustomComponentVO componentVO) {
 		super(parent, componentVO.getInternalName());
@@ -314,7 +317,9 @@ public class ResPlanController extends CustomComponentController {
 
 		try {
 			component.storeViewPreferences(null, rp);
-		} catch(PreferencesException e) {}
+		} catch(PreferencesException e) {
+			LOG.warn("storeInstanceStateToXML failed: " + e);
+		}
 
 		return toXML(rp);
 	}
@@ -341,21 +346,11 @@ public class ResPlanController extends CustomComponentController {
 		}
 		try {
 			component.restoreViewPreferences(null, rp);
-		} catch(PreferencesException e) {}
+		} catch(PreferencesException e) {
+			LOG.warn("restoreInstanceStateFromXML failed: " + e);
+		}
 
 		viewRectFromPreferences = rp.viewRect;
-
-		/*execute(new RefreshTask(true) {
-			@Override
-			public void done() throws CommonBusinessException {
-				super.done();
-				Rectangle viewRect = viewRectFromPreferences;
-				if (viewRect != null) {
-					component.setViewRect(viewRect);
-					viewRectFromPreferences = null;
-				}
-			}
-		});*/
 	}
 
 	/**
@@ -475,8 +470,8 @@ public class ResPlanController extends CustomComponentController {
 		entitySearchFilters.add(EntitySearchFilter.newDefaultFilter());
 		try {
 			entitySearchFilters.addAll(SearchFilters.forEntity(resPlanModel.getResourceEntity().getCollectableEntity().getName()).getAll());
-		} catch (PreferencesException ex) {
-			ex.printStackTrace();
+		} catch (PreferencesException e) {
+			LOG.warn("getSearchFilters failed: " + e, e);
 		}
 		entitySearchFilters.add(new NewCustomSearchFilter());
 

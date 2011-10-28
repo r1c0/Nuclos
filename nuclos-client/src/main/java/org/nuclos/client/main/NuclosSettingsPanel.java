@@ -32,6 +32,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.explorer.ExplorerSettings;
 import org.nuclos.client.explorer.ExplorerSettings.FolderNodeAction;
 import org.nuclos.client.explorer.ExplorerSettings.ObjectNodeAction;
@@ -47,7 +48,7 @@ import org.nuclos.common2.exception.PreferencesException;
 
 public class NuclosSettingsPanel extends JPanel {
 
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(NuclosSettingsPanel.class);
 
 	private static double settingslayout[][] = {
         { TableLayout.FILL }, // Columns
@@ -104,8 +105,6 @@ public class NuclosSettingsPanel extends JPanel {
 		JButton btClearHistory = new JButton();
 		btClearHistory.setAction(new AbstractAction(CommonLocaleDelegate.getMessage("R00022898", "Suchhistorie l\u00f6schen")) {
 
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(JOptionPane.showConfirmDialog(frm,
@@ -130,7 +129,10 @@ public class NuclosSettingsPanel extends JPanel {
 								}
 								JOptionPane.showMessageDialog(frm, CommonLocaleDelegate.getMessage("R00022901", "Die Suchhistorie wurde gel\u00f6scht."));
 							}
-							catch(BackingStoreException e1) {/*dann halt nicht*/}
+							catch(BackingStoreException e1) {
+								/*dann halt nicht*/
+								LOG.error("actionPerformed failed: " + e1, e1);
+							}
 						}
 					});
 				}

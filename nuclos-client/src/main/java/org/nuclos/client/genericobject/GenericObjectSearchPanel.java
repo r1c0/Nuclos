@@ -51,10 +51,6 @@ import org.nuclos.client.ui.collect.search.SearchPanel;
  */
 public class GenericObjectSearchPanel extends SearchPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private Collection<CollectableComponent> additionalSearchComponents;
 
 	public GenericObjectSearchPanel(Collection<CollectableComponent> additionalSearchComponents) {
@@ -123,7 +119,6 @@ public class GenericObjectSearchPanel extends SearchPanel {
 			return !collclctcomp.isEmpty() && CollectionUtils.forall(collclctcomp, new CanDisplay(atomiccond));
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public Boolean visitCompositeCondition(CompositeCollectableSearchCondition compositecond) {
 			final List<CollectableSubCondition> lstsubcond = CollectionUtils.selectInstancesOf(compositecond.getOperands(), CollectableSubCondition.class);
@@ -167,7 +162,6 @@ public class GenericObjectSearchPanel extends SearchPanel {
 		 * @param compositecond
 		 * @return Does the given composite condition contain nested composite conditions?
 		 */
-		@SuppressWarnings("deprecation")
 		private static boolean isNested(CompositeCollectableSearchCondition compositecond) {
 			return CollectionUtils.exists(compositecond.getOperands(), new HasType(CollectableSearchCondition.TYPE_COMPOSITE));
 		}

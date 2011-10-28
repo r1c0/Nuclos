@@ -45,6 +45,9 @@ import org.nuclos.common2.StringUtils;
  * @version 01.00.00
  */
 public class StatePropertiesPanelModel implements Serializable {
+	
+	private static final Logger LOG = Logger.getLogger(StatePropertiesPanelModel.class);
+	
 	// workaround - cause statemodel does not have an collectable metainformation yet.
 	public class CollectableImageEntityField extends AbstractCollectableEntityField {
 
@@ -113,10 +116,6 @@ public class StatePropertiesPanelModel implements Serializable {
 			return null;
 		}	}
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final String PROPERTY_SHAPE_NAME = "ShapeName";
 	public static final String PROPERTY_SHAPE_MNEMONIC = "ShapeMnemonic";
 	public static final String PROPERTY_SHAPE_ICON = "ShapeIcon";
@@ -142,7 +141,8 @@ public class StatePropertiesPanelModel implements Serializable {
 			sResult = docName.getText(0, docName.getLength());
 		}
 		catch (BadLocationException e) {
-			e.printStackTrace();	// this should never happens
+			// this should never happens
+			LOG.warn("getName failed: " + e, e);
 		}
 		return sResult;
 	}
@@ -167,7 +167,8 @@ public class StatePropertiesPanelModel implements Serializable {
 			iNumeral = new Integer(strValue);
 		}
 		catch (BadLocationException e) {
-			e.printStackTrace();	// this should never happens
+			// this should never happens
+			LOG.warn("getNumeral failed: " + e, e);
 		} catch (NumberFormatException e) {
 			log.warn("Das Statusnumeral ["+strValue+"] ist kein numerischer Wert.", e);
 		}

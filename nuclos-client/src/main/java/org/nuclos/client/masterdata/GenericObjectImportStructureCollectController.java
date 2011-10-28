@@ -102,7 +102,6 @@ public class GenericObjectImportStructureCollectController extends MasterDataCol
 		return result;
     }
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public CollectableMasterDataWithDependants insertCollectable(CollectableMasterDataWithDependants clctNew) throws CommonBusinessException {
 		if(clctNew.getId() != null) {

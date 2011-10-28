@@ -17,6 +17,8 @@
 package org.nuclos.client.masterdata;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.log4j.Logger;
+import org.nuclos.client.genericobject.ChangeListenerForResultTableVerticalScrollBar;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableForeignKeyField;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -34,11 +36,12 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class CollectableMasterDataForeignKeyField extends CollectableForeignKeyField {
 
+	private static final Logger LOG = Logger.getLogger(ChangeListenerForResultTableVerticalScrollBar.class);
+
 	public CollectableMasterDataForeignKeyField(CollectableEntityField clctef, Object iValueId) {
 		super(clctef, iValueId);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected Object readValue(CollectableEntityField clctef, Object iValueId) {
 		Object result;
@@ -46,10 +49,12 @@ public class CollectableMasterDataForeignKeyField extends CollectableForeignKeyF
 			final MasterDataVO mdvo = MasterDataDelegate.getInstance().get(clctef.getReferencedEntityName(), iValueId, true);
 			result = mdvo.getField(clctef.getReferencedEntityFieldName());
 		}
-		catch (CommonFinderException ex) {
+		catch (CommonFinderException e) {
+			LOG.warn("readValue: " + e);
 			result = null;
 		}
-		catch(CommonPermissionException ex){
+		catch (CommonPermissionException e) {
+			LOG.warn("readValue: " + e);
 			result = null;
 		}
 		return result;

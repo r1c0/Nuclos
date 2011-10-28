@@ -33,10 +33,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.CreateException;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.apache.xml.security.utils.Base64;
 import org.dom4j.Document;
@@ -82,9 +78,9 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Local(XmlExportFacadeLocal.class)
-@Remote(XmlExportFacadeRemote.class)
+// @Stateless
+// @Local(XmlExportFacadeLocal.class)
+// @Remote(XmlExportFacadeRemote.class)
 @Transactional
 public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFacadeLocal, XmlExportFacadeRemote {
 
@@ -124,7 +120,8 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 	}
 	
 	@Override
-	public org.nuclos.common2.File xmlExport(Map<Integer, String> exportEntities, boolean deepexport, String sFileName) throws CommonFinderException, CommonPermissionException, IOException, CommonCreateException, CreateException, NuclosBusinessRuleException {
+	public org.nuclos.common2.File xmlExport(Map<Integer, String> exportEntities, boolean deepexport, String sFileName) 
+			throws CommonFinderException, CommonPermissionException, IOException, CommonCreateException, NuclosBusinessRuleException {
 		return xmlExport(exportEntities, deepexport, true, sFileName);
 	}
 
@@ -143,7 +140,8 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 	 * @jboss.method-attributes read-only = "true"
 	 */
 	@Override
-	public org.nuclos.common2.File xmlExport(Map<Integer, String> exportEntities, boolean deepexport, boolean withDependants, String sFileName) throws CommonFinderException, CommonPermissionException, IOException, CommonCreateException, CreateException, NuclosBusinessRuleException {
+	public org.nuclos.common2.File xmlExport(Map<Integer, String> exportEntities, boolean deepexport, boolean withDependants, String sFileName) 
+			throws CommonFinderException, CommonPermissionException, IOException, CommonCreateException, NuclosBusinessRuleException {
 		today = new Date();
 		dateFormat = new SimpleDateFormat("dd.MM.yyy HH:mm:ss");
 		iActionNumber = 1;
@@ -277,7 +275,8 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 	 * @throws CommonCreateException
 	 * @throws NuclosBusinessRuleException
 	 */
-	private void xmlExportHelper(String sEntityName, Object entityId, Element parent, Boolean deepexport, Boolean bExportDependants, Boolean bImportData) throws CommonFinderException, CommonPermissionException, IOException, CommonCreateException, CreateException, NuclosBusinessRuleException {
+	private void xmlExportHelper(String sEntityName, Object entityId, Element parent, Boolean deepexport, Boolean bExportDependants, Boolean bImportData) 
+			throws CommonFinderException, CommonPermissionException, IOException, CommonCreateException, NuclosBusinessRuleException {
 		if (!wasExported(new Pair<String, Integer>(sEntityName,(Integer)entityId))) {
 			// genericObject Entity
 			if (modules.isModuleEntity(sEntityName) && modules.isImportExportable(sEntityName)) {
@@ -309,7 +308,8 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 	 * @throws CommonCreateException
 	 * @throws NuclosBusinessRuleException
 	 */
-	private void exportGOEntity(String sEntityName, Object entityId, Element parent, Boolean deepexport, Boolean bExportDependants, Boolean bImportData) throws CommonFinderException, CommonPermissionException, IOException, CommonCreateException, CreateException, NuclosBusinessRuleException {
+	private void exportGOEntity(String sEntityName, Object entityId, Element parent, Boolean deepexport, Boolean bExportDependants, Boolean bImportData) 
+			throws CommonFinderException, CommonPermissionException, IOException, CommonCreateException, NuclosBusinessRuleException {
 		Element entity = DocumentHelper.createElement("entity");
 
 		// get id for the exported Module on the source system
@@ -446,7 +446,8 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 	 * @throws CommonCreateException
 	 * @throws NuclosBusinessRuleException
 	 */
-	private void exportMDEntity(String sEntityName, Object entityId, Element parent, Boolean deepexport, Boolean bExportDependants, Boolean bImportData) throws CommonFinderException, CommonPermissionException, IOException, CommonCreateException, CreateException, NuclosBusinessRuleException {
+	private void exportMDEntity(String sEntityName, Object entityId, Element parent, Boolean deepexport, Boolean bExportDependants, Boolean bImportData) 
+			throws CommonFinderException, CommonPermissionException, IOException, CommonCreateException, NuclosBusinessRuleException {
 		info("Export MasterData Entity: "+sEntityName+" Entity-Id: "+entityId);
 
 		Element entity = DocumentHelper.createElement("entity");
@@ -628,7 +629,8 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 		}
 	}
 
-	private void exportMDSubform(final Map<EntityAndFieldName, String> subformtree, String entityname, Object entityId, Element parent, boolean deepexport) throws CommonFinderException, CommonPermissionException, IOException, CommonCreateException, CreateException, NuclosBusinessRuleException {
+	private void exportMDSubform(final Map<EntityAndFieldName, String> subformtree, String entityname, Object entityId, Element parent, boolean deepexport) 
+			throws CommonFinderException, CommonPermissionException, IOException, CommonCreateException, NuclosBusinessRuleException {
 		if (subformtree == null) {
 			return;
 		}

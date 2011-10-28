@@ -26,6 +26,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.text.html.HTMLEditorKit;
 
+import org.apache.log4j.Logger;
 import org.nuclos.installer.L10n;
 import org.pietschy.wizard.InvalidStateException;
 import org.pietschy.wizard.WizardModel;
@@ -38,10 +39,7 @@ import org.pietschy.wizard.WizardModel;
  */
 public class LicenseWizardStep extends AbstractWizardStep {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(LicenseWizardStep.class);
 
 	private JEditorPane pane = new JEditorPane();
 

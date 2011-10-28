@@ -15,7 +15,13 @@
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dblayer.impl;
+
+import org.apache.log4j.Logger;
+
 public class Base32 {
+
+	private static final Logger LOG = Logger.getLogger(Base32.class);	
+	
     private static final String base32Chars =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
     private static final int[] base32Lookup =
@@ -128,20 +134,19 @@ public class Base32 {
      */
     static public void main(String[] args) {
         if (args.length == 0) {
-            System.out.println("Supply a Base32-encoded argument.");
+        	LOG.error("Supply a Base32-encoded argument.");
             return;
         }
-        System.out.println(" Original: " + args[0]);
+        LOG.debug(" Original: " + args[0]);
         byte[] decoded = Base32.decode(args[0]);
-        System.out.print("      Hex: ");
+        LOG.debug("      Hex: ");
         for (int i = 0; i < decoded.length; i++) {
             int b = decoded[i];
             if (b < 0) {
                 b += 256;
             }
-            System.out.print((Integer.toHexString(b + 256)).substring(1));
+            LOG.debug((Integer.toHexString(b + 256)).substring(1));
         }
-        System.out.println();
-        System.out.println("Reencoded: " + Base32.encode(decoded));
+        LOG.debug("Reencoded: " + Base32.encode(decoded));
     }
 }

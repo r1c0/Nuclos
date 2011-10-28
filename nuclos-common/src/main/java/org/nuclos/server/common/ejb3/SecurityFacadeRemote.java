@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Remote;
 import javax.security.auth.login.LoginException;
 
 import org.nuclos.common.ApplicationProperties;
@@ -30,75 +29,76 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.MasterDataPermissions;
 import org.nuclos.server.common.ModulePermissions;
 
-@Remote
+// @Remote
 public interface SecurityFacadeRemote {
-	public static final String USERNAME = "USERNAME";
-	public static final String IS_SUPER_USER = "IS_SUPER_USER";
-	public static final String ALLOWED_ACTIONS = "ALLOWED_ACTIONS";
-	public static final String MODULE_PERMISSIONS = "MODULE_PERMISSIONS";
-	public static final String MASTERDATA_PERMISSIONS = "MASTERDATA_PERMISSIONS";
+	
+	String USERNAME = "USERNAME";
+	String IS_SUPER_USER = "IS_SUPER_USER";
+	String ALLOWED_ACTIONS = "ALLOWED_ACTIONS";
+	String MODULE_PERMISSIONS = "MODULE_PERMISSIONS";
+	String MASTERDATA_PERMISSIONS = "MASTERDATA_PERMISSIONS";
 
 	/**
 	 * logs the current user in.
 	 * @return session id for the current user
 	 */
 	@RolesAllowed("Login")
-	public abstract Integer login();
+	Integer login();
 
 	/**
 	 * logs the current user out.
 	 * @param iSessionId session id for the current user
 	 */
 	@RolesAllowed("Login")
-	public abstract void logout(Integer iSessionId) throws LoginException;
+	void logout(Integer iSessionId) throws LoginException;
 
 	/**
 	 * get the date of password expiration (or null if password never expires)
 	 */
 	@RolesAllowed("Login")
-	public abstract Date getPasswordExpiration();
+	Date getPasswordExpiration();
 
 	/**
 	 * @return information about the current version of the application installed on the server.
 	 */
 	@RolesAllowed("Login")
-	public abstract ApplicationProperties.Version getCurrentApplicationVersionOnServer();
+	ApplicationProperties.Version getCurrentApplicationVersionOnServer();
 
 	/**
 	 * @return information about the current version of the application installed on the server.
 	 */
 	@RolesAllowed("Login")
-	public abstract String getUserName();
+	String getUserName();
 
 	/**
 	 * Get all actions that are allowed for the current user.
 	 * @return set that contains the Actions objects (no duplicates).
 	 */
 	@RolesAllowed("Login")
-	public abstract Set<String> getAllowedActions();
+	Set<String> getAllowedActions();
 
 	/**
 	 * @return the module permissions for the current user.
 	 */
 	@RolesAllowed("Login")
-	public abstract ModulePermissions getModulePermissions();
+	ModulePermissions getModulePermissions();
 
 	/**
 	 * @return the masterdata permissions for the current user.
 	 */
 	@RolesAllowed("Login")
-	public abstract MasterDataPermissions getMasterDataPermissions();
+	MasterDataPermissions getMasterDataPermissions();
 
 	/**
 	 * get a String representation of the users session context
 	 */
 	@RolesAllowed("Login")
-	public abstract String getSessionContextAsString();
+	String getSessionContextAsString();
 
 	/**
 	 * @return the readable subforms
 	 */
-	public abstract java.util.Map<Integer, org.nuclos.common.security.Permission> getSubFormPermission(
+	Map<Integer, Permission> getSubFormPermission(
 		String sEntityName);
 
 	/**
@@ -108,26 +108,26 @@ public interface SecurityFacadeRemote {
 	 * @param iStatusNumeral
 	 * @return Permission
 	 */
-	public abstract Permission getAttributePermission(String sEntity, String sAttributeName,
+	Permission getAttributePermission(String sEntity, String sAttributeName,
 		Integer iState);
 
 
 	@RolesAllowed("Login")
-	public Map<String, Permission> getAttributePermissionsByEntity(String entity, Integer stateId);
+	Map<String, Permission> getAttributePermissionsByEntity(String entity, Integer stateId);
 
 	@RolesAllowed("Login")
-	public abstract void invalidateCache();
+	void invalidateCache();
 
 	@RolesAllowed("Login")
-	public Boolean isSuperUser();
+	Boolean isSuperUser();
 
 	@RolesAllowed("Login")
-	public Map<String, Object> getInitialSecurityData();
+	Map<String, Object> getInitialSecurityData();
 
 	@RolesAllowed("Login")
-	public Integer getUserId(final String sUserName) throws CommonFatalException;
+	Integer getUserId(final String sUserName) throws CommonFatalException;
 
-	public Boolean isLdapAuthenticationActive();
+	Boolean isLdapAuthenticationActive();
 
-	public Boolean isLdapSynchronizationActive();
+	Boolean isLdapSynchronizationActive();
 }

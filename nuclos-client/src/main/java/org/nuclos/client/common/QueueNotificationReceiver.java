@@ -28,6 +28,7 @@ import javax.jms.QueueReceiver;
 import javax.jms.QueueSession;
 import javax.naming.Context;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -45,6 +46,8 @@ import org.springframework.jms.listener.SimpleMessageListenerContainer;
 
 public class QueueNotificationReceiver {
 
+	private static final Logger LOG = Logger.getLogger(QueueNotificationReceiver.class);
+	
 	private static Context ctx;
 	private static QueueConnection queueconnection;
 
@@ -52,37 +55,6 @@ public class QueueNotificationReceiver {
 	 * list that holds all registered listeners for this queue receiver
 	 */
 	private static List<WeakReferenceMessageListener> weakmessagelistener = new LinkedList<WeakReferenceMessageListener>();
-
-//	static {
-//		try {
-//			ctx = ServiceLocator.getInstance().getInitialContext();
-//			final QueueConnectionFactory queueconnfactory = (QueueConnectionFactory) ctx.lookup(JMSConstants.CONNECTIONFACTORY_JNDINAME);
-//			queueconnection = queueconnfactory.createQueueConnection();
-//
-//			ShutdownActions.getInstance().registerShutdownAction(ShutdownActions.SHUTDOWNORDER_JMS_QUEUES,
-//				new Thread() {
-//				@Override
-//				public void run() {
-//					QueueNotificationReceiver.unsubscribeAll();
-//					try {
-//						queueconnection.close();
-//						queueconnection = null;
-//					}
-//					catch(JMSException e) {
-//						throw new NuclosFatalException(CommonLocaleDelegate.getMessage("QueueNotificationReceiver.1", "Die JMS-Queue-Verbindung konnte nicht abgebaut werden."), e);
-//					}
-//				}
-//			});
-//
-//			queueconnection.start();
-//		}
-//		catch (NamingException e) {
-//			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("QueueNotificationReceiver.2", "Die JMS-Queue-Verbindung konnte nicht aufgebaut werden."), e);
-//		}
-//		catch (JMSException e) {
-//			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("QueueNotificationReceiver.2", "Die JMS-Queue-Verbindung konnte nicht aufgebaut werden."), e);
-//		}
-//	}
 
 	/**
 	 * subscribes to the JMS queue

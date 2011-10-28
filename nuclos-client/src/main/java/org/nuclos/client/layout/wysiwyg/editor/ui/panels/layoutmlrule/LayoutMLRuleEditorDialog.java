@@ -36,6 +36,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGLayoutControllingPanel;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.LAYOUTML_RULE_EDITOR;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableCheckBox;
@@ -79,17 +80,14 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class LayoutMLRuleEditorDialog extends JPanel implements SaveAndCancelButtonPanelControllable{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	int width = 600;
-	int height = 500;
+	private static final Logger LOG = Logger.getLogger(LayoutMLRuleEditorDialog.class);
 
-	WYSIWYGComponent ruleSourceComponent = null;
+	private int width = 600;
+	private int height = 500;
+
+	private WYSIWYGComponent ruleSourceComponent = null;
 
 	/** the scrollpane for scrolling the rules */
 	private JScrollPane scrollpane = null;

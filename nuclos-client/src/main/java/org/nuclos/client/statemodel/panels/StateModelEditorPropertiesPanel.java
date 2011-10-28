@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 import org.nuclos.client.statemodel.StateModelEditor;
+import org.nuclos.client.statemodel.controller.StatePropertiesController;
 import org.nuclos.client.statemodel.controller.TransitionPropertiesController;
 import org.nuclos.client.ui.UIUtils;
 
@@ -35,10 +36,7 @@ import org.nuclos.client.ui.UIUtils;
  * @version 01.00.00
  */
 public class StateModelEditorPropertiesPanel extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private final CardLayout cardLayout = new CardLayout();
 	private final StatePropertiesPanel pnlStateProperties = new StatePropertiesPanel();
 	private final NotePropertiesPanel pnlNote = new NotePropertiesPanel();
@@ -46,19 +44,18 @@ public class StateModelEditorPropertiesPanel extends JPanel {
 	private final TransitionRolesPanel pnlTransitionRoles = new TransitionRolesPanel();
 	private final JPanel pnlEmpty;
 
-	@SuppressWarnings("unused") // created for constructor side-effects
+	// @SuppressWarnings("unused") // created for constructor side-effects
 	private final TransitionPropertiesController ctlTransitionProperties;
-	@SuppressWarnings({"deprecation", "unused"})
-	private final org.nuclos.client.statemodel.controller.StatePropertiesController ctlStateProperties;
+	// @SuppressWarnings({"deprecation", "unused"})
+	private final StatePropertiesController ctlStateProperties;
 
-	@SuppressWarnings("deprecation")
 	public StateModelEditorPropertiesPanel(StateModelEditor parent) {
 		pnlEmpty = new StatePropertiesPanel();
 		UIUtils.disableComponentsInContainer(pnlEmpty);
 
 		/** @todo this doesn't seem the right place to setup the controllers */
 		ctlTransitionProperties = new TransitionPropertiesController(parent, pnlTransitionRules, pnlTransitionRoles);
-		ctlStateProperties = new org.nuclos.client.statemodel.controller.StatePropertiesController(pnlStateProperties);
+		ctlStateProperties = new StatePropertiesController(pnlStateProperties);
 
 		this.init();
 	}

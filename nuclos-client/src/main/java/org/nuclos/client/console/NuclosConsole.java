@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.ejb.CreateException;
 import javax.security.auth.login.LoginException;
 
 import org.apache.commons.lang.NullArgumentException;
@@ -170,14 +169,14 @@ public class NuclosConsole extends ConsoleConstants {
 	 * delete a scheduled job
 	 * @param sJobName
 	 */
-	private static void unscheduleJob(String sJobName) throws CommonBusinessException, RemoteException, CreateException {
+	private static void unscheduleJob(String sJobName) throws CommonBusinessException, RemoteException {
 		final SchedulerControlFacadeRemote schedulercontrol = ServiceLocator.getInstance().getFacade(SchedulerControlFacadeRemote.class);
 		schedulercontrol.deleteJob(sJobName);
 		System.out.println("Successfully deleted job: " + sJobName);
 		System.out.println(schedulercontrol.getSchedulerSummary());
 	}
 
-	private static void executeTimelimitJobNow(String sRuleName) throws RemoteException, CreateException, CommonBusinessException {
+	private static void executeTimelimitJobNow(String sRuleName) throws RemoteException, CommonBusinessException {
 		final TimelimitRuleFacadeRemote timelimitrulefacade = ServiceLocator.getInstance().getFacade(TimelimitRuleFacadeRemote.class);
 		try {
 			timelimitrulefacade.executeTimelimitRule(sRuleName);
@@ -190,7 +189,7 @@ public class NuclosConsole extends ConsoleConstants {
 	/**
 	 * get a list of all scheduled jobs
 	 */
-	private static void showJobs() throws RemoteException, CreateException {
+	private static void showJobs() throws RemoteException {
 		final SchedulerControlFacadeRemote schedulercontrol = ServiceLocator.getInstance().getFacade(SchedulerControlFacadeRemote.class);
 		System.out.println(schedulercontrol.getSchedulerSummary());
 	}
@@ -367,7 +366,7 @@ public class NuclosConsole extends ConsoleConstants {
 		return fileOutputDir;
 	}
 
-	private static void importRules(String sInputDir) throws CommonBusinessException, CreateException {
+	private static void importRules(String sInputDir) throws CommonBusinessException {
 		final File fileInputDir = testForNonEmptyDirectory(sInputDir);
 
 		try {
@@ -380,7 +379,7 @@ public class NuclosConsole extends ConsoleConstants {
 		}
 	}
 
-	private static void importTimelimitRules(String sInputDir) throws CommonBusinessException, CreateException {
+	private static void importTimelimitRules(String sInputDir) throws CommonBusinessException {
 		final File fileInputDir = testForNonEmptyDirectory(sInputDir);
 
 		try {
@@ -780,7 +779,7 @@ public class NuclosConsole extends ConsoleConstants {
 	}
 
 
-	private static void invalidatAllCaches() throws CommonRemoteException, RemoteException, CommonFatalException, CreateException {
+	private static void invalidatAllCaches() throws CommonRemoteException, RemoteException, CommonFatalException {
 		System.out.println(getConsoleFacade().invalidateAllCaches());
 	}
 
@@ -830,54 +829,6 @@ public class NuclosConsole extends ConsoleConstants {
 	}
 
 	/**
-	 * Check for attributes which are not used in any layout and test, if they have contents.
-	 * @param sFileName
-	 */
-//	private static void checkAttributeUsage(String sFileName) {
-//		final GenericObjectMetaDataVO lometacvo = GenericObjectDelegate.getInstance().getMetaDataCVO();
-//
-//		final Map<String, Integer> mpAttributeUsages = GenericObjectDelegate.getInstance().getAllAttributeUsageCount();
-//
-//		final Set<String> stAttributesNotInLayout = new HashSet<String>(mpAttributeUsages.keySet());
-//		for (int iLayoutId : lometacvo.getAllLayoutIds()) {
-//			stAttributesNotInLayout.removeAll(lometacvo.getAttributeNamesByLayoutId(iLayoutId));
-//		}
-//
-//		final PrintStream ps;
-//		try {
-//			ps = new PrintStream(new BufferedOutputStream(new FileOutputStream(sFileName)), true);
-//		}
-//		catch (FileNotFoundException ex) {
-//			throw new NuclosFatalException("Cannot create file " + sFileName + ".", ex);
-//		}
-//
-//		AttributeCache.initialize();
-//		final AttributeCache attrcache = AttributeCache.getInstance();
-//		ps.println("Attribute name; Usages count; Occurs in no layout");
-//		for (String sAttributename : mpAttributeUsages.keySet()) {
-//			if (stAttributesNotInLayout.contains(sAttributename) || mpAttributeUsages.get(sAttributename).equals(0)) {
-//				ps.print(sAttributename);
-//				ps.print(';');
-//				if (attrcache.getAttribute(sAttributename).getCalcFunction() == null) {
-//					ps.print(mpAttributeUsages.get(sAttributename));
-//				}
-//				else {
-//					ps.print("Calculated");
-//				}
-//				ps.print(';');
-//				if (stAttributesNotInLayout.contains(sAttributename)) {
-//					ps.print("X");
-//				}
-//				ps.println();
-//			}
-//		}
-//		ps.close();
-//		if (ps.checkError()) {
-//			throw new NuclosFatalException("Failed to close PrintStream.");
-//		}
-//	}
-
-	/**
 	 * Check and eliminate attributes from object generation which are not valid in the context
 	 * todo: check validity of subentities here also!
 	 */
@@ -895,8 +846,9 @@ public class NuclosConsole extends ConsoleConstants {
 					try {
 						MasterDataDelegate.getInstance().remove(NuclosEntity.GENERATIONATTRIBUTE.getEntityName(), DalSupportForMD.wrapEntityObjectVO(mdvoAttribute));
 					}
-					catch (CommonBusinessException ex) {
-						ex.printStackTrace();
+					catch (CommonBusinessException e) {
+						// Ok! (tp)
+						e.printStackTrace();
 					}
 				}
 			}
@@ -945,10 +897,13 @@ public class NuclosConsole extends ConsoleConstants {
 			System.exit(0);
 		}
 		catch (CommonBusinessException ex) {
+			// Ok! (tp)
 			System.err.println(ex.getMessage());
+			ex.printStackTrace();
 			System.exit(-1);
 		}
 		catch (Exception ex) {
+			// Ok! (tp)
 			ex.printStackTrace(System.err);
 			System.exit(-1);
 		}

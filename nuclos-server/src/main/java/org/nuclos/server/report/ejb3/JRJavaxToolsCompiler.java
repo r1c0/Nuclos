@@ -22,12 +22,11 @@ import java.io.File;
 
 import javax.tools.JavaCompiler;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.design.JRAbstractMultiClassCompiler;
+
+import org.apache.log4j.Logger;
+import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
 
 
 /**
@@ -39,7 +38,7 @@ import net.sf.jasperreports.engine.design.JRAbstractMultiClassCompiler;
  */
 public class JRJavaxToolsCompiler extends JRAbstractMultiClassCompiler
 {
-	static final Log log = LogFactory.getLog(JRJavaxToolsCompiler.class);
+	static final Logger LOG = Logger.getLogger(JRJavaxToolsCompiler.class);
 
 	private static final int COMPILER_SUCCESS = 0;
 
@@ -72,9 +71,9 @@ public class JRJavaxToolsCompiler extends JRAbstractMultiClassCompiler
 			}
 			else 
 			{
-				if (log.isInfoEnabled() && baos.size() > 0)
+				if (LOG.isInfoEnabled() && baos.size() > 0)
 				{
-					log.info(baos.toString());
+					LOG.info(baos.toString());
 				}
 			}
 		}

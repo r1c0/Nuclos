@@ -22,10 +22,6 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
 
 public class GenericObjectRelationVO extends NuclosValueObject {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private Integer sourceGOId;
 	private Integer destinationGOId;
 	private String relationType;

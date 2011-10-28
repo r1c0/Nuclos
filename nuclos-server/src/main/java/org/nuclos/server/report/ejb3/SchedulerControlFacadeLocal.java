@@ -16,13 +16,11 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.report.ejb3;
 
-import javax.ejb.Local;
-
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.job.valueobject.JobVO;
 import org.quartz.Trigger;
 
-@Local
+// @Local
 public interface SchedulerControlFacadeLocal {
 
 	/**
@@ -31,7 +29,7 @@ public interface SchedulerControlFacadeLocal {
 	 * @param job Job to create
 	 * @throws CommonBusinessException
 	 */
-	public void addJob(JobVO job) throws CommonBusinessException;
+	void addJob(JobVO job) throws CommonBusinessException;
 
 	/**
 	 * Delete a quartz job including all existing triggers.
@@ -39,7 +37,7 @@ public interface SchedulerControlFacadeLocal {
 	 * @param jobname The name of the job to delete.
 	 * @throws CommonBusinessException
 	 */
-	public void deleteJob(String jobname) throws CommonBusinessException;
+	void deleteJob(String jobname) throws CommonBusinessException;
 
 	/**
 	 * Schedule the job with a cron expression.
@@ -47,7 +45,7 @@ public interface SchedulerControlFacadeLocal {
 	 * @param jobVO The job object containing jobname, cron expression and start time.
 	 * @return Quartz trigger with calculated next fire time.
 	 */
-	public abstract Trigger scheduleJob(JobVO jobVO) throws CommonBusinessException;
+	Trigger scheduleJob(JobVO jobVO) throws CommonBusinessException;
 
 	/**
 	 * Unschedule a job (remove all triggers).
@@ -56,7 +54,7 @@ public interface SchedulerControlFacadeLocal {
 	 * @return true if unscheduling was successful, otherwise false
 	 * @throws CommonBusinessException
 	 */
-	public abstract void unscheduleJob(JobVO jobVO) throws CommonBusinessException;
+	void unscheduleJob(JobVO jobVO) throws CommonBusinessException;
 
 	/**
 	 * Unschedule a job by name (remove all triggers).
@@ -65,12 +63,12 @@ public interface SchedulerControlFacadeLocal {
 	 * @return true if unscheduling was successful, otherwise false
 	 * @throws CommonBusinessException
 	 */
-	public abstract void unscheduleJob(String jobName) throws CommonBusinessException;
+	void unscheduleJob(String jobName) throws CommonBusinessException;
 
 	/**
 	 * @return the names of all scheduled jobs.
 	 */
-	public abstract String[] getJobNames();
+	String[] getJobNames();
 
 	/**
 	 * Check if job is scheduled
@@ -78,7 +76,7 @@ public interface SchedulerControlFacadeLocal {
 	 * @param jobName
 	 * @return
 	 */
-	public boolean isScheduled(String jobName);
+	boolean isScheduled(String jobName);
 
 	/**
 	 * Trigger immediate job execution
@@ -86,5 +84,5 @@ public interface SchedulerControlFacadeLocal {
 	 * @param jobVO
 	 * @throws CommonBusinessException
 	 */
-	public void triggerJob(JobVO jobVO) throws CommonBusinessException;
+	void triggerJob(JobVO jobVO) throws CommonBusinessException;
 }

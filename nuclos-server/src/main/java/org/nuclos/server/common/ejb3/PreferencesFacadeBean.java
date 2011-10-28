@@ -28,8 +28,6 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
@@ -64,8 +62,8 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Remote(PreferencesFacadeRemote.class)
+// @Stateless
+// @Remote(PreferencesFacadeRemote.class)
 @Transactional
 public class PreferencesFacadeBean extends NuclosFacadeBean implements PreferencesFacadeRemote {
 

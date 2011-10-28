@@ -37,10 +37,6 @@ import org.apache.commons.lang.NullArgumentException;
  */
 public class CenteringPanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final boolean bFilled;
 
 	/**

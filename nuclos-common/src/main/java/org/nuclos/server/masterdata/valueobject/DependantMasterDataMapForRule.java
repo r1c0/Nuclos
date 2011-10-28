@@ -41,11 +41,6 @@ import org.nuclos.server.common.ModuleConstants;
  */
 public class DependantMasterDataMapForRule implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private static final Logger log = Logger.getLogger(DependantMasterDataMapForRule.class);
 
 	protected final MultiListMap<String, MasterDataVO> mmp = new MultiListHashMap<String, MasterDataVO>();

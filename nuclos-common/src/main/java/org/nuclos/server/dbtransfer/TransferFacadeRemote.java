@@ -18,14 +18,12 @@ package org.nuclos.server.dbtransfer;
 
 import java.util.List;
 
-import javax.ejb.Remote;
-
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.dbtransfer.Transfer;
 import org.nuclos.common.dbtransfer.TransferNuclet;
 import org.nuclos.common.dbtransfer.TransferOption;
 
-@Remote
+// @Remote
 public interface TransferFacadeRemote {
 
 	/**
@@ -35,7 +33,7 @@ public interface TransferFacadeRemote {
 	 * @return the file content as byte array
 	 * @throws NuclosBusinessException 
 	 */
-	public byte[] createTransferFile(Long nucletId, TransferOption.Map exportOptions) throws NuclosBusinessException;
+	byte[] createTransferFile(Long nucletId, TransferOption.Map exportOptions) throws NuclosBusinessException;
 
 	/**
 	 * @param bytes the content of a transfer file
@@ -43,7 +41,7 @@ public interface TransferFacadeRemote {
 	 * current configuration would change if the transfer is executed
 	 * @throws NuclosBusinessException 
 	 */
-	public Transfer prepareTransfer(boolean isNuclon, byte[] bytes) throws NuclosBusinessException;
+	Transfer prepareTransfer(boolean isNuclon, byte[] bytes) throws NuclosBusinessException;
 
 	/**
 	 * execute a transfer
@@ -52,13 +50,13 @@ public interface TransferFacadeRemote {
 	 * @return a message object informing the client about success or failure
 	 * @throws NuclosBusinessException 
 	 */
-	public Transfer.Result runTransfer(Transfer transfer) throws NuclosBusinessException;
+	Transfer.Result runTransfer(Transfer transfer) throws NuclosBusinessException;
 	
-	public String getDatabaseType();
+	String getDatabaseType();
 	
 	/**
 	 * 
 	 * @return
 	 */
-	public List<TransferNuclet> getAvaiableNuclets();
+	List<TransferNuclet> getAvaiableNuclets();
 }

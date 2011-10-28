@@ -54,6 +54,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
 import org.apache.commons.httpclient.util.LangUtils;
+import org.apache.log4j.Logger;
 import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.LocaleDelegate;
@@ -94,6 +95,9 @@ import org.springframework.security.core.AuthenticationException;
  * @version 01.00.00
  */
 public class LoginController extends Controller {
+
+	private static final Logger LOG = Logger.getLogger(LoginController.class);
+	
 	private static final byte[] CRYPT = new byte[] {
 		(byte) 0x1e, (byte) 0x63, (byte) 0xc5, (byte) 0xe6, (byte) 0x41,
 		(byte) 0x82, (byte) 0x9e, (byte) 0x16, (byte) 0xff, (byte) 0xce,
@@ -116,24 +120,20 @@ public class LoginController extends Controller {
 
 	public LoginController(Component parent, String[] args) {
 		super(parent);
-
 		this.args = args;
-
 		try {
 	        ServerMetaFacadeRemote sm = ServiceLocator.getInstance().getFacade(ServerMetaFacadeRemote.class);
-
-	        // little time zone tests:
-	        //TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
-	        //TimeZone.setDefault(TimeZone.getTimeZone("Europe/Moscow"));
-
 	        final TimeZone serverDefaultTimeZone = sm.getServerDefaultTimeZone();
-			System.out.println("Default local  time zone is: " + TimeZone.getDefault().getID());
-			System.out.println("Default server time zone is: " + serverDefaultTimeZone.getID());
+	        String msg = "Default local  time zone is: " + TimeZone.getDefault().getID() + "\n";
+	        msg += "Default server time zone is: " + serverDefaultTimeZone.getID() + "\n";
 			if (!LangUtils.equals(TimeZone.getDefault(), serverDefaultTimeZone)) {
 				TimeZone.setDefault(serverDefaultTimeZone);
-				System.out.println("Local default time zone is set to server default!");
+				msg += "Local default time zone is set to server default!\n";
 			}
-			System.out.println("Initial local  time zone is: " + Main.getInitialTimeZone().getID());
+			msg += "Initial local  time zone is: " + Main.getInitialTimeZone().getID();
+	        // Ok! (tp)
+			System.out.println(msg);
+			LOG.info(msg);
 
 	        passwordSaveAllowed = Boolean.valueOf(
 	        	StringUtils.defaultIfNull(
@@ -142,6 +142,8 @@ public class LoginController extends Controller {
 	        	"false"));
         }
         catch(CommonFatalException e) {
+        	LOG.fatal("LoginController failed: " + e, e);
+        	// Ok! (tp)
         	e.printStackTrace();
 	        JOptionPane.showMessageDialog(
 	        	null,
@@ -161,10 +163,10 @@ public class LoginController extends Controller {
 		}
 		else {
 			int preselectId = LocalUserProperties.getInstance().getLoginLocaleId();
-			this.loginPanel.cmbbxLanguage.setModel(new DefaultComboBoxModel(localeInfo.toArray(new LocaleInfo[localeInfo.size()])));
+			loginPanel.getLanguageComboBox().setModel(new DefaultComboBoxModel(localeInfo.toArray(new LocaleInfo[localeInfo.size()])));
 			for(int i = 0; i < localeInfo.size(); i++)
 				if(localeInfo.get(i).localeId == preselectId)
-					this.loginPanel.cmbbxLanguage.setSelectedIndex(i);
+					loginPanel.getLanguageComboBox().setSelectedIndex(i);
 		}
 	}
 
@@ -211,9 +213,9 @@ public class LoginController extends Controller {
 			}
 		}
 
-		loginPanel.tfUserName.setText(userid != null ? userid : userName);
-		loginPanel.tfUserName.addFocusListener(new SelectAllFocusAdapter());
-		loginPanel.tfPassword.addFocusListener(new SelectAllFocusAdapter());
+		loginPanel.getUsernameField().setText(userid != null ? userid : userName);
+		loginPanel.getUsernameField().addFocusListener(new SelectAllFocusAdapter());
+		loginPanel.getPasswordField().addFocusListener(new SelectAllFocusAdapter());
 
 		// set focus to password field:
 		if(!userName.equals("")) {
@@ -226,18 +228,17 @@ public class LoginController extends Controller {
 			if(pass != null && passwordSaveAllowed) {
 				try {
 					String dec = CryptUtil.decryptAESHex(pass, CRYPT);
-					loginPanel.tfPassword.setText(dec);
-					loginPanel.tfPassword.setSelectionStart(0);
-					loginPanel.tfPassword.setSelectionEnd(dec.length());
-					loginPanel.rememberPass.setSelected(true);
+					loginPanel.getPasswordField().setText(dec);
+					loginPanel.getPasswordField().setSelectionStart(0);
+					loginPanel.getPasswordField().setSelectionEnd(dec.length());
+					loginPanel.getRememberPwCheckBox().setSelected(true);
 					attemptAutoLogin = true;
 				}
 				catch(Exception e) {
-					System.err.println("Error decoding autologin-pass");
-					e.printStackTrace(System.err);
+					LOG.error("Error decoding autologin-pass", e);
 				}
 			}
-			loginPanel.tfPassword.requestFocusInWindow();
+			loginPanel.getPasswordField().requestFocusInWindow();
 		}
 		final WindowAdapter windowlistener = new WindowAdapter() {
 			@Override
@@ -316,10 +317,10 @@ public class LoginController extends Controller {
 		dialog.setResizable(false);
 		dialog.setLocationRelativeTo(frame);
 
-		loginPanel.tfUserName.setText(props.getUserName());
-		loginPanel.tfUserName.setEnabled(false);
-		loginPanel.tfUserName.addFocusListener(new SelectAllFocusAdapter());
-		loginPanel.tfPassword.addFocusListener(new SelectAllFocusAdapter());
+		loginPanel.getUsernameField().setText(props.getUserName());
+		loginPanel.getUsernameField().setEnabled(false);
+		loginPanel.getUsernameField().addFocusListener(new SelectAllFocusAdapter());
+		loginPanel.getPasswordField().addFocusListener(new SelectAllFocusAdapter());
 
 		while (true) {
 			dialog.setVisible(true);
@@ -381,7 +382,7 @@ public class LoginController extends Controller {
 			selLocale = (LocaleInfo) cmb.getSelectedItem();
 		}
 		else {
-			selLocale = (LocaleInfo) this.loginPanel.cmbbxLanguage.getSelectedItem();
+			selLocale = (LocaleInfo) loginPanel.getLanguageComboBox().getSelectedItem();
 		}
 		LocaleDelegate.getInstance().selectLocale(localeInfo, selLocale);
 	}
@@ -401,8 +402,8 @@ public class LoginController extends Controller {
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 			if (selectedOption == JOptionPane.OK_OPTION) {
-				final String sUserName = loginPanel.tfUserName.getText().trim();
-				final char[] acPassword = loginPanel.tfPassword.getPassword();
+				final String sUserName = loginPanel.getUsernameField().getText().trim();
+				final char[] acPassword = loginPanel.getPasswordField().getPassword();
 				try {
 					try {
 						performLogin(sUserName, acPassword);
@@ -415,14 +416,14 @@ public class LoginController extends Controller {
 							public void changePassword(String oldPw, String newPw) throws CommonBusinessException {
 								RemoteAuthenticationManager ram = SpringApplicationContextHolder.getBean(RemoteAuthenticationManager.class);
 								ram.changePassword(sUserName, new String(acPassword), newPw);
-								loginPanel.tfPassword.setText(newPw);
+								loginPanel.getPasswordField().setText(newPw);
 							}
 						});
 						if (!ok) {
 							return result;
 						}
 						else {
-							performLogin(sUserName, loginPanel.tfPassword.getPassword());
+							performLogin(sUserName, loginPanel.getPasswordField().getPassword());
 							result = true;
 						}
 					}
@@ -453,8 +454,8 @@ public class LoginController extends Controller {
 						props.setUserName(sUserName);
 
 						props.setUserPasswd(
-							loginPanel.rememberPass.isSelected()
-							? CryptUtil.encryptAESHex(new String(loginPanel.tfPassword.getPassword()), CRYPT)
+							loginPanel.getRememberPwCheckBox().isSelected()
+							? CryptUtil.encryptAESHex(new String(loginPanel.getPasswordField().getPassword()), CRYPT)
 						    : "");
 
 						props.store();
@@ -518,8 +519,8 @@ public class LoginController extends Controller {
 			frame.requestFocus();
 			setSubComponentsEnabled(optpn, acls, true);
 			loginPanel.setProgressVisible(result);
-			loginPanel.tfPassword.setText("");
-			loginPanel.tfPassword.requestFocusInWindow();
+			loginPanel.getPasswordField().setText("");
+			loginPanel.getPasswordField().requestFocusInWindow();
 			frame.setCursor(null);
 		}
 		return result;
@@ -564,7 +565,7 @@ public class LoginController extends Controller {
 	}
 
 	public void fireLoginSuccessful() {
-		LoginEvent ev = new LoginEvent(this, this.loginPanel.tfUserName.getText(), "default");
+		LoginEvent ev = new LoginEvent(this, loginPanel.getUsernameField().getText(), "default");
 		for (LoginListener loginlistener : loginListeners) {
 			loginlistener.loginSuccessful(ev);
 		}

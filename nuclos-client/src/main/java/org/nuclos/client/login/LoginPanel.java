@@ -72,7 +72,6 @@ import org.nuclos.common.ApplicationProperties;
  */
 public class LoginPanel extends BackgroundPanel {
 
-	private static final long serialVersionUID = 1L;
 	private final JPanel	   pnlLogin	     = new JPanel();
 	private final JPanel	   pnlLogo	     = new JPanel();
 
@@ -83,10 +82,10 @@ public class LoginPanel extends BackgroundPanel {
 
 	private Bubble bubble;
 
-	final JTextField	       tfUserName	 = new JTextField();
-	final JPasswordField	   tfPassword	 = new JPasswordField();
-	final JComboBox	           cmbbxLanguage = new JComboBox();
-	final JCheckBox	           rememberPass	 = new JCheckBox();
+	private final JTextField	       tfUserName	 = new JTextField();
+	private final JPasswordField	   tfPassword	 = new JPasswordField();
+	private final JComboBox	           cmbbxLanguage = new JComboBox();
+	private final JCheckBox	           rememberPass	 = new JCheckBox();
 
 	private final JProgressBar	progressbar	 = new JProgressBar();
 
@@ -214,6 +213,22 @@ public class LoginPanel extends BackgroundPanel {
 		    null);
 		if(pbfg != null)
 			progressbar.setForeground(pbfg);
+	}
+	
+	JComboBox getLanguageComboBox() {
+		return cmbbxLanguage;
+	}
+	
+	JCheckBox getRememberPwCheckBox() {
+		return rememberPass;
+	}
+	
+	JPasswordField getPasswordField() {
+		return tfPassword;
+	}
+	
+	JTextField getUsernameField() {
+		return tfUserName;
 	}
 
 	public void setProgressVisible(boolean b) {

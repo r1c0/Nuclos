@@ -99,13 +99,13 @@ public class StateHistoryController extends Controller {
 	}
 
 	private void setupDoubleClickListener(final StateHistoryPanel pnlStateHistory) {
-		pnlStateHistory.tbl.addMouseListener(new MouseAdapter() {
+		pnlStateHistory.getTable().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent ev) {
 				if (ev.getClickCount() == 2) {
-					final int iSelectedRow = pnlStateHistory.tbl.getSelectedRow();
+					final int iSelectedRow = pnlStateHistory.getTable().getSelectedRow();
 					if (iSelectedRow >= 0) {
-						final StateHistoryVO stateHistory = ((StateHistoryPanel.TableModel) pnlStateHistory.tbl.getModel()).getRow(iSelectedRow);
+						final StateHistoryVO stateHistory = ((StateHistoryPanel.TableModel) pnlStateHistory.getTable().getModel()).getRow(iSelectedRow);
 
 						// Workaround for retrieval problems with initial state
 						Calendar cal = Calendar.getInstance();
@@ -158,10 +158,6 @@ public class StateHistoryController extends Controller {
 	private static void setupEscapeKey(final MainFrameTab ifrm, final StateHistoryPanel pnlHistory) {
 		// Escape key is to close the window:
 		final Action actClose = new AbstractAction() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -174,8 +170,8 @@ public class StateHistoryController extends Controller {
 				KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), KEY_CLOSE);
 		ifrm.getRootPane().getActionMap().put(KEY_CLOSE, actClose);
 
-		pnlHistory.tbl.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), KEY_CLOSE);
-		pnlHistory.tbl.getActionMap().put(KEY_CLOSE, actClose);
+		pnlHistory.getTable().getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), KEY_CLOSE);
+		pnlHistory.getTable().getActionMap().put(KEY_CLOSE, actClose);
 	}
 
 }	// class StateHistoryController

@@ -48,19 +48,18 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @version 01.00.00
  */
 
-class SubFormMultiEditController<Clct extends Collectable> extends SelectObjectsController {
+class SubFormMultiEditController<Clct extends Collectable> extends SelectObjectsController<CollectableField> {
 	private final Logger log = Logger.getLogger(this.getClass());
 
 	private final SubForm subform;
 	private final AbstractDetailsSubFormController<Clct> controller;
 
 	SubFormMultiEditController(SubForm subform, AbstractDetailsSubFormController<Clct> ctl) {
-		super(subform, new DefaultSelectObjectsPanel());
+		super(subform, new DefaultSelectObjectsPanel<CollectableField>());
 		this.subform = subform;
 		this.controller = ctl;
 	}
 
-	@SuppressWarnings("unchecked")
 	public void run() {
 		final CollectableTableModel<Clct> model = (CollectableTableModel<Clct>) this.subform.getJTable().getModel();
 

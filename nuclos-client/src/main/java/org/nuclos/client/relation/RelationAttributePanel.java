@@ -43,6 +43,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.wizard.model.EntityAttributeTranslationTableModel;
@@ -56,75 +57,72 @@ import org.nuclos.common2.LocaleInfo;
 
 public class RelationAttributePanel extends JPanel {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(RelationAttributePanel.class);
 
-	static String[] labels = {getMessage("wizard.step.entitytranslationstable.1", "Anzeigename"), getMessage("wizard.step.entitytranslationstable.2", "Beschreibung")};
+	private static String[] labels = {getMessage("wizard.step.entitytranslationstable.1", "Anzeigename"), getMessage("wizard.step.entitytranslationstable.2", "Beschreibung")};
 
-	JLabel lbLabel;
-	JTextField tfLabel;	
+	private JLabel lbLabel;
+	private JTextField tfLabel;	
 	
-	JLabel lbDescription;
-	JTextField tfDescription;
+	private JLabel lbDescription;
+	private JTextField tfDescription;
 	
-	JLabel lbFieldName;
-	JTextField tfFieldName;
+	private JLabel lbFieldName;
+	private JTextField tfFieldName;
 	
-	JLabel lbUnique;
-	JCheckBox cbxUnique;
+	private JLabel lbUnique;
+	private JCheckBox cbxUnique;
 	
-	JLabel lbNullable;
-	JCheckBox cbxNullable;
+	private JLabel lbNullable;
+	private JCheckBox cbxNullable;
 	
-	JLabel lbLogbookTracking;
-	JCheckBox cbxLogbookTracking;
+	private JLabel lbLogbookTracking;
+	private JCheckBox cbxLogbookTracking;
 	
-	JLabel lbSearchable;
-	JCheckBox cbxSearchable;
+	private JLabel lbSearchable;
+	private JCheckBox cbxSearchable;
 	
-	JLabel lbInsertable;
-	JCheckBox cbxInsertable;
+	private JLabel lbInsertable;
+	private JCheckBox cbxInsertable;
 	
-	JLabel lbModfiable;
-	JCheckBox cbxModfiable;
+	private JLabel lbModfiable;
+	private JCheckBox cbxModfiable;
 	
-	JLabel lbForeignField;
-	JComboBox cbForeignField;
-	JTextField tfForeignField;
+	private JLabel lbForeignField;
+	private JComboBox cbForeignField;
+	private JTextField tfForeignField;
 	
-	JLabel lbDefaultValue;
-	JComboBox cbDefaultValue;
+	private JLabel lbDefaultValue;
+	private JComboBox cbDefaultValue;
 	
-	JScrollPane scrolPane;
-	JTable tblAttributes;
+	private JScrollPane scrolPane;
+	private JTable tblAttributes;
 	
-	EntityMetaDataVO voEntity;
-	EntityMetaDataVO voEntitySource;
+	private EntityMetaDataVO voEntity;
+	private EntityMetaDataVO voEntitySource;
 	
-	JDialog dialog;
+	private JDialog dialog;
 	
-	EntityAttributeTranslationTableModel tablemodel;
+	private EntityAttributeTranslationTableModel tablemodel;
 	
-	List<EntityFieldMetaDataVO> lstFields;
+	private List<EntityFieldMetaDataVO> lstFields;
 	
-	boolean blnEditMode;
+	private boolean blnEditMode;
 	
-	Long fieldId;
-	String sDBColumn;
-	String sField;
+	private Long fieldId;
+	private String sDBColumn;
+	private String sField;
 	
-	boolean blnOkay;
-	int state;
+	private boolean blnOkay;
+	private int state;
 	
 	public static int TYPE_SUBFORM = 0;
 	public static int TYPE_ENTITY = 1;
 	
-	int type;
+	private int type;
 	
-	JButton btOk;
-	JButton btAbort;
+	private JButton btOk;
+	private JButton btAbort;
 	
 	public RelationAttributePanel(int type) {
 		this.type = type;
@@ -318,10 +316,10 @@ public class RelationAttributePanel extends JPanel {
 						tablemodel.fireTableDataChanged();
 					}
 				}
-				catch(BadLocationException e1) {					
+				catch(BadLocationException e1) {
+					LOG.warn("doSomeWork: " + e1);
 				}
 			}
-			
 		});
 		
 		tfFieldName.getDocument().addDocumentListener(new DocumentListener() {
@@ -363,7 +361,9 @@ public class RelationAttributePanel extends JPanel {
 					}
 					
 				}
-				catch(BadLocationException e1) {}
+				catch(BadLocationException e1) {
+					LOG.warn("doSomeWork: " + e1);
+				}
 			}
 		});
 		

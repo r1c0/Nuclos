@@ -62,7 +62,7 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
  */
 public class DbImport extends AbstractImport {
 
-	private static final Logger nucloslog = Logger.getLogger(NuclosImport.class);
+	private static final Logger LOG = Logger.getLogger(DbImport.class);
 
 	private ImportProgressNotifier notifier;
 
@@ -84,7 +84,8 @@ public class DbImport extends AbstractImport {
         	lineCount = ImportUtils.countLines(getFile(), getStructures().get(0).getDelimiter());
         }
         catch(IOException e1) {
-        	nucloslog.error("Error counting lines for csv import.", e1);
+        	LOG.info("doImport: " + e1);
+        	LOG.error("Error counting lines for csv import.", e1);
         	this.notifier.setMessage("import.notification.progresscalculationerror");
         }
 

@@ -83,7 +83,6 @@ public abstract class LabeledCollectableComponent extends AbstractCollectableCom
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public TableCellRenderer getTableCellRenderer() {
 		final TableCellRenderer parentRenderer = super.getTableCellRenderer();
 		return new TableCellRenderer() {

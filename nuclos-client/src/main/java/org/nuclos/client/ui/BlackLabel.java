@@ -34,10 +34,6 @@ import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 
 public class BlackLabel extends JPanel {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	public static final int BORDER_DEFAULT_LEFT = 6;
 	

@@ -47,7 +47,8 @@ import org.nuclos.common2.exception.CommonFinderException;
  */
 
 public final class CollectStateModel <Clct extends Collectable> implements CollectStateConstants {
-	private final Logger log = Logger.getLogger(this.getClass());
+	
+	private static final Logger LOG = Logger.getLogger(CollectStateModel.class);
 
 	/**
 	 * the current search mode (inner state)
@@ -232,7 +233,7 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 	 * @param bChangeTabUI Change the tab selection accordingly?
 	 */
 	private void setCollectState(int iTab, int iMode, boolean bChangeTabUI) throws CommonBusinessException {
-		log.debug("CollectStateModel.setState: Tab " + iTab + " - Mode " + iMode);
+		LOG.debug("CollectStateModel.setState: Tab " + iTab + " - Mode " + iMode);
 
 		final CollectState collectstateOld = this.getCollectState();
 		final CollectState collectstateNew = new CollectState(iTab, iMode);
@@ -271,27 +272,9 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 			default:
 				assert false;
 		}
-//		}
-//		catch (CommonBusinessException ex) {
-//			// try to revert to previous state:
-//			if(collectstateOld.isDefinedState()) {
-//				this.setState(collectstateOld.getOuterState(), collectstateOld.getInnerState());
-//			}
-//			// and pass the exception on:
-//			throw ex;
-//		}
-//		catch(RuntimeException ex) {
-//			// try to revert to previous state:
-//			if (collectstateOld.isDefinedState()) {
-//				this.setState(collectstateOld.getOuterState(), collectstateOld.getInnerState());
-//			}
-//			// and pass the exception on:
-//			throw ex;
-//		}
 
 		// ensure the new tab is enabled:
 		this.pnlCollect.setTabbedPaneEnabledAt(iTab, true);
-
 		this.ctlCollect.setTitle(iTab, iMode);
 	}
 
@@ -308,11 +291,6 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 	 * @param bChangeUI Change the tab selection accordingly?
 	 */
 	private void setTab(int iTab, boolean bChangeUI) {
-//		if (this.getTab() == OUTERSTATE_DETAILS) {
-//			// when leaving the details tab, remove listeners:
-//			this.ctlCollect.removeChangeListenersForDetails();
-//		}
-
 		this.iTab = iTab;
 
 		if (bChangeUI) {
@@ -456,7 +434,7 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 			}
 			
 			final int iOldVersion = clctOld.getVersion();
-			log.debug("performVersionCheck: Old version: " + iOldVersion + " - New version: " + iNewVersion);
+			LOG.debug("performVersionCheck: Old version: " + iOldVersion + " - New version: " + iNewVersion);
 			
 			if (iNewVersion == iOldVersion) {
 				this.setEditedCollectable(clctOld);

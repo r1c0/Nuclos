@@ -111,14 +111,8 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, MouseListener {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private boolean isInitialLoading = true;
 
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
@@ -196,13 +190,14 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	private Rectangle lastViewPosition = null;
 
 	private SubForm subform;
-	@SuppressWarnings("unused")
+
+	// @SuppressWarnings("unused")
 	private SubFormController controller;
 	private SortableCollectableTableModel<Collectable> model;
 
 	private JLabel message = new JLabel();
 
-	@SuppressWarnings("unused")
+	// @SuppressWarnings("unused")
 	private JPanel glassPane = new JPanel();
 
 	private HashMap<String, WYSIWYGSubFormColumn> columns = new HashMap<String, WYSIWYGSubFormColumn>();
@@ -322,7 +317,6 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	/**
 	 * Setup of the {@link WYSIWYGSubForm} does a complete render and refresh 
 	 */
-	@SuppressWarnings("unchecked")
 	public void setSubFormFromProperties() {
 		if (this.isInitialLoading()){
 			return;
@@ -618,7 +612,7 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#setProperty(java.lang.String, org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue, java.lang.Class)
 	 */
 	@Override
-	public void setProperty(String property, PropertyValue value, Class<?> valueClass) throws CommonBusinessException {
+	public void setProperty(String property, PropertyValue<?> value, Class<?> valueClass) throws CommonBusinessException {
 		properties.setProperty(property, value, valueClass);
 	}
 

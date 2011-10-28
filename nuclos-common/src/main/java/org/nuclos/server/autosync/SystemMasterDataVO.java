@@ -23,10 +23,6 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class SystemMasterDataVO extends MasterDataVO {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private static final Date SYSDATE = new Date();
 	private static final String NUCLOS = "NUCLOS";
 

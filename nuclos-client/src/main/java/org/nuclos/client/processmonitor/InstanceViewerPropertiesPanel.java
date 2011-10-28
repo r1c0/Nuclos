@@ -37,11 +37,6 @@ import org.nuclos.client.statemodel.panels.NotePropertiesPanel;
  */
 public class InstanceViewerPropertiesPanel extends JPanel {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private final CardLayout cardLayout = new CardLayout();
 	
 	private final JPanel pnlEmpty = new JPanel();

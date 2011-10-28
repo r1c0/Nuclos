@@ -25,6 +25,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.common.NuclosEntity;
@@ -33,6 +34,9 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class DevelopersPlayground extends JFrame {
+	
+	private static final Logger LOG = Logger.getLogger(DevelopersPlayground.class);
+
 	private static final long serialVersionUID = 7918814689595516206L;
 
 	public DevelopersPlayground(MainFrame mainFrame) {
@@ -43,21 +47,10 @@ public class DevelopersPlayground extends JFrame {
 		cp.setLayout(new FlowLayout());
 
 		cp.add(new JButton(new AbstractAction("Test locale") {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
 			@Override
             public void actionPerformed(ActionEvent e) {
 				testLocale();
 			}}));
-//		cp.add(new JButton(new AbstractAction("Read Locale Info #2") {
-//			@Override
-//            public void actionPerformed(ActionEvent e) {
-//				readLocale2();
-//			}}));
-
 		pack();
 	}
 
@@ -66,23 +59,11 @@ public class DevelopersPlayground extends JFrame {
 			MasterDataVO mloc = MasterDataDelegate.getInstance().get(NuclosEntity.LOCALE.getEntityName(), 1);
 			JOptionPane.showMessageDialog(this, mloc.getFields());
 		} catch (CommonFinderException e) {
-			e.printStackTrace();
+			LOG.warn("testLocale failed: " + e, e);
 		} catch (CommonPermissionException e) {
-			e.printStackTrace();
+			LOG.warn("testLocale failed: " + e, e);
 		}
 	}
 
-//	private void readLocale2() {
-//		ResourceBundle hrb = CommonLocaleDelegate.getResourceBundle();
-//		StringBuilder sb = new StringBuilder();
-//		for(String key : CollectionUtils.asIterable(hrb.getKeys()))
-//			sb.append(key)
-//				.append(": ")
-//				.append(hrb.getString(key))
-//				.append("\n");
-//		sb.append("\n\n");
-//		sb.append(CommonLocaleDelegate.getMessage("R_0001", "Test"));
-//		JOptionPane.showMessageDialog(this, sb.toString());
-//	}
 }
 

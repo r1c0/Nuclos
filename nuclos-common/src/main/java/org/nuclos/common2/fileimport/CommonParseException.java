@@ -28,10 +28,6 @@ import org.nuclos.common2.exception.CommonBusinessException;
  * @version	01.00.00
  */
 public class CommonParseException extends CommonBusinessException {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	public CommonParseException() {
 		super("parse.exception"); //"Es ist ein Fehler beim Parsen aufgetreten."

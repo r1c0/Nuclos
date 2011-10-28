@@ -41,11 +41,14 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 public class XmlUtils {
+
+	private static final Logger LOG = Logger.getLogger(XmlUtils.class);
 
 	private static final DocumentBuilder documentBuilder;
 	private static final XPathFactory xpathFactory;
@@ -102,17 +105,17 @@ public class XmlUtils {
 		transformer.setErrorListener(new ErrorListener() {
 			@Override
 			public void error(TransformerException exception) throws TransformerException {
-				System.err.println("error: " + exception);
+				LOG.error("error: " + exception, exception);
 			}
 
 			@Override
 			public void fatalError(TransformerException exception) throws TransformerException {
-				System.err.println("fatalError: " + exception);
+				LOG.fatal("fatalError: " + exception, exception);
 			}
 
 			@Override
 			public void warning(TransformerException exception) throws TransformerException {
-				System.err.println("warning: " + exception);
+				LOG.warn("warning: " + exception, exception);
 			}
 		});
 		transformer.setURIResolver(resolver);

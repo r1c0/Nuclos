@@ -19,6 +19,7 @@ package org.nuclos.common.entityobject;
 import java.util.prefs.Preferences;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.log4j.Logger;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.AbstractCollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -35,6 +36,8 @@ import org.nuclos.common2.exception.CommonFatalException;
  * </p>
  */
 public class CollectableEOEntityField extends AbstractCollectableEntityField {
+
+	private static final Logger LOG = Logger.getLogger(CollectableEOEntityField.class);
 
 	private final String entityName;
 
@@ -62,8 +65,9 @@ public class CollectableEOEntityField extends AbstractCollectableEntityField {
 				}
 			}
 		}
-		catch(Exception ex) {
+		catch(Exception e) {
 			// on exception return super.getDefault()
+			LOG.info("getDefault: " + e);
 			return super.getDefault();
 		}
 

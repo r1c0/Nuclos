@@ -139,7 +139,7 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 
 		datasourcedelegate.removeDynamicEntity((DynamicEntityVO) clct.getDatasourceVO());
 
-		pnlEdit.pnlQueryEditor.getController().refreshSchema();
+		pnlEdit.getQueryEditor().getController().refreshSchema();
 	}
 
 	/**
@@ -151,7 +151,7 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 	protected CollectableDataSource updateCurrentCollectable(CollectableDataSource clctEdited) throws CommonBusinessException {
 		//validateParameters();
 
-		final List<String> lstUsedDatasources = pnlEdit.pnlQueryEditor.getUsedDatasources();
+		final List<String> lstUsedDatasources = pnlEdit.getQueryEditor().getUsedDatasources();
 
 		final DynamicEntityVO dynamicEntityVO = (DynamicEntityVO) clctEdited.getDatasourceVO();
 
@@ -170,7 +170,7 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 		}
 		final DynamicEntityVO dynamicentityvoUpdated = datasourcedelegate.modifyDynamicEntity(dynamicEntityVO, lstUsedDatasources);
 
-		pnlEdit.pnlQueryEditor.getController().refreshSchema();
+		pnlEdit.getQueryEditor().getController().refreshSchema();
 
 		return new CollectableDataSource(dynamicentityvoUpdated);
 	}
@@ -193,9 +193,9 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 		}
 		
 		final DynamicEntityVO dynamicentityvo = datasourcedelegate.createDynamicEntity((DynamicEntityVO) clctNew.getDatasourceVO(),
-				pnlEdit.pnlQueryEditor.getUsedDatasources());
+				pnlEdit.getQueryEditor().getUsedDatasources());
 
-		pnlEdit.pnlQueryEditor.getController().refreshSchema();
+		pnlEdit.getQueryEditor().getController().refreshSchema();
 
 		return new CollectableDataSource(dynamicentityvo);
 	}
@@ -205,7 +205,7 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 	 */
 	@Override
 	protected boolean stopEditingInDetails() {
-		return pnlEdit.pnlQueryEditor.stopEditing();
+		return pnlEdit.getQueryEditor().stopEditing();
 	}
 
 	/**
@@ -216,7 +216,7 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 		ResultVO result = null;
 
 		try {
-			final String sDatasourceXML = this.pnlEdit.pnlQueryEditor.getXML(new DatasourceEntityOptions(true));
+			final String sDatasourceXML = pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(true));
 			final Map<String, Object> mpParams = CollectionUtils.newHashMap();
 
 			if (createParamMap(sDatasourceXML, mpParams, ifrm)) {
@@ -236,7 +236,7 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 	 */
 	@Override
 	public String generateSql() throws CommonBusinessException {
-		return datasourcedelegate.createSQL(this.pnlEdit.pnlQueryEditor.getXML(new DatasourceEntityOptions(true)));
+		return datasourcedelegate.createSQL(pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(true)));
 	}
 
 	/**
@@ -244,11 +244,11 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 	 */
 	@Override
 	protected void importXML(String sXML) throws NuclosBusinessException {
-		final String sWarnings = QueryBuilderEditor.getSkippedElements(pnlEdit.pnlQueryEditor.setXML(sXML));
+		final String sWarnings = QueryBuilderEditor.getSkippedElements(pnlEdit.getQueryEditor().setXML(sXML));
 		if (sWarnings.length() > 0) {
 			JOptionPane.showMessageDialog(parent, CommonLocaleDelegate.getMessage("DatasourceCollectController.12","Folgende Elemente existieren nicht mehr in dem aktuellen Datenbankschema\n und wurden daher entfernt:") + "\n" + sWarnings);
 		}
-		detailsChanged(pnlEdit.pnlQueryEditor);
+		detailsChanged(pnlEdit.getQueryEditor());
 	}
 
 	/**
@@ -258,7 +258,7 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 	 */
 	@Override
 	protected void exportXML(File file) throws IOException, CommonBusinessException {
-		final String sReportXML = pnlEdit.pnlQueryEditor.getXML(new DatasourceEntityOptions(true));
+		final String sReportXML = pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(true));
 		IOUtils.writeToTextFile(file, sReportXML, "UTF-8");
 	}
 
@@ -266,7 +266,7 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 	protected void validateSQL() {
 		try {
 			final DatasourceFacadeRemote dataSourceFacade = ServiceLocator.getInstance().getFacade(DatasourceFacadeRemote.class);
-			dataSourceFacade.validateSqlFromXML(pnlEdit.pnlQueryEditor.getXML(new DatasourceEntityOptions(true)));
+			dataSourceFacade.validateSqlFromXML(pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(true)));
 			JOptionPane.showMessageDialog(getFrame(), CommonLocaleDelegate.getMessage("DatasourceCollectController.10","Die SQL Abfrage ist syntaktisch korrekt."));
 		}
 		catch (Exception ex) {
@@ -283,7 +283,7 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 		super.readValuesFromEditPanel(clct, bSearchTab);
 
 		try {
-			clct.getDatasourceVO().setSource(this.pnlEdit.pnlQueryEditor.getXML(new DatasourceEntityOptions(true)));
+			clct.getDatasourceVO().setSource(pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(true)));
 		}
 		catch (CommonBusinessException ex) {
 			throw new CollectableValidationException(this.getCollectableEntity().getEntityField("datasourceXML"), ex);

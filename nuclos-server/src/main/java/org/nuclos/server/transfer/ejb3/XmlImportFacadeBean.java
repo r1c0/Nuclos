@@ -36,10 +36,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.CreateException;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.apache.xml.security.exceptions.Base64DecodingException;
 import org.apache.xml.security.utils.Base64;
@@ -119,9 +115,9 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Local(XmlImportFacadeLocal.class)
-@Remote(XmlImportFacadeRemote.class)
+// @Stateless
+// @Local(XmlImportFacadeLocal.class)
+// @Remote(XmlImportFacadeRemote.class)
 @Transactional
 public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFacadeLocal, XmlImportFacadeRemote {
 
@@ -181,8 +177,8 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	 * @jboss.method-attributes read-only = "true"
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	public void xmlImport(String sEntityName, org.nuclos.common2.File importFile) throws IOException, DocumentException, CommonCreateException, CommonPermissionException, CreateException, NuclosBusinessException, CommonFinderException {
+	public void xmlImport(String sEntityName, org.nuclos.common2.File importFile) 
+			throws IOException, DocumentException, CommonCreateException, CommonPermissionException, NuclosBusinessException, CommonFinderException {
 		today = new Date();
 		dateFormat = new SimpleDateFormat("dd.MM.yy HH:mm:ss");
 		iActionNumber = 1;
@@ -333,8 +329,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	 * @throws CommonCreateException
 	 * @throws NuclosBusinessRuleException
 	 */
-	@SuppressWarnings("unchecked")
-	private void importGOEntity(Element element) throws CommonCreateException, CommonPermissionException, CreateException, NuclosBusinessRuleException {
+	private void importGOEntity(Element element) throws CommonCreateException, CommonPermissionException, NuclosBusinessRuleException {
 		// Map for Attributes
 		Map<Integer, DynamicAttributeVO> attributesMap = new HashMap<Integer, DynamicAttributeVO>();
 		// Map for System Attributes
@@ -647,8 +642,8 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	 * @throws CommonFinderException
 	 * @throws ElisaBusinessException
 	 */
-	@SuppressWarnings("unchecked")
-	private void importMDEntity(Element element) throws CommonCreateException, CommonPermissionException, CreateException, NuclosBusinessException, CommonFinderException {
+	private void importMDEntity(Element element) 
+			throws CommonCreateException, CommonPermissionException, NuclosBusinessException, CommonFinderException {
 		info("Import MasterData Entity: " + element.attributeValue("name")+" Export-Id: "+element.attribute("id").getValue());
 
 		Boolean bImportData = new Boolean(element.attributeValue("import"));
@@ -919,7 +914,8 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 		}
 	}
 
-	private void putFieldToMap(Map<String, Object> mpFields, MasterDataMetaFieldVO mfield, String selmText, Element element) throws IOException, ClassNotFoundException, ParseException, CommonCreateException, CommonPermissionException, CreateException, NuclosBusinessRuleException, NumberFormatException, Base64DecodingException {
+	private void putFieldToMap(Map<String, Object> mpFields, MasterDataMetaFieldVO mfield, String selmText, Element element) 
+			throws IOException, ClassNotFoundException, ParseException, CommonCreateException, CommonPermissionException, NuclosBusinessRuleException, NumberFormatException, Base64DecodingException {
 		// Import documentfiles
 		if (mfield.getJavaClass().getName().equals("org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile")){
 			try {
@@ -1065,7 +1061,8 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	 * @throws NuclosBusinessException
 	 *             if ther are more thean one equal Entity
 	 */
-	private MasterDataVO getExistingMDEntity(MasterDataVO mdvo,	String entityName) throws NuclosBusinessException, CommonFinderException, CommonCreateException, CommonPermissionException, CreateException {
+	private MasterDataVO getExistingMDEntity(MasterDataVO mdvo,	String entityName) 
+			throws NuclosBusinessException, CommonFinderException, CommonCreateException, CommonPermissionException {
 		MasterDataMetaVO metavo = getMasterDataFacade().getMetaData(entityName);
 		Set<String> ufields = metavo.getUniqueFieldNames();
 
@@ -1142,7 +1139,8 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	 * @throws CreateException
 	 * @throws CommonCreateException
 	 */
-	private GenericObjectVO getExistingGOEntity(GenericObjectVO govo, Integer moduleId) throws NuclosBusinessException, CommonFinderException, CommonPermissionException, CommonCreateException, CreateException {
+	private GenericObjectVO getExistingGOEntity(GenericObjectVO govo, Integer moduleId) 
+			throws NuclosBusinessException, CommonFinderException, CommonPermissionException, CommonCreateException {
 
 		ArrayList<CollectableSearchCondition> conditions = new ArrayList<CollectableSearchCondition>();
 
@@ -1228,7 +1226,8 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	 * @throws CreateException
 	 * @throws NuclosBusinessRuleException
 	 */
-	private void removeNotExportedData() throws CommonCreateException, CommonPermissionException, CreateException, NuclosBusinessRuleException {
+	private void removeNotExportedData() 
+			throws CommonCreateException, CommonPermissionException, NuclosBusinessRuleException {
 		List<Pair<String, Integer>> lstRemoveEntityIds = new ArrayList<Pair<String, Integer>>();
 
 		for (Pair<String, Integer> pAllEntityId : lstAllReadEntityIds) {

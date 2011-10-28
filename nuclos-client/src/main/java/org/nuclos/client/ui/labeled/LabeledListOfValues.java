@@ -35,10 +35,6 @@ import org.nuclos.client.ui.UIUtils;
 
 public class LabeledListOfValues extends LabeledComponent {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final ListOfValues lov = new ListOfValues();
 
 	public LabeledListOfValues() {

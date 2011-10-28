@@ -169,27 +169,14 @@ public class PointerCollection implements Serializable{
 		return fieldPointers.getValues(field);
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
 	public Set<String> getFields() {
 		return fieldPointers.asMap().keySet();
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
 	public Map<String, List<Pointer>> getAllFieldPointers() {
 		return fieldPointers.asMap();
 	}
 	
-	/**
-	 * 
-	 * @param p
-	 * @return
-	 */
 	public static String localizePointer(Pointer p) {
 		if (p == null)
 			return null;
@@ -199,15 +186,8 @@ public class PointerCollection implements Serializable{
 		return CommonLocaleDelegate.getMessage(p.message, p.message, p.localizeParameter);
 	}
 	
-	/**
-	 * 
-	 * 
-	 */
 	public static class Pointer implements Serializable{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		public String message;
 		public Object[] localizeParameter;
 		

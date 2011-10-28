@@ -18,16 +18,7 @@ package org.nuclos.server.processmonitor.valueobject;
 
 import org.nuclos.common.UsageCriteria;
 
-/**
- * 
- *
- */
 public class SubProcessUsageCriteriaVO extends UsageCriteria {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	public SubProcessUsageCriteriaVO(Integer moduleId, Integer processId) {
 		super(moduleId, processId);
@@ -35,58 +26,6 @@ public class SubProcessUsageCriteriaVO extends UsageCriteria {
 	
 	public SubProcessUsageCriteriaVO(UsageCriteria ucSuper) {
 		this(ucSuper.getModuleId(), ucSuper.getProcessId());
-	}
-
-	/**
-	 * 
-	 */
-	@Override
-	public String toString(){
-		String result = "";
-		
-		if (super.getModuleId() != null){
-			/** @TODO Keine Client Classen hier! */
-//			result = Modules.getInstance().getEntityLabelByModuleId(super.getModuleId());
-//			try {
-//				for (MasterDataVO mdVO : MasterDataCache.getInstance().get(NuclosEntity.PROCESS.getEntityName())){
-//					if (mdVO.getId().equals(super.getProcessId())){
-//						result = result + " / " + mdVO.getField("name");
-//						break;
-//					}
-//				}
-//			} catch (CommonFinderException e) {
-//				throw new CommonFatalException(e); 
-//			}
-		} else {
-			result = "No Module";
-		}
-		
-		return result;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public Integer getId() {
-		/** @TODO Keine Client Classen hier! */
-//		try {
-//			for (MasterDataVO mdVO : MasterDataCache.getInstance().get(NuclosEntity.STATEMODELUSAGE.getEntityName())){
-//				Integer moduleId = (Integer) mdVO.getField("moduleId");
-//				Integer processId = (Integer) mdVO.getField("processId");
-//				
-//				if (moduleId.equals(super.getModuleId()) && 
-//						( 
-//								(processId == null && super.getProcessId() == null) ||
-//								(processId != null && processId.equals(super.getProcessId()))
-//								)){
-//					return mdVO.getIntId();
-//				}
-//			}
-//		} catch (CommonFinderException e) {
-//			throw new CommonFatalException(e); 
-//		}
-		return null;
 	}
 	
 }

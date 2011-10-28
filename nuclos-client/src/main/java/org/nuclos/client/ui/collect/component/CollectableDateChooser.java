@@ -29,6 +29,7 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import javax.swing.text.JTextComponent;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.labeled.LabeledDateChooser;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -53,6 +54,8 @@ import org.nuclos.common2.exception.CommonFatalException;
  */
 public class CollectableDateChooser extends CollectableTextComponent {
 
+	private static final Logger LOG = Logger.getLogger(CollectableDateChooser.class);
+
 	/**
 	 * @param clctef
 	 * @postcondition this.isDetailsComponent()
@@ -70,10 +73,6 @@ public class CollectableDateChooser extends CollectableTextComponent {
 
 		// The actions
 		Action nextFocusAction = new AbstractAction("insert-tab") {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
             public void actionPerformed(ActionEvent evt) {
@@ -81,10 +80,6 @@ public class CollectableDateChooser extends CollectableTextComponent {
 			}
 		};
 		Action prevFocusAction = new AbstractAction("Move Focus Backwards") {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
             public void actionPerformed(ActionEvent evt) {
@@ -122,7 +117,7 @@ public class CollectableDateChooser extends CollectableTextComponent {
 				try {
 					updateView(getFieldFromView());
 				} catch (CollectableFieldFormatException e1) {
-					//e1.printStackTrace();
+					LOG.debug("CollectableDateChooser: " + e1);
 				}
 			}
 		});

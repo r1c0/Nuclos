@@ -31,8 +31,6 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class UserVO extends NuclosValueObject {
 
-	private static final long serialVersionUID = 1L;
-
 	public static final String FIELD_NAME = "name";
 	public static final String FIELD_EMAIL = "email";
 	public static final String FIELD_LASTNAME = "lastname";

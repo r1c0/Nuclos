@@ -29,10 +29,7 @@ package org.nuclos.client.ui.collect;
  */
 
 public class CollectStateEvent extends java.util.EventObject {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private final CollectState collectstateOld;
 	private final CollectState collectstateNew;
 

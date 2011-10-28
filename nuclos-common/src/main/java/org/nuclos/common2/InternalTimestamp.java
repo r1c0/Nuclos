@@ -21,11 +21,6 @@ import java.util.Date;
 
 public class InternalTimestamp extends java.sql.Timestamp {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public InternalTimestamp(long millis) {
 		super(millis);
 	}

@@ -37,6 +37,7 @@ import java.util.Hashtable;
 import javax.swing.JPopupMenu;
 import javax.swing.text.BadLocationException;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.main.MainController;
 
 /**
@@ -54,6 +55,9 @@ import org.nuclos.client.main.MainController;
  * 08/12/2002	Clipboard actions	(Oliver Henning)
  */
 public abstract class InputHandler extends KeyAdapter {
+	
+	private static final Logger LOG = Logger.getLogger(InputHandler.class);
+	
 	/**
 	 * If this client property is set to Boolean.TRUE on the text area,
 	 * the home/end keys will support 'smart' BRIEF-like behaviour
@@ -365,8 +369,7 @@ public abstract class InputHandler extends KeyAdapter {
 		}
 
 		// this shouldn't happen
-		System.err.println("BUG: getTextArea() returning null");
-		System.err.println("Report this to Slava Pestov <sp@gjt.org>");
+		LOG.error("BUG: getTextArea() returning null");
 		return null;
 	}
 
@@ -444,8 +447,8 @@ public abstract class InputHandler extends KeyAdapter {
 				try {
 					textArea.getDocument().remove(caret - 1, 1);
 				}
-				catch (BadLocationException bl) {
-					bl.printStackTrace();
+				catch (BadLocationException e) {
+					LOG.warn("backspace failed: " + e, e);
 				}
 			}
 		}
@@ -484,8 +487,8 @@ public abstract class InputHandler extends KeyAdapter {
 						caret + lineStart,
 						start - (caret + lineStart));
 			}
-			catch (BadLocationException bl) {
-				bl.printStackTrace();
+			catch (BadLocationException e) {
+				LOG.warn("backspace_word failed: " + e, e);
 			}
 		}
 	}
@@ -513,8 +516,8 @@ public abstract class InputHandler extends KeyAdapter {
 				try {
 					textArea.getDocument().remove(caret, 1);
 				}
-				catch (BadLocationException bl) {
-					bl.printStackTrace();
+				catch (BadLocationException e) {
+					LOG.warn("delete failed: " + e, e);
 				}
 			}
 		}
@@ -552,8 +555,8 @@ public abstract class InputHandler extends KeyAdapter {
 				textArea.getDocument().remove(start,
 						(caret + lineStart) - start);
 			}
-			catch (BadLocationException bl) {
-				bl.printStackTrace();
+			catch (BadLocationException e) {
+				LOG.warn("delete_word failed: " + e, e);
 			}
 		}
 	}

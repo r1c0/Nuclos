@@ -78,7 +78,6 @@ public class DbColumnType {
 		 * Converts the given object (which must be a supported java type) into
 		 * the specified (supported) java type.
 		 */
-		@SuppressWarnings({ "unchecked", "cast" })
 		public <T> T convert(Object obj, Class<T> javaType) {
 			if (obj == null)
 				throw new NullPointerException();

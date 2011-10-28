@@ -45,7 +45,7 @@ import org.nuclos.installer.unpack.Unpacker;
  */
 public class CliInstaller implements Installer, Constants {
 
-	private static final Logger log = Logger.getLogger(CliInstaller.class);
+	private static final Logger LOG = Logger.getLogger(CliInstaller.class);
 
 	private final Console console;
 
@@ -110,7 +110,7 @@ public class CliInstaller implements Installer, Constants {
 					validconnection = true;
 				}
 				catch (Exception ex) {
-					log.error("Cannot connect to database.", ex);
+					LOG.error("Cannot connect to database.", ex);
 					validconnection = false;
 				}
 			}
@@ -173,7 +173,7 @@ public class CliInstaller implements Installer, Constants {
 			ConfigContext.getCurrentConfig().verify();
 		}
 		catch (InstallException e) {
-			log.error("Validation of installation settings failed.", e);
+			LOG.error("Validation of installation settings failed.", e);
 			error("error.installation.failed", e.getLocalizedMessage());
 		}
 
@@ -183,7 +183,7 @@ public class CliInstaller implements Installer, Constants {
 			info("installation.finished");
 		}
 		catch (InstallException ex) {
-			log.error("Installation failed.", ex);
+			LOG.error("Installation failed.", ex);
 			error("error.installation.failed", ex.getLocalizedMessage());
 		}
 	}
@@ -235,14 +235,14 @@ public class CliInstaller implements Installer, Constants {
 
 	@Override
 	public void info(String message, Object... args) {
-		log.info(L10n.getMessage(message, args));
+		LOG.info(L10n.getMessage(message, args));
 		this.writer.println(L10n.getMessage(message, args));
 		this.writer.flush();
 	}
 
 	@Override
 	public void warn(String message, Object... args) {
-		log.warn(L10n.getMessage(message, args));
+		LOG.warn(L10n.getMessage(message, args));
 		if (askQuestion(L10n.getMessage(message, args) + System.getProperty("line.separator") + L10n.getMessage("question.continue"), QUESTION_YESNO, ANSWER_NO) == ANSWER_NO) {
 			System.exit(1);
 		}
@@ -250,7 +250,7 @@ public class CliInstaller implements Installer, Constants {
 
 	@Override
 	public void error(String message, Object... args) {
-		log.error(L10n.getMessage(message, args));
+		LOG.error(L10n.getMessage(message, args));
 		this.writer.println(L10n.getMessage(message, args));
 		this.writer.flush();
 		System.exit(1);

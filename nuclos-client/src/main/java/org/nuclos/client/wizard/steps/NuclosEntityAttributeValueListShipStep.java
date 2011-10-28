@@ -42,6 +42,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.collect.SubForm;
@@ -62,17 +63,15 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttributeAbstractStep {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	JLabel lbName;
-	JTextField tfName;
-	JPanel pnlName;
-	JLabel lbInfo;
+	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeValueListShipStep.class);
 
-	SubForm subform = new SubForm("Werteliste", JToolBar.VERTICAL);	
-	List<ValueList> lstValues;
+	private JLabel lbName;
+	private JTextField tfName;
+	private JPanel pnlName;
+	private JLabel lbInfo;
+
+	private SubForm subform = new SubForm("Werteliste", JToolBar.VERTICAL);	
+	private List<ValueList> lstValues;
 	
 
 	public NuclosEntityAttributeValueListShipStep() {	
@@ -173,7 +172,9 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 		                }
 	                }
                 }
-                catch(BadLocationException ex) { }
+                catch(BadLocationException e1) { 
+                	LOG.info("doSomeWork failed: " + e1, e1);
+                }
 			}
 		});
 		
@@ -222,11 +223,6 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 	
 	class ValuelistTableModel extends AbstractTableModel {
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		ValuelistTableModel() {
 			lstValues = new ArrayList<ValueList>();
 		}
@@ -326,11 +322,7 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 	
 	class DateEditor extends AbstractCellEditor implements TableCellEditor {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		DateChooser dateChooser;
+		private DateChooser dateChooser;
 		
 		public DateEditor() {
 			dateChooser = new DateChooser();
@@ -342,6 +334,7 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 	            return dateChooser.getDate();
             }
             catch(CommonValidationException e) {
+            	LOG.info("getCellEditorValue: " + e);
 	            return null;
             }
         }
@@ -363,11 +356,7 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 	
 	private class LimitSpecialCharacterDocument extends PlainDocument {
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		int max;
+		private int max;
 		
 		public LimitSpecialCharacterDocument(int max) {
 	        this.max = max;

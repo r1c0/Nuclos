@@ -626,7 +626,7 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 		lstTranslation = new ArrayList<TranslationVO>();
 		lstTreeView = new ArrayList<EntityTreeViewVO>();
 
-		Iterator it = this.stepIterator();
+		Iterator<?> it = this.stepIterator();
 		while(it.hasNext()) {
 			Object step =  it.next();
 			if(step instanceof NuclosEntityAttributeInputStep) {

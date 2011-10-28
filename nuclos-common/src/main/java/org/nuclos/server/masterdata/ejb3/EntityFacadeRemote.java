@@ -21,13 +21,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Remote;
 
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common2.EntityAndFieldName;
 
-@Remote
+// @Remote
 public interface EntityFacadeRemote {
 
 	/**

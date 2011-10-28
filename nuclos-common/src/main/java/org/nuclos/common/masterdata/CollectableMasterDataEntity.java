@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -49,6 +50,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @version 01.00.00
  */
 public class CollectableMasterDataEntity implements CollectableEntity {
+
+	private static final Logger LOG = Logger.getLogger(CollectableMasterDataEntity.class);
 
 	private final MasterDataMetaVO mdmetavo;
 	private final Map<String, CollectableEntityField> mpclctef = CollectionUtils.newHashMap();

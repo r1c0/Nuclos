@@ -28,10 +28,6 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJBException;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.ObjectUtils;
@@ -113,9 +109,9 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Local(GeneratorFacadeLocal.class)
-@Remote(GeneratorFacadeRemote.class)
+// @Stateless
+// @Local(GeneratorFacadeLocal.class)
+// @Remote(GeneratorFacadeRemote.class)
 @Transactional
 public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFacadeLocal, GeneratorFacadeRemote {
 
@@ -985,7 +981,6 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		return result;
 	}
 
-	@SuppressWarnings("deprecation")
 	private EntityObjectVO getNewObject(Collection<EntityObjectVO> sourceObjects, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonValidationException, CommonPermissionException {
 		final EntityObjectVO object = getGroupedGeneratedObject(generatoractionvo, CollectionUtils.transform(sourceObjects, new Transformer<EntityObjectVO, Long>() {
 			@Override

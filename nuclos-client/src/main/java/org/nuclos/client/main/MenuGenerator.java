@@ -281,11 +281,6 @@ public class MenuGenerator {
 
 	private static final class CustomInsertionMarker extends JMenu {
 
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-
 		public CustomInsertionMarker() {
 	        super(CI_POINT);
 	        setVisible(false);
@@ -307,10 +302,6 @@ public class MenuGenerator {
 	}
 
 	private static final Action DUMMY_ACTION = new AbstractAction() {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {

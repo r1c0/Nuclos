@@ -32,7 +32,7 @@ import org.springframework.ws.server.endpoint.mapping.PayloadRootAnnotationMetho
 
 public class NuclosRuleEndpointMapping extends PayloadRootAnnotationMethodEndpointMapping {
 
-	private static final Logger log = Logger.getLogger(NuclosRuleEndpointMapping.class);
+	private static final Logger LOG = Logger.getLogger(NuclosRuleEndpointMapping.class);
 
 	private RuleClassLoader cl;
 
@@ -57,9 +57,9 @@ public class NuclosRuleEndpointMapping extends PayloadRootAnnotationMethodEndpoi
 				try {
 					endpointClass = cl.loadClass(code.getName());
 				}
-				catch(ClassNotFoundException e1) {
-					log.error(e1);
-					throw new RuntimeException(e1);
+				catch(ClassNotFoundException e) {
+					LOG.error("registerRuleMethods failed: " + e, e);
+					throw new RuntimeException(e);
 				}
 	            if (endpointClass != null && AnnotationUtils.findAnnotation(endpointClass, getEndpointAnnotationType()) != null) {
 	            	ReflectionUtils.doWithMethods(endpointClass, new ReflectionUtils.MethodCallback() {
@@ -72,7 +72,7 @@ public class NuclosRuleEndpointMapping extends PayloadRootAnnotationMethodEndpoi
 									instance = endpointClass.newInstance();
 								}
 								catch(InstantiationException e) {
-									log.error(e);
+									LOG.error("registerRuleMethods failed: " + e, e);
 									throw new RuntimeException(e);
 								}
 	                            registerEndpoint(key, new MethodEndpoint(instance, method));

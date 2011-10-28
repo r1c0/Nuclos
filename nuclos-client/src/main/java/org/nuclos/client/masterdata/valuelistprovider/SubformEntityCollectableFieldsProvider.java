@@ -41,7 +41,6 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
  * @author	<a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version	01.00.00
  */
-@SuppressWarnings("deprecation")
 public class SubformEntityCollectableFieldsProvider implements CollectableFieldsProvider{
 
 	private static Logger log = Logger.getLogger(SubformEntityCollectableFieldsProvider.class);

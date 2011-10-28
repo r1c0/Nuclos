@@ -18,21 +18,21 @@ package org.nuclos.client.wizard.util;
 
 import javax.swing.text.PlainDocument;
 
+import org.apache.log4j.Logger;
+
 public class NumericFormatDocument extends PlainDocument {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final Logger LOG = Logger.getLogger(NumericFormatDocument.class);
 
 	@Override
 	public void insertString(int offset, String str, javax.swing.text.AttributeSet a)  throws javax.swing.text.BadLocationException {
 		try {
 			Integer.parseInt(str);
 		}
-		catch(NumberFormatException ex) {
+		catch(NumberFormatException e) {
+			LOG.debug("insertString: not a Integer: " + str + ": " + e);
 			return;
 		}
-		
 		super.insertString(offset, str, a);
     }
 }

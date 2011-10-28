@@ -26,27 +26,22 @@ import org.nuclos.common2.CommonLocaleDelegate;
 
 public abstract class TaskView extends JPanel implements ScheduledRefreshable {
 	
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	final int[] intervals = new int[] {	0, 5, 10, 30};
-	final String[] intervalLabels = new String[] {
+	private final int[] intervals = new int[] {	0, 5, 10, 30};
+	private final String[] intervalLabels = new String[] {
 		CommonLocaleDelegate.getMessage("TaskController.Refresh.0.name","Manuell aktualisieren"),
 		CommonLocaleDelegate.getMessage("TaskController.Refresh.5.name","Alle 5 Minuten aktualisieren"),
 		CommonLocaleDelegate.getMessage("TaskController.Refresh.10.name","Alle 10 Minuten aktualisieren"),
 		CommonLocaleDelegate.getMessage("TaskController.Refresh.30.name","Alle 30 Minuten aktualisieren")
 	};
-	final String[] intervalDescs = new String[] {
+	private final String[] intervalDescs = new String[] {
 		CommonLocaleDelegate.getMessage("TaskController.Refresh.0.desc","Manuell aktualisieren"),
 		CommonLocaleDelegate.getMessage("TaskController.Refresh.5.desc","Alle 5 Minuten aktualisieren"),
 		CommonLocaleDelegate.getMessage("TaskController.Refresh.10.desc","Alle 10 Minuten aktualisieren"),
 		CommonLocaleDelegate.getMessage("TaskController.Refresh.30.desc","Alle 30 Minuten aktualisieren")
 	};
 	
-	final ButtonGroup bgRefreshInterval = new ButtonGroup();
-	final JRadioButtonMenuItem[] rbRefresIntervals = new JRadioButtonMenuItem[intervals.length];
+	private final ButtonGroup bgRefreshInterval = new ButtonGroup();
+	private final JRadioButtonMenuItem[] rbRefresIntervals = new JRadioButtonMenuItem[intervals.length];
 
 	private int refreshInterval = 0;
 	

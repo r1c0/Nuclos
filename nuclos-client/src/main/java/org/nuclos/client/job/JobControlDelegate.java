@@ -19,9 +19,6 @@ package org.nuclos.client.job;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
-import javax.ejb.CreateException;
-
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -46,7 +43,7 @@ public class JobControlDelegate {
 
 	JobControlFacadeRemote facade;
 
-	public JobControlDelegate() throws RemoteException, CreateException {
+	public JobControlDelegate() throws RemoteException {
 		this.facade = ServiceLocator.getInstance().getFacade(JobControlFacadeRemote.class);
 	}
 
@@ -57,9 +54,6 @@ public class JobControlDelegate {
 			}
 			catch (RemoteException ex) {
 				throw new CommonRemoteException(ex);
-			}
-			catch (CreateException ex) {
-				throw new NuclosFatalException(ex);
 			}
 		}
 		return singleton;

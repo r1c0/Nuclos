@@ -41,11 +41,6 @@ import org.pietschy.wizard.InvalidStateException;
  */
 public class UseDatabaseWizardStep extends AbstractWizardStep implements ActionListener, Constants {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private JComboBox cmbAdapter = new JComboBox();
 
 	private JTextField txtDriverJarPath = new JTextField();

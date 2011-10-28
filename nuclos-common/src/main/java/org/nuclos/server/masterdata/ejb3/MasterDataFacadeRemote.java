@@ -19,13 +19,14 @@ package org.nuclos.server.masterdata.ejb3;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Remote;
 
 import org.nuclos.common.EntityTreeViewVO;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.TruncatableCollection;
@@ -48,14 +49,14 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 
-@Remote
+// @Remote
 public interface MasterDataFacadeRemote {
 
 	/**
 	 * @return the masterdata meta information for the all entities.
 	 */
 	@RolesAllowed("Login")
-	public abstract Collection<MasterDataMetaVO> getAllMetaData();
+	Collection<MasterDataMetaVO> getAllMetaData();
 
 	/**
 	 * method to get meta information for a master data entity
@@ -64,7 +65,7 @@ public interface MasterDataFacadeRemote {
 	 * @postcondition result != null
 	 * @throws NuclosFatalException if there is not metadata for the given entity.
 	 */
-	public abstract MasterDataMetaVO getMetaData(String sEntityName);
+	MasterDataMetaVO getMetaData(String sEntityName);
 
 	/**
 	 * method to get meta information for a master data entity
@@ -73,13 +74,13 @@ public interface MasterDataFacadeRemote {
 	 * @postcondition result != null
 	 * @throws ElisaFatalException if there is not metadata for the given entity.
 	 */
-	public abstract MasterDataMetaVO getMetaData(Integer iEntityId);
+	MasterDataMetaVO getMetaData(Integer iEntityId);
 
 	/**
 	 * @param iModuleId the id of the module whose subentities we are looking for
 	 * @return Collection<MasterdataMetaCVO> the masterdata meta information for all entities having foreign keys to the given module.
 	 */
-	public abstract Collection<MasterDataMetaVO> getMetaDataByModuleId(
+	Collection<MasterDataMetaVO> getMetaDataByModuleId(
 		Integer iModuleId);
 
 	/**
@@ -89,7 +90,7 @@ public interface MasterDataFacadeRemote {
 	 * @todo restrict permissions by entity name
 	 */
 	@RolesAllowed("Login")
-	public abstract ProxyList<MasterDataWithDependantsVO> getMasterDataProxyList(
+	ProxyList<MasterDataWithDependantsVO> getMasterDataProxyList(
 		String sEntityName, CollectableSearchExpression clctexpr);
 
 	/**
@@ -101,7 +102,7 @@ public interface MasterDataFacadeRemote {
 	 * @todo restrict permissions by entity name
 	 */
 	@RolesAllowed("Login")
-	public abstract TruncatableCollection<MasterDataVO> getMasterData(
+	TruncatableCollection<MasterDataVO> getMasterData(
 		String sEntityName, CollectableSearchCondition cond, boolean bAll);
 
 	/**
@@ -110,7 +111,7 @@ public interface MasterDataFacadeRemote {
 	 * @return List<Integer> list of masterdata ids
 	 */
 	@RolesAllowed("Login")
-	public abstract List<Object> getMasterDataIds(String sEntityName,
+	List<Object> getMasterDataIds(String sEntityName,
 		CollectableSearchExpression cse);
 
 	/**
@@ -118,7 +119,7 @@ public interface MasterDataFacadeRemote {
 	 * @return List<Integer> list of masterdata ids
 	 */
 	@RolesAllowed("Login")
-	public abstract List<Object> getMasterDataIds(String sEntityName);
+	List<Object> getMasterDataIds(String sEntityName);
 
 	/**
 	 * @param sEntityName
@@ -128,7 +129,7 @@ public interface MasterDataFacadeRemote {
 	 * @todo restrict permissions by entity name
 	 */
 	@RolesAllowed("Login")
-	public abstract List<MasterDataWithDependantsVO> getMasterDataMore(
+	List<MasterDataWithDependantsVO> getMasterDataMore(
 		String sEntityName, final List<?> lstIntIds,
 		final List<EntityAndFieldName> lstRequiredSubEntities);
 
@@ -140,7 +141,7 @@ public interface MasterDataFacadeRemote {
 	 * @throws CommonPermissionException
 	 */
 	@RolesAllowed("Login")
-	public abstract TruncatableCollection<MasterDataVO> getAllReports() throws CommonFinderException,
+	TruncatableCollection<MasterDataVO> getAllReports() throws CommonFinderException,
 		CommonPermissionException;
 
 	/**
@@ -170,7 +171,7 @@ public interface MasterDataFacadeRemote {
 	 * @throws CommonPermissionException
 	 */
 	@RolesAllowed("Login")
-	public abstract MasterDataVO get(String sEntityName, Object oId)
+	MasterDataVO get(String sEntityName, Object oId)
 		throws CommonFinderException, CommonPermissionException;
 
 	/**
@@ -181,7 +182,7 @@ public interface MasterDataFacadeRemote {
 	 * @throws CommonFinderException
 	 */
 	@RolesAllowed("Login")
-	public abstract Integer getVersion(String sEntityName, Object oId)
+	Integer getVersion(String sEntityName, Object oId)
 		throws CommonFinderException, CommonPermissionException;
 
 	/**
@@ -195,7 +196,7 @@ public interface MasterDataFacadeRemote {
 	 * @nucleus.permission checkWriteAllowed(sEntityName)
 	 */
 	@RolesAllowed("Login")
-	public abstract MasterDataVO create(String sEntityName, MasterDataVO mdvo,
+	MasterDataVO create(String sEntityName, MasterDataVO mdvo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
 		CommonPermissionException, NuclosBusinessRuleException;
 
@@ -208,7 +209,7 @@ public interface MasterDataFacadeRemote {
 	 * @nucleus.permission checkWriteAllowed(sEntityName)
 	 */
 	@RolesAllowed("Login")
-	public abstract Object modify(String sEntityName, MasterDataVO mdvo,
+	Object modify(String sEntityName, MasterDataVO mdvo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonValidationException,
@@ -223,7 +224,7 @@ public interface MasterDataFacadeRemote {
 	 * @nucleus.permission checkDeleteAllowed(sEntityName)
 	 */
 	@RolesAllowed("Login")
-	public abstract void remove(String sEntityName, MasterDataVO mdvo,
+	void remove(String sEntityName, MasterDataVO mdvo,
 		boolean bRemoveDependants) throws CommonFinderException,
 		CommonRemoveException, CommonStaleVersionException,
 		CommonPermissionException, NuclosBusinessRuleException;
@@ -233,7 +234,7 @@ public interface MasterDataFacadeRemote {
 	 * @return Does the entity with the given name use the rule engine?
 	 */
 	@RolesAllowed("Login")
-	public abstract boolean getUsesRuleEngine(String sEntityName);
+	boolean getUsesRuleEngine(String sEntityName);
 
 	/**
 	 * execute a list of rules for the given Object
@@ -244,7 +245,7 @@ public interface MasterDataFacadeRemote {
 	 * @todo restrict permission - check module id!
 	 */
 	@RolesAllowed("ExecuteRulesManually")
-	public abstract void executeBusinessRules(String sEntityName,
+	void executeBusinessRules(String sEntityName,
 		List<RuleVO> lstRuleVO, MasterDataWithDependantsVO mdvo,
 		boolean bSaveAfterRuleExecution) throws CommonBusinessException;
 
@@ -253,7 +254,7 @@ public interface MasterDataFacadeRemote {
 	 * @param entityName
 	 */
 	@RolesAllowed("Login")
-	public abstract Set<EntityAndFieldName> getSubFormEntitiesByMasterDataEntity(
+	Set<EntityAndFieldName> getSubFormEntitiesByMasterDataEntity(
 		String entityName);
 
 	/**
@@ -261,7 +262,7 @@ public interface MasterDataFacadeRemote {
 	 * after metadata entries in the database were changed.
 	 */
 	@RolesAllowed("UseManagementConsole")
-	public abstract void revalidateMasterDataMetaCache();
+	void revalidateMasterDataMetaCache();
 
 	/**
 	 * value list provider function (get processes by usage)
@@ -270,17 +271,15 @@ public interface MasterDataFacadeRemote {
 	 * @return collection of master data value objects
 	 */
 	@RolesAllowed("Login")
-	public abstract java.util.List<org.nuclos.common.collect.collectable.CollectableField> getProcessByUsage(
-		Integer iModuleId, boolean bSearchMode);
+	List<CollectableField> getProcessByUsage(Integer iModuleId, boolean bSearchMode);
 
 	/**
 	 * @param iModuleId the id of the module whose subentities we are looking for
 	 * @return Collection<MasterDataMetaVO> the masterdata meta information for all entities having foreign keys to the given module.
 	 */
-	public abstract java.util.List<org.nuclos.common.collect.collectable.CollectableField> getSubEntities(
-		Integer iModuleId);
+	List<CollectableField> getSubEntities(Integer iModuleId);
 
-	public java.util.Map<String, String> getRuleEventsWithLocaleResource();
+	Map<String, String> getRuleEventsWithLocaleResource();
 
 	/**
 	 * Write changes to dependant masterdata into logbook table if specified for the field.
@@ -292,7 +291,7 @@ public interface MasterDataFacadeRemote {
 	 * @todo restrict permissions by entity name / module id
 	 */
 	@RolesAllowed("Login")
-	public abstract void protocolDependantChanges(Integer iGenericObjectId,
+	void protocolDependantChanges(Integer iGenericObjectId,
 		DependantMasterDataMap mpDependants, Set<Integer> stExcluded,
 		boolean bOnlyNewEntries) throws CommonPermissionException;
 
@@ -304,7 +303,7 @@ public interface MasterDataFacadeRemote {
 	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	@RolesAllowed("UseManagementConsole")
-	public abstract void checkMasterDataValues(String sOutputFileName);
+	void checkMasterDataValues(String sOutputFileName);
 
 	/**
 	 * gets the file content of a generic object document
@@ -314,12 +313,12 @@ public interface MasterDataFacadeRemote {
 	 * @todo restrict permission - check module id!
 	 */
 	@RolesAllowed("Login")
-	public abstract byte[] loadContent(Integer iGenericObjectDocumentId,
+	byte[] loadContent(Integer iGenericObjectDocumentId,
 		String sFileName, String sPath) throws CommonFinderException;
 
 	/**
 	 * @param user - the user for which to get subordinated users
 	 * @return List<MasterDataVO> list of masterdata valueobjects
 	 */
-	public List<MasterDataVO> getUserHierarchy(String user);
+	List<MasterDataVO> getUserHierarchy(String user);
 }

@@ -169,8 +169,6 @@ public class ResultController<Clct extends Collectable> {
 	private final Action actDefineAsNewSearchResult = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultController.3","Als neues Suchergebnis"),
 			Icons.getInstance().getIconEmpty16(), CommonLocaleDelegate.getMessage("ResultController.4","Ausgew\u00e4hlte Datens\u00e4tze als neues Suchergebnis anzeigen")) {
 
-		private static final long serialVersionUID = 1L;
-
 		@Override
         public void actionPerformed(ActionEvent ev) {
 			cmdDefineSelectedCollectablesAsNewSearchResult();
@@ -204,8 +202,6 @@ public class ResultController<Clct extends Collectable> {
 				(clctctl instanceof GenericObjectCollectController)? // quick and dirty... I know
 				Icons.getInstance().getIconDelete16() : Icons.getInstance().getIconRealDelete16(),
 				CommonLocaleDelegate.getMessage("ResultController.5","Ausgew\u00e4hlte Datens\u00e4tze l\u00f6schen")) {
-
-			private static final long serialVersionUID = 1L;
 
 			@Override
 	        public void actionPerformed(ActionEvent ev) {
@@ -288,10 +284,6 @@ public class ResultController<Clct extends Collectable> {
 
 		// action: Refresh (search again)
 		final Action actRefresh = new CommonAbstractAction(pnlResult.btnRefresh) {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
             public void actionPerformed(ActionEvent ev) {
@@ -315,10 +307,6 @@ public class ResultController<Clct extends Collectable> {
 
 		// action: View
 		this.actEditSelectedCollectables = new CommonAbstractAction(pnlResult.btnEdit) {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
             public void actionPerformed(ActionEvent ev) {
@@ -330,10 +318,6 @@ public class ResultController<Clct extends Collectable> {
 
 		// action: Select Columns
 		pnlResult.btnSelectColumns.setAction(new CommonAbstractAction(pnlResult.btnSelectColumns) {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
             public void actionPerformed(ActionEvent ev) {
@@ -348,10 +332,6 @@ public class ResultController<Clct extends Collectable> {
 		else {
 			// action: Export
 			pnlResult.btnExport.setAction(new CommonAbstractAction(pnlResult.btnExport) {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
                 public void actionPerformed(ActionEvent ev) {
@@ -361,10 +341,6 @@ public class ResultController<Clct extends Collectable> {
 
 			// action: Import
 			pnlResult.btnImport.setAction(new CommonAbstractAction(pnlResult.btnImport) {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
                 public void actionPerformed(ActionEvent ev) {
@@ -429,7 +405,6 @@ public class ResultController<Clct extends Collectable> {
 	 * @return List<CollectableEntityField> the selected fields from the user preferences.
 	 * @postcondition !result.isEmpty()
 	 */
-	@SuppressWarnings("unchecked")
 	private List<CollectableEntityField> getSelectedFieldsFromPreferences(CollectableEntity clcte, CollectController<Clct> clctctl) {
 		assert clctctl == this.clctctl && clctctl.getFields() == fields && clctctl.getResultController() == this;
 		assert this.clcte.equals(clcte);
@@ -961,9 +936,9 @@ public class ResultController<Clct extends Collectable> {
 			}
 			panel.restoreColumnWidths(fields.getSelectedFields(), mpWidths);
 		}
-		catch (CommonBusinessException ex) {
+		catch (CommonBusinessException e) {
 			// TODO Auto-generated catch block
-			ex.printStackTrace();
+			LOG.warn("toggleColumnVisibility failed: " + e, e);
 		}
 	}
 

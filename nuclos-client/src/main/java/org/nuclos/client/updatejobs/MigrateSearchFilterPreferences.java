@@ -22,8 +22,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.prefs.Preferences;
 
-import javax.ejb.CreateException;
-
+import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataCache;
@@ -50,6 +49,8 @@ import org.nuclos.server.searchfilter.ejb3.SearchFilterFacadeRemote;
 
 public class MigrateSearchFilterPreferences {
 
+	private static final Logger LOG = Logger.getLogger(MigrateSearchFilterPreferences.class);
+
 	private static final String PREFS_NODE_SEARCHFILTERS = "searchFilters";
 	private static final String PREFS_NODE_GLOBALSEARCHFILTERS = "globalSearchFilters";
 
@@ -67,7 +68,7 @@ public class MigrateSearchFilterPreferences {
 	private static Integer iUserId;
 	private static String sUserName;
 
-	public static void migrate(String sMigrationUser) throws RemoteException, CreateException {
+	public static void migrate(String sMigrationUser) throws RemoteException {
 		if(StringUtils.isNullOrEmpty(sMigrationUser)) {
 			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("MigrateSearchFilterPreferences.1", "Der Benutzer, der f\u00fcr die Migration der Suchfilter verwendet wird ist nicht gesetzt!"));
 		}
@@ -92,7 +93,7 @@ public class MigrateSearchFilterPreferences {
 					continue;
 				}
 
-				System.out.println("Migrate Searchfilter for User: "+ sUserName);
+				LOG.info("Migrate Searchfilter for User: "+ sUserName);
 
 				PreferencesVO prefsVO = null;
 				try {
@@ -110,7 +111,7 @@ public class MigrateSearchFilterPreferences {
 			}
 		}
 
-		System.out.println("Migrate Searchfilter for Migration User: "+ sMigrationUser);
+		LOG.info("Migrate Searchfilter for Migration User: "+ sMigrationUser);
 		// migrate preferences of migration user
 		if (mdVOOfMigrationUser != null && preferencesOfMigrationUser != null) {
 			migrate(mdVOOfMigrationUser, preferencesOfMigrationUser);
@@ -153,7 +154,7 @@ public class MigrateSearchFilterPreferences {
 			final Preferences prefsSearchFilters = prefs.node(sPrefsFilter);
 
 			for (String sFilterName : prefsSearchFilters.childrenNames()) {
-				System.out.println("Migrate Searchfilter: "+ sFilterName);
+				LOG.info("Migrate Searchfilter: "+ sFilterName);
 
 				String sDescription = "";
 				Integer iEntity = null;
@@ -164,11 +165,6 @@ public class MigrateSearchFilterPreferences {
 
 				sDescription = prefsSearchFilter.get(PREFS_KEY_DESCRIPTION, "");
 				iSearchDeleted = new Integer(prefsSearchFilter.getInt(PREFS_KEY_SEARCHDELETED, 0));
-
-//				// remove preferences properties
-//				prefsSearchFilter.remove(PREFS_KEY_MODULEID);
-//				prefsSearchFilter.remove(PREFS_KEY_DESCRIPTION);
-//				prefsSearchFilter.remove(PREFS_KEY_SEARCHDELETED);
 
 				// special handling for generalsearch
 				if (iEntity == null) {
@@ -257,7 +253,7 @@ public class MigrateSearchFilterPreferences {
 			final String sFilterName = prefsGlobalSearchFilter.get(PREFS_KEY_GLOBALSEARCHFILTERNAME, "");
 
 			if (sFilterName != null && !sFilterName.equals(CommonLocaleDelegate.getMessage("GlobalSearchFilter.1", "<Alle>"))) {
-				System.out.println("Migrate Global Searchfilter: "+ sFilterName);
+				LOG.info("Migrate Global Searchfilter: "+ sFilterName);
 
 				Integer iId = getSearchFilterId(sFilterName, sUserName);
 				if (iId != null) {
@@ -307,9 +303,6 @@ public class MigrateSearchFilterPreferences {
 								sFilter.lastIndexOf("_") + 1, sFilter
 								.length()));
 						filterName = sFilter.substring(0, sepIndex);
-						if (moduleID == null) {
-							initialRun = true;
-						}
 					}
 					catch (RuntimeException e) {
 						sFilter.substring(sFilter.lastIndexOf("_")+1, sFilter.length());
@@ -322,25 +315,15 @@ public class MigrateSearchFilterPreferences {
 					initialRun = true;
 				}
 				if (initialRun) {
-					System.out.println("Migrate TaslPanel Searchfilter: "+ filterName);
+					LOG.info("Migrate TaslPanel Searchfilter: "+ filterName);
 
 					Integer iId = getSearchFilterId(filterName, sUserName);
 					if (iId != null) {
 						prefsTaskPanelFilters.putInt(sKey, iId);
 					}
 				}
-//				else if (moduleID.intValue() == -1) {
-//				if (filterName.toLowerCase().indexOf("fristen") >= 0) {
-//				pnlTasks.getTabbedPane().addTab("Fristen",
-//				pnlTasks.getTimelimitTaskView());
-//				}
-//				else {
-//				pnlTasks.getTabbedPane().addTab("Meine Aufgaben",
-//				pnlTasks.getPersonalTaskView());
-//				}
-//				}
 				else {
-					System.out.println("Migrate TaslPanel Searchfilter: "+ filterName);
+					LOG.info("Migrate TaslPanel Searchfilter: "+ filterName);
 
 					Integer iId = getSearchFilterId(filterName, sUserName);
 					if (iId != null) {
@@ -354,9 +337,9 @@ public class MigrateSearchFilterPreferences {
 		}
 	}
 
-	private static Integer getSearchFilterId(String sFilter, String sUserName) throws CreateException, RemoteException {
+	private static Integer getSearchFilterId(String sFilter, String sUserName) throws RemoteException {
 		if (StringUtils.isNullOrEmpty(sFilter) || StringUtils.isNullOrEmpty(sUserName)) {
-			System.out.println();
+			LOG.info("search filter " + sFilter + " for user " + sUserName + " is null or empty");
 		}
 
 		ArrayList<CollectableSearchCondition> conditions = new ArrayList<CollectableSearchCondition>();
@@ -384,7 +367,7 @@ public class MigrateSearchFilterPreferences {
 		}
 	}
 
-	private static PreferencesFacadeRemote getPreferencesFacade() throws CreateException, RemoteException {
+	private static PreferencesFacadeRemote getPreferencesFacade() throws RemoteException {
 		try {
 			return ServiceLocator.getInstance().getFacade(PreferencesFacadeRemote.class);
 		}
@@ -393,7 +376,7 @@ public class MigrateSearchFilterPreferences {
 		}
 	}
 
-	private static SearchFilterFacadeRemote getSearchFilterFacade() throws CreateException, RemoteException {
+	private static SearchFilterFacadeRemote getSearchFilterFacade() throws RemoteException {
 		try {
 			return ServiceLocator.getInstance().getFacade(SearchFilterFacadeRemote.class);
 		}

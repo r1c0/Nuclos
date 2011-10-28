@@ -17,9 +17,6 @@
 package org.nuclos.server.masterdata.ejb3;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
@@ -43,9 +40,9 @@ import org.springframework.transaction.annotation.Transactional;
 * <br>Created by Novabit Informationssysteme GmbH
 * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-@Stateless
-@Local(MasterDataModuleFacadeLocal.class)
-@Remote(MasterDataModuleFacadeRemote.class)
+// @Stateless
+// @Local(MasterDataModuleFacadeLocal.class)
+// @Remote(MasterDataModuleFacadeRemote.class)
 @Transactional
 public class MasterDataModuleFacadeBean extends NuclosFacadeBean implements MasterDataModuleFacadeLocal, MasterDataModuleFacadeRemote {
 

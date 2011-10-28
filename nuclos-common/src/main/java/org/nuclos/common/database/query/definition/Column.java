@@ -19,6 +19,7 @@ package org.nuclos.common.database.query.definition;
 import java.io.Serializable;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -32,10 +33,8 @@ import org.apache.commons.lang.NullArgumentException;
  */
 public class Column implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(Column.class);
+	
 	private Table table;
 	private final String name;
 	private String alias;
@@ -171,20 +170,22 @@ public class Column implements Serializable {
 	}
 
 	public void show() {
-		System.out.println("Column: " + name);
-		type.show();
-		System.out.println("Length: " + length);
-		if (precision != 0) {
-			System.out.println("Precision: " + precision);
-		}
-		if (scale != 0) {
-			System.out.println("Scale: " + scale);
-		}
-		if (bNullable) {
-			System.out.println("Column is NULLABLE");
-		}
-		else {
-			System.out.println("Column is NOT NULLABLE");
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Column: " + name);
+			type.show();
+			LOG.debug("Length: " + length);
+			if (precision != 0) {
+				LOG.debug("Precision: " + precision);
+			}
+			if (scale != 0) {
+				LOG.debug("Scale: " + scale);
+			}
+			if (bNullable) {
+				LOG.debug("Column is NULLABLE");
+			}
+			else {
+				LOG.debug("Column is NOT NULLABLE");
+			}
 		}
 	}
 

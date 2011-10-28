@@ -54,14 +54,11 @@ public class SearchController<Clct extends Collectable> extends CommonController
 	 * Action for showing/hiding the search editor.
 	 */
 	private class ToggleSearchEditorAction extends CommonAbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		/**
 		 * avoids recursion
 		 */
-		boolean bLocked;
+		private boolean bLocked;
 
 		ToggleSearchEditorAction() {
 			super(CommonLocaleDelegate.getMessage("CollectController.28","Sucheditor"), null, CommonLocaleDelegate.getMessage("CollectController.29","Sucheditor anzeigen/verbergen"));
@@ -129,10 +126,6 @@ public class SearchController<Clct extends Collectable> extends CommonController
 	 */
 	private final Action actNewWithSearchValues = new CommonAbstractAction("Neu", Icons.getInstance().getIconNewWithSearchValues16(),
 		CommonLocaleDelegate.getMessage("CollectController.31","\u00dcbernahme der Suchkriterien in den neuen Datensatz")) {
-		/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -149,10 +142,6 @@ public class SearchController<Clct extends Collectable> extends CommonController
 	 * TODO: Move to ResultController???
 	 */
 	private final Action actSearch = new CommonAbstractAction("Suchen", Icons.getInstance().getIconFind16(), CommonLocaleDelegate.getMessage("CollectController.30","Suche starten")) {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -167,10 +156,6 @@ public class SearchController<Clct extends Collectable> extends CommonController
 	 */
 	private final AbstractAction actClearSearchCondition = new CommonAbstractAction(Icons.getInstance().getIconClearSearch16(),
 		CommonLocaleDelegate.getMessage("CollectController.27","Suchbedingung leeren")) {
-		/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
         public void actionPerformed(ActionEvent ev) {

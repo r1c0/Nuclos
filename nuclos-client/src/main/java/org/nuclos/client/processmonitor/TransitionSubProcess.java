@@ -33,15 +33,8 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
  */
 public class TransitionSubProcess implements Serializable {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	StateVO stateVO;
+	private StateVO stateVO;
 	
-	/**
-	 * 
-	 */
 	public TransitionSubProcess() {
 		// TODO Auto-generated constructor stub
 	}	

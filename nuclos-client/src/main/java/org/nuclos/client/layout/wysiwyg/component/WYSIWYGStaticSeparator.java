@@ -49,13 +49,7 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class WYSIWYGStaticSeparator extends JSeparator implements WYSIWYGComponent, WYSIWYGEditorModes {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	private ComponentProperties properties;
 	
@@ -197,7 +191,7 @@ public class WYSIWYGStaticSeparator extends JSeparator implements WYSIWYGCompone
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#setProperty(java.lang.String, org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue, java.lang.Class)
 	 */
 	@Override
-	public void setProperty(String property, PropertyValue value, Class<?> valueClass) throws CommonBusinessException {
+	public void setProperty(String property, PropertyValue<?> value, Class<?> valueClass) throws CommonBusinessException {
 		properties.setProperty(property, value, valueClass);
 	}
 	

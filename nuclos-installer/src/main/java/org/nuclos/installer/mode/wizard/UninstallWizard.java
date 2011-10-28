@@ -27,10 +27,6 @@ import org.pietschy.wizard.WizardModel;
 
 public class UninstallWizard extends Wizard implements PropertyChangeListener {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final JFrame frame;
 
 	public UninstallWizard(WizardModel model, JFrame frame) {

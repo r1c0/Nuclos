@@ -24,11 +24,15 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.TopicNotificationReceiver;
 import org.nuclos.common.caching.GenCache;
 
 
 public class JMSFlushingCache<K, V> extends GenCache<K, V> implements MessageListener {
+	
+	private static final Logger LOG = Logger.getLogger(JMSFlushingCache.class);
+	
 	private String pat;
 
 	public JMSFlushingCache(String topic, String messagePattern, LookupProvider<K, V> lookupProvider) {
@@ -47,7 +51,7 @@ public class JMSFlushingCache<K, V> extends GenCache<K, V> implements MessageLis
 					clear();
 			}
 			catch(JMSException e) {
-				e.printStackTrace();
+				LOG.warn("onMessage failed: " + e, e);
 			}
 		}
 	}

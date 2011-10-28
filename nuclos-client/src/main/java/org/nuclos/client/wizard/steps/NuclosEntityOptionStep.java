@@ -47,6 +47,7 @@ import javax.swing.SwingUtilities;
 
 import org.pietschy.wizard.InvalidStateException;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.client.common.LocaleDelegate;
@@ -76,10 +77,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(NuclosEntityOptionStep.class);
 
 	JLabel lbName;
 
@@ -184,7 +182,8 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 					}
 					tfUrl.setText(jdbcUrl);
 				}
-				catch(Exception ex) {
+				catch(Exception e1) {
+					LOG.info("actionPerformed failed: " + e1, e1);
 					JOptionPane.showMessageDialog(NuclosEntityOptionStep.this, "Datenbankverbindung konnte nicht erstellt werden!");
 				}
 			}
@@ -418,7 +417,6 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 								}
 
 							});
-
 							for(EntityFieldMetaDataVO field: lstSorted) {
 								if(NuclosWizardUtils.isSystemField(field))
 									continue;
@@ -458,8 +456,6 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 												attr.getDatatyp().setPrecision(voField.getPrecision());
 											if(voField.getScale() != null)
 												attr.getDatatyp().setScale(voField.getScale());
-//											if(voField.getFormatInput() != null)
-//												attr.getDatatyp().setInputFormat(voField.getFormatInput());
 											if(voField.getFormatOutput() != null)
 												attr.getDatatyp().setOutputFormat(voField.getFormatOutput());
 										}
@@ -470,11 +466,7 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 										field.getScale(), field.getPrecision(), field.getFormatInput(),
 										field.getFormatOutput()));
 								}
-
 								model.addAttribute(attr);
-
-
-
 							}
 							SwingUtilities.invokeLater(new Runnable() {
 
@@ -490,11 +482,10 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 							tblFields.setModel(model);
 						}
 					}
-					catch(Exception ex) {
-
+					catch(Exception e1) {
+						LOG.info("itemStateChanged failed: " + e1, e1);
 					}
 				}
-
 			}
 		});
 

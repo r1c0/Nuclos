@@ -56,13 +56,8 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIYWYGPropert
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class PropertyCollectableComponentProperty implements PropertyValue<WYSIYWYGProperty>, LayoutMLConstants {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private WYSIYWYGProperty wysiwygProperty = null;
 
 	/**
@@ -157,15 +152,6 @@ public class PropertyCollectableComponentProperty implements PropertyValue<WYSIY
 	 */
 	class PropertyEditorCollectableComponentProperty extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.table.TableCellEditor#getTableCellEditorComponent(javax.swing.JTable, java.lang.Object, boolean, int, int)
-		 */
 		@Override
 		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
 			return getComponent(true);

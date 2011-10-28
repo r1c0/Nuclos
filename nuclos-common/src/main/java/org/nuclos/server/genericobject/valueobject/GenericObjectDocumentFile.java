@@ -34,11 +34,7 @@ import org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote;
  */
 public class GenericObjectDocumentFile extends DocumentFileBase {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	String sModuleDirectoryPath;
+	private String sModuleDirectoryPath;
 
 	public GenericObjectDocumentFile(String sFileName, Integer iDocumentFileId) {
 		super(sFileName, iDocumentFileId);

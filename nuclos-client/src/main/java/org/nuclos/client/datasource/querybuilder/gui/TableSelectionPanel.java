@@ -54,19 +54,11 @@ import org.nuclos.common.database.query.definition.Table;
  */
 public class TableSelectionPanel extends JPanel implements DragGestureListener {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private final boolean blnShowParameterPanel;
 
 	private static class SystemObjectCellRenderer extends DefaultTableCellRenderer {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		final JLabel label = new JLabel();
+
+		private final JLabel label = new JLabel();
 
 		SystemObjectCellRenderer() {
 			label.setIcon(QueryBuilderIcons.iconTable16);

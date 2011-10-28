@@ -33,11 +33,6 @@ import org.xml.sax.SAXException;
 
 public class Config extends Properties implements Constants {
 
-    /**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
 	@Override
     public synchronized void loadFromXML(InputStream in) throws IOException, InvalidPropertiesFormatException {
         this.clear();

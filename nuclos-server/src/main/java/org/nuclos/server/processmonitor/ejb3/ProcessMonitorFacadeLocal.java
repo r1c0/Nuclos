@@ -19,8 +19,6 @@ package org.nuclos.server.processmonitor.ejb3;
 import java.util.Collection;
 import java.util.List;
 
-import javax.ejb.Local;
-
 import org.nuclos.common2.DateTime;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
@@ -35,32 +33,32 @@ import org.nuclos.server.processmonitor.valueobject.SubProcessVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 
-@Local
+// @Local
 public interface ProcessMonitorFacadeLocal {
 
-	public ProcessMonitorVO create(ProcessMonitorGraphVO graphvo) throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException ;
+	ProcessMonitorVO create(ProcessMonitorGraphVO graphvo) throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException ;
 	
-	public SubProcessVO findStartingSubProcess(Integer iProcessMonitorId) throws CommonBusinessException ;
+	SubProcessVO findStartingSubProcess(Integer iProcessMonitorId) throws CommonBusinessException ;
 	
-	public Integer getGenerationIdFromSubProcessTransition(Integer iSubProcessTransitionId);
+	Integer getGenerationIdFromSubProcessTransition(Integer iSubProcessTransitionId);
 	
-	public DateTime getPlanEnd(SubProcessVO subProcess, DateTime datePlanStart);
+	DateTime getPlanEnd(SubProcessVO subProcess, DateTime datePlanStart);
 	
-	public DateTime getPlanStart(SubProcessVO subProcess, DateTime dateOrigin);
+	DateTime getPlanStart(SubProcessVO subProcess, DateTime dateOrigin);
 	
-	public List<ProcessStateRuntimeFormatVO> getPossibleRuntimeFormats() ;
+	List<ProcessStateRuntimeFormatVO> getPossibleRuntimeFormats() ;
 	
-	public Collection<ProcessMonitorVO> getProcessModels() ;
+	Collection<ProcessMonitorVO> getProcessModels() ;
 	
-	public DateTime getProcessPlanEnd(Integer iProcessMonitorId, DateTime datePlanStart) throws CommonBusinessException;
+	DateTime getProcessPlanEnd(Integer iProcessMonitorId, DateTime datePlanStart) throws CommonBusinessException;
 	
-	public Collection<StateVO> getStateByModelId(Integer modelId) ;
+	Collection<StateVO> getStateByModelId(Integer modelId) ;
 	
-	public Boolean isFinalState(Integer targetStateId);
+	Boolean isFinalState(Integer targetStateId);
 	
-	public ProcessMonitorVO modify(ProcessMonitorVO vo);
+	ProcessMonitorVO modify(ProcessMonitorVO vo);
 	
-	public Collection<ProcessTransitionVO> findProcessTransitionByTargetStateAndProcessmodel(Integer targetStateId, Integer processmodelId) throws CommonPermissionException ;
+	Collection<ProcessTransitionVO> findProcessTransitionByTargetStateAndProcessmodel(Integer targetStateId, Integer processmodelId) throws CommonPermissionException ;
 	
-	public Collection<MasterDataVO> findGeneratorsWhichArePointingToSameSubProcess(Integer generationId, Integer targetCaseId) throws CommonPermissionException;
+	Collection<MasterDataVO> findGeneratorsWhichArePointingToSameSubProcess(Integer generationId, Integer targetCaseId) throws CommonPermissionException;
 }

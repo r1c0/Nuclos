@@ -101,7 +101,6 @@ public class SyntaxStyle {
 	/**
 	 * Returns the font metrics for the styled font.
 	 */
-	@SuppressWarnings("deprecation")
 	public FontMetrics getFontMetrics(Font font) {
 		if (font == null) {
 			throw new NullPointerException("font param must not"

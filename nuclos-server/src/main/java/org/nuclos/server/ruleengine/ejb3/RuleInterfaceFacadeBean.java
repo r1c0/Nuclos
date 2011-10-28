@@ -30,11 +30,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.ejb.Local;
-import javax.ejb.Stateless;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
@@ -104,16 +103,12 @@ import org.springframework.transaction.annotation.Transactional;
 * <br>Created by Novabit Informationssysteme GmbH
 * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-@Stateless
-@Local(RuleInterfaceFacadeLocal.class)
+// @Stateless
+// @Local(RuleInterfaceFacadeLocal.class)
 @Transactional
 public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInterfaceFacadeLocal {
-// @todo add assertions!
-	//private StateFacadeLocal stateFacade = ServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
-	//private GenericObjectFacadeLocal goFacade = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
-	//private MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
-	//private GeneratorFacadeLocal generatorFacade = ServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class);
-	//private JobControlFacadeLocal jobFacade = ServiceLocator.getInstance().getFacade(JobControlFacadeLocal.class);
+	
+	private static final Logger LOG = Logger.getLogger(RuleInterfaceFacadeBean.class);
 
 	@Override
 	public Integer getModuleId(Integer iGenericObjectId) {
@@ -231,10 +226,12 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 			iAttributeId = AttributeCache.getInstance().getAttribute(this.getModuleId(iGenericObjectId), sAttribute).getId();
 			result = getGenericObjectFacade().findAttributeByGoAndAttributeId(iGenericObjectId, iAttributeId);
 		}
-		catch (CommonFinderException ex) {
+		catch (CommonFinderException e) {
+			LOG.info("getAttribute: " + e);
 			result = new DynamicAttributeVO(iAttributeId, null, null);
 		}
-		catch(NullPointerException ex){
+		catch(NullPointerException e){
+			LOG.info("getAttribute: " + e);
 			result = new DynamicAttributeVO(iAttributeId, null, null);
 		}
 		assert result != null;

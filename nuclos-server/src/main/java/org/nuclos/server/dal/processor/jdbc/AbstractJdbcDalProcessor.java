@@ -71,9 +71,9 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
    }
    
 	public Object clone() {
-		final AbstractJdbcDalProcessor clone;
+		final AbstractJdbcDalProcessor<DalVO> clone;
 		try {
-			clone = (AbstractJdbcDalProcessor) super.clone();
+			clone = (AbstractJdbcDalProcessor<DalVO>) super.clone();
 		} catch (CloneNotSupportedException e) {
 			throw new IllegalStateException(e.toString());
 		}

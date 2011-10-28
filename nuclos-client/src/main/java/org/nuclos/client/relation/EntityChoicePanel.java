@@ -45,22 +45,18 @@ import org.nuclos.common2.CommonLocaleDelegate;
 
 public class EntityChoicePanel extends JPanel {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	JTable tblEntities;
-	JScrollPane paneEntities;
-	EntityChoiceTableModel model;
+	private JTable tblEntities;
+	private JScrollPane paneEntities;
+	private EntityChoiceTableModel model;
 	
-	JButton btnOk;
-	JButton btnSelectAll;
-	JButton btnSelectNon;
+	private JButton btnOk;
+	private JButton btnSelectAll;
+	private JButton btnSelectNon;
 	
-	List<EntityMetaDataVO> lstEntites;
-	List<EntityMetaDataVO> lstEntitesExclude;
-	Map<EntityMetaDataVO, Boolean> mpEntites;
-	JDialog dialog;
+	private List<EntityMetaDataVO> lstEntites;
+	private List<EntityMetaDataVO> lstEntitesExclude;
+	private Map<EntityMetaDataVO, Boolean> mpEntites;
+	private JDialog dialog;
 	
 	public EntityChoicePanel(JDialog dia, List<EntityMetaDataVO> lstExclude) {
 		super();
@@ -174,13 +170,6 @@ public class EntityChoicePanel extends JPanel {
 	
 	class EntityChoiceTableModel extends AbstractTableModel {
 		
-		
-		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		@Override
 		public String getColumnName(int column) {
 			switch(column) {
@@ -232,11 +221,6 @@ public class EntityChoicePanel extends JPanel {
 	}
 	
 	class CheckboxRenderer extends JCheckBox implements TableCellRenderer {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {

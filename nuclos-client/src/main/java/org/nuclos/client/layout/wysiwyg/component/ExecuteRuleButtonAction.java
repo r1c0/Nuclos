@@ -48,7 +48,7 @@ public class ExecuteRuleButtonAction<Clct extends Collectable> implements Collec
 	/**
 	 */
 	@Override
-	public void run(CollectController controller, Properties probs) {
+	public void run(CollectController<Clct> controller, Properties probs) {
 		try {
 			if (!controller.getDetailsPanel().isVisible()) {
 				return;

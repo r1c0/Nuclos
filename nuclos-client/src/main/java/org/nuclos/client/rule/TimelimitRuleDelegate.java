@@ -18,8 +18,6 @@ package org.nuclos.client.rule;
 
 import java.util.Collection;
 
-import javax.ejb.CreateException;
-
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.ServiceLocator;
@@ -144,9 +142,6 @@ public class TimelimitRuleDelegate {
 		}
 		catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);
-		}
-		catch (CreateException e) {
-			throw new NuclosFatalException(e);
 		}
 	}
 

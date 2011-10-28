@@ -183,10 +183,7 @@ public class XLSSearchImporter implements ExtSourceSearchImporter {
 	}
 	
 	private class ValidateImportPane extends ValidatingJOptionPane {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		private ValidateImportPanel pnlContents;
 		
 		public ValidateImportPane(ValidateImportPanel contents) {
@@ -209,20 +206,17 @@ public class XLSSearchImporter implements ExtSourceSearchImporter {
 	} // inner class ValidateImportPane
 	
 	private class ValidateImportPanel extends JPanel {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		final JComboBox cbSheetName = new JComboBox();
-		final JComboBox cbColumnName = new JComboBox();
-		final JComboBox cbAttributeName = new JComboBox();
-		final JCheckBox chkHeaderAvailable = new JCheckBox(CommonLocaleDelegate.getMessage("XLSSearchImporter.8", "Spalten haben \u00dcberschriften"));
-		final JLabel lblSheetName = new JLabel(CommonLocaleDelegate.getMessage("XLSSearchImporter.9", "Arbeitsblatt ausw\u00e4hlen"));
-		final JLabel lblColumnName = new JLabel(CommonLocaleDelegate.getMessage("XLSSearchImporter.10", "Spalte ausw\u00e4hlen"));
-		final JLabel lblAttributeName = new JLabel(CommonLocaleDelegate.getMessage("XLSSearchImporter.11", "Attribut ausw\u00e4hlen"));
 
-		final JLabel[] labels = new JLabel[] { lblSheetName, lblColumnName, lblAttributeName };
-		final JComboBox[] combos = new JComboBox[] { cbSheetName, cbColumnName, cbAttributeName };
+		private final JComboBox cbSheetName = new JComboBox();
+		private final JComboBox cbColumnName = new JComboBox();
+		private final JComboBox cbAttributeName = new JComboBox();
+		private final JCheckBox chkHeaderAvailable = new JCheckBox(CommonLocaleDelegate.getMessage("XLSSearchImporter.8", "Spalten haben \u00dcberschriften"));
+		private final JLabel lblSheetName = new JLabel(CommonLocaleDelegate.getMessage("XLSSearchImporter.9", "Arbeitsblatt ausw\u00e4hlen"));
+		private final JLabel lblColumnName = new JLabel(CommonLocaleDelegate.getMessage("XLSSearchImporter.10", "Spalte ausw\u00e4hlen"));
+		private final JLabel lblAttributeName = new JLabel(CommonLocaleDelegate.getMessage("XLSSearchImporter.11", "Attribut ausw\u00e4hlen"));
+
+		private final JLabel[] labels = new JLabel[] { lblSheetName, lblColumnName, lblAttributeName };
+		private final JComboBox[] combos = new JComboBox[] { cbSheetName, cbColumnName, cbAttributeName };
 		
 		public ValidateImportPanel() {
 			super(new GridBagLayout());

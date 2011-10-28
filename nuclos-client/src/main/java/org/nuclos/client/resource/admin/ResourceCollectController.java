@@ -100,7 +100,6 @@ public class ResourceCollectController extends MasterDataCollectController{
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected CollectableMasterDataWithDependants insertCollectable(CollectableMasterDataWithDependants clctNew) throws CommonBusinessException {
 //		 We have to clear the ids for cloned objects:

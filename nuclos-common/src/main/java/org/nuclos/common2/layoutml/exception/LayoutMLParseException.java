@@ -34,11 +34,6 @@ import org.xml.sax.SAXParseException;
 public class LayoutMLParseException extends LayoutMLException {
 
 	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
 	 * @deprecated Use constructor with locator instead. (Thomas Pasch)
 	 */
 	public LayoutMLParseException(SAXParseException ex) {
@@ -50,10 +45,7 @@ public class LayoutMLParseException extends LayoutMLException {
 	}
 
 	private static class MyLocator implements Locator, Serializable {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		private final SAXParseException ex;
 
 		MyLocator(SAXParseException ex) {

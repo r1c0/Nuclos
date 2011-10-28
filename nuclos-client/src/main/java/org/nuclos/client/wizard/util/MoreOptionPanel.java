@@ -25,26 +25,24 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common2.CommonLocaleDelegate;
 
 public class MoreOptionPanel extends JPanel {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(MoreOptionPanel.class);
 
-	boolean blnFadeIn;
+	private boolean blnFadeIn;
 	
-	JPanel content;
+	private JPanel content;
 	
-	JButton btnShow;
+	private JButton btnShow;
 	
-	JSplitPane split;
+	private JSplitPane split;
 	
-	static int velocity = 30;
-	static double velocity_step = 0.05;
+	private static final int velocity = 30;
+	private static final double velocity_step = 0.05;
 	
 	public MoreOptionPanel(JPanel pnlContent) {
 		super();
@@ -93,6 +91,7 @@ public class MoreOptionPanel extends JPanel {
 		                        }
 		                        catch(InterruptedException e1) {
 		                        	// stop loop
+		                        	LOG.warn("run: " + e1, e1);
 		                        	split.setDividerLocation(1.0);
 		                        	break;
 		                        }
@@ -117,6 +116,7 @@ public class MoreOptionPanel extends JPanel {
 		                        }
 		                        catch(InterruptedException e1) {
 		                        	// stop loop
+		                        	LOG.warn("run: " + e1, e1);
 		                        	split.setDividerLocation(0.0);
 		                        	break;
 		                        }

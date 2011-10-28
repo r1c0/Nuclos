@@ -36,8 +36,6 @@ import java.util.regex.Pattern;
  */
 public class VersionNumber implements Serializable, Comparable<VersionNumber> {
 	
-	private static final long serialVersionUID = 1L;
-	
 	private final List<?> parts;
 
 	public VersionNumber(String versionString) {

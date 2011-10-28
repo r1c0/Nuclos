@@ -30,8 +30,6 @@ import org.nuclos.common2.LocaleInfo;
 
 public class ResPlanTranslationTableModel extends AbstractTableModel {
 
-	private static final long serialVersionUID = 1L;
-
 	static String[] columns = {ResPlanResourceVO.LOCALE,
 		ResPlanResourceVO.RESOURCE_L,
 		ResPlanResourceVO.RESOURCE_TT,

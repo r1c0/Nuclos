@@ -37,12 +37,8 @@ import javax.swing.event.DocumentListener;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common.collection.CollectionUtils;
 
-/*package*/ class LiveSearchSearchPane extends JPanel {
+class LiveSearchSearchPane extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private JTextField	        searchtext;
 	private List<LiveSearchSearchPaneListener>   listeners;
 	private BusyComponent       busyComp;

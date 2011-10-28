@@ -18,18 +18,14 @@ package org.nuclos.server.servermeta.ejb3;
 
 import java.util.TimeZone;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-
 import org.nuclos.server.common.ServerParameterProvider;
 
 /**
  * Special "no-login"-service class. Keep small and secure ;)
  */
-@Stateless
-@Local(ServerMetaFacadeLocal.class)
-@Remote(ServerMetaFacadeRemote.class)
+// @Stateless
+// @Local(ServerMetaFacadeLocal.class)
+// @Remote(ServerMetaFacadeRemote.class)
 public class ServerMetaFacadeBean implements ServerMetaFacadeRemote {
 	@Override
 	public String getServerProperty(String key) {

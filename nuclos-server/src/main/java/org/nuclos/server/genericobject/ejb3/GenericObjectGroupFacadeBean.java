@@ -20,9 +20,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.dal.vo.SystemFields;
@@ -48,9 +45,9 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Local(GenericObjectGroupFacadeLocal.class)
-@Remote(GenericObjectGroupFacadeRemote.class)
+// @Stateless
+// @Local(GenericObjectGroupFacadeLocal.class)
+// @Remote(GenericObjectGroupFacadeRemote.class)
 @Transactional
 @RolesAllowed("Login")
 public class GenericObjectGroupFacadeBean extends NuclosFacadeBean implements GenericObjectGroupFacadeLocal, GenericObjectGroupFacadeRemote {

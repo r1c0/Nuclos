@@ -24,10 +24,11 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.Icons;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.common.ApplicationProperties;
+import org.nuclos.common2.LangUtils;
 
 /**
  * Singleton containing Nucleus specific icons.
@@ -38,6 +39,9 @@ import org.nuclos.common.ApplicationProperties;
  * @version 01.00.00
  */
 public class NuclosIcons {
+	
+	private static final Logger LOG = Logger.getLogger(NuclosIcons.class);
+
 	private static NuclosIcons singleton;
 
 	/**

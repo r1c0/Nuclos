@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 
 /**
  * Table for database queries.
@@ -32,10 +34,8 @@ import java.util.Set;
  */
 public class Table implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(Table.class);
+	
 	private final Set<Column> stColumns = new HashSet<Column>();
 	private final Set<Constraint> stConstraints = new HashSet<Constraint>();
 
@@ -218,45 +218,27 @@ public class Table implements Serializable {
 		stConstraints.add(constraint);
 	}
 
-	/**
-	 *
-	 * @return Set<Constraint> of constraints
-	 */
 	public Set<Constraint> getConstraints() {
 		return stConstraints;
 	}
 
-	/**
-	 *
-	 */
 	public void show() {
-		System.out.println("Table: " + sName);
-
-		for (Column column : stColumns) {
-			column.show();
-			System.out.println();
-		}
-
-		for (Constraint constraint : stConstraints) {
-			constraint.show();
-			System.out.println();
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Table: " + sName);	
+			for (Column column : stColumns) {
+				column.show();
+			}
+			for (Constraint constraint : stConstraints) {
+				constraint.show();
+			}
 		}
 	}
 
-	/**
-	 *
-	 * @return alias.name
-	 */
 	@Override
 	public String toString() {
 		return sAlias + "." + sName;
 	}
 
-	/**
-	 *
-	 * @param o
-	 * @return true if equal
-	 */
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {

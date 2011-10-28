@@ -65,7 +65,8 @@ import org.nuclos.common2.exception.CommonBusinessException;
  * @version 01.00.00
  */
 public abstract class CollectableDocumentFileChooserBase extends AbstractCollectableFileChooser implements MouseListener, NuclosDropTargetVisitor {
-	private static final Logger log = Logger.getLogger(CollectableGenericObjectFileChooser.class);
+	
+	private static final Logger LOG = Logger.getLogger(CollectableGenericObjectFileChooser.class);
 	private static final String PREFS_KEY_LAST_DIRECTORY = "lastDirectory";
 	private static final String PREFS_NODE_COLLECTABLEFILECHOOSER = "CollectableFileChooser";
 
@@ -166,9 +167,9 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 						String sFileName = file1.getFilename();
 						sFileName = sFileName.replaceAll("\\s", "");
 						final java.io.File file = new java.io.File(IOUtils.getDefaultTempDir(), sFileName);
-						log.debug("Schreibe Dokument in tempor\u00e4re Datei " + file.getAbsolutePath() + ".");
+						LOG.debug("Schreibe Dokument in tempor\u00e4re Datei " + file.getAbsolutePath() + ".");
 						IOUtils.writeToBinaryFile(file, abContents);
-						log.debug("Schreiben der tempor\u00e4ren Datei war erfolgreich.");
+						LOG.debug("Schreiben der tempor\u00e4ren Datei war erfolgreich.");
 						file.deleteOnExit();
 						DesktopUtils.open(file);
 					}
@@ -204,9 +205,9 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 										filechooser.getCurrentDirectory().getAbsolutePath());
 							}
 							try {
-								log.debug("Schreibe Dokument in Datei " + file.getAbsolutePath() + ".");
+								LOG.debug("Schreibe Dokument in Datei " + file.getAbsolutePath() + ".");
 								IOUtils.writeToBinaryFile(file, abContents);
-								log.debug("Schreiben der Datei war erfolgreich.");
+								LOG.debug("Schreiben der Datei war erfolgreich.");
 							}
 							catch (IOException ex) {
 								Errors.getInstance().showExceptionDialog(getJComponent(), ex);
@@ -302,13 +303,15 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
         flavor = (flavor == null) ? flavors[0] : flavor;
 
         // Flavors to check
-        DataFlavor Linux = null;
+        DataFlavor linux = null;
         try {
-        	Linux = new DataFlavor("text/uri-list;class=java.io.Reader");
+        	linux = new DataFlavor("text/uri-list;class=java.io.Reader");
         }
-        catch(Exception e) { }
+        catch (Exception e) {
+        	LOG.warn("visitDragOver fails on linux: " + e);
+        }
 
-        if(flavor.equals(Linux)) {
+        if(flavor.equals(linux)) {
         	dtde.acceptDrag(dtde.getDropAction());
         }
         else {
@@ -316,7 +319,7 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 				try {
 					int index = DragAndDropUtils.getIndexOfFileList(flavors, trans);
 					if(trans.getTransferData(flavors[index]) instanceof List) {
-						List files = (List) trans.getTransferData(flavors[index]);
+						List<?> files = (List<?>) trans.getTransferData(flavors[index]);
 						if(files.size() == 1) {
 							if(files.get(0) instanceof File) {
 								File fileDrag = (File)files.get(0);
@@ -347,8 +350,9 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 										}
 									}
 								}
-								catch(Exception ex) {
+								catch(Exception e) {
 									// do nothing here
+						        	LOG.warn("visitDragOver fails on Betreff: " + e);
 								}
 							}
 						}
@@ -358,8 +362,9 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 							dtde.rejectDrag();
 					}
 				}
-				catch(Exception ex) {
+				catch(Exception e) {
 					// do nothing here
+		        	LOG.warn("visitDragOver fails on flavours: " + e);
 				}
 			}
         }
@@ -407,7 +412,7 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 				for(int i = 0; i < flavors.length; i++) {
 					Object obj = trans.getTransferData(flavors[i]);
 					if(obj instanceof List) {
-						List files = (List) trans.getTransferData(flavors[i]);
+						List<?> files = (List<?>) trans.getTransferData(flavors[i]);
 						if(files.size() == 1) {
 							if(files.get(0) instanceof File) {
 								File file = (File)files.get(0);
@@ -425,11 +430,13 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 			}
 		}
 		catch(PointerException e){
+        	LOG.warn("visitDrop fails with PointerException: " + e);
 			Bubble bubble = new Bubble(CollectableDocumentFileChooserBase.this.getControlComponent(), CommonLocaleDelegate.getMessage("details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstützt!"),5, Bubble.Position.NW);
 			bubble.setVisible(true);
 		}
 		catch (Exception e) {
 			// ignore this
+        	LOG.warn("visitDrop fails: " + e);
 		}
 	}
 

@@ -70,66 +70,6 @@ public class IOUtils {
 		}
 	}
 
-//	/**
-//	 * reads the contents of a text file, using the default encoding.
-//	 *
-//	 * @param file a File that must have a size < 2GB.
-//	 * @return a String containing the contents of the file.
-//	 * @throws java.io.IOException
-//   * @todo nice try - but doesn't work!
-//	 * @todo call readFromTextFile( File file, String sEncoding)
-//	 */
-//	public static String readFromTextFile(File file) throws IOException {
-//		final FileReader fr = new FileReader(file);
-//		try {
-//			final BufferedReader br = new BufferedReader(fr);
-//			try {
-//				final StringBuffer sb = new StringBuffer();
-//				if (false) {
-//					// tests 3 and 5 fail:
-//					while (true) {
-//						final String sLine = readLine(br);
-//						if (sLine == null) {
-//							break;
-//						}
-//						System.out.println("sLine = >" + sLine + "<");
-//						sb.append(sLine);
-//						sb.append('\n');
-//					}
-//				}
-//				else {
-//					// test 4 and 6 fail:
-//					boolean bLastLineWasEmpty = true;
-//					while (true) {
-//						final String sLine = readLine(br);
-//						if (sLine == null) {
-//							break;
-//						}
-//						else if ("".equals(sLine)) {
-//							bLastLineWasEmpty = true;
-//						}
-//						else {
-//							bLastLineWasEmpty = false;
-//						}
-//						System.out.println("sLine = >" + sLine + "<");
-//						sb.append(sLine);
-//						sb.append('\n');
-//					}
-//					if (!bLastLineWasEmpty) {
-//						sb.deleteCharAt(sb.length() - 1);
-//					}
-//				}
-//
-//				return sb.toString();
-//			}
-//			finally {
-//				br.close();
-//			}
-//		}
-//		finally {
-//			fr.close();
-//		}
-//	}
 
 	/**
 	 * Reads the text contents of the given input stream with the specified encoding.

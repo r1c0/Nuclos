@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.CreateException;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SearchConditionUtils;
@@ -78,6 +78,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class JobControlFacadeBean extends MasterDataFacadeBean implements JobControlFacadeLocal, JobControlFacadeRemote {
 
+	private static final Logger LOG = Logger.getLogger(JobControlFacadeBean.class);
+	
 	private SchedulerControlFacadeLocal scheduler;
 
 	private SchedulerControlFacadeLocal getScheduler() {
@@ -283,7 +285,7 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 	 * @param iParentId
 	 * @throws NuclosBusinessRuleException
 	 */
-	private MasterDataVO createNewJobRun(Integer iParentId) throws CreateException, CommonCreateException, CommonPermissionException, NuclosBusinessRuleException{
+	private MasterDataVO createNewJobRun(Integer iParentId) throws CommonCreateException, CommonPermissionException, NuclosBusinessRuleException{
 		Map<String, Object> mpFields = new HashMap<String, Object>();
 
 		mpFields.put("startdate", DateUtils.getActualDateAndTime());
@@ -323,7 +325,7 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 		final Trigger jobTrigger = getScheduler().scheduleJob(new JobVO(mdVO));
 		Date nextFireTime = jobTrigger.getFireTimeAfter(Calendar.getInstance().getTime());
 		if (nextFireTime != null) {
-			System.out.println("Scheduled Job for " + nextFireTime);
+			LOG.info("Scheduled Job " + oId + " for " + nextFireTime);
 			MasterDataVO mdvo = get(NuclosEntity.JOBCONTROLLER.getEntityName(), mdVO.getId());
 			mdvo.setField("laststate", "Aktiviert");
 			mdvo.setField("nextfiretime", DateUtils.getDateAndTime(nextFireTime));
@@ -331,7 +333,7 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 			modify(NuclosEntity.JOBCONTROLLER.getEntityName(), mdvo, null);
 		}
 		else {
-			System.out.println("Scheduling Job failed");
+			LOG.error("Scheduling Job " + oId + " failed");
 		}
 	}
 

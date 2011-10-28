@@ -49,6 +49,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.AbstractDetailsSubFormController.DetailsSubFormTableModel;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.genericobject.GenerationController;
@@ -92,6 +93,8 @@ import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
 public abstract class EntityCollectController<Clct extends Collectable> extends NuclosCollectController<Clct> {
 
+	private static final Logger LOG = Logger.getLogger(EntityCollectController.class);
+	
 	private final static String loadingLabelText = CommonLocaleDelegate.getMessage("entity.collect.controller.loading.label", "Ladevorgang...");
 	private final static String notLoadingLabelText = "              ";
 	protected JLabel loadingLabel;
@@ -229,7 +232,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 
 		final String sControllerType = subform.getControllerType();
 		if (sControllerType != null && !sControllerType.equals("default"))
-			log.warn("Kein spezieller SearchConditionSubFormController f?r Controllertyp " + sControllerType + " vorhanden.");
+			LOG.warn("Kein spezieller SearchConditionSubFormController f?r Controllertyp " + sControllerType + " vorhanden.");
 		return _newSearchConditionSubFormController(clctcompmodelprovider, sParentEntityName, subform);
 	}
 
@@ -326,7 +329,6 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		return super.isCloneAllowed() && isNotLoadingSubForms();
 	}
 
-	@SuppressWarnings("unchecked")
 	public MasterDataSubFormController newDetailsSubFormController(SubForm subform,
 			String sParentEntityName, CollectableComponentModelProvider clctcompmodelprovider,
 			MainFrameTab ifrmParent, JComponent parent, JComponent compDetails, Preferences prefs) {
@@ -486,10 +488,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		}
 
 		private void initLoaderStates() {
-			//System.out.println("**********initLoaderStates ... ");
 			if(!getCollectState().isDetailsModeMultiViewOrEdit()){
 				synchronized (this) {
-					//System.out.println("**********initLoaderStates2 ... ");
 					// only a keys from MapOfSubFormControllersInDetails as entity name is not enough here because of m:n enities
 					for (DetailsSubFormController<CollectableEntityObject> subformctl : EntityCollectController.this.getMapOfSubFormControllersInDetails().values()) {
 						if (StringUtils.isNullOrEmpty(subformctl.getSubForm().getParentSubForm())) {
@@ -516,19 +516,14 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 						this.loading = true;
 						EntityCollectController.this.disableToolbarButtons();
 						EntityCollectController.this.showLoading(true);
-						log.debug("loading started");
+						LOG.debug("loading started");
 					}
 				}
 			}
 		}
 
 		public void finishLoading() {
-			//System.out.println("**********finishLoading ... ");
 			if(!getCollectState().isDetailsModeMultiViewOrEdit()){
-				//System.out.println("**********finishLoading2 ... ");
-				//if(bWasDetailsChangedIgnored != null && !bWasDetailsChangedIgnored){
-				//	setDetailsChangedIgnored(bWasDetailsChangedIgnored);
-				//}
 				if(!this.subFormsLoadState.isEmpty()){
 					this.loading = false;
 					EntityCollectController.this.showLoading(false);
@@ -542,7 +537,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 						try {
 							this.afterLoadingRunnable.run();
 						} catch (CommonBusinessException e) {
-							e.printStackTrace();
+							LOG.info("finishedLoading failed: " + e, e);
 						} finally {
 							this.afterLoadingRunnable = null;
 						}
@@ -557,9 +552,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		}
 
 		public boolean isLoadingSubForms(){
-			//System.out.println("**********isLoadingSubForms ... "+this.loading);
 			return this.loading;
-
 		}
 
 		public boolean haveUnloadedSubforms(){
@@ -572,12 +565,10 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 
 		public void setSubFormLoaded(String subFormName, boolean loaded){
 			synchronized (this) {
-				//System.out.println("**********setSubFormLoaded: "+subFormName + "-" + loaded);
 				this.subFormsLoadState.put(subFormName, loaded);
 				if(loaded){
 					this.subFormsClientWorker.remove(subFormName);
 				}
-				//System.out.println("**********subFormsLoadState: "+subFormsLoadState.toString());
 				if(!this.haveUnloadedSubforms()){
 					this.finishLoading();
 				}
@@ -618,7 +609,6 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 						SubFormsInterruptableClientWorker notLoadedWorker = this.subFormsClientWorker.get(notLoadedFom);
 						if(notLoadedWorker != null){
 							notLoadedWorker.interrupt();
-							//System.out.println("**********suspend Worker: "+notLoadedFom);
 						}
 					}
 					this.subFormsSuspendedState.putAll(this.subFormsLoadState);
@@ -645,19 +635,15 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 
 		public void interruptAllClientWorkers(){
 			synchronized (this) {
-				//System.out.println("**********interruptAllClientWorkers: "+EntityCollectController.this.getEntityLabel());
 				if(this.suspended){
-					//System.out.println("**********interruptAllClientWorkers - hasSuspendedClientWorkers - return.");
 					return;
 				}
-				//System.out.println("**********interruptAllClientWorkers: "+this.subFormsClientWorker.size());
 				for (SubFormsInterruptableClientWorker worker : this.subFormsClientWorker.values()) {
 					worker.interrupt();
 				}
 				this.subFormsClientWorker.clear();
 				this.initLoaderStates();
 				EntityCollectController.this.showLoading(false);
-				//System.out.println("**********interrupted ... new size: "+this.subFormsClientWorker.size());
 			}
 		}
 
@@ -732,7 +718,6 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 					catch(CommonBusinessException ex) {
 						throw new CommonFatalException(ex);
 					}
-
 				}
 			});
 		}
@@ -788,11 +773,6 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	 * displays <code>PointerCollection</code> in a JPopupMenu
 	 */
 	protected class PointerAction extends AbstractAction {
-
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public PointerAction() {
 			super(null, iconPointer);
@@ -1020,7 +1000,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				} else {
 					setPointerInformation(pc, pex);
 				}
-				log.error(ex);
+				LOG.error(ex);
 				return true;
 			} else if (nbrex != null) {
 				String exceptionMessage;
@@ -1034,7 +1014,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				if (exceptionMessage != null) {
 					final PointerCollection pc = new PointerCollection(Errors.formatErrorForBubble(exceptionMessage));
 					setPointerInformation(pc, nbrex);
-					log.error(ex);
+					LOG.error(ex);
 					return true;
 				}
 			}
@@ -1114,11 +1094,6 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				});
 			final ListCellRenderer originalRenderer = cmbbxActions.getRenderer();
 			cmbbxActions.setRenderer(new DefaultListCellRenderer() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
-
 				@Override
 				public Component getListCellRendererComponent(JList jlst, Object oValue, int iIndex, boolean bSelected,
 					boolean bHasFocus) {

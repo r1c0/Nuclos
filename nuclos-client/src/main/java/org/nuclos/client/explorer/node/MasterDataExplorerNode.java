@@ -56,10 +56,7 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  * @version 01.00.00
  */
 public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> extends ExplorerNode<TN> {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private static final Logger log = Logger.getLogger(MasterDataExplorerNode.class);
 
 	public MasterDataExplorerNode(TreeNode treenode) {
@@ -90,10 +87,6 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 	 * Action: remove node
 	 */
 	protected class RemoveAction extends TreeNodeAction {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public RemoveAction(JTree tree, String sLabel) {
 			super(ACTIONCOMMAND_REMOVE, sLabel, tree);

@@ -37,7 +37,6 @@ public abstract class AbstractEditModel<Clctcompmodel extends CollectableCompone
 
 	private final Map<String, Clctcompmodel> mpclctcompmodel = new HashMap<String, Clctcompmodel>();
 
-	@SuppressWarnings("unchecked")
 	public AbstractEditModel(Collection<CollectableComponent> collclctcomp) {
 		for (CollectableComponent clctcomp : collclctcomp) {
 			this.mpclctcompmodel.put(clctcomp.getFieldName(), (Clctcompmodel) clctcomp.getModel());

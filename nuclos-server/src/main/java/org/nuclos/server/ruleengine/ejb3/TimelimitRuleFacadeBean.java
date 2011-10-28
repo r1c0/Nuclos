@@ -27,10 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.CreateException;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosEntity;
@@ -83,14 +79,14 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-@Stateless
-@Local(TimelimitRuleFacadeLocal.class)
-@Remote(TimelimitRuleFacadeRemote.class)
+// @Stateless
+// @Local(TimelimitRuleFacadeLocal.class)
+// @Remote(TimelimitRuleFacadeRemote.class)
 @Transactional
 @RolesAllowed("Login")
 public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements TimelimitRuleFacadeLocal, TimelimitRuleFacadeRemote {
 
-	private static final Logger log = Logger.getLogger("TimelimitError");
+	private static final Logger LOG = Logger.getLogger(TimelimitRuleFacadeBean.class);
 
 	private CustomCodeManager ccm;
 
@@ -272,13 +268,13 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	 * @throws CreateException
 	 */
 	@Override
-	public void importTimelimitRules(Collection<RuleVO> collRuleVO) throws CommonBusinessException, CreateException {
+	public void importTimelimitRules(Collection<RuleVO> collRuleVO) throws CommonBusinessException {
 		for (RuleVO ruleVO : collRuleVO) {
 			try {
 				this.importTimelimitRule(ruleVO);
 			}
 			catch (CommonBusinessException ex) {
-				throw new CommonBusinessException(StringUtils.getParameterizedExceptionMessage("rule.import.error", ruleVO.getName()));
+				throw new CommonBusinessException(StringUtils.getParameterizedExceptionMessage("rule.import.error", ruleVO.getName()), ex);
 					//"Fehler beim Importieren der Regel \"" + ruleVO.getName() + "\" aufgetreten.", ex);
 			}
 		}
@@ -297,7 +293,7 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	 * @throws CommonFinderException
 	 */
 	private void importTimelimitRule(RuleVO voRule) throws CommonCreateException, CommonFinderException, CommonRemoveException,
-			CommonStaleVersionException, CommonValidationException, CommonPermissionException, CreateException, NuclosBusinessRuleException {
+			CommonStaleVersionException, CommonValidationException, CommonPermissionException, NuclosBusinessRuleException {
 		voRule.validate();
 
 		final String sName = voRule.getName();
@@ -331,7 +327,7 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 		try {
 			return DataBaseHelper.getDbAccess().executeQuery(query);
 		} catch (DbException ex) {
-			log.error(ex);
+			LOG.error(ex);
 			return Collections.emptySet();
 		}
     }
@@ -342,7 +338,7 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	 * @author corina.mandoki
 	 */
 	@Override
-	public void executeRule(String sRuleName, Integer iSessionId) throws CreateException {
+	public void executeRule(String sRuleName, Integer iSessionId) {
 		executeTimelimitRule(sRuleName, iSessionId);
 	}
 
@@ -352,23 +348,23 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	 * @return InvoiceInspectorResultRun
 	 */
 	@Override
-	public void executeTimelimitRule(String sRuleName) throws CreateException {
+	public void executeTimelimitRule(String sRuleName) {
 		executeTimelimitRule(sRuleName, null);
 	}
 
-	private void executeTimelimitRule(String ruleName, Integer sessionId) throws CreateException {
+	private void executeTimelimitRule(String ruleName, Integer sessionId) {
 		TimelimitRuleFacadeLocal timelimitRuleFacade = ServiceLocator.getInstance().getFacade(TimelimitRuleFacadeLocal.class);
 
 		Pair<NuclosTimelimitRule, RuleInterface> instanceAndInterface = timelimitRuleFacade.prepareTimelimitRule(ruleName, sessionId);
 
 		if (instanceAndInterface != null) {
-			log.info("Start executing timelimit rule \"" + ruleName + "\"");
+			LOG.info("Start executing timelimit rule \"" + ruleName + "\"");
 			Collection<Integer> collIntIds = timelimitRuleFacade.executeTimelimitRule(instanceAndInterface.getX(), instanceAndInterface.getY());
 
 			for(Integer iId : collIntIds) {
 				timelimitRuleFacade.executeTimelimitRule(instanceAndInterface.getX(), instanceAndInterface.getY(), iId);
 			}
-			log.info("Finished executing timelimit rule \"" + ruleName + "\"");
+			LOG.info("Finished executing timelimit rule \"" + ruleName + "\"");
 		}
 	}
 
@@ -379,7 +375,7 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 		RuleVO rulevo = mdvo != null ? makeTimelimitRuleVO(mdvo) : null;
 
 		if (rulevo == null) {
-			log.error("Eine Fristenregel mit dem Namen \"" + ruleName + "\" existiert nicht.");
+			LOG.error("Eine Fristenregel mit dem Namen \"" + ruleName + "\" existiert nicht.");
 			return null;
 		}
 
@@ -415,10 +411,11 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 		try {
 			ruleInstance.process(ri, iGenericObjectId);
 		}
-		catch(NuclosBusinessRuleException ex) {
-			String sErrorMessage = "Es sind Fehler aufgetreten bei der Abarbeitung der Fristenregel " + ri.getCurrentRule().getName() +
-			" aufgetreten beim Modulobjekt mit der ID " + iGenericObjectId + ":/n" + ex.getMessage();
+		catch(NuclosBusinessRuleException e) {
+			final String sErrorMessage = "Es sind Fehler aufgetreten bei der Abarbeitung der Fristenregel " + ri.getCurrentRule().getName() +
+			" aufgetreten beim Modulobjekt mit der ID " + iGenericObjectId + ":/n" + e;
 			Logger.getLogger("TimelimitErrors").error(sErrorMessage);
+			LOG.warn(sErrorMessage);
 
 			// Let the transaction for this generic object id be rolled back and continue eventually with the next...
 			//getSessionContext().setRollbackOnly();

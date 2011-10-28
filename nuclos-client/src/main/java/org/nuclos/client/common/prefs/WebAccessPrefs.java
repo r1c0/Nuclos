@@ -38,6 +38,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -63,6 +64,9 @@ import org.nuclos.server.common.valueobject.PreferencesVO;
  *
  */
 public class WebAccessPrefs {
+	
+	private static final Logger LOG = Logger.getLogger(WebAccessPrefs.class);
+	
    private static final String	PREFS_BASE	= "org/nuclos/client";
 
    private Document _d;
@@ -96,7 +100,7 @@ public class WebAccessPrefs {
             throw new CommonFatalException("Could not read user preferences", e);
          }
          catch(CommonFinderException e) {
-
+        	 LOG.debug("getDoc variant 1 failed, trying variant 2: " + e);
    			Preferences prefs = new DummyPreferences();
    			prefs = prefs.userRoot().node("org/nuclos/client/collect/entity");
 
@@ -162,7 +166,6 @@ public class WebAccessPrefs {
     * @param map key value pair
     * @throws CommonBusinessException
     */
-   @SuppressWarnings("unchecked")
 	public void addEntry(String id, HashMap<String, String> map)throws CommonBusinessException{
 
       if(!id.startsWith(PREFS_BASE))
@@ -178,7 +181,7 @@ public class WebAccessPrefs {
       Element element = root.getChild("root");
       Element elem = getChildren(element);
 
-		List children = elem.getChild("map").getChildren("entry");
+		List<Element> children = elem.getChild("map").getChildren("entry");
 
 		children.clear();
 		Element newElement;
@@ -209,7 +212,7 @@ public class WebAccessPrefs {
       Element elem = getChildren(element);
 
 		HashMap<String, String> res = new HashMap<String, String>();
-		List children = elem.getChild("map").getChildren("entry");
+		List<Element> children = elem.getChild("map").getChildren("entry");
 		for(Object child : children) {
 			Element entry = (Element) child;
 			res.put(entry.getAttributeValue("key"), entry.getAttributeValue("value"));
@@ -223,9 +226,8 @@ public class WebAccessPrefs {
     * @param element
     * @return
     */
-   @SuppressWarnings("unchecked")
 	private Element getChildren(Element element){
-      List childern = element.getChildren("node");
+      List<Element> childern = element.getChildren("node");
 
       Iterator<String> it = new DynamicCollectionIterator<String>(idList);
       boolean found = true;
@@ -248,7 +250,8 @@ public class WebAccessPrefs {
 			if(!found)
 			{
 				String nodeName = getList().get(0);
-				System.out.println("create node " + nodeName);
+				if (LOG.isDebugEnabled())
+					LOG.debug("getChildren: create node " + nodeName);
 				Element newNode = new Element("node");
 				newNode.setAttribute("name", nodeName);
 

@@ -19,7 +19,6 @@ package org.nuclos.server.masterdata.ejb3;
 import java.util.Collection;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
 
 import org.nuclos.common.CommonMetaDataServerProvider;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
@@ -34,7 +33,7 @@ import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
  * Local facade for accessing meta data information from the
  * server side.
  */
-@Local
+// @Local
 public interface MetaDataFacadeLocal extends CommonMetaDataServerProvider {
 
 	/**

@@ -18,9 +18,6 @@ package org.nuclos.server.transfer.ejb3;
 
 import java.util.Date;
 
-import javax.ejb.CreateException;
-import javax.ejb.Local;
-
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -29,7 +26,7 @@ import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
-@Local
+// @Local
 public interface XmlExportImportProtocolFacadeLocal {
 
 	/**
@@ -46,10 +43,10 @@ public interface XmlExportImportProtocolFacadeLocal {
 	 * @throws CreateException
 	 * @throws NuclosBusinessRuleException
 	 */
-	public abstract Integer writeExportImportLogHeader(String sType,
+	Integer writeExportImportLogHeader(String sType,
 		String sUserName, Date dImportDate, String sImportEntityName,
 		String sImportFileName) throws CommonCreateException,
-		CommonPermissionException, CreateException, NuclosBusinessRuleException;
+		CommonPermissionException, NuclosBusinessRuleException;
 
 	/**
 	 * creates a protocol entry for the given protocol header id
@@ -63,10 +60,10 @@ public interface XmlExportImportProtocolFacadeLocal {
 	 * @throws CreateException
 	 * @throws NuclosBusinessRuleException
 	 */
-	public abstract void writeExportImportLogEntry(Integer iParentId,
+	void writeExportImportLogEntry(Integer iParentId,
 		String sMessageLevel, String sImportAction, String sImportMessage,
 		Integer iActionNumber) throws CommonCreateException,
-		CommonPermissionException, CreateException, NuclosBusinessRuleException;
+		CommonPermissionException, NuclosBusinessRuleException;
 
 	/**
 	 * add content of xml file to protocol header of given id
@@ -81,6 +78,6 @@ public interface XmlExportImportProtocolFacadeLocal {
 	 * @throws CommonStaleVersionException
 	 * @throws CommonValidationException
 	 */
-	public abstract void addFile(Integer iParentId, byte[] ba);
+	void addFile(Integer iParentId, byte[] ba);
 
 }

@@ -19,8 +19,6 @@ package org.nuclos.client.transfer;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-import javax.ejb.CreateException;
-
 import org.dom4j.DocumentException;
 
 import org.nuclos.common2.ServiceLocator;
@@ -54,7 +52,7 @@ public class XmlImportDelegate {
 	/**
 	 * Use getInstance() to create an (the) instance of this class
 	 */
-	private XmlImportDelegate() throws RemoteException, CreateException {
+	private XmlImportDelegate() throws RemoteException {
 		this.facade = ServiceLocator.getInstance().getFacade(XmlImportFacadeRemote.class);
 	}
 
@@ -64,8 +62,6 @@ public class XmlImportDelegate {
 				singleton = new XmlImportDelegate();
 			} catch (RemoteException ex) {
 				throw new CommonRemoteException(ex);
-			} catch (CreateException ex) {
-				throw new NuclosFatalException(ex);
 			}
 		}
 		return singleton;
@@ -75,7 +71,8 @@ public class XmlImportDelegate {
 		return this.facade;
 	}
 
-	public void xmlImport(String sEntityName, org.nuclos.common2.File importFile) throws NuclosFatalException, NuclosBusinessException, CommonFinderException {
+	public void xmlImport(String sEntityName, org.nuclos.common2.File importFile) 
+			throws NuclosFatalException, NuclosBusinessException, CommonFinderException {
 		try {
 			this.getXmlImportFacade().xmlImport(sEntityName, importFile);
 		}
@@ -92,9 +89,6 @@ public class XmlImportDelegate {
 			throw new NuclosFatalException(e);
 		}
 		catch (CommonPermissionException e) {
-			throw new NuclosFatalException(e);
-		}
-		catch (CreateException e) {
 			throw new NuclosFatalException(e);
 		}
 		catch (NuclosBusinessRuleException e) {

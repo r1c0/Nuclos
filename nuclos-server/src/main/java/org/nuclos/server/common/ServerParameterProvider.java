@@ -134,7 +134,6 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 		return result;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static Map<String, String> getParameterDefaults() {
 		Properties defaults = new Properties();
 		InputStream is = ServerParameterProvider.class.getClassLoader().getResourceAsStream("resources/parameter-defaults.properties");

@@ -24,8 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.CreateException;
-
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common.NuclosEntity;
@@ -46,18 +44,18 @@ public class RoleRepository {
 
 	private final Map<Object, MasterDataVO> mpRoles = CollectionUtils.newHashMap();
 
-	public static synchronized RoleRepository getInstance() throws RemoteException, CreateException {
+	public static synchronized RoleRepository getInstance() throws RemoteException {
 		if (singleton == null) {
 			singleton = new RoleRepository();
 		}
 		return singleton;
 	}
 
-	protected RoleRepository() throws CreateException, RemoteException {
+	protected RoleRepository() throws RemoteException {
 		updateRoles();
 	}
 
-	public void updateRoles() throws RemoteException, CreateException {
+	public void updateRoles() throws RemoteException {
 		mpRoles.clear();
 
 		final MasterDataFacadeRemote facade = ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);

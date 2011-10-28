@@ -27,10 +27,6 @@ import java.io.Serializable;
  */
 public class ProgressNotification implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public final static int RUNNING = 0;
 	public final static int STOPPED = 1;
 	public final static int FINISHED = 2;

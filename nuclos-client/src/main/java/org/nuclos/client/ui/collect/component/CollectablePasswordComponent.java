@@ -75,7 +75,6 @@ public abstract class CollectablePasswordComponent extends LabeledCollectableCom
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public CollectableField getFieldFromView() throws CollectableFieldFormatException {
 		return CollectableTextComponentHelper.write(this.getJTextComponent(), this.getEntityField());
 	}

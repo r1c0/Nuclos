@@ -54,10 +54,6 @@ public class ClipboardUtils {
 	 * inner class CutAction
 	 */
 	public static class CutAction extends DefaultEditorKit.CutAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public CutAction() {
 			this.putValue(CutAction.SMALL_ICON, iconCut16);
@@ -70,10 +66,6 @@ public class ClipboardUtils {
 	 * inner class CopyAction
 	 */
 	public static class CopyAction extends DefaultEditorKit.CopyAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public CopyAction() {
 			this.putValue(CopyAction.SMALL_ICON, iconCopy16);
@@ -86,10 +78,6 @@ public class ClipboardUtils {
 	 * inner class PasteAction
 	 */
 	public static class PasteAction extends DefaultEditorKit.PasteAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public PasteAction() {
 			this.putValue(PasteAction.SMALL_ICON, iconPaste16);

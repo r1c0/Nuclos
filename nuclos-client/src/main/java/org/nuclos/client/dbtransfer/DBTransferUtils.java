@@ -30,12 +30,15 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.filechooser.FileFilter;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.dbtransfer.TransferNuclet;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.dbtransfer.TransferFacadeRemote;
 
 public class DBTransferUtils {
 
+	private static final Logger LOG = Logger.getLogger(DBTransferUtils.class);
+	
 	private TransferFacadeRemote transferFacade;
 	
 	public static final int TABLE_LAYOUT_V_GAP = 3;
@@ -107,7 +110,9 @@ public class DBTransferUtils {
 						sleep(sleepTime);
 					}
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+					LOG.warn("startProgressThread failed: " + e);
+				}
 			}
 		}.start();
 	}

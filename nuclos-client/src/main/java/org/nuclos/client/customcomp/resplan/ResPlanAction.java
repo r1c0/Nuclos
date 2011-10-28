@@ -22,6 +22,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.customcomp.CustomComponentController;
 import org.nuclos.client.main.Main;
@@ -33,8 +34,8 @@ import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 
 public class ResPlanAction extends AbstractAction {
-
-	private static final long serialVersionUID = 1L;
+	
+	private static final Logger LOG = Logger.getLogger(ResPlanAction.class);
 
 	public ResPlanAction(CustomComponentVO componentVO) {
 		putValue(Action.NAME, CommonLocaleDelegate.getTextFallback(componentVO.getLabelResourceId(), componentVO.getLabelResourceId()) + "...");
@@ -46,8 +47,8 @@ public class ResPlanAction extends AbstractAction {
 			ResPlanConfigVO configVO = ResPlanConfigVO.fromBytes(componentVO.getData());
 			enabled = SecurityCache.getInstance().isReadAllowedForEntity(configVO.getResourceEntity())
 				&& SecurityCache.getInstance().isReadAllowedForEntity(configVO.getEntryEntity());
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		} catch (Exception e) {
+			LOG.warn("ResPlanAction failed: " + e, e);
 		}
 		setEnabled(enabled);
 	}

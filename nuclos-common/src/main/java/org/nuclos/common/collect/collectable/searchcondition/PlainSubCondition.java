@@ -47,7 +47,6 @@ public class PlainSubCondition implements CollectableSearchCondition {
 	}
 	
 	@Override
-	@SuppressWarnings("deprecation")
 	public int getType() {
 		return TYPE_SUB;
 	}
@@ -73,7 +72,6 @@ public class PlainSubCondition implements CollectableSearchCondition {
 	// --------------------------------------------------------
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public <O, Ex extends Exception> O accept(Visitor<O, Ex> visitor) throws Ex {
 		if(visitor instanceof CompositeVisitor<?, ?>){
 			return accept((CompositeVisitor<O, Ex>)visitor);

@@ -68,7 +68,6 @@ public abstract class ValueObjectList<E> implements List<E>, Cloneable {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ValueObjectList<E> clone() {
 		final ValueObjectList<E> result;
@@ -121,7 +120,6 @@ public abstract class ValueObjectList<E> implements List<E>, Cloneable {
 	 * @return {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public boolean remove(Object o) {
 		if (this.collAdded.contains(o)) {
 			this.collAdded.remove(o);

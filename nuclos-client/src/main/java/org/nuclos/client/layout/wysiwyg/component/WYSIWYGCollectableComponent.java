@@ -62,13 +62,8 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSIWYGComponent, MouseListener {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static final String PROPERTY_SHOWONLY = PROPERTY_LABELS.SHOWONLY;
 	public static final String PROPERTY_ENABLED = PROPERTY_LABELS.ENABLED;
@@ -322,7 +317,7 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#setProperty(java.lang.String, org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue, java.lang.Class)
 	 */
 	@Override
-	public void setProperty(String property, PropertyValue value, Class<?> valueClass) throws CommonBusinessException {
+	public void setProperty(String property, PropertyValue<?> value, Class<?> valueClass) throws CommonBusinessException {
 		this.properties.setProperty(property, value, valueClass);
 	}
 	

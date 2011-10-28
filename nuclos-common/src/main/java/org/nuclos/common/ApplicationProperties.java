@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common2.StringUtils;
 
 /**
@@ -38,6 +39,8 @@ import org.nuclos.common2.StringUtils;
  * @version 01.00.00
  */
 public class ApplicationProperties implements Serializable {
+
+	private static final Logger LOG = Logger.getLogger(ApplicationProperties.class);
 
 	private static final long serialVersionUID = 16362018323707955L;
 
@@ -155,12 +158,13 @@ public class ApplicationProperties implements Serializable {
 	}
 
 	private static long parseColorHex(String s) {
-	   if(s != null)
-         	   try {
-         	      return Long.parseLong(s, 16);
-         	   }
-         	   catch(NumberFormatException e) {}
-           return -1L;
+		if (s != null)
+			try {
+				return Long.parseLong(s, 16);
+			} catch (NumberFormatException e) {
+				LOG.debug("parseColorHex: " + e);
+			}
+		return -1L;
 	}
 
 	/**
@@ -300,7 +304,7 @@ public class ApplicationProperties implements Serializable {
 					sb.append("<tr><td><b>" + methods[i].getName().replaceAll("get", "") + "</b></td><td>" + methods[i].invoke(this, new Object[] {}) + "</td></tr>");
 				} catch (Exception e) {
 					sb.append("<tr><td>ERROR</td><td></td></tr>");
-					e.printStackTrace();
+					LOG.warn("toHtml failed: " + e, e);
 				}
 			}
 		}

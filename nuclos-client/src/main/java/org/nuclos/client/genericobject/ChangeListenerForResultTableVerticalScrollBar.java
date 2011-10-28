@@ -45,7 +45,8 @@ import org.nuclos.server.genericobject.ProxyList;
  * @version 01.00.00
  */
 public class ChangeListenerForResultTableVerticalScrollBar implements ChangeListener {
-	private static final Logger log = Logger.getLogger(ChangeListenerForResultTableVerticalScrollBar.class);
+	
+	private static final Logger LOG = Logger.getLogger(ChangeListenerForResultTableVerticalScrollBar.class);
 
 	private final DefaultBoundedRangeModel model;
 	private final JViewport viewport;
@@ -70,44 +71,44 @@ public class ChangeListenerForResultTableVerticalScrollBar implements ChangeList
 	@Override
 	public synchronized void stateChanged(ChangeEvent ev) {
 		if (bLock) {
-			log.debug("Ignoring stateChanged event because lock is already set.");
+			LOG.debug("Ignoring stateChanged event because lock is already set.");
 		}
 		else if (model.getValueIsAdjusting()) {
-			log.debug("Ignoring stateChanged event because valueIsAdjusting.");
+			LOG.debug("Ignoring stateChanged event because valueIsAdjusting.");
 		}
 		else {
 			try {
 				// set lock to avoid unwanted recursion:
 				bLock = true;
 
-				log.debug("Knob released.");
-				log.debug("model.getValue() = " + model.getValue());
+				LOG.debug("Knob released.");
+				LOG.debug("model.getValue() = " + model.getValue());
 				final JTable tbl = resultpanel.getResultTable();
 				final int iMaxYBeforeMove = UIUtils.getMaxVisibleY(tbl);
-				log.debug("iMaxYBeforeMove = " + iMaxYBeforeMove);
+				LOG.debug("iMaxYBeforeMove = " + iMaxYBeforeMove);
 				final int iLastRowBeforeMove = TableUtils.getLastVisibleRow(tbl);
-				log.debug("iLastRowBeforeMove = " + iLastRowBeforeMove);
+				LOG.debug("iLastRowBeforeMove = " + iLastRowBeforeMove);
 
 				final Point p = viewport.getViewPosition();
 				final int iShiftY = model.getValue() - p.y;
 				final int iMaxYAfterMove = iMaxYBeforeMove + iShiftY;
-				log.debug("iMaxYAfterMove = " + iMaxYAfterMove);
+				LOG.debug("iMaxYAfterMove = " + iMaxYAfterMove);
 				final int iLastRowAfterMove = TableUtils.getLastVisibleRow(tbl, iMaxYAfterMove);
-				log.debug("iLastRowAfterMove = " + iLastRowAfterMove);
+				LOG.debug("iLastRowAfterMove = " + iLastRowAfterMove);
 
 				final int iLastRow = iLastRowAfterMove;
-				log.debug("getLastIndexRead() = " + proxylst.getLastIndexRead());
+				LOG.debug("getLastIndexRead() = " + proxylst.getLastIndexRead());
 				if (iLastRow != -1  && !proxylst.hasObjectBeenReadForIndex(iLastRow)) {
-					log.debug("*** NEED TO GET DATA!");
+					LOG.debug("*** NEED TO GET DATA!");
 					
 					class FetchSearchResultSwingWorker extends SwingWorker<Integer, Integer> {
 						@Override
 						public Integer doInBackground() {
-							log.debug("START FetchSearchResultSwingWorker");
+							LOG.debug("START FetchSearchResultSwingWorker");
 							// since fetchDataIfNecessary never publishes intermediate results (progress)
 							// to its ChangeListener, there is no need to install one
 							proxylst.fetchDataIfNecessary(iLastRow, null);
-							log.debug("FINISHED FetchSearchResultSwingWorker");
+							LOG.debug("FINISHED FetchSearchResultSwingWorker");
 							return proxylst.getLastIndexRead();
 						}
 						
@@ -123,19 +124,18 @@ public class ChangeListenerForResultTableVerticalScrollBar implements ChangeList
 									// move the table:
 									p.y = model.getValue();
 									viewport.setViewPosition(p);
-									log.debug("getLastVisibleRow(tbl) = " + TableUtils.getLastVisibleRow(tbl));
+									LOG.debug("getLastVisibleRow(tbl) = " + TableUtils.getLastVisibleRow(tbl));
 								}
 								else {
 									// move to the last read row:
-									log.debug("*** MOVE TO THE LAST READ ROW: " + iLastIndexRead);
+									LOG.debug("*** MOVE TO THE LAST READ ROW: " + iLastIndexRead);
 									model.setValue(getModelValue(tbl, iLastIndexRead));
 								}
 							} 
 							catch(Exception e) {
 								// an exception or error occured:
-
 								// reset view position:
-								log.info("Resetting vertical scrollbar.");
+								LOG.info("Resetting vertical scrollbar because of " + e);
 								model.setValue(0);
 
 								final String sMessage = CommonLocaleDelegate.getMessage("ChangeListenerForResultTableVerticalScrollBar.1", "Beim Nachladen von Datens\u00e4tzen ist ein Fehler ist aufgetreten. Die Datens\u00e4tze k\u00f6nnen nicht angezeigt werden.");
@@ -153,7 +153,7 @@ public class ChangeListenerForResultTableVerticalScrollBar implements ChangeList
 					// move the table:
 					p.y = model.getValue();
 					viewport.setViewPosition(p);
-					log.debug("getLastVisibleRow(tbl) = " + TableUtils.getLastVisibleRow(tbl));
+					LOG.debug("getLastVisibleRow(tbl) = " + TableUtils.getLastVisibleRow(tbl));
 				}
 			}
 			finally {

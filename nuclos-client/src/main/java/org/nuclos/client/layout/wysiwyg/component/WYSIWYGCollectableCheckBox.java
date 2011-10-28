@@ -41,13 +41,8 @@ import org.nuclos.common.NuclosBusinessException;
  * @author <a href="mailto:maik.stueker@novabit.de">maik.stueker</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class WYSIWYGCollectableCheckBox extends WYSIWYGCollectableComponent {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private TriStateCheckBox component = new TriStateCheckBox();
 	
 	public WYSIWYGCollectableCheckBox() {

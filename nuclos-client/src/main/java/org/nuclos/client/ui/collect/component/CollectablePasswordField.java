@@ -32,8 +32,10 @@ import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
  * @version 01.00.00
  */
 public class CollectablePasswordField extends CollectableTextComponent {
-	@SuppressWarnings("unused")
+	
+	// @SuppressWarnings("unused")
 	private CollectableEntityField clctef;
+	
 	/**
 	 * @param clctef
 	 * @postcondition this.isDetailsComponent()

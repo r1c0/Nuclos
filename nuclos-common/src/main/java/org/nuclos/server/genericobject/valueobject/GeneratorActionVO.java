@@ -30,10 +30,7 @@ import org.nuclos.common.PropertiesMap;
  * @version 01.00.000
  */
 public class GeneratorActionVO implements java.io.Serializable {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private Integer iId;
 	private String sName;
 	private String sLabel;

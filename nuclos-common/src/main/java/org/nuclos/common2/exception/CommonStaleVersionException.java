@@ -28,11 +28,6 @@ package org.nuclos.common2.exception;
  */
 public class CommonStaleVersionException extends CommonBusinessException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public CommonStaleVersionException() {
 		super(CommonBusinessException.STALE_VERSION);
 	}

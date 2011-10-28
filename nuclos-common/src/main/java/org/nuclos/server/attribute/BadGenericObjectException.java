@@ -30,10 +30,6 @@ import java.util.Collection;
  */
 public class BadGenericObjectException extends CommonValidationException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final Integer iGenericObjectId;
 	private Collection<BadAttributeValueException> collex;
 	private final int iTotalAttributeCount;

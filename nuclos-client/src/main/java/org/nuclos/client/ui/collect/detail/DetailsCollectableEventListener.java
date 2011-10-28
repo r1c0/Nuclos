@@ -39,7 +39,7 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 public class DetailsCollectableEventListener extends CollectStateAdapter implements CollectableEventListener {
 
-	protected static final Logger log = Logger.getLogger(CollectController.class);
+	private static final Logger LOG = Logger.getLogger(CollectController.class);
 
 	private final WeakReference<CollectController<?>> sourceController;
 	private final WeakReference<CollectController<?>> targetController;
@@ -62,7 +62,7 @@ public class DetailsCollectableEventListener extends CollectStateAdapter impleme
 					}
 	            }
 	            catch(CommonBusinessException e) {
-	            	log.error(e.getMessage(), e);
+	            	LOG.error("handleCollectableEvent failed: " + e, e);
 	            }
 			}
 		}

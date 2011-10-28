@@ -27,10 +27,8 @@ import org.nuclos.common.TranslationVO;
 
 public class CustomComponentTranslationTableModel extends AbstractTableModel {
 
-	private static final long serialVersionUID = 1L;
-
-	List<TranslationVO> lstRows;
-	static String[] labels = TranslationVO.labelsCustomComponent;
+	private List<TranslationVO> lstRows;
+	private static String[] labels = TranslationVO.labelsCustomComponent;
 
 	public CustomComponentTranslationTableModel() {
 		lstRows = new ArrayList<TranslationVO>();

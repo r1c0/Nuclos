@@ -48,7 +48,7 @@ public class ReportFormatController {
 
 		ReportOutputVO.Format result = ReportOutputVO.Format.PDF;
 
-		final ButtonModel bm = pnlFormat.bgFormat.getSelection();
+		final ButtonModel bm = pnlFormat.getFormatButtonGroup().getSelection();
 		if (bm != null) {
 			final String sSelectedFormat = bm.getActionCommand();
 			if (sSelectedFormat == "PDF") {

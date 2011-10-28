@@ -26,6 +26,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataModuleDelegate;
@@ -36,33 +37,28 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class ProzessWizardPanel extends JPanel {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	JSplitPane splitPane;	
+	private static final Logger LOG = Logger.getLogger(ProzessWizardPanel.class);
 	
-	JScrollPane scrollTree;	
-	JTree treeForcast;
+	private JSplitPane splitPane;	
 	
-	JPanel panelRight;
-	JLabel lbSourceModule;
-	JLabel lbTargetModule;
-	JScrollPane paneSource;
-	JScrollPane paneTarget;
-	JList lstSource;
-	JList lstTarget;
-	JTextField tfSource;
-	JTextField tfTarget;
+	private JScrollPane scrollTree;	
+	private JTree treeForcast;
+	
+	private JPanel panelRight;
+	private JLabel lbSourceModule;
+	private JLabel lbTargetModule;
+	private JScrollPane paneSource;
+	private JScrollPane paneTarget;
+	private JList lstSource;
+	private JList lstTarget;
+	private JTextField tfSource;
+	private JTextField tfTarget;
 
 	public ProzessWizardPanel()  {
 		super();
-		
 	}
 	
 	public Collection<MasterDataVO> buildTrees() {
-		
 		Collection<MasterDataVO> colGeneration = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.GENERATION.getEntityName());
 		for(MasterDataVO voGeneration : colGeneration) {
 			String sSourceModule = (String)voGeneration.getField("sourceModule");
@@ -75,17 +71,14 @@ public class ProzessWizardPanel extends JPanel {
 				continue;
 			}
 			voSourceModule.setField("showrelations", true);
-			
 			voSourceModule.setField("treeview", "${"+NuclosEOField.STATE.getMetaData().getField()+"}");
-			
-			
 			
 			//@TODO find a better way... modules are no longer supported for writing!
 			try {
 				MasterDataModuleDelegate.getInstance().update(NuclosEntity.MODULE.getEntityName(), voSourceModule, null);
 			}
 			catch(CommonBusinessException e) {
-				e.printStackTrace();
+				LOG.warn("buildTrees failed: " + e);
 			}
 		}
 		return colGeneration;

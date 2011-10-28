@@ -48,10 +48,6 @@ import org.xml.sax.Attributes;
 
 public class PropertyValueTranslations implements PropertyValue<TranslationMap> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private TranslationMap value;
 
 	public PropertyValueTranslations() {
@@ -114,10 +110,6 @@ public class PropertyValueTranslations implements PropertyValue<TranslationMap> 
 
 	public class PropertyEditorTranslations extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private JPanel panel = new JPanel();
 		private WYSIWYGComponent c;
 		

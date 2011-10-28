@@ -21,7 +21,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;
 
-import javax.ejb.CreateException;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
@@ -48,7 +47,7 @@ public class InsertRoleController {
 		this.parent = parent;
 	}
 
-	public boolean run(String sDialogTitle, java.util.List<MasterDataVO> excludeRoles) throws CreateException, RemoteException {
+	public boolean run(String sDialogTitle, java.util.List<MasterDataVO> excludeRoles) throws RemoteException {
 		boolean result = false;
 		pnlRoles = new InsertRolePanel();
 

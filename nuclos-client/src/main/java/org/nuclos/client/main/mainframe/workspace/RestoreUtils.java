@@ -30,7 +30,6 @@ import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 
 import org.apache.log4j.Logger;
-import org.jfree.util.Log;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.ExternalFrame;
@@ -78,7 +77,6 @@ public class RestoreUtils {
 			LOG.warn("TabRestoreController could not be created or restore failed:", e);
 			return false;
 		}
-
 		return true;
 	}
 
@@ -175,7 +173,7 @@ public class RestoreUtils {
 				wd = getPrefsFacade().getWorkspace(name);
 			}
 		} catch(CommonFinderException e) {
-			Log.error(e);
+			LOG.error("restoreWorkspaceThreaded: " + e, e);
 			name = MainFrame.getDefaultWorkspace();
 			wd = WorkspaceDescriptionDefaultsFactory.createOldMdiStyle();
 		}
@@ -600,10 +598,10 @@ public class RestoreUtils {
 					result.setSelectedComponent(toSelect);
 				} catch(IllegalArgumentException e) {
 					// may be not all tabs are restored
+					LOG.info("restoreContent: " + e);
 				}
 			}
 		}
-
 	}
 
 	private static class SplitRestorer implements ContentRestorer {

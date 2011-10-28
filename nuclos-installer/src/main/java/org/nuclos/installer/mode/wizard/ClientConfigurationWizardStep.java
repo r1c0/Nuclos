@@ -21,6 +21,7 @@ import info.clearthought.layout.TableLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 
+import org.apache.log4j.Logger;
 import org.nuclos.installer.ConfigContext;
 import org.nuclos.installer.InstallException;
 import org.nuclos.installer.L10n;
@@ -29,10 +30,7 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class ClientConfigurationWizardStep extends AbstractWizardStep {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(ClientConfigurationWizardStep.class);
 
 	private JCheckBox chkSingleInstance = new JCheckBox();
 

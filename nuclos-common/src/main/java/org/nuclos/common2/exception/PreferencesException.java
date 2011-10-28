@@ -27,10 +27,6 @@ package org.nuclos.common2.exception;
  */
 
 public class PreferencesException extends CommonBusinessException {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	public PreferencesException(String sMessage) {
 		super(sMessage);

@@ -20,27 +20,19 @@ import java.util.Collection;
 import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.CreateException;
-import javax.ejb.Remote;
 
-import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
-import org.nuclos.common2.exception.CommonRemoveException;
-import org.nuclos.common2.exception.CommonStaleVersionException;
-import org.nuclos.common2.exception.CommonValidationException;
-import org.nuclos.server.attribute.NuclosSystemAttributeNotModifiableException;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
-import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 
-@Remote
+// @Remote
 public interface AttributeFacadeRemote {
 
 	/**
 	 * @return a collection containing all dynamic attributes
 	 */
 	@RolesAllowed("Login")
-	public abstract Collection<AttributeCVO> getAttributes(Integer iGroupId);
+	Collection<AttributeCVO> getAttributes(Integer iGroupId);
 
 	/**
 	 * @param iAttributeId id of attribute
@@ -48,7 +40,7 @@ public interface AttributeFacadeRemote {
 	 * @throws CommonPermissionException
 	 * @precondition iAttributeId != null
 	 */
-	public abstract AttributeCVO get(Integer iAttributeId)
+	AttributeCVO get(Integer iAttributeId)
 		throws CommonFinderException, CommonPermissionException;
 
 	/**
@@ -57,13 +49,13 @@ public interface AttributeFacadeRemote {
 	 * @return same attribute as value object
 	 * @throws CommonPermissionException
 	 * @postcondition result != null
-	 */
 	@RolesAllowed("Login")
-	public abstract AttributeCVO create(AttributeCVO attrcvo,
+	AttributeCVO create(AttributeCVO attrcvo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonValidationException,
 		CommonPermissionException;
+	 */
 
 	/**
 	 * updates an existing attribute in the database.
@@ -73,38 +65,37 @@ public interface AttributeFacadeRemote {
 	 * @return new attribute id
 	 * @throws CommonPermissionException
 	 * @throws CreateException
-	 */
 	@RolesAllowed("Login")
-	public abstract Integer modify(AttributeCVO attrcvo,
+	Integer modify(AttributeCVO attrcvo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonValidationException,
-		NuclosSystemAttributeNotModifiableException, CommonPermissionException,
-		CreateException;
+		NuclosSystemAttributeNotModifiableException, CommonPermissionException;
+	 */
 
 	/**
 	 * deletes the given attribute from the database.
 	 * External values will not be deleted, they must be deleted in the referenced master data table directly.
 	 * @param attrcvo the attribute to be deleted
 	 * @throws CommonPermissionException
-	 */
 	@RolesAllowed("Login")
-	public abstract void remove(AttributeCVO attrcvo)
+	void remove(AttributeCVO attrcvo)
 		throws CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException,
 		NuclosSystemAttributeNotModifiableException, CommonPermissionException;
+	 */
 
 	/**
 	 * invalidates the attribute cache (console function)
 	 */
 	@RolesAllowed("Login")
-	public abstract void invalidateCache();
+	void invalidateCache();
 
 	/**
 	 * @return the available calculation functions for calculated attributes
 	 */
 	@RolesAllowed("Login")
-	public abstract Collection<String> getCalculationFunctions();
+	Collection<String> getCalculationFunctions();
 
 	/**
 	 *
@@ -112,7 +103,7 @@ public interface AttributeFacadeRemote {
 	 * @return the layouts that contained this attribute
 	 */
 	@RolesAllowed("Login")
-	public abstract Set<String> getAttributeLayouts(String sAttributeName);
+	Set<String> getAttributeLayouts(String sAttributeName);
 	
 	/**
 	 *
@@ -120,6 +111,6 @@ public interface AttributeFacadeRemote {
 	 * @return the layouts that contained this attribute
 	 */
 	@RolesAllowed("Login")
-	public abstract Set<String> getAttributeForModule(String iModuleId);
+	Set<String> getAttributeForModule(String iModuleId);
 
 }

@@ -26,6 +26,7 @@ import java.util.Iterator;
 
 import javax.swing.JPopupMenu;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.gef.layout.Extents2D;
 import org.nuclos.client.gef.shapes.AbstractConnector;
 import org.nuclos.client.gef.shapes.AbstractShape;
@@ -42,6 +43,9 @@ import org.nuclos.client.ui.Errors;
  * @version 01.00.00
  */
 public class AbstractShapeController extends AbstractController {
+	
+	private static final Logger LOG = Logger.getLogger(AbstractShapeController.class);
+
 	/**
 	 * Always remember the point where the user clicked first
 	 */
@@ -638,10 +642,10 @@ public class AbstractShapeController extends AbstractController {
 				shape.afterCreate();
 			}
 			catch (InstantiationException ex) {
-				System.out.println(ex);
+				LOG.error("mousePressedInsertShape failed: " + ex, ex);
 			}
 			catch (IllegalAccessException ex) {
-				System.out.println(ex);
+				LOG.error("mousePressedInsertShape failed: " + ex, ex);
 			}
 
 			shape.setView(viewer);

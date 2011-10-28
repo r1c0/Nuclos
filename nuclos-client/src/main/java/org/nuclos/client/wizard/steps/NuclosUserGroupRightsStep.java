@@ -27,6 +27,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.wizard.model.EntityRightsSelectTableModel;
 import org.nuclos.client.wizard.util.NuclosWizardUtils;
@@ -52,15 +53,13 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class NuclosUserGroupRightsStep extends NuclosEntityAbstractStep {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	JTable table;
-	JScrollPane scroll;
-	EntityRightsSelectTableModel userRightsModel;
-	TableColumn col;
-	JComboBox cmbUserRights;
+	private static final Logger LOG = Logger.getLogger(NuclosUserGroupRightsStep.class);
+
+	private JTable table;
+	private JScrollPane scroll;
+	private EntityRightsSelectTableModel userRightsModel;
+	private TableColumn col;
+	private JComboBox cmbUserRights;
 	
 	
 	public NuclosUserGroupRightsStep() {	
@@ -118,9 +117,10 @@ public class NuclosUserGroupRightsStep extends NuclosEntityAbstractStep {
 		cmbUserRights.removeAllItems();
 		cmbUserRights.addItem("");
 		try {
-			Class<? extends Enum> clazz = Class.forName("org.nuclos.server.common.MasterDataPermission").asSubclass(Enum.class);
-			for (Enum e : clazz.getEnumConstants()) {
-				Object value = (e instanceof KeyEnum) ? ((KeyEnum) e).getValue() : e.name();
+			Class<? extends Enum<?>> clazz = (Class<? extends Enum<?>>) 
+					Class.forName("org.nuclos.server.common.MasterDataPermission").asSubclass(Enum.class);
+			for (Enum<?> e : clazz.getEnumConstants()) {
+				Object value = (e instanceof KeyEnum) ? ((KeyEnum<?>) e).getValue() : e.name();
 				String text = (e instanceof Localizable) ? CommonLocaleDelegate.getText((Localizable) e) : e.toString();
 				CollectableField cf = new LocalizedCollectableValueField(value, text);
 				cmbUserRights.addItem(cf);

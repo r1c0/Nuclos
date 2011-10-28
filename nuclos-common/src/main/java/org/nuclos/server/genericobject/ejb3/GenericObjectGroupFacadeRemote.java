@@ -18,15 +18,13 @@ package org.nuclos.server.genericobject.ejb3;
 
 import java.util.Set;
 
-import javax.ejb.Remote;
-
-@Remote
+// @Remote
 public interface GenericObjectGroupFacadeRemote {
 
 	/**
 	 * @param iGenericObjectId
 	 * @return the ids of the object group, the genericobject is assigned to
 	 */
-	public abstract Set<Integer> getObjectGroupId(Integer iGenericObjectId);
+	Set<Integer> getObjectGroupId(Integer iGenericObjectId);
 
 }

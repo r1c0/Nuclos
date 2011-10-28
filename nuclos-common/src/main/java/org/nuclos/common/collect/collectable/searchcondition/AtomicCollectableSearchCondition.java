@@ -54,7 +54,6 @@ public abstract class AtomicCollectableSearchCondition extends AbstractCollectab
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public int getType() {
 		return TYPE_ATOMIC;
 	}

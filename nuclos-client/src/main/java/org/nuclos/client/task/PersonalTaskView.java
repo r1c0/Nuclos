@@ -48,23 +48,16 @@ import org.nuclos.common2.CommonLocaleDelegate;
  * @version 01.00.00
  */
 public class PersonalTaskView extends TaskView {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
-	final JButton btnRefresh = new JButton();
-	final JButton btnNew = new JButton();
-	final JMenuItem btnEdit = new JMenuItem();
-	final JMenuItem btnPerform = new JMenuItem();
-	final JMenuItem btnRemove = new JMenuItem();
-	final JMenuItem btnPrint = new JMenuItem();
 
-	final JToggleButton btnComplete = new JToggleButton() {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+	private final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
+	private final JButton btnRefresh = new JButton();
+	private final JButton btnNew = new JButton();
+	private final JMenuItem btnEdit = new JMenuItem();
+	private final JMenuItem btnPerform = new JMenuItem();
+	private final JMenuItem btnRemove = new JMenuItem();
+	private final JMenuItem btnPrint = new JMenuItem();
+
+	private final JToggleButton btnComplete = new JToggleButton() {
 
 		// JToggleButton doesn't respect the "hideActionText" client property.
 		@Override
@@ -149,7 +142,35 @@ public class PersonalTaskView extends TaskView {
 	}
 
 	JTable getTable() {
-		return this.tblTasks;
+		return tblTasks;
+	}
+	
+	JToggleButton getCompleteButton() {
+		return btnComplete;
+	}
+	
+	JButton getRefreshButton() {
+		return btnRefresh;
+	}
+	
+	JMenuItem getEditMenuItem() {
+		return btnEdit;
+	}
+	
+	JButton getNewButton() {
+		return btnNew;
+	}
+	
+	JMenuItem getPrintMenuItem() {
+		return btnPrint;
+	}
+	
+	JMenuItem getRemoveMenuItem() {
+		return btnRemove;
+	}
+	
+	JMenuItem getPerformMenuItem() {
+		return btnPerform;
 	}
 
 	public void setPersonalTaskTableModel(PersonalTaskTableModel model) {

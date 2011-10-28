@@ -23,9 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.CreateException;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
@@ -67,8 +64,8 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-@Stateless
-@Remote(SearchFilterFacadeRemote.class)
+// @Stateless
+// @Remote(SearchFilterFacadeRemote.class)
 @Transactional
 public class SearchFilterFacadeBean extends MasterDataFacadeBean implements SearchFilterFacadeRemote {
 
@@ -106,7 +103,7 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	 */
 	@Override
     @RolesAllowed("Login")
-	public Collection<SearchFilterVO> getAllSearchFilterByUser(String sUser) throws CreateException, CommonFinderException, CommonPermissionException {
+	public Collection<SearchFilterVO> getAllSearchFilterByUser(String sUser) throws CommonFinderException, CommonPermissionException {
 		Collection<SearchFilterVO> collSearchFilter = new ArrayList<SearchFilterVO>();
 
 		// 1. get all searchfilteruser objects for given user
@@ -156,7 +153,7 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	 */
 	@Override
     @RolesAllowed("Login")
-	public SearchFilterVO createSearchFilter(SearchFilterVO filterVO) throws NuclosBusinessRuleException, CommonCreateException, CommonPermissionException, CreateException {
+	public SearchFilterVO createSearchFilter(SearchFilterVO filterVO) throws NuclosBusinessRuleException, CommonCreateException, CommonPermissionException {
 		MasterDataVO mdVO_searchfilter = SearchFilterVO.transformToMasterData(filterVO);
 
 		filterVO.getSearchFilterUser().setEditable(true);
@@ -190,7 +187,7 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	 */
 	@Override
     @RolesAllowed("Login")
-	public SearchFilterVO modifySearchFilter(SearchFilterVO filterVO) throws NuclosBusinessRuleException, CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException, CreateException {
+	public SearchFilterVO modifySearchFilter(SearchFilterVO filterVO) throws NuclosBusinessRuleException, CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException {
 		Object oId = getMasterDataFacade().modify(NuclosEntity.SEARCHFILTER.getEntityName(), SearchFilterVO.transformToMasterData(filterVO), null);
 		return SearchFilterVO.transformToSearchFilter(getMasterDataFacade().get(NuclosEntity.SEARCHFILTER.getEntityName(), oId), SearchFilterUserVO.transformToMasterData(filterVO.getSearchFilterUser()));
 	}
@@ -200,7 +197,7 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	 */
 	@Override
     @RolesAllowed("Login")
-	public void removeSearchFilter(SearchFilterVO filterVO) throws NuclosBusinessRuleException, CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException, CreateException {
+	public void removeSearchFilter(SearchFilterVO filterVO) throws NuclosBusinessRuleException, CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException {
 		// if the user is not the owner of the searchfilter, remove only the searchfilteruser record
 		if (!filterVO.getOwner().equals(getCurrentUserName())) {
 			getMasterDataFacade().remove(NuclosEntity.SEARCHFILTERUSER.getEntityName(), SearchFilterUserVO.transformToMasterData(filterVO.getSearchFilterUser()), false);
@@ -217,7 +214,7 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	 */
 	@Override
     @RolesAllowed("Login")
-	public void changeCreatedUser(Integer iId, String sUserName) throws NuclosBusinessRuleException, CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException, CreateException {
+	public void changeCreatedUser(Integer iId, String sUserName) throws NuclosBusinessRuleException, CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException {
 		DataBaseHelper.execute(DbStatementUtils.updateValues("T_UD_SEARCHFILTER",
 			"STRCREATED", sUserName).where("INTID", iId));
 	}
@@ -228,7 +225,7 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	 * @return Integer
 	 * @throws CreateException
 	 */
-	private Integer getIdByUser(String sUser) throws CreateException {
+	private Integer getIdByUser(String sUser) {
 		final CollectableSearchCondition cond = SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.USER), "name", ComparisonOperator.EQUAL, sUser);
 		TruncatableCollection<MasterDataVO> collmdvo = getMasterDataFacade().getMasterData(NuclosEntity.USER.getEntityName(), cond, true);
 

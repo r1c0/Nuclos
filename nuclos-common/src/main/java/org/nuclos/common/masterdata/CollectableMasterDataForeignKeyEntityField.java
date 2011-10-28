@@ -18,6 +18,7 @@ package org.nuclos.common.masterdata;
 
 import java.util.prefs.Preferences;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.AbstractCollectableEntityField;
@@ -42,6 +43,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @version 01.00.00
  */
 public class CollectableMasterDataForeignKeyEntityField extends AbstractCollectableEntityField {
+
+	private static final Logger LOG = Logger.getLogger(CollectableMasterDataForeignKeyEntityField.class);
 
 	private final String entityName;
 
@@ -167,11 +170,11 @@ public class CollectableMasterDataForeignKeyEntityField extends AbstractCollecta
 				}
 			}
 		}
-		catch(Exception ex) {
+		catch(Exception e) {
 			// on exception return super.getDefault()
+			LOG.info("getDefault: " + e);
 			return super.getDefault();
 		}
-
 		return super.getDefault();
 	}
 

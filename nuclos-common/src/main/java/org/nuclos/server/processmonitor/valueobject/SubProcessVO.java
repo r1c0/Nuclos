@@ -31,11 +31,6 @@ import org.nuclos.server.statemodel.valueobject.StateModelVO;
 public class SubProcessVO extends NuclosValueObject{
 	
 	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
 	 * This id is used before a new object is saved.
 	 * A dirty id is < 0
 	 */

@@ -51,6 +51,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm.SubFormTableModel;
@@ -76,6 +77,8 @@ import org.nuclos.common2.exception.PreferencesException;
  *
  */
 public class FixedColumnRowHeader extends SubformRowHeader {
+
+	private static final Logger LOG = Logger.getLogger(FixedColumnRowHeader.class);
 
 	public static final String PREFS_NODE_FIXEDFIELDS = "fixedFields";
 	public static final String PREFS_NODE_FIXEDFIELDS_WIDTHS = "fixedFieldWidths";
@@ -196,7 +199,6 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	 * command: select columns
 	 * Lets the user select the columns to show in the result list.
 	 */
-	@SuppressWarnings("unchecked")
 	private void cmdSelectColumns() {
 
 		final SelectFixedColumnsController ctl = new SelectFixedColumnsController(this.getHeaderTable(), new SelectFixedColumnsPanel());
@@ -522,6 +524,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 			catch(Exception e) {
 				// only add Column on non exception
 				// column may be removed
+				LOG.warn("synchronizeColumnsInExternalTable: " + e + " (column removed?)");
 			}
 		}
 	}
@@ -564,22 +567,10 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 			catch(Exception e) {
 				// only add Column on non exception
 				// column may be removed
+				LOG.warn("synchronizeColumnsInHeaderTable: " + e + " (column removed?)");
 			}
 		}
 	}
-
-//	private Map getHeaderColumnWidths(JTable tbl) {
-//		final Map result = new HashMap();
-//		final Enumeration enumeration = tbl.getColumnModel().getColumns();
-//		while (enumeration.hasMoreElements()) {
-//			final TableColumn column = (TableColumn) enumeration.nextElement();
-//			if( !column.getIdentifier().equals("")) {
-//				CollectableEntityField clctbl = ((CollectableEntityFieldBasedTableModel)getExternalTable().getModel()).getEntityField(column.getModelIndex() - FixedRowIndicatorTableModel.ROWMARKERCOLUMN_COUNT);
-//				result.put(clctbl.getName(), new Integer(column.getWidth()));
-//			}
-//		}
-//		return result;
-//	}
 
 	private List<String> getColumnNames() {
 		final List<String> result = new ArrayList<String>();
@@ -625,10 +616,6 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	 */
 	public static class HeaderTable extends CommonJTable {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private TableCellEditorProvider cellEditorProvider;
 		private TableCellRendererProvider cellRendererProvider;
 
@@ -722,10 +709,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	 * @author <a href="mailto:rainer.schneider@novabit.de">rainer.schneider</a>
 	 */
 	public static class FixedRowIndicatorTableModel extends SubformRowHeader.RowIndicatorTableModel {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+
 		private static final int ROWMARKERCOLUMN_INDEX = 0;
 		public static final int ROWMARKERCOLUMN_COUNT = 1;
 		private TableModel externalModel = new DefaultTableModel(0, 0);
@@ -802,10 +786,6 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	}
 	
 	private static class FixedRowToolTipsTableHeader extends ToolTipsTableHeader {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public FixedRowToolTipsTableHeader(CollectableEntityFieldBasedTableModel aTableModel, TableColumnModel cm) {
 			super(aTableModel, cm);

@@ -18,13 +18,11 @@ package org.nuclos.server.job.ejb3;
 
 import java.util.Date;
 
-import javax.ejb.Local;
-
 import org.nuclos.common.collection.Pair;
 import org.nuclos.server.job.valueobject.JobVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
-@Local
+// @Local
 public interface JobControlFacadeLocal {
 
 	Pair<JobVO, MasterDataVO> prepare(Object oId);

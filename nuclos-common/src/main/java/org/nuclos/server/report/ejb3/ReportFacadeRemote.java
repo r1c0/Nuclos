@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.FinderException;
-import javax.ejb.Remote;
 import javax.swing.table.TableModel;
 
 import net.sf.jasperreports.engine.JRException;
@@ -47,14 +45,14 @@ import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ReportVO.ReportType;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
-@Remote
+// @Remote
 public interface ReportFacadeRemote {
 
 	/**
 	 * @return all reports
 	 * @throws CommonPermissionException
 	 */
-	public abstract Collection<ReportVO> getReports()
+	Collection<ReportVO> getReports()
 		throws CommonPermissionException;
 
 	/**
@@ -65,7 +63,7 @@ public interface ReportFacadeRemote {
 	 * @return set of reports
 	 * @throws CommonPermissionException
 	 */
-	public abstract Collection<ReportVO> getReportsForDatasourceId(
+	Collection<ReportVO> getReportsForDatasourceId(
 		Integer iDataSourceId, final ReportType type)
 		throws CommonPermissionException;
 
@@ -75,7 +73,7 @@ public interface ReportFacadeRemote {
 	 * @param mpDependants
 	 * @return new report
 	 */
-	public abstract MasterDataVO create(MasterDataVO mdvo,
+	MasterDataVO create(MasterDataVO mdvo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
 		NuclosReportException, CommonPermissionException,
 		NuclosBusinessRuleException;
@@ -87,7 +85,7 @@ public interface ReportFacadeRemote {
 	 * @param mpDependants
 	 * @return modified report
 	 */
-	public abstract Integer modify(MasterDataVO mdvo,
+	Integer modify(MasterDataVO mdvo,
 		DependantMasterDataMap mpDependants) throws CommonBusinessException;
 
 	/**
@@ -95,7 +93,7 @@ public interface ReportFacadeRemote {
 	 * @param sEntity
 	 * @param mdvo value object
 	 */
-	public abstract void remove(MasterDataVO mdvo)
+	void remove(MasterDataVO mdvo)
 		throws CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonPermissionException,
 		CommonCreateException, NuclosBusinessRuleException;
@@ -105,14 +103,14 @@ public interface ReportFacadeRemote {
 	 * @param iReportId id of report
 	 * @return collection of output formats
 	 */
-	public abstract Collection<ReportOutputVO> getReportOutputs(Integer iReportId);
+	Collection<ReportOutputVO> getReportOutputs(Integer iReportId);
 
 	/**
 	 * get output format for reportoutput id
 	 * @param iReportOutputId
 	 * @return reportoutput
 	 */
-	public abstract ReportOutputVO getReportOutput(Integer iReportOutputId)
+	ReportOutputVO getReportOutput(Integer iReportOutputId)
 		throws CommonFinderException, CommonPermissionException;
 
 	/**
@@ -121,19 +119,19 @@ public interface ReportFacadeRemote {
 	 * @param mpParams parameters
 	 * @return report/form filled with data
 	 */
-	public abstract JasperPrint prepareReport(Integer iReportOutputId,
+	JasperPrint prepareReport(Integer iReportOutputId,
 		Map<String, Object> mpParams, Integer iMaxRowCount)
 		throws CommonFinderException, NuclosReportException,
 		CommonPermissionException;
 
-	public NuclosFile prepareCsvReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) throws CommonFinderException, NuclosReportException, CommonPermissionException;
+	NuclosFile prepareCsvReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) throws CommonFinderException, NuclosReportException, CommonPermissionException;
 
 	/**
 	 * gets an empty report/form
 	 * @param iReportOutputId report output id
 	 * @return empty report/form
 	 */
-	public abstract JasperPrint prepareEmptyReport(Integer iReportOutputId)
+	JasperPrint prepareEmptyReport(Integer iReportOutputId)
 		throws CommonFinderException, NuclosReportException,
 		CommonBusinessException;
 
@@ -150,7 +148,7 @@ public interface ReportFacadeRemote {
 	 * @return search result report filled with data
 	 */
 	@RolesAllowed("Login")
-	public abstract JasperPrint prepareSearchResult(CollectableSearchExpression clctexpr,
+	JasperPrint prepareSearchResult(CollectableSearchExpression clctexpr,
 		List<? extends CollectableEntityField> lstclctefweSelected,
 		Integer iModuleId, boolean bIncludeSubModules)
 		throws NuclosReportException;
@@ -160,7 +158,7 @@ public interface ReportFacadeRemote {
 	 * @throws NuclosReportException
 	 */
 	@RolesAllowed("Login")
-	public abstract JasperPrint prepareTableModel(TableModel tableModel)
+	JasperPrint prepareTableModel(TableModel tableModel)
 		throws NuclosReportException;
 
 	/**
@@ -169,21 +167,21 @@ public interface ReportFacadeRemote {
 	 * @throws FinderException
 	 */
 	@RolesAllowed("Login")
-	public abstract JasperDesign getJrDesignForSearchResult()
-		throws JRException, NuclosReportException, FinderException;
+	JasperDesign getJrDesignForSearchResult()
+		throws JRException, NuclosReportException;
 
 	/**
 	 * @param iReportId report/form id
 	 * @return Is save allowed for the report/form with the given id?
 	 */
 	@RolesAllowed("Login")
-	public abstract boolean isSaveAllowed(Integer iReportId);
+	boolean isSaveAllowed(Integer iReportId);
 
 	/**
 	 * finds reports readable for current user
 	 * @return collection of report ids
 	 */
-	public abstract Collection<Integer> getReadableReportIdsForCurrentUser();
+	Collection<Integer> getReadableReportIdsForCurrentUser();
 
 	/**
 	 * finds reports (forms) by usage criteria
@@ -191,7 +189,7 @@ public interface ReportFacadeRemote {
 	 * @return collection of reports (forms)
 	 */
 	@RolesAllowed("Login")
-	public abstract Collection<ReportVO> findReportsByUsage(
+	Collection<ReportVO> findReportsByUsage(
 		UsageCriteria usagecriteria);
 
 }

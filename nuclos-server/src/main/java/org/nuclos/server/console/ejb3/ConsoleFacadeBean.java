@@ -22,9 +22,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.nuclos.common.CommandMessage;
 import org.nuclos.common.ConsoleConstants;
@@ -66,9 +63,9 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Local(ConsoleFacadeLocal.class)
-@Remote(ConsoleFacadeRemote.class)
+// @Stateless
+// @Local(ConsoleFacadeLocal.class)
+// @Remote(ConsoleFacadeRemote.class)
 @Transactional
 @RolesAllowed("UseManagementConsole")
 public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacadeLocal, ConsoleFacadeRemote {

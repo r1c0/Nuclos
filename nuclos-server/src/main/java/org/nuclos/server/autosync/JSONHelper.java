@@ -36,7 +36,6 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 
-@SuppressWarnings("deprecation")
 public class JSONHelper {
 
 	public static MasterDataVO makeMasterDataVO(Object json, String entity, Map<String, SystemMasterDataMetaVO> metaData) {
@@ -157,7 +156,6 @@ public class JSONHelper {
 				coerce(obj.get("ondeletecascade"), Boolean.class, false));
 		}
 
-		@SuppressWarnings("unchecked")
 		protected int checkId(Map<?, ?> obj, int nextId) {
 			if (!obj.containsKey("id")) {
 				((Map<String, Object>) obj).put("id", nextId);
@@ -182,7 +180,6 @@ public class JSONHelper {
 		return coerce(value, clazz, null);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> T coerce(Object value, Class<T> clazz, T def) {
 		if (value == null) {
 			return def;

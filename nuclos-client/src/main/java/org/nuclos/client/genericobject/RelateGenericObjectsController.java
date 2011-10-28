@@ -106,11 +106,6 @@ public class RelateGenericObjectsController extends Controller {
 		this.selectFirstEnabledRadioButton(pnl);
 
 		final ValidatingJOptionPane voptpn = new ValidatingJOptionPane(this.getParent(), CommonLocaleDelegate.getMessage("RelateGenericObjectsController.2", "Beziehung herstellen"), pnl) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void validateInput() throws ValidatingJOptionPane.ErrorInfo {
 				if (pnl.getRelationType() == RelateGenericObjectsPanel.RelationType.USERDEFINED) {
@@ -146,14 +141,16 @@ public class RelateGenericObjectsController extends Controller {
 	}
 
 	private void enableRadioButtons(RelateGenericObjectsPanel pnl) {
-		pnl.rbSuccessorOf.setEnabled(this.isSuccessorOfEnabled());
-		pnl.rbPartOf.setEnabled(this.isPartOfEnabled());
-		pnl.rbOtherRelation.setEnabled(true);
+		pnl.getSuccessorOfButton().setEnabled(this.isSuccessorOfEnabled());
+		pnl.getPartOfButton().setEnabled(this.isPartOfEnabled());
+		pnl.getCouplingButton().setEnabled(true);
 	}
 
 	/**
 	 * @return Is the successor-of relation enabled? <code>true</code> iff there is at least on object in the source list
 	 * for that a generator action to the target tree node exists.
+	 * 
+	 * @deprecated Always return true.
 	 */
 	private boolean isSuccessorOfEnabled() {
 		return CollectionUtils.exists(this.collgoimpSource, new Predicate<GenericObjectIdModuleProcess>() {
@@ -164,21 +161,14 @@ public class RelateGenericObjectsController extends Controller {
 		});
 	}
 
+	/**
+	 * @deprecated Always return true.
+	 */
 	private boolean isSuccessorRelationAllowed(GenericObjectIdModuleProcess goimpSource,
 			final GenericObjectIdModuleProcess goimpTarget) {
 		/** @todo respect statemnemonic! But I don't have it! Should I load it from the server?! */
 
 		return true;
-//		final List lstActions = GeneratorActions.getActions(new Integer(goimpSource.getModuleId()),
-//				goimpSource.getProcessId(), null);
-//
-//		return CollectionUtils.exists(lstActions, new Predicate() {
-//			public boolean evaluate(Object o) {
-//				final GeneratorActionVO gavo = ((GeneratorActionVO) o);
-//				return gavo.getTargetModuleId().equals(goimpTarget.getModuleId()) &&
-//						LangUtils.equals(gavo.getTargetProcessId(), goimpTarget.getProcessId());
-//			}
-//		});
 	}
 
 	/**
@@ -203,23 +193,23 @@ public class RelateGenericObjectsController extends Controller {
 	}
 
 	private void selectFirstEnabledRadioButton(RelateGenericObjectsPanel pnl) {
-		if (pnl.rbSuccessorOf.isEnabled()) {
-			pnl.rbSuccessorOf.setSelected(true);
+		if (pnl.getSuccessorOfButton().isEnabled()) {
+			pnl.getSuccessorOfButton().setSelected(true);
 		}
-		else if (pnl.rbPartOf.isEnabled()) {
-			pnl.rbPartOf.setSelected(true);
+		else if (pnl.getPartOfButton().isEnabled()) {
+			pnl.getPartOfButton().setSelected(true);
 		}
-		else if (pnl.rbOtherRelation.isEnabled()) {
-			pnl.rbOtherRelation.setSelected(true);
+		else if (pnl.getCouplingButton().isEnabled()) {
+			pnl.getCouplingButton().setSelected(true);
 		}
 	}
 
 	public static void createUserDefinedRelation(OtherRelationPanel pnl) throws CommonBusinessException {
-		final CollectableField clctfRelationType = pnl.clctcmbbxRelationType.getField();
+		final CollectableField clctfRelationType = pnl.getRelationComboBox().getField();
 		final String relationType = (String) clctfRelationType.getValue();
 
-		relateGenericObjects(pnl.collgoimpSource, pnl.goimpTarget, relationType, pnl.relationpanel.isReversedDirection(),
-				pnl.datechooserValidFrom.getDate(), pnl.datechooserValidUntil.getDate(), pnl.taDescription.getText());
+		relateGenericObjects(pnl.getGoSource(), pnl.getGoTarget(), relationType, pnl.getRelationPanel().isReversedDirection(),
+				pnl.getValidFromDateChooser().getDate(), pnl.getValidUntilDateChooser().getDate(), pnl.getDescriptionTextArea().getText());
 	}
 
 	/**

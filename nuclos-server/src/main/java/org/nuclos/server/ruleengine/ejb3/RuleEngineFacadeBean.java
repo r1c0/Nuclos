@@ -27,10 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJBException;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Level;
@@ -108,9 +104,9 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Local(RuleEngineFacadeLocal.class)
-@Remote(RuleEngineFacadeRemote.class)
+// @Stateless
+// @Local(RuleEngineFacadeLocal.class)
+// @Remote(RuleEngineFacadeRemote.class)
 @Transactional
 public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngineFacadeLocal, RuleEngineFacadeRemote {
 
@@ -304,21 +300,8 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 					if (!bIgnoreExceptions) {
 						String sErrorMessage = StringUtils.getParameterizedExceptionMessage("rule.execution.error",
 							sCurrentRule, getErrorLineNumber(ex, iHeaderLinesCount), null);
-						//                  	"Fehler bei der Ausf\u00fchrung der Gesch\u00e4ftsregel \"" + sCurrentRule + "\"" +
-						//                        " (Zeile " + getErrorLineNumber(ex, iHeaderLinesCount) + ") aufgetreten:\n";
-						if (ex instanceof EJBException) {
-							final EJBException ejbex = (EJBException) ex;
-							if (ejbex.getCausedByException() != null && ejbex.getCausedByException().getCause() != null) {
-								//sErrorMessage += ejbex.getCausedByException().getCause().getMessage();
-								sErrorMessage = StringUtils.getParameterizedExceptionMessage("rule.execution.error",
-									sCurrentRule, getErrorLineNumber(ex, iHeaderLinesCount), ejbex.getCausedByException().getCause().getMessage());
-							}
-						}
-						else {
-							//sErrorMessage += ex.getMessage();
-							sErrorMessage = StringUtils.getParameterizedExceptionMessage("rule.execution.error",
-								sCurrentRule, getErrorLineNumber(ex, iHeaderLinesCount), ex.getMessage());
-						}
+						sErrorMessage = StringUtils.getParameterizedExceptionMessage("rule.execution.error",
+							sCurrentRule, getErrorLineNumber(ex, iHeaderLinesCount), ex.getMessage());
 						throw new NuclosFatalRuleException(sErrorMessage, ex);
 					}
 				}

@@ -37,8 +37,7 @@ import java.util.Iterator;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
-import org.nuclos.common2.exception.CommonFatalException;
-import org.nuclos.common2.exception.CommonPermissionException;
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.gef.AbstractShapeViewer;
@@ -50,6 +49,8 @@ import org.nuclos.client.statemodel.shapes.StateModelStartShape;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.processmonitor.valueobject.SubProcessVO;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;
 
@@ -64,10 +65,9 @@ import org.nuclos.server.statemodel.valueobject.StateModelVO;
  */
 
 public class SubProcessShape extends ContainerShape implements ImageObserver {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final Logger LOG = Logger.getLogger(SubProcessShape.class);
+	
 	public static final int STATE_START = 1;
 	public static final int STATE_END = 2;
 	public static final int STATE_INTERMEDIATE = 3;
@@ -385,9 +385,7 @@ public class SubProcessShape extends ContainerShape implements ImageObserver {
 	/*
 	 * opens the statemodel window with the double clicked subprocess 
 	 */
-	@SuppressWarnings("unchecked")
-	public void openStateModel(JComponent parent) {		
-		
+	public void openStateModel(JComponent parent) {			
 		NuclosCollectController<CollectableStateModel> cont;
 		try {		
 			
@@ -406,25 +404,21 @@ public class SubProcessShape extends ContainerShape implements ImageObserver {
 			}			
 			
 			try {
-				if(id > 0)
+				if(id > 0) {
 					cont.runViewSingleCollectableWithId(id);
-					System.out.println(id);
+				}
+				LOG.info("openStateModel id=" + id);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOG.error("openStateModel failed: " + e, e);
 			}
 		
 		} catch (NuclosBusinessException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			LOG.error("openStateModel failed: " + e1, e1);
 		} catch (CommonPermissionException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			LOG.error("openStateModel failed: " + e1, e1);
 		} catch (CommonFatalException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} 
-		
+			LOG.error("openStateModel failed: " + e1, e1);
+		}	
 	}
 
 	@Override

@@ -22,7 +22,12 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.log4j.Logger;
+
 public class CryptUtil {
+	
+	private static final Logger LOG = Logger.getLogger(CryptUtil.class);
+	
 	private CryptUtil() {}
 
 	private static final String WRONG_PASSLEN_MESSAGE = "passphrase must be exactly 16 bytes";
@@ -112,7 +117,6 @@ public class CryptUtil {
 		byte[] CRYPT = new byte[16];
 		new Random().nextBytes(CRYPT);
 		for(byte b : CRYPT)
-			System.out.print("(byte) 0x" + String.format("%02x", b) + ", ");
-		System.out.println();
+			LOG.debug("(byte) 0x" + String.format("%02x", b) + ", ");
 	}
 }

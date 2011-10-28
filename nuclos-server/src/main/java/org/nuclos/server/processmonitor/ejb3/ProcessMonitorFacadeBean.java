@@ -25,12 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ejb.FinderException;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.RemoveException;
-import javax.ejb.Stateless;
-
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.UsageCriteria;
@@ -89,9 +83,9 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @todo restrict
  */
-@Stateless
-@Local(ProcessMonitorFacadeLocal.class)
-@Remote(ProcessMonitorFacadeRemote.class)
+// @Stateless
+// @Local(ProcessMonitorFacadeLocal.class)
+// @Remote(ProcessMonitorFacadeRemote.class)
 @Transactional
 public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements ProcessMonitorFacadeLocal, ProcessMonitorFacadeRemote{
 
@@ -156,7 +150,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 				throw new CommonFatalException(e);
 			}
 		}
-		
 		return result;
 	}
 	
@@ -167,59 +160,38 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 	 * @throws CommonPermissionException 
 	 */
 	@Override
-	public Integer setStateGraph(ProcessMonitorGraphVO processgraphcvo) throws CommonCreateException , CommonFinderException, CommonRemoveException, CommonValidationException /*, CommonStaleVersionException */, CommonPermissionException {
+	public Integer setStateGraph(ProcessMonitorGraphVO processgraphcvo) 
+			throws CommonCreateException , CommonFinderException, CommonRemoveException, CommonValidationException, CommonPermissionException {
 		final Integer result;
+		// check state graph for validity:
+		final ProcessMonitorVO statemodelvo = processgraphcvo.getStateModel();
+		if (!statemodelvo.isRemoved()) {
+			//stategraphcvo.validate();	// throws CommonValidationException
+		}
 
-		try {
-			// check state graph for validity:
-			final ProcessMonitorVO statemodelvo = processgraphcvo.getStateModel();
-			if (!statemodelvo.isRemoved()) {
-				//stategraphcvo.validate();	// throws CommonValidationException
-			}
+		// set state model:
+		if (statemodelvo.getId() == null) {
+			// TODO processmodel security
+			//this.checkWriteAllowed(NuclosEntity.STATEMODEL);
+			result = this.createStateGraph(processgraphcvo);				
+		}
+		else {
+			result = statemodelvo.getId();
 
-			// set state model:
-			if (statemodelvo.getId() == null) {
+			if (statemodelvo.isRemoved()) {
+				// remove process model graph:
 				// TODO processmodel security
-				//this.checkWriteAllowed(NuclosEntity.STATEMODEL);
-				result = this.createStateGraph(processgraphcvo);				
+				//this.checkDeleteAllowed(NuclosEntity.STATEMODEL);
+				this.removeStateGraph(processgraphcvo);
 			}
 			else {
-				result = statemodelvo.getId();
-
-				if (statemodelvo.isRemoved()) {
-					// remove process model graph:
-					// TODO processmodel security
-					//this.checkDeleteAllowed(NuclosEntity.STATEMODEL);
-					this.removeStateGraph(processgraphcvo);
-				}
-				else {
-					// update process model graph:
-					// TODO processmodel security
-					//this.checkWriteAllowed(NuclosEntity.STATEMODEL);
-					this.updateStateGraph(processgraphcvo);
-				}
+				// update process model graph:
+				// TODO processmodel security
+				//this.checkWriteAllowed(NuclosEntity.STATEMODEL);
+				this.updateStateGraph(processgraphcvo);
 			}
-
-		}
-//		catch (CreateException ex) {
-//			if(ex.getCause() != null && ex.getCause() instanceof SQLException){
-//				try{
-//					throw SQLExceptionHandler.handleException((SQLException)ex.getCause(), new CommonCreateException(ex));
-//				} catch (Exception newEx) {
-//					throw new CommonCreateException(newEx.getMessage());
-//				}
-//			}
-//			throw new CommonCreateException(ex);
-//		}
-		catch (FinderException ex) {
-			throw new CommonFinderException(ex);
-		}
-		catch (RemoveException ex) {
-			throw new CommonRemoveException(ex);
 		}
 		SecurityCache.getInstance().invalidate();
-
-
 		return result;
 	}
 	
@@ -235,48 +207,26 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 		ProcessMonitorGraphVO result = null;
 		
 		try {
-//			final ProcessMonitorModelLocal local = monitorHome.findByPrimaryKey(iModelId);
 			result = new ProcessMonitorGraphVO(MasterDataWrapper.getProcessMonitorVO(getMasterDataFacade().get(NuclosEntity.PROCESSMONITOR.getEntityName(), iModelId)));
 			
 			
-//			Collection colSubProcess = processstatemodelHome.findByCase(local.getId());
 			Collection<SubProcessVO> colSubProcess = findProcessModelByCase(result.getStateModel().getId());
 			Set<SubProcessVO> setSubProcess = new HashSet<SubProcessVO>();
-			
-//			for(Iterator it = colSubProcess.iterator(); it.hasNext(); ) {
-//				ProcessStateModelLocal localProcessState = (ProcessStateModelLocal)it.next();
-//				SubProcessVO vo = localProcessState.getValueObject();
-//				Integer iStateModelId = localProcessState.getStateModelId();
-//				StateModelLocal localStateModel = statemodelHome.findByPrimaryKey(iStateModelId);
-//				StateModelVO statemodelVO = localStateModel.getValueObject();
-//				vo.setStateModelVO(statemodelVO);
-//				setSubProcess.add(vo);
-//			}
 			for (SubProcessVO vo : colSubProcess) {
 				setSubProcess.add(vo);
 			}
 			
-//			Collection colTransition = transitionHome.findByCase(local.getId());
-			Collection<ProcessTransitionVO> colProcessTransition = findProcessTransitionByCase(result.getStateModel().getId());
-			
+			Collection<ProcessTransitionVO> colProcessTransition = findProcessTransitionByCase(result.getStateModel().getId());			
 			Set<ProcessTransitionVO> setTransition = new HashSet<ProcessTransitionVO>();
-//			for(Iterator it = colTransition.iterator(); it.hasNext(); ) {
-//				ProcessTransitionLocal localTransition = (ProcessTransitionLocal)it.next();
-//				ProcessTransitionVO vo = localTransition.getValueObject();
-//				setTransition.add(vo);
-//			}
 			for (ProcessTransitionVO vo : colProcessTransition) {
 				setTransition.add(vo);
 			}
-			
 			result.setStates(setSubProcess);
 			result.setTransitions(setTransition);
-			
 		}
 		catch(Exception ex) {
 			throw new CommonFatalException(ex);
 		}
-		
 		return result;
 	}
 	
@@ -333,7 +283,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 	/*
 	 * TODO
 	 */
-	private void removeStateGraph(ProcessMonitorGraphVO stategraphvo) throws FinderException, RemoveException {
+	private void removeStateGraph(ProcessMonitorGraphVO stategraphvo) {
 		try {
 		for (ProcessTransitionVO processtransitionvo : stategraphvo.getTransitions()) {
 			if (processtransitionvo.getId() != null) {
@@ -924,7 +874,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 			catch(CommonFinderException e) {
 				throw new CommonFatalException(e);
 			}
-			
 		}
 		return result;
 	}
@@ -943,7 +892,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 			catch(CommonFinderException e) {
 				throw new CommonFatalException(e);
 			}
-			
 		}
 		return result;
 	}
@@ -962,7 +910,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 			catch(CommonFinderException e) {
 				throw new CommonFatalException(e);
 			}
-			
 		}
 		return result;
 	}
@@ -983,7 +930,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 			catch(CommonFinderException e) {
 				throw new CommonFatalException(e);
 			}
-			
 		}
 		return result;
 	}
@@ -1018,7 +964,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 				throw new CommonFatalException(e);
 			}
 		}
-		
 		return result;
 	}
 	
@@ -1039,7 +984,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 			catch(Exception e) {
 				throw new CommonFatalException(e);
 			}
-			
 		}
 		return result;
 	}	

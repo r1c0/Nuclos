@@ -102,13 +102,8 @@ public class WYSIWYGInitialFocusComponentEditor implements WYSIWYGToolbarAttacha
 	 * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
 	 * @version 01.00.00
 	 */
-	@SuppressWarnings("serial")
 	private class WYSIWYGInitialFocusComponentDialog extends JDialog implements SaveAndCancelButtonPanelControllable {
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private JComboBox comboBoxEntity;
 		private JComboBox comboBoxName;
 		

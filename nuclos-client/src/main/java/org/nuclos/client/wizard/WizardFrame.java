@@ -37,18 +37,13 @@ import org.pietschy.wizard.Wizard;
 
 public class WizardFrame extends JPanel {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	final Wizard wiz;
+	private final Wizard wiz;
 	
 	private final Color transparent = new Color(0, 0, 0, 0);
 	private final Color shadow = new Color(40, 40, 40);
 	
-	int shadowRange = 7;
-	int minBorder = 10;
+	private int shadowRange = 7;
+	private int minBorder = 10;
 	
 	public WizardFrame(Wizard wiz) {
 		super(new BorderLayout());

@@ -22,6 +22,8 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JPopupMenu;
 
+import org.apache.log4j.Logger;
+
 /**
  * Abstract implementation of <code>JPopupMenuListener</code>.
  * Encapsulates the platform-specific logic about which mouse events lead to opening a popup menu,
@@ -39,6 +41,8 @@ import javax.swing.JPopupMenu;
  * @see LazyJPopupMenuListener
  */
 public abstract class AbstractJPopupMenuListener extends MouseAdapter {
+
+	private static final Logger LOG = Logger.getLogger(AbstractJPopupMenuListener.class);
 
 	/**
 	 * For some look&feels, a popup menu is opened when the mouse is pressed on a component.
@@ -74,6 +78,7 @@ public abstract class AbstractJPopupMenuListener extends MouseAdapter {
 			}
 			catch(IllegalComponentStateException e){
 				// popup kann nicht angezeigt werden
+				LOG.info("showPopupMenu failed: " + e, e);
 			}
 		}
 	}

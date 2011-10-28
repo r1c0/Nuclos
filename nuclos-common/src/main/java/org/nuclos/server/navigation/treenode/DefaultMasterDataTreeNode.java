@@ -37,11 +37,6 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class DefaultMasterDataTreeNode extends MasterDataTreeNode<Integer> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public DefaultMasterDataTreeNode(String sEntity, MasterDataVO mdvo) {
 		super(sEntity, mdvo.getIntId());
 		this.setLabel(getIdentifier(mdvo));

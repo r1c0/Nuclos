@@ -1,3 +1,19 @@
+//Copyright (C) 2011  Novabit Informationssysteme GmbH
+//
+//This file is part of Nuclos.
+//
+//Nuclos is free software: you can redistribute it and/or modify
+//it under the terms of the GNU Affero General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+//Nuclos is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU Affero General Public License for more details.
+//
+//You should have received a copy of the GNU Affero General Public License
+//along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.explorer;
 
 import java.awt.Component;
@@ -43,7 +59,7 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 
 	private static final long serialVersionUID = 5014512105916869563L;
 
-	private static final Logger log = Logger.getLogger(NucletExplorerNode.class);
+	private static final Logger LOG = Logger.getLogger(NucletExplorerNode.class);
 
 	private static final String PREFS_NODE_NUCLET_EXPLORER = "nucletExplorer";
 
@@ -68,8 +84,6 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 	public List<JComponent> getToolBarComponents() {
 		btnAddContent.setAction(new AbstractAction(null, Icons.getInstance().getIconPlus16()) {
 
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cmdShowAddDialog(getJTree());
@@ -77,8 +91,6 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 		});
 
 		btnRemoveContent.setAction(new AbstractAction(null, Icons.getInstance().getIconMinus16()) {
-
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -96,7 +108,6 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	private void cmdShowAddDialog(final JTree jTree) {
 		SelectObjectsController<AbstractNucletContentEntryTreeNode> selectCtrl =
 			new SelectObjectsController<AbstractNucletContentEntryTreeNode>(null, new NucletContentSelectObjectPanel());
@@ -121,7 +132,6 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void cmdShowRemoveDialog(final JTree jTree) {
 		SelectObjectsController<AbstractNucletContentEntryTreeNode> selectCtrl =
 				new SelectObjectsController<AbstractNucletContentEntryTreeNode>(null, new NucletContentSelectObjectPanel());
@@ -146,9 +156,7 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 		}
 	}
 
-	private class NucletContentSelectObjectPanel extends DefaultSelectObjectsPanel {
-
-		private static final long serialVersionUID = 1L;
+	private class NucletContentSelectObjectPanel<T> extends DefaultSelectObjectsPanel<T> {
 
 		public NucletContentSelectObjectPanel() {
 			super();
@@ -161,10 +169,6 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 		protected JList newList() {
 			final JList result = super.newList();
 			result.setCellRenderer(new DefaultListCellRenderer() {
-				/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 				@Override
 				public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {

@@ -41,18 +41,12 @@ import java.util.Iterator;
 import org.nuclos.client.gef.shapes.AbstractConnector;
 
 public abstract class AbstractShapeViewer extends AbstractViewer {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	protected BufferedImage screenBuffer = null;
 	protected Graphics2D gfxBuffer = null;
 	protected MapMode mapMode = null;
 	protected Dimension bufferDimension = new Dimension(-1, -1);
 
-	/**
-	 *
-	 */
 	public AbstractShapeViewer() {
 		this(null);
 	}

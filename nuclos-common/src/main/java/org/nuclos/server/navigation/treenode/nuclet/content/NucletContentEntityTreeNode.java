@@ -29,11 +29,6 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 public class NucletContentEntityTreeNode extends DefaultNucletContentEntryTreeNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public NucletContentEntityTreeNode(EntityObjectVO eo) {
 		super(eo);
 	}

@@ -57,9 +57,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 	
 	private final HashMap<String, Integer> mapCounter = new HashMap<String, Integer>();
 
-	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(ComponentProcessors.class);
-
 	
 	public static ComponentProcessors getInstance() {
 		if (singleton == null) {

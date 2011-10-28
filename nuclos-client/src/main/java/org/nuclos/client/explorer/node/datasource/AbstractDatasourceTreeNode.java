@@ -32,11 +32,6 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public abstract class AbstractDatasourceTreeNode implements TreeNode {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
 	protected static final Collator textCollator = Collator.getInstance();
 
 	private final Integer iId;
@@ -89,11 +84,7 @@ public abstract class AbstractDatasourceTreeNode implements TreeNode {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	@SuppressWarnings("deprecation")
 	public List<? extends TreeNode> getSubNodes() {
 		if (this.lstSubNodes == null) {
 			refresh();

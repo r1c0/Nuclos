@@ -55,7 +55,6 @@ public class BeanToString {
 				return result;
 			}
 			final Class<?> class1 = o1.getClass();
-			// System.out.println(".." + level + " " + class1.getSimpleName());
 
 			if (o1 instanceof Collection<?>) {
 				Collection<?> c1 = (Collection<?>) o1;

@@ -81,7 +81,6 @@ public abstract class AbstractNuclosValueObject<Id> implements Serializable, Clo
 	/**
 	 * @return a clone of this object.
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	protected AbstractNuclosValueObject<Id> clone() {
 		final AbstractNuclosValueObject<Id> result;

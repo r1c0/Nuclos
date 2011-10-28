@@ -24,10 +24,6 @@ import org.springframework.security.core.GrantedAuthority;
 
 class NuclosLocalServerAuthenticationToken extends AbstractAuthenticationToken {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final Object principal;
 	private Object credentials;
 

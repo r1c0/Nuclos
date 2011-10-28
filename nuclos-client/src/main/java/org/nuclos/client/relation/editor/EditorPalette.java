@@ -77,10 +77,6 @@ public class EditorPalette extends JPanel
 	int cellCount;
 	int iLabelWidth;
 
-	/**
-	 * 
-	 */
-	@SuppressWarnings("serial")
 	public EditorPalette(int labelwidth)
 	{
 		//setBackground(new Color(149, 230, 190));
@@ -150,10 +146,6 @@ public class EditorPalette extends JPanel
 		// Shows a nice icon for drag and drop but doesn't import anything
 		setTransferHandler(new TransferHandler()
 		{
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public boolean canImport(JComponent comp, DataFlavor[] flavors)
@@ -163,25 +155,16 @@ public class EditorPalette extends JPanel
 		});
 	}
 
-	/**
-	 * 
-	 */
 	public void setGradientColor(Color c)
 	{
 		gradientColor = c;
 	}
 
-	/**
-	 * 
-	 */
 	public Color getGradientColor()
 	{
 		return gradientColor;
 	}
 
-	/**
-	 * 
-	 */
 	@Override
 	public void paintComponent(Graphics g)
 	{

@@ -20,10 +20,6 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
 
 public class DynamicEntityVO extends DatasourceVO {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private String entity;
 
 	public DynamicEntityVO(NuclosValueObject evo, String sName,

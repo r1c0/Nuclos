@@ -20,6 +20,7 @@ import java.awt.Component;
 
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common2.CommonLocaleDelegate;
 
@@ -34,6 +35,8 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 public class NuclosCriticalErrorHandler implements Errors.CriticalErrorHandler {
 
+	private static final Logger LOG = Logger.getLogger(NuclosCriticalErrorHandler.class);
+
 	private final boolean bStrict;
 
 	/**
@@ -45,7 +48,9 @@ public class NuclosCriticalErrorHandler implements Errors.CriticalErrorHandler {
 
 	@Override
 	public void handleCriticalError(Component parent, Error error) {
+		// Ok! (tp)
 		error.printStackTrace(System.err);
+		LOG.fatal("handleCriticalError failed: " + error, error);
 		if (bStrict) {
 			// avoid multiple messages:
 			synchronized (this) {

@@ -24,6 +24,7 @@ import java.util.Properties;
 
 import javax.naming.NamingException;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.springframework.jndi.JndiTemplate;
 import org.springframework.util.ResourceUtils;
@@ -31,6 +32,8 @@ import org.springframework.util.SystemPropertyUtils;
 
 public class ServerProperties {
 
+	private static final Logger LOG = Logger.getLogger(ServerProperties.class);
+	
 	public static final String JNDI_SERVER_PROPERTIES = "java:comp/env/nuclos-conf-server";
 
 	private ServerProperties() {
@@ -52,7 +55,7 @@ public class ServerProperties {
 			location = template.lookup(jndiname, String.class);
 		}
 		catch (NamingException ex) {
-			System.out.println(jndiname + " not found.");
+			LOG.error(jndiname + " not found.", ex);
 		}
 
 		InputStream is = null;

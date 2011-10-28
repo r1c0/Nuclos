@@ -16,17 +16,18 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.wiki.ejb3;
 
-import javax.ejb.Remote;
-
-@Remote
+/**
+ * @deprecated Nuclos wiki feature has been removed.
+ */
+// @Remote
 public interface WikiFacadeRemote {
 
-	public abstract String getWikiPageFor(String sEntityName,
+	String getWikiPageFor(String sEntityName,
 		String sAttributeName);
 
 	/**
 	 * wikipage for a "general" component: explorer, menubar, statusbar ...
 	 */
-	public abstract String getWikiPageFor(String sComponentName);
+	String getWikiPageFor(String sComponentName);
 
 }

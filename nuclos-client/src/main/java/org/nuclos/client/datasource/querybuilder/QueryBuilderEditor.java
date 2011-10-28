@@ -96,11 +96,6 @@ import org.nuclos.server.report.valueobject.DatasourceParameterVO;
  */
 public class QueryBuilderEditor extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public static final String ALIAS_INTID = "_internal_lo_intid";
 
 	public static final String KEY_TABLES = "SkippedTables";

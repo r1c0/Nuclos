@@ -24,10 +24,6 @@ import org.nuclos.common.NuclosFile;
 
 public class NuclosMail implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private String from;
 	private String to;
 	private String subject;

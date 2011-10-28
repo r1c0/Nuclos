@@ -30,13 +30,8 @@ import java.io.Serializable;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class WYSIYWYGPropertySet implements Cloneable, Serializable{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private String propertyName = "";
 	private String propertyValue = "";
 	

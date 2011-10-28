@@ -27,9 +27,7 @@ import org.nuclos.common.TranslationVO;
 
 public class SearchFilterResourceTableModel extends AbstractTableModel {
 
-	private static final long serialVersionUID = 1L;
-
-	List<TranslationVO> lstRows;
+	private List<TranslationVO> lstRows;
 
 	public SearchFilterResourceTableModel() {
 		lstRows = new ArrayList<TranslationVO>();

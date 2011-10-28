@@ -154,25 +154,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		for (MasterDataVO mdvo : getResourcesAsVO(localeInfo)) {
 			res.putProperty((String) mdvo.getField(F_RESOURCEID), StringUtils.unicodeDecodeWithNewlines((String) mdvo.getField(F_TEXT)));
 		}
-		/*
-   	List<LocaleInfo> parentChain = getParentChain(localeInfo);
-   	final HashResourceBundle res = new HashResourceBundle();
-   	for(LocaleInfo li : parentChain) {
-   		Map<String, String> resources = DataBaseHelper.readMap(
-   			"select strresourceid, strtext from t_md_localeresource where " + getSQLCondition(localeInfo),
-   			"strresourceid", String.class, "strtext", String.class);
-   		for (Map.Entry<String, String> e : resources.entrySet()) {
-   			res.putProperty(e.getKey(), StringUtils.unicodeDecodeWithNewlines(e.getValue()));
-   		}
-
-   		//List<MasterDataVO> internalResources = XMLEntities.getData(NuclosEntity.LOCALERESOURCE.getEntityName()).findAllVO("language", li.language, "country", li.country);
-   		List<MasterDataVO> internalResources = XMLEntities.getData(NuclosEntity.LOCALERESOURCE.getEntityName()).findAllVO("localeId", li.localeId);
-   		for(MasterDataVO resource : internalResources) {
-   			res.putProperty(resource.getField(F_RESOURCEID, String.class), StringUtils.unicodeDecodeWithNewlines(resource.getField("text", String.class)));
-   		}
-   	}
-		 */
-		System.err.println("Created resource cache for locale " + localeInfo.getTag() + " in " + (System.currentTimeMillis() - start) + " ms");
+		LOG.info("Created resource cache for locale " + localeInfo.getTag() + " in " + (System.currentTimeMillis() - start) + " ms");
 		return res;
 	}
 

@@ -34,11 +34,6 @@ import java.awt.Dimension;
  */
 public class CommonBorderLayout extends BorderLayout {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public CommonBorderLayout() {
 		super();
 	}

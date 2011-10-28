@@ -16,10 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common.ejb3;
 
-import javax.ejb.Local;
-
-@Local
+// @Local
 public interface NuclosFacadeLocal {
 
-	public abstract String getCurrentUserName();
+	String getCurrentUserName();
+	
 }

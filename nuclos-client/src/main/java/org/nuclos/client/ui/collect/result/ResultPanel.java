@@ -90,11 +90,6 @@ import org.nuclos.common2.exception.PreferencesException;
  */
 public class ResultPanel<Clct extends Collectable> extends JPanel {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private final CollectPanelIndicator cpi = new CollectPanelIndicator(CollectPanel.TAB_RESULT);
 
 	/**
@@ -105,10 +100,6 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	private int popbtnExtraIndex = -1;
 
 	private final PopupButton popbtnExtra = new PopupButton(CommonLocaleDelegate.getMessage("PopupButton.Extras","Extras"));
-
-	//private final JPanel pnlToolBar = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
-	//private Component compCustomToolBarArea = createDefaultCustomToolBarArea();
 
 	/**
 	 * Button: "Enter New mode"

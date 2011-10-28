@@ -53,6 +53,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
@@ -88,10 +89,8 @@ import org.pietschy.wizard.WizardListener;
 
 public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeInputStep.class);
+
 	JScrollPane scrolPane;
 	JTable tblAttributes;
 
@@ -101,7 +100,6 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 	TableColumn colGroup;
 
 	static String[] sEditFields = {"STRCREATED","DATCREATED","STRCHANGED","DATCHANGED"};
-
 
 	EntityAttributeTableModel entityModel;
 
@@ -493,7 +491,6 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 		catch(CommonPermissionException e) {
 			Errors.getInstance().showExceptionDialog(NuclosEntityAttributeInputStep.this, e);
 		}
-
 	}
 
 	private Long getHighestInternalId() {
@@ -603,7 +600,6 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 			sortModel();
 		}
 
-        @SuppressWarnings("unchecked")
         public void sortModel() {
 	        List<Attribute> lstAttributes = model.getAttributes();
 	        List<SortKey> lst = (List<javax.swing.RowSorter.SortKey>) this.getSortKeys();

@@ -524,7 +524,6 @@ public class CollectionUtils {
       return result;
    }
    
-   @SuppressWarnings("unchecked")
 	public static <T, R> R[] transformArray(T[] input, Class<R> componentType, Transformer<T, R> transformer) {
    	R[] result = (R[]) Array.newInstance(componentType, input.length);
    	for (int i = 0, n = input.length; i < n; i++) {
@@ -612,7 +611,6 @@ public class CollectionUtils {
     * @postcondition result != null
     * @postcondition result != iterable
     */
-   @SuppressWarnings("unchecked")
    public static <I, O extends I> List<O> selectInstancesOf(Iterable<I> iterable, Class<? extends O> cls) {
       final List<I> lsti = select(iterable, PredicateUtils.<I>isInstanceOf(cls));
 
@@ -1036,7 +1034,6 @@ public class CollectionUtils {
     * @deprecated In the most common use case this is unnecessary. In the second
     * 		common use case this is a sign that you have not understood generics.
     */
-   @SuppressWarnings("unchecked")
    public static <T> List<T> typecheck(List<?> l, Class<T> tClass) {
       if(l == null)
          return null;
@@ -1058,7 +1055,6 @@ public class CollectionUtils {
     * @deprecated In the most common use case this is unnecessary. In the second
     * 		common use case this is a sign that you have not understood generics.
     */
-   @SuppressWarnings("unchecked")
    public static <T> List<T> typecheck(Collection<?> l, Class<T> tClass) {
       if(l == null)
          return null;
@@ -1083,7 +1079,6 @@ public class CollectionUtils {
     * @deprecated In the most common use case this is unnecessary. In the second
     * 		common use case this is a sign that you have not understood generics.
     */
-   @SuppressWarnings("unchecked")
    public static <K, V> Map<K, V> typecheck(Map<K, ?> m, Class<V> vClass) {
       if(m == null)
          return null;

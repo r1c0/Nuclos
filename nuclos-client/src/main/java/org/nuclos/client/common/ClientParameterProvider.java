@@ -46,14 +46,15 @@ import org.springframework.beans.factory.InitializingBean;
  * @version 01.00.00
  */
 public class ClientParameterProvider extends AbstractParameterProvider implements MessageListener, InitializingBean {
-	private static final Logger log = Logger.getLogger(ClientParameterProvider.class);
+	
+	private static final Logger LOG = Logger.getLogger(ClientParameterProvider.class);
 
 	private final MessageListener serverListener = new MessageListener() {
 		@Override
 		public void onMessage(Message message) {
 			TextMessage txtMessage = (TextMessage) message;
 			try {
-				log.debug("serverListener.onMessage(..) " + txtMessage.getText());
+				LOG.debug("serverListener.onMessage(..) " + txtMessage.getText());
 				if (JMS_MESSAGE_ALL_PARAMETERS_ARE_REVALIDATED.equals(txtMessage.getText()))
 					ClientParameterProvider.this.revalidate();
 			}
@@ -124,7 +125,7 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 			}
 		}
 		catch (Exception ex) {
-			log.warn("Parameter \"" + sParameterName + "\" cannot be retrieved from the parameter table.");
+			LOG.warn("Parameter \"" + sParameterName + "\" cannot be retrieved from the parameter table.");
 			result = defaultColor;
 		}
 		return result;
@@ -134,7 +135,7 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 	public void onMessage(Message message) {
 		TextMessage txtMessage = (TextMessage) message;
 		try {
-			log.debug("serverListener.onMessage(..) " + txtMessage.getText());
+			LOG.debug("serverListener.onMessage(..) " + txtMessage.getText());
 			if (JMS_MESSAGE_ALL_PARAMETERS_ARE_REVALIDATED.equals(txtMessage.getText()))
 				ClientParameterProvider.this.revalidate();
 		}

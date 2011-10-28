@@ -50,13 +50,8 @@ import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class PropertyValueFont implements PropertyValue<Integer> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final int FONT_MINIMUM_SIZE = InterfaceGuidelines.FONT_MINIMUM_SIZE;
 	private final int FONT_MAXIMUM_SIZE = InterfaceGuidelines.FONT_MAXIMUM_SIZE;
 
@@ -190,10 +185,6 @@ public class PropertyValueFont implements PropertyValue<Integer> {
 	 */
 	class PropertyEditorFont extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private JTextField inputBox = null;
 		private JSlider slider = null;
 		private Integer fontSize = null;

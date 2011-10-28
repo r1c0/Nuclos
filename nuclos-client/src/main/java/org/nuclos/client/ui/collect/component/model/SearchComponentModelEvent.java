@@ -28,10 +28,6 @@ import javax.swing.event.ChangeEvent;
  * @version	01.00.00
  */
 public class SearchComponentModelEvent extends ChangeEvent {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	public SearchComponentModelEvent(SearchComponentModel source) {
 		super(source);

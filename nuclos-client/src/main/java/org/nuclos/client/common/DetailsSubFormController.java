@@ -57,6 +57,7 @@ import javax.swing.UIManager;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess;
@@ -113,6 +114,8 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 public abstract class DetailsSubFormController<Clct extends Collectable>
 		extends AbstractDetailsSubFormController<Clct> implements NuclosDropTargetVisitor {
 
+	private static final Logger LOG = Logger.getLogger(DetailsSubFormController.class);
+	
 	/**
 	 * the id of the (current) parent object.
 	 */
@@ -205,8 +208,8 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 		final List<String> lstFieldNames = new LinkedList<String>();
 		CollectableEntity clcte = this.getCollectableEntity();
-		for (Iterator iterator = clcte.getFieldNames().iterator(); iterator.hasNext();) {
-			String sFieldName = (String) iterator.next();
+		for (Iterator<String> iterator = clcte.getFieldNames().iterator(); iterator.hasNext();) {
+			String sFieldName = iterator.next();
 			CollectableEntityField clctef = clcte.getEntityField(sFieldName);
 			if (clctef.getJavaClass() == Boolean.class && getSubForm().isColumnVisible(sFieldName)) {
 				lstFieldNames.add(sFieldName);
@@ -222,8 +225,8 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 					boolean blnChanged = false;
 					for (Collectable clct : DetailsSubFormController.this.getSelectedCollectables()) {
 						if (clct != null) {
-							for (Iterator iterator = lstFieldNames.iterator(); iterator.hasNext();) {
-								String sFieldName = (String) iterator.next();
+							for (Iterator<String> iterator = lstFieldNames.iterator(); iterator.hasNext();) {
+								String sFieldName = iterator.next();
 								if (DetailsSubFormController.this.getSubForm().isColumnEnabled(sFieldName)) {
 									clct.setField(sFieldName, new CollectableValueField(Boolean.TRUE));
 									blnChanged = true;
@@ -244,8 +247,8 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 					boolean blnChanged = false;
 					for (Collectable clct : DetailsSubFormController.this.getSelectedCollectables()) {
 						if (clct != null) {
-							for (Iterator iterator = lstFieldNames.iterator(); iterator.hasNext();) {
-								String sFieldName = (String) iterator.next();
+							for (Iterator<String> iterator = lstFieldNames.iterator(); iterator.hasNext();) {
+								String sFieldName = iterator.next();
 								if (DetailsSubFormController.this.getSubForm().isColumnEnabled(sFieldName)) {
 									clct.setField(sFieldName, new CollectableValueField(Boolean.FALSE));
 									blnChanged = true;
@@ -432,7 +435,6 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	 * @return All collectables, even the removed ones.
 	 * @postcondition result != null
 	 */
-	@SuppressWarnings("unchecked")
 	public List<Clct> getAllCollectables(Object oParentId, Collection<DetailsSubFormController<Clct>> collSubForms, boolean bSetParent, Clct clct) throws CommonValidationException {
 		List<Clct> lsclct;
 		if (bSetParent) {
@@ -820,9 +822,9 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		return sField;
 	}
 
-	protected void updateRowFromDrop(int hereRow, List files) throws FileNotFoundException, IOException {
-		for(Iterator it = files.iterator(); it.hasNext(); ) {
-			File file = (File)it.next();
+	protected void updateRowFromDrop(int hereRow, List<File> files) throws FileNotFoundException, IOException {
+		for(Iterator<File> it = files.iterator(); it.hasNext(); ) {
+			File file = it.next();
 			CollectableMasterData clma = (CollectableMasterData) DetailsSubFormController.this.getCollectables().get(hereRow);
 			FileInputStream fis = new FileInputStream(file);
 			byte[] b = new byte[(int)file.length()];
@@ -869,7 +871,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		Set<String> setEntities = entity.getFieldNames();
 		for(String sEntity : setEntities) {
 			CollectableEntityField field = entity.getEntityField(sEntity);
-			Class clazz = field.getJavaClass();
+			Class<?> clazz = field.getJavaClass();
 			if(DocumentFileBase.class.isAssignableFrom(clazz)) {
 				blnAcceptFileChosser = true;
 				break;
@@ -891,13 +893,15 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
         flavor = (flavor == null) ? flavors[0] : flavor;
 
         // Flavors to check
-        DataFlavor Linux = null;
+        DataFlavor linux = null;
         try {
-        	Linux = new DataFlavor("text/uri-list;class=java.io.Reader");
+        	linux = new DataFlavor("text/uri-list;class=java.io.Reader");
         }
-        catch(Exception e) { }
+        catch(Exception e) {
+        	LOG.warn("visitDragOver fails on linux: " + e);
+        }
 
-        if(flavor.equals(Linux)) {
+        if(flavor.equals(linux)) {
         	blnAcceptFileList = true;
         }
         else {
@@ -905,7 +909,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				try {
 					int index = DragAndDropUtils.getIndexOfFileList(flavors, trans);
 					if(trans.getTransferData(flavors[index]) instanceof List) {
-						List files = (List) trans.getTransferData(flavors[index]);
+						List<?> files = (List<?>) trans.getTransferData(flavors[index]);
 						if(files.size() > 0) {
 							if(files.get(0) instanceof File) {
 								blnAcceptFileList = true;
@@ -913,8 +917,9 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 						}
 					}
 				}
-				catch(Exception ex) {
+				catch (Exception e) {
 					// do nothing here
+		        	LOG.warn("visitDragOver fails on flavours: " + e);
 				}
 			}
 
@@ -931,8 +936,9 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 							}
 						}
 					}
-					catch(Exception ex) {
+					catch(Exception e) {
 						// do nothing here
+			        	LOG.warn("visitDragOver fails on Betreff: " + e);
 					}
 				}
 			}
@@ -990,7 +996,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	            			clct = new CollectableGenericObjectWithDependants(GenericObjectDelegate.getInstance().getWithDependants(goimp.getGenericObjectId()));
 	                    }
 	                    catch(Exception e) {
-	                        log.error(e.getMessage(), e);
+	                        LOG.error("visitDrop failed: " + e, e);
 	                    }
 	            	}
 	            	else if (o instanceof MasterDataIdAndEntity) {
@@ -1000,7 +1006,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	            			clct = new CollectableMasterData(new CollectableMasterDataEntity(MasterDataDelegate.getInstance().getMetaData(mdiae.getEntity())), MasterDataDelegate.getInstance().get(mdiae.getEntity(), mdiae.getId()));
 	            		}
 	                    catch(CommonBusinessException e) {
-	                        log.error(e.getMessage(), e);
+	                        LOG.error("visitDrop failed: " + e, e);
 	                    }
 	            	}
 
@@ -1014,8 +1020,9 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	                			countImported++;
 	                		}
 	                    }
-	                    catch(NuclosBusinessException e2) {
+	                    catch (NuclosBusinessException e) {
 	                    	noReferenceFound = true;
+	    		        	LOG.debug("visitDrop: No reference found: " + e);
 	                    }
 	            	}
 	            }
@@ -1074,13 +1081,13 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				for(int i = 0; i < flavors.length; i++) {
 					Object obj = trans.getTransferData(flavors[i]);
 					if(obj instanceof List) {
-						List files = (List) trans.getTransferData(flavors[i]);
+						List<File> files = (List<File>) trans.getTransferData(flavors[i]);
 						if(files.size() == 1 && hereRow > 0 && !blnViewPort) {
 							updateRowFromDrop(hereRow, files);
 						}
 						else {
-							for(Iterator it = files.iterator(); it.hasNext(); ) {
-								File file = (File)it.next();
+							for(Iterator<File> it = files.iterator(); it.hasNext(); ) {
+								File file = it.next();
 								insertNewRowFromDrop(file);
 							}
 						}
@@ -1099,14 +1106,14 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 					}
 				}
 			}
-
 		}
-		catch(PointerException e) {
+		catch (PointerException e) {
+        	LOG.warn("visitDrop fails with PointerException: " + e);
 			Bubble bubble = new Bubble(DetailsSubFormController.this.getJTable(), CommonLocaleDelegate.getMessage("details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstützt!"),5, Bubble.Position.NW);
 			bubble.setVisible(true);
 		}
 		catch (Exception e) {
-			log.error(e.getMessage(), e);
+        	LOG.warn("visitDrop fails: " + e);
 		}
 	}
 

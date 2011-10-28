@@ -21,7 +21,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 
-import javax.ejb.CreateException;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -189,9 +188,6 @@ public class TransitionPropertiesController {
 				((Component) parent.getViewer()).repaint();
 			}
 		}
-		catch (CreateException ex) {
-			Errors.getInstance().showExceptionDialog(parent, ex.getMessage(), ex);
-		}
 		catch (RemoteException ex) {
 			Errors.getInstance().showExceptionDialog(parent, ex.getMessage(), ex);
 		}
@@ -215,9 +211,6 @@ public class TransitionPropertiesController {
 				}
 				model.fireTableDataChanged();
 			}
-		}
-		catch (CreateException ex) {
-			Errors.getInstance().showExceptionDialog(parent, ex.getMessage(), ex);
 		}
 		catch (RemoteException ex) {
 			Errors.getInstance().showExceptionDialog(parent, ex.getMessage(), ex);

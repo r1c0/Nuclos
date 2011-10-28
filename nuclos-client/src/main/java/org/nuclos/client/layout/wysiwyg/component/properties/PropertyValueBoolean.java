@@ -40,12 +40,8 @@ import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
  * @author <a href="mailto:thomas.schiffmann@novabit.de">thomas.schiffmann</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class PropertyValueBoolean implements PropertyValue<Boolean> {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private boolean selected = true;
 	
 	/**
@@ -187,16 +183,8 @@ public class PropertyValueBoolean implements PropertyValue<Boolean> {
 	 */
 	public class PropertyEditorBoolean extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private JCheckBox checkbox;
 		
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.table.TableCellEditor#getTableCellEditorComponent(javax.swing.JTable, java.lang.Object, boolean, int, int)
-		 */
 		@Override
 		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
 			checkbox = new JCheckBox();
@@ -207,10 +195,6 @@ public class PropertyValueBoolean implements PropertyValue<Boolean> {
 			return checkbox;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.table.TableCellRenderer#getTableCellRendererComponent(javax.swing.JTable, java.lang.Object, boolean, boolean, int, int)
-		 */
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 			PropertyValueBoolean val = (PropertyValueBoolean)value;
@@ -223,25 +207,16 @@ public class PropertyValueBoolean implements PropertyValue<Boolean> {
 			return checkbox;
 		}
 		
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.CellEditor#getCellEditorValue()
-		 */
 		@Override
 		public Object getCellEditorValue() {
 			return PropertyValueBoolean.this;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.AbstractCellEditor#stopCellEditing()
-		 */
 		@Override
 		public boolean stopCellEditing() {
 			PropertyValueBoolean.this.setSelected(checkbox.isSelected());
 			return super.stopCellEditing();
-		}
-		
+		}	
 		
 	}
 }

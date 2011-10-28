@@ -32,7 +32,7 @@ import org.nuclos.installer.util.PropUtils;
 
 public class LinuxUnpacker extends UnixoidUnpacker {
 
-	private static final Logger log = Logger.getLogger(LinuxUnpacker.class);
+	private static final Logger LOG = Logger.getLogger(LinuxUnpacker.class);
 
 	private static final String X86_INSTALLER = "postgresql-9.0.4-1-linux.bin";
 	private static final String X64_INSTALLER = "postgresql-9.0.4-1-linux-x64.bin";
@@ -66,7 +66,7 @@ public class LinuxUnpacker extends UnixoidUnpacker {
 						p.waitFor();
 					}
 					catch (Exception ex) {
-						log.error("Error stopping server", ex);
+						LOG.error("Error stopping server", ex);
 						cb.warn("error.stop.server");
 					}
 				}
@@ -79,7 +79,7 @@ public class LinuxUnpacker extends UnixoidUnpacker {
 			}
 		}
 		catch (Exception ex) {
-			log.error("Failed to stop server", ex);
+			LOG.error("Failed to stop server", ex);
 			cb.warn("error.stop.server");
 		}
 	}
@@ -102,7 +102,7 @@ public class LinuxUnpacker extends UnixoidUnpacker {
 			}
 		}
 		catch (Exception ex) {
-			log.error("Failed to start server", ex);
+			LOG.error("Failed to start server", ex);
 			cb.warn("error.start.server");
 		}
 	}
@@ -125,7 +125,7 @@ public class LinuxUnpacker extends UnixoidUnpacker {
 			return isPrivileged() && getPostgresInstallerUrl() != null;
 		}
 		catch (InstallException ex) {
-			log.error(ex);
+			LOG.error(ex);
 			return false;
 		}
 	}
@@ -144,7 +144,7 @@ public class LinuxUnpacker extends UnixoidUnpacker {
 			FileUtils.copyInputStreamToFile(installerurl.openStream(), f, false);
 		}
 		catch(IOException e) {
-			log.error(e);
+			LOG.error("installPostgres failed: " + e, e);
 			cb.error("error.unpack.postgresql.installer");
 		}
 		f.setExecutable(true);
@@ -157,7 +157,7 @@ public class LinuxUnpacker extends UnixoidUnpacker {
 			"--datadir", ConfigContext.getProperty(POSTGRES_DATADIR),
 			"--serverport", ConfigContext.getProperty(DATABASE_PORT),
 			"--superpassword", ConfigContext.getProperty(POSTGRES_SUPERPWD));
-		log.info(command);
+		LOG.info(command);
 
 		InputStreamReader reader = null;
 		try {
@@ -172,7 +172,7 @@ public class LinuxUnpacker extends UnixoidUnpacker {
 	            while ((n = reader.read(buffer, 0, 1024)) > -1) {
 	            	val.append(buffer, 0, n);
 	            }
-			    log.info("PostgreSQL Installation result: " + val);
+			    LOG.info("PostgreSQL Installation result: " + val);
 			    cb.warn(val.toString());
 			}
 		}
@@ -181,10 +181,10 @@ public class LinuxUnpacker extends UnixoidUnpacker {
 				try {
 					reader.close();
 				} catch (IOException e) {
-					log.warn(e);
+					LOG.warn(e);
 				}
 			}
-			log.error(ex);
+			LOG.error(ex);
 			cb.warn("error.postgres.installation");
 		}
 	}
@@ -202,7 +202,7 @@ public class LinuxUnpacker extends UnixoidUnpacker {
 			PropUtils.replaceTextParameters(servicecontroller, ConfigContext.getCurrentConfig(), "UTF-8");
 			servicecontroller.setExecutable(true);
 		} catch (IOException e) {
-			log.error("Failed to install service.", e);
+			LOG.error("Failed to install service.", e);
 			cb.warn("error.install.service");
 		}
 
@@ -213,14 +213,14 @@ public class LinuxUnpacker extends UnixoidUnpacker {
 
 				// try "/sbin/chkconfig"
 				List<String> command = Arrays.asList("/sbin/chkconfig", "--add", "nuclos." + ConfigContext.getProperty(NUCLOS_INSTANCE).toLowerCase());
-				log.info("Try chkconfig: " + command);
+				LOG.info("Try chkconfig: " + command);
 
 				success = (exec(command) == 0);
 
 				if (!success) {
 					// try "/usr/sbin/update-rc.d"
 					command = Arrays.asList("/usr/sbin/update-rc.d", "nuclos." + ConfigContext.getProperty(NUCLOS_INSTANCE).toLowerCase(), "defaults", "90", "10");
-					log.info("Try update-rc.d: " + command);
+					LOG.info("Try update-rc.d: " + command);
 
 					success = (exec(command) == 0);
 				}
@@ -235,14 +235,14 @@ public class LinuxUnpacker extends UnixoidUnpacker {
 
 					// try "/sbin/chkconfig"
 					List<String> command = Arrays.asList("/sbin/chkconfig", "--del", "nuclos." + ConfigContext.getProperty(NUCLOS_INSTANCE).toLowerCase());
-					log.info("Try chkconfig: " + command);
+					LOG.info("Try chkconfig: " + command);
 
 					success = (exec(command) == 0);
 
 					if (!success) {
 						// try "/usr/sbin/update-rc.d"
 						command = Arrays.asList("/usr/sbin/update-rc.d", "nuclos." + ConfigContext.getProperty(NUCLOS_INSTANCE).toLowerCase(), "remove");
-						log.info("Try update-rc.d: " + command);
+						LOG.info("Try update-rc.d: " + command);
 
 						success = (exec(command) == 0);
 					}
@@ -263,14 +263,14 @@ public class LinuxUnpacker extends UnixoidUnpacker {
 
 			// try "/sbin/chkconfig"
 			List<String> command = Arrays.asList("/sbin/chkconfig", "--del", "nuclos." + ConfigContext.getProperty(NUCLOS_INSTANCE).toLowerCase());
-			log.info("Try chkconfig: " + command);
+			LOG.info("Try chkconfig: " + command);
 
 			success = (exec(command) == 0);
 
 			if (!success) {
 				// try "/usr/sbin/update-rc.d"
 				command = Arrays.asList("/usr/sbin/update-rc.d", "nuclos." + ConfigContext.getProperty(NUCLOS_INSTANCE).toLowerCase(), "remove");
-				log.info("Try update-rc.d: " + command);
+				LOG.info("Try update-rc.d: " + command);
 
 				success = (exec(command) == 0);
 			}

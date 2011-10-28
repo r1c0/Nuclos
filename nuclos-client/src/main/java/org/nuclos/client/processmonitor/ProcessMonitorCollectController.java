@@ -22,6 +22,7 @@ package org.nuclos.client.processmonitor;
 import javax.swing.JComponent;
 import javax.swing.JToolBar;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.console.NuclosConsole;
 import org.nuclos.client.main.mainframe.MainFrameTab;
@@ -42,9 +43,11 @@ import org.nuclos.server.processmonitor.valueobject.ProcessMonitorVO;
  */
 public class ProcessMonitorCollectController extends NuclosCollectController<CollectableProcessMonitorModel> {
 	
+	private static final Logger LOG = Logger.getLogger(ProcessMonitorCollectController.class);
+
 	private final CollectPanel<CollectableProcessMonitorModel> pnlCollect = new CollectPanel<CollectableProcessMonitorModel>(false);
 	private final MainFrameTab ifrm;
-	@SuppressWarnings("unused")
+	// @SuppressWarnings("unused")
 	private final MasterDataSubFormController subformctlUsages;	
 	private final ProcessMonitorEditPanel pnlEdit;
 	
@@ -84,7 +87,8 @@ public class ProcessMonitorCollectController extends NuclosCollectController<Col
 		
 		pnlEdit = new ProcessMonitorEditPanel(subformUsages);
 		
-		this.getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(pnlEdit, pnlEdit.pnlHeader.newCollectableComponentsProvider()));
+		this.getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(
+				pnlEdit, pnlEdit.getHeader().newCollectableComponentsProvider()));
 					
 		ifrm.setLayeredComponent(pnlCollect);
 		this.setInternalFrame(ifrm, tabIfAny==null);
@@ -223,7 +227,6 @@ public class ProcessMonitorCollectController extends NuclosCollectController<Col
 		catch(Exception e) {
 			throw new CommonBusinessException("Der serverseitige Cache konnte nicht invalidiert werden!", e);
 		}
-		
 		return intid;
 	}
 

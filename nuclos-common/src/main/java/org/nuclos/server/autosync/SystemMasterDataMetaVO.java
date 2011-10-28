@@ -29,13 +29,8 @@ import static org.nuclos.server.autosync.SystemMasterDataVO.CREATED_DATE;
 import static org.nuclos.server.autosync.SystemMasterDataVO.CREATED_USER;
 import static org.nuclos.server.autosync.SystemMasterDataVO.VERSION;
 
-@SuppressWarnings("deprecation")
 public class SystemMasterDataMetaVO extends MasterDataMetaVO {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final Collection<Set<String>> uniqueFieldCombinations;
 	private final Collection<Set<String>> logicalUniqueFieldCombinations;
 	

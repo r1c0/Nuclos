@@ -34,6 +34,7 @@ import java.util.prefs.Preferences;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.main.SwingLocaleSwitcher;
 import org.nuclos.common.ApplicationProperties;
@@ -53,6 +54,8 @@ import org.springframework.context.i18n.LocaleContextHolder;
 
 public class LocaleDelegate implements CommonLocaleDelegate.LookupService, MessageListener, InitializingBean {
 
+	private static final Logger LOG = Logger.getLogger(LocaleDelegate.class);
+	
 	private static Object rbLock = new Object();
 	private static Locale locale;
 	private static LocaleInfo localeInfo;

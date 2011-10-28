@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.statemodel;
 
-
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -39,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
@@ -119,12 +116,7 @@ import org.nuclos.server.statemodel.valueobject.TransitionLayout;
  */
 public class StateModelEditor extends JPanel implements ShapeModelListener, FocusListener {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	private final Logger log = Logger.getLogger(this.getClass());
+	private static final Logger LOG = Logger.getLogger(StateModelEditor.class);
 
 	/**
 	 * id of the starting state
@@ -132,10 +124,6 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private static final Integer STARTING_STATE_ID = -666;
 
 	private class SelectAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		SelectAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.1","Auswahl"), Icons.getInstance().getIconSelectObject());
@@ -149,10 +137,6 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 
 	private class NewStateAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		NewStateAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.9","Neuer Status"), Icons.getInstance().getIconState());
@@ -166,10 +150,6 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 
 	private class NewTransitionAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		NewTransitionAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.10","Neue Transition"), Icons.getInstance().getIconStateTransition());
@@ -183,10 +163,6 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 
 	private class NewNoteAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		NewNoteAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.8","Neue Bemerkung"), Icons.getInstance().getIconStateNewNote());
@@ -200,10 +176,6 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 
 	private class DeleteAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		DeleteAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.3","Auswahl l\u00f6schen"), Icons.getInstance().getIconDelete16());
@@ -216,10 +188,6 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 
 	private class DefaultTransitionAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		DefaultTransitionAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.19","Als Standardpfad definieren"));
@@ -238,10 +206,6 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 	
 	private class CopyStateRightsAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		CopyStateRightsAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.17","Rechte & Pflichten kopieren"), Icons.getInstance().getIconCopy16());
@@ -254,10 +218,6 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 	
 	private class PasteStateRightsAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		PasteStateRightsAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.18","Rechte & Pflichten einfügen"), Icons.getInstance().getIconPaste16());
@@ -270,10 +230,6 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 
 	private class ZoomInAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		ZoomInAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.15","Zoom +"), Icons.getInstance().getIconZoomIn());
@@ -286,10 +242,6 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 
 	private class ZoomOutAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		ZoomOutAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.13","Zoom -"), Icons.getInstance().getIconZoomOut());
@@ -302,10 +254,6 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 
 	private class PrintAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		PrintAction() {
 			super(CommonLocaleDelegate.getMessage("StateModelEditor.5","Drucken..."), Icons.getInstance().getIconPrint16());
@@ -667,18 +615,18 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 
 		if (pnlShapeViewer.getModel().isMultiSelected()) {
 			/** @todo this seems never to be called */
-			log.debug("selectionChanged: multi selection");
+			LOG.debug("selectionChanged: multi selection");
 			/** @todo show rights editor for multiple states */
 			pnlProperties.setPanel("None");
 			shapeSelected = null;
 		}
 		else if (shape == null) {
-			log.debug("selectionChanged: nothing selected");
+			LOG.debug("selectionChanged: nothing selected");
 			pnlProperties.setPanel("None");
 			shapeSelected = null;
 		}
 		else if (shape instanceof StateShape) {
-			log.debug("selectionChanged: single state shape selected");
+			LOG.debug("selectionChanged: single state shape selected");
 			pnlProperties.setPanel("State");
 			shapeSelected = shape;
 			final StateShape stateshapeSelected = (StateShape) shape;
@@ -696,7 +644,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 //			this.setupSubforms(stateshapeSelected.getStateVO());
 		}
 		else if (shape instanceof NoteShape) {
-			log.debug("selectionChanged: single note shape selected");
+			LOG.debug("selectionChanged: single note shape selected");
 			pnlProperties.setPanel("Note");
 			shapeSelected = shape;
 
@@ -706,7 +654,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			this.addNotePanelListeners();
 		}
 		else if (shape instanceof AbstractConnector) {
-			log.debug("selectionChanged: single transition shape selected");
+			LOG.debug("selectionChanged: single transition shape selected");
 			pnlProperties.setPanel("Transition");
 			shapeSelected = shape;
 			
@@ -721,15 +669,12 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 				pnlProperties.getTransitionRolePanel().getModel().setRoles(RoleRepository.getInstance().selectRolesById(((StateTransition) shape).getRoles()));
 				TableUtils.setPreferredColumnWidth(pnlProperties.getTransitionRolePanel().getTblRoles(), 10, 10);
 			}
-			catch (CreateException ex) {
-				Errors.getInstance().showExceptionDialog(this, ex.getMessage(), ex);
-			}
 			catch (RemoteException ex) {
 				Errors.getInstance().showExceptionDialog(this, ex.getMessage(), ex);
 			}
 		}
 		else {
-			log.debug("selectionChanged: something unknown was selected");
+			LOG.debug("selectionChanged: something unknown was selected");
 			pnlProperties.setPanel("None");
 			shapeSelected = null;
 		}
@@ -737,7 +682,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 
 	private void handlePreviousSelection() {
 		if (shapeSelected instanceof StateShape) {
-			log.debug("State shape deselected.");
+			LOG.debug("State shape deselected.");
 
 			// get user rights from properties panel and store them in the selected state's vo:
 //			final StateShape stateshape = (StateShape) shapeSelected;
@@ -752,11 +697,11 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			this.removeStatePanelListeners();
 		}
 		else if (shapeSelected instanceof NoteShape) {
-			log.debug("Note shape deselected.");
+			LOG.debug("Note shape deselected.");
 			this.removeNotePanelListeners();
 		}
 		else {
-			log.debug("Something unknown was deselected.");
+			LOG.debug("Something unknown was deselected.");
 			// do nothing
 		}
 	}
@@ -818,7 +763,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 
 	@Override
     public void multiSelectionChanged(Collection<Shape> collShapes) {
-		log.debug("multiSelectionChanged");
+		LOG.debug("multiSelectionChanged");
 
 		/** @todo this is always called when selecting a shape using "rubberbanding", even if a single shape
 		 * was selected. In the latter case, selectionChanged() should be called for the selected shape. */
@@ -892,7 +837,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 		}
 	}
 
-	public void removeRule(SortedRuleVO vo) throws CreateException, RemoteException {
+	public void removeRule(SortedRuleVO vo) throws RemoteException {
 		if (shapeSelected != null && shapeSelected instanceof StateTransition) {
 			((StateTransition) shapeSelected).removeRule(vo.getId());
 			pnlProperties.getTransitionRulePanel().getModel().setRules(RuleRepository.getInstance().selectRulesById(((StateTransition) shapeSelected).getRuleIdsWithRunAfterwards()));
@@ -901,7 +846,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 		}
 	}
 
-	public void addRule(SortedRuleVO vo) throws CreateException, RemoteException {
+	public void addRule(SortedRuleVO vo) throws RemoteException {
 		if (shapeSelected != null && shapeSelected instanceof StateTransition) {
 			((StateTransition) shapeSelected).addRule(vo.getId(), vo.isRunAfterwards());
 			pnlProperties.getTransitionRulePanel().getModel().setRules(RuleRepository.getInstance().selectRulesById(((StateTransition) shapeSelected).getRuleIdsWithRunAfterwards()));
@@ -921,7 +866,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 		}
 	}
 
-	public void addRole(MasterDataVO mdvo) throws CreateException, RemoteException {
+	public void addRole(MasterDataVO mdvo) throws RemoteException {
 		if (shapeSelected != null && shapeSelected instanceof StateTransition) {
 			((StateTransition) shapeSelected).addRole(mdvo.getIntId());
 			pnlProperties.getTransitionRolePanel().getModel().setRoles(RoleRepository.getInstance().selectRolesById(((StateTransition) shapeSelected).getRoles()));
@@ -930,7 +875,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 		}
 	}
 
-	public void removeRole(MasterDataVO mdvo) throws CreateException, RemoteException {
+	public void removeRole(MasterDataVO mdvo) throws RemoteException {
 		if (shapeSelected != null && shapeSelected instanceof StateTransition) {
 			((StateTransition) shapeSelected).removeRole(mdvo.getIntId());
 			pnlProperties.getTransitionRolePanel().getModel().setRoles(RoleRepository.getInstance().selectRolesById(((StateTransition) shapeSelected).getRoles()));
@@ -1070,7 +1015,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 		selectionChanged(null);
 		
 		try {
-			layoutinfo = showLayout(stategraphvo, pnlShapeViewer, log);
+			layoutinfo = showLayout(stategraphvo, pnlShapeViewer, LOG);
 			
 //		final ShapeModel shapemodel = pnlShapeViewer.getModel();
 //		final Map<Integer, StateEntry> mpShapes = CollectionUtils.newHashMap();
@@ -1184,8 +1129,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			model.setActiveLayer("Default");
 		}
 		catch (ShapeControllerException e) {
-			/** @todo !!! */
-			e.printStackTrace();
+			LOG.warn("createNewStateModel failed: " + e, e);
 		}
 		model.addShape(new StateModelStartShape(8d, 8d, 12d, 12d));
 		pnlShapeViewer.repaint();
@@ -1281,7 +1225,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			pnlShapeViewer.getModel().setActiveLayer("Default");
 		}
 		catch (ShapeControllerException e) {
-			e.printStackTrace();
+			LOG.warn("setStateTool failed: " + e, e);
 		}
 	}
 
@@ -1294,8 +1238,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			pnlShapeViewer.getModel().setActiveLayer("Connectors");
 		}
 		catch (ShapeControllerException e) {
-			// @todo
-			e.printStackTrace();
+			LOG.warn("setTransitionTool failed: " + e, e);
 		}
 	}
 
@@ -1308,8 +1251,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			pnlShapeViewer.getModel().setActiveLayer("Notes");
 		}
 		catch (ShapeControllerException e) {
-			// @todo
-			e.printStackTrace();
+			LOG.warn("setNoteTool failed: " + e, e);
 		}
 	}
 
@@ -1335,8 +1277,12 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 					cl.stateChanged(new ChangeEvent(this));
 				}
 			}
-			catch(UnsupportedFlavorException e) {}
-			catch(IOException e) {}
+			catch(UnsupportedFlavorException e) {
+				LOG.warn("pasteStateRights failed: " + e);
+			}
+			catch(IOException e) {
+				LOG.warn("pasteStateRights failed: " + e);
+			}
 		}
 	}
 
@@ -1375,7 +1321,6 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 		pnlShapeViewer.repaint();
 	}
 
-	@SuppressWarnings("deprecation")
 	private static CollectableField getCollectableFieldRole(final Integer iRoleId) {
 		try {
 			return MasterDataDelegate.getInstance().getCollectableField(NuclosEntity.ROLE.getEntityName(), iRoleId);
@@ -1392,379 +1337,6 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 		// this.closeSubForms();
 		return true;
 	}
-
-//	private class StateRoleSubFormController extends DetailsSubFormController<CollectableStateRole> {
-//		private final StateVO statevo;
-//
-//		private ListSelectionListener listselectionlistener;
-//		private ChangeListener changelistener;
-//
-//		StateRoleSubFormController(StateVO statevo) {
-//			/** @todo fix this */
-//			super(StateModelEditor.this, null, null, NuclosEntity.STATE.getEntityName(),
-//					pnlProperties.getStatePropertiesPanel().getStateDependantRightsPanel().getSubformRoles(),
-//					ClientPreferences.getUserPreferences().node("tmp"),
-//					MasterDataCollectableFieldsProviderFactory.newFactory(null));
-//			this.statevo = statevo;
-//
-//			this.readFromStateVO();
-//
-//			this.listselectionlistener = new ListSelectionListener() {
-//				@Override
-//                public void valueChanged(ListSelectionEvent ev) {
-//					if (!ev.getValueIsAdjusting()) {
-//						log.debug("listselectionlistener for roles");
-//						StateRoleSubFormController.this.stopEditing();
-////						final ListSelectionModel lsm = (ListSelectionModel) ev.getSource();
-////						ctlsubformAttributeGroup.getSubForm().setVisible(!lsm.isSelectionEmpty());
-//						//ctlsubformAttributeGroup.setRole(StateRoleSubFormController.this.getSelectedRole());
-//						StateRoleSubFormController.this.setRole(StateRoleSubFormController.this.getSelectedRole());
-//					}
-//				}
-//			};
-//			this.getSubForm().getJTable().getSelectionModel().addListSelectionListener(listselectionlistener);
-//
-//			this.changelistener = new ChangeListener() {
-//				@Override
-//                public void stateChanged(ChangeEvent ev) {
-//					log.debug("changelistener for roles");
-//					// Note that stopEditing causes a recursive call to stateChanged.
-//					// It's necessary to call stopEditing here because otherwise the changed value
-//					// won't be transferred to the table model.
-//					StateRoleSubFormController.this.stopEditing();
-//
-//					// notify the state model editor of the change:
-//					StateModelEditor.this.modelChanged();
-//
-//					//ctlsubformAttributeGroup.setRole(StateRoleSubFormController.this.getSelectedRole());
-//					StateRoleSubFormController.this.setRole(StateRoleSubFormController.this.getSelectedRole());
-//				}
-//			};
-//			this.getSubForm().addChangeListener(changelistener);
-//		}
-//
-//		fill the subforms (attributegroups and subforms) corresponding to the selected role
-//		private void setRole(CollectableField selectedField) {
-//			Integer iSelectedSubform = StateModelEditor.this.pnlProperties.getStatePropertiesPanel().getStateDependantRightsPanel().getSelectedSubform();
-//			if(iSelectedSubform == 0) {
-//				ctlsubformAttributeGroup.setRole(selectedField);
-//				ctlsubformSubForm.setRole(selectedField);
-//			}
-//			else {
-//				ctlsubformSubForm.setRole(selectedField);
-//				ctlsubformAttributeGroup.setRole(selectedField);
-//			}
-//		}
-//
-//		@Override
-//		public void close() {
-//			this.getSubForm().getJTable().getSelectionModel().removeListSelectionListener(this.listselectionlistener);
-//			this.listselectionlistener = null;
-//
-//			this.getSubForm().removeChangeListener(this.changelistener);
-//			this.changelistener = null;
-//
-//			super.close();
-//		}
-//
-//		@Override
-//		public CollectableStateRole newCollectable() {
-//			return new CollectableStateRole();
-//		}
-//
-//		@Override
-//		protected ValueObjectList<CollectableStateRole> newValueObjectList(List<CollectableStateRole> lstclct) {
-//			return new NonMarkingValueObjectList<CollectableStateRole>(lstclct);
-//		}
-//
-//		private void readFromStateVO() {
-//			// fill the subform roles from the statevo:
-//			final Integer iStateId = statevo.getId();
-//
-//			class MakeCollectable implements Transformer<Integer, CollectableStateRole> {
-//				@Override
-//                public CollectableStateRole transform(Integer iRoleId) {
-//					final CollectableStateRole result = new CollectableStateRole();
-//					result.setField(CollectableStateRole.FIELDNAME_STATE, new CollectableValueIdField(iStateId, null));
-//					result.setField(CollectableStateRole.FIELDNAME_ROLE, getCollectableFieldRole(iRoleId));
-//					return result;
-//				}
-//			}
-//
-//			this.fillSubForm(iStateId, CollectionUtils.transform(this.getRoleIdsFromStateVO(statevo), new MakeCollectable()));
-//		}
-//
-//		private Collection<Integer> getRoleIdsFromStateVO(StateVO statevo) {
-//			Collection<Integer> collRoleIds = new ArrayList<Integer>(statevo.getUserRights().keySet());
-//			for(Integer iRoleId : statevo.getUserSubformRights().keySet()) {
-//				if(!collRoleIds.contains(iRoleId)) {
-//					collRoleIds.add(iRoleId);
-//				}
-//			}
-//			return collRoleIds;
-//		}
-//
-//		private void fillSubForm(Object oParentId, List<CollectableStateRole> lstclct) {
-//			this.setParentId(oParentId);
-//
-//			this.updateTableModel(lstclct);
-//		}
-//
-//		/**
-//		 * @return the selected role id, if any
-//		 */
-//		public CollectableField getSelectedRole() {
-//			final Collectable clctSelected = this.getSelectedCollectable();
-//			return (clctSelected == null) ? null : clctSelected.getField(CollectableStateRole.FIELDNAME_ROLE);
-//		}
-//
-//		public Set<Integer> getRoleIds() {
-//			class ExtractRoleId implements Transformer<Collectable, Integer> {
-//				@Override
-//                public Integer transform(Collectable clct) {
-//					return (Integer) clct.getField(CollectableStateRole.FIELDNAME_ROLE).getValueId();
-//				}
-//			}
-//			return new HashSet<Integer>(CollectionUtils.transform(getCollectableTableModel().getCollectables(), new ExtractRoleId()));
-//		}
-//
-//		private void writeToStateVO() {
-//			final StateVO.UserRights userrights = new StateVO.UserRights();
-//			for (Iterator iter = this.getRoleIds().iterator(); iter.hasNext();) {
-//				final Integer iRoleId = (Integer) iter.next();
-//				/** @todo null is not a valid entry */
-//				userrights.put(iRoleId, null);
-//			}
-//			statevo.setUserRights(userrights);
-//		}
-//
-//		@Override
-//		protected CollectableFieldsProviderFactory getCollectableFieldsProviderFactory() {
-//			return MasterDataCollectableFieldsProviderFactory.newFactory(null);
-//		}
-//	}	// inner class StateRoleSubFormController
-
-//	private class StateRoleAttributeGroupSubFormController extends DetailsSubFormController<CollectableStateRoleAttributeGroup> {
-//		private final StateVO statevo;
-//
-//		private Map<CollectableField, List<CollectableStateRoleAttributeGroup>> mpModel;
-//
-//		private CollectableField clctfRole;
-//		private ChangeListener changelistener;
-//
-//		StateRoleAttributeGroupSubFormController(StateVO statevo) {
-//			super(StateModelEditor.this, null, null, "staterole", pnlProperties.getStatePropertiesPanel().getStateDependantRightsPanel().getSubformAttributeGroups(),
-//					ClientPreferences.getUserPreferences().node("tmp"),
-//					MasterDataCollectableFieldsProviderFactory.newFactory(null));
-//			this.statevo = statevo;
-//			this.readFromStateVO();
-//			this.getSubForm().setVisible(false);
-//
-//			this.changelistener = new ChangeListener() {
-//				@Override
-//                public void stateChanged(ChangeEvent ev) {
-//					StateModelEditor.this.modelChanged();
-//				}
-//			};
-//		}
-//
-//		private CollectableField getRole() {
-//			return this.clctfRole;
-//		}
-//
-//		private void setRole(CollectableField clctfRole) {
-//			final boolean bEditingStopped = this.stopEditing();
-//			assert bEditingStopped;
-//
-//			ctlsubformAttributeGroup.getSubForm().setVisible(clctfRole != null && !clctfRole.isNull());
-//
-//			if (LangUtils.equals(clctfRole, this.getRole())) {
-//				log.debug("setRole called with current role.");
-//			}
-//			else {
-//				log.debug("setRole: OLD ROLE: " + this.getRole() + " - NEW ROLE: " + clctfRole);
-//				if (this.getRole() != null) {
-//					// transfer current list (table model) to the (intermediate) model:
-//					mpModel.put(this.getRole(), new ArrayList<CollectableStateRoleAttributeGroup>(getCollectableTableModel().getCollectables()));
-//				}
-//
-//				this.clctfRole = clctfRole;
-//
-//				this.getSubForm().removeChangeListener(changelistener);
-//
-//				// transfer intermediate model for the new role id to the table model:
-//				final List<CollectableStateRoleAttributeGroup> lstclct = mpModel.get(this.getRole());
-//				this.getCollectableTableModel().setCollectables((lstclct == null) ? new ArrayList<CollectableStateRoleAttributeGroup>() : lstclct);
-//
-//				this.getSubForm().addChangeListener(changelistener);
-//			}
-//		}
-//
-//		@Override
-//		public CollectableStateRoleAttributeGroup newCollectable() {
-//			return new CollectableStateRoleAttributeGroup(this.getRole(),
-//					new AttributegroupPermissionVO(null, null, null, null, null, null, false));
-//		}
-//
-//		@Override
-//		protected CollectableFieldsProviderFactory getCollectableFieldsProviderFactory() {
-//			return MasterDataCollectableFieldsProviderFactory.newFactory(null);
-//		}
-//
-//		@Override
-//		protected ValueObjectList<CollectableStateRoleAttributeGroup> newValueObjectList(List<CollectableStateRoleAttributeGroup> lstclct) {
-//			return new NonMarkingValueObjectList<CollectableStateRoleAttributeGroup>(lstclct);
-//		}
-//
-//		private void readFromStateVO() {
-//			this.mpModel = CollectionUtils.newHashMap();
-//			for (Integer iRoleId : this.statevo.getUserRights().keySet()) {
-//				final CollectableField clctfRole = getCollectableFieldRole(iRoleId);
-//				final Collection<AttributegroupPermissionVO> collagpvo = this.statevo.getUserRights().getValues(iRoleId);
-//				mpModel.put(clctfRole, CollectionUtils.transform(collagpvo, new CollectableStateRoleAttributeGroup.MakeCollectable(clctfRole)));
-//			}
-//		}
-//
-//		private void writeToStateVO() {
-//			this.stopEditing();
-//			if (this.getRole() != null) {
-//				// transfer current list (table model) to the (intermediate) model:
-//				mpModel.put(this.getRole(), new ArrayList<CollectableStateRoleAttributeGroup>(getCollectableTableModel().getCollectables()));
-//			}
-//
-//			final StateVO.UserRights userrights = new StateVO.UserRights();
-//			for (Integer iRoleId : ctlsubformRole.getRoleIds()) {
-//				final List<? extends Collectable> lst = mpModel.get(getCollectableFieldRole(iRoleId));
-//				if (lst != null) {
-//					for (Collectable clct : lst) {
-//						final CollectableStateRoleAttributeGroup clctsrag = (CollectableStateRoleAttributeGroup) clct;
-//						userrights.addValue(iRoleId, clctsrag.getAttributegroupPermissionVO());
-//					}
-//				}
-//			}
-//			this.statevo.setUserRights(userrights);
-//		}
-//
-//		@Override
-//		public void close() {
-//			this.writeToStateVO();
-//			this.getSubForm().removeChangeListener(changelistener);
-//			this.getSubForm().setVisible(false);
-//			super.close();
-//		}
-//
-//	}	// inner class StateRoleAttributeGroupSubFormController
-
-//	private class StateRoleSubFormsSubFormController extends DetailsSubFormController<CollectableStateRoleSubForm> {
-//		private final StateVO statevo;
-//
-//		private Map<CollectableField, List<CollectableStateRoleSubForm>> mpModel;
-//
-//		private CollectableField clctfRole;
-//		private ChangeListener changelistener;
-//
-//		StateRoleSubFormsSubFormController(StateVO statevo) {
-//			super(StateModelEditor.this, null, null, "staterole", pnlProperties.getStatePropertiesPanel().getStateDependantRightsPanel().getSubformSubForms(),
-//					ClientPreferences.getUserPreferences().node("tmp"),
-//					new MasterDataCollectableFieldsProviderFactory(null));
-//
-//			this.statevo = statevo;
-//			this.readFromStateVO();
-//
-//			this.changelistener = new ChangeListener() {
-//				@Override
-//                public void stateChanged(ChangeEvent ev) {
-//					StateModelEditor.this.modelChanged();
-//				}
-//			};
-//		}
-//
-//		private CollectableField getRole() {
-//			return this.clctfRole;
-//		}
-//
-//		private void setRole(CollectableField clctfRole) {
-//			final boolean bEditingStopped = this.stopEditing();
-//			assert bEditingStopped;
-//
-//			this.getSubForm().setVisible(clctfRole != null && !clctfRole.isNull());
-//
-//			if (LangUtils.equals(clctfRole, this.getRole())) {
-//				log.debug("setRole called with current role.");
-//			}
-//			else {
-//				log.debug("setRole: OLD ROLE: " + this.getRole() + " - NEW ROLE: " + clctfRole);
-//				if (this.getRole() != null) {
-//					// transfer current list (table model) to the (intermediate) model:
-//					mpModel.put(this.getRole(), new ArrayList<CollectableStateRoleSubForm>(getCollectableTableModel().getCollectables()));
-//				}
-//
-//				this.clctfRole = clctfRole;
-//
-//				this.getSubForm().removeChangeListener(changelistener);
-//
-//				// transfer intermediate model for the new role id to the table model:
-//				final List<CollectableStateRoleSubForm> lstclct = mpModel.get(this.getRole());
-//				this.getCollectableTableModel().setCollectables((lstclct == null) ? new ArrayList<CollectableStateRoleSubForm>() : lstclct);
-//
-//				this.getSubForm().addChangeListener(changelistener);
-//			}
-//		}
-//
-//		@Override
-//		public CollectableStateRoleSubForm newCollectable() {
-//			return new CollectableStateRoleSubForm(this.getRole(),
-//					new SubformPermissionVO(null, null, null, null, null, null, false));
-//		}
-//
-//		@Override
-//		protected CollectableFieldsProviderFactory getCollectableFieldsProviderFactory() {
-//			return new MasterDataCollectableFieldsProviderFactory(null);
-//		}
-//
-//		@Override
-//		protected ValueObjectList<CollectableStateRoleSubForm> newValueObjectList(List<CollectableStateRoleSubForm> lstclct) {
-//			return new NonMarkingValueObjectList<CollectableStateRoleSubForm>(lstclct);
-//		}
-//
-//		private void readFromStateVO() {
-//			this.mpModel = new HashMap<CollectableField, List<CollectableStateRoleSubForm>>();
-//			for (Integer iRoleId : this.statevo.getUserSubformRights().keySet()) {
-//				final CollectableField clctfRole = getCollectableFieldRole(iRoleId);
-//				final Collection<SubformPermissionVO> collagpvo = this.statevo.getUserSubformRights().getValues(iRoleId);
-//				mpModel.put(clctfRole, CollectionUtils.transform(collagpvo, new CollectableStateRoleSubForm.MakeCollectable(clctfRole)));
-//			}
-//		}
-//
-//		private void writeToStateVO() {
-//			this.stopEditing();
-//			if (this.getRole() != null) {
-//				// transfer current list (table model) to the (intermediate) model:
-//				mpModel.put(this.getRole(), new ArrayList<CollectableStateRoleSubForm>(getCollectableTableModel().getCollectables()));
-//			}
-//
-//			final StateVO.UserSubformRights usersubformrights = new StateVO.UserSubformRights();
-//			for (Integer iRoleId : ctlsubformRole.getRoleIds()) {
-//				final List<? extends Collectable> lst = mpModel.get(getCollectableFieldRole(iRoleId));
-//				if (lst != null) {
-//					for (Collectable clct : lst) {
-//						final CollectableStateRoleSubForm clctsrag = (CollectableStateRoleSubForm) clct;
-//						usersubformrights.addValue(iRoleId, clctsrag.getSubformPermissionVO());
-//					}
-//				}
-//			}
-//			this.statevo.setUserSubformRights(usersubformrights);
-//		}
-//
-//		@Override
-//		public void close() {
-//			this.writeToStateVO();
-//			this.getSubForm().removeChangeListener(changelistener);
-//			this.getSubForm().setVisible(false);
-//			super.close();
-//		}
-//
-//	}  // inner class StateRoleSubFormsSubFormController
 
 	/**
 	 * Returns the Shapeviewer used by the editor

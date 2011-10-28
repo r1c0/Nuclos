@@ -29,9 +29,7 @@ import org.nuclos.common2.DateUtils;
  * Modeled after the JSR-310 and Jodatime.
  */
 public class LocalTime implements Serializable, Comparable<LocalTime> {
-
-	private static final long serialVersionUID = 1L;
-
+	
 	/**
 	 * Parses a time.
 	 */

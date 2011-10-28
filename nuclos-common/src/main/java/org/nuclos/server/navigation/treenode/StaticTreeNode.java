@@ -32,10 +32,6 @@ import java.util.List;
  */
 public class StaticTreeNode<Id> extends AbstractStaticTreeNode<Id> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final boolean bNeedsParent;
 
 	public StaticTreeNode(Id id, String sLabel, String sDescription, boolean bNeedsParent) {

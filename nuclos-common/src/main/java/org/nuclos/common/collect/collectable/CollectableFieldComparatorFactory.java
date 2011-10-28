@@ -60,7 +60,6 @@ public class CollectableFieldComparatorFactory <Clct extends CollectableField> {
 	 * @return comparator for given entity and entityfield
 	 * @precondition clctEntityField != null
 	 */
-	@SuppressWarnings("unchecked")
 	public <T extends CollectableField> Comparator<T> newCollectableFieldComparator(CollectableEntityField clctEntityField) {
 		return (Comparator<T>)CollectableComparator.getFieldComparator(clctEntityField);
 	}

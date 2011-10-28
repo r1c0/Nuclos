@@ -51,13 +51,8 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @author <a href="mailto:maik.stueker@novabit.de">maik.stueker</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class WYSIWYGScrollPane extends JScrollPane implements WYSIWYGComponent {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static String PROPERTY_PREFFEREDSIZE = PROPERTY_LABELS.PREFFEREDSIZE;
 	public static String PROPERTY_HORIZONTALSCROLLBAR = PROPERTY_LABELS.HORIZONTALSCROLLBAR;
@@ -160,7 +155,7 @@ public class WYSIWYGScrollPane extends JScrollPane implements WYSIWYGComponent {
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#setProperty(java.lang.String, org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue, java.lang.Class)
 	 */
 	@Override
-	public void setProperty(String property, PropertyValue value, Class<?> valueClass) throws CommonBusinessException {
+	public void setProperty(String property, PropertyValue<?> value, Class<?> valueClass) throws CommonBusinessException {
 		properties.setProperty(property, value, valueClass);
 	}
 

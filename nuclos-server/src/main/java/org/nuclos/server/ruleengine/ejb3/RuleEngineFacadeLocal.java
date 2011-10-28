@@ -19,8 +19,6 @@ package org.nuclos.server.ruleengine.ejb3;
 import java.util.Collection;
 import java.util.List;
 
-import javax.ejb.Local;
-
 import org.nuclos.common.PropertiesMap;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -29,7 +27,7 @@ import org.nuclos.server.ruleengine.valueobject.RuleEngineTransitionVO;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 
-@Local
+// @Local
 public interface RuleEngineFacadeLocal {
 
 	/**
@@ -42,7 +40,7 @@ public interface RuleEngineFacadeLocal {
 	 * @precondition iModuleId != null
 	 * @precondition Modules.getInstance().getUsesRuleEngine(iModuleId.intValue())
 	 */
-	public abstract RuleObjectContainerCVO fireRule(String sEntity,
+	RuleObjectContainerCVO fireRule(String sEntity,
 		String sEventName, RuleObjectContainerCVO loccvoCurrent)
 		throws NuclosBusinessRuleException;
 
@@ -54,14 +52,17 @@ public interface RuleEngineFacadeLocal {
 	 * @param loccvoCurrent current leased object as parameter for rules
 	 * @return the possibly change current object.
 	 */
-	public abstract RuleObjectContainerCVO fireRule(Integer sourceStateId,
+	RuleObjectContainerCVO fireRule(Integer sourceStateId,
 		Integer targetStateId, RuleObjectContainerCVO ruleContainer, Boolean after)
 		throws NuclosBusinessRuleException;
 
 	/**
 	 * fires the rules for a specific object generation.
 	 */
-	public abstract RuleObjectContainerCVO fireGenerationRules(Integer iGenerationId, RuleObjectContainerCVO tgtRuleObject, Collection<RuleObjectContainerCVO> srcRuleObjects, RuleObjectContainerCVO parameterRuleObject, List<String> actions, PropertiesMap properties, Boolean after) throws NuclosBusinessRuleException;
+	RuleObjectContainerCVO fireGenerationRules(Integer iGenerationId, RuleObjectContainerCVO tgtRuleObject, 
+			Collection<RuleObjectContainerCVO> srcRuleObjects, RuleObjectContainerCVO parameterRuleObject, 
+			List<String> actions, PropertiesMap properties, Boolean after) 
+			throws NuclosBusinessRuleException;
 
 	/**
 	 * executes the given lstRules of business rules.
@@ -71,7 +72,7 @@ public interface RuleEngineFacadeLocal {
 	 * @return the possibly change current object.
 	 * @throws NuclosBusinessRuleException
 	 */
-	public abstract RuleObjectContainerCVO executeBusinessRules(
+	RuleObjectContainerCVO executeBusinessRules(
 		List<RuleVO> lstRules, RuleObjectContainerCVO loccvoCurrent,
 		boolean bIgnoreExceptions) throws NuclosBusinessRuleException;
 
@@ -80,7 +81,7 @@ public interface RuleEngineFacadeLocal {
 	 * @return Collection<RuleEngineTransitionVO>
 	 * @throws CommonPermissionException
 	 */
-	public abstract Collection<RuleEngineTransitionVO> getAllRuleTransitionsForTransitionId(
+	Collection<RuleEngineTransitionVO> getAllRuleTransitionsForTransitionId(
 		Integer transitionId) throws CommonPermissionException;
 
 	/**
@@ -89,7 +90,7 @@ public interface RuleEngineFacadeLocal {
 	 * @return rule value object
 	 * @throws CommonPermissionException
 	 */
-	public abstract RuleVO get(Integer iId) throws CommonFinderException,
+	RuleVO get(Integer iId) throws CommonFinderException,
 		CommonPermissionException;
 
 	/**
@@ -99,7 +100,7 @@ public interface RuleEngineFacadeLocal {
 	 * @return rule value object
 	 * @throws CommonPermissionException
 	 */
-	public abstract RuleVO get(String ruleName) throws CommonFinderException,
+	RuleVO get(String ruleName) throws CommonFinderException,
 		CommonPermissionException;
 
 }

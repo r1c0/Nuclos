@@ -27,8 +27,4 @@ package org.nuclos.client.gef.shapes;
 
 public class FreeFormShape extends AbstractShape {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 }

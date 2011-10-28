@@ -22,7 +22,6 @@ import org.nuclos.common2.CommonLocaleDelegate;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import javax.ejb.CreateException;
 import javax.swing.table.AbstractTableModel;
 
 import org.nuclos.client.statemodel.RuleRepository;
@@ -39,16 +38,11 @@ import org.nuclos.client.statemodel.SortedRuleVO;
  */
 public class SelectRuleTableModel extends AbstractTableModel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private static final String[] asColumnNames = {CommonLocaleDelegate.getMessage("SelectRuleTableModel.2","Regel"), CommonLocaleDelegate.getMessage("SelectRuleTableModel.1","Beschreibung")};
 
 	private List<SortedRuleVO> lstRules;
 
-	public SelectRuleTableModel() throws CreateException, RemoteException {
+	public SelectRuleTableModel() throws RemoteException {
 		RuleRepository.getInstance().updateRules();
 	}
 
@@ -85,7 +79,7 @@ public class SelectRuleTableModel extends AbstractTableModel {
 		return result;
 	}
 
-	public void setExcludeRules(List<SortedRuleVO> lstExcludeRules) throws CreateException, RemoteException {
+	public void setExcludeRules(List<SortedRuleVO> lstExcludeRules) throws RemoteException {
 		this.lstRules = RuleRepository.getInstance().filterRulesByVO(lstExcludeRules);
 	}
 

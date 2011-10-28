@@ -26,10 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.nuclos.installer.Constants;
 import org.nuclos.installer.L10n;
 
 public class PostgresDbSetup extends DbSetup implements Constants {
+
+	private static final Logger LOG = Logger.getLogger(PostgresDbSetup.class);
 
 	private String server;
 	private String port;
@@ -147,11 +150,11 @@ public class PostgresDbSetup extends DbSetup implements Constants {
 			} finally {
 				superConn.close();
 			}
-		} catch (SQLException ex) {
-			actions.add(createErrorFromSQLException(ex));
-			ex.printStackTrace();
+		} catch (SQLException e) {
+			actions.add(createErrorFromSQLException(e));
+			LOG.warn("prepare failed: " + e, e);
 		}
-		System.err.println(actions);
+		LOG.info("prepare actions=" + actions);
 	}
 
 	public void checkConnection() throws SQLException {
@@ -351,7 +354,7 @@ public class PostgresDbSetup extends DbSetup implements Constants {
 		Statement stmt = conn.createStatement();
 		try {
 			String sql = String.format(fmt, args);
-			System.err.println(sql);
+			LOG.info("executeStmt: " + sql);
 			return stmt.execute(sql);
 		} finally {
 			stmt.close();

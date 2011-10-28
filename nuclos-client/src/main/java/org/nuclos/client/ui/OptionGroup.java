@@ -46,10 +46,6 @@ import org.apache.commons.lang.NullArgumentException;
  */
 public class OptionGroup extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final int ALIGN_HORIZONTAL = SwingConstants.HORIZONTAL;
 	public static final int ALIGN_VERTICAL = SwingConstants.VERTICAL;
 
@@ -65,10 +61,6 @@ public class OptionGroup extends JPanel {
 	private ActionListener actionListener = new OptionGroupActionListener();
 	
 	private class OptionGroupActionListener implements ActionListener, Serializable{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {

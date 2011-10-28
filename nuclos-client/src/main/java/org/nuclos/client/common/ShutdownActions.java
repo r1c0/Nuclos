@@ -19,6 +19,8 @@ package org.nuclos.client.common;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
+
 /**
  * Handler for shutdown actions.
  * The JDK's Runtime.addShutdownHook() lacks the possibility to define the order in which shutdown hooks
@@ -31,6 +33,8 @@ import java.util.TreeMap;
  * @version 01.00.00
  */
 public class ShutdownActions {
+	
+	private static final Logger LOG = Logger.getLogger(ShutdownActions.class);
 
 	private static ShutdownActions singleton;
 
@@ -95,9 +99,11 @@ public class ShutdownActions {
 						runnable.run();
 					}
 					catch (Exception ex) {
+						// Ok! (tp)
 						// Note that we don't use log4j here because we're somewhat paranoid:
 						System.err.print("Exception occured in shutdown hook: ");
 						ex.printStackTrace();
+						LOG.debug("Runnable " + runnable + " failed in shutdown hook", ex);
 					}
 				}
 			}

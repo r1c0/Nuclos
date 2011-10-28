@@ -44,11 +44,7 @@ import org.nuclos.common.collection.Factories;
 import org.nuclos.common.collection.LazyInitMapWrapper;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 
-/*package*/ class LiveSearchTreePane extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+class LiveSearchTreePane extends JPanel {
 
 	private static final int    ROW_HEIGHT = 48;
 	
@@ -251,27 +247,8 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 	}
 	
 	private class LabelIconRenderer extends DefaultTreeCellRenderer {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public LabelIconRenderer() {
-			super();
-			/*
-			 			@SuppressWarnings("unchecked")
-            Pair<Icon, String> p = (Pair<Icon, String>) value;
-			
-			String text = "<html><small><b>" + p.y + "</b></small></html>";
-			
-			JLabel c = (JLabel) super.getTableCellRendererComponent(table, text, isSelected, hasFocus, row, column);
-			c.setHorizontalAlignment(JLabel.CENTER);
-			c.setVerticalTextPosition(JLabel.BOTTOM);
-			c.setHorizontalTextPosition(JLabel.CENTER);
-
-			c.setIcon(p.x);
-			return c;
-			 */
 		}
 
 		@Override

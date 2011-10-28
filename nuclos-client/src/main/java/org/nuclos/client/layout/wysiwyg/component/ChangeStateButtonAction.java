@@ -46,7 +46,7 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
 public class ChangeStateButtonAction<Clct extends Collectable> implements CollectActionAdapter<Clct> {
 
 	@Override
-	public void run(CollectController controller, Properties probs) {
+	public void run(CollectController<Clct> controller, Properties probs) {
 		if(controller instanceof GenericObjectCollectController) {
 			GenericObjectCollectController gController = (GenericObjectCollectController) controller;
 			

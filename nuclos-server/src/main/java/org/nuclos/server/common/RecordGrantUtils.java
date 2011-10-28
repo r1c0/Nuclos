@@ -53,7 +53,8 @@ import org.nuclos.server.report.valueobject.RecordGrantVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 
 public class RecordGrantUtils {
-	private static Logger	log	= Logger.getLogger(RecordGrantUtils.class);
+	
+	private static final Logger	LOG	= Logger.getLogger(RecordGrantUtils.class);
 
 	public static void checkWriteInternal(String entity, Long id) throws CommonPermissionException {
 		if (!getRecordGrantRightInternal(entity, id).canWrite()) {
@@ -327,9 +328,9 @@ public class RecordGrantUtils {
 					csc.setConditionName(filterName);
 					cscs.add(csc);
 				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				throw new NuclosFatalException("Invalid compulsory filter " + filterName, ex);
+			} catch (Exception e) {
+				LOG.info("getCompulsorySearchFilter failed: " + e, e);
+				throw new NuclosFatalException("Invalid compulsory filter " + filterName, e);
 			}
 		}
 		

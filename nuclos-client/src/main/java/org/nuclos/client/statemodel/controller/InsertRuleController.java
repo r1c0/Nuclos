@@ -21,7 +21,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;
 
-import javax.ejb.CreateException;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
@@ -49,7 +48,7 @@ public class InsertRuleController extends Controller {
 		super(parent);
 	}
 
-	public boolean run(String sDialogTitle, java.util.List<SortedRuleVO> excludeRules) throws CreateException, RemoteException {
+	public boolean run(String sDialogTitle, java.util.List<SortedRuleVO> excludeRules) throws RemoteException {
 		this.pnlRules = new InsertRulePanel();
 
 		final SelectRuleTableModel tblmodel = new SelectRuleTableModel();

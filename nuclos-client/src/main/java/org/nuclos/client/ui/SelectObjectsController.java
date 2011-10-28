@@ -141,7 +141,6 @@ public class SelectObjectsController<T> extends Controller {
 			}
 
 			@Override
-			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent ev) {
 				final MutableListModel<T> modelSrc = (MutableListModel<T>) jlstSrc.getModel();
 				final MutableListModel<T> modelDest = (MutableListModel<T>) jlstDest.getModel();

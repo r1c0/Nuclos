@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.EntityTreeViewVO;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.collection.Transformer;
@@ -42,6 +43,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class DalSupportForMD {
+
+	private static final Logger LOG = Logger.getLogger(DalSupportForMD.class);
 
 	private DalSupportForMD() {
 		// Never invoked.

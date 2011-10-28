@@ -105,7 +105,6 @@ public class SystemDataCache {
 		return findAllVO(makeFieldEqualsPredicate(field1, value1, opt));
 	}
 
-	@SuppressWarnings("unchecked")
 	private static Predicate<MasterDataVO> makeFieldEqualsPredicate(String field, Object value, Object[] opt) {
 		Predicate<MasterDataVO>[] predicates = new Predicate[1 + (opt.length / 2)];
 		predicates[0] = new FieldEqualsPredicate(field, value);
@@ -213,9 +212,8 @@ public class SystemDataCache {
 			throw new IllegalStateException("Invalid comparison operator " + operator);
 		}
 
-		@SuppressWarnings("unchecked")
 		private static <T> int compare(T t1, T t2, Comparator<? super T> comparator) {
-			return (comparator != null) ? comparator.compare(t1, t2) : ((Comparable) t1).compareTo(t2);
+			return (comparator != null) ? comparator.compare(t1, t2) : ((Comparable<? super T>) t1).compareTo(t2);
 		}
 	}
 
@@ -283,7 +281,6 @@ public class SystemDataCache {
 
 		@Override
 		public Predicate<MasterDataVO> visitCompositeCondition(CompositeCollectableSearchCondition compositecond) {
-			@SuppressWarnings("unchecked")
 			Predicate<MasterDataVO>[] operands = CollectionUtils.transform(compositecond.getOperands(), this).toArray(new Predicate[0]);
 			switch (compositecond.getLogicalOperator()) {
 			case NOT:
@@ -348,7 +345,6 @@ public class SystemDataCache {
 	static class AtomicConditionToPredicateVisitor implements AtomicVisitor<Predicate<MasterDataVO>, RuntimeException>{
 
 		@Override
-		@SuppressWarnings("unchecked")
 		public Predicate<MasterDataVO> visitComparison(CollectableComparison comparison) {
 			CollectableEntityField entityField = comparison.getEntityField();
 			CollectableField comparand = comparison.getComparand();
@@ -360,9 +356,10 @@ public class SystemDataCache {
 					// We're are simulating SQL semantics where NULL comparisons yield always false.
 					return PredicateUtils.alwaysFalse();
 				}
-				Class<?> javaClass = entityField.getJavaClass();
-				BinaryPredicate pred = new ComparisonOperatorPredicate(comparison.getComparisonOperator(), javaClass, null);
-				return new FieldPredicate(entityField.getName(), javaClass, PredicateUtils.bindSecond(pred,comparand.getValue()));
+				Class<Object> javaClass = (Class<Object>) entityField.getJavaClass();
+				BinaryPredicate<Object,Object> pred = 
+						new ComparisonOperatorPredicate<Object>(comparison.getComparisonOperator(), javaClass, null);
+				return new FieldPredicate<Object>(entityField.getName(), javaClass, PredicateUtils.bindSecond(pred,comparand.getValue()));
 			}
 		}
 

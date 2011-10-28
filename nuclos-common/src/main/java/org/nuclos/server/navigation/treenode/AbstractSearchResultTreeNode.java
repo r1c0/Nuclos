@@ -32,13 +32,8 @@ import org.nuclos.common2.exception.CommonFinderException;
  */
 public abstract class AbstractSearchResultTreeNode extends AbstractTreeNode<Object> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private final CollectableSearchCondition cond;
-	private final String sFilterName;
-	
+	private final String sFilterName;	
 
 	public AbstractSearchResultTreeNode(CollectableSearchCondition cond, String sFilterName) {
 		super(null);

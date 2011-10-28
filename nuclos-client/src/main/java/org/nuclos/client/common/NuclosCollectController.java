@@ -53,6 +53,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.datasource.NuclosSearchConditionUtils;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
@@ -136,6 +137,9 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  * @version 01.00.00
  */
 public abstract class NuclosCollectController<Clct extends Collectable> extends CollectController<Clct> {
+	
+	private static final Logger LOG = Logger.getLogger(NuclosCollectController.class);
+		
 	protected String sEntity;
 	protected static final String PREFS_KEY_OUTERSTATE = "outerState";
 	protected static final String PREFS_KEY_ENTITY = "entity";
@@ -254,11 +258,6 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		final DetailsPanel pnlDetails = this.getDetailsPanel();
 
 		final Action actSelectSearchTab = new AbstractAction() {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
-
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				if (pnlCollect.isTabbedPaneEnabledAt(CollectPanel.TAB_SEARCH)) {
@@ -271,11 +270,6 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 		//TODO This is a workaround. The detailpanel should keep the focus
 		final Action actGrabFocus = new AbstractAction() {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
-
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				pnlDetails.grabFocus();
@@ -385,11 +379,6 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		pnlDetails.btnNext.setAction(actNext);
 
 		Action actClose = new AbstractAction() {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
-
 			@Override
             public void actionPerformed(ActionEvent e) {
 				getFrame().dispose();
@@ -516,11 +505,10 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 				}
 				ctl.writeStateToPreferences(rp);
 			} catch(Exception e) {
-				log.warn("Preferences not completely stored.", e);
+				LOG.warn("Preferences not completely stored.", e);
 			}
 
 			ctl.storeInstanceStateToPreferences(rp.inheritControllerPreferences);
-
 			return toXML(rp);
 		}
 
@@ -531,10 +519,6 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 	}
 
-	/**
-	 *
-	 *
-	 */
 	public static class NuclosCollectTabRestoreController extends TabRestoreController {
 
 		@Override
@@ -579,7 +563,6 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			UIUtils.runCommandLater(MainFrame.getPredefinedEntityOpenLocation(sEntity), new CommonRunnable() {
 				// This must be done later as reloading the layout in restoreStateFromPreferences is done later also:
 				@Override
-                @SuppressWarnings("unchecked")
 				public void run() throws CommonBusinessException {
 					switch (iCollectState) {
 					case CollectState.OUTERSTATE_SEARCH:
@@ -710,7 +693,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		// to the model are ignored. This seems to be better than throwing an exception here and not storing the search condition at all:
 		final CollectableSearchCondition cond = this.getCollectableSearchConditionFromSearchPanel(false);
 		rp.searchCondition = cond;
-		log.debug("Wrote searchcondition to prefs: " + LangUtils.toString(cond));
+		LOG.debug("Wrote searchcondition to prefs: " + LangUtils.toString(cond));
 
 	}
 
@@ -728,10 +711,10 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		this.setCollectableSearchConditionInSearchPanel(NuclosSearchConditionUtils.restorePlainSubConditions(cond));
 
 		try {
-			log.debug("restored searchcondition from prefs: " + LangUtils.toString(getSearchStrategy().getCollectableSearchCondition()));
+			LOG.debug("restored searchcondition from prefs: " + LangUtils.toString(getSearchStrategy().getCollectableSearchCondition()));
 		}
 		catch (CollectableFieldFormatException ex) {
-			log.debug("Exception thrown in log statement", ex);
+			LOG.debug("Exception thrown in log statement", ex);
 		}
 	}
 
@@ -830,7 +813,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	 */
 	protected void writeSerializableCurrentCollectableIdToPreferences(RestorePreferences rp) {
 		final Object oId = this.getSelectedCollectableId();
-		log.debug("writeSerializableCurrentCollectableIdToPreferences: oId = " + oId);
+		LOG.debug("writeSerializableCurrentCollectableIdToPreferences: oId = " + oId);
 		if ((oId != null) && !(oId instanceof Serializable)) {
 			throw new NuclosFatalException("The CollectableId is not serializable");//Die CollectableId ist nicht serialisierbar.
 		}
@@ -901,7 +884,6 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		if (this.alLayoutMLButtons == null) {
 			this.alLayoutMLButtons = new ActionListener() {
 				@Override
-                @SuppressWarnings("unchecked")
 				public void actionPerformed(ActionEvent ev) {
 					final String sActionCommand = ev.getActionCommand();
 					//NUCLOSINT-743 State and Rule Button Action
@@ -945,11 +927,6 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			= new CommonAbstractAction(CommonLocaleDelegate.getMessage("NuclosCollectController.9","Filter speichern"),
 						Icons.getInstance().getIconSave16(),
 						CommonLocaleDelegate.getMessage("NuclosCollectController.5","Eingestelltes Suchkriterium als Filter speichern")) {
-			/**
-							 *
-							 */
-							private static final long serialVersionUID = 1L;
-
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				cmdSaveFilter();
@@ -960,11 +937,6 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			= new CommonAbstractAction(CommonLocaleDelegate.getMessage("NuclosCollectController.8","Filter l\u00f6schen"),
 						Icons.getInstance().getIconDelete16(),
 						CommonLocaleDelegate.getMessage("NuclosCollectController.2","Ausgew\u00e4hlten Filter l\u00f6schen")) {
-			/**
-							 *
-							 */
-							private static final long serialVersionUID = 1L;
-
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				cmdRemoveFilter();
@@ -974,10 +946,6 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		//result.add(Box.createHorizontalStrut(5));
 
 		CenteringPanel cpSearchFilter = new CenteringPanel(getSearchPanel().cmbbxSearchFilter) {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public Dimension getMinimumSize() {
@@ -1013,8 +981,6 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 		// set tool tips dynamically:
 		getSearchPanel().cmbbxSearchFilter.setRenderer(new DefaultListCellRenderer() {
-
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public Component getListCellRendererComponent(JList lst, Object oValue, int index, boolean bSelected,
@@ -1059,7 +1025,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 					final SearchFilter filter = (SearchFilter) ev.getItem();
 					assert filter != null;
 					sToolTip = filter.getDescription();
-					log.debug("Filter selected: " + filter.getName());
+					LOG.debug("Filter selected: " + filter.getName());
 					bRegularFilterSelected = !filter.isDefaultFilter();
 				}
 				getSearchPanel().cmbbxSearchFilter.setToolTipText(sToolTip);
@@ -1331,9 +1297,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		return bTransferable;
 	}
 
-	private static class MySelectObjectsPanel extends DefaultSelectObjectsPanel {
-
-		private static final long serialVersionUID = 1L;
+	private static class MySelectObjectsPanel<T> extends DefaultSelectObjectsPanel<T> {
 
 		private final JCheckBox cbxSaveAfterRuleExecution = new JCheckBox();
 

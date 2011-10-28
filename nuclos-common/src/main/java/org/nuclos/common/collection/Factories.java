@@ -20,9 +20,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class Factories {
-	private Factories() {}
+import org.apache.log4j.Logger;
 
+public class Factories {
+	
+	private static final Logger LOG = Logger.getLogger(Factories.class);
+
+	private Factories() {
+	}
 
 	public static <T> Factory<T> constFactory(final T t) {
 		return new Factory<T>() {
@@ -42,43 +47,53 @@ public class Factories {
 	
 	public static <T extends Cloneable> Factory<T> cloneFactory(final T t) {
 		return new Factory<T>() {
-			@SuppressWarnings("unchecked")
-            @Override
+			@Override
 			public T create() {
 				Exception x = null;
 				try {
 					Class<?> c = t.getClass();
 					Method m = c.getDeclaredMethod("clone", new Class[0]);
 					return (T) m.invoke(t, new Object[0]);
+				} catch (SecurityException e) {
+					x = e;
+				} catch (IllegalArgumentException e) {
+					x = e;
+				} catch (NoSuchMethodException e) {
+					x = e;
+				} catch (IllegalAccessException e) {
+					x = e;
+				} catch (InvocationTargetException e) {
+					x = e;
 				}
-				catch(SecurityException e)         { x = e; }
-				catch(IllegalArgumentException e)  { x = e; }
-				catch(NoSuchMethodException e)     { x = e; }
-				catch(IllegalAccessException e)    { x = e; }
-				catch(InvocationTargetException e) { x = e; }
 				throw new RuntimeException(x);
 			}
 		};
-	}
-	
+	}	
 	
 	public static <T> Factory<T> defaultConstructorFactory(final Class<T> c) {
 		return new Factory<T>() {
 			@Override
-            public T create() {
+			public T create() {
 				Exception x = null;
 				try {
-	                Constructor<T> con = c.getConstructor(new Class[0]);
-	                return con.newInstance(new Object[0]);
-                }
-                catch(SecurityException e)         { x = e; }
-                catch(IllegalArgumentException e)  { x = e; }
-                catch(NoSuchMethodException e)     { x = e; }
-                catch(InstantiationException e)    { x = e; }
-                catch(IllegalAccessException e)    { x = e; }
-                catch(InvocationTargetException e) { x = e; }
-                throw new RuntimeException(x);
-            }};
+					Constructor<T> con = c.getConstructor(new Class[0]);
+					return con.newInstance(new Object[0]);
+				} catch (SecurityException e) {
+					x = e;
+				} catch (IllegalArgumentException e) {
+					x = e;
+				} catch (NoSuchMethodException e) {
+					x = e;
+				} catch (InstantiationException e) {
+					x = e;
+				} catch (IllegalAccessException e) {
+					x = e;
+				} catch (InvocationTargetException e) {
+					x = e;
+				}
+				throw new RuntimeException(x);
+			}
+		};
 	}
 	
 	private static class SynchronizingFactory<T> implements Factory<T> {

@@ -41,17 +41,12 @@ import javax.swing.JPanel;
  */
 public class StateModelHeaderPanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private final JPanel pnlTextFields = new JPanel();
 
-	final CollectableTextField clcttfName = new CollectableTextField(
+	private final CollectableTextField clcttfName = new CollectableTextField(
 			CollectableStateModel.clcte.getEntityField("name"));
 
-	final CollectableTextField clcttfDescription = new CollectableTextField(
+	private final CollectableTextField clcttfDescription = new CollectableTextField(
 			CollectableStateModel.clcte.getEntityField("description"));
 
 	public StateModelHeaderPanel() {
@@ -83,6 +78,14 @@ public class StateModelHeaderPanel extends JPanel {
 
 	public CollectableComponentsProvider newCollectableComponentsProvider() {
 		return new DefaultCollectableComponentsProvider(clcttfName, clcttfDescription);
+	}
+	
+	CollectableTextField getDescriptionField() {
+		return clcttfDescription;
+	}
+	
+	CollectableTextField getNameField() {
+		return clcttfName;
 	}
 
 }	// class StateModelHeaderPanel

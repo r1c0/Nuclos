@@ -40,17 +40,14 @@ import javax.swing.border.Border;
  * @version 01.00.00
  */
 public class ReportFormatPanel extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	Border border1;
-	GridBagLayout gridBagLayout1 = new GridBagLayout();
-	JLabel lblHeadline = new JLabel();
-	ButtonGroup bgFormat = new ButtonGroup();
-	JRadioButton rbPdf = new JRadioButton();
-	JRadioButton rbXls = new JRadioButton();
-	JRadioButton rbCsv = new JRadioButton();
+
+	private Border border1;
+	private GridBagLayout gridBagLayout1 = new GridBagLayout();
+	private JLabel lblHeadline = new JLabel();
+	private ButtonGroup bgFormat = new ButtonGroup();
+	private JRadioButton rbPdf = new JRadioButton();
+	private JRadioButton rbXls = new JRadioButton();
+	private JRadioButton rbCsv = new JRadioButton();
 
 	public ReportFormatPanel() {
 		rbXls.setActionCommand("XLS");
@@ -77,4 +74,9 @@ public class ReportFormatPanel extends JPanel {
 		bgFormat.add(rbXls);
 		bgFormat.add(rbCsv);
 	}
+	
+	ButtonGroup getFormatButtonGroup() {
+		return bgFormat;
+	}
+	
 }

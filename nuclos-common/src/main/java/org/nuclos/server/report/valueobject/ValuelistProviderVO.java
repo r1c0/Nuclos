@@ -20,10 +20,6 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
 
 public class ValuelistProviderVO extends DatasourceVO {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final String SUFFIX = ".ds";
 	
 	public ValuelistProviderVO(NuclosValueObject evo, String sName,

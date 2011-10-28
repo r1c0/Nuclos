@@ -28,10 +28,6 @@ import java.util.Collection;
  * @version 01.00.00
  */
 public class DefaultComponentViewer extends AbstractComponentViewer {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void selectionChanged(Shape shape) {

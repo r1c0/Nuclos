@@ -28,10 +28,6 @@ import org.nuclos.common2.exception.CommonBusinessException;
  * @version 01.00.00
  */
 public class ShapeControllerException extends CommonBusinessException {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	public ShapeControllerException() {
 		super();

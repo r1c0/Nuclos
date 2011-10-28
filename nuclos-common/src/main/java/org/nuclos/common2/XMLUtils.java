@@ -28,6 +28,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.XMLReader;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
@@ -43,6 +44,8 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @version	01.00.00
  */
 public class XMLUtils {
+
+	private static final Logger LOG = Logger.getLogger(XMLUtils.class);
 
 	protected XMLUtils() {
 	}

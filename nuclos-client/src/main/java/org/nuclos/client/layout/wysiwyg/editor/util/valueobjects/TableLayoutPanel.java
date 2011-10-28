@@ -104,7 +104,7 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  */
 public class TableLayoutPanel extends JPanel implements DropTargetListener, MouseMotionListener, MouseListener, ComponentListener {
 	
-	private static final long serialVersionUID = -522593648000743841L;
+	private static final Logger LOG = Logger.getLogger(TableLayoutPanel.class);
 
 	private TableLayoutUtil tableLayoutUtil;
 
@@ -167,13 +167,7 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 		setOpaque(false);
 	}
 
-	@SuppressWarnings("serial")
 	private class DeleteMarkedCells extends AbstractAction {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -434,12 +428,15 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 					}
 					catch (ClassCastException e) {
 						// nothing to do
+						LOG.info("isDropAllowed: " + e);
 					}
 					catch(UnsupportedFlavorException e) {
 						// nothing to do
+						LOG.info("isDropAllowed: " + e);
 					}
 					catch(IOException e) {
 						// nothing to do
+						LOG.info("isDropAllowed: " + e);
 					}
 				
 				/** if editor is running in standardmode dropping is only allowed to a empty cell */

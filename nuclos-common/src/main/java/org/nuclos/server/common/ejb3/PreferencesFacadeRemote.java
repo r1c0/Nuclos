@@ -20,35 +20,34 @@ import java.util.Collection;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Remote;
 
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.common.valueobject.PreferencesVO;
 
-@Remote
+// @Remote
 public interface PreferencesFacadeRemote {
 
 	/**
 	 * @return the preferences for the user currently logged
 	 */
 	@RolesAllowed("Login")
-	public abstract PreferencesVO getUserPreferences()
+	PreferencesVO getUserPreferences()
 		throws CommonFinderException;
 	
 	/**
 	 * @return the preferences for the user defined as template user, exception if not defined in t_ad_parameter
 	 */
 	@RolesAllowed("Login")
-	public PreferencesVO getTemplateUserPreferences() throws NuclosBusinessException, CommonFinderException;
+	PreferencesVO getTemplateUserPreferences() throws NuclosBusinessException, CommonFinderException;
 
 	/**
 	 * stores the preferences for the user currently logged
 	 * @param prefsvo the preferences for the user currently logged
 	 */
 	@RolesAllowed("Login")
-	public abstract void modifyUserPreferences(PreferencesVO prefsvo)
+	void modifyUserPreferences(PreferencesVO prefsvo)
 		throws CommonFinderException;
 
 	/**
@@ -58,7 +57,7 @@ public interface PreferencesFacadeRemote {
 	 * @throws CommonFinderException
 	 */
 	@RolesAllowed("UseManagementConsole")
-	public abstract void setPreferencesForUser(String sUserName,
+	void setPreferencesForUser(String sUserName,
 		PreferencesVO prefsvo) throws CommonFinderException;
 
 	/**
@@ -68,7 +67,7 @@ public interface PreferencesFacadeRemote {
 	 * @throws CommonFinderException
 	 */
 	@RolesAllowed("UseManagementConsole")
-	public abstract PreferencesVO getPreferencesForUser(String sUserName)
+	PreferencesVO getPreferencesForUser(String sUserName)
 		throws CommonFinderException;
 
 	/**
@@ -76,39 +75,16 @@ public interface PreferencesFacadeRemote {
 	 * @throws CommonFinderException
 	 */
 	@RolesAllowed("UseManagementConsole")
-	public abstract void mergePreferencesForUser(String name, Map<String, Map<String, String>> preferencesToMerge)
+	void mergePreferencesForUser(String name, Map<String, Map<String, String>> preferencesToMerge)
 		throws CommonFinderException;
 	
-	/**
-	 * 
-	 * @return
-	 */
-	public Collection<WorkspaceDescription> getWorkspaceMetadataOnly();
+	Collection<WorkspaceDescription> getWorkspaceMetadataOnly();
 	
-	/**
-	 * 
-	 * @param name
-	 * @return
-	 * @throws CommonFinderException
-	 */
-	public WorkspaceDescription getWorkspace(String name) throws CommonFinderException;
+	WorkspaceDescription getWorkspace(String name) throws CommonFinderException;
 		
-	/**
-	 * 
-	 * @param wd
-	 */
-	public void storeWorkspace(WorkspaceDescription wd);
+	void storeWorkspace(WorkspaceDescription wd);
 	
-	/**
-	 * 
-	 * @param wd
-	 * @throws CommonFinderException
-	 */
-	public void storeWorkspaceMetadataOnly(String originName, WorkspaceDescription wd) throws CommonFinderException;
+	void storeWorkspaceMetadataOnly(String originName, WorkspaceDescription wd) throws CommonFinderException;
 	
-	/**
-	 * 
-	 * @param name
-	 */
-	public void removeWorkspace(String name);
+	void removeWorkspace(String name);
 }

@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.client.common.ClientParameterProvider;
@@ -42,10 +43,11 @@ import org.nuclos.common.NuclosFatalException;
  * @author	<a href="mailto:oliver.helbig@novabit.de">Oliver Helbig</a>
  * @author	<a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version 01.00.00
+ * @deprecated Wiki feature isn't supported in Nuclos any more.
  */
-
 public class WikiController {
-	//private static final Logger log = Logger.getLogger(WikiController.class);
+	
+	private static final Logger LOG = Logger.getLogger(WikiController.class);
 	
 	private static WikiController singleton;
 	
@@ -79,10 +81,10 @@ public class WikiController {
 			Desktop.getDesktop().browse(new URI(getBaseURL()+sURL));
 		}
 		catch(IOException e) {
-			e.printStackTrace();
+			LOG.warn("openURLinBrowser failed: " + e, e);
 		}
 		catch(URISyntaxException e) {
-			e.printStackTrace();
+			LOG.warn("openURLinBrowser failed: " + e, e);
 		}
 	}
 	

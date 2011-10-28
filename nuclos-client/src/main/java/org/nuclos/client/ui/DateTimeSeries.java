@@ -70,10 +70,6 @@ import org.nuclos.common2.SeriesUtils.SeriesListItem;
  */
 public class DateTimeSeries extends JComponent implements Serializable, ActionListener {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final int NO_MODE = -1;
 	public static final int DAILY_MODE = 0;
 	public static final int WEEKLY_MODE = 1;
@@ -1040,11 +1036,6 @@ public class DateTimeSeries extends JComponent implements Serializable, ActionLi
 	 *
 	 */
 	private class DateTimeSeriesCommonJTextField extends CommonJTextField{
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void setDocument(Document doc) {

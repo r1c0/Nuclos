@@ -39,33 +39,12 @@ import org.nuclos.client.gef.Shape;
  */
 
 public abstract class AbstractConnector extends AbstractShape {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	/**
-	 *
-	 */
+
 	public static final int STARTPOINT = 1;
-	/**
-	 *
-	 */
 	public static final int ENDPOINT = 2;
-	/**
-	 *
-	 */
 	public static final int HIT_NONE = 0;
-	/**
-	 *
-	 */
 	public static final int HIT_STARTPOINT = 1;
-	/**
-	 *
-	 */
 	public static final int HIT_ENDPOINT = 2;
-	/**
-	 *
-	 */
 	public static final int HIT_LINE = 4;
 
 	protected ConnectionPoint srcConnection;
@@ -76,9 +55,6 @@ public abstract class AbstractConnector extends AbstractShape {
 	protected Color paint = Color.BLACK;
 	protected Stroke stroke = new BasicStroke(1f);
 
-	/**
-	 *
-	 */
 	public AbstractConnector() {
 		this((ConnectionPoint) null, (ConnectionPoint) null);
 		Point2D p = new Point2D.Double();

@@ -86,7 +86,6 @@ public final class CollectableSubCondition extends AbstractCollectableSearchCond
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public int getType() {
 		return TYPE_SUB;
 	}

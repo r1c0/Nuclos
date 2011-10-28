@@ -20,8 +20,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import javax.ejb.Local;
-
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
@@ -29,7 +27,7 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.server.common.valueobject.TaskVO;
 
-@Local
+// @Local
 public interface TaskFacadeLocal {
 
 	/**
@@ -37,7 +35,7 @@ public interface TaskFacadeLocal {
 	 * @param taskvo containing the task data
 	 * @return same task as value object
 	 */
-	public abstract TaskVO create(TaskVO taskvo, Set<Long> stOwners)
+	TaskVO create(TaskVO taskvo, Set<Long> stOwners)
 		throws CommonValidationException, NuclosBusinessException,
 		CommonPermissionException;
 
@@ -47,7 +45,7 @@ public interface TaskFacadeLocal {
 	 * @param splitforowners true/false - shows if this task will be transformed to tasks for each owner
 	 * @return new task ids
 	 */
-	public abstract Collection<TaskVO> create(TaskVO taskvo, Set<Long> stOwners, boolean splitforowners)
+	Collection<TaskVO> create(TaskVO taskvo, Set<Long> stOwners, boolean splitforowners)
 		throws CommonValidationException, NuclosBusinessException,
 		CommonPermissionException;
 	
@@ -56,7 +54,7 @@ public interface TaskFacadeLocal {
 	 * @param taskvo containing the task data
 	 * @return new task id
 	 */
-	public abstract TaskVO modify(TaskVO taskvo, Set<Long> collOwners)
+	TaskVO modify(TaskVO taskvo, Set<Long> collOwners)
 		throws CommonFinderException, CommonStaleVersionException,
 		CommonValidationException, NuclosBusinessException;
 
@@ -66,7 +64,7 @@ public interface TaskFacadeLocal {
 	 * @param splitforowners true/false - shows if this task will be transformed to tasks for each owner
 	 * @return new task id
 	 */
-	public abstract Collection<TaskVO> modify(TaskVO taskvo, Set<Long> collOwners, boolean splitforowners)
+	Collection<TaskVO> modify(TaskVO taskvo, Set<Long> collOwners, boolean splitforowners)
 		throws CommonFinderException, CommonStaleVersionException,
 		CommonValidationException, NuclosBusinessException;
 	
@@ -75,17 +73,16 @@ public interface TaskFacadeLocal {
 	 * @param sUserName
 	 * @return id user id
 	 */
-	public abstract Long getUserId(String sUserName);
+	Long getUserId(String sUserName);
 
-   /**
-    * get all tasks for specified visibility and owners
-    * 
-    * @param owners - task owners to get tasks for
-    * @param visibility 
-    * @return collection of task value objects
-    */
-	public Collection<TaskVO> getTasksByVisibilityForOwners(List<String> owners,
-		Integer visibility, boolean bUnfinishedOnly, Integer iPriority)
-		throws NuclosBusinessException;
+	/**
+	 * get all tasks for specified visibility and owners
+	 * 
+	 * @param owners - task owners to get tasks for
+	 * @param visibility 
+	 * @return collection of task value objects
+	 */
+	Collection<TaskVO> getTasksByVisibilityForOwners(List<String> owners, Integer visibility, boolean bUnfinishedOnly,
+			Integer iPriority) throws NuclosBusinessException;
 
 }

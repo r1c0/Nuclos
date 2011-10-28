@@ -24,8 +24,6 @@ import org.nuclos.common2.StringUtils;
 
 public class PopupButton extends JToggleButton implements PopupMenuListener, ActionListener {
 
-	private static final long serialVersionUID = 1L;
-
 	public final JPopupMenu popupMenu;
 
 	private long hideTime = 0l;
@@ -47,10 +45,6 @@ public class PopupButton extends JToggleButton implements PopupMenuListener, Act
 		setHorizontalAlignment(SwingConstants.LEFT);
 
 		popupMenu = new JPopupMenu() {
-			/**
-				 *
-				 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected JMenuItem createActionComponent(Action a) {

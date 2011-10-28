@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.prefs.Preferences;
 
 import org.nuclos.common.collect.collectable.access.CefSecurityAgent;
-import org.nuclos.common.collect.collectable.access.CefAllowAllSecurityAgentImpl;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.RelativeDate;
 

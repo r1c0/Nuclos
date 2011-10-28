@@ -24,20 +24,10 @@ import org.springframework.transaction.interceptor.TransactionAttribute;
 
 public class NuclosAnnotationTransactionAttributeSource extends AnnotationTransactionAttributeSource {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	@Override
 	protected TransactionAttribute determineTransactionAttribute(AnnotatedElement ae) {
 		
 		return new DefaultTransactionAttribute() {
-
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public boolean rollbackOn(Throwable ex) {
@@ -47,7 +37,5 @@ public class NuclosAnnotationTransactionAttributeSource extends AnnotationTransa
 		};
 		
 	}
-	
-	
 
 }

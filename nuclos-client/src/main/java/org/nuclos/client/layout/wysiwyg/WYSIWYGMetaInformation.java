@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectableEntityProvider;
@@ -90,6 +91,8 @@ import org.nuclos.server.ruleengine.valueobject.RuleVO;
  */
 public class WYSIWYGMetaInformation implements LayoutMLConstants {
 	
+	private static final Logger LOG = Logger.getLogger(WYSIWYGMetaInformation.class);
+
 	public static final String META_FIELD_NAMES = "meta_field_names";
 	public static final String META_ENTITY_NAMES = "meta_entity_names";
 	public static final String META_ENTITY_FIELD_NAMES = "meta_entity_field_names";
@@ -319,7 +322,6 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 	 * @param dialog
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	private List<String> getShowOnlyTag(PropertiesPanel dialog, WYSIWYGComponent c){
 		List<String> result = new ArrayList<String>();
 		result.add(COMMON_LABELS.EMPTY);
@@ -350,7 +352,6 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 	 * @param dialog
 	 * @return List<String> with all fitting ControlTypes found
 	 */
-	@SuppressWarnings("unchecked")
 	private List<String> getValidControlTypesForCollectableComponent(WYSIWYGComponent c, PropertiesPanel dialog){
 		List<String> result = new ArrayList<String>();
 		String fieldname = null;
@@ -684,11 +685,6 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 	 * y is the resource id or null).
 	 */
 	public static class StringResourceIdPair extends Pair<String, String> implements Localizable, Serializable {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public StringResourceIdPair(String value, String resourceId) {
 			super(value, resourceId);

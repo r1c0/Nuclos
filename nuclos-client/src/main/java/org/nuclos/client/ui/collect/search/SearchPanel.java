@@ -78,11 +78,6 @@ import org.nuclos.common.collection.Predicate;
  */
 public class SearchPanel extends SearchOrDetailsPanel {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private final CollectPanelIndicator cpi = new CollectPanelIndicator(CollectPanel.TAB_SEARCH);
 
 	/**
@@ -253,11 +248,6 @@ public class SearchPanel extends SearchOrDetailsPanel {
 	 */
 	private static class OverlayPanel extends JPanel {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		OverlayPanel(Component compTransparent, Component compMain) {
 			this.setLayout(new OverlayLayout(this));
 			this.add(compTransparent);
@@ -300,7 +290,6 @@ public class SearchPanel extends SearchOrDetailsPanel {
 		}
 
 		@Override
-		@SuppressWarnings("deprecation")
 		public Boolean visitCompositeCondition(CompositeCollectableSearchCondition compositecond) throws RuntimeException {
 			return (compositecond.getLogicalOperator() == LogicalOperator.AND) &&
 					CollectionUtils.forall(compositecond.getOperands(), new HasType(CollectableSearchCondition.TYPE_ATOMIC)) &&

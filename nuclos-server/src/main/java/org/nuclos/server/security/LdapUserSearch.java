@@ -50,7 +50,6 @@ public class LdapUserSearch implements org.springframework.security.ldap.search.
         this.scope = scope;
     }
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public DirContextOperations searchForUser(String username) throws UsernameNotFoundException {
 		if (log.isDebugEnabled()) {
@@ -67,7 +66,7 @@ public class LdapUserSearch implements org.springframework.security.ldap.search.
             }
         };
 
-        List l = template.search("", MessageFormat.format(searchFilter, username), scope, mapper);
+        List<DirContextOperations> l = template.search("", MessageFormat.format(searchFilter, username), scope, mapper);
 		if (l.size() == 0) {
 			throw new UsernameNotFoundException("User " + username + " not found in directory.", username);
 		}

@@ -29,7 +29,6 @@ import java.util.Date;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph Radig</a>
  * @version 01.00.00
  */
-@SuppressWarnings("deprecation")
 public class DateUtils {
 
 	/**
@@ -120,7 +119,6 @@ public class DateUtils {
 	 * @postcondition date != null --> result != date
 	 * @postcondition LangUtils.equals(result, date);
 	 */
-	//@SuppressWarnings({"FeatureEnvy"})
 	public static Date copyDate(Date date) {
 		final Date result = (date == null) ? null : new Date(date.getTime());
 		assert LangUtils.implies(date == null, result == null);

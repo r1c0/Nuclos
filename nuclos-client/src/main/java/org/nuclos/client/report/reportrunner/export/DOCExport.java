@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.jawin.DispatchPtr;
 import org.jawin.win32.Ole32;
 import org.nuclos.client.report.reportrunner.AbstractReportExporter;
@@ -39,6 +40,8 @@ import org.nuclos.server.report.valueobject.ResultVO;
  * @version 01.00.00
  */
 public class DOCExport extends AbstractReportExporter {
+
+	private static final Logger LOG = Logger.getLogger(DOCExport.class);
 
 	@Override
 	public void export(String sReportName, ResultVO resultVO, String sourceFile, String parameter, boolean bOpenFile) throws NuclosReportException {
@@ -117,8 +120,9 @@ public class DOCExport extends AbstractReportExporter {
 								DispatchPtr bookmark = null;
 								try {
 								  bookmark = (DispatchPtr)bookmarks.invoke("Item", field.get("Name").toString());
-								} catch(Exception exc) {
+								} catch(Exception e1) {
 									//empty block
+									LOG.warn("createFile: " + e1);
 								}
 								if(bookmark != null) {
 									DispatchPtr bookmarkRange = bookmark.getObject("Range");

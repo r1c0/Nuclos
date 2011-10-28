@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.attribute.AttributeDelegate;
 import org.nuclos.client.genericobject.CollectableGenericObjectEntity;
 import org.nuclos.client.genericobject.Modules;
@@ -47,14 +48,11 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
 
 public class WorkflowWizardPanel extends JPanel {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	String sUsername;
+	private static final Logger LOG = Logger.getLogger(WorkflowWizardPanel.class);
 	
-	final static String[] sFields = {NuclosEOField.STATE.getMetaData().getField() };
+	private String sUsername;
+	
+	private final static String[] sFields = {NuclosEOField.STATE.getMetaData().getField() };
 	
 
 	public WorkflowWizardPanel(String userName) {
@@ -63,11 +61,8 @@ public class WorkflowWizardPanel extends JPanel {
 		init();
 	}
 	
-
-	protected void init() {		
-		
+	protected void init() {			
 	}
-	
 	
 	public void buildSearchFilter() {
 		
@@ -128,8 +123,8 @@ public class WorkflowWizardPanel extends JPanel {
 						taskCtrl.cmdShowFilterInTaskPanel(filter);
 						
 					}
-					catch(Exception e) {
-						e.printStackTrace();
+					catch (Exception e) {
+						LOG.warn("buildSearchFilter failed: " + e);
 					}
 					
 					String sGroup = (String)voRoleAttrGroup.getField("role");
@@ -158,26 +153,19 @@ public class WorkflowWizardPanel extends JPanel {
 							mdvo.setField("validUntil", null);
 							
 							DependantMasterDataMap mp = voSearchFilter.getDependants();
-							mp.addValue(NuclosEntity.SEARCHFILTERUSER.getEntityName(), mdvo);
-							
-							
+							mp.addValue(NuclosEntity.SEARCHFILTERUSER.getEntityName(), mdvo);					
 							MasterDataDelegate.getInstance().update(NuclosEntity.SEARCHFILTER.getEntityName(), voSearchFilter, mp);
 							
 						}
 						catch(Exception e) {
-
-						}
-						
+							LOG.warn("buildSearchFilter failed: " + e);
+						}				
 					}
 				}
 				
 			}			
 		}
-		
 				
 	}
-	
-	
-	
 
 }

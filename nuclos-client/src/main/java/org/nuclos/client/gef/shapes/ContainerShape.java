@@ -38,16 +38,10 @@ import org.nuclos.client.gef.layout.ILayout;
  * @version 01.00.00
  */
 public abstract class ContainerShape extends RectangularShape {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	protected ArrayList<Shape> shapes = new ArrayList<Shape>();
 	protected ILayout layoutManager = new FlowLayout();
 
-	/**
-	 *
-	 */
 	public ContainerShape() {
 		this(0d, 0d, 0d, 0d);
 	}

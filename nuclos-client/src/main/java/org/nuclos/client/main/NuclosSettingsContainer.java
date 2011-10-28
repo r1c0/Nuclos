@@ -30,10 +30,7 @@ import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.PreferencesException;
 
 public class NuclosSettingsContainer extends JPanel {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private NuclosSettingsPanel      settingsPanel;
 	private LiveSearchSettingsPanel  livesearchPanel;
 

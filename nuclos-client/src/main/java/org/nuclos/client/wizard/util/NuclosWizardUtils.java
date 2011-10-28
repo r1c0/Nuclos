@@ -31,6 +31,7 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.masterdata.CollectableMasterData;
@@ -70,6 +71,8 @@ import org.xml.sax.InputSource;
 */
 
 public class NuclosWizardUtils {
+
+	private static final Logger LOG = Logger.getLogger(NuclosWizardUtils.class);
 
 	public static String COLUMN_PREFFIX = "c_";
 	public static String COLUMN_STRING_PREFFIX = "STR";
@@ -141,11 +144,9 @@ public class NuclosWizardUtils {
             }
             catch(LayoutMLException e) {
 	            // do nothing here
+            	LOG.info("searchParentEntity: " + e);
             }
-
 		}
-
-
 		return setParents;
 	}
 

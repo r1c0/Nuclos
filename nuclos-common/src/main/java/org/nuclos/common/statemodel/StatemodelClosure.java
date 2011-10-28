@@ -32,10 +32,7 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
  * themselves, an instance of this class is bound to the current user
  */
 public class StatemodelClosure implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private Integer                          moduleId;
 	private Map<UsageCriteria, Statemodel>   statemodels;
 	

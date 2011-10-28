@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Remote;
 
 import org.nuclos.common.CommonMetaDataServerProvider;
 import org.nuclos.common.NuclosBusinessException;
@@ -48,7 +47,7 @@ import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
  * {@link org.nuclos.common.CommonMetaDataClientProvider} on the client side.
  * </p>
  */
-@Remote
+// @Remote
 public interface MetaDataFacadeRemote extends CommonMetaDataServerProvider {
 
 	@RolesAllowed("Login")
@@ -69,120 +68,120 @@ public interface MetaDataFacadeRemote extends CommonMetaDataServerProvider {
 		CommonRemoveException, CommonFinderException;
 
 	@RolesAllowed("Login")
-	public String createOrModifyEntity(EntityMetaDataVO oldMDEntity, EntityMetaDataTO updatedMDEntity, MasterDataVO voEntity, List<EntityFieldMetaDataTO> lstFields, boolean blnExecute, String user, String password) throws NuclosBusinessException;
+	String createOrModifyEntity(EntityMetaDataVO oldMDEntity, EntityMetaDataTO updatedMDEntity, MasterDataVO voEntity, List<EntityFieldMetaDataTO> lstFields, boolean blnExecute, String user, String password) throws NuclosBusinessException;
 
 	@RolesAllowed("Login")
-	public void invalidateServerMetadata();
+	void invalidateServerMetadata();
 
 	@RolesAllowed("Login")
-	public Collection<MasterDataVO> hasEntityFieldInImportStructure(String sEntity, String sField);
+	Collection<MasterDataVO> hasEntityFieldInImportStructure(String sEntity, String sField);
 
 	@RolesAllowed("Login")
-	public boolean hasEntityRows(EntityMetaDataVO voEntity);
+	boolean hasEntityRows(EntityMetaDataVO voEntity);
 
 	@RolesAllowed("Login")
-	public boolean hasEntityLayout(Long id);
+	boolean hasEntityLayout(Long id);
 
-	public String getResourceSIdForEntityFieldLabel(Integer iId);
+	String getResourceSIdForEntityFieldLabel(Integer iId);
 
-	public String getResourceSIdForEntityFieldDescription(Integer iId);
+	String getResourceSIdForEntityFieldDescription(Integer iId);
 
 	/**
 	 * @return Script (with results if selected)
 	 */
 	@RolesAllowed("Login")
-	public List<String> getDBTables();
+	List<String> getDBTables();
 
 	/**
 	 * @return Script (with results if selected)
 	 */
 	@RolesAllowed("Login")
-	public Map<String, MasterDataVO> getColumnsFromTable(String sTable);
+	Map<String, MasterDataVO> getColumnsFromTable(String sTable);
 
 	/**
 	 * @return Script (with results if selected)
 	 */
 	@RolesAllowed("Login")
-	public List<String> getTablesFromSchema(String url, String user, String password, String schema);
+	List<String> getTablesFromSchema(String url, String user, String password, String schema);
 
 	/**
 	 * @return Script (with results if selected)
 	 */
 	@RolesAllowed("Login")
-	public MasterDataMetaVO transferTable(String url, String user, String password, String schema, String table, String sEntity);
+	MasterDataMetaVO transferTable(String url, String user, String password, String schema, String table, String sEntity);
 
 	/**
 	 * @return Script (with results if selected)
 	 */
 	@RolesAllowed("Login")
-	public List<MasterDataVO> transformTable(String url, String user, String password, String schema, String table);
+	List<MasterDataVO> transformTable(String url, String user, String password, String schema, String table);
 
 	/**
 	 * force to change internal entity name
 	 */
 	@RolesAllowed("Login")
-	public void changeEntityName(String newName, Integer id);
+	void changeEntityName(String newName, Integer id);
 
 	/**
 	 * force to change internal entity name
 	 */
 	@RolesAllowed("Login")
-	public EntityRelationshipModelVO getEntityRelationshipModelVO(MasterDataVO vo);
+	EntityRelationshipModelVO getEntityRelationshipModelVO(MasterDataVO vo);
 
 	/**
 	 * force to change internal entity name
 	 */
 	@RolesAllowed("Login")
-	public boolean isChangeDatabaseColumnToNotNullableAllowed(String sEntity, String field);
+	boolean isChangeDatabaseColumnToNotNullableAllowed(String sEntity, String field);
 
 	/**
 	 * force to change internal entity name
 	 */
 	@RolesAllowed("Login")
-	public boolean isChangeDatabaseColumnToUniqueAllowed(String sEntity, String field);
+	boolean isChangeDatabaseColumnToUniqueAllowed(String sEntity, String field);
 
 	@RolesAllowed("Login")
-	public Collection<EntityMetaDataVO> getAllEntities();
+	Collection<EntityMetaDataVO> getAllEntities();
 
 	@RolesAllowed("Login")
-	public Map<String, EntityFieldMetaDataVO> getAllEntityFieldsByEntity(String entity);
+	Map<String, EntityFieldMetaDataVO> getAllEntityFieldsByEntity(String entity);
 
 	@RolesAllowed("Login")
-	public Map<String, Map<String, EntityFieldMetaDataVO>> getAllEntityFieldsByEntitiesGz(Collection<String> entities);
+	Map<String, Map<String, EntityFieldMetaDataVO>> getAllEntityFieldsByEntitiesGz(Collection<String> entities);
 
 	@RolesAllowed("Login")
-	public Collection<EntityMetaDataVO> getNucletEntities();
+	Collection<EntityMetaDataVO> getNucletEntities();
 
 	@RolesAllowed("Login")
-	public void removeEntity(EntityMetaDataVO voEntity, boolean dropLayout) throws CommonBusinessException;
+	void removeEntity(EntityMetaDataVO voEntity, boolean dropLayout) throws CommonBusinessException;
 
 	@RolesAllowed("Login")
-	public boolean hasEntityImportStructure(Long id) throws CommonBusinessException;
+	boolean hasEntityImportStructure(Long id) throws CommonBusinessException;
 
 	@RolesAllowed("Login")
-	public boolean hasEntityWorkflow(Long id) throws CommonBusinessException;
+	boolean hasEntityWorkflow(Long id) throws CommonBusinessException;
 
 	@RolesAllowed("Login")
-	public Long getEntityIdByName(String sEntity);
+	Long getEntityIdByName(String sEntity);
 
 	@RolesAllowed("Login")
-	public EntityMetaDataVO getEntityByName(String sEntity);
+	EntityMetaDataVO getEntityByName(String sEntity);
 
 	@RolesAllowed("Login")
-	public EntityMetaDataVO getEntityById(Long id);
+	EntityMetaDataVO getEntityById(Long id);
 
 	@RolesAllowed("Login")
-	public List<String> getVirtualEntities();
+	List<String> getVirtualEntities();
 
 	@RolesAllowed("Login")
-	public List<EntityFieldMetaDataVO> getVirtualEntityFields(String virtualentity);
+	List<EntityFieldMetaDataVO> getVirtualEntityFields(String virtualentity);
 
 	@RolesAllowed("Login")
-	public void tryVirtualEntitySelect(EntityMetaDataVO virtualentity) throws NuclosBusinessException;
+	void tryVirtualEntitySelect(EntityMetaDataVO virtualentity) throws NuclosBusinessException;
 
 	@RolesAllowed("Login")
-	public void tryRemoveProcess(EntityObjectVO process) throws NuclosBusinessException;
+	void tryRemoveProcess(EntityObjectVO process) throws NuclosBusinessException;
 
 	@RolesAllowed("Login")
-	public List<EntityObjectVO> getEntityMenus();
+	List<EntityObjectVO> getEntityMenus();
 }

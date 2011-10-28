@@ -49,6 +49,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
+import org.apache.log4j.Logger;
 import org.jdesktop.swingx.combobox.ListComboBoxModel;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
@@ -92,7 +93,7 @@ import org.pietschy.wizard.InvalidStateException;
 
 public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep implements CollectableResouceSaveListener {
 
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(NuclosEntityCommonPropertiesStep.class);
 
 	private static final String[] VIRTUAL_STATICFIELDS = new String[] {"INTID", "DATCREATED", "STRCREATED", "DATCHANGED", "STRCHANGED", "INTVERSION"};
 
@@ -223,9 +224,11 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 			}
 			catch(CommonFinderException e) {
 				// do nothing here
+				LOG.info("prepare failed: " + e, e);
 			}
 			catch(CommonPermissionException e) {
 				// do nothing here
+				LOG.info("prepare failed: " + e, e);
 			}
 
 			nuclosIconChooser.setSelected(model.getNuclosResourceName());
@@ -818,7 +821,6 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 			}
 
 			protected void doSomeWork(DocumentEvent e) {
-
 				if(e.getDocument().getLength() < 1) {
 					if(model.isStateModel())
 						blnSystemId = false;
@@ -840,6 +842,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 					NuclosEntityCommonPropertiesStep.this.getModel().setSystemIdPrefix(e.getDocument().getText(0, e.getDocument().getLength()));
 				}
 				catch(BadLocationException e1) {
+					LOG.warn("doSomeWork failed: " + e1, e1);
 				}
 			}
 
@@ -1022,11 +1025,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 
 	private class LimitDocument extends PlainDocument {
 
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-		int max;
+		private int max;
 
 		public LimitDocument(int max) {
 	        this.max = max;

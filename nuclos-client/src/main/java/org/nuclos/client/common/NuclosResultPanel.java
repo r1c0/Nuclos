@@ -669,17 +669,12 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 		//override copy Action for both tables
 		final ActionMap am = new ActionMap();
 		am.put("copy", new AbstractAction() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				UIUtils.copyCells(NuclosResultPanel.this.getResultTable());				
 			}
 
-			@SuppressWarnings("unchecked")
 			private StringBuffer getColumnData(final JTable table, final int iSelectedRow) {
 				final int iColumnCount = table.getColumnCount();
 				final StringBuffer sb = new StringBuffer();

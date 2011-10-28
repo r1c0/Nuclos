@@ -35,13 +35,8 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class LayoutMLRuleEventType implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public static final String LOOKUP = LayoutMLConstants.ATTRIBUTEVALUE_LOOKUP;
 	public static final String VALUE_CHANGED = LayoutMLConstants.ATTRIBUTEVALUE_VALUECHANGED;
 

@@ -40,6 +40,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.KeyBinding;
@@ -116,7 +117,7 @@ import org.nuclos.server.searchfilter.valueobject.SearchFilterVO;
  */
 public class GenericObjectTaskController extends RefreshableTaskController {
 	
-	//private static final Logger log = Logger.getLogger(GenericObjectTaskController.class);
+	private static final Logger LOG = Logger.getLogger(GenericObjectTaskController.class);
 	
 	private Map<Integer, GenericObjectTaskView> mpTaskViews;
 	
@@ -136,10 +137,6 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		KeyBinding keybinding = KeyBindingProvider.REFRESH;
 		gotaskview.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(keybinding.getKeystroke(), keybinding.getKey());
 		gotaskview.getActionMap().put(keybinding.getKey(), new AbstractAction() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -150,7 +147,6 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		return gotaskview;
 	}
 	
-	@SuppressWarnings("deprecation")
     private void checkFilter(EntitySearchFilter filter) {
 		List<CollectableEntityField> lstRemovedFields = new ArrayList<CollectableEntityField>();
 		List<? extends CollectableEntityField> visibleColumns = filter.getVisibleColumns();
@@ -161,7 +157,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 					MetaDataClientProvider.getInstance().getEntityField(entity, column.getName());
 				} catch (Exception e) {
 					lstRemovedFields.add(column);
-					System.err.println(column.getName());
+					LOG.error("checkFilter for " + filter + " failed on column " + column.getName(), e);
 				}
 			}
 			else {
@@ -186,11 +182,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 			}
 		});
 		
-		gotaskview.btnRefresh.setAction(new AbstractAction("", Icons.getInstance().getIconRefresh16()) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
+		gotaskview.getRefreshButton().setAction(new AbstractAction("", Icons.getInstance().getIconRefresh16()) {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -198,12 +190,8 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 			}
 		});
 
-		gotaskview.btnPrint.setAction(new AbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.4","Aufgabenliste drucken"), 
+		gotaskview.getPrintMenuItem().setAction(new AbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.4","Aufgabenliste drucken"), 
 			Icons.getInstance().getIconPrintReport16()) {
-			/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -211,17 +199,14 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 			}
 		});
 		
-		gotaskview.btnPrint.setEnabled(false);
+		gotaskview.getPrintMenuItem().setEnabled(false);
 		
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_PRINT_TASKLIST)) {
-			gotaskview.btnPrint.setEnabled(true);
+			gotaskview.getPrintMenuItem().setEnabled(true);
 		}
 		
-		gotaskview.btnRename.setAction(new AbstractAction(CommonLocaleDelegate.getMessage("ExplorerController.31", "Umbenennen"), Icons.getInstance().getIconClearSearch16()) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
+		gotaskview.getRenameMenuItem().setAction(
+				new AbstractAction(CommonLocaleDelegate.getMessage("ExplorerController.31", "Umbenennen"), Icons.getInstance().getIconClearSearch16()) {
 
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -379,7 +364,6 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		
 	}
 	
-	@SuppressWarnings("deprecation")
 	private void refreshGenericObjectTaskView(EntitySearchFilter filter) {
 		/** @todo eliminate this workaround */
 		final CollectableGenericObjectSearchExpression clctexpr = new CollectableGenericObjectSearchExpression(filter.getInternalSearchCondition(), filter.getSortingOrder(), filter.getSearchDeleted());
@@ -586,10 +570,10 @@ public class GenericObjectTaskController extends RefreshableTaskController {
             public Integer transform(Collectable clct) {
 				try {								
 					return GenericObjectDelegate.getInstance().get((Integer)clct.getId()).getModuleId();
-				}catch(CommonBusinessException ex){
+				}catch(CommonBusinessException e){
+					LOG.warn("getCommonModuleId failed: " + e);
 					return null;
-				}
-								 
+				}						 
 			}
 		}));
 	}
@@ -639,7 +623,9 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 				return newFilter.getName();
 			}
 		}
-		catch(NoSuchElementException ex) {}
+		catch(NoSuchElementException e) {
+			LOG.info("cmdRenameFilter failed: " + e);
+		}
 		catch(NuclosBusinessException e) {
 			throw new NuclosFatalException(e);
 		}

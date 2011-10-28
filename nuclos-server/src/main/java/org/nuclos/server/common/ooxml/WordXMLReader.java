@@ -30,6 +30,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -64,6 +65,8 @@ import org.w3c.dom.NodeList;
  * [ECMA-376,2nd], part 1, 17.5.2).
  */
 public class WordXMLReader {
+
+	private static final Logger LOG = Logger.getLogger(WordXMLReader.class);
 
 	/** WordprocessingML namespace URI. */
 	private static final String WORDPROCESSINGML_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
@@ -218,14 +221,13 @@ public class WordXMLReader {
 						long timeMillis = calendar.toGregorianCalendar(null, null, null).getTimeInMillis();
 						final String dateText = text;
 						value = new Date(timeMillis) {
-							/**
-							 * 
-							 */
-							private static final long serialVersionUID = 1L;
-
-							@Override public String toString() { return dateText; };
+							@Override 
+							public String toString() { 
+								return dateText; 
+							};
 						};
 					} catch(DatatypeConfigurationException e) {
+						LOG.warn("createStructuredDocumentTag failed: " + e, e);
 					}
 				}
 			} else if ((sdtType = getFirstAsDomElement(sdtPr, "w:comboBox")) != null

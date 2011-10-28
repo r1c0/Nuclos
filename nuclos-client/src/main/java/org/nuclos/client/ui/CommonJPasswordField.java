@@ -32,10 +32,6 @@ import javax.swing.JPasswordField;
  */
 
 public class CommonJPasswordField extends JPasswordField {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * caches the column width so it needn't be recalculated every time.

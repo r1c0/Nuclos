@@ -77,7 +77,6 @@ public class LazyInitMapWrapper<K, V> implements Map<K, V> {
 	    return delegateMap.containsValue(value);
     }
 
-	@SuppressWarnings("unchecked")
     @Override
     public V get(Object key) {
 	    V v = delegateMap.get(key);

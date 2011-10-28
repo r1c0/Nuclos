@@ -32,6 +32,7 @@ import javax.swing.text.PlainDocument;
 import javax.swing.text.Segment;
 import javax.swing.undo.UndoableEdit;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.gef.editor.syntax.tokenmarker.TokenMarker;
 
 /**
@@ -42,10 +43,8 @@ import org.nuclos.client.gef.editor.syntax.tokenmarker.TokenMarker;
  * @version $Id: SyntaxDocument.java,v 1.1 2007-05-11 08:18:09 radig Exp $
  */
 public class SyntaxDocument extends PlainDocument {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	
+	private static final Logger LOG = Logger.getLogger(SyntaxDocument.class);
 
 	/**
 	 * Returns the token marker that is to be used to split lines
@@ -107,8 +106,8 @@ public class SyntaxDocument extends PlainDocument {
 				tokenMarker.markTokens(lineSegment, i);
 			}
 		}
-		catch (BadLocationException bl) {
-			bl.printStackTrace();
+		catch (BadLocationException e) {
+			LOG.info("tokenizeLines failed: " + e);
 		}
 	}
 

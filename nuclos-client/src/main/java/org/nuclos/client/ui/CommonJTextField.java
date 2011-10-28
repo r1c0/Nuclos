@@ -30,6 +30,7 @@ import java.util.List;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 
@@ -45,10 +46,8 @@ import org.nuclos.common.collect.exception.CollectableFieldFormatException;
  */
 
 public class CommonJTextField extends javax.swing.JTextField {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final Logger LOG = Logger.getLogger(CommonJTextField.class);
 
 	/**
 	 * caches the column width so it needn't be recalculated every time.
@@ -281,7 +280,7 @@ public class CommonJTextField extends javax.swing.JTextField {
 			}
 			catch (Exception e) {
 				getToolkit().beep();
-				System.err.println("Clipboard does not contain a string");
+				LOG.warn("Clipboard does not contain a string: " + e, e);
 			}
 		}
 	}

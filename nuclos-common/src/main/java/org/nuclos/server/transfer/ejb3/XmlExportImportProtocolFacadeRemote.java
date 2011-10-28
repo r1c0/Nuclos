@@ -16,9 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.transfer.ejb3;
 
-import javax.ejb.Remote;
+import org.nuclos.common2.File;
 
-@Remote
+// @Remote
 public interface XmlExportImportProtocolFacadeRemote {
 
 	/**
@@ -27,6 +27,6 @@ public interface XmlExportImportProtocolFacadeRemote {
 	 * @param iParentId
 	 * @return org.nuclos.common2.File
 	 */
-	public abstract org.nuclos.common2.File getFile(Integer iParentId);
+	File getFile(Integer iParentId);
 
 }

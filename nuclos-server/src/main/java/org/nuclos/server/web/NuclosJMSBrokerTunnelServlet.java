@@ -31,18 +31,14 @@ import org.apache.activemq.transport.http.HttpEmbeddedTunnelServlet;
 import org.apache.activemq.transport.http.HttpTransportServer;
 import org.apache.activemq.util.ServiceSupport;
 import org.apache.activemq.xbean.XBeanBrokerService;
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 
 public class NuclosJMSBrokerTunnelServlet extends HttpEmbeddedTunnelServlet {
 	
+	private static final Logger LOG = Logger.getLogger(NuclosJMSBrokerTunnelServlet.class);
 	
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	@Override
 	protected BrokerService createBroker() throws Exception {
 		XBeanBrokerService obj = (XBeanBrokerService) SpringApplicationContextHolder.getBean("broker");
@@ -61,8 +57,8 @@ public class NuclosJMSBrokerTunnelServlet extends HttpEmbeddedTunnelServlet {
 			TransportAcceptListener acceptListener = new TransportAcceptListener() {
 				
 				@Override
-				public void onAcceptError(Exception arg0) {
-					System.out.println("onerror");
+				public void onAcceptError(Exception e) {
+					LOG.error("init failed: " + e, e);
 				}
 				
 				@Override
@@ -117,7 +113,6 @@ public class NuclosJMSBrokerTunnelServlet extends HttpEmbeddedTunnelServlet {
 		catch(Exception e) {
 			throw new NuclosFatalException(e);
 		}
-       
         return answer;
     }
 

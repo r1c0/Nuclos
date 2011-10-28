@@ -33,12 +33,8 @@ import java.awt.*;
  */
 public class EnterNameDescriptionPanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	final JTextField tfName = new JTextField(10);
-	final JTextField tfDescription = new JTextField(40);
+	private final JTextField tfName = new JTextField(10);
+	private final JTextField tfDescription = new JTextField(40);
 
 	public EnterNameDescriptionPanel() {
 		super(new GridBagLayout());

@@ -27,11 +27,7 @@ import org.nuclos.common.TranslationVO;
 
 public class EntityAttributeTranslationTableModel extends AbstractTableModel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	List<TranslationVO> lstRows;
+	private List<TranslationVO> lstRows;
 	static String[] labels = TranslationVO.labelsField;
 	
 	public EntityAttributeTranslationTableModel() {

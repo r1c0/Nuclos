@@ -196,7 +196,7 @@ import org.nuclos.common2.exception.PreferencesException;
  */
 public abstract class CollectController<Clct extends Collectable> extends TopController implements NuclosDropTargetVisitor {
 
-	protected static final Logger log = Logger.getLogger(CollectController.class);
+	private static final Logger LOG = Logger.getLogger(CollectController.class);
 
 	/**
 	 * Key within user preferences under which the List of field names of an entity is stored.
@@ -360,10 +360,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final Action actNew = new CommonAbstractAction(CommonLocaleDelegate.getMessage("CollectController.39","Neu"), Icons.getInstance().getIconNew16(),
 		CommonLocaleDelegate.getMessage("CollectController.23","Neuen Datensatz erfassen")) {
-		/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -378,10 +374,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final Action actSave = new CommonAbstractAction(CommonLocaleDelegate.getMessage("CollectController.40","Speichern"), Icons.getInstance().getIconSave16(),
 		CommonLocaleDelegate.getMessage("CollectController.6","\u00c4nderungen an diesem Datensatz speichern")) {
-		/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -393,10 +385,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * action: Bookmark
 	 */
 	private final Action actBookmark = new CommonAbstractAction(CommonLocaleDelegate.getMessage("CollectController.105","Lesezeichen setzen"), Icons.getInstance().getIconBookmark16(), CommonLocaleDelegate.getMessage("CollectController.106","Lesezeichen auf den Start Tabs setzen")) {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -414,11 +402,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * action: Bookmark
 	 */
 	private final Action actCopyCells = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen"), Icons.getInstance().getIconCopy16(), CommonLocaleDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen")) {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-
+		
 		@Override
         public void actionPerformed(ActionEvent ev) {
 			UIUtils.copyCells(getResultTable());
@@ -430,10 +414,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * action: Bookmark
 	 */
 	private final Action actCopyRows = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen"), Icons.getInstance().getIconCopy16(), CommonLocaleDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen")) {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -447,10 +427,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * action: Open in new tab
 	 */
 	private final Action actOpenInNewTab = new CommonAbstractAction(CommonLocaleDelegate.getMessage("CollectController.107","In neuem Tab \u00f6ffnen"), Icons.getInstance().getIconOpenInNewTab16(), CommonLocaleDelegate.getMessage("CollectController.108","Details in neuem Tab \u00f6ffnen")) {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -469,10 +445,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final Action actClone = new CommonAbstractAction(CommonLocaleDelegate.getMessage("CollectController.38","Klonen"), Icons.getInstance().getIconClone16(),
 		CommonLocaleDelegate.getMessage("CollectController.7","Ausgew\u00e4hlten Datensatz klonen")) {
-		/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -487,10 +459,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final Action actRefreshCurrentCollectable = new CommonAbstractAction(CommonLocaleDelegate.getMessage("CollectController.37","Aktualisieren"),
 			Icons.getInstance().getIconRefresh16(), CommonLocaleDelegate.getMessage("CollectController.4","Aktualisieren (Datensatz neu laden und \u00c4nderungen verwerfen)")) {
-		/**
-				 *
-				 */
-				private static final long serialVersionUID = 1L;
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -503,10 +471,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final Action actFirst = new CommonAbstractAction(MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconFirstWhite16(), DetailsPanel.recordNavIconSize),
 		null) { //CommonLocaleDelegate.getMessage("CollectController.33","Zum ersten Datensatz springen")) {
-		/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -519,10 +483,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final Action actLast = new CommonAbstractAction(MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconLastWhite16(), DetailsPanel.recordNavIconSize),
 		null) { //CommonLocaleDelegate.getMessage("CollectController.34","Zum letzten Datensatz springen")) {
-		/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -535,10 +495,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final Action actPrevious = new CommonAbstractAction(MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconPreviousWhite16(), DetailsPanel.recordNavIconSize),
 		null) { //CommonLocaleDelegate.getMessage("CollectController.36","Zum vorigen Datensatz springen")) {
-		/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -551,10 +507,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	private final Action actNext = new CommonAbstractAction(MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconNextWhite16(), DetailsPanel.recordNavIconSize),
 		null) { //CommonLocaleDelegate.getMessage("CollectController.35","Zum n\u00e4chsten Datensatz springen")) {
-		/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -852,7 +804,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			return CollectController.readSortKeysFromPrefs(getPreferences());
 		}
 		catch (PreferencesException ex) {
-			log.error("The column order could not be loaded from preferences.", ex);
+			LOG.error("The column order could not be loaded from preferences.", ex);
 			return Collections.emptyList();
 		}
 	}
@@ -1190,7 +1142,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 							break;
 						default:
 							// do nothing
-							log.debug("detailsChanged fired in details mode " + getCollectStateModel().getDetailsMode());
+							LOG.debug("detailsChanged fired in details mode " + getCollectStateModel().getDetailsMode());
 					}
 				}
 			});
@@ -1422,7 +1374,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public final void runSearchWith(CollectableSearchCondition cond) throws CommonBusinessException {
 		this.setCollectState(CollectState.OUTERSTATE_SEARCH, CollectState.SEARCHMODE_UNSYNCHED);
 		if (cond != null) {
@@ -1505,11 +1456,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 		getResultTable().getActionMap().put(KeyBindingProvider.EDIT_2.getKey(), new AbstractAction() {
 
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				acceptLookedUpCollectable(clctlovSource);
@@ -1546,7 +1492,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * alternative entry point: enter new object
 	 */
-	@SuppressWarnings("deprecation")
 	public final void runNew(boolean selectTab) throws CommonBusinessException {
 		this.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW);
 
@@ -1555,7 +1500,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public final void runNewWith(Clct clct) throws CommonBusinessException {
 		this.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW);
 		if (clct != null) {
@@ -1582,7 +1526,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @precondition isCollectableComplete(clct)
 	 * @see #readCollectable(Collectable)
 	 */
-	@SuppressWarnings("deprecation")
 	public final void runViewSingleCollectable(Clct clct, boolean bShow) {
 		if (clct == null) {
 			throw new NullArgumentException("clct");
@@ -1699,7 +1642,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * alternative entry point: view all (in Results tab)
 	 * @precondition this.isSearchPanelAvailable()
 	 */
-	@SuppressWarnings("deprecation")
 	public final void runViewResults(CollectableSearchCondition cond) throws CommonBusinessException {
 		if (!this.isSearchPanelAvailable()) {
 			throw new IllegalStateException("this.isSearchPanelAvailable()");
@@ -1875,7 +1817,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				this.setSearchFieldsAccordingToSearchCondition(cond, true);
 			}
 			catch (Exception ex) {
-				log.info("Suchbedingung kann nicht in der Maske dargestellt werden. Daher wird der Sucheditor aktiviert.", ex);
+				LOG.info("Suchbedingung kann nicht in der Maske dargestellt werden. Daher wird der Sucheditor aktiviert.", ex);
 				getSearchPanel().setSearchEditorVisible(true);
 				getSearchPanel().getSearchEditorPanel().setSortedSearchCondition(cond);
 			}
@@ -2071,10 +2013,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	// TODO don't define those keybindings here
 	protected void setupShortcutsForTabs(MainFrameTab ifrm) {
 		final Action actSelectSearchTab = new AbstractAction() {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
             public void actionPerformed(ActionEvent ev) {
@@ -2085,10 +2023,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		};
 
 		final Action actSelectResultTab = new AbstractAction() {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
             public void actionPerformed(ActionEvent ev) {
@@ -2099,10 +2033,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		};
 
 		final Action actSelectDetailsTab = new AbstractAction() {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
 
 			@Override
             public void actionPerformed(ActionEvent ev) {
@@ -2120,18 +2050,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		ifrm.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0), sKeySelectResultTab);
 		ifrm.getRootPane().getActionMap().put(sKeySelectResultTab, actSelectResultTab);
 
-//		final String sKeySelectDetailsTab = "SelectDetailsTab";
-//		ifrm.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), sKeySelectDetailsTab);
-//		ifrm.getRootPane().getActionMap().put(sKeySelectDetailsTab, actSelectDetailsTab);
-
 		/**
 		 * inner class SelectTabAction
 		 */
 		class SelectTabAction extends AbstractAction {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 1L;
+
 			private int iDirection;
 
 			/**
@@ -2479,7 +2402,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * TODO this action is "overloaded". It's at least refresh and cancel in one...
 	 */
 	protected void cmdRefreshCurrentCollectable() {
-		log.debug("START cmdRefreshCurrentCollectable");
+		LOG.debug("START cmdRefreshCurrentCollectable");
 		assert this.statemodel.getOuterState() == CollectState.OUTERSTATE_DETAILS;
 
 		// try to get changes from table cell editors:
@@ -2528,7 +2451,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				}
 			}
 		});
-		log.debug("FINISHED cmdRefreshCurrentCollectable");
+		LOG.debug("FINISHED cmdRefreshCurrentCollectable");
 	}
 
 	/**
@@ -3181,20 +3104,20 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		try {
 			UIUtils.setWaitCursor(this.getFrame());
 
-			log.debug("START save");
+			LOG.debug("START save");
 			MessageType mt;
 			switch (this.statemodel.getDetailsMode()) {
 				case CollectState.DETAILSMODE_EDIT:
-					log.debug("START save updateCurrentCollectable");
+					LOG.debug("START save updateCurrentCollectable");
 					clct = this.updateCurrentCollectable();
-					log.debug("FINISHED save updateCurrentCollectable");
+					LOG.debug("FINISHED save updateCurrentCollectable");
 
 					// update the selected collectable in the table model:
 					getResultController().replaceSelectedCollectableInTableModel(clct);
 
-					log.debug("START save enterViewMode");
+					LOG.debug("START save enterViewMode");
 					this.enterViewMode();
-					log.debug("FINISHED save enterViewMode");
+					LOG.debug("FINISHED save enterViewMode");
 					mt = MessageType.EDIT_DONE;
 					break;
 
@@ -3227,7 +3150,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				throw cbe;
 		} finally {
 			this.getFrame().setCursor(null);
-			log.debug("FINISHED save");
+			LOG.debug("FINISHED save");
 		}
 	}
 
@@ -3390,7 +3313,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 *
 	 * @deprecated Move this to ResultController and make protected again.
 	 */
-	@SuppressWarnings("unchecked")
 	public final SortableCollectableTableModel<Clct> getResultTableModel() {
 		return (SortableCollectableTableModel<Clct>) this.getResultTable().getModel();
 	}
@@ -3526,7 +3448,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				MainFrame.setSelectedTab(this.getFrame());
 			} catch (Exception e) {
 				// TODO TABS: Ein Overlay Tab kann der MainFrame noch nicht finden... Quickfix try-catch
-				log.error(e.getMessage(), e);
+				LOG.error(e.getMessage(), e);
 			}
 			final String sMsg = CommonLocaleDelegate.getMessage("CollectController.14","Der Datensatz wurde ge\u00e4ndert.") + "\n" + CommonLocaleDelegate.getMessage("CollectController.32","Wenn Sie jetzt nicht speichern, werden diese \u00c4nderungen verloren gehen.") + "\n" + CommonLocaleDelegate.getMessage("CollectController.20","Jetzt speichern?");
 
@@ -4015,7 +3937,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				}
 				catch (CommonFatalException ex) {
 					// Strictly, this is an error in the definition of the entity. We don't want to throw an exception here though:
-					CollectController.log.warn("Das identifizierende Feld \"" + sIdentifierFieldName + "\" existiert nicht f\u00fcr die Entit\u00e4t \"" + clcte.getName() + "\".");
+					CollectController.LOG.warn("Das identifizierende Feld \"" + sIdentifierFieldName + "\" existiert nicht f\u00fcr die Entit\u00e4t \"" + clcte.getName() + "\".");
 				}
 			}
 
@@ -4067,7 +3989,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		public void resultModeEntered(final CollectStateEvent ev) throws CommonBusinessException {
 			// This should be invoked from the dispatch thread because it works on the model
 			if (!EventQueue.isDispatchThread()) {
-				log.warn("resultModeEntered invoked outside of the AWT dispatch thread");
+				LOG.warn("resultModeEntered invoked outside of the AWT dispatch thread");
 			}
 			// However, at the moment, it is still sometimes triggered from other threads. Especially it
 			// is triggered concurrently by MultiActions.

@@ -29,8 +29,6 @@ import org.nuclos.common2.StringUtils;
 
 public class SearchFilterListCellRenderer extends DefaultListCellRenderer {
 
-	private static final long serialVersionUID = 1L;
-
 	@Override
 	public Component getListCellRendererComponent(JList lst, Object oValue, int index, boolean bSelected, boolean bCellHasFocus) {
 		final JComponent result = (JComponent) super.getListCellRendererComponent(lst, oValue, index, bSelected, bCellHasFocus);

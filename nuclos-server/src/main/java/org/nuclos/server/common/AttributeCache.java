@@ -163,41 +163,33 @@ public class AttributeCache implements AttributeProvider {
 				mpAttributesById = Collections.synchronizedMap(new HashMap<Integer, AttributeCVO>());
 				mpAttributesByExternalEntity = Collections.synchronizedMap(new HashMap<String, List<AttributeCVO>>());
 
-//				DboFacadeLocal dboFacade = ServiceLocator.getInstance().getFacade(DboFacadeLocal.class);
 				MetaDataFacadeLocal metaFacade = ServiceLocator.getInstance().getFacade(MetaDataFacadeLocal.class);
 
 				for (EntityMetaDataVO eMeta : MetaDataServerProvider.getInstance().getAllEntities()) {
 					if (DalUtils.isNuclosProcessor(eMeta) || !eMeta.isStateModel()) {
 						continue;
 					}
-					for (EntityFieldMetaDataVO efMeta : MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(eMeta.getEntity()).values()) {
-						Map<Integer, Permission> permissions = SecurityCache.getInstance().getAttributeGroup("", LangUtils.convertId(efMeta.getFieldGroupId()));
+					for (EntityFieldMetaDataVO efMeta : MetaDataServerProvider.getInstance()
+							.getAllEntityFieldsByEntity(eMeta.getEntity()).values()) {
+						Map<Integer, Permission> permissions = SecurityCache.getInstance().getAttributeGroup("",
+								LangUtils.convertId(efMeta.getFieldGroupId()));
 						AttributeCVO attrCVO = DalSupportForGO.getAttributeCVO(efMeta, permissions);
 
-//				for (Attribute a : dboFacade.getAttributes()) {
-//					Map<Integer, Permission> permissions = SecurityCache.getInstance().getAttributeGroup("", a.getAttributegroupId());
-//					AttributeCVO attrCVO = VOFactory.FACTORY.createAttributeCVO(a, permissions, values.get(a.getId()));
+						mpAttributesById.put(attrCVO.getId(), attrCVO);
 
-					mpAttributesById.put(attrCVO.getId(), attrCVO);
-
-					if(!StringUtils.isNullOrEmpty(attrCVO.getExternalEntity())) {
-						if(mpAttributesByExternalEntity.containsKey(attrCVO.getExternalEntity())) {
-							mpAttributesByExternalEntity.get(attrCVO.getExternalEntity()).add(attrCVO);
-						}
-						else {
-							List<AttributeCVO> lstAttributeCVO = new ArrayList<AttributeCVO>();
-							lstAttributeCVO.add(attrCVO);
-							mpAttributesByExternalEntity.put(attrCVO.getExternalEntity(), lstAttributeCVO);
+						if (!StringUtils.isNullOrEmpty(attrCVO.getExternalEntity())) {
+							if (mpAttributesByExternalEntity.containsKey(attrCVO.getExternalEntity())) {
+								mpAttributesByExternalEntity.get(attrCVO.getExternalEntity()).add(attrCVO);
+							} else {
+								List<AttributeCVO> lstAttributeCVO = new ArrayList<AttributeCVO>();
+								lstAttributeCVO.add(attrCVO);
+								mpAttributesByExternalEntity.put(attrCVO.getExternalEntity(), lstAttributeCVO);
+							}
 						}
 					}
-//				}
-
-				}}
-
-
+				}
 				log.debug("FINISHED building attribute cache.");
-			}
-			catch(Exception e) {
+			} catch (Exception e) {
 				throw new CommonFatalException(e);
 			}
 		}

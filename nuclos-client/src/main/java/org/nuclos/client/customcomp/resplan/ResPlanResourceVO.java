@@ -26,8 +26,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name="resource")
 public class ResPlanResourceVO implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-
 	public static final String LOCALE = "locale";
 	public static final String RESOURCE_L = "resource.label";
 	public static final String RESOURCE_TT = "resource.looltip";

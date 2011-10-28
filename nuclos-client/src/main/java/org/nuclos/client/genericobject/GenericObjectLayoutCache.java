@@ -59,7 +59,8 @@ import org.xml.sax.InputSource;
  * @todo check if this cache is still needed
  */
 public class GenericObjectLayoutCache {
-	private static final Logger log = Logger.getLogger(GenericObjectLayoutCache.class);
+	
+	private static final Logger LOG = Logger.getLogger(GenericObjectLayoutCache.class);
 
 	private static GenericObjectLayoutCache singleton;
 
@@ -107,7 +108,6 @@ public class GenericObjectLayoutCache {
 
 	private final LayoutMLParser parser = new LayoutMLParser();
 
-	@SuppressWarnings("unchecked")
 	private GenericObjectLayoutCache() {
 		 mpLayoutIds = new LRUMap(100);
 	}
@@ -132,7 +132,9 @@ public class GenericObjectLayoutCache {
 				try {
 					result.addAll(this.parser.getSubFormEntityAndForeignKeyFieldNames(new InputSource(new StringReader(sLayoutML))));
 				}
-				catch(LayoutMLException e) {}
+				catch(LayoutMLException e) {
+					LOG.warn("getSubFormEntities failed: " + e, e);
+				}
 			}
 		}
 		return CollectionUtils.distinct(result, new BinaryPredicate<EntityAndFieldName, EntityAndFieldName>() {
@@ -217,10 +219,10 @@ public class GenericObjectLayoutCache {
 		Integer result = this.get(key);
 
 		if (result != null) {
-			log.debug("layout cache HIT");
+			LOG.debug("layout cache HIT");
 		}
 		else {
-			log.debug("layout cache MISS");
+			LOG.debug("layout cache MISS");
 			try {
 				result = gometa.getBestMatchingLayoutId(usagecriteria, bSearchScreen);
 

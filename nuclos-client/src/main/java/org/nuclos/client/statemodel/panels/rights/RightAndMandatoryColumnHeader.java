@@ -47,6 +47,7 @@ import javax.swing.TransferHandler;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.statemodel.panels.rights.RightTransfer.RoleRight;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -57,15 +58,17 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 public class RightAndMandatoryColumnHeader implements RightAndMandatoryConstants {
 
-	Integer role;
-	String name;
+	private static final Logger LOG = Logger.getLogger(RightAndMandatoryColumnHeader.class);
+
+	private Integer role;
+	private String name;
 	
-	boolean selected;
-	SelectionListener selectionListener;
-	MultiEditListener multiEditListener;
-	RightTransfer rightTransfer;
+	private boolean selected;
+	private SelectionListener selectionListener;
+	private MultiEditListener multiEditListener;
+	private RightTransfer rightTransfer;
 	
-	ChangeListener detailsChangedListener;
+	private ChangeListener detailsChangedListener;
 	
 	MouseListener selectionMouseListener = new MouseListener() {
 		@Override
@@ -223,11 +226,7 @@ public class RightAndMandatoryColumnHeader implements RightAndMandatoryConstants
 	 */
 	public class View extends JPanel{
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		NameLabel nameLabel;
+		private NameLabel nameLabel;
 		
 		/**
 		 * 
@@ -316,8 +315,12 @@ public class RightAndMandatoryColumnHeader implements RightAndMandatoryConstants
 					rightTransfer.setRoleRight((RoleRight) transferO);
 				detailsChangedListener.stateChanged(new ChangeEvent(this));
 			}
-			catch(UnsupportedFlavorException e) {}
-			catch(IOException e) {}
+			catch(UnsupportedFlavorException e) {
+				LOG.warn("pasteFromClipboard failed: " + e);
+			}
+			catch(IOException e) {
+				LOG.warn("pasteFromClipboard failed: " + e);
+			}
 		}
 	}
 	
@@ -327,11 +330,6 @@ public class RightAndMandatoryColumnHeader implements RightAndMandatoryConstants
 	 */
 	public class NameLabel extends JLabel implements Transferable{
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		private boolean needsRotate;
 		
 		private int namewidth;
@@ -358,10 +356,6 @@ public class RightAndMandatoryColumnHeader implements RightAndMandatoryConstants
 			
 			// disable default handler
 			setTransferHandler(new TransferHandler() {
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
 				@Override
 				public boolean importData(JComponent comp, Transferable t) {
 					return true;
@@ -462,11 +456,6 @@ public class RightAndMandatoryColumnHeader implements RightAndMandatoryConstants
 	 */
 	public class Marker extends JLabel {
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		public Marker() {
 			addMouseListener(selectionMouseListener);
 		}

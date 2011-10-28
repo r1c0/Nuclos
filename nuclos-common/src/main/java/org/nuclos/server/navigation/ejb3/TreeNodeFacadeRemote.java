@@ -19,8 +19,6 @@ package org.nuclos.server.navigation.ejb3;
 import java.util.List;
 import java.util.Set;
 
-import javax.ejb.Remote;
-
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -44,7 +42,7 @@ import org.nuclos.server.navigation.treenode.nuclet.NuclosInstanceTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.AbstractNucletContentEntryTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentTreeNode;
 
-@Remote
+// @Remote
 public interface TreeNodeFacadeRemote {
 
 	/**
@@ -54,7 +52,7 @@ public interface TreeNodeFacadeRemote {
 	 * @throws CommonFinderException if the object doesn't exist (anymore).
 	 * @postcondition result != null
 	 */
-	public abstract GenericObjectTreeNode getGenericObjectTreeNode(
+	GenericObjectTreeNode getGenericObjectTreeNode(
 		Integer iGenericObjectId, Integer moduleId, Integer parentId) throws CommonFinderException;
 
 	/**
@@ -68,7 +66,7 @@ public interface TreeNodeFacadeRemote {
 	 * @throws CommonFinderException if the object doesn't exist (anymore).
 	 * @postcondition result != null
 	 */
-	public abstract GenericObjectTreeNode newGenericObjectTreeNode(
+	GenericObjectTreeNode newGenericObjectTreeNode(
 		Integer iGenericObjectId, Integer moduleId, Integer iRelationId,
 		SystemRelationType relationtype, RelationDirection direction, Integer parentId)
 		throws CommonFinderException;
@@ -81,7 +79,7 @@ public interface TreeNodeFacadeRemote {
 	 * @throws CommonPermissionException
 	 * @postcondition result != null
 	 */
-	public abstract List<TreeNode> getSubNodesIgnoreUser(
+	List<TreeNode> getSubNodesIgnoreUser(
 		org.nuclos.server.navigation.treenode.GenericObjectTreeNode node);
 
 	/**
@@ -90,7 +88,7 @@ public interface TreeNodeFacadeRemote {
 	 * @return group tree node for given id
 	 * @postcondition result != null
 	 */
-	public abstract GroupTreeNode getGroupTreeNode(final Integer iId,
+	GroupTreeNode getGroupTreeNode(final Integer iId,
 		final boolean bLoadSubNodes) throws CommonFinderException;
 
 	/**
@@ -99,7 +97,7 @@ public interface TreeNodeFacadeRemote {
 	 * @return nuclet tree node for given id
 	 * @postcondition result != null
 	 */
-	public abstract NucletTreeNode getNucletTreeNode(final Integer iId) throws CommonFinderException;
+	NucletTreeNode getNucletTreeNode(final Integer iId) throws CommonFinderException;
 
 	/**
 	 * method to get a masterdata tree node for a specific masterdata record
@@ -108,7 +106,7 @@ public interface TreeNodeFacadeRemote {
 	 * @throws CommonPermissionException
 	 * @postcondition result != null
 	 */
-	public abstract MasterDataTreeNode<Integer> getMasterDataTreeNode(
+	MasterDataTreeNode<Integer> getMasterDataTreeNode(
 		Integer iId, String sEntity, boolean bLoadSubNodes)
 		throws CommonFinderException, CommonPermissionException;
 
@@ -117,50 +115,40 @@ public interface TreeNodeFacadeRemote {
 	 * @return the subnodes for the given node.
 	 * @postcondition result != null
 	 */
-	public abstract List<GenericObjectTreeNode> getSubNodes(GroupTreeNode node);
+	List<GenericObjectTreeNode> getSubNodes(GroupTreeNode node);
 
 	/**
 	 * @param node
 	 * @return the subnodes for the given node.
 	 * @postcondition result != null
 	 */
-	public abstract List<TreeNode> getSubNodes(NucletTreeNode node);
+	List<TreeNode> getSubNodes(NucletTreeNode node);
 
 	/**
 	 * @param node
 	 * @return the subnodes for the given node.
 	 * @postcondition result != null
 	 */
-	public abstract List<AbstractNucletContentEntryTreeNode> getSubNodes(NucletContentTreeNode node);
+	List<AbstractNucletContentEntryTreeNode> getSubNodes(NucletContentTreeNode node);
 
 	/**
 	 *
 	 * @return the available nodes.
 	 * @postcondition result != null
 	 */
-	public List<AbstractNucletContentEntryTreeNode> getAvailableNucletContents();
+	List<AbstractNucletContentEntryTreeNode> getAvailableNucletContents();
 
 	/**
 	 * @param node
 	 * @return the subnodes for the given node.
 	 * @postcondition result != null
 	 */
-	public abstract List<TreeNode> getSubnodes(DefaultMasterDataTreeNode node);
+	List<TreeNode> getSubnodes(DefaultMasterDataTreeNode node);
 
-	/**
-	 *
-	 * @param node
-	 * @param mdVO
-	 */
-	public abstract DynamicTreeNode<Integer> getDynamicTreeNode(TreeNode node,
+	DynamicTreeNode<Integer> getDynamicTreeNode(TreeNode node,
 		MasterDataVO mdVO);
 
-	/**
-	 *
-	 * @param node
-	 * @param mdVO
-	 */
-	public abstract List<TreeNode> getSubNodesForDynamicTreeNode(TreeNode node,
+	List<TreeNode> getSubNodesForDynamicTreeNode(TreeNode node,
 		MasterDataVO mdVO);
 
 	/**
@@ -169,7 +157,7 @@ public interface TreeNodeFacadeRemote {
 	 * @param mdVO
 	 * @return
 	 */
-	public abstract List<SubFormEntryTreeNode> getSubNodesForSubFormTreeNode(TreeNode node,
+	List<SubFormEntryTreeNode> getSubNodesForSubFormTreeNode(TreeNode node,
         MasterDataVO mdVO);
 
 	/**
@@ -177,7 +165,7 @@ public interface TreeNodeFacadeRemote {
 	 * @return the subnodes for the given node.
 	 * @postcondition result != null
 	 */
-	public abstract java.util.List<org.nuclos.server.navigation.treenode.GroupTreeNode> getSubNodes(
+	List<GroupTreeNode> getSubNodes(
 		GroupSearchResultTreeNode node);
 
 	/**
@@ -186,7 +174,7 @@ public interface TreeNodeFacadeRemote {
 	 * @return the subnodes for the given node.
 	 * @postcondition result != null
 	 */
-	public abstract java.util.List<org.nuclos.server.navigation.treenode.DefaultMasterDataTreeNode> getSubNodes(
+	List<DefaultMasterDataTreeNode> getSubNodes(
 		MasterDataSearchResultTreeNode node);
 
 	/**
@@ -195,63 +183,21 @@ public interface TreeNodeFacadeRemote {
 	 * @return list of sub nodes for given tree node
 	 * @postcondition result != null
 	 */
-	public abstract List<TreeNode> getSubNodes(EntitySearchResultTreeNode node);
+	List<TreeNode> getSubNodes(EntitySearchResultTreeNode node);
 
-	/**
-	 *
-	 * @param iId
-	 * @param sEntity
-	 * @param bLoadSubNodes
-	 * @return
-	 * @throws CommonFinderException
-	 * @throws CommonPermissionException
-	 */
-	public abstract SubFormEntryTreeNode getSubFormEntryTreeNode(Integer iId, String sEntity,
+	SubFormEntryTreeNode getSubFormEntryTreeNode(Integer iId, String sEntity,
         boolean bLoadSubNodes) throws CommonFinderException,
         CommonPermissionException;
 
-	/**
-	 *
-	 * @param node
-	 * @param mdVO
-	 * @return
-	 */
-	public abstract SubFormTreeNode getSubFormTreeNode(GenericObjectTreeNode node, MasterDataVO mdVO);
+	SubFormTreeNode getSubFormTreeNode(GenericObjectTreeNode node, MasterDataVO mdVO);
 
-	/**
-	 *
-	 * @param nucletId
-	 * @param contents
-	 * @throws NuclosBusinessException
-	 */
-	public void addNucletContents(Long nucletId, Set<AbstractNucletContentEntryTreeNode> contents) throws NuclosBusinessException;
+	void addNucletContents(Long nucletId, Set<AbstractNucletContentEntryTreeNode> contents) throws NuclosBusinessException;
 
-	/**
-	 *
-	 * @param entity
-	 * @param eoId
-	 * @return
-	 */
-	public AbstractNucletContentEntryTreeNode getNucletContentEntryNode(NuclosEntity entity, Long eoId);
+	AbstractNucletContentEntryTreeNode getNucletContentEntryNode(NuclosEntity entity, Long eoId);
 
-	/**
-	 *
-	 * @param contents
-	 * @return true if at least one content is removed from nuclet
-	 */
-	public boolean removeNucletContents(Set<AbstractNucletContentEntryTreeNode> contents);
+	boolean removeNucletContents(Set<AbstractNucletContentEntryTreeNode> contents);
 
-	/**
-	 *
-	 * @param node
-	 * @return
-	 */
-	public List<AbstractNucletContentEntryTreeNode> getNucletContent(NucletTreeNode node);
+	List<AbstractNucletContentEntryTreeNode> getNucletContent(NucletTreeNode node);
 
-	/**
-	 *
-	 * @param node
-	 * @return
-	 */
-	public List<NucletTreeNode> getSubNodes(NuclosInstanceTreeNode node);
+	List<NucletTreeNode> getSubNodes(NuclosInstanceTreeNode node);
 }

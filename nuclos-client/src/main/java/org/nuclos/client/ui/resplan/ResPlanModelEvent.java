@@ -21,8 +21,6 @@ import java.util.EventObject;
 
 public class ResPlanModelEvent extends EventObject {
 
-	private static final long serialVersionUID = 1L;
-
 	private Object resource;
 	private Object entry;
 	private Interval<?> interval;

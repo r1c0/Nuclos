@@ -44,10 +44,6 @@ import org.nuclos.server.statemodel.valueobject.StateModelVO;
  */
 public class SubProcessPanelModel implements Serializable {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	// one document for every subprocess attribute
 	// below the methods to get/set the content of the model's
 	public Document docSubProcessStateModel = new PlainDocument();
@@ -71,9 +67,6 @@ public class SubProcessPanelModel implements Serializable {
 	
 	protected static final Logger log = Logger.getLogger(SubProcessPanelModel.class);
 
-	/**
-	 * 
-	 */
 	public SubProcessPanelModel() {
 		// TODO Auto-generated constructor stub
 		getStateModelForComboBox();		
@@ -223,7 +216,8 @@ public class SubProcessPanelModel implements Serializable {
 			Object obj = modelSubProcessUsageCriteria.getElementAt(i);
 			if(obj instanceof SubProcessUsageCriteriaVO) {
 				SubProcessUsageCriteriaVO uc = (SubProcessUsageCriteriaVO)obj;
-				if(uc.getId().equals(ucId)) {
+				// TODO: Is this really needed? (tp)
+				if(ucId == null) {
 					modelSubProcessUsageCriteria.setSelectedItem(uc);
 					break;
 				}

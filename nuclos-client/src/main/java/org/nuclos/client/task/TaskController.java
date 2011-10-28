@@ -79,6 +79,9 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  * @version 01.00.00
  */
 public class TaskController extends Controller {
+
+	private final static Logger LOG = Logger.getLogger(TaskController.class);
+
 	private static final String PREFS_NODE_TASKPANEL = "taskPanel";
 	@Deprecated
 	private static final String PREFS_NODE_FILTERS = "filters";
@@ -87,7 +90,6 @@ public class TaskController extends Controller {
 	@Deprecated
 	private static final String PREFS_NODE_REFRESH_INTERVAL = "refreshInterval";
 
-	private final Logger log = Logger.getLogger(this.getClass());
 	private final Preferences prefs = ClientPreferences.getUserPreferences().node(PREFS_NODE_TASKPANEL);
 	private final TaskDelegate taskdelegate = new TaskDelegate();
 	private final TimelimitTaskDelegate timelimittaskdelegate = new TimelimitTaskDelegate();
@@ -274,8 +276,9 @@ public class TaskController extends Controller {
 		try {
 			tabNames = prefs.node(PREFS_NODE_TASKPANEL_TABS).childrenNames();
 		}
-		catch(BackingStoreException e1) {
+		catch(BackingStoreException e) {
 			/*dann halt nicht -> return empty map*/
+			LOG.info("getRefreshIntervalsFromPreferences failed: " + e);
 			return refreshIntervals;
 		}
 		for(String tabName : tabNames) {
@@ -343,17 +346,18 @@ public class TaskController extends Controller {
 								addOrReplaceGenericObjectTaskViewFor(filter, tab);
 								ctlGenericObjectTasks.setRefreshIntervalForMultiViewRefreshable(getTaskViewFor(filter), refreshInterval);
 							} catch(CommonBusinessException e) {
-								e.printStackTrace();
+								LOG.warn("restoreGenericObjectTaskViewsFromPreferences failed: " + e);
 							}
 						}
 					}
 					catch (NumberFormatException e) {
+						LOG.info("restoreGenericObjectTaskViewsFromPreferences failed: " + e);
 						continue;
 					}
 				}
 			}
 			catch (NoSuchElementException ex) {
-				log.warn("A search filter named \"" + sFilterName
+				LOG.warn("A search filter named \"" + sFilterName
 					+ "\" does not exist.");
 				// otherwise ignored
 			}
@@ -393,7 +397,7 @@ public class TaskController extends Controller {
 			return getTaskViewFor(filter);
 		}
 		catch(CommonBusinessException e) {
-			log.error(e.getMessage(), e);
+			LOG.error("addOrReplaceGenericObjectTaskViewFor failed: " + e, e);
 			return null;
 		}
 	}

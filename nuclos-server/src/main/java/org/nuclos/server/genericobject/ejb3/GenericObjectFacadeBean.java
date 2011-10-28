@@ -28,13 +28,9 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.log4j.Logger;
 import org.nuclos.common.AttributeProvider;
 import org.nuclos.common.GenericObjectMetaDataVO;
 import org.nuclos.common.NuclosBusinessException;
@@ -127,11 +123,13 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Local(GenericObjectFacadeLocal.class)
-@Remote(GenericObjectFacadeRemote.class)
+// @Stateless
+// @Local(GenericObjectFacadeLocal.class)
+// @Remote(GenericObjectFacadeRemote.class)
 @Transactional
 public class GenericObjectFacadeBean extends NuclosFacadeBean implements GenericObjectFacadeLocal, GenericObjectFacadeRemote {
+
+	private static final Logger LOG = Logger.getLogger(GenericObjectFacadeBean.class);
 
 	private final GenericObjectFacadeHelper helper = new GenericObjectFacadeHelper();
 
@@ -499,13 +497,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			}
 			lstResult.add(go);
 		}
-
-//		final GenericObjectSearchExpressionUnparser unparser = helper.getUnparser(this.getCurrentUserName());
-//
-//		final String sSql = unparser.unparseExpression(iModuleId, clctexpr, iMaxRowCount + 1);
-//
-//		final List<GenericObjectWithDependantsVO> lstResult = new ArrayList<GenericObjectWithDependantsVO>(Math.min(iMaxRowCount + 1, 1000));
-//		CollectionUtils.addAll(lstResult, helper.getGenericObjectsIteratorBySQL(iModuleId, this.getCurrentUserName(), sSql, helper.DEFAULT_PAGESIZE, stRequiredAttributeIds, stRequiredSubEntityNames, bIncludeParentObjects));
 
 		assert lstResult.size() <= iMaxRowCount + 1;
 
@@ -1265,6 +1256,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		}
 		catch(Exception e) {
 			// logbook entry can't be added; skip value
+			LOG.info("addLogbookIfPossible: " + e);
 		}
 	}
 
@@ -1777,7 +1769,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @return a collection of BadAttributeValueException
 	 */
 	@Override
-	public Collection<BadAttributeValueException> createGenericObjectAttribute(Integer genericObjectId, Integer attributeId, Integer valueId, String canonicalValue, boolean logbookTracking) throws CreateException {
+	public Collection<BadAttributeValueException> createGenericObjectAttribute(
+			Integer genericObjectId, Integer attributeId, Integer valueId, String canonicalValue, boolean logbookTracking) {
 		final Collection<BadAttributeValueException> badAttributes = new ArrayList<BadAttributeValueException>();
 		final String field = DalSupportForGO.getEntityFieldFromAttribute(attributeId);
 		final EntityObjectVO eo = DalSupportForGO.getEntityObject(genericObjectId);

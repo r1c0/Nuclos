@@ -37,10 +37,6 @@ import javax.swing.JPanel;
  */
 public class TransparentImagePanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private ImageIcon imgicon;
 	private final AlphaComposite composite;
 

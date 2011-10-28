@@ -22,11 +22,6 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class InstanceVO extends NuclosValueObject{
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private MasterDataVO mdVO;
 
 	private String name;

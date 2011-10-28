@@ -20,8 +20,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJBException;
-import javax.ejb.Remote;
 
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.exception.CommonCreateException;
@@ -35,14 +33,14 @@ import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
-@Remote
+// @Remote
 public interface GeneratorFacadeRemote {
 
 	/**
 	 * @return all generator actions
 	 */
 	@RolesAllowed("Login")
-	public abstract GeneratorVO getGeneratorActions()
+	GeneratorVO getGeneratorActions()
 		throws CommonPermissionException;
 
 	/**
@@ -54,15 +52,15 @@ public interface GeneratorFacadeRemote {
     * @nucleus.permission mayWrite(generatoractionvo.getTargetModuleId())
     */
    @RolesAllowed("Login")
-   public GenerationResult generateGenericObject(Long iSourceObjectId, Long parameterObjectId, GeneratorActionVO generatoractionvo)
+   GenerationResult generateGenericObject(Long iSourceObjectId, Long parameterObjectId, GeneratorActionVO generatoractionvo)
    	throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException,
       CommonStaleVersionException, CommonValidationException;
 
    @RolesAllowed("Login")
-   public Map<String, Collection<EntityObjectVO>> groupObjects(Collection<Long> sourceIds, GeneratorActionVO generatoractionvo);
+   Map<String, Collection<EntityObjectVO>> groupObjects(Collection<Long> sourceIds, GeneratorActionVO generatoractionvo);
 
    @RolesAllowed("Login")
-   public GenerationResult generateGenericObject(Collection<EntityObjectVO> sourceObjects, Long parameterObjectId, GeneratorActionVO generatoractionvo)
+   GenerationResult generateGenericObject(Collection<EntityObjectVO> sourceObjects, Long parameterObjectId, GeneratorActionVO generatoractionvo)
    	throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException,
       CommonStaleVersionException, CommonValidationException;
 
@@ -72,7 +70,7 @@ public interface GeneratorFacadeRemote {
 	 * @param usages
 	 * @throws EJBException
 	 */
-	public abstract void updateRuleUsages(Integer generatorId,
+	void updateRuleUsages(Integer generatorId,
 		Collection<GeneratorRuleVO> usages) throws NuclosBusinessRuleException,
 		CommonCreateException, CommonPermissionException,
 		CommonStaleVersionException, CommonRemoveException,
@@ -84,7 +82,7 @@ public interface GeneratorFacadeRemote {
 	 * @return
 	 * @throws CommonPermissionException
 	 */
-	public abstract Collection<GeneratorRuleVO> getRuleUsages(Integer generatorId)
+	Collection<GeneratorRuleVO> getRuleUsages(Integer generatorId)
 		throws CommonPermissionException;
 
 }

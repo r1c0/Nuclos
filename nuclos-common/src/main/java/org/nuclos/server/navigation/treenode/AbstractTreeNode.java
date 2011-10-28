@@ -115,22 +115,17 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	//private static AtomicInteger cnt = new AtomicInteger(0);
 	@Override
 	public synchronized List<? extends TreeNode> getSubNodes() {
-		if (this.lstSubNodes == null) {
+		if (lstSubNodes == null) {
 			try {
-				//System.err.println("getSubNodesImpl() #" + cnt.incrementAndGet());
-				this.lstSubNodes = this.getSubNodesImpl();
+				lstSubNodes = getSubNodesImpl();
 			}
 			catch (RemoteException ex) {
 				throw new NuclosFatalException(ex);
 			}
 		}
-		final List<? extends TreeNode> result = this.lstSubNodes;
+		final List<? extends TreeNode> result = lstSubNodes;
 
 		assert result != null;
 		assert this.hasSubNodes() != null;

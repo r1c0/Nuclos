@@ -43,6 +43,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
@@ -76,107 +77,102 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
  */
 public class NuclosStartupPanel extends JPanel implements ApplicationAssistantListener {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	JPanel pnlOverview;
-	JLabel lbLink;
-	JLabel lbSteep;
+	private static final Logger LOG = Logger.getLogger(NuclosStartupPanel.class);
 	
-	JPanel pnlDescription;
-	StartupJLabel lbDescription;
-	JLabel lbDescriptionState;
+	private JPanel pnlOverview;
+	private JLabel lbLink;
+	private JLabel lbSteep;
 	
-	JPanel pnlRelation;
-	StartupJLabel lbRelation;
-	JLabel lbRelationState;
+	private JPanel pnlDescription;
+	private StartupJLabel lbDescription;
+	private JLabel lbDescriptionState;
 	
-	JPanel pnlEntities;
-	StartupJLabel lbEntities;
-	JLabel lbEntitiesState;
+	private JPanel pnlRelation;
+	private StartupJLabel lbRelation;
+	private JLabel lbRelationState;
 	
-	JPanel pnlLayouts;
-	StartupJLabel lbLayouts;
-	JLabel lbLayoutsState;
+	private JPanel pnlEntities;
+	private StartupJLabel lbEntities;
+	private JLabel lbEntitiesState;
 	
-	JPanel pnlDataImport;
-	StartupJLabel lbDataImport;
-	JLabel lbDataImportState;
+	private JPanel pnlLayouts;
+	private StartupJLabel lbLayouts;
+	private JLabel lbLayoutsState;
 	
-	JPanel pnlTotalProcess;
-	StartupJLabel lbTotalProcess;
-	JLabel lbTotalProcessState;
+	private JPanel pnlDataImport;
+	private StartupJLabel lbDataImport;
+	private JLabel lbDataImportState;
 	
-	JPanel pnlSubProcess;
-	StartupJLabel lbSubProcess;
-	JLabel lbSubProcessState;
+	private JPanel pnlTotalProcess;
+	private StartupJLabel lbTotalProcess;
+	private JLabel lbTotalProcessState;
 	
-	JPanel pnlWorkflow;
-	StartupJLabel lbWorkflow;
-	JLabel lbWorkflowState;
+	private JPanel pnlSubProcess;
+	private StartupJLabel lbSubProcess;
+	private JLabel lbSubProcessState;
 	
-	JPanel pnlExplorerTree;
-	StartupJLabel lbExplorerTree;
-	JLabel lbExplorerTreeState;
+	private JPanel pnlWorkflow;
+	private StartupJLabel lbWorkflow;
+	private JLabel lbWorkflowState;
 	
-	JPanel pnlUserRights;
-	StartupJLabel lbUserRights;
-	JLabel lbUserRightsState;
+	private JPanel pnlExplorerTree;
+	private StartupJLabel lbExplorerTree;
+	private JLabel lbExplorerTreeState;
 	
-	JPanel pnlRest;
-	StartupJLabel lbRest;
-	JLabel lbRestState;
+	private JPanel pnlUserRights;
+	private StartupJLabel lbUserRights;
+	private JLabel lbUserRightsState;
 	
-	JPanel pnlNucletOnline;
-	StartupJLabel lbNucletOnline;
-	JLabel lbNucletOnlineState;
+	private JPanel pnlRest;
+	private StartupJLabel lbRest;
+	private JLabel lbRestState;
 	
-	JCheckBox cbShowOnStartup;
-	JButton btClose;
+	private JPanel pnlNucletOnline;
+	private StartupJLabel lbNucletOnline;
+	private JLabel lbNucletOnlineState;
 	
-	String sNuclet;
-	String sUsername;
+	private JCheckBox cbShowOnStartup;
+	private JButton btClose;
 	
-	URL urlNotOkay;
-	URL urlOkay;
+	private String sNuclet;
+	private String sUsername;
 	
-	MainFrameTab iFrame;
+	private URL urlNotOkay;
+	private URL urlOkay;
 	
-	List<StartupJLabel> lstLabel;
+	private MainFrameTab iFrame;
 	
-	final String strOverviewText = "<html><body><font color=\"#0048BF\"><b>" + 
+	private List<StartupJLabel> lstLabel;
+	
+	private final String strOverviewText = "<html><body><font color=\"#0048BF\"><b>" + 
 				getMessage("nuclos.startuppanel.20", "Herzlich willkommen beim Nuclet Wizard") +
 				"</b></font></body></html>";
 	
-	final String htmlStart = "<html><body><font color=\"#0048BF\"><b>";
-	final String htmlStartOverview = "<html><body><font color=\"#0048BF\"><b><u>";
-	final String htmlMarkedStart = "<html><body><font color=\"#FFFFFF\"><b>";
-	final String htmlEnd = "</b></font></body></html>";
+	private final String htmlStart = "<html><body><font color=\"#0048BF\"><b>";
+	private final String htmlStartOverview = "<html><body><font color=\"#0048BF\"><b><u>";
+	private final String htmlMarkedStart = "<html><body><font color=\"#FFFFFF\"><b>";
+	private final String htmlEnd = "</b></font></body></html>";
 	
-	MainFrame mainFrame;
+	private MainFrame mainFrame;
 	
-	ApplicationObserver observer = ApplicationObserver.getInstance();
+	private ApplicationObserver observer = ApplicationObserver.getInstance();
 	
-	URL url01 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/01_Neues_Nuclet.jpg");
-	URL url02 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/02_Entitaeten_Wizard.jpg");
-	URL url03 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/03.Relationen_Wizard.jpg");
-	URL url04 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/04_Layout_Editor.jpg");
-	URL url05 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/05_Daten_Import.jpg");
-	URL url06 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/06_Geschaeftsprozesse.jpg");
-	URL url07 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/07_Teilprozesse.jpg");
-	URL url08 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/08_Workflows.jpg");
-	URL url09 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/09_Baumansichten.jpg");
-	URL url10 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/10_Benutzerrechte.jpg");
-	URL url11 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/11_Nuclets_online.jpg");
-	URL url12 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/12_Weitere.jpg");
+	private URL url01 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/01_Neues_Nuclet.jpg");
+	private URL url02 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/02_Entitaeten_Wizard.jpg");
+	private URL url03 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/03.Relationen_Wizard.jpg");
+	private URL url04 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/04_Layout_Editor.jpg");
+	private URL url05 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/05_Daten_Import.jpg");
+	private URL url06 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/06_Geschaeftsprozesse.jpg");
+	private URL url07 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/07_Teilprozesse.jpg");
+	private URL url08 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/08_Workflows.jpg");
+	private URL url09 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/09_Baumansichten.jpg");
+	private URL url10 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/10_Benutzerrechte.jpg");
+	private URL url11 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/11_Nuclets_online.jpg");
+	private URL url12 = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/12_Weitere.jpg");
 	
-	URL urlNucLogo = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/nuclogo.jpg");
+	private URL urlNucLogo = this.getClass().getClassLoader().getResource("org/nuclos/client/application/assistant/images/nuclogo.jpg");
 	
 
-	/**
-	 * 
-	 */
 	public NuclosStartupPanel(MainFrame mf, String sUsername) {
 		super();
 		mainFrame = mf;
@@ -616,6 +612,7 @@ public class NuclosStartupPanel extends JPanel implements ApplicationAssistantLi
 				lbWorkflowState.setIcon(new ImageIcon(urlOkay));
 		}
 		catch(CommonFinderException e) {
+			LOG.info("loadWorkflowInformation failed: " + e);
 		}
 	}
 	
@@ -627,6 +624,7 @@ public class NuclosStartupPanel extends JPanel implements ApplicationAssistantLi
 				lbSubProcessState.setIcon(new ImageIcon(urlOkay));
 		}
 		catch(CommonFinderException e) {
+			LOG.info("loadSubProcessInformation failed: " + e);
 		}
 	}
 	
@@ -642,6 +640,7 @@ public class NuclosStartupPanel extends JPanel implements ApplicationAssistantLi
 		}
 		catch(CommonFinderException e) {
 			sNuclet = null;
+			LOG.info("loadNucletInformation failed: " + e);
 		}
 	}
 	
@@ -668,7 +667,7 @@ public class NuclosStartupPanel extends JPanel implements ApplicationAssistantLi
 				lbRelationState.setIcon(new ImageIcon(urlOkay));
 		}
 		catch(CommonFinderException e) {
-			e.printStackTrace();
+			LOG.warn("loadRelationship failed: " + e, e);
 		}		
 	}
 	
@@ -691,7 +690,7 @@ public class NuclosStartupPanel extends JPanel implements ApplicationAssistantLi
 			}
 		}
 		catch(CommonFinderException e) {
-			e.printStackTrace();
+			LOG.warn("loadLayouts failed: " + e, e);
 		}		
 	}
 	
@@ -915,11 +914,6 @@ public class NuclosStartupPanel extends JPanel implements ApplicationAssistantLi
 	private AbstractAction createCloseAction() {
 		return new AbstractAction(getMessage("nuclos.startuppanel.19", "Assistent schlie\u00dfen")) {
 			
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(iFrame != null) {
@@ -982,8 +976,8 @@ public class NuclosStartupPanel extends JPanel implements ApplicationAssistantLi
 				NuclosCollectControllerFactory.getInstance().newCollectController(mainFrame.getHomePane(), NuclosEntity.NUCLET.getEntityName(), null).runNew();
 			}
 		}
-		catch(CommonBusinessException e1) {
-			e1.printStackTrace();
+		catch(CommonBusinessException e) {
+			LOG.warn("openNucletController failed: " + e, e);
 		}						
 		finally {
 			setDefaultCursor();
@@ -996,7 +990,8 @@ public class NuclosStartupPanel extends JPanel implements ApplicationAssistantLi
 			setWaitCursor();
 			NuclosCollectControllerFactory.getInstance().newCollectController(mainFrame.getHomePane(), NuclosEntity.LAYOUT.getEntityName(), null).run();
 		}
-		catch(CommonBusinessException e1) {
+		catch(CommonBusinessException e) {
+			LOG.warn("openLayoutController failed: " + e);
 		}						
 		finally {
 			setDefaultCursor();
@@ -1009,7 +1004,8 @@ public class NuclosStartupPanel extends JPanel implements ApplicationAssistantLi
 			setWaitCursor();
 			NuclosCollectControllerFactory.getInstance().newCollectController(mainFrame.getHomePane(), NuclosEntity.IMPORT.getEntityName(), null).run();
 		}
-		catch(CommonBusinessException e1) {
+		catch(CommonBusinessException e) {
+			LOG.warn("openDataimportController failed: " + e);
 		}						
 		finally {
 			setDefaultCursor();
@@ -1025,12 +1021,12 @@ public class NuclosStartupPanel extends JPanel implements ApplicationAssistantLi
 			result.run();
 			
 		}
-		catch(CommonBusinessException e1) {
+		catch(CommonBusinessException e) {
+			LOG.warn("openRelationShipController failed: " + e);
 		}						
 		finally {
 			setDefaultCursor();
 		}			
-		
 	}
 	
 	protected void openUserRightsController() {
@@ -1039,27 +1035,25 @@ public class NuclosStartupPanel extends JPanel implements ApplicationAssistantLi
 			MasterDataCollectController mdcc = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(mainFrame.getHomePane(), NuclosEntity.ROLE.getEntityName(), null);
 			mdcc.run();
 		}
-		catch(CommonBusinessException e1) {
+		catch(CommonBusinessException e) {
+			LOG.warn("openUserRightsController failed: " + e);
 		}						
 		finally {
 			setDefaultCursor();
 		}			
-		
 	}
-	
-	
 	
 	protected void openStatemodelController() {
 		try {
 			setWaitCursor();
 			NuclosCollectControllerFactory.getInstance().newCollectController(mainFrame.getHomePane(), NuclosEntity.STATEMODEL.getEntityName(), null).run();
 		}
-		catch(CommonBusinessException e1) {
+		catch(CommonBusinessException e) {
+			LOG.warn("openStatemodelController failed: " + e);
 		}						
 		finally {
 			setDefaultCursor();
-		}			
-		
+		}					
 	}
 
 	protected void openWizard() {
@@ -1085,8 +1079,8 @@ public class NuclosStartupPanel extends JPanel implements ApplicationAssistantLi
 				dia.setVisible(true);
 			}
 		}
-		catch(Exception ex) {
-			ex.printStackTrace();
+		catch (Exception e) {
+			LOG.warn("openStatemodelController failed: " + e, e);
 		}
 		finally {
 			setDefaultCursor();
@@ -1105,8 +1099,8 @@ public class NuclosStartupPanel extends JPanel implements ApplicationAssistantLi
 						
 			NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(mainFrame.getHomePane(), NuclosEntity.SEARCHFILTER.getEntityName(), null).runViewAll();
 		}
-		catch(Exception ex) {
-			ex.printStackTrace();
+		catch (Exception e) {
+			LOG.warn("openWorkflowWizard failed: " + e, e);
 		}
 		finally {
 			loadWorkflowInformation();
@@ -1284,12 +1278,8 @@ public class NuclosStartupPanel extends JPanel implements ApplicationAssistantLi
 	
 	class StartupJLabel extends JLabel {
 		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		Pair<Integer, Integer> xyPosition;
-		String sLinkName;
+		private Pair<Integer, Integer> xyPosition;
+		private String sLinkName;
 
 		public StartupJLabel(String text, Pair<Integer, Integer> position, String linkName) {
 			super(text);			

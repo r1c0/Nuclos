@@ -65,6 +65,7 @@ import javax.swing.tree.TreePath;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.nuclos.client.application.assistant.ApplicationChangedEvent;
 import org.nuclos.client.application.assistant.ApplicationObserver;
 import org.nuclos.client.common.LocaleDelegate;
@@ -91,6 +92,7 @@ import org.nuclos.client.layout.wysiwyg.editor.util.TableLayoutUtil;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.LayoutCell;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRule;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRuleAction;
+import org.nuclos.client.main.Main;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -154,10 +156,8 @@ import org.xml.sax.SAXException;
 
 public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger(Main.class);
+
 	static String[] labels = NuclosWizardConstants.labels;
 	static String[] labelsFields = {getMessage("wizard.step.entitytranslationstable.1", "Anzeigename"), getMessage("wizard.step.entitytranslationstable.2", "Beschreibung")};
 	static String[] sEditFields = {"STRCREATED", "DATCREATED", "STRCHANGED", "DATCHANGED" };
@@ -346,6 +346,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 	}
 
+	/*
 	private void buttonUpGroupAction() {
 		int count = treeAttributeOrder.getSelectionPath().getPathCount();
 		Object selected = treeAttributeOrder.getSelectionPath().getPathComponent(count-1);
@@ -368,7 +369,9 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			treeModel.fireTreeModelChanged();
 		}
 	}
+	 */
 
+	/*
 	private void buttonDownGroupAction() {
 		int count = treeAttributeOrder.getSelectionPath().getPathCount();
 		Object selected = treeAttributeOrder.getSelectionPath().getPathComponent(count-1);
@@ -391,6 +394,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			treeModel.fireTreeModelChanged();
 		}
 	}
+	 */
 
 	private void buttonDownAttributeAction() {
 		int iSelected = listAttributeOrder.getSelectedIndex();
@@ -449,16 +453,12 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		else
 			cbLayout.setEnabled(true);
 
-
 		hasEntityLayout = hasEntityLayout();
 		if(hasEntityLayout){
 			lbLayout.setText(getMessage("wizard.step.entitysqllayout.16", "Wollen Sie die bestehende Maske aktualisieren:"));
 		}
-
 		DefaultListModel listmodel = new DefaultListModel();
-
 		List<Attribute> lstAttr = new ArrayList<Attribute>(this.model.getAttributeModel().getAttributes());
-
 		Collections.sort(lstAttr, new Comparator<Attribute>() {
 
 			@Override
@@ -479,7 +479,9 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		try {
 			treeAttributeOrder.setModel(treeModel);
 			treeModel.expandWholeTree();
-		}catch(Exception e) {}
+		} catch (Exception e) {
+			LOG.info("prepare failed: " + e, e);
+		}
 
 		listAttributeOrder.setModel(listmodel);
 
@@ -496,9 +498,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		        }
 			}
 		});
-
 	}
-
 
 
 	private void validateEntity() throws CommonValidationException {
@@ -629,9 +629,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 
 	protected boolean createOrModifyEntity() {
-
 		buildValueListIfNeeded();
-
 		List<MasterDataVO> lstLayoutToChange = new ArrayList<MasterDataVO>();
 		changeLayout = false;
 		NuclosEntityWizardStaticModel wizardModel = this.getModel();
@@ -736,10 +734,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			NuclosWizardUtils.flushCaches();
 		}
 
-
 		Long iEntityId = MetaDataDelegate.getInstance().getEntityIdByName(metaVO.getEntity());
-
-
 		try {
 			RoleRepository.getInstance().updateRoles();
 	   }
@@ -803,10 +798,10 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 						 throw new NuclosFatalException(e);
 				 }
 			 }
-
 		}
 		catch(CommonBusinessException bex) {
 			// do nothing here
+			LOG.warn("createOrModifyEntity: " + bex);
       }
 
 
@@ -995,11 +990,10 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 							layoutToChange.add(voLayout);
 						}
 						catch(Exception e) {
-							   // don't modify layout
+							// don't modify layout
+							LOG.info("searchParentLayouts failed: " + e);
 						}
-
 					}
-
 				}
 			}
 		}
@@ -1026,11 +1020,9 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
             }
             catch(LayoutMLException e) {
 	            // do nothing here
+            	LOG.info("searchParentEntity failed: " + e);
             }
-
 		}
-
-
 		return setParents;
 	}
 
@@ -1169,20 +1161,16 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				else {
 					MasterDataDelegate.getInstance().create(sLayoutType, mdLayout, dependMapLayoutUsage);
 				}
-
-
 			}
 			catch(Exception ex) {
 				Errors.getInstance().showExceptionDialog(this, ex);
 			}
-
 		}
 		catch(CommonValidationException e) {
 			Errors.getInstance().showExceptionDialog(this, e);
 		}catch(CommonBusinessException e1) {
 			Errors.getInstance().showExceptionDialog(this, e1);
 		}
-
 	}
 
 	private void createDefaultBorder(TableLayoutUtil util) {
@@ -1204,10 +1192,10 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				cellForEditing.setCellY(cellForEditing.getCellY() + 1);
 			util.addRow(cellForEditing);
 		}
-		catch(Exception ex) {
+		catch(Exception e) {
 			// don't create default border when exception
+			LOG.info("createDefaultBorder failed: " + e);
 		}
-
 	}
 
 	private LayoutCell createBetweenCell(int counter) {
@@ -1477,8 +1465,9 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			 try {
 				comp = tabPane.getComponent(tabcounter++);
 			 }
-			 catch(Exception ex) {
+			 catch(Exception e) {
 				 // new tab necessary
+				 LOG.info("buildSubformsLayout: " + e + " (new tab?)", e);
 				 comp = ComponentProcessors.getInstance().createComponent(LayoutMLConstants.ELEMENT_PANEL, LayoutMLConstants.ELEMENT_LABEL, new WYSIWYGMetaInformation(), "subEntites");
 				 tabPane.addTab(sSubEntity, comp);
 			 }
@@ -1612,12 +1601,10 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 					continue;
 				mpFields1.put(iKey, mpFields.get(iKey));
 			}
-
 			createComponentForLayout(panel, util, mpFields1, maxWidth, counter);
-
 		}
-		catch(Exception ex) {
-			ex.printStackTrace();
+		catch(Exception e) {
+			LOG.error("createAttributeGroupPanel failed: " + e, e);
 		}
 	}
 
@@ -1923,11 +1910,12 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		}
 		catch(CommonBusinessException e) {
 			// don't modify layout
+			LOG.info("modifyLayout: " + e);
 		}
 		catch(SAXException e) {
 		   // don't modify layout
+			LOG.info("modifyLayout: " + e);
 		}
-
 		return sLayout;
 	}
 
@@ -1968,11 +1956,9 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
             		}
                 }
                 catch(CommonBusinessException e) {
-	                e.printStackTrace();
+                	LOG.error("buildValueListIfNeeded failed: " + e, e);
                 }
             }
-
-
 		}
 	}
 
@@ -2039,7 +2025,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	        String sResult = MetaDataDelegate.getInstance().createOrModifyEntity(null, toEntity, null, lstFields, true, null, null);
 	    }
 	    catch(NuclosBusinessException e) {
-	        e.printStackTrace();
+	    	LOG.error("createValueList failed: " + e, e);
 	    }
     }
 
@@ -2063,11 +2049,6 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
     }
 
 	class MyTreeCellRenderer extends DefaultTreeCellRenderer {
-
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		@Override
 		public Icon getLeafIcon() {
@@ -2175,6 +2156,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 					return mpGroup.get(parent).get(index);
 				}
 				catch(Exception e) {
+					LOG.info("getChild: " + e);
 					return null;
 				}
 			}
@@ -2186,11 +2168,11 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 						return group;
 					}
 					catch(Exception e) {
+						LOG.info("getChild: " + e);
 						return null;
 					}
 				}
 			}
-
 			return null;
 		}
 
@@ -2249,7 +2231,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 		@Override
 		public void valueForPathChanged(TreePath path, Object newValue) {
-			System.out.println(newValue);
+			LOG.info(newValue);
 		}
 
 		public void setModelData(Map<String, List<Attribute>> mp) {

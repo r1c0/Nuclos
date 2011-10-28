@@ -32,14 +32,10 @@ import org.nuclos.common2.StringUtils;
 
 public class EntityAttributeTableModel extends AbstractTableModel {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	List<Attribute> lstAttribute;
-	List<Attribute> lstRemovedAttribute;
-	Map<Attribute, List<TranslationVO>> mpTranslation;
-	boolean blnStateModel;
+	private List<Attribute> lstAttribute;
+	private List<Attribute> lstRemovedAttribute;
+	private Map<Attribute, List<TranslationVO>> mpTranslation;
+	private boolean blnStateModel;
 	
 	public EntityAttributeTableModel() {
 		lstAttribute = new ArrayList<Attribute>();

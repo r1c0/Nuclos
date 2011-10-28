@@ -23,7 +23,6 @@ import java.util.NoSuchElementException;
 import java.util.prefs.Preferences;
 
 import org.nuclos.client.common.MetaDataClientProvider;
-import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.collect.collectable.CollectableEntityField;

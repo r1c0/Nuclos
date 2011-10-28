@@ -33,11 +33,6 @@ import org.nuclos.server.report.valueobject.DatasourceVO;
  */
 public class OwnDatasourceNode extends DirectoryDatasourceNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public OwnDatasourceNode() {
 		super(false, CommonLocaleDelegate.getMessage("OwnDatasourceNode.1", "Eigene Datenquellen"), CommonLocaleDelegate.getMessage("OwnDatasourceNode.1", "Eigene Datenquellen"), null);
 	}

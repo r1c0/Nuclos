@@ -82,7 +82,7 @@ import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
  */
 public class CollectableListOfValues extends LabeledCollectableComponentWithVLP implements ICollectableListOfValues, CollectableEventListener {
 
-	private static final Logger log = Logger.getLogger(CollectableListOfValues.class);
+	private static final Logger LOG = Logger.getLogger(CollectableListOfValues.class);
 
 	/**
 	 * the value id "remembered in the view", as the JTextField only holds the value.
@@ -97,10 +97,6 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	 * inner class <code>CollectableListOfValues.Event</code>.
 	 */
 	public static class Event extends CollectableComponentEvent {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		/**
 		 * @param clctlovSource the <code>CollectableListOfValues</code> that triggered this event.
@@ -436,7 +432,6 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public CollectableField getFieldFromView() throws CollectableFieldFormatException {
 		if (this.oValueId == null) {
 			return new CollectableValueIdField(this.oValueId, null);
@@ -524,7 +519,6 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	 * @see org.nuclos.client.ui.collect.component.ICollectableListOfValues#acceptLookedUpCollectable(org.nuclos.common.collect.collectable.Collectable)
 	 */
 	@Override
-	@SuppressWarnings("deprecation")
 	public void acceptLookedUpCollectable(Collectable clctLookedUp) {
 		this.acceptLookedUpCollectable(clctLookedUp, this.getEntityField().getReferencedEntityFieldName(), null);
 	}
@@ -533,7 +527,6 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	 * @see org.nuclos.client.ui.collect.component.ICollectableListOfValues#acceptLookedUpCollectable(org.nuclos.common.collect.collectable.Collectable, java.util.List)
 	 */
 	@Override
-	@SuppressWarnings("deprecation")
 	public void acceptLookedUpCollectable(Collectable clctLookedUp, List<Collectable> additionalCollectables) {
 		this.acceptLookedUpCollectable(clctLookedUp, this.getEntityField().getReferencedEntityFieldName(), additionalCollectables);
 	}
@@ -573,7 +566,7 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 
 		}
 		catch (Exception ex) {
-			log.warn("acceptLookedUpCollectable: foreign value could not be found.");
+			LOG.warn("acceptLookedUpCollectable: foreign value could not be found.");
 			oForeignValue = null;
 		}
 		this.setField(new CollectableValueIdField(clctLookedUp.getId(), oForeignValue));

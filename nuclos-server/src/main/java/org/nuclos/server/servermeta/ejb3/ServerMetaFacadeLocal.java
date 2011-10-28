@@ -16,9 +16,10 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.servermeta.ejb3;
 
-import javax.ejb.Local;
-
-@Local
+/**
+ * @deprecated No methods.
+ */
+// @Local
 public interface ServerMetaFacadeLocal {
 
 }

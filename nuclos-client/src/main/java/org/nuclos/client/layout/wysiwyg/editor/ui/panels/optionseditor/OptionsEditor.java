@@ -65,15 +65,10 @@ import info.clearthought.layout.TableLayoutConstraints;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-@SuppressWarnings("serial")
 public class OptionsEditor extends JDialog implements SaveAndCancelButtonPanelControllable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	int height = 500;
-	int width = 470;
+	private int height = 500;
+	private int width = 470;
 
 	private JLabel lblName = new JLabel(OPTIONS_EDITOR.LABEL_OPTIONGROUP_NAME);
 	private JTextField txtName = new JTextField(15);
@@ -379,10 +374,6 @@ public class OptionsEditor extends JDialog implements SaveAndCancelButtonPanelCo
 	 */
 	class OptionPanel extends JPanel implements AddRemoveButtonControllable {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		WYSIWYGOption option = null;
 		private JTextField txtName = null;
 		private JTextField txtValue = null;

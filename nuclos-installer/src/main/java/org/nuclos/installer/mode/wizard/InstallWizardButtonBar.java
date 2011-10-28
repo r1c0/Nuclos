@@ -28,11 +28,6 @@ import org.pietschy.wizard.Wizard;
 */
 public class InstallWizardButtonBar extends ButtonBar {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public InstallWizardButtonBar(Wizard wizard) {
 		super(wizard);
 	}

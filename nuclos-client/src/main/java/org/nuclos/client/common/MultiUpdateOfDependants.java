@@ -375,11 +375,6 @@ public class MultiUpdateOfDependants {
 	private static class IdMapping extends HashMap<String, Map<IdMapping.Key, Collection<Object>>> {
 
 		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-
-		/**
 		 * maps (sEntity, oParentId, oPrototypeId) to a collection of ids.
 		 * @param oPrototypeId
 		 * @param sSubEntityName

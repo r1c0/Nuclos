@@ -40,10 +40,6 @@ import javax.swing.JPanel;
  */
 public class RuleHeaderPanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public final CollectableTextField clcttfName = new CollectableTextField(CollectableRule.clcte.getEntityField("name"));
 	public final CollectableTextField clcttfDescription = new CollectableTextField(CollectableRule.clcte.getEntityField("description"));
 	public final CollectableCheckBox clctchkbxActive = new CollectableCheckBox(CollectableRule.clcte.getEntityField("active"), false);

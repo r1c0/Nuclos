@@ -76,10 +76,6 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  * @version 01.00.00
  */
 public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
 
 	private static final Logger log = Logger.getLogger(ExplorerNode.class);
 
@@ -111,7 +107,6 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	/**
 	 * @return the <code>TreeNode</code> object contained (as user object) in this node.
 	 */
-	@SuppressWarnings("unchecked")
 	public TN getTreeNode() {
 		return (TN) this.getUserObject();
 	}
@@ -151,7 +146,6 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 * @param bLoadAllAvailableSubNodes Load all available subnodes (recursively)?
 	 * @postcondition this.getChildrenHaveBeenLoaded()
 	 */
-	@SuppressWarnings("unchecked")
 	public void loadChildren(boolean bLoadAllAvailableSubNodes) {
 		if (!this.getChildrenHaveBeenLoaded()) {
 			log.debug("START loadChildren");
@@ -194,7 +188,6 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 * @param dtm the DefaultTreeModel to notify. Must contain this node.
 	 * @throws CommonFinderException if the object presented by this node no longer exists.
 	 */
-	@SuppressWarnings({ "unchecked", "deprecation" })
 	public void refresh(final JTree tree, boolean fullRefreshCurrent) throws CommonFinderException {
 		List<String> lstExpandedPathsResult = new ArrayList<String>();
 		ExplorerNode.createExpandendPathsForTree(new TreePath(tree.getModel().getRoot()), tree, lstExpandedPathsResult);
@@ -207,7 +200,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 		if (treenode.implementsNewRefreshMethod()) {
 			TN refreshed = null;
 			if(fullRefreshCurrent && !this.isRoot()){
-				TreeNode parentTreeNode = ((ExplorerNode)this.getParent()).getTreeNode();
+				TreeNode parentTreeNode = ((ExplorerNode<TN>)this.getParent()).getTreeNode();
 				parentTreeNode.removeSubNodes();
 				List<? extends TreeNode> parentSubNodes = parentTreeNode.getSubNodes();
 				for(TreeNode parentSubNode : parentSubNodes){
@@ -526,10 +519,6 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 * Action: Show the current node in its own tab.
 	 */
 	protected class ShowInOwnTabAction extends TreeNodeAction {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public ShowInOwnTabAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_IN_OWN_TAB, CommonLocaleDelegate.getMessage("ExplorerNode.3","In eigenem Reiter anzeigen"), tree);
@@ -549,10 +538,6 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 * Action: Refresh the descendants of the current node
 	 */
 	protected class RefreshAction extends TreeNodeAction {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public RefreshAction(JTree tree) {
 			super(ACTIONCOMMAND_REFRESH, CommonLocaleDelegate.getMessage("ExplorerNode.1","Aktualisieren"), tree);
@@ -578,10 +563,6 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 * Action: Expand all Subnodes
 	 */
 	protected class ExpandAction extends TreeNodeAction {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public ExpandAction(JTree tree) {
 			super(ACTIONCOMMAND_EXPAND, CommonLocaleDelegate.getMessage("ExplorerNode.5","Unterelemente aufklappen"), tree);
@@ -607,10 +588,6 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 * Action: Collapse all Subnodes
 	 */
 	protected class CollapseAction extends TreeNodeAction {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
 
 		public CollapseAction(JTree tree) {
 			super(ACTIONCOMMAND_COLLAPSE, CommonLocaleDelegate.getMessage("ExplorerNode.6","Unterelemente zuklappen"), tree);
@@ -732,7 +709,6 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 */
 	protected class ShowDetailsAction extends TreeNodeAction {
 
-		private static final long serialVersionUID = 1L;
 		private final boolean newTab;
 
 		protected ShowDetailsAction(String command, String labelResourceId, JTree tree, boolean newTab) {
@@ -768,8 +744,6 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 * Action: Show subnodes in lists
 	 */
 	protected class ShowListAction extends TreeNodeAction {
-
-		private static final long serialVersionUID = 1L;
 
 		public ShowListAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_IN_LIST, CommonLocaleDelegate.getMessage("ExplorerNode.ShowList", "Unterelemente in Liste anzeigen"), tree);

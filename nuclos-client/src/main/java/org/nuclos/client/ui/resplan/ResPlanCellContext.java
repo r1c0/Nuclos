@@ -27,19 +27,13 @@ import org.jdesktop.swingx.renderer.CellContext;
 
 public class ResPlanCellContext extends CellContext {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	protected transient boolean mouseOver;
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public JResPlanComponent getComponent() {
 		return (JResPlanComponent) super.getComponent();
 	}
 
-	@SuppressWarnings("rawtypes")
 	public void installContext(JResPlanComponent component, Object value, int row, int column, boolean selected, boolean focused, boolean expanded, boolean leaf) {
 		this.component = component;
 		this.mouseOver = false;

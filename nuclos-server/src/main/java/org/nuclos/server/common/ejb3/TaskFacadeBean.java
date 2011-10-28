@@ -25,9 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
@@ -79,12 +76,11 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Stateless
-@Local(TaskFacadeLocal.class)
-@Remote(TaskFacadeRemote.class)
+// @Stateless
+// @Local(TaskFacadeLocal.class)
+// @Remote(TaskFacadeRemote.class)
 @Transactional
 @RolesAllowed("Login")
-
 public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote, TaskFacadeLocal {
 
 

@@ -18,8 +18,6 @@ package org.nuclos.server.genericobject.ejb3;
 
 import java.util.Set;
 
-import javax.ejb.Local;
-
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -27,26 +25,26 @@ import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
-@Local
+// @Local
 public interface GenericObjectGroupFacadeLocal {
 
 	/**
 	 * @param iGenericObjectId
 	 * @return the ids of the object group, the genericobject is assigned to
 	 */
-	public abstract Set<Integer> getObjectGroupId(Integer iGenericObjectId);
+	Set<Integer> getObjectGroupId(Integer iGenericObjectId);
 
 	/**
 	 * @param iGenericObjectId
 	 * @return the group name
 	 */
-	public abstract String getObjectGroupName(Integer iGenericObjectId);
+	String getObjectGroupName(Integer iGenericObjectId);
 
 	/**
 	 * @param iGroupId
 	 * @return the ids of the genericobjects, which are assigned to the given objectgroup
 	 */
-	public abstract Set<Integer> getGenericObjectIdsForGroup(Integer iModuleId,
+	Set<Integer> getGenericObjectIdsForGroup(Integer iModuleId,
 		Integer iGroupId);
 
 	/**
@@ -68,7 +66,7 @@ public interface GenericObjectGroupFacadeLocal {
 	 * @throws CommonFinderException
 	 * @throws NuclosBusinessRuleException
 	 */
-	public abstract void removeFromGroup(int iGenericObjectId, int iGroupId)
+	void removeFromGroup(int iGenericObjectId, int iGroupId)
 		throws NuclosBusinessRuleException, CommonFinderException,
 		CommonRemoveException, CommonStaleVersionException,
 		CommonPermissionException, CommonCreateException;
@@ -86,7 +84,7 @@ public interface GenericObjectGroupFacadeLocal {
 	 * @throws CommonCreateException
 	 * @throws NuclosBusinessRuleException
 	 */
-	public abstract void addToGroup(int iGenericObjectId, int iGroupId)
+	void addToGroup(int iGenericObjectId, int iGroupId)
 		throws NuclosBusinessRuleException, CommonCreateException,
 		CommonPermissionException;
 

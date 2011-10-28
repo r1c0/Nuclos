@@ -19,19 +19,11 @@ package org.nuclos.client.attribute;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.ejb.CreateException;
-
-import org.apache.commons.lang.NullArgumentException;
-
-import org.nuclos.common2.ServiceLocator;
-import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonCreateException;
-import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common2.ServiceLocator;
+import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.attribute.ejb3.AttributeFacadeRemote;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
-import org.nuclos.server.common.NuclosUpdateException;
-import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 
 /**
  * Business Delegate for <code>AttributeFacadeBean</code>.
@@ -42,7 +34,6 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@SuppressWarnings("deprecation")
 public class AttributeDelegate {
 	private static AttributeDelegate singleton;
 
@@ -81,7 +72,8 @@ public class AttributeDelegate {
 		}
 	}	// getAttributes
 
-	public AttributeCVO update(AttributeCVO attrcvo, DependantMasterDataMap mpmdvoDependants) throws CommonBusinessException, CreateException{
+	/*
+	public AttributeCVO update(AttributeCVO attrcvo, DependantMasterDataMap mpmdvoDependants) throws CommonBusinessException {
 		if (attrcvo == null) {
 			throw new NullArgumentException("attrcvo");
 		}
@@ -98,13 +90,13 @@ public class AttributeDelegate {
 		}
 
 	}
+	 */
 
 	/**
 	 * @param attrcvo
 	 * @return
 	 * @throws CommonBusinessException
 	 * @postcondition result != null
-	 */
 	public AttributeCVO create(AttributeCVO attrcvo, DependantMasterDataMap mpmdvoDependants) throws CommonBusinessException {
 		try {
 			return this.facade.create(attrcvo, mpmdvoDependants);
@@ -122,6 +114,7 @@ public class AttributeDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
+	 */
 
 	/**
 	 * invalidates the attribute cache (console function)

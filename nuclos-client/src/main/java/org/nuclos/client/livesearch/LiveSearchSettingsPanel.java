@@ -55,8 +55,7 @@ import org.nuclos.common2.exception.PreferencesException;
 
 public class LiveSearchSettingsPanel extends JPanel {
 
-	private static final long serialVersionUID = 1L;
-	private DefaultSelectObjectsPanel selPanel;
+	private DefaultSelectObjectsPanel<?> selPanel;
 
 	public LiveSearchSettingsPanel() {
 		super(new BorderLayout());
@@ -76,7 +75,7 @@ public class LiveSearchSettingsPanel extends JPanel {
 		label.setBorder(new EmptyBorder(20, 20, 20, 20));
 		add(label, BorderLayout.NORTH);
 
-		selPanel = new DefaultSelectObjectsPanel();
+		selPanel = new DefaultSelectObjectsPanel<Object>();
 		selPanel.btnUp.setVisible(true);
 		selPanel.btnDown.setVisible(true);
 		add(selPanel, BorderLayout.CENTER);
@@ -151,7 +150,6 @@ public class LiveSearchSettingsPanel extends JPanel {
 	};
 
 	private ActionListener left = new ActionListener() {
-		@SuppressWarnings("unchecked")
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			JList list = selPanel.getJListSelectedObjects();
@@ -160,7 +158,6 @@ public class LiveSearchSettingsPanel extends JPanel {
 	};
 
 	private ActionListener right = new ActionListener() {
-		@SuppressWarnings("unchecked")
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			JList list = selPanel.getJListAvailableObjects();
@@ -178,7 +175,6 @@ public class LiveSearchSettingsPanel extends JPanel {
 
 	private void moveUpDown(int offset) {
 		JList list = selPanel.getJListSelectedObjects();
-		@SuppressWarnings("unchecked")
 		CommonDefaultListModel<String> model = (CommonDefaultListModel<String>) list.getModel();
 		int start = offset < 0 ? 0 : model.getSize() - 1;
 		int end = offset < 0 ? model.getSize() : -1;

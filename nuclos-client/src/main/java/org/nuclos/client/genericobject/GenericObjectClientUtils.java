@@ -32,7 +32,6 @@ import org.nuclos.client.common.CollectableEntityFieldPreferencesUtil;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
-import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.genericobject.access.CgoWithDependantsSecurityAgentImpl;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.collect.CollectController;

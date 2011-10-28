@@ -32,7 +32,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRootPane;
 
 import org.apache.log4j.Logger;
-
 import org.nuclos.client.gef.layout.Extents2D;
 import org.nuclos.client.gef.shapes.AbstractConnector;
 import org.nuclos.client.gef.shapes.AbstractShape;
@@ -50,6 +49,9 @@ import org.nuclos.client.ui.Errors;
  * @version 01.00.00
  */
 public class AbstractController implements MouseListener, MouseMotionListener, KeyListener {
+	
+	private static final Logger LOG = Logger.getLogger(AbstractController.class);
+
 	/**
 	 * (Value for iDragMode) Indicates that no drag action is active
 	 */
@@ -259,10 +261,10 @@ public class AbstractController implements MouseListener, MouseMotionListener, K
 					ConnectionPoint cp = new ConnectionPoint((Shape) shape, iWhich);
 					if (iWhich < 0) {
 						try {
-							Logger.getLogger(this.getClass()).error("Startpunkt ist f\u00e4lschlicherweise < 0 (" + iWhich + ", connectShape())");
+							LOG.error("Startpunkt ist f\u00e4lschlicherweise < 0 (" + iWhich + ", connectShape())");
 						}
 						catch (Exception e) {
-							e.printStackTrace();
+							LOG.warn("connectShape failed: " + e, e);
 						}
 						iWhich = 0;
 					}
@@ -278,10 +280,10 @@ public class AbstractController implements MouseListener, MouseMotionListener, K
 					ConnectionPoint cp = new ConnectionPoint((Shape) shape, iWhich);
 					if (iWhich < 0) {
 						try {
-							Logger.getLogger(this.getClass()).error("Endpunkt ist f\u00e4lschlicherweise < 0 (" + iWhich + ", connectShape())");
+							LOG.error("Endpunkt ist f\u00e4lschlicherweise < 0 (" + iWhich + ", connectShape())");
 						}
 						catch (Exception e) {
-							e.printStackTrace();
+							LOG.warn("connectShape failed: " + e, e);
 						}
 						iWhich = 0;
 					}
@@ -938,10 +940,10 @@ public class AbstractController implements MouseListener, MouseMotionListener, K
 				shape.afterCreate();
 			}
 			catch (InstantiationException ex) {
-				System.out.println(ex);
+				LOG.error("mousePressedInsertShape failed: " + ex, ex);
 			}
 			catch (IllegalAccessException ex) {
-				System.out.println(ex);
+				LOG.error("mousePressedInsertShape failed: " + ex, ex);
 			}
 
 			shape.setView(viewer);

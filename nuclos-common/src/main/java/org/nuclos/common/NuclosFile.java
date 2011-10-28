@@ -18,14 +18,14 @@ package org.nuclos.common;
 
 import java.io.Serializable;
 
-public class NuclosFile implements Serializable{
+/**
+ * TODO: There is also org.nuclos.common2.File.
+ * Perhaps there should be only one. (tp)
+ */
+public class NuclosFile implements Serializable {
 		
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	String fileName;
-	byte[] fileContents;
+	private String fileName;
+	private byte[] fileContents;
 	
 	public NuclosFile(String fileName, byte[] fileContents) {
 		super();

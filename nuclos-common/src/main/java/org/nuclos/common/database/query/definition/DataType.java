@@ -19,6 +19,8 @@ package org.nuclos.common.database.query.definition;
 import java.io.Serializable;
 import java.sql.Types;
 
+import org.apache.log4j.Logger;
+
 public enum DataType implements Serializable {
 	
 	VARCHAR(Types.VARCHAR, "VARCHAR", "VARCHAR2"),
@@ -32,6 +34,8 @@ public enum DataType implements Serializable {
 	DATE(Types.TIMESTAMP, "DATE"),
 	TIMESTAMP(Types.TIMESTAMP, "TIMESTAMP", "DATETIME"),
 	;
+	
+	private static final Logger LOG = Logger.getLogger(DataType.class);
 	
 	public static DataType findByName(String name) {
 		return findByName(name, false);
@@ -60,7 +64,8 @@ public enum DataType implements Serializable {
 	}
 	
 	public void show() {
-		System.out.println("DataType: " + name);
+		if (LOG.isDebugEnabled())
+			LOG.debug("DataType: " + name);
 	}
 
 	public String getTypeName() {

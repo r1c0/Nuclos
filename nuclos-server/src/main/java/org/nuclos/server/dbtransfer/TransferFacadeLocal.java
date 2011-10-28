@@ -16,11 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dbtransfer;
 
-import javax.ejb.Local;
-
 import org.nuclos.common2.exception.CommonValidationException;
 
-@Local
+// @Local
 public interface TransferFacadeLocal {
 
 	public boolean isFrozenEntity(String entityName);
@@ -30,5 +28,5 @@ public interface TransferFacadeLocal {
 	 * @param nucletId
 	 * @throws CommonValidationException 
 	 */
-	public void checkCircularReference(Long nucletId) throws CommonValidationException;
+	void checkCircularReference(Long nucletId) throws CommonValidationException;
 }

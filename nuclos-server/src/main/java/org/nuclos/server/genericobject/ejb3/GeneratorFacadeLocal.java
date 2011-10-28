@@ -19,7 +19,6 @@ package org.nuclos.server.genericobject.ejb3;
 import java.util.Collection;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.Local;
 
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -33,7 +32,7 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
 
-@Local
+// @Local
 public interface GeneratorFacadeLocal {
 
 	/**
@@ -44,7 +43,7 @@ public interface GeneratorFacadeLocal {
 	 * @return id of generated generic object (if exactly one object was generated)
 	 */
 	@RolesAllowed("Login")
-	public abstract Long generateGenericObject(
+	Long generateGenericObject(
 			Long iSourceObjectId, String sGenerator)
 		throws CommonFinderException, CommonPermissionException,
 		NuclosBusinessRuleException, CommonStaleVersionException,
@@ -58,7 +57,7 @@ public interface GeneratorFacadeLocal {
 	 * @return id of generated generic object (if exactly one object was generated)
 	 */
 	@RolesAllowed("Login")
-	public abstract Long generateGenericObject(
+	Long generateGenericObject(
 		RuleObjectContainerCVO loccvoSource, String sGenerator)
 		throws CommonFinderException, CommonPermissionException,
 		NuclosBusinessRuleException, CommonStaleVersionException,
@@ -76,7 +75,7 @@ public interface GeneratorFacadeLocal {
 	 * @param asAttributes Array of attribute names to specify transferred data
 	 * @precondition asAttributes != null
 	 */
-	public abstract void transferGenericObjectData(GenericObjectVO govoSource,
+	void transferGenericObjectData(GenericObjectVO govoSource,
 		Integer iTargetGenericObjectId, String[][] asAttributes);
 
 	/**
@@ -85,10 +84,10 @@ public interface GeneratorFacadeLocal {
 	 * @return Collection<GeneratorUsageVO>
 	 * @throws CommonFatalException
 	 */
-	public abstract Collection<GeneratorUsageVO> getGeneratorUsages(Integer id)
+	Collection<GeneratorUsageVO> getGeneratorUsages(Integer id)
 		throws CommonFatalException;
 
-	public EntityObjectVO generateGenericObjectWithoutCheckingPermission(Long iSourceObjectId, GeneratorActionVO generatoractionvo)
+	EntityObjectVO generateGenericObjectWithoutCheckingPermission(Long iSourceObjectId, GeneratorActionVO generatoractionvo)
 		throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException,
 		CommonStaleVersionException, CommonValidationException ;
 }
