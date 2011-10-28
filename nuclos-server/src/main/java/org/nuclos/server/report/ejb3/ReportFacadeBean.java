@@ -66,6 +66,7 @@ import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
+import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
@@ -98,6 +99,7 @@ import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.masterdata.MasterDataWrapper;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.report.ByteArrayCarrier;
@@ -780,6 +782,15 @@ public Collection<Integer> getReadableReportIdsForCurrentUser() {
    private void setDefaultsParameters(Map<String, Object> parameters, ReportOutputVO output) {
 	   parameters.put(JRParameter.REPORT_FILE_RESOLVER, new JRFileResolver());
 	   parameters.put(JRParameter.REPORT_LOCALE, getLocale(output.getLocale(), CommonLocaleDelegate.getLocale()));
-	   parameters.put("NUCLOS_USERNAME", getCurrentUserName());
+	   parameters.put("NUCLOS_USER_NAME", getCurrentUserName());
+	   final MasterDataFacadeLocal mdfacadehome = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+	   final CollectableComparison cond = SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.USER), "name", ComparisonOperator.EQUAL, getCurrentUserName());
+	   final Collection<MasterDataVO> collmdvo = mdfacadehome.getMasterData(NuclosEntity.USER.getEntityName(), cond, false);
+	   if (collmdvo.size() == 1) {
+		   MasterDataVO user = collmdvo.iterator().next();
+		   parameters.put("NUCLOS_USER_EMAIL", user.getField("email"));
+		   parameters.put("NUCLOS_USER_FIRSTNAME", user.getField("firstname"));
+		   parameters.put("NUCLOS_USER_LASTNAME", user.getField("lastname"));
+	   }
    }
 }
