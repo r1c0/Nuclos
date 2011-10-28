@@ -54,6 +54,7 @@ public class Attribute {
 	boolean blnValueListNew;
 	boolean indexed;
 	Object mandatoryValue;
+	boolean onDeleteCascade;
 
 	String labelRes;
 	String descriptionRes;
@@ -292,6 +293,7 @@ public class Attribute {
 		attr.setInputValidation(this.sInputValidation);
 		attr.setIndexed(this.isIndexed());
 		attr.setMandatoryValue(this.getMandatoryValue());
+		attr.setOnDeleteCascade(this.isOnDeleteCascade());
 
 		return attr;
 	}
@@ -432,6 +434,14 @@ public class Attribute {
 
 	public void setReadonly(boolean readonly) {
 		this.readonly = readonly;
+	}
+
+	public boolean isOnDeleteCascade() {
+		return onDeleteCascade;
+	}
+
+	public void setOnDeleteCascade(boolean onDeleteCascade) {
+		this.onDeleteCascade = onDeleteCascade;
 	}
 
 	@Override

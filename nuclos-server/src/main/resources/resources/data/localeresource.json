@@ -62132,5 +62132,35 @@
     "resourceID": "DetailsSubFormController.resetselected",
     "locale": "de",
     "text": "Selektierte Zeilen zurücksetzen"
+  },
+  {
+    "resourceID": "wizard.step.attributerelationship.deletecascade.label",
+    "locale": "i-default",
+    "text": "Cascade on delete"
+  },
+  {
+    "resourceID": "wizard.step.attributerelationship.deletecascade.label",
+    "locale": "en",
+    "text": "Cascade on delete"
+  },
+  {
+    "resourceID": "wizard.step.attributerelationship.deletecascade.label",
+    "locale": "de",
+    "text": "Kaskadierend löschen"
+  },
+  {
+    "resourceID": "wizard.step.attributerelationship.deletecascade.description",
+    "locale": "i-default",
+    "text": "Delete all referencing objects in this entity if the referenced object is deleted."
+  },
+  {
+    "resourceID": "wizard.step.attributerelationship.deletecascade.description",
+    "locale": "en",
+    "text": "Delete all referencing objects in this entity if the referenced object is deleted."
+  },
+  {
+    "resourceID": "wizard.step.attributerelationship.deletecascade.description",
+    "locale": "de",
+    "text": "Referenzierende Datensätze dieser Entität löschen, wenn der referenzierte Datensatz gelöscht wird. "
   }
 ]

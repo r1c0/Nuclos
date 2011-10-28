@@ -270,6 +270,8 @@ public class ProcessorFactorySingleton {
 
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STR_DEFAULT_MANDATORY", "defaultMandatory", DT_STRING));
 
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "BLNONDELETECASCADE", "onDeleteCascade", DT_BOOLEAN));
+
 		return new EntityFieldMetaDataProcessor(allColumns, entityIdColumn, idColumn);
 	}
 

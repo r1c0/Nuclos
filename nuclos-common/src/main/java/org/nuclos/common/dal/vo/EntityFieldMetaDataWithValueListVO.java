@@ -32,14 +32,14 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @version 01.00.00
  */
 public class EntityFieldMetaDataWithValueListVO extends EntityFieldMetaDataVO {
-	
+
 	private Set<MasterDataVO> setValueList;
-	
+
 	public EntityFieldMetaDataWithValueListVO() {
 		super();
 		setValueList = new HashSet<MasterDataVO>();
 	}
-	
+
 	public EntityFieldMetaDataWithValueListVO(EntityFieldMetaDataVO vo) {
 		this();
 		this.setCalcFunction(vo.getCalcFunction());
@@ -75,6 +75,7 @@ public class EntityFieldMetaDataWithValueListVO extends EntityFieldMetaDataVO {
 		this.setIndexed(vo.isIndexed());
 		this.setVersion(vo.getVersion());
 		this.setFallbacklabel(vo.getFallbacklabel());
+		this.setOnDeleteCascade(vo.isOnDeleteCascade());
 		this.processor(vo.processor());
 		setValueList = new HashSet<MasterDataVO>();
 	}
@@ -86,6 +87,6 @@ public class EntityFieldMetaDataWithValueListVO extends EntityFieldMetaDataVO {
 	public void setValueList(Set<MasterDataVO> setValueList) {
 		this.setValueList = setValueList;
 	}
-	
-	
+
+
 }

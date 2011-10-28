@@ -7238,6 +7238,12 @@
         "datatype": "java.lang.String",
         "datascale": 4000,
         "nullable": true
+      },
+      {
+        "name": "ondeletecascade",
+        "dbfield": "BLNONDELETECASCADE",
+        "datatype": "java.lang.Boolean",
+        "nullable": true
       }
     ]
   },

@@ -83,6 +83,8 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements C
 
 	private String defaultMandatory;
 
+	private boolean onDeleteCascade;
+
 	public EntityFieldMetaDataVO() {
 		super();
 	}
@@ -124,8 +126,9 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements C
 		setLocaleResourceIdForLabel(eo.getField("localeresourcel", String.class));
 		setLocaleResourceIdForDescription(eo.getField("localeresourced", String.class));
 		setDefaultMandatory(eo.getField("defaultmandatory", String.class));
+		setOnDeleteCascade(eo.getField("ondeletecascade", Boolean.class));
 	}
-	
+
 	public Object clone() {
 		EntityFieldMetaDataVO clone;
 		try {
@@ -426,6 +429,14 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements C
 		this.defaultMandatory = defaultMandatory;
 	}
 
+	public boolean isOnDeleteCascade() {
+		return onDeleteCascade;
+	}
+
+	public void setOnDeleteCascade(Boolean onDeleteCascade) {
+		this.onDeleteCascade = LangUtils.defaultIfNull(onDeleteCascade, Boolean.FALSE);
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
@@ -450,7 +461,7 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements C
 		}
 	    return result;
     }
-	
+
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder();

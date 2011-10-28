@@ -147,11 +147,8 @@ public class EntityObjectMetaDbHelper {
 
 				String dbForeignTableName = generateDbName(getTableName(foreignEntity));
 
-				boolean onDeleteCascade = false;
-				// - System entities support on delete cascade constraints
-				if (fieldMeta instanceof SystemEntityFieldMetaDataVO) {
-					onDeleteCascade = ((SystemEntityFieldMetaDataVO) fieldMeta).isOnDeleteCascade();
-				}
+				boolean onDeleteCascade = fieldMeta.isOnDeleteCascade();
+
 				// TODO: was XR_<ID> but this does not work consistently for system entities => ...
 				DbForeignKeyConstraint fkConstraint = new DbForeignKeyConstraint(dbTableName,
 					generateDbName("XR_" + tableName, dbColumnName),

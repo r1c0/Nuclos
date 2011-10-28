@@ -648,6 +648,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
         	else {
         		attr.setMetaVO(voForeignEntity);
 
+        		attr.setOnDeleteCascade(fieldVO.isOnDeleteCascade());
         		attr.setField(fieldVO.getForeignEntityField());
         		attr.setDatatyp(DataTyp.getReferenzTyp());
         		if(!Modules.getInstance().isModuleEntity(sForeignEntity) && fieldVO.getForeignEntityField() != null) {

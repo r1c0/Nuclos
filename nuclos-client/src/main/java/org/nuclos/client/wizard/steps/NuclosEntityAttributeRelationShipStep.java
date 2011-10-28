@@ -96,6 +96,9 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 	JLabel lbValueListProvider;
 	JCheckBox cbValueListProvider;
 
+	JLabel lbOnDeleteCascade;
+	JCheckBox cbOnDeleteCascade;
+
 	List<Attribute> lstAttributes;
 
 	NuclosEntityWizardStaticModel parentWizardModel;
@@ -121,7 +124,7 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 
 	@Override
 	protected void initComponents() {
-		double size [][] = {{TableLayout.PREFERRED,40, TableLayout.FILL}, {20,20,20,100,20,TableLayout.PREFERRED, TableLayout.FILL}};
+		double size [][] = {{TableLayout.PREFERRED,40, TableLayout.FILL}, {20,20,20,20,100,20,TableLayout.PREFERRED, TableLayout.FILL}};
 
 		TableLayout layout = new TableLayout(size);
 		layout.setVGap(3);
@@ -139,6 +142,10 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 		tfAlternativeLabel.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.3", "Fremdschl\u00fcsselaufbau"));
 		tfAlternativeLabel.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 
+		lbOnDeleteCascade = new JLabel(getMessage("wizard.step.attributerelationship.deletecascade.label", "Cascade on delete"));
+		cbOnDeleteCascade = new JCheckBox();
+		cbOnDeleteCascade.setToolTipText(getMessage("wizard.step.attributerelationship.deletecascade.description", "Delete all referencing objects in this entity if the referenced object is deleted."));
+
 		lbValueListProvider = new JLabel(getMessage("wizard.step.attributerelationship.4", "Suchfeld"));
 		cbValueListProvider = new JCheckBox();
 		cbValueListProvider.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.4", "Suchfeld"));
@@ -154,17 +161,20 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 		this.add(lbEntity, "0,0, 1,0");
 		this.add(cbxEntity, "2,0");
 
-		this.add(lbValueListProvider, "0,1, 1,1");
-		this.add(cbValueListProvider, "2,1");
+		this.add(lbOnDeleteCascade, "0,1, 1,1");
+		this.add(cbOnDeleteCascade, "2,1");
+
+		this.add(lbValueListProvider, "0,2, 1,2");
+		this.add(cbValueListProvider, "2,2");
 
 
-		this.add(scrollPane, "0,2, 0,6");
+		this.add(scrollPane, "0,3, 0,7");
 
-		this.add(btSelect, "1,2");
+		this.add(btSelect, "1,3");
 
 
-		this.add(tfAlternativeLabel, "2,2");
-		this.add(lbInfo, "0,5, 2,5");
+		this.add(tfAlternativeLabel, "2,3");
+		this.add(lbInfo, "0,6, 2,6");
 
 		cbxEntity.addItemListener(new ItemListener() {
 
@@ -238,6 +248,15 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 
 		});
 
+		cbOnDeleteCascade.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				JCheckBox cb = (JCheckBox)e.getItem();
+				NuclosEntityAttributeRelationShipStep.this.model.getAttribute().setOnDeleteCascade(cb.isSelected());
+			}
+		});
+
 		cbValueListProvider.addItemListener(new ItemListener() {
 
 			@Override
@@ -287,6 +306,7 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 				String sField = new String(model.getAttribute().getField());
 				cbxEntity.setSelectedItem(this.model.getAttribute().getMetaVO());
 				tfAlternativeLabel.setText(sField);
+				cbOnDeleteCascade.setSelected(this.model.getAttribute().isOnDeleteCascade());
 				cbValueListProvider.setSelected(this.model.getAttribute().isValueListProvider());
 			}
 			else {

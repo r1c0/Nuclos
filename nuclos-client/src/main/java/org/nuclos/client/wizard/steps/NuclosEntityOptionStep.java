@@ -442,7 +442,7 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 								String sForeignEntity = field.getForeignEntity();
 								if(sForeignEntity != null) {
 									attr.setMetaVO(MetaDataClientProvider.getInstance().getEntity(sForeignEntity));
-
+									attr.setOnDeleteCascade(field.isOnDeleteCascade());
 									attr.setField(field.getForeignEntityField());
 									attr.setDatatyp(DataTyp.getReferenzTyp());
 									if(!Modules.getInstance().isModuleEntity(sForeignEntity) && field.getForeignEntityField() != null) {

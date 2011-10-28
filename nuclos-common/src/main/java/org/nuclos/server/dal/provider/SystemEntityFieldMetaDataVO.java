@@ -61,12 +61,8 @@ public class SystemEntityFieldMetaDataVO extends EntityFieldMetaDataVO {
 		this.setChangedAt(InternalTimestamp.toInternalTimestamp(mdFieldMeta.getChangedAt()));
 		this.setChangedBy(mdFieldMeta.getCreatedBy());
 		this.setVersion(mdFieldMeta.getVersion());
-	}
-
-	public boolean isOnDeleteCascade() {
 		if (mdFieldMeta instanceof SystemMasterDataMetaFieldVO) {
-			return ((SystemMasterDataMetaFieldVO) mdFieldMeta).isOnDeleteCascade();
+			this.setOnDeleteCascade(((SystemMasterDataMetaFieldVO) mdFieldMeta).isOnDeleteCascade());
 		}
-		return false;
 	}
 }
