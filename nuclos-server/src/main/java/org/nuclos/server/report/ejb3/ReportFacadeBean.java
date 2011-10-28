@@ -500,8 +500,7 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
                JRDefaultNuclosDataSource ds = new JRDefaultNuclosDataSource(facade.get(reportoutput.getDatasourceId()).getName(), mpParams, conn);
 
                mpParams2.put(JRParameter.REPORT_DATA_SOURCE, ds);
-               mpParams2.put(JRParameter.REPORT_FILE_RESOLVER, new JRFileResolver());
-               mpParams2.put(JRParameter.REPORT_LOCALE, getLocale(reportoutput.getLocale(), CommonLocaleDelegate.getLocale()));
+               setDefaultsParameters(mpParams2, reportoutput);
 
                try {
                   jprint = JasperFillManager.fillReport(jr, mpParams2, ds);
@@ -594,7 +593,7 @@ public JasperPrint prepareEmptyReport(Integer iReportOutputId) throws CommonFind
          final Map<String, Object> params = new HashMap<String, Object>();
 
          params.put("REPORT_DATA_SOURCE", jrdatasource);
-         params.put("REPORT_FILE_RESOLVER", new JRFileResolver());
+         setDefaultsParameters(params, reportoutput);
 
          for (SubreportVO subreport : getSubreports(iReportOutputId)) {
             String parametername = subreport.getParameter();
@@ -776,5 +775,11 @@ public Collection<Integer> getReadableReportIdsForCurrentUser() {
 	      }
    	}
    	return sb.toString();
+   }
+
+   private void setDefaultsParameters(Map<String, Object> parameters, ReportOutputVO output) {
+	   parameters.put(JRParameter.REPORT_FILE_RESOLVER, new JRFileResolver());
+	   parameters.put(JRParameter.REPORT_LOCALE, getLocale(output.getLocale(), CommonLocaleDelegate.getLocale()));
+	   parameters.put("NUCLOS_USERNAME", getCurrentUserName());
    }
 }
