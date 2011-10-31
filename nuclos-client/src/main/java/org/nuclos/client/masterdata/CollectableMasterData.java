@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.AbstractCollectable;
+import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityProvider;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldFormat;
@@ -50,14 +51,14 @@ public class CollectableMasterData extends AbstractCollectable implements Remova
 	public static final String FIELDNAME_DESCRIPTION = MasterDataVO.FIELDNAME_DESCRIPTION;
 
 	private final MasterDataVO mdvo;
-	private final CollectableMasterDataEntity clcte;
+	private final CollectableEntity clcte;
 	private final Map<String, CollectableField> mpFields = CollectionUtils.newHashMap();
 
 	// map for dependant child subform data
 	private DependantCollectableMasterDataMap depclctmd = new DependantCollectableMasterDataMap();
 	private DependantMasterDataMap depmd = new DependantMasterDataMap();
 
-	public CollectableMasterData(CollectableMasterDataEntity clcte, MasterDataVO mdvo) {
+	public CollectableMasterData(CollectableEntity clcte, MasterDataVO mdvo) {
 		this.mdvo = mdvo;
 		this.clcte = clcte;
 	}
@@ -77,7 +78,7 @@ public class CollectableMasterData extends AbstractCollectable implements Remova
 		return this.getMasterDataCVO().getId();
 	}
 
-	public CollectableMasterDataEntity getCollectableEntity() {
+	public CollectableEntity getCollectableEntity() {
 		return this.clcte;
 	}
 
@@ -168,7 +169,7 @@ public class CollectableMasterData extends AbstractCollectable implements Remova
 		result.append("]");
 		return result.toString();
 	}
-	
+
 	/**
 	 * inner class MakeCollectable: makes a <code>MasterDataVO</code> <code>Collectable</code>.
 	 */

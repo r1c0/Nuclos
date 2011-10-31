@@ -52,11 +52,11 @@ public class CollectableMasterDataWithDependants extends CollectableMasterData i
 	 * @return
 	 * @precondition govo != null
 	 */
-	public static CollectableMasterDataWithDependants newInstance(CollectableMasterDataEntity clcte, MasterDataVO mdvo) {
+	public static CollectableMasterDataWithDependants newInstance(CollectableEntity clcte, MasterDataVO mdvo) {
 		return new CollectableMasterDataWithDependants(clcte, new MasterDataWithDependantsVO(mdvo, new DependantMasterDataMap()));
 	}
 
-	public CollectableMasterDataWithDependants(CollectableMasterDataEntity clcte, MasterDataWithDependantsVO mdwdcvo) {
+	public CollectableMasterDataWithDependants(CollectableEntity clcte, MasterDataWithDependantsVO mdwdcvo) {
 		super(clcte, mdwdcvo);
 	}
 
@@ -82,7 +82,7 @@ public class CollectableMasterDataWithDependants extends CollectableMasterData i
 			Map<String, EntityFieldMetaDataVO> mpFields = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(sSubEntityName);
 			ce = new CollectableEOEntity(metaVO, mpFields);
 		}
-		final CollectableEOEntity clctmde = (CollectableEOEntity)ce; 
+		final CollectableEOEntity clctmde = (CollectableEOEntity)ce;
 		final Collection<EntityObjectVO> collmdvoDependants = this.getMasterDataWithDependantsCVO().getDependants().getData(sSubEntityName);
 		final List<CollectableEntityObject> result = CollectionUtils.transform(collmdvoDependants, new CollectableEntityObject.MakeCollectable(clctmde));
 		assert result != null;

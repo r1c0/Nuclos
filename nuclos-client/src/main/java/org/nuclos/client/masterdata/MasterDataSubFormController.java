@@ -42,9 +42,7 @@ import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.EntityCollectController;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
-import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
 import org.nuclos.client.entityobject.CollectableEntityObject;
-import org.nuclos.client.genericobject.CollectableGenericObjectEntity;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
@@ -80,9 +78,6 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.DefaultValueObjectList;
 import org.nuclos.common.collection.ValueObjectList;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common.entityobject.CollectableEOEntity;
-import org.nuclos.common.entityobject.CollectableEOEntityProvider;
-import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.LangUtils;
@@ -216,7 +211,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 				final int iRow = getSubForm().getJTable().rowAtPoint(e.getPoint());
 				if (iRow >= 0) {
 					final int iSelectedRowCount = getSubForm().getJTable().getSelectedRowCount();
-					String entityName = MasterDataSubFormController.this.getSelectedCollectable().getCollectableEOEntity().getName();
+					String entityName = MasterDataSubFormController.this.getSelectedCollectable().getCollectableEntity().getName();
 
 					try {
 						miDetails.setEnabled(iSelectedRowCount == 1
@@ -272,7 +267,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 
 			@Override
 			public void run() throws CommonBusinessException {
-				String sEntity = MasterDataSubFormController.this.getSelectedCollectable().getCollectableEOEntity().getName();
+				String sEntity = MasterDataSubFormController.this.getSelectedCollectable().getCollectableEntity().getName();
 
 				if(sEntity != null) {
 					if(MetaDataClientProvider.getInstance().getEntity(sEntity).isStateModel()) {
@@ -332,12 +327,12 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		boolean noReferenceFound = true;
 
 		// find fields for copied entity objects
-		for (final String field : clct.getCollectableEOEntity().getFieldNames()) {
-			CollectableEntityField clctef = clct.getCollectableEOEntity().getEntityField(field);
+		for (final String field : clct.getCollectableEntity().getFieldNames()) {
+			CollectableEntityField clctef = clct.getCollectableEntity().getEntityField(field);
 			if (referenceEntity.equals(clctef.getReferencedEntityName())) {
 
 				// for getting readable presentation and fire lookup use ListOfValues
-                CollectableListOfValues clctlov = new CollectableListOfValues(clct.getCollectableEOEntity().getEntityField(field));
+                CollectableListOfValues clctlov = new CollectableListOfValues(clct.getCollectableEntity().getEntityField(field));
                 try {
                 	boolean insert = false;
                 	//check provider if value exists in result
@@ -422,7 +417,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 
 					// clone selected record
 					CollectableEntityObject original = getCollectableTableModel().getCollectable(getJTable().getSelectedRow());
-					CollectableEntityObject clone = new CollectableEntityObject(original.getCollectableEOEntity(), original.getEntityObjectVO().copy());
+					CollectableEntityObject clone = new CollectableEntityObject(original.getCollectableEntity(), original.getEntityObjectVO().copy());
 
 					// check whether the selected record has some dependant data
 					boolean hasDependantData = false;
@@ -473,7 +468,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 
 			for (CollectableEntityObject clctmd : lsclctmd) {
 				if (!clctmd.isMarkedRemoved()) {
-					CollectableEntityObject clone = new CollectableEntityObject(clctmd.getCollectableEOEntity(), clctmd.getEntityObjectVO().copy());
+					CollectableEntityObject clone = new CollectableEntityObject(clctmd.getCollectableEntity(), clctmd.getEntityObjectVO().copy());
 					mdsfctl.insertNewRow(clone);
 					mdsfctl.cloneDependantData(clctmd, clone);
 				}
@@ -531,29 +526,12 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	}
 
 	/**
-	 * @deprecated This is a evil hack - use with care! (tp)
-	 */
-	private CollectableEOEntity getCollectableEOEntity() {
-		if (getCollectableEntity() instanceof CollectableGenericObjectEntity) {
-			final CollectableGenericObjectEntity cgoe = (CollectableGenericObjectEntity) getCollectableEntity();
-			final CollectableEOEntityProvider provider = CollectableEOEntityClientProvider.getInstance();
-			return (CollectableEOEntity)provider.getCollectableEntity(cgoe.getName());
-		}
-		else if (getCollectableEntity() instanceof CollectableMasterDataEntity) {
-			final CollectableMasterDataEntity cmde = (CollectableMasterDataEntity) getCollectableEntity();
-			final CollectableEOEntityProvider provider = CollectableEOEntityClientProvider.getInstance();
-			return (CollectableEOEntity)provider.getCollectableEntity(cmde.getName());
-		}
-		return (CollectableEOEntity) getCollectableEntity();
-	}
-	
-	/**
 	 * @return a new collectable adapter object containing a MasterDataVO
 	 */
 	@Override
 	public CollectableEntityObject newCollectable() {
 		// final CollectableEntity clctmde = this.getCollectableEntity();
-		final CollectableEOEntity clctmde = getCollectableEOEntity();
+		final CollectableEntity clctmde = getCollectableEntity();
 		return new CollectableEntityObject(clctmde, EntityObjectVO.newObject(clctmde.getName()));
 	}
 
@@ -594,7 +572,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 				}
 				final List<CollectableEntityObject> lst = CollectionUtils.transform(
 					collmdvo,
-					new CollectableEntityObject.MakeCollectable(MasterDataSubFormController.this.getCollectableEntityAsEO()));
+					new CollectableEntityObject.MakeCollectable(getCollectableEntity()));
 				MasterDataSubFormController.this.updateTableModel(lst);
 				// Trigger the 'size' display...
 				if (listener != null) {
@@ -714,7 +692,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 					new ArrayList<EntityObjectVO>() :
 						MasterDataDelegate.getInstance().getDependantMasterData(this.getCollectableEntity().getName(), this.getForeignKeyFieldName(), clct.getId());
 
-					lstclctmd = CollectionUtils.transform(collmdvo, new CollectableEntityObject.MakeCollectable(this.getCollectableEntityAsEO()));
+					lstclctmd = CollectionUtils.transform(collmdvo, new CollectableEntityObject.MakeCollectable(this.getCollectableEntity()));
 					clct.getDependantCollectableMasterDataMap().addValues(this.getEntityAndForeignKeyFieldName().getEntityName(), lstclctmd);
 		}
 		return lstclctmd;

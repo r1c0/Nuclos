@@ -73,8 +73,6 @@ import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collection.ComparatorUtils;
-import org.nuclos.common.entityobject.CollectableEOEntity;
-import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.PreferencesUtils;
@@ -214,24 +212,6 @@ public abstract class SubFormController extends Controller
 	 */
 	public final CollectableEntity getCollectableEntity() {
 		return clcte;
-	}
-	
-	/**
-	 * @deprecated This is a evil hack - use with care! (tp)
-	 */
-	public CollectableEOEntity getCollectableEntityAsEO() {
-		final CollectableEOEntity result;
-		if (clcte instanceof CollectableEOEntity) {
-			result = (CollectableEOEntity) clcte;
-		}
-		else if (clcte instanceof CollectableMasterDataEntity) {
-			result = Utils.transformCollectableMasterDataEntityTOCollectableEOEntity((CollectableMasterDataEntity) clcte);
-		}
-		else {
-			throw new IllegalStateException("getCollectableEntityAsEO: CollectableEntity " + clcte + " of " 
-					+ clcte.getClass().getName() + ": unexpected type");
-		}
-		return result;
 	}
 
 	/**
