@@ -279,8 +279,13 @@ public class GenerationController {
 		final Collection<Pair<Collection<EntityObjectVO>, Long>> sourceWithParameters = new ArrayList<Pair<Collection<EntityObjectVO>,Long>>();
 
 		for (Collection<EntityObjectVO> sourceGroup : sources) {
-			for (Long parameterObjectId : parameterObjectIds) {
-				sourceWithParameters.add(new Pair<Collection<EntityObjectVO>, Long>(sourceGroup, parameterObjectId));
+			if (parameterObjectIds != null && parameterObjectIds.size() > 0) {
+				for (Long parameterObjectId : parameterObjectIds) {
+					sourceWithParameters.add(new Pair<Collection<EntityObjectVO>, Long>(sourceGroup, parameterObjectId));
+				}
+			}
+			else {
+				sourceWithParameters.add(new Pair<Collection<EntityObjectVO>, Long>(sourceGroup, null));
 			}
 		}
 
