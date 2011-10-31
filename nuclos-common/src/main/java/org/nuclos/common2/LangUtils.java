@@ -76,13 +76,13 @@ public class LangUtils {
 	 * @param o1 may be <code>null</code>
 	 * @param o2 may be <code>null</code>
 	 */
-	public static <T extends Comparable<T>> int compare(Object o1, Object o2) {
+	public static int compare(Object o1, Object o2) {
 		if (o1 == o2) {
 			// performance shortcut, esp. for o1 == o2 == null.
 			return 0;
 		}
 		else if (o1 instanceof Comparable) {
-			return compareComparables((T) o1, (T) o2);
+			return compareComparables((Comparable) o1, (Comparable) o2);
 		}
 		else {
 			return compareBasedOnToString(o1, o2);
