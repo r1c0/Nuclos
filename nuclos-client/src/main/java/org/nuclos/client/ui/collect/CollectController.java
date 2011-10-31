@@ -402,7 +402,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * action: Bookmark
 	 */
 	private final Action actCopyCells = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen"), Icons.getInstance().getIconCopy16(), CommonLocaleDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen")) {
-		
+
 		@Override
         public void actionPerformed(ActionEvent ev) {
 			UIUtils.copyCells(getResultTable());
@@ -1420,19 +1420,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			miPopupApplySelection.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					Collectable first = null;
-					List<Collectable> additionalCollectables = new ArrayList<Collectable>();
-					for (Collectable clct : getSelectedCollectables()) {
-						if (clct != null) {
-							if (first == null) {
-								first = clct;
-							} else {
-								additionalCollectables.add(clct);
-							}
-						}
-					}
-					if (first != null)
-						clctlovSource.acceptLookedUpCollectable(first, additionalCollectables);
+					acceptLookedUpCollectable(clctlovSource);
 					getFrame().dispose();
 				}
 			});
@@ -1459,6 +1447,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				acceptLookedUpCollectable(clctlovSource);
+				getFrame().dispose();
 			}
 		});
 
@@ -4310,10 +4299,19 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	private void acceptLookedUpCollectable(final ICollectableListOfValues clctlovSource) {
 		try {
-			final Collectable clctSelected = CollectController.this.getCompleteSelectedCollectable();
-			// TODO assert clctSelected != null ?
-			if (clctSelected != null) {
-				clctlovSource.acceptLookedUpCollectable(clctSelected);
+			Collectable first = null;
+			List<Collectable> additionalCollectables = new ArrayList<Collectable>();
+			for (Collectable clct : getSelectedCollectables()) {
+				if (clct != null) {
+					if (first == null) {
+						first = clct;
+					} else {
+						additionalCollectables.add(clct);
+					}
+				}
+			}
+			if (first != null) {
+				clctlovSource.acceptLookedUpCollectable(first, additionalCollectables);
 			}
 		}
 		catch (Exception ex) {
