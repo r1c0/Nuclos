@@ -63,7 +63,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @author marc.jackisch
  */
 public class CommonLocaleDelegate {
-	
+
 	private static final Logger LOG = Logger.getLogger(CommonLocaleDelegate.class);
 
 	public static interface LookupService {
@@ -515,7 +515,7 @@ public class CommonLocaleDelegate {
 
 		try {
 			if (text != null && text.indexOf("{") > -1) {
-				resText = getText(text.substring(0, text.indexOf("{")));
+				resText = getText(text.substring(0, text.indexOf("{")).trim());
 			}
 			else {
 				resText = getText(text);
