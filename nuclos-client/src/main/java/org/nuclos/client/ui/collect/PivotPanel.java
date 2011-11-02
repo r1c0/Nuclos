@@ -191,16 +191,17 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				final int viewIndex = pivotLines.getViewIndex(index) + 1;
 				final PivotInfo pinfo = getDefaultPivotInfo(Header.this, subform);
 				final int modelIndex = keyLabels.size();
-				addLine(Header.this, baseEntity, pinfo, modelIndex, viewIndex, fields, false, true);
-				pivotLines.map(modelIndex, viewIndex);
-				
-				// disable more lines for this subform if there are no more values
-				final int size = incSubformNames(subform);
-				if (size >= valueCombos.get(index).getModel().getSize()) {
-					subformAddOrDelete.get(index).setEnabled(false);
+				if (addLine(Header.this, baseEntity, pinfo, modelIndex, viewIndex, fields, false, true)) {
+					pivotLines.map(modelIndex, viewIndex);
+					
+					// disable more lines for this subform if there are no more values
+					final int size = incSubformNames(subform);
+					if (size >= valueCombos.get(index).getModel().getSize()) {
+						subformAddOrDelete.get(index).setEnabled(false);
+					}
+					
+					updateLayout();
 				}
-				
-				updateLayout();
 			}	
 			
 		}
@@ -333,8 +334,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				if (plist.size() == 0) {
 					// no pivot from this subform is in state
 					final PivotInfo pinfo = getDefaultPivotInfo(this, subform);
-					if (pinfo != null) {
-						addLine(this, baseEntity, pinfo, index, index, fields, true, false);
+					if (pinfo != null && addLine(this, baseEntity, pinfo, index, index, fields, true, false)) {
 						pivotLines.map(index, index);
 						incSubformNames(subform);
 						++index;
@@ -342,11 +342,12 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				}
 				boolean first = true;
 				for (PivotInfo pinfo: plist) {
-					addLine(this, baseEntity, pinfo, index, index, fields, first, true);
-					pivotLines.map(index, index);
-					incSubformNames(subform);
-					++index;
-					first = false;
+					if (addLine(this, baseEntity, pinfo, index, index, fields, first, true)) {
+						pivotLines.map(index, index);
+						incSubformNames(subform);
+						++index;
+						first = false;
+					}
 				}
 				
 				// disable add button if there are equal or more lines than value
@@ -371,13 +372,17 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			return getPivotInfo(subform, keyField, keyField);
 		}
 		
-		private static void addLine(Header me, String baseEntity, PivotInfo pinfo, int index, int viewIndex, 
+		private static boolean addLine(Header me, String baseEntity, PivotInfo pinfo, int index, int viewIndex, 
 				Map<String, EntityFieldMetaDataVO> fields, boolean first, boolean enabled) {
 			final MetaDataClientProvider mdProv = MetaDataClientProvider.getInstance();
 			final Collator collator = Collator.getInstance(CommonLocaleDelegate.getLocale());
 			final String subform = pinfo.getSubform();
 			final EntityMetaDataVO mdSubform = mdProv.getEntity(subform);
-			// final int index = me.keyLabels.size();
+
+			final EntityFieldMetaDataVO keyField = mdProv.getPivotKeyField(baseEntity, subform);
+			final JComboBox combo = mkCombo(baseEntity, subform, keyField.getField(), collator, fields);
+			// nothing to select -> no line to add
+			if (combo == null) return false;
 			
 			final GridBagConstraints c = new GridBagConstraints();
 			c.gridx = 0;
@@ -401,7 +406,6 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			cb.setEnabled(first);
 			
 			final Changer changer = me.new Changer(pinfo.getSubform(), index);
-			final EntityFieldMetaDataVO keyField = mdProv.getPivotKeyField(baseEntity, subform);
 			final JLabel l = new JLabel(CommonLocaleDelegate.getLabelFromMetaFieldDataVO(keyField));
 			l.setEnabled(enabled);
 			me.keyLabels.add(l);
@@ -427,7 +431,6 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			me.add(add, c);
 			c.fill = GridBagConstraints.BOTH;
 
-			final JComboBox combo = mkCombo(baseEntity, subform, keyField.getField(), collator, fields);
 			combo.setEnabled(enabled);
 			final EntityFieldMetaDataVO valueItem = fields.get(pinfo.getValueField()); 
 			combo.setSelectedItem(valueItem);
@@ -444,7 +447,8 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				if (first && combo.getModel().getSize() <= 1) {
 					add.setEnabled(false);
 				}
-			}			
+			}
+			return true;
 		}
 
 		private static JComboBox mkCombo(final String baseEntity, String subform, String keyField, final Collator col, Map<String, EntityFieldMetaDataVO> fields) {
@@ -470,6 +474,10 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				if (ef.getField().equals(keyField)) continue;
 				fieldList.add(ef);
 			}
+			
+			// return null if there is nothing to select...
+			if (fieldList.isEmpty()) return null;
+			
 			Collections.sort(fieldList, new Comparator<EntityFieldMetaDataVO>() {
 				@Override
 				public int compare(EntityFieldMetaDataVO o1, EntityFieldMetaDataVO o2) {
