@@ -352,7 +352,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				
 				// disable add button if there are equal or more lines than value
 				final int firstIndex = getIndexOfFirst(subform);
-				if (valueCombos.get(firstIndex).getModel().getSize() <= plist.size()) {
+				if (firstIndex >= 0 && valueCombos.get(firstIndex).getModel().getSize() <= plist.size()) {
 					subformAddOrDelete.get(firstIndex).setEnabled(false);
 				}
 			}
