@@ -333,10 +333,12 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 				if (plist.size() == 0) {
 					// no pivot from this subform is in state
 					final PivotInfo pinfo = getDefaultPivotInfo(this, subform);
-					addLine(this, baseEntity, pinfo, index, index, fields, true, false);
-					pivotLines.map(index, index);
-					incSubformNames(subform);
-					++index;
+					if (pinfo != null) {
+						addLine(this, baseEntity, pinfo, index, index, fields, true, false);
+						pivotLines.map(index, index);
+						incSubformNames(subform);
+						++index;
+					}
 				}
 				boolean first = true;
 				for (PivotInfo pinfo: plist) {
@@ -363,8 +365,9 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			}
 			// no pivot from this subform is in state
 			final MetaDataClientProvider mdProv = MetaDataClientProvider.getInstance();
-			final EntityFieldMetaDataVO field = me.subFormFields.get(subform).values().iterator().next();
+			// final EntityFieldMetaDataVO field = me.subFormFields.get(subform).values().iterator().next();
 			final EntityFieldMetaDataVO keyField = mdProv.getPivotKeyField(me.baseEntity, subform);
+			if (keyField == null) return null;
 			return getPivotInfo(subform, keyField, keyField);
 		}
 		
@@ -478,7 +481,9 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			final JComboBox result = new JComboBox(model);
 			result.setRenderer(EntityFieldMetaDataListCellRenderer.getInstance());
 			result.setVisible(true);
-			result.setSelectedIndex(0);
+			if (!fieldList.isEmpty()) {
+				result.setSelectedIndex(0);
+			}
 			result.putClientProperty(SUBFORM_KEY, subform);
 			return result;
 		}
