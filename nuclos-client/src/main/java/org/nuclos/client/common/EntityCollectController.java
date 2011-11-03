@@ -43,11 +43,14 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.AbstractDetailsSubFormController.DetailsSubFormTableModel;
@@ -94,7 +97,7 @@ import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 public abstract class EntityCollectController<Clct extends Collectable> extends NuclosCollectController<Clct> {
 
 	private static final Logger LOG = Logger.getLogger(EntityCollectController.class);
-	
+
 	private final static String loadingLabelText = CommonLocaleDelegate.getMessage("entity.collect.controller.loading.label", "Ladevorgang...");
 	private final static String notLoadingLabelText = "              ";
 	protected JLabel loadingLabel;
@@ -1121,4 +1124,49 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	protected abstract void cmdGenerateObject(GeneratorActionVO generatoractionvo);
 
 	protected abstract List<GeneratorActionVO> getGeneratorActions();
+
+	protected void setupResultContextMenuGeneration() {
+		this.getResultPanel().popupmenuRow.addPopupMenuListener(new PopupMenuListener() {
+
+			@Override
+			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+
+				try {
+					final List<GeneratorActionVO> lstActions = getGeneratorActions();
+
+					JMenu mi = getResultPanel().miGenerations;
+					mi.setVisible(lstActions.size() != 0);
+					for(final GeneratorActionVO actionVO : lstActions) {
+						JMenuItem action = new JMenuItem(new AbstractAction(actionVO.toString()) {
+
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								cmdGenerateObject(actionVO);
+							}
+
+						});
+						mi.add(action);
+					}
+				}
+				catch (Exception e1) {
+					getResultPanel().miGenerations.setVisible(false);
+					LOG.warn("popupMenuWillBecomeVisible failed: " + e1 + ", setting it invisible");
+				}
+			}
+
+			@Override
+			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+				clearGeneratorMenu();
+			}
+
+			@Override
+			public void popupMenuCanceled(PopupMenuEvent e) {
+				clearGeneratorMenu();
+			}
+
+			private void clearGeneratorMenu() {
+				 getResultPanel().miGenerations.removeAll();
+			}
+		});
+	}
 }

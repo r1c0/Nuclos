@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.explorer;
 
+import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
+
 import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
@@ -27,12 +29,15 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
@@ -44,26 +49,35 @@ import javax.swing.tree.TreePath;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.explorer.ExplorerSettings.FolderNodeAction;
 import org.nuclos.client.explorer.ExplorerSettings.ObjectNodeAction;
+import org.nuclos.client.genericobject.GenerationController;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.ui.CommonClientWorkerAdapter;
+import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.ChainedTreeNodeAction;
 import org.nuclos.client.ui.tree.TreeNodeAction;
+import org.nuclos.common.UsageCriteria;
+import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.multimap.MultiListHashMap;
 import org.nuclos.common.collection.multimap.MultiListMap;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
+import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.navigation.treenode.TreeNode;
 
 /**
@@ -89,6 +103,11 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	public static final String ACTIONCOMMAND_EXPAND = "EXPAND";
 	public static final String ACTIONCOMMAND_COLLAPSE = "COLLAPSE";
 	public static final String ACTIONCOMMAND_SHOW_IN_LIST = "SHOW_IN_LIST";
+
+	/**
+	 * action: generate genericobject
+	 */
+	private static final String ACTIONCOMMAND_GENERATE_GENERICOBJECT = "GENERATE GENERICOBJECT";
 
 	/**
 	 * Have the children of this node already been loaded?
@@ -775,4 +794,70 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 		}
 	}	// inner class CollapseAction
 
+	/**
+	 * inner class GeneratorAction. Removes the relation between this node and its parent.
+	 */
+	protected class GeneratorAction extends TreeNodeAction {
+
+		private final GeneratorActionVO generatoractionvo;
+		private final UsageCriteria usagecriteria;
+
+		public GeneratorAction(JTree tree, GeneratorActionVO generatoractionvo, UsageCriteria critera) {
+			super(ACTIONCOMMAND_GENERATE_GENERICOBJECT, generatoractionvo.getLabel() + "...", tree);
+			this.generatoractionvo = generatoractionvo;
+			this.usagecriteria = critera;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			final JTree tree = this.getJTree();
+
+			CommonClientWorkerAdapter<Collectable> searchWorker = new CommonClientWorkerAdapter<Collectable>(null) {
+				@Override
+				public void init() {
+					UIUtils.setWaitCursor(tree);
+				}
+
+				@Override
+				public void work() throws CommonBusinessException {
+					cmdGenerateGenericObject();
+				}
+
+				@Override
+				public void paint() {
+					tree.setCursor(null);
+				}
+
+				@Override
+				public void handleError(Exception ex) {
+					Errors.getInstance().showExceptionDialog(null, getMessage("GenericObjectExplorerNode.3", "Fehler beim entfernen der Beziehungen"), ex);
+				}
+			};
+
+			CommonMultiThreader.getInstance().execute(searchWorker);
+		}
+
+		/**
+		 * removes the relation between this node and its parent.
+		 * @param tree
+		 * @param goexplorernode
+		 */
+		private void cmdGenerateGenericObject() {
+			try {
+				Map<Long, UsageCriteria> sources = new HashMap<Long, UsageCriteria>();
+				sources.put(IdUtils.toLongId(getTreeNode().getId()), usagecriteria);
+
+				String targetEntity = MetaDataClientProvider.getInstance().getEntity(generatoractionvo.getTargetModuleId().longValue()).getEntity();
+				JTabbedPane pane = MainFrame.getHomePane();
+				if (MainFrame.isPredefinedEntityOpenLocationSet(targetEntity)) {
+					pane = MainFrame.getPredefinedEntityOpenLocation(targetEntity);
+				}
+				GenerationController controller = new GenerationController(sources, generatoractionvo, null, MainFrameTab.getMainFrameTabForComponent(getJTree()), pane);
+				controller.generateGenericObject();
+			}
+			catch (Exception ex) {
+				Errors.getInstance().showExceptionDialog(MainFrame.getHomePane(), ex);
+			}
+		}
+	}	// inner class GeneratorAction
 }	// class ExplorerNode

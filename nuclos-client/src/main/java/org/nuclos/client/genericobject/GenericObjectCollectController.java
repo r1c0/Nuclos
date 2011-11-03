@@ -55,7 +55,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -72,8 +71,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -653,51 +650,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		addCollectableEventListener(collectableEventListener);
 		setInternalFrame(frame, noTabFromContructor);
 
-		this.getResultPanel().popupmenuRow.addPopupMenuListener(new PopupMenuListener() {
-
-			@Override
-			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-
-				try {
-					final Integer iProcessId = GenericObjectCollectController.this.getSelectedGenericObjectsCommonFieldIdByFieldName(NuclosEOField.PROCESS.getMetaData().getField());
-					final Integer iStateNumeral = GenericObjectCollectController.this.getSelectedGenericObjectsCommonStateNumeral();
-					final List<GeneratorActionVO> lstActions = GeneratorActions.getActions(iModuleId, iStateNumeral, iProcessId);
-
-					JMenu mi = GenericObjectCollectController.this.getResultPanel().miGenerations;
-					mi.setVisible(lstActions.size() != 0);
-					for(final GeneratorActionVO actionVO : lstActions) {
-						JMenuItem action = new JMenuItem(new AbstractAction(actionVO.toString()) {
-
-							@Override
-							public void actionPerformed(ActionEvent e) {
-								cmdGenerateObject(actionVO);
-							}
-
-						});
-						mi.add(action);
-					}
-				}
-				catch (Exception e1) {
-					GenericObjectCollectController.this.getResultPanel().miGenerations.setVisible(false);
-					LOG.warn("popupMenuWillBecomeVisible failed: " + e1 + ", setting it invisible");
-				}
-			}
-
-			@Override
-			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-				clearGeneratorMenu();
-			}
-
-			@Override
-			public void popupMenuCanceled(PopupMenuEvent e) {
-				clearGeneratorMenu();
-			}
-
-			private void clearGeneratorMenu() {
-				 GenericObjectCollectController.this.getResultPanel().miGenerations.removeAll();
-			}
-
-		});
+		setupResultContextMenuGeneration();
 	}
 
 	private void setupToolbars() {

@@ -18,6 +18,7 @@ package org.nuclos.client.explorer.node;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.explorer.ExplorerController;
 import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.explorer.ExplorerView;
+import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.resource.NuclosResourceCache;
@@ -39,9 +41,12 @@ import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.tree.CompositeTreeNodeAction;
 import org.nuclos.client.ui.tree.TreeNodeAction;
+import org.nuclos.common.UsageCriteria;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.navigation.treenode.MasterDataTreeNode;
 import org.nuclos.server.navigation.treenode.TreeNode;
@@ -71,6 +76,14 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 		result.add(this.newShowDetailsAction(tree, true));
 		result.add(this.newShowListAction(tree));
 		result.add(this.newRemoveAction(tree));
+
+		// add generator actions here.
+		TreeNodeAction newGeneratorAction = newGeneratorAction(tree);
+		if (newGeneratorAction != null) {
+			result.add(TreeNodeAction.newSeparatorAction());
+			result.add(newGeneratorAction);
+		}
+
 		return result;
 	}
 
@@ -81,6 +94,29 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 
 	protected MasterDataExplorerNode<TN>.RemoveAction newRemoveAction(JTree tree) {
 		return new RemoveAction(tree, CommonLocaleDelegate.getMessage("MasterDataExplorerNode.1", "L\u00f6schen")+ "...");
+	}
+
+	private TreeNodeAction newGeneratorAction(JTree tree) {
+		final List<TreeNodeAction> lst = getGeneratorActions(tree, MetaDataClientProvider.getInstance().getEntity(getTreeNode().getEntityName()).getId().intValue());
+		if (lst.isEmpty()) {
+			return null;
+		}
+
+		final CompositeTreeNodeAction result = new CompositeTreeNodeAction(CommonLocaleDelegate.getMessage("RuleExplorerNode.5","Arbeitsschritte"), lst);
+		return result;
+	}
+
+	private List<TreeNodeAction> getGeneratorActions(JTree tree, Integer iModuleId) {
+		final List<TreeNodeAction> result = new LinkedList<TreeNodeAction>();
+
+		final List<GeneratorActionVO> lstActions = GeneratorActions.getActions(iModuleId, null, null);
+		if (lstActions.size() > 0) {
+			for (Iterator<GeneratorActionVO> iterator = lstActions.iterator(); iterator.hasNext();) {
+				GeneratorActionVO generatorActionVO = iterator.next();
+				result.add(new GeneratorAction(tree, generatorActionVO, new UsageCriteria(iModuleId, null)));
+			}
+		}
+		return result;
 	}
 
 	/**
