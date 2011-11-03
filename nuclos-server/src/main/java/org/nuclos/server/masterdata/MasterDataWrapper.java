@@ -373,7 +373,7 @@ public class MasterDataWrapper {
 		StateModelVO vo = new StateModelVO(getBaseVO(mdVO),
 			(String)mdVO.getField("name"),
 			(String)mdVO.getField("description"),
-			layout, xmlLayout);
+			layout, xmlLayout, (Integer)mdVO.getField("nucletId"));
 
 		return vo;
 	}
@@ -410,6 +410,7 @@ public class MasterDataWrapper {
 //			layoutData = vo.getXMLLayout().getBytes();
 //		}
 		mpFields.put("layout", layoutData);
+		mpFields.put("nucletId", vo.getNucletId());
 
 		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}

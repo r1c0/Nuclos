@@ -34,8 +34,10 @@ public class StateModelVO extends NuclosValueObject {
 	private StateModelLayout layout;
 	private String xmlLayout;
 
+	private Integer nucletId;
+
 	public StateModelVO() {
-		this(null, null, null, null);
+		this(null, null, null, null, null);
 	}
 
 	/**
@@ -45,7 +47,7 @@ public class StateModelVO extends NuclosValueObject {
 	 * @param sDescription model description of underlying database record
 	 * @param layout model layout information of underlying database record
 	 */
-	public StateModelVO(NuclosValueObject nvo, String sName, String sDescription, StateModelLayout layout, String xml) {
+	public StateModelVO(NuclosValueObject nvo, String sName, String sDescription, StateModelLayout layout, String xml, Integer nucletId) {
 		super(nvo);
 		this.sName = sName;
 		this.sDescription = sDescription;
@@ -59,7 +61,7 @@ public class StateModelVO extends NuclosValueObject {
 	 * @param sDescription model description of underlying database record
 	 * @param layout model layout information of underlying database record
 	 */
-	public StateModelVO(String sName, String sDescription, StateModelLayout layout, String xml) {
+	public StateModelVO(String sName, String sDescription, StateModelLayout layout, String xml, Integer nucletId) {
 		super();
 		this.sName = sName;
 		this.sDescription = sDescription;
@@ -114,13 +116,21 @@ public class StateModelVO extends NuclosValueObject {
 	public void setLayout(StateModelLayout layoutinfo) {
 		this.layout = layoutinfo;
 	}
-	
+
 	public String getXMLLayout() {
 		return this.xmlLayout;
 	}
-	
+
 	public void setXMLLayout(String xml) {
 		this.xmlLayout = xml;
+	}
+
+	public Integer getNucletId() {
+		return nucletId;
+	}
+
+	public void setNucletId(Integer nucletId) {
+		this.nucletId = nucletId;
 	}
 
 	@Override
