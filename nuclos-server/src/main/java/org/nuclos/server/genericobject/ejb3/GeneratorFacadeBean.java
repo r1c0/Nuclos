@@ -414,6 +414,8 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 				return new GenerationResult(CollectionUtils.transform(sourceObjects, new ExtractIdTransformer()), DalSupportForMD.getEntityObjectVO(getMasterDataFacade().get(targetMeta.getEntity(), created.getId())), null) ;
 			}
 			catch (CommonBusinessException ex) {
+				// this is required, because the id is already generated
+				container.getMasterData().setId(null);
 				EntityObjectVO temp = DalSupportForMD.getEntityObjectVO(container.getMasterData());
 				temp.setEntity(targetMeta.getEntity());
 				temp.setDependants(container.getDependants());

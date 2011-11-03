@@ -80,7 +80,13 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 	@Override
 	public EntityObjectVO get(String entity, Long id) throws CommonPermissionException {
 		EntityMetaDataVO meta = MetaDataServerProvider.getInstance().getEntity(entity);
-		checkReadAllowedForModule(IdUtils.unsafeToId(meta.getId()), IdUtils.unsafeToId(id));
+		if (meta.isStateModel()) {
+			checkReadAllowedForModule(IdUtils.unsafeToId(meta.getId()), IdUtils.unsafeToId(id));
+		}
+		else {
+			checkReadAllowed(entity);
+		}
+
 		RecordGrantUtils.checkInternal(entity, id);
 		JdbcEntityObjectProcessor eop = NucletDalProvider.getInstance().getEntityObjectProcessor(entity);
 		return eop.getByPrimaryKey(id);

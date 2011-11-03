@@ -20,6 +20,9 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.nuclos.common.MetaDataProvider;
+import org.nuclos.common.SpringApplicationContextHolder;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 
 /**
@@ -57,20 +60,24 @@ public class GeneratorVO implements Serializable {
 		final List<GeneratorActionVO> result = new LinkedList<GeneratorActionVO>();
 		for (GeneratorActionVO generatoractionvo : lstActions) {
 			if (iModuleId.equals(generatoractionvo.getSourceModuleId())) {
-				final String sStateMnemonic = LangUtils.toString(iStateNumeral);
-				for (GeneratorUsageVO guvo : generatoractionvo.getUsages()) {
-					if ((getStateMnemonicFromGeneratorusageVO(guvo) == null || getStateMnemonicFromGeneratorusageVO(guvo).equals(sStateMnemonic)) &&
-							(guvo.getProcessId() == null || guvo.getProcessId().equals(iProcessId))) {
-
-						result.add(generatoractionvo);
+				if (SpringApplicationContextHolder.getBean(MetaDataProvider.class).getEntity(IdUtils.toLongId(iModuleId)).isStateModel()) {
+					final String sStateMnemonic = LangUtils.toString(iStateNumeral);
+					for (GeneratorUsageVO guvo : generatoractionvo.getUsages()) {
+						if ((getStateMnemonicFromGeneratorusageVO(guvo) == null || getStateMnemonicFromGeneratorusageVO(guvo).equals(sStateMnemonic)) &&
+								(guvo.getProcessId() == null || guvo.getProcessId().equals(iProcessId))) {
+							result.add(generatoractionvo);
+						}
 					}
+				}
+				else {
+					result.add(generatoractionvo);
 				}
 			}
 		}
 		assert result != null;
 		return result;
 	}
-	
+
 	private String getStateMnemonicFromGeneratorusageVO(GeneratorUsageVO guvo) {
 		String state = guvo.getStateMnemonic();
 		int index = state.indexOf(" ");

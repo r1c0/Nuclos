@@ -41,6 +41,7 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 
 public class DalSupportForMD {
 
@@ -106,6 +107,12 @@ public class DalSupportForMD {
 		if(eo.isFlagRemoved())
 			vo.remove();
 		return vo;
+	}
+
+	public static MasterDataWithDependantsVO getMasterDataWithDependantsVO(EntityObjectVO eo) {
+		final MasterDataVO base = wrapEntityObjectVO(eo);
+		final MasterDataWithDependantsVO result = new MasterDataWithDependantsVO(base, eo.getDependants());
+		return result;
 	}
 
 	public static EntityTreeViewVO wrapEntityObjectVOAsSubNode(EntityObjectVO eo) {

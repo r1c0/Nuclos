@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.EntityCollectController;
@@ -37,7 +38,9 @@ import org.nuclos.client.entityobject.EntityObjectDelegate;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCache;
+import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.ui.CommonClientWorkerAdapter;
 import org.nuclos.client.ui.CommonMultiThreader;
@@ -60,6 +63,7 @@ import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
+import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
@@ -348,7 +352,9 @@ public class GenerationController {
 	private void showResult(GenerationResult result) {
 		try {
 			Integer generatedGoId = IdUtils.unsafeToId(result.getGeneratedObject().getId());
-			if (SecurityCache.getInstance().isWriteAllowedForModule(Modules.getInstance().getEntityNameByModuleId(action.getTargetModuleId()), generatedGoId)) {
+			EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(action.getTargetModuleId()));
+			if ((meta.isStateModel() && SecurityCache.getInstance().isWriteAllowedForModule(Modules.getInstance().getEntityNameByModuleId(action.getTargetModuleId()), generatedGoId))
+					|| (!meta.isStateModel() && SecurityCache.getInstance().isWriteAllowedForMasterData(meta.getEntity())) ) {
 				if (generatedGoId != null) {
 					showGenericObject(result.getGeneratedObject(), action.getTargetModuleId());
 				}
@@ -371,7 +377,7 @@ public class GenerationController {
 	private void showGenericObject(EntityObjectVO result, final Integer iModuleId) throws CommonBusinessException {
 		Long iGeneratedObjectId = result.getId();
 
-		String entity = Modules.getInstance().getEntityNameByModuleId(iModuleId);
+		String entity = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(action.getTargetModuleId())).getEntity();
 		Main.getMainController().showDetails(entity, iGeneratedObjectId);
 	}
 
@@ -379,7 +385,7 @@ public class GenerationController {
 	 * Open an incomplete generated object in its own controller.
 	 * @throws CommonBusinessException
 	 */
-	private void showIncompleteGenericObject(Integer sourceId, EntityObjectVO result, String message) throws CommonBusinessException {
+	private void showIncompleteGenericObject(Integer sourceId, EntityObjectVO result, final String message) throws CommonBusinessException {
 		String entity = result.getEntity();
 		JTabbedPane pane;
 		if (MainFrame.isPredefinedEntityOpenLocationSet(entity)) {
@@ -391,14 +397,34 @@ public class GenerationController {
 		EntityMetaDataVO metaVO = MetaDataClientProvider.getInstance().getEntity(entity);
 		Map<String, EntityFieldMetaDataVO> mpFields = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(entity);
 
-		GenericObjectCollectController goclct = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(pane, IdUtils.unsafeToId(metaVO.getId()), null);
-		goclct.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW_CHANGED);
-		goclct.setGenerationSourceId(sourceId);
-		CollectableEOEntity meta = new CollectableEOEntity(metaVO, mpFields);
-		goclct.unsafeFillDetailsPanel(new CollectableGenericObjectWithDependants(DalSupportForGO.getGenericObjectWithDependantsVO(result, meta)));
-		goclct.showFrame();
-		MainFrame.setSelectedTab(goclct.getFrame());
-		goclct.setPointerInformation(new PointerCollection(CommonLocaleDelegate.getMessageFromResource(message)), null);
+		if (metaVO.isStateModel()) {
+			final GenericObjectCollectController goclct = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(pane, IdUtils.unsafeToId(metaVO.getId()), null);
+			goclct.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW_CHANGED);
+			goclct.setGenerationSourceId(sourceId);
+			CollectableEOEntity meta = new CollectableEOEntity(metaVO, mpFields);
+			goclct.unsafeFillDetailsPanel(new CollectableGenericObjectWithDependants(DalSupportForGO.getGenericObjectWithDependantsVO(result, meta)));
+			goclct.showFrame();
+			MainFrame.setSelectedTab(goclct.getFrame());
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					goclct.setPointerInformation(new PointerCollection(CommonLocaleDelegate.getMessageFromResource(message)), null);
+				}
+			});
+		}
+		else {
+			final MasterDataCollectController mdclct = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(pane, metaVO.getEntity(), null);
+			CollectableEOEntity meta = new CollectableEOEntity(metaVO, mpFields);
+			mdclct.runNewWith(new CollectableMasterDataWithDependants(meta, DalSupportForMD.getMasterDataWithDependantsVO(result)));
+			mdclct.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW_CHANGED);
+			MainFrame.setSelectedTab(mdclct.getFrame());
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					mdclct.setPointerInformation(new PointerCollection(CommonLocaleDelegate.getMessageFromResource(message)), null);
+				}
+			});
+		}
 	}
 
 	private class GenerationClientWorker<T extends Collectable> extends CommonClientWorkerAdapter<T> {

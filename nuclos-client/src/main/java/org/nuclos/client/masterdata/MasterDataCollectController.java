@@ -18,6 +18,7 @@ package org.nuclos.client.masterdata;
 
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -150,7 +151,7 @@ import org.xml.sax.InputSource;
 public class MasterDataCollectController extends EntityCollectController<CollectableMasterDataWithDependants> {
 
 	private static final Logger LOG = Logger.getLogger(MasterDataCollectController.class);
-	
+
    private static int iFilter;
 
    public static final String FIELDNAME_ACTIVE = "active";
@@ -177,6 +178,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
     */
    //private GlobalSearchFilter globalsearchfilterForRecentSearch;
 
+   private final List<Component> toolbarCustomActionsDetails = new ArrayList<Component>();
+   private int toolbarCustomActionsDetailsIndex = -1;
 
    /**
     * Use <code>newMasterDataCollectController()</code> to create an instance of this class.
@@ -306,6 +309,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
             }
 
             respectRights(getDetailsPanel().getEditView().getCollectableComponents(), collsubform, ev.getNewCollectState());
+
+            showCustomActions(iDetailsMode);
          }
       });
       this.getCollectStateModel().addCollectStateListener(new CollectStateAdapter() {
@@ -521,6 +526,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
          this.btnExecuteRule.setEnabled(SecurityCache.getInstance().isActionAllowed(Actions.ACTION_EXECUTE_RULE_BY_USER));
       }
 
+      toolbarCustomActionsDetailsIndex = this.getDetailsPanel().getToolBarNextIndex();
          //this.getDetailsPanel().setCustomToolBarArea(toolbar);
          //toolbar.add(Box.createHorizontalGlue());
 
@@ -528,6 +534,26 @@ public class MasterDataCollectController extends EntityCollectController<Collect
          //toolbar.add(btnPointer);
       	this.getDetailsPanel().addToolBarComponent(btnPointer);
    }
+
+   private void showCustomActions(int iDetailsMode) {
+		final boolean bSingle = CollectState.isDetailsModeViewOrEdit(iDetailsMode);
+		final boolean bMulti = CollectState.isDetailsModeMultiViewOrEdit(iDetailsMode);
+		final boolean bViewOrEdit = bSingle || bMulti;
+		final boolean bView = bViewOrEdit && !CollectState.isDetailsModeChangesPending(iDetailsMode);
+
+		this.getDetailsPanel().removeToolBarComponents(toolbarCustomActionsDetails);
+		toolbarCustomActionsDetails.clear();
+		if (toolbarCustomActionsDetailsIndex == -1) {
+			return;
+		}
+
+		if (bViewOrEdit) {
+			addGeneratorActions(bView, toolbarCustomActionsDetails);
+			UIUtils.ensureMinimumSize(getFrame());
+		}
+
+		this.getDetailsPanel().addToolBarComponents(toolbarCustomActionsDetails, toolbarCustomActionsDetailsIndex);
+	}
 
    @Override
    public void executeBusinessRules(List<RuleVO> lstRuleVO, boolean bSaveAfterRuleExecution) throws CommonBusinessException {

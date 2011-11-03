@@ -18,6 +18,7 @@ package org.nuclos.client.masterdata;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -25,6 +26,9 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.DetailsSubFormController;
+import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.GeneratorDelegate;
 import org.nuclos.client.main.mainframe.MainFrameTab;
@@ -32,10 +36,13 @@ import org.nuclos.client.masterdata.ui.GenerationRulesPanel;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
+import org.nuclos.client.ui.collect.component.model.CollectableComponentModelAdapter;
+import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -74,6 +81,23 @@ public class GenerationCollectController extends MasterDataCollectController {
 	@Override
 	protected void initialize(CollectPanel<CollectableMasterDataWithDependants> pnlCollect) {
 		super.initialize(pnlCollect);
+		getDetailsComponentModel("sourceModule").addCollectableComponentModelListener(new CollectableComponentModelAdapter() {
+			@Override
+			public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
+				Integer newValue = (Integer) ev.getNewValue().getValueId();
+				boolean enabled = false;
+				if (newValue != null && MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(newValue)).isStateModel()) {
+					enabled = true;
+				}
+				DetailsSubFormController<CollectableEntityObject> sfctl = getDetailsSubforms().get(NuclosEntity.GENERATIONUSAGE.getEntityName());
+				if (!enabled) {
+					for (CollectableEntityObject clct : new ArrayList<CollectableEntityObject>(sfctl.getCollectables())) {
+						sfctl.getCollectableTableModel().remove(clct);
+					}
+				}
+				sfctl.getSubForm().setEnabled(enabled);
+			}
+		});
 		// todo: Add listener to target module combo box to enable/disable details check box
 		//getSelectedCollectable().getField("targetModule").   //?!
 	}
