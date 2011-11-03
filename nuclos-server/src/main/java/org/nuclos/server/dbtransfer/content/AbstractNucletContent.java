@@ -229,9 +229,9 @@ public abstract class AbstractNucletContent implements INucletContent {
 	}
 
 	@Override
-	public void deleteNcObject(DalCallResult result, Long id) {
+	public void deleteNcObject(DalCallResult result, EntityObjectVO ncObject) {
 		try {
-			NucletDalProvider.getInstance().getEntityObjectProcessor(entity).delete(id);
+			NucletDalProvider.getInstance().getEntityObjectProcessor(entity).delete(ncObject.getId());
 		}
 		catch (DbException e) {
 			result.addBusinessException(e);

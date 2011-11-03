@@ -21,6 +21,7 @@ import java.awt.Cursor;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -476,9 +477,8 @@ public class ReportController extends Controller {
 			final String sMainEntityName = clcteMain.getName();
 			final Integer iModuleId = Modules.getInstance().getModuleIdByEntityName(sMainEntityName);
 			final List<Integer> lstAttributeIds = GenericObjectUtils.getAttributeIds(lstclctefweSelected, sMainEntityName, AttributeCache.getInstance());
-			final Set<String> stRequiredSubEntityNames = GenericObjectUtils.getSubEntityNames(lstclctefweSelected, sMainEntityName, Modules.getInstance());
-			final boolean bIncludeParentObjects = GenericObjectUtils.containsParentField(lstclctefweSelected, Modules.getInstance().getParentEntityName(sMainEntityName));
-
+			final Set<String> stRequiredSubEntityNames = Collections.emptySet();
+			
 			switch (format) {
 				case PDF:
 					final JasperPrint printObj = delegate.prepareSearchResult(searchexpr, lstclctefweSelected, iModuleId, bIncludeSubModules);
@@ -488,7 +488,7 @@ public class ReportController extends Controller {
 				default:
 					/** @todo always include submodules here? */
 					final List<GenericObjectWithDependantsVO> lstlowdcvo = GenericObjectDelegate.getInstance().getPrintableGenericObjectsWithDependants(iModuleId,
-							searchexpr, new HashSet<Integer>(lstAttributeIds), stRequiredSubEntityNames, bIncludeParentObjects, bIncludeSubModules);
+							searchexpr, new HashSet<Integer>(lstAttributeIds), stRequiredSubEntityNames, false, bIncludeSubModules);
 
 					final ResultVO resultVO = convertGenericObjectListToResultVO(clcteMain, lstclctefweSelected, lstlowdcvo);
 					ReportRunner.createExportJob(this.getParent(), resultVO, format, null, null).start();
@@ -523,7 +523,6 @@ public class ReportController extends Controller {
 
 		// fill the rows:
 		final String sMainEntityName = clcteMain.getName();
-		final String sParentEntityName = Modules.getInstance().getParentEntityName(sMainEntityName);
 		for (GenericObjectWithDependantsVO lowdcvo : lstlowdcvo) {
 			final Object[] aoData = new Object[lstclctefweSelected.size()];
 
@@ -535,11 +534,6 @@ public class ReportController extends Controller {
 				if (sFieldEntityName.equals(sMainEntityName)) {
 					// own attribute:
 					final DynamicAttributeVO davo = lowdcvo.getAttribute(sFieldName, AttributeCache.getInstance());
-					aoData[iColumn] = davo != null ? davo.getValue() : null;
-				}
-				else if (sFieldEntityName.equals(sParentEntityName)) {
-					// parent attribute:
-					final DynamicAttributeVO davo = lowdcvo.getParent().getAttribute(sFieldName, AttributeCache.getInstance());
 					aoData[iColumn] = davo != null ? davo.getValue() : null;
 				}
 				else {

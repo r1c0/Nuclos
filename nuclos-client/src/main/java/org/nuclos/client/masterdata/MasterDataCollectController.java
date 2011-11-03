@@ -818,7 +818,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
          sParentEntityName = sParentSubForm;
       }
 
-      return newDetailsSubFormController(subform, sParentEntityName, clctcompmodelprovider, this.getFrame(), this.getParent(), this.getDetailsPanel(), this.getPreferences());
+      return newDetailsSubFormController(subform, sParentEntityName, clctcompmodelprovider, 
+    		  this.getFrame(), this.getParent(), this.getDetailsPanel(), this.getPreferences(), this.getEntityPreferences());
    }
 
    /**

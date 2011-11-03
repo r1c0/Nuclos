@@ -31,12 +31,12 @@ public class WebserviceNucletContent extends DefaultNucletContent {
 	}
 
 	@Override
-	public void deleteNcObject(DalCallResult result, Long id) {
-		GenericObjectDocumentFile docfile = NucletDalProvider.getInstance().getEntityObjectProcessor(getEntity()).getByPrimaryKey(id).getField("wsdl", GenericObjectDocumentFile.class);
+	public void deleteNcObject(DalCallResult result, EntityObjectVO ncObject) {
+		GenericObjectDocumentFile docfile = NucletDalProvider.getInstance().getEntityObjectProcessor(getEntity()).getByPrimaryKey(ncObject.getId()).getField("wsdl", GenericObjectDocumentFile.class);
 		if (docfile != null) {
-			MasterDataFacadeHelper.remove(id.intValue(), docfile.getFilename(), NuclosSystemParameters.getDirectory(NuclosSystemParameters.DOCUMENT_PATH));
+			MasterDataFacadeHelper.remove(ncObject.getId().intValue(), docfile.getFilename(), NuclosSystemParameters.getDirectory(NuclosSystemParameters.DOCUMENT_PATH));
 		}
-		super.deleteNcObject(result, id);
+		super.deleteNcObject(result, ncObject);
 	}
 
 	@Override

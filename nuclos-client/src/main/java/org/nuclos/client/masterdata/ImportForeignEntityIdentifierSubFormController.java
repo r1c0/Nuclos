@@ -29,6 +29,8 @@ import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
+import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 
 /**
@@ -52,9 +54,9 @@ public class ImportForeignEntityIdentifierSubFormController extends MasterDataSu
 	public ImportForeignEntityIdentifierSubFormController(Component parent, JComponent parentMdi,
       CollectableComponentModelProvider clctcompmodelproviderParent,
       String sParentEntityName, SubForm subform,
-      Preferences prefsUserParent, CollectableFieldsProviderCache valueListProviderCache) {
+      Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderCache valueListProviderCache) {
       super(parent, parentMdi, clctcompmodelproviderParent,
-         sParentEntityName, subform, prefsUserParent, valueListProviderCache);
+         sParentEntityName, subform, prefsUserParent, entityPrefs, valueListProviderCache);
       this.clctcompmodelproviderParent = clctcompmodelproviderParent;
    }
 

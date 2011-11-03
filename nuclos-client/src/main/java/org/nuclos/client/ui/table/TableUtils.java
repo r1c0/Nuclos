@@ -19,6 +19,7 @@ package org.nuclos.client.ui.table;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.MouseListener;
+import java.util.Date;
 
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
@@ -284,5 +285,27 @@ public class TableUtils {
 				tbl.getTableHeader().removeMouseListener(amouselisteners[i]);
 			}
 		}
+	}
+	
+	/**
+	 * 
+	 * @param Class c
+	 * @return minimum column width based on class
+	 */
+	public static int getMinimumColumnWidth(Class<?> c) {
+		if (String.class == c)
+			return 120;
+		if (Integer.class == c)
+			return 80;
+		if (Double.class == c)
+			return 80;
+		if (Date.class == c)
+			return 80;
+		if (Boolean.class == c)
+			return 40;
+		if (org.nuclos.common.NuclosImage.class == c)
+			return 40;
+		
+		return 120;
 	}
 }  // class TableUtils

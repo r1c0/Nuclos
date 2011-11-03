@@ -1115,24 +1115,31 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 
 			@Override
 			protected List<JMenuItem> getContextMenuItems() {
+				
 				List<JMenuItem>result = new ArrayList<JMenuItem>();
 
-				JCheckBoxMenuItem cbmiOpenHere = new JCheckBoxMenuItem(new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.10","Immer hier oeffnen")) {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						JCheckBoxMenuItem cbmiThis = (JCheckBoxMenuItem) e.getSource();
-						boolean selected = cbmiThis.isSelected();
-						setMarker(selected ? LinkMarker.ORANGE_HALF : LinkMarker.NONE);
-						if (selected) {
-							MainFrame.setPredefinedEntityOpenLocation(command, tabbedPane);
-						} else {
-							MainFrame.removePredefinedEntityOpenLocation(command, true);
+				if (MainFrame.isStarttabEditable()) {
+					JCheckBoxMenuItem cbmiOpenHere = new JCheckBoxMenuItem(new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.10","Immer hier oeffnen")) {
+						/**
+						 *
+						 */
+						private static final long serialVersionUID = 1L;
+	
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							JCheckBoxMenuItem cbmiThis = (JCheckBoxMenuItem) e.getSource();
+							boolean selected = cbmiThis.isSelected();
+							setMarker(selected ? LinkMarker.ORANGE_HALF : LinkMarker.NONE);
+							if (selected) {
+								MainFrame.setPredefinedEntityOpenLocation(command, tabbedPane);
+							} else {
+								MainFrame.removePredefinedEntityOpenLocation(command, true);
+							}
 						}
-					}
-				});
-				cbmiOpenHere.setSelected(getMarker() == LinkMarker.ORANGE_HALF);
-				result.add(cbmiOpenHere);
+					});
+					cbmiOpenHere.setSelected(getMarker() == LinkMarker.ORANGE_HALF);
+					result.add(cbmiOpenHere);
+				}
 				return result;
 			}
 		};
@@ -1286,6 +1293,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		private boolean hover = false;
 		private boolean selected = true;
 		private boolean headline;
+		private final Action action;
 
 		public LinkLabel(final Action action) {
 			this(action, false);
@@ -1296,6 +1304,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				(String)action.getValue(Action.NAME),
 				MainFrame.resizeAndCacheLinkIcon((Icon)action.getValue(Action.SMALL_ICON)),
 				JLabel.LEFT);
+			this.action = action;
 			this.headline = isHeadline;
 			setSelected(isActionSelected(action));
 			setOpaque(false);
@@ -1305,17 +1314,19 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					if (SwingUtilities.isLeftMouseButton(e)) {
-						setSelected(!selected);
-						action.actionPerformed(new ActionEvent(LinkLabel.this, 0, (String)action.getValue(Action.ACTION_COMMAND_KEY)));
-					} else if (SwingUtilities.isRightMouseButton(e)) {
-						List<JMenuItem> cmis = getContextMenuItems();
-						if (cmis != null && !cmis.isEmpty()) {
-							JPopupMenu pm = new JPopupMenu();
-							for (JMenuItem mi : cmis) {
-								pm.add(mi);
+					if (action != null && action.isEnabled()) {
+						if (SwingUtilities.isLeftMouseButton(e)) {
+							setSelected(!selected);
+							action.actionPerformed(new ActionEvent(LinkLabel.this, 0, (String)action.getValue(Action.ACTION_COMMAND_KEY)));
+						} else if (SwingUtilities.isRightMouseButton(e)) {
+							List<JMenuItem> cmis = getContextMenuItems();
+							if (cmis != null && !cmis.isEmpty()) {
+								JPopupMenu pm = new JPopupMenu();
+								for (JMenuItem mi : cmis) {
+									pm.add(mi);
+								}
+								pm.show(LinkLabel.this, 0, LinkLabel.this.getSize().height);
 							}
-							pm.show(LinkLabel.this, 0, LinkLabel.this.getSize().height);
 						}
 					}
 				}
@@ -1368,7 +1379,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 
 		@Override
 		public void paint(Graphics g) {
-			if (hover || marker.isMarked()) {
+			if (action != null && action.isEnabled() && (hover || marker.isMarked())) {
 				Graphics2D g2 = (Graphics2D) g;
 				Object renderingHint = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -1476,6 +1487,18 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		}
 	}
 
+	public boolean isStartmenuShown() {
+		return isStartmenuShown;
+	}
+
+	public boolean isHistoryShown() {
+		return isHistoryShown;
+	}
+
+	public boolean isBookmarkShown() {
+		return isBookmarkShown;
+	}
+
 	private class ExpandOrReduceAction extends AbstractAction {
 
 		private final Set<String> reducedItems;
@@ -1493,7 +1516,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
-			setSelected(transferSelected(ev, this));
+			if (isEnabled()) {
+				setSelected(transferSelected(ev, this));
+			}
 		}
 
 		public void setSelected(boolean selected) {
@@ -1513,5 +1538,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			ll.setVisible(isActionSelected(this));
 		}
 
+		@Override
+		public boolean isEnabled() {
+			return MainFrame.isStarttabEditable();
+		}
 	}
 }

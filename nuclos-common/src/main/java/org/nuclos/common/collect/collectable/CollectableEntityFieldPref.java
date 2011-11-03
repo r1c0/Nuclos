@@ -11,7 +11,10 @@ import org.nuclos.common.dal.vo.PivotInfo;
  * 
  * @author Thomas Pasch
  * @since Nuclos 3.1.0-rc5
+ * 
+ * @deprecated use WorkspaceDescription
  */
+@Deprecated
 public class CollectableEntityFieldPref implements Serializable {
 	
 	private final String type;

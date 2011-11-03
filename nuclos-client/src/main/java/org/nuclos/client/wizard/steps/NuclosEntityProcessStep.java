@@ -42,10 +42,13 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
+import org.nuclos.client.wizard.NuclosEntityWizard;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.TranslationVO;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
+import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
@@ -133,7 +136,7 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 
 		Preferences prefs = java.util.prefs.Preferences.userRoot().node("org/nuclos/client/entitywizard/steps/process");
 
-		subFormController = new ProcessSubformController(this, tab, provider,ENTITYNAME_PROCESS, subform, prefs, null);
+		subFormController = new ProcessSubformController(this, tab, provider,ENTITYNAME_PROCESS, subform, prefs, NuclosEntityWizard.getEntityPreferences(), null);
 		Collection<EntityObjectVO> data = model.getProcesses();
 
 		if (data != null) {
@@ -186,8 +189,9 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 
 	private class ProcessSubformController extends MasterDataSubFormController {
 
-		public ProcessSubformController(Component parent, JComponent parentMdi, CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, SubForm subform, Preferences prefsUserParent, CollectableFieldsProviderCache valueListProviderCache) {
-			super(parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform, prefsUserParent, valueListProviderCache);
+		public ProcessSubformController(Component parent, JComponent parentMdi, CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, SubForm subform, Preferences prefsUserParent, 
+				EntityPreferences entityPrefs, CollectableFieldsProviderCache valueListProviderCache) {
+			super(parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform, prefsUserParent, entityPrefs, valueListProviderCache);
 		}
 
 		@Override

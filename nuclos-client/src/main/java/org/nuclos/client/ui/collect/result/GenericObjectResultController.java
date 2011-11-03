@@ -31,16 +31,20 @@ import javax.swing.JTable;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
+import org.nuclos.client.ui.collect.CollectableTableHelper;
 import org.nuclos.client.ui.collect.PivotController;
 import org.nuclos.client.ui.collect.PivotPanel;
 import org.nuclos.client.ui.collect.SelectFixedColumnsController;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
@@ -147,11 +151,6 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 		final SortedSet<CollectableEntityField> result = super.getFieldsAvailableForResult(clcte, comp);
 		final GenericObjectCollectController controller = getGenericObjectCollectController();
 
-		// add parent entity's fields, if any:
-		final CollectableEntity clcteParent = controller.getParentEntity();
-		if (clcteParent != null)
-			result.addAll(CollectionUtils.transform(clcteParent.getFieldNames(), new GetCollectableEntityFieldForResult(clcteParent)));
-
 		// add subentities' fields, if any:
 		final Set<String> stSubEntityNames = GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(controller.getModuleId());
 		final Set<String> stSubEntityLabels = new HashSet<String>();
@@ -200,8 +199,8 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	@Override
 	protected List<? extends CollectableEntityField> readSelectedFieldsFromPreferences(CollectableEntity clcte) {
 		assert getEntity().equals(clcte);
-		final List<? extends CollectableEntityField>  result = GenericObjectClientUtils.readCollectableEntityFieldsFromPreferences(
-				getGenericObjectCollectController().getPreferences(), clcte);
+		final List<? extends CollectableEntityField> result = WorkspaceUtils.getCollectableEntityFieldsForGenericObject(
+				getGenericObjectCollectController().getEntityPreferences());
 		CollectionUtils.removeDublicates(result);
 		
 		// recover pivots state
@@ -224,20 +223,13 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 			
 		return result;
 	}
-
-	/**
-	 * writes the selected fields and their entities to the user preferences.
-	 * @param lstclctefweSelected
-	 * @throws PreferencesException
-	 * @deprecated Remove this.
-	 */
+	
 	@Override
-	public void writeSelectedFieldsToPreferences(List<? extends CollectableEntityField> lstclctefweSelected) throws PreferencesException {
-		GenericObjectClientUtils.writeCollectableEntityFieldsToPreferences(
-				getGenericObjectCollectController().getPreferences(), 
-				// CollectionUtils.typecheck(lstclctefweSelected, CollectableEntityFieldWithEntity.class), 
-				CollectionUtils.typecheck(lstclctefweSelected, CollectableEntityField.class));
-		super.writeSelectedFieldsToPreferences(lstclctefweSelected);
+	protected void writeSelectedFieldsAndWidthsToPreferences(
+			EntityPreferences entityPreferences, 
+			List<? extends CollectableEntityField> lstclctefSelected, Map<String, Integer> mpWidths) {
+		WorkspaceUtils.setCollectableEntityFieldsForGenericObject(entityPreferences, lstclctefSelected, getFieldWidthsForPreferences(),
+				CollectableUtils.getFieldNamesFromCollectableEntityFields(getNuclosResultPanel().getFixedColumns()));
 	}
 
 	/**

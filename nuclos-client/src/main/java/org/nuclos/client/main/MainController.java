@@ -94,6 +94,7 @@ import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.common.TopicNotificationReceiver;
+import org.nuclos.client.common.prefs.PreferencesMigration;
 import org.nuclos.client.common.prefs.WebAccessPrefs;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.common.security.SecurityDelegate;
@@ -338,7 +339,7 @@ public class MainController {
 			LOG.debug(">>> restore last workspace...");
 			try {
 				MainFrame.readMainFramePreferences(prefs);
-				RestoreUtils.restoreWorkspaceThreaded(MainFrame.getLastWorkspaceFromPreferences());
+				RestoreUtils.restoreWorkspaceThreaded(MainFrame.getLastWorkspaceIdFromPreferences(), MainFrame.getLastWorkspaceFromPreferences());
 			}
 			catch (Exception ex) {
 				final String sMessage = CommonLocaleDelegate.getMessage("MainController.4","Die in der letzten Sitzung ge\u00f6ffneten Fenster konnten nicht wiederhergestellt werden.");
@@ -435,10 +436,6 @@ public class MainController {
 			LOG.fatal("Creating MainController failed, this is fatal: " + e.toString(), e);
 			throw new ExceptionInInitializerError(e);
 		}
-	}
-
-	public void addForcedContent() {
-		ctlTasks.addForcedFilters();
 	}
 
 	private Action cmdDirectHelp = new AbstractAction() {

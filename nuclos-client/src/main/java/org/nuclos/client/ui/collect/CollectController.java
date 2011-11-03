@@ -39,6 +39,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,7 +50,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JDesktopPane;
 import javax.swing.JDialog;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenuItem;
@@ -58,7 +58,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.RowSorter.SortKey;
-import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -79,6 +78,7 @@ import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.NuclosDropTargetVisitor;
 import org.nuclos.client.common.OneDropNuclosDropTargetListener;
+import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.genericobject.CollectableGenericObject;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.Modules;
@@ -126,8 +126,10 @@ import org.nuclos.client.ui.multiaction.MultiActionProgressPanel;
 import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
+import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -156,14 +158,12 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
-import org.nuclos.common2.exception.PreferencesException;
 
 
 /**
@@ -197,35 +197,6 @@ import org.nuclos.common2.exception.PreferencesException;
 public abstract class CollectController<Clct extends Collectable> extends TopController implements NuclosDropTargetVisitor {
 
 	private static final Logger LOG = Logger.getLogger(CollectController.class);
-
-	/**
-	 * Key within user preferences under which the List of field names of an entity is stored.
-	 *
-	 * This is e.g. used to remember the fields/columns in the result panel of an entity.
-	 */
-	public static final String PREFS_NODE_SELECTEDFIELDS = "selectedFields";
-
-	/**
-	 * Key within user preferences under which the List of field entities of an entity is stored.
-	 *
-	 * This is e.g. used to remember the fields/columns in the result panel of an entity. The entity
-	 * could be different for fields from subforms and pivot subforms.
-	 */
-	public static final String PREFS_NODE_SELECTEDFIELDENTITIES = "selectedFieldEntities";
-
-	/**
-	 * Key within user preferences under which the List of XML representations of a field of an entity is stored.
-	 *
-	 * The sequence is the same as for PREFS_NODE_SELECTEDFIELDENTITIES. For backward compatibility, if this
-	 * list is missing, CollectableEntityFieldWithEntityForExternal is assumed for all field entities.
-	 *
-	 * @see org.nuclos.client.genericobject.GenericObjectClientUtils.getCollectableEntityFieldForResult(CollectableEntity, String, CollectableEntity)
-	 */
-	public static final String PREFS_NODE_SELECTEDFIELDBEANS = "selectedFieldBeans";
-
-	public static final String PREFS_NODE_SELECTEDFIELDWIDTHS = "selectedFieldWidths";
-	public static final String PREFS_NODE_ORDERBYSELECTEDFIELD = "orderBySelectedField";
-	public static final String PREFS_NODE_ORDERASCENDING = "orderAscending";
 
 	/**
 	 * the parent component for this controller
@@ -638,8 +609,18 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 
 		this.setCollectPanel(pnlCollect);
-		getResultController().initializeFields(clcte, this, getPreferences());
-		getResultController().setModel(newResultTableModel(), clcte, this);
+		getResultController().initializeFields(clcte, this);
+		SortableCollectableTableModel<Clct> model = newResultTableModel();
+		getResultController().setModel(model, clcte, this);
+		// setup sorted fields and sorting order from preferences
+		final List<SortKey> sortKeys = readColumnOrderFromPreferences();
+		if (model.getColumnCount() > 0) {
+			try {
+				model.setSortKeys(sortKeys, false);
+			} catch (IllegalArgumentException e) {
+				// sortKeys contains invalid column index, ignore
+			}
+		}
 		this.getCollectStateModel().addCollectStateListener(new DefaultCollectStateListener());
 		this.getResultPanel().setupTableCellRenderers(getResultTable());
 		getResultController().setColumnWidths(getResultTable());
@@ -665,6 +646,14 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	public Preferences getPreferences() {
 		return this.getUserPreferencesRoot().node("collect").node("entity").node(this.getEntityName());
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public EntityPreferences getEntityPreferences() {
+		return MainFrame.getWorkspaceDescription().getEntityPreferences(this.getEntityName());
 	}
 
 	/**
@@ -795,18 +784,31 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	public final Action getNextAction() {
 		return this.actNext;
 	}
+	
+	/**
+	 * 
+	 * @param sortImmediately
+	 */
+	public void restoreColumnOrderFromPreferences(boolean sortImmediately) {
+		getResultTableModel().setSortKeys(readColumnOrderFromPreferences(), sortImmediately);
+	}
 
 	/**
 	 * Reads the user-preferences for the sorting order.
 	 */
 	protected List<SortKey> readColumnOrderFromPreferences() {
-		try {
-			return CollectController.readSortKeysFromPrefs(getPreferences());
-		}
-		catch (PreferencesException ex) {
-			LOG.error("The column order could not be loaded from preferences.", ex);
-			return Collections.emptyList();
-		}
+		return WorkspaceUtils.getSortKeys(getEntityPreferences(), 
+				new WorkspaceUtils.IColumnIndexRecolver() {
+					@Override
+					public int getColumnIndex(String columnIdentifier) {
+						try {
+							return getResultTableModel().findColumnByFieldName(columnIdentifier);
+						} catch (ClassCastException cce) {
+							LOG.error("ResultTableModel is not sortable", cce);
+							return -1;
+						}
+					}
+				});
 	}
 
 	/**
@@ -1036,34 +1038,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	@Override
 	public void writePreferencesWhileClosing() {
 		this.close();
-	}
-
-	/**
-	 * sets the default window state (position, size, minimized/maximized) for the given frame.
-	 * Tries to cascade this ifrm below the currently selected frame.
-	 * @param ifrm
-	 */
-	protected void setDefaultWindowState(JInternalFrame ifrm) {
-		PreferencesUtils.readWindowState(this.getPreferences(), ifrm, 0, 0);
-
-		if (!ifrm.isMaximum()) {
-			// override the location:
-			ifrm.setLocation(0, 0);
-
-			// don't draw the ifrm directly over the top frame, if any:
-			final JDesktopPane desktop = ifrm.getDesktopPane();
-			if (desktop != null) {
-				final JInternalFrame ifrmSelected = desktop.getSelectedFrame();
-				if (ifrmSelected != null) {
-					final Point pNewLocation = ifrmSelected.getLocation();
-					final int iDistance = 20;
-					pNewLocation.translate(iDistance, iDistance);
-					ifrm.setLocation(pNewLocation);
-				}
-			}
-
-			UIUtils.ensureMinimumSize(ifrm);
-		}
 	}
 
 	/**
@@ -3380,15 +3354,12 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		TableModel resultTableModel = this.getResultTable().getModel();
 		// NUCLEUSINT-1045
 		if (resultTableModel instanceof SortableTableModel) {
-			try {
-				CollectController.writeSortKeysToPrefs(getPreferences(), ((SortableTableModel) resultTableModel).getSortKeys());
-			} catch (PreferencesException e1) {
-				try {
-					handleSaveException(e1, "Fehler beim Abspeichern der Preferences.");
-				} catch (CommonBusinessException e2) {
-					Errors.getInstance().showExceptionDialog(this.getFrame(), "Exception beim Abspeichern der Preferences." , e2);
+			WorkspaceUtils.setSortKeys(getEntityPreferences(), ((SortableTableModel) resultTableModel).getSortKeys(), new WorkspaceUtils.IColumnNameResolver() {
+				@Override
+				public String getColumnName(int iColumn) {
+					return getResultTableModel().getCollectableEntityField(iColumn).getName(); 
 				}
-			}
+			});
 		}
 	}
 
@@ -3918,20 +3889,73 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	public void makeSureSelectedFieldsAreNonEmpty(CollectableEntity clcte, List<CollectableEntityField> lstclctefSelected) {
 		if (lstclctefSelected.isEmpty()) {
-			// 1: show identifier (if any), as defined in CollectableEntity.
-			final String sIdentifierFieldName = clcte.getIdentifierFieldName();
-			if (sIdentifierFieldName != null) {
-				try {
-					lstclctefSelected.add(getResultController().getCollectableEntityFieldForResult(clcte, sIdentifierFieldName));
+			
+			List<String> fieldNames = new ArrayList<String>();
+			try {
+				List<EntityFieldMetaDataVO> fields = CollectionUtils.sorted(
+						MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(clcte.getName()).values(),
+						new Comparator<EntityFieldMetaDataVO>() {
+							@Override
+							public int compare(EntityFieldMetaDataVO o1, EntityFieldMetaDataVO o2) {
+								Integer order1 = (o1.getOrder()==null)?0:o1.getOrder();
+								Integer order2 = (o2.getOrder()==null)?0:o2.getOrder();
+								return order1.compareTo(order2);
+							}
+						});
+				
+				for (EntityFieldMetaDataVO efMeta : fields) {
+					if (StringUtils.isNullOrEmpty(efMeta.getCalcFunction())) {
+						fieldNames.add(efMeta.getField());
+					}
 				}
-				catch (CommonFatalException ex) {
-					// Strictly, this is an error in the definition of the entity. We don't want to throw an exception here though:
-					CollectController.LOG.warn("Das identifizierende Feld \"" + sIdentifierFieldName + "\" existiert nicht f\u00fcr die Entit\u00e4t \"" + clcte.getName() + "\".");
+			} catch (Exception ex) {
+				LOG.warn("No entity fields for entity " + clcte.getName(), ex);
+			}
+			if (fieldNames.isEmpty()) {
+				fieldNames.addAll(clcte.getFieldNames());
+			}
+			
+			CollectableEntityField sysStateIcon = null;
+			CollectableEntityField sysStateNumber = null;
+			CollectableEntityField sysStateName = null;
+			
+			Set<String> clcteFieldNames = clcte.getFieldNames();
+			for (String field : fieldNames) {
+				if (!clcteFieldNames.contains(field)) {
+					LOG.warn("Field " + field + " in collectable entity " + clcte.getName() + " does not exists");
+					continue;
+				}
+				
+				CollectableEntityField clctef = clcte.getEntityField(field);
+				boolean select = true;
+				if (NuclosEOField.getByField(field) != null) {
+					select = false;
+					switch (NuclosEOField.getByField(field)) {
+					case STATEICON : 
+						sysStateIcon = clctef;
+						break;
+					case STATENUMBER : 
+						sysStateNumber = clctef;
+						break;
+					case STATE : 
+						sysStateName = clctef;
+						break;
+					}
+				}
+				if (select) {
+					lstclctefSelected.add(clctef);
 				}
 			}
+			
+			if (sysStateIcon != null)
+				lstclctefSelected.add(sysStateIcon);
+			if (sysStateNumber != null)
+				lstclctefSelected.add(sysStateNumber);
+			if (sysStateName != null)
+				lstclctefSelected.add(sysStateName);
 
 			if (lstclctefSelected.isEmpty()) {
-				// 2: show any (the first, random) field:
+				// show any (the first, random) field:
 				if (clcte.getFieldNames().isEmpty()) {
 					throw new CommonFatalException("Die Entit\u00e4t \"" + clcte.getName() + "\" enth\u00e4lt keine Felder.");
 				}
@@ -4317,38 +4341,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		catch (Exception ex) {
 			Errors.getInstance().showExceptionDialog(getFrame(), ex);
 		}
-	}
-
-	// Maybe the following preferences helper methods should be part of PreferencesUtils.
-	// However, at the moment these used pref nodes are too interwoven with the other table prefs
-	// (e.g. selected fields), esp. within NuclosCollectController.checkPreferences().
-	public static void writeSortKeysToPrefs(Preferences prefs, List<? extends SortKey> sortKeys) throws PreferencesException {
-		List<Integer> sortColumns = new ArrayList<Integer>(sortKeys.size());
-		List<Integer> sortOrders = new ArrayList<Integer>(sortKeys.size());
-		for (SortKey sortKey : sortKeys) {
-			if (sortKey.getSortOrder() == SortOrder.UNSORTED)
-				continue;
-			sortColumns.add(sortKey.getColumn());
-			sortOrders.add(sortKey.getSortOrder() == SortOrder.ASCENDING ? 1 : 0);
-		}
-		PreferencesUtils.putIntegerList(prefs, PREFS_NODE_ORDERBYSELECTEDFIELD, sortColumns);
-		PreferencesUtils.putIntegerList(prefs, PREFS_NODE_ORDERASCENDING, sortOrders);
-	}
-
-	public static List<SortKey> readSortKeysFromPrefs(Preferences prefs) throws PreferencesException {
-		List<Integer> sortColumns = PreferencesUtils.getIntegerList(prefs, PREFS_NODE_ORDERBYSELECTEDFIELD);
-		List<Integer> sortOrders = PreferencesUtils.getIntegerList(prefs, PREFS_NODE_ORDERASCENDING);
-
-		List<SortKey> sortKeys = new ArrayList<SortKey>(sortColumns.size());
-		for (int i = 0, n = sortColumns.size(); i < n; i++) {
-			int column = sortColumns.get(i);
-			if (column == -1)
-				continue;
-			// ascending is the default
-			SortOrder order = (i < sortOrders.size() && sortOrders.get(i) == 0) ? SortOrder.DESCENDING : SortOrder.ASCENDING;
-			sortKeys.add(new SortKey(column, order));
-		}
-		return sortKeys;
 	}
 
 	@Override

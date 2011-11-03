@@ -21,6 +21,10 @@ import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 
 import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DragSource;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -34,16 +38,23 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import javax.activation.ActivationDataFlavor;
+import javax.activation.DataHandler;
+import javax.swing.DefaultListModel;
+import javax.swing.DropMode;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
+import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.RowSorterEvent;
@@ -59,6 +70,7 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.client.wizard.NuclosEntityAttributeWizard;
 import org.nuclos.client.wizard.NuclosEntityAttributeWizardStaticModel;
@@ -66,6 +78,7 @@ import org.nuclos.client.wizard.model.Attribute;
 import org.nuclos.client.wizard.model.DataTyp;
 import org.nuclos.client.wizard.model.EntityAttributeTableModel;
 import org.nuclos.client.wizard.util.NuclosWizardUtils;
+import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
@@ -93,6 +106,9 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 
 	JScrollPane scrolPane;
 	JTable tblAttributes;
+	JButton btUp;
+	JButton btDown;
+	JPanel panelAttributes;
 
 	JButton btnNewAttribute;
 	JButton btnDropAttribute;
@@ -135,6 +151,9 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 		tblAttributes = new JTable(entityModel);
 		tblAttributes.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		tblAttributes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		tblAttributes.setDragEnabled(true);
+		tblAttributes.setDropMode(DropMode.INSERT_ROWS);
+		tblAttributes.setTransferHandler(new TableRowTransferHandler(tblAttributes));
 
 		tblAttributes.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
@@ -300,8 +319,35 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 				showNuclosEntityAttributeWizard(attr, true, selected);
 			}
 		});
+		
+		panelAttributes = new JPanel();
+		double sizePanel [][] = {{TableLayout.FILL, 3, 20}, {20,20,3,20,3,TableLayout.FILL}};
+		panelAttributes.setLayout(new TableLayout(sizePanel));
 
-		this.add(scrolPane, new TableLayoutConstraints(0, 0, 4, 0));
+		btUp = new JButton(Icons.getInstance().getIconSortAscending());
+		btUp.setToolTipText(getMessage("wizard.step.entitysqllayout.tooltip.5", "Attribut nach oben schieben"));
+		btDown = new JButton(Icons.getInstance().getIconSortDescending());
+		btDown.setToolTipText(getMessage("wizard.step.entitysqllayout.tooltip.6", "Attribut nach unten schieben"));
+
+		panelAttributes.add(scrolPane, "0,0, 0,5");
+		panelAttributes.add(btUp, "2,1");
+		panelAttributes.add(btDown, "2,3");
+		
+		btUp.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				buttonUpAttributeAction();
+			}
+		});
+
+		btDown.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				buttonDownAttributeAction();
+			}
+		});
+		
+		this.add(panelAttributes, new TableLayoutConstraints(0, 0, 4, 0));
 		this.add(btnNewAttribute, "0,1");
 		this.add(btnDropAttribute, "1,1");
 		this.add(btnEditAttribute, "2,1");
@@ -320,8 +366,6 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 		}
 		return false;
 	}
-
-
 
 	@Override
 	public void prepare() {
@@ -348,7 +392,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 
 		btnNewAttribute.setEnabled(!this.model.isImportTable());
 
-		initTableSorter();
+		//initTableSorter();
 
 
 		if(!this.model.isStateModel()) {
@@ -387,6 +431,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 			JOptionPane.showMessageDialog(this, message, getMessage("wizard.step.entitycommonproperties.19", "Achtung!"), JOptionPane.OK_OPTION);
 	        throw new InvalidStateException();
 		}
+		NuclosEntityAttributeInputStep.this.model.setAttributeModel(entityModel);
 	}
 
 	private void initTableSorter() {
@@ -415,6 +460,28 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 		if(model.isStateModel())
 			sorter.setComparator(9, new StringComparator());
     }
+	
+	private void buttonDownAttributeAction() {
+		int iSelected = tblAttributes.getSelectedRow();
+		if(iSelected < 0 || iSelected >= entityModel.getRowCount()-1)
+			return;
+
+		entityModel.reorder(iSelected, iSelected+1);
+		tblAttributes.getSelectionModel().setSelectionInterval(iSelected+1, iSelected+1);
+		tblAttributes.invalidate();
+		tblAttributes.repaint();
+	}
+
+	private void buttonUpAttributeAction() {
+		int iSelected = tblAttributes.getSelectedRow();
+		if(iSelected < 1 || iSelected > entityModel.getRowCount())
+			return;
+
+		entityModel.reorder(iSelected, iSelected-1);
+		tblAttributes.getSelectionModel().setSelectionInterval(iSelected-1, iSelected-1);
+		tblAttributes.invalidate();
+		tblAttributes.repaint();
+	}
 
 	protected void showNuclosEntityAttributeWizard(Attribute attr, final boolean editMode, final int row) {
 
@@ -701,5 +768,111 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 	        return o1.getName().compareTo(o2.getName());
         }
 	}
+	
+	public class TableRowTransferHandler extends TransferHandler {
+		private JTable table = null;
+
+		public TableRowTransferHandler(JTable table) {
+			this.table = table;
+		}
+
+		@Override
+		protected Transferable createTransferable(JComponent c) {
+			assert (c == table);
+			return new IndexTransferable(table.getSelectedRow());
+		}
+
+		@Override
+		public boolean canImport(JComponent comp, DataFlavor[] transferFlavors) {
+			for (DataFlavor df : transferFlavors) {
+				if (df == indexFlavor)
+					return true;
+			}
+			return super.canImport(comp, transferFlavors);
+		}
+
+		@Override
+		public boolean canImport(TransferHandler.TransferSupport info) {
+			boolean b = info.getComponent() == table && info.isDrop()
+					&& info.isDataFlavorSupported(indexFlavor);
+			table.setCursor(b ? DragSource.DefaultMoveDrop
+					: DragSource.DefaultMoveNoDrop);
+			return b;
+		}
+
+		@Override
+		public int getSourceActions(JComponent c) {
+			return TransferHandler.COPY_OR_MOVE;
+		}
+
+		@Override
+		public boolean importData(TransferHandler.TransferSupport info) {
+			JTable target = (JTable) info.getComponent();
+			JTable.DropLocation dl = (JTable.DropLocation) info
+					.getDropLocation();
+			int index = dl.getRow();
+			int max = table.getModel().getRowCount();
+			if (index < 0 || index > max)
+				index = max;
+			target.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			try {
+				Integer rowFrom = (Integer) info.getTransferable()
+						.getTransferData(indexFlavor);
+				if (rowFrom != -1 && rowFrom != index) {
+					((EntityAttributeTableModel) table.getModel()).reorder(
+							rowFrom, index);
+					if (index > rowFrom)
+						index--;
+					target.getSelectionModel().addSelectionInterval(index,
+							index);
+					return true;
+				}
+			} catch (Exception e) {
+				LOG.error("Error during attribute drop", e);
+			}
+			return false;
+		}
+
+		@Override
+		protected void exportDone(JComponent c, Transferable t, int act) {
+			if (act == TransferHandler.MOVE) {
+				table.setCursor(Cursor
+						.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+		}
+
+	}
+	
+	private static class IndexTransferable implements Transferable {
+		
+		final Integer index;
+		
+		public IndexTransferable(Integer index) {
+			this.index = index;
+		}
+
+		@Override
+		public DataFlavor[] getTransferDataFlavors() {
+			return flavors;
+		}
+
+		@Override
+		public boolean isDataFlavorSupported(DataFlavor fl) {
+			if (indexFlavor.equals(fl))
+				return true;
+			return false;
+		}
+		
+		@Override
+		public Object getTransferData(DataFlavor fl) {
+		    if (indexFlavor.equals(fl)) {
+		      return index;
+		    }
+		    return null;
+		}
+	}
+	
+	public static final DataFlavor indexFlavor = new DataFlavor(Integer.class, "index");
+	private static final DataFlavor[] flavors = new DataFlavor[] {indexFlavor};
 
 }

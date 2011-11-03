@@ -61,6 +61,7 @@ import org.nuclos.client.wizard.util.DefaultValue;
 import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.common.EntityTreeViewVO;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
@@ -296,7 +297,15 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 
 							EntityAttributeTableModel attributeModel = new EntityAttributeTableModel();
 							Collection<EntityFieldMetaDataVO> lstFields = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(vo.getEntity()).values();
-							for(EntityFieldMetaDataVO fieldVO : lstFields) {
+							for(EntityFieldMetaDataVO fieldVO : CollectionUtils.sorted(lstFields,
+										new Comparator<EntityFieldMetaDataVO>() {
+									@Override
+									public int compare(EntityFieldMetaDataVO o1, EntityFieldMetaDataVO o2) {
+										Integer order1 = (o1.getOrder()==null)?0:o1.getOrder();
+										Integer order2 = (o2.getOrder()==null)?0:o2.getOrder();
+										return order1.compareTo(order2);
+									}
+								})) {
 								if(fieldVO.getEntityId() == -100)
 									continue;
 								Attribute attr = new Attribute();

@@ -155,7 +155,7 @@ public class SearchResultStrategy<Clct extends Collectable> implements ISearchRe
 				else {
 					// TODO remove - painting isn't necessary here:
 					UIUtils.paintImmediately(cc.getSearchPanel().tfStatusBar);
-					rc.writeSelectedFieldsAndWidthsToPreferences();
+					//rc.writeSelectedFieldsAndWidthsToPreferences();
 					final List<Clct> selected = cc.getSelectedCollectables();
 					adjustVerticalScrollBarForSearch(bRefreshOnly);
 

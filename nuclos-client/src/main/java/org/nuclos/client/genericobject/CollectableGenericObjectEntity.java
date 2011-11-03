@@ -51,7 +51,7 @@ public class CollectableGenericObjectEntity implements CollectableEntity {
 		private static Cache singleton;
 
 		private Map<Integer, CollectableGenericObjectEntity> mpByModuleId =
-				new HashMap<Integer, CollectableGenericObjectEntity>(Modules.getInstance().getModuleCount(true));
+				new HashMap<Integer, CollectableGenericObjectEntity>(Modules.getInstance().getModuleCount());
 
 		public synchronized static Cache getInstance() {
 			if (singleton == null) {
@@ -94,10 +94,6 @@ public class CollectableGenericObjectEntity implements CollectableEntity {
 				// Note that only attributes occuring in Details layouts are taken into account for building the entity:
 				/* the collection from the AttributeCache must not be modified. A new one is created instead */
 				final Collection<String> collFieldNames = new HashSet<String>(GenericObjectMetaDataCache.getInstance().getAttributeNamesByModuleId(iModuleId, Boolean.FALSE));
-				if (modules.isSubModule(iModuleId)) {
-					// special case: "virtual" parent field:
-					collFieldNames.add(getParentObjectFieldName(sName));
-				}
 				mpByModuleId.put(iModuleId, new CollectableGenericObjectEntity(sName, sLabel, collFieldNames));
 			}
 			final CollectableEntity result = mpByModuleId.get(iModuleId);
@@ -185,18 +181,6 @@ public class CollectableGenericObjectEntity implements CollectableEntity {
 	@Override
 	public int getFieldCount() {
 		return this.stFieldNames.size();
-	}
-
-	/**
-	 * @param sSubEntityName
-	 * @return the name of the "virtual" parent object field for the subentity with the given name.
-	 * The "parentObject" property of <code>GenericObjectVO</code> is mapped to a corresponding
-	 * <code>CollectableEntityField</code> with the name returned by this method.
-	 * 
-	 * @deprecated Parent is no longer part of the entity model.
-	 */
-	public static String getParentObjectFieldName(String sSubEntityName) {
-		return GenericObjectUtils.getParentObjectFieldName(sSubEntityName);
 	}
 
 	@Override

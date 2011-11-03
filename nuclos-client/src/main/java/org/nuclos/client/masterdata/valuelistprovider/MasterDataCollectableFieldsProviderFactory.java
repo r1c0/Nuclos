@@ -206,6 +206,9 @@ public class MasterDataCollectableFieldsProviderFactory implements CollectableFi
 		else if (sCustomType.equals("locales")) {
 			result = new LocaleCollectableFieldsProvider();
 		}
+		else if (sCustomType.equals("assignableworkspaces")) {
+			result = new AssignableWorkspaceCollectableFieldsProvider();
+		}
 		else {
 			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("GenericObjectCollectableFieldsProviderFactory.2",
 				"Unbekannter valuelist-provider Typ: {0}", sCustomType));

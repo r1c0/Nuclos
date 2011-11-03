@@ -23,6 +23,9 @@ import javax.annotation.security.RolesAllowed;
 
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.WorkspaceDescription;
+import org.nuclos.common.WorkspaceVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.common.valueobject.PreferencesVO;
 
@@ -78,13 +81,91 @@ public interface PreferencesFacadeRemote {
 	void mergePreferencesForUser(String name, Map<String, Map<String, String>> preferencesToMerge)
 		throws CommonFinderException;
 	
-	Collection<WorkspaceDescription> getWorkspaceMetadataOnly();
+	/**
+	 * 
+	 * @return
+	 */
+	public Collection<WorkspaceVO> getWorkspaceHeaderOnly();
 	
-	WorkspaceDescription getWorkspace(String name) throws CommonFinderException;
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 * @throws CommonBusinessException 
+	 */
+	public WorkspaceVO getWorkspace(Long id) throws CommonBusinessException;
 		
-	void storeWorkspace(WorkspaceDescription wd);
+	/**
+	 * 
+	 * @param wovo
+	 * @return 
+	 * @throws CommonBusinessException 
+	 */
+	public WorkspaceVO storeWorkspace(WorkspaceVO wovo) throws CommonBusinessException;
 	
-	void storeWorkspaceMetadataOnly(String originName, WorkspaceDescription wd) throws CommonFinderException;
+	/**
+	 * 
+	 * @param wovo
+	 * @throws CommonBusinessException 
+	 */
+	public void storeWorkspaceHeaderOnly(WorkspaceVO wovo) throws CommonBusinessException;
 	
-	void removeWorkspace(String name);
+	/**
+	 * 
+	 * @param id
+	 */
+	public void removeWorkspace(Long id);
+	
+	/**
+	 * 
+	 * @param wovo 
+	 * 			private or customized workspace
+	 * @param roleIds
+	 * @throws CommonBusinessException 
+	 * return private or customized workspace
+	 */
+	public WorkspaceVO assignWorkspace(WorkspaceVO wovo, Collection<Long> roleIds) throws CommonBusinessException;
+	
+	/**
+	 * 
+	 * @return 
+	 */
+	public Collection<EntityObjectVO> getAssignableRoles();
+	
+	/**
+	 * 
+	 * @param assignedWorkspaceId
+	 * @return
+	 */
+	public Collection<Long> getAssignedRoleIds(Long assignedWorkspaceId);
+
+	/**
+	 * 
+	 * @param customizedWovo
+	 * @param isPublishStructureChanged 
+	 * @param isPublishStructureUpdate 
+	 * @param isPublishStarttabConfiguration
+	 * @param isPublishToolbarConfiguration 
+	 * @param isPublishTableColumnConfiguration 
+	 * @throws CommonBusinessException
+	 */
+	public void publishWorkspaceChanges(WorkspaceVO customizedWovo, boolean isPublishStructureChanged, boolean isPublishStructureUpdate, boolean isPublishStarttabConfiguration, boolean isPublishTableColumnConfiguration, boolean isPublishToolbarConfiguration) throws CommonBusinessException;
+
+	/**
+	 * 
+	 * @param customizedWovo
+	 * @return
+	 * @throws CommonBusinessException
+	 */
+	public WorkspaceVO restoreWorkspace(WorkspaceVO customizedWovo) throws CommonBusinessException;
+
+	/**
+	 * 
+	 * @param id1
+	 * @param id2
+	 * @return
+	 * @throws CommonBusinessException
+	 */
+	public boolean isWorkspaceStructureChanged(Long id1, Long id2) throws CommonBusinessException;
+
 }

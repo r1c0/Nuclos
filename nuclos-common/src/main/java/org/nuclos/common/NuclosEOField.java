@@ -103,6 +103,8 @@ public enum NuclosEOField implements NuclosEOFieldConstants{
 
 		result.setLocaleResourceIdForLabel("nuclos.entityfield.eo.state.label");
 		result.setLocaleResourceIdForDescription("nuclos.entityfield.eo.state.description");
+		
+		result.setOrder(65528);
 
 		return result;
 	}
@@ -134,6 +136,8 @@ public enum NuclosEOField implements NuclosEOFieldConstants{
 
 		result.setLocaleResourceIdForLabel("nuclos.entityfield.eo.statenumeral.label");
 		result.setLocaleResourceIdForDescription("nuclos.entityfield.eo.statenumeral.description");
+		
+		result.setOrder(65527);
 
 		return result;
 	}
@@ -165,6 +169,8 @@ public enum NuclosEOField implements NuclosEOFieldConstants{
 
 		result.setLocaleResourceIdForLabel("nuclos.entityfield.eo.stateicon.label");
 		result.setLocaleResourceIdForDescription("nuclos.entityfield.eo.stateicon.description");
+		
+		result.setOrder(65526);
 
 		return result;
 	}
@@ -193,6 +199,8 @@ public enum NuclosEOField implements NuclosEOFieldConstants{
 
 		result.setLocaleResourceIdForLabel("nuclos.entityfield.eo.systemidentifier.label");
 		result.setLocaleResourceIdForDescription("nuclos.entityfield.eo.systemidentifier.description");
+		
+		result.setOrder(65530);
 
 		return result;
 	}
@@ -222,6 +230,8 @@ public enum NuclosEOField implements NuclosEOFieldConstants{
 
 		result.setLocaleResourceIdForLabel("nuclos.entityfield.eo.process.label");
 		result.setLocaleResourceIdForDescription("nuclos.entityfield.eo.process.description");
+		
+		result.setOrder(65529);
 
 		return result;
 	}
@@ -248,6 +258,8 @@ public enum NuclosEOField implements NuclosEOFieldConstants{
 
 		result.setLocaleResourceIdForLabel("nuclos.entityfield.eo.createdat.label");
 		result.setLocaleResourceIdForDescription("nuclos.entityfield.eo.createdat.description");
+		
+		result.setOrder(65531);
 
 		return result;
 	}
@@ -275,6 +287,8 @@ public enum NuclosEOField implements NuclosEOFieldConstants{
 
 		result.setLocaleResourceIdForLabel("nuclos.entityfield.eo.createdby.label");
 		result.setLocaleResourceIdForDescription("nuclos.entityfield.eo.createdby.description");
+		
+		result.setOrder(65532);
 
 		return result;
 	}
@@ -301,6 +315,8 @@ public enum NuclosEOField implements NuclosEOFieldConstants{
 
 		result.setLocaleResourceIdForLabel("nuclos.entityfield.eo.changedat.label");
 		result.setLocaleResourceIdForDescription("nuclos.entityfield.eo.changedat.description");
+		
+		result.setOrder(65533);
 
 		return result;
 	}
@@ -328,6 +344,8 @@ public enum NuclosEOField implements NuclosEOFieldConstants{
 
 		result.setLocaleResourceIdForLabel("nuclos.entityfield.eo.changedby.label");
 		result.setLocaleResourceIdForDescription("nuclos.entityfield.eo.changedby.description");
+		
+		result.setOrder(65534);
 
 		return result;
 	}
@@ -355,6 +373,8 @@ public enum NuclosEOField implements NuclosEOFieldConstants{
 
 		result.setLocaleResourceIdForLabel("nuclos.entityfield.eo.origin.label");
 		result.setLocaleResourceIdForDescription("nuclos.entityfield.eo.origin.description");
+		
+		result.setOrder(65535);
 
 		return result;
 	}
@@ -381,6 +401,8 @@ public enum NuclosEOField implements NuclosEOFieldConstants{
 
 		result.setLocaleResourceIdForLabel("nuclos.entityfield.eo.logicaldeleted.label");
 		result.setLocaleResourceIdForDescription("nuclos.entityfield.eo.logicaldeleted.description");
+		
+		result.setOrder(65536);
 
 		return result;
 	}

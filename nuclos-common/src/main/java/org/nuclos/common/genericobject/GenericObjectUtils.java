@@ -40,12 +40,6 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
  * @version 01.00.00
  */
 public class GenericObjectUtils {
-	/**
-	 * the suffix for the name of the "virtual" field that refers to the parent object for submodules.
-	 * The <code>parentId</code> is a property of GenericObjectVO. As we don't have such a thing in <code>CollectableEntity</code>,
-	 * we need to map this property to a "virtual" <code>CollectableEntityField</code>.
-	 */
-	private static final String FIELDNAMESUFFIX_PARENTOBJECT = "_parentObject";
 
 	private GenericObjectUtils() {
 	}
@@ -81,56 +75,6 @@ public class GenericObjectUtils {
 	public static List<Integer> getAttributeIds(List<? extends CollectableEntityField> lstclctefwe, String sMainEntityName, AttributeProvider ap) {
 		final List<? extends CollectableEntityField> lstclctefMain = CollectionUtils.select(lstclctefwe, new CollectableEntityField.HasEntity(sMainEntityName));
 		return CollectionUtils.transform(lstclctefMain, TransformerUtils.chained(new CollectableEntityField.GetName(), new AttributeProvider.GetAttributeIdByName(sMainEntityName, ap)));
-	}
-
-	/**
-	 * @param iModuleId
-	 * @param sSubEntitySuffix
-	 * @return the name of the subentity with the given suffix belonging to the main entity with the given module id.
-	 */
-	public static String getSubEntityName(Integer iModuleId, String sSubEntitySuffix) {
-		ModuleProvider modules = SpringApplicationContextHolder.getBean(ModuleProvider.class);
-		return modules.getEntityNameByModuleId(iModuleId) + sSubEntitySuffix;
-	}
-
-	/**
-	 * @param collclctefwe
-	 * @param sMainEntityName name of the main entity
-	 * @return the names of subentities contained in the given collection
-	 * @postcondition result != null
-	 */
-	public static Set<String> getSubEntityNames(Collection<? extends CollectableEntityField> collclctefwe, String sMainEntityName, ModuleProvider mp) {
-		final Set<String> result = new HashSet<String>(CollectionUtils.transform(collclctefwe, new CollectableEntityField.GetEntityName()));
-		// remove the names of the main entity and the parent entity, if any:
-		result.remove(sMainEntityName);
-		result.remove(mp.getParentEntityName(sMainEntityName));
-		assert result != null;
-		return result;
-	}
-
-	/**
-	 * @param clctefweSelected
-	 * @param sParentEntityName name of the parent entity. May be <code>null</code>.
-	 * @return Does the given list contain a field of the parent entity?
-	 * @precondition clctefweSelected != null
-	 * @postcondition (sParentEntityName == null) --> !result
-	 * 
-	 * @deprecated Parent is no longer part of the entity model.
-	 */
-	public static boolean containsParentField(List<? extends CollectableEntityField> clctefweSelected, String sParentEntityName) {
-		return (sParentEntityName != null) && CollectionUtils.exists(clctefweSelected, new CollectableEntityField.HasEntity(sParentEntityName));
-	}
-
-	/**
-	 * @param sSubEntityName
-	 * @return the name of the "virtual" parent object field for the subentity with the given name.
-	 * The "parentObject" property of <code>GenericObjectVO</code> is mapped to a corresponding
-	 * <code>CollectableEntityField</code> with the name returned by this method.
-	 * 
-	 * @deprecated Parent is no longer part of the entity model.
-	 */
-	public static String getParentObjectFieldName(String sSubEntityName) {
-		return sSubEntityName + FIELDNAMESUFFIX_PARENTOBJECT;
 	}
 
 }	// class GenericObjectUtils

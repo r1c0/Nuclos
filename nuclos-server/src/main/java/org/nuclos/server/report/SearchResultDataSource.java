@@ -18,6 +18,7 @@ package org.nuclos.server.report;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -65,7 +66,6 @@ public class SearchResultDataSource implements JRDataSource {
 	private final Map<String, Object> mpRows = new HashMap<String, Object>();
 	private final Iterator<GenericObjectWithDependantsVO> iterator;
 	private final String sMainEntityName;
-	private final String sParentEntityName;
 	private final List<? extends CollectableEntityField> lstclctefweSelected;
 
 	/**
@@ -81,12 +81,9 @@ public class SearchResultDataSource implements JRDataSource {
 
 		this.lstclctefweSelected = lstclctefweSelected;
 		this.sMainEntityName = Modules.getInstance().getEntityNameByModuleId(iModuleId);
-		// module id is null in generalsearch...
-		this.sParentEntityName = (iModuleId == null) ? "" : Modules.getParentModuleName(Modules.getInstance().getModuleById(iModuleId));
 
 		final List<Integer> lstAttributeIds = GenericObjectUtils.getAttributeIds(lstclctefweSelected, sMainEntityName, AttributeCache.getInstance());
-		final Set<String> stRequiredSubEntityNames = GenericObjectUtils.getSubEntityNames(lstclctefweSelected, sMainEntityName, Modules.getInstance());
-		final boolean bIncludeParentObjects = iModuleId != null && GenericObjectUtils.containsParentField(lstclctefweSelected, sParentEntityName);
+		final Set<String> stRequiredSubEntityNames = Collections.emptySet();
 
 		this.mpTypes = CollectionUtils.transformIntoMap(lstclctefweSelected, new Transformer<CollectableEntityField, String>() {
 				@Override
@@ -113,7 +110,7 @@ public class SearchResultDataSource implements JRDataSource {
 			}
 		});
 		this.iterator = goFacade.getPrintableGenericObjectsWithDependants(iModuleId, clctexpr, new HashSet<Integer>(lstAttributeIds),
-				stRequiredSubEntityNames, bIncludeParentObjects, bIncludeSubModules).iterator();
+				stRequiredSubEntityNames, false, bIncludeSubModules).iterator();
 	}
 
 	/**
@@ -150,11 +147,6 @@ public class SearchResultDataSource implements JRDataSource {
 		if (sFieldEntityName.equals(this.sMainEntityName)) {
 			// own attribute:
 			final DynamicAttributeVO davo = lowdcvo.getAttribute(sFieldName, AttributeCache.getInstance());
-			result = davo != null ? davo.getValue() : null;
-		}
-		else if (sFieldEntityName.equals(this.sParentEntityName)) {
-			// parent attribute:
-			final DynamicAttributeVO davo = lowdcvo.getParent().getAttribute(sFieldName, AttributeCache.getInstance());
 			result = davo != null ? davo.getValue() : null;
 		}
 		else {

@@ -57,7 +57,7 @@ public interface INucletContent {
 	
 	public void insertOrUpdateNcObject(DalCallResult result, EntityObjectVO ncObject, boolean isNuclon);
 	
-	public void deleteNcObject(DalCallResult result, Long id);
+	public void deleteNcObject(DalCallResult result, EntityObjectVO ncObject);
 	
 	public Set<EntityMetaDataVO> getForeignEntities();
 	

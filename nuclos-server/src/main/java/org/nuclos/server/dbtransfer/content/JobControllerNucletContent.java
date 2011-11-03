@@ -32,10 +32,9 @@ public class JobControllerNucletContent extends DefaultNucletContent {
 	}
 
 	@Override
-	public void deleteNcObject(DalCallResult result, Long id) {
-		EntityObjectVO job = NucletDalProvider.getInstance().getEntityObjectProcessor(getEntity().getEntityName()).getByPrimaryKey(id);
-		unschedule(job);
-		super.deleteNcObject(result, id);
+	public void deleteNcObject(DalCallResult result, EntityObjectVO ncObject) {
+		unschedule(ncObject);
+		super.deleteNcObject(result, ncObject);
 	}
 
 	@Override

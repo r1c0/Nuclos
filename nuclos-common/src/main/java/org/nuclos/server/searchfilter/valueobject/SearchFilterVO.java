@@ -143,14 +143,6 @@ public class SearchFilterVO extends NuclosValueObject {
 		return this.getSearchFilterUser().isEditable();
 	}
 
-	public void setForced(Boolean bForced) {
-		this.getSearchFilterUser().setForced(bForced);
-	}
-
-	public Boolean isForced() {
-		return this.getSearchFilterUser().isForced();
-	}
-
 	public void setValidFrom(Date dValidFrom) {
 		this.getSearchFilterUser().setValidFrom(dValidFrom);
 	}
@@ -245,7 +237,6 @@ public class SearchFilterVO extends NuclosValueObject {
 		result.append(",name=").append(getFilterName());
 		result.append(",entity=").append(getEntity());
 		result.append(",owner=").append(getOwner());
-		result.append(",forced=").append(isForced());
 		result.append("]");
 		return result.toString();
 	}

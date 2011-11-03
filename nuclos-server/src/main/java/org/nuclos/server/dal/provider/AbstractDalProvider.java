@@ -18,9 +18,6 @@ package org.nuclos.server.dal.provider;
 
 import org.nuclos.common.AbstractProvider;
 
-/**
- * @deprecated Remove this - no function.
- */
 public class AbstractDalProvider extends AbstractProvider {
 
 }

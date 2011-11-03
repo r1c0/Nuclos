@@ -1920,7 +1920,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			sParentEntityName = sParentSubForm;
 
 		return new SearchConditionSubFormController(getFrame(), parent, clctcompmodelprovider, sParentEntityName, subform,
-			getPreferences(), MasterDataCollectableFieldsProviderFactory.newFactory(null, valueListProviderCache));
+			getPreferences(), getEntityPreferences(), MasterDataCollectableFieldsProviderFactory.newFactory(null, valueListProviderCache));
 	}
 
 	/**
@@ -1937,7 +1937,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (sParentSubForm != null)
 			sParentEntityName = sParentSubForm;
 
-		MasterDataSubFormController result = newDetailsSubFormController(subform, sParentEntityName, clctcompmodelprovider, getFrame(), parent, getDetailsPanel(), getPreferences());
+		MasterDataSubFormController result = newDetailsSubFormController(subform, sParentEntityName, clctcompmodelprovider, getFrame(), parent, 
+				getDetailsPanel(), getPreferences(), getEntityPreferences());
 
 //		if (bUseInvalidMasterData)
 //			result.setCollectableComponentFactory(new NuclosValidityTolerantCollectableComponentFactory());
@@ -2113,16 +2114,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final SortableCollectableTableModel<CollectableGenericObjectWithDependants> result =
 				new GenericObjectsResultTableModel<CollectableGenericObjectWithDependants>(
 							getCollectableEntity(), getFields().getSelectedFields());
-
-		// setup sorted fields and sorting order from preferences
-		final List<SortKey> sortKeys = readColumnOrderFromPreferences();
-		if (result.getColumnCount() > 0) {
-			try {
-				result.setSortKeys(sortKeys, false);
-			} catch (IllegalArgumentException e) {
-				// sortKeys contains invalid column index, ignore
-			}
-		}
 
 		/**
 		 * @deprecated Move to ResultController hierarchy.
@@ -2422,7 +2413,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			public void handleError(Exception ex) {
 				if(!interrupted)
 					Errors.getInstance().showExceptionDialog(
-						getResultsComponent(), ex);
+						Main.getMainFrame(), ex);
 			}
 
 			@Override
@@ -2773,39 +2764,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		return new CollectableGenericObjectEntity(this.getEntityName(), getEntityLabel(), collFieldNames);
 	}
 
-	/**
-	 * @return the parent entity, if any, of this <code>CollectController</code>'s entity.
-	 */
-	public final CollectableEntity getParentEntity() {
-		return getParentEntity(this.getEntityName());
-	}
-
-	private static CollectableEntity getParentEntity(String sEntityName) {
-		final String sParentEntityName = getParentEntityName(sEntityName);
-		return (sParentEntityName == null) ? null : DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sParentEntityName);
-	}
-
-	/**
-	 * @return the name of the parent entity, if any, of this <code>CollectController</code>'s entity.
-	 *
-	 * TODO: Make private again.
-	 *
-	 * @deprecated Parent is no longer part of the entity model.
-	 */
-	public String getParentEntityName() {
-		return getParentEntityName(this.getEntityName());
-	}
-
-	/**
-	 * @param sEntityName
-	 * @return the name of the given entity's parent entity, if any.
-	 *
-	 * @deprecated Parent is no longer part of the entity model.
-	 */
-	private static String getParentEntityName(String sEntityName) {
-		return Modules.getInstance().getParentEntityName(sEntityName);
-	}
-
 	@Override
 	protected CollectableGenericObjectWithDependants insertCollectable(CollectableGenericObjectWithDependants clctNew) throws CommonBusinessException {
 		if (clctNew.getId() != null)
@@ -3016,7 +2974,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @deprecated Not in use - remove it.
 	 */
 	private Set<String> getSelectedSubEntityNames() {
-		return GenericObjectUtils.getSubEntityNames(getSelectedFields(), getCollectableEntity().getName(), Modules.getInstance());
+		return Collections.emptySet();
 	}
 
 	@Override

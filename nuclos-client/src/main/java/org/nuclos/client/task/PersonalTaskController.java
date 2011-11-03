@@ -138,8 +138,9 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	private static final String PREFS_NODE_PERSONALTASKS = "personalTasks";
 	private static final String PREFS_NODE_PERSONALTASKS_BUTTON_ALL_PRESSED = "personalTasksButtonAllIsPressed";
 	private static final String PREFS_NODE_PERSONALTASKS_SHOW_TASKS_ITEM_SELECTED = "personalTasksShowTasksItemSelected";
-	private static final String PREFS_NODE_SELECTEDFIELDS = CollectController.PREFS_NODE_SELECTEDFIELDS;
-	private static final String PREFS_NODE_SELECTEDFIELDWIDTHS = CollectController.PREFS_NODE_SELECTEDFIELDWIDTHS;
+	
+	private static final String PREFS_NODE_SELECTEDFIELDS = "selectedFields";
+	private static final String PREFS_NODE_SELECTEDFIELDWIDTHS = "selectedFieldWidths";
 
 	private final PersonalTasksPopupMenu popupPersonal;
 
@@ -551,7 +552,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 	private List<SortKey> readColumnOrderFromPreferences() {
 		try {
-			return CollectController.readSortKeysFromPrefs(getPreferences());
+			return PreferencesUtils.readSortKeysFromPrefs(getPreferences());
 		} catch (PreferencesException ex) {
 			LOG.error("The column order could not be loaded from preferences.", ex);
 			return Collections.emptyList();
@@ -683,7 +684,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 	public void storeOrderBySelectedColumnToPreferences(){
 		try {
-			CollectController.writeSortKeysToPrefs(getPreferences(), this.personaltaskview.getPersonalTaskTableModel().getSortKeys());
+			PreferencesUtils.writeSortKeysToPrefs(getPreferences(), this.personaltaskview.getPersonalTaskTableModel().getSortKeys());
 		} catch (PreferencesException e1) {
 			Errors.getInstance().showExceptionDialog(this.getParent(), CommonLocaleDelegate.getMessage("PersonalTaskController.19","Fehler beim Abspeichern der Einstellungen"), e1);
 		}

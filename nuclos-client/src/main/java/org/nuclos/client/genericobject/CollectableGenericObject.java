@@ -127,28 +127,21 @@ public class CollectableGenericObject extends AbstractCollectable implements Rem
 	public CollectableField getField(String sFieldName) {
 		CollectableField result;
 
-		if (sFieldName.equals(CollectableGenericObjectEntity.getParentObjectFieldName(this.getCollectableEntity().getName())))
-		{
-			// special case: "virtual" parent field:
-			// Note that the value should be the entity name or label, but is never displayed anyway.
-			result = new CollectableValueIdField(this.getGenericObjectCVO().getParentId(), null);
-		}
-		else {
-			// mpFields is used as a cache:
-			result = this.mpFields.get(sFieldName);
-			if (result == null) {
-				DynamicAttributeVO attrvo = this.getAttributeValueByName(sFieldName);
-				if (attrvo == null || attrvo.isRemoved()) {
-					attrvo = newGenericObjectAttributeVO(this.govo.getModuleId(), sFieldName);
-				}
-				final CollectableEntityField clctef = this.getCollectableEntity().getEntityField(sFieldName);
-				if (clctef == null) {
-					throw new NuclosFatalException(CommonLocaleDelegate.getMessage("CollectableGenericObject.1", "Unbekanntes Attribut: {0}", sFieldName));
-				}
-				result = new CollectableGenericObjectAttributeField(attrvo, clctef.getFieldType());
-				/** @todo reactivate cache? */
-				//			this.mpFields.put(sFieldName, result);
+		// mpFields is used as a cache:
+		result = this.mpFields.get(sFieldName);
+		if (result == null) {
+			DynamicAttributeVO attrvo = this.getAttributeValueByName(sFieldName);
+			if (attrvo == null || attrvo.isRemoved()) {
+				attrvo = newGenericObjectAttributeVO(this.govo.getModuleId(), sFieldName);
 			}
+			final CollectableEntityField clctef = this.getCollectableEntity().getEntityField(sFieldName);
+			if (clctef == null) {
+				throw new NuclosFatalException(CommonLocaleDelegate.getMessage("CollectableGenericObject.1", "Unbekanntes Attribut: {0}", sFieldName));
+			}
+			result = new CollectableGenericObjectAttributeField(attrvo, clctef.getFieldType());
+			/** @todo reactivate cache? */
+			//			this.mpFields.put(sFieldName, result);
+			
 		}
 		assert result != null;
 		return result;
@@ -166,41 +159,34 @@ public class CollectableGenericObject extends AbstractCollectable implements Rem
 			throw new NullArgumentException("clctfValue");
 		}
 
-		if (sFieldName.equals(CollectableGenericObjectEntity.getParentObjectFieldName(this.getCollectableEntity().getName())))
-		{
-			// special case: "virtual" parent field:
-			this.getGenericObjectCVO().setParentId((Integer) clctfValue.getValueId());
+		if (clctfValue.isNull()) {
+			// remove from cvo:
+			final DynamicAttributeVO attrvo = this.getAttributeValueByName(sFieldName);
+			if (attrvo != null) {
+				attrvo.remove();
+			}
 		}
 		else {
-			if (clctfValue.isNull()) {
-				// remove from cvo:
-				final DynamicAttributeVO attrvo = this.getAttributeValueByName(sFieldName);
-				if (attrvo != null) {
-					attrvo.remove();
-				}
+			// 1. cvo \u00e4ndern:
+			DynamicAttributeVO attrvo = this.getAttributeValueByName(sFieldName);
+			if (attrvo == null) {
+				attrvo = newGenericObjectAttributeVO(this.govo.getModuleId(), sFieldName);
 			}
-			else {
-				// 1. cvo \u00e4ndern:
-				DynamicAttributeVO attrvo = this.getAttributeValueByName(sFieldName);
-				if (attrvo == null) {
-					attrvo = newGenericObjectAttributeVO(this.govo.getModuleId(), sFieldName);
-				}
-				else if (attrvo.isRemoved()) {
-					attrvo.unremove();
-				}
-				assert !attrvo.isRemoved();
-
-				attrvo.setValue(clctfValue.getValue());
-				if (this.getCollectableEntity().getEntityField(sFieldName).isIdField()) {
-					attrvo.setValueId((Integer) clctfValue.getValueId());
-				}
-
-				/** @todo OPTIMIZE: This method is very inefficient - check if this is an issue! */
-				this.govo.setAttribute(attrvo);
-
-				// 2. Evtl. vorhandenen Cache-Eintrag l\u00f6schen:
-				this.mpFields.remove(sFieldName);
+			else if (attrvo.isRemoved()) {
+				attrvo.unremove();
 			}
+			assert !attrvo.isRemoved();
+
+			attrvo.setValue(clctfValue.getValue());
+			if (this.getCollectableEntity().getEntityField(sFieldName).isIdField()) {
+				attrvo.setValueId((Integer) clctfValue.getValueId());
+			}
+
+			/** @todo OPTIMIZE: This method is very inefficient - check if this is an issue! */
+			this.govo.setAttribute(attrvo);
+
+			// 2. Evtl. vorhandenen Cache-Eintrag l\u00f6schen:
+			this.mpFields.remove(sFieldName);
 		}
 
 		assert this.getField(sFieldName).equals(clctfValue) :

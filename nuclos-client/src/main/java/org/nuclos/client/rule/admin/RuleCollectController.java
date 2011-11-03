@@ -161,7 +161,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 		this.subform.addColumn(eventColumn);
 
 		this.subformctlUsage = new MasterDataSubFormController(getFrame(), parent, this.getDetailsPanel().getEditModel(), getEntityName(),
-				subform, this.getPreferences(), valueListProviderCache);
+				subform, this.getPreferences(), this.getEntityPreferences(), valueListProviderCache);
 	}
 
 	public final MainFrameTab getMainFrameTab() {

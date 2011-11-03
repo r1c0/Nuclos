@@ -22,6 +22,7 @@ import java.awt.EventQueue;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -43,6 +44,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import org.apache.commons.httpclient.util.LangUtils;
 import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.ui.Controller;
@@ -50,7 +52,6 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.SizeKnownEvent;
 import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.SubForm.SubFormTableModel;
@@ -62,7 +63,10 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelPro
 import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
 import org.nuclos.client.ui.table.TableCellEditorProvider;
 import org.nuclos.client.ui.table.TableCellRendererProvider;
+import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFieldNotInModelException;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
+import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -72,13 +76,13 @@ import org.nuclos.common.collect.collectable.CollectableUtils.GivenFieldOrderCom
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
-import org.nuclos.common.collection.ComparatorUtils;
+import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.EntityAndFieldName;
-import org.nuclos.common2.PreferencesUtils;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
-import org.nuclos.common2.exception.PreferencesException;
 
 /**
  * Controller for collecting or searching for dependant data (in a one-to-many relationship) in a subform.
@@ -116,8 +120,7 @@ public abstract class SubFormController extends Controller
 	private final CollectableComponentModelProvider clctcompmodelproviderParent;
 	private final String sParentEntityName;
 	private final Preferences prefs;
-	protected static final String PREFS_NODE_SELECTEDFIELDS = CollectController.PREFS_NODE_SELECTEDFIELDS;
-	protected static final String PREFS_NODE_SELECTEDFIELDWIDTHS = CollectController.PREFS_NODE_SELECTEDFIELDWIDTHS;
+	private final SubFormPreferences subFormPrefs;
 	private ListSelectionListener listselectionlistener;
 	private final CollectableFieldsProviderFactory clctfproviderfactory;
 
@@ -136,7 +139,7 @@ public abstract class SubFormController extends Controller
 	 */
 	public SubFormController(CollectableEntity clcte, Component parent, JComponent parentMdi,
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, SubForm subform,
-			boolean bSearchable, Preferences prefsUserParent, CollectableFieldsProviderFactory clctfproviderfactory) {
+			boolean bSearchable, Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderFactory clctfproviderfactory) {
 
 		super(parent);
 		this.clcte = clcte;
@@ -147,6 +150,7 @@ public abstract class SubFormController extends Controller
 		this.bSearchable = bSearchable;
 		final String sEntityName = subform.getEntityName();
 		this.prefs = prefsUserParent.node("subentity").node(sEntityName);
+		this.subFormPrefs = entityPrefs.getSubFormPreferences(sEntityName);
 		this.clctfproviderfactory = clctfproviderfactory;
 
 		assert this.getCollectableEntity() != null;
@@ -231,6 +235,10 @@ public abstract class SubFormController extends Controller
 	protected final Preferences getPrefs() {
 		return this.prefs;
 	}
+	
+	protected final SubFormPreferences getSubFormPrefs() {
+		return this.subFormPrefs;
+	}
 
 	public final String getParentEntityName() {
 		return this.sParentEntityName;
@@ -253,14 +261,7 @@ public abstract class SubFormController extends Controller
 	 * Size and order of list entries is determined by number and order of visible columns
 	 */
 	protected List<Integer> getTableColumnWidthsFromPreferences() {
-		List<Integer> result;
-		try {
-			result = PreferencesUtils.getIntegerList(this.getPrefs(), PREFS_NODE_SELECTEDFIELDWIDTHS);
-		}
-		catch (PreferencesException ex) {
-			LOG.error("Failed to retrieve table column widths from the preferences. They are reset.");
-			result = new ArrayList<Integer>();
-		}
+		List<Integer> result = WorkspaceUtils.getColumnWidthsWithoutFixed(getSubFormPrefs());
 
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("getTableColumnWidthsFromPreferences for entity " + this.getSubForm().getEntityName());
@@ -276,35 +277,11 @@ public abstract class SubFormController extends Controller
 	 * stores the order of the columns in the table
 	 */
 	protected void storeColumnOrderAndWidths(JTable tbl) {
-		try {
-			this.storeFieldNamesInPreferences(CollectableTableHelper.getFieldNamesFromColumns(tbl));
-			if (getSubForm().isUseCustomColumnWidths()) {
-				this.storeFieldWidthsInPreferences(CollectableTableHelper.getColumnWidths(tbl));
-			}
+		if (!isSearchable()) {
+			final List<String> lstFields = CollectableTableHelper.getFieldNamesFromColumns(tbl);
+			final List<Integer> lstFieldWidths = CollectableTableHelper.getColumnWidths(tbl);
+			WorkspaceUtils.setColumnPreferences(getSubFormPrefs(), lstFields, lstFieldWidths);
 		}
-		catch (PreferencesException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-
-	/**
-	 * stores the selected columns (fields) in user preferences
-	 */
-	private void storeFieldNamesInPreferences(List<String> lstFieldNames) throws PreferencesException {
-		PreferencesUtils.putStringList(this.prefs, PREFS_NODE_SELECTEDFIELDS, lstFieldNames);
-	}
-
-	/**
-	 * stores the widths of the selected columns (fields) in user preferences
-	 */
-	private void storeFieldWidthsInPreferences(List<Integer> lstFieldWidths) throws PreferencesException {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("storeFieldWidthsInPreferences for entity " + this.getSubForm().getEntityName());
-			for (Integer i : lstFieldWidths) {
-				LOG.debug("storeFieldWidthsInPreferences: column width = " + i);
-			}
-		}
-		PreferencesUtils.putIntegerList(this.prefs, PREFS_NODE_SELECTEDFIELDWIDTHS, lstFieldWidths);
 	}
 
 	/**
@@ -312,28 +289,163 @@ public abstract class SubFormController extends Controller
 	 * By default, the table column order is controlled by the record order of entities in table t_ad_masterdata_field
 	 */
 	protected List<CollectableEntityField> getTableColumns() {
-		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
+		final List<CollectableEntityField> allFields = new ArrayList<CollectableEntityField>();
 
 		final String sForeignKeyFieldName = this.getForeignKeyFieldName();
 		for (String sFieldName : this.getCollectableEntity().getFieldNames()) {
 			if (getSubForm().isColumnVisible(sFieldName) && !sFieldName.equals(sForeignKeyFieldName)) {
-				result.add(this.getCollectableEntity().getEntityField(sFieldName));
+				allFields.add(this.getCollectableEntity().getEntityField(sFieldName));
 			}
 		}
-
-		List<String> definitionOrder = new ArrayList<String>(getSubForm().getColumnNames());
+		
+		final List<String> definitionOrder = new ArrayList<String>(getSubForm().getColumnNames());
+		final List<String> storedFieldNames = WorkspaceUtils.getSelectedWithoutFixedColumns(getSubFormPrefs());		
+		
+		final List<CollectableEntityField> availableFields = new ArrayList<CollectableEntityField>(allFields); 
+		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
+		
+		if (storedFieldNames.isEmpty()) {
+			// try to order by meta data
+			try {
+				List<EntityFieldMetaDataVO> efsOrdered = CollectionUtils.sorted(
+						MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(getCollectableEntity().getName()).values(),
+						new Comparator<EntityFieldMetaDataVO>() {
+							@Override
+							public int compare(EntityFieldMetaDataVO o1, EntityFieldMetaDataVO o2) {
+								Integer order1 = (o1.getOrder()==null)?0:o1.getOrder();
+								Integer order2 = (o2.getOrder()==null)?0:o2.getOrder();
+								return order1.compareTo(order2);
+							}
+						}); 
+				
+				for (EntityFieldMetaDataVO efMeta : efsOrdered) {
+					for (CollectableEntityField clctef : new ArrayList<CollectableEntityField>(availableFields)) {
+						if (LangUtils.equals(efMeta.getField(), clctef.getName())) {
+							result.add(clctef);
+							availableFields.remove(clctef);
+							break;
+						}
+					}
+				}
+			} catch (Exception ex) {
+				LOG.warn("no column order from meta data", ex);
+			}
+			
+		} else {
+			// restore order from preferences
+			for (String storedFieldName : storedFieldNames) {
+				for (CollectableEntityField clctef : new ArrayList<CollectableEntityField>(availableFields)) {
+					if (LangUtils.equals(storedFieldName, clctef.getName())) {
+						result.add(clctef);
+						availableFields.remove(clctef);
+						break;
+					}
+				}
+			}
+		}
+		
 		Comparator<CollectableEntityField> comparator = new GivenFieldOrderComparator(definitionOrder);
-
-		try {
-			List<String> storedFieldNames = PreferencesUtils.getStringList(this.prefs, PREFS_NODE_SELECTEDFIELDS);
-			comparator = ComparatorUtils.compoundComparator(new GivenFieldOrderComparator(storedFieldNames), comparator);
-		}
-		catch (PreferencesException ex) {
-			LOG.warn("Failed to retrieve the field names from the preferences. They will be empty.");
-		}
-		Collections.sort(result, comparator);
+		Collections.sort(availableFields, comparator);
+		result.addAll(availableFields);
 
 		return result;
+	}
+	
+	/**
+	 * makes sure the given list of selected fields is non-empty. If the list is empty, this method adds one field to it.
+	 * This is to avoid a seemingly empty search result, which might be irritating to the user.
+	 * @param clcte
+	 * @param lstclctefSelected
+	 * @precondition clcte != null
+	 * @precondition lstclctefSelected != null
+	 * @postcondition !lstclctefSelected.isEmpty()
+	 *
+	 * TODO: Make this protected again.
+	 */
+	public void makeSureSelectedFieldsAreNonEmpty(CollectableEntity clcte, List<CollectableEntityField> lstclctefSelected) {
+		if (lstclctefSelected.isEmpty()) {
+			
+			List<String> fieldNames = new ArrayList<String>();
+			try {
+				List<EntityFieldMetaDataVO> fields = CollectionUtils.sorted(
+						MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(clcte.getName()).values(),
+						new Comparator<EntityFieldMetaDataVO>() {
+							@Override
+							public int compare(EntityFieldMetaDataVO o1, EntityFieldMetaDataVO o2) {
+								Integer order1 = (o1.getOrder()==null)?0:o1.getOrder();
+								Integer order2 = (o2.getOrder()==null)?0:o2.getOrder();
+								return order1.compareTo(order2);
+							}
+						});
+				
+				for (EntityFieldMetaDataVO efMeta : fields) {
+					if (StringUtils.isNullOrEmpty(efMeta.getCalcFunction())) {
+						fieldNames.add(efMeta.getField());
+					}
+				}
+			} catch (Exception ex) {
+				LOG.warn("No entity fields for entity " + clcte.getName(), ex);
+			}
+			if (fieldNames.isEmpty()) {
+				fieldNames.addAll(clcte.getFieldNames());
+			}
+			
+			CollectableEntityField sysStateIcon = null;
+			CollectableEntityField sysStateNumber = null;
+			CollectableEntityField sysStateName = null;
+			
+			Set<String> clcteFieldNames = clcte.getFieldNames();
+			for (String field : fieldNames) {
+				if (!clcteFieldNames.contains(field)) {
+					LOG.warn("Field " + field + " in collectable entity " + clcte.getName() + " does not exists");
+					continue;
+				}
+
+				CollectableEntityField clctef = clcte.getEntityField(field);
+				boolean select = true;
+				if (NuclosEOField.getByField(field) != null) {
+					select = false;
+					switch (NuclosEOField.getByField(field)) {
+					case STATEICON : 
+						sysStateIcon = clctef;
+						break;
+					case STATENUMBER : 
+						sysStateNumber = clctef;
+						break;
+					case STATE : 
+						sysStateName = clctef;
+						break;
+					}
+				}
+				if (select) {
+					lstclctefSelected.add(clctef);
+				}
+			}
+			
+			if (sysStateIcon != null)
+				lstclctefSelected.add(sysStateIcon);
+			if (sysStateNumber != null)
+				lstclctefSelected.add(sysStateNumber);
+			if (sysStateName != null)
+				lstclctefSelected.add(sysStateName);
+			
+			final String sForeignKeyFieldName = this.getForeignKeyFieldName();
+			for (CollectableEntityField clctef : new ArrayList<CollectableEntityField>(lstclctefSelected)) {
+				final String sFieldName = clctef.getName();
+				boolean remove = false;
+				if (!getSubForm().isColumnVisible(sFieldName))
+					remove = true;
+				if (sFieldName.equals(sForeignKeyFieldName))
+					remove = true;
+				
+				if (remove)
+					lstclctefSelected.remove(clctef);
+			}
+			
+			if (lstclctefSelected.isEmpty()) {
+				lstclctefSelected.add(clcte.getEntityField(NuclosEOField.CHANGEDBY.getName()));
+			}
+		}
 	}
 
 	/**

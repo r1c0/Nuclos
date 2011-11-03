@@ -48,6 +48,8 @@ import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
 import org.nuclos.client.ui.popupmenu.JPopupMenuFactory;
 import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
+import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
@@ -87,8 +89,8 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 
 	public DynamicEntitySubFormController(Component parent, JComponent parentMdi,
 			CollectableComponentModelProvider clctcompmodelprovider, String sParentEntityName, SubForm subform,
-			Preferences prefsUserParent, CollectableFieldsProviderCache valueListProviderCache) {
-		super(parent, parentMdi, clctcompmodelprovider, sParentEntityName, subform, prefsUserParent, valueListProviderCache);
+			Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderCache valueListProviderCache) {
+		super(parent, parentMdi, clctcompmodelprovider, sParentEntityName, subform, prefsUserParent, entityPrefs, valueListProviderCache);
 
 
 		setupDetailsStuff();

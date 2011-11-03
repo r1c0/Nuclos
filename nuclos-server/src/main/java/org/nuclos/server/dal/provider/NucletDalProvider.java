@@ -27,12 +27,13 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.processor.nuclet.IEOGenericObjectProcessor;
+import org.nuclos.server.dal.processor.nuclet.IWorkspaceProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityFieldMetaDataProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityMetaDataProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 
 /**
- * @deprecated Replace with pure Spring solution.
+ * TODO Replace with pure Spring solution.
  */
 public class NucletDalProvider extends AbstractDalProvider {
 	
@@ -49,6 +50,7 @@ public class NucletDalProvider extends AbstractDalProvider {
 	private JdbcEntityMetaDataProcessor entityMetaDataProcessor;
 	private JdbcEntityFieldMetaDataProcessor entityFieldMetaDataProcessor;
 	private IEOGenericObjectProcessor eoGenericObjectProcessor;
+	private IWorkspaceProcessor workspaceProcessor;
 	
 	public static NucletDalProvider getInstance() {
 		return singleton;
@@ -76,6 +78,13 @@ public class NucletDalProvider extends AbstractDalProvider {
 	 */
 	public void setGenericObjectProcessor(IEOGenericObjectProcessor processor) {
 		this.eoGenericObjectProcessor = processor;
+	}	
+	
+	/**
+	 * Spring property.
+	 */
+	public void setWorkspaceProcessor(IWorkspaceProcessor processor) {
+		this.workspaceProcessor = processor;
 	}	
 	
 	public void buildEOProcessors() {
@@ -146,6 +155,10 @@ public class NucletDalProvider extends AbstractDalProvider {
 	
 	public IEOGenericObjectProcessor getEOGenericObjectProcessor() {
 		return eoGenericObjectProcessor;
+	}
+	
+	public IWorkspaceProcessor getWorkspaceProcessor() {
+		return workspaceProcessor;
 	}
 
 	public void revalidate() {

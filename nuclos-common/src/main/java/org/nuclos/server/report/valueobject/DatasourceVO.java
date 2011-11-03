@@ -211,7 +211,7 @@ public class DatasourceVO extends NuclosValueObject {
 		if (StringUtils.isNullOrEmpty(this.getSource())) {
 			throw new CommonValidationException("datasource.error.validation.datasourcexml");
 		}
-		for (MasterDataVO md : SpringApplicationContextHolder.getBean(ModuleProvider.class).getModules(true)) {
+		for (MasterDataVO md : SpringApplicationContextHolder.getBean(ModuleProvider.class).getModules()) {
 			if (this.getName().equals(md.getField("entity"))) {
 				throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage("datasource.error.validation.name", this.getName()));
 //					"Es existiert ein Modul mit dem Namen: "+this.getDatasource()

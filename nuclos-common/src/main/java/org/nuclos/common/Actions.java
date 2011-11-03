@@ -40,4 +40,8 @@ public class Actions {
 	public static final String ACTION_TRANSLATION								= "EditTranslationsForLocale";//"\u00dcbersetzungen bearbeiten";
 	public static final String ACTION_TASKLIST 								= "TaskList";//"Aufgabenliste";
 	public static final String ACTION_PRINT_TASKLIST 						= "PrintTaskList";//"Aufgabenliste drucken";
+	public static final String ACTION_WORKSPACE_ASSIGN						= "WorkspaceAssignment";//"Arbeitsumgebung: Zuweisen";
+	public static final String ACTION_WORKSPACE_CREATE_NEW					= "WorkspaceCreateNew";//"Arbeitsumgebung: Anlegen";
+	public static final String ACTION_WORKSPACE_CUSTOMIZE_STARTTAB			= "WorkspaceCustomizeStarttab";//"Arbeitsumgebung zugewiesen: Starttabs individualisieren";
+	public static final String ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS = "WorkspaceCustomizeEntityAndSubFormColumns";//"Arbeitsumgebung zugewiesen: Entitäten- und Unterformularspalten individualisieren";
 }	// interface Actions

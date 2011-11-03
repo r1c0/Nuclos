@@ -51,6 +51,7 @@ public class MasterDataMetaFieldVO extends NuclosValueObject {
 	private boolean bUnique;
 	private boolean invariant;
 	private boolean bIndexed;
+	private Integer iOrder;
 	
 	private boolean bLogToLogbook;
 
@@ -82,7 +83,7 @@ public class MasterDataMetaFieldVO extends NuclosValueObject {
 			Class<?> clsDataType, Integer iDataScale, Integer iDataPrecision, String sInputFormat,
 			String sOutputFormat, boolean bNullable, boolean bSearchable, boolean bUnique, boolean bInvariant, boolean bLogToLogbook, 
 			java.util.Date dateCreatedAt, String sCreatedBy, java.util.Date dateChangedAt, String sChangedBy, Integer iVersion,
-			String resourceIdForLabel, String resourceIdForDescription, boolean bIndexed) {
+			String resourceIdForLabel, String resourceIdForDescription, boolean bIndexed, Integer iOrder) {
 		super(iId, dateCreatedAt, sCreatedBy, dateChangedAt, sChangedBy, iVersion);
 		this.sFieldName = sFieldName;
 		this.sDBFieldName = sDbFieldName;
@@ -106,6 +107,7 @@ public class MasterDataMetaFieldVO extends NuclosValueObject {
 		this.sResourceIdForLabel = resourceIdForLabel;
 		this.sResourceIdForDescription = resourceIdForDescription;
 		this.bIndexed = bIndexed;
+		this.iOrder = iOrder;
 	}
 
 	/**
@@ -298,6 +300,10 @@ public class MasterDataMetaFieldVO extends NuclosValueObject {
 		return bIndexed;
 	}
 	
+	public Integer getOrder() {
+		return iOrder;
+	}
+
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder();

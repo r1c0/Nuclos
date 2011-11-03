@@ -168,21 +168,18 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		List<INucletContent> contents = new ArrayList<INucletContent>();
 
 		INucletContent userNC = new UserNucletContent(contents);
-		INucletContent workspaceNC = new WorkspaceNucletContent(contents);
 		INucletContent ldapServerNC = new DefaultNucletContent(NuclosEntity.LDAPSERVER, null, contents, true);
 		INucletContent ldapMappingNC = new DefaultNucletContent(NuclosEntity.LDAPMAPPING, NuclosEntity.LDAPSERVER, contents, true);
 		INucletContent importFileNC = new ImportFileNucletContent(contents);
 		INucletContent importUsageNC = new DefaultNucletContent(NuclosEntity.IMPORTUSAGE, NuclosEntity.IMPORTFILE, contents, true);
 		if (transferOptions.containsKey(TransferOption.IS_NUCLOS_INSTANCE)) {
 			userNC.setEnabled(transferOptions.containsKey(TransferOption.INCLUDES_USER));
-			workspaceNC.setEnabled(transferOptions.containsKey(TransferOption.INCLUDES_USER));
 			ldapServerNC.setEnabled(transferOptions.containsKey(TransferOption.INCLUDES_LDAP));
 			ldapMappingNC.setEnabled(transferOptions.containsKey(TransferOption.INCLUDES_LDAP));
 			importFileNC.setEnabled(transferOptions.containsKey(TransferOption.INCLUDES_IMPORTFILE));
 			importUsageNC.setEnabled(transferOptions.containsKey(TransferOption.INCLUDES_IMPORTFILE));
 		} else {
 			userNC.setEnabled(false);
-			workspaceNC.setEnabled(false);
 			ldapServerNC.setEnabled(false);
 			ldapMappingNC.setEnabled(false);
 			importFileNC.setEnabled(false);
@@ -207,7 +204,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		contents.add(new DefaultNucletContent(NuclosEntity.GROUPTYPE, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.GROUP, NuclosEntity.GROUPTYPE, contents));
 		contents.add(userNC);
-		contents.add(workspaceNC);
 
 		contents.add(new DefaultNucletContent(NuclosEntity.PARAMETER, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.DBOBJECT, null, contents));
@@ -259,7 +255,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		contents.add(new DefaultNucletContent(NuclosEntity.RECORDGRANTUSAGE, NuclosEntity.RECORDGRANT, contents));
 
 		contents.add(new DefaultNucletContent(NuclosEntity.WEBSERVICE, null, contents));
-
+		contents.add(new WorkspaceNucletContent(contents));
 		contents.add(new CustomComponentNucletContent(contents));
 
 		contents.add(new DefaultNucletContent(NuclosEntity.REPORT, null, contents));
@@ -278,6 +274,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		contents.add(new DefaultNucletContent(NuclosEntity.ROLESUBFORM, NuclosEntity.ROLE, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.ROLESUBFORMCOLUMN, NuclosEntity.ROLESUBFORM, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.ROLEREPORT, NuclosEntity.ROLE, contents));
+		contents.add(new DefaultNucletContent(NuclosEntity.ROLEWORKSPACE, NuclosEntity.ROLE, contents));
 
 		contents.add(new SearchFilterNucletContent(contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.SEARCHFILTERUSER, NuclosEntity.SEARCHFILTER, contents));
@@ -1491,7 +1488,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			} else {
 				info("--> delete existing eo");
 				if (!testMode) {
-					ncp.getNC().deleteNcObject(result, ncp.getNcObject().getId());
+					ncp.getNC().deleteNcObject(result, ncp.getNcObject());
 				}
 				if (ncp.isDeleteUID()) {
 					info("delete existing uid");

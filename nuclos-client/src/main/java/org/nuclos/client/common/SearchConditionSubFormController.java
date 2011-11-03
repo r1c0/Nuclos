@@ -32,6 +32,10 @@ import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
+import org.nuclos.client.ui.table.TableUtils;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
+import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
+import org.nuclos.common.WorkspaceDescription.TablePreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -436,18 +440,25 @@ public class SearchConditionSubFormController extends SubFormController {
             }
 		}
 
+		@Override
+		public int getMinimumColumnWidth(int columnIndex) {
+			return TableUtils.getMinimumColumnWidth(getCollectableEntityField(columnIndex).getJavaClass());
+		}
+
 	}	// class SearchConditionTableModelImpl
 
 	private SearchConditionTableModel tblmdl;
 
 	public SearchConditionSubFormController(Component parent, JComponent parentMdi,
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, final SubForm subform,
-			Preferences prefsUserParent, CollectableFieldsProviderFactory clctfproviderfactory) {
-		super(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform, true, prefsUserParent,
-				clctfproviderfactory);
+			Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderFactory clctfproviderfactory) {
+		super(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), parent, parentMdi, clctcompmodelproviderParent, 
+				sParentEntityName, subform, true, prefsUserParent, entityPrefs, clctfproviderfactory);
 
 		// there is no multiedit for a SearchConditionSubFormController:
 		subform.setToolbarFunctionState(SubForm.ToolbarFunction.MULTIEDIT.name(), SubForm.ToolbarFunctionState.HIDDEN);
+		
+		subform.getJTable().getTableHeader().setReorderingAllowed(false);
 
 		// initialize table model:
 		this.tblmdl = new SearchConditionTableModelImpl(subform.getEntityName());
@@ -472,15 +483,7 @@ public class SearchConditionSubFormController extends SubFormController {
 	 */
 	@Override
 	protected List<Integer> getTableColumnWidthsFromPreferences() {
-		List<Integer> result;
-		try {
-			result = PreferencesUtils.getIntegerList(this.getPrefs(), FixedColumnRowHeader.PREFS_NODE_FIXEDFIELDS_WIDTHS);
-			result.addAll(PreferencesUtils.getIntegerList(this.getPrefs(), PREFS_NODE_SELECTEDFIELDWIDTHS));
-		}
-		catch (PreferencesException ex) {
-			LOG.error("Failed to retrieve table column widths from the preferences. They are reset.");
-			result = new ArrayList<Integer>();
-		}
+		List<Integer> result = WorkspaceUtils.getColumnWidths(getSubFormPrefs());
 
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("getTableColumnWidthsFromPreferences for entity " + this.getSubForm().getEntityName());
@@ -503,32 +506,23 @@ public class SearchConditionSubFormController extends SubFormController {
 
 	private List<CollectableEntityField> getColumnsFromPrefs() {
 		List<CollectableEntityField> lstFieldsToDisplay = new ArrayList<CollectableEntityField>();
-		Preferences pref = this.getPrefs();
-		try {
-			List<String> lstFields = PreferencesUtils.getStringList(pref, FixedColumnRowHeader.PREFS_NODE_FIXEDFIELDS);
-			lstFields.addAll(PreferencesUtils.getStringList(pref, CollectController.PREFS_NODE_SELECTEDFIELDS));
-			if(lstFields.size() == 0) {
-				lstFieldsToDisplay = getTableColumns();
-				List<CollectableEntityField> lstTMP = new ArrayList<CollectableEntityField>();
-				for(CollectableEntityField field : lstFieldsToDisplay) {
-					if(!isEditField(field))
-						lstTMP.add(field);
-				}
-				lstFieldsToDisplay.clear();
-				lstFieldsToDisplay.addAll(lstTMP);
-			}
-			for(String strField : lstFields) {
-				for(CollectableEntityField field : this.getTableColumns()) {
-					if(field.getName().equals(strField)) {
-						lstFieldsToDisplay.add(field);
-					}
-				}
-			}
-		}
-		catch (PreferencesException e) {
-			LOG.warn("getColumnsFromPrefs failed: " + e);
-			// display all columns on Exception
+		List<String> lstFields = WorkspaceUtils.getSelectedColumns(getSubFormPrefs());
+		if(lstFields.size() == 0) {
 			lstFieldsToDisplay = getTableColumns();
+			List<CollectableEntityField> lstTMP = new ArrayList<CollectableEntityField>();
+			for(CollectableEntityField field : lstFieldsToDisplay) {
+				if(!isEditField(field))
+					lstTMP.add(field);
+			}
+			lstFieldsToDisplay.clear();
+			lstFieldsToDisplay.addAll(lstTMP);
+		}
+		for(String strField : lstFields) {
+			for(CollectableEntityField field : this.getTableColumns()) {
+				if(field.getName().equals(strField)) {
+					lstFieldsToDisplay.add(field);
+				}
+			}
 		}
 		return lstFieldsToDisplay;
 	}

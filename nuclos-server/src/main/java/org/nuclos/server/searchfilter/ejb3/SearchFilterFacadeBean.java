@@ -157,7 +157,6 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 		MasterDataVO mdVO_searchfilter = SearchFilterVO.transformToMasterData(filterVO);
 
 		filterVO.getSearchFilterUser().setEditable(true);
-		filterVO.getSearchFilterUser().setForced(false);
 		filterVO.getSearchFilterUser().setUser(getIdByUser(getCurrentUserName()));
 
 		MasterDataVO mdVO_searchfilteruser = SearchFilterUserVO.transformToMasterData(filterVO.getSearchFilterUser());

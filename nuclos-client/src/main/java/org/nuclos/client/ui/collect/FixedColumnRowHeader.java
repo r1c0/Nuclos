@@ -18,9 +18,11 @@ package org.nuclos.client.ui.collect;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -31,8 +33,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.prefs.Preferences;
 
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -52,6 +54,9 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.WorkspaceUtils;
+import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm.SubFormTableModel;
@@ -62,11 +67,13 @@ import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableCellEditorProvider;
 import org.nuclos.client.ui.table.TableCellRendererProvider;
 import org.nuclos.client.ui.table.TableHeaderMouseListenerForSorting;
+import org.nuclos.common.Actions;
+import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableUtils;
+import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
-import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
@@ -78,10 +85,10 @@ import org.nuclos.common2.exception.PreferencesException;
  */
 public class FixedColumnRowHeader extends SubformRowHeader {
 
-	private static final Logger LOG = Logger.getLogger(FixedColumnRowHeader.class);
 
-	public static final String PREFS_NODE_FIXEDFIELDS = "fixedFields";
-	public static final String PREFS_NODE_FIXEDFIELDS_WIDTHS = "fixedFieldWidths";
+	private static final Logger LOG = Logger.getLogger(FixedColumnRowHeader.class);
+	
+	public static final Color FIXED_HEADER_BACKGROUND = new Color(100, 100, 100, 50);
 
 	private List<String> lstFixedColumnCollNames;
 	private Map<Object, Integer> mpFixedColumnCollWidths;
@@ -89,17 +96,12 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	private ToolTipsTableHeader tableHeader;
 	private TableHeaderMouseListenerForSorting sortingListener;
 	private TableColumnModelListener headerColumnModelListener;
+	
+	private final SubFormPreferences subFormPreferences;
 
-	public FixedColumnRowHeader() {
+	public FixedColumnRowHeader(SubFormPreferences subFormPreferences) {
 		super();
-		this.lstFixedColumnCollNames = new ArrayList<String>();
-		this.mpFixedColumnCollWidths = new HashMap<Object, Integer>();
-		this.initColumnModelListener();
-		getHeaderTable().getColumnModel().addColumnModelListener(headerColumnModelListener);
-	}
-
-	public FixedColumnRowHeader(SubForm.SubFormTable tableToAddHeader, JScrollPane scrlpnOriginalTable) {
-		super(tableToAddHeader, scrlpnOriginalTable);
+		this.subFormPreferences = subFormPreferences;
 		this.lstFixedColumnCollNames = new ArrayList<String>();
 		this.mpFixedColumnCollWidths = new HashMap<Object, Integer>();
 		this.initColumnModelListener();
@@ -200,7 +202,11 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	 * Lets the user select the columns to show in the result list.
 	 */
 	private void cmdSelectColumns() {
-
+		if (!SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) &&
+				MainFrame.getWorkspace().isAssigned()) {
+			return;
+		}
+		
 		final SelectFixedColumnsController ctl = new SelectFixedColumnsController(this.getHeaderTable(), new SelectFixedColumnsPanel());
 		final Comparator<CollectableEntityField> comp = (Comparator<CollectableEntityField>) getCollectableEntityFieldComparator();
 		final SortedSet<CollectableEntityField> lstAvailable = getAllAvailableFields(comp);
@@ -218,41 +224,74 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		// remember the widths of the currently visible columns
 		final Map<Object,Integer> mpWidths = getVisibleColumnWidth();
 		ctl.setModel(ro);
+		
+		final List<CollectableEntityField> lstSelectedOld = new ArrayList<CollectableEntityField>((List<CollectableEntityField>) ro.getSelectedFields());
 		final boolean bOK = ctl.run(CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 
 		if (bOK) {
-			UIUtils.runCommand(this.getHeaderTable(), new CommonRunnable() {
-				@Override
-                public void run() /* throws CommonBusinessException */ {
-					final int iSelRow = getExternalTable().getSelectedRow();
+			final List<CollectableEntityField> lstSelectedNew = ctl.getSelectedObjects();
+			changeSelectedColumns(ctl.getSelectedObjects(), ctl.getFixedObjects(), null, mpWidths, null, null);
+			
+			// add DEselected to hidden in preferences
+			final Collection<? extends CollectableEntityField> collDeselected = CollectionUtils.subtract(lstSelectedOld, lstSelectedNew);
+			for (CollectableEntityField clctef : collDeselected) {
+				WorkspaceUtils.addHiddenColumn(subFormPreferences, clctef.getName());
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @param lstSelectedNew
+	 * @param setFixedNew
+	 * @param mpWidths
+	 */
+	public void changeSelectedColumns(
+			final List<CollectableEntityField> lstSelectedNew, 
+			final Set<CollectableEntityField> setFixedNew, 
+			final List<Integer> allFieldWidths,
+			final Map<Object,Integer> mpWidths,
+			final Action actResetToDefaultWidths,
+			final Action actAfterSelection) {
+		UIUtils.runCommand(this.getHeaderTable(), new CommonRunnable() {
+			@Override
+            public void run() /* throws CommonBusinessException */ {
+				final int iSelRow = getExternalTable().getSelectedRow();
 
-					final List<CollectableEntityField> lstSelectedNew = (List<CollectableEntityField>) ctl.getSelectedObjects();
-					final Set<?> setFixedNew = ctl.getFixedObjects();
-					final List<CollectableEntityField> lstFixedNew = new ArrayList<CollectableEntityField>(setFixedNew.size());
+				final List<CollectableEntityField> lstFixedNew = new ArrayList<CollectableEntityField>(setFixedNew.size());
 
-					for (CollectableEntityField curField : lstSelectedNew) {
-						if (setFixedNew.contains(curField)) {
-							lstFixedNew.add(curField);
-						}
+				for (CollectableEntityField curField : lstSelectedNew) {
+					if (setFixedNew.contains(curField)) {
+						lstFixedNew.add(curField);
 					}
+				}
 
-					lstFixedColumnCollNames = CollectableUtils.getFieldNamesFromCollectableEntityFields(lstFixedNew);
-					synchronizeColumnsInHeaderTable(lstFixedColumnCollNames);
-					lstSelectedNew.removeAll(lstFixedNew);
-					synchronizeColumnsInExternalTable(lstSelectedNew);
+				lstFixedColumnCollNames = CollectableUtils.getFieldNamesFromCollectableEntityFields(lstFixedNew);
+				synchronizeColumnsInHeaderTable(lstFixedColumnCollNames);
+				lstSelectedNew.removeAll(lstFixedNew);
+				
+				synchronizeColumnsInExternalTable(lstSelectedNew);
 
-					// reselect the previously selected row (which gets lost be refreshing the model)
-					if (iSelRow != -1) {
-						getExternalTable().setRowSelectionInterval(iSelRow, iSelRow);
-					}
-
+				// reselect the previously selected row (which gets lost be refreshing the model)
+				if (iSelRow != -1) {
+					getExternalTable().setRowSelectionInterval(iSelRow, iSelRow);
+				}
+				
+				if (allFieldWidths != null && !allFieldWidths.isEmpty()) { 
+					restoreColumnWidthsFromPrefs(allFieldWidths);
+				} else if (mpWidths != null && !mpWidths.isEmpty()) {
 					restoreColumnWidthsInExternalTable(mpWidths);
 					restoreColumnWidthsInHeaderTable(mpWidths);
-					mpFixedColumnCollWidths = getVisibleColumnWidth();
-					invalidateHeaderTable();
+				} else if (actResetToDefaultWidths != null) {
+					actResetToDefaultWidths.actionPerformed(new ActionEvent(FixedColumnRowHeader.this, 1, "reset to default widths"));
 				}
-			});
-		}
+				mpFixedColumnCollWidths = getVisibleColumnWidth();
+				invalidateHeaderTable();
+				
+				if (actAfterSelection != null)
+					actAfterSelection.actionPerformed(new ActionEvent(FixedColumnRowHeader.this, 2, "after selection"));
+			}
+		});
 	}
 
 	/**
@@ -261,6 +300,16 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	 */
 	private SortedSet<CollectableEntityField> getAllAvailableFields(Comparator<CollectableEntityField> comp) {
 		final SortedSet<CollectableEntityField> resultList = new TreeSet<CollectableEntityField>(comp);
+		resultList.addAll(getAllAvailableFields());
+		return resultList;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public List<CollectableEntityField> getAllAvailableFields() {
+		final List<CollectableEntityField> resultList = new ArrayList<CollectableEntityField>();
 		final CollectableEntityFieldBasedTableModel subformtblmdl = getExternalModel();
 		for (int iColumnNr = 0; iColumnNr < subformtblmdl.getColumnCount(); iColumnNr++) {
 			resultList.add(subformtblmdl.getCollectableEntityField(iColumnNr));
@@ -351,9 +400,10 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		}
 	}
 
-	private void restoreColumnWidthsFromPrefsInHeaderTable(final List<Integer> lstWidthsFromPref) {
-		TableColumnModel headerColumnModel = getHeaderTable().getColumnModel();
+	private void restoreColumnWidthsFromPrefs(final List<Integer> lstWidthsFromPref) {
 		Iterator<Integer> widthIter = lstWidthsFromPref.iterator();
+		
+		TableColumnModel headerColumnModel = getHeaderTable().getColumnModel();
 		for (Enumeration<TableColumn> columnEnum = headerColumnModel.getColumns(); columnEnum.hasMoreElements();) {
 			TableColumn varColumn = columnEnum.nextElement();
 			if (StringUtils.nullIfEmpty((String) varColumn.getIdentifier()) != null) {
@@ -364,6 +414,18 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 				}
 			}
 		}
+		
+		TableColumnModel externalColumnModel = getExternalTable().getColumnModel();
+		for (Enumeration<TableColumn> columnEnum = externalColumnModel.getColumns(); columnEnum.hasMoreElements();) {
+			TableColumn varColumn = columnEnum.nextElement();
+			if (StringUtils.nullIfEmpty((String) varColumn.getIdentifier()) != null) {
+				if (widthIter.hasNext()) {
+					Integer width = widthIter.next();
+					varColumn.setPreferredWidth(width.intValue());
+					varColumn.setWidth(width.intValue());
+				}
+			}
+		} 
 	}
 
 	/**
@@ -450,12 +512,13 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 
 		invalidateHeaderTable();
 		getHeaderTable().getColumnModel().addColumnModelListener(headerColumnModelListener);
-		restoreColumnWidthsInExternalTable(mpWidths);
+		
 		if (lstHeaderColumnWidthsFromPref != null) {
-			restoreColumnWidthsFromPrefsInHeaderTable(lstHeaderColumnWidthsFromPref);
+			restoreColumnWidthsFromPrefs(lstHeaderColumnWidthsFromPref);
 			lstHeaderColumnWidthsFromPref = null;
 		}
 		else {
+			restoreColumnWidthsInExternalTable(mpWidths);
 			restoreColumnWidthsInHeaderTable(mpWidths);
 		}
 	}
@@ -585,8 +648,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		return result;
 	}
 
-	public void writeFieldToPreferences(Preferences preferences) throws PreferencesException {
-
+	public void writeFieldToPreferences(SubFormPreferences subFormPreferences) throws PreferencesException {
 		final List<Integer> lstWidths = new ArrayList<Integer>();
 		final Enumeration<TableColumn> enumeration = getHeaderTable().getColumnModel().getColumns();
 		while (enumeration.hasMoreElements()) {
@@ -595,20 +657,12 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 				lstWidths.add(column.getWidth());
 			}
 		}
-		PreferencesUtils.putIntegerList(preferences, PREFS_NODE_FIXEDFIELDS_WIDTHS, lstWidths);
-		PreferencesUtils.putStringList(preferences, PREFS_NODE_FIXEDFIELDS, getColumnNames());
+		WorkspaceUtils.addFixedColumns(subFormPreferences, lstFixedColumnCollNames, lstWidths);
 	}
 
-	public void initializeFieldsFromPreferences(Preferences preferences) {
-
-		try {
-			this.lstFixedColumnCollNames = PreferencesUtils.getStringList(preferences, PREFS_NODE_FIXEDFIELDS);
-			this.lstHeaderColumnWidthsFromPref = PreferencesUtils.getIntegerList(preferences, PREFS_NODE_FIXEDFIELDS_WIDTHS);
-		}
-		catch (PreferencesException ex) {
-			this.lstFixedColumnCollNames = new ArrayList<String>();
-			this.mpFixedColumnCollWidths = new HashMap<Object, Integer>();
-		}
+	public void initializeFieldsFromPreferences(SubFormPreferences subFormPreferences) {
+		this.lstFixedColumnCollNames = WorkspaceUtils.getFixedColumns(subFormPreferences);
+		this.lstHeaderColumnWidthsFromPref = WorkspaceUtils.getColumnWidths(subFormPreferences);
 	}
 
 	/**
@@ -775,9 +829,18 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 
 			if (renderer instanceof JLabel) {
 				if (column == 0) {
-					((JLabel) renderer).setIcon(Icons.getInstance().getIconSelectVisibleColumns16());
-					((JLabel) renderer).setBorder(BorderFactory.createEmptyBorder(0, 2, 2, 0));
+					if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) ||
+							!MainFrame.getWorkspace().isAssigned()) {
+						((JLabel) renderer).setIcon(MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconSelectVisibleColumns16(), 12));
+						((JLabel) renderer).setBorder(BorderFactory.createEmptyBorder(2, 2, 1, 1));
+					}
 				}
+			}
+			
+			if (rendererTable.getColumnCount() <= 1) {
+				renderer.setBackground(null);
+			} else {
+				renderer.setBackground(FIXED_HEADER_BACKGROUND);
 			}
 			
 			return renderer;
@@ -799,7 +862,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 						boolean hasFocus, int row, int column) {
 					
 					Component comp = FixedRowToolTipsTableHeader.super.getDefaultRenderer().getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-					comp.setBackground(Color.lightGray);
+					//comp.setBackground(Color.lightGray);
 					
 					return comp;
 				}

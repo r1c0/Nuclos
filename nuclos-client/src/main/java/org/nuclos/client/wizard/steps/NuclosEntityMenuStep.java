@@ -32,6 +32,7 @@ import javax.swing.JToolBar;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
 import org.nuclos.client.entityobject.CollectableEntityObject;
+import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.ui.collect.SubForm;
@@ -39,6 +40,7 @@ import org.nuclos.client.ui.collect.component.CollectableComponentType;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
+import org.nuclos.client.wizard.NuclosEntityWizard;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
@@ -145,7 +147,7 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 
 		Preferences prefs = java.util.prefs.Preferences.userRoot().node("org/nuclos/client/entitywizard/steps/menu");
 
-		subFormController = new MasterDataSubFormController(clcte, this, tab, provider, ENTITYNAME_MENU, subform, prefs, null);
+		subFormController = new MasterDataSubFormController(clcte, this, tab, provider, ENTITYNAME_MENU, subform, prefs, NuclosEntityWizard.getEntityPreferences(), null);
 		Collection<EntityObjectVO> data = model.getEntityMenus();
 
 		if (data != null) {

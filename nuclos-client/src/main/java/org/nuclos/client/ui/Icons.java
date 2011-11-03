@@ -128,6 +128,14 @@ public class Icons {
 	public Icon getIconPaste16() {
 		return this.getIconByName("paste");
 	}
+	
+	public Icon getIconRedo16() {
+		return this.getIconByName("redo");
+	}
+	
+	public Icon getIconUndo16() {
+		return this.getIconByName("undo");
+	}
 
 	public Icon getIconNew16() {
 		return this.getIconByName("new");
@@ -143,6 +151,10 @@ public class Icons {
 
 	public Icon getIconSave16() {
 		return this.getIconByName("save");
+	}
+	
+	public Icon getIconSaveS16() {
+		return this.getIconByName("saveS");
 	}
 
 	public Icon getIconClone16() {
@@ -735,6 +747,10 @@ public class Icons {
 	
 	public ImageIcon getWorkspaceChooser_right() {
 		return this.getIconByName("workspaceChooser_right");
+	}
+	
+	public ImageIcon getWorkspaceChooser_assigned() {
+		return this.getIconByName("workspaceChooser_assigned");
 	}
 	
 	public Icon getStateViewStateNormal(String type) {

@@ -138,7 +138,7 @@ public class MakeAttributesConsistent implements UpdateJobs{
 		}
 
 		// get all module entities
-		for (final MasterDataVO mdvo : Modules.getInstance().getModules(false)) {
+		for (final MasterDataVO mdvo : Modules.getInstance().getModules()) {
 			// get all attributes which have a reference to the current module entity
 			for (final AttributeCVO attrcvo : AttributeCache.getInstance().getReferencingAttributes(mdvo.getField("entity").toString())) {
 				// check whether attribute is used in a genericobject

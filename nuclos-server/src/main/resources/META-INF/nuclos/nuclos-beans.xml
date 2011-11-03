@@ -246,6 +246,9 @@
   <bean id="genericObjectProcessor" factory-bean="processorFactorySingleton" factory-method="newEOGenericObjectProcessor">
   </bean>
   
+  <bean id="workspaceProcessor" factory-bean="processorFactorySingleton" factory-method="newWorkspaceProcessor">
+  </bean>
+  
   <bean id="jsonEntityMetaDataProcessor" class="org.nuclos.server.dal.processor.json.impl.EntityMetaDataProcessor">
   </bean>
   
@@ -266,6 +269,7 @@
   	<property name="entityMetaDataProcessor"><ref bean="jdbcEntityMetaDataProcessor"/></property>
   	<property name="entityFieldMetaDataProcessor"><ref bean="jdbcEntityFieldMetaDataProcessor"/></property>
   	<property name="genericObjectProcessor"><ref bean="genericObjectProcessor"/></property>
+  	<property name="workspaceProcessor"><ref bean="workspaceProcessor"/></property>
   </bean>  
 
 </beans>

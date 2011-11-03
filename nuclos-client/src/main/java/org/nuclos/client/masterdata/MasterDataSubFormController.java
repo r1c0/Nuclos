@@ -66,6 +66,8 @@ import org.nuclos.client.ui.event.PopupMenuMouseAdapter;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
+import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.collect.collectable.AbstractCollectableField;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -123,9 +125,9 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	 */
 	public MasterDataSubFormController(Component parent, JComponent parentMdi,
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, final SubForm subform,
-			Preferences prefsUserParent, CollectableFieldsProviderCache valueListProviderCache) {
+			Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderCache valueListProviderCache) {
 		this(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), parent, parentMdi, clctcompmodelproviderParent,
-				sParentEntityName, subform, prefsUserParent, valueListProviderCache);
+				sParentEntityName, subform, prefsUserParent, entityPrefs, valueListProviderCache);
 	}
 
 	/**
@@ -142,9 +144,9 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	 */
 	public MasterDataSubFormController(CollectableEntity clcte, Component parent, JComponent parentMdi,
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, final SubForm subform,
-			Preferences prefsUserParent, CollectableFieldsProviderCache valueListProviderCache) {
+			Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderCache valueListProviderCache) {
 		super(clcte, parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform,
-				prefsUserParent, MasterDataCollectableFieldsProviderFactory.newFactory(null, valueListProviderCache));
+				prefsUserParent, entityPrefs, MasterDataCollectableFieldsProviderFactory.newFactory(null, valueListProviderCache));
 
 		getSubForm().getJTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			@Override

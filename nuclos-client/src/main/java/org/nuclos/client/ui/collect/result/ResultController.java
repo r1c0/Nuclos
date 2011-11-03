@@ -16,8 +16,10 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.result;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -31,10 +33,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.prefs.Preferences;
 
 import javax.swing.Action;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter.SortKey;
@@ -45,6 +48,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -52,7 +56,10 @@ import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.common.Utils;
+import org.nuclos.client.common.WorkspaceUtils;
+import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
+import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
@@ -68,8 +75,10 @@ import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
 import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
 import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
-import org.nuclos.client.ui.collect.result.ResultPanel.TableHeaderColumnPopupListener;
+import org.nuclos.client.ui.popupmenu.AbstractJPopupMenuListener;
 import org.nuclos.client.ui.table.TableUtils;
+import org.nuclos.common.Actions;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -82,11 +91,9 @@ import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
-import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
-import org.nuclos.common2.exception.PreferencesException;
 
 /**
  * Controller for the Result panel.
@@ -141,13 +148,6 @@ public class ResultController<Clct extends Collectable> {
 	 * the lists of available and selected fields, resp.
 	 */
 	private final ChoiceEntityFieldList fields = new ChoiceEntityFieldList(null);
-
-	/**
-	 * Use custom column widths? This will always be true as soon as the user changed one or more column width
-	 * the first time.
-	 * TODO move to ResultController or ResultPanel
-	 */
-	private boolean bUseCustomColumnWidths;
 
 	/**
 	 * action: Edit selected Collectable (in Result panel)
@@ -274,8 +274,14 @@ public class ResultController<Clct extends Collectable> {
 		};
 		getResultPanel().addDoubleClickMouseListener(this.mouselistenerTableDblClick);
 
+		if (!SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) &&
+				MainFrame.getWorkspace().isAssigned()) {
+			getResultPanel().getResultTable().getTableHeader().setReorderingAllowed(false);
+		}
+		
 		// change column ordering in table model when table columns are reordered by dragging a column with the mouse:
 		getResultPanel().addColumnModelListener(newColumnModelListener());
+		
 		getResultPanel().addPopupMenuListener();
 	}
 
@@ -372,7 +378,7 @@ public class ResultController<Clct extends Collectable> {
 	 *
 	 * TODO: Make protected again.
 	 */
-	public void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl, Preferences preferences) {
+	public void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl) {
 		assert clctctl == this.clctctl && clctctl.getFields() == fields && clctctl.getResultController() == this;
 		assert this.clcte.equals(clcte);
 		final Comparator<CollectableEntityField> comp = getCollectableEntityFieldComparator();
@@ -483,7 +489,6 @@ public class ResultController<Clct extends Collectable> {
 
 			@Override
             public void columnMarginChanged(ChangeEvent ev) {
-				bUseCustomColumnWidths = true;
 			}
 
 			@Override
@@ -602,15 +607,8 @@ public class ResultController<Clct extends Collectable> {
 	 */
 	protected List<? extends CollectableEntityField> readSelectedFieldsFromPreferences(CollectableEntity clcte) {
 		assert this.clcte.equals(clcte);
-		List<String> lstSelectedFieldNames;
-		try {
-			lstSelectedFieldNames = PreferencesUtils.getStringList(clctctl.getPreferences(), CollectController.PREFS_NODE_SELECTEDFIELDS);
-		}
-		catch (PreferencesException ex) {
-			LOG.error("Die selektierten Felder konnten nicht aus den Preferences geladen werden.", ex);
-			lstSelectedFieldNames = new ArrayList<String>();
-			// no exception is thrown here.
-		}
+		List<String> lstSelectedFieldNames = WorkspaceUtils.getSelectedColumns(clctctl.getEntityPreferences());
+		
 		final List<CollectableEntityField> result = Utils.createCollectableEntityFieldListFromFieldNames(this, clcte, lstSelectedFieldNames);
 		return result;
 	}
@@ -671,7 +669,7 @@ public class ResultController<Clct extends Collectable> {
 	 * @param tbl
 	 */
 	public void setColumnWidths(final JTable tbl) {
-		this.getResultPanel().setColumnWidths(tbl, this.bUseCustomColumnWidths, clctctl.getPreferences());
+		this.getResultPanel().setColumnWidths(tbl, clctctl.getEntityPreferences());
 	}
 
 	/**
@@ -880,6 +878,7 @@ public class ResultController<Clct extends Collectable> {
 	protected void cmdRemoveColumn(final ChoiceEntityFieldList fields, CollectableEntityField entityField, CollectController<Clct> ctl) {
 		assert ctl == this.clctctl && ctl.getFields() == fields && ctl.getResultController() == this;
 		fields.moveToAvailableFields(entityField);
+		WorkspaceUtils.addHiddenColumn(getCollectController().getEntityPreferences(), entityField.getName());
 
 		// Note that it is not enough to remove the column from the result table model.
 		// We must rebuild the table model's columns in order to sync it with the table column model:
@@ -897,23 +896,6 @@ public class ResultController<Clct extends Collectable> {
 		final JTable resultTable = panel.getResultTable();
 		resultTable.setModel(tblmodel);
 		((ToolTipsTableHeader) resultTable.getTableHeader()).setExternalModel(tblmodel);
-
-		panel.setTableHeaderColumnPopupListener(new TableHeaderColumnPopupListener(resultTable.getTableHeader()) {
-
-			@Override
-			protected void removeColumnVisibility(TableColumn column) {
-				final Map<String, Integer> mpWidths = panel.getVisibleColumnWidth(ctl.getFields().getSelectedFields());
-				final CollectableEntityField clctef = ((CollectableEntityFieldBasedTableModel) resultTable.getModel()).getCollectableEntityField(column.getModelIndex());
-				cmdRemoveColumn(ctl.getFields(), clctef, ctl);
-				panel.restoreColumnWidths(ctl.getFields().getSelectedFields(), mpWidths);
-			}
-
-			@Override
-			public List<? extends CollectableEntityField> getSelectedFields() {
-				return ctl.getFields().getSelectedFields();
-			}
-		});
-		resultTable.getTableHeader().addMouseListener(panel.getTableHeaderColumnPopupListener());
 	}
 
 	protected void toggleColumnVisibility(TableColumn columnBefore, final String sFieldName, final CollectController<Clct> ctl,  final CollectableEntity clcte)  {
@@ -941,41 +923,50 @@ public class ResultController<Clct extends Collectable> {
 			LOG.warn("toggleColumnVisibility failed: " + e, e);
 		}
 	}
-
+	
 	/**
-	 * writes the widths of the selected columns (fields) to the user preferences.
-	 * @param prefs
+	 * writes the selected columns (fields) and their widths to the user preferences.
+	 * TODO make private again or refactor!
 	 */
-	protected void writeFieldWidthsToPreferences(Preferences prefs) throws PreferencesException {
-		final ResultPanel<Clct> panel = getResultPanel();
-		final List<Integer> lstFieldWidths = CollectableTableHelper.getColumnWidths(panel.getResultTable());
-		PreferencesUtils.putIntegerList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDWIDTHS, lstFieldWidths);
+	public void writeSelectedFieldsAndWidthsToPreferences() {
+		writeSelectedFieldsAndWidthsToPreferences(null);
 	}
 
 	/**
 	 * writes the selected columns (fields) and their widths to the user preferences.
 	 * TODO make private again or refactor!
+	 * @param mpWidths 
 	 */
-	public final void writeSelectedFieldsAndWidthsToPreferences() {
-		try {
-			writeSelectedFieldsToPreferences(clctctl.getFields().getSelectedFields());
-			writeFieldWidthsToPreferences(clctctl.getPreferences());
-		}
-		catch (PreferencesException ex) {
-			LOG.error("Failed to write selected field names and widths (search result columns) to preferences.", ex);
-			// No exception is thrown here.
-		}
+	public void writeSelectedFieldsAndWidthsToPreferences(Map<String, Integer> mpWidths) {
+		writeSelectedFieldsAndWidthsToPreferences(clctctl.getEntityPreferences(), clctctl.getFields().getSelectedFields(), mpWidths);
 	}
-
-	/**
-	 * writes the given list of selected fields to the preferences, so they can be restored later by calling <code>readSelectedFieldsFromPreferences</code>.
-	 * @param lstclctefSelected List<CollectableEntityField>
-	 * @throws PreferencesException
-	 * @see #readSelectedFieldsFromPreferences(CollectableEntity)
-	 * TODO make this private
-	 */
-	public void writeSelectedFieldsToPreferences(List<? extends CollectableEntityField> lstclctefSelected) throws PreferencesException {
-		PreferencesUtils.putStringList(clctctl.getPreferences(), CollectController.PREFS_NODE_SELECTEDFIELDS, CollectableUtils.getFieldNamesFromCollectableEntityFields(lstclctefSelected));
+	
+	protected void writeSelectedFieldsAndWidthsToPreferences(
+			EntityPreferences entityPreferences, 
+			List<? extends CollectableEntityField> lstclctefSelected, Map<String, Integer> mpWidths) {
+		final List<String> lstFields = getFieldsForPreferences(lstclctefSelected);
+		final List<Integer> lstFieldWidths = new ArrayList<Integer>();
+		if (mpWidths==null) {
+			mpWidths = getResultPanel().getVisibleColumnWidth(lstclctefSelected);
+		}
+		for (CollectableEntityField clctef : lstclctefSelected) {
+			final String field = clctef.getName();
+			if (mpWidths.containsKey(field)) {
+				lstFieldWidths.add(mpWidths.get(field));
+			} else {
+				lstFieldWidths.add(TableUtils.getMinimumColumnWidth(clctef.getJavaClass()));
+			}
+		}
+		
+		WorkspaceUtils.setColumnPreferences(entityPreferences, lstFields, lstFieldWidths);
+	}
+	
+	protected List<String> getFieldsForPreferences(List<? extends CollectableEntityField> lstclctefSelected) {
+		return CollectableUtils.getFieldNamesFromCollectableEntityFields(lstclctefSelected);
+	}
+	
+	protected List<Integer> getFieldWidthsForPreferences() {
+		return CollectableTableHelper.getColumnWidths(getResultPanel().getResultTable());
 	}
 
 	/**

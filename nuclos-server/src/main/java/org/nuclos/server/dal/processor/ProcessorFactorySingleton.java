@@ -31,6 +31,7 @@ import java.util.Set;
 
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEOField;
+import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.dal.vo.EOGenericObjectVO;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
@@ -47,6 +48,7 @@ import org.nuclos.server.dal.processor.jdbc.impl.EntityFieldMetaDataProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.EntityMetaDataProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.EntityObjectProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.ImportObjectProcessor;
+import org.nuclos.server.dal.processor.jdbc.impl.WorkspaceProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.fileimport.ImportStructure;
 
@@ -271,6 +273,7 @@ public class ProcessorFactorySingleton {
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STR_DEFAULT_MANDATORY", "defaultMandatory", DT_STRING));
 
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "BLNONDELETECASCADE", "onDeleteCascade", DT_BOOLEAN));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "INTORDER", "order", DT_INTEGER));
 
 		return new EntityFieldMetaDataProcessor(allColumns, entityIdColumn, idColumn);
 	}
@@ -337,6 +340,28 @@ public class ProcessorFactorySingleton {
 		allColumns.add(moduleColumn);
 
 		return new EOGenericObjectProcessor(allColumns, moduleColumn, idColumn);
+	}
+	
+	public WorkspaceProcessor newWorkspaceProcessor() {
+		final Class<? extends IDalVO> type = WorkspaceVO.class;
+		final List<IColumnToVOMapping<? extends Object>> allColumns = new ArrayList<IColumnToVOMapping<? extends Object>>();
+		final IColumnToVOMapping<Long> idColumn = createBeanMapping(SystemFields.BASE_ALIAS, type, "INTID", "id", DT_LONG);
+		allColumns.add(idColumn);
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "DATCREATED", "createdAt", DT_INTERNALTIMESTAMP));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRCREATED", "createdBy", DT_STRING));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "DATCHANGED", "changedAt", DT_INTERNALTIMESTAMP));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRCHANGED", "changedBy", DT_STRING));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "INTVERSION", "version", DT_INTEGER));
+		
+		final IColumnToVOMapping<String> nameColumn = createBeanMapping(SystemFields.BASE_ALIAS, type, "STRNAME", "name", DT_STRING); 
+		allColumns.add(nameColumn);
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "CLBWORKSPACE", "clbworkspace", DT_STRING));
+		final IColumnToVOMapping<Long> userColumn = createBeanMapping(SystemFields.BASE_ALIAS, type, "INTID_T_MD_USER", "user", DT_LONG);
+		allColumns.add(userColumn);
+		final IColumnToVOMapping<Long> assignedColumn = createBeanMapping(SystemFields.BASE_ALIAS, type, "INTID_T_MD_WORKSPACE", "assignedWorkspace", DT_LONG);
+		allColumns.add(assignedColumn);
+		
+		return new WorkspaceProcessor(allColumns, idColumn, userColumn, nameColumn, assignedColumn);
 	}
 
 	public DynamicEntityObjectProcessor newDynamicEntityObjectProcessor(EntityMetaDataVO eMeta, Collection<EntityFieldMetaDataVO> colEfMeta) {

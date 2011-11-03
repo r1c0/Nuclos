@@ -46,20 +46,9 @@ public class MasterDataResultTableModel<Clct extends Collectable> extends Sortab
 		}
 		else {
 			final MasterDataWithDependantsVO mdwdvo = ((CollectableMasterDataWithDependants) clct).getMasterDataWithDependantsCVO();
-			if (sFieldEntityName.equals(Modules.getInstance().getParentEntityName(sMainEntityName))) {
-
-				/** @todo assert govoParent != null */
-				if (mdwdvo == null) {
-					result = clctefwe.getNullField();
-				}
-				else {
-					result = new CollectableMasterData(((CollectableMasterDataWithDependants) clct).getCollectableEntity(), mdwdvo).getField(sFieldName);
-				}
-			}
-			else {
-				final Collection<EntityObjectVO> collmdvo = mdwdvo.getDependants().getData(sFieldEntityName);
-				result = new CollectableValueField(GenericObjectUtils.getConcatenatedValue(collmdvo, sFieldName));
-			}
+			
+			final Collection<EntityObjectVO> collmdvo = mdwdvo.getDependants().getData(sFieldEntityName);
+			result = new CollectableValueField(GenericObjectUtils.getConcatenatedValue(collmdvo, sFieldName));
 		}
 
 		// set output format

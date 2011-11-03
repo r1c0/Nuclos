@@ -67,6 +67,7 @@ import org.nuclos.common.NuclosAttributeNotFoundException;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
@@ -515,7 +516,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 		}
 
 		return NuclosCollectControllerFactory.getInstance().newDetailsSubFormController(subform, sParentEntityName, layoutroot,
-				this.getFrame(), this.parent, layoutroot.getRootComponent(), prefs, null);
+				this.getFrame(), this.parent, layoutroot.getRootComponent(), prefs, new EntityPreferences(), null);
 	}
 
 	@Override

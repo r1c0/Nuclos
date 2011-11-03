@@ -81,6 +81,9 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 public class TaskController extends Controller {
 
 	private final static Logger LOG = Logger.getLogger(TaskController.class);
+	
+	private static final String PREFS_NODE_SELECTEDFIELDS = "selectedFields";
+	private static final String PREFS_NODE_SELECTEDFIELDWIDTHS = "selectedFieldWidths";
 
 	private static final String PREFS_NODE_TASKPANEL = "taskPanel";
 	@Deprecated
@@ -237,9 +240,9 @@ public class TaskController extends Controller {
 	 * stores the order of the columns in the table
 	 */
 	private void storeColumnOrderAndWidthsInPrefs(GenericObjectTaskView goTaskView) throws PreferencesException {
-		PreferencesUtils.putStringList(getPreferences(goTaskView), CollectController.PREFS_NODE_SELECTEDFIELDS,
+		PreferencesUtils.putStringList(getPreferences(goTaskView), PREFS_NODE_SELECTEDFIELDS,
 			CollectableTableHelper.getFieldNamesFromColumns(goTaskView.getJTable()));
-		PreferencesUtils.putIntegerList(getPreferences(goTaskView), CollectController.PREFS_NODE_SELECTEDFIELDWIDTHS,
+		PreferencesUtils.putIntegerList(getPreferences(goTaskView), PREFS_NODE_SELECTEDFIELDWIDTHS,
 			CollectableTableHelper.getColumnWidths(goTaskView.getJTable()));
 	}
 
@@ -362,14 +365,6 @@ public class TaskController extends Controller {
 				// otherwise ignored
 			}
 			i++;
-		}
-	}
-
-	public void addForcedFilters() {
-		for(EntitySearchFilter entitySearchFilter : SearchFilterCache.getInstance().getForcedFilters()){
-			if(entitySearchFilter.isValid()){
-				addOrReplaceGenericObjectTaskViewFor(entitySearchFilter, false);
-			}
 		}
 	}
 
@@ -503,11 +498,6 @@ public class TaskController extends Controller {
 	 * @param view
 	 */
 	private void closeGenericObjectTaskView(GenericObjectTaskView view)	throws PreferencesException, CommonBusinessException {
-
-		if (view.getFilter().isForced()) {
-			throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("tasklist.error.searchfilter.fixed", "Der Suchfilter ist fixiert und darf nicht entfernt werden."));
-		}
-
 		MainFrame.closeTab(getTabFor(view));
 		ctlGenericObjectTasks.removeGenericObjectTaskView(view);
 	}

@@ -217,7 +217,6 @@ public class MigrateSearchFilterPreferences {
 				MasterDataVO mdVO_searchfilter_user = new MasterDataVO(MetaDataCache.getInstance().getMetaData(NuclosEntity.SEARCHFILTERUSER), true);
 
 				mdVO_searchfilter_user.setField("userId", iUserId);
-				mdVO_searchfilter_user.setField("forcefilter", Boolean.FALSE);
 				mdVO_searchfilter_user.setField("editable", Boolean.TRUE);
 				mdVO_searchfilter_user.setField("validFrom", null);
 				mdVO_searchfilter_user.setField("validUntil", null);

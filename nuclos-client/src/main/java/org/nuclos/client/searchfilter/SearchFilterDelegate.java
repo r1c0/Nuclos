@@ -192,10 +192,6 @@ public class SearchFilterDelegate {
 			throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("SearchFilterDelegate.5", "Der Suchfilter darf von Ihnen nicht gel\u00f6scht werden."));
 		}
 
-		if (filter.getSearchFilterVO().isForced()) {
-			throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("SearchFilterDelegate.6", "Der Suchfilter darf von Ihnen nicht gel\u00f6scht werden, da er bei Ihnen in der Aufgabenleiste (explizit) fixiert ist."));
-		}
-
 		try {
 			facade.removeSearchFilter(filter.getSearchFilterVO());
 			SearchFilterCache.getInstance().removeFilter(filter);

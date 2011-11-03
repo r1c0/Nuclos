@@ -20,11 +20,14 @@ package org.nuclos.common;
 import java.awt.Rectangle;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.httpclient.util.LangUtils;
+import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.common2.exception.CommonFatalException;
 
 public class WorkspaceDescription implements Serializable {
 	private static final long serialVersionUID = 6637996725938917463L;
@@ -32,13 +35,14 @@ public class WorkspaceDescription implements Serializable {
 	private String name;
 	private boolean hideName;
 	private String nuclosResource;
-	private final List<Frame> frames = new ArrayList<Frame>();
+	private List<Frame> frames;
+	private List<EntityPreferences> entityPreferences;
 	
 	public WorkspaceDescription() {
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public void setName(String name) {
@@ -46,7 +50,7 @@ public class WorkspaceDescription implements Serializable {
 	}
 
 	public boolean isHideName() {
-		return hideName;
+		return this.hideName;
 	}
 
 	public void setHideName(boolean hideName) {
@@ -54,26 +58,94 @@ public class WorkspaceDescription implements Serializable {
 	}
 
 	public String getNuclosResource() {
-		return nuclosResource;
+		return this.nuclosResource;
 	}
 
 	public void setNuclosResource(String nuclosResource) {
 		this.nuclosResource = nuclosResource;
 	}
+	
+	private List<Frame> _getFrames() {
+		if (this.frames == null)
+			this.frames = new ArrayList<Frame>();
+		return this.frames;
+	}
 
 	public List<Frame> getFrames() {
-		return frames;
+		return this._getFrames();
 	}
 
 	public void addFrame(Frame frame) {
-		this.frames.add(frame);
+		this._getFrames().add(frame);
+	}
+	
+	private List<EntityPreferences> _getEntityPreferences() {
+		if (this.entityPreferences == null)
+			this.entityPreferences = new ArrayList<EntityPreferences>();
+		return this.entityPreferences;
+	}
+	
+	public List<EntityPreferences> getEntityPreferences() {
+		return new ArrayList<EntityPreferences>(this._getEntityPreferences());
+	}
+	
+	/**
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	public EntityPreferences getEntityPreferences(String entity) {
+		EntityPreferences result = null;
+		for (EntityPreferences ep : this._getEntityPreferences()) {
+			if (LangUtils.equals(entity, ep.getEntity())) {
+				result = ep;
+				break;
+			}
+		}
+		if (result == null) {
+			result = new EntityPreferences();
+			result.setEntity(entity);
+			this._getEntityPreferences().add(result);
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	public boolean containsEntityPreferences(String entity) {
+		for (EntityPreferences ep : this._getEntityPreferences()) {
+			if (LangUtils.equals(entity, ep.getEntity())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void addEntityPreferences(EntityPreferences ep) {
+		this._getEntityPreferences().add(ep);
+	}
+	
+	public void addAllEntityPreferences(Collection<EntityPreferences> eps) {
+		this._getEntityPreferences().addAll(eps);
+	}
+	
+	public void removeEntityPreferences(EntityPreferences ep) {
+		this._getEntityPreferences().remove(ep);
+	}
+	
+	public void removeAllEntityPreferences() {
+		this._getEntityPreferences().clear();
 	}
 
 	public static class Tab implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
 
 		private String label;
-		private boolean neverClose = false;;
+		private boolean neverClose = false;
+		private boolean fromAssigned = false;;
 		private String preferencesXML;
 		private String restoreController;
 		public String getLabel() {
@@ -88,6 +160,12 @@ public class WorkspaceDescription implements Serializable {
 		public void setNeverClose(boolean neverClose) {
 			this.neverClose = neverClose;
 		}
+		public boolean isFromAssigned() {
+			return fromAssigned;
+		}
+		public void setFromAssigned(boolean fromAssigned) {
+			this.fromAssigned = fromAssigned;
+		}
 		public String getPreferencesXML() {
 			return preferencesXML;
 		}
@@ -99,6 +177,14 @@ public class WorkspaceDescription implements Serializable {
 		}
 		public void setRestoreController(String restoreController) {
 			this.restoreController = restoreController;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof Tab)
+				return LangUtils.equals(this.preferencesXML, ((Tab) obj).getPreferencesXML()) &&
+						LangUtils.equals(this.restoreController, ((Tab) obj).getRestoreController()) &&
+						LangUtils.equals(this.fromAssigned, ((Tab) obj).isFromAssigned());
+			return super.equals(obj);
 		}
 	}
 
@@ -143,10 +229,16 @@ public class WorkspaceDescription implements Serializable {
 			this.selected = selected;
 		}
 		public List<Tab> getTabs() {
-			return tabs;
+			return new ArrayList<Tab>(this.tabs);
 		}
 		public void addTab(Tab tab) {
 			this.tabs.add(tab);
+		}
+		public void addAllTab(List<Tab> tabs) {
+			this.tabs.addAll(tabs);
+		}
+		public void removeTab(Tab tab) {
+			this.tabs.remove(tab);
 		}
 		public boolean isShowEntity() {
 			return showEntity;
@@ -317,19 +409,421 @@ public class WorkspaceDescription implements Serializable {
 	}
 
 	public static interface NestedContent extends Serializable {}
+	
+	public static class EntityPreferences implements Serializable {
+		private static final long serialVersionUID = 6637996725938917463L;
+		
+		private String entity;
+		private TablePreferences resultPreferences;
+		private List<SubFormPreferences> subFormPreferences;
+		
+		public String getEntity() {
+			return entity;
+		}
+		public void setEntity(String entity) {
+			this.entity = entity;
+		}
+		
+		private TablePreferences _getResultPreferences() {
+			if (this.resultPreferences == null)
+				this.resultPreferences = new TablePreferences();
+			return this.resultPreferences;
+		}
+		public TablePreferences getResultPreferences() {
+			return this._getResultPreferences() ;
+		}
+		
+		private List<SubFormPreferences> _getSubFormPreferences() {
+			if (this.subFormPreferences == null) 
+				this.subFormPreferences = new ArrayList<SubFormPreferences>();
+			return this.subFormPreferences;
+		}
+		public List<SubFormPreferences> getSubFormPreferences() {
+			return new ArrayList<SubFormPreferences>(this._getSubFormPreferences());
+		}
+		
+		/**
+		 * 
+		 * @param subForm
+		 * @return
+		 */
+		public SubFormPreferences getSubFormPreferences(String subForm) {
+			SubFormPreferences result = null;
+			for (SubFormPreferences sfp : this._getSubFormPreferences()) {
+				if (LangUtils.equals(subForm, sfp.getEntity())) {
+					result = sfp;
+					break;
+				}
+			}
+			if (result == null) {
+				result = new SubFormPreferences();
+				result.setEntity(subForm);
+				this._getSubFormPreferences().add(result);
+			}
+			return result;
+		}
+		
+		public void addSubFormPreferences(SubFormPreferences sfp) {
+			this._getSubFormPreferences().add(sfp);
+		}
+		public void removeSubFormPreferences(SubFormPreferences sfp) {
+			this._getSubFormPreferences().remove(sfp);
+		}
+		public void clearResultPreferences() {
+			this._getResultPreferences().clear();
+		}
+		
+		@Override
+		public int hashCode() {
+			if (entity == null)
+				return 0;
+			return entity.hashCode();
+		}
 
-	public WorkspaceDescription copyMetadata() {
-		WorkspaceDescription copy = new WorkspaceDescription();
-		copy.setName(getName());
-		copy.setHideName(isHideName());
-		copy.setNuclosResource(getNuclosResource());
-		return copy;
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof EntityPreferences) {
+				EntityPreferences other = (EntityPreferences) obj;
+				LangUtils.equals(getEntity(), other.getEntity());
+			}
+			return super.equals(obj);
+		}
+
+		@Override
+		public String toString() {
+			if (entity == null)
+				return "null";
+			return entity.toString();
+		}
 	}
 	
-	public void importMetadata(WorkspaceDescription importWD) {
-		setName(importWD.getName());
-		setHideName(importWD.isHideName());
-		setNuclosResource(importWD.getNuclosResource());
+	public static class SubFormPreferences implements Serializable {
+		private static final long serialVersionUID = 6637996725938917463L;
+		
+		private String entity;
+		private TablePreferences tablePreferences;
+		
+		public String getEntity() {
+			return entity;
+		}
+
+		public void setEntity(String entity) {
+			this.entity = entity;
+		}
+
+		private TablePreferences _getTablePreferences() {
+			if (this.tablePreferences == null)
+				this.tablePreferences = new TablePreferences();
+			return this.tablePreferences;
+		}
+		public TablePreferences getTablePreferences() {
+			return this._getTablePreferences();
+		}
+		
+		public void clearTablePreferences() {
+			this._getTablePreferences().clear();
+		}
+
+		@Override
+		public int hashCode() {
+			if (entity == null)
+				return 0;
+			return entity.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof SubFormPreferences) {
+				SubFormPreferences other = (SubFormPreferences) obj;
+				LangUtils.equals(getEntity(), other.getEntity());
+			}
+			return super.equals(obj);
+		}
+
+		@Override
+		public String toString() {
+			if (entity == null)
+				return "null";
+			return entity.toString();
+		}
+	}
+	
+	public static class TablePreferences implements Serializable {
+		private static final long serialVersionUID = 6637996725938917463L;
+		
+		private List<ColumnPreferences> selectedColumnPreferences;
+		private Set<String> hiddenColumns;
+		private List<ColumnSorting> columnSorting;
+		
+		private List<ColumnPreferences> _getSelectedColumnPreferences() {
+			if (this.selectedColumnPreferences == null)
+				this.selectedColumnPreferences = new ArrayList<ColumnPreferences>();
+			return this.selectedColumnPreferences;
+		}
+		public List<ColumnPreferences> getSelectedColumnPreferences() {
+			return new ArrayList<ColumnPreferences>(this._getSelectedColumnPreferences());
+		}
+		public void addSelectedColumnPreferences(ColumnPreferences cp) {
+			this._getSelectedColumnPreferences().add(cp);
+		}
+		public void addSelectedColumnPreferencesInFront(ColumnPreferences cp) {
+			this._getSelectedColumnPreferences().add(0, cp);
+		}
+		public void addAllSelectedColumnPreferencesInFront(List<ColumnPreferences> cps) {
+			this._getSelectedColumnPreferences().addAll(0, cps);
+		}
+		public void addAllSelectedColumnPreferences(List<ColumnPreferences> cps) {
+			this._getSelectedColumnPreferences().addAll(cps);
+		}
+		public void removeSelectedColumnPreferences(ColumnPreferences cp) {
+			this._getSelectedColumnPreferences().remove(cp);
+		}
+		public void removeAllSelectedColumnPreferences() {
+			this._getSelectedColumnPreferences().clear();
+		}
+		
+		private List<ColumnSorting> _getColumnSortings() {
+			if (this.columnSorting == null)
+				this.columnSorting = new ArrayList<ColumnSorting>();
+			return this.columnSorting;
+		}
+		public List<ColumnSorting> getColumnSortings() {
+			return new ArrayList<ColumnSorting>(this._getColumnSortings());
+		}
+		public void addColumnSorting(ColumnSorting cs) {
+			this._getColumnSortings().add(cs);
+		}
+		public void addAllColumnSortings(List<ColumnSorting> css) {
+			this._getColumnSortings().addAll(css);
+		}
+		public void removeColumnSorting(ColumnSorting cs) {
+			this._getColumnSortings().remove(cs);
+		}
+		public void removeAllColumnSortings() {
+			this._getColumnSortings().clear();
+		}
+		
+		private Set<String> _getHiddenColumns() {
+			if (this.hiddenColumns == null)
+				this.hiddenColumns = new HashSet<String>();
+			return this.hiddenColumns;
+		}
+		public Set<String> getHiddenColumns() {
+			return new HashSet<String>(this._getHiddenColumns());
+		}
+		public void addHiddenColumn(String column) {
+			this._getHiddenColumns().add(column);
+		}
+		public void addAllHiddenColumns(Set<String> columns) {
+			this._getHiddenColumns().addAll(columns);
+		}
+		public void removeHiddenColumn(String column) {
+			this._getHiddenColumns().remove(column);
+		}
+		public void removeAllHiddenColumns() {
+			this._getHiddenColumns().clear();
+		}
+		
+		public TablePreferences copy() {
+			TablePreferences result = new TablePreferences();
+			for (ColumnPreferences cp : this._getSelectedColumnPreferences())
+				result.addSelectedColumnPreferences(cp.copy());
+			for (String hidden : this._getHiddenColumns())
+				result.addHiddenColumn(hidden);
+			for (ColumnSorting cs : this._getColumnSortings())
+				result.addColumnSorting(cs.copy());
+			return result;
+		}
+		
+		public void clear() {
+			this.removeAllSelectedColumnPreferences();
+			this.removeAllHiddenColumns();
+			this.removeAllColumnSortings();
+		}
+		
+		public void clearAndImport(TablePreferences tp) {
+			clear();
+			final TablePreferences toImportPrefs = tp.copy();
+			this.addAllSelectedColumnPreferences(toImportPrefs.getSelectedColumnPreferences());
+			this.addAllHiddenColumns(toImportPrefs.getHiddenColumns());
+			this.addAllColumnSortings(toImportPrefs.getColumnSortings());
+		}
+	}
+	
+	public static class ColumnPreferences implements Serializable {
+		private static final long serialVersionUID = 6637996725938917463L;
+		
+		public static final int TYPE_DEFAULT = 0;
+		public static final int TYPE_EOEntityField = 1;
+		public static final int TYPE_GenericObjectEntityField = 2;
+		public static final int TYPE_MasterDataForeignKeyEntityField = 3;
+		public static final int TYPE_EntityFieldWithEntity = 4;
+		public static final int TYPE_EntityFieldWithEntityForExternal = 5;
+		
+		
+		private String column;
+		private String entity;
+		private int width;
+		private boolean fixed;
+		
+		private int type;
+		private String pivotSubForm;
+		private String pivotKeyField;
+		private String pivotValueField;
+		private String pivotValueType;
+		
+		public String getColumn() {
+			return column;
+		}
+		public void setColumn(String column) {
+			this.column = column;
+		}
+		public int getWidth() {
+			return width;
+		}
+		public void setWidth(int width) {
+			this.width = width;
+		}		
+		public String getEntity() {
+			return entity;
+		}
+		public void setEntity(String entity) {
+			this.entity = entity;
+		}
+		public boolean isFixed() {
+			return fixed;
+		}
+		public void setFixed(boolean fixed) {
+			this.fixed = fixed;
+		}
+		public int getType() {
+			return type;
+		}
+		public void setType(int type) {
+			this.type = type;
+		}
+		public String getPivotSubForm() {
+			return pivotSubForm;
+		}
+		public void setPivotSubForm(String pivotSubForm) {
+			this.pivotSubForm = pivotSubForm;
+		}
+		public String getPivotKeyField() {
+			return pivotKeyField;
+		}
+		public void setPivotKeyField(String pivotKeyField) {
+			this.pivotKeyField = pivotKeyField;
+		}
+		public String getPivotValueField() {
+			return pivotValueField;
+		}
+		public void setPivotValueField(String pivotValueField) {
+			this.pivotValueField = pivotValueField;
+		}
+		public String getPivotValueType() {
+			return pivotValueType;
+		}
+		public void setPivotValueType(String pivotValueType) {
+			this.pivotValueType = pivotValueType;
+		}
+		@Override
+		public int hashCode() {
+			if (column == null)
+				return 0;
+			return column.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof ColumnPreferences) {
+				ColumnPreferences other = (ColumnPreferences) obj;
+				return LangUtils.equals(getColumn(), other.getColumn()) &&
+					   LangUtils.equals(getEntity(), other.getEntity()) &&
+					   LangUtils.equals(getType(), other.getType()) &&
+					   LangUtils.equals(getPivotSubForm(), other.getPivotSubForm()) &&
+					   LangUtils.equals(getPivotKeyField(), other.getPivotKeyField()) &&
+					   LangUtils.equals(getPivotValueField(), other.getPivotValueField());
+			}
+			return super.equals(obj);
+		}
+
+		@Override
+		public String toString() {
+			final StringBuilder sb = new StringBuilder();
+			sb.append("ColumnPreferences[").append(entity).append(", ");
+			sb.append(column).append(", ");
+			sb.append(type).append(", ");
+			sb.append(pivotSubForm).append(", ");
+			sb.append(pivotKeyField).append(", ");
+			sb.append(pivotValueField).append(", ");
+			sb.append(pivotValueType);
+			sb.append("]");
+			return sb.toString();
+		}
+		
+		public ColumnPreferences copy() {
+			ColumnPreferences result = new ColumnPreferences();
+			result.setColumn(column);
+			result.setEntity(entity);
+			result.setFixed(fixed);
+			result.setWidth(width);
+			result.setType(type);
+			result.setPivotSubForm(pivotSubForm);
+			result.setPivotKeyField(pivotKeyField);
+			result.setPivotValueField(pivotValueField);
+			result.setPivotValueType(pivotValueType);
+			return result;
+		}
+	}
+	
+	public static class ColumnSorting implements Serializable {
+		private static final long serialVersionUID = 6637996725938917463L;
+		
+		private String column;
+		private boolean asc = true;
+		
+		public String getColumn() {
+			return column;
+		}
+		public void setColumn(String column) {
+			this.column = column;
+		}
+		public boolean isAsc() {
+			return asc;
+		}
+		public void setAsc(boolean asc) {
+			this.asc = asc;
+		}
+		
+		@Override
+		public int hashCode() {
+			if (column == null)
+				return 0;
+			return column.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof ColumnSorting) {
+				ColumnSorting other = (ColumnSorting) obj;
+				LangUtils.equals(getColumn(), other.getColumn());
+			}
+			return super.equals(obj);
+		}
+
+		@Override
+		public String toString() {
+			if (column == null)
+				return "null";
+			return column.toString();
+		}
+		
+		public ColumnSorting copy() {
+			ColumnSorting result = new ColumnSorting();
+			result.setColumn(getColumn());
+			result.setAsc(isAsc());
+			return result;
+		}
 	}
 	
 	@Override
@@ -355,5 +849,87 @@ public class WorkspaceDescription implements Serializable {
 		return name.toString();
 	}
 	
+	/**
+	 * 
+	 * @param wd
+	 */
+	public void importHeader(WorkspaceDescription wd) {
+		setName(wd.getName());
+		setHideName(wd.isHideName());
+		setNuclosResource(wd.getNuclosResource());
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Frame getMainFrame() {
+		for (Frame f : frames) {
+			if (f.isMainFrame())
+				return f;
+		}
+		throw new CommonFatalException("No main frame in workspace description");
+	}
+	
+	/**
+	 * 
+	 * @param wd
+	 * @return
+	 */
+	public List<Tabbed> getTabbeds() {
+		List<Tabbed> result = new ArrayList<Tabbed>();
+		for (Frame f : getFrames()) {
+			result.addAll(getTabbeds(f.getContent()));
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @param nc
+	 * @return
+	 */
+	public static List<Tabbed> getTabbeds(NestedContent nc) {
+		List<Tabbed> result = new ArrayList<Tabbed>();
+		if (nc instanceof MutableContent) {
+			result.addAll(getTabbeds(((MutableContent) nc).getContent()));
+		} else if (nc instanceof Split) {
+			result.addAll(getTabbeds(((Split) nc).getContentA()));
+			result.addAll(getTabbeds(((Split) nc).getContentB()));
+		} else if (nc instanceof Tabbed) {
+			result.add((Tabbed) nc);
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @param wd
+	 * @return
+	 * @throws CommonBusinessException 
+	 */
+	public Tabbed getHomeTabbed() throws CommonBusinessException {
+		for (Tabbed tbb : getTabbeds()) {
+			if (tbb.isHome()) {
+				return tbb;
+			}
+		}
+		throw new CommonBusinessException("Workspace.contains.no.home.tabbed");
+	}
+	
+	/**
+	 * 
+	 * @param wd
+	 * @return
+	 * @throws CommonBusinessException 
+	 */
+	public Tabbed getHomeTreeTabbed() throws CommonBusinessException {
+		for (Tabbed tbb : getTabbeds()) {
+			if (tbb.isHomeTree()) {
+				return tbb;
+			}
+		}
+		throw new CommonBusinessException("Workspace.contains.no.home.tabbed");
+	}
 	
 }

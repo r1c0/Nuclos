@@ -5670,21 +5670,6 @@
     "text": "Beschreibung"
   },
   {
-    "resourceID": "nuclos.entityfield.searchfilteruser.forcefilter.label",
-    "locale": "i-default",
-    "text": "Fixed?"
-  },
-  {
-    "resourceID": "nuclos.entityfield.searchfilteruser.forcefilter.label",
-    "locale": "en",
-    "text": "Fixed?"
-  },
-  {
-    "resourceID": "nuclos.entityfield.searchfilteruser.forcefilter.label",
-    "locale": "de",
-    "text": "Fixieren?"
-  },
-  {
     "resourceID": "nuclos.entityfield.attribute.sortationasc.label",
     "locale": "i-default",
     "text": "Sort ascending"
@@ -16933,21 +16918,6 @@
     "resourceID": "nuclos.entityfield.searchfilter.clbsearchfilter.description",
     "locale": "de",
     "text": "Suchfilter"
-  },
-  {
-    "resourceID": "nuclos.entityfield.searchfilteruser.forcefilter.description",
-    "locale": "i-default",
-    "text": "Search filter will be fixed in the task bar if set to true (1)"
-  },
-  {
-    "resourceID": "nuclos.entityfield.searchfilteruser.forcefilter.description",
-    "locale": "en",
-    "text": "Search filter will be fixed in the task bar if set to true (1)"
-  },
-  {
-    "resourceID": "nuclos.entityfield.searchfilteruser.forcefilter.description",
-    "locale": "de",
-    "text": "Falls wahr(1) wird der Suchfilter in der Aufgabenleiste fixiert."
   },
   {
     "resourceID": "nuclos.entityfield.genericobjectgroup.group.description",
@@ -28995,21 +28965,6 @@
     "text": "Daten Importieren"
   },
   {
-    "resourceID": "ResultPanel.6",
-    "locale": "i-default",
-    "text": "Hide this column"
-  },
-  {
-    "resourceID": "ResultPanel.6",
-    "locale": "en",
-    "text": "Hide this column"
-  },
-  {
-    "resourceID": "ResultPanel.6",
-    "locale": "de",
-    "text": "Diese Spalte ausblenden"
-  },
-  {
     "resourceID": "DirectoryRuleNode.16",
     "locale": "i-default",
     "text": "Rules to run on state transitions"
@@ -36820,6 +36775,36 @@
     "text": "XML-Export"
   },
   {
+    "resourceID": "NuclosResultController.1",
+    "locale": "i-default",
+    "text": "Hide this column"
+  },
+  {
+    "resourceID": "NuclosResultController.1",
+    "locale": "en",
+    "text": "Hide this column"
+  },
+  {
+    "resourceID": "NuclosResultController.1",
+    "locale": "de",
+    "text": "Diese Spalte ausblenden"
+  },
+  {
+    "resourceID": "NuclosResultController.2",
+    "locale": "i-default",
+    "text": "Restore to template columns"
+  },
+  {
+    "resourceID": "NuclosResultController.2",
+    "locale": "en",
+    "text": "Restore to template columns"
+  },
+  {
+    "resourceID": "NuclosResultController.2",
+    "locale": "de",
+    "text": "Alle Spalten auf Vorlage zurücksetzen"
+  },
+  {
     "resourceID": "SubFormController.1",
     "locale": "i-default",
     "text": "The entity of the parent component ({0}) must correspond with the entity of the subform ({1}) or with the entity of the superordinate form."
@@ -36878,6 +36863,21 @@
     "resourceID": "DetailsSubFormController.2",
     "locale": "de",
     "text": "Alle zurücksetzen"
+  },
+  {
+    "resourceID": "DetailsSubFormController.3",
+    "locale": "i-default",
+    "text": "Restore to template columns"
+  },
+  {
+    "resourceID": "DetailsSubFormController.3",
+    "locale": "en",
+    "text": "Restore to template columns"
+  },
+  {
+    "resourceID": "DetailsSubFormController.3",
+    "locale": "de",
+    "text": "Alle Spalten auf Vorlage zurücksetzen"
   },
   {
     "resourceID": "SelectUserController.1",
@@ -43104,21 +43104,6 @@
     "text": "Der Suchfilter darf von Ihnen nicht gelöscht werden."
   },
   {
-    "resourceID": "SearchFilterDelegate.6",
-    "locale": "i-default",
-    "text": "The search filter may not be deleted by you, since it was explicitly assigned to you."
-  },
-  {
-    "resourceID": "SearchFilterDelegate.6",
-    "locale": "en",
-    "text": "The search filter may not be deleted by you, since it was explicitly assigned to you."
-  },
-  {
-    "resourceID": "SearchFilterDelegate.6",
-    "locale": "de",
-    "text": "Der Suchfilter darf von Ihnen nicht gelöscht werden, da er Ihnen explizit zugewiesen wurde."
-  },
-  {
     "resourceID": "SearchFilterDelegate.7",
     "locale": "i-default",
     "text": "A search filter could not be deleted, since it was changed in the meantime by another user.\\nPlease initialize the client and try again."
@@ -46459,16 +46444,6 @@
     "text": "Die Spaltenreihenfolge konnte nicht gespeichert werden."
   },
   {
-    "resourceID": "tasklist.error.searchfilter.fixed",
-    "locale": "i-default",
-    "text": "The search filter is fixed and cannot be removed."
-  },
-  {
-    "resourceID": "tasklist.error.searchfilter.fixed",
-    "locale": "de",
-    "text": "Der Suchfilter ist fixiert und darf nicht entfernt werden."
-  },
-  {
     "resourceID": "tasklist.error.load",
     "locale": "i-default",
     "text": "The task list cannot be loaded."
@@ -48846,12 +48821,12 @@
   {
     "resourceID": "wizard.show.8",
     "locale": "i-default",
-    "text": "In order to add attributes, press the button Add attribute"
+    "text": "Add, change or delete attributes. Order of attributes is used in lists and subforms as default for column settings."
   },
   {
     "resourceID": "wizard.show.8",
     "locale": "de",
-    "text": "Fügen Sie Attribute hinzu in dem Sie auf den Button Attribute hinzufügen klicken"
+    "text": "Fügen Sie Attribute hinzu, ändern Sie vorhandene oder löschen Sie welche. Die Reihenfolge der Attribute wird in Listen und Unterformularen als Standard für die Spalteneinstellungen verwendet."
   },
   {
     "resourceID": "wizard.show.9",
@@ -55059,36 +55034,6 @@
     "text": "Benutzergruppen des Suchfilters"
   },
   {
-    "resourceID": "nuclos.entityfield.searchfilterrole.forcefilter.label",
-    "locale": "i-default",
-    "text": "Fixed?"
-  },
-  {
-    "resourceID": "nuclos.entityfield.searchfilterrole.forcefilter.label",
-    "locale": "en",
-    "text": "Fixed?"
-  },
-  {
-    "resourceID": "nuclos.entityfield.searchfilterrole.forcefilter.label",
-    "locale": "de",
-    "text": "Fixieren?"
-  },
-  {
-    "resourceID": "nuclos.entityfield.searchfilterrole.forcefilter.description",
-    "locale": "i-default",
-    "text": "Search filter will be fixed in the task bar if set to true (1)"
-  },
-  {
-    "resourceID": "nuclos.entityfield.searchfilterrole.forcefilter.description",
-    "locale": "en",
-    "text": "Search filter will be fixed in the task bar if set to true (1)"
-  },
-  {
-    "resourceID": "nuclos.entityfield.searchfilterrole.forcefilter.description",
-    "locale": "de",
-    "text": "Falls wahr(1) wird der Suchfilter in der Aufgabenleiste fixiert."
-  },
-  {
     "resourceID": "nuclos.entityfield.searchfilterrole.validFrom.label",
     "locale": "i-default",
     "text": "Valid from"
@@ -59056,7 +59001,7 @@
   {
     "resourceID": "nuclos.entity.workspace.label",
     "locale": "de",
-    "text": "Arbeitsplatz"
+    "text": "Arbeitsumgebung"
   },
   {
     "resourceID": "nuclos.entityfield.workspace.name.label",
@@ -59841,47 +59786,47 @@
   {
     "resourceID": "miWRestoreDefaultWorkspace",
     "locale": "i-default",
-    "text": "Restore default workspace"
+    "text": "Reset workspace"
   },
   {
     "resourceID": "miWRestoreDefaultWorkspace",
     "locale": "en",
-    "text": "Restore default workspace"
+    "text": "Reset workspace"
   },
   {
     "resourceID": "miWRestoreDefaultWorkspace",
     "locale": "de",
-    "text": "Standardarbeitsbereich wiederherstellen"
+    "text": "Arbeitsumgebung zurücksetzen"
   },
   {
     "resourceID": "MainFrame.restoreDefaultWorkspace.2",
     "locale": "i-default",
-    "text": "Do you really want to reset the workspace to default?\nTabs are not closed, but Window Splits and Window Extension are reset.\nDo you want to continue?"
+    "text": "Do you really want to reset the workspace to initial state?"
   },
   {
     "resourceID": "MainFrame.restoreDefaultWorkspace.2",
     "locale": "en",
-    "text": "Do you really want to reset the workspace to default?\nTabs are not closed, but Window Splits and Window Extension are reset.\nDo you want to continue?"
+    "text": "Do you really want to reset the workspace to initial state?"
   },
   {
     "resourceID": "MainFrame.restoreDefaultWorkspace.2",
     "locale": "de",
-    "text": "Möchten Sie wirklich die Fenstereinteilung auf den Standard zurücksetzen?\nTabs werden nicht geschlossen, aber Fenstereinteilungen und Erweiterungsfenster werden zurückgesetzt.\nMöchten Sie fortfahren?"
+    "text": "Möchten Sie wirklich die Arbeitsumgebung auf den Ausgangszustand zurücksetzen?"
   },
   {
     "resourceID": "MainFrame.restoreDefaultWorkspace.1",
     "locale": "i-default",
-    "text": "Restore default workspace"
+    "text": "Reset workspace"
   },
   {
     "resourceID": "MainFrame.restoreDefaultWorkspace.1",
     "locale": "en",
-    "text": "Restore default workspace"
+    "text": "Reset workspace"
   },
   {
     "resourceID": "MainFrame.restoreDefaultWorkspace.1",
     "locale": "de",
-    "text": "Standardarbeitsbereich wiederherstellen"
+    "text": "Arbeitsumgebung zurücksetzen"
   },
   {
     "resourceID": "Workspace.Default",
@@ -60034,6 +59979,111 @@
     "text": "Sind Sie sicher?"
   },
   {
+    "resourceID": "WorkspaceChooserController.10",
+    "locale": "i-default",
+    "text": "Assign to user group"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.10",
+    "locale": "en",
+    "text": "Assign to user group"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.10",
+    "locale": "de",
+    "text": "Benutzergruppen zuweisen"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.11",
+    "locale": "i-default",
+    "text": "Assign workspace to user groups"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.11",
+    "locale": "en",
+    "text": "Assign workspace to user groups"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.11",
+    "locale": "de",
+    "text": "Arbeitsumgebung Benutzergruppen zuweisen"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.12",
+    "locale": "i-default",
+    "text": "Saving assignment"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.12",
+    "locale": "en",
+    "text": "Saving assignment"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.12",
+    "locale": "de",
+    "text": "Zuweisung wird gespeichert"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.13",
+    "locale": "i-default",
+    "text": "Refresh bar"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.13",
+    "locale": "en",
+    "text": "Refresh bar"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.13",
+    "locale": "de",
+    "text": "Leiste aktualisieren"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.14",
+    "locale": "i-default",
+    "text": "Publish changes to template"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.14",
+    "locale": "en",
+    "text": "Publish changes to template"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.14",
+    "locale": "de",
+    "text": "Änderungen in Vorlage publizieren"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.15",
+    "locale": "i-default",
+    "text": "Restore to template"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.15",
+    "locale": "en",
+    "text": "Restore to template"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.15",
+    "locale": "de",
+    "text": "Auf Vorlage zurücksetzen"
+  },
+  {
+    "resourceID": "WorkspaceChooserController.16",
+    "locale": "i-default",
+    "text": "Changes successfully published."
+  },
+  {
+    "resourceID": "WorkspaceChooserController.16",
+    "locale": "en",
+    "text": "Changes successfully published."
+  },
+  {
+    "resourceID": "WorkspaceChooserController.16",
+    "locale": "de",
+    "text": "Änderungen erfolgreich publiziert."
+  },
+  {
     "resourceID": "WorkspaceEditor.1",
     "locale": "i-default",
     "text": "Edit workspace"
@@ -60136,7 +60186,247 @@
   {
     "resourceID": "WorkspaceEditor.7",
     "locale": "de",
-    "text": "Bitte geben Sie einen Namen an"
+    "text": "Bitte geben Sie einen Namen ein"
+  },
+  {
+    "resourceID": "WorkspacePublisher.1",
+    "locale": "i-default",
+    "text": "Publish changes"
+  },
+  {
+    "resourceID": "WorkspacePublisher.1",
+    "locale": "en",
+    "text": "Publish changes"
+  },
+  {
+    "resourceID": "WorkspacePublisher.1",
+    "locale": "de",
+    "text": "Änderungen publizieren"
+  },
+  {
+    "resourceID": "WorkspacePublisher.2",
+    "locale": "i-default",
+    "text": "Publish"
+  },
+  {
+    "resourceID": "WorkspacePublisher.2",
+    "locale": "en",
+    "text": "Publish"
+  },
+  {
+    "resourceID": "WorkspacePublisher.2",
+    "locale": "de",
+    "text": "Publizieren"
+  },
+  {
+    "resourceID": "WorkspacePublisher.3",
+    "locale": "i-default",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "WorkspacePublisher.3",
+    "locale": "en",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "WorkspacePublisher.3",
+    "locale": "de",
+    "text": "Abbrechen"
+  },
+  {
+    "resourceID": "WorkspacePublisher.4",
+    "locale": "i-default",
+    "text": "Name, icon, position of divider and window"
+  },
+  {
+    "resourceID": "WorkspacePublisher.4",
+    "locale": "en",
+    "text": "Name, icon, position of divider and window"
+  },
+  {
+    "resourceID": "WorkspacePublisher.4",
+    "locale": "de",
+    "text": "Name, Icon, Position der Trenner und des Fensters"
+  },
+  {
+    "resourceID": "WorkspacePublisher.5",
+    "locale": "i-default",
+    "text": "Window splitting changed, structure must be published."
+  },
+  {
+    "resourceID": "WorkspacePublisher.5",
+    "locale": "en",
+    "text": "Window splitting changed, structure must be published."
+  },
+  {
+    "resourceID": "WorkspacePublisher.5",
+    "locale": "de",
+    "text": "Aufgrund der geänderten Fensteraufteilung muss die Struktur publiziert werden."
+  },
+  {
+    "resourceID": "WorkspacePublisher.6",
+    "locale": "i-default",
+    "text": "Structure of main window (window splitting)"
+  },
+  {
+    "resourceID": "WorkspacePublisher.6",
+    "locale": "en",
+    "text": "Structure of main window (window splitting)"
+  },
+  {
+    "resourceID": "WorkspacePublisher.6",
+    "locale": "de",
+    "text": "Struktur des Hauptfensters (Fensteraufteilung)"
+  },
+  {
+    "resourceID": "WorkspacePublisher.7",
+    "locale": "i-default",
+    "text": "Start tab configurations"
+  },
+  {
+    "resourceID": "WorkspacePublisher.7",
+    "locale": "en",
+    "text": "Start tab configurations"
+  },
+  {
+    "resourceID": "WorkspacePublisher.7",
+    "locale": "de",
+    "text": "Starttab Konfigurationen"
+  },
+  {
+    "resourceID": "WorkspacePublisher.8",
+    "locale": "i-default",
+    "text": "Column settings of all entities and subforms"
+  },
+  {
+    "resourceID": "WorkspacePublisher.8",
+    "locale": "en",
+    "text": "Column settings of all entities and subforms"
+  },
+  {
+    "resourceID": "WorkspacePublisher.8",
+    "locale": "de",
+    "text": "Spalteneinstellungen aller Entitäten und Unterformulare"
+  },
+  {
+    "resourceID": "WorkspacePublisher.9",
+    "locale": "i-default",
+    "text": "Toolbar of all entities"
+  },
+  {
+    "resourceID": "WorkspacePublisher.9",
+    "locale": "en",
+    "text": "Toolbar of all entities"
+  },
+  {
+    "resourceID": "WorkspacePublisher.9",
+    "locale": "de",
+    "text": "Symbolleisten aller Entitäten"
+  },
+  {
+    "resourceID": "Workspace.name.in.use",
+    "locale": "i-default",
+    "text": "Name is already in use. Please choose another one."
+  },
+  {
+    "resourceID": "Workspace.name.in.use",
+    "locale": "en",
+    "text": "Name is already in use. Please choose another one."
+  },
+  {
+    "resourceID": "Workspace.name.in.use",
+    "locale": "de",
+    "text": "Name wird bereits verwendet. Bitte wählen Sie einen anderen."
+  },
+  {
+    "resourceID": "Workspace.not.found",
+    "locale": "i-default",
+    "text": "The workspace no longer exists."
+  },
+  {
+    "resourceID": "Workspace.not.found",
+    "locale": "en",
+    "text": "The workspace no longer exists."
+  },
+  {
+    "resourceID": "Workspace.not.found",
+    "locale": "de",
+    "text": "Die Arbeitsumgebung existiert nicht mehr."
+  },
+  {
+    "resourceID": "Workspace.contains.no.home.tabbed",
+    "locale": "i-default",
+    "text": "The main frame of the workspace does not contain the home tab bar."
+  },
+  {
+    "resourceID": "Workspace.contains.no.home.tabbed",
+    "locale": "en",
+    "text": "The main frame of the workspace does not contain the home tab bar."
+  },
+  {
+    "resourceID": "Workspace.contains.no.home.tabbed",
+    "locale": "de",
+    "text": "Das Hauptfenster der Arbeitsumgebung enthält nicht die Home Tableiste."
+  },
+  {
+    "resourceID": "action.WorkspaceAssign",
+    "locale": "i-default",
+    "text": "Workspace: Assign"
+  },
+  {
+    "resourceID": "action.WorkspaceAssign",
+    "locale": "en",
+    "text": "Workspace: Assign"
+  },
+  {
+    "resourceID": "action.WorkspaceAssign",
+    "locale": "de",
+    "text": "Arbeitsumgebung: Zuweisen"
+  },
+  {
+    "resourceID": "action.WorkspaceCreateNew",
+    "locale": "i-default",
+    "text": "Workspace: Create new"
+  },
+  {
+    "resourceID": "action.WorkspaceCreateNew",
+    "locale": "en",
+    "text": "Workspace: Create new"
+  },
+  {
+    "resourceID": "action.WorkspaceCreateNew",
+    "locale": "de",
+    "text": "Arbeitsumgebung: Anlegen"
+  },
+  {
+    "resourceID": "action.WorkspaceCustomizeStarttab",
+    "locale": "i-default",
+    "text": "Workspace assigned: Customize start tab"
+  },
+  {
+    "resourceID": "action.WorkspaceCustomizeStarttab",
+    "locale": "en",
+    "text": "Workspace assigned: Customize start tab"
+  },
+  {
+    "resourceID": "action.WorkspaceCustomizeStarttab",
+    "locale": "de",
+    "text": "Arbeitsumgebung zugewiesen: Starttabs individualisieren"
+  },
+  {
+    "resourceID": "action.WorkspaceCustomizeEntityAndSubFormColumns",
+    "locale": "i-default",
+    "text": "Workspace assigned: Customize entity and subform columns"
+  },
+  {
+    "resourceID": "action.WorkspaceCustomizeEntityAndSubFormColumns",
+    "locale": "en",
+    "text": "Workspace assigned: Customize entity and subform columns"
+  },
+  {
+    "resourceID": "action.WorkspaceCustomizeEntityAndSubFormColumns",
+    "locale": "de",
+    "text": "Arbeitsumgebung zugewiesen: Entitäten- und Unterformularspalten individualisieren"
   },
   {
     "resourceID": "MainMenuAdministration",
@@ -60321,62 +60611,32 @@
   {
     "resourceID": "NucletExplorerNode.1",
     "locale": "i-default",
-    "text": "Add"
+    "text": "Assign"
   },
   {
     "resourceID": "NucletExplorerNode.1",
     "locale": "en",
-    "text": "Add"
+    "text": "Assign"
   },
   {
     "resourceID": "NucletExplorerNode.1",
     "locale": "de",
-    "text": "Hinzufügen"
+    "text": "Zuweisen"
   },
   {
     "resourceID": "NucletExplorerNode.2",
     "locale": "i-default",
-    "text": "Add to Nuclet"
+    "text": "Nuclet assignment"
   },
   {
     "resourceID": "NucletExplorerNode.2",
     "locale": "en",
-    "text": "Add to Nuclet"
+    "text": "Nuclet assignment"
   },
   {
     "resourceID": "NucletExplorerNode.2",
     "locale": "de",
-    "text": "Zum Nuclet hinzufügen"
-  },
-  {
-    "resourceID": "NucletExplorerNode.3",
-    "locale": "i-default",
-    "text": "Remove"
-  },
-  {
-    "resourceID": "NucletExplorerNode.3",
-    "locale": "en",
-    "text": "Remove"
-  },
-  {
-    "resourceID": "NucletExplorerNode.3",
-    "locale": "de",
-    "text": "Entfernen"
-  },
-  {
-    "resourceID": "NucletExplorerNode.4",
-    "locale": "i-default",
-    "text": "Remove from Nuclet"
-  },
-  {
-    "resourceID": "NucletExplorerNode.4",
-    "locale": "en",
-    "text": "Remove from Nuclet"
-  },
-  {
-    "resourceID": "NucletExplorerNode.4",
-    "locale": "de",
-    "text": "Vom Nuclet entfernen"
+    "text": "Nuclet Zuweisung"
   },
   {
     "resourceID": "NucletExplorerNode.5",
@@ -62072,6 +62332,111 @@
     "resourceID": "StateViewComponent.01",
     "locale": "de",
     "text": "M\u00f6gliche Statuswechsel:"
+  },
+  {
+    "resourceID": "nuclos.entityfield.workspace.assignedworkspace.label",
+    "locale": "i-default",
+    "text": "Assigned workspace"
+  },
+  {
+    "resourceID": "nuclos.entityfield.workspace.assignedworkspace.label",
+    "locale": "en",
+    "text": "Assigned workspace"
+  },
+  {
+    "resourceID": "nuclos.entityfield.workspace.assignedworkspace.label",
+    "locale": "de",
+    "text": "Zugewiesene Arbeitsumgebung"
+  },
+  {
+    "resourceID": "nuclos.entityfield.workspace.assignedworkspace.description",
+    "locale": "i-default",
+    "text": "Assigned workspace"
+  },
+  {
+    "resourceID": "nuclos.entityfield.workspace.assignedworkspace.description",
+    "locale": "en",
+    "text": "Assigned workspace"
+  },
+  {
+    "resourceID": "nuclos.entityfield.workspace.assignedworkspace.description",
+    "locale": "de",
+    "text": "Zugewiesene Arbeitsumgebung"
+  },
+  {
+    "resourceID": "nuclos.entity.roleworkspace.label",
+    "locale": "i-default",
+    "text": "Workspace association"
+  },
+  {
+    "resourceID": "nuclos.entity.roleworkspace.label",
+    "locale": "en",
+    "text": "Workspace association"
+  },
+  {
+    "resourceID": "nuclos.entity.roleworkspace.label",
+    "locale": "de",
+    "text": "Arbeitsumgebungzuordnung"
+  },
+  {
+    "resourceID": "nuclos.entityfield.roleworkspace.role.label",
+    "locale": "i-default",
+    "text": "User group"
+  },
+  {
+    "resourceID": "nuclos.entityfield.roleworkspace.role.label",
+    "locale": "en",
+    "text": "User group"
+  },
+  {
+    "resourceID": "nuclos.entityfield.roleworkspace.role.label",
+    "locale": "de",
+    "text": "Benutzergruppe"
+  },
+  {
+    "resourceID": "nuclos.entityfield.roleworkspace.role.description",
+    "locale": "i-default",
+    "text": "User group name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.roleworkspace.role.description",
+    "locale": "en",
+    "text": "User group name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.roleworkspace.role.description",
+    "locale": "de",
+    "text": "Name der Benutzergruppe"
+  },
+  {
+    "resourceID": "nuclos.entityfield.roleworkspace.workspace.label",
+    "locale": "i-default",
+    "text": "Workspace"
+  },
+  {
+    "resourceID": "nuclos.entityfield.roleworkspace.workspace.label",
+    "locale": "en",
+    "text": "Workspace"
+  },
+  {
+    "resourceID": "nuclos.entityfield.roleworkspace.workspace.label",
+    "locale": "de",
+    "text": "Arbeitsumgebung"
+  },
+  {
+    "resourceID": "nuclos.entityfield.roleworkspace.workspace.description",
+    "locale": "i-default",
+    "text": "Workspace name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.roleworkspace.workspace.description",
+    "locale": "en",
+    "text": "Workspace name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.roleworkspace.workspace.description",
+    "locale": "de",
+    "text": "Name der Arbeitsumgebung"
   },
   {
     "resourceID": "CollectController.lookup.generation",

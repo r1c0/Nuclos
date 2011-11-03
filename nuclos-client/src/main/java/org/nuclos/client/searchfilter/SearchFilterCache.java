@@ -249,19 +249,6 @@ public class SearchFilterCache {
 			}
 		}
 	}
-
-	/**
-	 * gets all entity searchfilters which are forced to the current user
-	 * @return List<EntitySearchFilter>
-	 */
-	public List<EntitySearchFilter> getForcedFilters() {
-		return CollectionUtils.applyFilter(getAllUserFilters(),
-			new Predicate<EntitySearchFilter>() {
-				@Override
-                public boolean evaluate(EntitySearchFilter t) {
-	                return t.isForced();
-                }});
-	}
 	
 	/**
 	 * gets all entity searchfilters of the current user

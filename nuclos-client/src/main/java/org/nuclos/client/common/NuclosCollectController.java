@@ -97,6 +97,7 @@ import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityProvider;
@@ -426,27 +427,6 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		// enable/disable multithreading here:
 //		return false;
 		return true;
-	}
-
-	/**
-	 * sets the default window state (position, size, minimized/maximized) for the given frame.
-	 * Tries to cascade this frame below the currently selected frame.
-	 * Ensures that the position of the frame is in the upper left quarter of the scrollpane's viewport.
-	 * @param ifrm
-	 */
-	@Override
-	protected void setDefaultWindowState(JInternalFrame ifrm) {
-		super.setDefaultWindowState(ifrm);
-
-		// ensure that the position is in the upper left quarter of the viewport:
-		/*final JViewport viewport = Main.getMainFrame().getDesktopScrollPane().getViewport();
-
-		final Rectangle rectViewport = viewport.getViewRect();
-		rectViewport.width /= 2;
-		rectViewport.height /= 2;
-		if (!rectViewport.contains(ifrm.getLocation())) {
-			ifrm.setLocation(viewport.getViewPosition());
-		}*/
 	}
 
 	/**
@@ -1361,148 +1341,59 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	 */
 	@Override
 	public Preferences getPreferences() {
-		try {
-			Preferences prefs = this.getUserPreferencesRoot().node("collect").node("entity").node(this.getEntityName());
-			checkPreferences(prefs);
-			return prefs;
-
-		}
-		catch (Exception e) {
-			// if any Exception return the original Preferences
-			return this.getUserPreferencesRoot().node("collect").node("entity").node(this.getEntityName());
-		}
+		return super.getPreferences();
 	}
 
-	private void checkPreferences(Preferences prefs) throws BackingStoreException, PreferencesException {
-		if(!Modules.getInstance().isModuleEntity(this.getEntityName())) {
-			List<String> lstSelectedEntityNames = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES);
-			List<String> lstSelectedFieldNames = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS);
+	@Override
+	public EntityPreferences getEntityPreferences() {
+		WorkspaceUtils.validatePreferences(super.getEntityPreferences());
+		return super.getEntityPreferences();
+	}
 
-			final List<CollectableEntityFieldWithEntity> result = new ArrayList<CollectableEntityFieldWithEntity>();
-			final CollectableEntityProvider clcteprovider = DefaultCollectableEntityProvider.getInstance();
-			for (int i = 0; i < lstSelectedFieldNames.size(); i++) {
-				final String sFieldName = lstSelectedFieldNames.get(i);
-				final String sEntityName = lstSelectedEntityNames.get(i);
+	@Override
+	protected Clct findCollectableById(String sEntity, Object oId)
+			throws CommonBusinessException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-				final CollectableEntity clcteForField = (sEntityName == null) ? this.getCollectableEntity() : clcteprovider.getCollectableEntity(sEntityName);
-				result.add(new CollectableEntityFieldWithEntity(clcteForField, sFieldName));
+	@Override
+	protected Clct findCollectableByIdWithoutDependants(String sEntity,
+			Object oId) throws CommonBusinessException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-			}
-			List<CollectableEntityFieldWithEntity> lstRemovedKeys = new ArrayList<CollectableEntityFieldWithEntity>();
-			for (CollectableEntityFieldWithEntity clctefwe : result) {
-				List<MasterDataMetaFieldVO> lstVOFields = MetaDataCache.getInstance().getMetaData(clctefwe.getCollectableEntityName()).getFields();
-					boolean found = false;
-					for(MasterDataMetaFieldVO voField : lstVOFields) {
-						if(voField.getFieldName().equals(clctefwe.getName())) {
-							found = true;
-							break;
-						}
-					}
-					if(!found) {
-						lstRemovedKeys.add(clctefwe);
-					}
-			}
-			result.removeAll(lstRemovedKeys);
-			PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS, CollectableUtils.getFieldNamesFromCollectableEntityFields(result));
-			final List<String> lstEntityNames = CollectionUtils.transform(result, new CollectableEntityFieldWithEntity.GetEntityName());
-			PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES, lstEntityNames);
+	@Override
+	protected Clct updateCollectable(Clct clct, Object oAdditionalData)
+			throws CommonBusinessException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-			String[] strNodes = {CollectController.PREFS_NODE_SELECTEDFIELDWIDTHS,CollectController.PREFS_NODE_ORDERASCENDING,
-				CollectController.PREFS_NODE_ORDERBYSELECTEDFIELD};
+	@Override
+	protected Clct insertCollectable(Clct clctNew)
+			throws CommonBusinessException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-			for(String sNode : strNodes) {
-				for(CollectableEntityFieldWithEntity keyRemoved : lstRemovedKeys) {
-					Preferences prefsSelectedNode = prefs.node(sNode);
-					String sSize = prefsSelectedNode.get("size", "0");
-					int sizeSelectedFieldsWidth = Integer.parseInt(sSize);
-					if(sizeSelectedFieldsWidth != 0) {
-						prefsSelectedNode.remove(keyRemoved.getName());
-						prefsSelectedNode.put("size", String.valueOf((--sizeSelectedFieldsWidth)));
-					}
-					List<String> lstValues = new ArrayList<String>();
-					String [] keys = prefsSelectedNode.keys();
-					for(String key : keys) {
-						if(key.equals("size"))
-							continue;
-						lstValues.add(prefsSelectedNode.get(key, null));
-						prefsSelectedNode.remove(key);
-					}
-					for(int i = 0; i < lstValues.size(); i++) {
-						prefsSelectedNode.put(String.valueOf(i), lstValues.get(i));
-					}
-				}
-			}
-		}
-		else {
+	@Override
+	protected void deleteCollectable(Clct clct) throws CommonBusinessException {
+		// TODO Auto-generated method stub
+		
+	}
 
-			Set<String> setFieldNames = GenericObjectMetaDataCache.getInstance().getAttributeNamesByModuleId(Modules.getInstance().getModuleIdByEntityName(this.getEntityName()), false);
+	@Override
+	protected String getEntityLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-			List<String> lstSelectedEntityNames = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES);
-			List<String> lstSelectedFieldNames = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS);
-
-			final List<CollectableEntityFieldWithEntity> result = new ArrayList<CollectableEntityFieldWithEntity>();
-			final CollectableEntityProvider clcteprovider = DefaultCollectableEntityProvider.getInstance();
-			for (int i = 0; i < lstSelectedFieldNames.size(); i++) {
-				final String sFieldName = lstSelectedFieldNames.get(i);
-				final String sEntityName = lstSelectedEntityNames.get(i);
-				//code from GenericObjectClientUtils.getCollectableEntityFieldForResult
-				final CollectableEntity clcteForField = (sEntityName == null) ? this.getCollectableEntity() : clcteprovider.getCollectableEntity(sEntityName);
-				final String sMainEntityName = this.getCollectableEntity().getName();
-				final boolean bFieldBelongsToMainEntity = clcteForField.getName().equals(sMainEntityName);
-				final String sParentEntityName = Modules.getInstance().getParentEntityName(sMainEntityName);
-				final boolean bFieldBelongsToParentEntity = clcteForField.getName().equals(sParentEntityName);
-				final boolean bFieldBelongsToSubEntity = !(bFieldBelongsToMainEntity || bFieldBelongsToParentEntity);
-				final CollectableEntityFieldWithEntityForExternal clctefwefe = new CollectableEntityFieldWithEntityForExternal(clcteForField, sFieldName, bFieldBelongsToSubEntity, bFieldBelongsToMainEntity);
-
-				result.add(clctefwefe);
-			}
-			List<CollectableEntityFieldWithEntity> lstRemovedKeys = new ArrayList<CollectableEntityFieldWithEntity>();
-			for (CollectableEntityFieldWithEntity clctefwe : result) {
-				List<MasterDataMetaFieldVO> lstVOFields = MetaDataCache.getInstance().getMetaData(clctefwe.getCollectableEntityName()).getFields();
-					boolean found = setFieldNames.contains(clctefwe.getName());
-					if (!found) {
-						for(MasterDataMetaFieldVO voField : lstVOFields) {
-							if(voField.getFieldName().equals(clctefwe.getName())) {
-								found = true;
-								break;
-							}
-						}
-					}
-					if(!found) {
-						lstRemovedKeys.add(clctefwe);
-					}
-			}
-			result.removeAll(lstRemovedKeys);
-			List<String> lstEntityFields = CollectableUtils.getFieldNamesFromCollectableEntityFields(result);
-			final List<String> lstEntityNames = CollectionUtils.transform(result, new CollectableEntityFieldWithEntity.GetEntityName());
-			PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS, lstEntityFields);
-			PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES, lstEntityNames);
-
-			String[] strNodes = {CollectController.PREFS_NODE_SELECTEDFIELDWIDTHS, CollectController.PREFS_NODE_ORDERASCENDING,
-				CollectController.PREFS_NODE_ORDERBYSELECTEDFIELD, "fixedFields", "fixedFieldWidths"};
-			for(String sNode : strNodes) {
-				for(CollectableEntityFieldWithEntity keyRemoved : lstRemovedKeys) {
-					Preferences prefsSelectedNode = prefs.node(sNode);
-					String sSize = prefsSelectedNode.get("size", "0");
-					int sizeSelectedFieldsWidth = Integer.parseInt(sSize);
-					if(sizeSelectedFieldsWidth != 0) {
-						prefsSelectedNode.put("size", String.valueOf((--sizeSelectedFieldsWidth)));
-						prefsSelectedNode.remove(keyRemoved.getName());
-					}
-					List<String> lstValues = new ArrayList<String>();
-					String [] keys = prefsSelectedNode.keys();
-					for(String key : keys) {
-						if(key.equals("size"))
-							continue;
-						lstValues.add(prefsSelectedNode.get(key, null));
-						prefsSelectedNode.remove(key);
-					}
-					for(int i = 0; i < lstValues.size(); i++) {
-						prefsSelectedNode.put(String.valueOf(i), lstValues.get(i));
-					}
-				}
-			}
-		}
+	@Override
+	public Clct newCollectable() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/**

@@ -8,7 +8,10 @@ import java.util.prefs.Preferences;
  * 
  * @author Thomas Pasch
  * @since Nuclos 3.1.0-rc5
+ * 
+ * @deprecated use WorkspaceDescription
  */
+@Deprecated
 public class CollectableEntityPref {
 
 	private final String type;

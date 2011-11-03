@@ -97,6 +97,9 @@ import org.nuclos.common2.exception.PreferencesException;
 public class GenericObjectTaskView extends TaskView implements IMainFrameTabClosableController, NuclosDropTargetVisitor{
 
 	private static final Logger LOG = Logger.getLogger(GenericObjectTaskView.class);
+	
+	private static final String PREFS_NODE_SELECTEDFIELDS = "selectedFields";
+	private static final String PREFS_NODE_SELECTEDFIELDWIDTHS = "selectedFieldWidths";
 
 	private final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
 	private final JButton btnRefresh = new JButton();
@@ -263,7 +266,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 		// sort using the order stored in the preferences:
 		List<String> lstFieldNameOrderTemp;
 		try {
-			lstFieldNameOrderTemp = PreferencesUtils.getStringList(getPreferences(), CollectController.PREFS_NODE_SELECTEDFIELDS);
+			lstFieldNameOrderTemp = PreferencesUtils.getStringList(getPreferences(), PREFS_NODE_SELECTEDFIELDS);
 		}
 		catch (PreferencesException ex) {
 			log.error("Failed to retrieve list of selected fields from the preferences. They will be empty.");
@@ -303,7 +306,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 	public void storeOrderBySelectedColumnToPreferences() {
 		if (getTableModel() instanceof SortableCollectableTableModel<?>) {
 			try {
-				CollectController.writeSortKeysToPrefs(getPreferences(), ((SortableCollectableTableModel<?>) getTableModel()).getSortKeys());
+				PreferencesUtils.writeSortKeysToPrefs(getPreferences(), ((SortableCollectableTableModel<?>) getTableModel()).getSortKeys());
 			} catch (PreferencesException e1) {
 				Errors.getInstance().showExceptionDialog(this.getParent(), 
 					CommonLocaleDelegate.getMessage("gotaskview.error.save.sortorder", "Fehler beim Abspeichern der Sortierreihenfolge des Suchfilters."), e1);
@@ -316,7 +319,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 	 */
 	private List<SortKey> readColumnOrderFromPreferences() {
 		try {
-			return CollectController.readSortKeysFromPrefs(getPreferences());
+			return PreferencesUtils.readSortKeysFromPrefs(getPreferences());
 		}
 		catch (PreferencesException ex) {
 			log.error("The column order could not be loaded from preferences.", ex);
@@ -327,7 +330,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 	public List<Integer> readColumnWidthsFromPreferences() {
 		List<Integer> lstColumnWidths = null;
 		try {
-			lstColumnWidths = PreferencesUtils.getIntegerList(getPreferences(), CollectController.PREFS_NODE_SELECTEDFIELDWIDTHS);
+			lstColumnWidths = PreferencesUtils.getIntegerList(getPreferences(), PREFS_NODE_SELECTEDFIELDWIDTHS);
 		}
 		catch (PreferencesException ex) {
 			log.error("Die Spaltenbreite konnte nicht aus den Preferences geladen werden.", ex);
@@ -343,7 +346,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 
 	@Override
 	public boolean isClosable() {
-		return !this.filter.isForced();
+		return true;
 	}
 
 	@Override

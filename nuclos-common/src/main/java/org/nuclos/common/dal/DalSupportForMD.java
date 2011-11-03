@@ -250,7 +250,8 @@ public class DalSupportForMD {
 			/*Integer iVersion,*/ efMeta.getVersion(),
 			/*String resourceIdForLabel,*/ efMeta.getLocaleResourceIdForLabel(),
 			/*String resourceIdForDescription*/ efMeta.getLocaleResourceIdForDescription(),
-			/*boolean bIndexed*/ Boolean.TRUE.equals(efMeta.isIndexed())
+			/*boolean bIndexed*/ Boolean.TRUE.equals(efMeta.isIndexed()),
+			/*Integer iOrder*/ efMeta.getOrder()
 		);
 
 		return mdfmeta;

@@ -79,6 +79,7 @@ import org.nuclos.client.ui.collect.result.ResultController;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.common.PointerCollection;
 import org.nuclos.common.PointerException;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -248,7 +249,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 			sParentEntityName = sParentSubForm;
 
 		return new SearchConditionSubFormController(getFrame(), parent, clctcompmodelprovider, sParentEntityName, subform,
-			getPreferences(), MasterDataCollectableFieldsProviderFactory.newFactory(null, valueListProviderCache));
+			getPreferences(), getEntityPreferences(), MasterDataCollectableFieldsProviderFactory.newFactory(null, valueListProviderCache));
 	}
 
 	@Override
@@ -334,9 +335,10 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 
 	public MasterDataSubFormController newDetailsSubFormController(SubForm subform,
 			String sParentEntityName, CollectableComponentModelProvider clctcompmodelprovider,
-			MainFrameTab ifrmParent, JComponent parent, JComponent compDetails, Preferences prefs) {
+			MainFrameTab ifrmParent, JComponent parent, JComponent compDetails, Preferences prefs, EntityPreferences entityPrefs) {
 		//subform.setLockedLayer();
-		MasterDataSubFormController controller = NuclosCollectControllerFactory.getInstance().newDetailsSubFormController(subform, sParentEntityName, clctcompmodelprovider, ifrmParent, parent, compDetails, prefs, valueListProviderCache);
+		MasterDataSubFormController controller = NuclosCollectControllerFactory.getInstance().newDetailsSubFormController(subform, 
+				sParentEntityName, clctcompmodelprovider, ifrmParent, parent, compDetails, prefs, entityPrefs, valueListProviderCache);
 		controller.setParentController((EntityCollectController<CollectableEntityObject>) this);
 		return controller;
 	}

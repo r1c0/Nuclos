@@ -33,15 +33,6 @@ public abstract class LayoutUtils {
 		
 		EntityMetaDataVO vo = MetaDataClientProvider.getInstance().getEntity(sEntityName);
 		
-		try {
-			if(vo.getId() > 0 && Modules.getInstance().isSubModule(vo.getId().intValue())) {
-				return true;
-			}
-		}
-		// kein modul
-		catch(NoSuchElementException e){ 
-			LOG.warn("isSubformEntity failed for " + sEntityName + ": " + e);
-		}
 		return MasterDataDelegate.getInstance().isSubformEntity(sEntityName);
 	}
 

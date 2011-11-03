@@ -24,6 +24,8 @@ import javax.swing.JComponent;
 
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
+import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
@@ -42,9 +44,11 @@ public abstract class SimpleDetailsSubFormController<Clct extends Collectable> e
 
 	protected SimpleDetailsSubFormController(Component parent, JComponent parentMdi,
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, SubForm subform,
-			Preferences prefsUserParent, CollectableFieldsProviderFactory clctfproviderfactory) {
+			Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderFactory clctfproviderfactory) {
 
-		super(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform, prefsUserParent, clctfproviderfactory);
+		super(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), parent, parentMdi, 
+				clctcompmodelproviderParent, sParentEntityName, subform, prefsUserParent, 
+				entityPrefs, clctfproviderfactory);
 
 		this.postCreate();
 	}

@@ -51,7 +51,7 @@ public class MultiMessageListenerContainer extends SimpleMessageListenerContaine
 	protected void invokeListener(Session session, Message message) throws JMSException {
 		if(lstMessageListener == null) 
 			lstMessageListener = new ArrayList<MessageListener>();
-		for(Object listener : lstMessageListener) {
+		for(Object listener : new ArrayList<MessageListener>(lstMessageListener)) { // new list here, otherwise java.util.ConcurrentModificationException
 			if (listener instanceof SessionAwareMessageListener) {
 				doInvokeListener((SessionAwareMessageListener) listener, session, message);
 			}

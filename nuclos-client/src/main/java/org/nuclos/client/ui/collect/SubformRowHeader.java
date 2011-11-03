@@ -104,8 +104,10 @@ public class SubformRowHeader {
 	 * initialize the look of the header table
 	 */
 	private void initializeHeaderTable() {
-		headerTable.setGridColor(Color.GRAY);
+		//headerTable.setGridColor(Color.GRAY);
 		headerTable.setShowGrid(true);
+		headerTable.getTableHeader().setReorderingAllowed(false);
+		
 		headerTable.setPreferredScrollableViewportSize(new Dimension(COLUMN_SIZE, Integer.MAX_VALUE));
 		headerTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		

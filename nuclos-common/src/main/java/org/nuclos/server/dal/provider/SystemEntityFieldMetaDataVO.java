@@ -39,6 +39,7 @@ public class SystemEntityFieldMetaDataVO extends EntityFieldMetaDataVO {
 		this.setForeignEntityField(mdFieldMeta.getForeignEntityField());
 		this.setUnreferencedForeignEntity(mdFieldMeta.getUnreferencedForeignEntityName());
 		this.setUnreferencedForeignEntityField(mdFieldMeta.getUnreferencedForeignEntityFieldName());
+		this.setOrder(mdFieldMeta.getOrder());
 
 		this.setReadonly(Boolean.FALSE);
 		this.setUnique(mdFieldMeta.isUnique());

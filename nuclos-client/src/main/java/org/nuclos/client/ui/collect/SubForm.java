@@ -981,7 +981,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 			Integer preferredCellWidth = getColumnWidth("" + tableColumn.getIdentifier());
 			int width = (preferredCellWidth != null)
 				? preferredCellWidth
-				: TableUtils.getPreferredColumnWidth(subformtbl, iColumn, 50, TableUtils.TABLE_INSETS);
+				: Math.max(TableUtils.getPreferredColumnWidth(subformtbl, iColumn, 50, TableUtils.TABLE_INSETS), subformtbl.getSubFormModel().getMinimumColumnWidth(iColumn));
 			tableColumn.setPreferredWidth(width);
 			tableColumn.setWidth(width);
 		}
@@ -1877,6 +1877,12 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		 * @return an unique identifier for the column (usually the name of the entity field).
 		 */
 	    public String getColumnFieldName(int columnIndex);
+	    
+	    /**
+	     * @param columnIndex
+		 * @return minimum column width based on class
+	     */
+	    public int getMinimumColumnWidth(int columnIndex);
 
 		/**
 		 * @param sFieldName

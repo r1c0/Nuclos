@@ -81,6 +81,7 @@ import org.nuclos.client.ui.util.SwingUtils;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -98,9 +99,6 @@ import org.nuclos.server.genericobject.ProxyList;
 
 /** @todo refactor: This class contains a lot of Controller code, which should be in a (Nucleus)ResultController. */
 public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clct> {
-
-	public static final String PREFS_NODE_FIXEDFIELDS = "fixedFields";
-	public static final String PREFS_NODE_FIXEDFIELDS_WIDTHS = "fixedFieldWidths";
 
 	private static final String PREFS_KEY_LASTXMLTRANSFERPATH = "lastXMLTransferPath";
 	
@@ -573,11 +571,10 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	 * TODO: Make this protected again.
 	 */
 	@Override
-	public void setColumnWidths(JTable tblResult, boolean bUseCustomColumnWidths, Preferences preferences) {
-		super.setColumnWidths(tblResult, bUseCustomColumnWidths, preferences);
+	public void setColumnWidths(JTable tblResult, EntityPreferences entityPreferences) {
+		super.setColumnWidths(tblResult, entityPreferences);
 
-		final List<Integer> lstWidthsFromPreferences = getFixedTableColumnWidthsFromPreferences(preferences);
-		setColumnWiths(lstWidthsFromPreferences);
+		setColumnWiths(WorkspaceUtils.getFixedWidths(entityPreferences));
 	}
 
 	private void setColumnWiths(final List<Integer> lstWidths) {
@@ -601,22 +598,6 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 			TableUtils.setOptimalColumnWidths(tblFixedResult);
 			// use custom column widths as soon as a column width was changed after setting the optimal column width:
 		}
-	}
-
-	/**
-	 * @return the table columns widths. If there are stored user preferences, the sizes will be restored.
-	 * Size and order of list entries is determined by number and order of visible columns
-	 */
-	private List<Integer> getFixedTableColumnWidthsFromPreferences(Preferences preferences) {
-		List<Integer> result;
-		try {
-			result = PreferencesUtils.getIntegerList(preferences, PREFS_NODE_FIXEDFIELDS_WIDTHS);
-		}
-		catch (PreferencesException ex) {
-			result = new ArrayList<Integer>();
-		}
-
-		return result;
 	}
 
 	public final Set<CollectableEntityField> getFixedColumns() {

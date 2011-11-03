@@ -39,13 +39,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
+import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -67,6 +71,9 @@ import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
 import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 import org.nuclos.client.ui.Bubble;
+import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.Icons;
+import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.ToolTipsTableHeader;
@@ -75,8 +82,11 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelPro
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.PointerException;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
+import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -91,10 +101,12 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.PredicateUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.collection.ValueObjectList;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -144,13 +156,13 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	 */
 	public DetailsSubFormController(CollectableEntity clcte, Component parent, JComponent parentMdi,
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, final SubForm subform,
-			Preferences prefsUserParent, CollectableFieldsProviderFactory clctfproviderfactory) {
+			Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderFactory clctfproviderfactory) {
 		super(clcte, parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform,
-				prefsUserParent, clctfproviderfactory);
+				prefsUserParent, entityPrefs, clctfproviderfactory);
 
 		if (this.isColumnSelectionAllowed(sParentEntityName)) {
-			this.fixedcolumnheader = new FixedColumnRowHeader();
-			this.fixedcolumnheader.initializeFieldsFromPreferences(this.getPrefs());
+			this.fixedcolumnheader = new FixedColumnRowHeader(this.getSubFormPrefs());
+			this.fixedcolumnheader.initializeFieldsFromPreferences(this.getSubFormPrefs());
 			subform.setTableRowHeader(this.fixedcolumnheader);
 		}
 
@@ -280,86 +292,130 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		}
 
 		final CollectableEntityField clctef = getCollectableTableModel().getCollectableEntityField(iColumn);
-		if (clctef.getJavaClass() != Boolean.class || !getSubForm().isColumnVisible(clctef.getName())) {
-			return result;
+		if (clctef.getJavaClass() == Boolean.class && getSubForm().isColumnVisible(clctef.getName())) {
+
+			JMenuItem mi1 = new JMenuItem(getMessage("DetailsSubFormController.1", "Alle setzen"));
+			mi1.addActionListener(new ActionListener() {
+	
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					List<Clct> clcts = DetailsSubFormController.this.getCollectables();
+					boolean blnChanged = false;
+					for (Clct clct : clcts) {
+						clct.setField(clctef.getName(), new CollectableValueField(Boolean.TRUE));
+						blnChanged = true;
+					}
+					if (blnChanged) {
+						int last = DetailsSubFormController.this.getSubForm().getJTable().getRowCount();
+						((AbstractTableModel)DetailsSubFormController.this.getSubForm().getJTable().getModel()).fireTableRowsUpdated(0, last);
+					}
+				}
+			});
+			mi1.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive());
+			JMenuItem mi2 = new JMenuItem(getMessage("DetailsSubFormController.2", "Alle zurücksetzen"));
+			mi2.addActionListener(new ActionListener() {
+	
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					boolean blnChanged = false;
+					List<Clct> clcts = DetailsSubFormController.this.getCollectables();
+					for (Clct clct : clcts) {
+						clct.setField(clctef.getName(), new CollectableValueField(Boolean.FALSE));
+						blnChanged = true;
+					}
+					if (blnChanged) {
+						int last = DetailsSubFormController.this.getSubForm().getJTable().getRowCount();
+						((AbstractTableModel)DetailsSubFormController.this.getSubForm().getJTable().getModel()).fireTableRowsUpdated(0, last);
+					}
+				}
+			});
+			mi2.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive());
+	
+			result.add(mi1);
+			result.add(mi2);
+			result.add(new JSeparator());
+	
+			JMenuItem mi3 = new JMenuItem(getMessage("DetailsSubFormController.setselected", "Selektierte Zeilen setzen"));
+			mi3.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					List<Clct> clcts = DetailsSubFormController.this.getSelectedCollectables();
+					boolean blnChanged = false;
+					for (Clct clct : clcts) {
+						clct.setField(clctef.getName(), new CollectableValueField(Boolean.TRUE));
+						blnChanged = true;
+					}
+					if (blnChanged) {
+						fireDataUpdatedForSelectedRows();
+					}
+				}
+			});
+			mi3.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive() && getSelectedCollectables().size() > 0);
+			JMenuItem mi4 = new JMenuItem(getMessage("DetailsSubFormController.resetselected", "Selektierte Zeilen zurücksetzen"));
+			mi4.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					boolean blnChanged = false;
+					List<Clct> clcts = DetailsSubFormController.this.getSelectedCollectables();
+					for (Clct clct : clcts) {
+						clct.setField(clctef.getName(), new CollectableValueField(Boolean.FALSE));
+						blnChanged = true;
+					}
+					if (blnChanged) {
+						fireDataUpdatedForSelectedRows();
+					}
+				}
+			});
+			mi4.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive() && getSelectedCollectables().size() > 0);
+	
+			result.add(mi3);
+			result.add(mi4);
 		}
-
-		JMenuItem mi1 = new JMenuItem(getMessage("DetailsSubFormController.1", "Alle setzen"));
-		mi1.addActionListener(new ActionListener() {
-
+		
+		if (!result.isEmpty())
+			result.add(new JSeparator());
+		
+		JMenuItem miRestoreColumns = new JMenuItem(new AbstractAction(
+				CommonLocaleDelegate.getMessage("DetailsSubFormController.3", "Alle Spalten auf Vorlage zurücksetzen"), 
+				Icons.getInstance().getIconUndo16()) {
+			private static final long serialVersionUID = 1L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				List<Clct> clcts = DetailsSubFormController.this.getCollectables();
-				boolean blnChanged = false;
-				for (Clct clct : clcts) {
-					clct.setField(clctef.getName(), new CollectableValueField(Boolean.TRUE));
-					blnChanged = true;
+				try {
+					WorkspaceUtils.restoreSubFormPreferences(getSubFormPrefs(), getCollectController().getEntity());
+					
+					final List<Integer> widths = WorkspaceUtils.getColumnWidths(getSubFormPrefs());
+					final List<CollectableEntityField> allFields = fixedcolumnheader.getAllAvailableFields();
+					final List<CollectableEntityField> selected = WorkspaceUtils.getSelectedFields(getSubFormPrefs(), allFields);
+					final Set<CollectableEntityField> fixed = WorkspaceUtils.getFixedFields(getSubFormPrefs(), selected);
+					
+					makeSureSelectedFieldsAreNonEmpty(getCollectableEntity(), selected);
+					
+					fixedcolumnheader.changeSelectedColumns(
+							selected, 
+							fixed, 
+							widths,
+							null,
+							new AbstractAction() {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									getSubForm().resetDefaultColumnWidths();
+								}
+							},
+							new AbstractAction() {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									setColumnOrder();
+								}
+							});
+				} catch (CommonBusinessException e1) {
+					Errors.getInstance().showExceptionDialog(getParent(), e1);
 				}
-				if (blnChanged) {
-					int last = DetailsSubFormController.this.getSubForm().getJTable().getRowCount();
-					((AbstractTableModel)DetailsSubFormController.this.getSubForm().getJTable().getModel()).fireTableRowsUpdated(0, last);
-				}
+				
+				
 			}
 		});
-		mi1.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive());
-		JMenuItem mi2 = new JMenuItem(getMessage("DetailsSubFormController.2", "Alle zurücksetzen"));
-		mi2.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				boolean blnChanged = false;
-				List<Clct> clcts = DetailsSubFormController.this.getCollectables();
-				for (Clct clct : clcts) {
-					clct.setField(clctef.getName(), new CollectableValueField(Boolean.FALSE));
-					blnChanged = true;
-				}
-				if (blnChanged) {
-					int last = DetailsSubFormController.this.getSubForm().getJTable().getRowCount();
-					((AbstractTableModel)DetailsSubFormController.this.getSubForm().getJTable().getModel()).fireTableRowsUpdated(0, last);
-				}
-			}
-		});
-		mi2.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive());
-
-		result.add(mi1);
-		result.add(mi2);
-		result.add(new JSeparator());
-
-		JMenuItem mi3 = new JMenuItem(getMessage("DetailsSubFormController.setselected", "Selektierte Zeilen setzen"));
-		mi3.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				List<Clct> clcts = DetailsSubFormController.this.getSelectedCollectables();
-				boolean blnChanged = false;
-				for (Clct clct : clcts) {
-					clct.setField(clctef.getName(), new CollectableValueField(Boolean.TRUE));
-					blnChanged = true;
-				}
-				if (blnChanged) {
-					fireDataUpdatedForSelectedRows();
-				}
-			}
-		});
-		mi3.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive() && getSelectedCollectables().size() > 0);
-		JMenuItem mi4 = new JMenuItem(getMessage("DetailsSubFormController.resetselected", "Selektierte Zeilen zurücksetzen"));
-		mi4.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				boolean blnChanged = false;
-				List<Clct> clcts = DetailsSubFormController.this.getSelectedCollectables();
-				for (Clct clct : clcts) {
-					clct.setField(clctef.getName(), new CollectableValueField(Boolean.FALSE));
-					blnChanged = true;
-				}
-				if (blnChanged) {
-					fireDataUpdatedForSelectedRows();
-				}
-			}
-		});
-		mi4.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive() && getSelectedCollectables().size() > 0);
-
-		result.add(mi3);
-		result.add(mi4);
+		result.add(miRestoreColumns);
 
 		return result;
 	}
@@ -713,11 +769,10 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	 */
 	@Override
 	protected void storeColumnOrderAndWidths(JTable tbl) {
-
 		super.storeColumnOrderAndWidths(tbl);
 		try {
 			if (fixedcolumnheader != null) {
-				this.fixedcolumnheader.writeFieldToPreferences(getPrefs());
+				this.fixedcolumnheader.writeFieldToPreferences(getSubFormPrefs());
 			}
 		}
 		catch (PreferencesException ex) {

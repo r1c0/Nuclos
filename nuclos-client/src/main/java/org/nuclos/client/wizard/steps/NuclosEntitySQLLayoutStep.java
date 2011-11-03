@@ -459,16 +459,6 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		}
 		DefaultListModel listmodel = new DefaultListModel();
 		List<Attribute> lstAttr = new ArrayList<Attribute>(this.model.getAttributeModel().getAttributes());
-		Collections.sort(lstAttr, new Comparator<Attribute>() {
-
-			@Override
-            public int compare(Attribute o1, Attribute o2) {
-				Long l1 = (Long)ObjectUtils.defaultIfNull(o1.getInternalId(), 0L);
-			    Long l2 = (Long)ObjectUtils.defaultIfNull(o2.getInternalId(), 0L);
-				return l1.compareTo(l2);
-            }
-
-		});
 
 		for(Attribute attr : lstAttr) {
 			listmodel.addElement(attr);
@@ -686,8 +676,9 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 		List<EntityFieldMetaDataTO> lstEntityFields = new ArrayList<EntityFieldMetaDataTO>();
 
-		for(Attribute attr : attributeModel.getAttributes()) {
-			EntityFieldMetaDataVO mdFieldVO = buildMasterDataField(attr, metaVO, metaVOOld);
+		for(int i = 0; i < attributeModel.getAttributes().size(); i++) {
+			Attribute attr = attributeModel.getAttributes().get(i);
+			EntityFieldMetaDataVO mdFieldVO = buildMasterDataField(attr, metaVO, metaVOOld, i+1);
 			EntityFieldMetaDataTO to = new EntityFieldMetaDataTO();
 			to.setEntityFieldMeta(mdFieldVO);
 			to.setTranslation(attributeModel.getTranslation().get(attr));
@@ -695,7 +686,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		}
 		if(wizardModel.isEditMode()) {
 			for(Attribute attr : attributeModel.getRemoveAttributes()) {
-				EntityFieldMetaDataVO mdFieldVO = buildMasterDataField(attr, metaVO, metaVOOld);
+				EntityFieldMetaDataVO mdFieldVO = buildMasterDataField(attr, metaVO, metaVOOld, 0);
 				mdFieldVO.flagRemove();
 				EntityFieldMetaDataTO to = new EntityFieldMetaDataTO();
 				to.setEntityFieldMeta(mdFieldVO);
@@ -1704,9 +1695,10 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		return false;
 	}
 
-	private EntityFieldMetaDataVO buildMasterDataField(Attribute attr, EntityMetaDataVO parentVO, EntityMetaDataVO metaVOOld) {
+	private EntityFieldMetaDataVO buildMasterDataField(Attribute attr, EntityMetaDataVO parentVO, EntityMetaDataVO metaVOOld, int order) {
 
 		EntityFieldMetaDataVO metaFieldVO = new EntityFieldMetaDataVO();
+		metaFieldVO.setOrder(order);
 
 		if(attr.getId() != null) {
 
@@ -1784,7 +1776,6 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			metaFieldVO.setReadonly(parentVO.isVirtual() ? attr.isReadonly() : Boolean.FALSE);
 		}
 		metaFieldVO.setInsertable(false);
-
 
 		metaFieldVO.setSearchable(attr.isValueListProvider());
 

@@ -160,7 +160,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 		moduleProvider.setParameter("restriction", moduleProvider.ENTITIES_WITH_STATEMODEL_ONLY);
 		subformUsages.getColumn("nuclos_module").setValueListProvider(moduleProvider);
 		this.subformctlUsages = new MasterDataSubFormController(getFrame(), parent, this.getDetailsEditView().getModel(),
-				this.getEntityName(), subformUsages, this.getPreferences(), valueListProviderCache);
+				this.getEntityName(), subformUsages, this.getPreferences(), this.getEntityPreferences(), valueListProviderCache);
 
 		pnlEdit = new StateModelEditPanel(subformUsages);
 

@@ -633,9 +633,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		final int iModuleId = gowdvo.getModuleId();
 
-		// Is the object to create a main module (as opposed to submodule) object?
-		final boolean bMainModuleObject = Modules.getInstance().isMainModule(gowdvo.getModuleId());
-
 //		if (!bMainModuleObject && gowdvo.getParentId() == null) {
 //			throw new NullArgumentException("govo.getParentId");
 //		}
@@ -718,13 +715,11 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			helper.createDependants(Modules.getInstance().getEntityNameByModuleId(iModuleId), id, mpDependants);
 		}
 
-		if (bMainModuleObject) {
-			// Write a possible origin object into the logbook:
-			final DynamicAttributeVO attrvoOrigin = gowdvo.getAttribute(NuclosEOField.ORIGIN.getMetaData().getId().intValue());
-			if (attrvoOrigin != null) {
-				createLogbookEntry(id, attrvoOrigin.getAttributeId(), null, null, null, null, null,
-					null, null, null, null, (String) attrvoOrigin.getValue());
-			}
+		// Write a possible origin object into the logbook:
+		final DynamicAttributeVO attrvoOrigin = gowdvo.getAttribute(NuclosEOField.ORIGIN.getMetaData().getId().intValue());
+		if (attrvoOrigin != null) {
+			createLogbookEntry(id, attrvoOrigin.getAttributeId(), null, null, null, null, null,
+				null, null, null, null, (String) attrvoOrigin.getValue());
 		}
 
 		GenericObjectVO result;
@@ -1087,10 +1082,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 //			throw new CommonFatalException(ex);
 //		}
 
-		if (Modules.getInstance().isMainModule(iModuleId)) {
-			if (isInfoEnabled()) {
-				info("The entry " + gowdvo.getSystemIdentifier() + " (Id: " + gowdvo.getId() + ") has been deleted.");
-			}
+		if (isInfoEnabled()) {
+			info("The entry " + gowdvo.getSystemIdentifier() + " (Id: " + gowdvo.getId() + ") has been deleted.");
 		}
 
 		if(useRuleEngine)
@@ -1104,11 +1097,9 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		final int iModuleId = govo.getModuleId();
 
 		final Modules modules = Modules.getInstance();
-		if (modules.isMainModule(iModuleId)) {
-			// delete all dependant leased object relations:
-			for (GenericObjectRelationVO vo : findRelationsByGenericObjectId(govo.getId())) {
-				getMasterDataFacade().remove(NuclosEntity.GENERICOBJECTRELATION.getEntityName(),MasterDataWrapper.wrapGenericObjectRelationVO(vo),false);
-			}
+		// delete all dependant leased object relations:
+		for (GenericObjectRelationVO vo : findRelationsByGenericObjectId(govo.getId())) {
+			getMasterDataFacade().remove(NuclosEntity.GENERICOBJECTRELATION.getEntityName(),MasterDataWrapper.wrapGenericObjectRelationVO(vo),false);
 		}
 
 		if (modules.getUsesStateModel(iModuleId)) {
@@ -1275,10 +1266,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		final int iModuleId = this.getModuleContainingGenericObject(iGenericObjectId);
 
-		if (!Modules.getInstance().isMainModule(iModuleId)) {
-			throw new IllegalArgumentException("iModuleId");
-		}
-
 		this.checkWriteAllowedForObjectGroup(iModuleId, iGroupId);
 		if (blnCheckWriteAllowedForObject) {
 			this.checkWriteAllowedForModule(iModuleId, iGenericObjectId);
@@ -1336,10 +1323,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		final int iModuleId = this.getModuleContainingGenericObject(iGenericObjectId);
 
-		if (!Modules.getInstance().isMainModule(iModuleId)) {
-			throw new IllegalArgumentException("iModuleId");
-		}
-
 		checkWriteAllowedForObjectGroup(iModuleId, iGroupId);
 
 		GenericObjectGroupFacadeLocal goGroupFacade = ServiceLocator.getInstance().getFacade(GenericObjectGroupFacadeLocal.class);
@@ -1387,9 +1370,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		if (!isGenericObjectInModule(iModuleIdTarget, iGenericObjectIdTarget)) {
 			throw new IllegalArgumentException("iModuleIdTarget");
 		}
-		if (!Modules.getInstance().isMainModule(iModuleIdTarget)) {
-			throw new IllegalArgumentException("iModuleIdTarget");
-		}
 
 		this.checkWriteAllowedForModule(iModuleIdTarget, iGenericObjectIdSource);
 		this.checkWriteAllowedForModule(iModuleIdTarget, iGenericObjectIdTarget);
@@ -1435,9 +1415,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		if (!isGenericObjectInModule(iModuleIdTarget, iGenericObjectIdTarget)) {
 			throw new IllegalArgumentException("iModuleIdTarget");
 		}
-		if (!Modules.getInstance().isMainModule(iModuleIdTarget)) {
-			throw new IllegalArgumentException("iModuleIdTarget");
-		}
 		this.checkWriteAllowedForModule(iModuleIdTarget, iGenericObjectIdTarget);
 		try {
 			MasterDataVO mdVO = getMasterDataFacade().get(NuclosEntity.GENERICOBJECTRELATION.getEntityName(), iRelationId);
@@ -1472,9 +1449,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			throws CommonFinderException, NuclosBusinessRuleException, CommonPermissionException, CommonRemoveException {
 
 		if (!isGenericObjectInModule(iModuleIdTarget, iGenericObjectIdTarget)) {
-			throw new IllegalArgumentException("iModuleIdTarget");
-		}
-		if (!Modules.getInstance().isMainModule(iModuleIdTarget)) {
 			throw new IllegalArgumentException("iModuleIdTarget");
 		}
 

@@ -62,7 +62,7 @@ public class PersonalSearchFiltersTreeNode extends AbstractTreeNode<Object> {
 	public List<? extends TreeNode> getSubNodesImpl() throws NuclosFatalException {
 		final List<TreeNode> result = new ArrayList<TreeNode>();
 
-		for (MasterDataVO mdvoModule : Modules.getInstance().getModules(false)) {
+		for (MasterDataVO mdvoModule : Modules.getInstance().getModules()) {
 			final Integer iModuleId = (Integer) mdvoModule.getId();
 			final String sEntity = mdvoModule.getField("entity", String.class);
 			if (SecurityCache.getInstance().isReadAllowedForModule(sEntity, null)) {

@@ -53,7 +53,7 @@ public class Modules extends ModuleProvider {
 
 
 	@Override
-	protected Collection<MasterDataVO> getModules() {
+	public Collection<MasterDataVO> getModules() {
 		return fillLocales(MasterDataDelegate.getInstance().getMasterData(NuclosEntity.MODULE.getEntityName()));
 	}
 

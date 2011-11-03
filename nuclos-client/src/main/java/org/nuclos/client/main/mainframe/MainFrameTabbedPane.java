@@ -73,6 +73,7 @@ import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.NuclosDropTargetListener;
 import org.nuclos.client.common.NuclosDropTargetVisitor;
+import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame.SplitRange;
 import org.nuclos.client.main.mainframe.StartTabPanel.LinkMarker;
@@ -82,6 +83,7 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.common.Actions;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 
@@ -1094,8 +1096,9 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		});
 		//jpnTabbedPaneControl.add(lbMin);
 		jpnTabbedPaneControl.add(lbMax);
-		jpnTabbedPaneControl.add(lbClose);
-
+		if (MainFrame.isSplittingEnabled()) {
+			jpnTabbedPaneControl.add(lbClose);
+		}
 
 		BlackLabel bl = new BlackLabel(jpnTabbedPaneControl, CommonLocaleDelegate.getMessage("MainFrameTabbedPane.3","Tableiste"));
 		toolBar.add(bl);
@@ -1115,23 +1118,29 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		 */
 		PopupButton extraButton = new PopupButton(CommonLocaleDelegate.getMessage("PopupButton.Extras","Extras"));
 
-		extraButton.add(startTab.createHeadline(CommonLocaleDelegate.getMessage("StartTabPanel.11","Startmenu"), null));
-		extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getShowStartmenuAction()));
-		extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getAlwaysHideStartmenuAction()));
-		JCheckBoxMenuItem cbmiAdministration = new JCheckBoxMenuItem(startTab.getShowAdministration());
-		JCheckBoxMenuItem cbmiConfiguration = new JCheckBoxMenuItem(startTab.getShowConfiguration());
-		JCheckBoxMenuItem cbmiEntity = new JCheckBoxMenuItem(startTab.getShowEntity());
-		cbmiAdministration.setSelected(startTab.isShowAdministration());
-		cbmiConfiguration.setSelected(startTab.isShowConfiguration());
-		cbmiEntity.setSelected(startTab.isShowEntity());
-		extraButton.add(cbmiAdministration);
-		extraButton.add(cbmiConfiguration);
-		extraButton.add(cbmiEntity);
+		if (MainFrame.isStarttabEditable()) {
+			extraButton.add(startTab.createHeadline(CommonLocaleDelegate.getMessage("StartTabPanel.11","Startmenu"), null));
+			extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getShowStartmenuAction()));
+			extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getAlwaysHideStartmenuAction()));
+			JCheckBoxMenuItem cbmiAdministration = new JCheckBoxMenuItem(startTab.getShowAdministration());
+			JCheckBoxMenuItem cbmiConfiguration = new JCheckBoxMenuItem(startTab.getShowConfiguration());
+			JCheckBoxMenuItem cbmiEntity = new JCheckBoxMenuItem(startTab.getShowEntity());
+			cbmiAdministration.setSelected(startTab.isShowAdministration());
+			cbmiConfiguration.setSelected(startTab.isShowConfiguration());
+			cbmiEntity.setSelected(startTab.isShowEntity());
+			extraButton.add(cbmiAdministration);
+			extraButton.add(cbmiConfiguration);
+			extraButton.add(cbmiEntity);	
+			extraButton.addSeparator();
+		}
 
-		extraButton.addSeparator();
 		extraButton.add(startTab.createHeadline(CommonLocaleDelegate.getMessage("StartTabPanel.12","Zuletzt angesehen"), null));
-		extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getShowHistoryAction()));
-		extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getAlwaysHideHistoryAction()));
+		
+		if (MainFrame.isStarttabEditable()) {
+			extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getShowHistoryAction()));
+			extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getAlwaysHideHistoryAction()));
+		}	
+		
 		ButtonGroup bgHistorySize = new ButtonGroup();
 
 		for (int i = 0; i < MainFrame.HISTORY_SIZES.length; i++) {
@@ -1144,11 +1153,15 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 			}
 		}
 		extraButton.add(new JMenuItem(startTab.getClearHistoryAction()));
-
+		
 		extraButton.addSeparator();
 		extraButton.add(startTab.createHeadline(CommonLocaleDelegate.getMessage("StartTabPanel.13","Lesezeichen"), null));
-		extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getShowBookmarkAction()));
-		extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getAlwaysHideBookmarkAction()));
+		
+		if (MainFrame.isStarttabEditable()) {
+			extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getShowBookmarkAction()));
+			extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getAlwaysHideBookmarkAction()));
+		}
+		
 		extraButton.add(new JMenuItem(startTab.getClearBookmarkAction()));
 
 		toolBar.add(extraButton);

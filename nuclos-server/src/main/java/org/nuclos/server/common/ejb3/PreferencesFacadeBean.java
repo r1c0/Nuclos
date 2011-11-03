@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -29,32 +30,48 @@ import java.util.TreeMap;
 
 import javax.annotation.security.RolesAllowed;
 
+import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.WorkspaceDescription;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
+import org.nuclos.common.WorkspaceDescription.Frame;
+import org.nuclos.common.WorkspaceDescription.MutableContent;
+import org.nuclos.common.WorkspaceDescription.NestedContent;
+import org.nuclos.common.WorkspaceDescription.Split;
+import org.nuclos.common.WorkspaceDescription.Tab;
+import org.nuclos.common.WorkspaceDescription.Tabbed;
+import org.nuclos.common.WorkspaceVO;
+import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
+import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.preferences.PreferencesConverter;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
+import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.valueobject.PreferencesVO;
 import org.nuclos.server.dal.DalUtils;
+import org.nuclos.server.dal.processor.nuclet.IWorkspaceProcessor;
+import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
+import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.XStreamException;
-import com.thoughtworks.xstream.io.xml.DomDriver;
 
 /**
  * Facade bean for storing user preferences.
@@ -159,32 +176,60 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		}
 	}
 	
+	private void handleWorkspaceBusinessExceptions(DbException ex) throws CommonBusinessException {
+		boolean throwBusiness = false;
+		if ("Workspace.name.in.use".equals(ex.getMessage())) {
+			throwBusiness = true;
+		} else if ("Workspace.not.found".equals(ex.getMessage())) {
+			throwBusiness = true;
+		}
+		
+		if (throwBusiness) 
+			throw new CommonBusinessException(ex.getMessage());
+		else
+			throw ex;
+	}
+	
 	/**
 	 * 
 	 * @return
 	 */
 	@Override
-	public Collection<WorkspaceDescription> getWorkspaceMetadataOnly() {
-		Integer userId = SecurityCache.getInstance().getUserId(getCurrentUserName());
+	public Collection<WorkspaceVO> getWorkspaceHeaderOnly() {
+		List<WorkspaceVO> result = new ArrayList<WorkspaceVO>();
+		result.addAll(getWorkspaceProcessor().getByUser(getCurrentUserName()));
+		List<WorkspaceVO> newAssigned = getWorkspaceProcessor().getNewAssigned(getCurrentUserName());
 		
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
-		DbQuery<String> query = builder.createQuery(String.class);
-		DbFrom t = query.from("T_MD_WORKSPACE").alias(SystemFields.BASE_ALIAS);
-		query.select(t.baseColumn("CLBWORKSPACE", String.class));
-		query.where(builder.equal(t.baseColumn("INTID_T_MD_USER", Integer.class), userId));
+		// remove first user workspace if:
+		// 1. only one user workspace exists
+		// 2. workspace is not assigned
+		// 3. user has no right to create new workspaces 
+		// 1+2+3 = Initial start workspace 
+		// 4. at least one assigned workspace is new
+		if (result.size() == 1
+		 && result.get(0).getAssignedWorkspace() == null
+		 && !SecurityCache.getInstance().getAllowedActions(getCurrentUserName()).contains(Actions.ACTION_WORKSPACE_CREATE_NEW)
+		 && !newAssigned.isEmpty()) {
+			removeWorkspace(result.get(0).getId());
+			result.clear();
+		}
 		
-		List<String> xmls = DataBaseHelper.getDbAccess().executeQuery(query);
-		Collection<WorkspaceDescription> result = new ArrayList<WorkspaceDescription>();
-		
-		for (String xml : xmls) {
+		for (WorkspaceVO assignedWorkspace : newAssigned) {
+			WorkspaceVO customizedWorkspace = new WorkspaceVO();
+			customizedWorkspace.importHeader(assignedWorkspace.getWoDesc());
+			customizedWorkspace.setClbworkspace(assignedWorkspace.getClbworkspace());
+			customizedWorkspace.setAssignedWorkspace(assignedWorkspace.getId());
 			try {
-				WorkspaceDescription wd = (WorkspaceDescription) (new XStream(new DomDriver())).fromXML(xml);
-				wd.getFrames().clear(); // no need for frames, only metadata
-				result.add(wd);
-			} 
-			catch (XStreamException e) {
-				error(e.getMessage());
+				result.add(storeWorkspace(customizedWorkspace));
+			} catch (CommonBusinessException e) {
+				// ignore. may be workspace name is in use by private workspace.
 			}
+		}
+		
+		// header only
+		for (WorkspaceVO wovo : result) {
+			wovo.getWoDesc().getFrames().clear();
+			wovo.getWoDesc().removeAllEntityPreferences();
 		}
 		
 		return result;
@@ -192,71 +237,441 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 	
 	/**
 	 * 
-	 * @param wd
-	 * @throws CommonFinderException
+	 * @param wovo
+	 * @throws CommonBusinessException 
 	 */
 	@Override
-	public void storeWorkspaceMetadataOnly(String originName, WorkspaceDescription wd) throws CommonFinderException {
-		WorkspaceDescription wddb = getWorkspace(originName);
-		
-		if (!LangUtils.equals(wd.getName(), originName)) {
-			removeWorkspace(originName);
+	public void storeWorkspaceHeaderOnly(WorkspaceVO wovo) throws CommonBusinessException {
+		if (wovo.getAssignedWorkspace() != null && !isAssignWorkspaceAllowed()) {
+			throw new CommonFatalException("Edit of assignable workspaces is not allowed!");
 		}
+		WorkspaceVO wovoDB = getWorkspaceProcessor().getByPrimaryKey(wovo.getId());
 		
-		wddb.setName(wd.getName());
-		wddb.setHideName(wd.isHideName());
-		wddb.setNuclosResource(wd.getNuclosResource());
-		storeWorkspace(wddb);
+		wovoDB.importHeader(wovo.getWoDesc());
+		
+		DalUtils.updateVersionInformation(wovoDB, getCurrentUserName());
+		wovoDB.flagUpdate();
+		try {
+			getWorkspaceProcessor().insertOrUpdate(wovoDB);
+		} catch (DbException ex) {
+			handleWorkspaceBusinessExceptions(ex);
+		}
 	}
 	
 	/**
 	 * 
-	 * @param name
+	 * @param id
 	 * @return
-	 * @throws CommonFinderException
 	 */
 	@Override
-	public WorkspaceDescription getWorkspace(String name) throws CommonFinderException {
-		Integer userId = SecurityCache.getInstance().getUserId(getCurrentUserName());
-		
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
-		DbQuery<String> query = builder.createQuery(String.class);
-		DbFrom t = query.from("T_MD_WORKSPACE").alias(SystemFields.BASE_ALIAS);
-		query.select(t.baseColumn("CLBWORKSPACE", String.class));
-		query.where(builder.and(
-			builder.equal(t.baseColumn("INTID_T_MD_USER", Integer.class), userId),
-			builder.equal(t.baseColumn("STRNAME", String.class), name)));
-		
-		try {
-			String xml = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
-			return (WorkspaceDescription) (new XStream(new DomDriver())).fromXML(xml);
-		} 
-		catch (DbInvalidResultSizeException e) {
-			throw new CommonFinderException("There is no workspace stored for the current user and given name. (" 
-					+ getCurrentUserName() + ", " + name + "): " + e.toString());
+	public WorkspaceVO getWorkspace(Long id) throws CommonBusinessException {
+		WorkspaceVO wovo = getWorkspaceProcessor().getByPrimaryKey(id);
+		if (wovo == null) {
+			throw new CommonBusinessException("Workspace.not.found");
 		}
-		catch (XStreamException e) {
-			throw new CommonFinderException("There is no workspace stored for the current user and given name. (" 
-					+ getCurrentUserName() + ", " + name + "): " + e.toString());
+		if (wovo.getAssignedWorkspace() != null) {
+			if (!SecurityCache.getInstance().getAllowedActions(getCurrentUserName()).contains(Actions.ACTION_WORKSPACE_ASSIGN)) {
+				return mergeWorkspaces(getWorkspaceProcessor().getByPrimaryKey(wovo.getAssignedWorkspace()), wovo);
+			}
+		}
+		return wovo;
+	}
+	
+	/**
+	 * 
+	 * @param wovo
+	 * @return 
+	 * @throws CommonBusinessException 
+	 */
+	@Override
+	public WorkspaceVO storeWorkspace(WorkspaceVO wovo) throws CommonBusinessException {
+		DalUtils.updateVersionInformation(wovo, getCurrentUserName());
+		if (wovo.getId() == null) {
+			wovo.setUser(SecurityCache.getInstance().getUserId(getCurrentUserName()).longValue());
+			wovo.flagNew();
+			wovo.setId(DalUtils.getNextId());
+		} else {
+			wovo.flagUpdate();
+		}
+		try {
+			getWorkspaceProcessor().insertOrUpdate(wovo);
+		} catch (DbException ex) {
+			handleWorkspaceBusinessExceptions(ex);
+		}
+		return wovo;
+	}
+	
+	/**
+	 * 
+	 * @param wovo
+	 * @return
+	 * @throws CommonBusinessException 
+	 */
+	private WorkspaceVO storeAssignableWorkspace(WorkspaceVO wovo) throws CommonBusinessException {	
+		DalUtils.updateVersionInformation(wovo, getCurrentUserName());
+		wovo.setUser(null);
+		if (wovo.getId() == null) {
+			wovo.flagNew();
+			wovo.setId(DalUtils.getNextId());
+		} else {
+			wovo.flagUpdate();
+		}
+		try {
+			getWorkspaceProcessor().insertOrUpdate(wovo);
+		} catch (DbException ex) {
+			handleWorkspaceBusinessExceptions(ex);
+		}
+		return wovo;
+	}
+	
+	/**
+	 * 
+	 * @param id
+	 */
+	@Override
+	public void removeWorkspace(Long id) {
+		getWorkspaceProcessor().delete(id);
+	}
+	
+	/**
+	 * 
+	 * @param wovo (private or customized workspace)
+	 * @param roleIds
+	 * @throws CommonBusinessException 
+	 * return private or customized workspace
+	 */
+	@Override
+	public WorkspaceVO assignWorkspace(WorkspaceVO wovo, Collection<Long> roleIds) throws CommonBusinessException {
+		if (!isAssignWorkspaceAllowed()) {
+			throw new CommonFatalException("Edit of assignable workspaces is not allowed!");
+		}
+		
+		if (wovo.getAssignedWorkspace() == null) {
+			// workspace is private, make it assignable
+			
+			if (!roleIds.isEmpty()) {
+				WorkspaceVO assignableWovo = getWorkspace(wovo.getId());;
+				WorkspaceVO customizedWovo = splitWorkspace(assignableWovo);
+				
+				storeAssignableWorkspace(assignableWovo);
+				storeWorkspace(customizedWovo);
+				
+				modifyWorkspaceAssignments(roleIds, assignableWovo.getId());
+				
+				// transfer header only
+				WorkspaceDescription customizedWoDesc = customizedWovo.getWoDesc();
+				customizedWovo.setWoDesc(new WorkspaceDescription());
+				customizedWovo.importHeader(customizedWoDesc);
+				
+				return customizedWovo;
+			} else {
+				return wovo;
+			}
+			
+		} else {
+			// assigned workspace
+			if (roleIds.isEmpty()) {
+				// revert assignment, make it private again
+				
+				Long assignableWovoId = wovo.getAssignedWorkspace();
+				
+				WorkspaceVO privateWovo = getWorkspace(wovo.getId());
+				privateWovo.setAssignedWorkspace(null);
+				storeWorkspace(privateWovo);
+				
+				removeWorkspace(assignableWovoId);
+				
+				// transfer header only
+				WorkspaceDescription privateWoDesc = privateWovo.getWoDesc();
+				privateWovo.setWoDesc(new WorkspaceDescription());
+				privateWovo.importHeader(privateWoDesc);
+				
+				return privateWovo;
+			} else {
+				// modify assignments only
+				modifyWorkspaceAssignments(roleIds, wovo.getAssignedWorkspace());
+				
+				return wovo; // workspace is customized
+			}
 		}
 	}
 	
-	public WorkspaceDescription getWorkspace(Integer id) throws CommonFinderException {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
-		DbQuery<String> query = builder.createQuery(String.class);
-		DbFrom t = query.from("T_MD_WORKSPACE").alias(SystemFields.BASE_ALIAS);
-		query.select(t.baseColumn("CLBWORKSPACE", String.class));
-		query.where(builder.equal(t.baseColumn(SystemFields.ID, SystemFields.ID_CLASS), id.longValue()));
+	/**
+	 * 
+	 * @param roleIds
+	 * @param assignedWorkspace
+	 */
+	private void modifyWorkspaceAssignments(Collection<Long> roleIds, Long assignedWorkspace) {
+		JdbcEntityObjectProcessor rowoProc = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.ROLEWORKSPACE);
 		
-		try {
-			String xml = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
-			return (WorkspaceDescription) (new XStream(new DomDriver())).fromXML(xml);
-		} 
-		catch (DbInvalidResultSizeException e) {
-			throw new CommonFinderException(e.getMessage());
+		List<EntityObjectVO> grantedRoles = rowoProc.getBySearchExpression(new CollectableSearchExpression(
+				SearchConditionUtils.newEOidComparison(NuclosEntity.ROLEWORKSPACE.getEntityName(), 
+						"workspace", 
+						ComparisonOperator.EQUAL, 
+						assignedWorkspace, MetaDataServerProvider.getInstance())));
+		
+		// remove assignments
+		for (EntityObjectVO grantedRole : grantedRoles) {
+			if (!roleIds.contains(grantedRole.getFieldId("role"))) {
+				rowoProc.delete(grantedRole.getId());
+				
+				// remove customized workspaces
+				getWorkspaceProcessor().deleteByAssigned(assignedWorkspace);
+			}
 		}
-		catch (XStreamException e) {
-			throw new CommonFinderException(e.getMessage());
+		
+		// add new assignments
+		for (Long roleId : roleIds) {
+			boolean alreadyGranted = false;
+			if (grantedRoles != null) {
+				for (EntityObjectVO grantedRole : grantedRoles) {
+					if (roleId.equals(grantedRole.getFieldId("role"))) {
+						alreadyGranted = true;
+					}
+				}
+			}
+			
+			if (!alreadyGranted) {
+				// assign role
+				EntityObjectVO newGrant = EntityObjectVO.newObject(NuclosEntity.ROLEWORKSPACE.getEntityName());
+				newGrant.setId(DalUtils.getNextId());
+				DalUtils.updateVersionInformation(newGrant, getCurrentUserName());
+				newGrant.getFieldIds().put("role", roleId);
+				newGrant.getFieldIds().put("workspace", assignedWorkspace);
+				rowoProc.insertOrUpdate(newGrant);
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @return 
+	 */
+	public Collection<EntityObjectVO> getAssignableRoles() {
+		return NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.ROLE).getAll();
+	}
+	
+	/**
+	 * 
+	 * @param assignedWorkspaceId
+	 * @return
+	 */
+	public Collection<Long> getAssignedRoleIds(Long assignedWorkspaceId) {
+		if (assignedWorkspaceId == null) {
+			return new ArrayList<Long>();
+		}
+		
+		List<EntityObjectVO> assignedRoles = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.ROLEWORKSPACE).getBySearchExpression(
+				new CollectableSearchExpression(SearchConditionUtils.newEOidComparison(
+						NuclosEntity.ROLEWORKSPACE.getEntityName(), 
+						"workspace", 
+						ComparisonOperator.EQUAL, 
+						assignedWorkspaceId, 
+						MetaDataServerProvider.getInstance())));
+		return CollectionUtils.transform(assignedRoles, new Transformer<EntityObjectVO, Long>() {
+			@Override
+			public Long transform(EntityObjectVO eovo) {
+				return eovo.getFieldId("role");
+			}
+			
+		});
+	}
+	
+	/**
+	 * 
+	 * @param assignableWovo
+	 * @return customizedWovo
+	 * @throws CommonBusinessException 
+	 */
+	private WorkspaceVO splitWorkspace(WorkspaceVO assignableWovo) throws CommonBusinessException {
+		WorkspaceVO customizedWorkspace = new WorkspaceVO();
+		
+		transferWorkspaceContent(assignableWovo, customizedWorkspace);
+		removeNonMainFrames(assignableWovo);
+		removeClosableTabs(assignableWovo.getWoDesc());
+		flagTabsAssigned(assignableWovo.getWoDesc());
+		
+		customizedWorkspace.setAssignedWorkspace(assignableWovo.getId());
+		assignableWovo.setUser(null);
+		
+		return customizedWorkspace;
+	}
+	
+	/**
+	 * 
+	 * @param customizedWovo
+	 * @param isPublishStructureChange 
+	 * @param isPublishStructureUpdate 
+	 * @param isPublishStarttabConfiguration
+	 * @param isPublishToolbarConfiguration 
+	 * @param isPublishTableColumnConfiguration 
+	 * @throws CommonBusinessException
+	 */
+	@Override
+	public void publishWorkspaceChanges(WorkspaceVO customizedWovo, boolean isPublishStructureChange, boolean isPublishStructureUpdate, boolean isPublishStarttabConfiguration, boolean isPublishTableColumnConfiguration, boolean isPublishToolbarConfiguration) throws CommonBusinessException {
+		if (!isAssignWorkspaceAllowed()) {
+			throw new CommonFatalException("Edit of assignable workspaces is not allowed!");
+		}
+		
+		WorkspaceVO customizedWovoFromDb = getWorkspace(customizedWovo.getId());
+		WorkspaceVO assignableWovo = getWorkspace(customizedWovoFromDb.getAssignedWorkspace());
+		
+		/**
+		 * STRUCTURE CHANGE - implements STRUCTURE UPDATE, STARTTAB CONFIGURATIONs
+		 */
+		if (isPublishStructureChange) {
+			transferWorkspaceContent(customizedWovoFromDb, assignableWovo);
+			removeNonMainFrames(assignableWovo);
+			removeClosableTabs(assignableWovo.getWoDesc());
+			flagTabsAssigned(assignableWovo.getWoDesc());
+		} else {
+			// check before publish
+			if (isStructureChanged(assignableWovo.getWoDesc().getMainFrame().getContent(), customizedWovoFromDb.getWoDesc().getMainFrame().getContent())) {
+				throw new CommonFatalException("Workspace structure differs");
+			}
+			
+			WorkspaceVO assignableBackupWovo = getWorkspace(customizedWovoFromDb.getAssignedWorkspace());
+			
+			/**
+			 * STRUCTURE UPDATE - implements STARTTAB CONFIGURATIONs
+			 */
+			if (isPublishStructureUpdate) {
+				transferWorkspaceContent(customizedWovoFromDb, assignableWovo);
+				removeNonMainFrames(assignableWovo);
+				removeClosableTabs(assignableWovo.getWoDesc());
+				flagTabsAssigned(assignableWovo.getWoDesc());
+				
+				if (!isPublishStarttabConfiguration) {
+					/**
+					 * NO STARTTAB CONFIGURATIONs - restore from backup
+					 */
+					transferStarttabConfiguration(assignableBackupWovo.getWoDesc().getMainFrame().getContent(), assignableWovo.getWoDesc().getMainFrame().getContent());
+				}
+			} else {
+				/**
+				 * STARTTAB CONFIGURATIONs without STRUCTURE UPDATE
+				 */
+				if (isPublishStarttabConfiguration) {
+					transferStarttabConfiguration(customizedWovoFromDb.getWoDesc().getMainFrame().getContent(), assignableWovo.getWoDesc().getMainFrame().getContent());
+				}
+			}
+		}
+		
+		/**
+		 * TABLE COLUMNs
+		 */
+		if (isPublishTableColumnConfiguration) {
+			assignableWovo.getWoDesc().removeAllEntityPreferences();
+			assignableWovo.getWoDesc().addAllEntityPreferences(customizedWovoFromDb.getWoDesc().getEntityPreferences());
+		}
+		
+		/**
+		 * TOOLBARs
+		 */
+		if (isPublishToolbarConfiguration) {
+			// TODO implement
+		}
+		
+		storeWorkspace(assignableWovo);
+	}
+	
+	/**
+	 * 
+	 * @param ncSource
+	 * @param ncTarget
+	 */
+	private void transferStarttabConfiguration(NestedContent ncSource, NestedContent ncTarget) {
+		if (ncSource instanceof MutableContent) {
+			transferStarttabConfiguration(((MutableContent) ncSource).getContent(), ((MutableContent) ncTarget).getContent());
+		} else if (ncSource instanceof Split) {
+			transferStarttabConfiguration(((Split) ncSource).getContentA(), ((Split) ncTarget).getContentA());
+			transferStarttabConfiguration(((Split) ncSource).getContentB(), ((Split) ncTarget).getContentB());
+		} else if (ncSource instanceof Tabbed) {
+			final Tabbed tbbSource = (Tabbed) ncSource;
+			final Tabbed tbbTarget = (Tabbed) ncTarget;
+			
+			tbbTarget.getPredefinedEntityOpenLocations().clear();
+			tbbTarget.addAllPredefinedEntityOpenLocations(new ArrayList<String>(tbbSource.getPredefinedEntityOpenLocations()));
+			
+			tbbTarget.getReducedStartmenus().clear();
+			tbbTarget.addAllReducedStartmenus(tbbSource.getReducedStartmenus());
+			
+			tbbTarget.setAlwaysHideBookmark(tbbSource.isAlwaysHideBookmark());
+			tbbTarget.setAlwaysHideHistory(tbbSource.isAlwaysHideHistory());
+			tbbTarget.setAlwaysHideStartmenu(tbbSource.isAlwaysHideStartmenu());
+			tbbTarget.setNeverHideBookmark(tbbSource.isNeverHideBookmark());
+			tbbTarget.setNeverHideHistory(tbbSource.isNeverHideHistory());
+			tbbTarget.setNeverHideStartmenu(tbbSource.isNeverHideStartmenu());
+			tbbTarget.setShowAdministration(tbbSource.isShowAdministration());
+			tbbTarget.setShowConfiguration(tbbSource.isShowConfiguration());
+			tbbTarget.setShowEntity(tbbSource.isShowEntity());
+		} else {
+			throw new UnsupportedOperationException("Unknown NestedContent type: " + ncSource.getClass());
+		}
+	}
+	
+	/**
+	 * 
+	 * @param customizedWovo
+	 * @return
+	 * @throws CommonBusinessException
+	 */
+	@Override
+	public WorkspaceVO restoreWorkspace(WorkspaceVO customizedWovo) throws CommonBusinessException {
+		if (customizedWovo.getAssignedWorkspace() == null) {
+			throw new CommonFatalException("Workspace is not assigned!");
+		}
+		
+		WorkspaceVO assignableWovo = getWorkspace(customizedWovo.getAssignedWorkspace());
+		
+		transferWorkspaceContent(assignableWovo, customizedWovo);
+		storeWorkspace(customizedWovo);
+		
+		// only header
+		customizedWovo.getWoDesc().getFrames().clear();
+		customizedWovo.getWoDesc().removeAllEntityPreferences();
+		
+		return customizedWovo;
+	}
+	
+	/**
+	 * 
+	 * @param sourceWovo
+	 * @param targetWovo
+	 * @throws CommonBusinessException
+	 */
+	private void transferWorkspaceContent(WorkspaceVO sourceWovo, WorkspaceVO targetWovo) throws CommonBusinessException {
+		targetWovo.importHeader(sourceWovo.getWoDesc());
+		
+		// clone WorkspaceDescription
+		targetWovo.setClbworkspace(sourceWovo.getClbworkspace());
+	}
+	
+	/**
+	 * 
+	 * @param wovo
+	 * @throws CommonBusinessException
+	 */
+	private void removeNonMainFrames(WorkspaceVO wovo) throws CommonBusinessException {
+		// only main frame in target
+		Frame mainFrame = wovo.getWoDesc().getMainFrame();
+		wovo.getWoDesc().getFrames().clear();
+		wovo.getWoDesc().addFrame(mainFrame);
+				
+		// check for home and tree tabbed in main frame
+		wovo.getWoDesc().getHomeTabbed();
+		wovo.getWoDesc().getHomeTreeTabbed();
+	}
+	
+	/**
+	 * 
+	 * @param wd
+	 */
+	private void flagTabsAssigned(WorkspaceDescription wd) {
+		for (Frame frame : wd.getFrames()) {
+			for (Tab tab : getTabs(frame.getContent())) {
+				tab.setFromAssigned(true);
+			}
 		}
 	}
 	
@@ -264,53 +679,225 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 	 * 
 	 * @param wd
 	 */
-	@Override
-	public void storeWorkspace(WorkspaceDescription wd) {
-		if (wd.getName() == null) {
-			throw new IllegalArgumentException("Name must not be null");
+	private void removeClosableTabs(WorkspaceDescription wd) {
+		for (Frame frame : wd.getFrames()) {
+			removeClosableTabs(frame.getContent());
 		}
-		Integer userId = SecurityCache.getInstance().getUserId(getCurrentUserName());
-		
-		String xml = (new XStream(new DomDriver())).toXML(wd);
-		
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
-		DbQuery<Integer> query = builder.createQuery(Integer.class);
-		DbFrom t = query.from("T_MD_WORKSPACE").alias(SystemFields.BASE_ALIAS);
-		query.select(t.baseColumn("INTID", Integer.class));
-		query.where(builder.and(
-			builder.equal(t.baseColumn("INTID_T_MD_USER", Integer.class), userId),
-			builder.equal(t.baseColumn("STRNAME", String.class), wd.getName())));
-		
-		try {
-			Integer workspaceId = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
-			DataBaseHelper.getDbAccess().execute(DbStatementUtils.updateValues("T_MD_WORKSPACE", 
-				"CLBWORKSPACE", xml).where("INTID", workspaceId));
-		} catch (DbInvalidResultSizeException e) {
-			EntityObjectVO eo = new EntityObjectVO();
-			eo.initFields(3, 1);
-			eo.flagNew();
-			eo.setId(DalUtils.getNextId());
-			eo.getFields().put("name", wd.getName());
-			eo.getFields().put("clbworkspace", xml);
-			eo.getFieldIds().put("user", LangUtils.convertId(userId));
-			DalUtils.updateVersionInformation(eo, getCurrentUserName());
-			NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.WORKSPACE).insertOrUpdate(eo);
-		}
-	}
-	
-	public void updateWorkspaceMetadata(Integer id, String name, Boolean hideName, Integer resourceId, String nuclosResource) {
-		
 	}
 	
 	/**
 	 * 
-	 * @param name
+	 * @param nc
+	 */
+	private void removeClosableTabs(NestedContent nc) {
+		if (nc instanceof MutableContent) {
+			removeClosableTabs(((MutableContent) nc).getContent());
+		} else if (nc instanceof Split) {
+			removeClosableTabs(((Split) nc).getContentA());
+			removeClosableTabs(((Split) nc).getContentB());
+		} else if (nc instanceof Tabbed) {
+			for (Tab tab : ((Tabbed) nc).getTabs()) {
+				if (!tab.isNeverClose()) {
+					((Tabbed) nc).removeTab(tab);
+				}
+			}
+		} else {
+			throw new UnsupportedOperationException("Unknown NestedContent type: " + nc.getClass());
+		}
+	}
+	
+	/**
+	 * 
+	 * @param ncAssigned
+	 * @param ncCustomized
+	 */
+	private void mergeTabbeds(NestedContent ncAssigned, NestedContent ncCustomized) {
+		if (ncAssigned instanceof MutableContent) {
+			mergeTabbeds(((MutableContent) ncAssigned).getContent(), ((MutableContent) ncCustomized).getContent());
+		} else if (ncAssigned instanceof Split) {
+			mergeTabbeds(((Split) ncAssigned).getContentA(), ((Split) ncCustomized).getContentA());
+			mergeTabbeds(((Split) ncAssigned).getContentB(), ((Split) ncCustomized).getContentB());
+		} else if (ncAssigned instanceof Tabbed) {
+			final Tabbed tbbAssigned = (Tabbed) ncAssigned;
+			final Tabbed tbbCustomized = (Tabbed) ncCustomized;
+			
+			// add never closable tabs
+			final List<Tab> tabsAssigned = tbbAssigned.getTabs();
+			final List<Tab> tabsCustomized = tbbCustomized.getTabs();
+			for (Tab tab : tabsAssigned) {
+				if (!tabsCustomized.contains(tab)) {
+					((Tabbed) ncCustomized).addTab(tab);
+				}
+			}
+			
+			// start tab configuration
+			if (!SecurityCache.getInstance().getAllowedActions(getCurrentUserName()).contains(Actions.ACTION_WORKSPACE_CUSTOMIZE_STARTTAB)) {
+				tbbCustomized.getPredefinedEntityOpenLocations().clear();
+				tbbCustomized.addAllPredefinedEntityOpenLocations(new ArrayList<String>(tbbAssigned.getPredefinedEntityOpenLocations()));
+				
+				tbbCustomized.getReducedStartmenus().clear();
+				tbbCustomized.addAllReducedStartmenus(tbbAssigned.getReducedStartmenus());
+				
+				tbbCustomized.setAlwaysHideBookmark(tbbAssigned.isAlwaysHideBookmark());
+				tbbCustomized.setAlwaysHideHistory(tbbAssigned.isAlwaysHideHistory());
+				tbbCustomized.setAlwaysHideStartmenu(tbbAssigned.isAlwaysHideStartmenu());
+				tbbCustomized.setNeverHideBookmark(tbbAssigned.isNeverHideBookmark());
+				tbbCustomized.setNeverHideHistory(tbbAssigned.isNeverHideHistory());
+				tbbCustomized.setNeverHideStartmenu(tbbAssigned.isNeverHideStartmenu());
+				tbbCustomized.setShowAdministration(tbbAssigned.isShowAdministration());
+				tbbCustomized.setShowConfiguration(tbbAssigned.isShowConfiguration());
+				tbbCustomized.setShowEntity(tbbAssigned.isShowEntity());
+			}
+		} else {
+			throw new UnsupportedOperationException("Unknown NestedContent type: " + ncAssigned.getClass());
+		}
+	}
+	
+	/**
+	 * 
+	 * @param assignableWovo
+	 * @param customizedWovo
+	 * @return
+	 * @throws CommonBusinessException 
+	 */
+	private WorkspaceVO mergeWorkspaces(WorkspaceVO assignableWovo, WorkspaceVO customizedWovo) throws CommonBusinessException {
+		final WorkspaceVO mergedWovo = customizedWovo;
+		final WorkspaceDescription wdm = mergedWovo.getWoDesc();
+		final WorkspaceDescription wda = assignableWovo.getWoDesc();
+		
+		// list of frames is ordered by use (last on top)
+		// --> merge only mainframe
+		if (isStructureChanged(wdm.getMainFrame(), wda.getMainFrame())) {
+			
+			// backup open tabs
+			final List<Tab> tabsToMove = getTabs(wdm.getMainFrame().getContent());
+			final List<Tab> tabsSource = getTabs(wda.getMainFrame().getContent());
+			
+			// transfer structure
+			wdm.getMainFrame().getContent().setContent(wda.getMainFrame().getContent().getContent());
+			final Tabbed homeTabbed = wdm.getHomeTabbed();
+			
+			// move tabs
+			for (Tab ttm : tabsToMove) {
+				if (!tabsSource.contains(ttm)) {
+					homeTabbed.addTab(ttm);
+				}
+			}
+			
+			// remove home tabbed in other frames
+			for (Frame f : wdm.getFrames()) {
+				if (!f.isMainFrame()) {
+					removeHomeTabbedFlags(f.getContent());
+				}
+			}
+		}
+		
+		// same structure in merged and assigned
+		// transfer assigned never closable tabs, start tab configuration...
+		mergeTabbeds(wda.getMainFrame().getContent(), wdm.getMainFrame().getContent());
+		
+		// column preferences
+		if (!SecurityCache.getInstance().getAllowedActions(getCurrentUserName()).contains(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS)) {
+			wdm.removeAllEntityPreferences();
+			wdm.addAllEntityPreferences(wda.getEntityPreferences());
+		}
+		
+		return mergedWovo;
+	}
+	
+	/**
+	 * 
+	 * @param id1
+	 * @param id2
+	 * @return
+	 * @throws CommonBusinessException
 	 */
 	@Override
-	public void removeWorkspace(String name) {
-		Integer userId = SecurityCache.getInstance().getUserId(getCurrentUserName());
-		
-		DataBaseHelper.getDbAccess().execute(DbStatementUtils.deleteFrom("T_MD_WORKSPACE", "INTID_T_MD_USER", userId, "STRNAME", name));
+	public boolean isWorkspaceStructureChanged(Long id1, Long id2) throws CommonBusinessException {
+		return isStructureChanged(
+				getWorkspace(id1).getWoDesc().getMainFrame(), 
+				getWorkspace(id2).getWoDesc().getMainFrame());
+	}
+	
+	private boolean isStructureChanged(Frame f1, Frame f2) {
+		return isStructureChanged(f1.getContent(), f2.getContent());
+	}
+	
+	private boolean isStructureChanged(NestedContent nc1, NestedContent nc2) {
+		if (equalsContent(nc1, nc2)) {
+			if (nc1 instanceof MutableContent) {
+				return isStructureChanged(((MutableContent) nc1).getContent(), ((MutableContent) nc2).getContent());
+			} else if (nc1 instanceof Split) {
+				return isStructureChanged(((Split) nc1).getContentA(), ((Split) nc2).getContentA())
+						|| isStructureChanged(((Split) nc1).getContentB(), ((Split) nc2).getContentB());
+			} else if (nc1 instanceof Tabbed) {
+				return false;
+			} else {
+				throw new UnsupportedOperationException("Unknown NestedContent type: " + nc1.getClass());
+			}
+		} else {
+			return true;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param nc1
+	 * @param nc2
+	 * @return
+	 */
+	private boolean equalsContent(NestedContent nc1, NestedContent nc2) {
+		if (nc1 instanceof MutableContent) {
+			return (nc2 instanceof MutableContent);
+		} else if (nc1 instanceof Split) {
+			return (nc2 instanceof Split);
+		} else if (nc1 instanceof Tabbed) {
+			return (nc2 instanceof Tabbed);
+		} else {
+			throw new UnsupportedOperationException("Unknown NestedContent type: " + nc1.getClass());
+		}
+	}
+	
+	/**
+	 * 
+	 * @param nc
+	 * @return
+	 */
+	private List<Tab> getTabs(NestedContent nc) {
+		List<Tab> result = new ArrayList<Tab>();
+		if (nc instanceof MutableContent) {
+			result.addAll(getTabs(((MutableContent) nc).getContent()));
+		} else if (nc instanceof Split) {
+			result.addAll(getTabs(((Split) nc).getContentA()));
+			result.addAll(getTabs(((Split) nc).getContentB()));
+		} else if (nc instanceof Tabbed) {
+			result.addAll(((Tabbed) nc).getTabs());
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @param nc
+	 */
+	private void removeHomeTabbedFlags(NestedContent nc) {
+		if (nc instanceof MutableContent) {
+			removeHomeTabbedFlags(((MutableContent) nc).getContent());
+		} else if (nc instanceof Split) {
+			removeHomeTabbedFlags(((Split) nc).getContentA());
+			removeHomeTabbedFlags(((Split) nc).getContentB());
+		} else if (nc instanceof Tabbed) {
+			((Tabbed) nc).setHome(false);
+			((Tabbed) nc).setHomeTree(false);
+		}
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	private boolean isAssignWorkspaceAllowed() {
+		return SecurityCache.getInstance().getAllowedActions(getCurrentUserName()).contains(Actions.ACTION_WORKSPACE_ASSIGN);
 	}
 
 	/**
@@ -360,4 +947,8 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 	}
 	
 	private final static Charset UTF_8 = Charset.forName("UTF-8");
+	
+	private IWorkspaceProcessor getWorkspaceProcessor() {
+		return NucletDalProvider.getInstance().getWorkspaceProcessor();
+	}
 }

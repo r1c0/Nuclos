@@ -30,6 +30,7 @@ import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.prefs.PreferencesMigration;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.ExternalFrame;
@@ -48,6 +49,7 @@ import org.nuclos.common.WorkspaceDescription.MutableContent;
 import org.nuclos.common.WorkspaceDescription.Split;
 import org.nuclos.common.WorkspaceDescription.Tabbed;
 import org.nuclos.common.WorkspaceDescriptionDefaultsFactory;
+import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
@@ -105,7 +107,7 @@ public class RestoreUtils {
 		if (wdFrame.isMainFrame()) {
 			wsFrame = Main.getMainFrame();
 		} else {
-			wsFrame = Main.getMainFrame().createWorkspaceFrame();
+			wsFrame = MainFrame.createWorkspaceFrame();
 		}
 
 		CommonJFrame frame = wsFrame.getFrame();
@@ -145,39 +147,81 @@ public class RestoreUtils {
 		frame.setVisible(true);
 	}
 
-
 	/**
-	 *
-	 * @param name
+	 * 
+	 * @param lastWorkspaceIdFromPreferences
+	 * @param lastWorkspaceFromPreferences
+	 * @throws CommonBusinessException 
 	 */
-	public synchronized static void restoreWorkspaceThreaded(String name) {
-		restoreWorkspaceThreaded(name, false, true);
+	public static void restoreWorkspaceThreaded(Long lastWorkspaceIdFromPreferences, String lastWorkspaceFromPreferences) throws CommonBusinessException {
+		WorkspaceVO wovoToRestore = null;
+		for (WorkspaceVO wovo : MainFrame.getWorkspaceHeaders()) {
+			if (lastWorkspaceIdFromPreferences.equals(wovo.getId())) {
+				wovoToRestore = wovo;
+				break; // priority of id is higher
+			}
+			// if id not found try to search for name
+			if (lastWorkspaceFromPreferences.equals(wovo.getName())) {
+				wovoToRestore = wovo; 
+			}
+		}
+		
+		if (wovoToRestore == null && !MainFrame.getWorkspaceHeaders().isEmpty()) {
+			wovoToRestore = MainFrame.getWorkspaceHeaders().get(0);
+		}
+		
+		if (wovoToRestore == null) {
+			wovoToRestore = createDefaultWorkspace(createDefaultWorkspace());
+			MainFrame.refreshWorkspacesHeaders();
+		}
+		restoreWorkspaceThreaded(wovoToRestore);
 	}
 
 	/**
 	 *
 	 * @param name
 	 * @param restoreToDefault
-	 * @param callMainControllerAddForcedContent
+	 * @throws CommonBusinessException 
 	 */
-	private synchronized static void restoreWorkspaceThreaded(String name, boolean restoreToDefault, final boolean callMainControllerAddForcedContent) {
+	private synchronized static void restoreWorkspaceThreaded(WorkspaceVO wovo) throws CommonBusinessException {
 		checkRestoreRunning();
 
 		MainFrame.setWorkspaceManagementEnabled(false);
 
+		//load from db. wovo contains header only
 		WorkspaceDescription wd;
-		try {
-			if (restoreToDefault) {
-				wd = WorkspaceDescriptionDefaultsFactory.createOldMdiStyle();
-			} else {
-				wd = getPrefsFacade().getWorkspace(name);
+		if (wovo.getWoDesc().getFrames().isEmpty()) {
+			try {
+				wd = getPrefsFacade().getWorkspace(wovo.getId()).getWoDesc();
+			} catch (Exception e) {
+				try {
+					wovo = createDefaultWorkspace(wovo.getWoDesc());
+					wd = wovo.getWoDesc();
+				} catch (Exception e1) {
+					wd = WorkspaceDescriptionDefaultsFactory.createOldMdiStyle();
+				}
 			}
-		} catch(CommonFinderException e) {
-			LOG.error("restoreWorkspaceThreaded: " + e, e);
-			name = MainFrame.getDefaultWorkspace();
+			if (wd.getFrames().isEmpty()) {
+				wd = WorkspaceDescriptionDefaultsFactory.createOldMdiStyle();
+			}
+		} else {
+			wd = wovo.getWoDesc();
+		}
+		
+		try {
+			wd.getHomeTabbed();
+			wd.getHomeTreeTabbed();
+		} catch (Exception e) {
 			wd = WorkspaceDescriptionDefaultsFactory.createOldMdiStyle();
 		}
 
+		// set workspace preferences
+		wovo.getWoDesc().removeAllEntityPreferences();
+		wovo.getWoDesc().addAllEntityPreferences(wd.getEntityPreferences());
+		
+		MainFrame.setWorkspace(wovo);
+		PreferencesMigration.migrateEntityAndSubFormColumnPreferences();
+		
 		threadList.clear();
 
 		MainFrame.resetExternalFrameNumber();
@@ -196,7 +240,6 @@ public class RestoreUtils {
 		final Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				if (callMainControllerAddForcedContent) Main.getMainController().addForcedContent();
 				MainFrame.hideProgress();
 				MainFrame.setWorkspaceManagementEnabled(true);
 				MainFrame.setActiveTabNavigation(MainFrame.getHomePane());
@@ -210,8 +253,34 @@ public class RestoreUtils {
 		if (threadList.size() > 0) {
 			threadList.get(0).start();
 		}
-
-		MainFrame.setWorkspace(name);
+	}
+	
+	/**
+	 * 
+	 * @return
+	 * @throws CommonBusinessException 
+	 */
+	public static WorkspaceDescription createDefaultWorkspace() throws CommonBusinessException {
+		WorkspaceDescription wd = new WorkspaceDescription();
+		wd.setName(MainFrame.getDefaultWorkspace());
+		wd.setHideName(true);
+		wd.setNuclosResource("org.nuclos.client.resource.icon.glyphish.174-imac.png");
+		return wd;
+	}
+	
+	/**
+	 * 
+	 * @param name
+	 * @param hideName
+	 * @param nuclosResource (nullable)
+	 * @return
+	 * @throws CommonBusinessException 
+	 */
+	public static WorkspaceVO createDefaultWorkspace(WorkspaceDescription wdOrigin) throws CommonBusinessException {
+		WorkspaceVO wovo = new WorkspaceVO(WorkspaceDescriptionDefaultsFactory.createOldMdiStyle());
+		wovo.importHeader(wdOrigin);
+		wovo = getPrefsFacade().storeWorkspace(wovo);
+		return wovo;
 	}
 
 	/**
@@ -225,6 +294,7 @@ public class RestoreUtils {
 			final WorkspaceDescription.Tab wdTab = new WorkspaceDescription.Tab();
 			wdTab.setLabel(tab.getTitle());
 			wdTab.setNeverClose(tab.isNeverClose());
+			wdTab.setFromAssigned(tab.isFromAssigned());
 			wdTab.setPreferencesXML(tab.getTabStoreController().getPreferencesXML());
 			wdTab.setRestoreController(tab.getTabStoreController().getTabRestoreControllerClass().getName());
 			wdTabbed.addTab(wdTab);
@@ -331,17 +401,19 @@ public class RestoreUtils {
 	/**
 	 *
 	 * @param name
+	 * @throws CommonBusinessException 
 	 */
-	public synchronized static void storeWorkspace(WorkspaceDescription wd) {
+	public synchronized static WorkspaceVO storeWorkspace(WorkspaceVO wovo) throws CommonBusinessException {
+		if (wovo == null) {
+			return null;
+		}
+		
 		if (isRestoreRunning()) {
 			// do not store workspace if restore is running...
-			return;
+			return null;
 		}
 
-		if (wd == null) {
-			wd = new WorkspaceDescription();
-			wd.setName(MainFrame.getDefaultWorkspace());
-		}
+		WorkspaceDescription wd = wovo.getWoDesc();
 		wd.getFrames().clear();
 
 		MainFrame.restoreAllTabbedPaneContainingArea();
@@ -349,62 +421,96 @@ public class RestoreUtils {
 			storeFrame(wd, frame);
 		}
 
-		getPrefsFacade().storeWorkspace(wd);
+		return getPrefsFacade().storeWorkspace(wovo);
 	}
 
 	/**
 	 *
 	 * @param name
+	 * @throws CommonBusinessException 
 	 */
-	public synchronized static void clearAndRestoreWorkspace(String name) {
+	public synchronized static boolean clearAndRestoreWorkspace(WorkspaceVO wovo) throws CommonBusinessException {
 		if (clearWorkspace()) {
-			restoreWorkspaceThreaded(name);
+			restoreWorkspaceThreaded(wovo);
+			return true;
 		}
+		return false;
+	}
+	
+	/**
+	 *
+	 * @param name
+	 * @throws CommonBusinessException 
+	 */
+	public synchronized static WorkspaceVO clearAndRestoreToDefaultWorkspace() throws CommonBusinessException {
+		return clearAndRestoreToDefaultWorkspace(createDefaultWorkspace());
 	}
 
 	/**
 	 *
-	 * @param name
+	 * @param wd
+	 * @throws CommonBusinessException 
 	 */
-	public synchronized static void clearAndRestoreToDefaultWorkspace(String name) {
+	public synchronized static WorkspaceVO clearAndRestoreToDefaultWorkspace(WorkspaceDescription wd) throws CommonBusinessException {
+		WorkspaceVO wovo = createDefaultWorkspace(wd);
 		if (clearWorkspace()) {
-			restoreWorkspaceThreaded(name, true, false);
+			restoreWorkspaceThreaded(wovo);
 
 			if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TASKLIST))
 				Main.getMainController().getTaskController().getPersonalTaskController().cmdShowPersonalTasks();
 			if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TIMELIMIT_LIST))
 				Main.getMainController().getTaskController().getTimelimitTaskController().cmdShowTimelimitTasks();
 
-			Main.getMainController().addForcedContent();
 			Main.getMainController().getExplorerController().cmdShowPersonalSearchFilters();
 
-			arrangeTabsOnDefaultWorkspace(removeTabsFromWorkspace());
+			//arrangeTabsOnDefaultWorkspace(removeTabsFromWorkspace());
 
 			for (MainFrameTabbedPane tabbedPane : MainFrame.getAllTabbedPanes()) {
 				if (tabbedPane.getTabCount() > 1) {
 					tabbedPane.setSelectedIndex(1);
 				}
 			}
+			return wovo;
+		} else {
+			getPrefsFacade().removeWorkspace(wovo.getId());
 		}
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public synchronized static boolean closeTabs(boolean notifyOnly) {
+		List<MainFrameTab> allTabs = MainFrame.getAllTabs();
+
+		for (MainFrameTab tab : allTabs) {
+			try {
+				if (tab.notifyClosing()) {
+					if (!notifyOnly)
+						tab.notifyClosed();
+				} else {
+					return false;
+				}
+				
+			} catch(CommonBusinessException e) {
+				Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e);
+				return false;
+			}
+		}
+		
+		return true;
 	}
 
 	/**
 	 *
 	 * @return
 	 */
-	private synchronized static boolean clearWorkspace() {
+	public synchronized static boolean clearWorkspace() {
 		checkRestoreRunning();
 
-		List<MainFrameTab> allTabs = MainFrame.getAllTabs();
-
-		for (MainFrameTab tab : allTabs) {
-			try {
-				tab.notifyClosing();
-				tab.notifyClosed();
-			} catch(CommonBusinessException e) {
-				Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e);
-				return false;
-			}
+		if (!closeTabs(false)) {
+			return false;
 		}
 
 		for (JFrame frame : new ArrayList<JFrame>(MainFrame.getAllFrames())) {
@@ -412,6 +518,15 @@ public class RestoreUtils {
 				frame.dispose();
 			} else if (frame instanceof MainFrame) {
 				frame.setVisible(false);
+				// setVisible to false, cause of problems during repaint in synthetica:
+				/* Exception in thread "AWT-EventQueue-0" java.lang.ArrayIndexOutOfBoundsException: 1
+						at javax.swing.plaf.basic.BasicTabbedPaneUI.getTabBounds(BasicTabbedPaneUI.java:1517)
+						at javax.swing.plaf.basic.BasicTabbedPaneUI.getTabBounds(BasicTabbedPaneUI.java:1452)
+						at javax.swing.JTabbedPane.getBoundsAt(JTabbedPane.java:1268)
+						at de.javasoft.plaf.synthetica.painter.TabbedPanePainter.getTabPosition(TabbedPanePainter.java:666)
+						at de.javasoft.plaf.synthetica.painter.TabbedPanePainter.drawContentBorderLine4SelectedTab(TabbedPanePainter.java:763)
+						at de.javasoft.plaf.synthetica.painter.TabbedPanePainter.paintTabbedPaneContentBorder(TabbedPanePainter.java:191)
+				 */
 			}
 		}
 
@@ -426,7 +541,7 @@ public class RestoreUtils {
 	 *
 	 * @return
 	 */
-	private synchronized static List<MainFrameTab> removeTabsFromWorkspace() {
+	/*private synchronized static List<MainFrameTab> removeTabsFromWorkspace() {
 		List<MainFrameTab> allTabs = MainFrame.getAllTabs();
 
 		for (MainFrameTab tab : allTabs) {
@@ -434,38 +549,13 @@ public class RestoreUtils {
 		}
 
 		return allTabs;
-	}
-
-	/**
-	 *
-	 * @param name
-	 */
-	public synchronized static void restoreToDefaultWorkspace(String name) {
-		checkRestoreRunning();
-
-		for (JFrame frame : new ArrayList<JFrame>(MainFrame.getAllFrames())) {
-			if (frame instanceof ExternalFrame) {
-				frame.dispose();
-			} else if (frame instanceof MainFrame) {
-				frame.setVisible(false);
-			}
-		}
-
-		List<MainFrameTab> allTabs = MainFrame.getAllTabs();
-
-		for (MainFrameTabbedPane tabbedPane : new ArrayList<MainFrameTabbedPane>(MainFrame.getAllTabbedPanes())) {
-			MainFrame.removeTabbedPane(tabbedPane, true, false);
-		}
-
-		restoreWorkspaceThreaded(name, true, false);
-		arrangeTabsOnDefaultWorkspace(allTabs);
-	}
+	}*/
 
 	/**
 	 *
 	 * @param allTabs
 	 */
-	private synchronized static void arrangeTabsOnDefaultWorkspace (List<MainFrameTab> allTabs) {
+	/*private synchronized static void arrangeTabsOnDefaultWorkspace (List<MainFrameTab> allTabs) {
 		MainFrameTabbedPane taskPane = null;
 		for (MainFrameTabbedPane tabbedPane : MainFrame.getAllTabbedPanes()) {
 			if (!tabbedPane.isHome() && !tabbedPane.isHomeTree()) {
@@ -487,7 +577,7 @@ public class RestoreUtils {
 			}
 			tab.postAdd();
 		}
-	}
+	}*/
 
 	private static class TabbedRestorer implements ContentRestorer {
 
@@ -539,6 +629,7 @@ public class RestoreUtils {
 				final WorkspaceDescription.Tab wdTab = wdTabbed.getTabs().get(i);
 				final MainFrameTab tab = new MainFrameTab(CommonLocaleDelegate.getMessage("WorkspaceRestore.restoring","Wiederherstellen")+"...");
 				tab.setNeverClose(wdTab.isNeverClose());
+				tab.setFromAssigned(wdTab.isFromAssigned());
 				result.addTab(tab, false);
 
 				final Thread t = new Thread(new Runnable() {

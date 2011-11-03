@@ -110,8 +110,8 @@ public class TimelimitTaskController extends RefreshableTaskController {
 	private static final Logger LOG = Logger.getLogger(TimelimitTaskController.class);
 
 	private final static String PREFS_NODE_TIMELIMITTASKS = "timelimitTasks";
-	private static final String PREFS_NODE_SELECTEDFIELDS = CollectController.PREFS_NODE_SELECTEDFIELDS;
-	private static final String PREFS_NODE_SELECTEDFIELDWIDTHS = CollectController.PREFS_NODE_SELECTEDFIELDWIDTHS;
+	private static final String PREFS_NODE_SELECTEDFIELDS = "selectedFields";
+	private static final String PREFS_NODE_SELECTEDFIELDWIDTHS = "selectedFieldWidths";
 
 	/**
 	 * popup menu for list of timelimit tasks

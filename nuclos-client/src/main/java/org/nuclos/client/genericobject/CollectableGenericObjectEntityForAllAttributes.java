@@ -74,14 +74,8 @@ public class CollectableGenericObjectEntityForAllAttributes implements Collectab
 	 */
 	private void initializeVirtualFields() {
 		final Modules modules = Modules.getInstance();
-		for (MasterDataVO mdvoModule : modules.getModules(true)) {
+		for (MasterDataVO mdvoModule : modules.getModules()) {
 			final Integer iModuleId = mdvoModule.getIntId();
-			if (modules.isSubModule(iModuleId)) {
-				final String sEntityName = modules.getEntityNameByModuleId(iModuleId);
-				final String sFieldName = CollectableGenericObjectEntity.getParentObjectFieldName(sEntityName);
-				final String sReferencedEntityName = Modules.getParentModuleName(mdvoModule);
-				this.mpVirtualFields.put(sFieldName, new VirtualCollectableEntityField(sEntityName, sFieldName, sReferencedEntityName));
-			}
 		}
 	}
 

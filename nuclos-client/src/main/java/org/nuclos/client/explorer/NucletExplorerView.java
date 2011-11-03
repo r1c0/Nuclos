@@ -19,6 +19,7 @@ package org.nuclos.client.explorer;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -47,6 +48,7 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;
@@ -69,86 +71,57 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 
 	private final NucletTreeNode nucletnode;
 
-	private final JButton btnAddContent = new JButton();
-	private final JButton btnRemoveContent = new JButton();
-
 	public NucletExplorerView(NucletTreeNode treenode) {
 		super(treenode);
 		this.nucletnode = treenode;
-
-		btnAddContent.setFocusable(false);
-		btnRemoveContent.setFocusable(false);
 	}
 
 	@Override
 	public List<JComponent> getToolBarComponents() {
-		btnAddContent.setAction(new AbstractAction(null, Icons.getInstance().getIconPlus16()) {
+		final JButton btnAddContent = new JButton();
+		
+		btnAddContent.setFocusable(false);
+		
+		btnAddContent.setAction(new AbstractAction(CommonLocaleDelegate.getMessage("NucletExplorerNode.1", "Zuweisen"), Icons.getInstance().getIconRelate()) {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				cmdShowAddDialog(getJTree());
+				cmdShowAddRemoveDialog(getJTree());
 			}
 		});
-
-		btnRemoveContent.setAction(new AbstractAction(null, Icons.getInstance().getIconMinus16()) {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cmdShowRemoveDialog(getJTree());
-			}
-		});
-		btnAddContent.setToolTipText(CommonLocaleDelegate.getText("NucletExplorerNode.1", "Hinzufuegen"));
-		btnRemoveContent.setToolTipText(CommonLocaleDelegate.getText("NucletExplorerNode.3", "Entfernen"));
 
 		List<JComponent> result = new ArrayList<JComponent>();
 
 		result.add(btnAddContent);
-		result.add(btnRemoveContent);
 
 		return result;
 	}
 
-	private void cmdShowAddDialog(final JTree jTree) {
+	private void cmdShowAddRemoveDialog(final JTree jTree) {
 		SelectObjectsController<AbstractNucletContentEntryTreeNode> selectCtrl =
 			new SelectObjectsController<AbstractNucletContentEntryTreeNode>(null, new NucletContentSelectObjectPanel());
+		
+		List<AbstractNucletContentEntryTreeNode> curAvailable = getTreeNodeFacade().getAvailableNucletContents();
+		List<AbstractNucletContentEntryTreeNode> curSelected = getTreeNodeFacade().getNucletContent(nucletnode);
 
 		ChoiceList<AbstractNucletContentEntryTreeNode> ro = new ChoiceList<AbstractNucletContentEntryTreeNode>();
-		ro.set(getTreeNodeFacade().getAvailableNucletContents(),
-				new AbstractNucletContentEntryTreeNode.Comparator());
+		ro.set(new ArrayList<AbstractNucletContentEntryTreeNode>(curAvailable),	new AbstractNucletContentEntryTreeNode.Comparator());
+		ro.setSelectedFields(new ArrayList<AbstractNucletContentEntryTreeNode>(curSelected));
 
 		selectCtrl.setModel(ro);
 		final boolean userPressedOk = selectCtrl.run(
-				CommonLocaleDelegate.getText("NucletExplorerNode.2", "Zum Nuclet hinzufuegen") + "...");
+				CommonLocaleDelegate.getMessage("NucletExplorerNode.2", "Nuclet Zuweisung"));
 		final NucletContentSelectObjectPanel selectPanel = (NucletContentSelectObjectPanel) selectCtrl.getPanel();
 		PreferencesUtils.putRectangle(prefs, PREFS_NODE_ADDREMOVE_DIALOG_SIZE, selectPanel.getBounds());
 
 		if (userPressedOk) {
 			try {
-				getTreeNodeFacade().addNucletContents(nucletnode.getId().longValue(), new HashSet<AbstractNucletContentEntryTreeNode>((List<AbstractNucletContentEntryTreeNode>) selectCtrl.getSelectedObjects()));
-				getExplorerController().refreshTab(NucletExplorerView.this);
-			} catch(Exception e) {
-				Errors.getInstance().showExceptionDialog(getExplorerController().getParent(), e);
-			}
-		}
-	}
+				Collection<AbstractNucletContentEntryTreeNode> removed = CollectionUtils.subtract(curSelected, selectCtrl.getSelectedObjects());
+				Collection<AbstractNucletContentEntryTreeNode> added = CollectionUtils.subtract(selectCtrl.getSelectedObjects(), curSelected);
+						
+				getTreeNodeFacade().removeNucletContents(new HashSet<AbstractNucletContentEntryTreeNode>(removed));
+				getTreeNodeFacade().addNucletContents(nucletnode.getId().longValue(), new HashSet<AbstractNucletContentEntryTreeNode>(added));
 
-	private void cmdShowRemoveDialog(final JTree jTree) {
-		SelectObjectsController<AbstractNucletContentEntryTreeNode> selectCtrl =
-				new SelectObjectsController<AbstractNucletContentEntryTreeNode>(null, new NucletContentSelectObjectPanel());
-
-		final ChoiceList<AbstractNucletContentEntryTreeNode> ro = new ChoiceList<AbstractNucletContentEntryTreeNode>();
-		ro.set(getTreeNodeFacade().getNucletContent(nucletnode),
-				new AbstractNucletContentEntryTreeNode.Comparator());
-		selectCtrl.setModel(ro);
-		final boolean userPressedOk = selectCtrl.run(
-				CommonLocaleDelegate.getText("NucletExplorerNode.4", "Vom Nuclet entfernen") + "...");
-
-		NucletContentSelectObjectPanel selectPanel = (NucletContentSelectObjectPanel) selectCtrl.getPanel();
-		PreferencesUtils.putRectangle(prefs, PREFS_NODE_ADDREMOVE_DIALOG_SIZE, selectPanel.getBounds());
-
-		if (userPressedOk) {
-			try {
-				getTreeNodeFacade().removeNucletContents(new HashSet<AbstractNucletContentEntryTreeNode>((List<AbstractNucletContentEntryTreeNode>) selectCtrl.getSelectedObjects()));
 				getExplorerController().refreshTab(NucletExplorerView.this);
 			} catch(Exception e) {
 				Errors.getInstance().showExceptionDialog(getExplorerController().getParent(), e);

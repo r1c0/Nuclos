@@ -204,7 +204,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		final List<MasterDataVO> lstModules = new ArrayList<MasterDataVO>();
 		if (moduleId == null) {
 			//choose all modules for finding required attributes for tree labels (tree node for generic search)
-			lstModules.addAll(Modules.getInstance().getModules(false));
+			lstModules.addAll(Modules.getInstance().getModules());
 		} else {
 			//choose requested module for finding required attributes for tree labels
 			lstModules.add(Modules.getInstance().getModuleById(moduleId.intValue()));
@@ -729,6 +729,16 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 				efMetaNuclet.getField(),
 				ComparisonOperator.IS_NULL,
 				MetaDataServerProvider.getInstance());
+			
+			switch(ne) {
+			case WORKSPACE:
+				cond = SearchConditionUtils.and(cond, SearchConditionUtils.newEOIsNullComparison(
+						ne.getEntityName(), 
+						"user", 
+						ComparisonOperator.IS_NULL, 
+						MetaDataServerProvider.getInstance()));
+				break;
+			}
 
 			List<AbstractNucletContentEntryTreeNode> nodes = new ArrayList<AbstractNucletContentEntryTreeNode>();
 			for (EntityObjectVO eo : NucletDalProvider.getInstance().getEntityObjectProcessor(ne).getBySearchExpression(new CollectableSearchExpression(cond))) {

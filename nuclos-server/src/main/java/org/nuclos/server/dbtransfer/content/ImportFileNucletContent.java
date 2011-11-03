@@ -51,17 +51,16 @@ public class ImportFileNucletContent extends DefaultNucletContent {
 	}
 
 	@Override
-	public void deleteNcObject(DalCallResult result, Long id) {
-		EntityObjectVO ncObject = NucletDalProvider.getInstance().getEntityObjectProcessor(getEntity()).getByPrimaryKey(id);
+	public void deleteNcObject(DalCallResult result, EntityObjectVO ncObject) {
 		GenericObjectDocumentFile docfile = ncObject.getField("name", GenericObjectDocumentFile.class);
 		if (docfile != null) {
-			MasterDataFacadeHelper.remove(id.intValue(), docfile.getFilename(), NuclosSystemParameters.getDirectory(NuclosSystemParameters.DOCUMENT_PATH));
+			MasterDataFacadeHelper.remove(ncObject.getId().intValue(), docfile.getFilename(), NuclosSystemParameters.getDirectory(NuclosSystemParameters.DOCUMENT_PATH));
 		}
 		GenericObjectDocumentFile doclogfile = ncObject.getField("log", GenericObjectDocumentFile.class);
 		if (doclogfile != null) {
-			MasterDataFacadeHelper.remove(id.intValue(), doclogfile.getFilename(), NuclosSystemParameters.getDirectory(NuclosSystemParameters.DOCUMENT_PATH));
+			MasterDataFacadeHelper.remove(ncObject.getId().intValue(), doclogfile.getFilename(), NuclosSystemParameters.getDirectory(NuclosSystemParameters.DOCUMENT_PATH));
 		}
-		super.deleteNcObject(result, id);
+		super.deleteNcObject(result, ncObject);
 	}
 
 	@Override

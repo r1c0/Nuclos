@@ -78,12 +78,12 @@ import org.nuclos.client.common.ComponentNameSetter;
 import org.nuclos.client.common.KeyBindingProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.Utils;
+import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.livesearch.LiveSearchController;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MenuGenerator;
 import org.nuclos.client.main.NuclosMessagePanel;
 import org.nuclos.client.main.NuclosNotificationDialog;
-import org.nuclos.client.main.mainframe.workspace.RestoreUtils;
 import org.nuclos.client.main.mainframe.workspace.WorkspaceChooserController;
 import org.nuclos.client.main.mainframe.workspace.WorkspaceFrame;
 import org.nuclos.client.report.reportrunner.BackgroundProcessStatusController;
@@ -95,14 +95,17 @@ import org.nuclos.client.ui.CommonJFrame;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.ValidationLayerFactory;
+import org.nuclos.common.Actions;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.WorkspaceDescription;
+import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.ComparatorUtils;
 import org.nuclos.common.collection.Pair;
+import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.collection.multimap.MultiListHashMap;
 import org.nuclos.common.collection.multimap.MultiListMap;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -132,7 +135,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private static final String PREFS_NODE_SPLITTING_DEACTIVATED = "splittingdeactivated";
 	private static final String PREFS_NODE_DEFAULT_WORKSPACE = "defaultworkspace";
 	private static final String PREFS_NODE_LAST_WORKSPACE = "lastworkspace";
+	private static final String PREFS_NODE_LAST_WORKSPACE_ID = "lastworkspaceid";
 	private static final String PREFS_NODE_WORKSPACE_ORDER = "workspaceorder";
+	private static final String PREFS_NODE_WORKSPACE_ORDER_IDS = "workspaceorderids";
 
 	public final static boolean SPLIT_CONTINUOS_LAYOUT = false;
 	public final static boolean SPLIT_ONE_TOUCH_EXPANDABLE = true;
@@ -173,12 +178,14 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private static int selectedHistorySize = 0;
 
 	private final JMenu menuWindow = new JMenu();
+	private static boolean splittingEnabled = true;
 	private static boolean splittingDeactivated = false;
 
 	private static LiveSearchController liveSearchController;
 	private static WorkspaceChooserController workspaceChooserController;
 	private static String defaultWorkspace;
 	private static String lastWorkspace;
+	private static Long lastWorkspaceId;
 
 	private static final AbstractAction actDeactivateSplitting = new AbstractAction() {
 
@@ -568,14 +575,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				UIUtils.runCommand(MainFrame.this, new Runnable() {
 					@Override
 					public void run() {
-						if (!RestoreUtils.isRestoreRunning()) {
-							if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(MainFrame.this,
-								CommonLocaleDelegate.getMessage("MainFrame.restoreDefaultWorkspace.2","Möchten Sie wirklich die Fenstereinteilung auf den Standard zurücksetzen?\nTabs werden nicht geschlossen, aber Fenstereinteilungen und Erweiterungsfenster werden zurückgesetzt.\nMöchten Sie fortfahren?"),
-								CommonLocaleDelegate.getMessage("MainFrame.restoreDefaultWorkspace.1","Arbeitsbereich wiederherstellen"),
-								JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE)) {
-								RestoreUtils.restoreToDefaultWorkspace(getWorkspace().getName());
-							}
-						}
+						WorkspaceChooserController.restoreSelectedWorkspace();
 					}
 				});
 			}
@@ -1732,7 +1732,23 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		mainFramePrefs.putInt(PREFS_NODE_HISTORY_SIZE_INDEX, selectedHistorySize);
 		mainFramePrefs.put(PREFS_NODE_DEFAULT_WORKSPACE, defaultWorkspace);
 		mainFramePrefs.put(PREFS_NODE_LAST_WORKSPACE, getWorkspace()==null?defaultWorkspace:getWorkspace().getName());
-		PreferencesUtils.putStringList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER, WorkspaceChooserController.getWorkspaceOrder());
+		mainFramePrefs.putLong(PREFS_NODE_LAST_WORKSPACE_ID, getWorkspace().getId());
+		PreferencesUtils.putStringList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER, 
+				CollectionUtils.transform(WorkspaceChooserController.getWorkspaceHeaders(), 
+						new Transformer<WorkspaceVO, String>() {
+							@Override
+							public String transform(WorkspaceVO i) {
+								return i.getWoDesc().getName();
+							}
+						}));
+		PreferencesUtils.putLongList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER_IDS, 
+				CollectionUtils.transform(WorkspaceChooserController.getWorkspaceHeaders(), 
+						new Transformer<WorkspaceVO, Long>() {
+							@Override
+							public Long transform(WorkspaceVO i) {
+								return i.getId();
+							}
+						}));
 		
 		mainFramePrefs.node(PREFS_NODE_BOOKMARK).removeNode();
 		Preferences prefsBookmark = mainFramePrefs.node(PREFS_NODE_BOOKMARK);
@@ -1759,7 +1775,10 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		selectedHistorySize = mainFramePrefs.getInt(PREFS_NODE_HISTORY_SIZE_INDEX, 0);
 		defaultWorkspace = mainFramePrefs.get(PREFS_NODE_DEFAULT_WORKSPACE, CommonLocaleDelegate.getMessage("Workspace.Default","Standard"));
 		lastWorkspace = mainFramePrefs.get(PREFS_NODE_LAST_WORKSPACE, CommonLocaleDelegate.getMessage("Workspace.Default","Standard"));
-		workspaceChooserController.setupWorkspaces(PreferencesUtils.getStringList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER));
+		lastWorkspaceId = mainFramePrefs.getLong(PREFS_NODE_LAST_WORKSPACE_ID, 0l);
+		WorkspaceChooserController.setupWorkspaces(
+				PreferencesUtils.getLongList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER_IDS), 
+				PreferencesUtils.getStringList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER));
 
 		Preferences prefsBookmark = mainFramePrefs.node(PREFS_NODE_BOOKMARK);
 		for (String entity : prefsBookmark.childrenNames()) {
@@ -1889,6 +1908,36 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		MainFrame.splittingDeactivated = splittingDeactivated;
 		MainFrame.miDeactivateSplitting.setSelected(splittingDeactivated);
 	}
+	
+	/**
+	 * 
+	 * @return splittingEnabled
+	 */
+	public static boolean isSplittingEnabled() {
+		return MainFrame.splittingEnabled;
+	}
+	
+	/**
+	 * 
+	 * @param enabled
+	 */
+	public static void setSplittingEnabled(boolean enabled) {
+		MainFrame.splittingEnabled = enabled;
+		setSplittingDeactivated(!enabled);
+		MainFrame.miDeactivateSplitting.setEnabled(enabled);
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static boolean isStarttabEditable() {
+		if (getWorkspace().getAssignedWorkspace() == null) {
+			return true;
+		} else {
+			return SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_STARTTAB);
+		}
+	}
 
 	/**
 	 *
@@ -1918,16 +1967,39 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 *
 	 * @return
 	 */
-	public static WorkspaceDescription getWorkspace() {
+	public static WorkspaceVO getWorkspace() {
 		return WorkspaceChooserController.getSelectedWorkspace();
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static WorkspaceDescription getWorkspaceDescription() {
+		return getWorkspace().getWoDesc();
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static List<WorkspaceVO> getWorkspaceHeaders() {
+		return WorkspaceChooserController.getWorkspaceHeaders();
+	}
+	
+	/**
+	 * 
+	 */
+	public static void refreshWorkspacesHeaders() {
+		WorkspaceChooserController.setupWorkspaces();
 	}
 
 	/**
 	 *
 	 * @param name
 	 */
-	public static void setWorkspace(String name) {
-		workspaceChooserController.setSelectedWorkspace(name);
+	public static void setWorkspace(WorkspaceVO wovo) {
+		WorkspaceChooserController.setSelectedWorkspace(wovo);
 	}
 
 	/**
@@ -1950,7 +2022,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 * @return
 	 */
 	public static boolean isWorkspaceManagementEnabled() {
-		return workspaceChooserController.isEnabled();
+		return WorkspaceChooserController.isEnabled();
 	}
 
 	/**
@@ -1959,7 +2031,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 * @return
 	 */
 	public static void setWorkspaceManagementEnabled(boolean b) {
-		workspaceChooserController.setEnabled(b);
+		WorkspaceChooserController.setEnabled(b);
 	}
 
 	/**
@@ -1976,6 +2048,14 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 */
 	public static String getLastWorkspaceFromPreferences() {
 		return lastWorkspace;
+	}
+	
+	/**
+	 *
+	 * @return
+	 */
+	public static Long getLastWorkspaceIdFromPreferences() {
+		return lastWorkspaceId;
 	}
 
 	/**

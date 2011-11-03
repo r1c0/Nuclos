@@ -74,6 +74,7 @@ import org.jdesktop.swingx.painter.TextPainter;
 import org.nuclos.client.common.NuclosDropTargetListener;
 import org.nuclos.client.common.NuclosDropTargetVisitor;
 import org.nuclos.client.common.TopicNotificationReceiver;
+import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.workspace.ITabStoreController;
 import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
@@ -84,6 +85,7 @@ import org.nuclos.client.ui.IOverlayComponent;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabListener;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.common.Actions;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.LockedTabProgressNotification;
 import org.nuclos.common.MutableBoolean;
@@ -114,6 +116,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	private ITabStoreController storeController;
 
 	private boolean neverClose;
+	private boolean fromAssigned;
 
 	private String title;
 
@@ -1009,6 +1012,9 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 * @return
 	 */
 	private boolean _isClosable() {
+		if (fromAssigned && !SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN)) {
+			return false;
+		}
 		if (layer != null && getContent() instanceof IMainFrameTabClosableController) {
 			return ((IMainFrameTabClosableController)getContent()).isClosable();
 		}
@@ -1314,6 +1320,22 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 */
 	public void setNeverClose(boolean neverClose) {
 		this.neverClose = neverClose;
+	}
+
+	/**
+	 * 
+	 * @return fromAssigned (is workspace decision)
+	 */
+	public boolean isFromAssigned() {
+		return fromAssigned;
+	}
+
+	/**
+	 * 
+	 * @param fromAssigned (is workspace decision)
+	 */
+	public void setFromAssigned(boolean fromAssigned) {
+		this.fromAssigned = fromAssigned;
 	}
 
 	/**

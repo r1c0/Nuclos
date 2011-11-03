@@ -421,10 +421,7 @@ public class GenericObjectFacadeHelper {
 		getGenericObjectFacade().createGenericObjectAttribute(govo.getId(), NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getId().intValue(), null, sCanonicalValueSystemIdentifier, false);
 
 		// store system attributes:
-		if (Modules.getInstance().isMainModule(govo.getModuleId())) {
-			// system attributes are not generated for submodule objects:
-			this.storeSystemAttributes(govo, lometacache, false);
-		}
+		this.storeSystemAttributes(govo, lometacache, false);
 	}
 
 	/**

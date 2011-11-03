@@ -23,6 +23,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -370,7 +371,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 
 		//final String sMainEntityName = Modules.getInstance().getEntityNameByModuleId(filter.getModuleId());
 		final Set<Integer> stRequiredAttributeIds = new HashSet<Integer>(GenericObjectUtils.getAttributeIds(filter.getVisibleColumns(), filter.getEntityName(), AttributeCache.getInstance()));
-		final Set<String> stRequiredSubEntityNames = GenericObjectUtils.getSubEntityNames(filter.getVisibleColumns(), filter.getEntityName(), Modules.getInstance());
+		final Set<String> stRequiredSubEntityNames = Collections.emptySet();
 
 		// add the attributes 'nuclosState' and 'nuclosStateNumber' to the set of required attributes to be able
 		// to check the permission for the resultset 

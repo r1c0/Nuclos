@@ -39,6 +39,8 @@ import java.util.prefs.Preferences;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JSplitPane;
+import javax.swing.RowSorter.SortKey;
+import javax.swing.SortOrder;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -111,6 +113,9 @@ public class PreferencesUtils {
 	 * preferences key for storing the window state
 	 */
 	private final static String PREFS_NODE_WINDOWSTATE = "windowState";
+	
+	private static final String PREFS_NODE_ORDERBYSELECTEDFIELD = "orderBySelectedField";
+	private static final String PREFS_NODE_ORDERASCENDING = "orderAscending";
 
 	/**
 	 * specifies how to read and write an Object from/to the preferences.
@@ -442,6 +447,31 @@ public class PreferencesUtils {
 		}
 		return result;
 	}
+	
+	/**
+	 * reads an Long array from the preferences node specified by <code>prefs.node(sNode)</code>.
+	 * If the given node does not exist, <code>null</code> is returned.
+	 * If a value is not in the backing store, the corresponding element is Long(-1).
+	 * There is no way to tell if <code>-1</code> was read or if there was no entry.
+	 * @param prefs
+	 * @param sNode
+	 * @return the <code>Long[]</code> stored under <code>prefs.node(sNode)</code>, if any.
+	 */
+	public static Long[] getLongArrayOrNull(Preferences prefs, String sNode) throws PreferencesException {
+		Long[] result = null;
+
+		if (nodeExists(prefs, sNode)) {
+			prefs = prefs.node(sNode);
+			final int iSize = prefs.getInt(PREFS_KEY_LIST_SIZE, -1);
+			if (iSize >= 0) {
+				result = new Long[iSize];
+				for (int i = 0; i < iSize; ++i) {
+					result[i] = prefs.getLong(String.valueOf(i), -1);
+				}
+			}
+		}
+		return result;
+	}
 
 	/**
 	 * reads an Integer array from the preferences node specified by <code>prefs.node(sNode)</code>.
@@ -459,6 +489,23 @@ public class PreferencesUtils {
 		assert result != null;
 		return result;
 	}
+	
+	/**
+	 * reads an Long from the preferences node specified by <code>prefs.node(sNode)</code>.
+	 * If a value is not in the backing store, the corresponding element is Long(-1).
+	 * There is no way to tell if <code>-1</code> was read or if there was no entry.
+	 * @param prefs
+	 * @param sNode
+	 * @return the <code>Long[]</code> stored under <code>prefs.node(sNode)</code> or an empty array.
+	 * @postcondition result != null
+	 */
+	public static Long[] getLongArray(Preferences prefs, String sNode) throws PreferencesException {
+		final Long[] ai = PreferencesUtils.getLongArrayOrNull(prefs, sNode);
+		final Long[] result = (ai == null) ? new Long[0] : ai;
+
+		assert result != null;
+		return result;
+	}
 
 	/**
 	 * writes an Integer array to the preferences node specified by <code>prefs.node(sNode)</code>.
@@ -472,6 +519,21 @@ public class PreferencesUtils {
 		prefs.putInt(PREFS_KEY_LIST_SIZE, ai.length);
 		for (int i = 0; i < ai.length; ++i) {
 			prefs.putInt(String.valueOf(i), ai[i]);
+		}
+	}
+	
+	/**
+	 * writes an Long array to the preferences node specified by <code>prefs.node(sNode)</code>.
+	 * That preferences node is completely removed before writing.
+	 * @param prefs
+	 * @param sNode
+	 * @param ai
+	 */
+	public static void putLongArray(Preferences prefs, String sNode, Long[] ai) throws PreferencesException {
+		prefs = getEmptyNode(prefs, sNode);
+		prefs.putInt(PREFS_KEY_LIST_SIZE, ai.length);
+		for (int i = 0; i < ai.length; ++i) {
+			prefs.putLong(String.valueOf(i), ai[i]);
 		}
 	}
 
@@ -492,6 +554,24 @@ public class PreferencesUtils {
 		assert result != null;
 		return result;
 	}
+	
+	/**
+	 * reads an Long list from the preferences node specified by <code>prefs.node(sNode)</code>.
+	 * If a value is not in the backing store, the corresponding element is Long(-1).
+	 * There is no way to tell if <code>-1</code> was read or if there was no entry.
+	 * @param prefs
+	 * @param sNode
+	 * @return
+	 * @postcondition result != null
+	 */
+	public static List<Long> getLongList(Preferences prefs, String sNode) throws PreferencesException {
+		final Long[] ai = PreferencesUtils.getLongArray(prefs, sNode);
+		// Note that we create an extra ArrayList around Arrays.asList, so the result allows for
+		// removal of single elements.
+		final List<Long> result = (ai == null) ? new ArrayList<Long>() : new ArrayList<Long>(Arrays.asList(ai));
+		assert result != null;
+		return result;
+	}
 
 	/**
 	 * writes an Integer list to the preferences node specified by <code>prefs.node(sNode)</code>.
@@ -507,6 +587,23 @@ public class PreferencesUtils {
 		int i = 0;
 		while (iter.hasNext()) {
 			prefs.putInt(String.valueOf(i++), iter.next());
+		}
+	}
+	
+	/**
+	 * writes an Long list to the preferences node specified by <code>prefs.node(sNode)</code>.
+	 * That preferences node is completely removed before writing.
+	 * @param prefs
+	 * @param sNode
+	 * @param list
+	 */
+	public static void putLongList(Preferences prefs, String sNode, List<Long> list) throws PreferencesException {
+		prefs = getEmptyNode(prefs, sNode);
+		prefs.putInt(PREFS_KEY_LIST_SIZE, list.size());
+		final Iterator<Long> iter = list.listIterator();
+		int i = 0;
+		while (iter.hasNext()) {
+			prefs.putLong(String.valueOf(i++), iter.next());
 		}
 	}
 
@@ -931,6 +1028,35 @@ public class PreferencesUtils {
 		}
 
 		return result;
+	}
+	
+	public static void writeSortKeysToPrefs(Preferences prefs, List<? extends SortKey> sortKeys) throws PreferencesException {
+		List<Integer> sortColumns = new ArrayList<Integer>(sortKeys.size());
+		List<Integer> sortOrders = new ArrayList<Integer>(sortKeys.size());
+		for (SortKey sortKey : sortKeys) {
+			if (sortKey.getSortOrder() == SortOrder.UNSORTED)
+				continue;
+			sortColumns.add(sortKey.getColumn());
+			sortOrders.add(sortKey.getSortOrder() == SortOrder.ASCENDING ? 1 : 0);
+		}
+		PreferencesUtils.putIntegerList(prefs, PREFS_NODE_ORDERBYSELECTEDFIELD, sortColumns);
+		PreferencesUtils.putIntegerList(prefs, PREFS_NODE_ORDERASCENDING, sortOrders);
+	}
+
+	public static List<SortKey> readSortKeysFromPrefs(Preferences prefs) throws PreferencesException {
+		List<Integer> sortColumns = PreferencesUtils.getIntegerList(prefs, PREFS_NODE_ORDERBYSELECTEDFIELD);
+		List<Integer> sortOrders = PreferencesUtils.getIntegerList(prefs, PREFS_NODE_ORDERASCENDING);
+
+		List<SortKey> sortKeys = new ArrayList<SortKey>(sortColumns.size());
+		for (int i = 0, n = sortColumns.size(); i < n; i++) {
+			int column = sortColumns.get(i);
+			if (column == -1)
+				continue;
+			// ascending is the default
+			SortOrder order = (i < sortOrders.size() && sortOrders.get(i) == 0) ? SortOrder.DESCENDING : SortOrder.ASCENDING;
+			sortKeys.add(new SortKey(column, order));
+		}
+		return sortKeys;
 	}
 	
 }  // class PreferencesUtils

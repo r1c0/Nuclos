@@ -17,31 +17,25 @@
 package org.nuclos.client.genericobject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 import javax.swing.JComponent;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
-import org.nuclos.client.common.CollectableEntityFieldPreferencesUtil;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.genericobject.access.CgoWithDependantsSecurityAgentImpl;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.collect.CollectController;
-import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common.collect.collectable.CollectableEntityProvider;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.access.CefAllowAllSecurityAgentImpl;
 import org.nuclos.common.collect.collectable.access.CefSecurityAgent;
@@ -61,10 +55,8 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.CommonLocaleDelegate;
-import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonPermissionException;
-import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.common.ModuleConstants;
 
 /**
@@ -83,110 +75,16 @@ public class GenericObjectClientUtils {
 	private GenericObjectClientUtils() {
 	}
 
-	public static List<? extends CollectableEntityField> readCollectableEntityFieldsFromPreferences(Preferences prefs, CollectableEntity clcte) {
-		// new implementation
-		final CollectableEntityProvider clcteprovider = DefaultCollectableEntityProvider.getInstance();
-		List<CollectableEntityField> beans = null;
-		try {
-			beans = (List<CollectableEntityField>)
-					// PreferencesUtils.getSerializableListXML(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS);
-					CollectableEntityFieldPreferencesUtil.readList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS, true);
-		} catch (PreferencesException e) {
-			// do nothing
-			LOG.error("XMLEncoder/XMLDecoder Fehler", e);
-		}
-		List<CollectableEntityField> result = null;
-		if (beans != null && !beans.isEmpty()) {
-			result = new ArrayList<CollectableEntityField>();
-			for (Iterator<CollectableEntityField> it = beans.iterator(); it.hasNext();) {
-				final CollectableEntityField f;
-				final CollectableEntityField bean = it.next();
-				
-				if (bean instanceof CollectableEntityFieldWithEntity) {
-					f = getCollectableEntityFieldForResult(clcteprovider.getCollectableEntity(bean.getEntityName()), bean.getName(), clcte);
-				}
-				else {
-					f = bean;
-					// setSecurityAgent(clcte, f, !(clcte.getName().equals(f.getEntityName())));
-				}
-				result.add(f);
-			}
-		}
-		// old implementation (for backward compatibility)
-		else {
-			List<String> lstSelectedFieldNames;
-			List<String> lstSelectedEntityNames;
-			try {
-				lstSelectedFieldNames = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS);
-				lstSelectedEntityNames = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES);
-			}
-			catch (PreferencesException ex) {
-				LOG.error("Die selektierten Felder konnten nicht aus den Preferences geladen werden.", ex);
-				lstSelectedFieldNames = new ArrayList<String>();
-				lstSelectedEntityNames = new ArrayList<String>();
-				// no exception is thrown here.
-			}
-			assert lstSelectedFieldNames != null;
-			assert lstSelectedEntityNames != null;
-
-			// ensure backwards compatibility:
-			if (lstSelectedEntityNames.isEmpty() && !lstSelectedFieldNames.isEmpty()) {
-				lstSelectedEntityNames = Arrays.asList(new String[lstSelectedFieldNames.size()]);
-				assert lstSelectedEntityNames.size() == lstSelectedFieldNames.size();
-			}
-
-			if (lstSelectedFieldNames.size() != lstSelectedEntityNames.size()) {
-				LOG.warn("Die Listen der selektierten Felder und ihrer Entit\u00e4ten stimmen nicht \u00fcberein.");
-				lstSelectedFieldNames = new ArrayList<String>();
-				lstSelectedEntityNames = new ArrayList<String>();
-			}
-
-			result = new ArrayList<CollectableEntityField>();
-			for (int i = 0; i < lstSelectedFieldNames.size(); i++) {
-				final String sFieldName = lstSelectedFieldNames.get(i);
-				final String sEntityName = lstSelectedEntityNames.get(i);
-				try {
-					final CollectableEntity clcteForField = (sEntityName == null) ? clcte : clcteprovider.getCollectableEntity(sEntityName);
-					result.add(getCollectableEntityFieldForResult(clcteForField, sFieldName, clcte));
-				}
-				catch (Exception ex) {
-					// ignore unknown fields
-					LOG.warn("Ein Feld mit dem Namen \"" + sFieldName + "\" ist nicht in der Entit\u00e4t " + clcte.getName() + " enthalten.", ex);
-				}
-			}
-		}
-		return result;
-	}
-
-	public static void writeCollectableEntityFieldsToPreferences(Preferences prefs, List<CollectableEntityField> selectedFields) throws PreferencesException {
-		final int size = selectedFields.size();
-		final List<String> fieldNames = new ArrayList<String>(size);
-		final List<String> entityNames = new ArrayList<String>(size);
-		for (CollectableEntityField f : selectedFields) {
-			fieldNames.add(f.getName());
-			entityNames.add(f.getEntityName());
-		}
-
-		PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS, fieldNames);
-		PreferencesUtils.putStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDENTITIES, entityNames);
-		// PreferencesUtils.putSerializableListXML(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS, selectedFields);
-		CollectableEntityFieldPreferencesUtil.writeList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDBEANS, selectedFields);
-	}
-
 	/**
 	 * @param clcte the entity of the field
 	 * @param sFieldName the name of the field
 	 * @param clcteMain the main entity
 	 * @return a <code>CollectableEntityField</code> for the Result tab with the given entity and field name.
-	 *
-	 * @deprecated Should be private!
 	 */
-	public static CollectableEntityField getCollectableEntityFieldForResult(final CollectableEntity clcte, String sFieldName, CollectableEntity clcteMain) {
+	public static CollectableEntityFieldWithEntityForExternal getCollectableEntityFieldForResult(final CollectableEntity clcte, String sFieldName, CollectableEntity clcteMain) {
 		final String sMainEntityName = clcteMain.getName();
 		final boolean bFieldBelongsToMainEntity = clcte.getName().equals(sMainEntityName);
-		final String sParentEntityName = Modules.getInstance().getParentEntityName(sMainEntityName);
-		final boolean bFieldBelongsToParentEntity = clcte.getName().equals(sParentEntityName);
-		final boolean bFieldBelongsToSubEntity = !(bFieldBelongsToMainEntity || bFieldBelongsToParentEntity);
+		final boolean bFieldBelongsToSubEntity = !(bFieldBelongsToMainEntity);
 		final CollectableEntityFieldWithEntityForExternal clctefwefe = new CollectableEntityFieldWithEntityForExternal(clcte, sFieldName, bFieldBelongsToSubEntity, bFieldBelongsToMainEntity);
 
 		// set security agent, to check whether the user has the right to see the data in the result panel

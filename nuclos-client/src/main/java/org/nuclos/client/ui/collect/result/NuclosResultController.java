@@ -18,6 +18,10 @@ package org.nuclos.client.ui.collect.result;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -31,8 +35,11 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -40,18 +47,28 @@ import javax.swing.table.TableColumnModel;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosResultPanel;
+import org.nuclos.client.common.WorkspaceUtils;
+import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.UIUtils.CommandHandler;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
+import org.nuclos.client.ui.collect.FixedColumnRowHeader;
 import org.nuclos.client.ui.collect.SelectFixedColumnsController;
 import org.nuclos.client.ui.collect.SelectFixedColumnsPanel;
 import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
+import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
 import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
+import org.nuclos.client.ui.popupmenu.AbstractJPopupMenuListener;
 import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableUtils;
+import org.nuclos.common.Actions;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -59,9 +76,7 @@ import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
-import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.PreferencesException;
 
 /**
  * A specialization of ResultController for use with an {@link NuclosCollectController}.
@@ -108,18 +123,12 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	 * TODO: Make protected again.
 	 */
 	@Override
-	public void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl, Preferences preferences) {
+	public void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl) {
 		assert clctctl == getCollectController() && clctctl.getFields() == getFields() && clctctl.getResultController() == this;
 		assert getEntity().equals(clcte);
-		super.initializeFields(clcte, clctctl, preferences);
+		super.initializeFields(clcte, clctctl);
 
-		List<String> lstSelectedFieldNames;
-		try {
-			lstSelectedFieldNames = PreferencesUtils.getStringList(preferences, NuclosResultPanel.PREFS_NODE_FIXEDFIELDS);
-		}
-		catch (PreferencesException ex) {
-			lstSelectedFieldNames = new ArrayList<String>();
-		}
+		List<String> lstSelectedFieldNames = WorkspaceUtils.getFixedColumns(clctctl.getEntityPreferences());
 
 		ChoiceEntityFieldList fields = clctctl.getFields();
 		for (CollectableEntityField clctef : fields.getSelectedFields()) {
@@ -236,7 +245,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 
 	protected final void setSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl, 
 			final SortedSet<CollectableEntityField> lstAvailableObjects, final List<CollectableEntityField> lstSelectedObjects, 
-			final Set<CollectableEntityField> stFixedObjects) 
+			final Set<CollectableEntityField> stFixedObjects, final boolean restoreWidthsFromPreferences, final boolean restoreOrder) 
 	{
 		assert clctctl == getCollectController() && clctctl.getFields() == getFields() && clctctl.getResultController() == this;
 		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
@@ -280,21 +289,37 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 					} else {
 						panel.setVisibleTable(true);
 					}
+					
+					// add DEselected to hidden in preferences
+					final Collection<? extends CollectableEntityField> collDeselected = CollectionUtils.subtract(lstSelectedOld, lstSelectedNew);
+					for (CollectableEntityField clctef : collDeselected) {
+						WorkspaceUtils.addHiddenColumn(getCollectController().getEntityPreferences(), clctef.getName());
+					}
 
 					// reselect the previously selected row (which gets lost be refreshing the model)
 					if (iSelRow != -1) {
 						tblResult.setRowSelectionInterval(iSelRow, iSelRow);
 					}
 
-					// restore the widths of the still present columns
-					panel.restoreColumnWidths(lstSelectedNew, mpWidths);
-
-					// write preferences after column width was restored
-					writeFieldWidthsToPreferences(clctctl.getPreferences());
+					if (restoreWidthsFromPreferences) {
+						// restore widths from preferences
+						panel.setColumnWidths(getNuclosResultPanel().getResultTable(), getCollectController().getEntityPreferences());
+					} else {
+						// restore the widths of the still present columns
+						panel.restoreColumnWidths(lstSelectedNew, mpWidths);
+					}
 
 					panel.invalidateFixedTable();
 
 					panel.setupTableCellRenderers(tblResult);
+					
+					if (restoreOrder) {
+						getCollectController().restoreColumnOrderFromPreferences(false);
+						getCollectController().getSearchStrategy().search(true);
+					}
+					
+					// write preferences after column width are restored
+					writeSelectedFieldsAndWidthsToPreferences(mpWidths);
 				}
 
 				private void refreshResult(final CollectController<Clct> clctctl) throws CommonBusinessException {
@@ -342,6 +367,15 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		setFixedTable();
 		TableUtils.setOptimalColumnWidths(fixedTable);
 		
+		panel.getResultTable().getTableHeader().addMouseListener(new TableHeaderColumnPopupListener() {
+			@Override
+			protected void removeColumnVisibility(TableColumn column) {
+				final Map<String, Integer> mpWidths = panel.getVisibleColumnWidth(clctctl.getFields().getSelectedFields());
+				final CollectableEntityField clctef = ((CollectableEntityFieldBasedTableModel) panel.getResultTable().getModel()).getCollectableEntityField(column.getModelIndex());
+				cmdRemoveColumn(clctctl.getFields(), clctef, clctctl);
+				panel.restoreColumnWidths(clctctl.getFields().getSelectedFields(), mpWidths);
+			}
+		});
 	}
 
 	/**
@@ -418,7 +452,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 				Component renderComp = originalRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 				if (renderComp != null && renderComp.getBackground() != null) {
-					renderComp.setBackground(Color.LIGHT_GRAY);
+					renderComp.setBackground(FixedColumnRowHeader.FIXED_HEADER_BACKGROUND);
 				}
 				return renderComp;
 			}
@@ -456,7 +490,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 				CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 
 		if (bOK) {
-			setSelectColumns(fields, clctctl, ctl.getAvailableObjects(), ctl.getSelectedObjects(), ctl.getFixedObjects());
+			setSelectColumns(fields, clctctl, ctl.getAvailableObjects(), ctl.getSelectedObjects(), ctl.getFixedObjects(), false, false);
 		}
 	}
 
@@ -484,27 +518,121 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		lstAvailableFields.addAll(fields.getAvailableFields());
 		// TODO: Is the copy really needed? (Thomas Pasch)
 		List<CollectableEntityField> lstSelectedFields = new ArrayList<CollectableEntityField>(fields.getSelectedFields());
-		setSelectColumns(fields, ctl, lstAvailableFields, lstSelectedFields, panel.getFixedColumns());
+		setSelectColumns(fields, ctl, lstAvailableFields, lstSelectedFields, panel.getFixedColumns(), false, false);
 	}
-
+	
 	@Override
-	protected final void writeFieldWidthsToPreferences(Preferences preferences) throws PreferencesException {
-		super.writeFieldWidthsToPreferences(preferences);
-
-		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
-		PreferencesUtils.putIntegerList(preferences, NuclosResultPanel.PREFS_NODE_FIXEDFIELDS_WIDTHS, 
-				CollectableTableHelper.getColumnWidths(panel.getFixedResultTable()));
-	}
-
-	@Override
-	public void writeSelectedFieldsToPreferences(List<? extends CollectableEntityField> lstclctefweSelected) throws PreferencesException {
-		super.writeSelectedFieldsToPreferences(lstclctefweSelected);
-		PreferencesUtils.putStringList(getCollectController().getPreferences(), NuclosResultPanel.PREFS_NODE_FIXEDFIELDS, 
+	protected void writeSelectedFieldsAndWidthsToPreferences(
+			EntityPreferences entityPreferences,
+			List<? extends CollectableEntityField> lstclctefSelected, Map<String, Integer> mpWidths) {
+		super.writeSelectedFieldsAndWidthsToPreferences(entityPreferences,
+				lstclctefSelected, mpWidths);
+		WorkspaceUtils.updateFixedColumns(entityPreferences, 
 				CollectableUtils.getFieldNamesFromCollectableEntityFields(getNuclosResultPanel().getFixedColumns()));
 	}
 	
-	private NuclosResultPanel<Clct> getNuclosResultPanel() {
+	@Override
+	protected List<Integer> getFieldWidthsForPreferences() {
+		final List<Integer> lstFieldWidths = CollectableTableHelper.getColumnWidths(getNuclosResultPanel().getFixedResultTable());
+		lstFieldWidths.addAll(CollectableTableHelper.getColumnWidths(getNuclosResultPanel().getResultTable()));
+		return lstFieldWidths;
+	}
+	
+	protected NuclosResultPanel<Clct> getNuclosResultPanel() {
 		return (NuclosResultPanel<Clct>) getCollectController().getResultPanel();
 	}
+	
+	/**
+	 * Popup menu for the columns in the Result table.
+	 */
+	protected abstract class TableHeaderColumnPopupListener extends AbstractJPopupMenuListener {
+
+		private Point ptLastOpened;
+		protected JPopupMenu popupmenuColumn = new JPopupMenu();
+		protected final JTableHeader usedHeader;
+
+		public TableHeaderColumnPopupListener() {
+			super();
+			this.usedHeader = getNuclosResultPanel().getResultTable().getTableHeader();
+			if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) ||
+					!MainFrame.getWorkspace().isAssigned()) {
+				this.popupmenuColumn.add(createHideColumnItem());
+				this.popupmenuColumn.addSeparator();
+			}
+			
+			this.popupmenuColumn.add(createRestoreColumnsItem());
+		}
+
+		private JMenuItem createHideColumnItem() {
+			final JMenuItem miPopupHideThisColumn = new JMenuItem(CommonLocaleDelegate.getMessage("NuclosResultController.1","Diese Spalte ausblenden"));
+			miPopupHideThisColumn.setIcon(Icons.getInstance().getIconRemoveColumn16());
+			miPopupHideThisColumn.addActionListener(new ActionListener() {
+				@Override
+                public void actionPerformed(ActionEvent ev) {
+					final int iColumnIndex = usedHeader.columnAtPoint(getLatestOpenPoint());
+					removeColumnVisibility(usedHeader.getColumnModel().getColumn(iColumnIndex));
+				}
+			});
+
+			return miPopupHideThisColumn;
+		}
+		
+		private JMenuItem createRestoreColumnsItem() {
+			final JMenuItem miPopupRestoreColumns = new JMenuItem(CommonLocaleDelegate.getMessage("NuclosResultController.2", "Alle Spalten auf Vorlage zurücksetzen"));
+			miPopupRestoreColumns.setIcon(Icons.getInstance().getIconUndo16());
+			miPopupRestoreColumns.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						WorkspaceUtils.restoreEntityPreferences(getCollectController().getEntityPreferences());
+						
+						final List<CollectableEntityField> allFields = CollectionUtils.concat(
+								getFields().getAvailableFields(), 
+								getFields().getSelectedFields());
+						
+						// add missing pivot fields. (why they are not avaiable?)
+						WorkspaceUtils.addMissingPivotFields(getCollectController().getEntityPreferences(), allFields);
+						
+						final List<CollectableEntityField> selected = WorkspaceUtils.getSelectedFields(getCollectController().getEntityPreferences(), allFields);
+						getCollectController().makeSureSelectedFieldsAreNonEmpty(getEntity(), selected);
+						
+						final SortedSet<CollectableEntityField> avaiable = new TreeSet<CollectableEntityField>(new CollectableEntityField.LabelComparator());
+						avaiable.addAll(CollectionUtils.subtract(allFields, selected));
+
+						setSelectColumns(
+								getFields(), 
+								getCollectController(), 
+								avaiable, 
+								selected, 
+								WorkspaceUtils.getFixedFields(getCollectController().getEntityPreferences(), selected),
+								true,
+								true);
+				
+					} catch (CommonBusinessException e1) {
+						Errors.getInstance().showExceptionDialog(getNuclosResultPanel(), e1);
+					}
+					
+				}
+			});
+			
+			return miPopupRestoreColumns;
+		}
+
+		@Override
+		protected final JPopupMenu getJPopupMenu(MouseEvent ev) {
+			this.ptLastOpened = ev.getPoint();
+			return popupmenuColumn;
+		}
+
+		/**
+		 * the point where the popup menu was opened latest
+		 */
+		public Point getLatestOpenPoint() {
+			return this.ptLastOpened;
+		}
+
+		protected abstract void removeColumnVisibility(TableColumn column);
+
+	}  // inner class PopupMenuColumnListener
 
 }

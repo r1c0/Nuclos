@@ -37,8 +37,11 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
 import org.nuclos.client.ui.table.SortableTableModel;
+import org.nuclos.common.Actions;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
@@ -54,6 +57,10 @@ public class ToolTipsTableHeader extends JTableHeader {
 		this.entityTableModel = aTableModel;
 		this.ascendingSortIcon = UIManager.getIcon("Table.ascendingSortIcon");
 		this.descendingSortIcon = UIManager.getIcon("Table.descendingSortIcon");
+		if (!SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) &&
+				MainFrame.getWorkspace().isAssigned()) {
+			setReorderingAllowed(false);
+		}
 	}
 
 	/**

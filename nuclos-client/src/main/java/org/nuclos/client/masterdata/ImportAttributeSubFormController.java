@@ -24,6 +24,8 @@ import javax.swing.JComponent;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
+import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 
 /**
  * MasterDataSubFormController for import attributes.
@@ -39,9 +41,9 @@ public class ImportAttributeSubFormController extends MasterDataSubFormControlle
    public ImportAttributeSubFormController(Component parent, JComponent parentMdi,
       CollectableComponentModelProvider clctcompmodelproviderParent,
       String sParentEntityName, SubForm subform,
-      Preferences prefsUserParent, CollectableFieldsProviderCache valueListProviderCache) {
+      Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderCache valueListProviderCache) {
       super(parent, parentMdi, clctcompmodelproviderParent,
-         sParentEntityName, subform, prefsUserParent, valueListProviderCache);
+         sParentEntityName, subform, prefsUserParent, entityPrefs, valueListProviderCache);
    }
 
    @Override

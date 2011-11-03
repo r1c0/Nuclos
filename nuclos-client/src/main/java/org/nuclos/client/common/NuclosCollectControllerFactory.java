@@ -45,6 +45,8 @@ import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.UsageCriteria;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
+import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.statemodel.Statemodel;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
@@ -254,24 +256,24 @@ public class NuclosCollectControllerFactory {
 	public MasterDataSubFormController newDetailsSubFormController(SubForm subform,
 			String sParentEntityName, CollectableComponentModelProvider clctcompmodelprovider,
 			MainFrameTab ifrmParent, JComponent parent, JComponent compDetails, Preferences prefs,
-			CollectableFieldsProviderCache valueListProviderCache) {
+			EntityPreferences entityPrefs, CollectableFieldsProviderCache valueListProviderCache) {
 
 		final MasterDataSubFormController result;
 
 		final String sControllerType = subform.getControllerType();
 		if (sControllerType == null || sControllerType.equals("default")) {
 			if (MasterDataDelegate.getInstance().getMetaData(subform.getEntityName()).isDynamic()) {
-				result = new DynamicEntitySubFormController(ifrmParent, parent, clctcompmodelprovider, sParentEntityName, subform, prefs, valueListProviderCache);
+				result = new DynamicEntitySubFormController(ifrmParent, parent, clctcompmodelprovider, sParentEntityName, subform, prefs, entityPrefs, valueListProviderCache);
 			}
 			else {
-				result = new MasterDataSubFormController(ifrmParent, parent, clctcompmodelprovider, sParentEntityName, subform, prefs, valueListProviderCache);
+				result = new MasterDataSubFormController(ifrmParent, parent, clctcompmodelprovider, sParentEntityName, subform, prefs, entityPrefs, valueListProviderCache);
 			}
 		}
 		else if (sControllerType.equals("importforeignentityidentifier")) {
-			result = new ImportForeignEntityIdentifierSubFormController(parent, ifrmParent, clctcompmodelprovider, sParentEntityName, subform, prefs, valueListProviderCache);
+			result = new ImportForeignEntityIdentifierSubFormController(parent, ifrmParent, clctcompmodelprovider, sParentEntityName, subform, prefs, entityPrefs, valueListProviderCache);
 		}
 		else if (sControllerType.equals("importattribute")) {
-			result = new ImportAttributeSubFormController(parent, ifrmParent, clctcompmodelprovider, sParentEntityName, subform, prefs, valueListProviderCache);
+			result = new ImportAttributeSubFormController(parent, ifrmParent, clctcompmodelprovider, sParentEntityName, subform, prefs, entityPrefs, valueListProviderCache);
 		}
 		else {
 			throw new NuclosFatalException("Unknown Controllertype for subform:" + sControllerType);//Unbekannter Controllertyp f\u00fcr Unterformular:

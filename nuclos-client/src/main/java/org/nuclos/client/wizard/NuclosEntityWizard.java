@@ -20,6 +20,8 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.Action;
 
+import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.pietschy.wizard.ButtonBar;
 import org.pietschy.wizard.InvalidStateException;
 import org.pietschy.wizard.Wizard;
@@ -70,6 +72,10 @@ public class NuclosEntityWizard extends Wizard {
 			}
 
 		};
+	}
+	
+	public static EntityPreferences getEntityPreferences() {
+		return MainFrame.getWorkspaceDescription().getEntityPreferences("NuclosEntityWizard");
 	}
 
 }

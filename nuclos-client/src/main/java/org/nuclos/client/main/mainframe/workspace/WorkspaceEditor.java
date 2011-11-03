@@ -35,6 +35,7 @@ import javax.swing.JTextField;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.resource.ResourceIconChooser;
 import org.nuclos.common.WorkspaceDescription;
+import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 
@@ -49,12 +50,15 @@ public class WorkspaceEditor  {
 	private final JButton btSave;
 	private final JButton btCancel;
 	
-	private final WorkspaceDescription workspaceDescription;
 	private boolean saved;
-	private WorkspaceDescription result;
+	private final WorkspaceVO wovo;
+	private final WorkspaceVO backup;
 	
-	public WorkspaceEditor(WorkspaceDescription workspaceDescription) {
-		this.workspaceDescription = workspaceDescription;
+	public WorkspaceEditor(WorkspaceVO wovo) {
+		this.wovo = wovo;
+		this.backup = new WorkspaceVO();
+		this.backup.importHeader(wovo.getWoDesc());
+		
 		contentPanel = new JPanel();
 		initJPanel(contentPanel,
 				new double[] {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL},
@@ -84,9 +88,9 @@ public class WorkspaceEditor  {
 		actionsPanel.add(btCancel);
 		contentPanel.add(actionsPanel, "0, 3, 4, 3");
 		
-		tfName.setText(workspaceDescription.getName());
-		chckHideName.setSelected(workspaceDescription.isHideName());
-		nuclosIconChooser.setSelected(workspaceDescription.getNuclosResource());
+		tfName.setText(wovo.getWoDesc().getName());
+		chckHideName.setSelected(wovo.getWoDesc().isHideName());
+		nuclosIconChooser.setSelected(wovo.getWoDesc().getNuclosResource());
 		
 		dialog = new JDialog(Main.getMainFrame(), CommonLocaleDelegate.getMessage("WorkspaceEditor.1","Arbeitsumgebung bearbeiten"), true);
 		dialog.setContentPane(contentPanel);
@@ -94,6 +98,7 @@ public class WorkspaceEditor  {
 		dialog.getRootPane().setDefaultButton(btSave);
 		Rectangle mfBounds = Main.getMainFrame().getBounds();
 		dialog.setBounds(mfBounds.x+(mfBounds.width/2)-300, mfBounds.y+(mfBounds.height/2)-200, 600, 400);
+		dialog.setResizable(false);
 		
 		initListener();
 		dialog.setVisible(true);
@@ -109,16 +114,14 @@ public class WorkspaceEditor  {
 				
 				if (StringUtils.looksEmpty(name)) {
 					JOptionPane.showMessageDialog(contentPanel, CommonLocaleDelegate.getMessage("WorkspaceEditor.7","Bitte geben Sie einen Namen an"));
+				} else {
+					wovo.setName(name);
+					wovo.getWoDesc().setHideName(hideName);
+					wovo.getWoDesc().setNuclosResource(nuclosResource);
+					
+					saved = true;
+					dialog.dispose();
 				}
-				
-				result = workspaceDescription.copyMetadata();
-				
-				result.setName(name);
-				result.setHideName(hideName);
-				result.setNuclosResource(nuclosResource);
-				
-				saved = true;
-				dialog.dispose();
 			}
 		});
 		
@@ -134,8 +137,8 @@ public class WorkspaceEditor  {
 		return saved;
 	}
 	
-	public WorkspaceDescription getResult() {
-		return result;
+	public void revertChanges() {
+		this.wovo.importHeader(this.backup.getWoDesc());
 	}
 
 	protected void initJPanel(JPanel panel, double[] cols, double[] rows) {	

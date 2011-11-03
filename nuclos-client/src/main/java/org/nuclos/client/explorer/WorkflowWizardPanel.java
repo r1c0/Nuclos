@@ -68,7 +68,7 @@ public class WorkflowWizardPanel extends JPanel {
 		
 		Collection<MasterDataVO> colSearchFilter = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.SEARCHFILTER.getEntityName());
 		
-		for(MasterDataVO vo : Modules.getInstance().getModules(false)) {
+		for(MasterDataVO vo : Modules.getInstance().getModules()) {
 			String sModule = (String)vo.getField("entity");
 			Integer iModule = Modules.getInstance().getModuleIdByEntityName(sModule);			
 			
@@ -97,7 +97,6 @@ public class WorkflowWizardPanel extends JPanel {
 					f.setDescription(sModule + " im Status " + voState.getNumeral());					
 					f.setEntityName(sModule);
 					f.setEditable(false);
-					f.setForced(false);
 					
 					f.setSearchCondition(SearchConditionUtils.newComparison(sModule, NuclosEOField.STATENUMBER.getMetaData().getField(), ComparisonOperator.EQUAL, voState.getNumeral()));
 					
@@ -146,7 +145,6 @@ public class WorkflowWizardPanel extends JPanel {
 							mdvo.setField("searchfilterId", voSearchFilter.getIntId());
 							mdvo.setField("user", voRoleUser.getField("user"));
 							mdvo.setField("userId", voRoleUser.getField("userId"));							
-							mdvo.setField("forcefilter", false);
 							mdvo.setField("compulsoryFilter", false);
 							mdvo.setField("editable", false);
 							mdvo.setField("validFrom", null);

@@ -32,9 +32,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 import javax.swing.BorderFactory;
@@ -54,6 +58,7 @@ import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.TableColumn;
 
+import org.apache.commons.httpclient.util.LangUtils;
 import org.jdesktop.swingx.event.TableColumnModelExtListener;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.SubFormController;
@@ -91,7 +96,9 @@ import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModelImpl;
 import org.nuclos.client.ui.event.TableColumnModelAdapter;
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collection.CollectionUtils;
@@ -369,7 +376,7 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 					subform.setInitialSortingOrder(sortingOrder.getName(), sortingOrder.getSortingOrder());
 				}
 
-				this.controller = NuclosCollectControllerFactory.getInstance().newDetailsSubFormController(subform, meta.getCollectableEntity().getName(), clctmodelprovider, new MainFrameTab(), this, this, Preferences.userRoot().node("tmp"), null);
+				this.controller = NuclosCollectControllerFactory.getInstance().newDetailsSubFormController(subform, meta.getCollectableEntity().getName(), clctmodelprovider, new MainFrameTab(), this, this, Preferences.userRoot().node("tmp"), new EntityPreferences(), null);
 
 				if (subform.getJTable().getModel() instanceof SortableCollectableTableModel) {
 					this.model = (SortableCollectableTableModel<Collectable>) subform.getJTable().getModel();
@@ -411,11 +418,29 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 				} else {
 					throw new NuclosFatalException("Unexpected table model type.");
 				}
-
+				
 				for (int i = 0; i < model.getColumnCount(); i++) {
 					CollectableEntityField field = model.getCollectableEntityField(i);
 					//NUCLEUSINT-401 there is no need to setup the columns every time... this does reset the properties and destroys changes...
 					if (columns.get(field.getName()) == null) {
+						boolean ignore = false;
+						if (NuclosEOField.getByField(field.getName()) != null) {
+							switch (NuclosEOField.getByField(field.getName())) {
+							case CHANGEDAT :
+							case CHANGEDBY :
+							case CREATEDAT : 
+							case CREATEDBY : 
+							case LOGGICALDELETED : 
+							case ORIGIN :
+							case SYSTEMIDENTIFIER : 
+							case PROCESS : 
+								ignore = true;
+							}
+						}
+						if (ignore) {
+							continue;
+						}
+						
 						WYSIWYGSubFormColumn column = new WYSIWYGSubFormColumn(this, field);
 						column.setProperties(PropertyUtils.getEmptyProperties(column, this.meta));
 						PropertyValueString value = new PropertyValueString(field.getName());

@@ -769,6 +769,21 @@ public class CollectionUtils {
          }
       }
    }
+   
+   /**
+    * removes all elements of <code>listInOut</code> that are NOT contained in <code>iterable</code>
+    * @param listInOut
+    * @param iterable
+    * @precondition listInOut != null
+    * @precondition iterable != null
+    */
+   public static <E1, E extends E1> void retainAll(List<E> listInOut, Iterable<? extends E> iterable) {
+      for (Iterator<E> iter = listInOut.iterator(); iter.hasNext();) {
+         if (!contains(iterable, iter.next(), PredicateUtils.<E>equals())) {
+            iter.remove();
+         }
+      }
+   }
 
    /**
     * @return the intersection of all Collections contained in iterable, based on <code>LangUtils.equals()</code>.
@@ -1099,6 +1114,22 @@ public class CollectionUtils {
     * @return a - b, if both are not null, null if a is null, a if b is null
     */
    public static <T> Collection<T> subtract(Collection<T> a, Collection<T> b) {
+      if(a == null)
+         return null;
+      if(b == null)
+         return a;
+      ArrayList<T> r = new ArrayList<T>(a);
+      r.removeAll(b);
+      return r;
+   }
+   
+   
+   /**
+    * @param a  a list
+    * @param b  a list
+    * @return a - b, if both are not null, null if a is null, a if b is null
+    */
+   public static <T> List<T> subtract(List<T> a, List<T> b) {
       if(a == null)
          return null;
       if(b == null)

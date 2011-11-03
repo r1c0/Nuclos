@@ -105,8 +105,8 @@ public class EntityNucletContent extends DefaultNucletContent {
 	}
 
 	@Override
-	public void deleteNcObject(DalCallResult result, Long id) {
-		for (Long goId : getReferencingEOids(NuclosEntity.GENERICOBJECT, "module", id)) {
+	public void deleteNcObject(DalCallResult result, EntityObjectVO ncObject) {
+		for (Long goId : getReferencingEOids(NuclosEntity.GENERICOBJECT, "module", ncObject.getId())) {
 			result.add(removeReferencingEOs(NuclosEntity.STATEHISTORY, "genericObject", goId));
 			result.add(removeReferencingEOs(NuclosEntity.GENERICOBJECTLOGBOOK, "genericObject", goId));
 			result.add(removeReferencingEOs(NuclosEntity.GENERICOBJECTGROUP, "genericObject", goId));
@@ -122,7 +122,7 @@ public class EntityNucletContent extends DefaultNucletContent {
 				result.addBusinessException(e);
 			}
 		}
-		super.deleteNcObject(result, id);
+		super.deleteNcObject(result, ncObject);
 	}
 
 	@Override

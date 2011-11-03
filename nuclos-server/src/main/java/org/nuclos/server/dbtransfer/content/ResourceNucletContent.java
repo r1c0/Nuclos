@@ -48,9 +48,9 @@ public class ResourceNucletContent extends DefaultNucletContent {
 	}
 
 	@Override
-	public void deleteNcObject(DalCallResult result, Long id) {
-		ResourceFacadeBean.removeResource(ResourceCache.getInstance().getResourceById(id.intValue()).getFileName());
-		super.deleteNcObject(result, id);
+	public void deleteNcObject(DalCallResult result, EntityObjectVO ncObject) {
+		ResourceFacadeBean.removeResource(ResourceCache.getInstance().getResourceById(ncObject.getId().intValue()).getFileName());
+		super.deleteNcObject(result, ncObject);
 	}
 
 	@Override

@@ -83,7 +83,7 @@ public class ProcessMonitorCollectController extends NuclosCollectController<Col
 		final SubForm subformUsages = new SubForm(NuclosEntity.STATEMODELUSAGE.getEntityName(), JToolBar.VERTICAL, "statemodel");
 		
 		this.subformctlUsages = new MasterDataSubFormController(getFrame(), parent, this.getDetailsEditView().getModel(),
-				this.getEntityName(), subformUsages, this.getPreferences(), valueListProviderCache);
+				this.getEntityName(), subformUsages, this.getPreferences(), this.getEntityPreferences(), valueListProviderCache);
 		
 		pnlEdit = new ProcessMonitorEditPanel(subformUsages);
 		

@@ -20,9 +20,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -31,7 +28,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.prefs.Preferences;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
@@ -49,11 +45,14 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TableColumnModelListener;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
+import org.jfree.util.Log;
+import org.nuclos.client.common.WorkspaceUtils;
+import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.StatusBarTextField;
@@ -70,14 +69,15 @@ import org.nuclos.client.ui.collect.indicator.CollectPanelIndicator;
 import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
 import org.nuclos.client.ui.popupmenu.AbstractJPopupMenuListener;
 import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
+import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
 import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.client.ui.table.TableUtils;
+import org.nuclos.common.Actions;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
-import org.nuclos.common2.PreferencesUtils;
-import org.nuclos.common2.exception.PreferencesException;
 
 /**
  * <br>Result panel for collecting data
@@ -181,8 +181,6 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public final JMenuItem miPopupCopyRows = new JMenuItem(CommonLocaleDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen"));
 	public final JMenu miGenerations = new JMenu(CommonLocaleDelegate.getMessage("ResultPanel.12","Arbeitsschritte"));
 
-	private TableHeaderColumnPopupListener tableHeaderColumnListener;
-
 	public ResultPanel() {
 		super(new BorderLayout());
 
@@ -231,20 +229,6 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 	public final CollectPanelIndicator getCollectPanelIndicator() {
 		return cpi;
-	}
-
-	/**
-	 * TODO: Make this package visible.
-	 */
-	public final TableHeaderColumnPopupListener getTableHeaderColumnPopupListener() {
-		return tableHeaderColumnListener;
-	}
-
-	/**
-	 * TODO: Make this package visible.
-	 */
-	public final void setTableHeaderColumnPopupListener(TableHeaderColumnPopupListener tableHeaderColumnListener) {
-		this.tableHeaderColumnListener = tableHeaderColumnListener;
 	}
 
 	/**
@@ -303,7 +287,10 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		//result.add(btnClone, null);
 		//result.add(btnSelectColumns, null);
 		addPopupExtraMenuItem(btnClone);
-		addPopupExtraMenuItem(btnSelectColumns);
+		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) ||
+				!MainFrame.getWorkspace().isAssigned()) {
+			addPopupExtraMenuItem(btnSelectColumns);
+		}
 
 		this.btnEdit.setName("btnEdit");
 		this.btnEdit.setIcon(Icons.getInstance().getIconEdit16());
@@ -627,64 +614,60 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 *
 	 * TODO: Make this protected again.
 	 */
-	public void setColumnWidths(JTable tblResult, boolean bUseCustomColumnWidths, Preferences prefs) {
-		final Map<String, Integer> lstWidthsFromPreferences = this.getTableColumnWidthsFromPreferences(prefs);
+	public void setColumnWidths(JTable tblResult, EntityPreferences entityPreferences) {
+		final List<Integer> lstWidthsFromPreferences = WorkspaceUtils.getColumnWidthsWithoutFixed(entityPreferences);
 
-		bUseCustomColumnWidths = !lstWidthsFromPreferences.isEmpty();
+		boolean bUseCustomColumnWidths = !lstWidthsFromPreferences.isEmpty();
 		if (bUseCustomColumnWidths) {
 			Logger.getLogger(this.getClass()).debug("Restoring column widths from user preferences");
-			if (tblResult.getModel() instanceof CollectableEntityFieldBasedTableModel) {
-				CollectableEntityFieldBasedTableModel cefbtm = (CollectableEntityFieldBasedTableModel) tblResult.getModel();
-
-				for (String field : lstWidthsFromPreferences.keySet()) {
-					for (int iColumn = 0; iColumn < cefbtm.getColumnCount(); iColumn++) {
-						if (cefbtm.getCollectableEntityField(iColumn).getName().equals(field) && tblResult.getColumnModel().getColumnCount() > iColumn) {
-							final TableColumn column = tblResult.getColumnModel().getColumn(iColumn);
-							final Integer iPreferredCellWidth = lstWidthsFromPreferences.get(field);
-							if (iPreferredCellWidth != null) {
-								column.setPreferredWidth(iPreferredCellWidth);
-								column.setWidth(iPreferredCellWidth);
-							}
-							else {
-								TableUtils.setOptimalColumnWidth(tblResult, iColumn);
-							}
-							break;
+			for (int iColumn = 0; iColumn < tblResult.getColumnModel().getColumnCount(); iColumn++) {
+				final TableColumn column = tblResult.getColumnModel().getColumn(iColumn);
+				try {
+					final Integer iPreferredCellWidth = lstWidthsFromPreferences.get(iColumn);
+					if (iPreferredCellWidth != null) {
+						column.setPreferredWidth(iPreferredCellWidth);
+						column.setWidth(iPreferredCellWidth);
+					}
+				} catch (Exception e) {
+					try {
+						if (tblResult.getModel() instanceof CollectableEntityFieldBasedTableModel) {
+							CollectableEntityFieldBasedTableModel cefbtm = (CollectableEntityFieldBasedTableModel) tblResult.getModel();
+							final int width = Math.max(
+									TableUtils.getPreferredColumnWidth(tblResult, iColumn, 50, TableUtils.TABLE_INSETS), 
+									TableUtils.getMinimumColumnWidth(cefbtm.getCollectableEntityField(iColumn).getJavaClass()));
+							column.setPreferredWidth(width);
+							column.setWidth(width);
+						} else {
+							TableUtils.setOptimalColumnWidth(tblResult, iColumn);
 						}
+					} catch (Exception ex) {
+						Log.error("Restoring column widths from user preferences", ex);
+						TableUtils.setOptimalColumnWidth(tblResult, iColumn);
 					}
 				}
 			}
 		}
 		else {
 			// If there are no stored field widths or the number of stored field widths differs from the column count
-			// (that is, the number of columns has changed since the last invocation of the client), set optimal column widths:
-			Logger.getLogger(this.getClass()).debug("Setting optimal column widths");
-			TableUtils.setOptimalColumnWidths(tblResult);
-//			assert !bUseCustomColumnWidths;
-			// use custom column widths as soon as a column width was changed after setting the optimal column width:
-		}
+			// (that is, the number of columns has changed since the last invocation of the client)
+			
+			if (tblResult.getModel() instanceof CollectableEntityFieldBasedTableModel) {
+				CollectableEntityFieldBasedTableModel cefbtm = (CollectableEntityFieldBasedTableModel) tblResult.getModel();
 
-//		tblResult.revalidate();
-	}
-
-	/**
-	 * @return the table columns widths. If there are stored user preferences, the sizes will be restored.
-	 * Size and order of list entries is determined by number and order of visible columns
-	 */
-	private Map<String, Integer> getTableColumnWidthsFromPreferences(Preferences prefs) {
-		Map<String, Integer> result = new HashMap<String, Integer>();
-		List<String> fields;
-		List<Integer> widths;
-		try {
-			fields = PreferencesUtils.getStringList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDS);
-			widths = PreferencesUtils.getIntegerList(prefs, CollectController.PREFS_NODE_SELECTEDFIELDWIDTHS);
+				for (int iColumn = 0; iColumn < cefbtm.getColumnCount(); iColumn++) {
+					if (tblResult.getColumnModel().getColumnCount() > iColumn) {
+						final TableColumn column = tblResult.getColumnModel().getColumn(iColumn);
+						final int width = Math.max(
+								TableUtils.getPreferredColumnWidth(tblResult, iColumn, 50, TableUtils.TABLE_INSETS), 
+								TableUtils.getMinimumColumnWidth(cefbtm.getCollectableEntityField(iColumn).getJavaClass()));
+						column.setPreferredWidth(width);
+						column.setWidth(width);
+					}
+				}
+			}
+			
+			tblResult.revalidate();
 		}
-		catch (PreferencesException ex) {
-			return result;
-		}
-		for (int i = 0; i < fields.size(); i++) {
-			result.put(fields.get(i), widths.size() > i ? widths.get(i) : null);
-		}
-		return result;
 	}
 
 	public Map<String, Integer> getCurrentFieldWithsMap(){
@@ -757,57 +740,10 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public void columnMovedInHeader(ChoiceEntityFieldList fields) {
 		fields.setSelectedFields(CollectableTableHelper.getCollectableEntityFieldsFromColumns(this.tblResult));
 	}
-
-	/**
-	 * Popup menu for the columns in the Result table.
-	 *
-	 * TODO: Should be private or protected.
-	 */
-	public static abstract class TableHeaderColumnPopupListener extends AbstractJPopupMenuListener {
-
-		private Point ptLastOpened;
-		public JPopupMenu popupmenuColumn = new JPopupMenu();
-		public JTableHeader usedHeader;
-
-		public TableHeaderColumnPopupListener(final JTableHeader aUsedHeader) {
-			super();
-
-			this.usedHeader = aUsedHeader;
-			this.popupmenuColumn.add(createHideColumnItem(usedHeader));
-		}
-
-		private JMenuItem createHideColumnItem(final JTableHeader usedHeader) {
-			final JMenuItem miPopupHideThisColumn = new JMenuItem(CommonLocaleDelegate.getMessage("ResultPanel.6","Diese Spalte ausblenden"));
-			miPopupHideThisColumn.setIcon(Icons.getInstance().getIconRemoveColumn16());
-			miPopupHideThisColumn.addActionListener(new ActionListener() {
-				@Override
-                public void actionPerformed(ActionEvent ev) {
-					final int iColumnIndex = usedHeader.columnAtPoint(getLatestOpenPoint());
-					removeColumnVisibility(usedHeader.getColumnModel().getColumn(iColumnIndex));
-				}
-			});
-
-			return miPopupHideThisColumn;
-		}
-
-		@Override
-		protected final JPopupMenu getJPopupMenu(MouseEvent ev) {
-			this.ptLastOpened = ev.getPoint();
-			return popupmenuColumn;
-		}
-
-		public abstract List<? extends CollectableEntityField> getSelectedFields();
-
-		/**
-		 * the point where the popup menu was opened latest
-		 */
-		public Point getLatestOpenPoint() {
-			return this.ptLastOpened;
-		}
-
-		protected abstract void removeColumnVisibility(TableColumn column);
-
-	}  // inner class PopupMenuColumnListener
+	
+	protected interface ITableHeaderColumnPopupListener {
+		
+	}
 
 	protected void setupCopyAction() {
 	}

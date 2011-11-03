@@ -112,6 +112,7 @@ public enum NuclosEntity {
 	ROLESUBFORMCOLUMN("rolesubformcolumn"),
 	ROLETRANSITION("roletransition"),
 	ROLEUSER("roleuser"),
+	ROLEWORKSPACE("roleworkspace"),
 	RULE("rule"),
 	RULEUSAGE("ruleUsage"),
 	RULEGENERATION("rulegeneration"),

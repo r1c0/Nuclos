@@ -28,6 +28,8 @@ import javax.swing.SortOrder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.jfree.util.Log;
+import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.table.SortableTableModelEvent;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableComparatorFactory;
@@ -77,9 +79,14 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 	
 	@Override
 	public void setSortKeys(List<? extends SortKey> sortKeys, boolean sortImmediately) throws IllegalArgumentException {
-		for (SortKey sortKey : sortKeys) {
-			if (!(sortKey.getColumn() >= 0 && sortKey.getColumn() < this.getColumnCount()))
-				throw new IllegalArgumentException("Invalid sort column " + sortKey.getColumn());
+		for (SortKey sortKey : new ArrayList<SortKey>(sortKeys)) {
+			if (sortKey.getColumn() == -1) {
+				// column not selected any more
+				sortKeys.remove(sortKey);
+			} else {
+				if (!(sortKey.getColumn() >= 0 && sortKey.getColumn() < this.getColumnCount()))
+					throw new IllegalArgumentException("Invalid sort column " + sortKey.getColumn());
+			}
 		}
 		
 		if (!this.sortKeys.equals(sortKeys)) {

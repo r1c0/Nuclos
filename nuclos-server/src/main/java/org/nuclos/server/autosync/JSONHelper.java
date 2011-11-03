@@ -153,7 +153,8 @@ public class JSONHelper {
 				(String) obj.get("labelres"),
 				(String) obj.get("descriptionres"),
 				coerce(obj.get("indexed"), Boolean.class, false),
-				coerce(obj.get("ondeletecascade"), Boolean.class, false));
+				coerce(obj.get("ondeletecascade"), Boolean.class, false),
+				coerce(obj.get("order"), Integer.class));
 		}
 
 		protected int checkId(Map<?, ?> obj, int nextId) {

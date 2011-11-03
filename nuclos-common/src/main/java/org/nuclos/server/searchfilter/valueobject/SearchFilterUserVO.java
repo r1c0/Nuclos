@@ -37,7 +37,6 @@ public class SearchFilterUserVO extends NuclosValueObject {
 	private Integer iSearchFilterId;
 	private Integer iUserId;
 	private Boolean bEditable;
-	private Boolean bForced;
 	private Boolean bCompulsory;
 	private Date dValidFrom;
 	private Date dValidUntil;
@@ -46,14 +45,13 @@ public class SearchFilterUserVO extends NuclosValueObject {
 		super();
 	}
 	
-	public SearchFilterUserVO(Integer iId, Integer iSearchFilterId, Integer iUserId, Boolean bEditable, Boolean bForced, Boolean bCompulsory, Date dValidFrom, Date dValidUntil,
+	public SearchFilterUserVO(Integer iId, Integer iSearchFilterId, Integer iUserId, Boolean bEditable, Boolean bCompulsory, Date dValidFrom, Date dValidUntil,
 			java.util.Date dCreated, String sCreated, java.util.Date dChanged, String sChanged, Integer iVersion) {
 		super(iId, dCreated, sCreated, dChanged, sChanged, iVersion);
 		
 		setSearchFilter(iSearchFilterId);
 		setUser(iUserId);
 		setEditable(bEditable);
-		setForced(bForced);
 		setCompulsory(bCompulsory);
 		setValidFrom(dValidFrom);
 		setValidUntil(dValidUntil);
@@ -81,14 +79,6 @@ public class SearchFilterUserVO extends NuclosValueObject {
 	
 	public Boolean isEditable() {
 		return this.bEditable;
-	}
-	
-	public void setForced(Boolean bForced) {
-		this.bForced = bForced;
-	}
-	
-	public Boolean isForced() {
-		return this.bForced;
 	}
 
 	public Boolean isCompulsory() {
@@ -121,7 +111,6 @@ public class SearchFilterUserVO extends NuclosValueObject {
 		(Integer)mdVO_searchFilteruser.getField("searchfilterId"),
 		(Integer)mdVO_searchFilteruser.getField("userId"),
 		(Boolean)mdVO_searchFilteruser.getField("editable"),
-		(Boolean)mdVO_searchFilteruser.getField("forcefilter"),
 		(Boolean)mdVO_searchFilteruser.getField("compulsoryFilter"),
 		(Date)mdVO_searchFilteruser.getField("validFrom"),
 		(Date)mdVO_searchFilteruser.getField("validUntil"),
@@ -139,7 +128,6 @@ public class SearchFilterUserVO extends NuclosValueObject {
 		mpField.put("searchfilterId", searchFilterUser.getSearchFilter());
 		mpField.put("userId", searchFilterUser.getUser());
 		mpField.put("editable", searchFilterUser.isEditable());
-		mpField.put("forcefilter", searchFilterUser.isForced());
 		mpField.put("compulsoryFilter", searchFilterUser.isCompulsory());
 		mpField.put("validFrom", searchFilterUser.getValidFrom());
 		mpField.put("validUntil", searchFilterUser.getValidUntil());
@@ -162,7 +150,6 @@ public class SearchFilterUserVO extends NuclosValueObject {
 		result.append(getClass().getName()).append("[");
 		result.append("id=").append(getId());
 		result.append(",user=").append(getUser());
-		result.append(",forced=").append(isForced());
 		result.append(",filterId=").append(getSearchFilter());
 		result.append("]");
 		return result.toString();

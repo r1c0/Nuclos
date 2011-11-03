@@ -38,6 +38,9 @@ import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModelImpl;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.NuclosEOField;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
+import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
+import org.nuclos.common.WorkspaceDescription.TablePreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -76,9 +79,9 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 	 * @see #postCreate()
 	 */
 	public AbstractDetailsSubFormController(CollectableEntity clcte, Component parent, JComponent parentMdi, CollectableComponentModelProvider clctcompmodelproviderParent,
-			String sParentEntityName, SubForm subform, Preferences prefsUserParent, CollectableFieldsProviderFactory clctfproviderfactory) {
+			String sParentEntityName, SubForm subform, Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderFactory clctfproviderfactory) {
 
-		super(clcte, parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform, false, prefsUserParent, clctfproviderfactory);
+		super(clcte, parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform, false, prefsUserParent, entityPrefs, clctfproviderfactory);
 
 		// initialize table model:
 		DetailsSubFormTableModel<Clct>  tblmdl = new DetailsSubFormTableModelImpl<Clct>(this.newCollectableList(new ArrayList<Clct>()));
@@ -87,6 +90,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 		getJTable().setModel(tblmdl);
 
 		// Inititialize listeners for toolbar actions:
+
 		subform.addSubFormToolListener(new SubFormToolListener() {
 			@Override
 			public void toolbarAction(String actionCommand) {
@@ -109,23 +113,16 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 		}
 
 		if (this.isColumnSelectionAllowed(sParentEntityName)) {
-			try {
-				final List<String> lstStoredFieldNames = PreferencesUtils.getStringList(this.getPrefs(), PREFS_NODE_SELECTEDFIELDS);
-				if (!lstStoredFieldNames.isEmpty()) {
-					removeColumnsFromTableColumnModel(subform.getJTable(), lstStoredFieldNames, true);
-				}
-				else {
-					List<String> lstSystemFields = new ArrayList<String>();
-					for(NuclosEOField field : NuclosEOField.values()) {
-						lstSystemFields.add(field.getMetaData().getField());
-					}
-					removeColumnsFromTableColumnModel(subform.getJTable(), lstSystemFields, false);
-				}
+			final List<String> lstStoredFieldNames = WorkspaceUtils.getSelectedColumns(getSubFormPrefs());
+			if (!lstStoredFieldNames.isEmpty()) {
+				removeColumnsFromTableColumnModel(subform.getJTable(), lstStoredFieldNames, true);
 			}
-			catch (PreferencesException ex) {
-				LOG.error("Die Liste der Spalten f\u00fcr das Unterformular \"" + this.getEntityAndForeignKeyFieldName().getEntityName() +
-						"\" konnte nicht aus den Preferences gelesen werden.", ex);
-				// go on with all columns selected.
+			else {
+				List<String> lstSystemFields = new ArrayList<String>();
+				for(NuclosEOField field : NuclosEOField.values()) {
+					lstSystemFields.add(field.getMetaData().getField());
+				}
+				removeColumnsFromTableColumnModel(subform.getJTable(), lstSystemFields, false);
 			}
 		}
 
@@ -251,28 +248,24 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 	}
 
 	protected void storeColumnOrderToPreferences(){
-		try {
-			CollectController.writeSortKeysToPrefs(getPrefs(), getCollectableTableModel().getSortKeys());
-		} catch (PreferencesException e1) {
-			try {
-				throw e1;
-			} catch (CommonBusinessException e2) {
-				Errors.getInstance().showExceptionDialog(this.getParent(), "Exception while storing the preferences." , e2);
+		WorkspaceUtils.setSortKeys(getSubFormPrefs(), getCollectableTableModel().getSortKeys(), new WorkspaceUtils.IColumnNameResolver() {	
+			@Override
+			public String getColumnName(int iColumn) {
+				return getSubFormTableModel().getColumnFieldName(iColumn);
 			}
-		}
+		});
 	}
 
 	/**
 	 * Reads the user-preferences for the sorting order.
 	 */
 	protected List<SortKey> readColumnOrderFromPreferences() {
-		try {
-			return CollectController.readSortKeysFromPrefs(getPrefs());
-		}
-		catch (PreferencesException ex) {
-			LOG.error("The column order could not be loaded from preferences.", ex);
-			return Collections.emptyList();
-		}
+		return WorkspaceUtils.getSortKeys(getSubFormPrefs(), new WorkspaceUtils.IColumnIndexRecolver() {
+			@Override
+			public int getColumnIndex(String columnIdentifier) {
+				return getCollectableTableModel().findColumnByFieldName(columnIdentifier);
+			}
+		});
 	}
 
 	/**
@@ -353,6 +346,11 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 		@Override
 		public String getColumnFieldName(int columnIndex) {
 			return getCollectableEntityField(columnIndex).getName();
+		}
+
+		@Override
+		public int getMinimumColumnWidth(int columnIndex) {
+			return TableUtils.getMinimumColumnWidth(getCollectableEntityField(columnIndex).getJavaClass());
 		}
 	}	// class DetailsSubFormTableModelImpl
 

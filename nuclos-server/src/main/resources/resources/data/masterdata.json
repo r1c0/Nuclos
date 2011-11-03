@@ -2051,19 +2051,6 @@
         "descriptionres": "nuclos.entityfield.searchfilteruser.user.description"
       },
       {
-        "name": "forcefilter",
-        "dbfield": "BLNFORCEFILTER",
-        "label": "Fixieren?",
-        "description": "Falls wahr(1) wird der Suchfilter in der Aufgabenleiste fixiert.",
-        "datatype": "java.lang.Boolean",
-        "nullable": true,
-        "searchable": false,
-        "logbook": false,
-        "unique": false,
-        "labelres": "nuclos.entityfield.searchfilteruser.forcefilter.label",
-        "descriptionres": "nuclos.entityfield.searchfilteruser.forcefilter.description"
-      },
-      {
         "name": "editable",
         "dbfield": "BLNEDITABLE",
         "label": "Editierbar?",
@@ -7244,6 +7231,13 @@
         "dbfield": "BLNONDELETECASCADE",
         "datatype": "java.lang.Boolean",
         "nullable": true
+      },
+      {
+        "name": "order",
+        "dbfield": "INTORDER",
+        "datatype": "java.lang.Integer",
+        "datascale": 9,
+        "nullable": true
       }
     ]
   },
@@ -8944,17 +8938,6 @@
         "descriptionres": "nuclos.entityfield.searchfilterrole.role.description"
       },
       {
-        "name": "forcefilter",
-        "dbfield": "BLNFORCEFILTER",
-        "datatype": "java.lang.Boolean",
-        "nullable": true,
-        "searchable": false,
-        "logbook": false,
-        "unique": false,
-        "labelres": "nuclos.entityfield.searchfilterrole.forcefilter.label",
-        "descriptionres": "nuclos.entityfield.searchfilterrole.forcefilter.description"
-      },
-      {
         "name": "validFrom",
         "dbfield": "DATVALIDFROM",
         "datatype": "java.util.Date",
@@ -9328,13 +9311,15 @@
     "searchable": false,
     "editable": true,
     "cacheable": false,
-    "dbentity": "V_MD_WORKSPACE",
+    "dbentity": "T_MD_WORKSPACE",
     "importexport": true,
     "systementity": true,
     "labelres": "nuclos.entity.workspace.label",
+    "nuclosresource": "org.nuclos.client.resource.icon.glyphish-blue.174-imac.png",
     "logicaluniquefields": [
       [
         "name",
+        "assignedWorkspace",
         "user"
       ]
     ],
@@ -9346,7 +9331,7 @@
         "description": "Name des Workspace",
         "datatype": "java.lang.String",
         "datascale": 255,
-        "nullable": false,
+        "nullable": true,
         "searchable": false,
         "logbook": false,
         "labelres": "nuclos.entityfield.workspace.name.label",
@@ -9366,12 +9351,12 @@
       },
       {
         "name": "user",
-        "dbfield": "STRVALUE_T_MD_USER",
+        "dbfield": "INTID_T_MD_USER",
         "label": "Benutzer",
         "description": "Besitzer des Workspace",
         "foreignentity": "nuclos_user",
-        "datatype": "java.lang.String",
-        "datascale": 255,
+        "datatype": "java.lang.Long",
+        "datascale": 20,
         "nullable": true,
         "searchable": false,
         "logbook": false,
@@ -9379,6 +9364,35 @@
         "ondeletecascade": true,
         "labelres": "nuclos.entityfield.workspace.user.label",
         "descriptionres": "nuclos.entityfield.workspace.user.description"
+      },
+      {
+        "name": "assignedWorkspace",
+        "dbfield": "INTID_T_MD_WORKSPACE",
+        "label": "Zugewiesener Workspace",
+        "description": "Zugewiesener Workspace",
+        "foreignentity": "nuclos_workspace",
+        "datatype": "java.lang.Long",
+        "datascale": 20,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "foreignentityfield": "name",
+        "ondeletecascade": true,
+        "labelres": "nuclos.entityfield.workspace.assignedworkspace.label",
+        "descriptionres": "nuclos.entityfield.workspace.assignedworkspace.description"
+      },
+      {
+        "name": "nuclet",
+        "dbfield": "INTID_T_MD_NUCLET",
+        "foreignentity": "nuclos_nuclet",
+        "datatype": "java.lang.Long",
+        "datascale": 20,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "foreignentityfield": "name",
+        "unique": false,
+        "labelres": "nuclet.foreign.label"
       }
     ]
   },
@@ -9507,6 +9521,56 @@
         "unique": false,
         "labelres": "nuclos.entityfield.entitymenu.menupath.label",
         "descriptionres": "nuclos.entityfield.entitymenu.menupath.description"
+      }
+    ]
+  },
+  {
+    "name": "Arbeitsumgebungzuordnung",
+    "entity": "nuclos_roleworkspace",
+    "searchable": false,
+    "editable": true,
+    "cacheable": false,
+    "dbentity": "V_MD_ROLE_WORKSPACE",
+    "importexport": true,
+    "systementity": true,
+    "labelres": "nuclos.entity.roleworkspace.label",
+    "uniquefields": [
+      [
+        "role",
+        "workspace"
+      ]
+    ],
+    "nuclos_entityfield": [
+      {
+        "name": "role",
+        "dbfield": "STRVALUE_T_MD_ROLE",
+        "label": "Benutzergruppe",
+        "description": "Name der Benutzergruppe",
+        "foreignentity": "nuclos_role",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.roleworkspace.role.label",
+        "descriptionres": "nuclos.entityfield.roleworkspace.role.description"
+      },
+      {
+        "name": "workspace",
+        "dbfield": "STRVALUE_T_MD_WORKSPACE",
+        "label": "Arbeitsumgebung",
+        "description": "Name der Arbeitsumgebung",
+        "foreignentity": "nuclos_workspace",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": true,
+        "ondeletecascade": true,
+        "labelres": "nuclos.entityfield.roleworkspace.workspace.label",
+        "descriptionres": "nuclos.entityfield.roleworkspace.workspace.description"
       }
     ]
   }

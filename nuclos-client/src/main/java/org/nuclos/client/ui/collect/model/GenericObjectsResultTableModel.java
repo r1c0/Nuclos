@@ -100,27 +100,14 @@ public class GenericObjectsResultTableModel<Clct extends Collectable> extends So
 		}
 		// field of subform entity
 		else {
-			if (sFieldEntityName.equals(Modules.getInstance().getParentEntityName(sMainEntityName))) {
-				// dead code here
-				assert false;
-				final GenericObjectVO govoParent = lowdcvo.getParent();
-				if (govoParent == null) {
-					result = clctefwe.getNullField();
+			final Collection<EntityObjectVO> collmdvo = lowdcvo.getDependants().getData(sFieldEntityName);
+			List<Object> values = CollectionUtils.transform(collmdvo, new Transformer<EntityObjectVO, Object>() {
+				@Override
+				public Object transform(EntityObjectVO i) {
+					return i.getRealField(sFieldName);
 				}
-				else {
-					result = new CollectableGenericObject(govoParent).getField(sFieldName);
-				}
-			}
-			else {
-				final Collection<EntityObjectVO> collmdvo = lowdcvo.getDependants().getData(sFieldEntityName);
-				List<Object> values = CollectionUtils.transform(collmdvo, new Transformer<EntityObjectVO, Object>() {
-					@Override
-					public Object transform(EntityObjectVO i) {
-						return i.getRealField(sFieldName);
-					}
-				});
-				return new CollectableValueField(values);
-			}
+			});
+			return new CollectableValueField(values);
 		}
 		return result;
 	}

@@ -65,7 +65,7 @@ public class Modules extends ModuleProvider {
 	}
 
 	@Override
-	protected Collection<MasterDataVO> getModules() {
+	public Collection<MasterDataVO> getModules() {
 		try {
 			if (NuclosLocalServerSession.getCurrentUser() == null)
 				NuclosLocalServerSession.loginAsSuperUser();

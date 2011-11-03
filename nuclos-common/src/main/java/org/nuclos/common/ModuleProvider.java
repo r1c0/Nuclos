@@ -52,8 +52,6 @@ public abstract class ModuleProvider {
 	private Map<Object, MasterDataVO> mpModulesById = CollectionUtils.newHashMap();
 	private Map<String, MasterDataVO> mpModulesByEntityName = CollectionUtils.newHashMap();
 
-	protected abstract Collection<MasterDataVO> getModules();
-
 	protected void setModules(Collection<MasterDataVO> collmdvoModules) {
 		mpModulesById = CollectionUtils.newHashMap();
 		mpModulesByEntityName = CollectionUtils.newHashMap();
@@ -89,12 +87,8 @@ public abstract class ModuleProvider {
 	 * <code>MasterDataVO.getField("entity")</code>, not in <code>MasterDataVO.getEntity()</code>.
 	 * The artificial entity "generalsearch" is not contained in the result.
 	 */
-	public List<MasterDataVO> getModules(boolean bIncludeSubModules) {
+	public Collection<MasterDataVO> getModules() {
 		final List<MasterDataVO> result = new ArrayList<MasterDataVO>(this.mpModulesById.values());
-
-		if (!bIncludeSubModules) {
-			CollectionUtils.removeAll(result, new IsSubModule());
-		}
 
 		// sort by module id:
 		Collections.sort(result, new Comparator<MasterDataVO>() {
@@ -111,8 +105,8 @@ public abstract class ModuleProvider {
 	 * @return the number of modules in the application.
 	 * The artificial entity "generalsearch" is not being counted in.
 	 */
-	public int getModuleCount(boolean bIncludeSubModules) {
-		return bIncludeSubModules ? mpModulesById.size() : this.getModules(false).size();
+	public int getModuleCount() {
+		return mpModulesById.size();
 	}
 
 	/**
@@ -237,23 +231,7 @@ public abstract class ModuleProvider {
 	 */
 	public boolean getUsesRuleEngine(int iModuleId) {
 		/** @todo this could be a separate flag in T_MD_MODULE */
-		return this.isMainModule(iModuleId);
-	}
-
-	/**
-	 * @param iModuleId
-	 * @return Is the module with the given id a main module?
-	 */
-	public boolean isMainModule(int iModuleId) {
-		return !this.isSubModule(iModuleId);
-	}
-
-	/**
-	 * @param iModuleId
-	 * @return Is the module with the given id a submodule?
-	 */
-	public boolean isSubModule(int iModuleId) {
-		return (iModuleId != -2) && isSubModule(this.getModuleById(iModuleId));
+		return true;
 	}
 
 	/**
@@ -263,30 +241,6 @@ public abstract class ModuleProvider {
 	 */
 	public String getSystemIdentifierMnemonic(int iModuleId) {
 		return this.getModuleById(iModuleId).getField("systemIdentifierMnemonic", String.class);
-	}
-
-	/**
-	 * @param mdvoModule
-	 * @return the name of the given module's parent module, if any.
-	 * 
-	 * @deprecated Parent is no longer part of the entity model.
-	 */
-	public static String getParentModuleName(MasterDataVO mdvoModule) {
-		return mdvoModule.getField("parentModule", String.class);
-	}
-
-	private static boolean isSubModule(MasterDataVO mdvoModule) {
-		return getParentModuleName(mdvoModule) != null;
-	}
-
-	/**
-	 * @param sEntityName
-	 * @return the name of the parent entity, if any, of the given entity.
-	 * 
-	 * @deprecated Parent is no longer part of the entity model.
-	 */
-	public String getParentEntityName(String sEntityName) {
-		return getParentModuleName(getModuleByEntityName(sEntityName));
 	}
 
 	public List<String> getMenuPath(MasterDataVO mdvoModule){
@@ -303,13 +257,6 @@ public abstract class ModuleProvider {
 
 	public String getTreeView(MasterDataVO mdvoModule) {
 		return mdvoModule.getField("treeview", String.class);
-	}
-
-	private static class IsSubModule implements Predicate<MasterDataVO> {
-		@Override
-		public boolean evaluate(MasterDataVO mdvo) {
-			return isSubModule(mdvo);
-		}
 	}
 
 	public Boolean isImportExportable(String sEntityName) {

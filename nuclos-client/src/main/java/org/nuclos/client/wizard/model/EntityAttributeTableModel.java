@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.DefaultListModel;
 import javax.swing.table.AbstractTableModel;
 
 import org.nuclos.common.TranslationVO;
@@ -220,6 +221,12 @@ public class EntityAttributeTableModel extends AbstractTableModel {
 	
 	public boolean isStatemodel() {
 		return blnStateModel;
+	}
+	
+	public void reorder(int fromIndex, int toIndex) {
+		Attribute attrDrag = lstAttribute.get(fromIndex);
+		lstAttribute.remove(fromIndex);
+		lstAttribute.add(fromIndex<(toIndex-1)?(toIndex-1):toIndex, attrDrag);
 	}
 
 }

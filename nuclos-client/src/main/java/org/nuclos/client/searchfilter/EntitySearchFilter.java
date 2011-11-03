@@ -245,11 +245,4 @@ public class EntitySearchFilter extends SearchFilter {
 		return NuclosSearchConditionUtils.restorePlainSubConditions(super.getSearchCondition());
 	}
 	
-	public Boolean isForced() {
-		return getSearchFilterVO().isForced();
-	}
-	
-	public void setForced(Boolean isForced) {
-		getSearchFilterVO().setForced(isForced);
-	}
 }	// class ModuleSearchFilter

@@ -151,7 +151,7 @@ public class SubFormFilterPanel extends JXCollapsiblePane {
 				}
 					
 				comp.setPreferredSize(new Dimension(tc.getWidth(), 20));
-				filterPanel.add(comp, index);
+				filterPanel.add(comp);
 				index++;
 			}
 		}

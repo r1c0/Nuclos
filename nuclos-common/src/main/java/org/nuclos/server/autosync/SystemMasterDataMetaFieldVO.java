@@ -37,7 +37,7 @@ public class SystemMasterDataMetaFieldVO extends MasterDataMetaFieldVO {
 		String sOutputFormat, boolean bNullable, boolean bSearchable,
 		boolean bUnique, boolean bInvariant, boolean bLogToLogbook,
 		String resourceIdForLabel, String resourceIdForDescription,
-		boolean bIndexed, boolean onDeleteCascade)
+		boolean bIndexed, boolean onDeleteCascade, Integer iOrder)
 	{
 		super(iId, sFieldName, sDbFieldName, sLabel, sDescription, sDefaultValue,
 			sForeignEntityName, sForeignEntityFieldName, sUnreferencedForeignEntityName, sUnreferencedForeignEntityFieldName,
@@ -45,7 +45,7 @@ public class SystemMasterDataMetaFieldVO extends MasterDataMetaFieldVO {
 			iDataPrecision, sInputFormat, sOutputFormat, bNullable, bSearchable,
 			bUnique, bInvariant, bLogToLogbook, CREATED_DATE, CREATED_USER,
 			CHANGED_DATE, CHANGED_USER, VERSION, resourceIdForLabel,
-			resourceIdForDescription, bIndexed);
+			resourceIdForDescription, bIndexed, iOrder);
 		this.onDeleteCascade = onDeleteCascade;
 	}
 	

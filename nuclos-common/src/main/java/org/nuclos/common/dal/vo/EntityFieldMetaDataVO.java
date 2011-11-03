@@ -84,6 +84,7 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements C
 	private String defaultMandatory;
 
 	private boolean onDeleteCascade;
+	private Integer order;
 
 	public EntityFieldMetaDataVO() {
 		super();
@@ -435,6 +436,14 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements C
 
 	public void setOnDeleteCascade(Boolean onDeleteCascade) {
 		this.onDeleteCascade = LangUtils.defaultIfNull(onDeleteCascade, Boolean.FALSE);
+	}
+
+	public Integer getOrder() {
+		return order;
+	}
+
+	public void setOrder(Integer order) {
+		this.order = order;
 	}
 
 	@Override
