@@ -277,9 +277,9 @@ public class PreferencesMigration {
 					try {
 						List<SortKey> sortKeys = readSortKeysFromPrefs(subFormPrefs);
 						for (SortKey sk : sortKeys) {
-							if (subformColumns.size() > sk.getColumn() && lstSelectedFieldNames.size() > sk.getColumn()) {
+							if (subformColumns.size() > sk.getColumn()) {
 								ColumnSorting cs = new ColumnSorting();
-								cs.setColumn(lstSelectedFieldNames.get(sk.getColumn()));
+								cs.setColumn(subformColumns.get(sk.getColumn()));
 								cs.setAsc(sk.getSortOrder() == SortOrder.ASCENDING);
 								sfp.getTablePreferences().addColumnSorting(cs);
 							}
