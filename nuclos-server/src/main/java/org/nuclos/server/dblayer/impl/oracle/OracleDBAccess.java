@@ -263,14 +263,14 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 
 	@Override
 	protected List<String> getSqlForDropPrimaryKey(DbPrimaryKeyConstraint constraint) {
-		return Collections.singletonList(String.format("ALTER TABLE %s DROP CONSTRAINT %s CASCADE",
+		return Collections.singletonList(String.format("ALTER TABLE %s DROP CONSTRAINT %s CASCADE DROP INDEX",
 			getQualifiedName(constraint.getTableName()),
 			constraint.getConstraintName()));
 	}
 
 	@Override
 	protected List<String> getSqlForDropUniqueConstraint(DbUniqueConstraint constraint) {
-		return Collections.singletonList(String.format("ALTER TABLE %s DROP CONSTRAINT %s CASCADE",
+		return Collections.singletonList(String.format("ALTER TABLE %s DROP CONSTRAINT %s CASCADE DROP INDEX",
 			getQualifiedName(constraint.getTableName()),
 			constraint.getConstraintName()));
 	}
