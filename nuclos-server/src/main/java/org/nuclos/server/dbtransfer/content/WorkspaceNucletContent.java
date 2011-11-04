@@ -25,7 +25,6 @@ import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dbtransfer.TransferOption.Map;
-import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbStatementUtils;
 

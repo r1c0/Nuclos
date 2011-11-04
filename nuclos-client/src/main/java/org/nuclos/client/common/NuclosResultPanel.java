@@ -24,7 +24,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,10 +89,8 @@ import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.IOUtils;
-import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
-import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.genericobject.ProxyList;
 
 

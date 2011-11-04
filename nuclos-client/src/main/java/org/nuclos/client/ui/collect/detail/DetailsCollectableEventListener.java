@@ -81,15 +81,20 @@ public class DetailsCollectableEventListener extends CollectStateAdapter impleme
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					CollectController<?> ctlsource = sourceController.get();
-					CollectController<?> ctltarget = targetController.get();
-					if (ctlsource != null) {
-						ctlsource.getCollectStateModel().removeCollectStateListener(DetailsCollectableEventListener.this);
+					try {
+						CollectController<?> ctlsource = sourceController.get();
+						CollectController<?> ctltarget = targetController.get();
+						if (ctlsource != null) {
+							ctlsource.getCollectStateModel().removeCollectStateListener(DetailsCollectableEventListener.this);
+						}
+					    if (ctltarget != null) {
+					    	ctltarget.getCollectStateModel().removeCollectStateListener(DetailsCollectableEventListener.this);
+					    	ctltarget.removeCollectableEventListener(DetailsCollectableEventListener.this);
+					    }
 					}
-				    if (ctltarget != null) {
-				    	ctltarget.getCollectStateModel().removeCollectStateListener(DetailsCollectableEventListener.this);
-				    	ctltarget.removeCollectableEventListener(DetailsCollectableEventListener.this);
-				    }
+					catch (Exception e) {
+						LOG.error("detailsModeLeft failed: " + e, e);
+					}
 				}
 			});
 		}

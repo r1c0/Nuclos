@@ -38,6 +38,7 @@ import javax.swing.table.TableModel;
 
 import net.sf.jasperreports.engine.JasperPrint;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.datasource.DatasourceDelegate;
@@ -87,6 +88,8 @@ import org.nuclos.server.report.valueobject.ResultVO;
  */
 public class ReportController extends Controller {
 
+	private static final Logger LOG = Logger.getLogger(ReportController.class);
+	
 	private final ReportDelegate delegate;
 
 	private String sLastGeneratedFileName;
@@ -202,7 +205,12 @@ public class ReportController extends Controller {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(pnlSelection)).setVisible(true);
+					try {
+						BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(pnlSelection)).setVisible(true);
+					}
+					catch (Exception e) {
+						LOG.error("executeForm failed: " + e, e);
+					}																									
 				}
 			});
 		}

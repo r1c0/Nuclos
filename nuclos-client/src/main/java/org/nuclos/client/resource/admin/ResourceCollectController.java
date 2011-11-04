@@ -22,6 +22,7 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
@@ -43,6 +44,8 @@ import org.nuclos.server.resource.valueobject.ResourceVO;
 
 public class ResourceCollectController extends MasterDataCollectController{
 
+	private static final Logger LOG = Logger.getLogger(ResourceCollectController.class);
+	
 	private static final ResourceDelegate delegate = ResourceDelegate.getInstance();
 
 	protected List<CollectableResouceSaveListener> listResourceSaveListener = new ArrayList<CollectableResouceSaveListener>();
@@ -115,7 +118,12 @@ public class ResourceCollectController extends MasterDataCollectController{
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				fireResourceSaveEvent(cmdwd);
+				try {
+					fireResourceSaveEvent(cmdwd);
+				}
+				catch (Exception e) {
+					LOG.error("insertCollectable failed: " + e, e);
+				}																									
 			}
 		});
 

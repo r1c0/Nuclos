@@ -26,6 +26,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
 import org.nuclos.common.JMSConstants;
@@ -34,6 +35,8 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 
 public class CustomComponentCache {
+	
+	private static final Logger LOG = Logger.getLogger(CustomComponentCache.class);
 
 	private static CustomComponentCache singleton;
 
@@ -58,7 +61,12 @@ public class CustomComponentCache {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					Main.getMainController().refreshMenus();
+					try {
+						Main.getMainController().refreshMenus();
+					}
+					catch (Exception e) {
+						LOG.error("onMessage failed: " + e, e);
+					}
 				}
 			});
 		}

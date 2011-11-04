@@ -46,7 +46,6 @@ import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
-import org.nuclos.server.dal.provider.SystemEntityFieldMetaDataVO;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.structure.DbColumn;
 import org.nuclos.server.dblayer.structure.DbColumnType;

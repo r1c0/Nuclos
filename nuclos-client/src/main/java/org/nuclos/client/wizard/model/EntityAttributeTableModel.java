@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.DefaultListModel;
 import javax.swing.table.AbstractTableModel;
 
 import org.nuclos.common.TranslationVO;

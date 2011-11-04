@@ -7,7 +7,6 @@ import java.awt.FlowLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
 import org.nuclos.client.main.Main;
-import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
 
 public class WorkspacePublisher {

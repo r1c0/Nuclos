@@ -63,8 +63,12 @@ public abstract class CommonClientWorkerAdapter<T extends Collectable> implement
 	@Override
 	public void handleError(Exception ex) {
 		ctl.forceUnlockFrame();
-		if(ctl.getCollectPanel() != null && ctl.getCollectPanel().isShowing())
+		if(ctl.getCollectPanel() != null && ctl.getCollectPanel().isShowing()) {
 			Errors.getInstance().showExceptionDialog(getResultsComponent(), ex);
+		}
+		else {
+			LOG.error("handleError: " + ex, ex);			
+		}
 	}
 	
 	@Override
@@ -95,6 +99,9 @@ public abstract class CommonClientWorkerAdapter<T extends Collectable> implement
 			catch(CommonBusinessException e) {
 				LOG.warn("PaintRunner.run failed: " + e, e);
 				occurredBusinessException = e;
+			}
+			catch(Exception e) {
+				LOG.error("PaintRunner.run failed: " + e, e);
 			}
 		}
 		

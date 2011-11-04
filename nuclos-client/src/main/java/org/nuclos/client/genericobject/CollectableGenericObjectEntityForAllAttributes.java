@@ -27,7 +27,6 @@ import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common.collect.collectable.VirtualCollectableEntityField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;

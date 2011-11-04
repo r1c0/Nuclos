@@ -39,6 +39,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.ui.BackgroundPanel;
@@ -48,6 +49,8 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.springframework.security.core.AuthenticationException;
 
 public class ChangePasswordPanel extends BackgroundPanel implements DocumentListener {
+
+	private static final Logger LOG = Logger.getLogger(ChangePasswordPanel.class);
 
 	private final JLabel lbOld = new JLabel();
 	private final JLabel lbNew1 = new JLabel();
@@ -154,7 +157,12 @@ public class ChangePasswordPanel extends BackgroundPanel implements DocumentList
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
 									public void run() {
-										optpn.setValue(optpn.getInitialValue());
+										try {
+											optpn.setValue(optpn.getInitialValue());
+										}
+										catch (Exception e) {
+											LOG.error("ChangePasswordPanel.setValue: " + e, e);
+										}
 									}
 								});
 							}

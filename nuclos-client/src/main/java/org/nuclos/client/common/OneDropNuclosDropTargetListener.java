@@ -24,6 +24,7 @@ import java.awt.dnd.DropTargetEvent;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.jfree.util.Log;
 import org.nuclos.common.ParameterProvider;
 
 public class OneDropNuclosDropTargetListener extends NuclosDropTargetListener {
@@ -68,19 +69,23 @@ public class OneDropNuclosDropTargetListener extends NuclosDropTargetListener {
 			
 			@Override
 			public void run() {
-				
-				Point pointAfterTimer = MouseInfo.getPointerInfo().getLocation();
-				if(pointAfterTimer.getX() == pointBeforeTimer.getX() && pointAfterTimer.getY() == pointBeforeTimer.getY()){
-					stepInto = true;
-					onlyOnce = true;
+				try {
+					Point pointAfterTimer = MouseInfo.getPointerInfo().getLocation();
+					if(pointAfterTimer.getX() == pointBeforeTimer.getX() && pointAfterTimer.getY() == pointBeforeTimer.getY()){
+						stepInto = true;
+						onlyOnce = true;
+					}
+					else {
+						stepInto = false;
+						onlyOnce = false;
+					}
+					
+					if(stepInto) {					
+						visit.visitDragOver(dtde);
+					}
 				}
-				else {
-					stepInto = false;
-					onlyOnce = false;
-				}
-				
-				if(stepInto) {					
-					visit.visitDragOver(dtde);
+				catch (Exception e) {
+					Log.error("dragOver failed: " + e, e);
 				}
 			}
 		};

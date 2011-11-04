@@ -4,8 +4,6 @@ import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.List;
 
-import org.nuclos.client.genericobject.Modules;
-import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.collect.collectable.Collectable;

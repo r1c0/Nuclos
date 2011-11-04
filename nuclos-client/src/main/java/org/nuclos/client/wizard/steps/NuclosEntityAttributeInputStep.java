@@ -38,9 +38,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import javax.activation.ActivationDataFlavor;
-import javax.activation.DataHandler;
-import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -78,7 +75,6 @@ import org.nuclos.client.wizard.model.Attribute;
 import org.nuclos.client.wizard.model.DataTyp;
 import org.nuclos.client.wizard.model.EntityAttributeTableModel;
 import org.nuclos.client.wizard.util.NuclosWizardUtils;
-import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;

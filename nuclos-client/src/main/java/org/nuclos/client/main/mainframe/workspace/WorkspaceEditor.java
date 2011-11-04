@@ -34,7 +34,6 @@ import javax.swing.JTextField;
 
 import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.resource.ResourceIconChooser;
-import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.StringUtils;

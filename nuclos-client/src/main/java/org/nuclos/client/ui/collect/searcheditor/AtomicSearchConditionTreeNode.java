@@ -33,6 +33,7 @@ import java.util.List;
 import javax.swing.JTree;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -45,6 +46,8 @@ import org.apache.commons.lang.NullArgumentException;
  * @version 01.00.00
  */
 public class AtomicSearchConditionTreeNode extends SearchConditionTreeNode {
+	
+	private static final Logger LOG = Logger.getLogger(AtomicSearchConditionTreeNode.class);
 
 	protected static final String ACTIONCOMMAND_EDIT_ATOMICNODE = "EDIT ATOMIC NODE";
 
@@ -137,7 +140,12 @@ public class AtomicSearchConditionTreeNode extends SearchConditionTreeNode {
 			UIUtils.runCommand(parent, new Runnable() {
 				@Override
 				public void run() {
-					new AtomicNodeController(parent, getJTree(), clcte, clctfproviderfactory, additionalFields).runEdit(AtomicSearchConditionTreeNode.this);
+					try {
+						new AtomicNodeController(parent, getJTree(), clcte, clctfproviderfactory, additionalFields).runEdit(AtomicSearchConditionTreeNode.this);
+					}
+					catch (Exception e) {
+						LOG.error("EditAtomicNodeAction.actionPerformed: " + e, e);
+					}
 				}
 			});
 		}

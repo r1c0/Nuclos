@@ -30,6 +30,7 @@ import javax.swing.JTree;
 import javax.swing.TransferHandler;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.explorer.node.GenericObjectExplorerNode;
 import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess;
 import org.nuclos.client.genericobject.datatransfer.TransferableGenericObjects;
@@ -43,6 +44,8 @@ import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 
 public class DefaultTransferHandler extends TransferHandler {
 
+	private static final Logger LOG = Logger.getLogger(DefaultTransferHandler.class);
+	
 	private final Component parent;
 	private boolean result = false;
 
@@ -168,7 +171,13 @@ public class DefaultTransferHandler extends TransferHandler {
 				UIUtils.invokeOnDispatchThread(new Runnable() {
 					@Override
 					public void run() {
-						JOptionPane.showMessageDialog(parent, CommonLocaleDelegate.getMessage("ExplorerController.16","Dieser Datentransfer wird von dem ausgew\u00e4hlten Objekt nicht unterst\u00fctzt."));
+						try {
+							JOptionPane.showMessageDialog(parent, CommonLocaleDelegate.getMessage(
+									"ExplorerController.16","Dieser Datentransfer wird von dem ausgew\u00e4hlten Objekt nicht unterst\u00fctzt."));
+						}
+						catch (Exception e) {
+							LOG.error("DefaultTransferHandler.importTransferData: " + e, e);
+						}            		
 					}
 				});
 			}

@@ -80,6 +80,9 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @version 02.00.00
  */
 public class FileImportController<Clct extends Collectable> {
+
+	private static final Logger LOG = Logger.getLogger(FileImportController.class);
+	
 	private static final String PREFS_KEY_FILECHOOSERPATH = "FileChooserPath";
 	private final CollectController<Clct> clct;
 	private final Preferences userPreferences;
@@ -192,9 +195,14 @@ public class FileImportController<Clct extends Collectable> {
 								UIUtils.runCommandLater(null, new Runnable() {
 									@Override
 									public void run() {
-										entry.setStatus(status);
-										entry.setMessage(statusMessage);
-										log.debug("Set import status to "+status + " because "+statusMessage);
+										try {
+											entry.setStatus(status);
+											entry.setMessage(statusMessage);
+											log.debug("Set import status to "+status + " because "+statusMessage);
+										}
+										catch (Exception e) {
+											LOG.error("setBackgroundProcessFinishedStatus failed: " + e, e);
+										}
 									}
 								});
 							}

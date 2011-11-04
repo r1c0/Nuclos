@@ -24,6 +24,7 @@ import javax.swing.Action;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.CollectableGenericObjectEntityForAllAttributes;
 import org.nuclos.client.ui.collect.component.CollectableTextField;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
@@ -49,6 +50,8 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 public class NuclosCollectableTextFieldWithSearchPeers extends CollectableTextField {
 
+	private static final Logger LOG = Logger.getLogger(NuclosCollectableTextFieldWithSearchPeers.class);
+	
 	/** @todo Potential NPE when property "search-peers" is omitted */
 	private Collection<String> collPeers = null;
 	private boolean bUsePeers = false;
@@ -144,12 +147,17 @@ public class NuclosCollectableTextFieldWithSearchPeers extends CollectableTextFi
 		this.runLocked(new Runnable() {
 			@Override
 			public void run() {
-				final CollectableSearchCondition cond = ev.getSearchComponentModel().getSearchCondition();
-				final AtomicCollectableSearchCondition atomiccond = getFirstAtomicSearchCondition(cond);
-
-				modelToView(atomiccond, getJTextComponent());
-
-				bUsePeers = (cond instanceof CompositeCollectableSearchCondition);
+				try {
+					final CollectableSearchCondition cond = ev.getSearchComponentModel().getSearchCondition();
+					final AtomicCollectableSearchCondition atomiccond = getFirstAtomicSearchCondition(cond);
+	
+					modelToView(atomiccond, getJTextComponent());
+	
+					bUsePeers = (cond instanceof CompositeCollectableSearchCondition);
+				}
+				catch (Exception e) {
+					LOG.error("searchConditionChangedInModel failed: " + e, e);
+				}
 			}
 		});
 	}

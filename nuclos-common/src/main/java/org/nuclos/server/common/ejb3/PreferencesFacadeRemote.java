@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.annotation.security.RolesAllowed;
 
 import org.nuclos.common.NuclosBusinessException;
-import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.exception.CommonBusinessException;

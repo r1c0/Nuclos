@@ -76,7 +76,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class Utils {
 
-	private static final Logger log = Logger.getLogger(Utils.class);
+	private static final Logger LOG = Logger.getLogger(Utils.class);
 	
 	private static final String FIELDNAME_ACTIVE = "active";
 	private static final String FIELDNAME_VALIDFROM = "validFrom";
@@ -273,55 +273,60 @@ public class Utils {
 		EventQueue.invokeLater(new Runnable() {
 			@Override
             public void run() {
-				if (sInitialFocusEntityName == null) {
-					if (sInitialFocusFieldName != null) {
-						final Collection<CollectableComponent> collclctcomp = clctcompprovider.getCollectableComponentsFor(sInitialFocusFieldName);
-						if (collclctcomp.isEmpty()) {
-							if (bShowWarnings) {
-								final String sMessage = CommonLocaleDelegate.getMessage("ClientUtils.1", "Das angegebene Feld f\u00fcr den initialen Fokus existiert nicht.");
-								JOptionPane.showMessageDialog(frame, sMessage, CommonLocaleDelegate.getMessage("ClientUtils.2", "Hinweis"), JOptionPane.WARNING_MESSAGE);
-							}
-						}
-						else {
-							final CollectableComponent clctcomp = collclctcomp.iterator().next();
-							final JComponent compFocus = clctcomp.getFocusableComponent();
-							compFocus.requestFocusInWindow();
-						}
-					}
-				}
-				else {
-					final SubFormController subformctl = mpsubformctl.get(sInitialFocusEntityName);
-					if (subformctl != null) {
-						final SubForm.SubFormTableModel subformtblmdl = (SubForm.SubFormTableModel) subformctl.getSubForm().getJTable().getModel();
-
-						final JTable tbl = subformctl.getSubForm().getJTable();
-						final int iColumn = tbl.convertColumnIndexToView(subformtblmdl.findColumnByFieldName(sInitialFocusFieldName));
-						if (iColumn != -1) {
-							if (subformtblmdl.getRowCount() > 0) {
-								tbl.editCellAt(0, iColumn);
-
-								Component comp = tbl.getCellEditor().getTableCellEditorComponent(tbl, tbl.getValueAt(0, iColumn), true, 0, iColumn);
-
-								// Special case for multiline text editor components
-								if (comp instanceof JScrollPane) {
-									comp = ((JScrollPane) comp).getViewport().getView();
+				try {
+					if (sInitialFocusEntityName == null) {
+						if (sInitialFocusFieldName != null) {
+							final Collection<CollectableComponent> collclctcomp = clctcompprovider.getCollectableComponentsFor(sInitialFocusFieldName);
+							if (collclctcomp.isEmpty()) {
+								if (bShowWarnings) {
+									final String sMessage = CommonLocaleDelegate.getMessage("ClientUtils.1", "Das angegebene Feld f\u00fcr den initialen Fokus existiert nicht.");
+									JOptionPane.showMessageDialog(frame, sMessage, CommonLocaleDelegate.getMessage("ClientUtils.2", "Hinweis"), JOptionPane.WARNING_MESSAGE);
 								}
-								comp.requestFocusInWindow();
 							}
-						}
-						else {
-							if (bShowWarnings) {
-								final String sMessage = CommonLocaleDelegate.getMessage("ClientUtils.3", "Das angegebene Feld in der Entit\u00e4t f\u00fcr den initialen Fokus existiert nicht.");
-								JOptionPane.showMessageDialog(frame, sMessage, CommonLocaleDelegate.getMessage("ClientUtils.2", "Hinweis"), JOptionPane.WARNING_MESSAGE);
+							else {
+								final CollectableComponent clctcomp = collclctcomp.iterator().next();
+								final JComponent compFocus = clctcomp.getFocusableComponent();
+								compFocus.requestFocusInWindow();
 							}
 						}
 					}
 					else {
-						if (bShowWarnings) {
-							final String sMessage = CommonLocaleDelegate.getMessage("ClientUtils.4", "Die angegebene Entit\u00e4t f\u00fcr den initialen Fokus existiert nicht.");
-							JOptionPane.showMessageDialog(frame, sMessage, CommonLocaleDelegate.getMessage("ClientUtils.2", "Hinweis"), JOptionPane.WARNING_MESSAGE);
+						final SubFormController subformctl = mpsubformctl.get(sInitialFocusEntityName);
+						if (subformctl != null) {
+							final SubForm.SubFormTableModel subformtblmdl = (SubForm.SubFormTableModel) subformctl.getSubForm().getJTable().getModel();
+	
+							final JTable tbl = subformctl.getSubForm().getJTable();
+							final int iColumn = tbl.convertColumnIndexToView(subformtblmdl.findColumnByFieldName(sInitialFocusFieldName));
+							if (iColumn != -1) {
+								if (subformtblmdl.getRowCount() > 0) {
+									tbl.editCellAt(0, iColumn);
+	
+									Component comp = tbl.getCellEditor().getTableCellEditorComponent(tbl, tbl.getValueAt(0, iColumn), true, 0, iColumn);
+	
+									// Special case for multiline text editor components
+									if (comp instanceof JScrollPane) {
+										comp = ((JScrollPane) comp).getViewport().getView();
+									}
+									comp.requestFocusInWindow();
+								}
+							}
+							else {
+								if (bShowWarnings) {
+									final String sMessage = CommonLocaleDelegate.getMessage("ClientUtils.3", "Das angegebene Feld in der Entit\u00e4t f\u00fcr den initialen Fokus existiert nicht.");
+									JOptionPane.showMessageDialog(frame, sMessage, CommonLocaleDelegate.getMessage("ClientUtils.2", "Hinweis"), JOptionPane.WARNING_MESSAGE);
+								}
+							}
+						}
+						else {
+							if (bShowWarnings) {
+								final String sMessage = CommonLocaleDelegate.getMessage("ClientUtils.4", "Die angegebene Entit\u00e4t f\u00fcr den initialen Fokus existiert nicht.");
+								JOptionPane.showMessageDialog(frame, sMessage, CommonLocaleDelegate.getMessage("ClientUtils.2", "Hinweis"), JOptionPane.WARNING_MESSAGE);
+							}
 						}
 					}
+				}
+				catch (Exception e) {
+					LOG.error("setInitialComponentFocus failed: " + e, e);
 				}
 			}
 		});
@@ -390,7 +395,7 @@ public class Utils {
 			}
 			catch (Exception ex) {
 				// ignore unknown fields
-				log.warn("Ein Feld mit dem Namen \"" + sFieldName + "\" ist nicht in der Entit\u00e4t " + clcte.getName() + " enthalten.", ex);
+				LOG.warn("Ein Feld mit dem Namen \"" + sFieldName + "\" ist nicht in der Entit\u00e4t " + clcte.getName() + " enthalten.", ex);
 			}
 		}
 		return result;

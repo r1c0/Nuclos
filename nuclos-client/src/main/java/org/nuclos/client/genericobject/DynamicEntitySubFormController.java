@@ -49,7 +49,6 @@ import org.nuclos.client.ui.popupmenu.JPopupMenuFactory;
 import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
-import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;

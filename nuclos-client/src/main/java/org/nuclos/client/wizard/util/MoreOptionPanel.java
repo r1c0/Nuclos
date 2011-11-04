@@ -84,18 +84,23 @@ public class MoreOptionPanel extends JPanel {
 						
 						@Override
 						public void run() {
-							for(double d = 0.0; d < 1.0; d += velocity_step) {
-								split.setDividerLocation(d);
-								try {
-			                        Thread.sleep(velocity);
-		                        }
-		                        catch(InterruptedException e1) {
-		                        	// stop loop
-		                        	LOG.warn("run: " + e1, e1);
-		                        	split.setDividerLocation(1.0);
-		                        	break;
-		                        }
-							}							
+							try {
+								for(double d = 0.0; d < 1.0; d += velocity_step) {
+									split.setDividerLocation(d);
+									try {
+				                        Thread.sleep(velocity);
+			                        }
+			                        catch(InterruptedException e1) {
+			                        	// stop loop
+			                        	LOG.warn("run: " + e1, e1);
+			                        	split.setDividerLocation(1.0);
+			                        	break;
+			                        }
+								}							
+							}
+							catch (Exception e) {
+								LOG.error("actionPerformed failed: " + e, e);
+							}
 						}
 					};
 					Thread t = new Thread(r);
@@ -109,18 +114,23 @@ public class MoreOptionPanel extends JPanel {
 						
 						@Override
 						public void run() {
-							for(double d = 1.0; d > 0.0; d -= velocity_step) {
-								split.setDividerLocation(d);
-								try {
-			                        Thread.sleep(velocity);
-		                        }
-		                        catch(InterruptedException e1) {
-		                        	// stop loop
-		                        	LOG.warn("run: " + e1, e1);
-		                        	split.setDividerLocation(0.0);
-		                        	break;
-		                        }
-							}							
+							try {
+								for(double d = 1.0; d > 0.0; d -= velocity_step) {
+									split.setDividerLocation(d);
+									try {
+				                        Thread.sleep(velocity);
+			                        }
+			                        catch(InterruptedException e1) {
+			                        	// stop loop
+			                        	LOG.warn("run: " + e1, e1);
+			                        	split.setDividerLocation(0.0);
+			                        	break;
+			                        }
+								}							
+							}
+							catch (Exception e) {
+								LOG.error("actionPerformed failed: " + e, e);
+							}
 						}
 					};
 					Thread t = new Thread(r);

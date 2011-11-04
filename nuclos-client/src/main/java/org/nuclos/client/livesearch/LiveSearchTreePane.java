@@ -38,6 +38,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 import org.nuclos.common.collection.Factories;
@@ -46,6 +47,8 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 
 class LiveSearchTreePane extends JPanel {
 
+	private static final Logger LOG = Logger.getLogger(LiveSearchTreePane.class);
+	
 	private static final int    ROW_HEIGHT = 48;
 	
 	private List<LiveSearchResultPaneListener>   listeners;
@@ -88,12 +91,17 @@ class LiveSearchTreePane extends JPanel {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				TableColumn treeColumn = treeTable.getColumnModel().getColumn(0);
-				treeColumn.setMinWidth(80);
-				treeColumn.setPreferredWidth(80);
-				treeColumn.setMaxWidth(80);
-				treeColumn.setWidth(80);
-				treeTable.expandAll();
+				try {
+					TableColumn treeColumn = treeTable.getColumnModel().getColumn(0);
+					treeColumn.setMinWidth(80);
+					treeColumn.setPreferredWidth(80);
+					treeColumn.setMaxWidth(80);
+					treeColumn.setWidth(80);
+					treeTable.expandAll();
+				}
+				catch (Exception e) {
+					LOG.error("setResultData failed: " + e, e);
+				}
 			}
 		});
 	}

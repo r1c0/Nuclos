@@ -53,6 +53,7 @@ import javax.swing.ToolTipManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.collect.component.CollectableListOfValues;
 import org.nuclos.client.ui.collect.component.ICollectableListOfValues;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
@@ -70,6 +71,8 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 
 public class ListOfValues extends JPanel {
+	
+	private static final Logger LOG = Logger.getLogger(ListOfValues.class);
 	
 	private static final int QUICKSEARCH_DELAY_TIME = 756;
 	
@@ -589,11 +592,12 @@ public class ListOfValues extends JPanel {
 		}
 		
 		@Override
-		public void handleError(Exception ex) {
-			if (ex instanceof IllegalComponentStateException) {
+		public void handleError(Exception e) {
+			if (e instanceof IllegalComponentStateException) {
 				// do nothing. popup could not be shown. maybe the frame is closed.
+				LOG.error("handleError: " + e, e);
 			} else {
-				Errors.getInstance().showExceptionDialog(getResultsComponent(), ex);
+				Errors.getInstance().showExceptionDialog(getResultsComponent(), e);
 			}
 		}
 		

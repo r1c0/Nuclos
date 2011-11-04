@@ -28,8 +28,6 @@ import javax.swing.SortOrder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.jfree.util.Log;
-import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.table.SortableTableModelEvent;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableComparatorFactory;

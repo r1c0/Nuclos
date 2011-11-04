@@ -24,7 +24,6 @@ import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dbtransfer.TransferOption;
 import org.nuclos.server.common.NuclosSystemParameters;
-import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeHelper;
 

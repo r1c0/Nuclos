@@ -55,7 +55,6 @@ import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 
 public class RestoreUtils {
@@ -240,10 +239,15 @@ public class RestoreUtils {
 		final Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				MainFrame.hideProgress();
-				MainFrame.setWorkspaceManagementEnabled(true);
-				MainFrame.setActiveTabNavigation(MainFrame.getHomePane());
-				threadList.clear();
+				try {
+					MainFrame.hideProgress();
+					MainFrame.setWorkspaceManagementEnabled(true);
+					MainFrame.setActiveTabNavigation(MainFrame.getHomePane());
+					threadList.clear();
+				}
+				catch (Exception e) {
+					LOG.error("restoreWorkspaceThreaded failed: " + e, e);
+				}																		
 			}
 		}, THREAD_NAME);
 		t.setDaemon(true);
@@ -635,31 +639,41 @@ public class RestoreUtils {
 				final Thread t = new Thread(new Runnable() {
 					@Override
 					public void run() {
-						threadList.remove(0);
-
-						UIUtils.runCommand(tab, new Runnable() {
-							@Override
-							public void run() {
-								UIUtils.invokeOnDispatchThread(new Runnable() {
-									@Override
-									public void run() {
-										if (restoreTab(wdTab, tab)) {
-											tab.postAdd();
-										} else {
-											tab.setTabIcon(Icons.getInstance().getIconTabNotRestored());
-											tab.setTitle(wdTab.getLabel());
-											// TODO TABS Show nice message in content "Tab konnte nicht wiederhergestellt werden. Möglicherweise existiert der Datensatz oder die Funktion nicht länger, oder Ihnen wurde die Berechtigung entzogen."
+						try {
+							threadList.remove(0);
+	
+							UIUtils.runCommand(tab, new Runnable() {
+								@Override
+								public void run() {
+									UIUtils.invokeOnDispatchThread(new Runnable() {
+										@Override
+										public void run() {
+											try {
+												if (restoreTab(wdTab, tab)) {
+													tab.postAdd();
+												} else {
+													tab.setTabIcon(Icons.getInstance().getIconTabNotRestored());
+													tab.setTitle(wdTab.getLabel());
+													// TODO TABS Show nice message in content "Tab konnte nicht wiederhergestellt werden. Möglicherweise existiert der Datensatz oder die Funktion nicht länger, oder Ihnen wurde die Berechtigung entzogen."
+												}
+											}
+											catch (Exception e) {
+												LOG.error("restoreContent failed: " + e, e);
+											}																		
 										}
-									}
-								});
+									});
+								}
+							});
+	
+							MainFrame.continueProgress();
+	
+							if (threadList.size() > 0) {
+								threadList.get(0).start();
 							}
-						});
-
-						MainFrame.continueProgress();
-
-						if (threadList.size() > 0) {
-							threadList.get(0).start();
 						}
+						catch (Exception e) {
+							LOG.error("restoreContent failed: " + e, e);
+						}							
 					}
 				}, THREAD_NAME);
 				t.setDaemon(true);

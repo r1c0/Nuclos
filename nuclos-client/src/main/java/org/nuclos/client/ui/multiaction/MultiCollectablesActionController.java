@@ -62,6 +62,8 @@ import org.nuclos.common2.exception.CommonBusinessException;
  * @version	01.00.00
  */
 public class MultiCollectablesActionController <T,R> extends Controller {
+	
+	private static final Logger LOG = Logger.getLogger(MultiCollectablesActionController.class);
 
 	/**
 	 * defines the action to perform on each object.
@@ -344,86 +346,115 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 
 		@Override
 		public void run() {
-			final Iterator<T> iter = coll.iterator();
-			for (int i = 0; i < iCount; ++i) {
-				while (this.bPaused && !this.bStopped) {
-					// reset wait cursor:
+			try {
+				final Iterator<T> iter = coll.iterator();
+				for (int i = 0; i < iCount; ++i) {
+					while (this.bPaused && !this.bStopped) {
+						// reset wait cursor:
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								try {
+								ifrm.unlockLayer();
+								pnl.setStatus(CommonLocaleDelegate.getMessage("MultiCollectablesActionController.5","Angehalten."));
+								}
+								catch (Exception e) {
+									LOG.error("MultiObjectsActionRunnable.run failed: " + e, e);
+								}
+							}
+						});
+						synchronized (this) {
+							try {
+								this.wait();
+							}
+							catch (InterruptedException ex) {
+								LOG.error(ex);
+								// ignored
+							}
+						}
+					}
+					if (this.bStopped) {
+						break;
+					}
+					final T t = iter.next();
+					final String tId;
+	
+					final int j = i + 1;
+	
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
-//							pnl.setCursor(null);
-							ifrm.unlockLayer();
-							pnl.setStatus(CommonLocaleDelegate.getMessage("MultiCollectablesActionController.5","Angehalten."));
+							try {
+								pnl.setActionText(action.getText(t));
+							}
+							catch (Exception e) {
+								LOG.error("MultiObjectsActionRunnable.run failed: " + e, e);
+							}
 						}
 					});
-					synchronized (this) {
-						try {
-							this.wait();
-						}
-						catch (InterruptedException ex) {
-							Logger.getLogger(this.getClass()).debug(ex);
-							// ignored
-						}
+	
+					String result;
+					String state;
+					R oResult = null;
+					try {
+						oResult = action.perform(t);
+						result = action.getSuccessfulMessage(t, oResult);
+						state = pnl.getSuccessLabel();
 					}
-				}
-				if (this.bStopped) {
-					break;
-				}
-				final T t = iter.next();
-				final String tId;
-
-				final int j = i + 1;
-
+					catch (final Exception ex) {
+						MultiCollectablesActionController.this.error = true;
+						result = action.getExceptionMessage(t, ex);
+						state = pnl.getExceptionLabel();
+					}
+					finally {
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								try {
+									pnl.setProgress(j);
+								}
+								catch (Exception e) {
+									LOG.error("MultiObjectsActionRunnable.run failed: " + e, e);
+								}
+							}
+						});
+					}
+					addProtocolLineRun(t, oResult, result, state);
+				}  // for
+	
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						pnl.setActionText(action.getText(t));
+						try {
+							if (MultiCollectablesActionController.this.error) {
+								JOptionPane.showMessageDialog(MultiCollectablesActionController.this.getParent(), CommonLocaleDelegate.getMessageFromResource("MultiCollectablesActionController.erroroccurred"), Errors.getInstance().getAppName(), JOptionPane.ERROR_MESSAGE);
+							}
+							closable = true;
+							pnl.setActionText(" ");
+							pnl.setCloseButton();
+							pnl.setStatus(CommonLocaleDelegate.getMessage("MultiCollectablesActionController.6","Beendet."));
+						}
+						catch (Exception e) {
+							LOG.error("MultiObjectsActionRunnable.run failed: " + e, e);
+						}
 					}
 				});
-
-				String result;
-				String state;
-				R oResult = null;
-				try {
-					oResult = action.perform(t);
-					result = action.getSuccessfulMessage(t, oResult);
-					state = pnl.getSuccessLabel();
-				}
-				catch (final Exception ex) {
-					MultiCollectablesActionController.this.error = true;
-					result = action.getExceptionMessage(t, ex);
-					state = pnl.getExceptionLabel();
-				}
-				finally {
-					SwingUtilities.invokeLater(new Runnable() {
-						@Override
-						public void run() {
-							pnl.setProgress(j);
-						}
-					});
-				}
-				addProtocolLineRun(t, oResult, result, state);
-			}  // for
-
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					if (MultiCollectablesActionController.this.error) {
-						JOptionPane.showMessageDialog(MultiCollectablesActionController.this.getParent(), CommonLocaleDelegate.getMessageFromResource("MultiCollectablesActionController.erroroccurred"), Errors.getInstance().getAppName(), JOptionPane.ERROR_MESSAGE);
-					}
-					closable = true;
-					pnl.setActionText(" ");
-					pnl.setCloseButton();
-					pnl.setStatus(CommonLocaleDelegate.getMessage("MultiCollectablesActionController.6","Beendet."));
-				}
-			});
+			}
+			catch (Exception e) {
+				LOG.error("MultiObjectsActionRunnable.run failed: " + e, e);
+			}
 		}
 
 		public void addProtocolLineRun(final Object source, final Object oResult, final String result, final String state){
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					pnl.addProtocolLine(source, oResult, result, state);
+					try {
+						pnl.addProtocolLine(source, oResult, result, state);
+					}
+					catch (Exception e) {
+						LOG.error("addProtocolLineRun.run failed: " + e, e);
+					}
 				}
 			});
 		}

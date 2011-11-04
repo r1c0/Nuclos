@@ -216,7 +216,7 @@ public class ReleaseNotesController extends Controller {
 					parentMdi.add(ifrm);
 					ifrm.setVisible(true);
 				}
-				catch (IOException ex) {
+				catch (/* IO */ Exception ex) {
 					final String sMessage = CommonLocaleDelegate.getMessage("ReleaseNotesController.1", "Die Release Notes k\u00f6nnen nicht angezeigt werden.");
 					Logger.getLogger(ReleaseNotesController.class).debug(sMessage);
 					//Errors.getInstance().showExceptionDialog(ReleaseNotesController.this.getParent(), sMessage, ex);

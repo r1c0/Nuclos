@@ -306,7 +306,12 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
                 	SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
-							searchComponent.requestFocus();
+							try {
+								searchComponent.requestFocus();
+							}
+							catch (Exception e) {
+								LOG.error("functionAction failed: " + e, e);
+							}
 						}
 					});
                 }
@@ -460,14 +465,19 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
                 new Runnable() {
                     @Override
                     public void run() {
-                    	if(searchDef.search.equals(currentSearchText)) {
-	                        currentResult.addAll(newRows);
-	                        resultPane.setResultData(currentResult);
-	                        if(searchComponent.hasFocus()) {
-		                        searchComponent.setButtonSelection(true);
-		                        showResultPane();
-	                        }
-                    	}
+                    	try {
+	                    	if(searchDef.search.equals(currentSearchText)) {
+		                        currentResult.addAll(newRows);
+		                        resultPane.setResultData(currentResult);
+		                        if(searchComponent.hasFocus()) {
+			                        searchComponent.setButtonSelection(true);
+			                        showResultPane();
+		                        }
+	                    	}
+						}
+						catch (Exception e) {
+							LOG.error("addResults failed: " + e, e);
+						}
                     }
                 });
     }
@@ -477,19 +487,24 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
             new Runnable() {
                 @Override
                 public void run() {
-                    searchComponent.setMaxProgress(0);
-                    searchComponent.setMaxBackgroundProgress(0);
-                    if(currentResult.isEmpty())
-                        searchComponent.setBackground(new Color(0xff6565));
-
-                   if(overflowed) {
-                		overflowMessage = new Bubble(
-                			searchComponent,
-                			bubbleMessage,
-                			10,
-                			Bubble.Position.SE);
-                		overflowMessage.setVisible(true);
-                	}
+                	try {
+	                    searchComponent.setMaxProgress(0);
+	                    searchComponent.setMaxBackgroundProgress(0);
+	                    if(currentResult.isEmpty())
+	                        searchComponent.setBackground(new Color(0xff6565));
+	
+	                   if(overflowed) {
+	                		overflowMessage = new Bubble(
+	                			searchComponent,
+	                			bubbleMessage,
+	                			10,
+	                			Bubble.Position.SE);
+	                		overflowMessage.setVisible(true);
+	                	}
+					}
+					catch (Exception e) {
+						LOG.error("finishedSearch failed: " + e, e);
+					}
                 }
             });
     }
@@ -499,11 +514,16 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
             new Runnable() {
                 @Override
                 public void run() {
-                	if(overflowMessage != null) {
-                		overflowMessage.dispose();
-                		overflowMessage = null;
-                	}
-                    searchComponent.setBackground(Color.WHITE);
+                	try {
+	                	if(overflowMessage != null) {
+	                		overflowMessage.dispose();
+	                		overflowMessage = null;
+	                	}
+	                    searchComponent.setBackground(Color.WHITE);
+					}
+					catch (Exception e) {
+						LOG.error("startSearch failed: " + e, e);
+					}
                 }
             });
     }
@@ -571,18 +591,23 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                if(isSearch) {
-                    if(searchComponent.getMaxBackgroundProgress() != max)
-                        searchComponent.setMaxBackgroundProgress(max);
-                    if(searchComponent.getCurrentBackgroundProgress() != curr)
-                        searchComponent.setCurrentBackgroundProgress(curr);
-                }
-                else {
-                    if(searchComponent.getMaxProgress() != max)
-                        searchComponent.setMaxProgress(max);
-                    if(searchComponent.getCurrentProgress() != curr)
-                        searchComponent.setCurrentProgress(curr);
-                }
+            	try {
+	                if(isSearch) {
+	                    if(searchComponent.getMaxBackgroundProgress() != max)
+	                        searchComponent.setMaxBackgroundProgress(max);
+	                    if(searchComponent.getCurrentBackgroundProgress() != curr)
+	                        searchComponent.setCurrentBackgroundProgress(curr);
+	                }
+	                else {
+	                    if(searchComponent.getMaxProgress() != max)
+	                        searchComponent.setMaxProgress(max);
+	                    if(searchComponent.getCurrentProgress() != curr)
+	                        searchComponent.setCurrentProgress(curr);
+	                }
+				}
+				catch (Exception e) {
+					LOG.error("setProgress failed: " + e, e);
+				}
             }
         });
     }

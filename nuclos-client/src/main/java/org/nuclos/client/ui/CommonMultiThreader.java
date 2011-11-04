@@ -27,6 +27,8 @@ import java.util.concurrent.Future;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
+
 /**
  * Central class (singleton) for the multithreading framework - builds threads - handles progress information
  * ensures threadsafety
@@ -39,6 +41,8 @@ import javax.swing.SwingUtilities;
  * @version 02.00.00
  */
 public class CommonMultiThreader {
+	
+	private static final Logger LOG	 = Logger.getLogger(CommonMultiThreader.class);
 
 	/**
 	 * for statistic use, shutdown stuff, ...
@@ -135,7 +139,12 @@ public class CommonMultiThreader {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						worker.handleError(ex);
+						try {
+							worker.handleError(ex);
+						}
+						catch (Exception e) {
+							LOG.error("WorkerThread failed: " + e, e);
+						}
 					}
 				});
 			}

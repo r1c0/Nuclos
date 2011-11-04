@@ -237,6 +237,9 @@ public class NuclosConsoleGui extends JPanel {
 				catch (IOException e) {
 					LOG.error("System.setErr failed", e);
 				}
+				catch (Exception e) {
+					LOG.error("System.setErr failed", e);
+				}
 
 				// Create reader threads
 				new ReaderThread(piOut).start();
@@ -263,8 +266,13 @@ public class NuclosConsoleGui extends JPanel {
 				UIUtils.invokeOnDispatchThread(new Runnable() {
 					@Override
 					public void run() {
-						btnStart.setEnabled(false);
-						btnCancel.setEnabled(true);
+						try {
+							btnStart.setEnabled(false);
+							btnCancel.setEnabled(true);
+						}
+						catch (Exception e) {
+							LOG.error("startCommand failed: " + e, e);
+						}
 					}
 				});
 				try {
@@ -279,8 +287,13 @@ public class NuclosConsoleGui extends JPanel {
 				UIUtils.invokeOnDispatchThread(new Runnable() {
 					@Override
 					public void run() {
-						btnStart.setEnabled(true);
-						btnCancel.setEnabled(false);
+						try {
+							btnStart.setEnabled(true);
+							btnCancel.setEnabled(false);
+						}
+						catch (Exception e) {
+							LOG.error("startCommand failed: " + e, e);
+						}
 					}
 				});
 			}
@@ -327,9 +340,8 @@ public class NuclosConsoleGui extends JPanel {
 							.getLength());
 				}
 			}
-			catch (IOException e) {
-				/** @todo !!! */
-				//...
+			catch (Exception e) {
+				LOG.error("ReaderThread failed: " + e, e);
 			}
 		}
 	}
@@ -342,7 +354,12 @@ public class NuclosConsoleGui extends JPanel {
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			@Override
 			public void run() {
-				NuclosRemoteServerSession.logout();
+				try {
+					NuclosRemoteServerSession.logout();
+				}
+				catch (Exception e) {
+					LOG.error("main failed: " + e, e);
+				}
 			}
 		}));
 		final LoginPanel pnlLogin = new LoginPanel();

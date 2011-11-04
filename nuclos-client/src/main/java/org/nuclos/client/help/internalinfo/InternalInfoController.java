@@ -23,6 +23,7 @@ import java.util.prefs.Preferences;
 
 import javax.swing.JComponent;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.client.common.ClientParameterProvider;
@@ -43,6 +44,8 @@ import org.nuclos.common.ParameterProvider;
 
 public class InternalInfoController extends Controller {
 
+	private static final Logger LOG = Logger.getLogger(InternalInfoController.class);
+	
 	private static final String PREFS_KEY_FILEDATE = "version";
 	private static final String PREFS_NODE_INTERNALINFO = "internalInfo";
 
@@ -80,18 +83,23 @@ public class InternalInfoController extends Controller {
 			UIUtils.runCommandLater(this.getParent(), new Runnable() {
 				@Override
 				public void run() {
-					if (!fileInternalInfoFile.exists()) {
-						final String sMessage = CommonLocaleDelegate.getMessage("InternalInfoController.1", "Die Datei {0} f\u00fcr die Onlinehilfe existiert nicht.", fileInternalInfoFile.getAbsolutePath());
-						Errors.getInstance().showExceptionDialog(InternalInfoController.this.getParent(), new IOException(sMessage));
+					try {
+						if (!fileInternalInfoFile.exists()) {
+							final String sMessage = CommonLocaleDelegate.getMessage("InternalInfoController.1", "Die Datei {0} f\u00fcr die Onlinehilfe existiert nicht.", fileInternalInfoFile.getAbsolutePath());
+							Errors.getInstance().showExceptionDialog(InternalInfoController.this.getParent(), new IOException(sMessage));
+						}
+						else {
+							try {
+								Runtime.getRuntime().exec("cmd /c " + " \"" + fileInternalInfoFile.getAbsolutePath() + "\"");
+							}
+							catch (IOException ex) {
+								final String sMessage = CommonLocaleDelegate.getMessage("InternalInfoController.2", "Die Informationen k\u00f6nnen nicht angezeigt werden.");
+								Errors.getInstance().showExceptionDialog(InternalInfoController.this.getParent(), sMessage, ex);
+							}
+						}
 					}
-					else {
-						try {
-							Runtime.getRuntime().exec("cmd /c " + " \"" + fileInternalInfoFile.getAbsolutePath() + "\"");
-						}
-						catch (IOException ex) {
-							final String sMessage = CommonLocaleDelegate.getMessage("InternalInfoController.2", "Die Informationen k\u00f6nnen nicht angezeigt werden.");
-							Errors.getInstance().showExceptionDialog(InternalInfoController.this.getParent(), sMessage, ex);
-						}
+					catch (Exception e) {
+						LOG.error("showInternalInfo failed: " + e, e);
 					}
 				}
 			});

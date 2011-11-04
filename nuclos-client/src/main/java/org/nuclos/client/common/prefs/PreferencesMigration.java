@@ -17,22 +17,17 @@
 package org.nuclos.client.common.prefs;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import javax.swing.SortOrder;
 import javax.swing.RowSorter.SortKey;
+import javax.swing.SortOrder;
 
 import org.apache.commons.httpclient.util.LangUtils;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
-import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.main.mainframe.MainFrame;
-import org.nuclos.client.ui.collect.CollectController;
-import org.nuclos.client.ui.collect.FixedColumnRowHeader;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.WorkspaceDescription.ColumnPreferences;
@@ -41,13 +36,10 @@ import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableEntityFieldPref;
-import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
-import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.masterdata.CollectableMasterDataForeignKeyEntityField;
 import org.nuclos.common2.PreferencesUtils;
-import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.PreferencesException;
 
 public class PreferencesMigration {

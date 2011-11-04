@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.component;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.CommonJTextField;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
@@ -40,6 +41,8 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @version	01.00.00
  */
 public class CollectableIdTextField extends CollectableTextComponent {
+	
+	private static final Logger LOG = Logger.getLogger(CollectableIdTextField.class);
 
 	/**
 	 * the value id "remembered in the view", as the JTextField only holds the value.
@@ -94,7 +97,12 @@ public class CollectableIdTextField extends CollectableTextComponent {
 			this.runLocked(new Runnable() {
 				@Override
                 public void run() {
-					getJTextComponent().setText(null);
+					try {
+						getJTextComponent().setText(null);
+					}
+					catch (Exception e) {
+						LOG.error("CollectableTextField.setComparisionOperator: " + e, e);
+					}
 				}
 			});
 		}

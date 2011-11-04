@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.explorer.ExplorerNode;
@@ -55,6 +56,8 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode> {
 
+	private static final Logger LOG = Logger.getLogger(SearchFilterExplorerNode.class);
+	
 	private static final String ACTIONCOMMAND_REMOVEFILTER = "REMOVE_FILTER";
 	private static final String ACTIONCOMMAND_SHOWINTASKPANEL = "SHOW_FILTER_IN_TASKPANEL";
 	private static final String ACTIONCOMMAND_SHOW_RESULT = "SHOW RESULT";
@@ -144,8 +147,13 @@ public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode>
 			UIUtils.runCommand(getJTree(), new Runnable() {
 				@Override
 				public void run() {
-					final TaskController ctlTask = getExplorerController().getTaskController();
-					ctlTask.cmdShowFilterInTaskPanel(getTreeNode().getSearchFilter());
+					try {
+						final TaskController ctlTask = getExplorerController().getTaskController();
+						ctlTask.cmdShowFilterInTaskPanel(getTreeNode().getSearchFilter());
+					}
+					catch (Exception e) {
+						LOG.error("cmdShowFilterInTaskPanel failed: " + e, e);
+					}							
 				}
 			});
 		}

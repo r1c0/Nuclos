@@ -286,11 +286,16 @@ public class LoginController extends Controller {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					if(cmdPerformLogin(frame, optpn, JOptionPane.OK_OPTION,  props)) {
-						postProcessLogin();
-						LoginController.this.fireLoginSuccessful();
-						frame.dispose();
-						return;
+					try {
+						if(cmdPerformLogin(frame, optpn, JOptionPane.OK_OPTION,  props)) {
+							postProcessLogin();
+							LoginController.this.fireLoginSuccessful();
+							frame.dispose();
+							return;
+						}
+					}
+					catch (Exception e) {
+						LOG.error("attemptAutoLogin failed: " + e, e);
 					}
 				}
 			});

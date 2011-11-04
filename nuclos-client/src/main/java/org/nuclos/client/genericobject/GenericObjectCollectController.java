@@ -196,7 +196,6 @@ import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
-import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableLikeCondition;
@@ -215,7 +214,6 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
-import org.nuclos.common.genericobject.GenericObjectUtils;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
@@ -339,7 +337,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							}
 
 						}
-						catch (CommonBusinessException ex) {
+						catch (/* CommonBusiness */ Exception ex) {
 							Errors.getInstance().showExceptionDialog(getFrame(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.15","Beim Nachladen eines Layouts ist ein Fehler aufgetreten."), ex);
 						}
 					}
@@ -360,7 +358,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						try {
 							reloadLayoutForSearchTab();
 						}
-						catch (CommonBusinessException ex) {
+						catch (/* CommonBusiness */ Exception ex) {
 							Errors.getInstance().showExceptionDialog(getFrame(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.16","Beim Nachladen eines Layouts ist ein Fehler aufgetreten."), ex);
 						}
 					}

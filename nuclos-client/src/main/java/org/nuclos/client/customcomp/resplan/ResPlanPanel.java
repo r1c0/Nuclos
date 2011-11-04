@@ -361,8 +361,13 @@ public class ResPlanPanel extends JPanel {
 			EventQueue.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					Bubble bubble = new Bubble(infoButton, message, 8, Bubble.Position.SE);
-					bubble.setVisible(true);
+					try {
+						Bubble bubble = new Bubble(infoButton, message, 8, Bubble.Position.SE);
+						bubble.setVisible(true);
+					}
+					catch (Exception e) {
+						LOG.error("showInfoMessages failed: " + e, e);
+					}
 				}
 			});
 		}
@@ -595,7 +600,12 @@ public class ResPlanPanel extends JPanel {
 		return new Runnable() {
 			@Override
 			public void run() {
-				resPlan.scrollRectToArea(resource, timeInterval, true);
+				try {
+					resPlan.scrollRectToArea(resource, timeInterval, true);
+				}
+				catch (Exception e) {
+					LOG.error("createScrollToCurrentAreaRunnable failed: " + e, e);
+				}
 			}
 		};
 	}

@@ -26,7 +26,6 @@ import javax.swing.JOptionPane;
 
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.UsageCriteria;
 
 /**
@@ -57,7 +56,7 @@ public class ChoiceListOrReportExportController extends ReportFormatController {
 						try {
 							pnlChoiceExport.prepareSelectionPanel(usagecriteria, iObjectCount, sSelectedFormat);
 						}
-						catch (NuclosBusinessException ex) {
+						catch (Exception ex) {
 							Errors.getInstance().showExceptionDialog(parent, ex.getCause());
 						}
 					}

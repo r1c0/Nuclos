@@ -25,6 +25,8 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.Logger;
+
 /**
  * This is a wrapper class takes a TreeTableModel and implements
  * the table model interface. The implementation is trivial, with
@@ -39,6 +41,8 @@ import javax.swing.tree.TreePath;
  * @version	01.00.00
  */
 public class TreeTableModelAdapter extends AbstractTableModel {
+	
+	private static final Logger LOG = Logger.getLogger(TreeTableModelAdapter.class);
 	
 	private JTree tree;
 	private TreeTableModel treeTableModel;
@@ -141,7 +145,12 @@ public class TreeTableModelAdapter extends AbstractTableModel {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				fireTableDataChanged();
+				try {
+					fireTableDataChanged();
+				}
+				catch (Exception e) {
+					LOG.error("delayedFireTableDataChanged failed: " + e, e);
+				}
 			}
 		});
 	}

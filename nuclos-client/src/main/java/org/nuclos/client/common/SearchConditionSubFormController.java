@@ -28,14 +28,10 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.ui.collect.CollectController;
-import org.nuclos.client.ui.collect.FixedColumnRowHeader;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
-import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
-import org.nuclos.common.WorkspaceDescription.TablePreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -58,10 +54,8 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
-import org.nuclos.common2.exception.PreferencesException;
 
 /**
  * Controller for searching for dependant data (in a one-to-many relationship) in a subform.

@@ -17,14 +17,10 @@
 package org.nuclos.common.genericobject;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.nuclos.common.AttributeProvider;
-import org.nuclos.common.ModuleProvider;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collection.CollectionUtils;

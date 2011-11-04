@@ -43,7 +43,7 @@ import org.pietschy.wizard.WizardModel;
 
 public abstract class AbstractWizardStep extends PanelWizardStep implements DocumentListener, ActionListener, Constants {
 
-	private static final Logger log = Logger.getLogger(AbstractWizardStep.class);
+	private static final Logger LOG = Logger.getLogger(AbstractWizardStep.class);
 
 	private InstallerWizardModel model;
 
@@ -68,8 +68,8 @@ public abstract class AbstractWizardStep extends PanelWizardStep implements Docu
 			getUnpacker().validate(property, value);
 		}
 		catch (Exception ex) {
-			log.error("Validation failed.", ex);
-			log.info(MessageFormat.format("Validation failed for {0}={1}: {2}.", property, value, ex.getLocalizedMessage()));
+			LOG.error("Validation failed.", ex);
+			LOG.info(MessageFormat.format("Validation failed for {0}={1}: {2}.", property, value, ex.getLocalizedMessage()));
 			throw new InvalidStateException(ex.getLocalizedMessage());
 		}
 	}
@@ -126,29 +126,34 @@ public abstract class AbstractWizardStep extends PanelWizardStep implements Docu
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				String value = null;
-				if (ConfigContext.containsKey(property)) {
-					value = ConfigContext.getProperty(property);
-				}
-
-				if (component instanceof JTextField) {
-					((JTextField)component).setText(value);
-				}
-				else if (component instanceof JComboBox) {
-					JComboBox cb = (JComboBox)component;
-					for (int i = 0; i < cb.getItemCount(); i++) {
-						if (cb.getItemAt(i) instanceof ComboBoxItem && ((ComboBoxItem)cb.getItemAt(i)).value.equals(value)) {
-							cb.setSelectedIndex(i);
-							break;
+				try {
+					String value = null;
+					if (ConfigContext.containsKey(property)) {
+						value = ConfigContext.getProperty(property);
+					}
+	
+					if (component instanceof JTextField) {
+						((JTextField)component).setText(value);
+					}
+					else if (component instanceof JComboBox) {
+						JComboBox cb = (JComboBox)component;
+						for (int i = 0; i < cb.getItemCount(); i++) {
+							if (cb.getItemAt(i) instanceof ComboBoxItem && ((ComboBoxItem)cb.getItemAt(i)).value.equals(value)) {
+								cb.setSelectedIndex(i);
+								break;
+							}
 						}
 					}
+					else if (component instanceof JCheckBox) {
+						JCheckBox cb = (JCheckBox)component;
+						cb.setSelected("true".equals(value));
+					}
+					else {
+						throw new RuntimeException("Not implemented");
+					}
 				}
-				else if (component instanceof JCheckBox) {
-					JCheckBox cb = (JCheckBox)component;
-					cb.setSelected("true".equals(value));
-				}
-				else {
-					throw new RuntimeException("Not implemented");
+				catch (Exception e) {
+					LOG.error("modelToView failed: " + e, e);
 				}
 			}
 		});

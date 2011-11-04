@@ -94,7 +94,6 @@ import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.common.TopicNotificationReceiver;
-import org.nuclos.client.common.prefs.PreferencesMigration;
 import org.nuclos.client.common.prefs.WebAccessPrefs;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.common.security.SecurityDelegate;
@@ -236,7 +235,12 @@ public class MainController {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					handleMessge(msg);
+					try {
+						handleMessge(msg);
+					}
+					catch (Exception e) {
+						LOG.error("ParameterPanel failed: " + e, e);
+					}
 				}
 			});
 		}
@@ -527,7 +531,12 @@ public class MainController {
 			UIUtils.runCommand(frm, new Runnable() {
 				@Override
 				public void run() {
-					NuclosConsoleGui.showInFrame(frm.getHomePane());
+					try {
+						NuclosConsoleGui.showInFrame(frm.getHomePane());
+					}
+					catch (Exception e) {
+						LOG.error("showInFrame failed: " + e, e);
+					}
 				}
 			});
 		}};
@@ -541,8 +550,13 @@ public class MainController {
 			UIUtils.runCommand(frm, new Runnable() {
 				@Override
 				public void run() {
-					ShowNuclosWizard w = new ShowNuclosWizard(false);
-					w.showWizard(MainController.this.getDesktopPane(), MainController.this.getFrame());
+					try {
+						ShowNuclosWizard w = new ShowNuclosWizard(false);
+						w.showWizard(MainController.this.getDesktopPane(), MainController.this.getFrame());
+					}
+					catch (Exception e) {
+						LOG.error("showWizard failed: " + e, e);
+					}
 				}
 			});
 		}};
@@ -556,7 +570,12 @@ public class MainController {
 			UIUtils.runCommand(frm, new Runnable() {
 				@Override
 				public void run() {
-					CustomComponentWizard.run();
+					try {
+						CustomComponentWizard.run();
+					}
+					catch (Exception e) {
+						LOG.error("CustomComponentWizard failed: " + e, e);
+					}
 				}
 			});
 		}};
@@ -582,8 +601,8 @@ public class MainController {
 								result.runNew();
 							}
 						}
-						catch(CommonBusinessException e1) {
-							LOG.warn("actionPerformed " + evt + ": " + e1);
+						catch(/* CommonBusiness */ Exception e1) {
+							LOG.error("actionPerformed " + evt + ": " + e1);
 						}
 					}
 				});
@@ -598,7 +617,12 @@ public class MainController {
 			UIUtils.runCommand(frm, new Runnable() {
 				@Override
 				public void run() {
-					showStartupPanel(false);
+					try {
+						showStartupPanel(false);
+					}
+					catch (Exception e) {
+						LOG.error("showStartupPanel failed: " + e, e);
+					}
 				}
 			});
 		}};
@@ -1966,23 +1990,28 @@ public class MainController {
 			while(true) {
 				try {
 					Thread.sleep(2000);
+					Runtime r = Runtime.getRuntime();
+					total = r.totalMemory();
+					free = r.freeMemory();
+					inuse = total - free;
+					SwingUtilities.invokeLater(swingUpd);
 				}
-				catch(InterruptedException e) {
+				catch(Exception e) {
 					LOG.warn("MemoryMonitor.run: " + e, e);
 				}
-				Runtime r = Runtime.getRuntime();
-				total = r.totalMemory();
-				free = r.freeMemory();
-				inuse = total - free;
-				SwingUtilities.invokeLater(swingUpd);
 			}
 		}
 
 		private Runnable swingUpd = new Runnable() {
 			@Override
 			public void run() {
-				content.setText(String.format("%,.2f KB", inuse / 1024.0));
-				content.setToolTipText("<html><b>Free</b>: " + String.format("%,.2f KB", free / 1024.0) + "<br /><b>Total</b>: " + String.format("%,.2f KB", total / 1024.0) + "</html>");
+				try {
+					content.setText(String.format("%,.2f KB", inuse / 1024.0));
+					content.setToolTipText("<html><b>Free</b>: " + String.format("%,.2f KB", free / 1024.0) + "<br /><b>Total</b>: " + String.format("%,.2f KB", total / 1024.0) + "</html>");
+				}
+				catch (Exception e) {
+					LOG.error("swingUpd failed: " + e, e);
+				}
 			}
 		};
 	}

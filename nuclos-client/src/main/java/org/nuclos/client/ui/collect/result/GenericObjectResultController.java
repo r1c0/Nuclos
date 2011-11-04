@@ -36,7 +36,6 @@ import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
-import org.nuclos.client.ui.collect.CollectableTableHelper;
 import org.nuclos.client.ui.collect.PivotController;
 import org.nuclos.client.ui.collect.PivotPanel;
 import org.nuclos.client.ui.collect.SelectFixedColumnsController;
@@ -53,7 +52,6 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common2.IdUtils;
-import org.nuclos.common2.exception.PreferencesException;
 
 /**
  * A specialization of ResultController for use with an {@link GenericObjectCollectController}.

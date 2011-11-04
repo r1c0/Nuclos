@@ -33,7 +33,6 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common2.CommonLocaleDelegate;
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.treenode.GroupTreeNode;
 import org.nuclos.server.navigation.treenode.TreeNode;
 
@@ -82,7 +81,7 @@ public class GroupExplorerNode extends MasterDataExplorerNode<GroupTreeNode> {
 
 					refresh(tree);
 				}
-				catch (CommonBusinessException ex) {
+				catch (/* CommonBusiness */ Exception ex) {
 					Errors.getInstance().showExceptionDialog(parent, ex);
 				}
 			}

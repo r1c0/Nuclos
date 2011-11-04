@@ -23,6 +23,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.table.TableCellRenderer;
 
+import org.apache.log4j.Logger;
 import org.jdesktop.jxlayer.JXLayer;
 
 import org.nuclos.client.ui.labeled.LabeledTextArea;
@@ -40,6 +41,8 @@ import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
  */
 public class CollectableTextArea extends CollectableTextComponent {
 
+	private static final Logger LOG = Logger.getLogger(CollectableTextArea.class);
+	
 	/**
 	 * @param clctef
 	 * @postcondition this.isDetailsComponent()
@@ -77,7 +80,12 @@ public class CollectableTextArea extends CollectableTextComponent {
 			this.runLocked(new Runnable() {
 				@Override
                 public void run() {
-					getJTextComponent().setText(null);
+					try {
+						getJTextComponent().setText(null);
+					}
+					catch (Exception e) {
+						LOG.error("CollectableTextArea.setComparisionOperator: " + e, e);
+					}						
 				}
 			});
 		}

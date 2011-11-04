@@ -402,7 +402,7 @@ public class LogbookController extends Controller {
 					NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(parentMdi, iModuleId, null).
 							runViewSingleHistoricalCollectable(clct, dateHistorical);
 					}
-				catch (CommonBusinessException ex) {
+				catch (/* CommonBusiness */ Exception ex) {
 					Errors.getInstance().showExceptionDialog(parent, ex);
 				}
 			}

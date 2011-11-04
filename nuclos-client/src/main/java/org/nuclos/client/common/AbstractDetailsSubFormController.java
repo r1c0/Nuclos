@@ -28,9 +28,7 @@ import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.SubForm.SubFormToolListener;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
@@ -39,17 +37,13 @@ import org.nuclos.client.ui.collect.model.SortableCollectableTableModelImpl;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
-import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
-import org.nuclos.common.WorkspaceDescription.TablePreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableFactory;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
 import org.nuclos.common.collect.collectable.CollectableUtils;
-import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.PreferencesException;
 
 /**
  * Controller for collecting dependant data (in a one-to-many relationship) in a subform,

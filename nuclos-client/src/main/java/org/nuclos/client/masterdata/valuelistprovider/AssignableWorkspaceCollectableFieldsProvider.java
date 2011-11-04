@@ -20,18 +20,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataCache;
-import org.nuclos.common.MasterDataMetaProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
-import org.nuclos.common.collect.collectable.LocalizedCollectableValueField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIsNullCondition;
-import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 

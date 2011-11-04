@@ -32,7 +32,6 @@ import javax.swing.JToolBar;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
 import org.nuclos.client.entityobject.CollectableEntityObject;
-import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.ui.collect.SubForm;

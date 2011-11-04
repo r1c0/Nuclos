@@ -39,7 +39,6 @@ import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbJoin;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
-import org.nuclos.server.dblayer.query.DbSelection;
 
 public class WorkspaceProcessor extends AbstractJdbcDalProcessor<WorkspaceVO> implements IWorkspaceProcessor{
 	

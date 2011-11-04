@@ -254,7 +254,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 							importXml(file);
 						} catch (IOException ex) {
 							Errors.getInstance().showExceptionDialog(getFrame(), CommonLocaleDelegate.getMessage("LayoutCollectController.3","Beim Lesen der Datei ist ein Fehler aufgetreten."), ex);
-						} catch (CommonBusinessException ex) {
+						} catch (/* CommonBusiness */ Exception ex) {
 							Errors.getInstance().showExceptionDialog(getFrame(), ex.getMessage(), ex);
 						}
 					}

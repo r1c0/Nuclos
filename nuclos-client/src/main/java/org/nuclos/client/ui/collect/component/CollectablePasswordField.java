@@ -21,6 +21,7 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.CommonJPasswordField;
 import org.nuclos.client.ui.labeled.LabeledPasswordField;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -32,6 +33,8 @@ import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
  * @version 01.00.00
  */
 public class CollectablePasswordField extends CollectableTextComponent {
+	
+	private static final Logger LOG = Logger.getLogger(CollectablePasswordField.class);
 	
 	// @SuppressWarnings("unused")
 	private CollectableEntityField clctef;
@@ -74,7 +77,12 @@ public class CollectablePasswordField extends CollectableTextComponent {
 			this.runLocked(new Runnable() {
 				@Override
 				public void run() {
-					getJTextComponent().setText(null);
+					try {
+						getJTextComponent().setText(null);
+					}
+					catch (Exception e) {
+						LOG.error("CollectablePassword.setComparisionOperator: " + e, e);
+					}
 				}
 			});
 		}

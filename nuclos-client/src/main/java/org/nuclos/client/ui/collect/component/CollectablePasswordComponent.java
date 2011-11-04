@@ -18,6 +18,7 @@ package org.nuclos.client.ui.collect.component;
 
 import javax.swing.text.JTextComponent;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.labeled.LabeledTextComponent;
@@ -36,6 +37,8 @@ import org.nuclos.common.collect.exception.CollectableFieldFormatException;
  */
 public abstract class CollectablePasswordComponent extends LabeledCollectableComponent {
 
+	private static final Logger LOG = Logger.getLogger(CollectablePasswordComponent.class);
+	
 	protected CollectablePasswordComponent(CollectableEntityField clctef, LabeledTextComponent labeledtextcomp, boolean bSearchable) {
 		super(clctef, labeledtextcomp, bSearchable);
 
@@ -108,11 +111,16 @@ public abstract class CollectablePasswordComponent extends LabeledCollectableCom
 		this.runLocked(new Runnable() {
 			@Override
 			public void run() {
-				// Note: CollectableTextComponent itself can only handle atomic search conditions.
-				// If the following class cast should ever fail for a special text field, redefine searchConditionChangedInModel in your subclass:
-				final AtomicCollectableSearchCondition atomiccond = (AtomicCollectableSearchCondition) ev.getSearchComponentModel().getSearchCondition();
-
-				modelToView(atomiccond, CollectablePasswordComponent.this.getJTextComponent());
+				try {
+					// Note: CollectableTextComponent itself can only handle atomic search conditions.
+					// If the following class cast should ever fail for a special text field, redefine searchConditionChangedInModel in your subclass:
+					final AtomicCollectableSearchCondition atomiccond = (AtomicCollectableSearchCondition) ev.getSearchComponentModel().getSearchCondition();
+	
+					modelToView(atomiccond, CollectablePasswordComponent.this.getJTextComponent());
+				}
+				catch (Exception e) {
+					LOG.error("CollectablePassword.searchConditionChangedInModel: " + e, e);
+				}
 			}
 		});
 	}

@@ -133,7 +133,7 @@ public class StateHistoryController extends Controller {
 					final CollectableGenericObjectWithDependants clct = new CollectableGenericObjectWithDependants(lowdcvo);
 					NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(parent, iModuleId, null).runViewSingleHistoricalCollectable(clct, dateHistorical);
 				}
-				catch (CommonBusinessException ex) {
+				catch (/* CommonBusiness */ Exception ex) {
 					Errors.getInstance().showExceptionDialog(parent, ex);
 				}
 			}

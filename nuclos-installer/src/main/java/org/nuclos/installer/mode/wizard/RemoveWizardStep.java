@@ -23,7 +23,6 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
-import org.nuclos.installer.InstallException;
 import org.nuclos.installer.L10n;
 import org.pietschy.wizard.AbstractWizardModel;
 import org.pietschy.wizard.InvalidStateException;
@@ -76,7 +75,7 @@ public class RemoveWizardStep extends AbstractWizardStep {
 					getUnpacker().shutdown(getModel().getCallback());
 					getUnpacker().remove(getModel().getCallback());
 				}
-				catch(InstallException e) {
+				catch(/* Install */ Exception e) {
 					// Ok! (tp)
 					e.printStackTrace();
 					LOG.error("prepare failed: " + e, e);
@@ -104,7 +103,12 @@ public class RemoveWizardStep extends AbstractWizardStep {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				text.append(L10n.getMessage(message, args) + System.getProperty("line.separator"));
+				try {
+					text.append(L10n.getMessage(message, args) + System.getProperty("line.separator"));
+				}
+				catch (Exception e) {
+					LOG.error("info failed: " + e, e);
+				}
 			}
 		});
 	}

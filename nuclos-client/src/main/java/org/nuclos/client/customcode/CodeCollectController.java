@@ -25,6 +25,7 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.explorer.node.rule.RuleTreeModel;
 import org.nuclos.client.main.Main;
@@ -55,6 +56,9 @@ import org.nuclos.server.ruleengine.NuclosCompileException;
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
 public class CodeCollectController extends MasterDataCollectController {
+
+	private static final Logger LOG = Logger.getLogger(CodeCollectController.class);
+	
 	private final CodeDelegate codeDelegate = CodeDelegate.getInstance();
 
 	private RuleEditPanel pnlEdit;
@@ -288,8 +292,13 @@ public class CodeCollectController extends MasterDataCollectController {
 		UIUtils.runCommand(this.getFrame(), new Runnable() {
 			@Override
 			public void run() {
-				final Integer id = (Integer) getSelectedCollectableId();
-				Main.getMainController().getExplorerController().cmdShowRuleUsage(id, RuleTreeModel.LIBRARY_LABEL);
+				try {
+					final Integer id = (Integer) getSelectedCollectableId();
+					Main.getMainController().getExplorerController().cmdShowRuleUsage(id, RuleTreeModel.LIBRARY_LABEL);
+				}
+				catch (Exception e) {
+					LOG.error("CodeCollectController.cmdJmpToTree: " + e, e);
+				}
 			}
 		});
 	}
@@ -299,7 +308,12 @@ public class CodeCollectController extends MasterDataCollectController {
 		UIUtils.runCommand(this.getFrame(), new Runnable() {
 			@Override
 			public void run() {
-				Main.getMainController().getExplorerController().cmdShowRuleUsage(null, null);
+				try {
+					Main.getMainController().getExplorerController().cmdShowRuleUsage(null, null);
+				}
+				catch (Exception e) {
+					LOG.error("CodeCollectController.cmdShowResultInExplorer: " + e, e);
+				}
 			}
 		});
 	}

@@ -178,7 +178,12 @@ public class ParameterPanel extends JPanel {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						comp.requestFocus();
+						try {
+							comp.requestFocus();
+						}
+						catch (Exception e) {
+							LOG.error("ParameterPanel failed: " + e, e);
+						}
 					}
 				});
 			}

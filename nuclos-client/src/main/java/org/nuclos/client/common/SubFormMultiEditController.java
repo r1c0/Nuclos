@@ -33,7 +33,6 @@ import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableComparator;
-import org.nuclos.common.collect.collectable.CollectableFactory;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;

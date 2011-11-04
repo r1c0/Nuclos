@@ -16,14 +16,12 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.report.reportrunner.export;
 
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.common.csvparser.ExcelCSVPrinter;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;

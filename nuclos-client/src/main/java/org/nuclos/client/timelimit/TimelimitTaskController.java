@@ -72,7 +72,6 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
@@ -394,8 +393,13 @@ public class TimelimitTaskController extends RefreshableTaskController {
 			UIUtils.runCommand(this.getParent(), new Runnable() {
 				@Override
 	            public void run() {
-					showTimelimitTasks(new MainFrameTab());
-					MainFrame.addTab(tab);
+					try {
+						showTimelimitTasks(new MainFrameTab());
+						MainFrame.addTab(tab);
+					}
+					catch (Exception e) {
+						LOG.error("cmdShowTimelimitTasks failed: " + e, e);
+					}
 				}
 			});
 		} 
@@ -467,7 +471,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 								refreshTimelimitTaskView();
 							}
 						}
-						catch (CommonBusinessException ex) {
+						catch (/* CommonBusiness */ Exception ex) {
 							Errors.getInstance().showExceptionDialog(getParent(), ex);
 						}
 					}
@@ -498,7 +502,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 							refreshTimelimitTaskView();
 						}
 					}
-					catch (CommonBusinessException ex) {
+					catch (/* CommonBusiness */Exception ex) {
 						Errors.getInstance().showExceptionDialog(getParent(), ex);
 					}
 				}

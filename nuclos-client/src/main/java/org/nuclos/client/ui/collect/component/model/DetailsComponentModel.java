@@ -34,7 +34,7 @@ import org.nuclos.common.collect.collectable.CollectableField;
  */
 public class DetailsComponentModel extends CollectableComponentModel {
 
-	private static final Logger log = Logger.getLogger(DetailsComponentModel.class);
+	private static final Logger LOG = Logger.getLogger(DetailsComponentModel.class);
 
 	private static class MultiEdit {
 		private boolean bValueToBeChanged;
@@ -68,7 +68,12 @@ public class DetailsComponentModel extends CollectableComponentModel {
 		UIUtils.invokeOnDispatchThread(new Runnable() {
 			@Override
 			public void run() {
-				DetailsComponentModel.this.setField(clctfValue, true);
+				try {
+					DetailsComponentModel.this.setField(clctfValue, true);
+				}
+				catch (Exception e) {
+					LOG.error("setField failed: " + e, e);
+				}
 			}
 		});
 		
@@ -133,7 +138,7 @@ public class DetailsComponentModel extends CollectableComponentModel {
 		}
 		this.multiedit.bValueToBeChanged = bValueToBeChanged;
 
-		log.debug("setValueToBeChanged: " + bValueToBeChanged + " - field: " + this.getEntityField().getName());
+		LOG.debug("setValueToBeChanged: " + bValueToBeChanged + " - field: " + this.getEntityField().getName());
 
 		this.fireValueToBeChanged(bValueToBeChanged);
 

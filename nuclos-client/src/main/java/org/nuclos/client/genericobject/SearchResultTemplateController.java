@@ -67,7 +67,7 @@ import org.nuclos.common2.exception.PreferencesException;
  */
 public class SearchResultTemplateController {
 	
-	private static final Logger log = Logger.getLogger(SearchResultTemplateController.class);
+	private static final Logger LOG = Logger.getLogger(SearchResultTemplateController.class);
 	
 	private final Action actSaveTemplate = new CommonAbstractAction(CommonLocaleDelegate.getMessage("SearchResultTemplateController.1", "Suchergebnisvorlage speichern"), Icons.getInstance().getIconSave16(),
 			CommonLocaleDelegate.getMessage("SearchResultTemplateController.2", "Eingestelltes Ergebnisformat als Suchergebnisvorlage speichern")) {
@@ -158,7 +158,7 @@ public class SearchResultTemplateController {
 					final SearchResultTemplate template = (SearchResultTemplate) ev.getItem();
 					assert template != null;
 					sToolTip = template.getDescription();
-					log.debug("Template selected: " + template.getName());
+					LOG.debug("Template selected: " + template.getName());
 					bRegularTemplateSelected = !template.isDefaultTemplate();
 				}
 				getSearchResultTemplateComboBox().setToolTipText(sToolTip);
@@ -368,8 +368,13 @@ public class SearchResultTemplateController {
 				UIUtils.runCommand(getFrame(), new Runnable() {
 					@Override
 					public void run() {
-						getSearchResultTemplates().remove(sTemplateName);
-						refreshSearchResultTemplateView();
+						try {
+							getSearchResultTemplates().remove(sTemplateName);
+							refreshSearchResultTemplateView();
+						}
+						catch (Exception e) {
+							LOG.error("cmdRemoveTemplate failed: " + e, e);
+						}							
 					}
 				});
 			}

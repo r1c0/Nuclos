@@ -238,7 +238,7 @@ public class SearchResultStrategy<Clct extends Collectable> implements ISearchRe
 						}
 					}
 				}
-				catch (CommonBusinessException ex) {
+				catch (/* CommonBusiness */ Exception ex) {
 					Errors.getInstance().showExceptionDialog(cc.getFrame(), ex);
 				}
 			}

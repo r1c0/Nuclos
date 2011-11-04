@@ -16,11 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.layout;
 
-import java.util.NoSuchElementException;
-
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
-import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 

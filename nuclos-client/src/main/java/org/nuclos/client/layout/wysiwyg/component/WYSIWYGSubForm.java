@@ -32,13 +32,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.prefs.Preferences;
 
 import javax.swing.BorderFactory;
@@ -58,7 +54,6 @@ import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.TableColumn;
 
-import org.apache.commons.httpclient.util.LangUtils;
 import org.jdesktop.swingx.event.TableColumnModelExtListener;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.SubFormController;

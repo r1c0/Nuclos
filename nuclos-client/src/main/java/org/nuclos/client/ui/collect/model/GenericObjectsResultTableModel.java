@@ -21,9 +21,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.genericobject.CollectableGenericObject;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
-import org.nuclos.client.genericobject.Modules;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -34,7 +32,6 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
-import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 
 public class GenericObjectsResultTableModel<Clct extends Collectable> extends SortableCollectableTableModelImpl<Clct> {

@@ -45,7 +45,6 @@ import org.nuclos.client.ui.tree.CompositeTreeNodeAction;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common2.CommonLocaleDelegate;
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.navigation.treenode.MasterDataTreeNode;
@@ -144,9 +143,9 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 			UIUtils.runCommand(parent, new Runnable() {
 				@Override
 				public void run() {
-					final String sEntity = getTreeNode().getEntityName();
-					final Object oId = getTreeNode().getId();
 					try {
+						final String sEntity = getTreeNode().getEntityName();
+						final Object oId = getTreeNode().getId();
 						final MasterDataVO mdvo = MasterDataDelegate.getInstance().get(sEntity, oId);
 						MasterDataDelegate.getInstance().remove(sEntity, mdvo);
 						final DefaultTreeModel dtm = (DefaultTreeModel) getJTree().getModel();
@@ -163,7 +162,7 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 							log.warn("cmdRemove: node could not be removed from tree model.");
 						}
 					}
-					catch (CommonBusinessException ex) {
+					catch (/* CommonBusiness */ Exception ex) {
 						Errors.getInstance().showExceptionDialog(parent, ex);
 					}
 				}

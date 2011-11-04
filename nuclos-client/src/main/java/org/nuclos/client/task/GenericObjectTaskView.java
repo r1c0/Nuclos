@@ -62,7 +62,6 @@ import org.nuclos.client.ui.IMainFrameTabClosableController;
 import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.StatusBarTextField;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.collect.model.GenericObjectsResultTableModel;
 import org.nuclos.client.ui.collect.model.MasterDataResultTableModel;

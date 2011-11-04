@@ -34,6 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.LAYOUTML_RULE_EDITOR;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
@@ -58,6 +59,8 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  */
 public class LayoutMLRuleSingleRulePanel extends JPanel implements AddRemoveButtonControllable {
 
+	private static final Logger LOG = Logger.getLogger(LayoutMLRuleSingleRulePanel.class);
+	
 	/** the layoutdefinition of the editor */
 	private double[][] defaultLayout = {{InterfaceGuidelines.MARGIN_LEFT, 50, TableLayout.FILL, InterfaceGuidelines.MARGIN_BETWEEN, 50, TableLayout.FILL, InterfaceGuidelines.MARGIN_RIGHT}, {InterfaceGuidelines.MARGIN_TOP, TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BOTTOM}};
 	private int ruleCounter = 0;
@@ -387,7 +390,12 @@ public class LayoutMLRuleSingleRulePanel extends JPanel implements AddRemoveButt
 			SwingUtilities.invokeLater(new Runnable(){
 				@Override
 				public void run() {
-					newRulePanel.scrollRectToVisible(newRulePanel.getBounds());
+					try {
+						newRulePanel.scrollRectToVisible(newRulePanel.getBounds());
+					}
+					catch (Exception e) {
+						LOG.error("addAnotherRule failed: " + e, e);
+					}
 				}
 			});
 		}

@@ -127,7 +127,12 @@ public class StartUp  {
 		EventQueue.invokeLater(new Runnable() {
 			@Override
             public void run() {
-				createGUI();
+				try {
+					createGUI();
+				}
+				catch (Exception e) {
+					LOG.fatal("Startup failed: " + e, e);
+				}
 			}
 		});
 
@@ -224,7 +229,7 @@ public class StartUp  {
 									@Override
                                     public void run() {
 										Errors.getInstance().setCriticalErrorHandler(new NuclosCriticalErrorHandler(true));
-										log.debug("login done");
+										log.info("login done");
 									}
 								});
 

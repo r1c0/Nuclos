@@ -89,7 +89,12 @@ public class CollectableTextField extends CollectableTextComponent implements Me
          this.runLocked(new Runnable() {
             @Override
             public void run() {
-               getJTextComponent().setText(null);
+            	try {
+            		getJTextComponent().setText(null);
+				}
+				catch (Exception e) {
+					LOG.error("CollectableTextField.setComparisionOperator: " + e, e);
+				}            		
             }
          });
       }

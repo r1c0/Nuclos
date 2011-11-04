@@ -77,8 +77,8 @@ public class BackgroundPanel extends JPanel {
 						Thread.sleep(delay);
 						move(w, point);
 						Thread.sleep(delay);
-					} catch(InterruptedException e) {
-						LOG.warn("shake failed: " + e, e);
+					} catch(Exception e) {
+						LOG.error("shake failed: " + e, e);
 					}
 				}
 			}
@@ -91,7 +91,12 @@ public class BackgroundPanel extends JPanel {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
             public void run() {
-				w.setLocation(p);
+				try {
+					w.setLocation(p);
+				}
+				catch (Exception e) {
+					LOG.error("BackgroundPanel.move: " + e, e);
+				}					
 			}
 		});
 	}

@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common.collection.Predicate;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;

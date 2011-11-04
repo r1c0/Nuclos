@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.datasource.querybuilder.gui;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.datasource.querybuilder.QueryBuilderConstants;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -43,6 +44,8 @@ import org.nuclos.server.report.valueobject.DatasourceParameterValuelistprovider
  */
 public class ParameterModel extends DefaultTableModel {
 
+	private static final Logger LOG = Logger.getLogger(ParameterModel.class);
+	
 	public static final int COLUMN_NAME = 0;
 	public static final int COLUMN_TYPE = 1;
 	public static final int COLUMN_MESSAGE = 2;
@@ -183,7 +186,12 @@ public class ParameterModel extends DefaultTableModel {
 		UIUtils.invokeOnDispatchThread(new Runnable() {
 			@Override
 			public void run() {
-				fireTableDataChanged();
+				try {
+					fireTableDataChanged();
+				}
+				catch (Exception e) {
+					LOG.error("addEntry: " + e, e);
+				}
 			}
 		});
 	}

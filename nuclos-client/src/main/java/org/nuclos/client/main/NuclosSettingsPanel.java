@@ -114,8 +114,8 @@ public class NuclosSettingsPanel extends JPanel {
 
 						@Override
 						public void run() {
-							Preferences entityPrefs = ClientPreferences.getUserPreferences().node("collect").node("entity");
 							try {
+								Preferences entityPrefs = ClientPreferences.getUserPreferences().node("collect").node("entity");
 								for(String entityName : entityPrefs.childrenNames()) {
 									Preferences fields = entityPrefs.node(entityName).node("fields");
 									for (String fieldName : fields.childrenNames()) {
@@ -129,7 +129,7 @@ public class NuclosSettingsPanel extends JPanel {
 								}
 								JOptionPane.showMessageDialog(frm, CommonLocaleDelegate.getMessage("R00022901", "Die Suchhistorie wurde gel\u00f6scht."));
 							}
-							catch(BackingStoreException e1) {
+							catch(/* BackingStore */ Exception e1) {
 								/*dann halt nicht*/
 								LOG.error("actionPerformed failed: " + e1, e1);
 							}

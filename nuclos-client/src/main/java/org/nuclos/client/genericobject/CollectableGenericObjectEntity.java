@@ -31,7 +31,6 @@ import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
-import org.nuclos.common.genericobject.GenericObjectUtils;
 
 /**
  * Contains meta information about a leased object.

@@ -37,7 +37,6 @@ import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.masterdata.MasterDataDelegate;
-import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.common.Actions;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;

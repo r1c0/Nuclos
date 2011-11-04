@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.main.mainframe.workspace;
 
-import info.clearthought.layout.TableLayout;
-
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -48,7 +46,6 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -60,6 +57,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.TransferHandler;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
@@ -86,6 +84,8 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 
 public class WorkspaceChooserController {
+	
+	private static final Logger LOG = Logger.getLogger(WorkspaceChooserController.class);
 	
 	public static final int ICON_SIZE = 16;
 	private static WorkspaceVO selectedWorkspace = null;
@@ -644,6 +644,9 @@ public class WorkspaceChooserController {
 																	(new Bubble(wl, message, 8, Bubble.Position.SE)).setVisible(true);
 																} catch (IllegalComponentStateException e) {
 																	JOptionPane.showMessageDialog(Main.getMainFrame(), message);
+																}
+																catch (Exception e) {
+																	LOG.error("setupContextMenu failed: " + e, e);
 																}
 															}
 														});

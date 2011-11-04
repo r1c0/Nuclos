@@ -18,8 +18,6 @@ package org.nuclos.installer.mode.wizard;
 
 import info.clearthought.layout.TableLayout;
 
-import java.io.IOException;
-
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
@@ -86,8 +84,9 @@ public class SummaryWizardStep extends AbstractWizardStep {
 						pane.setText(L10n.getLocalizedHtml("org/nuclos/installer/resource/summary-dbinstall", ConfigContext.getCurrentConfig()));
 					}
 				}
-				catch(IOException e) {
-					throw new RuntimeException(e);
+				catch(/* IO */ Exception e) {
+					// throw new RuntimeException(e);
+					LOG.error("prepare failed: " + e, e);
 				}
 			}
 		});

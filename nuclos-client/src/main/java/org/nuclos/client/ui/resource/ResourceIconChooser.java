@@ -44,12 +44,15 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 import org.nuclos.client.ui.Icons;
 
 public class ResourceIconChooser extends JPanel {
+	
+	private static final Logger LOG = Logger.getLogger(ResourceIconChooser.class);
 	
 	private final JList list;
 	private final List<String> iconNames = new ArrayList<String>();
@@ -168,7 +171,12 @@ public class ResourceIconChooser extends JPanel {
     			SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						list.scrollRectToVisible(list.getCellBounds(select, select));
+						try {
+							list.scrollRectToVisible(list.getCellBounds(select, select));
+						}
+						catch (Exception e) {
+							LOG.error("setSelected failed: " + e, e);
+						}																									
 					}
 				});
 		}

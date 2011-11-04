@@ -20,14 +20,13 @@ import java.util.Map;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.nuclos.client.attribute.AttributeCache;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosEOField;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.AbstractCollectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Removable;
 import org.nuclos.common2.CommonLocaleDelegate;
