@@ -193,7 +193,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	public GenerationResult generateGenericObject(Long iSourceObjectId, Long parameterObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException, CommonValidationException {
 		EntityMetaDataVO sourceMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generatoractionvo.getSourceModuleId()));
 		EntityMetaDataVO targetMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generatoractionvo.getTargetModuleId()));
-		
+
 		this.checkWriteAllowed(targetMeta.getEntity());
 
 		JdbcEntityObjectProcessor proc = NucletDalProvider.getInstance().getEntityObjectProcessor(sourceMeta.getEntity());
@@ -280,7 +280,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		// Create target process
 		if (targetMeta.isStateModel() && generatoractionvo.getTargetProcessId() != null) {
 			//final String sTargetProcess = getMasterDataFacade().get(NuclosEntity.PROCESS.getEntityName(), generatoractionvo.getTargetProcessId()).getField("name").toString();
-			target.getFields().put(NuclosEOField.PROCESS.getName(), generatoractionvo.getTargetProcessId().longValue());
+			target.getFieldIds().put(NuclosEOField.PROCESS.getName(), generatoractionvo.getTargetProcessId().longValue());
 		}
 
 		// Load parameter object (if available)
