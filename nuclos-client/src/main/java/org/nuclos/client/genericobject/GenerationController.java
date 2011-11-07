@@ -359,7 +359,7 @@ public class GenerationController {
 					showGenericObject(result.getGeneratedObject(), action.getTargetModuleId());
 				}
 				else {
-					showIncompleteGenericObject(null, result.getGeneratedObject(), result.getError());
+					showIncompleteGenericObject(result.getSourceIds(), result.getGeneratedObject(), result.getError());
 				}
 			}
 		}
@@ -385,7 +385,7 @@ public class GenerationController {
 	 * Open an incomplete generated object in its own controller.
 	 * @throws CommonBusinessException
 	 */
-	private void showIncompleteGenericObject(Integer sourceId, EntityObjectVO result, final String message) throws CommonBusinessException {
+	private void showIncompleteGenericObject(Collection<Long> sourceIds, EntityObjectVO result, final String message) throws CommonBusinessException {
 		String entity = result.getEntity();
 		JTabbedPane pane;
 		if (MainFrame.isPredefinedEntityOpenLocationSet(entity)) {
@@ -400,7 +400,7 @@ public class GenerationController {
 		if (metaVO.isStateModel()) {
 			final GenericObjectCollectController goclct = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(pane, IdUtils.unsafeToId(metaVO.getId()), null);
 			goclct.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW_CHANGED);
-			goclct.setGenerationSourceId(sourceId);
+			goclct.setGenerationSourceIds(sourceIds);
 			CollectableEOEntity meta = new CollectableEOEntity(metaVO, mpFields);
 			goclct.unsafeFillDetailsPanel(new CollectableGenericObjectWithDependants(DalSupportForGO.getGenericObjectWithDependantsVO(result, meta)));
 			goclct.showFrame();

@@ -400,7 +400,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private final CollectPanel<CollectableGenericObjectWithDependants> pnlCollect = newCollectPanel();
 
 	private boolean bGenerated = false;
-	private Integer iGenericObjectIdSource;
+	private Collection<Long> iGenericObjectIdSources;
 
 	private final GenericObjectDelegate lodelegate = GenericObjectDelegate.getInstance();
 	private final GeneratorDelegate generatordelegate = GeneratorDelegate.getInstance();
@@ -1935,7 +1935,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (sParentSubForm != null)
 			sParentEntityName = sParentSubForm;
 
-		MasterDataSubFormController result = newDetailsSubFormController(subform, sParentEntityName, clctcompmodelprovider, getFrame(), parent, 
+		MasterDataSubFormController result = newDetailsSubFormController(subform, sParentEntityName, clctcompmodelprovider, getFrame(), parent,
 				getDetailsPanel(), getPreferences(), getEntityPreferences());
 
 //		if (bUseInvalidMasterData)
@@ -3889,9 +3889,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	@Override
 	public void save() throws CommonBusinessException {
 		super.save();
-		if (bGenerated && iGenericObjectIdSource != null) {
+		if (bGenerated && iGenericObjectIdSources != null) {
 			if (getSelectedGenericObjectId() != null) { // could be null if save is not possible (e.g. mandatory fields)
-				lodelegate.relate(iGenericObjectIdSource, GenericObjectTreeNode.SystemRelationType.PREDECESSOR_OF.getValue(), getSelectedGenericObjectId(), getModuleId(), null, null, null);
+				for (Long iGenericObjectIdSource : iGenericObjectIdSources) {
+					lodelegate.relate(IdUtils.unsafeToId(iGenericObjectIdSource), GenericObjectTreeNode.SystemRelationType.PREDECESSOR_OF.getValue(), getSelectedGenericObjectId(), getModuleId(), null, null, null);
+				}
 				bGenerated = false;
 			}
 		}
@@ -5487,10 +5489,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	/**
-	 * @return the source object's id if current collectable is generated
+	 * @return the source object's ids if current collectable is generated
 	 */
-	public Integer getSourceObjectId() {
-		return iGenericObjectIdSource;
+	public Collection<Long> getSourceObjectId() {
+		return iGenericObjectIdSources;
 	}
 
 	@Override
@@ -5725,8 +5727,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		return this.mpsubformctlDetails;
 	}
 
-	protected void setGenerationSourceId(Integer id) {
-		iGenericObjectIdSource = id;
+	protected void setGenerationSourceIds(Collection<Long> ids) {
+		iGenericObjectIdSources = ids;
 		bGenerated = true;
 	}
 
