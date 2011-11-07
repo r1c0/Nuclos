@@ -109,6 +109,7 @@ import org.nuclos.server.dbtransfer.content.ActionNucletContent;
 import org.nuclos.server.dbtransfer.content.CustomComponentNucletContent;
 import org.nuclos.server.dbtransfer.content.DefaultNucletContent;
 import org.nuclos.server.dbtransfer.content.EntityFieldNucletContent;
+import org.nuclos.server.dbtransfer.content.EntityMenuNucletContent;
 import org.nuclos.server.dbtransfer.content.EntityNucletContent;
 import org.nuclos.server.dbtransfer.content.EntitySubnodesNucletContent;
 import org.nuclos.server.dbtransfer.content.EventNucletContent;
@@ -200,6 +201,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		contents.add(new EntitySubnodesNucletContent(contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.ENTITYFIELDGROUP, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.ENTITYRELATION, null, contents));
+		contents.add(new EntityMenuNucletContent(contents));
 
 		contents.add(new DefaultNucletContent(NuclosEntity.GROUPTYPE, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.GROUP, NuclosEntity.GROUPTYPE, contents));
@@ -1023,7 +1025,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	 * @param bExecuteDDL
 	 * @param sbResultMessage
 	 */
-	private void updateDB(DbAccess dbAccess, Collection<DbTable> currentSchema, Collection<DbTable> transferredSchema, 
+	private void updateDB(DbAccess dbAccess, Collection<DbTable> currentSchema, Collection<DbTable> transferredSchema,
 			boolean bExecuteDDL, List<String> script, StringBuffer sbResultMessage) throws SQLException {
 		for (DbStructureChange dbChangeStmt : SchemaUtils.modify(currentSchema, transferredSchema)) {
 			logScript(script, dbAccess.getPreparedSqlFor(dbChangeStmt));
