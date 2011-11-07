@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
+import org.nuclos.client.genericobject.CollectableGenericObjectEntity;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -57,6 +58,7 @@ import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.entityobject.CollectableEOEntityProvider;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
+import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.masterdata.CollectableMasterDataForeignKeyEntityField;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -534,15 +536,16 @@ public class WorkspaceUtils {
 					break;
 					
 				case ColumnPreferences.TYPE_GenericObjectEntityField:
-					result.add(new CollectableGenericObjectEntityField(
-							AttributeCache.getInstance().getAttribute(cp.getEntity(), cp.getColumn()),
-							mdProv.getEntityField(cp.getEntity(), cp.getColumn()),
-							cp.getEntity()));
+					result.add(CollectableGenericObjectEntity.getByModuleId(
+							mdProv.getEntity(cp.getEntity()).getId().intValue()).getEntityField(cp.getColumn()));
 					break;
 					
 				case ColumnPreferences.TYPE_MasterDataForeignKeyEntityField:
-					result.add(new CollectableMasterDataForeignKeyEntityField(
-							MasterDataDelegate.getInstance().getMetaData(cp.getEntity()).getField(cp.getColumn()), cp.getEntity()));
+					CollectableMasterDataForeignKeyEntityField clctef = 
+						new CollectableMasterDataForeignKeyEntityField(
+							MasterDataDelegate.getInstance().getMetaData(cp.getEntity()).getField(cp.getColumn()), cp.getEntity());
+					result.add(clctef);
+					clctef.setCollectableEntity(new CollectableMasterDataEntity(MasterDataDelegate.getInstance().getMetaData(cp.getEntity())));
 					break;
 					
 				case ColumnPreferences.TYPE_EntityFieldWithEntityForExternal:
