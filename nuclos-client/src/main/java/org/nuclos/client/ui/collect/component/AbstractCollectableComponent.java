@@ -1665,22 +1665,27 @@ public abstract class AbstractCollectableComponent
 						throw new NullPointerException("getTableCellRendererComponent failed to find field: " + clct + " tm index " + iTColumn);
 					}
 
-					EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(clctef.getEntityName());
-					if (meta.getRowColorScript() != null && !bSelected) {
-						CollectableTableModel<? extends Collectable> mdl = (CollectableTableModel<? extends Collectable>) tbl.getModel();
-						if (mdl.getRowCount() > iRow) {
-							Collectable c = mdl.getRow(iRow);
-							try {
-								Object o = GroovySupport.eval(meta.getRowColorScript(), c, "FFFFFF");
-								if (o instanceof String) {
-									Color color = Color.decode((String)o);
-									setBackground(color);
+					try {
+						EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(clctef.getEntityName());
+						if (meta.getRowColorScript() != null && !bSelected) {
+							CollectableTableModel<? extends Collectable> mdl = (CollectableTableModel<? extends Collectable>) tbl.getModel();
+							if (mdl.getRowCount() > iRow) {
+								Collectable c = mdl.getRow(iRow);
+								try {
+									Object o = GroovySupport.eval(meta.getRowColorScript(), c, "FFFFFF");
+									if (o instanceof String) {
+										Color color = Color.decode((String)o);
+										setBackground(color);
+									}
+								}
+								catch (Exception ex) {
+									LOG.warn(ex);
 								}
 							}
-							catch (Exception ex) {
-								LOG.warn(ex);
-							}
 						}
+					}
+					catch (CommonFatalException ex) {
+						LOG.warn(ex);
 					}
 
 					final CefSecurityAgent sa = clctef.getSecurityAgent();
