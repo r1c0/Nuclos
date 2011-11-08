@@ -274,6 +274,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 							NuclosEntityNameStep.this.model.setDocumentPath(vo.getDocumentPath());
 							NuclosEntityNameStep.this.model.setReportFilename(vo.getReportFilename());
 							NuclosEntityNameStep.this.model.setVirtualentity(vo.getVirtualentity());
+							NuclosEntityNameStep.this.model.setRowColorScript(vo.getRowColorScript());
 
 
 							if(vo.getResourceId() != null)

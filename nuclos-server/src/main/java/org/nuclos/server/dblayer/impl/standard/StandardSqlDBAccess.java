@@ -46,6 +46,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.nuclos.common.CryptUtil;
 import org.nuclos.common.NuclosPassword;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
@@ -111,13 +112,16 @@ import org.nuclos.server.dblayer.structure.DbTableType;
 import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+
 public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 
     public static final String MAX_ROWS_HINT = "maxRows";
     public static final String QUERY_TIMEOUT_HINT = "queryTimeout";
-    
+
     private static final Logger LOG = Logger.getLogger(StandardSqlDBAccess.class);
-    
+
     protected StandardSqlDBAccess() {
     }
 
@@ -429,7 +433,9 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
             stmt.setBytes(index, (byte[]) value);
         } else if (value == null) {
             stmt.setNull(index, getPreferredSqlTypeFor(javaType));
-        } else {
+        } else if (value instanceof NuclosScript) {
+            stmt.setString(index, new XStream(new DomDriver("UTF-8")).toXML(value));
+        }else {
             throw new SQLException("Java type " + javaType + " cannot be mapped to DB type");
         }
     }
@@ -440,6 +446,8 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         } else if (javaType == InternalTimestamp.class) {
             javaType = java.sql.Timestamp.class;
         } else if (javaType == NuclosPassword.class) {
+        	javaType = java.lang.String.class;
+        } else if (javaType == NuclosScript.class) {
         	javaType = java.lang.String.class;
         }
         return JDBCType.getJDCBTypesForObjectType(javaType)[0].getSqlType();
@@ -469,6 +477,14 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
             value = rs.getBytes(index);
         } else if (javaType == Object.class) {
             value = rs.getObject(index);
+        } else if (javaType == NuclosScript.class) {
+        	String xml = rs.getString(index);
+        	if (StringUtils.isNullOrEmpty(xml)) {
+        		value = null;
+        	}
+        	else {
+        		value = new XStream(new DomDriver("UTF-8")).fromXML(rs.getString(index));
+        	}
         } else {
             throw new IllegalArgumentException("Class " + javaType + " not supported by readField");
         }
@@ -495,7 +511,9 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
             value = stmt.getDate(index);
         } 	else if(javaType == byte[].class) {
             value = stmt.getBytes(index);
-        } 	else {
+        } 	else if (javaType == NuclosScript.class) {
+            value = new XStream(new DomDriver("UTF-8")).fromXML(stmt.getString(index));
+        }   else {
             throw new IllegalArgumentException("Class " + javaType + " not supported by readField");
         }
         return stmt.wasNull() ? null : javaType.cast(value);
@@ -580,7 +598,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 
     public static abstract class QueryBuilder extends DbQueryBuilder {
 
-        protected <T, R> ResultSetRunner<List<R>> createListResultSetRunner(final DbQuery<? extends T> query, Transformer<? super T, R> transformer) 
+        protected <T, R> ResultSetRunner<List<R>> createListResultSetRunner(final DbQuery<? extends T> query, Transformer<? super T, R> transformer)
         		throws DbException {
             final List<? extends DbSelection<?>> selections = query.getSelections();
             final DbTupleElementImpl<?>[] elements = new DbTupleElementImpl<?>[selections.size()];

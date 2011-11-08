@@ -17,53 +17,63 @@
 
 package org.nuclos.client.scripting;
 
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.MetaClass;
+import groovy.lang.MetaMethod;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.script.Bindings;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableField;
-
-import groovy.lang.GroovyClassLoader;
-import groovy.lang.MetaClass;
-import groovy.lang.MetaMethod;
+import org.nuclos.common.collection.Transformer;
+import org.nuclos.common2.StringUtils;
 
 public class GroovySupport {
 
 	Class<?> groovyClass;
 	Object instance;
-	
+
+	static final ScriptEngine engine = new ScriptEngineManager().getEngineByName("groovy");
+
 	public GroovySupport() {
 	}
-	
+
 	public void compile(String text) {
 		groovyClass = null;
 		instance = null;
 
 		ClassLoader parent = getClass().getClassLoader();
 		GroovyClassLoader loader = new GroovyClassLoader(parent);
-		
+
 		DefaultGroovyMethods.mixin(Collectable.class, CollectableMixin.class);
 		groovyClass = loader.parseClass(text);
 	}
-	
+
 	public Class<?> getGroovyClass() {
 		return groovyClass;
 	}
-	
+
 	public boolean isCompiled() {
 		return groovyClass != null;
 	}
-	
+
 	public void prepare() throws InstantiationException, IllegalAccessException {
 		getInstance();
 	}
-	
+
 	public Object getInstance() throws InstantiationException, IllegalAccessException {
 		if (instance != null) {
 			return instance;
@@ -74,14 +84,14 @@ public class GroovySupport {
 		}
 		return instance;
 	}
-	
+
 	public MetaMethod getMethod(String name, Class<?>... argumentTypes) {
 		if (groovyClass == null || name == null)
 			return null;
 		MetaClass metaClass = InvokerHelper.getMetaClass(groovyClass);
 		return metaClass.pickMethod(name, argumentTypes);
 	}
-	
+
 	public List<String> findMethodNames(Class<?>... argumentTypes) {
 		Set<String> methods = new TreeSet<String>();
 		if (groovyClass != null) {
@@ -94,7 +104,7 @@ public class GroovySupport {
 		}
 		return new ArrayList<String>(methods);
 	}
-	
+
 	public boolean methodExists(String name) {
 		if (groovyClass != null) {
 			MetaClass metaClass = InvokerHelper.getMetaClass(groovyClass);
@@ -106,7 +116,7 @@ public class GroovySupport {
 		}
 		return false;
 	}
-	
+
 	public InvocableMethod getInvocable(String name, Class<?>... signature) throws InstantiationException, IllegalAccessException {
 		if (name != null) {
 			MetaMethod method = getMethod(name, signature);
@@ -114,18 +124,36 @@ public class GroovySupport {
 		}
 		return null;
 	}
-	
+
+	public static Object eval(NuclosScript script, final Collectable c, Object defaultValue) {
+		final Bindings b = engine.createBindings();
+        String source = StringUtils.replaceParameters(script.getSource(), new Transformer<String, String>() {
+			@Override
+			public String transform(String i) {
+				String variable = "__var_" + i;
+				b.put(variable, c.getValue(i));
+				return variable;
+			}
+		});
+
+        try {
+			return engine.eval(source, b);
+		} catch (ScriptException e) {
+			return defaultValue;
+		}
+	}
+
 	public static class InvocableMethod {
-		
+
 		private final Object delegate;
 		private final MetaMethod groovyMethod;
 		private boolean hasErrors;
-		
+
 		private InvocableMethod(Object delegate, MetaMethod method) {
 			this.delegate = delegate;
 			this.groovyMethod = method;
 		}
-		
+
 		public Object invoke(Object... args) {
 			if (delegate != null && groovyMethod != null && !hasErrors) {
 				try {
@@ -137,18 +165,18 @@ public class GroovySupport {
 			}
 			return null;
 		}
-		
+
 		public boolean hasErrors() {
 			return hasErrors;
 		}
 	}
-	
+
 	public static class CollectableMixin {
-		
+
 		public static Object getAt(Collectable clct, String name) {
 			return clct.getValue(name);
 		}
-		
+
 		public static CollectableField propertyMissing(Collectable clct, String name) {
 			return clct.getField(name);
 		}

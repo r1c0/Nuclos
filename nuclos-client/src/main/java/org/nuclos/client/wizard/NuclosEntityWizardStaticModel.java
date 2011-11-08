@@ -38,6 +38,7 @@ import org.nuclos.client.wizard.steps.NuclosEntityOptionStep;
 import org.nuclos.client.wizard.steps.NuclosEntityProcessStep;
 import org.nuclos.client.wizard.util.ModifierMap;
 import org.nuclos.common.EntityTreeViewVO;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -95,6 +96,8 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	String documentPath;
 	String reportFilename;
 	String virtualentity;
+
+	NuclosScript rowColorScript;
 
 	Collection<EntityObjectVO> processes;
 	Collection<EntityObjectVO> entityMenus;
@@ -737,6 +740,14 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 		if (overview != null) {
 			overview.setEnabled(NuclosEntityOptionStep.class, org.nuclos.common2.StringUtils.isNullOrEmpty(virtualentity));
 		}
+	}
+
+	public NuclosScript getRowColorScript() {
+		return rowColorScript;
+	}
+
+	public void setRowColorScript(NuclosScript rowColorScript) {
+		this.rowColorScript = rowColorScript;
 	}
 
 	public Collection<EntityObjectVO> getProcesses() {

@@ -55,10 +55,12 @@ import org.jdesktop.jxlayer.plaf.BufferedLayerUI;
 import org.jdesktop.jxlayer.plaf.effect.BufferedImageOpEffect;
 import org.jdesktop.swingx.renderer.DefaultListRenderer;
 import org.nuclos.client.common.ClientParameterProvider;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.Modules;
+import org.nuclos.client.scripting.GroovySupport;
 import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.ResourceIdMapper;
@@ -70,6 +72,7 @@ import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModel;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
+import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.labeled.LabeledComboBox;
 import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
@@ -95,6 +98,7 @@ import org.nuclos.common.collect.collectable.searchcondition.ToHumanReadablePres
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
@@ -1660,6 +1664,25 @@ public abstract class AbstractCollectableComponent
 					if (clctef == null) {
 						throw new NullPointerException("getTableCellRendererComponent failed to find field: " + clct + " tm index " + iTColumn);
 					}
+
+					EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(clctef.getEntityName());
+					if (meta.getRowColorScript() != null && !bSelected) {
+						CollectableTableModel<? extends Collectable> mdl = (CollectableTableModel<? extends Collectable>) tbl.getModel();
+						if (mdl.getRowCount() > iRow) {
+							Collectable c = mdl.getRow(iRow);
+							try {
+								Object o = GroovySupport.eval(meta.getRowColorScript(), c, "FFFFFF");
+								if (o instanceof String) {
+									Color color = Color.decode((String)o);
+									setBackground(color);
+								}
+							}
+							catch (Exception ex) {
+								LOG.warn(ex);
+							}
+						}
+					}
+
 					final CefSecurityAgent sa = clctef.getSecurityAgent();
 					if (sa == null) {
 						// lazy set the security agent
@@ -1673,6 +1696,7 @@ public abstract class AbstractCollectableComponent
 						layerUI.setLayerEffects(blurEffect);
 						return layer;
 					}
+
 				}
 			}
 			return this;

@@ -20,7 +20,6 @@ import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -95,6 +94,7 @@ import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataDelegate;
+import org.nuclos.client.scripting.ScriptEditor;
 import org.nuclos.client.statemodel.RoleRepository;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.Bubble.Position;
@@ -112,6 +112,7 @@ import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosImage;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -174,6 +175,8 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	static int I_CREATEAT_WIDTH = 85;
 	static int I_CREATEBY_WIDTH = 75;
 
+	JLabel lbRowColorScript;
+	JButton btRowColorScript;
 
 	JLabel lbLayout;
 	JCheckBox cbLayout;
@@ -184,7 +187,6 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	JLabel lbEditFields;
 	JCheckBox cbEditFields;
 
-	JLabel lbInfo;
 	JLabel lbAttributeText;
 
 	boolean changeLayout;
@@ -227,6 +229,25 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		layout.setHGap(5);
 		this.setLayout(layout);
 
+		lbRowColorScript = new JLabel(getMessage("wizard.step.entitysqllayout.rowcolor", "Hintergrundfarbe der Zeilendarstellung konfigurieren"));
+		btRowColorScript = new JButton("...");
+		btRowColorScript.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ScriptEditor editor = new ScriptEditor();
+				if (getModel().getRowColorScript() != null) {
+					editor.setScript(getModel().getRowColorScript());
+				}
+				editor.run();
+				NuclosScript script = editor.getScript();
+				if (org.nuclos.common2.StringUtils.isNullOrEmpty(script.getSource())) {
+					script = null;
+				}
+				getModel().setRowColorScript(script);
+			}
+		});
+
+
 		lbLayout = new JLabel(getMessage("wizard.step.entitysqllayout.2", "M\u00f6chten Sie eine Standard-Maske generieren lassen"));
 		cbLayout = new JCheckBox();
 		cbLayout.setToolTipText(getMessage("wizard.step.entitysqllayout.tooltip.2", "M\u00f6chten Sie eine Standard-Maske generieren lassen"));
@@ -245,10 +266,6 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		cbEditFields = new JCheckBox();
 		cbEditFields.setSelected(true);
 		cbEditFields.setToolTipText(getMessage("wizard.step.entitysqllayout.tooltip.7","Editierungsfelder mit in das Layout aufnehmen"));
-
-		lbInfo = new JLabel(getMessage("wizard.step.entitysqllayout.9", "Achtung! Ihr bestehendes Layout wird überschrieben!"));
-		lbInfo.setVisible(false);
-		lbInfo.setForeground(Color.RED);
 
 		listAttributeOrder = new JList();
 
@@ -274,7 +291,8 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		panelAttributes.add(btUp, "2,0");
 		panelAttributes.add(btDown, "2,2");
 
-		this.add(lbInfo, "0,0, 1,0");
+		this.add(lbRowColorScript, "0,0");
+		this.add(btRowColorScript, "1,0");
 		this.add(lbLayout, "0,1");
 		this.add(cbLayout, "1,1");
 		this.add(lbAttributeGroup, "0,2");
@@ -671,6 +689,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 		metaVO.setFieldsForEquality(wizardModel.getMultiEditEquation());
 		metaVO.setVirtualentity(wizardModel.getVirtualentity());
+		metaVO.setRowColorScript(wizardModel.getRowColorScript());
 
 		List<EntityFieldMetaDataTO> lstEntityFields = new ArrayList<EntityFieldMetaDataTO>();
 

@@ -20,6 +20,7 @@ import static org.nuclos.server.dal.processor.AbstractDalProcessor.DT_BOOLEAN;
 import static org.nuclos.server.dal.processor.AbstractDalProcessor.DT_INTEGER;
 import static org.nuclos.server.dal.processor.AbstractDalProcessor.DT_INTERNALTIMESTAMP;
 import static org.nuclos.server.dal.processor.AbstractDalProcessor.DT_LONG;
+import static org.nuclos.server.dal.processor.AbstractDalProcessor.DT_NUCLOSSCRIPT;
 import static org.nuclos.server.dal.processor.AbstractDalProcessor.DT_STRING;
 
 import java.util.ArrayList;
@@ -321,6 +322,7 @@ public class ProcessorFactorySingleton {
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STR_REPORTFILENAME", "reportFilename", DT_STRING));
 
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRVIRTUALENTITY", "virtualentity", DT_STRING));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRROWCOLORSCRIPT", "rowColorScript", DT_NUCLOSSCRIPT));
 
 		return new EntityMetaDataProcessor(allColumns, idColumn);
 	}
@@ -341,7 +343,7 @@ public class ProcessorFactorySingleton {
 
 		return new EOGenericObjectProcessor(allColumns, moduleColumn, idColumn);
 	}
-	
+
 	public WorkspaceProcessor newWorkspaceProcessor() {
 		final Class<? extends IDalVO> type = WorkspaceVO.class;
 		final List<IColumnToVOMapping<? extends Object>> allColumns = new ArrayList<IColumnToVOMapping<? extends Object>>();
@@ -352,15 +354,15 @@ public class ProcessorFactorySingleton {
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "DATCHANGED", "changedAt", DT_INTERNALTIMESTAMP));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRCHANGED", "changedBy", DT_STRING));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "INTVERSION", "version", DT_INTEGER));
-		
-		final IColumnToVOMapping<String> nameColumn = createBeanMapping(SystemFields.BASE_ALIAS, type, "STRNAME", "name", DT_STRING); 
+
+		final IColumnToVOMapping<String> nameColumn = createBeanMapping(SystemFields.BASE_ALIAS, type, "STRNAME", "name", DT_STRING);
 		allColumns.add(nameColumn);
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "CLBWORKSPACE", "clbworkspace", DT_STRING));
 		final IColumnToVOMapping<Long> userColumn = createBeanMapping(SystemFields.BASE_ALIAS, type, "INTID_T_MD_USER", "user", DT_LONG);
 		allColumns.add(userColumn);
 		final IColumnToVOMapping<Long> assignedColumn = createBeanMapping(SystemFields.BASE_ALIAS, type, "INTID_T_MD_WORKSPACE", "assignedWorkspace", DT_LONG);
 		allColumns.add(assignedColumn);
-		
+
 		return new WorkspaceProcessor(allColumns, idColumn, userColumn, nameColumn, assignedColumn);
 	}
 

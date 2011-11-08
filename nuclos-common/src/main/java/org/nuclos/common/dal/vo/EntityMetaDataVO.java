@@ -19,6 +19,7 @@ package org.nuclos.common.dal.vo;
 import java.util.Collection;
 import java.util.Set;
 
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 
@@ -71,6 +72,8 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	private String documentPath;
 	private String reportFilename;
 
+	private NuclosScript rowColorScript;
+
 	public EntityMetaDataVO() {
 	    super();
     }
@@ -108,6 +111,7 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	    this.setReportFilename(eo.getField("reportFilename", String.class));
 
 	    this.setVirtualentity(eo.getField("virtualentity", String.class));
+	    this.setRowColorScript(eo.getField("rowcolorscript", NuclosScript.class));
     }
 
 	public void setEntity(String entity) {
@@ -353,6 +357,14 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 
 	public boolean isVirtual() {
 		return !StringUtils.isNullOrEmpty(virtualentity);
+	}
+
+	public NuclosScript getRowColorScript() {
+		return rowColorScript;
+	}
+
+	public void setRowColorScript(NuclosScript rowColorScript) {
+		this.rowColorScript = rowColorScript;
 	}
 
 	@Override

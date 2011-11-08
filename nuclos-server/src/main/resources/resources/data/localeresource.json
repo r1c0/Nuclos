@@ -48871,22 +48871,22 @@
   {
     "resourceID": "wizard.show.13",
     "locale": "i-default",
-    "text": "Create SQL and layout"
+    "text": "Customize appearance"
   },
   {
     "resourceID": "wizard.show.13",
     "locale": "de",
-    "text": "SQL und Layout erzeugen"
+    "text": "Darstellung konfigurieren"
   },
   {
     "resourceID": "wizard.show.14",
     "locale": "i-default",
-    "text": "Should SQL scripts and a standard layout be created by Nuclos"
+    "text": "Customize the appearance of search results and generate a layout template."
   },
   {
     "resourceID": "wizard.show.14",
     "locale": "de",
-    "text": "Möchten Sie SQL-Skripte und eine Standardmaske von Nuclos erstellen lassen"
+    "text": "Konfigurieren Sie die Darstellung von Suchergebnissen und lassen Sie eine Standardmaske von Nuclos generieren."
   },
   {
     "resourceID": "wizard.show.15",
@@ -62527,5 +62527,20 @@
     "resourceID": "wizard.step.attributerelationship.deletecascade.description",
     "locale": "de",
     "text": "Referenzierende Datensätze dieser Entität löschen, wenn der referenzierte Datensatz gelöscht wird. "
+  },
+  {
+    "resourceID": "wizard.step.entitysqllayout.rowcolor",
+    "locale": "i-default",
+    "text": "Customize background color of row presentation"
+  },
+  {
+    "resourceID": "wizard.step.entitysqllayout.rowcolor",
+    "locale": "en",
+    "text": "Customize background color of row presentation"
+  },
+  {
+    "resourceID": "wizard.step.entitysqllayout.rowcolor",
+    "locale": "de",
+    "text": "Hintergrundfarbe der Zeilendarstellung konfigurieren"
   }
 ]

@@ -18,6 +18,7 @@ package org.nuclos.server.dal.processor;
 
 import java.util.Date;
 
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.dal.vo.IDalVO;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -35,6 +36,7 @@ public abstract class AbstractDalProcessor<DalVO extends IDalVO> {
 	public final static Class<Date>	            DT_DATE	             = java.util.Date.class;
 	public final static Class<InternalTimestamp>	DT_INTERNALTIMESTAMP = org.nuclos.common2.InternalTimestamp.class;
 	public final static Class<Boolean>	        DT_BOOLEAN	         = java.lang.Boolean.class;
+	public final static Class<NuclosScript>	    DT_NUCLOSSCRIPT	     = NuclosScript.class;
 
 	protected AbstractDalProcessor(Class<DalVO> type) {
 		this.dalVOClzz = type;
@@ -46,7 +48,7 @@ public abstract class AbstractDalProcessor<DalVO extends IDalVO> {
 			return "<[none]>";
 		return interfaces[0].getName();
 	}
-	
+
 	public final Class<DalVO> getDalType() {
 		return dalVOClzz;
 	}

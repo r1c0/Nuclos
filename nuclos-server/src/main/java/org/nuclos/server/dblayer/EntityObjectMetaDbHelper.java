@@ -38,6 +38,7 @@ import org.nuclos.common.CryptUtil;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosPassword;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
@@ -382,6 +383,8 @@ public class EntityObjectMetaDbHelper {
 		} else if (javaClass == NuclosPassword.class) {
 			genericType = DbGenericType.VARCHAR;
 			length = CryptUtil.calcSizeForAESHexInputLength(oldScale);
+		} else if (javaClass == NuclosScript.class) {
+			genericType = DbGenericType.CLOB;
 		} else {
 			throw new IllegalArgumentException("Unsupported DB column type mapping for " + javaClass);
 		}
