@@ -1672,7 +1672,9 @@ public abstract class AbstractCollectableComponent
 							if (mdl.getRowCount() > iRow) {
 								Collectable c = mdl.getRow(iRow);
 								try {
-									Object o = GroovySupport.eval(meta.getRowColorScript(), c, "FFFFFF");
+									String rgb = Integer.toHexString(getBackground().getRGB());
+									rgb = rgb.substring(2, rgb.length());
+									Object o = GroovySupport.eval(meta.getRowColorScript(), c, "#" + rgb);
 									if (o instanceof String) {
 										Color color = Color.decode((String)o);
 										setBackground(color);
