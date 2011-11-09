@@ -769,7 +769,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		if (StringUtils.isNullOrEmpty(subentity.getField("sourceType", String.class))) {
 			for (EntityObjectVO source : sources) {
 				final UsageCriteria sourcecriteria = new UsageCriteria(gavo.getSourceModuleId(), IdUtils.unsafeToId(source.getFieldId(NuclosEOField.PROCESS.getName())));
-				final int iLayoutIdSource = lometacache.getBestMatchingLayoutId(criteria, false);
+				final int iLayoutIdSource = lometacache.getBestMatchingLayoutId(sourcecriteria, false);
 				final Set<String> setEntityNamesSource = lometacache.getSubFormEntityNamesByLayoutId(iLayoutIdSource);
 
 				if (!setEntityNamesSource.contains(sSource)) {
