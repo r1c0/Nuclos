@@ -167,6 +167,8 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	public HashResourceBundle getResourceBundle(LocaleInfo localeInfo) throws CommonFatalException {
 		HashResourceBundle result = CACHE.get(localeInfo);
 		if (result == null) {
+			// Check if current thread is already loading resources.
+			// If yes, return an empty result to avoid infinite recursion through calls to getResourcesAsVO().
 			if (!isLoadingResources.get()) {
 				isLoadingResources.set(true);
 				try {
