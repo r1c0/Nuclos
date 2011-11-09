@@ -30,7 +30,6 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.nuclos.common.HashResourceBundle;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
@@ -136,15 +135,12 @@ public class ServerLocaleDelegate implements CommonLocaleDelegate.LookupService 
 	}
 
 	private ResourceBundle getResourceBundle() {
-		// TODO obtaining a resource bundle does not work at the moment because there will be a recursive call that will lead to a stack overflow
-		// -> no translations on server-side (as before)
-		return new HashResourceBundle();
-//		if (getLocaleInfo() != null) {
-//			return localeFacade.getResourceBundle(getLocaleInfo());
-//		}
-//		else {
-//			return localeFacade.getResourceBundle(localeFacade.getDefaultLocale());
-//		}
+		if (getLocaleInfo() != null) {
+			return localeFacade.getResourceBundle(getLocaleInfo());
+		}
+		else {
+			return localeFacade.getResourceBundle(localeFacade.getDefaultLocale());
+		}
 	}
 
 	@Override

@@ -93,9 +93,16 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	private static final String F_TEXT = "text";
 	private static final String F_LOCALE = "locale";
 
+	/**
+	 * for simple caching implementation.
+	 * TODO replace with real caching solution, i.e. with caching in Spring 3.1
+	 */
+	private static final Map<LocaleInfo, HashResourceBundle> CACHE = Collections.synchronizedMap(new HashMap<LocaleInfo, HashResourceBundle>());
+
 	private static final TransactionSynchronization ts = new TransactionSynchronizationAdapter() {
 		@Override
 		public void afterCommit() {
+			CACHE.clear();
 			NuclosJMSUtils.sendMessage("flush", JMSConstants.TOPICNAME_LOCALE, JMSConstants.BROADCAST_MESSAGE);
 		}
 	};
@@ -141,6 +148,16 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	}
 
 	/**
+	 * To avoid StackOverflow. If current thread is already loading resources, return an empty resourcebundle.
+	 */
+	private final ThreadLocal<Boolean> isLoadingResources = new ThreadLocal<Boolean>() {
+		@Override
+		protected Boolean initialValue() {
+			return Boolean.FALSE;
+		}
+	};
+
+	/**
 	 * Return the complete resource bundle for a given locale info
 	 * @param localeInfo  the locale info
 	 * @return the resulting resource bundle
@@ -148,14 +165,29 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	 */
 	@Override
 	public HashResourceBundle getResourceBundle(LocaleInfo localeInfo) throws CommonFatalException {
-		long start = System.currentTimeMillis();
+		HashResourceBundle result = CACHE.get(localeInfo);
+		if (result == null) {
+			if (!isLoadingResources.get()) {
+				isLoadingResources.set(true);
+				try {
+					long start = System.currentTimeMillis();
 
-		HashResourceBundle res = new HashResourceBundle();
-		for (MasterDataVO mdvo : getResourcesAsVO(localeInfo)) {
-			res.putProperty((String) mdvo.getField(F_RESOURCEID), StringUtils.unicodeDecodeWithNewlines((String) mdvo.getField(F_TEXT)));
+					result = new HashResourceBundle();
+					for (MasterDataVO mdvo : getResourcesAsVO(localeInfo)) {
+						result.putProperty((String) mdvo.getField(F_RESOURCEID), StringUtils.unicodeDecodeWithNewlines((String) mdvo.getField(F_TEXT)));
+					}
+					LOG.info("Created resource cache for locale " + localeInfo.getTag() + " in " + (System.currentTimeMillis() - start) + " ms");
+					CACHE.put(localeInfo, result);
+				}
+				finally {
+					isLoadingResources.set(false);
+				}
+			}
 		}
-		LOG.info("Created resource cache for locale " + localeInfo.getTag() + " in " + (System.currentTimeMillis() - start) + " ms");
-		return res;
+		if (result == null) {
+			result = new HashResourceBundle();
+		}
+		return result;
 	}
 
 	@Override
