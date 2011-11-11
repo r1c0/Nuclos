@@ -66,7 +66,7 @@ public class NuclosImage implements Serializable, NuclosAttributeExternalValue {
 				// ...
 			}
 		}
-		
+
 		if(produceThumbnail)
 			produceThumbnail();
 	}
@@ -90,11 +90,11 @@ public class NuclosImage implements Serializable, NuclosAttributeExternalValue {
 	public int getWidth() {
 		return width;
 	}
-	
+
 	public int getHeight()  {
 		return height;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof NuclosImage) {
@@ -129,30 +129,35 @@ public class NuclosImage implements Serializable, NuclosAttributeExternalValue {
 					LOG.info("produceThumbnail: " + e);
 				}
 
-				BufferedImage buff = ImageIO.read(new ByteArrayInputStream(this.content));
-				if (buff.getHeight() < iHeight) {
-					iHeight = buff.getHeight();
-					iWidth = buff.getWidth();
-				}
-				
-				BufferedImage bdest = new BufferedImage(iWidth, iHeight, BufferedImage.TYPE_INT_ARGB);
-				Graphics2D g = bdest.createGraphics();
-			    AffineTransform at = AffineTransform.getScaleInstance((double)iWidth/buff.getWidth(), (double)iHeight/buff.getHeight());
-			    g.drawRenderedImage(buff,at);
-			    File scaled = new File(IOUtils.getDefaultTempDir(), new Double(Math.random()).toString() + "tmp.png");
-			    scaled.deleteOnExit();
-			    ImageIO.write(bdest,"PNG", scaled);
+				if (this.content != null) {
+					BufferedImage buff = ImageIO.read(new ByteArrayInputStream(this.content));
+					if (buff.getHeight() < iHeight) {
+						iHeight = buff.getHeight();
+						iWidth = buff.getWidth();
+					}
 
-				BufferedInputStream bisscaled = new BufferedInputStream(new FileInputStream(scaled));
-				byte bscaled[] = new byte[bisscaled.available()];
-				int cscaled = 0;
-				int counterscaled = 0;
-				while((cscaled = bisscaled.read()) != -1) {
-					bscaled[counterscaled++] = (byte)cscaled;
-				}
-				bisscaled.close();
+					BufferedImage bdest = new BufferedImage(iWidth, iHeight, BufferedImage.TYPE_INT_ARGB);
+					Graphics2D g = bdest.createGraphics();
+				    AffineTransform at = AffineTransform.getScaleInstance((double)iWidth/buff.getWidth(), (double)iHeight/buff.getHeight());
+				    g.drawRenderedImage(buff,at);
+				    File scaled = new File(IOUtils.getDefaultTempDir(), new Double(Math.random()).toString() + "tmp.png");
+				    scaled.deleteOnExit();
+				    ImageIO.write(bdest,"PNG", scaled);
 
-				setThmubnail(bscaled);
+					BufferedInputStream bisscaled = new BufferedInputStream(new FileInputStream(scaled));
+					byte bscaled[] = new byte[bisscaled.available()];
+					int cscaled = 0;
+					int counterscaled = 0;
+					while((cscaled = bisscaled.read()) != -1) {
+						bscaled[counterscaled++] = (byte)cscaled;
+					}
+					bisscaled.close();
+
+					setThmubnail(bscaled);
+				}
+				else {
+					setThmubnail(new byte[0]);
+				}
 			}
 		}
 		catch(Exception e) {
