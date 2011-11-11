@@ -665,9 +665,10 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 
 			NuclosEntity nuclosEntity = NuclosEntity.getByName(sEntityName);
 
-			boolean useRuleEngine = this.getUsesRuleEngine(sEntityName, false);
-			if(useRuleEngine)
+			final boolean useRuleEngineSave = this.getUsesRuleEngine(sEntityName, RuleEventUsageVO.SAVE_EVENT);
+			if(useRuleEngineSave) {
 				fireSaveEvent(Event.CREATE_BEFORE, sEntityName, mdvo, mpDependants, false);
+			}
 
 			if (nuclosEntity == NuclosEntity.RELATIONTYPE) {
 				LocaleFacadeLocal localeFacade = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
@@ -684,7 +685,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			final Integer iId = helper.createSingleRow(sEntityName, mdvo,
 				this.getCurrentUserName(),
 				this.getServerValidatesMasterDataValues(), null);
-			final MasterDataVO result;
+			MasterDataVO result;
 			try {
 				result = MasterDataFacadeHelper.getMasterDataCVOById(
 					MasterDataMetaCache.getInstance().getMetaData(sEntityName), iId);
@@ -725,8 +726,17 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 				ServiceLocator.getInstance().getFacade(TransferFacadeLocal.class).checkCircularReference(LangUtils.convertId(mdvo.getIntId()));
 			}
 
-			if(useRuleEngine)
-				fireSaveEvent(Event.CREATE_AFTER, sEntityName, result, mpDependants, true);
+			boolean useRuleEngineSaveAfter = this.getUsesRuleEngine(sEntityName, RuleEventUsageVO.SAVE_AFTER_EVENT);
+			if(useRuleEngineSaveAfter) {
+				try {
+					mpDependants = reloadDependants(sEntityName, result, true);
+					fireSaveEvent(Event.CREATE_AFTER, sEntityName, result, mpDependants, true);
+					result = MasterDataFacadeHelper.getMasterDataCVOById(MasterDataMetaCache.getInstance().getMetaData(sEntityName), iId);
+				}
+				catch (CommonFinderException ex) {
+					throw new CommonFatalException(ex);
+				}
+			}
 
 			MasterDataFacadeHelper.invalidateCaches(sEntityName, mdvo);
 			if (nuclosEntity == NuclosEntity.DYNAMICENTITY || nuclosEntity == NuclosEntity.ROLE)
@@ -764,8 +774,8 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 
 		NuclosEntity nuclosEntity = NuclosEntity.getByName(sEntityName);
 
-		final boolean useRuleEngine = this.getUsesRuleEngine(sEntityName, false);
-		if(useRuleEngine) {
+		final boolean useRuleEngineSave = this.getUsesRuleEngine(sEntityName, RuleEventUsageVO.SAVE_EVENT);
+		if(useRuleEngineSave) {
 			this.debug("Modifying (Start rules)");
 			final RuleObjectContainerCVO roccvoResult = this.fireSaveEvent(Event.MODIFY_BEFORE,
 				sEntityName, mdvo, mpDependants, false);
@@ -824,9 +834,17 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			ServiceLocator.getInstance().getFacade(TransferFacadeLocal.class).checkCircularReference(LangUtils.convertId(mdvo.getIntId()));
 		}
 
-		if(useRuleEngine) {
-			this.debug("Modifying (Start rules after save)");
-			this.fireSaveEvent(Event.MODIFY_AFTER, sEntityName, mdvo, mpDependants, true);
+		final boolean useRuleEngineSaveAfter = this.getUsesRuleEngine(sEntityName, RuleEventUsageVO.SAVE_AFTER_EVENT);
+		if(useRuleEngineSaveAfter) {
+			try {
+				this.debug("Modifying (Start rules after save)");
+				MasterDataVO updated = get(sEntityName, result);
+				mpDependants = reloadDependants(sEntityName, updated, true);
+				this.fireSaveEvent(Event.MODIFY_AFTER, sEntityName, mdvo, mpDependants, true);
+			}
+			catch (CommonFinderException ex) {
+				throw new CommonFatalException(ex);
+			}
 		}
 
 		MasterDataFacadeHelper.invalidateCaches(sEntityName, mdvo);
@@ -975,10 +993,10 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	@Override
     @RolesAllowed("Login")
 	public boolean getUsesRuleEngine(String sEntityName) {
-		return this.getUsesRuleEngine(sEntityName, true);
+		return this.getUsesRuleEngine(sEntityName, RuleEventUsageVO.USER_EVENT);
 	}
 
-	private boolean getUsesRuleEngine(String sEntityName, boolean userEvent) {
+	private boolean getUsesRuleEngine(String sEntityName, String event) {
 
 		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 		DbFrom from = query.from("T_MD_RULE_EVENT").alias(SystemFields.BASE_ALIAS);
@@ -990,21 +1008,8 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		List<DbCondition> lstDbCondition = new ArrayList<DbCondition>();
 		lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("STRMASTERDATA", String.class),
 			DataBaseHelper.getDbAccess().getQueryBuilder().literal(sEntityName)));
-		if(userEvent) {
-			lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("STREVENT", String.class),
-				DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.USER_EVENT)));
-		} else {
-			DbCondition orCondition = DataBaseHelper.getDbAccess().getQueryBuilder().or(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
-					from.baseColumn("STREVENT", String.class),
-				DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.SAVE_EVENT)),
-				DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("STREVENT", String.class),
-					DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.DELETE_EVENT)),
-					DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("STREVENT", String.class),
-						DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.SAVE_AFTER_EVENT)),
-						DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("STREVENT", String.class),
-							DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.DELETE_AFTER_EVENT)));
-			lstDbCondition.add(orCondition);
-		}
+		lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("STREVENT", String.class),
+			DataBaseHelper.getDbAccess().getQueryBuilder().literal(event)));
 
 		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().and(lstDbCondition.toArray(new DbCondition[0])));
 
@@ -1476,6 +1481,13 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		}
 
 		return result;
+	}
+
+	public DependantMasterDataMap reloadDependants(String entityname, MasterDataVO mdvo, boolean bAll) throws CommonFinderException {
+		LayoutFacadeLocal layoutFacade = ServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
+
+		final Map<EntityAndFieldName, String> collSubEntities = layoutFacade.getSubFormEntityAndParentSubFormEntityNames(entityname, mdvo.getIntId(), false);
+		return getDependants(mdvo.getIntId(), new ArrayList<EntityAndFieldName>(collSubEntities.keySet()));
 	}
 
 	public DependantMasterDataMap getDependants(Object oId,

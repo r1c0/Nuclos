@@ -639,8 +639,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		DependantMasterDataMap mpDependants = gowdvo.getDependants();
 
-		final boolean useRuleEngine = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId)).getEntity(), false);
-		if(useRuleEngine){
+		final boolean useRuleEngineSave = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId)).getEntity(), RuleEventUsageVO.SAVE_EVENT);
+		if(useRuleEngineSave){
 			/** @todo check if loccvoResult can safely be ignored */
 			final RuleObjectContainerCVO loccvoResult = fireSaveEvent(Event.CREATE_BEFORE, gowdvo, mpDependants, false);
 			mpDependants = loccvoResult.getDependants();
@@ -755,9 +755,11 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			result = DalSupportForGO.getGenericObject(goVO.getId(), goVO.getModuleId());
 		}
 
-		if(useRuleEngine){
-			fireSaveEvent(Event.CREATE_AFTER, result, mpDependants, true);
+		final boolean useRuleEngineSaveAfter = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId)).getEntity(), RuleEventUsageVO.SAVE_AFTER_EVENT);
+		if(useRuleEngineSaveAfter){
 			try {
+				mpDependants = reloadDependants(result, mpDependants, true);
+				fireSaveEvent(Event.CREATE_AFTER, result, mpDependants, true);
 				result = get(id);
 			} catch (CommonFinderException ex) {
 				throw new CommonFatalException(ex);
@@ -792,9 +794,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			throw new IllegalArgumentException("iModuleId");
 		}
 
-		final GenericObjectVO govoUpdated = this.modify(lowdcvo, lowdcvo.getDependants(),
-			this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId)).getEntity(), false));
-
+		final GenericObjectVO govoUpdated = this.modify(lowdcvo, lowdcvo.getDependants(), true);
 
 		final GenericObjectMetaDataCache lometadataprovider = GenericObjectMetaDataCache.getInstance();
 		final AttributeProvider attrprovider = AttributeCache.getInstance();
@@ -859,7 +859,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		this.checkForStaleVersion(dbGoVO, govo);
 
-		if (bFireSaveEvent) {
+		final boolean useRuleEngineSave = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(govo.getModuleId())).getEntity(), RuleEventUsageVO.SAVE_EVENT);
+		if (bFireSaveEvent && useRuleEngineSave) {
 			this.debug("Modifying (Start rules)");
 			final RuleObjectContainerCVO loccvoResult = this.fireSaveEvent(Event.MODIFY_BEFORE, govo, mpDependants, false);
 			govo = loccvoResult.getGenericObject();
@@ -915,8 +916,10 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		this.debug("Modifying (Start read)");
 		GenericObjectVO result = get(dbGoVO.getId());
 
-		if (bFireSaveEvent) {
+		final boolean useRuleEngineSaveAfter = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(govo.getModuleId())).getEntity(), RuleEventUsageVO.SAVE_AFTER_EVENT);
+		if (bFireSaveEvent && useRuleEngineSaveAfter) {
 			this.debug("Modifying (Start rules after save)");
+			mpDependants = reloadDependants(result, mpDependants, true);
 			this.fireSaveEvent(Event.MODIFY_AFTER, result, mpDependants, true);
 			result = get(dbGoVO.getId());
 		}
@@ -1020,9 +1023,10 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			final Map<EntityAndFieldName, String> collSubEntities = layoutFacade.getSubFormEntityAndParentSubFormEntityNames(
 				Modules.getInstance().getEntityNameByModuleId(dbGoVO.getModuleId()),dbGoVO.getId(),false);
 
-			final boolean useRuleEngine = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId)).getEntity(), false);
-			if(useRuleEngine)
+			final boolean useRuleEngineDelete = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId)).getEntity(), RuleEventUsageVO.DELETE_EVENT);
+			if(useRuleEngineDelete) {
 				this.fireDeleteEvent(gowdvo, gowdvo.getDependants(), false);
+			}
 
 			DalCallResult dalResult;
 			if (bDeletePhysically) {
@@ -1086,8 +1090,10 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			info("The entry " + gowdvo.getSystemIdentifier() + " (Id: " + gowdvo.getId() + ") has been deleted.");
 		}
 
-		if(useRuleEngine)
+		final boolean useRuleEngineDeleteAfter = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId)).getEntity(), RuleEventUsageVO.DELETE_AFTER_EVENT);
+		if(useRuleEngineDeleteAfter) {
 			this.fireDeleteEvent(gowdvo, gowdvo.getDependants(), true);
+		}
 
 		this.debug("Leaving remove(GenericObjectVO govo, boolean bDeletePhysically)");
 	}
@@ -1807,7 +1813,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		return DalSupportForGO.getDynamicAttributeVO(eo, field);
 	}
 
-	private boolean getUsesRuleEngine(String sEntityName, boolean userEvent) {
+	private boolean getUsesRuleEngine(String sEntityName, String event) {
 
 		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 		DbFrom from = query.from("T_MD_RULE_EVENT").alias(SystemFields.BASE_ALIAS);
@@ -1819,21 +1825,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		List<DbCondition> lstDbCondition = new ArrayList<DbCondition>();
 		lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("strmasterdata", String.class),
 			DataBaseHelper.getDbAccess().getQueryBuilder().literal(sEntityName)));
-		if(userEvent) {
-			lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("strevent", String.class),
-				DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.USER_EVENT)));
-		} else {
-			DbCondition orCondition = DataBaseHelper.getDbAccess().getQueryBuilder().or(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
-					from.baseColumn("strevent", String.class),
-				DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.SAVE_EVENT)),
-				DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("strevent", String.class),
-					DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.DELETE_EVENT)),
-					DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("strevent", String.class),
-						DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.SAVE_AFTER_EVENT)),
-						DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("strevent", String.class),
-							DataBaseHelper.getDbAccess().getQueryBuilder().literal(RuleEventUsageVO.DELETE_AFTER_EVENT)));
-			lstDbCondition.add(orCondition);
-		}
+		lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("strevent", String.class),
+			DataBaseHelper.getDbAccess().getQueryBuilder().literal(event)));
 
 		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().and(lstDbCondition.toArray(new DbCondition[0])));
 
