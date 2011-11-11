@@ -62542,5 +62542,65 @@
     "resourceID": "wizard.step.entitysqllayout.rowcolor",
     "locale": "de",
     "text": "Hintergrundfarbe der Zeilendarstellung konfigurieren"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.parameterValuelist.label",
+    "locale": "i-default",
+    "text": "Valuelistprovider"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.parameterValuelist.label",
+    "locale": "en",
+    "text": "Valuelistprovider"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.parameterValuelist.label",
+    "locale": "de",
+    "text": "Valuelistprovider"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.parameterValuelist.description",
+    "locale": "i-default",
+    "text": "Valuelistprovider for configuration of possible parameter objects"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.parameterValuelist.description",
+    "locale": "en",
+    "text": "Valuelistprovider for configuration of possible parameter objects"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.parameterValuelist.description",
+    "locale": "de",
+    "text": "Valuelistprovider zur Konfiguration der möglichen Parameterobjekte"
+  },
+  {
+    "resourceID": "GenerationController.vlp.wrong.parameter",
+    "locale": "i-default",
+    "text": "The valuelistprovider for this work step must not have any parameters except \"intid\"."
+  },
+  {
+    "resourceID": "GenerationController.vlp.wrong.parameter",
+    "locale": "en",
+    "text": "The valuelistprovider for this work step must not have any parameters except \"intid\"."
+  },
+  {
+    "resourceID": "GenerationController.vlp.wrong.parameter",
+    "locale": "de",
+    "text": "Der Valuelistprovider für diesen Arbeitsschritt darf keine Parameter außer \"intid\" haben."
+  },
+  {
+    "resourceID": "GenerationController.vlp.intid.singlesource",
+    "locale": "i-default",
+    "text": "This work step cannot be executed for multiple source objects."
+  },
+  {
+    "resourceID": "GenerationController.vlp.intid.singlesource",
+    "locale": "en",
+    "text": "This work step cannot be executed for multiple source objects."
+  },
+  {
+    "resourceID": "GenerationController.vlp.intid.singlesource",
+    "locale": "de",
+    "text": "Dieser Arbeitsschritt kann nicht für mehrere Quellobjekte ausgeführt werden."
   }
 ]

@@ -6,7 +6,7 @@
     <tablelayout columns="-1.0" rows="-1.0" />
     <panel>
       <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
-      <tablelayout columns="12.0|327.0|5.0|239.0|-1.0|100.0|12.0" rows="12.0|22.0|5.0|22.0|5.0|22.0|5.0|22.0|5.0|22.0|5.0|20.0|51.0|79.0|5.0|83.0|5.0|22.0|150.0|-1.0|12.0" />
+      <tablelayout columns="12.0|327.0|5.0|239.0|-1.0|100.0|12.0" rows="12.0|22.0|5.0|22.0|5.0|22.0|5.0|22.0|5.0|22.0|5.0|20.0|51.0|79.0|5.0|105.0|5.0|22.0|150.0|-1.0|12.0" />
       <collectable-component fill-control-horizontally="yes" name="name" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
         <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="1" />
         <minimum-size height="22" width="15" />
@@ -134,7 +134,7 @@
         </titled-border>
         <panel>
           <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
-          <tablelayout columns="0.0|320.0|5.0|238.0|5.0" rows="0.0|23.0|5.0|22.0|5.0" />
+          <tablelayout columns="0.0|320.0|5.0|238.0|5.0" rows="0.0|23.0|5.0|22.0|5.0|22.0" />
           <collectable-component fill-control-horizontally="yes" name="parameterEntity" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
             <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="1" />
             <minimum-size height="22" width="15" />
@@ -154,6 +154,16 @@
             <tablelayout-constraints col1="3" col2="3" row1="3" row2="3" hAlign="2" vAlign="1" />
             <minimum-size height="22" width="19" />
             <preferred-size height="22" width="20" />
+          </collectable-component>
+          <collectable-component fill-control-horizontally="yes" name="parameterValuelist" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+            <tablelayout-constraints col1="1" col2="1" row1="5" row2="5" hAlign="2" vAlign="1" />
+            <minimum-size height="22" width="15" />
+            <preferred-size height="22" width="50" />
+          </collectable-component>
+          <collectable-component fill-control-horizontally="yes" name="parameterValuelist" insertable="no" opaque="yes" visible="yes" enabled="yes" controltype="combobox" show-only="control">
+            <tablelayout-constraints col1="3" col2="3" row1="5" row2="5" hAlign="2" vAlign="1" />
+            <minimum-size height="23" width="35" />
+            <preferred-size height="23" width="70" />
           </collectable-component>
         </panel>
       </panel>

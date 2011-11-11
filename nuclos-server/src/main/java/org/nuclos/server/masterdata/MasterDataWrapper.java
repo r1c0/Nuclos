@@ -183,6 +183,8 @@ public class MasterDataWrapper {
 			vo.setCreateRelationBetweenObjects((Boolean)mdVO.getField("createRelation"));
 		if(mdVO.getField("createParameterRelation") != null)
 			vo.setCreateRelationToParameterObject((Boolean)mdVO.getField("createParameterRelation"));
+		if(mdVO.getField("parameterValuelistId") != null)
+			vo.setValuelistProviderId((Integer)mdVO.getField("parameterValuelistId"));
 		return vo;
 	}
 

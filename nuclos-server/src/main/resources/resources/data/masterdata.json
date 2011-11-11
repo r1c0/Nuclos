@@ -8105,8 +8105,8 @@
       {
         "name": "parameterEntity",
         "dbfield": "STRVALUE_T_MD_ENTITY_PARAMETER",
-        "label": "ParameterentitÃ¤t",
-        "description": "ParameterentitÃ¤t",
+        "label": "Parameterentität",
+        "description": "Parameterentität",
         "foreignentity": "nuclos_entity",
         "foreignentityfield": "entity",
         "datatype": "java.lang.String",
@@ -8143,6 +8143,22 @@
         "unique": false,
         "labelres": "nuclos.entityfield.generation.createParameterRelation.label",
         "descriptionres": "nuclos.entityfield.generation.createParameterRelation.description"
+      },
+      {
+        "name": "parameterValuelist",
+        "dbfield": "STRVALUE_T_MD_VLP",
+        "label": "Valuelistprovider",
+        "description": "Valuelistprovider",
+        "foreignentity": "nuclos_valuelistProvider",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "foreignentityfield": "name",
+        "unique": false,
+        "labelres": "nuclos.entityfield.generation.parameterValuelist.label",
+        "descriptionres": "nuclos.entityfield.generation.parameterValuelist.description"
       }
     ]
   },

@@ -43,6 +43,8 @@ public class GeneratorActionVO implements java.io.Serializable {
 	private boolean blnCreateRelationBetweenObjects;
 	private boolean blnCreateRelationToParameterObject;
 
+	private Integer valuelistProviderId;
+
 	private PropertiesMap mpProperties = null;
 
 	private Collection<GeneratorUsageVO> collUsages;
@@ -176,5 +178,13 @@ public class GeneratorActionVO implements java.io.Serializable {
 
 	public void setCaseTransitionId(Integer caseTransitionId) {
 		iCaseTransitionId = caseTransitionId;
+	}
+
+	public Integer getValuelistProviderId() {
+		return valuelistProviderId;
+	}
+
+	public void setValuelistProviderId(Integer valuelistProviderId) {
+		this.valuelistProviderId = valuelistProviderId;
 	}
 }

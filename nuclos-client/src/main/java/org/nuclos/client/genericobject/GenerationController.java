@@ -20,6 +20,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -34,6 +35,7 @@ import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.dal.DalSupportForGO;
+import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.entityobject.EntityObjectDelegate;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
@@ -75,6 +77,8 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.genericobject.ejb3.GenerationResult;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
+import org.nuclos.server.report.valueobject.DatasourceParameterVO;
+import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 
 public class GenerationController {
 
@@ -140,6 +144,35 @@ public class GenerationController {
 
 			final boolean bMulti = sources.size() > 1;
 
+			final ValuelistProviderVO vlp;
+			final Map<String, Object> params = new HashMap<String, Object>();
+			if (action.getValuelistProviderId() != null) {
+				vlp = DatasourceDelegate.getInstance().getValuelistProvider(action.getValuelistProviderId());
+				List<DatasourceParameterVO> parameters = DatasourceDelegate.getInstance().getParametersFromXML(vlp.getSource());
+				if (parameters != null && parameters.size() > 0) {
+					if (parameters.size() == 1) {
+						DatasourceParameterVO parameter = parameters.get(0);
+						if (parameter.getParameter().toUpperCase().equals("INTID")) {
+							if (!bMulti) {
+								params.put(parameter.getParameter(), IdUtils.unsafeToId(sources.keySet().iterator().next()));
+							}
+							else {
+								throw new CommonBusinessException("GenerationController.vlp.intid.singlesource");
+							}
+						}
+						else {
+							throw new CommonBusinessException("GenerationController.vlp.wrong.parameter");
+						}
+					}
+					else {
+						throw new CommonBusinessException("GenerationController.vlp.wrong.parameter");
+					}
+				}
+			}
+			else {
+				vlp = null;
+			}
+
 			final int iBtn = isConfirmationEnabled() ? confirmGenerationType(bMulti, sSourceModuleName, sTargetModuleName, action) : JOptionPane.OK_OPTION;
 
 			if (iBtn != JOptionPane.CANCEL_OPTION && iBtn != JOptionPane.CLOSED_OPTION) {
@@ -162,6 +195,10 @@ public class GenerationController {
 
 							final ICollectableListOfValues lov = new EntityListOfValues(parent);
 							final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(parent, pEntityStr, null);
+							if (vlp != null) {
+								ctl.getSearchStrategy().setValueListProviderDatasource(vlp);
+								ctl.getSearchStrategy().setValueListProviderDatasourceParameter(params);
+							}
 							lov.addLookupListener(new LookupListener() {
 								@Override
 								public void lookupSuccessful(LookupEvent ev) {
