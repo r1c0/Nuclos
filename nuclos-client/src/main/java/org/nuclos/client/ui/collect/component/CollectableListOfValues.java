@@ -195,8 +195,7 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 
 		this.getListOfValues().setQuickSearchEnabled(enableQuickSearch(clctef));
 
-		CollectableEntity clcte = clctef.getCollectableEntity();
-		EntityFieldMetaDataVO efMeta = MetaDataClientProvider.getInstance().getEntityField(clcte.getName(), clctef.getName());
+		EntityFieldMetaDataVO efMeta = MetaDataClientProvider.getInstance().getEntityField(clctef.getEntityName(), clctef.getName());
 		final EntityMetaDataVO eMetaForeign = MetaDataClientProvider.getInstance().getEntity(efMeta.getForeignEntity());
 
 		this.getListOfValues().setQuickSearchSelectedListener(new ListOfValues.QuickSearchSelectedListener() {
