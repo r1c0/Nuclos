@@ -647,9 +647,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	public Preferences getPreferences() {
 		return this.getUserPreferencesRoot().node("collect").node("entity").node(this.getEntityName());
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public EntityPreferences getEntityPreferences() {
@@ -784,9 +784,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	public final Action getNextAction() {
 		return this.actNext;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param sortImmediately
 	 */
 	public void restoreColumnOrderFromPreferences(boolean sortImmediately) {
@@ -797,7 +797,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * Reads the user-preferences for the sorting order.
 	 */
 	protected List<SortKey> readColumnOrderFromPreferences() {
-		return WorkspaceUtils.getSortKeys(getEntityPreferences(), 
+		return WorkspaceUtils.getSortKeys(getEntityPreferences(),
 				new WorkspaceUtils.IColumnIndexRecolver() {
 					@Override
 					public int getColumnIndex(String columnIdentifier) {
@@ -1389,7 +1389,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			final JMenuItem miPopupApplySelection = new JMenuItem(label);
 			miPopupApplySelection.setToolTipText(description);
 
-			getResultPanel().popupmenuRow.addSeparator();
+			getResultPanel().popupmenuRow.removeAll();//.addSeparator();
 			getResultPanel().popupmenuRow.add(miPopupApplySelection);
 			miPopupApplySelection.addActionListener(new ActionListener() {
 				@Override
@@ -3357,7 +3357,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			WorkspaceUtils.setSortKeys(getEntityPreferences(), ((SortableTableModel) resultTableModel).getSortKeys(), new WorkspaceUtils.IColumnNameResolver() {
 				@Override
 				public String getColumnName(int iColumn) {
-					return getResultTableModel().getCollectableEntityField(iColumn).getName(); 
+					return getResultTableModel().getCollectableEntityField(iColumn).getName();
 				}
 			});
 		}
@@ -3889,7 +3889,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	public void makeSureSelectedFieldsAreNonEmpty(CollectableEntity clcte, List<CollectableEntityField> lstclctefSelected) {
 		if (lstclctefSelected.isEmpty()) {
-			
+
 			List<String> fieldNames = new ArrayList<String>();
 			try {
 				List<EntityFieldMetaDataVO> fields = CollectionUtils.sorted(
@@ -3902,7 +3902,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 								return order1.compareTo(order2);
 							}
 						});
-				
+
 				for (EntityFieldMetaDataVO efMeta : fields) {
 					if (StringUtils.isNullOrEmpty(efMeta.getCalcFunction())) {
 						fieldNames.add(efMeta.getField());
@@ -3914,30 +3914,30 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			if (fieldNames.isEmpty()) {
 				fieldNames.addAll(clcte.getFieldNames());
 			}
-			
+
 			CollectableEntityField sysStateIcon = null;
 			CollectableEntityField sysStateNumber = null;
 			CollectableEntityField sysStateName = null;
-			
+
 			Set<String> clcteFieldNames = clcte.getFieldNames();
 			for (String field : fieldNames) {
 				if (!clcteFieldNames.contains(field)) {
 					LOG.warn("Field " + field + " in collectable entity " + clcte.getName() + " does not exists");
 					continue;
 				}
-				
+
 				CollectableEntityField clctef = clcte.getEntityField(field);
 				boolean select = true;
 				if (NuclosEOField.getByField(field) != null) {
 					select = false;
 					switch (NuclosEOField.getByField(field)) {
-					case STATEICON : 
+					case STATEICON :
 						sysStateIcon = clctef;
 						break;
-					case STATENUMBER : 
+					case STATENUMBER :
 						sysStateNumber = clctef;
 						break;
-					case STATE : 
+					case STATE :
 						sysStateName = clctef;
 						break;
 					}
@@ -3946,7 +3946,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 					lstclctefSelected.add(clctef);
 				}
 			}
-			
+
 			if (sysStateIcon != null)
 				lstclctefSelected.add(sysStateIcon);
 			if (sysStateNumber != null)
