@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
@@ -40,6 +41,7 @@ import org.nuclos.client.entityobject.EntityObjectDelegate;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MasterDataCollectController;
@@ -47,6 +49,8 @@ import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.ui.CommonClientWorkerAdapter;
 import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.MainFrameTabAdapter;
+import org.nuclos.client.ui.MainFrameTabListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectState;
@@ -91,10 +95,24 @@ public class GenerationController {
 	private final MainFrameTab parent;
 	private final JTabbedPane pane;
 
+	private MainFrameTabbedPane parentForLookup;
+
 	private final List<GenerationListener> listeners = new ArrayList<GenerationController.GenerationListener>();
 
 	private boolean confirmationEnabled = true;
 	private boolean headless = false;
+
+	private final MainFrameTabListener tabListener = new MainFrameTabAdapter() {
+		@Override
+		public void tabClosed(MainFrameTab tab) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					parent.unlockLayer();
+				}
+			});
+		}
+	};
 
 	public GenerationController(Map<Long, UsageCriteria> sources, GeneratorActionVO action, EntityCollectController<?> parentController, MainFrameTab parent) {
 		this(sources, action, parentController, parent, parent.getTabbedPane());
@@ -133,12 +151,27 @@ public class GenerationController {
 		listeners.remove(l);
 	}
 
+	public MainFrameTabbedPane getParentForLookup() {
+		return parentForLookup;
+	}
+
+	public void setParentForLookup(MainFrameTabbedPane parentForLookup) {
+		this.parentForLookup = parentForLookup;
+	}
+
 	/**
 	 * generates one or more object(s) from current.
 	 * @param generatoractionvo generator action vo to be used for generation
 	 */
 	public void generateGenericObject() {
 		try {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					parent.lockLayerBusy();
+				}
+			});
+
 			final String sTargetModuleName = getModuleLabel(action.getTargetModuleId());
 			final String sSourceModuleName = getModuleLabel(action.getSourceModuleId());
 
@@ -193,12 +226,15 @@ public class GenerationController {
 								MetaDataClientProvider.getInstance().getEntity(action.getParameterEntityId().longValue());
 							final String pEntityStr = parameterEntity.getEntity();
 
-							final ICollectableListOfValues lov = new EntityListOfValues(parent);
-							final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(parent, pEntityStr, null);
+							final JComponent lookupParent = getParentForLookup() != null ? getParentForLookup() : parent;
+							final ICollectableListOfValues lov = new EntityListOfValues(lookupParent);
+							final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(lookupParent, pEntityStr, null);
 							if (vlp != null) {
 								ctl.getSearchStrategy().setValueListProviderDatasource(vlp);
 								ctl.getSearchStrategy().setValueListProviderDatasourceParameter(params);
 							}
+							ctl.getFrame().addMainFrameTabListener(tabListener);
+
 							lov.addLookupListener(new LookupListener() {
 								@Override
 								public void lookupSuccessful(LookupEvent ev) {
