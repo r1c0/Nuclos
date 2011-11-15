@@ -99,7 +99,7 @@ public enum NuclosEOField implements NuclosEOFieldConstants{
 		result.setId(-10010l);
 
 		result.setForeignEntity(NuclosEntity.STATE.getEntityName());
-		result.setForeignEntityField("name");
+		result.setForeignEntityField("${name}");
 
 		result.setLocaleResourceIdForLabel("nuclos.entityfield.eo.state.label");
 		result.setLocaleResourceIdForDescription("nuclos.entityfield.eo.state.description");
@@ -132,7 +132,7 @@ public enum NuclosEOField implements NuclosEOFieldConstants{
 		result.setId(-10011l);
 
 		result.setForeignEntity(NuclosEntity.STATE.getEntityName());
-		result.setForeignEntityField("numeral");
+		result.setForeignEntityField("${numeral}");
 
 		result.setLocaleResourceIdForLabel("nuclos.entityfield.eo.statenumeral.label");
 		result.setLocaleResourceIdForDescription("nuclos.entityfield.eo.statenumeral.description");
@@ -165,7 +165,7 @@ public enum NuclosEOField implements NuclosEOFieldConstants{
 		result.setId(-10020l);
 
 		result.setForeignEntity(NuclosEntity.STATE.getEntityName());
-		result.setForeignEntityField("icon");
+		result.setForeignEntityField("${icon}");
 
 		result.setLocaleResourceIdForLabel("nuclos.entityfield.eo.stateicon.label");
 		result.setLocaleResourceIdForDescription("nuclos.entityfield.eo.stateicon.description");

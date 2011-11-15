@@ -85,6 +85,9 @@ public final class CollectableSubCondition extends AbstractCollectableSearchCond
 		return this.condSub;
 	}
 
+	/**
+	 * @deprecated Don't use this constant in new applications.
+	 */
 	@Override
 	public int getType() {
 		return TYPE_SUB;

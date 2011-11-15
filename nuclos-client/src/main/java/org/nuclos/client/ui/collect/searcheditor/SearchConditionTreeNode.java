@@ -32,6 +32,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondi
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.PlainSubCondition;
+import org.nuclos.common.collect.collectable.searchcondition.RefJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ToHumanReadablePresentationVisitor;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
@@ -373,6 +374,11 @@ public abstract class SearchConditionTreeNode extends DefaultMutableTreeNode {
 			throw new UnsupportedOperationException();
 		}
 
+		@Override
+		public SubConditionTreeNode visitRefJoinCondition(RefJoinCondition subcond) {
+			throw new UnsupportedOperationException();
+		}
+		
 		@Override
 		public SearchConditionTreeNode visitSelfSubCondition(CollectableSelfSubCondition subcond) {
 			return subcond.getSubCondition().accept(new NewSearchConditionTreeNodeVisitor());

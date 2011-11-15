@@ -350,6 +350,12 @@ public class SearchConditionUtils {
 		}
 
 		@Override
+		public CollectableSearchCondition visitRefJoinCondition(RefJoinCondition joincond) {
+			// do noting
+			return joincond;
+		}
+
+		@Override
 		public CollectableSearchCondition visitSelfSubCondition(CollectableSelfSubCondition subcond) {
 			CollectableSelfSubCondition res = new CollectableSelfSubCondition(subcond.getForeignKeyFieldName(),
 					sorted(subcond.getSubCondition(), bSortByLabels), subcond.getSubEntityName());

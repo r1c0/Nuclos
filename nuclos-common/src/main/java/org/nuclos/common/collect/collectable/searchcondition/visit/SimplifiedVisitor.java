@@ -29,6 +29,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondi
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.PlainSubCondition;
+import org.nuclos.common.collect.collectable.searchcondition.RefJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
@@ -115,6 +116,12 @@ public class SimplifiedVisitor implements Visitor<CollectableSearchCondition, Ru
 
 	@Override
 	public CollectableSearchCondition visitPivotJoinCondition(PivotJoinCondition joincond) {
+		// do nothing
+		return joincond;
+	}
+
+	@Override
+	public CollectableSearchCondition visitRefJoinCondition(RefJoinCondition joincond) {
 		// do nothing
 		return joincond;
 	}

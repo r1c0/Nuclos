@@ -33,14 +33,33 @@ public class DbColumnExpression<T> extends DbExpression<T> {
 	}
 
 	DbColumnExpression(String tableAlias, DbFrom fromTable, String columnName, Class<T> javaType, boolean caseSensitive) {
-		super(fromTable.getQuery().getBuilder(), javaType, caseSensitive
-			? PreparedStringBuilder.concat(tableAlias, ".", "\"", columnName, "\"")
-			: PreparedStringBuilder.concat(tableAlias, ".", columnName));
+		super(fromTable.getQuery().getBuilder(), javaType, mkQualifiedColumnName(tableAlias, columnName, caseSensitive));
 		if (fromTable.getAlias() == null) {
 			throw new IllegalArgumentException("Table alias in DbFrom must not be null on table " + fromTable.getTableName());
 		}
 		this.tableAlias = tableAlias;
 		this.columnName = columnName;
+	}
+	
+	static final PreparedStringBuilder mkQualifiedColumnName(String tableAlias, String columnName, boolean caseSensitive) {
+		final PreparedStringBuilder result;
+		if (tableAlias != null) {
+			if (caseSensitive) {
+				result = PreparedStringBuilder.concat(tableAlias, ".", "\"", columnName, "\"");
+			}
+			else {
+				result = PreparedStringBuilder.concat(tableAlias, ".", columnName);
+			}
+		}
+		else {
+			if (caseSensitive) {
+				result = PreparedStringBuilder.concat("\"", columnName, "\"");
+			}
+			else {
+				result = PreparedStringBuilder.concat(columnName);
+			}
+		}
+		return result;
 	}
 
 	public final DbExpression<T> tableAlias(String tableAlias) {

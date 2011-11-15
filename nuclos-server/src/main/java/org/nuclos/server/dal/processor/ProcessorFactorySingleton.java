@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEOField;
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.dal.vo.EOGenericObjectVO;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
@@ -43,6 +44,7 @@ import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.dal.DalUtils;
+import org.nuclos.server.dal.processor.jdbc.TableAliasSingleton;
 import org.nuclos.server.dal.processor.jdbc.impl.DynamicEntityObjectProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.EOGenericObjectProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.EntityFieldMetaDataProcessor;
@@ -126,27 +128,32 @@ public class ProcessorFactorySingleton {
 		return null;
 	}
 
-	protected static <S extends Object> IColumnToVOMapping<S> createFieldMapping(String alias, String column,
-			String field, String dataType, Boolean isReadonly, boolean caseSensitive) {
+	protected static <S extends Object> IColumnToVOMapping<S> createFieldMapping(String alias, EntityFieldMetaDataVO field) {
 		try {
-			return new ColumnToFieldVOMapping<S>(alias, column, field,
-					(Class<S>) Class.forName(dataType), isReadonly, caseSensitive);
+			return new ColumnToFieldVOMapping<S>(alias, field);
 		} catch (ClassNotFoundException e) {
 			throw new CommonFatalException(e);
 		}
 	}
 
-	protected static <S extends Object> IColumnToVOMapping<S> createFieldIdMapping(String alias, String column,
-			String field, String dataType, Boolean isReadonly, boolean caseSensitive) {
+	protected static <S extends Object> IColumnToVOMapping<S> createRefFieldMapping(EntityFieldMetaDataVO field) {
 		try {
-			return new ColumnToFieldIdVOMapping<S>(alias, column, field,
-					(Class<S>) Class.forName(dataType), isReadonly, caseSensitive);
+			final String alias = TableAliasSingleton.getInstance().getAlias(field);
+			return new ColumnToRefFieldVOMapping<S>(alias, field);
 		} catch (ClassNotFoundException e) {
 			throw new CommonFatalException(e);
 		}
 	}
 
-	protected static <S extends Object> IColumnToVOMapping<S> createJoinMapping(String alias, String column,
+	protected static <S extends Object> IColumnToVOMapping<S> createFieldIdMapping(String alias, EntityFieldMetaDataVO field) {
+		try {
+			return new ColumnToFieldIdVOMapping<S>(alias, field);
+		} catch (ClassNotFoundException e) {
+			throw new CommonFatalException(e);
+		}
+	}
+
+	protected static <S extends Object> IColumnToVOMapping<S> createPivotJoinMapping(String alias, String column,
 			String field, String dataType, Boolean isReadonly, String joinEntity) {
 		try {
 			return new PivotJoinEntityFieldVOMapping<S>(alias, column,
@@ -188,8 +195,9 @@ public class ProcessorFactorySingleton {
 				continue;
 			}
 
+			// normal (non-reference) field
 			if (efMeta.getForeignEntity() == null) {
-				allColumns.add(createFieldMapping(SystemFields.BASE_ALIAS, efMeta.getDbColumn(), efMeta.getField(), efMeta.getDataType(), efMeta.isReadonly(), efMeta.isDynamic()));
+				allColumns.add(createFieldMapping(SystemFields.BASE_ALIAS, efMeta));
 			}
 			// column is ref to foreign table
 			else {
@@ -197,24 +205,30 @@ public class ProcessorFactorySingleton {
 				if (efMeta.getDbColumn().toUpperCase().startsWith("INTID_")) {
 					// kein join nötig!
 					if (!isIdColumnInList(allColumns, efMeta.getDbColumn()))
-						allColumns.add(createFieldIdMapping(SystemFields.BASE_ALIAS, efMeta.getDbColumn(), efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), efMeta.isDynamic()));
+						allColumns.add(createFieldIdMapping(SystemFields.BASE_ALIAS, efMeta));
 				}
 				// normal case: key ref and 'stringified' ref to foreign table
 				else {
 					// add 'stringified' ref to column mapping
-					allColumns.add(createFieldMapping(SystemFields.BASE_ALIAS, efMeta.getDbColumn(), efMeta.getField(), efMeta.getDataType(), true, efMeta.isDynamic()));
-					String dbIdFieldName = DalUtils.getDbIdFieldName(efMeta.getDbColumn());
+					
+					// The 'if' is temporary HACK. We MUST get rid of it! (tp) 
+					if (!eMeta.getEntity().equals(NuclosEntity.DATASOURCE) && !efMeta.getDbColumn().equalsIgnoreCase("STRVALUE_T_MD_NUCLET")) {
+						allColumns.add(createRefFieldMapping(efMeta));
+					}
+					
+					// Also add foreign key
+					final String dbIdFieldName = DalUtils.getDbIdFieldName(efMeta.getDbColumn());
 					if (!isIdColumnInList(allColumns, dbIdFieldName)) {
-						allColumns.add(createFieldIdMapping(SystemFields.BASE_ALIAS, dbIdFieldName, efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), efMeta.isDynamic()));
+						allColumns.add(createFieldIdMapping(SystemFields.BASE_ALIAS, efMeta));
 					}
 					// id column is already in allColumns:
 					// Replace the id column if the one present is read-only and the current is not read-only
 					// This in effect only switched the read-only flag to false.
 					else {
-						IColumnToVOMapping<?> col = getColumnFromList(allColumns, dbIdFieldName);
+						final IColumnToVOMapping<?> col = getColumnFromList(allColumns, dbIdFieldName);
 						if (col.isReadonly() && !efMeta.isReadonly()) {
 							allColumns.remove(col);
-							allColumns.add(createFieldIdMapping(SystemFields.BASE_ALIAS, dbIdFieldName, efMeta.getField(), DT_LONG.getName(), efMeta.isReadonly(), efMeta.isDynamic()));
+							allColumns.add(createFieldIdMapping(SystemFields.BASE_ALIAS, efMeta));
 						}
 					}
 				}
@@ -397,19 +411,17 @@ public class ProcessorFactorySingleton {
 		}
 
 		if (pinfo == null) {
-			mapping = createFieldMapping(alias,
-					field.getDbColumn(), field.getField(), field.getDataType(), field.isReadonly(), false);
+			mapping = createFieldMapping(alias, field);
 		}
 		else {
 			final EntityFieldMetaDataVO vField = mdProv.getEntityField(pinfo.getSubform(), pinfo.getValueField());
-			final IColumnToVOMapping<?> mapping2 = createJoinMapping(alias,
+			final IColumnToVOMapping<?> mapping2 = createPivotJoinMapping(alias,
 					vField.getDbColumn(), vField.getField(), vField.getDataType(), vField.isReadonly(), pinfo.getSubform());
 			processor.addToColumns(mapping2);
 			// Also add the key field so that the gui result table could find the pivot
 			final EntityFieldMetaDataVO kField = mdProv.getEntityField(pinfo.getSubform(), pinfo.getKeyField());
-			mapping = createJoinMapping(alias,
+			mapping = createPivotJoinMapping(alias,
 					kField.getDbColumn(), kField.getField(), kField.getDataType(), kField.isReadonly(), pinfo.getSubform());
-
 		}
 		processor.addToColumns(mapping);
 	}

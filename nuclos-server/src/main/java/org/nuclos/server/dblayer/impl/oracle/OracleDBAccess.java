@@ -93,7 +93,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 
 	@Override
 	public DbQueryBuilder getQueryBuilder() {
-		return new OracleQueryBuilder();
+		return new OracleQueryBuilder(this);
 	}
 
 	@Override
@@ -298,7 +298,11 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 		return "";
 	}
 
-	static class OracleQueryBuilder extends QueryBuilder {
+	static class OracleQueryBuilder extends StandardQueryBuilder {
+		
+		public OracleQueryBuilder(StandardSqlDBAccess dbAccess) {
+			super(dbAccess);
+		}
 
 		@Override
 		public DbExpression<Date> currentDate() {

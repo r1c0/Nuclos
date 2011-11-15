@@ -19,22 +19,29 @@ package org.nuclos.server.dal.processor.jdbc.impl;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosEOField;
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
+import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
+import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.DalCallResult;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
@@ -44,8 +51,10 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.DatasourceServerUtils;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
+import org.nuclos.server.dal.processor.IColumnWithMdToVOMapping;
 import org.nuclos.server.dal.processor.ProcessorConfiguration;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcWithFieldsDalProcessor;
+import org.nuclos.server.dal.processor.jdbc.TableAliasSingleton;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
@@ -63,6 +72,8 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 	implements JdbcEntityObjectProcessor {
 
 	// static variables
+	
+	private static final Logger LOG = Logger.getLogger(EntityObjectProcessor.class);
 
 	/**
 	 * TODO: Is null for entity name ok?
@@ -70,15 +81,22 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 	 * @deprecated This is not really a field of an entity - avoid this!
 	 */
 	private static final CollectableEntityField clctEOEFdeleted = new CollectableEOEntityField(NuclosEOField.LOGGICALDELETED.getMetaData(), "<dummy>");
-
+	
 	private final Collection<List<IColumnToVOMapping<?>>> logicalUniqueConstraintCombinations =
 		new ArrayList<List<IColumnToVOMapping<?>>>();
-
+	
 	// instance variables
 
 	protected final EntityMetaDataVO eMeta;
 
+	/**
+	 * @deprecated We want to get rid of views.
+	 */
 	private final String dbSourceForSQL;
+	
+	/**
+	 * @deprecated We want to get rid of views.
+	 */
 	private final String dbSourceForDML;
 
 	private final IColumnToVOMapping<Long> idColumn;
@@ -91,8 +109,9 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		this.idColumn = config.getIdColumn();
 		this.versionColumn = config.getVersionColumn();
 
-		dbSourceForSQL = this.eMeta.getDbEntity();
+		// dbSourceForSQL = this.eMeta.getDbEntity();
 		dbSourceForDML = this.eMeta.isVirtual() ? this.eMeta.getVirtualentity() : "T_" + this.eMeta.getDbEntity().substring(2);
+		dbSourceForSQL = dbSourceForDML;
 
 		/**
 		 * Logical Unique Constraints
@@ -130,11 +149,17 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		}
 	}
 
+	/**
+	 * @deprecated We want to get rid of views.
+	 */
 	@Override
 	public String getDbSourceForDML() {
 		return dbSourceForDML;
 	}
 
+	/**
+	 * @deprecated We want to get rid of views.
+	 */
 	@Override
 	public String getDbSourceForSQL() {
 		return dbSourceForSQL;
@@ -150,29 +175,51 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		super.delete(id);
 	}
 
+	/**
+	 * Includes joins for (former) views.
+	 */
 	@Override
 	public List<EntityObjectVO> getAll() {
-		return super.getAll();
+		/*
+		if (eMeta.getEntity().equals(NuclosEntity.DATASOURCE.getEntityName())) {
+			return super.getAll();
+		}
+		 */
+		return getBySearchExpression(CollectableSearchExpression.TRUE_SEARCH_EXPR);
 	}
 
+	/**
+	 * Includes joins for (former) views.
+	 */
 	@Override
 	public EntityObjectVO getByPrimaryKey(Long id) {
-		return super.getByPrimaryKey(id);
+		return CollectionUtils.getSingleIfExist(getBySearchExpressionAndPrimaryKeys(
+				CollectableSearchExpression.TRUE_SEARCH_EXPR, Collections.singletonList(id)));
 	}
 
+	/**
+	 * Includes joins for (former) views.
+	 */
 	@Override
 	public List<EntityObjectVO> getByPrimaryKeys(List<Long> ids) {
-		return super.getByPrimaryKeys(allColumns, ids);
+		return getBySearchExpressionAndPrimaryKeys(CollectableSearchExpression.TRUE_SEARCH_EXPR, ids);
 	}
 
+	/**
+	 * Includes joins for (former) views.
+	 */
 	@Override
     public List<EntityObjectVO> getBySearchExpressionAndPrimaryKeys(CollectableSearchExpression clctexpr, List<Long> ids) {
 		DbQuery<Object[]> query = createQuery(allColumns);
+		
+		// we modify the search expr here...
+		clctexpr = addJoinedRefs(null, clctexpr);
+		
 		EOSearchExpressionUnparser unparser = new EOSearchExpressionUnparser(query, eMeta);
 		unparser.unparseSearchCondition(getSearchConditionWithDeletedAndVLP(clctexpr));
 
 		DbFrom from = CollectionUtils.getFirst(query.getRoots());
-		DbExpression<?> pkExpr = getDbColumn(from, getPrimaryKeyColumn());
+		DbExpression<?> pkExpr = getPrimaryKeyColumn().getDbColumn(from);
 		Transformer<Object[], EntityObjectVO> transformer = createResultTransformer(allColumns);
 
 		List<EntityObjectVO> result = new ArrayList<EntityObjectVO>(ids.size());
@@ -209,21 +256,35 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 			return super.batchInsertOrUpdate(colDalVO, failAfterBatch);
 	}
 
+	/**
+	 * Includes joins for (former) views.
+	 */
 	@Override
 	public List<EntityObjectVO> getBySearchExpression(CollectableSearchExpression clctexpr) {
 		return getBySearchExpression(clctexpr, null, false);
 	}
 
+	/**
+	 * Includes joins for (former) views.
+	 */
 	@Override
 	public List<EntityObjectVO> getBySearchExpression(CollectableSearchExpression clctexpr, boolean bSortResult) {
 		return getBySearchExpression(clctexpr, null, bSortResult);
 	}
 
+	/**
+	 * Includes joins for (former) views.
+	 */
 	@Override
 	public List<EntityObjectVO> getBySearchExpression(CollectableSearchExpression clctexpr, Integer iMaxRowCount, boolean bSortResult) {
 		return getBySearchExpression(null, clctexpr, iMaxRowCount, bSortResult, false);
 	}
 
+	/**
+	 * Includes joins for (former) views.
+	 * 
+	 * @deprecated fields doesn't support fields from joined entities, hence we need something better... 
+	 */
 	@Override
 	public List<EntityObjectVO> getBySearchExpression(Collection<String> fields, CollectableSearchExpression clctexpr, Integer iMaxRowCount, boolean bSortResult, boolean bSearchInDMLSource) {
 		List<IColumnToVOMapping<? extends Object>> columns = fields == null ? allColumns : getColumns(fields, bSearchInDMLSource);
@@ -232,6 +293,9 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 			columns.add(idColumn);
 		}
 
+		// we modify the search expr here...
+		clctexpr = addJoinedRefs(fields, clctexpr);
+		
 		DbQuery<Object[]> query = createQuery(columns, bSearchInDMLSource);
 		EOSearchExpressionUnparser unparser = new EOSearchExpressionUnparser(query, eMeta);
 		unparser.unparseSearchCondition(getSearchConditionWithDeletedAndVLP(clctexpr));
@@ -261,7 +325,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 
 		DbFrom from = query.from(getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
 
-		query.select(this.<Long>getDbColumn(from, getPrimaryKeyColumn()));
+		query.select(getPrimaryKeyColumn().getDbColumn(from));
 
 		EOSearchExpressionUnparser unparser = new EOSearchExpressionUnparser(query, eMeta);
 		unparser.unparseSearchCondition(getSearchConditionWithDeletedAndVLP(searchExpression));
@@ -308,7 +372,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 
 		DbQuery<Integer> query = createSingleColumnQuery(versionColumn, true);
 		DbFrom from = CollectionUtils.getFirst(query.getRoots());
-		query.where(query.getBuilder().equal(getDbColumn(from, getPrimaryKeyColumn()), id));
+		query.where(query.getBuilder().equal(getPrimaryKeyColumn().getDbColumn(from), id));
 		try {
 			return DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 		} catch (DbInvalidResultSizeException e) {
@@ -384,6 +448,87 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 			public boolean evaluate(IColumnToVOMapping<? extends Object> column) {
 				return fields.contains(column.getField()) && (!bSearchInDMLSource || (bSearchInDMLSource && !column.isReadonly()));
 			}});
+	}
+	
+	/**
+	 * Includes joins for (former) views.
+	 */
+	@Override
+	protected List<EntityObjectVO> getByIdColumn(final List<IColumnToVOMapping<? extends Object>> columns,
+			IColumnToVOMapping<Long> column, final Long id) {
+		return getBySearchExpressionAndPrimaryKeys(CollectableSearchExpression.TRUE_SEARCH_EXPR, Collections.singletonList(id));
+	}
+
+	private CollectableSearchExpression addJoinedRefs(Collection<String> fields, CollectableSearchExpression clctexpr) {
+		// ???
+		final List<IColumnToVOMapping<? extends Object>> columns;
+		if (fields == null) {
+			columns = allColumns;
+		}
+		else {
+			// TODO: ???
+			columns = new ArrayList<IColumnToVOMapping<? extends Object>>(fields.size());
+			// defensive copy
+			final Set<String> fieldSet = new HashSet<String>(fields);
+			for (IColumnToVOMapping<?> m: allColumns) {
+				if (fieldSet.remove(m.getField())) {
+					columns.add(m);
+				}
+			}
+			if (!fieldSet.isEmpty()) {
+				throw new IllegalStateException("Unable to map the following fields: " + fieldSet);
+			}
+		}
+		CollectableSearchExpression result = clctexpr;
+		final List<CollectableSearchCondition> joins = getJoinsForColumns(columns);
+		if (!joins.isEmpty()) {
+			// add old condition
+			if (clctexpr != null && clctexpr.getSearchCondition() != null) {
+				joins.add(clctexpr.getSearchCondition());
+			}
+			result = new CollectableSearchExpression(
+					new CompositeCollectableSearchCondition(LogicalOperator.AND, joins), 
+					clctexpr.getSortingOrder());
+		}
+		return result;
+	}
+	
+	private CollectableSearchExpression getRefFieldsSearchExpression(final List<IColumnToVOMapping<? extends Object>> columns) {
+		final List<CollectableSearchCondition> joins = getJoinsForColumns(columns);
+		if (!joins.isEmpty()) {
+			return new CollectableSearchExpression(
+					new CompositeCollectableSearchCondition(LogicalOperator.AND, joins));
+		}
+		return null;
+	}
+	
+	private List<CollectableSearchCondition> getJoinsForColumns(final List<IColumnToVOMapping<? extends Object>> columns) {
+		final TableAliasSingleton tas = TableAliasSingleton.getInstance();
+		final List<CollectableSearchCondition> result = new ArrayList<CollectableSearchCondition>();
+		final boolean debug = LOG.isDebugEnabled();
+		for (IColumnToVOMapping<?> m: columns) {
+			final String f = m.getColumn();
+			if (f.startsWith("STRVALUE_")) {
+				final String alias = tas.getAlias(m);
+				if (debug) {
+					LOG.info("getJoinsForColumns: apply RefJoinCondition for " + m + " alias " + alias);
+				}
+				result.add(tas.getRefJoinCondition(m));
+			}
+			else if (f.startsWith("INTVALUE_")) {
+				// We used to have *2* joins on nuclos_state, one for STRVALUE_ and INTVALUE_...
+				// Hence we omit the INTVALUE case
+				final EntityFieldMetaDataVO meta = ((IColumnWithMdToVOMapping<?>) m).getMeta();
+				if (!meta.getForeignEntity().equals(NuclosEntity.STATE.getEntityName())) {
+					final String alias = tas.getAlias(m);
+					if (debug) {
+						LOG.info("getJoinsForColumns: apply RefJoinCondition for " + m + " alias " + alias);
+					}
+					result.add(tas.getRefJoinCondition(m));
+				}				
+			}
+		}
+		return result;
 	}
 
 }

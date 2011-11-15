@@ -27,6 +27,7 @@ import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
+import org.nuclos.common.collect.collectable.searchcondition.RefJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
 import org.nuclos.common.collection.CollectionUtils;
@@ -75,6 +76,12 @@ public class GetAtomicFieldsMapVisitor implements Visitor<Map<String, Collectabl
 
 	@Override
 	public Map<String, CollectableField> visitPivotJoinCondition(PivotJoinCondition joincond) {
+		// do nothing
+		return mpFields;
+	}
+
+	@Override
+	public Map<String, CollectableField> visitRefJoinCondition(RefJoinCondition joincond) {
 		// do nothing
 		return mpFields;
 	}

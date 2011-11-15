@@ -75,6 +75,7 @@ import org.nuclos.server.dblayer.impl.util.PreparedString;
 import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 import org.nuclos.server.dblayer.incubator.DbExecutor.ConnectionRunner;
 import org.nuclos.server.dblayer.incubator.DbExecutor.ResultSetRunner;
+import org.nuclos.server.dblayer.query.DbColumnExpression;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbJoin;
@@ -185,7 +186,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 
     @Override
     public <T, R> List<R> executeQuery(DbQuery<T> query, Transformer<? super T, R> transformer) throws DbException {
-        QueryBuilder queryBuilder = (QueryBuilder) query.getBuilder();
+        StandardQueryBuilder queryBuilder = (StandardQueryBuilder) query.getBuilder();
         PreparedString ps = queryBuilder.getPreparedString(query);
         // logSql("execute SQL query", ps.toString(), ps.getParameters());
         // Create runner
@@ -596,15 +597,29 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         return true;
     }
 
-    public static abstract class QueryBuilder extends DbQueryBuilder {
+    public static abstract class StandardQueryBuilder extends DbQueryBuilder {
+    	
+    	private final StandardSqlDBAccess dbAccess;
+    	
+    	protected StandardQueryBuilder(StandardSqlDBAccess dbAccess) {
+    		if (dbAccess == null) {
+    			throw new NullPointerException();
+    		}
+    		this.dbAccess = dbAccess;
+    	}
+    	
+    	@Override
+    	public StandardSqlDBAccess getDBAccess() {
+    		return dbAccess;
+    	}
 
         protected <T, R> ResultSetRunner<List<R>> createListResultSetRunner(final DbQuery<? extends T> query, Transformer<? super T, R> transformer)
         		throws DbException {
-            final List<? extends DbSelection<?>> selections = query.getSelections();
-            final DbTupleElementImpl<?>[] elements = new DbTupleElementImpl<?>[selections.size()];
+            final List<? extends DbSelection<? extends T>> selections = query.getSelections();
+            final DbTupleElementImpl<T>[] elements = new DbTupleElementImpl[selections.size()];
             for (int i = 0; i < selections.size(); i++) {
-                DbSelection<?> selection = selections.get(i);
-                elements[i] = new DbTupleElementImpl(selection);
+                DbSelection<? extends T> selection = selections.get(i);
+                elements[i] = new DbTupleElementImpl<T>((DbSelection<T>) selection);
             }
             Transformer<Object[], ? extends Object> internalTransformer;
             if (query.getResultType() == Object[].class) {
@@ -627,7 +642,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
             if (transformer == TransformerUtils.id()) {
                 return new DefaultResultSetRunner(elements, internalTransformer);
             } else {
-                return new DefaultResultSetRunner(elements, TransformerUtils.chained(internalTransformer, (Transformer<Object, R>) transformer));
+                return new DefaultResultSetRunner<R>(elements, TransformerUtils.chained(internalTransformer, (Transformer<Object, R>) transformer));
             }
         }
 
@@ -1118,6 +1133,10 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         return getSqlForCast(sql, columnType);
     }
 
+    /**
+     * @deprecated Views has always been problematic (especially with PostgreSQL).
+     * 	Avoid whenever possible.
+     */
     @Override
     protected List<String> getSqlForCreateSimpleView(DbSimpleView view) throws DbException {
         StringBuilder fromClause = new StringBuilder();
@@ -1184,7 +1203,8 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         return name;
     }
 
-    protected String getSqlForConcat(String x, String y) {
+    @Override
+    public String getSqlForConcat(String x, String y) {
         // or JDBC escape syntax? String.format("{fn concat(%s,%s)}", x, y);
         return String.format("CONCAT(%s,%s)", x, y);
     }

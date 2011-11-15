@@ -27,6 +27,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
  *
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
+ * 
+ * @see org.nuclos.server.dal.processor.jdbc.impl.EOSearchExpressionUnparser.UnparseVisitor
  */
 public abstract class AbstractCollectableSearchCondition implements CollectableSearchCondition {
 	

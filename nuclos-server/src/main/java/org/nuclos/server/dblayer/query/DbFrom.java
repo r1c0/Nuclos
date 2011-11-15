@@ -33,6 +33,7 @@ public class DbFrom implements Serializable {
 	// private final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
 	
 	DbFrom(DbQuery<?> query, String tableName) {
+		if (query == null || tableName == null) throw new NullPointerException();
 		this.query = query;
 		this.tableName = tableName;
 		this.joins = new LinkedHashSet<DbJoin>();
@@ -105,7 +106,7 @@ public class DbFrom implements Serializable {
 	 * @since Nuclos 3.1.01
 	 */
 	public <T> DbColumnExpression<T> column(String tAlias, String columnName, Class<T> javaClass) {
-		// This would be to early, as the unparser could add a join... (tp)
+		// This would be too early, as the unparser could add a join... (tp)
 		// if (!containsAlias(alias)) throw new IllegalArgumentException("FROM clause " + this + " does not contain alias " + alias);
 		return new DbColumnExpression<T>(tAlias, this, columnName, javaClass);
 	}
@@ -120,8 +121,8 @@ public class DbFrom implements Serializable {
 		return new DbColumnExpression<T>(tableAlias, this, columnName, javaClass);
 	}
 	
-	DbQuery<?> getQuery() {
-		return query;
+	public <T extends Object> DbQuery<T> getQuery() {
+		return (DbQuery<T>) query;
 	}
 	
 	/**

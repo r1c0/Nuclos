@@ -68,6 +68,9 @@ public class CollectableSelfSubCondition extends AbstractCollectableSearchCondit
 		return this.condSub;
 	}
 
+	/**
+	 * @deprecated Don't use this constant in new applications.
+	 */
 	@Override
 	public int getType() {
 		return TYPE_SUB;

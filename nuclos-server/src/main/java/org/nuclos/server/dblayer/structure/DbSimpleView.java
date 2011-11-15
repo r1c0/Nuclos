@@ -30,8 +30,11 @@ import org.nuclos.server.dblayer.DbIdent;
 
 /**
  * This artifact represents a Nuclos generated view, i.e. a view which maps...  
- * 
+ * <p>
  * Note that this artifact is a table artifact, i.e. it belongs to its base table.
+ * </p>
+ * @deprecated Views has always been problematic (especially with PostgreSQL).
+ * 	Avoid whenever possible.
  */
 public class DbSimpleView extends DbTableArtifact {
 
@@ -41,6 +44,10 @@ public class DbSimpleView extends DbTableArtifact {
 		FUNCTION;
 	}
 	
+	/**
+	 * @deprecated Views has always been problematic (especially with PostgreSQL).
+	 * 	Avoid whenever possible.
+	 */
 	public static class DbSimpleViewColumn implements Serializable {
 
 		private final DbSimpleViewColumnType type;

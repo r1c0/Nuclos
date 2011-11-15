@@ -120,7 +120,7 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 
 	@Override
 	public DbQueryBuilder getQueryBuilder() {
-		return new PostgreSQLQueryBuilder();
+		return new PostgreSQLQueryBuilder(this);
 	}
 
 	@Override
@@ -244,7 +244,7 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	protected String getSqlForConcat(String x, String y) {
+	public String getSqlForConcat(String x, String y) {
 		return String.format("%s||%s", x, y);
 	}
 
@@ -337,7 +337,11 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 		}
 	}
 
-	static class PostgreSQLQueryBuilder extends QueryBuilder {
+	static class PostgreSQLQueryBuilder extends StandardQueryBuilder {
+		
+		public PostgreSQLQueryBuilder(StandardSqlDBAccess dbAccess) {
+			super(dbAccess);
+		}
 
 		@Override
 		public DbExpression<String> upper(DbExpression<String> x) {

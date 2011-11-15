@@ -64,6 +64,8 @@ public abstract class AbstractDBAccess extends DbAccess {
 		return artifact.accept(sqlForDropVisitor);
 	}
 
+    public abstract String getSqlForConcat(String x, String y);
+
 	protected abstract List<PreparedString> getSqlForInsert(DbInsertStatement insertStmt);
 
 	protected abstract List<PreparedString> getSqlForDelete(DbDeleteStatement deleteStmt);

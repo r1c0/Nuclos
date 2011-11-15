@@ -46,6 +46,9 @@ public class PlainSubCondition implements CollectableSearchCondition {
 		this.conditionName = pConditionName;
 	}
 	
+	/**
+	 * @deprecated Don't use this constant in new applications.
+	 */
 	@Override
 	public int getType() {
 		return TYPE_SUB;

@@ -44,6 +44,11 @@ public class PreparedStringBuilder implements Serializable {
 	public PreparedStringBuilder() {
 	}
 	
+	public PreparedStringBuilder(String s) {
+		this();
+		append(s);
+	}
+	
 	public PreparedStringBuilder append(String string) {
 		appendImpl(string);
 		return this;

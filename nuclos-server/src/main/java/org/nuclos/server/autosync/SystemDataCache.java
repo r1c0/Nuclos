@@ -43,6 +43,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondi
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.PlainSubCondition;
+import org.nuclos.common.collect.collectable.searchcondition.RefJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
 import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
@@ -309,7 +310,12 @@ public class SystemDataCache {
 
 		@Override
 		public Predicate<MasterDataVO> visitPivotJoinCondition(PivotJoinCondition joincond) {
-			throw new IllegalArgumentException("joincond");
+			throw new IllegalArgumentException("pivotjoincond");
+		}
+
+		@Override
+		public Predicate<MasterDataVO> visitRefJoinCondition(RefJoinCondition joincond) {
+			throw new IllegalArgumentException("refjoincond");
 		}
 
 		@Override

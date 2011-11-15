@@ -40,7 +40,7 @@ public class DbQuery<T extends Object> {
 	private Map<String, DbFrom> tableAliases = new TreeMap<String, DbFrom>(String.CASE_INSENSITIVE_ORDER);
 	private boolean distinct = false;
 	private int maxResults = -1;
-	private List<? extends DbSelection<T>> selections;
+	private List<DbSelection<T>> selections;
 	private DbCondition condition;
 	private List<DbExpression<?>> groupList;
 	private DbCondition groupRestriction;
@@ -69,13 +69,17 @@ public class DbQuery<T extends Object> {
 	}
 	
 	public DbQuery<T> select(DbSelection<T> selection) {
-		this.selections = Collections.singletonList(selection);
+		// this.selections = Collections.singletonList(selection);	
+		this.selections = new ArrayList<DbSelection<T>>();
+		this.selections.add(selection);
 		checkSelections();
 		return this;
 	}
 	
 	public DbQuery<T> selectLiberate(DbSelection<?> selection) {
-		this.selections = Collections.singletonList((DbSelection<T>) selection);
+		// this.selections = Collections.singletonList(selection);
+		this.selections = new ArrayList<DbSelection<T>>();
+		this.selections.add((DbSelection<T>) selection);
 		checkSelections();
 		return this;
 	}
@@ -87,7 +91,7 @@ public class DbQuery<T extends Object> {
 	public DbQuery<T> multiselect(List<? extends DbSelection<?>> selections) {
 		final Class<T> clazz = getResultType();
 		if (clazz == Object[].class || clazz == DbTuple.class) {
-			this.selections = (List<? extends DbSelection<T>>) selections;
+			this.selections = (List<DbSelection<T>>) selections;
 		} else {
 			throw new IllegalArgumentException("Multi selection requires tuple/array result type, not " + clazz);
 		}
@@ -118,7 +122,7 @@ public class DbQuery<T extends Object> {
 		*/
 	}
 	
-	public List<? extends DbSelection<T>> getSelections() {
+	public List<DbSelection<T>> getSelections() {
 		return selections;
 	}
 	

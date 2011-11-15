@@ -24,17 +24,20 @@ import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpressi
 
 public interface IDalSearchExpressionSpecification<DalVO extends IDalVO> {
 	
-	public List<DalVO> getBySearchExpression(CollectableSearchExpression clctexpr);
+	List<DalVO> getBySearchExpression(CollectableSearchExpression clctexpr);
 	
-	public List<DalVO> getBySearchExpressionAndPrimaryKeys(CollectableSearchExpression clctexpr, List<Long> ids);
+	List<DalVO> getBySearchExpressionAndPrimaryKeys(CollectableSearchExpression clctexpr, List<Long> ids);
 	
-	public List<DalVO> getBySearchExpression(CollectableSearchExpression clctexpr, boolean bSortResult);
+	List<DalVO> getBySearchExpression(CollectableSearchExpression clctexpr, boolean bSortResult);
 	
-	public List<DalVO> getBySearchExpression(CollectableSearchExpression clctexpr, Integer iMaxRowCount, boolean bSortResult);
+	List<DalVO> getBySearchExpression(CollectableSearchExpression clctexpr, Integer iMaxRowCount, boolean bSortResult);
 	
-	public List<DalVO> getBySearchExpression(Collection<String> fields, CollectableSearchExpression clctexpr, Integer iMaxRowCount, boolean bSortResult, boolean bSearchInDMLSource);
+	/**
+	 * @deprecated fields doesn't support fields from joined entities, hence we need something better... 
+	 */
+	List<DalVO> getBySearchExpression(Collection<String> fields, CollectableSearchExpression clctexpr, Integer iMaxRowCount, boolean bSortResult, boolean bSearchInDMLSource);
 	
-	public List<Long> getIdsBySearchExpression(CollectableSearchExpression clctexpr);
+	List<Long> getIdsBySearchExpression(CollectableSearchExpression clctexpr);
 	
-	public List<Long> getIdsBySearchExprUserGroups(CollectableSearchExpression searchExpression, Long moduleId, String user);
+	List<Long> getIdsBySearchExprUserGroups(CollectableSearchExpression searchExpression, Long moduleId, String user);
 }

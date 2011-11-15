@@ -25,13 +25,15 @@ import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
 
 /**
- * Map a database column to a simple value reference entity field representation.
- * 
- * @see org.nuclos.common.dal.vo.IDalWithFieldsVO#getFields()
- *
+ * Map a database column as a 'stringified' reference. 
+ * <p>
+ * In the general case, 'stringified' references are compound. Hence it is not 
+ * possible to write to the database with this mapping class.
+ * This is part of the effort to deprecate all views in Nuclos.
+ * </p>
  * @param <T> Java type for the data in this column of the database.
  */
-public final class ColumnToFieldVOMapping<T extends Object> extends AbstractColumnToVOMapping<T>
+public final class ColumnToRefFieldVOMapping<T extends Object> extends AbstractColumnToVOMapping<T>
 	implements IColumnWithMdToVOMapping<T>
 {
 
@@ -41,7 +43,7 @@ public final class ColumnToFieldVOMapping<T extends Object> extends AbstractColu
 	 * Konstruktor für dynamische VO Werte (Die Werte werden in einer "Fields"-Liste gespeichert).
 	 * @throws ClassNotFoundException 
 	 */
-	public ColumnToFieldVOMapping(String tableAlias, EntityFieldMetaDataVO field) throws ClassNotFoundException {
+	public ColumnToRefFieldVOMapping(String tableAlias, EntityFieldMetaDataVO field) throws ClassNotFoundException {
 		super(tableAlias, field.getDbColumn(), field.getDataType(), field.isReadonly(), field.isDynamic());
 		this.field = field;
 	}
@@ -50,17 +52,14 @@ public final class ColumnToFieldVOMapping<T extends Object> extends AbstractColu
 	public DbExpression<T> getDbColumn(DbFrom from) {
 		final DbExpression<T> result;
 		if (field.getCalcFunction() == null) {
-			result = super.getDbColumn(from);
-		}
-		else {
-			final String tableAlias = from.getAlias();
 			try {
-				result = (DbExpression<T>) from.getQuery().getBuilder().plainExpression(
-						Class.forName(field.getDataType()), 
-						field.getCalcFunction() + "(" + tableAlias + ".INTID) " + field.getDbColumn());
+				result = new DbCompoundColumnExpression<T>(from, field);
 			} catch (ClassNotFoundException e) {
 				throw new IllegalStateException(e.toString());
 			}
+		}
+		else {
+			throw new IllegalStateException();
 		}
 		return result;
 	}
@@ -81,8 +80,8 @@ public final class ColumnToFieldVOMapping<T extends Object> extends AbstractColu
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof ColumnToFieldVOMapping)) return false;
-		final ColumnToFieldVOMapping<T> other = (ColumnToFieldVOMapping<T>) o;
+		if (!(o instanceof ColumnToRefFieldVOMapping)) return false;
+		final ColumnToRefFieldVOMapping<T> other = (ColumnToRefFieldVOMapping<T>) o;
 		return field.equals(other.field);
 	}
 	
@@ -91,6 +90,11 @@ public final class ColumnToFieldVOMapping<T extends Object> extends AbstractColu
 		int result = getColumn().hashCode();
 		result += 3 * field.hashCode();
 		return result;
+	}
+
+	@Override
+	public EntityFieldMetaDataVO getMeta() {
+		return field;
 	}
 
 	/**
@@ -102,18 +106,8 @@ public final class ColumnToFieldVOMapping<T extends Object> extends AbstractColu
 	}
 
 	@Override
-	public EntityFieldMetaDataVO getMeta() {
-		return field;
-	}
-
-	@Override
 	public Object convertFromDalFieldToDbValue(IDalVO dal) {
-		final IDalWithFieldsVO<?> realDal = (IDalWithFieldsVO<?>) dal;
-		try {
-			return convertToDbValue(getDataType(), realDal.getFields().get(field.getField()));
-		} catch (Exception e) {
-			throw new CommonFatalException(e);
-		}
+		throw new CommonFatalException("Can't write to ref field " + field + " value " + dal);
 	}
 
 	@Override

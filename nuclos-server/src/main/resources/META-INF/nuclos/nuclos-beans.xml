@@ -180,7 +180,7 @@
 
 	<bean id="moduleProvider" class="org.nuclos.server.genericobject.Modules" depends-on="appContext"/>
 
-	<bean id="metaDataProvider" class="org.nuclos.server.common.MetaDataServerProvider" depends-on="appContext"/>
+	<bean id="metaDataProvider" class="org.nuclos.server.common.MetaDataServerProvider" depends-on="nucletDalProvider"/>
 
 	<bean id="serviceLocator" class="org.nuclos.server.common.ServerServiceLocator" depends-on="appContext"/>
 
@@ -260,7 +260,12 @@
   <bean id="dynamicMetaDataProcessor" class="org.nuclos.server.dal.processor.jdbc.impl.DynamicMetaDataProcessor">
   </bean>
 
-  <bean id="nuclosDalProvider" class="org.nuclos.server.dal.provider.NuclosDalProvider" factory-method="getInstance" init-method="buildEOProcessors">
+  <bean id="datasourceCache" class="org.nuclos.server.common.DatasourceCache" factory-method="getInstance"
+  	depends-on="nucletDalProvider">
+  </bean>
+  
+  <bean id="nuclosDalProvider" class="org.nuclos.server.dal.provider.NuclosDalProvider" factory-method="getInstance" 
+  	init-method="buildEOProcessors" depends-on="appContext">
   	<property name="entityMetaDataProcessor"><ref bean="jsonEntityMetaDataProcessor"/></property>
   	<property name="entityFieldMetaDataProcessor"><ref bean="jsonEntityFieldMetaDataProcessor"/></property>
   	<property name="dynamicMetaDataProcessor"><ref bean="dynamicMetaDataProcessor"/></property>

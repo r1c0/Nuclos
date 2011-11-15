@@ -70,6 +70,9 @@ public final class CompositeCollectableSearchCondition extends AbstractCollectab
 		this.lstOperands.remove(operand);
 	}
 
+	/**
+	 * @deprecated Don't use this constant in new applications.
+	 */
 	@Override
 	public int getType() {
 		return TYPE_COMPOSITE;

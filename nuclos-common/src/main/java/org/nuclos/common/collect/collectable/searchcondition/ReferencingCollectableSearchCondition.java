@@ -94,6 +94,9 @@ public final class ReferencingCollectableSearchCondition extends AbstractCollect
 		return this.condSub;
 	}
 
+	/**
+	 * @deprecated Don't use this constant in new applications.
+	 */
 	@Override
 	public int getType() {
 		return TYPE_REFERENCING;

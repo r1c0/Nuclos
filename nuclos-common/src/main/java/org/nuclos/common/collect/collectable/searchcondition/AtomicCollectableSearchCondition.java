@@ -53,6 +53,9 @@ public abstract class AtomicCollectableSearchCondition extends AbstractCollectab
 		this.compop = compop;
 	}
 
+	/**
+	 * @deprecated Don't use this constant in new applications.
+	 */
 	@Override
 	public int getType() {
 		return TYPE_ATOMIC;

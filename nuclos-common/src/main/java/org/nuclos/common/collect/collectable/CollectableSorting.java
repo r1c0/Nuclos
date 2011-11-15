@@ -64,7 +64,13 @@ public class CollectableSorting implements Serializable {
 		this.mdField = null;
 		this.asc = asc;
 	}
-	
+
+	/**
+	 * Attention: Only use this for pivot sorting! (tp)
+	 * 
+	 * @author Thomas Pasch
+	 * @since Nuclos 3.1.01
+	 */
 	public CollectableSorting(EntityFieldMetaDataVO mdField, boolean isBaseEntity, boolean asc) {
 		if (mdField == null) throw new NullPointerException();
 		

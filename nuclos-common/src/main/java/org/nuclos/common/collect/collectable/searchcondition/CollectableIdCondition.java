@@ -40,6 +40,9 @@ public final class CollectableIdCondition extends AbstractCollectableSearchCondi
 		return this.oId;
 	}
 
+	/**
+	 * @deprecated Don't use this constant in new applications.
+	 */
 	@Override
 	public int getType() {
 		return TYPE_ID;

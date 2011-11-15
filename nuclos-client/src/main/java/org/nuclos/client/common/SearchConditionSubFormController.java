@@ -46,6 +46,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondi
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
+import org.nuclos.common.collect.collectable.searchcondition.RefJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
@@ -424,6 +425,11 @@ public class SearchConditionSubFormController extends SubFormController {
 			}
 
 			@Override
+			public Void visitRefJoinCondition(RefJoinCondition joincond) {
+				throw new IllegalArgumentException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.11", "Eine geschachtelte Joinbedingung kann in einem Unterformular nicht dargestellt werden."));
+			}
+
+			@Override
 			public Void visitReferencingCondition(ReferencingCollectableSearchCondition refcond) {
 				throw new IllegalArgumentException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.9", "Eine referenzierende Bedingung kann in einem Unterformular nicht dargestellt werden."));
 			}
@@ -701,6 +707,11 @@ public class SearchConditionSubFormController extends SubFormController {
 
 		@Override
 		public Boolean visitPivotJoinCondition(PivotJoinCondition joincond) throws RuntimeException {
+			return false;
+		}
+
+		@Override
+		public Boolean visitRefJoinCondition(RefJoinCondition joincond) throws RuntimeException {
 			return false;
 		}
 

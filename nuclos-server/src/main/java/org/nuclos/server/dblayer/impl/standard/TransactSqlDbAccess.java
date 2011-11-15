@@ -79,7 +79,7 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 
 	@Override
 	public DbQueryBuilder getQueryBuilder() throws DbException {
-		return new TransactSqlQueryBuilder();
+		return new TransactSqlQueryBuilder(this);
 	}
 
 	@Override
@@ -175,7 +175,7 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	protected String getSqlForConcat(String x, String y) {
+	public String getSqlForConcat(String x, String y) {
 		return String.format("convert(varchar, %s)+convert(varchar, %s)", x, y);
 	}   
 
@@ -218,7 +218,11 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 		}
 	}
 
-	static class TransactSqlQueryBuilder extends QueryBuilder {
+	static class TransactSqlQueryBuilder extends StandardQueryBuilder {
+		
+		public TransactSqlQueryBuilder(StandardSqlDBAccess dbAccess) {
+			super(dbAccess);
+		}
 
 		@Override
 		public DbExpression<Date> currentDate() {

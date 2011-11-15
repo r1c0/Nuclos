@@ -146,6 +146,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectabl
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.PlainSubCondition;
+import org.nuclos.common.collect.collectable.searchcondition.RefJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
@@ -1948,6 +1949,13 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 		@Override
         public Void visitPivotJoinCondition(PivotJoinCondition joincond) throws CommonBusinessException {
+			// TODO: fix
+			// CollectController.this._setSearchFieldsAccordingToSubCondition(joincond);
+			return null;
+		}
+
+		@Override
+        public Void visitRefJoinCondition(RefJoinCondition joincond) throws CommonBusinessException {
 			// TODO: fix
 			// CollectController.this._setSearchFieldsAccordingToSubCondition(joincond);
 			return null;

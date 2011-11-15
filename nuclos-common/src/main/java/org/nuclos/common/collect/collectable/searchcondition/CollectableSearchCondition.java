@@ -90,7 +90,14 @@ public interface CollectableSearchCondition extends Transferable, Serializable {
 	 * @deprecated Don't use this constant in new applications.
 	 */
 	@Deprecated
-	int TYPE_PIVOTJOIN = 5;
+	int TYPE_PIVOTJOIN = 6;
+	
+	/**
+	 * "ref join" condition.
+	 * @deprecated Don't use this constant in new applications.
+	 */
+	@Deprecated
+	int REF_JOIN = 7;
 
 	/**
 	 * @return the type of this node (TYPE_ATOMIC, TYPE_COMPOSITE, TYPE_SUB, TYPE_ID, TYPE_REFERENCING or TYPE_TRUE)

@@ -18,15 +18,19 @@ package org.nuclos.server.dblayer.query;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.NullArgumentException;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.expression.DbNull;
 import org.nuclos.server.dblayer.impl.SQLUtils2;
+import org.nuclos.server.dblayer.impl.standard.StandardSqlDBAccess;
 import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder.Parameter;
 
@@ -92,6 +96,8 @@ public abstract class DbQueryBuilder implements Serializable {
 	}
 
 	public abstract DbExpression<java.util.Date> currentDate();
+	
+	public abstract StandardSqlDBAccess getDBAccess();
 
 	public DbExpression<String> convertDateToString(DbExpression<java.util.Date> x, String pattern) {
 		return buildExpressionSql(String.class, "TO_CHAR(", x, ", ", SQLUtils2.escape(pattern), ")");
@@ -334,6 +340,15 @@ public abstract class DbQueryBuilder implements Serializable {
 				args[i] = getPreparedString((DbCondition) args[i]);
 			} else if (args[i] instanceof DbExpression<?>) {
 				args[i] = getPreparedString((DbExpression<?>) args[i]);
+			} else if (args[i] instanceof String) {
+				// do nothing, no convertion needed
+			} else if (args[i] instanceof PreparedStringBuilder) {
+				// do nothing, no convertion needed
+			} else if (args[i] == null) {
+				throw new NullArgumentException("No null allowed at index " + i + " in " + Arrays.asList(args));
+			} else {
+				throw new IllegalArgumentException("Don't know how to handle " + args[i] 
+						+ " of " + args[i].getClass().getName() + " in " + Arrays.asList(args));
 			}
 		}
 		return PreparedStringBuilder.concat(args);

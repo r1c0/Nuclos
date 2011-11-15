@@ -30,6 +30,7 @@ public class DbJoin extends DbFrom {
 	
 	DbJoin(DbQuery<?> query, DbFrom left, JoinType joinType, String tableName) {
 		super(query, tableName);
+		if (left == null || joinType == null) throw new NullPointerException();
 		this.left = left;
 		this.joinType = joinType;
 	}
@@ -38,7 +39,8 @@ public class DbJoin extends DbFrom {
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");
-		result.append("from=").append(left);
+		result.append("table=").append(getTableName());
+		result.append(", join=").append(left.getTableName());
 		result.append(", type=").append(joinType);
 		result.append(", on=").append(on);
 		result.append("]");

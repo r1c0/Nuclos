@@ -36,8 +36,8 @@ public class DbExpression<T> extends DbSelection<T> implements Serializable {
 		this.sqlString = sqlString.freeze();
 	}
 
-	DbExpression(DbQueryBuilder builder, Class<? extends T> javaType, String tableAlias, PreparedStringBuilder sqlString) {
-		super(builder, javaType, tableAlias);
+	DbExpression(DbQueryBuilder builder, Class<? extends T> javaType, String alias, PreparedStringBuilder sqlString) {
+		super(builder, javaType, alias);
 		this.sqlString = sqlString.freeze();
 	}
 

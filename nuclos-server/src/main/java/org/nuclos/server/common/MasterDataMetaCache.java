@@ -63,8 +63,6 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	
 	private static final Logger LOG = Logger.getLogger(MasterDataMetaCache.class);
 	
-	private final Logger log = Logger.getLogger(this.getClass());
-
 	private Map<String, MasterDataMetaVO> mp;
 	
 	private Map<String, Collection<MasterDataVO>> mpSubNodes = new HashMap<String, Collection<MasterDataVO>>();
@@ -89,7 +87,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	}
 
 	private MasterDataMetaCache() {
-		this.revalidate();
+		// revalidate();
 	}
 
 	/**
@@ -98,9 +96,9 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	 */
 	@Override
 	public synchronized void revalidate() {
-		this.mpSubNodes.clear();
-		this.subNodes.clear();
-		this.mp = this.buildMap();
+		mpSubNodes.clear();
+		subNodes.clear();
+		mp = buildMap();
 	}
 
 	/**
@@ -108,7 +106,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	 */
 	public synchronized Collection<MasterDataMetaVO> getAllMetaData() {
 		// Note that we need to return a copy here as mp.values() is not serializable:
-		return new ArrayList<MasterDataMetaVO>(mp.values());
+		return new ArrayList<MasterDataMetaVO>(getMp().values());
 	}
 
 	/**
@@ -118,7 +116,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	 */
 	@Override
 	public synchronized MasterDataMetaVO getMetaData(String sEntityName) {
-		final MasterDataMetaVO result = mp.get(sEntityName);
+		final MasterDataMetaVO result = getMp().get(sEntityName);
 		if (result == null) {
 			throw new NuclosFatalException("Master data meta information for entity \"" + sEntityName + "\" is not available.");
 		}
@@ -131,7 +129,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	}
 
 	public synchronized MasterDataMetaVO findMetaData(String sEntityName) {
-		return mp.get(sEntityName);
+		return getMp().get(sEntityName);
 	}
 
 	/**
@@ -139,7 +137,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	 * @return the masterdata meta information for the given entity, if any.
 	 */
 	public synchronized MasterDataMetaVO getMasterDataMetaById(Integer iId) {
-		for (MasterDataMetaVO result : mp.values()) {
+		for (MasterDataMetaVO result : getMp().values()) {
 			if (iId.equals(result.getId())) {
 				return result;
 			}
@@ -151,7 +149,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	 * does the given entity exists
      */
 	public boolean exist(String sEntityName) {
-		return mp.containsKey(sEntityName) && !Modules.getInstance().isModuleEntity(sEntityName);
+		return getMp().containsKey(sEntityName) && !Modules.getInstance().isModuleEntity(sEntityName);
 	}
 
 	/**
@@ -179,7 +177,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	 */
 	@Override
 	public synchronized MasterDataMetaVO getMetaDataById(Integer iId) {
-		for (MasterDataMetaVO result : mp.values()) {
+		for (MasterDataMetaVO result : getMp().values()) {
 			if (iId.equals(result.getId())) {
 				return result;
 			}
@@ -193,7 +191,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	 */
 	public synchronized List<MasterDataMetaVO> getMetaDataByDBEntityNames(List<String> dbEntities) {
 		List<MasterDataMetaVO> result = new ArrayList<MasterDataMetaVO>();
-		for (MasterDataMetaVO current : mp.values()) {
+		for (MasterDataMetaVO current : getMp().values()) {
 			if (dbEntities.contains(current.getDBEntity())) {
 				result.add(current);
 			}
@@ -206,32 +204,16 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	 * @postcondition result != null
 	 */
 	private synchronized Map<String, MasterDataMetaVO> buildMap() {
-		final Logger logger = Logger.getLogger(this.getClass());
-		logger.debug("START building masterdata cache.");
+		LOG.debug("START building masterdata cache.");
 
 		final Map<String, MasterDataMetaVO> result = new HashMap<String, MasterDataMetaVO>();
-
-		// Add static masterdata entity meta information:
-//		for (MasterDataMetaVO mdmetavo : getStaticEntities()) {
-//			result.put(mdmetavo.getEntityName(), mdmetavo);
-//		}
-
-		// Add dynamic masterdata entity meta information:
-//		for (MasterDataMetaVO mdmetavo : getDynamicEntities()) {
-//			final String sEntityName = mdmetavo.getEntityName();
-//			if (result.containsKey(sEntityName)) {
-//				throw new NuclosFatalException(StringUtils.getParameterizedExceptionMessage("metacache.exception", sEntityName));
-//					//"Dynamische Entit\u00e4t \"" + sEntityName + "\" schon unter demselben Namen als statische Entit\u00e4t vorhanden.");
-//			}
-//			result.put(sEntityName, mdmetavo);
-//		}
 
 		for (EntityMetaDataVO eMeta : MetaDataServerProvider.getInstance().getAllEntities()) {
 			result.put(eMeta.getEntity(), DalSupportForMD.wrapEntityMetaDataVOInMasterData(eMeta,
 				MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(eMeta.getEntity()).values()));
 		}
 
-		logger.debug("FINISHED building masterdata cache.");
+		LOG.debug("FINISHED building masterdata cache.");
 		assert result != null;
 		return result;
 	}
@@ -283,7 +265,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	 */
 	public Collection<MasterDataVO> getSubnodesMD(String sEntity, Object oId) {
 		if(mpSubNodes.get(sEntity) == null) {
-			log.info("Initilizing SubnodeMD Metainformation for entity " + sEntity);
+			LOG.info("Initilizing SubnodeMD Metainformation for entity " + sEntity);
 
 			final MasterDataFacadeLocal mdLocal = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			final Collection<MasterDataVO> colSubNodes = mdLocal.getDependantMasterData(NuclosEntity.ENTITYSUBNODES.getEntityName(), EntityTreeViewVO.ENTITY_FIELD, oId);
@@ -294,7 +276,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 
 	public Collection<EntityTreeViewVO> getSubnodesETV(String sEntity, Object oId) {
 		if(subNodes.get(sEntity) == null) {
-			log.info("Initilizing SubnodeETV Metainformation for entity " + sEntity);
+			LOG.info("Initilizing SubnodeETV Metainformation for entity " + sEntity);
 
 			final MasterDataFacadeLocal mdLocal = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			final Collection<EntityTreeViewVO> colSubNodes = mdLocal.getDependantSubnodes(NuclosEntity.ENTITYSUBNODES.getEntityName(), EntityTreeViewVO.ENTITY_FIELD, oId);
@@ -305,7 +287,8 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 
 	@Override
 	public int getEntityCount() {
-		return mp != null ? mp.size() : 0;
+		// return mp != null ? mp.size() : 0;
+		return getMp().size();
 	}
 
 	@Override
@@ -315,12 +298,20 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 
 	@Override
 	public Collection<String> showEntities() {
-		return mp != null ? new ArrayList<String>(mp.keySet()) : null;
+		// return mp != null ? new ArrayList<String>(mp.keySet()) : null;
+		return new ArrayList<String>(getMp().keySet());
 	}
 
 	@Override
 	public Collection<String> showSubEntities() {
 		return mpSubNodes != null ? new ArrayList<String>(mpSubNodes.keySet()) : null;
+	}
+	
+	private Map<String, MasterDataMetaVO> getMp() {
+		if (mp == null) {
+			revalidate();
+		}
+		return mp;
 	}
 
 }	// class MasterDataMetaCache

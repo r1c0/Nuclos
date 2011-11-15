@@ -27,6 +27,8 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dblayer.expression.DbNull;
 import org.nuclos.server.dblayer.impl.standard.StandardSqlDBAccess;
+import org.nuclos.server.dblayer.query.DbExpression;
+import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.nuclos.server.report.ByteArrayCarrier;
 import org.nuclos.server.resource.valueobject.ResourceFile;
@@ -41,6 +43,10 @@ abstract class AbstractColumnToVOMapping<T> implements IColumnToVOMapping<T> {
 	private final Class<T> dataType;
 	private final boolean isReadonly;
 	private final boolean caseSensitive;
+
+	AbstractColumnToVOMapping(String tableAlias, String column, String dataType, boolean isReadonly, boolean caseSensitive) throws ClassNotFoundException {
+		this(tableAlias, column, (Class<T>) Class.forName(dataType), isReadonly, caseSensitive);
+	}
 
 	AbstractColumnToVOMapping(String tableAlias, String column, Class<T> dataType, boolean isReadonly, boolean caseSensitive) {
 		if (tableAlias == null) throw new NullPointerException();
@@ -77,22 +83,17 @@ abstract class AbstractColumnToVOMapping<T> implements IColumnToVOMapping<T> {
 		return dataType;
 	}
 	
-	/*
 	@Override
-	public boolean equals(Object other) {
-		if (this == other) return true;
-		if (!(other instanceof IColumnToVOMapping)) return false;
-		final IColumnToVOMapping<T> o = (IColumnToVOMapping<T>) other;
-		return getTableAlias().equals(o.getTableAlias()) && getColumn().equals(o.getColumn());
+	public DbExpression<T> getDbColumn(DbFrom table) {
+		if (isCaseSensitive()) {
+			return table.columnCaseSensitive(getTableAlias(), getColumn(),
+					(Class<T>) DalUtils.getDbType(getDataType()));
+		}
+		else {
+			return table.column(getTableAlias(), getColumn(),
+					(Class<T>) DalUtils.getDbType(getDataType()));
+		}
 	}
-	
-	@Override
-	public int hashCode() {
-		int result = tableAlias.hashCode();
-		result += 3 * column.hashCode() + 173;
-		return result;
-	}
-	 */
 
 	static <S> S convertFromDbValue(Object value, String column, final Class<S> dataType, final Long recordId) {
 		if (dataType == ByteArrayCarrier.class) {

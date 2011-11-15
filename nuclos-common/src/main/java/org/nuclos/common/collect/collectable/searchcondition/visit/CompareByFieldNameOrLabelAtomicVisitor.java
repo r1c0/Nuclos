@@ -25,6 +25,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSelfSubC
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.PlainSubCondition;
+import org.nuclos.common.collect.collectable.searchcondition.RefJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
 import org.nuclos.common2.LangUtils;
@@ -76,6 +77,12 @@ public class CompareByFieldNameOrLabelAtomicVisitor implements Visitor<Integer, 
 
 	@Override
 	public Integer visitPivotJoinCondition(PivotJoinCondition subcond1) throws RuntimeException {
+		final PivotJoinCondition subcond2 = (PivotJoinCondition) cond2;
+		return subcond1.getField().getField().compareTo(subcond2.getField().getField());
+	}
+
+	@Override
+	public Integer visitRefJoinCondition(RefJoinCondition subcond1) throws RuntimeException {
 		final PivotJoinCondition subcond2 = (PivotJoinCondition) cond2;
 		return subcond1.getField().getField().compareTo(subcond2.getField().getField());
 	}

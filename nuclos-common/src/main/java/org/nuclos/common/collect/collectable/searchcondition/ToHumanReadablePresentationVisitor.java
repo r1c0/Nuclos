@@ -148,6 +148,14 @@ public class ToHumanReadablePresentationVisitor implements Visitor<String, Runti
 	}
 
 	@Override
+	public String visitRefJoinCondition(RefJoinCondition cond) {
+		final StringBuilder result = new StringBuilder();
+		result.append("[ref join: field=").append(cond.getField());
+		result.append("]");
+		return result.toString();
+	}
+
+	@Override
 	public String visitTrueCondition(TrueCondition truecond) {
 		if(truecond.getConditionName() != null)
 			return truecond.getConditionName();

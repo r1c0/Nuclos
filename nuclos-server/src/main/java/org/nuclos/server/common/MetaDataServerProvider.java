@@ -71,19 +71,11 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		return (MetaDataServerProvider) SpringApplicationContextHolder.getBean("metaDataProvider");
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	@Override
     public Collection<EntityMetaDataVO> getAllEntities() {
 		return  new ArrayList<EntityMetaDataVO>(dataCache.getMapMetaDataByEntity().values());
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	public Collection<EntityMetaDataVO> getNucletEntities() {
 		Collection<EntityMetaDataVO> result = new ArrayList<EntityMetaDataVO>();
 
@@ -96,11 +88,6 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		return result;
 	}
 
-	/**
-	 *
-	 * @param id
-	 * @return
-	 */
 	@Override
     public EntityMetaDataVO getEntity(Long id) {
 		final EntityMetaDataVO result = dataCache.getMapMetaDataById().get(id);
@@ -110,11 +97,6 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		return result;
 	}
 
-	/**
-	 *
-	 * @param entity
-	 * @return
-	 */
 	@Override
     public EntityMetaDataVO getEntity(String entity) {
 		final EntityMetaDataVO result = dataCache.getMapMetaDataByEntity().get(entity);
@@ -124,11 +106,6 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		return result;
 	}
 
-	/**
-	 *
-	 * @param entity
-	 * @return
-	 */
 	@Override
     public EntityMetaDataVO getEntity(NuclosEntity entity) {
 		final EntityMetaDataVO result = dataCache.getMapMetaDataByEntity().get(entity.getEntityName());
@@ -138,11 +115,6 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		return result;
 	}
 
-	/**
-	 *
-	 * @param entity
-	 * @return
-	 */
 	@Override
     public Map<String, EntityFieldMetaDataVO> getAllEntityFieldsByEntity(String entity) {
 		final Map<String, EntityFieldMetaDataVO> result = dataCache.getMapFieldMetaData().get(entity);
@@ -247,12 +219,6 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
     }
 
 
-	/**
-	 *
-	 * @param entity
-	 * @param field
-	 * @return
-	 */
 	@Override
     public EntityFieldMetaDataVO getEntityField(String entity, String field) {
 		final EntityFieldMetaDataVO result = getAllEntityFieldsByEntity(entity).get(field);
@@ -262,12 +228,6 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		return result;
 	}
 
-	/**
-	 *
-	 * @param entity
-	 * @param field
-	 * @return
-	 */
 	public EntityFieldMetaDataVO getEntityField(NuclosEntity entity, String field) {
 		return getEntityField(entity.getEntityName(), field);
 	}
@@ -301,12 +261,8 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		super.finalize();
 	}
 
-	/**
-	 *
-	 *
-	 */
 	class DataCache {
-		private boolean revalidating = false;
+		private volatile boolean revalidating = false;
 
 		private long startRevalidating;
 
@@ -317,12 +273,18 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 
 		private Map<String, DynamicEntityVO> mapDynamicEntities;
 
+		/**
+		 * @deprecated Risk of spring circular references. Avoid this.
+		 */
 		public Map<String, EntityMetaDataVO> getMapMetaDataByEntity() {
 			if (isRevalidating()) {
 				return getMapMetaDataByEntity();
-			} else {
-				return mapMetaDataByEntity;
+			} 
+			else if (mapDynamicEntities == null) {
+				mapDynamicEntities = Collections.unmodifiableMap(CollectionUtils.generateLookupMap(
+						DatasourceCache.getInstance().getAllDynamicEntities(), DalTransformations.getDynamicEntityName()));				
 			}
+			return mapMetaDataByEntity;
 		}
 
 		private Map<String, EntityMetaDataVO> buildMapMetaDataByEntity() {
@@ -378,12 +340,17 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 			}
 		}
 
+		/**
+		 * @deprecated Risk of spring circular references. Avoid this.
+		 */
 		public Map<String, DynamicEntityVO> getMapDynamicEntities() {
 			if (isRevalidating()) {
 				return getMapDynamicEntities();
-			} else {
-				return mapDynamicEntities;
 			}
+			else if (mapDynamicEntities == null) {
+				getMapMetaDataByEntity();
+			}
+			return mapDynamicEntities;
 		}
 
 		private Map<String, Map<String, EntityFieldMetaDataVO>> buildMapFieldMetaData(Map<String, EntityMetaDataVO> mapMetaDataByEntity) {
@@ -435,8 +402,6 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 			mapMetaDataById = Collections.unmodifiableMap(buildMapMetaDataById(mapMetaDataByEntity));
 			mapFieldMetaData = Collections.unmodifiableMap(buildMapFieldMetaData(mapMetaDataByEntity));
 			mapPivotMetaData.clear();
-
-			mapDynamicEntities = Collections.unmodifiableMap(CollectionUtils.generateLookupMap(getDatasourceFacade().getDynamicEntities(), DalTransformations.getDynamicEntityName()));
 			revalidating = false;
 		}
 

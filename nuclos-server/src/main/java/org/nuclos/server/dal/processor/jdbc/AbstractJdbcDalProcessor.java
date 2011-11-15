@@ -34,12 +34,15 @@ import org.nuclos.common.CloneUtils;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.DalCallResult;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.IDalVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.AbstractDalProcessor;
+import org.nuclos.server.dal.processor.ColumnToRefFieldVOMapping;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
+import org.nuclos.server.dal.processor.IColumnWithMdToVOMapping;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.expression.DbNull;
@@ -49,6 +52,7 @@ import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
+import org.nuclos.server.dblayer.query.DbSelection;
 import org.nuclos.server.dblayer.statements.DbDeleteStatement;
 import org.nuclos.server.dblayer.statements.DbInsertStatement;
 import org.nuclos.server.dblayer.statements.DbStatement;
@@ -89,8 +93,14 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
       }
    }
 
+   /**
+    * @deprecated We want to get rid of views.
+    */
    protected abstract String getDbSourceForDML();
 
+   /**
+    * @deprecated We want to get rid of views.
+    */
    protected abstract String getDbSourceForSQL();
 
    protected abstract IColumnToVOMapping<Long> getPrimaryKeyColumn();
@@ -127,14 +137,14 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
    protected List<DalVO> getByIdColumn(final List<IColumnToVOMapping<? extends Object>> columns, IColumnToVOMapping<Long> column, final Long id) {
       DbQuery<Object[]> query = createQuery(columns);
       DbFrom from = CollectionUtils.getFirst(query.getRoots());
-      query.where(query.getBuilder().equal(getDbColumn(from, column), id));
+      query.where(query.getBuilder().equal(column.getDbColumn(from), id));
       return DataBaseHelper.getDbAccess().executeQuery(query, createResultTransformer(columns));
    }
 
    protected List<DalVO> getByPrimaryKeys(final List<IColumnToVOMapping<? extends Object>> columns, final List<Long> ids) {
       DbQuery<Object[]> query = createQuery(columns);
       DbFrom from = CollectionUtils.getFirst(query.getRoots());
-      DbExpression<?> pkExpr = getDbColumn(from, getPrimaryKeyColumn());
+      DbExpression<?> pkExpr = getPrimaryKeyColumn().getDbColumn(from);
       Transformer<Object[], DalVO> transformer = createResultTransformer(columns);
 
       List<DalVO> result = new ArrayList<DalVO>(ids.size());
@@ -218,7 +228,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
       DbFrom from = query.from(overrideDbSourceUseDML ? getDbSourceForDML() : getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
       List<DbExpression<?>> selections = new ArrayList<DbExpression<?>>();
       for (IColumnToVOMapping<?> column : columns) {
-         selections.add(getDbColumn(from, column));
+         selections.add(column.getDbColumn(from));
       }
       query.multiselect(selections);
       return query;
@@ -227,15 +237,14 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 	protected <S> DbQuery<S> createSingleColumnQuery(IColumnToVOMapping<S> column, boolean overrideDbSourceUseDML) {
 		DbQuery<S> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(column.getDataType());
 		DbFrom from = query.from(overrideDbSourceUseDML ? getDbSourceForDML() : getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
-		DbExpression<S> dbColumn = getDbColumn(from, column);
-		query.select(dbColumn);
+		query.select(column.getDbColumn(from));
 		return query;
 	}
 
    protected DbQuery<Long> createCountQuery(IColumnToVOMapping<Long> column) {
       DbQuery<Long> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(column.getDataType());
       DbFrom from = query.from(getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
-      query.select(query.getBuilder().count(getDbColumn(from, column)));
+      query.select(query.getBuilder().count(column.getDbColumn(from)));
       return query;
    }
 
@@ -252,6 +261,14 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 		final Map<IColumnToVOMapping<?>, Object> map = new LinkedHashMap<IColumnToVOMapping<?>, Object>();
 		for (IColumnToVOMapping<?> column : columns) {
 			if (!withReadonly && column.isReadonly()) continue;
+			// also ignore stringified references
+			if (column instanceof ColumnToRefFieldVOMapping) {
+				final EntityFieldMetaDataVO meta = ((ColumnToRefFieldVOMapping<?>) column).getMeta();
+				final String dbColumn = meta.getDbColumn();
+				if (meta.getForeignEntity() != null && (dbColumn.startsWith("STRVALUE_") || dbColumn.startsWith("INTVALUE_"))) {
+					continue;
+				}
+			}
 			map.put(column, column.convertFromDalFieldToDbValue(dalVO));
 		}
 		return map;
@@ -296,7 +313,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 		boolean bFullIsNullCondition = true;
 		for (Map.Entry<IColumnToVOMapping<?>, Object> e : values.entrySet()) {
 			Object value = e.getValue();
-			DbExpression<?> c = getDbColumn(from, e.getKey());
+			DbExpression<?> c = e.getKey().getDbColumn(from);
 			if (DbNull.isNull(value)) {
 				conditions.add(builder.isNull(c));
 			} else {
@@ -336,13 +353,6 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 			}
 		});
 	}
-
-   protected <S> DbExpression<S> getDbColumn(DbFrom table, IColumnToVOMapping<?> mapping) {
-	   if(mapping.isCaseSensitive())
-		   return table.columnCaseSensitive(mapping.getTableAlias(), mapping.getColumn(), (Class<S>) DalUtils.getDbType(mapping.getDataType()));
-	   else
-		   return table.column(mapping.getTableAlias(), mapping.getColumn(), (Class<S>) DalUtils.getDbType(mapping.getDataType()));
-   }
 
    // TODO:
    protected String getReadableMessage(DbException ex) {

@@ -34,6 +34,7 @@ import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.dal.provider.NucletDalProvider;
+import org.nuclos.server.dal.provider.NuclosDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -56,7 +57,8 @@ import org.nuclos.server.report.valueobject.ValuelistProviderVO;
  * @version	01.00.00
  */
 public class DatasourceCache {
-	private static final Logger log = Logger.getLogger(DatasourceCache.class);
+	
+	private static final Logger LOG = Logger.getLogger(DatasourceCache.class);
 
 	private static DatasourceCache singleton;
 
@@ -88,31 +90,34 @@ public class DatasourceCache {
 	}
 
 	private synchronized void findDatasourcesById() {
-		//log.info("Initializing DatasourceCache");
+		LOG.info("Initializing DatasourceCache");
+		final NucletDalProvider prov = NucletDalProvider.getInstance();
+		
 		mpDatasourcesById = Collections.synchronizedMap(new HashMap<Integer, DatasourceVO>());
-//		try {
-//			MasterDataFacadeLocalHome mdFacadeHome = ((MasterDataFacadeLocalHome)ServiceLocator.getInstance().getLocalHome(MasterDataFacadeLocalHome.JNDI_NAME));
-//			MasterDataFacadeLocal mdFacade = mdFacadeHome.create();
-			for (EntityObjectVO eoVO : NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.DATASOURCE).getAll()) {
-				mpDatasourcesById.put(eoVO.getId().intValue(), MasterDataWrapper.getDatasourceVO(DalSupportForMD.wrapEntityObjectVO(eoVO), "INITIAL"));
-			}
-//		}
-//		catch (CreateException ex) {
-//			throw new NuclosFatalException(ex);
-//		}
-			mpValuelistProviderById = Collections.synchronizedMap(new HashMap<Integer, ValuelistProviderVO>());
-			for (EntityObjectVO eoVO : NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.VALUELISTPROVIDER).getAll()) {
-				mpValuelistProviderById.put(eoVO.getId().intValue(), MasterDataWrapper.getValuelistProviderVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
-			}
-			mpDynamicEntitiesById = Collections.synchronizedMap(new HashMap<Integer, DynamicEntityVO>());
-			for (EntityObjectVO eoVO : NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.DYNAMICENTITY).getAll()) {
-				mpDynamicEntitiesById.put(eoVO.getId().intValue(), MasterDataWrapper.getDynamicEntityVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
-			}
-			mpRecordGrantById = Collections.synchronizedMap(new HashMap<Integer, RecordGrantVO>());
-			for (EntityObjectVO eoVO : NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.RECORDGRANT).getAll()) {
-				mpRecordGrantById.put(eoVO.getId().intValue(), MasterDataWrapper.getRecordGrantVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
-			}
-		//log.info("Finished initializing DatasourceCache.");
+		for (EntityObjectVO eoVO : 
+			prov.getEntityObjectProcessor(NuclosEntity.DATASOURCE).getAll()) {
+			mpDatasourcesById.put(eoVO.getId().intValue(),
+					MasterDataWrapper.getDatasourceVO(DalSupportForMD.wrapEntityObjectVO(eoVO), "INITIAL"));
+		}
+		mpValuelistProviderById = Collections.synchronizedMap(new HashMap<Integer, ValuelistProviderVO>());
+		for (EntityObjectVO eoVO : 
+			prov.getEntityObjectProcessor(NuclosEntity.VALUELISTPROVIDER).getAll()) {
+			mpValuelistProviderById.put(eoVO.getId().intValue(),
+					MasterDataWrapper.getValuelistProviderVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
+		}
+		mpDynamicEntitiesById = Collections.synchronizedMap(new HashMap<Integer, DynamicEntityVO>());
+		for (EntityObjectVO eoVO : 
+			prov.getEntityObjectProcessor(NuclosEntity.DYNAMICENTITY).getAll()) {
+			mpDynamicEntitiesById.put(eoVO.getId().intValue(),
+					MasterDataWrapper.getDynamicEntityVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
+		}
+		mpRecordGrantById = Collections.synchronizedMap(new HashMap<Integer, RecordGrantVO>());
+		for (EntityObjectVO eoVO : 
+			prov.getEntityObjectProcessor(NuclosEntity.RECORDGRANT).getAll()) {
+			mpRecordGrantById.put(eoVO.getId().intValue(),
+					MasterDataWrapper.getRecordGrantVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
+		}
+		LOG.info("Finished initializing DatasourceCache.");
 	}
 
 	/**
@@ -120,7 +125,7 @@ public class DatasourceCache {
 	 * @param sCreator
 	 */
 	private synchronized void findDataSourcesByCreator(String sCreator) {
-		log.debug("Initializing DatasourceCacheByCreator");
+		LOG.debug("Initializing DatasourceCacheByCreator");
 		mpDatasourcesByCreator = Collections.synchronizedMap(new HashMap<String, List<DatasourceVO>>());
 		try {
 			MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
@@ -146,14 +151,14 @@ public class DatasourceCache {
 		}
 		catch (CommonFinderException ex) {
 		}
-		log.debug("Finished initializing DatasourceCacheByCreator.");
+		LOG.debug("Finished initializing DatasourceCacheByCreator.");
 	}
 
 	/**
 	 * Invalidate the cache
 	 */
 	public synchronized void invalidate() {
-		log.debug("Invalidating DatasourceCache");
+		LOG.debug("Invalidating DatasourceCache");
 		mpDatasourcesById = null;
 		mpDatasourcesByCreator = null;
 		mpValuelistProviderById = null;

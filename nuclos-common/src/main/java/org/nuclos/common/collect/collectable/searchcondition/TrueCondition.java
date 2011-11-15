@@ -35,6 +35,9 @@ public final class TrueCondition extends AbstractCollectableSearchCondition {
 	private TrueCondition() {
 	}
 
+	/**
+	 * @deprecated Don't use this constant in new applications.
+	 */
 	@Override
 	public int getType() {
 		return TYPE_TRUE;

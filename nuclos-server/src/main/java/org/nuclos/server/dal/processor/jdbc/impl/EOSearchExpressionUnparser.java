@@ -18,6 +18,7 @@ package org.nuclos.server.dal.processor.jdbc.impl;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -44,6 +45,7 @@ import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.PlainSubCondition;
+import org.nuclos.common.collect.collectable.searchcondition.RefJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
 import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
@@ -60,6 +62,7 @@ import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.SessionUtils;
 import org.nuclos.server.dal.DalUtils;
+import org.nuclos.server.dal.processor.jdbc.TableAliasSingleton;
 import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
 import org.nuclos.server.dblayer.query.DbCondition;
@@ -69,6 +72,9 @@ import org.nuclos.server.dblayer.query.DbJoin;
 import org.nuclos.server.dblayer.query.DbOrder;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
+import org.nuclos.server.dblayer.query.DbSelection;
+import org.nuclos.server.dblayer.util.ForeignEntityFieldParser;
+import org.nuclos.server.dblayer.util.IFieldRef;
 
 public class EOSearchExpressionUnparser {
 
@@ -119,10 +125,23 @@ public class EOSearchExpressionUnparser {
 	private DbColumnExpression<?> getDbColumn(CollectableSorting sort) {
 		final EntityFieldMetaDataVO entityField = MetaDataServerProvider.getInstance().getEntityField(
 				sort.getEntity(), sort.getFieldName());
+		final String calcFunction = entityField.getCalcFunction();
 		final Class<?> type = normalizeJavaType(entityField.getDataType());
 		final DbColumnExpression<?> result;
 		if (sort.isBaseEntity()) {
-			if (entity.isDynamic()) {
+			if (calcFunction != null) {
+				final List<DbSelection<Object>> selects = table.getQuery().getSelections();
+				// only INTID in SELECT part of SQL query
+				if (selects.size() == 1) {
+					// we must add the sorting function to the SELECT part in order to get ORDER BY to work
+					final DbSelection<Object> select = (DbSelection<Object>) table.getQuery().getBuilder().plainExpression(type, 
+							calcFunction + "(" + table.getAlias() + ".INTID) " + entityField.getDbColumn());
+					selects.add(select);
+				}
+				// no tableAlias, only select alias (i.e. unqualified)...
+				result = table.column(null, entityField.getDbColumn(), type);
+			}
+			else if (entity.isDynamic()) {
 				result = table.baseColumnCaseSensitive(entityField.getDbColumn(), type);
 			}
 			else {
@@ -130,7 +149,12 @@ public class EOSearchExpressionUnparser {
 			}
 		}
 		else {
-			result = table.column(sort.getTableAlias(), entityField.getDbColumn(), type);
+			if (calcFunction != null) {
+				throw new IllegalStateException();
+			}
+			else {
+				result = table.column(sort.getTableAlias(), entityField.getDbColumn(), type);
+			}
 		}
 		return result;
 	}
@@ -237,6 +261,23 @@ public class EOSearchExpressionUnparser {
 			return queryBuilder.alwaysTrue();
 		}
 
+		@Override
+		public DbCondition visitRefJoinCondition(RefJoinCondition joincond) {
+			final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
+			
+			final EntityFieldMetaDataVO field = joincond.getField();
+			final EntityMetaDataVO refEntity = mdProv.getEntity(field.getForeignEntity());
+			
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("visitRefJoinCondition: apply " + joincond + " on " + table);
+			}
+			final DbJoin join = table.join(refEntity.getDbEntity(), JoinType.LEFT).alias(joincond.getTableAlias()).on(
+					DalUtils.getDbIdFieldName(field.getDbColumn()), "INTID", Long.class);
+
+			// ??? We have no real condition, all is said within the join...
+			return queryBuilder.alwaysTrue();
+		}
+		
 		@Override
 		public DbCondition visitReferencingCondition(ReferencingCollectableSearchCondition refcond) {
 			DbColumnExpression<Integer> refColumn = getDbIdColumn(refcond.getReferencingField());
@@ -448,12 +489,46 @@ public class EOSearchExpressionUnparser {
 
 	}
 
-	private DbColumnExpression<?> getDbColumn(CollectableEntityField field) {
-		EntityFieldMetaDataVO entityField = MetaDataServerProvider.getInstance().getEntityField(entity.getEntity(), field.getName());
-		if(entity.isDynamic() && entityField.isDynamic())
-			return table.baseColumnCaseSensitive(entityField.getDbColumn(), field.getJavaClass());
-		else
-			return table.baseColumn(entityField.getDbColumn(), field.getJavaClass());
+	/**
+	 * Get the DBExpression for use in the condition part of the SQL.
+	 * <p>
+	 * TODO: {@link org.nuclos.server.dal.processor.IColumnToVOMapping#getDbColumn(DbFrom)}
+	 * does the same for the SELECT part of the SQL.
+	 * </p>
+	 */
+	private DbExpression<?> getDbColumn(CollectableEntityField field) {
+		final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
+		final EntityFieldMetaDataVO entityField = mdProv.getEntityField(entity.getEntity(), field.getName());
+		String dbColumn = entityField.getDbColumn();
+		final String tableAlias;
+		if (entityField.getCalcFunction() == null) {
+			if (entityField.getForeignEntity() != null && (dbColumn.startsWith("STRVALUE_") || dbColumn.startsWith("INTVALUE_"))) {
+				tableAlias = TableAliasSingleton.getInstance().getAlias(entityField);
+				final Iterator<IFieldRef> it = new ForeignEntityFieldParser(entityField).iterator();
+				final IFieldRef ref = it.next();
+				if (ref.isConstant()) {
+					throw new IllegalStateException();
+				}
+				dbColumn = mdProv.getEntityField(entityField.getForeignEntity(), ref.getContent()).getDbColumn();
+				if (it.hasNext()) {
+					throw new IllegalStateException();
+				}
+			}
+			else {
+				tableAlias = table.getAlias();
+			}
+		}
+		else {
+			tableAlias = table.getAlias();
+			return queryBuilder.plainExpression(field.getJavaClass(), entityField.getCalcFunction() 
+					+ "(" + tableAlias + ".INTID)");
+		}
+		if(entity.isDynamic() && entityField.isDynamic()) {
+			return table.columnCaseSensitive(tableAlias, dbColumn, field.getJavaClass());
+		}
+		else {
+			return table.column(tableAlias, dbColumn, field.getJavaClass());
+		}
 	}
 
 	private DbColumnExpression<Integer> getDbIdColumn(CollectableEntityField field) {

@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
+import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 
 /**
@@ -35,6 +36,12 @@ import org.nuclos.server.report.valueobject.DatasourceVO;
  * @version 00.01.000
  */
 public class CollectableSearchExpression implements Serializable {
+	
+	public static final CollectableSearchExpression TRUE_SEARCH_EXPR;
+	
+	static {
+		TRUE_SEARCH_EXPR = new CollectableSearchExpression(TrueCondition.TRUE);
+	}
 
 	private static final long serialVersionUID = -5153960862338691472L;
 	

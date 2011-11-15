@@ -52,6 +52,9 @@ public final class CollectableIdListCondition extends AbstractCollectableSearchC
             }});
 	}
 
+	/**
+	 * @deprecated Don't use this constant in new applications.
+	 */
 	@Override
 	public int getType() {
 		return TYPE_ID;

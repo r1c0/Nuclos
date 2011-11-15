@@ -22,6 +22,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCo
 import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
+import org.nuclos.common.collect.collectable.searchcondition.RefJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ReferencingCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
 
@@ -43,7 +44,15 @@ public interface Visitor<O, Ex extends Exception> {
 
 	O visitSubCondition(CollectableSubCondition subcond) throws Ex;
 
+	/**
+	 * @since Nuclos 3.1.01
+	 */
 	O visitPivotJoinCondition(PivotJoinCondition joincond) throws Ex;
+
+	/**
+	 * @since Nuclos 3.2.01
+	 */
+	O visitRefJoinCondition(RefJoinCondition joincond) throws Ex;
 
 	O visitReferencingCondition(ReferencingCollectableSearchCondition refcond) throws Ex;
 

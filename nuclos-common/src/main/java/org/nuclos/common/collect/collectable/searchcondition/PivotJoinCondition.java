@@ -21,14 +21,16 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 
 /**
- * A collectable subcondition which represents an expression like this: "Does a Collectable in the given dependant subentity
- * exist that is joined to the main entity by the given foreign key field and that matches the criteria given in the subcondition?".
- * <br>
- * <br>Created by Novabit Informationssysteme GmbH
- * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
- * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
- * @version	01.00.00
+ * Join a pivot table with given value in the key column to the base entity.
+ * <p>
+ * The use of this condition results in a (left non-equi) join with the referenced
+ * table/entity. 
+ * </p>
+ * @author Thomas Pasch
+ * @since Nuclos 3.1.01
+ * 
+ * @see org.nuclos.server.dal.processor.jdbc.impl.EOSearchExpressionUnparser.UnparseVisitor
+ * @see org.nuclos.server.dal.processor.PivotJoinEntityFieldVOMapping
  */
 public final class PivotJoinCondition extends AbstractCollectableSearchCondition {
 	
@@ -66,6 +68,9 @@ public final class PivotJoinCondition extends AbstractCollectableSearchCondition
 		return field;
 	}
 
+	/**
+	 * @deprecated Don't use this constant in new applications.
+	 */
 	@Override
 	public int getType() {
 		return TYPE_PIVOTJOIN;

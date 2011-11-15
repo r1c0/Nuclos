@@ -22,7 +22,10 @@ import org.nuclos.common.dal.vo.IDalVO;
 import org.nuclos.common2.exception.CommonFatalException;
 
 /**
- * Type parameter T is the java type
+ * Map a database column to a entity field representation with the help
+ * of (bean) getter and setter methods.
+ *
+ * @param <T> Java type for the data in this column of the database.
  */
 public final class ColumnToBeanVOMapping<T> extends AbstractColumnToVOMapping<T> {
 

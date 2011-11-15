@@ -382,10 +382,16 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements C
 		this.unreferencedForeignEntityField = unreferencedForeignEntityField;
 	}
 
+	/**
+	 * @deprecated This will just give you the entityId as a String (not as Long).
+	 */
 	public String getEntityIdAsString() {
 		return entityIdAsString;
 	}
 
+	/**
+	 * @deprecated This will just give you the entityId as a String (not as Long).
+	 */
 	public void setEntityIdAsString(String entityIdAsString) {
 		this.entityIdAsString = entityIdAsString;
 	}
