@@ -874,7 +874,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
 		   // iterate over the models rather than over the components:
 		   final CollectableComponentModel clctcompmodel = this.getDetailsPanel().getLayoutRoot().getCollectableComponentModelFor(sFieldName);
-		   clctcompmodel.setField(clct.getField(sFieldName));
+		   clctcompmodel.setFieldInitial(clct.getField(sFieldName));
 	   }
 
 	   // fill subforms:

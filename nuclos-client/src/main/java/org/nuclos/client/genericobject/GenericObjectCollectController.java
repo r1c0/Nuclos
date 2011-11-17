@@ -2186,7 +2186,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				// iterate over the models rather than over the components:
 				final CollectableComponentModel clctcompmodel = layoutrootDetails.getCollectableComponentModelFor(sFieldName);
 				final CollectableField clctfShown = clct.getField(sFieldName);
-				clctcompmodel.setField(clctfShown);
+				clctcompmodel.setFieldInitial(clctfShown);
 
 				markFieldInHistoricalView(lowdCurrent, sFieldName, clctfShown);
 			}

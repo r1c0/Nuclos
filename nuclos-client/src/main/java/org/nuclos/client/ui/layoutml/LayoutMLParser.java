@@ -398,7 +398,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 									}
 									@Override
 									public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
-										if (ev.collectableFieldHasChanged()) {
+										if (ev.collectableFieldHasChanged() && !ev.getCollectableComponentModel().isInitializing()) {
 											Object id = ev.getNewValue().getValueId();
 											Collectable clctSelected = null;
 											try {

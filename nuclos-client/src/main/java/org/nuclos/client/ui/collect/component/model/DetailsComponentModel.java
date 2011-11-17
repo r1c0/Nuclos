@@ -226,7 +226,7 @@ public class DetailsComponentModel extends CollectableComponentModel {
 			this.multiedit.clctfCommonValue = that.multiedit.clctfCommonValue;
 		}
 
-		this.setField(that.getField());
+		this.setFieldInitial(that.getField());
 
 		if(this.isMultiEditable()) {
 			this.setValueToBeChanged(that.isValueToBeChanged());

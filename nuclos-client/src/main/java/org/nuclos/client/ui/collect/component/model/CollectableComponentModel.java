@@ -45,6 +45,8 @@ public abstract class CollectableComponentModel {
 	protected final CollectableComponentModelHelper helper = new CollectableComponentModelHelper();
 	private CollectableEntityField clctef;
 	private CollectableField clctfValue;
+	
+	private boolean isInitializing = false;
 
 	/**
 	 * package private ctor. Use <code>newCollectableComponentModel()</code> to create an instance of this class.
@@ -125,6 +127,12 @@ public abstract class CollectableComponentModel {
 	 * @postcondition this.getField().equals(clctfValue)
 	 */
 	public abstract void setField(CollectableField clctfValue);
+	
+	public void setFieldInitial(CollectableField clctValue) {
+		isInitializing = true;
+		setField(clctValue);
+		isInitializing = false;
+	}
 
 	/**
 	 * sets the "collectableField" (the composite value) of this component and optionally notifies the listeners.
@@ -139,6 +147,12 @@ public abstract class CollectableComponentModel {
 	 */
 	void setField(CollectableField clctfValue, boolean bNotifyListeners) {
 		this.setField(clctfValue, bNotifyListeners, false);
+	}
+	
+	public void setFieldInitial(CollectableField clctValue, boolean bNotifyListeners) {
+		isInitializing = true;
+		setField(clctValue, bNotifyListeners, false);
+		isInitializing = false;
 	}
 
 	/**
@@ -185,6 +199,12 @@ public abstract class CollectableComponentModel {
 			this.fireFieldChanged(clctfOldValue, clctfValue);
 		}
 		assert this.getField().equals(clctfValue);
+	}
+	
+	public void setFieldInitial(CollectableField clctfValue, boolean bNotifyListeners, boolean bDirty) {
+		isInitializing = true;
+		setField(clctfValue, bNotifyListeners, bDirty);
+		isInitializing = false;
 	}
 
 	/**
@@ -234,6 +254,10 @@ public abstract class CollectableComponentModel {
 		public boolean evaluate(CollectableComponentModel clctcompmodel) {
 			return clctcompmodel.getFieldName().equals(sFieldName);
 		}
+	}
+	
+	public boolean isInitializing() {
+		return isInitializing;
 	}
 
 }  // class CollectableComponentModel
