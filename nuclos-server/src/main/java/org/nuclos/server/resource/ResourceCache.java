@@ -19,7 +19,9 @@ package org.nuclos.server.resource;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.collection.CollectionUtils;
@@ -158,6 +160,10 @@ public class ResourceCache {
 			}				
 		}
 		return mpResources.get(resourcevo);		
+	}
+	
+	public Set<String> getResourceNames() {
+		return new HashSet<String>(mpResourcesByName.keySet());
 	}
 	
 	public void invalidate() {

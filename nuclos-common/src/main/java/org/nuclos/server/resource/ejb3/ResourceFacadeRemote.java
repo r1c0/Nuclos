@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.resource.ejb3;
 
+import java.util.Set;
+
 import javax.annotation.security.RolesAllowed;
 
 import org.nuclos.common.collection.Pair;
@@ -70,5 +72,7 @@ public interface ResourceFacadeRemote {
 	@RolesAllowed("Login")
 	byte[] loadResource(Integer iResourceId, String sFileName)
 		throws CommonFinderException;
+
+	Set<String> getResourceNames();
 
 }

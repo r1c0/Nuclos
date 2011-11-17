@@ -1161,6 +1161,10 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		}
 		
 		extraButton.add(new JMenuItem(startTab.getClearBookmarkAction()));
+		if (MainFrame.isStarttabEditable()) {
+			extraButton.addSeparator();
+			extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getShowDesktopAction()));
+		}
 
 		toolBar.add(extraButton);
 	}

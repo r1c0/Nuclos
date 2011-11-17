@@ -96,6 +96,8 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	private static final Logger log = Logger.getLogger(StartTabPanel.class);
 
 	public final static int CENTER_COLUMNS_PREFFERED_WIDTH = 200;
+	
+	private boolean showDesktop = false;
 
 	private final MainFrameTabbedPane tabbedPane;
 
@@ -114,7 +116,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	private boolean isStartmenuShown = true;
 	private boolean isHistoryShown = true;
 	private boolean isBookmarkShown = true;
-
+	private final DesktopStartTab desktop = new DesktopStartTab();
 
 	/**
 	 * CONTENTS
@@ -137,6 +139,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	private Action actionShowConfiguration;
 	private Action actionClearHistory;
 	private Action actionClearBookmark;
+	private Action actionShowDesktop;
 
 
 	private boolean showEntityStartmenuEntries = true;
@@ -309,6 +312,31 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				MainFrame.clearBookmark();
 			}
 		};
+		actionShowDesktop = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.17","Desktop anzeigen")) {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				boolean selected = transferSelected(e, actionShowDesktop);
+				showHideDesktop(selected);
+			}
+		};
+ 
+	}
+	
+	private void showHideDesktop(boolean show) {
+		showDesktop = show;
+		if (showDesktop) {
+			remove(jpnCenter);
+			add(desktop.getJComponent(), BorderLayout.CENTER);
+		} else {
+			remove(desktop.getJComponent());
+			add(jpnCenter, BorderLayout.CENTER);
+		}
+		repaint();
+	}
+	
+	public boolean isShowDesktop() {
+		return this.showDesktop;
 	}
 
 	/**
@@ -414,6 +442,14 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	 */
 	public Action getClearBookmarkAction() {
 		return actionClearBookmark;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Action getShowDesktopAction() {
+		return actionShowDesktop;
 	}
 
 	/**

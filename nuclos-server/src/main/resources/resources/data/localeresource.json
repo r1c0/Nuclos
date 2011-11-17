@@ -59574,6 +59574,66 @@
     "text": "Niemals anzeigen"
   },
   {
+    "resourceID": "StartTabPanel.17",
+    "locale": "i-default",
+    "text": "Show desktop"
+  },
+  {
+    "resourceID": "StartTabPanel.17",
+    "locale": "en",
+    "text": "Show desktop"
+  },
+  {
+    "resourceID": "StartTabPanel.17",
+    "locale": "de",
+    "text": "Desktop anzeigen"
+  },
+  {
+    "resourceID": "DesktopStartTab.1",
+    "locale": "i-default",
+    "text": "Add menu button"
+  },
+  {
+    "resourceID": "DesktopStartTab.1",
+    "locale": "en",
+    "text": "Add menu button"
+  },
+  {
+    "resourceID": "DesktopStartTab.1",
+    "locale": "de",
+    "text": "Menu Button hinzufügen"
+  },
+  {
+    "resourceID": "DesktopStartTab.2",
+    "locale": "i-default",
+    "text": "Select resource icon"
+  },
+  {
+    "resourceID": "DesktopStartTab.2",
+    "locale": "en",
+    "text": "Select resource icon"
+  },
+  {
+    "resourceID": "DesktopStartTab.2",
+    "locale": "de",
+    "text": "Ressource Icon auswählen"
+  },
+  {
+    "resourceID": "ResourceIconChooser.3",
+    "locale": "i-default",
+    "text": "Select resource icon"
+  },
+  {
+    "resourceID": "ResourceIconChooser.3",
+    "locale": "en",
+    "text": "Select resource icon"
+  },
+  {
+    "resourceID": "ResourceIconChooser.3",
+    "locale": "de",
+    "text": "Ressource Icon auswählen"
+  },
+  {
     "resourceID": "MainFrameTabbedPane.3",
     "locale": "i-default",
     "text": "Tab bar"
@@ -60427,6 +60487,36 @@
     "resourceID": "action.WorkspaceCustomizeEntityAndSubFormColumns",
     "locale": "de",
     "text": "Arbeitsumgebung zugewiesen: Entitäten- und Unterformularspalten individualisieren"
+  },
+  {
+    "resourceID": "ResourceIconChooser.1",
+    "locale": "i-default",
+    "text": "Save"
+  },
+  {
+    "resourceID": "ResourceIconChooser.1",
+    "locale": "en",
+    "text": "Save"
+  },
+  {
+    "resourceID": "ResourceIconChooser.1",
+    "locale": "de",
+    "text": "Speichern"
+  },
+  {
+    "resourceID": "ResourceIconChooser.2",
+    "locale": "i-default",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "ResourceIconChooser.2",
+    "locale": "en",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "ResourceIconChooser.2",
+    "locale": "de",
+    "text": "Abbrechen"
   },
   {
     "resourceID": "MainMenuAdministration",

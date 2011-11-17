@@ -18,6 +18,7 @@ package org.nuclos.server.resource.ejb3;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
 
@@ -187,5 +188,11 @@ public class ResourceFacadeBean extends MasterDataFacadeBean implements Resource
 		catch(IOException e) {
 			throw new NuclosFatalException(e);
 		}
+	}
+
+
+	@Override
+	public Set<String> getResourceNames() {
+		return ResourceCache.getInstance().getResourceNames();
 	}
 }

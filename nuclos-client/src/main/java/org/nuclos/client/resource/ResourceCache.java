@@ -17,6 +17,7 @@
 package org.nuclos.client.resource;
 
 import java.util.Map;
+import java.util.Set;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;

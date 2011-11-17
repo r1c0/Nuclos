@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.resource;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.collection.Pair;
@@ -128,6 +130,15 @@ public class ResourceDelegate {
 	public void remove(String sEntityName, MasterDataVO mdvo) throws CommonBusinessException {
 		try {
 			facade.remove(sEntityName, mdvo);
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		}
+	}
+
+	public Set<String> getResourceNames() {
+		try {
+			return facade.getResourceNames();
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
