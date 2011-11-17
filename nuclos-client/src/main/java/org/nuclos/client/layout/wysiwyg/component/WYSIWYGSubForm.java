@@ -465,6 +465,9 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 				
 				this.add(this.subform, BorderLayout.CENTER);
 
+				for (MouseListener ml : this.subform.getJTable().getTableHeader().getMouseListeners()) {
+					this.subform.getJTable().getTableHeader().removeMouseListener(ml);
+				}
 				this.subform.getJTable().getTableHeader().addMouseListener(this);
 				try {
 					//NUCLEUSINT-265
