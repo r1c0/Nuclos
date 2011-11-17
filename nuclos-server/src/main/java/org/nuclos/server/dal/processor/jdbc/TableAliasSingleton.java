@@ -75,8 +75,16 @@ public class TableAliasSingleton {
 		return INSTANCE;
 	}
 	
+	/**
+	 * @deprecated Try to avoid this and use {@link #getAlias(IColumnWithMdToVOMapping)} instead.
+	 */
 	public String getAlias(IColumnToVOMapping<?> mapping) {
 		final EntityFieldMetaDataVO meta = getMeta(mapping);
+		return getAlias(meta);
+	}
+	
+	public String getAlias(IColumnWithMdToVOMapping<?> mapping) {
+		final EntityFieldMetaDataVO meta = mapping.getMeta();
 		return getAlias(meta);
 	}
 	

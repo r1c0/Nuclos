@@ -507,48 +507,39 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		final List<CollectableSearchCondition> result = new ArrayList<CollectableSearchCondition>();
 		final boolean debug = LOG.isDebugEnabled();
 		for (IColumnToVOMapping<?> m: columns) {
+			boolean add = false;
+			String alias = null;
 			final String f = m.getColumn();
-			if (f.startsWith("STRVALUE_")) {
-				// exclude STRVALUE_NEW in T_UD_LOGBOOK
-				if (m instanceof IColumnWithMdToVOMapping) {
-					final EntityFieldMetaDataVO meta = ((IColumnWithMdToVOMapping<?>) m).getMeta();
-					if (meta.getForeignEntity() != null) {
-						final String alias = tas.getAlias(m);
-						if (debug) {
-							LOG.info("getJoinsForColumns: apply RefJoinCondition for " + m + " alias " + alias);
+			if (m instanceof IColumnWithMdToVOMapping) {
+				final EntityFieldMetaDataVO meta = ((IColumnWithMdToVOMapping<?>) m).getMeta();
+				final String fentity = meta.getForeignEntity();
+				if (fentity != null) {
+					alias = tas.getAlias(meta);					
+					if (f.startsWith("STRVALUE_")) {
+						add = true;
+					}					
+					else if (f.startsWith("INTVALUE_")) {
+						// We used to have *2* joins on nuclos_state, one for STRVALUE_ and INTVALUE_...
+						// Hence we omit the INTVALUE case
+						if (!meta.getForeignEntity().equals(NuclosEntity.STATE.getEntityName())) {
+							add = true;
 						}
-						result.add(tas.getRefJoinCondition(m));
 					}
-				}
-				else {
-					final String alias = tas.getAlias(m);
-					if (debug) {
-						LOG.info("getJoinsForColumns: apply RefJoinCondition for " + m + " alias " + alias);
-					}
-					result.add(tas.getRefJoinCondition(m));
 				}
 			}
-			else if (f.startsWith("INTVALUE_")) {
-				// We used to have *2* joins on nuclos_state, one for STRVALUE_ and INTVALUE_...
-				// Hence we omit the INTVALUE case
-				if (m instanceof IColumnWithMdToVOMapping) {
-					final EntityFieldMetaDataVO meta = ((IColumnWithMdToVOMapping<?>) m).getMeta();
-					if (!meta.getForeignEntity().equals(NuclosEntity.STATE.getEntityName())) {
-						final String alias = tas.getAlias(m);
-						if (debug) {
-							LOG.info("getJoinsForColumns: apply RefJoinCondition for " + m + " alias " + alias);
-						}
-						result.add(tas.getRefJoinCondition(m));
-					}
-				}
-				else {
-					final String alias = tas.getAlias(m);
-					if (debug) {
-						LOG.info("getJoinsForColumns: apply RefJoinCondition for " + m + " alias " + alias);
-					}
-					result.add(tas.getRefJoinCondition(m));
+			// ???
+			else {
+				if (f.startsWith("STRVALUE_") || f.startsWith("INTVALUE_")) {
+					alias = tas.getAlias(m);
+					add = true;
 				}
 			}
+			if (add) {
+				if (debug) {
+					LOG.info("getJoinsForColumns: apply RefJoinCondition for " + m + " alias " + alias);
+				}
+				result.add(tas.getRefJoinCondition(m));
+			}			
 		}
 		return result;
 	}
