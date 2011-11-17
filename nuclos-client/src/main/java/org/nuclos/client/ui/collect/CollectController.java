@@ -4460,10 +4460,19 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		String message = ex.getInputSpecification().getMessage();
 		switch (ex.getInputSpecification().getType()) {
 			case InputSpecification.CONFIRM_YES_NO:
-			case InputSpecification.CONFIRM_OK_CANCEL:
 				int i = JOptionPane.showConfirmDialog(getFrame(), message, title, JOptionPane.YES_NO_OPTION);
 				if (i != JOptionPane.CLOSED_OPTION && i != JOptionPane.CANCEL_OPTION) {
-					getContext().put(ex.getInputSpecification().getKey(), new Integer(i));
+					getContext().put(ex.getInputSpecification().getKey(), (i == JOptionPane.YES_OPTION) ? InputSpecification.YES : InputSpecification.NO);
+					invoke(r);
+				}
+				else {
+					throw new UserCancelledException();
+				}
+				break;
+			case InputSpecification.CONFIRM_OK_CANCEL:
+				i = JOptionPane.showConfirmDialog(getFrame(), message, title, JOptionPane.OK_CANCEL_OPTION);
+				if (i != JOptionPane.CLOSED_OPTION && i != JOptionPane.CANCEL_OPTION) {
+					getContext().put(ex.getInputSpecification().getKey(), InputSpecification.OK);
 					invoke(r);
 				}
 				else {
