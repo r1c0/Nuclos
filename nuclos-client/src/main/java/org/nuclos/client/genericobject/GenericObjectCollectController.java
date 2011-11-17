@@ -136,6 +136,7 @@ import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.DeleteSelectedCollectablesController;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.UpdateSelectedCollectablesController.UpdateAction;
+import org.nuclos.client.ui.collect.UserCancelledException;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
@@ -3749,7 +3750,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						CollectableGenericObjectWithDependants updated = GenericObjectCollectController.this.updateCurrentCollectable();
 						StateDelegate.getInstance().changeStateAndModify(iModuleId, updated.getGenericObjectWithDependantsCVO(), stateNew.getId());
 					} else {
-						StateDelegate.getInstance().changeState(iModuleId, iGenericObjectId, stateNew.getId());
+						invoke(new CommonRunnable() {
+							@Override
+							public void run() throws CommonBusinessException {
+								StateDelegate.getInstance().changeState(iModuleId, iGenericObjectId, stateNew.getId());
+							}
+						});
 					}
 					broadcastCollectableEvent(clct, MessageType.STATECHANGE_DONE);
 
@@ -3758,8 +3764,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					// . other fields because of business rules
 					if (!errorOccurred)
 						GenericObjectCollectController.this.refreshCurrentCollectable(false);
-				}
-				finally {
+				} finally {
 					isProcessingStateChange.set(false);
 				}
 			}
@@ -3777,7 +3782,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					if (pex != null) {
 						GenericObjectCollectController.this.setCollectableComponentModelsInDetailsMandatoryAdded(pex.getPointerCollection().getFields());
 					}
-				} else {
+				} else if (!(ex instanceof UserCancelledException)) {
 					final String sErrorMsg = CommonLocaleDelegate.getMessage("GenericObjectCollectController.34","Der Statuswechsel konnte nicht vollzogen werden.");
 					Errors.getInstance().showExceptionDialog(getFrame(), sErrorMsg, ex);
 				}
