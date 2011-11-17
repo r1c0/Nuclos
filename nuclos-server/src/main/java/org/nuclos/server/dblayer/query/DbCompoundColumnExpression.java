@@ -23,6 +23,7 @@ import java.util.List;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.jdbc.TableAliasSingleton;
 import org.nuclos.server.dblayer.impl.standard.StandardSqlDBAccess;
 import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
@@ -42,8 +43,8 @@ import org.nuclos.server.dblayer.util.IFieldRef;
  */
 public class DbCompoundColumnExpression<T> extends DbExpression<T> {
 	
-	public DbCompoundColumnExpression(DbFrom from, EntityFieldMetaDataVO field) throws ClassNotFoundException {
-		super(from.getQuery().getBuilder(), (Class<T>) Class.forName(field.getDataType()), 
+	public DbCompoundColumnExpression(DbFrom from, EntityFieldMetaDataVO field) {
+		super(from.getQuery().getBuilder(), (Class<T>) DalUtils.getDbType(field.getDataType()), 
 				field.getDbColumn(), mkConcat(from, field));
 		if (field.getForeignEntity() == null) {
 			throw new IllegalArgumentException();

@@ -186,6 +186,15 @@ public class DalUtils {
 		}
 		return javaType;
 	}
+	
+	public static Class<?> getDbType(String javaType) {
+		try {
+			return getDbType(Class.forName(javaType));
+		}
+		catch (ClassNotFoundException e) {
+			throw new IllegalArgumentException(javaType);
+		}
+	}	
 
 	public static EntityFieldMetaDataVO getFieldMeta(DbColumn column) {
 		Class<?> cls = String.class;

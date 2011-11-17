@@ -20,6 +20,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.IDalVO;
 import org.nuclos.common.dal.vo.IDalWithFieldsVO;
 import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dblayer.query.DbCompoundColumnExpression;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -54,13 +55,9 @@ public final class ColumnToFieldVOMapping<T extends Object> extends AbstractColu
 		}
 		else {
 			final String tableAlias = from.getAlias();
-			try {
-				result = (DbExpression<T>) from.getQuery().getBuilder().plainExpression(
-						Class.forName(field.getDataType()), 
-						field.getCalcFunction() + "(" + tableAlias + ".INTID) " + field.getDbColumn());
-			} catch (ClassNotFoundException e) {
-				throw new IllegalStateException(e.toString());
-			}
+			result = (DbExpression<T>) from.getQuery().getBuilder().plainExpression(
+					DalUtils.getDbType(field.getDataType()), 
+					field.getCalcFunction() + "(" + tableAlias + ".INTID) " + field.getDbColumn());
 		}
 		return result;
 	}

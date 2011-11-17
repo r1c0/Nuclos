@@ -393,11 +393,6 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		return count.intValue();
 	}
 
-	/**
-	 *
-	 * @param clctexpr
-	 * @return
-	 */
 	private CollectableSearchCondition getSearchConditionWithDeletedAndVLP(CollectableSearchExpression clctexpr) {
 		CollectableSearchCondition result = null;
 		if (clctexpr.getValueListProviderDatasource() != null) {
