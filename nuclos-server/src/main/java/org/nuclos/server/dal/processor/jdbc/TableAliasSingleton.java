@@ -20,8 +20,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.collect.collectable.searchcondition.RefJoinCondition;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.SystemFields;
+import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.IColumnWithMdToVOMapping;
 
@@ -34,6 +39,8 @@ import org.nuclos.server.dal.processor.IColumnWithMdToVOMapping;
  * @since Nuclos 3.2.01
  */
 public class TableAliasSingleton {
+	
+	private static final Logger LOG = Logger.getLogger(TableAliasSingleton.class);
 	
 	private static final TableAliasSingleton INSTANCE = new TableAliasSingleton();
 	
@@ -52,8 +59,16 @@ public class TableAliasSingleton {
 		map.put("strvalue_entity_source", "t_md_entity_source");
 		SPECIAL_TABLE_ALIASES = Collections.unmodifiableMap(map);
 	}
+	
+	//
+	
+	private final MetaDataProvider mdProv;
+	
+	private final boolean debug;
 
 	private TableAliasSingleton() {
+		mdProv = MetaDataServerProvider.getInstance();
+		debug = LOG.isDebugEnabled();
 	}
 	
 	public static TableAliasSingleton getInstance() {
@@ -82,6 +97,13 @@ public class TableAliasSingleton {
 		if (alias == null) {
 			// default value
 			alias = meta.getForeignEntity();
+		}
+		if (alias == null) {
+			throw new IllegalArgumentException("Field " + meta + " is not a reference to a foreign entity");
+		}
+		if (debug) {
+			final EntityMetaDataVO entity = mdProv.getEntity(meta.getEntityId());
+			LOG.debug("table alias for " + entity.getEntity() + "." + meta.getField() + " is " + alias);
 		}
 		return alias;
 	}

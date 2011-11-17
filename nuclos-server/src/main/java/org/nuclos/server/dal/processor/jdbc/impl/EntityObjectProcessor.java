@@ -509,23 +509,45 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		for (IColumnToVOMapping<?> m: columns) {
 			final String f = m.getColumn();
 			if (f.startsWith("STRVALUE_")) {
-				final String alias = tas.getAlias(m);
-				if (debug) {
-					LOG.info("getJoinsForColumns: apply RefJoinCondition for " + m + " alias " + alias);
+				// exclude STRVALUE_NEW in T_UD_LOGBOOK
+				if (m instanceof IColumnWithMdToVOMapping) {
+					final EntityFieldMetaDataVO meta = ((IColumnWithMdToVOMapping<?>) m).getMeta();
+					if (meta.getForeignEntity() != null) {
+						final String alias = tas.getAlias(m);
+						if (debug) {
+							LOG.info("getJoinsForColumns: apply RefJoinCondition for " + m + " alias " + alias);
+						}
+						result.add(tas.getRefJoinCondition(m));
+					}
 				}
-				result.add(tas.getRefJoinCondition(m));
-			}
-			else if (f.startsWith("INTVALUE_")) {
-				// We used to have *2* joins on nuclos_state, one for STRVALUE_ and INTVALUE_...
-				// Hence we omit the INTVALUE case
-				final EntityFieldMetaDataVO meta = ((IColumnWithMdToVOMapping<?>) m).getMeta();
-				if (!meta.getForeignEntity().equals(NuclosEntity.STATE.getEntityName())) {
+				else {
 					final String alias = tas.getAlias(m);
 					if (debug) {
 						LOG.info("getJoinsForColumns: apply RefJoinCondition for " + m + " alias " + alias);
 					}
 					result.add(tas.getRefJoinCondition(m));
-				}				
+				}
+			}
+			else if (f.startsWith("INTVALUE_")) {
+				// We used to have *2* joins on nuclos_state, one for STRVALUE_ and INTVALUE_...
+				// Hence we omit the INTVALUE case
+				if (m instanceof IColumnWithMdToVOMapping) {
+					final EntityFieldMetaDataVO meta = ((IColumnWithMdToVOMapping<?>) m).getMeta();
+					if (!meta.getForeignEntity().equals(NuclosEntity.STATE.getEntityName())) {
+						final String alias = tas.getAlias(m);
+						if (debug) {
+							LOG.info("getJoinsForColumns: apply RefJoinCondition for " + m + " alias " + alias);
+						}
+						result.add(tas.getRefJoinCondition(m));
+					}
+				}
+				else {
+					final String alias = tas.getAlias(m);
+					if (debug) {
+						LOG.info("getJoinsForColumns: apply RefJoinCondition for " + m + " alias " + alias);
+					}
+					result.add(tas.getRefJoinCondition(m));
+				}
 			}
 		}
 		return result;
