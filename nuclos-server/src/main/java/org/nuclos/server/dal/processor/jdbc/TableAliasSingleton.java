@@ -19,13 +19,16 @@ package org.nuclos.server.dal.processor.jdbc;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.collect.collectable.searchcondition.RefJoinCondition;
+import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common.dal.vo.SystemFields;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.IColumnWithMdToVOMapping;
@@ -61,6 +64,20 @@ public class TableAliasSingleton {
 	}
 	
 	//
+	
+	private final AtomicInteger AI = new AtomicInteger(0);
+	
+	/**
+	 * The table alias for each pivot (subform, key) pair must be unique (and repeatable).
+	 * Hence we store this class-wise.
+	 * <p>
+	 * (Pair (subform, key) -> tableAlias) mapping.
+	 * </p><p>
+	 * TODO:
+	 * Is PivotInfo the right place to store this information?
+	 * </p>
+	 */
+	private final Map<Pair<String,String>,String> TABLE_ALIASES = new ConcurrentHashMap<Pair<String,String>, String>();
 	
 	private final MetaDataProvider mdProv;
 	
@@ -100,20 +117,27 @@ public class TableAliasSingleton {
 	}
 
 	public String getAlias(EntityFieldMetaDataVO meta) {
-		final String dbColumn = meta.getDbColumn();
-		String alias = SPECIAL_TABLE_ALIASES.get(dbColumn.toLowerCase());
-		if (alias == null) {
-			// default value
-			alias = meta.getForeignEntity();
-		}
-		if (alias == null) {
+		final String fentity = meta.getForeignEntity();
+		if (fentity == null) {
 			throw new IllegalArgumentException("Field " + meta + " is not a reference to a foreign entity");
 		}
-		if (debug) {
-			final EntityMetaDataVO entity = mdProv.getEntity(meta.getEntityId());
-			LOG.debug("table alias for " + entity.getEntity() + "." + meta.getField() + " is " + alias);
+		final Pair<String,String> pair = new Pair<String,String>(fentity, meta.getField());
+		String result = TABLE_ALIASES.get(pair);
+		if (result == null) {
+			final String dbColumn = meta.getDbColumn();
+			String alias = SPECIAL_TABLE_ALIASES.get(dbColumn.toLowerCase());
+			if (alias == null) {
+				// default value
+				alias = meta.getForeignEntity();
+			}
+			result = StringUtils.makeSQLIdentifierFrom("a_", alias, meta.getField(), Integer.toString(AI.incrementAndGet()));
+			if (debug) {
+				final EntityMetaDataVO entity = mdProv.getEntity(meta.getEntityId());
+				LOG.debug("table alias for " + entity.getEntity() + "." + meta.getField() + " is " + result);
+			}
+			TABLE_ALIASES.put(pair, result);
 		}
-		return alias;
+		return result;
 	}
 	
 	public RefJoinCondition getRefJoinCondition(IColumnToVOMapping<?> mapping) {
@@ -122,4 +146,25 @@ public class TableAliasSingleton {
 		return new RefJoinCondition(meta, tableAlias);
 	}
 
+	/**
+	 * <p>
+	 * TODO:
+	 * This seems not 100% thread-safe at present!
+	 * </p>
+	 */
+	public String getPivotTableAlias(String subform, String keyValue) {
+		if (keyValue == null) throw new IllegalArgumentException();
+		final Pair<String,String> pair = new Pair<String,String>(subform, keyValue);
+		String result = TABLE_ALIASES.get(pair);
+		if (result == null) {
+			// allow string with only numbers in, and trailing '_' in oracle db
+			result = StringUtils.makeSQLIdentifierFrom("p_", subform, keyValue, Integer.toString(AI.incrementAndGet()));
+			if (debug) {
+				LOG.debug("pivot table alias for " + subform + "." + keyValue + " is " + result);
+			}
+			TABLE_ALIASES.put(pair, result);
+		}
+		return result;
+	}
+	
 }

@@ -16,14 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.dal.vo;
 
-import java.io.ObjectStreamException;
 import java.io.Serializable;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.nuclos.common.collection.Pair;
-import org.nuclos.common2.StringUtils;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * For displaying pivot subforms as part of the result list of a entity, we
@@ -34,19 +29,11 @@ import org.nuclos.common2.StringUtils;
  */
 public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 	
-	private static final transient AtomicInteger AI = new AtomicInteger(0);
+	private static final Class<?>[] NO_ARGS = new Class<?>[0];
 	
-	/**
-	 * The table alias for each pivot (subform, key) pair must be unique (and repeatable).
-	 * Hence we store this class-wise.
-	 * <p>
-	 * (Pair (subform, key) -> tableAlias) mapping.
-	 * </p><p>
-	 * TODO:
-	 * Is PivotInfo the right place to store this information?
-	 * </p>
-	 */
-	private static final transient Map<Pair<String,String>,String> TABLE_ALIASES = new ConcurrentHashMap<Pair<String,String>, String>();
+	private static final Class<?>[] STRING_STRING_ARGS = new Class<?>[] {String.class, String.class };
+	
+	//
 	
 	private final String subform;
 	
@@ -64,15 +51,6 @@ public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 		this.valueType = valueType;
 	}
 	
-	/**
-	 * Special serialization handling.
-	 */
-	Object readResolve() throws ObjectStreamException {
-		// save handling of static final fields...
-		assert AI != null && TABLE_ALIASES != null;
-		return new PivotInfo(subform, keyField, valueField, valueType);
-	}
-
 	public String getSubform() {
 		return subform;
 	}
@@ -98,20 +76,25 @@ public class PivotInfo implements Comparable<PivotInfo>, Serializable {
 	 */
 	public String getPivotTableAlias(String keyValue) {
 		try {
-			assert AI != null && Class.forName("org.nuclos.server.dal.processor.ProcessorFactorySingleton") != null;
+			final Class<?> tableAliasSingleton = Class.forName("org.nuclos.server.dal.processor.jdbc.TableAliasSingleton");
+			final Method getInstance = tableAliasSingleton.getMethod("getInstance", NO_ARGS);
+			final Method getPivotTableAlias = tableAliasSingleton.getMethod("getPivotTableAlias", STRING_STRING_ARGS);
+			final Object instance = getInstance.invoke(null);
+			return (String) getPivotTableAlias.invoke(instance, getSubform(), keyValue);
 		}
 		catch (ClassNotFoundException e) {
-			throw new IllegalStateException("getPivotTableAlias can only be called on the server side!");
+			throw new IllegalStateException("getPivotTableAlias can only be called on the server side: " + e.toString());
+		} catch (SecurityException e) {
+			throw new IllegalStateException("getPivotTableAlias can only be called on the server side: " + e.toString());
+		} catch (NoSuchMethodException e) {
+			throw new IllegalStateException("getPivotTableAlias can only be called on the server side: " + e.toString());
+		} catch (IllegalArgumentException e) {
+			throw new IllegalStateException("getPivotTableAlias can only be called on the server side: " + e.toString());
+		} catch (IllegalAccessException e) {
+			throw new IllegalStateException("getPivotTableAlias can only be called on the server side: " + e.toString());
+		} catch (InvocationTargetException e) {
+			throw new IllegalStateException("Error invoking getPivotTableAlias", e.getCause());
 		}
-		if (keyValue == null) throw new IllegalArgumentException();
-		final Pair<String,String> pair = new Pair<String,String>(subform, keyValue);
-		String result = TABLE_ALIASES.get(pair);
-		if (result == null) {
-			// allow string with only numbers in, and trailing '_' in oracle db
-			result = StringUtils.makeSQLIdentifierFrom("a_", getSubform(), keyValue, Integer.toString(AI.incrementAndGet()));
-			TABLE_ALIASES.put(pair, result);
-		}
-		return result;
 	}
 	
 	@Override

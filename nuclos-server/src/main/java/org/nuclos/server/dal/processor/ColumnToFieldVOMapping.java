@@ -21,7 +21,6 @@ import org.nuclos.common.dal.vo.IDalVO;
 import org.nuclos.common.dal.vo.IDalWithFieldsVO;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
-import org.nuclos.server.dblayer.query.DbCompoundColumnExpression;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
 

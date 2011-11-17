@@ -20,7 +20,6 @@ import info.clearthought.layout.TableLayout;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;

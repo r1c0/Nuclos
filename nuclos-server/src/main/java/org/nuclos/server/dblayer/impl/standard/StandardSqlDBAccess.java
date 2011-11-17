@@ -75,7 +75,6 @@ import org.nuclos.server.dblayer.impl.util.PreparedString;
 import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 import org.nuclos.server.dblayer.incubator.DbExecutor.ConnectionRunner;
 import org.nuclos.server.dblayer.incubator.DbExecutor.ResultSetRunner;
-import org.nuclos.server.dblayer.query.DbColumnExpression;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbJoin;

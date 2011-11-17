@@ -34,7 +34,6 @@ import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.dal.provider.NucletDalProvider;
-import org.nuclos.server.dal.provider.NuclosDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
