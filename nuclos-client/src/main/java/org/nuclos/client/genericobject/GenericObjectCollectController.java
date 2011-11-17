@@ -42,6 +42,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
@@ -1507,49 +1508,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				UIUtils.runCommand(getFrame(), new Runnable() {
 					@Override
 					public void run() {
-						try {
-							// try to find next or previous object:
-							final JTable tblResult = getResultTable();
-							final int iSelectedRow = tblResult.getSelectedRow();
-							if (iSelectedRow < 0)
-								throw new IllegalStateException();
-
-							final int iNewSelectedRow;
-							if (iSelectedRow < tblResult.getRowCount() - 1)
-								// the selected row is not the last row: select the next row
-								iNewSelectedRow = iSelectedRow;
-							else if (iSelectedRow > 0)
-								// the selected row is not the first row: select the previous row
-								iNewSelectedRow = iSelectedRow - 1;
-							else {
-								// the selected row is the single row: don't select a row
-								assert tblResult.getRowCount() == 1;
-								assert iSelectedRow == 0;
-								iNewSelectedRow = -1;
-							}
-
-							checkedDeleteCollectable(getSelectedCollectable());
-							getSearchStrategy().search(true);
-
-							if (iNewSelectedRow == -1) {
-								tblResult.clearSelection();
-								// switch to new mode:
-								getResultController().getSearchResultStrategy().refreshResult();
-							}
-							else {
-								tblResult.getSelectionModel().setSelectionInterval(iNewSelectedRow, iNewSelectedRow);
-								// go into view mode again:
-								cmdEnterViewMode();
-							}
-						}
-						catch (CommonPermissionException ex) {
-							final String sErrorMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.69","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz zu l\u00f6schen.");
-							Errors.getInstance().showExceptionDialog(getFrame(), sErrorMessage, ex);
-						}
-						catch (CommonBusinessException ex) {
-							if (!handlePointerException(ex))
-								Errors.getInstance().showExceptionDialog(getFrame(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.31","Der Datensatz konnte nicht gel\u00f6scht werden."), ex);
-						}
+						cmdDeleteCurrentCollectableInDetailsImpl();
 					}
 				});
 		}
@@ -2728,10 +2687,20 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final GenericObjectWithDependantsVO lowdcvoCurrent = new GenericObjectWithDependantsVO(lowdcvo, mpclctDependants.toDependantMasterDataMap());
 
 		// update the whole thing (only if no state change is processing):
-		final GenericObjectWithDependantsVO lowdcvoUpdated = !isProcessingStateChange.get()? lodelegate.update(lowdcvoCurrent) : lowdcvoCurrent;
-
+		final AtomicReference<GenericObjectWithDependantsVO> lowdcvoUpdated = new AtomicReference<GenericObjectWithDependantsVO>();
+		if (isProcessingStateChange.get()) {
+			lowdcvoUpdated.set(lowdcvoCurrent);
+		}
+		else {
+			invoke(new CommonRunnable() {
+				@Override
+				public void run() throws CommonBusinessException {
+					lowdcvoUpdated.set(lodelegate.update(lowdcvoCurrent));
+				}
+			});
+		}
 		// and return the updated version:
-		return new CollectableGenericObjectWithDependants(lowdcvoUpdated);
+		return new CollectableGenericObjectWithDependants(lowdcvoUpdated.get());
 	}
 
 	/**
@@ -2778,9 +2747,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final GenericObjectVO govo = clctNew.getGenericObjectCVO();
 		final GenericObjectWithDependantsVO lowdcvoNew = new GenericObjectWithDependantsVO(govo, mpDependants);
 
-		final GenericObjectWithDependantsVO lowdcvoInserted = lodelegate.create(lowdcvoNew, getSelectedSubEntityNames());
-
-		return new CollectableGenericObjectWithDependants(lowdcvoInserted);
+		final AtomicReference<GenericObjectWithDependantsVO> lowdcvoInserted = new AtomicReference<GenericObjectWithDependantsVO>();
+		invoke(new CommonRunnable() {
+			@Override
+			public void run() throws CommonBusinessException {
+				lowdcvoInserted.set(lodelegate.create(lowdcvoNew, getSelectedSubEntityNames()));
+			}
+		});
+		return new CollectableGenericObjectWithDependants(lowdcvoInserted.get());
 	}
 
 	@Override
@@ -2910,8 +2884,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		return (clctlo == null) ? null : clctlo.getGenericObjectCVO();
 	}
 
-	private void markCollectableAsDeleted(CollectableGenericObjectWithDependants clctlo) throws CommonBusinessException {
-		lodelegate.remove(clctlo.getGenericObjectWithDependantsCVO(), false);
+	private void markCollectableAsDeleted(final CollectableGenericObjectWithDependants clctlo) throws CommonBusinessException {
+		invoke(new CommonRunnable() {
+			@Override
+			public void run() throws CommonBusinessException {
+				lodelegate.remove(clctlo.getGenericObjectWithDependantsCVO(), false);
+			}
+		});
 	}
 
 	/**
@@ -2921,7 +2900,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (!isPhysicallyDeleteAllowed(clctlo))
 			throw new CommonPermissionException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.41","Endg\u00fcltiges L\u00f6schen ist nicht erlaubt."));
 
-		lodelegate.remove(clctlo.getGenericObjectWithDependantsCVO(), true);
+		invoke(new CommonRunnable() {
+			@Override
+			public void run() throws CommonBusinessException {
+				lodelegate.remove(clctlo.getGenericObjectWithDependantsCVO(), true);
+			}
+		});
 		broadcastCollectableEvent(clctlo, MessageType.DELETE_DONE);
 
 		UIUtils.invokeOnDispatchThread(new Runnable() {
@@ -2936,10 +2920,15 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		getResultController().getSearchResultStrategy().refreshResult();
 	}
 
-	protected void checkedRestoreCollectable(CollectableGenericObjectWithDependants clct) throws CommonBusinessException {
+	protected void checkedRestoreCollectable(final CollectableGenericObjectWithDependants clct) throws CommonBusinessException {
 		if (!isPhysicallyDeleteAllowed(clct))
 			throw new CommonPermissionException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.100","Wiederherstellen ist nicht erlaubt."));
-		lodelegate.restore(clct.getGenericObjectWithDependantsCVO());
+		invoke(new CommonRunnable() {
+			@Override
+			public void run() throws CommonBusinessException {
+				lodelegate.restore(clct.getGenericObjectWithDependantsCVO());
+			}
+		});
 	}
 
 

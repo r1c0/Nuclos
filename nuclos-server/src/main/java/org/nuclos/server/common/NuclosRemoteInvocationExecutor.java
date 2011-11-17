@@ -16,24 +16,44 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.log4j.Logger;
+import org.nuclos.api.context.InputContext;
 import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationExecutor;
 
 public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor {
 
+	private static final Logger LOG = Logger.getLogger(NuclosRemoteInvocationExecutor.class);
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public Object invoke(RemoteInvocation invoke, Object param) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		try {
 			NuclosUserDetailsContextHolder.setTimeZone((TimeZone) invoke.getAttribute("user.timezone"));
 			NuclosRemoteContextHolder.setRemotly(true);
-			return invoke.invoke(param);			
-		}		
+
+			if (invoke.getAttribute("org.nuclos.api.context.InputContext") != null) {
+				HashMap<String, Serializable> context = (HashMap<String, Serializable>) invoke.getAttribute("org.nuclos.api.context.InputContext");
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("Receiving call with dynamic context:");
+					for (Map.Entry<String, Serializable> entry : context.entrySet()) {
+						LOG.debug(entry.getKey() + ": " + String.valueOf(entry.getValue()));
+					}
+				}
+				InputContext.set(context);
+			}
+			return invoke.invoke(param);
+		}
 		finally {
 			NuclosUserDetailsContextHolder.clear();
-			NuclosRemoteContextHolder.clear();			
+			NuclosRemoteContextHolder.clear();
+			InputContext.clear();
 		}
 	}
 

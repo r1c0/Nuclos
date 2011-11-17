@@ -19,6 +19,7 @@
 
 	<properties>
 		<nuclos.version.date>15.06.2011</nuclos.version.date>
+		<nuclos.api.version>1.0.0</nuclos.api.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 

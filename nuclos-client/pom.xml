@@ -126,6 +126,13 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.nuclos</groupId>
+			<artifactId>nuclos-client-api</artifactId>
+			<version>${nuclos.api.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<repositories>

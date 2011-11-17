@@ -16,21 +16,31 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client;
 
+import java.io.Serializable;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
 import org.nuclos.client.main.Main;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationResult;
 
-public class NuclosHttpInvokerProxyFactoryBean extends
-		HttpInvokerProxyFactoryBean {
+public class NuclosHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBean {
+
+	private static final Logger LOG = Logger.getLogger(NuclosHttpInvokerProxyFactoryBean.class);
 
 	@Override
-	protected RemoteInvocationResult executeRequest(RemoteInvocation invocation)
-			throws Exception {
-		
+	protected RemoteInvocationResult executeRequest(RemoteInvocation invocation) throws Exception {
 		invocation.addAttribute("user.timezone", Main.getInitialTimeZone());
+		invocation.addAttribute("org.nuclos.api.context.InputContext", NuclosHttpInvokerAttributeContext.get());
+		if (LOG.isDebugEnabled() && NuclosHttpInvokerAttributeContext.get().size() > 0) {
+			LOG.debug("Sending call with dynamic context:");
+			for (Map.Entry<String, Serializable> entry : NuclosHttpInvokerAttributeContext.get().entrySet()) {
+				LOG.debug(entry.getKey() + ": " + String.valueOf(entry.getValue()));
+			}
+		}
 		return super.executeRequest(invocation);
 	}
 
-	
+
 }

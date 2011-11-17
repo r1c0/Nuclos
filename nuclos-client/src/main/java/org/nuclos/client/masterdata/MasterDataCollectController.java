@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.JButton;
@@ -818,7 +819,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
          sParentEntityName = sParentSubForm;
       }
 
-      return newDetailsSubFormController(subform, sParentEntityName, clctcompmodelprovider, 
+      return newDetailsSubFormController(subform, sParentEntityName, clctcompmodelprovider,
     		  this.getFrame(), this.getParent(), this.getDetailsPanel(), this.getPreferences(), this.getEntityPreferences());
    }
 
@@ -1184,7 +1185,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    }
 
    @Override
-   protected CollectableMasterDataWithDependants insertCollectable(CollectableMasterDataWithDependants clctNew) throws CommonBusinessException {
+   protected CollectableMasterDataWithDependants insertCollectable(final CollectableMasterDataWithDependants clctNew) throws CommonBusinessException {
       if (clctNew.getId() != null) {
          throw new IllegalArgumentException("clctNew");
       }
@@ -1193,10 +1194,16 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       /** @todo eliminate this workaround - this is the wrong place. The right place is the Clone action! */
       final DependantMasterDataMap mpmdvoDependants = org.nuclos.common.Utils.clearIds(this.getAllSubFormData(null).toDependantMasterDataMap());
 
-      final MasterDataVO mdvoInserted = this.mddelegate.create(this.getEntityName(), clctNew.getMasterDataCVO(), mpmdvoDependants);
+      final AtomicReference<MasterDataVO> mdvoInserted = new AtomicReference<MasterDataVO>();
+      invoke(new CommonRunnable() {
+			@Override
+			public void run() throws CommonBusinessException {
+				mdvoInserted.set(mddelegate.create(getEntityName(), clctNew.getMasterDataCVO(), mpmdvoDependants));
+			}
+	  });
 
       fireApplicationObserverEvent();
-      return new CollectableMasterDataWithDependants(clctNew.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoInserted, this.readDependants(mdvoInserted.getId())));
+      return new CollectableMasterDataWithDependants(clctNew.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoInserted.get(), this.readDependants(mdvoInserted.get().getId())));
    }
 
    @Override
@@ -1205,12 +1212,18 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    }
 
    @Override
-   protected CollectableMasterDataWithDependants updateCollectable(CollectableMasterDataWithDependants clct, Object oAdditionalData) throws CommonBusinessException {
+   protected CollectableMasterDataWithDependants updateCollectable(final CollectableMasterDataWithDependants clct, Object oAdditionalData) throws CommonBusinessException {
       final DependantCollectableMasterDataMap mpclctDependants = (DependantCollectableMasterDataMap) oAdditionalData;
 
-      final Object oId = this.mddelegate.update(this.getEntityName(), clct.getMasterDataCVO(), mpclctDependants.toDependantMasterDataMap());
+      final AtomicReference<Object> oId = new AtomicReference<Object>();
+      invoke(new CommonRunnable() {
+			@Override
+			public void run() throws CommonBusinessException {
+				oId.set(mddelegate.update(getEntityName(), clct.getMasterDataCVO(), mpclctDependants.toDependantMasterDataMap()));
+			}
+	  });
 
-      final MasterDataVO mdvoUpdated = this.mddelegate.get(this.getEntityName(), oId);
+      final MasterDataVO mdvoUpdated = this.mddelegate.get(this.getEntityName(), oId.get());
       fireApplicationObserverEvent();
       return new CollectableMasterDataWithDependants(clct.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoUpdated, this.readDependants(mdvoUpdated.getId())));
    }
@@ -1221,8 +1234,13 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    }
 
    @Override
-   protected void deleteCollectable(CollectableMasterDataWithDependants clct) throws CommonBusinessException {
-      this.mddelegate.remove(this.getEntityName(), clct.getMasterDataCVO());
+   protected void deleteCollectable(final CollectableMasterDataWithDependants clct) throws CommonBusinessException {
+	  invoke(new CommonRunnable() {
+		 @Override
+		 public void run() throws CommonBusinessException {
+			 mddelegate.remove(getEntityName(), clct.getMasterDataCVO());
+		 }
+	  });
       fireApplicationObserverEvent();
    }
 

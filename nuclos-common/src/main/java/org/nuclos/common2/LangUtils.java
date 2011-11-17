@@ -56,7 +56,7 @@ public class LangUtils {
 	public static boolean implies(boolean bPremise, boolean bConclusion) {
 		return !bPremise || bConclusion;
 	}
-	
+
 	public static boolean isValidURI(String sUri) {
 		try {
 			URI uri = new URI(sUri);
@@ -64,7 +64,7 @@ public class LangUtils {
 		}
 		catch(Exception e) {
 			// no valid URI Format
-			LOG.debug("isValiedURI: " + e);
+			LOG.trace("isValiedURI: " + e);
 			return false;
 		}
 		String str = org.nuclos.common2.StringUtils.emptyIfNull(sUri).toLowerCase();
@@ -221,7 +221,7 @@ public class LangUtils {
 	public static int hashCode(Object o) {
 		return (o == null) ? 0 : o.hashCode();
 	}
-	
+
 	/**
 	 * Generates a hash code for a sequence of input values.
 	 */
@@ -425,7 +425,7 @@ public class LangUtils {
 	}
 
 	/**
-	 * Creates an instance of the given class and casts it. 
+	 * Creates an instance of the given class and casts it.
 	 */
 	public static <T> T instantiate(String className, Class<T> superClass) {
 		try {
@@ -443,7 +443,7 @@ public class LangUtils {
 	public static Integer convertId(Long id) {
 		if (id == null) {
 			return null;
-		}	
+		}
 		return new Integer(id.intValue());
 	}
 
@@ -451,7 +451,7 @@ public class LangUtils {
 		if (id == null) {
 			return null;
 		}
-		
+
 		return new Long(id.longValue());
 	}
 
@@ -463,5 +463,5 @@ public class LangUtils {
 			return s;
 		}
 	}
-	
+
 }	// class LangUtils

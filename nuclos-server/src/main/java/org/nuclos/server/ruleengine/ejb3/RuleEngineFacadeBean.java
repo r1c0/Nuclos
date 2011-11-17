@@ -1139,6 +1139,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	}
 
 	static final String[] IMPORTS = new String[] {
+		"org.nuclos.api.context.*",
 		"org.nuclos.common.collect.collectable.CollectableEntity",
 		"org.nuclos.common.collect.collectable.CollectableEntityField",
 		"org.nuclos.common.collect.collectable.Collectable",

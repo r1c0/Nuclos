@@ -35,14 +35,16 @@ import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
-import java.text.MessageFormat;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
@@ -70,6 +72,9 @@ import javax.swing.table.TableModel;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
+import org.nuclos.api.context.InputRequiredException;
+import org.nuclos.api.context.InputSpecification;
+import org.nuclos.client.NuclosHttpInvokerAttributeContext;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.DatasourceBasedCollectableFieldsProvider;
 import org.nuclos.client.common.KeyBindingProvider;
@@ -520,6 +525,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			CollectController.this.searchChanged(ev.getSource());
 		}
 	};
+
+	private final Map<String, Serializable> context = new HashMap<String, Serializable>();
 
 	/**
 	 * constructs a new CollectController.<br>
@@ -3029,6 +3036,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	protected boolean handleSpecialException(Exception ex) {
+		if (ex instanceof UserCancelledException) {
+			// simply do nothing
+			getContext().clear();
+			return true;
+		}
 		return false;
 	}
 
@@ -3117,8 +3129,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			}
 			broadcastCollectableEvent(clct, mt);
 		} catch (CommonBusinessException cbe) {
-			if (!handleSpecialException(cbe))
+			if (!handleSpecialException(cbe)) {
 				throw cbe;
+			}
 		} finally {
 			this.getFrame().setCursor(null);
 			LOG.debug("FINISHED save");
@@ -3188,61 +3201,72 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		assert this.getCollectStateModel().getCollectState().equals(new CollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_VIEW));
 
 		if (this.stopEditingInDetails()) {
-			final String sMessagePattern = "Soll der angezeigte Datensatz ({0}) wirklich gel\u00f6scht werden?";
-			final String sMessage = MessageFormat.format(sMessagePattern, this.getSelectedCollectable().getIdentifierLabel());
-			final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), sMessage, "Datensatz l\u00f6schen", JOptionPane.YES_NO_OPTION);
+			final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.74","Soll der angezeigte Datensatz ({0}) wirklich gel\u00f6scht werden?", getSelectedCollectable().getIdentifierLabel());
+			final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.26","Datensatz l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (iBtn == JOptionPane.OK_OPTION) {
 				UIUtils.runCommand(this.getFrame(), new Runnable() {
 					@Override
                     public void run() {
-						try {
-							// try to find next or previous object:
-							final JTable tblResult = getResultTable();
-							final int iSelectedRow = tblResult.getSelectedRow();
-							if (iSelectedRow < 0) {
-								throw new IllegalStateException();
-							}
-
-							final int iNewSelectedRow;
-							if (iSelectedRow < tblResult.getRowCount() - 1) {
-								// the selected row is not the last row: select the next row
-								iNewSelectedRow = iSelectedRow;
-							}
-							else if (iSelectedRow > 0) {
-								// the selected row is not the first row: select the previous row
-								iNewSelectedRow = iSelectedRow - 1;
-							}
-							else {
-								// the selected row is the single row: don't select a row
-								assert tblResult.getRowCount() == 1;
-								assert iSelectedRow == 0;
-								iNewSelectedRow = -1;
-							}
-
-							checkedDeleteSelectedCollectable();
-
-							if (iNewSelectedRow == -1) {
-								tblResult.getSelectionModel().clearSelection();
-								// switch to new mode:
-								enterNewMode();
-							}
-							else {
-								tblResult.getSelectionModel().setSelectionInterval(iNewSelectedRow, iNewSelectedRow);
-								// go into view mode again:
-								enterViewMode();
-							}
-						}
-						catch (CommonPermissionException ex) {
-							final String sErrorMessage = "Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um dieses Objekt zu l\u00f6schen.";
-							Errors.getInstance().showExceptionDialog(getFrame(), sErrorMessage, ex);
-						}
-						catch (CommonBusinessException ex) {
-							if (!handleSpecialException(ex))
-								Errors.getInstance().showExceptionDialog(getFrame(), "Das Objekt konnte nicht gel\u00f6scht werden.", ex);
-						}
+						cmdDeleteCurrentCollectableInDetailsImpl();
 					}
 				});
+			}
+		}
+	}
+
+	/**
+	 * command: delete current collectable in details<br>
+	 * Deletes the current collectable in Details mode.
+	 *
+	 * @deprecated Move to DetailsController and make private.
+	 */
+	public void cmdDeleteCurrentCollectableInDetailsImpl() {
+		try {
+			// try to find next or previous object:
+			final JTable tblResult = getResultTable();
+			final int iSelectedRow = tblResult.getSelectedRow();
+			if (iSelectedRow < 0) {
+				throw new IllegalStateException();
+			}
+
+			final int iNewSelectedRow;
+			if (iSelectedRow < tblResult.getRowCount() - 1) {
+				// the selected row is not the last row: select the next row
+				iNewSelectedRow = iSelectedRow;
+			}
+			else if (iSelectedRow > 0) {
+				// the selected row is not the first row: select the previous row
+				iNewSelectedRow = iSelectedRow - 1;
+			}
+			else {
+				// the selected row is the single row: don't select a row
+				assert tblResult.getRowCount() == 1;
+				assert iSelectedRow == 0;
+				iNewSelectedRow = -1;
+			}
+
+			checkedDeleteSelectedCollectable();
+			getSearchStrategy().search(true);
+
+			if (iNewSelectedRow == -1) {
+				tblResult.getSelectionModel().clearSelection();
+				// switch to new mode:
+				getResultController().getSearchResultStrategy().refreshResult();
+			}
+			else {
+				tblResult.getSelectionModel().setSelectionInterval(iNewSelectedRow, iNewSelectedRow);
+				// go into view mode again:
+				enterViewMode();
+			}
+		}
+		catch (CommonPermissionException ex) {
+			final String sErrorMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.69","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz zu l\u00f6schen.");
+			Errors.getInstance().showExceptionDialog(getFrame(), sErrorMessage, ex);
+		}
+		catch (CommonBusinessException ex) {
+			if (!handleSpecialException(ex)) {
+				Errors.getInstance().showExceptionDialog(getFrame(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.31","Der Datensatz konnte nicht gel\u00f6scht werden."), ex);
 			}
 		}
 	}
@@ -4394,4 +4418,92 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 	}
 
+	protected Map<String, Serializable> getContext() {
+		return context;
+	}
+
+	protected void invoke(CommonRunnable runnable) throws CommonBusinessException {
+		try {
+			NuclosHttpInvokerAttributeContext.putAll(getContext());
+			try {
+				runnable.run();
+				getContext().clear();
+			}
+			finally {
+				NuclosHttpInvokerAttributeContext.clear();
+			}
+		}
+		catch (CommonBusinessException cbex) {
+			InputRequiredException ex = getInputRequiredException(cbex);
+			if (ex != null) {
+				handleInputRequiredException(ex, runnable);
+			}
+			else {
+				getContext().clear();
+				throw cbex;
+			}
+		}
+		catch (CommonFatalException cfex) {
+			InputRequiredException ex = getInputRequiredException(cfex);
+			if (ex != null) {
+				handleInputRequiredException(ex, runnable);
+			}
+			else {
+				getContext().clear();
+				throw cfex;
+			}
+		}
+	}
+
+	private void handleInputRequiredException(InputRequiredException ex, CommonRunnable r) throws CommonBusinessException {
+		String title = Main.getMainFrame().getTitle();
+		String message = ex.getInputSpecification().getMessage();
+		switch (ex.getInputSpecification().getType()) {
+			case InputSpecification.CONFIRM_YES_NO:
+			case InputSpecification.CONFIRM_OK_CANCEL:
+				int i = JOptionPane.showConfirmDialog(getFrame(), message, title, JOptionPane.YES_NO_OPTION);
+				if (i != JOptionPane.CLOSED_OPTION && i != JOptionPane.CANCEL_OPTION) {
+					getContext().put(ex.getInputSpecification().getKey(), new Integer(i));
+					invoke(r);
+				}
+				else {
+					throw new UserCancelledException();
+				}
+				break;
+			case InputSpecification.INPUT_VALUE:
+				String s = JOptionPane.showInputDialog(getFrame(), message, title, JOptionPane.PLAIN_MESSAGE);
+				if (s != null) {
+					getContext().put(ex.getInputSpecification().getKey(), s);
+					invoke(r);
+				}
+				else {
+					throw new UserCancelledException();
+				}
+				break;
+			case InputSpecification.INPUT_OPTION:
+				Object o = JOptionPane.showInputDialog(getFrame(), message, title, JOptionPane.PLAIN_MESSAGE, null, ex.getInputSpecification().getOptions(), ex.getInputSpecification().getDefaultOption());
+				if (o != null) {
+					getContext().put(ex.getInputSpecification().getKey(), (Serializable) o);
+					invoke(r);
+				}
+				else {
+					throw new UserCancelledException();
+				}
+				break;
+			default:
+				break;
+		}
+	}
+
+	private static InputRequiredException getInputRequiredException(Throwable ex) {
+		if (ex instanceof InputRequiredException) {
+			return (InputRequiredException) ex;
+		}
+		else if (ex.getCause() != null) {
+			return getInputRequiredException(ex.getCause());
+		}
+		else {
+			return null;
+		}
+	}
 }	// class CollectController
