@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.MetaDataProvider;
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.searchcondition.RefJoinCondition;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
@@ -121,7 +122,7 @@ public class TableAliasSingleton {
 		if (fentity == null) {
 			throw new IllegalArgumentException("Field " + meta + " is not a reference to a foreign entity");
 		}
-		final Pair<String,String> pair = new Pair<String,String>(fentity, meta.getField());
+		final Pair<String,String> pair = newPair(fentity, meta.getField());
 		String result = TABLE_ALIASES.get(pair);
 		if (result == null) {
 			final String dbColumn = meta.getDbColumn();
@@ -138,6 +139,16 @@ public class TableAliasSingleton {
 			TABLE_ALIASES.put(pair, result);
 		}
 		return result;
+	}
+	
+	private Pair<String,String> newPair(String fentity, String field) {
+		if (fentity.equals(NuclosEntity.STATE.getEntityName())) {
+			if (field.equalsIgnoreCase("nuclosState") || field.equalsIgnoreCase("nuclosStateNumber")
+					|| field.equalsIgnoreCase("nuclosStateIcon")) {
+				field = "nuclosState";
+			}
+		}
+		return new Pair<String,String>(fentity, field);
 	}
 	
 	public RefJoinCondition getRefJoinCondition(IColumnToVOMapping<?> mapping) {
