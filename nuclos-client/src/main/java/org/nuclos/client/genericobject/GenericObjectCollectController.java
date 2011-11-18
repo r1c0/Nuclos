@@ -3747,8 +3747,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						// tsc: the implementation with dbUpdate-parameter skipped a lot of data collection logic, which was the reason for the NUCLOSINT-1114.
 						//      Final servercall for database update is now skipped by setting a ThreadLocal variable.
 						//      TODO Best solution would be to refactor and call all data collection logic in prepareCollectableForSaving(), but this would take some time.
-						CollectableGenericObjectWithDependants updated = GenericObjectCollectController.this.updateCurrentCollectable();
-						StateDelegate.getInstance().changeStateAndModify(iModuleId, updated.getGenericObjectWithDependantsCVO(), stateNew.getId());
+						final CollectableGenericObjectWithDependants updated = GenericObjectCollectController.this.updateCurrentCollectable();
+						invoke(new CommonRunnable() {
+							@Override
+							public void run() throws CommonBusinessException {
+								StateDelegate.getInstance().changeStateAndModify(iModuleId, updated.getGenericObjectWithDependantsCVO(), stateNew.getId());
+							}
+						});
 					} else {
 						invoke(new CommonRunnable() {
 							@Override
@@ -4978,8 +4983,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				super.perform(clctlo);
 
 				final GenericObjectVO govo = clctlo.getGenericObjectCVO();
-				for (StateWrapper stateNew : statesNew) {
-					StateDelegate.getInstance().changeState(govo.getModuleId(), govo.getId(), stateNew.getId());
+				for (final StateWrapper stateNew : statesNew) {
+					ctl.invoke(new CommonRunnable() {
+						@Override
+						public void run() throws CommonBusinessException {
+							StateDelegate.getInstance().changeState(govo.getModuleId(), govo.getId(), stateNew.getId());
+						}
+					});
 				}
 				return null;
 			}
