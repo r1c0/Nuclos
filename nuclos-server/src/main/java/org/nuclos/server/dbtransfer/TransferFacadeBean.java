@@ -206,6 +206,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		contents.add(new DefaultNucletContent(NuclosEntity.GROUPTYPE, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.GROUP, NuclosEntity.GROUPTYPE, contents));
 		contents.add(userNC);
+		contents.add(new DefaultNucletContent(NuclosEntity.ROLEUSER, NuclosEntity.USER, contents));
 
 		contents.add(new DefaultNucletContent(NuclosEntity.PARAMETER, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.DBOBJECT, null, contents));
@@ -266,7 +267,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		contents.add(new DefaultNucletContent(NuclosEntity.FORMUSAGE, NuclosEntity.REPORT, contents));
 
 		contents.add(new DefaultNucletContent(NuclosEntity.ROLE, null, contents));
-		contents.add(new DefaultNucletContent(NuclosEntity.ROLEUSER, NuclosEntity.ROLE, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.ROLEACTION, NuclosEntity.ROLE, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.ROLETRANSITION, NuclosEntity.ROLE, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.ROLEENTITYFIELD, NuclosEntity.ROLE, contents));
@@ -474,7 +474,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			dbAccess.execute(SchemaUtils.drop(fkConstraints));
 			Object savepoint = TransactionAspectSupport.currentTransactionStatus().createSavepoint();
 			info("delete content");
-			deleteContent(existingNucletIds, uidExistingMap, uidImportMap, importContentMap, contentTypes, t, false,
+			deleteContent(existingNucletIds, uidExistingMap, uidImportMap, importContentMap, contentTypes, t, true,
 				new TransferNotifierHelper(jmsNotifier, "prepare delete obsolete content", 30, 50));
 			info("localize content");
 			uidLocalizedMap = localizeContent(uidExistingMap, uidImportMap, importContentMap, contentTypes, t,
@@ -483,7 +483,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			localizeNewContentForInsert(importContentMap, uidLocalizedMap, contentTypes, true,
 				new TransferNotifierHelper(jmsNotifier, "prepare localize new content for insert", 55, 60));
 			info("insert or update content");
-			insertOrUpdateContent(existingNucletIds, uidLocalizedMap, importContentMap, contentTypes, t, false,
+			insertOrUpdateContent(existingNucletIds, uidLocalizedMap, importContentMap, contentTypes, t,
 				new TransferNotifierHelper(jmsNotifier, "prepare insert or update content", 60, 80));
 			TransactionAspectSupport.currentTransactionStatus().rollbackToSavepoint(savepoint);
 		} catch (Exception ex) {
@@ -882,7 +882,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			localizeNewContentForInsert(importContentMap, t.getUidLocalizedMap(), contentTypes, false,
 				new TransferNotifierHelper(jmsNotifier, "localize content", 20, 30));
 			info("insert or update content");
-			insertOrUpdateContent(t.getExistingNucletIds(), t.getUidLocalizedMap(), importContentMap, contentTypes, t, false,
+			insertOrUpdateContent(t.getExistingNucletIds(), t.getUidLocalizedMap(), importContentMap, contentTypes, t,
 				new TransferNotifierHelper(jmsNotifier, "insert and update content", 30, 45));
 
 			info("update parameter");
@@ -1218,7 +1218,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		NucletContentMap importContentMap,
 		List<INucletContent> contentTypes,
 		Transfer t,
-		boolean testMode,
 		TransferNotifierHelper notifierHelper) {
 
 		if (importContentMap == null)
@@ -1302,27 +1301,21 @@ public class TransferFacadeBean extends NuclosFacadeBean
 
 				if (ncp.isCreateUID()) {
 					info("is not nuclon --> store uid");
-					if (!testMode) {
-						try {
-							createUIDRecord(ncp.getUID(), ncp.getEntity(), ncp.getNcObject().getId());
-						}
-						catch (DbException e) {
-							result.addBusinessException(e);
-						}
-						// logDalCallResult(, t.result.sbWarning);
+					try {
+						createUIDRecord(ncp.getUID(), ncp.getEntity(), ncp.getNcObject().getId());
+					}
+					catch (DbException e) {
+						result.addBusinessException(e);
 					}
 				}
 
 				else if (ncp.isUpdateUID()) {
-					info("uid version \"" + ncp.getUID().version + "\" differs from import eo version \"" + ncp.getNcObject().getVersion() + "\" --> update version in existing uid");
-					if (!testMode) {
-						try {
-							updateUIDRecord(ncp.getUID().id, ncp.getNcObject().getVersion());
-						}
-						catch (DbException e) {
-							result.addBusinessException(e);
-						}
-						// logDalCallResult(, t.result.sbWarning);
+					//info("uid version \"" + ncp.getUID().version + "\" differs from import eo version \"" + ncp.getNcObject().getVersion() + "\" --> update version in existing uid");
+					try {
+						updateUIDRecord(ncp.getUID().id, ncp.getNcObject().getVersion());
+					}
+					catch (DbException e) {
+						result.addBusinessException(e);
 					}
 
 					Integer existingEOversion = getProcessor(ncp.getEntity()).getVersion(ncp.getNcObject().getId());
@@ -1333,10 +1326,12 @@ public class TransferFacadeBean extends NuclosFacadeBean
 				}
 
 				info("insert or update");
-				if (!testMode) {
+				try {
 					// no update of version information here
 					ncp.getNC().insertOrUpdateNcObject(result, ncp.getNcObject(), t.isNuclon());
-					// logDalCallResult(, t.result.sbWarning);
+				}
+				catch (DbException e) {
+					result.addBusinessException(e);
 				}
 			}
 		}
@@ -1489,14 +1484,23 @@ public class TransferFacadeBean extends NuclosFacadeBean
 				info("existing is untouched");
 			} else {
 				info("--> delete existing eo");
-				if (!testMode) {
+				try {
 					ncp.getNC().deleteNcObject(result, ncp.getNcObject());
+				}
+				catch (DbException e) {
+					result.addBusinessException(e);
 				}
 				if (ncp.isDeleteUID()) {
 					info("delete existing uid");
 					if (!testMode) {
 						uidExistingMap.remove(uidExistingMap.getKey(ncp.getNcObject()));
+					}
+					
+					try {
 						getProcessor(NuclosEntity.NUCLETCONTENTUID).delete(ncp.getUID().id);
+					}
+					catch (DbException e) {
+						result.addBusinessException(e);
 					}
 				}
 			}
