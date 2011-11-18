@@ -33,6 +33,7 @@ import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
@@ -42,10 +43,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.BUTTON_LABELS;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.TABLELAYOUT_PANEL;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPanel;
+import org.nuclos.common2.CommonLocaleDelegate;
 
 /**
  * This Class displays a Dialog for picking Metainformation.
@@ -61,8 +64,11 @@ public class WYSIWYGMetaInformationPicker extends JDialog {
 	
 	private static final long serialVersionUID = 1695463517589418674L;
 
-	private double[][] layoutDefinition = {{InterfaceGuidelines.MARGIN_LEFT,TableLayout.FILL, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.FILL,  InterfaceGuidelines.MARGIN_RIGHT},
-			{InterfaceGuidelines.MARGIN_TOP, TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.FILL, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BOTTOM}};
+	private double[][] layoutDefinition = {
+			{InterfaceGuidelines.MARGIN_LEFT,TableLayout.FILL, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.FILL,  InterfaceGuidelines.MARGIN_RIGHT},
+			{InterfaceGuidelines.MARGIN_TOP, TableLayout.PREFERRED, TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.FILL, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BOTTOM}};
+	
+	private JCheckBox freeExpr;
 	
 	private JList itemList = null;
 	
@@ -131,7 +137,7 @@ public class WYSIWYGMetaInformationPicker extends JDialog {
 		/** request focus in the filter window */
 		filter.requestFocus();
 		
-		this.add(filter, new TableLayoutConstraints(1,1,3,1));
+		this.add(filter, new TableLayoutConstraints(1, 1, 3, 1));
 		itemList = new JList(listModel);
 		itemList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		itemList.addListSelectionListener(new ListSelectionListener(){
@@ -143,6 +149,10 @@ public class WYSIWYGMetaInformationPicker extends JDialog {
 			}
 			
 		});
+		freeExpr = new JCheckBox(
+				CommonLocaleDelegate.getMessageFromResource("wysiwg.metainformation.picker.freeexpr"));
+		this.add(freeExpr, new TableLayoutConstraints(1, 2, 3, 2));
+		freeExpr.setVisible(true);
 		
 		// double click on item to select
 		itemList.addMouseListener(new MouseListener(){
@@ -172,7 +182,7 @@ public class WYSIWYGMetaInformationPicker extends JDialog {
 		
 		JScrollPane scrollpane = new JScrollPane(itemList);
 		
-		this.add(scrollpane, new TableLayoutConstraints(1,3, 3,3));
+		this.add(scrollpane, new TableLayoutConstraints(1, 4, 3, 4));
 		
 		JButton apply = new JButton(BUTTON_LABELS.LABEL_APPLY);
 		apply.addActionListener(new ActionListener(){
@@ -183,7 +193,7 @@ public class WYSIWYGMetaInformationPicker extends JDialog {
 			}
 			
 		});
-		this.add(apply, new TableLayoutConstraints(1,5));
+		this.add(apply, new TableLayoutConstraints(1,6));
 		
 		JButton cancel = new JButton(BUTTON_LABELS.LABEL_CANCEL);
 		cancel.addActionListener(new ActionListener(){
@@ -202,11 +212,18 @@ public class WYSIWYGMetaInformationPicker extends JDialog {
 				performCancelAction();
 			}});
 		
-		this.add(cancel, new TableLayoutConstraints(3,5));
+		this.add(cancel, new TableLayoutConstraints(3,6));
 		
 		this.setBounds(this.getBounds().x, this.getBounds().y, 300, 400);
 		this.setTitle(TABLELAYOUT_PANEL.SELECT_FIELD_FOR_METAINFORMATION);
 		this.setModal(true);
+	}
+	
+	public String getSelectedEntity() {
+		if (StringUtils.isEmpty(selectedEntity) && freeExpr.isSelected()) {
+			selectedEntity = filter.getText();
+		}
+		return selectedEntity;
 	}
 		
 	/**
@@ -222,7 +239,7 @@ public class WYSIWYGMetaInformationPicker extends JDialog {
 		picker.pack();
 		picker.setLocationRelativeTo(parent);
 		picker.setVisible(true);
-		return picker.selectedEntity;
+		return picker.getSelectedEntity();
 	}
 	
 	/**

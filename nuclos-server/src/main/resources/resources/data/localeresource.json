@@ -62664,6 +62664,21 @@
     "text": "Valuelistprovider zur Konfiguration der möglichen Parameterobjekte"
   },
   {
+    "resourceID": "wysiwg.metainformation.picker.freeexpr",
+    "locale": "i-default",
+    "text": "Allow arbitrary expression"
+  },
+  {
+    "resourceID": "wysiwg.metainformation.picker.freeexpr",
+    "locale": "en",
+    "text": "Allow arbitrary expression"
+  },
+  {
+    "resourceID": "wysiwg.metainformation.picker.freeexpr",
+    "locale": "de",
+    "text": "Erlaube beliebigen Ausdruck"
+  },
+  {
     "resourceID": "GenerationController.vlp.wrong.parameter",
     "locale": "i-default",
     "text": "The valuelistprovider for this work step must not have any parameters except \"intid\"."
