@@ -220,7 +220,7 @@ public class SchedulerControlFacadeBean extends NuclosFacadeBean implements Sche
 			try {
 				scheduler.triggerJob(jobVO.getName(), Scheduler.DEFAULT_GROUP);
 			} catch (SchedulerException e) {
-				throw new CommonBusinessException("scheduler.error.trigger.immediate");
+				throw new CommonBusinessException("scheduler.error.trigger.immediate", e);
 			}
 		}
 		else {
