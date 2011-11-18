@@ -18,7 +18,6 @@ package org.nuclos.client.common;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -229,10 +228,15 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 					}
 				}
 			}
-
-			Collections.sort(lstFields);
+			// The result can be sorted by a SQL 'ORDER BY'.
+			//
+			// For example for value list provider used as a ComboBox in a subform,
+			// the data source defined should contain an order by if needed.
+			//
+			// It should never been sorted here by name. (tp)
+			// Plain wrong:
+			// Collections.sort(lstFields);
 		}
-
 		return lstFields;
 	}
 
