@@ -1188,7 +1188,8 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
                     }
 				});
 			}
-		} else if (clctcomp instanceof CollectableComboBox) {
+		//} else if (clctcomp instanceof CollectableComboBox) {
+		} else {
 			final Collection<ClearAction> collClearActions = getClearActions(sColumnName);
 			final Collection<TransferLookedUpValueAction> collTransferValueActions = getTransferLookedUpValueActions(sColumnName);
 			if (!collClearActions.isEmpty() || !collTransferValueActions.isEmpty() ) {
