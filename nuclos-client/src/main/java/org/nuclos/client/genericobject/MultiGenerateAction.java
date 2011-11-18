@@ -16,14 +16,21 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.genericobject;
 
+import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicReference;
+
+import javax.swing.JComponent;
 
 import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.ui.collect.InvokeWithInputRequiredSupport;
 import org.nuclos.client.ui.multiaction.MultiCollectablesActionController.Action;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.genericobject.ejb3.GenerationResult;
@@ -34,9 +41,11 @@ import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
  */
 class MultiGenerateAction implements Action<Pair<Collection<EntityObjectVO>, Long>, GenerationResult> {
 
+	private final JComponent parent;
 	private final GeneratorActionVO generatoractionvo;
 
-	MultiGenerateAction(GeneratorActionVO generatoractionvo) {
+	MultiGenerateAction(JComponent parent, GeneratorActionVO generatoractionvo) {
+		this.parent = parent;
 		this.generatoractionvo = generatoractionvo;
 	}
 
@@ -48,15 +57,23 @@ class MultiGenerateAction implements Action<Pair<Collection<EntityObjectVO>, Lon
 	 */
 	@Override
 	public GenerationResult perform(final Pair<Collection<EntityObjectVO>, Long> sources) throws CommonBusinessException {
-		if (generatoractionvo.isGroupAttributes()) {
-			return GeneratorDelegate.getInstance().generateGenericObject(sources.x, sources.y, generatoractionvo);
-		}
-		else {
-			if (sources.x.size() > 1) {
-				throw new NuclosFatalException();
+		final HashMap<String, Serializable> context = new HashMap<String, Serializable>();
+		final AtomicReference<GenerationResult> result = new AtomicReference<GenerationResult>();
+		InvokeWithInputRequiredSupport.invoke(new CommonRunnable() {
+			@Override
+			public void run() throws CommonBusinessException {
+				if (generatoractionvo.isGroupAttributes()) {
+					result.set(GeneratorDelegate.getInstance().generateGenericObject(sources.x, sources.y, generatoractionvo));
+				}
+				else {
+					if (sources.x.size() > 1) {
+						throw new NuclosFatalException();
+					}
+					result.set(GeneratorDelegate.getInstance().generateGenericObject(sources.x.iterator().next().getId(), sources.y, generatoractionvo));
+				}
 			}
-			return GeneratorDelegate.getInstance().generateGenericObject(sources.x.iterator().next().getId(), sources.y, generatoractionvo);
-		}
+		}, context, parent);
+		return result.get();
 	}
 
 	/**

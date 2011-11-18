@@ -72,9 +72,6 @@ import javax.swing.table.TableModel;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
-import org.nuclos.api.context.InputRequiredException;
-import org.nuclos.api.context.InputSpecification;
-import org.nuclos.client.NuclosHttpInvokerAttributeContext;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.DatasourceBasedCollectableFieldsProvider;
 import org.nuclos.client.common.KeyBindingProvider;
@@ -4423,96 +4420,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	protected void invoke(CommonRunnable runnable) throws CommonBusinessException {
-		try {
-			NuclosHttpInvokerAttributeContext.putAll(getContext());
-			try {
-				runnable.run();
-				getContext().clear();
-			}
-			finally {
-				NuclosHttpInvokerAttributeContext.clear();
-			}
-		}
-		catch (CommonBusinessException cbex) {
-			InputRequiredException ex = getInputRequiredException(cbex);
-			if (ex != null) {
-				handleInputRequiredException(ex, runnable);
-			}
-			else {
-				getContext().clear();
-				throw cbex;
-			}
-		}
-		catch (CommonFatalException cfex) {
-			InputRequiredException ex = getInputRequiredException(cfex);
-			if (ex != null) {
-				handleInputRequiredException(ex, runnable);
-			}
-			else {
-				getContext().clear();
-				throw cfex;
-			}
-		}
-	}
-
-	private void handleInputRequiredException(InputRequiredException ex, CommonRunnable r) throws CommonBusinessException {
-		String title = Main.getMainFrame().getTitle();
-		String message = ex.getInputSpecification().getMessage();
-		switch (ex.getInputSpecification().getType()) {
-			case InputSpecification.CONFIRM_YES_NO:
-				int i = JOptionPane.showConfirmDialog(getFrame(), message, title, JOptionPane.YES_NO_OPTION);
-				if (i != JOptionPane.CLOSED_OPTION && i != JOptionPane.CANCEL_OPTION) {
-					getContext().put(ex.getInputSpecification().getKey(), (i == JOptionPane.YES_OPTION) ? InputSpecification.YES : InputSpecification.NO);
-					invoke(r);
-				}
-				else {
-					throw new UserCancelledException();
-				}
-				break;
-			case InputSpecification.CONFIRM_OK_CANCEL:
-				i = JOptionPane.showConfirmDialog(getFrame(), message, title, JOptionPane.OK_CANCEL_OPTION);
-				if (i != JOptionPane.CLOSED_OPTION && i != JOptionPane.CANCEL_OPTION) {
-					getContext().put(ex.getInputSpecification().getKey(), InputSpecification.OK);
-					invoke(r);
-				}
-				else {
-					throw new UserCancelledException();
-				}
-				break;
-			case InputSpecification.INPUT_VALUE:
-				String s = JOptionPane.showInputDialog(getFrame(), message, title, JOptionPane.PLAIN_MESSAGE);
-				if (s != null) {
-					getContext().put(ex.getInputSpecification().getKey(), s);
-					invoke(r);
-				}
-				else {
-					throw new UserCancelledException();
-				}
-				break;
-			case InputSpecification.INPUT_OPTION:
-				Object o = JOptionPane.showInputDialog(getFrame(), message, title, JOptionPane.PLAIN_MESSAGE, null, ex.getInputSpecification().getOptions(), ex.getInputSpecification().getDefaultOption());
-				if (o != null) {
-					getContext().put(ex.getInputSpecification().getKey(), (Serializable) o);
-					invoke(r);
-				}
-				else {
-					throw new UserCancelledException();
-				}
-				break;
-			default:
-				break;
-		}
-	}
-
-	private static InputRequiredException getInputRequiredException(Throwable ex) {
-		if (ex instanceof InputRequiredException) {
-			return (InputRequiredException) ex;
-		}
-		else if (ex.getCause() != null) {
-			return getInputRequiredException(ex.getCause());
-		}
-		else {
-			return null;
-		}
+		InvokeWithInputRequiredSupport.invoke(runnable, getContext(), getFrame());
 	}
 }	// class CollectController

@@ -38,6 +38,12 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 			NuclosUserDetailsContextHolder.setTimeZone((TimeZone) invoke.getAttribute("user.timezone"));
 			NuclosRemoteContextHolder.setRemotly(true);
 
+			if (invoke.getAttribute("org.nuclos.api.context.InputContextSupported") != null) {
+				Object o = invoke.getAttribute("org.nuclos.api.context.InputContextSupported");
+				if (o instanceof Boolean) {
+					InputContext.setSupported(((Boolean) o).booleanValue());
+				}
+			}
 			if (invoke.getAttribute("org.nuclos.api.context.InputContext") != null) {
 				HashMap<String, Serializable> context = (HashMap<String, Serializable>) invoke.getAttribute("org.nuclos.api.context.InputContext");
 				if (LOG.isDebugEnabled()) {

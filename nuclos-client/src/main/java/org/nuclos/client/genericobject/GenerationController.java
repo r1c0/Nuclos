@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.genericobject;
 
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,6 +55,7 @@ import org.nuclos.client.ui.MainFrameTabListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectState;
+import org.nuclos.client.ui.collect.InvokeWithInputRequiredSupport;
 import org.nuclos.client.ui.collect.component.EntityListOfValues;
 import org.nuclos.client.ui.collect.component.ICollectableListOfValues;
 import org.nuclos.client.ui.collect.component.LookupEvent;
@@ -272,6 +274,12 @@ public class GenerationController {
 		}
 		catch (Exception ex) {
 			Errors.getInstance().showExceptionDialog(parent, ex);
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					parent.unlockLayer();
+				}
+			});
 		}
 	}
 
@@ -371,13 +379,19 @@ public class GenerationController {
 
 				@Override
 				public void run() {
-					for (Pair<Collection<EntityObjectVO>, Long> pair : sourceWithParameters) {
-						GenerationResult result;
+					for (final Pair<Collection<EntityObjectVO>, Long> pair : sourceWithParameters) {
+						final HashMap<String, Serializable> context = new HashMap<String, Serializable>();
+						final AtomicReference<GenerationResult> result = new AtomicReference<GenerationResult>();
 						try {
-							result = GeneratorDelegate.getInstance().generateGenericObject(pair.x, pair.y, action);
-							fireGenerationEvent(result);
+							InvokeWithInputRequiredSupport.invoke(new CommonRunnable() {
+								@Override
+								public void run() throws CommonBusinessException {
+									result.set(GeneratorDelegate.getInstance().generateGenericObject(pair.x, pair.y, action));
+								}
+							}, context, parent);
+							fireGenerationEvent(result.get());
 							if (!isHeadless()) {
-								showResult(result);
+								showResult(result.get());
 							}
 						} catch (CommonBusinessException e) {
 							Errors.getInstance().showExceptionDialog(parent, e);
@@ -411,7 +425,7 @@ public class GenerationController {
 			});
 			new MultiCollectablesActionController<Pair<Collection<EntityObjectVO>, Long>, GenerationResult>(
 				parent, sourceWithParameters, CommonLocaleDelegate.getMessage("R00022892", "Objektgenerierung"), parent.getTabIcon(),
-				new MultiGenerateAction(action)
+				new MultiGenerateAction(parent, action)
 			).run(panel);
 		}
 	}

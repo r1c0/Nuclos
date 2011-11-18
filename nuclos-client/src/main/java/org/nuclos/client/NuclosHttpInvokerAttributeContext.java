@@ -22,6 +22,13 @@ import java.util.Map;
 
 public class NuclosHttpInvokerAttributeContext {
 
+	private static final ThreadLocal<Boolean> supported = new ThreadLocal<Boolean>() {
+		@Override
+		protected Boolean initialValue() {
+			return Boolean.FALSE;
+		}
+	};
+
 	private static final ThreadLocal<HashMap<String, Serializable>> threadLocal = new ThreadLocal<HashMap<String, Serializable>>() {
 		@Override
 		protected HashMap<String, Serializable> initialValue() {
@@ -47,5 +54,13 @@ public class NuclosHttpInvokerAttributeContext {
 
 	public static void clear() {
 		threadLocal.get().clear();
+	}
+
+	public static void setSupported(boolean value) {
+		supported.set(Boolean.valueOf(value));
+	}
+
+	public static boolean isSupported() {
+		return supported.get() != null ? (boolean) supported.get() : false;
 	}
 }

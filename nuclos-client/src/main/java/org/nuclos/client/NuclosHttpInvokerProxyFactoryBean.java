@@ -32,6 +32,7 @@ public class NuclosHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBe
 	@Override
 	protected RemoteInvocationResult executeRequest(RemoteInvocation invocation) throws Exception {
 		invocation.addAttribute("user.timezone", Main.getInitialTimeZone());
+		invocation.addAttribute("org.nuclos.api.context.InputContextSupported", NuclosHttpInvokerAttributeContext.isSupported());
 		invocation.addAttribute("org.nuclos.api.context.InputContext", NuclosHttpInvokerAttributeContext.get());
 		if (LOG.isDebugEnabled() && NuclosHttpInvokerAttributeContext.get().size() > 0) {
 			LOG.debug("Sending call with dynamic context:");

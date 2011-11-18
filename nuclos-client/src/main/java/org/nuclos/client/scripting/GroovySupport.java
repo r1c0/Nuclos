@@ -17,6 +17,7 @@
 
 package org.nuclos.client.scripting;
 
+import groovy.lang.Closure;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.MetaClass;
 import groovy.lang.MetaMethod;
@@ -31,8 +32,10 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.apache.log4j.Logger;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.codehaus.groovy.runtime.InvokerHelper;
+import org.codehaus.groovy.runtime.MethodClosure;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.NuclosScript;
@@ -42,6 +45,8 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.StringUtils;
 
 public class GroovySupport {
+
+	private static final Logger LOG = Logger.getLogger(GroovySupport.class);
 
 	Class<?> groovyClass;
 	Object instance;
@@ -125,20 +130,35 @@ public class GroovySupport {
 		return null;
 	}
 
+	public static Object closure(Closure c) {
+		return c.call();
+	}
+
 	public static Object eval(NuclosScript script, final Collectable c, Object defaultValue) {
 		final Bindings b = engine.createBindings();
+		b.put("$", new MethodClosure(new Object() {
+			public Object closure(Closure c) {
+				return c.call();
+			}
+		}, "closure"));
+
         String source = StringUtils.replaceParameters(script.getSource(), new Transformer<String, String>() {
 			@Override
 			public String transform(String i) {
-				String variable = "__var_" + i;
-				b.put(variable, c.getValue(i));
-				return variable;
+				try {
+					b.put(i, c.getValue(i));
+				}
+				catch (Exception ex) {
+					LOG.debug("Unable to find possible binding " + i + ".");
+				}
+				return "${" + i + "}";
 			}
 		});
 
         try {
 			return engine.eval(source, b);
 		} catch (ScriptException e) {
+			LOG.warn(e);
 			return defaultValue;
 		}
 	}
