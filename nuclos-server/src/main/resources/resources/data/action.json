@@ -146,7 +146,7 @@
   {
     "name": "Arbeitsumgebung zugewiesen: Entitäten- und Unterformularspalten individualisieren",
     "description": "Arbeitsumgebung zugewiesen: Entitäten- und Unterformularspalten individualisieren",
-    "action": "WorkspaceCustomizeEntityAndSubFormColumns",
+    "action": "WorkspaceCustomizeEntityAndSubFormColumn",
     "labelres": "action.WorkspaceCustomizeEntityAndSubFormColumns"
   }
 ]
