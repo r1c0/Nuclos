@@ -1286,6 +1286,9 @@ public abstract class AbstractCollectableComponent
 		catch (CollectableFieldFormatException ex) {
 			bShowDetailsEnabled = false;
 		}
+		if (bShowDetailsEnabled) {
+			bShowDetailsEnabled = SecurityCache.getInstance().isReadAllowedForEntity(getEntityField().getReferencedEntityName());
+		}
 		result.setEnabled(bShowDetailsEnabled);
 
 		result.addActionListener(new ActionListener() {

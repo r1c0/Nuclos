@@ -36,6 +36,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common.security.PermissionKey;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.MasterDataPermission;
@@ -173,7 +174,7 @@ public class SecurityCache {
 	}
 
 	public synchronized boolean isNewAllowedForModule(String sModuleEntity) {
-		return this.modulepermissions.getNewAllowedByEntityName().get(sModuleEntity);
+		return LangUtils.defaultIfNull(this.modulepermissions.getNewAllowedByEntityName().get(sModuleEntity), false);
 	}
 
 	public synchronized boolean isNewAllowedForModuleAndProcess(Integer iModuleId, Integer iProcessId) {

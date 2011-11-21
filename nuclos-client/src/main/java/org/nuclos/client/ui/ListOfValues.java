@@ -71,66 +71,68 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 
 public class ListOfValues extends JPanel {
-	
+
 	private static final Logger LOG = Logger.getLogger(ListOfValues.class);
-	
+
 	private static final int QUICKSEARCH_DELAY_TIME = 756;
-	
+
 	private static final int QUICKSEARCH_POPUP_ROWS = 16;
-	
+
 	private ToolTipTextProvider tooltiptextprovider;
-	
+
 	private QuickSearchResulting quickSearchResulting;
-	
+
 	private static final KeyStroke ENTER = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true);
-	
+
 	private static final KeyStroke UP = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, true);
-	
+
 	private static final KeyStroke DOWN = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, true);
-	
+
 	private static final KeyStroke ESC = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, true);
-	
+
 	private static final KeyStroke DELETE = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0, true);
-	
+
 	private static final KeyStroke BACK_SPACE = KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0, true);
-	
+
 	private static final String QUICK_SEARCH = "quickSearch";
-	
+
 	private static final String QUICK_SEARCH_NAV_UP = "quickSearchNavUp";
-	
+
 	private static final String QUICK_SEARCH_NAV_DOWN = "quickSearchNavDown";
-	
+
 	private static final String QUICK_SEARCH_CANCEL = "quickSearchCancel";
-	
+
 	private QuickSearchSelectedListener quickSearchSelectedListener;
-	
+
 	private ActionListener quickSearchCanceledListener;
-	
+
 	private boolean searchOnLostFocus = true;
-	
+
 	private boolean transferQuickSearchValue = true;
-	
+
 	private boolean quickSearchEnabled = true;
-	
+
+	private boolean quickSearchOnly = false;
+
 	private boolean alertRunning = false;
-	
+
 	private boolean searchRunning = false;
-	
+
 	private boolean changesPending = false;
-	
+
 	private boolean clearOnEmptyInput = false;
-	
+
 	private final InputChanged inputChanged = new InputChanged();
-	
+
 	private final LovDocumentListener lovDocumentListener = new LovDocumentListener();
-	
+
 	private final QuickSearchAction actionSearch = new QuickSearchAction();
-	
+
 	private SearchingWorker lastSearchingWorker = null;
-	
+
 	private Timer lastTimer = null;
 
-	private final TextFieldWithButton tf = new TextFieldWithButton(Icons.getInstance().getIconTextFieldButtonLOV()) {		
+	private final TextFieldWithButton tf = new TextFieldWithButton(Icons.getInstance().getIconTextFieldButtonLOV()) {
 
 		@Override
 		public String getToolTipText(MouseEvent ev) {
@@ -152,11 +154,11 @@ public class ListOfValues extends JPanel {
 		public boolean isEditable() {
 			return super.isEditable() && quickSearchEnabled;
 		}
-		
+
 		@Override
 		protected boolean processKeyBinding(KeyStroke ks, KeyEvent e,
 			int condition, boolean pressed) {
-			
+
 			if (e.getKeyCode() == ENTER.getKeyCode()) {
 				if (ks.getModifiers() == 0) {
 					if (!pressed) {
@@ -166,7 +168,7 @@ public class ListOfValues extends JPanel {
 							SwingUtilities.notifyAction(new QuickSearchAction(), ks, e, ListOfValues.this.tf,
 								   e.getModifiers());
 						}
-					} 
+					}
 					return true;
 				} else {
 					return super.processKeyBinding(ks, e, condition, pressed);
@@ -178,7 +180,7 @@ public class ListOfValues extends JPanel {
 							   e.getModifiers());
 					}
 					return true;
-				} 
+				}
 			} else if (e.getKeyCode() == DOWN.getKeyCode()) {
 				if (ListOfValues.this.cbxQuickChooser.isPopupVisible()) {
 					if (!pressed) {
@@ -186,7 +188,7 @@ public class ListOfValues extends JPanel {
 							   e.getModifiers());
 					}
 					return true;
-				} 
+				}
 			} else if (e.getKeyCode() == ESC.getKeyCode()) {
 				if (!pressed) {
 					SwingUtilities.notifyAction(new QuickSearchCancelAction(), ks, e, ListOfValues.this.tf,
@@ -207,12 +209,12 @@ public class ListOfValues extends JPanel {
 			}
 			return super.processKeyBinding(ks, e, condition, pressed);
 		}
-		
-		
+
+
 	};
 
 	private final JButton btnBrowse = new JButton();
-	
+
 	private final JComboBox cbxQuickChooser = new JComboBox() {
 
 		@Override
@@ -224,7 +226,7 @@ public class ListOfValues extends JPanel {
 		public Rectangle getBounds() {
 			return ListOfValues.this.tf.getBounds();
 		}
-		
+
 		@Override
 		 public Point getLocationOnScreen() {
 			return ListOfValues.this.tf.getLocationOnScreen();
@@ -234,7 +236,7 @@ public class ListOfValues extends JPanel {
 		public boolean isShowing() {
 			return ListOfValues.this.tf.isShowing();
 		}
-		
+
 	};
 
 	public ListOfValues() {
@@ -247,7 +249,7 @@ public class ListOfValues extends JPanel {
 		this.tf.getDocument().addDocumentListener(lovDocumentListener);
 		this.tf.addFocusListener(new LovTfFocusListener());
 		this.tf.addKeyListener(new LovKeyListener());
-		
+
 		this.add(this.cbxQuickChooser, BorderLayout.SOUTH);
 		this.cbxQuickChooser.setVisible(false);
 		this.cbxQuickChooser.setMaximumRowCount(QUICKSEARCH_POPUP_ROWS);
@@ -259,23 +261,30 @@ public class ListOfValues extends JPanel {
 				if (value instanceof String) {
 					return new JLabel((String) value);
 				}
-				
+
 				return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			}
 		});
-		
+
 		this.tf.getActionMap().put(QUICK_SEARCH, new QuickSearchAction());
 		this.tf.getActionMap().put(QUICK_SEARCH_NAV_UP, new QuickSearchNavigationAction(true));
 		this.tf.getActionMap().put(QUICK_SEARCH_NAV_DOWN, new QuickSearchNavigationAction(false));
 		this.tf.getActionMap().put(QUICK_SEARCH_CANCEL, new QuickSearchCancelAction());
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param enabled
 	 */
 	public void setQuickSearchEnabled(boolean enabled) {
 		this.quickSearchEnabled = enabled;
+	}
+
+	public void setQuickSearchOnly(boolean qsonly) {
+		this.quickSearchOnly = qsonly;
+		if (isEnabled()) {
+			btnBrowse.setEnabled(!qsonly);
+		}
 	}
 
 	public JTextField getJTextField() {
@@ -311,7 +320,7 @@ public class ListOfValues extends JPanel {
 		super.setEnabled(bEnabled);
 
 		this.tf.setEditable(bEnabled);
-		this.btnBrowse.setEnabled(bEnabled);
+		this.btnBrowse.setEnabled(!quickSearchOnly);
 	}
 
 	public void setBackgroundColorProviderForTextField(ColorProvider colorproviderBackground) {
@@ -324,12 +333,12 @@ public class ListOfValues extends JPanel {
 		UIUtils.setCombinedName(this.tf, sName, "tf");
 		UIUtils.setCombinedName(this.btnBrowse, sName, "btnBrowse");
 	}
-	
+
 	@Override
 	public boolean hasFocus() {
 		return tf.hasFocus();
 	}
-	
+
 	@Override
 	public synchronized void addFocusListener(FocusListener l) {
 		tf.addFocusListener(l);
@@ -339,7 +348,7 @@ public class ListOfValues extends JPanel {
 	public synchronized void removeFocusListener(FocusListener l) {
 		tf.removeFocusListener(l);
 	}
-	
+
 	class LovFocusListener implements FocusListener {
 		@Override
 		public void focusGained(FocusEvent e) {
@@ -349,7 +358,7 @@ public class ListOfValues extends JPanel {
 		public void focusLost(FocusEvent e) {
 		}
 	}
-	
+
 	class LovTfFocusListener implements FocusListener {
 		@Override
 		public void focusGained(FocusEvent e) {
@@ -373,7 +382,7 @@ public class ListOfValues extends JPanel {
 			changesPending = false;
 		}
 	}
-	
+
 	class LovKeyListener extends KeyAdapter {
 		@Override
 		public void keyPressed(KeyEvent e) {
@@ -382,7 +391,7 @@ public class ListOfValues extends JPanel {
 			}
 		}
 	}
-	
+
 	class LovDocumentListener implements DocumentListener {
 		@Override
 		public void insertUpdate(DocumentEvent e) {
@@ -398,20 +407,20 @@ public class ListOfValues extends JPanel {
 			inputChanged.handleUpdate();
 		}
 	}
-	
+
 	class InputChanged extends Object {
 		private long enabledAt = 0l;
-		
+
 		private void handleUpdate() {
 			if (enabledAt+25 >= System.currentTimeMillis()) {
-				// verarbeite nur Events die 25 ms nach einer Tastatureingabe getätigt wurden.		
-				
+				// verarbeite nur Events die 25 ms nach einer Tastatureingabe getätigt wurden.
+
 				changesPending = true;
-				
+
 				if (lastTimer != null) {
 					lastTimer.cancel();
 				}
-				
+
 				lastTimer = new Timer(this.getClass().getName() + " quick-search-delay");
 				TimerTask task = new TimerTask() {
 					@Override
@@ -429,21 +438,21 @@ public class ListOfValues extends JPanel {
 				lastTimer.schedule(task, QUICKSEARCH_DELAY_TIME);
 			}
 		}
-		
+
 		public void enable() {
 			enabledAt = System.currentTimeMillis();
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private void hideQuickSearch() {
 		ListOfValues.this.cbxQuickChooser.hidePopup();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 *
 	 */
 	class QuickSearchActionListener implements ActionListener {
@@ -453,9 +462,9 @@ public class ListOfValues extends JPanel {
 				actionPerformedQuickSearchSelected();
 		}
 	}
-	
+
 	class QuickSearchNavigationAction extends AbstractAction {
-		
+
 		private final boolean navUp;
 
 		public QuickSearchNavigationAction(boolean navUp) {
@@ -468,20 +477,20 @@ public class ListOfValues extends JPanel {
 				ListOfValues.this.transferQuickSearchValue = false;
 				JComboBox cbx = ListOfValues.this.cbxQuickChooser;
 				if (cbx.isPopupVisible()) {
-					
+
 					InputMap map = cbx.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 					ActionMap am = cbx.getActionMap();
-	
+
 			        if	(map != null && am != null && isEnabled()) {
 			        	KeyStroke ks = KeyStroke.getKeyStroke((navUp ? KeyEvent.VK_UP : KeyEvent.VK_DOWN), 0);
 			        	KeyEvent ke = new KeyEvent(
-							ListOfValues.this.cbxQuickChooser, 
-							KeyEvent.KEY_RELEASED, 
-							e.getWhen(), 
-							e.getModifiers(), 
-							(navUp ? KeyEvent.VK_UP : KeyEvent.VK_DOWN), 
+							ListOfValues.this.cbxQuickChooser,
+							KeyEvent.KEY_RELEASED,
+							e.getWhen(),
+							e.getModifiers(),
+							(navUp ? KeyEvent.VK_UP : KeyEvent.VK_DOWN),
 							KeyEvent.CHAR_UNDEFINED);
-							
+
 			        	Object binding = map.get(ks);
 			        	Action action = (binding == null) ? null : am.get(binding);
 			        	if (action != null) {
@@ -492,21 +501,21 @@ public class ListOfValues extends JPanel {
 			} finally {
 				ListOfValues.this.transferQuickSearchValue = true;
 			}
-		}		
+		}
 	}
 
 	class QuickSearchAction extends AbstractAction {
 
 		@Override
-		public void actionPerformed(ActionEvent e) {		
+		public void actionPerformed(ActionEvent e) {
 			actionPerformed(false);
 		}
-		
+
 		public void actionPerformed(boolean forceSelect) {
 			final String inputString = ListOfValues.this.tf.getText();
 			if (StringUtils.looksEmpty(inputString) || !ListOfValues.this.tf.isEditable() || alertRunning)
 				return;
-			
+
 			if (lastSearchingWorker != null) {
 				lastSearchingWorker.setStopped(true);
 			}
@@ -515,12 +524,12 @@ public class ListOfValues extends JPanel {
 			changesPending = false;
 		}
 	}
-	
+
 	class SearchingWorker implements CommonClientWorker {
-		
+
 		private final String inputString;
 		private final boolean forceSelect;
-		
+
 		private boolean stopped = false;
 		List<CollectableValueIdField> qsResult;
 
@@ -533,18 +542,18 @@ public class ListOfValues extends JPanel {
 		@Override
 		public void work() throws CommonBusinessException {
 			qsResult = (quickSearchResulting != null ? quickSearchResulting.getQuickSearchResult(inputString) : new ArrayList<CollectableValueIdField>());
-			
-			if (!searchRunning) 
+
+			if (!searchRunning)
 				return;
 			searchRunning = false;
 		}
-		
+
 		@Override
 		public void paint() throws CommonBusinessException {
 			if (isStopped())
 				return;
-			
-			ListOfValues.this.transferQuickSearchValue = false;		
+
+			ListOfValues.this.transferQuickSearchValue = false;
 			ListOfValues.this.cbxQuickChooser.removeAllItems();
 			switch (qsResult.size()) {
 				case 0:
@@ -564,33 +573,33 @@ public class ListOfValues extends JPanel {
 						ListOfValues.this.actionPerformedQuickSearchSelected();
 						break;
 					}
-					
+
 					for (Object item : qsResult) {
 						ListOfValues.this.cbxQuickChooser.addItem(item);
 					}
-					
+
 					if (qsResult.size() == ICollectableListOfValues.QUICKSEARCH_MAX) {
 						ListOfValues.this.cbxQuickChooser.addItem("...");
 					}
-					
+
 					if (qsResult.size() < QUICKSEARCH_POPUP_ROWS) {
 						for (int i = 1; i < QUICKSEARCH_POPUP_ROWS - qsResult.size(); i++) {
 							ListOfValues.this.cbxQuickChooser.addItem(" ");
 						}
 					}
-					
+
 					if (!ListOfValues.this.cbxQuickChooser.isPopupVisible())
 						ListOfValues.this.cbxQuickChooser.showPopup();
 			}
-			
+
 			ListOfValues.this.transferQuickSearchValue = true;
 		}
-		
+
 		@Override
 		public void init() throws CommonBusinessException {
 			ListOfValues.this.searchRunning = true;
 		}
-		
+
 		@Override
 		public void handleError(Exception e) {
 			if (e instanceof IllegalComponentStateException) {
@@ -600,7 +609,7 @@ public class ListOfValues extends JPanel {
 				Errors.getInstance().showExceptionDialog(getResultsComponent(), e);
 			}
 		}
-		
+
 		@Override
 		public JComponent getResultsComponent() {
 			return ListOfValues.this.tf;
@@ -614,7 +623,7 @@ public class ListOfValues extends JPanel {
 			this.stopped = stopped;
 		}
 	};
-	
+
 	class QuickSearchCancelAction extends AbstractAction {
 
 		@Override
@@ -630,18 +639,18 @@ public class ListOfValues extends JPanel {
 			hideQuickSearch();
 		}
 	}
-	
+
 	private void actionPerformedQuickSearchSelected() {
 		actionPerformedQuickSearchSelected(false);
 	}
-	
+
 	private void actionPerformedQuickSearchSelected(boolean forceClear) {
 		if (this.quickSearchSelectedListener != null) {
 			if (forceClear) {
 				this.quickSearchSelectedListener.actionPerformed(null);
 			} else {
 				if (ListOfValues.this.cbxQuickChooser.getSelectedIndex() >= 0 &&
-					ListOfValues.this.cbxQuickChooser.getSelectedIndex() < CollectableListOfValues.QUICKSEARCH_MAX && 
+					ListOfValues.this.cbxQuickChooser.getSelectedIndex() < CollectableListOfValues.QUICKSEARCH_MAX &&
 					ListOfValues.this.cbxQuickChooser.getSelectedItem() != null &&
 					ListOfValues.this.cbxQuickChooser.getSelectedItem() instanceof CollectableValueIdField) {
 					this.quickSearchSelectedListener.actionPerformed(((CollectableValueIdField) ListOfValues.this.cbxQuickChooser.getSelectedItem()));
@@ -653,15 +662,15 @@ public class ListOfValues extends JPanel {
 		if (this.cbxQuickChooser.isPopupVisible())
 			this.cbxQuickChooser.hidePopup();
 	}
-	
+
 	public void setQuickSearchSelectedListener(final QuickSearchSelectedListener qssl) {
 		this.quickSearchSelectedListener = qssl;
 	}
-	
+
 	public void setQuickSearchCanceledListener(final ActionListener al) {
 		this.quickSearchCanceledListener = al;
 	}
-	
+
 	public boolean isSearchOnLostFocus() {
 		return searchOnLostFocus;
 	}
@@ -669,21 +678,21 @@ public class ListOfValues extends JPanel {
 	public void setSearchOnLostFocus(boolean searchOnLostFocus) {
 		this.searchOnLostFocus = searchOnLostFocus;
 	}
-	
+
 	public static abstract class QuickSearchResulting {
-		
-	protected abstract List<CollectableValueIdField> getQuickSearchResult(String inputString);	
+
+	protected abstract List<CollectableValueIdField> getQuickSearchResult(String inputString);
 	}
-	
+
 	public static abstract class QuickSearchSelectedListener {
 		public abstract void actionPerformed(CollectableValueIdField itemSelected);
 	}
-	
+
 	private static enum Alert {
 		ONE_RESULT_SELECTION,
 		NO_RESULT_FOUND;
 	}
-	
+
 	private void alertQuickSearch(Alert alert) {
 		alertRunning = true;
 		final Color color;
@@ -697,10 +706,10 @@ public class ListOfValues extends JPanel {
 			default:
 				color = Color.YELLOW;
 		}
-		
+
 		final Color defaultColor = this.tf.getBackground();
 		final ColorProvider colorProvider = this.tf.getBackgroundColorProviderForTextField();
-		
+
 		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -709,24 +718,24 @@ public class ListOfValues extends JPanel {
 					ListOfValues.this.tf.setBackgroundColorProviderForTextField(null);
 					ListOfValues.this.tf.setBackground(color);
 					ListOfValues.this.tf.repaint();
-					
+
 					Thread.currentThread().sleep(500);
 					ListOfValues.this.tf.setBackground(defaultColor);
 					ListOfValues.this.tf.repaint();
 					ListOfValues.this.tf.setBackgroundColorProviderForTextField(colorProvider);
-					
+
 					alertRunning = false;
 				} catch (Exception ex) {
 					// do nothing...
-				} 
+				}
 			}
 		}, "ListOfValues.AlertQuickSearch");
-		
+
 		t.start();
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public QuickSearchResulting getQuickSearchResulting() {
@@ -734,7 +743,7 @@ public class ListOfValues extends JPanel {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param quickSearchResulting
 	 */
 	public void setQuickSearchResulting(QuickSearchResulting quickSearchResulting) {

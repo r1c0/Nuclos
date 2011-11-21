@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.DatasourceBasedCollectableFieldsProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.Utils;
+import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.ListOfValues;
 import org.nuclos.client.ui.ListOfValues.QuickSearchResulting;
@@ -220,6 +221,8 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 			this.getListOfValues().setSearchOnLostFocus(false);
 		}
 
+		this.getListOfValues().setQuickSearchOnly(!SecurityCache.getInstance().isReadAllowedForEntity(efMeta.getForeignEntity()));
+
 		assert this.isInsertable() == this.isSearchComponent();
 	}
 
@@ -370,8 +373,7 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 			super.setEnabled(bEnabled);
 		}
 		else {
-			getListOfValues().getBrowseButton().setEnabled(bEnabled);
-			getListOfValues().getJTextField().setEditable(bEnabled);
+			getListOfValues().setEnabled(bEnabled);
 		}
 	}
 
