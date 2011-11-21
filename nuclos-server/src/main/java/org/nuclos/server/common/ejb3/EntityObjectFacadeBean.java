@@ -45,6 +45,7 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common2.IdUtils;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.common.MetaDataServerProvider;
@@ -90,6 +91,20 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		RecordGrantUtils.checkInternal(entity, id);
 		JdbcEntityObjectProcessor eop = NucletDalProvider.getInstance().getEntityObjectProcessor(entity);
 		return eop.getByPrimaryKey(id);
+	}
+
+	@Override
+	public EntityObjectVO getReferenced(String referencingEntity, String referencingEntityField, Long id) throws CommonBusinessException {
+		checkWriteAllowed(referencingEntity);
+
+		EntityFieldMetaDataVO fieldmeta = MetaDataServerProvider.getInstance().getEntityField(referencingEntity, referencingEntityField);
+		if (fieldmeta.getForeignEntity() == null) {
+			throw new NuclosFatalException("Field " + referencingEntity + "." + referencingEntityField + " is not a reference field.");
+		}
+		else {
+			JdbcEntityObjectProcessor eop = NucletDalProvider.getInstance().getEntityObjectProcessor(fieldmeta.getForeignEntity());
+			return eop.getByPrimaryKey(id);
+		}
 	}
 
 	@Override

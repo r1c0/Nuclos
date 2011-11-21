@@ -388,7 +388,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 						if (transfers.size() > 0) {
 							String referencedEntityName = clctcompSource.getEntityField().getReferencedEntityName();
 							if (referencedEntityName != null) {
-								final GenCache<Object, Collectable> cache = new GenCache<Object, Collectable>(new CollectableLookupProvider(referencedEntityName));
+								final GenCache<Object, Collectable> cache = new GenCache<Object, Collectable>(new CollectableLookupProvider(clctcompSource.getEntityField().getEntityName(), clctcompSource.getEntityField().getName()));
 								clctcompSource.getModel().addCollectableComponentModelListener(new CollectableComponentModelListener() {
 									@Override
 									public void valueToBeChanged(DetailsComponentModelEvent ev) {

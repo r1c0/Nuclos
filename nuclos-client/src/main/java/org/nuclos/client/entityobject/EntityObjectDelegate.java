@@ -8,6 +8,7 @@ import org.nuclos.common.EntityObjectCommon;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.ServiceLocator;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.common.ejb3.EntityObjectFacadeRemote;
@@ -80,6 +81,11 @@ public class EntityObjectDelegate implements EntityObjectCommon {
 	@Override
 	public void remove(EntityObjectVO entity) throws CommonPermissionException {
 		facade.remove(entity);
+	}
+
+	@Override
+	public EntityObjectVO getReferenced(String referencingEntity, String referencingEntityField, Long id) throws CommonBusinessException {
+		return facade.getReferenced(referencingEntity, referencingEntityField, id);
 	}
 
 }

@@ -23,6 +23,7 @@ import javax.annotation.security.RolesAllowed;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.genericobject.ProxyList;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
@@ -37,6 +38,9 @@ public interface EntityObjectCommon {
 
 	@RolesAllowed("Login")
 	EntityObjectVO get(String entity, Long id) throws CommonPermissionException;
+
+	@RolesAllowed("Login")
+	EntityObjectVO getReferenced(String referencingEntity, String referencingEntityField, Long id) throws CommonBusinessException;
 
 	/**
 	 * gets the ids of all leased objects that match a given search expression (ordered, when necessary)

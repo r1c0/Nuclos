@@ -35,11 +35,7 @@ import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.DatasourceBasedCollectableFieldsProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
-import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
-import org.nuclos.client.genericobject.GenericObjectDelegate;
-import org.nuclos.client.masterdata.CollectableMasterData;
-import org.nuclos.client.masterdata.MasterDataDelegate;
-import org.nuclos.client.masterdata.MetaDataCache;
+import org.nuclos.client.common.Utils;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.ListOfValues;
 import org.nuclos.client.ui.ListOfValues.QuickSearchResulting;
@@ -63,7 +59,6 @@ import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.format.FormattingTransformer;
-import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
@@ -205,14 +200,8 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 					CollectableListOfValues.this.clearListOfValues();
 				} else {
 					try {
-						if (eMetaForeign.isStateModel()) {
-							CollectableListOfValues.this.acceptLookedUpCollectable(CollectableGenericObjectWithDependants.newCollectableGenericObject(
-								GenericObjectDelegate.getInstance().get((Integer) itemSelected.getValueId())));
-						} else {
-							CollectableListOfValues.this.acceptLookedUpCollectable(new CollectableMasterData(
-								new CollectableMasterDataEntity(MetaDataCache.getInstance().getMetaData(clctef.getReferencedEntityName())),
-								MasterDataDelegate.getInstance().get(clctef.getReferencedEntityName(), itemSelected.getValueId())));
-						}
+						Collectable c = Utils.getReferencedCollectable(clctef.getEntityName(), clctef.getName(), itemSelected.getValueId());
+						CollectableListOfValues.this.acceptLookedUpCollectable(c);
 					} catch(Exception e) {
 						Errors.getInstance().showExceptionDialog(CollectableListOfValues.this.getListOfValues(), e);
 					}

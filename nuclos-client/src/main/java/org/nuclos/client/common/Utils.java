@@ -33,6 +33,8 @@ import javax.swing.JTable;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
+import org.nuclos.client.dal.DalSupportForGO;
+import org.nuclos.client.entityobject.EntityObjectDelegate;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.Modules;
@@ -54,11 +56,16 @@ import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.dal.DalSupportForMD;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.masterdata.MakeMasterDataValueIdField;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.EntityAndFieldName;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
@@ -77,17 +84,17 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 public class Utils {
 
 	private static final Logger LOG = Logger.getLogger(Utils.class);
-	
+
 	private static final String FIELDNAME_ACTIVE = "active";
 	private static final String FIELDNAME_VALIDFROM = "validFrom";
 	private static final String FIELDNAME_VALIDUNTIL = "validUntil";
-	
+
 	private Utils() {
 	}
 
 	/**
 	 * @deprecated use <code>EntityObjectDelegate.getCollectableFieldsByName</code>
-	 * 
+	 *
 	 * get masterdata for the given entity as collectable fields.
 	 * @param sEntityName
 	 * @param collmdvo
@@ -294,15 +301,15 @@ public class Utils {
 						final SubFormController subformctl = mpsubformctl.get(sInitialFocusEntityName);
 						if (subformctl != null) {
 							final SubForm.SubFormTableModel subformtblmdl = (SubForm.SubFormTableModel) subformctl.getSubForm().getJTable().getModel();
-	
+
 							final JTable tbl = subformctl.getSubForm().getJTable();
 							final int iColumn = tbl.convertColumnIndexToView(subformtblmdl.findColumnByFieldName(sInitialFocusFieldName));
 							if (iColumn != -1) {
 								if (subformtblmdl.getRowCount() > 0) {
 									tbl.editCellAt(0, iColumn);
-	
+
 									Component comp = tbl.getCellEditor().getTableCellEditorComponent(tbl, tbl.getValueAt(0, iColumn), true, 0, iColumn);
-	
+
 									// Special case for multiline text editor components
 									if (comp instanceof JScrollPane) {
 										comp = ((JScrollPane) comp).getViewport().getView();
@@ -333,12 +340,12 @@ public class Utils {
 	}
 
 	/**
-	 * Returns a {@code Collectable} object for the given entity and id. 
+	 * Returns a {@code Collectable} object for the given entity and id.
 	 * This method works for master data as well as generic objects.
 	 * @param id id (valid types are Integer or Long)
 	 * @throws CommonFinderException
 	 */
-	public static Collectable getCollectable(String entityName, Object id) throws CommonFinderException {
+	public static Collectable getCollectable(String entityName, Object id) throws CommonBusinessException {
 		if (entityName == null)
 			throw new IllegalArgumentException("entityName is null");
 		if (!(id == null || id instanceof Integer || id instanceof Long)) {
@@ -347,42 +354,63 @@ public class Utils {
 		final Integer intId = (id != null) ? ((Number) id).intValue() : null;
 		Collectable clct = null;
 		if (intId != null) {
-			try {
-				if (Modules.getInstance().existModule(entityName)) {
-					Integer moduleId = Modules.getInstance().getModuleIdByEntityName(entityName);
-					if (moduleId != null) {
-						GenericObjectVO govo = GenericObjectDelegate.getInstance().get(moduleId, intId);
-						clct = CollectableGenericObjectWithDependants.newCollectableGenericObject(govo);
-					}
-				} else {
-					MasterDataMetaVO metaData = MasterDataDelegate.getInstance().getMetaData(entityName);
-					CollectableMasterDataEntity clcte = new CollectableMasterDataEntity(metaData);
-					MasterDataVO mdvo = MasterDataDelegate.getInstance().get(entityName, intId);
-					clct = new CollectableMasterData(clcte, mdvo);
+			if (Modules.getInstance().existModule(entityName)) {
+				Integer moduleId = Modules.getInstance().getModuleIdByEntityName(entityName);
+				if (moduleId != null) {
+					GenericObjectVO govo = GenericObjectDelegate.getInstance().get(moduleId, intId);
+					clct = CollectableGenericObjectWithDependants.newCollectableGenericObject(govo);
 				}
-			} catch (CommonBusinessException ex) {
-				throw new CommonFinderException("Cannot lookup " + entityName + " #" + intId, ex);
+			} else {
+				MasterDataMetaVO metaData = MasterDataDelegate.getInstance().getMetaData(entityName);
+				CollectableMasterDataEntity clcte = new CollectableMasterDataEntity(metaData);
+				MasterDataVO mdvo = MasterDataDelegate.getInstance().get(entityName, intId);
+				clct = new CollectableMasterData(clcte, mdvo);
 			}
 		}
 		return clct;
 	}
-	
+
+	public static Collectable getReferencedCollectable(String referencingEntity, String referencingEntityField, Object oId) throws CommonBusinessException {
+		final Long id = IdUtils.toLongId(oId);
+		Collectable clct = null;
+		if (id != null) {
+			EntityObjectVO eo = EntityObjectDelegate.getInstance().getReferenced(referencingEntity, referencingEntityField, id);
+			EntityFieldMetaDataVO field = MetaDataClientProvider.getInstance().getEntityField(referencingEntity, referencingEntityField);
+			EntityMetaDataVO referencedMeta = MetaDataClientProvider.getInstance().getEntity(field.getForeignEntity());
+			if (referencedMeta.isStateModel()) {
+				Map<String, EntityFieldMetaDataVO> fields = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(referencedMeta.getEntity());
+				CollectableEOEntity clcte = new CollectableEOEntity(referencedMeta, fields);
+				GenericObjectVO govo = DalSupportForGO.getGenericObjectVO(eo, clcte);
+				clct = CollectableGenericObjectWithDependants.newCollectableGenericObjectWithDependants(govo);
+			}
+			else {
+				MasterDataMetaVO metaData = MasterDataDelegate.getInstance().getMetaData(referencedMeta.getEntity());
+				CollectableMasterDataEntity clcte = new CollectableMasterDataEntity(metaData);
+				MasterDataVO mdvo = DalSupportForMD.wrapEntityObjectVO(eo);
+				clct = new CollectableMasterData(clcte, mdvo);
+			}
+		}
+		return clct;
+	}
+
 	public static class CollectableLookupProvider implements NBCache.LookupProvider<Object, Collectable> {
-		private final String entityName;
-		
-		public CollectableLookupProvider(String entityName) {
-			this.entityName = entityName;
+		private final String referencingEntity;
+		private final String referencingField;
+
+		public CollectableLookupProvider(String referencingEntity, String referencingField) {
+			this.referencingEntity = referencingEntity;
+			this.referencingField = referencingField;
 		}
 		@Override
 		public Collectable lookup(Object key) {
 			try {
-				return getCollectable(entityName, key);
-			} catch (CommonFinderException e) {
+				return getReferencedCollectable(referencingEntity, referencingField, key);
+			} catch (CommonBusinessException e) {
 				throw new NuclosFatalException(e);
 			}
 		}
 	}
-	
+
 	/**
 	 * @deprecated Move to ResultController.
 	 */
@@ -400,13 +428,13 @@ public class Utils {
 		}
 		return result;
 	}
-	
+
 	public static CollectableEOEntity transformCollectableMasterDataEntityTOCollectableEOEntity(CollectableMasterDataEntity cmde) {
-		String entity = cmde.getName();		
-		
-		CollectableEOEntity cee = new CollectableEOEntity(MetaDataClientProvider.getInstance().getEntity(entity), 
+		String entity = cmde.getName();
+
+		CollectableEOEntity cee = new CollectableEOEntity(MetaDataClientProvider.getInstance().getEntity(entity),
 				MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(entity));
-		
+
 		return cee;
 	}
 

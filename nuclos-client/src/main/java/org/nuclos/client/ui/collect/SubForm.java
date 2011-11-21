@@ -88,7 +88,6 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.URIMouseAdapter;
-import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
@@ -131,8 +130,8 @@ import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
-import org.nuclos.common2.exception.CommonFinderException;
 
 /**
  * Subform for displaying/editing dependant <code>Collectable</code>s.
@@ -1223,8 +1222,8 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 							String referencedEntity = clctcomp.getEntityField().getReferencedEntityName();
 							if (referencedEntity != null) {
 								try {
-									clct = Utils.getCollectable(referencedEntity, id);
-								} catch (CommonFinderException ex) {
+									clct = Utils.getReferencedCollectable(getEntityName(), clctcomp.getFieldName(), id);
+								} catch (CommonBusinessException ex) {
 									log.error(ex);
 								}
 							}
@@ -1878,7 +1877,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		 * @return an unique identifier for the column (usually the name of the entity field).
 		 */
 	    public String getColumnFieldName(int columnIndex);
-	    
+
 	    /**
 	     * @param columnIndex
 		 * @return minimum column width based on class
