@@ -62707,5 +62707,20 @@
     "resourceID": "GenerationController.vlp.intid.singlesource",
     "locale": "de",
     "text": "Dieser Arbeitsschritt kann nicht für mehrere Quellobjekte ausgeführt werden."
+  },
+  {
+    "resourceID": "action.ExecuteReports",
+    "locale": "i-default",
+    "text": "Execute reporting"
+  },
+  {
+    "resourceID": "action.ExecuteReports",
+    "locale": "en",
+    "text": "Execute reporting"
+  },
+  {
+    "resourceID": "action.ExecuteReports",
+    "locale": "de",
+    "text": "Reporting ausführen"
   }
 ]

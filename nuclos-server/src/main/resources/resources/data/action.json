@@ -148,5 +148,23 @@
     "description": "Arbeitsumgebung zugewiesen: Entitäten- und Unterformularspalten individualisieren",
     "action": "WorkspaceCustomizeEntityAndSubFormColumn",
     "labelres": "action.WorkspaceCustomizeEntityAndSubFormColumns"
+  },
+  {
+    "name": "Arbeitsumgebung: Anlegen",
+    "description": "Arbeitsumgebung: Anlegen",
+    "action": "WorkspaceCreateNew",
+    "labelres": "action.WorkspaceCreateNew"
+  },
+  {
+    "name": "Arbeitsumgebung zugewiesen: Starttabs individualisieren",
+    "description": "Arbeitsumgebung zugewiesen: Starttabs individualisieren",
+    "action": "WorkspaceCustomizeStarttab",
+    "labelres": "action.WorkspaceCustomizeStarttab"
+  },
+  {
+    "name": "Reporting ausführen",
+    "description": "Reporting ausführen",
+    "action": "ExecuteReports",
+    "labelres": "action.ExecuteReports"
   }
 ]

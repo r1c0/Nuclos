@@ -44,4 +44,5 @@ public class Actions {
 	public static final String ACTION_WORKSPACE_CREATE_NEW					= "WorkspaceCreateNew";//"Arbeitsumgebung: Anlegen";
 	public static final String ACTION_WORKSPACE_CUSTOMIZE_STARTTAB			= "WorkspaceCustomizeStarttab";//"Arbeitsumgebung zugewiesen: Starttabs individualisieren";
 	public static final String ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS = "WorkspaceCustomizeEntityAndSubFormColumn";//"Arbeitsumgebung zugewiesen: Entitäten- und Unterformularspalten individualisieren";
+	public static final String ACTION_EXECUTE_REPORTS = "ExecuteReports";
 }	// interface Actions

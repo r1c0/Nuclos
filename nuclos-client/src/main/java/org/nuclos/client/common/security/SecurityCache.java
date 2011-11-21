@@ -29,6 +29,7 @@ import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.common.Actions;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
@@ -151,6 +152,9 @@ public class SecurityCache {
 	}
 
 	public synchronized boolean isReadAllowedForMasterData(String sEntity) {
+		if (NuclosEntity.REPORTEXECUTION.checkEntityName(sEntity)) {
+			return this.isActionAllowed(Actions.ACTION_EXECUTE_REPORTS);
+		}
 		return MasterDataPermission.includesReading(this.getMasterDataPermission(sEntity));
 	}
 

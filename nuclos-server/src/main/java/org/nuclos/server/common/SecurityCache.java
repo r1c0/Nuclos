@@ -661,6 +661,9 @@ public class SecurityCache implements SecurityCacheMBean {
 	}
 
 	public boolean isReadAllowedForMasterData(String sUserName, String sEntityName) {
+		if (NuclosEntity.REPORTEXECUTION.checkEntityName(sEntityName)) {
+			return this.getUserRights(sUserName).getAllowedActions().contains(Actions.ACTION_EXECUTE_REPORTS);
+		}
 		return this.getUserRights(sUserName).isSuperUser() || MasterDataPermission.includesReading(this.getMasterDataPermissions(sUserName).get(sEntityName));
 	}
 
