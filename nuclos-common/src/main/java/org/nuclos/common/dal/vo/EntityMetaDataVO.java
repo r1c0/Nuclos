@@ -81,8 +81,6 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	public EntityMetaDataVO(EntityObjectVO eo) {
 	    // super(eo);
 	    this.setId(eo.getId());
-	    this.setEntity(eo.getField("entity", String.class));
-	    this.setDbEntity(eo.getField("dbentity", String.class));
 
 	    this.setSystemIdPrefix(eo.getField("systemidprefix", String.class));
 	    this.setMenuShortcut(eo.getField("menushortcut", String.class));
@@ -112,6 +110,9 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 
 	    this.setVirtualentity(eo.getField("virtualentity", String.class));
 	    this.setRowColorScript(eo.getField("rowcolorscript", NuclosScript.class));
+	    
+	    this.setEntity(eo.getField("entity", String.class));
+	    this.setDbEntity(eo.getField("dbentity", String.class));
     }
 
 	public void setEntity(String entity) {
@@ -119,7 +120,21 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	}
 
 	public void setDbEntity(String dbEntity) {
-		this.dbEntity = dbEntity;
+		if (isDynamic() || isVirtual()) {
+			this.dbEntity = dbEntity;
+		}
+		// Don't use normal views in Nuclos any more... (tp)
+		else if (dbEntity.startsWith("V_")) {
+			this.dbEntity = "T_" + dbEntity.substring(2);
+		}
+		else if (dbEntity.startsWith("T_")) {
+			this.dbEntity = dbEntity;
+		}
+		else {
+			// ??? Is this really possible?
+			assert false : "Strange entity with db table name: " + dbEntity;
+			this.dbEntity = dbEntity;
+		}
 	}
 
 	public void setSystemIdPrefix(String systemIdPrefix) {

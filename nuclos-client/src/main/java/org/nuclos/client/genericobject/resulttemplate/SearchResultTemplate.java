@@ -30,6 +30,7 @@ import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IdUtils;
@@ -350,7 +351,7 @@ public class SearchResultTemplate {
 		else {
 			final List<CollectableSorting> sorting = new ArrayList<CollectableSorting>();
 			for (String n: PreferencesUtils.getStringList(prefs, PREFS_NODE_SORTINGCOLUMNS)) {
-				sorting.add(new CollectableSorting(entity, true, n, true));
+				sorting.add(new CollectableSorting(SystemFields.BASE_ALIAS, entity, true, n, true));
 			}
 			result.setSortingOrder(sorting);
 		}

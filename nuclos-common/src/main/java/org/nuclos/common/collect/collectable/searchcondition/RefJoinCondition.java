@@ -82,12 +82,11 @@ public final class RefJoinCondition extends AbstractCollectableSearchCondition {
 		if (this == o) {
 			return true;
 		}
-		if (!(o instanceof PivotJoinCondition)) {
+		if (!(o instanceof RefJoinCondition)) {
 			return false;
 		}
-		final PivotJoinCondition that = (PivotJoinCondition) o;
-
-		return field.equals(that.getField());
+		final RefJoinCondition that = (RefJoinCondition) o;
+		return field.equals(that.getField()) && tableAlias.equals(that.getTableAlias());
 	}
 
 	@Override

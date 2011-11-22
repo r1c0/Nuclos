@@ -26,16 +26,19 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
+import org.nuclos.common.collect.collectable.searchcondition.RefJoinCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
@@ -49,6 +52,7 @@ import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.DatasourceServerUtils;
+import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.IColumnWithMdToVOMapping;
@@ -65,6 +69,8 @@ import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbJoin;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
+import org.nuclos.server.dblayer.util.ForeignEntityFieldParser;
+import org.nuclos.server.dblayer.util.IFieldRef;
 import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectSearchExpression;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 
@@ -306,8 +312,14 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		return DataBaseHelper.getDbAccess().executeQuery(query, createResultTransformer(columns));
 	}
 
+	/**
+	 * Includes joins for (former) views (needed for sorting order).
+	 */
 	@Override
 	public List<Long> getIdsBySearchExpression(CollectableSearchExpression clctexpr) {
+		// we modify the search expr here...
+		clctexpr = addJoinedRefs(clctexpr);
+		
 		DbQuery<Long> query = createSingleColumnQuery(getPrimaryKeyColumn(), false);
 		EOSearchExpressionUnparser unparser = new EOSearchExpressionUnparser(query, eMeta);
 		unparser.unparseSearchCondition(getSearchConditionWithDeletedAndVLP(clctexpr));
@@ -315,6 +327,9 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		return DataBaseHelper.getDbAccess().executeQuery(query);
 	}
 
+	/**
+	 * Includes joins for (former) views (needed for sorting order).
+	 */
 	@Override
 	public List<Long> getIdsBySearchExprUserGroups(CollectableSearchExpression searchExpression, Long moduleId, String user) {
 		// if user is super-user or has a module permission that is not restricted to a user group, object groups can be ignored
@@ -327,6 +342,9 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 
 		query.select(getPrimaryKeyColumn().getDbColumn(from));
 
+		// we modify the search expr here...
+		searchExpression = addJoinedRefs(searchExpression);
+		
 		EOSearchExpressionUnparser unparser = new EOSearchExpressionUnparser(query, eMeta);
 		unparser.unparseSearchCondition(getSearchConditionWithDeletedAndVLP(searchExpression));
 		unparser.unparseSortingOrder(searchExpression.getSortingOrder());
@@ -474,8 +492,14 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 				throw new IllegalStateException("Unable to map the following fields: " + fieldSet);
 			}
 		}
-		CollectableSearchExpression result = clctexpr;
 		final List<CollectableSearchCondition> joins = getJoinsForColumns(columns);
+		return composeSearchCondition(clctexpr, joins);
+	}
+	
+	private CollectableSearchExpression composeSearchCondition(CollectableSearchExpression clctexpr, List<CollectableSearchCondition> joins) {
+		addJoinsForSortingOrder(clctexpr, joins);
+		
+		CollectableSearchExpression result = clctexpr;
 		if (!joins.isEmpty()) {
 			// add old condition
 			if (clctexpr != null && clctexpr.getSearchCondition() != null) {
@@ -488,6 +512,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		return result;
 	}
 	
+	/*
 	private CollectableSearchExpression getRefFieldsSearchExpression(final List<IColumnToVOMapping<? extends Object>> columns) {
 		final List<CollectableSearchCondition> joins = getJoinsForColumns(columns);
 		if (!joins.isEmpty()) {
@@ -496,6 +521,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		}
 		return null;
 	}
+	 */
 	
 	private List<CollectableSearchCondition> getJoinsForColumns(final List<IColumnToVOMapping<? extends Object>> columns) {
 		final TableAliasSingleton tas = TableAliasSingleton.getInstance();
@@ -537,6 +563,56 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 			}			
 		}
 		return result;
+	}
+	
+	private CollectableSearchExpression addJoinedRefs(CollectableSearchExpression clctexpr) {
+		final List<CollectableSearchCondition> joins = new ArrayList<CollectableSearchCondition>();
+		addJoinsForSortingOrder(clctexpr, joins);
+		return composeSearchCondition(clctexpr, joins);
+	}
+	
+	private void addJoinsForSortingOrder(CollectableSearchExpression searchExpression, List<CollectableSearchCondition> result) {
+		final List<CollectableSorting> sortingOrder = searchExpression.getSortingOrder();
+		// 
+		// Also add join conditions needed by sorting order. (tp)
+		if (sortingOrder != null) {
+			final TableAliasSingleton tas = TableAliasSingleton.getInstance();
+			final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
+			final List<CollectableSorting> newSortingOrder = new ArrayList<CollectableSorting>(sortingOrder.size());
+			final String baseEntity = eMeta.getEntity();
+			for (CollectableSorting cs: sortingOrder) {
+				// This could happen only for the base entity, for foreign entity fields ('STRVALUE_...'),
+				// because sorting is only available for the base entity (and the pivot table).
+				if (cs.getEntity().equals(baseEntity)) {
+					assert cs.getTableAlias().equals(SystemFields.BASE_ALIAS);
+					final EntityFieldMetaDataVO mdField = mdProv.getEntityField(cs.getEntity(), cs.getFieldName());
+					final String fentity = mdField.getForeignEntity(); 
+					if (fentity == null) {
+						// copy sorting order
+						newSortingOrder.add(cs);
+						continue;
+					}
+					final RefJoinCondition join = tas.getRefJoinCondition(mdField);
+					if (!result.contains(join)) {
+						result.add(join);
+					}
+					
+					// retrieve sorting order
+					for (IFieldRef ref: new ForeignEntityFieldParser(mdField)) {
+						if (!ref.isConstant()) {
+							newSortingOrder.add(new CollectableSorting(
+									join.getTableAlias(), fentity, false, ref.getContent(), cs.isAscending()));
+						}
+					}
+				}
+				else {
+					// copy sorting order
+					newSortingOrder.add(cs);
+				}
+			}
+			// modify sorting order
+			searchExpression.setSortingOrder(newSortingOrder);
+		}
 	}
 
 }

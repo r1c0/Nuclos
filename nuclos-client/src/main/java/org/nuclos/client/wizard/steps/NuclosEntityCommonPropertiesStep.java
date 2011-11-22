@@ -993,9 +993,9 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				// check if select is possible
 				try {
 					EntityMetaDataVO virtualentity = new EntityMetaDataVO();
+					virtualentity.setVirtualentity(model.getVirtualentity());
 					virtualentity.setEntity(model.getEntityName());
 					virtualentity.setDbEntity(model.getVirtualentity());
-					virtualentity.setVirtualentity(model.getVirtualentity());
 					MetaDataDelegate.getInstance().tryVirtualEntitySelect(virtualentity);
 				}
 				catch (NuclosBusinessException ex) {

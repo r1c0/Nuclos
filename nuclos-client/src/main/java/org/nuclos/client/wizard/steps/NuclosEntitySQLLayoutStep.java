@@ -652,9 +652,6 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			metaVO = MetaDataClientProvider.getInstance().getEntity(metaVOOld.getEntity());
 		}
 
-		metaVO.setEntity(wizardModel.getEntityName());
-
-		metaVO.setDbEntity(NuclosWizardUtils.replace(wizardModel.getTableOrViewName()));
 		metaVO.setSearchable(wizardModel.isSearchable());
 		metaVO.setCacheable(wizardModel.isCachable());
 		metaVO.setResourceId(wizardModel.getResourceId());
@@ -691,6 +688,9 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		metaVO.setVirtualentity(wizardModel.getVirtualentity());
 		metaVO.setRowColorScript(wizardModel.getRowColorScript());
 
+		metaVO.setEntity(wizardModel.getEntityName());
+		metaVO.setDbEntity(NuclosWizardUtils.replace(wizardModel.getTableOrViewName()));
+		
 		List<EntityFieldMetaDataTO> lstEntityFields = new ArrayList<EntityFieldMetaDataTO>();
 
 		for(int i = 0; i < attributeModel.getAttributes().size(); i++) {
@@ -1975,8 +1975,6 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	    EntityMetaDataTO toEntity = new EntityMetaDataTO();
 	    EntityMetaDataVO voEntity = new EntityMetaDataVO();
 	    voEntity.flagNew();
-	    voEntity.setEntity(attr.getValueListName());
-	    voEntity.setDbEntity("V_EO_"+ attr.getValueListName());
 	    voEntity.setSearchable(true);
 	    voEntity.setCacheable(false);
 	    voEntity.setEditable(true);
@@ -1990,6 +1988,8 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	    toEntity.setEntityMetaVO(voEntity);
 	    toEntity.setTranslation(new ArrayList<TranslationVO>());
 	    toEntity.setTreeView(new ArrayList<EntityTreeViewVO>());
+	    voEntity.setEntity(attr.getValueListName());
+	    voEntity.setDbEntity("V_EO_"+ attr.getValueListName());
 
 	    attr.setMetaVO(voEntity);
 	    attr.setField("${value}");

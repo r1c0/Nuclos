@@ -50,14 +50,18 @@ public class CollectableSorting implements Serializable {
 	private final EntityFieldMetaDataVO mdField;
 	
 	private final boolean asc;
+	
+	// lazy initialization needed
+	private String tableAlias = null;
 
 	/**
 	 * @param field name of the field to sort
 	 * @param asc Sort ascending? (false: sort descending)
 	 * @precondition sFieldName != null
 	 */
-	public CollectableSorting(String entity, boolean isBaseEntity, String field, boolean asc) {
+	public CollectableSorting(String tableAlias, String entity, boolean isBaseEntity, String field, boolean asc) {
 		if (entity == null || field == null) throw new NullPointerException();
+		this.tableAlias = tableAlias;
 		this.entity = entity;
 		this.isBaseEntity = isBaseEntity;
 		this.field = field;
@@ -104,10 +108,10 @@ public class CollectableSorting implements Serializable {
 	/**
 	 * Attention: A call to this method is only valid on the <em>server</em> side!
 	 */
-	public String getTableAlias() {
+	private static String initTableAlias(EntityFieldMetaDataVO mdField) {
 		final String result;
 		if (mdField == null) {
-			result = SystemFields.BASE_ALIAS;
+			throw new IllegalStateException();
 		}
 		else {
 			final PivotInfo pinfo = mdField.getPivotInfo();
@@ -120,6 +124,13 @@ public class CollectableSorting implements Serializable {
 			}
 		}
 		return result;
+	}
+	
+	public String getTableAlias() {
+		if (tableAlias == null) {
+			tableAlias = initTableAlias(mdField);
+		}
+		return tableAlias;
 	}
 	
 	public String getEntity() {

@@ -194,10 +194,8 @@ public class MyGraphModel extends mxGraphModel implements ApplicationAssistantLi
 								EntityMetaDataVO voEntityCreated = MetaDataDelegate.getInstance().getEntityByName(sEntity);
 								cell.setValue(voEntityCreated);
 								
-								editPanel.loadReferenz();
-								
-							}
-							
+								editPanel.loadReferenz();						
+							}							
 						}
 					}
 				}

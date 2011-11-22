@@ -36,8 +36,6 @@ public class SystemEntityMetaDataVO extends EntityMetaDataVO {
 	SystemEntityMetaDataVO(SystemMasterDataMetaVO mdMeta) {
 		this.mdMeta = mdMeta;
 		this.setId(mdMeta.getId().longValue());
-		this.setEntity(mdMeta.getEntityName());
-		this.setDbEntity(mdMeta.getDBEntity());
 
 		this.setStateModel(Boolean.FALSE);
 		this.setLogBookTracking(Boolean.FALSE);
@@ -68,6 +66,9 @@ public class SystemEntityMetaDataVO extends EntityMetaDataVO {
 
 		this.setUniqueFieldCombinations(mdMeta.getUniqueFieldCombinations());
 		this.setLogicalUniqueFieldCombinations(mdMeta.getLogicalUniqueFieldCombinations());
+		
+		this.setEntity(mdMeta.getEntityName());
+		this.setDbEntity(mdMeta.getDBEntity());
 	}
 
 	public Map<String, SystemEntityFieldMetaDataVO> getEntityFields() {

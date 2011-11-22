@@ -30,6 +30,7 @@ import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common2.DateTime;
 import org.nuclos.common2.SeriesUtils;
@@ -820,7 +821,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 		//get rules attached to transition
 		final List<CollectableSorting> lstSortingOrder = new ArrayList<CollectableSorting>();
 		final NuclosEntity ruleTransition = NuclosEntity.RULETRANSITION;
-		lstSortingOrder.add(new CollectableSorting(ruleTransition.getEntityName(), true, "order", true));
+		lstSortingOrder.add(new CollectableSorting(SystemFields.BASE_ALIAS, ruleTransition.getEntityName(), true, "order", true));
 		for (Object id : getMasterDataFacade().getMasterDataIds(ruleTransition.getEntityName(), new CollectableSearchExpression(
 			SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(ruleTransition), "transition", ComparisonOperator.EQUAL, ptId), 
 			lstSortingOrder))) {

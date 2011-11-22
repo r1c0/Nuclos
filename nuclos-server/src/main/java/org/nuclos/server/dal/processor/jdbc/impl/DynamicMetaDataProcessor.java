@@ -94,8 +94,6 @@ public class DynamicMetaDataProcessor implements IDalReadSpecification<EntityMet
 			EntityMetaDataVO v = new EntityMetaDataVO();
 			v.setId(id);
 			String entityName = getEntityNameFromDynamicViewName(viewName);
-			v.setEntity(entityName);
-			v.setDbEntity(viewName);
 			v.setSearchable(true);
 			v.setEditable(false);
 			v.setCacheable(false);
@@ -106,6 +104,8 @@ public class DynamicMetaDataProcessor implements IDalReadSpecification<EntityMet
 			v.setTreeRelation(false);
 			v.setFieldValueEntity(false);
 			v.setDynamic(true);
+			v.setEntity(entityName);
+			v.setDbEntity(viewName);
 
 			res.add(v);
 			id = id - 1000l;

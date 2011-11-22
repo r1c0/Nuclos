@@ -153,6 +153,10 @@ public class TableAliasSingleton {
 	
 	public RefJoinCondition getRefJoinCondition(IColumnToVOMapping<?> mapping) {
 		final EntityFieldMetaDataVO meta = getMeta(mapping);
+		return getRefJoinCondition(meta);
+	}
+
+	public RefJoinCondition getRefJoinCondition(EntityFieldMetaDataVO meta) {
 		final String tableAlias = getAlias(meta);
 		return new RefJoinCondition(meta, tableAlias);
 	}
