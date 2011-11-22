@@ -456,6 +456,59 @@ public class EOSearchExpressionUnparser {
 
 			return queryBuilder.or(inConditions);
         }
+		
+		/**
+		 * Get the DBExpression for use in the condition part of the SQL.
+		 * <p>
+		 * TODO: {@link org.nuclos.server.dal.processor.IColumnToVOMapping#getDbColumn(DbFrom)}
+		 * does the same for the SELECT part of the SQL.
+		 * </p>
+		 */
+		private DbExpression<?> getDbColumn(CollectableEntityField field) {
+			final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
+			final EntityFieldMetaDataVO entityField = mdProv.getEntityField(entity.getEntity(), field.getName());
+			String dbColumn = entityField.getDbColumn();
+			final String tableAlias;
+			if (entityField.getCalcFunction() == null) {
+				// 'stringified' nuclos reference field case 
+				if (entityField.getForeignEntity() != null && (dbColumn.startsWith("STRVALUE_") || dbColumn.startsWith("INTVALUE_"))) {
+					tableAlias = TableAliasSingleton.getInstance().getAlias(entityField);
+					
+					// It might be that the stringified reference used in the condition is not used for a join so far... (tp)
+					if (!table.containsAlias(tableAlias)) {
+						visitRefJoinCondition(new RefJoinCondition(entityField, tableAlias));
+					}
+					
+					// we only allow 'simple' (aka non-compound) references to foreign entities as condition parts of the SQL (tp)
+					final Iterator<IFieldRef> it = new ForeignEntityFieldParser(entityField).iterator();
+					final IFieldRef ref = it.next();
+					if (ref.isConstant()) {
+						throw new IllegalStateException();
+					}
+					dbColumn = mdProv.getEntityField(entityField.getForeignEntity(), ref.getContent()).getDbColumn();
+					if (it.hasNext()) {
+						throw new IllegalStateException();
+					}
+				}
+				// normal field case
+				else {
+					tableAlias = table.getAlias();
+				}
+			}
+			// db calc function case
+			else {
+				tableAlias = table.getAlias();
+				return queryBuilder.plainExpression(field.getJavaClass(), entityField.getCalcFunction() 
+						+ "(" + tableAlias + ".INTID)");
+			}
+			if(entity.isDynamic() && entityField.isDynamic()) {
+				return table.columnCaseSensitive(tableAlias, dbColumn, field.getJavaClass());
+			}
+			else {
+				return table.column(tableAlias, dbColumn, field.getJavaClass());
+			}
+		}
+
 	}
 
 	/**
@@ -463,14 +516,14 @@ public class EOSearchExpressionUnparser {
 	 * database.  For example, on the database layer {@link org.nuclos.common2.File}
 	 * objects are treated as strings (paths).
 	 */
-	protected Class<?> normalizeJavaType(Class<?> clazz) {
+	private Class<?> normalizeJavaType(Class<?> clazz) {
 		if (clazz == org.nuclos.common2.File.class) {
 			return String.class;
 		}
 		return clazz;
 	}
 
-	protected Class<?> normalizeJavaType(String className) {
+	private Class<?> normalizeJavaType(String className) {
 		try {
 			return normalizeJavaType(Class.forName(className));
 		}
@@ -479,7 +532,7 @@ public class EOSearchExpressionUnparser {
 		}
 	}
 
-	protected DbExpression<?> normalizedLiteral(Object value) {
+	private DbExpression<?> normalizedLiteral(Object value) {
 		if (value == RelativeDate.today()) {
 			return queryBuilder.currentDate();
 		} else if (value instanceof org.nuclos.common2.File) {
@@ -487,48 +540,6 @@ public class EOSearchExpressionUnparser {
 		}
 		return queryBuilder.literal(value);
 
-	}
-
-	/**
-	 * Get the DBExpression for use in the condition part of the SQL.
-	 * <p>
-	 * TODO: {@link org.nuclos.server.dal.processor.IColumnToVOMapping#getDbColumn(DbFrom)}
-	 * does the same for the SELECT part of the SQL.
-	 * </p>
-	 */
-	private DbExpression<?> getDbColumn(CollectableEntityField field) {
-		final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
-		final EntityFieldMetaDataVO entityField = mdProv.getEntityField(entity.getEntity(), field.getName());
-		String dbColumn = entityField.getDbColumn();
-		final String tableAlias;
-		if (entityField.getCalcFunction() == null) {
-			if (entityField.getForeignEntity() != null && (dbColumn.startsWith("STRVALUE_") || dbColumn.startsWith("INTVALUE_"))) {
-				tableAlias = TableAliasSingleton.getInstance().getAlias(entityField);
-				final Iterator<IFieldRef> it = new ForeignEntityFieldParser(entityField).iterator();
-				final IFieldRef ref = it.next();
-				if (ref.isConstant()) {
-					throw new IllegalStateException();
-				}
-				dbColumn = mdProv.getEntityField(entityField.getForeignEntity(), ref.getContent()).getDbColumn();
-				if (it.hasNext()) {
-					throw new IllegalStateException();
-				}
-			}
-			else {
-				tableAlias = table.getAlias();
-			}
-		}
-		else {
-			tableAlias = table.getAlias();
-			return queryBuilder.plainExpression(field.getJavaClass(), entityField.getCalcFunction() 
-					+ "(" + tableAlias + ".INTID)");
-		}
-		if(entity.isDynamic() && entityField.isDynamic()) {
-			return table.columnCaseSensitive(tableAlias, dbColumn, field.getJavaClass());
-		}
-		else {
-			return table.column(tableAlias, dbColumn, field.getJavaClass());
-		}
 	}
 
 	private DbColumnExpression<Integer> getDbIdColumn(CollectableEntityField field) {

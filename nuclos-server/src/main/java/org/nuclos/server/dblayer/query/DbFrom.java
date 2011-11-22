@@ -156,7 +156,7 @@ public class DbFrom implements Serializable {
 		return new DbColumnExpression<T>(tableAlias, this, columnName, javaClass, true);
 	}
 	
-	private boolean containsAlias(String tAlias) {
+	public boolean containsAlias(String tAlias) {
 		if (tAlias == null) throw new NullPointerException();
 		if (tAlias.equals(tableAlias)) return true;
 		for (DbJoin j: joins) {
