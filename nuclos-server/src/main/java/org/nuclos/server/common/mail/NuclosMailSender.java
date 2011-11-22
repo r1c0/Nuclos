@@ -112,7 +112,7 @@ public class NuclosMailSender {
 			Authenticator auth = null;
 			if (login != null) {
 				properties.put("mail.smtp.user", login);
-				properties.put("mail.smtp.starttls.enable","true");
+				properties.put("mail.smtp.starttls.enable","false");
 				properties.put("mail.smtp.auth", "true");
 				auth = new Authenticator() {
 
