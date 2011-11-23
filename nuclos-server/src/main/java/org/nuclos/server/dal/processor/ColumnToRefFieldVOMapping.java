@@ -52,7 +52,7 @@ public final class ColumnToRefFieldVOMapping<T extends Object> extends AbstractC
 	public DbExpression<T> getDbColumn(DbFrom from) {
 		final DbExpression<T> result;
 		if (field.getCalcFunction() == null) {
-			result = new DbCompoundColumnExpression<T>(from, field);
+			result = new DbCompoundColumnExpression<T>(from, field, true);
 		}
 		else {
 			throw new IllegalStateException();

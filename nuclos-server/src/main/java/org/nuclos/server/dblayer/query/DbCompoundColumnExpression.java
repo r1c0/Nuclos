@@ -43,9 +43,9 @@ import org.nuclos.server.dblayer.util.IFieldRef;
  */
 public class DbCompoundColumnExpression<T> extends DbExpression<T> {
 	
-	public DbCompoundColumnExpression(DbFrom from, EntityFieldMetaDataVO field) {
+	public DbCompoundColumnExpression(DbFrom from, EntityFieldMetaDataVO field, boolean setAlias) {
 		super(from.getQuery().getBuilder(), (Class<T>) DalUtils.getDbType(field.getDataType()), 
-				field.getDbColumn(), mkConcat(from, field));
+				setAlias ? field.getDbColumn() : null, mkConcat(from, field));
 		if (field.getForeignEntity() == null) {
 			throw new IllegalArgumentException();
 		}

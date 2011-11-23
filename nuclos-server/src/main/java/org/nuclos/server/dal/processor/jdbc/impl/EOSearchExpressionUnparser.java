@@ -65,6 +65,7 @@ import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.jdbc.TableAliasSingleton;
 import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
+import org.nuclos.server.dblayer.query.DbCompoundColumnExpression;
 import org.nuclos.server.dblayer.query.DbCondition;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -478,17 +479,8 @@ public class EOSearchExpressionUnparser {
 					if (!table.containsAlias(tableAlias)) {
 						visitRefJoinCondition(new RefJoinCondition(entityField, tableAlias));
 					}
-					
-					// we only allow 'simple' (aka non-compound) references to foreign entities as condition parts of the SQL (tp)
-					final Iterator<IFieldRef> it = new ForeignEntityFieldParser(entityField).iterator();
-					final IFieldRef ref = it.next();
-					if (ref.isConstant()) {
-						throw new IllegalStateException();
-					}
-					dbColumn = mdProv.getEntityField(entityField.getForeignEntity(), ref.getContent()).getDbColumn();
-					if (it.hasNext()) {
-						throw new IllegalStateException();
-					}
+					// We must repeat the SQL 'case when ...' expression here
+					return new DbCompoundColumnExpression<Object>(table, entityField, false);
 				}
 				// normal field case
 				else {
