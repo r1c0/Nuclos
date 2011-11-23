@@ -700,7 +700,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				lstDbChangesOkay.add(ds);
 			}
 			catch(DbException e) {
-				LOG.debug("createOrModifyEntity: " + e);
+				LOG.info("createOrModifyEntity failed: " + e);
 				dbchangeOkay = false;
 				lstDbChangesNotOkay.add(ds);
 			}

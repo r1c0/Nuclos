@@ -331,15 +331,27 @@ public class EntityObjectMetaDbHelper {
 			return entityMeta.getVirtualentity();
 		}
 		String tableName = StringUtils.toUpperCase(entityMeta.getDbEntity());
-		if (tableName.startsWith("V_"))
+		if (tableName.startsWith("V_")) {
 			tableName = "T_" + tableName.substring(2);
+		}
+		else if (tableName.startsWith("T_")){
+			// do nothing
+		}
+		// could this really happen? (tp)
+		else {
+			assert false : tableName;
+		}
 		return tableName;
 	}
 
 	public static String getViewName(EntityMetaDataVO entityMeta) {
 		String tableName = StringUtils.toUpperCase(entityMeta.getDbEntity());
-		if (tableName.startsWith("V_"))
+		if (tableName.startsWith("V_")) {
 			return tableName;
+		}
+		else if (tableName.startsWith("T_")) {
+			return "V_" + tableName.substring(2);
+		}
 		return null;
 	}
 

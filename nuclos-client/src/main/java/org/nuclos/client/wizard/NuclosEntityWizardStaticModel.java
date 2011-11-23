@@ -160,8 +160,9 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	}
 
 	public String getTableOrViewName() {
-		if(strTableName != null && !strTableName.startsWith("V_"))
-			strTableName = "V_" + strTableName;
+		if(strTableName != null && !(strTableName.startsWith("T_") || strTableName.startsWith("V_"))) {
+			strTableName = "T_" + strTableName;
+		}
 		if(strTableName != null && strTableName.length() > 30){
 			strTableName.replaceAll(" " ,"").toUpperCase();
 			if(strTableName.length() > 30)
@@ -171,14 +172,14 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 			}
 		}
 		else if (strTableName != null && strTableName.length() < 1) {
-			String sTable = "V_EO_" + entityName.replaceAll(" " ,"").toUpperCase();
+			String sTable = "T_EO_" + entityName.replaceAll(" " ,"").toUpperCase();
 			return sTable;
 		}
 		else if(strTableName != null) {
 			return strTableName;
 		}
 		else {
-			String sTable = "V_EO_" + entityName.replaceAll(" " ,"").toUpperCase();
+			String sTable = "T_EO_" + entityName.replaceAll(" " ,"").toUpperCase();
 			if(sTable.length() > 30) {
 				sTable = sTable.substring(0,30);
 			}
