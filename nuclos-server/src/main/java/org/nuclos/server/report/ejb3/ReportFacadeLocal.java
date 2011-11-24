@@ -19,7 +19,6 @@ package org.nuclos.server.report.ejb3;
 import java.util.Collection;
 import java.util.Map;
 
-import javax.ejb.Local;
 import javax.print.DocFlavor;
 import javax.print.attribute.AttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
@@ -82,8 +81,8 @@ public interface ReportFacadeLocal {
 	NuclosFile prepareCsvReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) throws CommonFinderException, NuclosReportException, CommonPermissionException;
 
 	public NuclosReportRemotePrintService lookupDefaultPrintService();
-	
+
 	public NuclosReportRemotePrintService[] lookupPrintServices(DocFlavor flavor, AttributeSet as) throws NuclosReportException;
-	
+
 	public void printViaPrintService(NuclosReportRemotePrintService ps, NuclosReportPrintJob pj, PrintRequestAttributeSet aset, byte[] data) throws NuclosReportException;
 }

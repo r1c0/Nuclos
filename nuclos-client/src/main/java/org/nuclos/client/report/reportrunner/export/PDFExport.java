@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.report.reportrunner.export;
 
-<<<<<<< .mine
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.io.ByteArrayOutputStream;
@@ -25,7 +24,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
@@ -35,11 +33,9 @@ import javax.print.attribute.PrintRequestAttributeSet;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperPrintManager;
-import net.sf.jasperreports.engine.JasperRunManager;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.report.ReportDelegate;
 import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -49,18 +45,6 @@ import org.nuclos.server.report.NuclosReportRemotePrintService;
 import org.nuclos.server.report.print.PDFPrintJob;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ResultVO;
-import org.springframework.ui.jasperreports.JasperReportsUtils;
-=======
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperPrint;
-
-import org.apache.log4j.Logger;
-import org.nuclos.client.report.reportrunner.AbstractReportExporter;
-import org.nuclos.server.report.NuclosReportException;
-import org.nuclos.server.report.valueobject.ResultVO;
->>>>>>> .r7086
-
 /**
  * Exporter which creates Adobe PDF-files. <br>
  * <br>
@@ -72,7 +56,7 @@ import org.nuclos.server.report.valueobject.ResultVO;
  * @todo don't extend AbstractReportExporter
  */
 public class PDFExport extends AbstractReportExporter {
-	
+
 	private static final Logger LOG = Logger.getLogger(PDFExport.class);
 
 	/**
@@ -89,7 +73,7 @@ public class PDFExport extends AbstractReportExporter {
 		LOG.debug("export to PDF as " + sFileName);
 		try {
 			JasperExportManager.exportReportToPdfFile(printObj, sFileName);
-			
+
 			switch (destination) {
 			case FILE:
 				openFile(sFileName, false);
@@ -110,7 +94,7 @@ public class PDFExport extends AbstractReportExporter {
 				// TYPE SCREEN
 				openFile(sFileName, true);
 				break;
-			}			
+			}
 		}
 		catch (JRException ex) {
 			throw new NuclosReportException(ex);
@@ -122,13 +106,13 @@ public class PDFExport extends AbstractReportExporter {
 	        	prservDflt = PrintServiceLookup.lookupDefaultPrintService();
 	        else
 	        	prservDflt = ReportDelegate.getInstance().lookupDefaultPrintService();
-	
+
 	        PrintService[] prservices;
 	        if (bIsClient)
 	        	prservices = PrintServiceLookup.lookupPrintServices(null, null);
 	        else
 	        	prservices = ReportDelegate.getInstance().lookupPrintServices(null, null);
-	        
+
 	        if(null == prservices || 0 >= prservices.length) {
 	          if(null != prservDflt) {
 	        	  prservices = new PrintService[] {prservDflt};
@@ -136,7 +120,7 @@ public class PDFExport extends AbstractReportExporter {
 	        	  throw new NuclosReportException(CommonLocaleDelegate.getMessage("AbstractReportExporter.5", "Es ist kein passender Print-Service installiert."));
 	          }
 	        }
-	        
+
 	        PrintService prserv = null;
 	        PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
 	        if (prservDflt == null || !bIsDefault) {
@@ -145,33 +129,33 @@ public class PDFExport extends AbstractReportExporter {
 	        	prserv = ServiceUI.printDialog(null, (gcBounds.width / 2) - 200, (gcBounds.height / 2) - 200, prservices, prservDflt, null, aset);
 	        } else
 	        	prserv = prservDflt;
-	        
+
 	        if( null != prserv ) {
 	        	File file = getFileFromBytes(printObj);
-	        	if (bIsClient) 
+	        	if (bIsClient)
 	        		getNuclosReportPrintJob().print(prserv, file.getAbsolutePath(), aset);
 	        	else {
 	        		ReportDelegate.getInstance().printViaPrintService((NuclosReportRemotePrintService)prserv, getNuclosReportPrintJob(), aset, getBytesFromFile(file));
 	        	}
-	        }	
+	        }
 		} catch (Exception e) {
 			throw new NuclosReportException(e);
 		}
 	}
-	
+
 	private static File getFileFromBytes(Object data) throws IOException {
 		File file = File.createTempFile("report_", ".tmp");
 		file.deleteOnExit();
-		
+
 		OutputStream os = new FileOutputStream(file);
-		
+
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 	    ObjectOutputStream oos = new ObjectOutputStream(bos);
 	    oos.writeObject(data);
 	    oos.flush();
 	    oos.close();
 	    bos.close();
-	    
+
 	    os.write(bos.toByteArray());
 		os.close();
 
@@ -192,7 +176,7 @@ public class PDFExport extends AbstractReportExporter {
 		/** @todo adjust design */
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	protected NuclosReportPrintJob getNuclosReportPrintJob() {
 		return new PDFPrintJob();

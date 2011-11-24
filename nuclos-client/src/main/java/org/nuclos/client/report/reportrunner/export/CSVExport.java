@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.report.reportrunner.export;
 
-<<<<<<< .mine
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -29,12 +28,6 @@ import org.nuclos.server.report.print.CSVPrintJob;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;
-=======
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
->>>>>>> .r7086
-import java.io.OutputStreamWriter;
 
 /**
  * Exporter which creates CSV-files. <br>
@@ -52,11 +45,11 @@ public class CSVExport extends AbstractReportExporter {
 	private final char cQuote;
 	private final boolean bWriteHeader;
 	private final String sFileSuffix;
-	
+
 	public CSVExport() {
 		this(';', 2, '\"', true, ".csv");
 	}
-	
+
 	public CSVExport(char cDelimiter, int iQuoteLevel, char cQuote, boolean bWriteHeader, String sFileSuffix) {
 		this.cDelimiter = cDelimiter;
 		this.iQuoteLevel = iQuoteLevel;
@@ -91,7 +84,7 @@ public class CSVExport extends AbstractReportExporter {
 			// TYPE SCREEN
 			openFile(sFileName, true);
 			break;
-		}			
+		}
 	}
 
 	private String createFile(final String sReportName, final ResultVO resultVO, String parameter) throws NuclosReportException {
@@ -99,7 +92,7 @@ public class CSVExport extends AbstractReportExporter {
 
 		try {
 			sFileName = getFileName(createExportDir(parameter), sReportName, sFileSuffix);
-			
+
 			final ExcelCSVPrinter excelCSVPrinter = new ExcelCSVPrinter(new FileWriter(sFileName, false), iQuoteLevel, cDelimiter, cQuote, false);
 			//final ExcelCSVPrinter excelCSVPrinter = new ExcelCSVPrinter(new OutputStreamWriter(new FileOutputStream(sFileName), "UTF8"), iQuoteLevel, cDelimiter, cQuote, false);
 			excelCSVPrinter.changeDelimiter(cDelimiter);
@@ -111,7 +104,7 @@ public class CSVExport extends AbstractReportExporter {
 				}
 				excelCSVPrinter.writeln();
 			}
-			
+
 			// export data
 			for (int iRow = 0; iRow < resultVO.getRows().size(); iRow++) {
 				for (int iColumn = 0; iColumn < resultVO.getColumns().size(); iColumn++) {
@@ -130,7 +123,7 @@ public class CSVExport extends AbstractReportExporter {
 
 		return sFileName;
 	}
-	
+
 	@Override
 	protected NuclosReportPrintJob getNuclosReportPrintJob() {
 		return new CSVPrintJob();

@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.jawin.DispatchPtr;
 import org.jawin.win32.Ole32;
 import org.nuclos.client.report.reportrunner.AbstractReportExporter;
@@ -31,19 +32,6 @@ import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 
-<<<<<<< .mine
-=======
-import org.apache.log4j.Logger;
-import org.jawin.DispatchPtr;
-import org.jawin.win32.Ole32;
-import org.nuclos.client.report.reportrunner.AbstractReportExporter;
-import org.nuclos.common2.CommonLocaleDelegate;
-import org.nuclos.server.report.NuclosReportException;
-import org.nuclos.server.report.valueobject.ReportOutputVO;
-import org.nuclos.server.report.valueobject.ResultColumnVO;
-import org.nuclos.server.report.valueobject.ResultVO;
-
->>>>>>> .r7086
 /**
  * Exporter which creates MS-Word documents.
  * <br>
@@ -60,9 +48,9 @@ public class DOCExport extends AbstractReportExporter {
 	@Override
 	public void export(String sReportName, ResultVO resultVO, String sourceFile, String parameter, ReportOutputVO.Destination destination) throws NuclosReportException {
 		checkJawin();
-		
+
 		final String sFileName = this.createFile(resultVO, sourceFile, sReportName, this.reportOutputVO);
-		
+
 		switch (destination) {
 		case FILE:
 			openFile(sFileName, true);
@@ -83,7 +71,7 @@ public class DOCExport extends AbstractReportExporter {
 			// TYPE SCREEN
 			openFile(sFileName, false);
 			break;
-		}			
+		}
 	}
 
 	/**
@@ -101,7 +89,7 @@ public class DOCExport extends AbstractReportExporter {
 		DispatchPtr fields = null;
 		final Map<String, DispatchPtr> mpFields = new HashMap<String, DispatchPtr>();
 		new HashMap<String, DispatchPtr>();
-		
+
 		if (sSourceFileName == null || sSourceFileName.length() == 0) {
 			throw new NuclosReportException(CommonLocaleDelegate.getMessage("DOCExport.1", "Word-Datei konnte nicht erstellt werden, da keine Vorlage angegeben wurde."));
 		}
@@ -126,7 +114,7 @@ public class DOCExport extends AbstractReportExporter {
 			Integer iFieldCount = (Integer) fields.get("Count");
 			for (int i = 1; i <= iFieldCount; i++) {
 				DispatchPtr field = (DispatchPtr) fields.invoke("Item", new Integer(i));
-				mpFields.put(field.get("Name").toString().toUpperCase(), field);				
+				mpFields.put(field.get("Name").toString().toUpperCase(), field);
 			}
 
 			// export data
@@ -173,7 +161,7 @@ public class DOCExport extends AbstractReportExporter {
 									}
 									field.put("Result", value);
 								}
-								
+
 								textinput.put("Default", value);
 							}
 						}
@@ -220,7 +208,7 @@ public class DOCExport extends AbstractReportExporter {
 
 		return sFileName;
 	}
-	
+
 	@Override
 	protected NuclosReportPrintJob getNuclosReportPrintJob() {
 		return new DOCPrintJob();
