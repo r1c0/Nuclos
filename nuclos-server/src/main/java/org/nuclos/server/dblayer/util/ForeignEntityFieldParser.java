@@ -66,9 +66,9 @@ public class ForeignEntityFieldParser implements Iterable<IFieldRef> {
 		
 	}
 	
-	private static final Pattern REF_PATTERN = Pattern.compile("\\$\\{(\\p{Alpha}\\p{Alnum}*)\\}", Pattern.MULTILINE);
+	private static final Pattern REF_PATTERN = Pattern.compile("\\$\\{(\\p{Alpha}[\\p{Alnum}_]*)\\}", Pattern.MULTILINE);
 	
-	private static final Pattern OLD_SIMPLE_REF_PATTERN = Pattern.compile("\\p{Alpha}\\p{Alnum}*");
+	private static final Pattern OLD_SIMPLE_REF_PATTERN = Pattern.compile("\\p{Alpha}[\\p{Alnum}_]*");
 	
 	private static final String DEFAULT_FOREIGN_ENTITY_FIELD = "${name}";
 	
