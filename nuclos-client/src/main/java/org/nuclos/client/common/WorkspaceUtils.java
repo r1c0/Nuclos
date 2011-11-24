@@ -37,6 +37,7 @@ import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
 import org.nuclos.client.genericobject.CollectableGenericObjectEntity;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.workspace.RestoreUtils;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.common.Actions;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
@@ -46,9 +47,15 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common.WorkspaceDescription.ColumnPreferences;
 import org.nuclos.common.WorkspaceDescription.ColumnSorting;
+import org.nuclos.common.WorkspaceDescription.Desktop;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
+import org.nuclos.common.WorkspaceDescription.MutableContent;
+import org.nuclos.common.WorkspaceDescription.NestedContent;
+import org.nuclos.common.WorkspaceDescription.Split;
 import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
+import org.nuclos.common.WorkspaceDescription.Tabbed;
 import org.nuclos.common.WorkspaceDescription.TablePreferences;
+import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
@@ -60,6 +67,7 @@ import org.nuclos.common.entityobject.CollectableEOEntityProvider;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.masterdata.CollectableMasterDataForeignKeyEntityField;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
@@ -1037,6 +1045,65 @@ public class WorkspaceUtils {
 				LOG.error("Column could not be restored " + cp, e); 
 			}
 		}
+	}
+	
+	
+	public static Desktop restoreDesktop(Desktop dsktp) throws CommonBusinessException {
+		final WorkspaceVO currentWovo = MainFrame.getWorkspace();
+		RestoreUtils.storeWorkspace(currentWovo);
+		final Long assignedWorkspaceId = MainFrame.getWorkspace().getAssignedWorkspace();
+		boolean restoreToSystemDefault = false;
+		
+		if (assignedWorkspaceId == null) {
+			// restore to first time
+			restoreToSystemDefault = true;
+		} else {
+			final WorkspaceDescription assignedWd = getPrefsFacade().getWorkspace(assignedWorkspaceId).getWoDesc();
+			if (getPrefsFacade().isWorkspaceStructureChanged(assignedWorkspaceId, MainFrame.getWorkspace().getId())) {
+				throw new CommonBusinessException(CommonLocaleDelegate.getMessage("Desktop.not.restoreable", "Desktop kann nicht zurückgesetzt werden. Die Struktur der Vorlage entspricht nicht der aktuellen Arbeitsumgebung."));
+			} else {
+				// find tabbed in current workspace...
+				Desktop dsktpAssigned = getDesktopFromTargetWorkspace(
+						currentWovo.getWoDesc().getMainFrame().getContent(), 
+						dsktp, 
+						assignedWd.getMainFrame().getContent());
+				if (dsktpAssigned == null) {
+					restoreToSystemDefault = true;
+				} else {
+					return dsktpAssigned;
+				}
+			}
+		}
+		
+		if (restoreToSystemDefault) {
+			return null;
+		} 
+		
+		return null;
+	}
+	
+	
+	private static Desktop getDesktopFromTargetWorkspace(NestedContent ncSource, Desktop dsktpSource, NestedContent ncTarget) {
+		try {
+			if (ncSource instanceof MutableContent) {
+				return getDesktopFromTargetWorkspace(((MutableContent) ncSource).getContent(), dsktpSource, ((MutableContent) ncTarget).getContent());
+			} else if (ncSource instanceof Split) {
+				Desktop splitResult = getDesktopFromTargetWorkspace(((Split) ncSource).getContentA(), dsktpSource, ((Split) ncTarget).getContentA());
+				if (splitResult == null) 
+					splitResult = getDesktopFromTargetWorkspace(((Split) ncSource).getContentB(), dsktpSource, ((Split) ncTarget).getContentB());
+				return splitResult;
+			} else if (ncSource instanceof Tabbed) {
+				if (((Tabbed)ncSource).getDesktop() != null && 
+						((Tabbed)ncSource).getDesktop() == dsktpSource) {
+					return ((Tabbed)ncTarget).getDesktop();
+				}
+			}
+		} catch (Exception ex) {
+			LOG.error(ex);
+			// structure change
+		}
+		
+		return null;
 	}
 	
 	

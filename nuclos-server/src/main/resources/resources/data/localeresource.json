@@ -59606,17 +59606,257 @@
   {
     "resourceID": "DesktopStartTab.2",
     "locale": "i-default",
-    "text": "Select resource icon"
+    "text": "Desktop properties"
   },
   {
     "resourceID": "DesktopStartTab.2",
     "locale": "en",
-    "text": "Select resource icon"
+    "text": "Desktop properties"
   },
   {
     "resourceID": "DesktopStartTab.2",
     "locale": "de",
-    "text": "Ressource Icon auswählen"
+    "text": "Desktop Eigenschaften"
+  },
+  {
+    "resourceID": "DesktopStartTab.3",
+    "locale": "i-default",
+    "text": "Hide desktop"
+  },
+  {
+    "resourceID": "DesktopStartTab.3",
+    "locale": "en",
+    "text": "Hide desktop"
+  },
+  {
+    "resourceID": "DesktopStartTab.3",
+    "locale": "de",
+    "text": "Desktop ausblenden"
+  },
+  {
+    "resourceID": "DesktopStartTab.4",
+    "locale": "i-default",
+    "text": "Hide toolbar"
+  },
+  {
+    "resourceID": "DesktopStartTab.4",
+    "locale": "en",
+    "text": "Hide toolbar"
+  },
+  {
+    "resourceID": "DesktopStartTab.4",
+    "locale": "de",
+    "text": "Symbolleiste ausblenden"
+  },
+  {
+    "resourceID": "DesktopStartTab.5",
+    "locale": "i-default",
+    "text": "Restore to template"
+  },
+  {
+    "resourceID": "DesktopStartTab.5",
+    "locale": "en",
+    "text": "Restore to template"
+  },
+  {
+    "resourceID": "DesktopStartTab.5",
+    "locale": "de",
+    "text": "Auf Vorlage zurücksetzen"
+  },
+  {
+    "resourceID": "MenuButton.2",
+    "locale": "i-default",
+    "text": "Select default icon"
+  },
+  {
+    "resourceID": "MenuButton.2",
+    "locale": "en",
+    "text": "Select default icon"
+  },
+  {
+    "resourceID": "MenuButton.2",
+    "locale": "de",
+    "text": "Standard Icon auswählen"
+  },
+  {
+    "resourceID": "MenuButton.3",
+    "locale": "i-default",
+    "text": "action"
+  },
+  {
+    "resourceID": "MenuButton.3",
+    "locale": "en",
+    "text": "action"
+  },
+  {
+    "resourceID": "MenuButton.3",
+    "locale": "de",
+    "text": "Aktion"
+  },
+  {
+    "resourceID": "MenuButton.4",
+    "locale": "i-default",
+    "text": "Add menu item"
+  },
+  {
+    "resourceID": "MenuButton.4",
+    "locale": "en",
+    "text": "Add menu item"
+  },
+  {
+    "resourceID": "MenuButton.4",
+    "locale": "de",
+    "text": "Menu Eintrag hinzufügen"
+  },
+  {
+    "resourceID": "MenuButton.5",
+    "locale": "i-default",
+    "text": "Properties"
+  },
+  {
+    "resourceID": "MenuButton.5",
+    "locale": "en",
+    "text": "Properties"
+  },
+  {
+    "resourceID": "MenuButton.5",
+    "locale": "de",
+    "text": "Eigenschaften"
+  },
+  {
+    "resourceID": "MenuButton.6",
+    "locale": "i-default",
+    "text": "Remove menu button"
+  },
+  {
+    "resourceID": "MenuButton.6",
+    "locale": "en",
+    "text": "Remove menu button"
+  },
+  {
+    "resourceID": "MenuButton.6",
+    "locale": "de",
+    "text": "Menu Button entfernen"
+  },
+  {
+    "resourceID": "MenuButton.7",
+    "locale": "i-default",
+    "text": "Select mouseover icon"
+  },
+  {
+    "resourceID": "MenuButton.7",
+    "locale": "en",
+    "text": "Select mouseover icon"
+  },
+  {
+    "resourceID": "MenuButton.7",
+    "locale": "de",
+    "text": "Mouseover Icon auswählen"
+  },
+  {
+    "resourceID": "MenuButton.8",
+    "locale": "i-default",
+    "text": "My icons"
+  },
+  {
+    "resourceID": "MenuButton.8",
+    "locale": "en",
+    "text": "My icons"
+  },
+  {
+    "resourceID": "MenuButton.8",
+    "locale": "de",
+    "text": "Meine Icons"
+  },
+  {
+    "resourceID": "MenuButton.9",
+    "locale": "i-default",
+    "text": "My icons"
+  },
+  {
+    "resourceID": "MenuButton.9",
+    "locale": "en",
+    "text": "Nuclos icons"
+  },
+  {
+    "resourceID": "MenuButton.9",
+    "locale": "de",
+    "text": "Nuclos Icons"
+  },
+  {
+    "resourceID": "DefaultMenuItem.1",
+    "locale": "i-default",
+    "text": "action"
+  },
+  {
+    "resourceID": "DefaultMenuItem.1",
+    "locale": "en",
+    "text": "action"
+  },
+  {
+    "resourceID": "DefaultMenuItem.1",
+    "locale": "de",
+    "text": "Aktion"
+  },
+  {
+    "resourceID": "DefaultMenuItem.2",
+    "locale": "i-default",
+    "text": "Action not found"
+  },
+  {
+    "resourceID": "DefaultMenuItem.2",
+    "locale": "en",
+    "text": "Action not found"
+  },
+  {
+    "resourceID": "DefaultMenuItem.2",
+    "locale": "de",
+    "text": "Aktion nicht gefunden"
+  },
+  {
+    "resourceID": "DefaultMenuItem.3",
+    "locale": "i-default",
+    "text": "Remove menu item"
+  },
+  {
+    "resourceID": "DefaultMenuItem.3",
+    "locale": "en",
+    "text": "Remove menu item"
+  },
+  {
+    "resourceID": "DefaultMenuItem.3",
+    "locale": "de",
+    "text": "Menu Eintrag entfernen"
+  },
+  {
+    "resourceID": "DefaultMenuItem.4",
+    "locale": "i-default",
+    "text": "Properties"
+  },
+  {
+    "resourceID": "DefaultMenuItem.4",
+    "locale": "en",
+    "text": "Properties"
+  },
+  {
+    "resourceID": "DefaultMenuItem.4",
+    "locale": "de",
+    "text": "Eigenschaften"
+  },
+  {
+    "resourceID": "DefaultMenuItem.5",
+    "locale": "i-default",
+    "text": "Position"
+  },
+  {
+    "resourceID": "DefaultMenuItem.5",
+    "locale": "en",
+    "text": "Position"
+  },
+  {
+    "resourceID": "DefaultMenuItem.5",
+    "locale": "de",
+    "text": "Position"
   },
   {
     "resourceID": "ResourceIconChooser.3",
@@ -59632,6 +59872,36 @@
     "resourceID": "ResourceIconChooser.3",
     "locale": "de",
     "text": "Ressource Icon auswählen"
+  },
+  {
+    "resourceID": "MenuActionChooser.3",
+    "locale": "i-default",
+    "text": "Select action"
+  },
+  {
+    "resourceID": "MenuActionChooser.3",
+    "locale": "en",
+    "text": "Select action"
+  },
+  {
+    "resourceID": "MenuActionChooser.3",
+    "locale": "de",
+    "text": "Aktion auswählen"
+  },
+  {
+    "resourceID": "MenuItemMover.3",
+    "locale": "i-default",
+    "text": "Change order"
+  },
+  {
+    "resourceID": "MenuItemMover.3",
+    "locale": "en",
+    "text": "Change order"
+  },
+  {
+    "resourceID": "MenuItemMover.3",
+    "locale": "de",
+    "text": "Reihenfolge ändern"
   },
   {
     "resourceID": "MainFrameTabbedPane.3",
@@ -59936,17 +60206,17 @@
   {
     "resourceID": "WorkspaceChooserController.3",
     "locale": "i-default",
-    "text": "Edit"
+    "text": "Properties"
   },
   {
     "resourceID": "WorkspaceChooserController.3",
     "locale": "en",
-    "text": "Edit"
+    "text": "Properties"
   },
   {
     "resourceID": "WorkspaceChooserController.3",
     "locale": "de",
-    "text": "Bearbeiten"
+    "text": "Eigenschaften"
   },
   {
     "resourceID": "WorkspaceChooserController.4",
@@ -60146,17 +60416,17 @@
   {
     "resourceID": "WorkspaceEditor.1",
     "locale": "i-default",
-    "text": "Edit workspace"
+    "text": "Workspace properties"
   },
   {
     "resourceID": "WorkspaceEditor.1",
     "locale": "en",
-    "text": "Edit workspace"
+    "text": "Workspace properties"
   },
   {
     "resourceID": "WorkspaceEditor.1",
     "locale": "de",
-    "text": "Arbeitsumgebung bearbeiten"
+    "text": "Arbeitsumgebung Eigenschaften"
   },
   {
     "resourceID": "WorkspaceEditor.2",
@@ -60517,6 +60787,456 @@
     "resourceID": "ResourceIconChooser.2",
     "locale": "de",
     "text": "Abbrechen"
+  },
+  {
+    "resourceID": "MenuActionChooser.1",
+    "locale": "i-default",
+    "text": "Save"
+  },
+  {
+    "resourceID": "MenuActionChooser.1",
+    "locale": "en",
+    "text": "Save"
+  },
+  {
+    "resourceID": "MenuActionChooser.1",
+    "locale": "de",
+    "text": "Speichern"
+  },
+  {
+    "resourceID": "MenuActionChooser.2",
+    "locale": "i-default",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "MenuActionChooser.2",
+    "locale": "en",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "MenuActionChooser.2",
+    "locale": "de",
+    "text": "Abbrechen"
+  },
+  {
+    "resourceID": "MenuItemMover.1",
+    "locale": "i-default",
+    "text": "Save"
+  },
+  {
+    "resourceID": "MenuItemMover.1",
+    "locale": "en",
+    "text": "Save"
+  },
+  {
+    "resourceID": "MenuItemMover.1",
+    "locale": "de",
+    "text": "Speichern"
+  },
+  {
+    "resourceID": "MenuItemMover.2",
+    "locale": "i-default",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "MenuItemMover.2",
+    "locale": "en",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "MenuItemMover.2",
+    "locale": "de",
+    "text": "Abbrechen"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.1",
+    "locale": "i-default",
+    "text": "Desktop properties"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.1",
+    "locale": "en",
+    "text": "Desktop properties"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.1",
+    "locale": "de",
+    "text": "Desktop Eigenschaften"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.2",
+    "locale": "i-default",
+    "text": "Layout"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.2",
+    "locale": "en",
+    "text": "Layout"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.2",
+    "locale": "de",
+    "text": "Layout"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.3",
+    "locale": "i-default",
+    "text": "One Row centered"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.3",
+    "locale": "en",
+    "text": "One Row centered"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.3",
+    "locale": "de",
+    "text": "Einzeilig zentriert"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.4",
+    "locale": "i-default",
+    "text": "With wrap"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.4",
+    "locale": "en",
+    "text": "With wrap"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.4",
+    "locale": "de",
+    "text": "Mit Umbruch"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.5",
+    "locale": "i-default",
+    "text": "Gaps"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.5",
+    "locale": "en",
+    "text": "Gaps"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.5",
+    "locale": "de",
+    "text": "Abstände"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.6",
+    "locale": "i-default",
+    "text": "Horizontal"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.6",
+    "locale": "en",
+    "text": "Horizontal"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.6",
+    "locale": "de",
+    "text": "Horizontal"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.7",
+    "locale": "i-default",
+    "text": "Vertical"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.7",
+    "locale": "en",
+    "text": "Vertical"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.7",
+    "locale": "de",
+    "text": "Vertikal"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.8",
+    "locale": "i-default",
+    "text": "Menu button label"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.8",
+    "locale": "en",
+    "text": "Menu button label"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.8",
+    "locale": "de",
+    "text": "Menu Button Beschriftung"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.9",
+    "locale": "i-default",
+    "text": "Color"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.9",
+    "locale": "en",
+    "text": "Color"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.9",
+    "locale": "de",
+    "text": "Farbe"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.10",
+    "locale": "i-default",
+    "text": "Size"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.10",
+    "locale": "en",
+    "text": "Size"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.10",
+    "locale": "de",
+    "text": "Größe"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.11",
+    "locale": "i-default",
+    "text": "Mouseover"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.11",
+    "locale": "en",
+    "text": "Mouseover"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.11",
+    "locale": "de",
+    "text": "Mouseover"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.12",
+    "locale": "i-default",
+    "text": "Image"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.12",
+    "locale": "en",
+    "text": "Image"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.12",
+    "locale": "de",
+    "text": "Bild"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.13",
+    "locale": "i-default",
+    "text": "Mouseover image"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.13",
+    "locale": "en",
+    "text": "Mouseover image"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.13",
+    "locale": "de",
+    "text": "Bild Mouseover"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.14",
+    "locale": "i-default",
+    "text": "Save"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.14",
+    "locale": "en",
+    "text": "Save"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.14",
+    "locale": "de",
+    "text": "Speichern"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.15",
+    "locale": "i-default",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.15",
+    "locale": "en",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.15",
+    "locale": "de",
+    "text": "Abbrechen"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.16",
+    "locale": "i-default",
+    "text": "Gabs and font size must be numbers!"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.16",
+    "locale": "en",
+    "text": "Gabs and font size must be numbers!"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.16",
+    "locale": "de",
+    "text": "Abstände und Schriftgröße dürfen nur Zahlen enthalten!"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.17",
+    "locale": "i-default",
+    "text": "Left"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.17",
+    "locale": "en",
+    "text": "Left"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.17",
+    "locale": "de",
+    "text": "Links"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.18",
+    "locale": "i-default",
+    "text": "Center"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.18",
+    "locale": "en",
+    "text": "Center"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.18",
+    "locale": "de",
+    "text": "Zentriert"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.19",
+    "locale": "i-default",
+    "text": "Right"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.19",
+    "locale": "en",
+    "text": "Right"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.19",
+    "locale": "de",
+    "text": "Rechts"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.20",
+    "locale": "i-default",
+    "text": "Horizontal padding"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.20",
+    "locale": "en",
+    "text": "Horizontal padding"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.20",
+    "locale": "de",
+    "text": "Horizontaler Abstand"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.21",
+    "locale": "i-default",
+    "text": "Background image"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.21",
+    "locale": "en",
+    "text": "Background image"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.21",
+    "locale": "de",
+    "text": "Hintergrundbild"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.22",
+    "locale": "i-default",
+    "text": "Menu button backgrounds"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.22",
+    "locale": "en",
+    "text": "Menu button backgrounds"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.22",
+    "locale": "de",
+    "text": "Menu Button Hintergründe"
+  },
+  {
+    "resourceID": "ColorChooserButton.1",
+    "locale": "i-default",
+    "text": "Change color"
+  },
+  {
+    "resourceID": "ColorChooserButton.1",
+    "locale": "en",
+    "text": "Change color"
+  },
+  {
+    "resourceID": "ColorChooserButton.1",
+    "locale": "de",
+    "text": "Farbe ändern"
+  },
+  {
+    "resourceID": "ColorChooserButton.2",
+    "locale": "i-default",
+    "text": "Save"
+  },
+  {
+    "resourceID": "ColorChooserButton.2",
+    "locale": "en",
+    "text": "Save"
+  },
+  {
+    "resourceID": "ColorChooserButton.2",
+    "locale": "de",
+    "text": "Speichern"
+  },
+  {
+    "resourceID": "ColorChooserButton.3",
+    "locale": "i-default",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "ColorChooserButton.3",
+    "locale": "en",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "ColorChooserButton.3",
+    "locale": "de",
+    "text": "Abbrechen"
+  },
+  {
+    "resourceID": "Desktop.not.restoreable",
+    "locale": "i-default",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "Desktop.not.restoreable",
+    "locale": "en",
+    "text": "Desktop could not be restored. Structure change between current workspace and template."
+  },
+  {
+    "resourceID": "Desktop.not.restoreable",
+    "locale": "de",
+    "text": "Desktop kann nicht zurückgesetzt werden. Die Struktur der Vorlage entspricht nicht der aktuellen Arbeitsumgebung."
   },
   {
     "resourceID": "MainMenuAdministration",

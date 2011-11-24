@@ -17,15 +17,21 @@
 
 package org.nuclos.common;
 
+import java.awt.Color;
 import java.awt.Rectangle;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import javax.swing.SwingConstants;
+
 import org.apache.commons.httpclient.util.LangUtils;
+import org.eclipse.jdt.internal.core.SetClasspathOperation;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 
@@ -202,6 +208,7 @@ public class WorkspaceDescription implements Serializable {
 		private boolean alwaysHideStartmenu = false;
 		private boolean alwaysHideHistory = false;
 		private boolean alwaysHideBookmark = false;
+		private boolean desktopActive = false;
 
 		private int selected;
 		private final List<Tab> tabs = new ArrayList<Tab>();
@@ -209,6 +216,8 @@ public class WorkspaceDescription implements Serializable {
 		private final Set<String> reducedStartmenus = new HashSet<String>();
 		private final Set<String> reducedHistoryEntities = new HashSet<String>();
 		private final Set<String> reducedBookmarkEntities = new HashSet<String>();
+		
+		private Desktop desktop;
 
 		public boolean isHome() {
 			return home;
@@ -329,6 +338,18 @@ public class WorkspaceDescription implements Serializable {
 		}
 		public void addAllReducedBookmarkEntities(Set<String> reducedBookmarkEntities) {
 			this.reducedBookmarkEntities.addAll(reducedBookmarkEntities);
+		}
+		public Desktop getDesktop() {
+			return desktop;
+		}
+		public void setDesktop(Desktop desktop) {
+			this.desktop = desktop;
+		}
+		public boolean isDesktopActive() {
+			return desktopActive;
+		}
+		public void setDesktopActive(boolean desktopActive) {
+			this.desktopActive = desktopActive;
 		}
 	}
 
@@ -660,7 +681,6 @@ public class WorkspaceDescription implements Serializable {
 		public static final int TYPE_EntityFieldWithEntity = 4;
 		public static final int TYPE_EntityFieldWithEntityForExternal = 5;
 		
-		
 		private String column;
 		private String entity;
 		private int width;
@@ -823,6 +843,376 @@ public class WorkspaceDescription implements Serializable {
 			result.setColumn(getColumn());
 			result.setAsc(isAsc());
 			return result;
+		}
+	}
+	
+	public static class Color implements Serializable {
+		private static final long serialVersionUID = 6637996725938917463L;
+		private final int red, green, blue;
+		public Color(int red, int green, int blue) {
+			super();
+			this.red = red;
+			this.green = green;
+			this.blue = blue;
+		}
+		public int getRed() {
+			return red;
+		}
+		public int getGreen() {
+			return green;
+		}
+		public int getBlue() {
+			return blue;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj instanceof Color) {
+				Color other = (Color) obj;
+				return this.red == other.red &&
+						this.green == other.green &&
+						this.blue == other.blue;
+			}
+			return super.equals(obj);
+		}
+		public java.awt.Color toColor() {
+			return new java.awt.Color(red, green, blue);
+		}
+	}
+	
+	public static interface DesktopItem extends Serializable{}
+	
+	public static class Action implements Serializable {
+		private static final long serialVersionUID = 6637996725938917463L;
+		private String action;
+		private Map<String, String> stringParams;
+		private Map<String, Long> longParams;
+		private Map<String, Boolean> booleanParams;
+		public String getAction() {
+			return action;
+		}
+		public void setAction(String action) {
+			this.action = action;
+		}
+		public void putStringParameter(String key, String value) {
+			_getStringParams().put(key, value);
+		}
+		public String getStringParameter(String key) {
+			return _getStringParams().get(key);
+		}
+		public void putLongParameter(String key, Long value) {
+			_getLongParams().put(key, value);
+		}
+		public Long getLongParameter(String key) {
+			return _getLongParams().get(key);
+		}
+		public void putBooleanParameter(String key, Boolean value) {
+			_getBooleanParams().put(key, value);
+		}
+		public Boolean getBooleanParameter(String key) {
+			return _getBooleanParams().get(key);
+		}
+		private Map<String, String> _getStringParams() {
+			if (stringParams == null) {
+				stringParams = new HashMap<String, String>();
+			}
+			return stringParams;
+		}
+		private Map<String, Long> _getLongParams() {
+			if (longParams == null) {
+				longParams = new HashMap<String, Long>();
+			}
+			return longParams;
+		}
+		private Map<String, Boolean> _getBooleanParams() {
+			if (booleanParams == null) {
+				booleanParams = new HashMap<String, Boolean>();
+			}
+			return booleanParams;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == this)
+			    return true;
+			if (obj instanceof Action) {
+				Action other = (Action) obj;
+				if (!LangUtils.equals(this.getAction(), other.getAction())) {
+					return false;
+				}
+				if (!LangUtils.equals(this._getStringParams(), other._getStringParams())) {
+					return false;
+				}
+				if (!LangUtils.equals(this._getLongParams(), other._getLongParams())) {
+					return false;
+				}
+				if (!LangUtils.equals(this._getBooleanParams(), other._getBooleanParams())) {
+					return false;
+				}
+				return true;
+			}
+			return super.equals(obj);
+		}
+		@Override
+		public int hashCode() {
+			if (action != null) {
+				return action.hashCode();
+			}
+			return 0;
+		}
+		@Override
+		public String toString() {
+			final StringBuffer result = new StringBuffer();
+			result.append("Action=").append(getAction());
+			result.append(",StringParams=").append(_getStringParams().toString());
+			result.append(",LongParams=").append(_getLongParams().toString());
+			result.append(",BooleanParams=").append(_getBooleanParams().toString());
+			return result.toString();
+		}
+		
+	}
+	
+	public static class MenuItem implements Serializable {
+		private static final long serialVersionUID = 6637996725938917463L;
+		private Action menuAction;
+		public Action getMenuAction() {
+			return menuAction;
+		}
+		public void setMenuAction(Action menuAction) {
+			this.menuAction = menuAction;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj instanceof MenuItem) {
+				MenuItem other = (MenuItem) obj;
+				return LangUtils.equals(this.menuAction, other.menuAction);
+			}
+			return super.equals(obj);
+		}
+		
+	}
+	
+	public static class MenuButton implements DesktopItem {
+		private static final long serialVersionUID = 6637996725938917463L;
+		private Action menuAction;
+		private String resourceIcon, resourceIconHover, nuclosResource, nuclosResourceHover;
+		private List<MenuItem> menuItems;
+		public Action getMenuAction() {
+			return menuAction;
+		}
+		public void setMenuAction(Action menuAction) {
+			this.menuAction = menuAction;
+		}
+		public String getResourceIcon() {
+			return resourceIcon;
+		}
+		public void setResourceIcon(String resourceIconHover) {
+			this.resourceIcon = resourceIconHover;
+		}
+		public String getResourceIconHover() {
+			return resourceIconHover;
+		}
+		public void setResourceIconHover(String resourceIconHover) {
+			this.resourceIconHover = resourceIconHover;
+		}
+		public String getNuclosResource() {
+			return nuclosResource;
+		}
+		public void setNuclosResource(String nuclosResource) {
+			this.nuclosResource = nuclosResource;
+		}
+		public String getNuclosResourceHover() {
+			return nuclosResourceHover;
+		}
+		public void setNuclosResourceHover(String nuclosResourceHover) {
+			this.nuclosResourceHover = nuclosResourceHover;
+		}
+		private List<MenuItem> _getMenuItems() {
+			if (menuItems == null)
+				menuItems = new ArrayList<MenuItem>();
+			return menuItems;
+		}
+		public List<MenuItem> getMenuItems() {
+			return new ArrayList<MenuItem>(_getMenuItems());
+		}
+		public void addMenuItem(MenuItem mi) {
+			_getMenuItems().add(mi);
+		}
+		public void addMenuItem(int index, MenuItem mi) {
+			_getMenuItems().add(index, mi);
+		}
+		public void addAllMenuItems(List<MenuItem> mis) {
+			_getMenuItems().addAll(mis);
+		}
+		public boolean removeMenuItem(MenuItem mi) {
+			return _getMenuItems().remove(mi);
+		}
+		public void removeAllMenuItems() {
+			_getMenuItems().clear();
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj instanceof MenuButton) {
+				MenuButton other = (MenuButton) obj;
+				return LangUtils.equals(this.menuAction, other.menuAction) &&
+						LangUtils.equals(this.menuItems, other.menuItems) &&
+						LangUtils.equals(this.nuclosResource, other.nuclosResource) &&
+						LangUtils.equals(this.resourceIcon, other.resourceIcon) &&
+						LangUtils.equals(this.resourceIconHover, other.resourceIconHover);
+			}
+			return super.equals(obj);
+		}
+	}
+	
+	public static class Desktop implements Serializable {
+		private static final long serialVersionUID = 6637996725938917463L;
+		public static final int LAYOUT_WRAP = 0;
+		public static final int LAYOUT_ONE_ROW = 1;
+		/** <code>SwingConstants.CENTER</code> */		public static final int HORIZONTAL_ALIGNMENT_CENTER = 0;
+		/** <code>SwingConstants.LEFT</code> */			public static final int HORIZONTAL_ALIGNMENT_LEFT = 2;
+		/** <code>SwingConstants.RIGHT</code> */		public static final int HORIZONTAL_ALIGNMENT_RIGHT = 4;
+		private int horizontalGap, verticalGap, menuItemTextSize, layout, menuItemTextHorizontalPadding, menuItemTextHorizontalAlignment;
+		private Color menuItemTextColor, menuItemTextHoverColor;
+		private String resourceMenuBackground, resourceMenuBackgroundHover, resourceBackground, nuclosResourceBackground;
+		private boolean hideToolBar = false;
+		private List<DesktopItem> desktopItems;
+		public int getHorizontalGap() {
+			return horizontalGap;
+		}
+		public void setHorizontalGap(int horizontalGap) {
+			this.horizontalGap = horizontalGap;
+		}
+		public int getLayout() {
+			return layout;
+		}
+		public void setLayout(int layout) {
+			this.layout = layout;
+		}
+		public int getVerticalGap() {
+			return verticalGap;
+		}
+		public void setVerticalGap(int verticalGap) {
+			this.verticalGap = verticalGap;
+		}
+		public int getMenuItemTextSize() {
+			return menuItemTextSize;
+		}
+		public void setMenuItemTextSize(int menuItemTextSize) {
+			this.menuItemTextSize = menuItemTextSize;
+		}
+		public int getMenuItemTextHorizontalPadding() {
+			return menuItemTextHorizontalPadding;
+		}
+		public void setMenuItemTextHorizontalPadding(int menuItemTextHorizontalPadding) {
+			this.menuItemTextHorizontalPadding = menuItemTextHorizontalPadding;
+		}
+		public int getMenuItemTextHorizontalAlignment() {
+			return menuItemTextHorizontalAlignment;
+		}
+		public void setMenuItemTextHorizontalAlignment(
+				int menuItemTextHorizontalAlignment) {
+			this.menuItemTextHorizontalAlignment = menuItemTextHorizontalAlignment;
+		}
+		public Color getMenuItemTextColor() {
+			return menuItemTextColor;
+		}
+		public void setMenuItemTextColor(Color menuItemTextColor) {
+			this.menuItemTextColor = menuItemTextColor;
+		}
+		public void setMenuItemTextColor(java.awt.Color menuItemTextColor) {
+			if (menuItemTextColor == null) {
+				this.menuItemTextColor = null;
+			} else {
+				this.menuItemTextColor = new Color(menuItemTextColor.getRed(), menuItemTextColor.getGreen(), menuItemTextColor.getBlue());
+			}
+		}
+		public Color getMenuItemTextHoverColor() {
+			return menuItemTextHoverColor;
+		}
+		public void setMenuItemTextHoverColor(Color menuItemTextHoverColor) {
+			this.menuItemTextHoverColor = menuItemTextHoverColor;
+		}
+		public void setMenuItemTextHoverColor(java.awt.Color menuItemTextHoverColor) {
+			if (menuItemTextHoverColor == null) {
+				this.menuItemTextHoverColor = null;
+			} else {
+				this.menuItemTextHoverColor = new Color(menuItemTextHoverColor.getRed(), menuItemTextHoverColor.getGreen(), menuItemTextHoverColor.getBlue());
+			}
+		}
+		public String getResourceMenuBackground() {
+			return resourceMenuBackground;
+		}
+		public void setResourceMenuBackground(String resourceMenuBackground) {
+			this.resourceMenuBackground = resourceMenuBackground;
+		}
+		public String getResourceMenuBackgroundHover() {
+			return resourceMenuBackgroundHover;
+		}
+		public void setResourceMenuBackgroundHover(String resourceMenuBackgroundHover) {
+			this.resourceMenuBackgroundHover = resourceMenuBackgroundHover;
+		}
+		public String getResourceBackground() {
+			return resourceBackground;
+		}
+		public void setResourceBackground(String resourceBackground) {
+			this.resourceBackground = resourceBackground;
+		}
+		public String getNuclosResourceBackground() {
+			return nuclosResourceBackground;
+		}
+		public void setNuclosResourceBackground(String nuclosResourceBackground) {
+			this.nuclosResourceBackground = nuclosResourceBackground;
+		}
+		public boolean isHideToolBar() {
+			return hideToolBar;
+		}
+		public void setHideToolBar(boolean hideToolBar) {
+			this.hideToolBar = hideToolBar;
+		}
+		private List<DesktopItem> _getDesktopItems() {
+			if (desktopItems == null)
+				desktopItems = new ArrayList<DesktopItem>();
+			return desktopItems;
+		}
+		public List<DesktopItem> getDesktopItems() {
+			return new ArrayList<DesktopItem>(_getDesktopItems());
+		}
+		public void addDesktopItem(DesktopItem di) {
+			_getDesktopItems().add(di);
+		}
+		public void addDesktopItem(int index, DesktopItem di) {
+			_getDesktopItems().add(index, di);
+		}
+		public void addAllDesktopItems(List<DesktopItem> dis) {
+			_getDesktopItems().addAll(dis);
+		}
+		public boolean removeDesktopItem(DesktopItem di) {
+			return _getDesktopItems().remove(di);
+		}
+		public void removeAllDesktopItems() {
+			_getDesktopItems().clear();
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj instanceof Desktop) {
+				Desktop other = (Desktop) obj;
+				return LangUtils.equals(this.desktopItems, other.desktopItems) &&
+						this.horizontalGap == other.horizontalGap &&
+						this.verticalGap == other.verticalGap &&
+						this.menuItemTextSize == other.menuItemTextSize &&
+						this.layout == other.layout &&
+						LangUtils.equals(this.resourceMenuBackground, other.resourceMenuBackground) &&
+						LangUtils.equals(this.resourceMenuBackgroundHover, other.resourceMenuBackgroundHover) &&
+						LangUtils.equals(this.menuItemTextColor, other.menuItemTextColor) &&
+						LangUtils.equals(this.menuItemTextHoverColor, other.menuItemTextHoverColor);
+			}
+			return super.equals(obj);
 		}
 	}
 	

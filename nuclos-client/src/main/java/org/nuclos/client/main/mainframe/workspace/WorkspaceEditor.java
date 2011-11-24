@@ -91,7 +91,7 @@ public class WorkspaceEditor  {
 		chckHideName.setSelected(wovo.getWoDesc().isHideName());
 		nuclosIconChooser.setSelected(wovo.getWoDesc().getNuclosResource());
 		
-		dialog = new JDialog(Main.getMainFrame(), CommonLocaleDelegate.getMessage("WorkspaceEditor.1","Arbeitsumgebung bearbeiten"), true);
+		dialog = new JDialog(Main.getMainFrame(), CommonLocaleDelegate.getMessage("WorkspaceEditor.1","Arbeitsumgebung Eigenschaften"), true);
 		dialog.setContentPane(contentPanel);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.getRootPane().setDefaultButton(btSave);

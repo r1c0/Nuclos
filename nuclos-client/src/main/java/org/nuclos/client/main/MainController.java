@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,6 +47,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
@@ -118,6 +120,7 @@ import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.workspace.RestoreUtils;
 import org.nuclos.client.masterdata.MasterDataCache;
+import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.masterdata.MetaDataDelegate;
@@ -125,6 +128,8 @@ import org.nuclos.client.relation.EntityRelationShipCollectController;
 import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
+import org.nuclos.client.searchfilter.EntitySearchFilter;
+import org.nuclos.client.searchfilter.SearchFilter;
 import org.nuclos.client.searchfilter.SearchFilterCache;
 import org.nuclos.client.security.NuclosRemoteServerSession;
 import org.nuclos.client.task.TaskController;
@@ -153,6 +158,7 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.Priority;
 import org.nuclos.common.RuleNotification;
 import org.nuclos.common.SpringApplicationContextHolder;
+import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
@@ -161,6 +167,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableComparis
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.ComparatorUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
@@ -1166,62 +1173,126 @@ public class MainController {
 	void setupMenus() {
 		setupMenuBar();
 	}
+	
+	public static final String GENERIC_ENTITY_ACTION = "nuclosGenericEntityAction";
+	public static final String GENERIC_COMMAND_ACTION = "nuclosGenericCommandAction";
+	public static final String GENERIC_CUSTOMCOMPONENT_ACTION = "nuclosGenericCustomComponentAction";
+	public static final String GENERIC_SEARCHFILTER_ACTION = "nuclosGenericSearchFilterAction";
+	
+	public List<GenericAction> getGenericActions() {
+		List<GenericAction> result = new ArrayList<GenericAction>();
+		
+		getAdministrationMenuActions(result);
+		getConfigurationMenuActions(result);
+		
+		List<GenericAction> sortedResult = new ArrayList<GenericAction>();
+		getEntityMenuActions(sortedResult);
+		getCustomComponentMenuActions(sortedResult);
 
+		final Collator collator = Collator.getInstance(Locale.getDefault());
+		final Comparator<String[]> arrayCollator = ComparatorUtils.arrayComparator(collator);
+		Collections.sort(sortedResult, new Comparator<GenericAction>() {
+			@Override
+			public int compare(GenericAction p1, GenericAction p2) {
+				int cmp = arrayCollator.compare(p1.y.x, p2.y.x);
+				if (cmp == 0)
+					cmp = collator.compare(p1.y.y.getValue(Action.NAME), p2.y.y.getValue(Action.NAME));
+				return cmp;
+			}
+		});
+		result.addAll(sortedResult);
+		
+		addSearchFilterActions(result);
+		
+		return result;
+	}
+	
+	private void addGenericCommandAction(List<GenericAction> genericActions, String command, Action act, String[] menuPath) {
+		if (genericActions != null && act != null) {
+			WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
+			wa.setAction(GENERIC_COMMAND_ACTION);
+			wa.putStringParameter("command", command);
+			genericActions.add(new GenericAction(wa, new ActionWithMenuPath(menuPath, act)));
+		}
+	}
+	
 	public List<Pair<String[], Action>> getAdministrationMenuActions() {
+		return getAdministrationMenuActions(null);
+	}
+
+	private List<Pair<String[], Action>> getAdministrationMenuActions(List<GenericAction> genericActions) {
 		List<Pair<String[], Action>> menuActions = new ArrayList<Pair<String[],Action>>();
 
 		final String[] menuPath = new String[] {getMainMenuAdministration()};
 
-		addActionIfAllowed(menuActions, menuPath, NuclosEntity.USER);
-		addActionIfAllowed(menuActions, menuPath, NuclosEntity.ROLE);
-		addActionIfAllowed(menuActions, menuPath, NuclosEntity.SEARCHFILTER);
-		addActionIfAllowed(menuActions, menuPath, NuclosEntity.JOBCONTROLLER);
-		addActionIfAllowed(menuActions, menuPath, NuclosEntity.PARAMETER);
-		addActionIfAllowed(menuActions, menuPath, NuclosEntity.LDAPSERVER);
-		addActionIfAllowed(menuActions, menuPath, NuclosEntity.WEBSERVICE);
+		addActionIfAllowed(menuActions, menuPath, NuclosEntity.USER, genericActions);
+		addActionIfAllowed(menuActions, menuPath, NuclosEntity.ROLE, genericActions);
+		addActionIfAllowed(menuActions, menuPath, NuclosEntity.SEARCHFILTER, genericActions);
+		addActionIfAllowed(menuActions, menuPath, NuclosEntity.JOBCONTROLLER, genericActions);
+		addActionIfAllowed(menuActions, menuPath, NuclosEntity.PARAMETER, genericActions);
+		addActionIfAllowed(menuActions, menuPath, NuclosEntity.LDAPSERVER, genericActions);
+		addActionIfAllowed(menuActions, menuPath, NuclosEntity.WEBSERVICE, genericActions);
 
 		if (SecurityCache.getInstance().isActionAllowed("UseManagementConsole")) {
 			menuActions.add(new Pair<String[], Action>(menuPath, cmdOpenManagementConsole));
+			addGenericCommandAction(genericActions, "UseManagementConsole", cmdOpenManagementConsole, menuPath);
 		}
 
 		return menuActions;
 	}
 
 	public List<Pair<String[], Action>> getConfigurationMenuActions() {
+		return getConfigurationMenuActions(null);
+	}
+	
+	private List<Pair<String[], Action>> getConfigurationMenuActions(List<GenericAction> genericActions) {
 		List<Pair<String[], Action>> menuActions = new ArrayList<Pair<String[],Action>>();
 
 		final String[] menuPath = new String[] {getMainMenuConfiguration()};
 
 		if (SecurityCache.getInstance().isActionAllowed("EntityWizard")) {
 			menuActions.add(new Pair<String[], Action>(menuPath, cmdOpenEntityWizard));
+			addGenericCommandAction(genericActions, "EntityWizard", cmdOpenEntityWizard, menuPath);
 		}
 
-		addActionIfAllowed(menuActions, menuPath, NuclosEntity.LAYOUT);
-		addActionIfAllowed(menuActions, menuPath, NuclosEntity.STATEMODEL);
-		addActionIfAllowed(menuActions, menuPath, NuclosEntity.GENERATION);
+		addActionIfAllowed(menuActions, menuPath, NuclosEntity.LAYOUT, genericActions);
+		addActionIfAllowed(menuActions, menuPath, NuclosEntity.STATEMODEL, genericActions);
+		addActionIfAllowed(menuActions, menuPath, NuclosEntity.GENERATION, genericActions);
 
 		if (SecurityCache.getInstance().isActionAllowed("RelationEditor")) {
 			menuActions.add(new Pair<String[], Action>(menuPath, cmdOpenRelationEditor));
+			addGenericCommandAction(genericActions, "RelationEditor", cmdOpenRelationEditor, menuPath);
 		}
 		if (SecurityCache.getInstance().isActionAllowed("ResPlanWizard")) {
 			menuActions.add(new Pair<String[], Action>(menuPath, cmdOpenCustomComponentWizard));
+			addGenericCommandAction(genericActions, "ResPlanWizard", cmdOpenCustomComponentWizard, menuPath);
 		}
 
-		addActionIfAllowed(menuActions, menuPath, NuclosEntity.REPORT);
-		addActionIfAllowed(menuActions, menuPath, NuclosEntity.NUCLET);
+		addActionIfAllowed(menuActions, menuPath, NuclosEntity.REPORT, genericActions);
+		addActionIfAllowed(menuActions, menuPath, NuclosEntity.NUCLET, genericActions);
 
 		return menuActions;
 	}
 
-	private void addActionIfAllowed(List<Pair<String[], Action>> menuActions, String[] menuPath, NuclosEntity entity) {
+	private void addActionIfAllowed(List<Pair<String[], Action>> menuActions, String[] menuPath, NuclosEntity entity, List<GenericAction> genericActions) {
 		EntityMetaDataVO entitymetavo = MetaDataClientProvider.getInstance().getEntity(entity);
 		Action act = createEntityAction(entitymetavo, CommonLocaleDelegate.getLabelFromMetaDataVO(entitymetavo), false, null);
 		if (act != null) {
 			menuActions.add(new Pair<String[], Action>(menuPath, act));
+			if (genericActions != null) {
+				WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
+				wa.setAction(GENERIC_ENTITY_ACTION);
+				wa.putStringParameter("entity", entity.getEntityName());
+				genericActions.add(new GenericAction(wa, new ActionWithMenuPath(menuPath, act)));
+			}
 		}
 	}
-
+	
 	public List<Pair<String[], Action>> getEntityMenuActions() {
+		return getEntityMenuActions(null);
+	}
+
+	private List<Pair<String[], Action>> getEntityMenuActions(List<GenericAction> genericActions) {
 		List<Pair<String[], Action>> entityMenuActions = new ArrayList<Pair<String[], Action>>();
 
 		Set<String> customConfigurationEntities = new HashSet<String>();
@@ -1234,6 +1305,14 @@ public class MainController {
 				Action action = createEntityAction(meta, menuPath[menuPath.length - 1], conf.getField("new", Boolean.class), conf.getFieldId("process"));
 				if (menuPath != null && menuPath.length > 0 && action != null) {
 					entityMenuActions.add(Pair.makePair(Arrays.copyOf(menuPath, menuPath.length - 1), action));
+					if (genericActions != null) {
+						WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
+						wa.setAction(GENERIC_ENTITY_ACTION);
+						wa.putStringParameter("entity", meta.getEntity());
+						wa.putStringParameter("process", conf.getField("process", String.class));
+						wa.putBooleanParameter("new", conf.getField("new", Boolean.class));
+						genericActions.add(new GenericAction(wa, new ActionWithMenuPath(menuPath, action)));
+					}
 				}
 				customConfigurationEntities.add(meta.getEntity());
 			}
@@ -1247,12 +1326,22 @@ public class MainController {
 			Action action = createEntityAction(entitymetavo, CommonLocaleDelegate.getLabelFromMetaDataVO(entitymetavo), false, null);
 			if (menuPath != null && menuPath.length > 0 && action != null) {
 				entityMenuActions.add(Pair.makePair(menuPath, action));
+				if (genericActions != null) {
+					WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
+					wa.setAction(GENERIC_ENTITY_ACTION);
+					wa.putStringParameter("entity", entitymetavo.getEntity());
+					genericActions.add(new GenericAction(wa, new ActionWithMenuPath(menuPath, action)));
+				}
 			}
 		}
 		return entityMenuActions;
 	}
-
+	
 	public List<Pair<String[], Action>> getCustomComponentMenuActions() {
+		return getCustomComponentMenuActions(null);
+	}
+
+	private List<Pair<String[], Action>> getCustomComponentMenuActions(List<GenericAction> genericActions) {
 		List<Pair<String[], Action>> customComponentMenuAction = new ArrayList<Pair<String[], Action>>();
 		for (CustomComponentVO ccvo : CustomComponentCache.getInstance().getAll()) {
 			String[] menuPath = splitMenuPath(CommonLocaleDelegate.getTextFallback(ccvo.getMenupathResourceId(), ccvo.getMenupathResourceId()));
@@ -1260,9 +1349,51 @@ public class MainController {
 			// If the component is not allowed to run (due to missing permissions), the action is disabled and skipped
 			if (menuPath != null && menuPath.length > 0 && action != null && action.isEnabled()) {
 				customComponentMenuAction.add(Pair.makePair(menuPath, action));
+				if (genericActions != null) {
+					WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
+					wa.setAction(GENERIC_CUSTOMCOMPONENT_ACTION);
+					wa.putStringParameter("customcomponent", "resPlan");
+					genericActions.add(new GenericAction(wa, new ActionWithMenuPath(menuPath, action)));
+				}
 			}
 		};
 		return customComponentMenuAction;
+	}
+	
+	private void addSearchFilterActions(List<GenericAction> genericActions) {
+		for (final EntitySearchFilter searchfilter : SearchFilterCache.getInstance().getAllEntitySearchFilters()) {
+			Action action = new AbstractAction(searchfilter.getName(), MainFrame.resizeAndCacheIcon(
+					NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish.06-magnify.png"), 16)) {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					UIUtils.runCommand(frm, new CommonRunnable() {
+						@Override
+						public void run() throws CommonBusinessException {
+							final String entity = searchfilter.getEntityName();
+							if (Modules.getInstance().isModuleEntity(entity)) {
+								final Integer iModuleId = Modules.getInstance().getModuleIdByEntityName(entity);
+								final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
+								newGenericObjectCollectController(MainFrame.getPredefinedEntityOpenLocation(MetaDataClientProvider.getInstance().getEntity(new Long(iModuleId)).getEntity()), iModuleId, null);
+								ctlGenericObject.setSelectedSearchFilter(searchfilter);
+								ctlGenericObject.runViewResults(searchfilter.getSearchCondition());
+							}
+							else {
+								final MasterDataCollectController ctlMasterData = NuclosCollectControllerFactory.getInstance().
+								newMasterDataCollectController(MainFrame.getPredefinedEntityOpenLocation(entity), entity, null);
+								ctlMasterData.setSelectedSearchFilter(searchfilter);
+								ctlMasterData.runViewResults(searchfilter.getSearchCondition());
+							}
+						}
+					});
+				}
+			};
+			if (genericActions != null) {
+				WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
+				wa.setAction(GENERIC_SEARCHFILTER_ACTION);
+				wa.putStringParameter("searchfilter", searchfilter.getName());
+				genericActions.add(new GenericAction(wa, new ActionWithMenuPath(new String[]{CommonLocaleDelegate.getMessage("nuclos.entity.searchfilter.label", "Suchfilter")}, action)));
+			}
+		}
 	}
 
 	private Action createEntityAction(NuclosEntity entity) {

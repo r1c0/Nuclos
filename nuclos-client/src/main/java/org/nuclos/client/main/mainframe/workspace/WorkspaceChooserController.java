@@ -373,7 +373,7 @@ public class WorkspaceChooserController {
 					 */
 					if (wl.getWorkspaceVO().getAssignedWorkspace() == null || SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN)) {
 						final JMenuItem miEdit = new JMenuItem(new AbstractAction(
-								CommonLocaleDelegate.getMessage("WorkspaceChooserController.3","Bearbeiten"), 
+								CommonLocaleDelegate.getMessage("WorkspaceChooserController.3","Eigenschaften"), 
 								MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconEdit16(), ICON_SIZE)) {
 
 								private static final long serialVersionUID = 1L;
@@ -846,14 +846,13 @@ public class WorkspaceChooserController {
 									wovoToRemove = wovoI;
 								}
 							}
-							if (wovoToRemove != null) workspaces.remove(wovoToRemove);
-							
 							int indexToAdd = 0;
 							for (WorkspaceVO wovoI : workspaces) {
 								if (wovoI.equals(WorkspaceLabel.this.wovo)) {
 									indexToAdd = workspaces.indexOf(wovoI);
 								}
 							}
+							if (wovoToRemove != null) workspaces.remove(wovoToRemove);
 							workspaces.add(indexToAdd, other);
 							
 							WorkspaceChooserController.refreshWorkspaces();

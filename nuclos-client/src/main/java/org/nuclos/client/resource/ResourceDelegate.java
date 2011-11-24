@@ -18,6 +18,8 @@ package org.nuclos.client.resource;
 
 import java.util.Set;
 
+import javax.swing.ImageIcon;
+
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.collection.Pair;
@@ -134,6 +136,20 @@ public class ResourceDelegate {
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
+	}
+	
+	public boolean containsIconResources() {
+		for (String resName : getResourceNames()) {
+			try {
+				ImageIcon ico = ResourceCache.getIconResource(resName);
+				if (ico.getIconWidth() > 0 && ico.getIconHeight() > 0) {
+					return true;
+				}
+			} catch (Exception ex) {
+				// do nothing
+			}
+		}
+		return false;
 	}
 
 	public Set<String> getResourceNames() {

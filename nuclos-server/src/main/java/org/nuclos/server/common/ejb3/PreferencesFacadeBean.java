@@ -602,6 +602,8 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 			tbbTarget.setShowAdministration(tbbSource.isShowAdministration());
 			tbbTarget.setShowConfiguration(tbbSource.isShowConfiguration());
 			tbbTarget.setShowEntity(tbbSource.isShowEntity());
+			
+			tbbTarget.setDesktop(tbbSource.getDesktop());
 		} else {
 			throw new UnsupportedOperationException("Unknown NestedContent type: " + ncSource.getClass());
 		}
@@ -744,6 +746,8 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 				tbbCustomized.setShowAdministration(tbbAssigned.isShowAdministration());
 				tbbCustomized.setShowConfiguration(tbbAssigned.isShowConfiguration());
 				tbbCustomized.setShowEntity(tbbAssigned.isShowEntity());
+				
+				tbbCustomized.setDesktop(tbbAssigned.getDesktop());
 			}
 		} else {
 			throw new UnsupportedOperationException("Unknown NestedContent type: " + ncAssigned.getClass());
@@ -812,8 +816,8 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 	@Override
 	public boolean isWorkspaceStructureChanged(Long id1, Long id2) throws CommonBusinessException {
 		return isStructureChanged(
-				getWorkspace(id1).getWoDesc().getMainFrame(), 
-				getWorkspace(id2).getWoDesc().getMainFrame());
+				getWorkspaceProcessor().getByPrimaryKey(id1).getWoDesc().getMainFrame(), 
+				getWorkspaceProcessor().getByPrimaryKey(id2).getWoDesc().getMainFrame());
 	}
 	
 	private boolean isStructureChanged(Frame f1, Frame f2) {

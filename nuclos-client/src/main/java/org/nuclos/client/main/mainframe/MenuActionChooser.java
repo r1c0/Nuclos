@@ -14,7 +14,7 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.client.ui.resource;
+package org.nuclos.client.main.mainframe;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -29,16 +29,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -50,73 +53,47 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.main.ActionWithMenuPath;
+import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.main.mainframe.MainFrame;
-import org.nuclos.client.resource.NuclosResourceCache;
-import org.nuclos.client.resource.ResourceCache;
-import org.nuclos.client.resource.ResourceDelegate;
 import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 import org.nuclos.client.ui.Icons;
-import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common2.CommonLocaleDelegate;
 
-public class ResourceIconChooser extends JPanel {
+public class MenuActionChooser extends JPanel{
 	
-	private static final Logger LOG = Logger.getLogger(ResourceIconChooser.class);
+	private static final Logger LOG = Logger.getLogger(MenuActionChooser.class);
 	
 	private final JList list;
-	private final List<String> iconNames = new ArrayList<String>();
+	private final JScrollPane listScroller;
+	private final List<GenericAction> actions = new ArrayList<GenericAction>();
 	
 	private boolean saved;
 	
-	final ActionListener iconActionListener = new ActionListener() {
+	private final ActionListener menuActionListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			 if (e.getActionCommand().compareTo("Copy")==0) {
 				 int selectedIndex = list.getSelectedIndex();
-				 if (selectedIndex > 0) {
-					 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(getResourceIconName(selectedIndex)), null);
+				 if (selectedIndex > 0 && getAction(selectedIndex) != null) {
+					 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(getAction(selectedIndex).x.toString()), null);
 				 }
 			 }
 		}
 	};
 	
-	public ResourceIconChooser() {
-		this(0);
-	}
-	
-	public ResourceIconChooser(final int iconMaxSize) {
-		this(iconMaxSize, false);
-	}
-	
-	public ResourceIconChooser(boolean customResources) {
-		this(0, customResources);
-	}
-	
-	public ResourceIconChooser(final int iconMaxSize, boolean customResources) {
+	public MenuActionChooser() {
 		setLayout(new BorderLayout());
 		
-		List<ImageIcon> icons = new ArrayList<ImageIcon>();
-		iconNames.add(null);
-		icons.add(Icons.getInstance().getIconEmpty16());
-		if (customResources) {
-			for (String sResource : CollectionUtils.sorted(ResourceDelegate.getInstance().getResourceNames())) {
-				try {
-					ImageIcon iconResource = ResourceCache.getIconResource(sResource);
-					iconNames.add(sResource);
-					icons.add(iconResource);
-				} catch (Exception ex) {
-					// ignore. not an image icon.
-				}
+		actions.add(new GenericAction(null, new ActionWithMenuPath(null, new AbstractAction("", Icons.getInstance().getIconEmpty16()) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 			}
-		} else {
-			for (String iconName : NuclosResourceCache.getNuclosResourceIcons()) {
-				iconNames.add(iconName);
-				icons.add(NuclosResourceCache.getNuclosResourceIcon(iconName));
-			}
-		}
-		
-		list = new JList(icons.toArray()) {
+		})));
+		actions.addAll(Main.getMainController().getGenericActions());
+
+		list = new JList(actions.toArray()) {
 
 			@Override
 			public int getScrollableUnitIncrement(Rectangle visibleRect,
@@ -143,39 +120,41 @@ public class ResourceIconChooser extends JPanel {
             }
         };
         
-        list.registerKeyboardAction(iconActionListener,"Copy", KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK), JComponent.WHEN_FOCUSED);
-        list.registerKeyboardAction(iconActionListener,"Copy", KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.META_DOWN_MASK), JComponent.WHEN_FOCUSED);
+        list.registerKeyboardAction(menuActionListener,"Copy", KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK), JComponent.WHEN_FOCUSED);
+        list.registerKeyboardAction(menuActionListener,"Copy", KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.META_DOWN_MASK), JComponent.WHEN_FOCUSED);
         list.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        list.setLayoutOrientation(JList.VERTICAL);
         list.setCellRenderer(new ListCellRenderer() {
 			@Override
 			public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+				GenericAction genAction = (GenericAction) value;
 				JPanel btnPanel = new JPanel(new BorderLayout());
 				btnPanel.setOpaque(false);
 				
-				Icon ico = (ImageIcon) value;
-				if (iconMaxSize==0) {
-					if (((ImageIcon) value).getIconWidth() > 256 ||
-						((ImageIcon) value).getIconHeight() > 256) {
-						ico = MainFrame.resizeAndCacheIcon(ico, 256);
-					}
-				} else {
-					ico = MainFrame.resizeAndCacheIcon(ico, iconMaxSize);
-				}
+				JLabel jlbMenuPath = new JLabel(getMenuPath(genAction.y.x));
+				jlbMenuPath.setOpaque(false);
+				jlbMenuPath.setForeground(NuclosSyntheticaConstants.BACKGROUND_DARKER);
+				btnPanel.add(jlbMenuPath, BorderLayout.WEST);
 				
-				JButton btn = new JButton(ico);
+				String name = (String) genAction.y.y.getValue(Action.NAME);
+				Icon ico = (Icon) genAction.y.y.getValue(Action.SMALL_ICON);
+				JButton btn = new JButton(name, ico);
+				btn.setHorizontalAlignment(SwingConstants.LEFT);
 				btn.setBorderPainted(false);
 				btn.setContentAreaFilled(true);
-				btn.addActionListener(iconActionListener);
+				btn.addActionListener(menuActionListener);
 				
-				if (index > 0) btn.setToolTipText(ResourceIconChooser.this.getResourceIconName(index));
+				//if (index > 0) btn.setToolTipText(ResourceIconChooser.this.getResourceIconName(index));
 				
 				if (isSelected && index > 0) {
 					btn.setOpaque(true);
+					jlbMenuPath.setOpaque(true);
 					btn.setBackground(NuclosSyntheticaConstants.BACKGROUND_SPOT);
+					jlbMenuPath.setBackground(NuclosSyntheticaConstants.BACKGROUND_SPOT);
 					btnPanel.setBorder(BorderFactory.createLineBorder(NuclosSyntheticaConstants.BACKGROUND_DARKER, 1));
 				} else {
 					btn.setOpaque(false);
+					jlbMenuPath.setOpaque(false);
 					btnPanel.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 				}
 				btnPanel.add(btn, BorderLayout.CENTER);
@@ -185,21 +164,35 @@ public class ResourceIconChooser extends JPanel {
 		});
         list.setVisibleRowCount(-1);
         
-        JScrollPane listScroller = new JScrollPane(list);
+        listScroller = new JScrollPane(list);
         listScroller.setPreferredSize(new Dimension(250, 80));
         listScroller.setAlignmentX(LEFT_ALIGNMENT);
         
         add(listScroller, BorderLayout.CENTER);
 	}	
 	
-	public void setSelected(String name) {
+	private String getMenuPath(String[] menuPath) {
+		if (menuPath == null)
+			return "";
+		
+		StringBuffer result = new StringBuffer();
+		for (int i = 0; i < menuPath.length; i++) {
+			result.append(menuPath[i]);
+			if (i < menuPath.length-1) {
+				result.append('/');
+			}
+		}
+		return result.toString();
+	}
+	
+	public void setSelected(WorkspaceDescription.Action wdAction) {
 		int selectedIndex = -1;
 		
-		if (name == null) {
+		if (wdAction == null) {
 			selectedIndex = 0;
 		} else {
-			for (int i = 0; i < iconNames.size(); i++) {
-				if (iconNames.get(i) != null && iconNames.get(i).equals(name)) {
+			for (int i = 0; i < actions.size(); i++) {
+				if (actions.get(i).x != null && actions.get(i).x.equals(wdAction)) {
 					selectedIndex = i;
 				}
 			}
@@ -222,16 +215,19 @@ public class ResourceIconChooser extends JPanel {
 		}
 	}
 	
-	public String getSelectedResourceIconName() {
-		return getResourceIconName(getSelectedIndex());
+	public GenericAction getSelectedAction() {
+		return getAction(getSelectedIndex());
 	}
 	
 	public int getSelectedIndex() {
 		return list.getSelectedIndex();
 	}
 	
-	public String getResourceIconName(int index) {
-		return iconNames.get(index);
+	public GenericAction getAction(int index) {
+		if (index == 0)
+			return null;
+		else
+			return actions.get(index);
 	}
 	
 	public void addListSelectionListener(ListSelectionListener lsl) {
@@ -242,27 +238,28 @@ public class ResourceIconChooser extends JPanel {
 		list.removeListSelectionListener(lsl);
 	}
 	
-	public void showDialog(String sSelectedResource) {
+	public void showDialog(WorkspaceDescription.Action selectedAction) {
+		final JDialog dialog = new JDialog(Main.getMainFrame(), CommonLocaleDelegate.getMessage("MenuActionChooser.3","Aktion auswählen"), true);
+		
 		JPanel contentPanel = new JPanel(new BorderLayout(5, 5));
 		contentPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		contentPanel.add(this, BorderLayout.CENTER);
 		
 		JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 2));
-		JButton btSave = new JButton(CommonLocaleDelegate.getMessage("ResourceIconChooser.1","Speichern"));
-		JButton btCancel = new JButton(CommonLocaleDelegate.getMessage("ResourceIconChooser.2","Abbrechen"));
+		JButton btSave = new JButton(CommonLocaleDelegate.getMessage("MenuActionChooser.1","Speichern"));
+		JButton btCancel = new JButton(CommonLocaleDelegate.getMessage("MenuActionChooser.2","Abbrechen"));
 		actionsPanel.add(btSave);
 		actionsPanel.add(btCancel);
 		contentPanel.add(actionsPanel, BorderLayout.SOUTH);
 		
-		setSelected(sSelectedResource);
+		setSelected(selectedAction);
 		
-		final JDialog dialog = new JDialog(Main.getMainFrame(), CommonLocaleDelegate.getMessage("ResourceIconChooser.3","Ressource Icon auswählen"), true);
 		dialog.setContentPane(contentPanel);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.getRootPane().setDefaultButton(btSave);
 		Rectangle mfBounds = Main.getMainFrame().getBounds();
-		dialog.setBounds(mfBounds.x+(mfBounds.width/2)-480, mfBounds.y+(mfBounds.height/2)-300, 960, 600);
-		dialog.setResizable(true);
+		dialog.setBounds(mfBounds.x+(mfBounds.width/2)-360, mfBounds.y+(mfBounds.height/2)-200, 720, 400);
+		dialog.setResizable(false);
 		
 		btSave.addActionListener(new ActionListener() {
 			@Override
@@ -295,49 +292,4 @@ public class ResourceIconChooser extends JPanel {
 	public boolean isSaved() {
 		return saved;
 	}
-	
-	public static class Button extends JButton {
-		
-		private String sResource;
-		
-		private final String sLabel;
-		
-		public Button(String sLabel, String sResource) {
-			super(sLabel + (sResource==null?"":(": " + sResource)));
-			this.sLabel = sLabel;
-			this.sResource = sResource;
-			addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					ResourceIconChooser iconChooser = new ResourceIconChooser(true);
-					iconChooser.showDialog(getResource());
-					if (iconChooser.isSaved()) {
-						setResource(iconChooser.getSelectedResourceIconName());
-					}
-				}
-			});
-		}
-		
-		public String getResource() {
-			return sResource;
-		}
-		
-		public void setResource(String sResource) {
-			this.sResource = sResource;
-			setText(sLabel + (sResource==null?"":(": " + sResource)));
-		}
-	}
-	
-	public static void main(String[] args) {
-		JFrame frm = new JFrame(ResourceIconChooser.class.getName());
-		frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frm.setBounds(100, 100, 300, 600);
-		
-		ResourceIconChooser ric = new ResourceIconChooser();
-		ric.setSelected("org.nuclos.common.resource.icon.glyphish.88-beer-mug.png");
-		frm.getContentPane().add(ric, BorderLayout.CENTER);
-		
-		frm.setVisible(true);
-	}
-	
 }

@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.main.mainframe;
 
+import static org.nuclos.client.main.mainframe.MainFrameUtils.setActionSelected;
+
 import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -73,15 +75,17 @@ import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.NuclosDropTargetListener;
 import org.nuclos.client.common.NuclosDropTargetVisitor;
+import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame.SplitRange;
-import org.nuclos.client.main.mainframe.StartTabPanel.LinkMarker;
+import org.nuclos.client.main.mainframe.desktop.DesktopListener;
 import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 import org.nuclos.client.ui.BlackLabel;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.common.WorkspaceDescription.Desktop;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 
@@ -723,7 +727,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 
 	void refreshSelectedHistorySize() {
 		if (0 <= MainFrame.getSelectedHistorySize() && MainFrame.getSelectedHistorySize() < actionSelectHistorySize.length) {
-			StartTabPanel.setActionSelected(actionSelectHistorySize[MainFrame.getSelectedHistorySize()], true);
+			setActionSelected(actionSelectHistorySize[MainFrame.getSelectedHistorySize()], true);
 		}
 	}
 
@@ -1098,23 +1102,27 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 			jpnTabbedPaneControl.add(lbClose);
 		}
 
-		BlackLabel bl = new BlackLabel(jpnTabbedPaneControl, CommonLocaleDelegate.getMessage("MainFrameTabbedPane.3","Tableiste"));
+		final BlackLabel bl = new BlackLabel(jpnTabbedPaneControl, CommonLocaleDelegate.getMessage("MainFrameTabbedPane.3","Tableiste"));
 		toolBar.add(bl);
 
 		/**
 		 * HOME's
 		 */
-		JToggleButton btnHome = new JToggleButton(actionHome);
+		final JToggleButton btnHome = new JToggleButton(actionHome);
 		btnHome.setFocusable(false);
-		toolBar.add(btnHome);
-		JToggleButton btnHomeTree = new JToggleButton(actionHomeTree);
+		if (MainFrame.isStarttabEditable()) {
+			toolBar.add(btnHome);
+		}
+		final JToggleButton btnHomeTree = new JToggleButton(actionHomeTree);
 		btnHomeTree.setFocusable(false);
-		toolBar.add(btnHomeTree);
+		if (MainFrame.isStarttabEditable()) {
+			toolBar.add(btnHomeTree);
+		}
 
 		/**
 		 * EXTRAS
 		 */
-		PopupButton extraButton = new PopupButton(CommonLocaleDelegate.getMessage("PopupButton.Extras","Extras"));
+		final PopupButton extraButton = new PopupButton(CommonLocaleDelegate.getMessage("PopupButton.Extras","Extras"));
 
 		if (MainFrame.isStarttabEditable()) {
 			extraButton.add(startTab.createHeadline(CommonLocaleDelegate.getMessage("StartTabPanel.11","Startmenu"), null));
@@ -1163,10 +1171,27 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		extraButton.add(new JMenuItem(startTab.getClearBookmarkAction()));
 		if (MainFrame.isStarttabEditable()) {
 			extraButton.addSeparator();
-			extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getShowDesktopAction()));
+			extraButton.add(new JMenuItem(startTab.getActivateDesktopAction()));
 		}
 
 		toolBar.add(extraButton);
+		
+		startTab.addDesktopListener(new DesktopListener() {
+			@Override
+			public void desktopShowing() {
+				extraButton.setVisible(false);
+			}
+			@Override
+			public void desktopHiding() {
+				extraButton.setVisible(true);
+			}
+			@Override
+			public void toolbarChange(boolean show) {
+				bl.setVisible(show);
+				btnHome.setVisible(show);
+				btnHomeTree.setVisible(show);
+			}
+		});
 	}
 
 	/**
@@ -1805,4 +1830,17 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 
 	}
 
+	public Desktop getDesktop() {
+		return startTab.getDesktop();
+	}
+	
+	public void setDesktop(Desktop desktop, List<GenericAction> actions) {
+		startTab.setDesktop(desktop, actions);
+	}
+	public boolean isDesktopActive() {
+		return startTab.isDesktopActive();
+	}
+	public void setDesktopActive(boolean desktopActive) {
+		startTab.setDesktopActive(desktopActive);
+	}
 }

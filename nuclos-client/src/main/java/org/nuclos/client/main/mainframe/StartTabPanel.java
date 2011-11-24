@@ -16,15 +16,11 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.main.mainframe;
 
+import static org.nuclos.client.main.mainframe.MainFrameUtils.isActionSelected;
+import static org.nuclos.client.main.mainframe.MainFrameUtils.setActionSelected;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
@@ -32,8 +28,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -58,10 +52,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.ClientParameterProvider;
@@ -72,14 +64,18 @@ import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.NuclosDropTarget;
 import org.nuclos.client.common.NuclosDropTargetVisitor;
 import org.nuclos.client.common.OneDropNuclosDropTargetListener;
+import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.main.mainframe.desktop.DesktopListener;
+import org.nuclos.client.main.mainframe.desktop.DesktopStartTab;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.WrapLayout;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.WorkspaceDescription;
+import org.nuclos.common.WorkspaceDescription.Desktop;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
@@ -96,10 +92,13 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	private static final Logger log = Logger.getLogger(StartTabPanel.class);
 
 	public final static int CENTER_COLUMNS_PREFFERED_WIDTH = 200;
-	
-	private boolean showDesktop = false;
 
 	private final MainFrameTabbedPane tabbedPane;
+	
+	
+	private boolean desktopActive;
+	
+	private final List<DesktopListener> desktopListener = new ArrayList<DesktopListener>();
 
 	/**
 	 * NORTH
@@ -116,7 +115,19 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	private boolean isStartmenuShown = true;
 	private boolean isHistoryShown = true;
 	private boolean isBookmarkShown = true;
-	private final DesktopStartTab desktop = new DesktopStartTab();
+	private final DesktopStartTab desktop = new DesktopStartTab() {
+		@Override
+		public void hide() {
+			setDesktopActive(false);
+			fireDesktopToolBarChange(true);
+		}
+		@Override
+		public void showToolBar(boolean show) {
+			if (isDesktopActive()) {
+				fireDesktopToolBarChange(show);
+			}
+		}
+	};
 
 	/**
 	 * CONTENTS
@@ -139,8 +150,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	private Action actionShowConfiguration;
 	private Action actionClearHistory;
 	private Action actionClearBookmark;
-	private Action actionShowDesktop;
-
+	private Action actionActivateDesktop;
 
 	private boolean showEntityStartmenuEntries = true;
 	private boolean showAdministrationStartmenuEntries = false;
@@ -312,31 +322,14 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				MainFrame.clearBookmark();
 			}
 		};
-		actionShowDesktop = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.17","Desktop anzeigen")) {
+		actionActivateDesktop = new AbstractAction(CommonLocaleDelegate.getMessage("StartTabPanel.17","Desktop anzeigen")) {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean selected = transferSelected(e, actionShowDesktop);
-				showHideDesktop(selected);
+				setDesktopActive(true);
 			}
 		};
  
-	}
-	
-	private void showHideDesktop(boolean show) {
-		showDesktop = show;
-		if (showDesktop) {
-			remove(jpnCenter);
-			add(desktop.getJComponent(), BorderLayout.CENTER);
-		} else {
-			remove(desktop.getJComponent());
-			add(jpnCenter, BorderLayout.CENTER);
-		}
-		repaint();
-	}
-	
-	public boolean isShowDesktop() {
-		return this.showDesktop;
 	}
 
 	/**
@@ -448,8 +441,8 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	 * 
 	 * @return
 	 */
-	public Action getShowDesktopAction() {
-		return actionShowDesktop;
+	public Action getActivateDesktopAction() {
+		return actionActivateDesktop;
 	}
 
 	/**
@@ -469,17 +462,6 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			}
 		};
 		return result;
-	}
-
-	/**
-	 *
-	 * @param action
-	 * @return
-	 */
-	private static boolean isActionSelected(Action action) {
-		if (action == null) return false;
-		Boolean result = (Boolean) action.getValue(Action.SELECTED_KEY);
-		return result==null? false : result;
 	}
 
 	/**
@@ -837,7 +819,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 
 					ExpandOrReduceAction actionExpOrRed = new ExpandOrReduceAction(reducedStartmenus, menu);
 					startmenuExpandOrReduceActions.put(menu, actionExpOrRed);
-					jpnStartmenu.add(createHeadline(actionExpOrRed));
+					// do not add disabled and reduced headlines (asigned workspace without rights to customize)
+					if (actionExpOrRed.isEnabled() || isActionSelected(actionExpOrRed))
+						jpnStartmenu.add(createHeadline(actionExpOrRed));
 
 					// add static items unsorted
 					for (Action action : mapStartmenuActionsStatic.getValues(menu)) {
@@ -1300,147 +1284,6 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		}
 	}
 
-	/**
-	 *
-	 *
-	 */
-	public enum LinkMarker {
-		NONE, ORANGE_FULL, ORANGE_HALF, BLUE_FULL, BLUE_HALF, GRAY;
-
-		public boolean isMarked() {
-			return this != NONE;
-		}
-
-		public Color getColor() {
-			switch (this) {
-			case ORANGE_FULL : return new Color(210, 123, 59, 255);
-			case ORANGE_HALF : return new Color(210, 123, 59, 120);
-			case BLUE_FULL : return new Color(172, 217, 232, 255);
-			case BLUE_HALF : return new Color(172, 217, 232, 120);
-			case GRAY: return new Color(112, 120, 132, 120);
-			default : return new Color(0,0,0,0);
-			}
-		}
-	}
-
-	abstract static class LinkLabel extends JLabel {
-
-		private LinkMarker marker = LinkMarker.NONE;
-		private boolean hover = false;
-		private boolean selected = true;
-		private boolean headline;
-		private final Action action;
-
-		public LinkLabel(final Action action) {
-			this(action, false);
-		}
-
-		public LinkLabel(final Action action, final boolean isHeadline) {
-			super(
-				(String)action.getValue(Action.NAME),
-				MainFrame.resizeAndCacheLinkIcon((Icon)action.getValue(Action.SMALL_ICON)),
-				JLabel.LEFT);
-			this.action = action;
-			this.headline = isHeadline;
-			setSelected(isActionSelected(action));
-			setOpaque(false);
-			setBackground(new Color(0,0,0,0));
-			setBorder(BorderFactory.createEmptyBorder(1, 5, 1, 5));
-
-			addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					if (action != null && action.isEnabled()) {
-						if (SwingUtilities.isLeftMouseButton(e)) {
-							setSelected(!selected);
-							action.actionPerformed(new ActionEvent(LinkLabel.this, 0, (String)action.getValue(Action.ACTION_COMMAND_KEY)));
-						} else if (SwingUtilities.isRightMouseButton(e)) {
-							List<JMenuItem> cmis = getContextMenuItems();
-							if (cmis != null && !cmis.isEmpty()) {
-								JPopupMenu pm = new JPopupMenu();
-								for (JMenuItem mi : cmis) {
-									pm.add(mi);
-								}
-								pm.show(LinkLabel.this, 0, LinkLabel.this.getSize().height);
-							}
-						}
-					}
-				}
-				@Override
-				public void mouseEntered(MouseEvent e) {
-					hover = true;
-					repaint();
-				}
-				@Override
-				public void mouseExited(MouseEvent e) {
-					hover = false;
-					repaint();
-				}
-			});
-		}
-
-		public void setSelected(boolean selected) {
-			this.selected = selected;
-			if (headline)
-				setForeground(selected?Color.BLACK:Color.LIGHT_GRAY);
-			setFont(getFont().deriveFont(headline&&selected?Font.BOLD:Font.PLAIN));
-		}
-
-		public boolean isSelected() {
-			return selected;
-		}
-
-		/**
-		 *
-		 * @return
-		 */
-		protected abstract List<JMenuItem> getContextMenuItems();
-
-		/**
-		 *
-		 * @param marker
-		 */
-		public void setMarker(LinkMarker marker) {
-			this.marker = marker;
-			repaint();
-		}
-
-		/**
-		 *
-		 * @return
-		 */
-		public LinkMarker getMarker() {
-			return this.marker;
-		}
-
-		@Override
-		public void paint(Graphics g) {
-			if (action != null && action.isEnabled() && (hover || marker.isMarked())) {
-				Graphics2D g2 = (Graphics2D) g;
-				Object renderingHint = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-				Rectangle bounds = getBounds();
-				g2.setColor(hover ? (headline&&!selected?NuclosSyntheticaConstants.BACKGROUND_DARK:NuclosSyntheticaConstants.BACKGROUND_SPOT) : marker.getColor());
-				g2.fillRoundRect(0, 0, bounds.width, bounds.height, 4, 4);
-
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, renderingHint);
-			}
-
-			super.paint(g);
-		}
-
-	}
-
-	/**
-	 *
-	 * @param action
-	 * @param selected
-	 */
-	static void setActionSelected(Action action, boolean selected) {
-		action.putValue(Action.SELECTED_KEY, selected);
-	}
-
 	@Override
 	public void visitDragEnter(DropTargetDragEvent dtde) {}
 
@@ -1538,7 +1381,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	private class ExpandOrReduceAction extends AbstractAction {
 
 		private final Set<String> reducedItems;
-		private Collection<LinkLabel> items = new ArrayList<StartTabPanel.LinkLabel>();
+		private Collection<LinkLabel> items = new ArrayList<LinkLabel>();
 
 		public ExpandOrReduceAction(Set<String> reducedItems, String menu) {
 			this(reducedItems, menu, null);
@@ -1577,6 +1420,65 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		@Override
 		public boolean isEnabled() {
 			return MainFrame.isStarttabEditable();
+		}
+	}
+	
+	Desktop getDesktop() {
+		return desktop.getDesktopPreferences();
+	}
+	void setDesktop(Desktop desktopPreferences, List<GenericAction> actions) {
+		this.desktop.setDesktopPreferences(desktopPreferences, actions);
+	}
+	boolean isDesktopActive() {
+		return desktopActive;
+	}
+	void setDesktopActive(boolean desktopActive) {
+		boolean bRepaint = false;
+		if (this.desktopActive != desktopActive) {
+			if (desktopActive) {
+				remove(jpnCenter);
+				add(desktop.getJComponent(), BorderLayout.CENTER);
+				setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+				fireDesktopShowing();
+				if (desktop.getDesktopPreferences().isHideToolBar()) {
+					fireDesktopToolBarChange(false);
+				}
+			} else {
+				remove(desktop.getJComponent());
+				add(jpnCenter, BorderLayout.CENTER);
+				setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+				fireDesktopHiding();
+			}
+			bRepaint = true;
+		}
+		this.desktopActive = desktopActive;
+		if (bRepaint)
+			repaint();
+	}
+	
+	public void addDesktopListener(DesktopListener dl) {
+		this.desktopListener.add(dl);
+	}
+	
+	public boolean removeDesktopListener(DesktopListener dl) {
+		return this.desktopListener.remove(dl);
+	}
+	
+	private void fireDesktopShowing() {
+		for (DesktopListener dl : this.desktopListener) {
+			dl.desktopShowing();
+		}
+	}
+		
+	private void fireDesktopHiding() {
+		for (DesktopListener dl : this.desktopListener) {
+			dl.desktopHiding();
+		}
+	}
+	
+	private void fireDesktopToolBarChange(boolean show) {
+		for (DesktopListener dl : this.desktopListener) {
+			dl.toolbarChange(show);
 		}
 	}
 }

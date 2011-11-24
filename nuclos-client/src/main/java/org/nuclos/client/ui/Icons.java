@@ -753,6 +753,10 @@ public class Icons {
 		return this.getIconByName("workspaceChooser_assigned");
 	}
 	
+	public ImageIcon getTableMoveIndicator() {
+		return this.getIconByName("table-move-indicator");
+	}
+	
 	public Icon getStateViewStateNormal(String type) {
 		if (type.equals("first"))
 			return this.getIconByName("state-view-state-normal-first");

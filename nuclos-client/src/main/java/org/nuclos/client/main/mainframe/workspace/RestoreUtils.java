@@ -25,13 +25,16 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
+import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.prefs.PreferencesMigration;
 import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.ExternalFrame;
 import org.nuclos.client.main.mainframe.MainFrame;
@@ -63,6 +66,8 @@ public class RestoreUtils {
 
 	private static final String THREAD_NAME = "Workspace restoring...";
 	private static final List<Thread> threadList = new ArrayList<Thread>();
+	
+	private static List<GenericAction> cachedActions;
 
 	/**
 	 *
@@ -153,6 +158,8 @@ public class RestoreUtils {
 	 * @throws CommonBusinessException 
 	 */
 	public static void restoreWorkspaceThreaded(Long lastWorkspaceIdFromPreferences, String lastWorkspaceFromPreferences) throws CommonBusinessException {
+		cachedActions = Main.getMainController().getGenericActions();
+		
 		WorkspaceVO wovoToRestore = null;
 		for (WorkspaceVO wovo : MainFrame.getWorkspaceHeaders()) {
 			if (lastWorkspaceIdFromPreferences.equals(wovo.getId())) {
@@ -333,6 +340,8 @@ public class RestoreUtils {
 		wdTabbed.addAllReducedHistoryEntities(tabbedPane.getReducedHistoryEntities());
 		wdTabbed.addAllReducedBookmarkEntities(tabbedPane.getReducedBookmarkEntities());
 		wdTabbed.setSelected(-1);
+		wdTabbed.setDesktop(tabbedPane.getDesktop());
+		wdTabbed.setDesktopActive(tabbedPane.isDesktopActive());
 		int tabOrder = 0;
 		for (MainFrameTab tab : tabbedPane.getHiddenTabs()) {
 			if (storeTab(wdTabbed, tab)) {
@@ -626,6 +635,8 @@ public class RestoreUtils {
 			if (wdTabbed.getReducedBookmarkEntities() != null) {
 				result.setReducedBookmarkEntities(wdTabbed.getReducedBookmarkEntities());
 			}
+			result.setDesktop(wdTabbed.getDesktop(), cachedActions);
+			result.setDesktopActive(wdTabbed.isDesktopActive());
 
 			final int selected = wdTabbed.getSelected();
 
