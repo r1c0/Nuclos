@@ -41,7 +41,6 @@ import java.util.List;
 import javax.swing.AbstractListModel;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.DropMode;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -59,8 +58,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 import org.nuclos.client.ui.Icons;
-import org.nuclos.common.WorkspaceDescription;
-import org.nuclos.common.WorkspaceDescription.MenuItem;
 import org.nuclos.common2.CommonLocaleDelegate;
 
 public class MenuItemMover extends JPanel {

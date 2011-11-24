@@ -40,17 +40,14 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JViewport;
 import javax.swing.TransferHandler;
 
 import org.apache.commons.httpclient.util.LangUtils;
 import org.apache.log4j.Logger;
 import org.jfree.util.Log;
-import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.main.mainframe.LinkLabel;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameUtils;
 import org.nuclos.client.resource.NuclosResourceCache;

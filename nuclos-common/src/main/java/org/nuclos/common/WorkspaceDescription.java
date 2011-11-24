@@ -17,7 +17,6 @@
 
 package org.nuclos.common;
 
-import java.awt.Color;
 import java.awt.Rectangle;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,10 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.SwingConstants;
-
 import org.apache.commons.httpclient.util.LangUtils;
-import org.eclipse.jdt.internal.core.SetClasspathOperation;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 

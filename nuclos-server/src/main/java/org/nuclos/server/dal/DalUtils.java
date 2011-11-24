@@ -36,7 +36,6 @@ import org.nuclos.server.dal.specification.IDalVersionSpecification;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.structure.DbColumn;
 import org.nuclos.server.dblayer.structure.DbColumnType;
-import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.nuclos.server.report.ByteArrayCarrier;
 import org.nuclos.server.resource.valueobject.ResourceFile;

@@ -18,23 +18,17 @@ package org.nuclos.server.report;
 
 import java.io.Serializable;
 
-import javax.print.Doc;
 import javax.print.DocFlavor;
 import javax.print.DocPrintJob;
-import javax.print.PrintException;
 import javax.print.PrintService;
 import javax.print.ServiceUIFactory;
 import javax.print.attribute.Attribute;
 import javax.print.attribute.AttributeSet;
 import javax.print.attribute.HashAttributeSet;
 import javax.print.attribute.HashPrintServiceAttributeSet;
-import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.PrintServiceAttribute;
 import javax.print.attribute.PrintServiceAttributeSet;
-import javax.print.attribute.standard.ColorSupported;
 import javax.print.event.PrintServiceAttributeListener;
-
-import org.apache.commons.lang.NotImplementedException;
 
 /**
  *

@@ -129,7 +129,6 @@ import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
-import org.nuclos.client.searchfilter.SearchFilter;
 import org.nuclos.client.searchfilter.SearchFilterCache;
 import org.nuclos.client.security.NuclosRemoteServerSession;
 import org.nuclos.client.task.TaskController;

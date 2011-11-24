@@ -74,7 +74,6 @@ import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.WrapLayout;
 import org.nuclos.common.ParameterProvider;
-import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common.WorkspaceDescription.Desktop;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;

@@ -24,9 +24,7 @@ import javax.swing.JFrame;
 import org.nuclos.common.WorkspaceDescription.ColumnPreferences;
 import org.nuclos.common.WorkspaceDescription.ColumnSorting;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
-import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.WorkspaceDescription.TablePreferences;
-import org.nuclos.server.navigation.treenode.SubFormEntryTreeNode;
 
 public class WorkspaceDescriptionDefaultsFactory {
 	

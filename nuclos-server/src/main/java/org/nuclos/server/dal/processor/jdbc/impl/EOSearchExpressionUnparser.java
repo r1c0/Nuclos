@@ -18,7 +18,6 @@ package org.nuclos.server.dal.processor.jdbc.impl;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -74,8 +73,6 @@ import org.nuclos.server.dblayer.query.DbOrder;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.dblayer.query.DbSelection;
-import org.nuclos.server.dblayer.util.ForeignEntityFieldParser;
-import org.nuclos.server.dblayer.util.IFieldRef;
 
 public class EOSearchExpressionUnparser {
 
