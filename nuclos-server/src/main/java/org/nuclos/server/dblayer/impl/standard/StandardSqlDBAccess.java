@@ -133,7 +133,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 			try {
 				result += statement.build().accept(visitor);
 			} catch (SQLException e) {
-				throw wrapSQLException(null, "execute DbBuildableStatement " + statement + " failed", e);
+				throw wrapSQLException(null, "execute DbBuildableStatement " + statement + " failed: " + e.toString(), e);
 			}
 		}
 		return result;

@@ -599,16 +599,10 @@ public class MasterDataFacadeHelper {
 		try {
 			eoProcessor.insertOrUpdate(eoVO);
 		} catch (DbException e) {
-			throw new CommonCreateException(e.getMessage());
+			throw new CommonCreateException(e.toString());
 		}
 
 		storeFiles(sEntityName, eoVO);
-
-//		try {
-//			runSql(mdmetavo, getSqlForInsert(mdmetavo, result, sUserName), mdvoToCreate);
-//		} catch (CommonFatalException e) {
-//			throw new CommonCreateException(e.getMessage());
-//		}
 
 		NuclosEntity nucEntity = NuclosEntity.getByName(sEntityName);
 		if (nucEntity != null)

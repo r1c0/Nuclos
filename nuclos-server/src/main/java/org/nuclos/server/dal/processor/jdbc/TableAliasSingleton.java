@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dal.processor.jdbc;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -47,22 +45,6 @@ public class TableAliasSingleton {
 	private static final Logger LOG = Logger.getLogger(TableAliasSingleton.class);
 	
 	private static final TableAliasSingleton INSTANCE = new TableAliasSingleton();
-	
-	/**
-	 * Special tablealiases:
-	 * (String) DB column -> (String) tablealias
-	 */
-	private static final Map<String,String> SPECIAL_TABLE_ALIASES;
-	
-	static {
-		Map<String,String> map = new HashMap<String, String>();
-		// Attention: Use lower case here! (tp) 
-		map.put("strvalue_t_md_module_target", "t_md_entitymod_target");
-		map.put("strvalue_t_md_module_source", "t_md_entitymod_source");
-		map.put("strvalue_entity_target", "t_md_entity_target");
-		map.put("strvalue_entity_source", "t_md_entity_source");
-		SPECIAL_TABLE_ALIASES = Collections.unmodifiableMap(map);
-	}
 	
 	//
 	
@@ -125,12 +107,7 @@ public class TableAliasSingleton {
 		final Pair<String,String> pair = newPair(fentity, meta.getField());
 		String result = TABLE_ALIASES.get(pair);
 		if (result == null) {
-			final String dbColumn = meta.getDbColumn();
-			String alias = SPECIAL_TABLE_ALIASES.get(dbColumn.toLowerCase());
-			if (alias == null) {
-				// default value
-				alias = meta.getForeignEntity();
-			}
+			final String alias = meta.getForeignEntity();
 			result = StringUtils.makeSQLIdentifierFrom("a_", alias, meta.getField(), Integer.toString(AI.incrementAndGet()));
 			if (debug) {
 				final EntityMetaDataVO entity = mdProv.getEntity(meta.getEntityId());

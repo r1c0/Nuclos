@@ -79,23 +79,8 @@ public class DalUtils {
 			entityFields.add(NuclosEOField.LOGGICALDELETED.getMetaData());
 			entityFields.add(NuclosEOField.STATE.getMetaData());
 			entityFields.add(NuclosEOField.STATENUMBER.getMetaData());
-			if (addWithoutCheck || checkIfColumnExists(NuclosEOField.STATEICON.getMetaData(), eMeta)) {
-				entityFields.add(NuclosEOField.STATEICON.getMetaData());
-			}
+			entityFields.add(NuclosEOField.STATEICON.getMetaData());
 		}
-	}
-
-	// @TODO can this be refactored to an better class?!
-	private static boolean checkIfColumnExists(EntityFieldMetaDataVO efMeta, EntityMetaDataVO eMeta) {
-		DbTable table = DataBaseHelper.getDbAccess().getTableMetaData(eMeta.getDbEntity());
-		if (table != null) {
-			 List<DbColumn> tblColumns = table.getTableColumns();
-			 for (DbColumn dbColumn : tblColumns) {
-				if (dbColumn.getColumnName().equalsIgnoreCase(efMeta.getDbColumn()))
-					return true;
-			}
-		}
-		return false;
 	}
 
 	public static boolean isNucletEOSystemField(EntityFieldMetaDataVO voField) {
