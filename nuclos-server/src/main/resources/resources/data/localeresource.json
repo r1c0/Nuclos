@@ -42744,6 +42744,21 @@
     "text": "Die Datei {0} konnte nicht geöffnet werden."
   },
   {
+    "resourceID": "AbstractReportExporter.5",
+    "locale": "i-default",
+    "text": "There is no suitable Print-Service installed."
+  },
+  {
+    "resourceID": "AbstractReportExporter.5",
+    "locale": "en",
+    "text": "There is no suitable Print-Service installed."
+  },
+  {
+    "resourceID": "AbstractReportExporter.5",
+    "locale": "de",
+    "text": "Es ist kein passender Print-Service installiert."
+  },
+  {
     "resourceID": "ReportRunner.1",
     "locale": "i-default",
     "text": "The process has been cancelled."
@@ -50722,6 +50737,66 @@
     "resourceID": "reportDestination.file",
     "locale": "de",
     "text": "Datei"
+  },
+  {
+    "resourceID": "reportDestination.printer_client",
+    "locale": "i-default",
+    "text": "Printer client"
+  },
+  {
+    "resourceID": "reportDestination.printer_client",
+    "locale": "en",
+    "text": "Printer client"
+  },
+  {
+    "resourceID": "reportDestination.printer_client",
+    "locale": "de",
+    "text": "Clientdrucker"
+  },
+  {
+    "resourceID": "reportDestination.printer_server",
+    "locale": "i-default",
+    "text": "Printer server"
+  },
+  {
+    "resourceID": "reportDestination.printer_server",
+    "locale": "en",
+    "text": "Printer server"
+  },
+  {
+    "resourceID": "reportDestination.printer_server",
+    "locale": "de",
+    "text": "Serverdrucker"
+  },
+  {
+    "resourceID": "reportDestination.default_printer_client",
+    "locale": "i-default",
+    "text": "Defaultprinter (client)"
+  },
+  {
+    "resourceID": "reportDestination.default_printer_client",
+    "locale": "en",
+    "text": "Defaultprinter (client)"
+  },
+  {
+    "resourceID": "reportDestination.default_printer_client",
+    "locale": "de",
+    "text": "Standarddrucker (Client)"
+  },
+  {
+    "resourceID": "reportDestination.default_printer_server",
+    "locale": "i-default",
+    "text": "Defaultprinter (server)"
+  },
+  {
+    "resourceID": "reportDestination.default_printer_server",
+    "locale": "en",
+    "text": "Defaultprinter (server)"
+  },
+  {
+    "resourceID": "reportDestination.default_printer_server",
+    "locale": "de",
+    "text": "Standarddrucker (Server)"
   },
   {
     "resourceID": "nuclos.entityfield.user.password.label",
