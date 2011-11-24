@@ -22,6 +22,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.print.DocFlavor;
+import javax.print.PrintService;
+import javax.print.attribute.AttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
 import javax.swing.table.TableModel;
 
 import net.sf.jasperreports.engine.JRException;
@@ -47,6 +51,8 @@ import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpressi
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.report.NuclosReportException;
+import org.nuclos.server.report.NuclosReportPrintJob;
+import org.nuclos.server.report.NuclosReportRemotePrintService;
 import org.nuclos.server.report.ejb3.ReportFacadeRemote;
 import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ReportVO.ReportType;
@@ -273,6 +279,18 @@ public class ReportDelegate {
 
 	public NuclosFile prepareCsvReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) throws CommonFinderException, NuclosReportException, CommonPermissionException {
 		return reportfacade.prepareCsvReport(iReportOutputId, mpParams, iMaxRowCount);
+	}
+	
+	public PrintService lookupDefaultPrintService() {
+	 	return getReportFacade().lookupDefaultPrintService();
+	}
+	
+	public PrintService[] lookupPrintServices(DocFlavor flavor, AttributeSet as) throws NuclosReportException {
+		return getReportFacade().lookupPrintServices(flavor, as);
+	}
+	
+	public void printViaPrintService(NuclosReportRemotePrintService ps, NuclosReportPrintJob pj, PrintRequestAttributeSet aset, byte[] data) throws NuclosReportException {
+		getReportFacade().printViaPrintService(ps, pj, aset, data);
 	}
 
 }	// class ReportDelegate

@@ -20,6 +20,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jawin.DispatchPtr;
+import org.jawin.win32.Ole32;
+import org.nuclos.client.report.reportrunner.AbstractReportExporter;
+import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.server.report.NuclosReportException;
+import org.nuclos.server.report.NuclosReportPrintJob;
+import org.nuclos.server.report.print.DOCPrintJob;
+import org.nuclos.server.report.valueobject.ReportOutputVO;
+import org.nuclos.server.report.valueobject.ResultColumnVO;
+import org.nuclos.server.report.valueobject.ResultVO;
+
+<<<<<<< .mine
+=======
 import org.apache.log4j.Logger;
 import org.jawin.DispatchPtr;
 import org.jawin.win32.Ole32;
@@ -30,6 +43,7 @@ import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 
+>>>>>>> .r7086
 /**
  * Exporter which creates MS-Word documents.
  * <br>
@@ -44,11 +58,32 @@ public class DOCExport extends AbstractReportExporter {
 	private static final Logger LOG = Logger.getLogger(DOCExport.class);
 
 	@Override
-	public void export(String sReportName, ResultVO resultVO, String sourceFile, String parameter, boolean bOpenFile) throws NuclosReportException {
+	public void export(String sReportName, ResultVO resultVO, String sourceFile, String parameter, ReportOutputVO.Destination destination) throws NuclosReportException {
 		checkJawin();
 		
 		final String sFileName = this.createFile(resultVO, sourceFile, sReportName, this.reportOutputVO);
-		openFile(sFileName, bOpenFile);
+		
+		switch (destination) {
+		case FILE:
+			openFile(sFileName, true);
+			break;
+		case PRINTER_CLIENT:
+			openPrintDialog(sFileName, true, false);
+			break;
+		case PRINTER_SERVER:
+			openPrintDialog(sFileName, false, false);
+			break;
+		case DEFAULT_PRINTER_CLIENT:
+			openPrintDialog(sFileName, true, true);
+			break;
+		case DEFAULT_PRINTER_SERVER:
+			openPrintDialog(sFileName, false, true);
+			break;
+		default:
+			// TYPE SCREEN
+			openFile(sFileName, false);
+			break;
+		}			
 	}
 
 	/**
@@ -184,6 +219,11 @@ public class DOCExport extends AbstractReportExporter {
 		}
 
 		return sFileName;
+	}
+	
+	@Override
+	protected NuclosReportPrintJob getNuclosReportPrintJob() {
+		return new DOCPrintJob();
 	}
 
 }	// class DOCExport

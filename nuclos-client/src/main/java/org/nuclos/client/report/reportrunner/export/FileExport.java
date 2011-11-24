@@ -7,6 +7,9 @@ import java.io.IOException;
 import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.common.NuclosFile;
 import org.nuclos.server.report.NuclosReportException;
+import org.nuclos.server.report.NuclosReportPrintJob;
+import org.nuclos.server.report.print.FilePrintJob;
+import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 
 public class FileExport extends AbstractReportExporter {
@@ -17,7 +20,7 @@ public class FileExport extends AbstractReportExporter {
 		this.file = file;
 	}
 
-	public void export(String sReportName, String parameter, boolean bOpenFile) throws NuclosReportException {
+	public void export(String sReportName, String parameter, ReportOutputVO.Destination destination) throws NuclosReportException {
 		final String sDir = createExportDir(parameter);
 		final String sFileName = getFileName(sDir, sReportName, file.getFileName().substring(file.getFileName().lastIndexOf('.')));
 
@@ -27,7 +30,28 @@ public class FileExport extends AbstractReportExporter {
 		try {
 			fos = new FileOutputStream(file);
 			fos.write(this.file.getFileContents());
-			openFile(sFileName, bOpenFile);
+
+			switch (destination) {
+			case FILE:
+				openFile(sFileName, true);
+				break;
+			case PRINTER_CLIENT:
+				openPrintDialog(sFileName, true, false);
+				break;
+			case PRINTER_SERVER:
+				openPrintDialog(sFileName, false, false);
+				break;
+			case DEFAULT_PRINTER_CLIENT:
+				openPrintDialog(sFileName, true, true);
+				break;
+			case DEFAULT_PRINTER_SERVER:
+				openPrintDialog(sFileName, false, true);
+				break;
+			default:
+				// TYPE SCREEN
+				openFile(sFileName, false);
+				break;
+			}			
 		}
 		catch (Exception ex) {
 			throw new NuclosReportException(ex);
@@ -42,8 +66,13 @@ public class FileExport extends AbstractReportExporter {
 	}
 
 	@Override
-	public void export(String sReportName, ResultVO resultVO, String sourceFile, String parameter, boolean bOpenFile) throws NuclosReportException {
+	public void export(String sReportName, ResultVO resultVO, String sourceFile, String parameter, ReportOutputVO.Destination destination) throws NuclosReportException {
 		/** @todo adjust design */
 		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	protected NuclosReportPrintJob getNuclosReportPrintJob() {
+		return new FilePrintJob();
 	}
 }

@@ -35,7 +35,11 @@ public class ReportOutputVO extends NuclosValueObject {
 	public static enum Destination implements KeyEnum<String>, Localizable {
 
 		SCREEN("Screen", "reportDestination.screen"),
-		FILE("File", "reportDestination.file");
+		FILE("File", "reportDestination.file"),
+		PRINTER_CLIENT("PrinterClient", "reportDestination.printer_client"),
+		PRINTER_SERVER("PrinterServer", "reportDestination.printer_server"),
+		DEFAULT_PRINTER_CLIENT("DefaultPrinterClient", "reportDestination.default_printer_client"),
+		DEFAULT_PRINTER_SERVER("DefaultPrinterServer", "reportDestination.default_printer_server");
 
 		private final String value;
 		private final String resourceId;

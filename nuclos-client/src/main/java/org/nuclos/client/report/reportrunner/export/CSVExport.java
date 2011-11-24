@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.report.reportrunner.export;
 
+<<<<<<< .mine
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -23,8 +24,17 @@ import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.common.csvparser.ExcelCSVPrinter;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.server.report.NuclosReportException;
+import org.nuclos.server.report.NuclosReportPrintJob;
+import org.nuclos.server.report.print.CSVPrintJob;
+import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;
+=======
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+>>>>>>> .r7086
+import java.io.OutputStreamWriter;
 
 /**
  * Exporter which creates CSV-files. <br>
@@ -57,10 +67,31 @@ public class CSVExport extends AbstractReportExporter {
 
 	@Override
 	public void export(final String sReportName, final ResultVO resultVO,
-			String destination, final String parameter, boolean bOpenFile) throws NuclosReportException {
+			String sourceFile, final String parameter, ReportOutputVO.Destination destination) throws NuclosReportException {
 
 		final String sFileName = createFile(sReportName, resultVO, parameter);
-		openFile(sFileName, bOpenFile);
+
+		switch (destination) {
+		case FILE:
+			openFile(sFileName, false);
+			break;
+		case PRINTER_CLIENT:
+			openPrintDialog(sFileName, true, false);
+			break;
+		case PRINTER_SERVER:
+			openPrintDialog(sFileName, false, false);
+			break;
+		case DEFAULT_PRINTER_CLIENT:
+			openPrintDialog(sFileName, true, true);
+			break;
+		case DEFAULT_PRINTER_SERVER:
+			openPrintDialog(sFileName, false, true);
+			break;
+		default:
+			// TYPE SCREEN
+			openFile(sFileName, true);
+			break;
+		}			
 	}
 
 	private String createFile(final String sReportName, final ResultVO resultVO, String parameter) throws NuclosReportException {
@@ -98,5 +129,10 @@ public class CSVExport extends AbstractReportExporter {
 		}
 
 		return sFileName;
+	}
+	
+	@Override
+	protected NuclosReportPrintJob getNuclosReportPrintJob() {
+		return new CSVPrintJob();
 	}
 }	// class CSVExport

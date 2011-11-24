@@ -16,19 +16,33 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.report.reportrunner;
 
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
+import javax.print.ServiceUI;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+
 import org.apache.log4j.Logger;
+import org.nuclos.client.report.ReportDelegate;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.SystemUtils;
 import org.nuclos.server.report.NuclosReportException;
+import org.nuclos.server.report.NuclosReportPrintJob;
+import org.nuclos.server.report.NuclosReportRemotePrintService;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ResultVO;
@@ -65,9 +79,7 @@ public abstract class AbstractReportExporter implements ReportExporter {
 		final String sSourceFileName = outputvo.getSourceFile();
 		final String sParameter = outputvo.getParameter();
 
-		final boolean bOpenFile = ReportOutputVO.Destination.SCREEN.equals(outputvo.getDestination());
-
-		export(outputvo.getDescription() != null ? outputvo.getDescription() : sReportName , resultvo, sSourceFileName, sParameter, bOpenFile);
+		export(outputvo.getDescription() != null ? outputvo.getDescription() : sReportName , resultvo, sSourceFileName, sParameter, outputvo.getDestination());
 	}
 
 	@Override
@@ -82,7 +94,7 @@ public abstract class AbstractReportExporter implements ReportExporter {
 	 * @throws NuclosReportException
 	 */
 	public abstract void export(String sReportName, ResultVO resultVO, String sourceFile, String parameter,
-			boolean bOpenFile) throws NuclosReportException;
+			 ReportOutputVO.Destination destination) throws NuclosReportException;
 
 	/**
 	 * Generate the output file name
@@ -202,7 +214,86 @@ public abstract class AbstractReportExporter implements ReportExporter {
 			log.debug("NOT opening " + sFileName);
 		}
 	}
+	
+	
+	public void openPrintDialog(String sFileName, boolean bIsClient, boolean bIsDefault) throws NuclosReportException {
+		try {
+	        PrintService   prservDflt;
+	        if (bIsClient)
+	        	prservDflt = PrintServiceLookup.lookupDefaultPrintService();
+	        else
+	        	prservDflt = ReportDelegate.getInstance().lookupDefaultPrintService();
+	
+	        PrintService[] prservices;
+	        if (bIsClient)
+	        	prservices = PrintServiceLookup.lookupPrintServices(null, null);
+	        else
+	        	prservices = ReportDelegate.getInstance().lookupPrintServices(null, null);
+	        
+	        if(null == prservices || 0 >= prservices.length) {
+	          if(null != prservDflt) {
+	        	  prservices = new PrintService[] {prservDflt};
+	          } else {
+	        	  throw new NuclosReportException(CommonLocaleDelegate.getMessage("AbstractReportExporter.5", "Es ist kein passender Print-Service installiert."));
+	          }
+	        }
+	        
+	        PrintService prserv = null;
+	        PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
+	        if (prservDflt == null || !bIsDefault) {
+	        	Rectangle gcBounds = GraphicsEnvironment.
+	        		    getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().getBounds();
+	        	prserv = ServiceUI.printDialog(null, (gcBounds.width / 2) - 200, (gcBounds.height / 2) - 200, prservices, prservDflt, null, aset);
+	        } else
+	        	prserv = prservDflt;
+	        
+	        if( null != prserv ) {
+	        	if (bIsClient) 
+	        		getNuclosReportPrintJob().print(prserv, sFileName, aset);
+	        	else {
+	        		ReportDelegate.getInstance().printViaPrintService((NuclosReportRemotePrintService)prserv, getNuclosReportPrintJob(), aset, getBytesFromFile(new File(sFileName)));
+	        	}
+	        }	
+		} catch (Exception e) {
+			throw new NuclosReportException(e);
+		}
+	}
+	
+	protected static byte[] getBytesFromFile(File file) throws IOException {
+	    InputStream is = new FileInputStream(file);
 
+	    // Get the size of the file
+	    long length = file.length();
+
+	    // You cannot create an array using a long type.
+	    // It needs to be an int type.
+	    // Before converting to an int type, check
+	    // to ensure that file is not larger than Integer.MAX_VALUE.
+	    if (length > Integer.MAX_VALUE) {
+	        // File is too large
+	    }
+
+	    // Create the byte array to hold the data
+	    byte[] bytes = new byte[(int)length];
+
+	    // Read in the bytes
+	    int offset = 0;
+	    int numRead = 0;
+	    while (offset < bytes.length
+	           && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
+	        offset += numRead;
+	    }
+
+	    // Ensure all the bytes have been read in
+	    if (offset < bytes.length) {
+	        throw new IOException("Could not completely read file "+file.getName());
+	    }
+
+	    // Close the input stream and return bytes
+	    is.close();
+	    return bytes;
+	}
+	
 	public static synchronized void checkJawin() throws NuclosReportException {
 		if (!jawinLoaded) {
 			try {
@@ -219,5 +310,6 @@ public abstract class AbstractReportExporter implements ReportExporter {
 	}
 
 	private static volatile boolean jawinLoaded = false;
-
+	
+	protected abstract NuclosReportPrintJob getNuclosReportPrintJob();
 }	// class AbstractReportExporter

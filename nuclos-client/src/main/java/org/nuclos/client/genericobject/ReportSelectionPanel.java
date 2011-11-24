@@ -18,9 +18,13 @@ package org.nuclos.client.genericobject;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -173,10 +177,20 @@ public class ReportSelectionPanel extends JXPanel {
 		cbAttachReport.setSelected(false);
 		if (bShowAttachReport) {
 			add(cbAttachReport, BorderLayout.SOUTH);
+			cbAttachReport.setSelected(true); // as default
 		}
 		tblReports.setAutoCreateRowSorter(true);
 	}
-
+	
+	public JTable getReportsTable() {
+		return tblReports;
+	}
+	
+	public void addDoubleClickListener(MouseListener l)
+	{
+		tblReports.addMouseListener(l);
+	}
+	
 	public void addReport(ReportVO reportVO, ReportOutputVO formatVO) {
 		ReportEntry entry = new ReportEntry(reportVO, formatVO);
 		if (entry != null) {

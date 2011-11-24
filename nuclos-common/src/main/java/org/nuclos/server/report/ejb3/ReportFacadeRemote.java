@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
+import javax.print.DocFlavor;
+import javax.print.attribute.AttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
 import javax.swing.table.TableModel;
 
 import net.sf.jasperreports.engine.JRException;
@@ -40,6 +43,8 @@ import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpressi
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.report.NuclosReportException;
+import org.nuclos.server.report.NuclosReportPrintJob;
+import org.nuclos.server.report.NuclosReportRemotePrintService;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ReportVO.ReportType;
@@ -192,4 +197,9 @@ public interface ReportFacadeRemote {
 	Collection<ReportVO> findReportsByUsage(
 		UsageCriteria usagecriteria);
 
+	public NuclosReportRemotePrintService lookupDefaultPrintService();
+	
+	public NuclosReportRemotePrintService[] lookupPrintServices(DocFlavor flavor, AttributeSet as) throws NuclosReportException;
+		
+	public void printViaPrintService(NuclosReportRemotePrintService ps, NuclosReportPrintJob pj, PrintRequestAttributeSet aset, byte[] data)  throws NuclosReportException;
 }

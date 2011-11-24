@@ -18,8 +18,10 @@ package org.nuclos.server.report.ejb3;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -38,6 +40,11 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
+import javax.print.DocFlavor;
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
+import javax.print.attribute.AttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
 import javax.swing.table.TableModel;
 
 import net.sf.jasperreports.engine.JRDataSource;
@@ -103,6 +110,8 @@ import org.nuclos.server.report.JRDefaultNuclosDataSource;
 import org.nuclos.server.report.JREmptyNuclosDataSource;
 import org.nuclos.server.report.JRFileResolver;
 import org.nuclos.server.report.NuclosReportException;
+import org.nuclos.server.report.NuclosReportPrintJob;
+import org.nuclos.server.report.NuclosReportRemotePrintService;
 import org.nuclos.server.report.SearchResultDataSource;
 import org.nuclos.server.report.TableModelDataSource;
 import org.nuclos.server.report.api.JRNuclosDataSource;
@@ -782,4 +791,51 @@ public Collection<Integer> getReadableReportIdsForCurrentUser() {
 		   parameters.put("NUCLOS_USER_LASTNAME", user.getField("lastname"));
 	   }
    }
+
+	@Override
+	public NuclosReportRemotePrintService lookupDefaultPrintService() {
+		PrintService ps = PrintServiceLookup.lookupDefaultPrintService();
+		return new NuclosReportRemotePrintService(ps);
+	}
+
+	@Override
+	public NuclosReportRemotePrintService[] lookupPrintServices(DocFlavor flavor, AttributeSet as) throws NuclosReportException {
+		PrintService   prservDflt = PrintServiceLookup.lookupDefaultPrintService();
+		PrintService[] prservices = PrintServiceLookup.lookupPrintServices( flavor, as );
+        if( null == prservices || 0 >= prservices.length ) {
+          if( null != prservDflt ) {
+        	  prservices = new PrintService[] {prservDflt};
+          } else {
+        	  throw new NuclosReportException("Es ist kein passender Print-Service installiert."); //@todo
+          }
+        }
+        
+        NuclosReportRemotePrintService[] rprservices = new NuclosReportRemotePrintService[prservices.length];
+        for (int i = 0; i < prservices.length; i++) {
+        	rprservices[i] = new NuclosReportRemotePrintService(prservices[i]);
+		}
+        return rprservices;
+	}
+
+	@Override
+	public void printViaPrintService(NuclosReportRemotePrintService ps, NuclosReportPrintJob pj, PrintRequestAttributeSet aset, byte[] data) throws NuclosReportException {
+		try {
+			File prntFile = getFileFromBytes(data);
+			pj.print(ps, prntFile.getAbsolutePath(), aset);
+		} catch (Exception e) {
+			throw new NuclosReportException(e.getMessage());
+		}
+	}
+	
+	private static File getFileFromBytes(byte[] data) throws IOException {
+		File file = File.createTempFile("report_", ".tmp");
+		file.deleteOnExit();
+		
+		OutputStream os = new FileOutputStream(file);
+		os.write(data);
+		os.close();
+		
+		return file;
+	}
+
 }

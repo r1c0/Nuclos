@@ -19,12 +19,19 @@ package org.nuclos.server.report.ejb3;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.ejb.Local;
+import javax.print.DocFlavor;
+import javax.print.attribute.AttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+
 import net.sf.jasperreports.engine.JasperPrint;
 
 import org.nuclos.common.NuclosFile;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.report.NuclosReportException;
+import org.nuclos.server.report.NuclosReportPrintJob;
+import org.nuclos.server.report.NuclosReportRemotePrintService;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.SubreportVO;
@@ -74,4 +81,9 @@ public interface ReportFacadeLocal {
 
 	NuclosFile prepareCsvReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) throws CommonFinderException, NuclosReportException, CommonPermissionException;
 
+	public NuclosReportRemotePrintService lookupDefaultPrintService();
+	
+	public NuclosReportRemotePrintService[] lookupPrintServices(DocFlavor flavor, AttributeSet as) throws NuclosReportException;
+	
+	public void printViaPrintService(NuclosReportRemotePrintService ps, NuclosReportPrintJob pj, PrintRequestAttributeSet aset, byte[] data) throws NuclosReportException;
 }

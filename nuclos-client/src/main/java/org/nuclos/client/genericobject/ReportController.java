@@ -18,6 +18,8 @@ package org.nuclos.client.genericobject;
 
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -122,15 +124,30 @@ public class ReportController extends Controller {
 	 * @throws NuclosFatalException
 	 * @throws NuclosReportException
 	 */
-	public void exportForm(final List<? extends CollectableGenericObject> lstclctlo, UsageCriteria usagecriteria, String sDocumentEntityName, String[] documentFieldNames)
+	public void exportForm(final List<? extends CollectableGenericObject> lstclctlo, UsageCriteria usagecriteria,final  String sDocumentEntityName, final String[] documentFieldNames)
 			throws NuclosFatalException, NuclosReportException {
 		try {
 			final ReportSelectionPanel pnlSelection = prepareReportSelectionPanel(usagecriteria, lstclctlo.size());
-
+			if (pnlSelection.getReportsTable().getModel().getRowCount() == 1) {
+				executeForm(pnlSelection, lstclctlo, sDocumentEntityName, documentFieldNames);
+				return;
+			}
+			
 			String sDialogTitle = CommonLocaleDelegate.getMessage("ReportController.15","Verf\u00fcgbare Formulare");
 			//int btnValue = JOptionPane.showConfirmDialog(this.getParent(), pnlSelection, sDialogTitle, JOptionPane.OK_CANCEL_OPTION);
-	        JOptionPane pane = new JOptionPane(pnlSelection, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, null, null);
-	        JDialog dialog = pane.createDialog(this.getParent(), sDialogTitle);
+	        final JOptionPane pane = new JOptionPane(pnlSelection, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, null, null);
+	        final JDialog dialog = pane.createDialog(this.getParent(), sDialogTitle);
+	        pnlSelection.addDoubleClickListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					if (e.getClickCount() == 2) {
+						pane.setValue(JOptionPane.OK_OPTION);
+						dialog.hide();
+					}
+				}
+			});
+	        
+	       
 	        dialog.setResizable(true);
 	        dialog.setVisible(true);
 			if ((pane.getValue() == null? -1: (Integer)pane.getValue()) == JOptionPane.OK_OPTION)

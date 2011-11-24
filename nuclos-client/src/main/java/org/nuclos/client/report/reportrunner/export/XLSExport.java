@@ -30,6 +30,8 @@ import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.server.report.NuclosReportException;
+import org.nuclos.server.report.NuclosReportPrintJob;
+import org.nuclos.server.report.print.XLSPrintJob;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ResultColumnVO;
@@ -62,7 +64,7 @@ public class XLSExport extends AbstractReportExporter {
 	 */
 	@Override
 	public void export(String sReportName, ResultVO resultVO, String sourceFile,
-			String parameter, boolean bOpenFile) throws NuclosReportException {
+			String parameter, ReportOutputVO.Destination destination) throws NuclosReportException {
 
 		checkJawin();
 		
@@ -70,7 +72,27 @@ public class XLSExport extends AbstractReportExporter {
 
 		if (reportVO == null || reportVO.getOutputType() != ReportVO.OutputType.EXCEL || reportOutputVO == null || reportOutputVO.isLastOfMany())
 		{
-			openFile(sFileName, bOpenFile);
+			switch (destination) {
+			case FILE:
+				openFile(sFileName, true);
+				break;
+			case PRINTER_CLIENT:
+				openPrintDialog(sFileName, true, false);
+				break;
+			case PRINTER_SERVER:
+				openPrintDialog(sFileName, false, false);
+				break;
+			case DEFAULT_PRINTER_CLIENT:
+				openPrintDialog(sFileName, true, true);
+				break;
+			case DEFAULT_PRINTER_SERVER:
+				openPrintDialog(sFileName, false, true);
+				break;
+			default:
+				// TYPE SCREEN
+				openFile(sFileName, false);
+				break;
+			}			
 		}
 	}
 
@@ -303,6 +325,11 @@ public class XLSExport extends AbstractReportExporter {
 		}
 
 		return result;
+	}
+	
+	@Override
+	protected NuclosReportPrintJob getNuclosReportPrintJob() {
+		return new XLSPrintJob();
 	}
 
 }	// class XLSExport

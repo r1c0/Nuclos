@@ -358,12 +358,12 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 							jasperPrint = ReportDelegate.getInstance().prepareEmptyReport(reportoutputvo.getId());
 						}
 						setBackgroundProcessInterruptionIntervalForCurrentThread();
-						new PDFExport().export((reportoutputvo.getDescription() != null) ? reportoutputvo.getDescription() : reportvo.getName(), jasperPrint, reportoutputvo.getParameter(), reportoutputvo.getDestination().equals(ReportOutputVO.Destination.SCREEN));
+						new PDFExport().export((reportoutputvo.getDescription() != null) ? reportoutputvo.getDescription() : reportvo.getName(), jasperPrint, reportoutputvo.getParameter(), reportoutputvo.getDestination());
 					}
 					else if (outputFormat == ReportOutputVO.Format.CSV && reportoutputvo.getSourceFile() != null) {
 						NuclosFile result = ReportDelegate.getInstance().prepareCsvReport(reportoutputvo.getId(), mpParams, iMaxRowCount);
 						setBackgroundProcessInterruptionIntervalForCurrentThread();
-						new FileExport(result).export((reportoutputvo.getDescription() != null) ? reportoutputvo.getDescription() : reportvo.getName(), reportoutputvo.getParameter(), reportoutputvo.getDestination().equals(ReportOutputVO.Destination.SCREEN));
+						new FileExport(result).export((reportoutputvo.getDescription() != null) ? reportoutputvo.getDescription() : reportvo.getName(), reportoutputvo.getParameter(), reportoutputvo.getDestination());
 					}
 					else {
 						// report without a layout
@@ -386,7 +386,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 						assert exporter.getClass().equals(PDFExport.class);
 
 						setBackgroundProcessInterruptionIntervalForCurrentThread();
-						new PDFExport().export((sDatasourceName != null) ? sDatasourceName : CommonLocaleDelegate.getMessage("ReportRunner.2", "Suchergebnis"), jasperPrint, null, true);
+						new PDFExport().export((sDatasourceName != null) ? sDatasourceName : CommonLocaleDelegate.getMessage("ReportRunner.2", "Suchergebnis"), jasperPrint, null, reportoutputvo.getDestination());
 
 					}
 					else if (this.resultVO != null) {
