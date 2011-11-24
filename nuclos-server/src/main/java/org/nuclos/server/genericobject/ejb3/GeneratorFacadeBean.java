@@ -279,7 +279,8 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 
 		// Create target process
 		if (targetMeta.isStateModel() && generatoractionvo.getTargetProcessId() != null) {
-			//final String sTargetProcess = getMasterDataFacade().get(NuclosEntity.PROCESS.getEntityName(), generatoractionvo.getTargetProcessId()).getField("name").toString();
+			final String sTargetProcess = getMasterDataFacade().get(NuclosEntity.PROCESS.getEntityName(), generatoractionvo.getTargetProcessId()).getField("name").toString();
+			target.getFields().put(NuclosEOField.PROCESS.getName(), sTargetProcess);
 			target.getFieldIds().put(NuclosEOField.PROCESS.getName(), generatoractionvo.getTargetProcessId().longValue());
 		}
 
