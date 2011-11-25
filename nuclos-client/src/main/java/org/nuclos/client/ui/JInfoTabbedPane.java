@@ -105,7 +105,7 @@ public class JInfoTabbedPane extends JTabbedPane {
 	private void setTabComponent(String text, int index) {
 		JLabel tabComponent = new JLabel(text);
 		int height = tabComponent.getFontMetrics(tabComponent.getFont()).getHeight();
-		int width = tabComponent.getFontMetrics(tabComponent.getFont()).stringWidth(text + " 999");
+		int width = tabComponent.getFontMetrics(tabComponent.getFont()).stringWidth(text + " (>999)");
 		tabComponent.setPreferredSize(new Dimension(width, height));
 		tabComponent.setHorizontalAlignment(SwingConstants.CENTER);
 		setTabComponentAt(index, tabComponent);
@@ -156,17 +156,17 @@ public class JInfoTabbedPane extends JTabbedPane {
 				int j = info.intValue();
 				if (j < 0) {
 					if (j > -1000) {
-						text = title + " " + j;
+						text = title + " (" + j + ")";
 					}
 					else {
 						text = title + " -?";
 					}
 				}
 				else if (j > 999) {
-					text = title + " >999";
+					text = title + " (>999)";
 				}
 				else {
-					text = title + " " + j;
+					text = title + " (" + j + ")";
 				}
 			}
 		}
