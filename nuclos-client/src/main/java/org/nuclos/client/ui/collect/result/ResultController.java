@@ -40,6 +40,7 @@ import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableColumnModelEvent;
@@ -69,6 +70,7 @@ import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
 import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
+import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.Actions;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
@@ -168,6 +170,8 @@ public class ResultController<Clct extends Collectable> {
 			cmdDefineSelectedCollectablesAsNewSearchResult();
 		}
 	};
+	
+	protected boolean isIgnorePreferencesUpdate = true;
 
 	/**
 	 * Don't make this public!
@@ -275,6 +279,8 @@ public class ResultController<Clct extends Collectable> {
 		
 		// change column ordering in table model when table columns are reordered by dragging a column with the mouse:
 		getResultPanel().addColumnModelListener(newColumnModelListener());
+		PreferencesUpdateListener pul = newResultTablePreferencesUpdateListener();
+		getResultPanel().addColumnModelListener(pul);
 		
 		getResultPanel().addPopupMenuListener();
 	}
@@ -490,6 +496,52 @@ public class ResultController<Clct extends Collectable> {
 			}
 		};
 	}
+	
+	protected final PreferencesUpdateListener newResultTablePreferencesUpdateListener() {
+		return new PreferencesUpdateListener();
+	}
+
+	protected class PreferencesUpdateListener implements ChangeListener, TableColumnModelListener  {
+		@Override
+		public void stateChanged(ChangeEvent ev) {
+//			System.out.println("stateChanged " + ev);
+			if (!isIgnorePreferencesUpdate) {
+				clctctl.writeColumnOrderToPreferences();
+			}
+		}
+		
+		@Override
+		public void columnSelectionChanged(ListSelectionEvent ev) {
+//			System.out.println("columnSelectionChanged " + ev);
+			if (!isIgnorePreferencesUpdate) {
+//				writeSelectedFieldsAndWidthsToPreferences();
+			}
+		}
+		
+		@Override
+		public void columnMoved(TableColumnModelEvent ev) {
+//			System.out.println("columnMoved " + ev);
+			if (!isIgnorePreferencesUpdate) {
+				writeSelectedFieldsAndWidthsToPreferences();
+			}
+		}
+		
+		@Override
+		public void columnMarginChanged(ChangeEvent ev) {
+//			System.out.println("columnMarginChanged " + ev);
+			if (!isIgnorePreferencesUpdate) {
+				writeSelectedFieldsAndWidthsToPreferences();
+			}
+		}
+		
+		@Override
+		public void columnAdded(TableColumnModelEvent ev) {
+		}
+		
+		@Override
+		public void columnRemoved(TableColumnModelEvent ev) {
+		}		
+	}
 
 	/**
 	 * releases the resources (esp. listeners) for this controller.
@@ -514,8 +566,8 @@ public class ResultController<Clct extends Collectable> {
 		UIUtils.removeAllMouseListeners(this.getResultPanel().getResultTable().getTableHeader());
 
 		/** @todo this doesn't really belong here */
-		writeSelectedFieldsAndWidthsToPreferences();
-		clctctl.writeColumnOrderToPreferences();
+//		writeSelectedFieldsAndWidthsToPreferences();
+//		clctctl.writeColumnOrderToPreferences();
 	}
 
 	/**
@@ -663,7 +715,9 @@ public class ResultController<Clct extends Collectable> {
 	 * @param tbl
 	 */
 	public void setColumnWidths(final JTable tbl) {
+		isIgnorePreferencesUpdate = true;
 		this.getResultPanel().setColumnWidths(tbl, clctctl.getEntityPreferences());
+		isIgnorePreferencesUpdate = false;
 	}
 
 	/**
@@ -830,7 +884,9 @@ public class ResultController<Clct extends Collectable> {
 						tbl.setRowSelectionInterval(iSelectedRow, iSelectedRow);
 					}
 
+					isIgnorePreferencesUpdate = true;
 					panel.restoreColumnWidths(ctl.getSelectedObjects(), mpWidths);
+					isIgnorePreferencesUpdate = false;
 
 					// Set the newly added columns to optimal width
 					for (CollectableEntityField clctef : collNewlySelected) {
@@ -890,6 +946,13 @@ public class ResultController<Clct extends Collectable> {
 		final JTable resultTable = panel.getResultTable();
 		resultTable.setModel(tblmodel);
 		((ToolTipsTableHeader) resultTable.getTableHeader()).setExternalModel(tblmodel);
+		if (tblmodel instanceof SortableTableModel) {
+			((SortableTableModel) tblmodel).addSortingListener(newResultTablePreferencesUpdateListener());
+		}
+	}
+	
+	public void setIgnorePreferencesUpdate(boolean ignore) {
+		this.isIgnorePreferencesUpdate = ignore;
 	}
 
 	protected void toggleColumnVisibility(TableColumn columnBefore, final String sFieldName, final CollectController<Clct> ctl,  final CollectableEntity clcte)  {
@@ -910,7 +973,9 @@ public class ResultController<Clct extends Collectable> {
 			else {
 				cmdRemoveColumn(fields, clctef, ctl);
 			}
+			isIgnorePreferencesUpdate = true;
 			panel.restoreColumnWidths(fields.getSelectedFields(), mpWidths);
+			isIgnorePreferencesUpdate = false;
 		}
 		catch (CommonBusinessException e) {
 			// TODO Auto-generated catch block

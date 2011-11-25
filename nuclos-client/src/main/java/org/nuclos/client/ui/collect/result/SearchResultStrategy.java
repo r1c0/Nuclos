@@ -221,7 +221,7 @@ public class SearchResultStrategy<Clct extends Collectable> implements ISearchRe
 						UIUtils.paintImmediately(cc.getSearchPanel().tfStatusBar);
 
 						// Write the column widths to preferences, so they can be restored after searching is finished
-						rc.writeSelectedFieldsAndWidthsToPreferences();
+//						rc.writeSelectedFieldsAndWidthsToPreferences();
 						adjustVerticalScrollBarForSearch(bRefreshOnly);
 						cc.getSearchStrategy().search(bRefreshOnly);
 

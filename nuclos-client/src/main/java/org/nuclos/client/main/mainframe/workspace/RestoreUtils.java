@@ -220,8 +220,10 @@ public class RestoreUtils {
 		}
 
 		// set workspace preferences
-		wovo.getWoDesc().removeAllEntityPreferences();
-		wovo.getWoDesc().addAllEntityPreferences(wd.getEntityPreferences());
+		if (wovo.getWoDesc() != wd) {
+			wovo.getWoDesc().removeAllEntityPreferences();
+			wovo.getWoDesc().addAllEntityPreferences(wd.getEntityPreferences());
+		}
 		
 		MainFrame.setWorkspace(wovo);
 		PreferencesMigration.migrateEntityAndSubFormColumnPreferences();

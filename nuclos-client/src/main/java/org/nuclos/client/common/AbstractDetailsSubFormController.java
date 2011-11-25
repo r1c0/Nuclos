@@ -26,14 +26,18 @@ import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.SubFormController.PreferencesUpdateListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.SubForm.SubFormToolListener;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModelImpl;
+import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
@@ -80,7 +84,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 		// initialize table model:
 		DetailsSubFormTableModel<Clct>  tblmdl = new DetailsSubFormTableModelImpl<Clct>(this.newCollectableList(new ArrayList<Clct>()));
 		tblmdl.setColumns(getTableColumns());
-
+		tblmdl.addSortingListener(newSubFormTablePreferencesUpdateListener());
 		getJTable().setModel(tblmdl);
 
 		// Inititialize listeners for toolbar actions:
@@ -168,7 +172,9 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 	protected final void setCollectables(List<Clct> lstclct) {
 		// Stop editing the current cell if any; else controls may be left over / UA
 		this.stopEditing();
+		isIgnorePreferencesUpdate = true;
 		this.getCollectableTableModel().setCollectables(this.newCollectableList(lstclct));
+		isIgnorePreferencesUpdate = false;
 	}
 
 	/**
@@ -179,7 +185,9 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 	 */
 	public void updateTableModel(List<Clct> lstclct) {
 		this.setCollectables(lstclct);
+		isIgnorePreferencesUpdate = true;
 		this.getCollectableTableModel().sort();
+		isIgnorePreferencesUpdate = false;
 	}
 
 	@Override
@@ -240,6 +248,21 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 
 		TableUtils.addMouseListenerForSortingToTableHeader(tbl, this.getCollectableTableModel());
 	}
+	
+	@Override
+	protected final PreferencesUpdateListener newSubFormTablePreferencesUpdateListener() {
+		return new PreferencesUpdateListener();
+	}
+	
+	protected class PreferencesUpdateListener extends SubFormController.PreferencesUpdateListener implements ChangeListener {
+		@Override
+		public void stateChanged(ChangeEvent ev) {
+//			System.out.println("stateChanged " + ev);
+			if (!isIgnorePreferencesUpdate) {
+				storeColumnOrderToPreferences();
+			}
+		}
+	}
 
 	protected void storeColumnOrderToPreferences(){
 		WorkspaceUtils.setSortKeys(getSubFormPrefs(), getCollectableTableModel().getSortKeys(), new WorkspaceUtils.IColumnNameResolver() {	
@@ -267,6 +290,8 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 	 */
 	protected void setColumnOrder() {
 		LOG.debug("setColumnOrder");
+		
+		isIgnorePreferencesUpdate = true;
 		List<SortKey> sortKeys = readColumnOrderFromPreferences();
 		if (this.getCollectableTableModel().getColumnCount() > 0) {
 			try {
@@ -276,13 +301,14 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 					"\" could not be restored. Column count has changed.", e);
 			}
 		}
+		isIgnorePreferencesUpdate = false;
 	}
 
 	@Override
 	public void close() {
 		super.close();
 
-		this.storeColumnOrderToPreferences();
+//		this.storeColumnOrderToPreferences();
 	}
 
 	/**

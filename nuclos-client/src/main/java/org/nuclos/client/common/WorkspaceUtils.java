@@ -69,6 +69,7 @@ import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.masterdata.CollectableMasterDataForeignKeyEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.ServiceLocator;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 
@@ -661,6 +662,7 @@ public class WorkspaceUtils {
 				|| !MainFrame.getWorkspace().isAssigned()) {
 		
 			ep.getResultPreferences().removeAllSelectedColumnPreferences();
+			LOG.debug("setCollectableEntityFieldsForGenericObject for entity "+ep.getEntity());
 			
 			final List<CollectableEntityField> fixedEfs = new ArrayList<CollectableEntityField>();
 			final List<CollectableEntityField> normalEfs = new ArrayList<CollectableEntityField>();
@@ -707,6 +709,7 @@ public class WorkspaceUtils {
 					cp.setWidth(fieldWidths.get(i));
 				}
 				
+				LOG.debug(StringUtils.logFormat("setCollectableEntityFieldsForGenericObject",cp.getColumn(),cp.getWidth()));
 				ep.getResultPreferences().addSelectedColumnPreferences(cp);
 			}
 		}
@@ -720,6 +723,7 @@ public class WorkspaceUtils {
 	 * @param fieldWidths
 	 */
 	public static void addFixedColumns(SubFormPreferences sfp, List<String> fields, List<Integer> fieldWidths) {
+		LOG.debug("addFixedColumns for subform " + sfp.getEntity());
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS)
 				|| !MainFrame.getWorkspace().isAssigned()) {
 			
@@ -730,6 +734,7 @@ public class WorkspaceUtils {
 					cp.setColumn(fields.get(i));
 					cp.setWidth(fieldWidths.get(i));
 					sfp.getTablePreferences().addSelectedColumnPreferencesInFront(cp);
+					LOG.debug(StringUtils.logFormat("addFixedColumns",cp.getColumn(),cp.getWidth()));
 				}
 			}
 		}
@@ -743,6 +748,7 @@ public class WorkspaceUtils {
 	 * @param fieldWidths
 	 */
 	public static void setColumnPreferences(EntityPreferences ep, List<String> fields, List<Integer> fieldWidths) {
+		LOG.debug("setColumnPreferences for entity"+ep.getEntity());
 		setColumnPreferences(ep.getResultPreferences(), fields, fieldWidths);
 	}
 	/**
@@ -752,6 +758,7 @@ public class WorkspaceUtils {
 	 * @param fieldWidths
 	 */
 	public static void setColumnPreferences(SubFormPreferences sfp, List<String> fields, List<Integer> fieldWidths) {
+		LOG.debug("setColumnPreferences for subform"+sfp.getEntity());
 		setColumnPreferences(sfp.getTablePreferences(), fields, fieldWidths);
 	}
 	/**
@@ -774,6 +781,7 @@ public class WorkspaceUtils {
 				}
 				
 				tp.addSelectedColumnPreferences(cp);
+				LOG.debug(StringUtils.logFormat("setColumnPreference",cp.getColumn(),cp.getWidth()));
 				
 				// remove from hidden
 				if (tp.getHiddenColumns().contains(cp.getColumn())) {
@@ -825,6 +833,7 @@ public class WorkspaceUtils {
 	 * @param cnResolver
 	 */
 	public static void setSortKeys(EntityPreferences ep, List<? extends SortKey> sortKeys, IColumnNameResolver cnResolver) {
+		LOG.debug("setSortKeys for entity " + ep.getEntity());
 		setSortKeys(ep.getResultPreferences(), sortKeys, cnResolver);
 	}
 	/**
@@ -834,6 +843,7 @@ public class WorkspaceUtils {
 	 * @param cnResolver
 	 */
 	public static void setSortKeys(SubFormPreferences sfp, List<? extends SortKey> sortKeys, IColumnNameResolver cnResolver) {
+		LOG.debug("setSortKeys for subform " + sfp.getEntity());
 		setSortKeys(sfp.getTablePreferences(), sortKeys, cnResolver);
 	}
 	/**
@@ -856,6 +866,7 @@ public class WorkspaceUtils {
 				cs.setColumn(cnResolver.getColumnName(sortKey.getColumn()));
 				cs.setAsc(sortKey.getSortOrder() == SortOrder.ASCENDING);
 				tp.addColumnSorting(cs);
+				LOG.debug(StringUtils.logFormat("setSortKeys",cs.getColumn(),(cs.isAsc()?"ASC":"DESC")));
 			}
 		}
 	}

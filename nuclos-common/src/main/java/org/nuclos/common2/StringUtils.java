@@ -649,6 +649,31 @@ public class StringUtils {
 		}
 		return result.append("</body></html>").toString();
 	}
+	
+	public static String concat(String... parts) {
+		final StringBuffer result = new StringBuffer();
+		for (String part : parts) {
+			if (StringUtils.isNullOrEmpty(part)) {
+				continue;
+			}
+			result.append(part);
+		}
+		return result.toString();
+	}
+	
+	public static String logFormat(String name, Object... pairs) {
+		final StringBuffer result = new StringBuffer();
+		result.append(name);
+		result.append('[');
+		for (int i = 0; i < pairs.length; i++) {
+			result.append(pairs[i]);
+			if (i != pairs.length-1) {
+				result.append(i%2==0?'=':',');
+			}
+		}
+		result.append(']');
+		return result.toString();
+	}
 
 	public static String trimInvalidCharactersInFilename(String sFilename){
 		// this is very ugly. regexp should be used here !

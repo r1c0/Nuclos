@@ -182,6 +182,10 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	public JTable getFixedResultTable() {
 		return this.tblFixedResult;
 	}
+	
+	public void addFixedColumnModelListener(TableColumnModelListener tblcolumnlistener) {
+		tblFixedResult.getColumnModel().addColumnModelListener(tblcolumnlistener);
+	}
 
 	public void invalidateFixedTable() {
 		JViewport header = getResultTableScrollPane().getRowHeader();

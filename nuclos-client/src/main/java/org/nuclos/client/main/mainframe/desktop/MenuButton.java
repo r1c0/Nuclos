@@ -72,7 +72,7 @@ import org.nuclos.common2.LangUtils;
 
 abstract class MenuButton extends DesktopItem implements DragGestureListener {
 	
-	private static final Logger LOG = Logger.getLogger(MenuButton.class);
+//	private static final Logger LOG = Logger.getLogger(MenuButton.class);
 	
 	public static final Color HOVER_COLOR = new Color(255, 255, 255, 50);
 	
@@ -250,7 +250,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 			return;
 		}
 		
-		LOG.info("show menu");
+//		LOG.info("show menu");
 		
 		JPanel jpnMenu = new JPanel();
 		jpnMenu.setLayout(new BoxLayout(jpnMenu, BoxLayout.Y_AXIS));
@@ -260,7 +260,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		jpnMenu.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent mev) {
-				LOG.info("mouse over menu");
+//				LOG.info("mouse over menu");
 			}
 
 			@Override
@@ -363,7 +363,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 			return false;
 		}
 		mouseOverButton = buttonScreenBounds.contains(mousePoint);
-		LOG.info(mousePoint + " --> " + buttonScreenBounds);
+//		LOG.info(mousePoint + " --> " + buttonScreenBounds);
 		
 		if (popupContent != null) {
 			final Rectangle menuScreenBounds = popupContent.getBounds();
@@ -373,16 +373,16 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 				return false;
 			}
 			mouseOverMenu = menuScreenBounds.contains(mousePoint);
-			LOG.info(mousePoint + " --> " + menuScreenBounds);
+//			LOG.info(mousePoint + " --> " + menuScreenBounds);
 		} else {
 			mouseOverMenu = false;
 		}
 
 		if (mouseOverButton || mouseOverMenu) {
-			LOG.info("mouse is over");
+//			LOG.info("mouse is over");
 			return true;
 		} else {
-			LOG.info("mouse is NOT over");
+//			LOG.info("mouse is NOT over");
 			return false; 
 		}
 	}
@@ -394,7 +394,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 	private void hideMenu(MouseEvent mev) {
 		if (popupWindow != null) {
 			if (mev == null || (mev != null && !isMouseOver())) {
-				LOG.info("hide menu");
+//				LOG.info("hide menu");
 				popupWindow.setVisible(false);
 				popupWindow.removeAll();
 				popupWindow.dispose();

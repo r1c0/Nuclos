@@ -42,6 +42,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TableColumnModelListener;
@@ -69,6 +70,7 @@ import org.nuclos.client.ui.collect.indicator.CollectPanelIndicator;
 import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
 import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
 import org.nuclos.client.ui.table.CommonJTable;
+import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.Actions;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
@@ -728,7 +730,6 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		// popup menu for rows:
 		tblResult.addMouseListener(new PopupMenuRowsListener(popupmenuRow, tblResult));
 	}
-
 
 	public void addColumnModelListener(TableColumnModelListener tblcolumnlistener) {
 		tblResult.getColumnModel().addColumnModelListener(tblcolumnlistener);

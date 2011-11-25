@@ -195,7 +195,9 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 				}
 
 				// restore the widths of the still present columns
+				isIgnorePreferencesUpdate = true;
 				panel.restoreColumnWidths(lstSelectedNew, lstColumnWiths);
+				isIgnorePreferencesUpdate = false;
 
 				// panel.invalidateFixedTable();
 				panel.setupTableCellRenderers(tblResult);
@@ -300,6 +302,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 						tblResult.setRowSelectionInterval(iSelRow, iSelRow);
 					}
 
+					isIgnorePreferencesUpdate = true;
 					if (restoreWidthsFromPreferences) {
 						// restore widths from preferences
 						panel.setColumnWidths(getNuclosResultPanel().getResultTable(), getCollectController().getEntityPreferences());
@@ -307,6 +310,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 						// restore the widths of the still present columns
 						panel.restoreColumnWidths(lstSelectedNew, mpWidths);
 					}
+					isIgnorePreferencesUpdate = false;
 
 					panel.invalidateFixedTable();
 
@@ -364,7 +368,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		removeColumnsFromResultTable();
 
 		setFixedTable();
-		TableUtils.setOptimalColumnWidths(fixedTable);
+//		TableUtils.setOptimalColumnWidths(fixedTable);
 		
 		panel.getResultTable().getTableHeader().addMouseListener(new TableHeaderColumnPopupListener() {
 			@Override
@@ -372,7 +376,9 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 				final Map<String, Integer> mpWidths = panel.getVisibleColumnWidth(clctctl.getFields().getSelectedFields());
 				final CollectableEntityField clctef = ((CollectableEntityFieldBasedTableModel) panel.getResultTable().getModel()).getCollectableEntityField(column.getModelIndex());
 				cmdRemoveColumn(clctctl.getFields(), clctef, clctctl);
+				isIgnorePreferencesUpdate = true;
 				panel.restoreColumnWidths(clctctl.getFields().getSelectedFields(), mpWidths);
+				isIgnorePreferencesUpdate = false;
 			}
 		});
 	}
@@ -541,6 +547,12 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		return (NuclosResultPanel<Clct>) getCollectController().getResultPanel();
 	}
 	
+	@Override
+	public void setupResultPanel() {
+		super.setupResultPanel();
+		getNuclosResultPanel().addFixedColumnModelListener(newResultTablePreferencesUpdateListener());
+	}
+
 	/**
 	 * Popup menu for the columns in the Result table.
 	 */

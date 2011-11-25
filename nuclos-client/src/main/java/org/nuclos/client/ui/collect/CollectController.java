@@ -797,17 +797,24 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	public void restoreColumnOrderFromPreferences(boolean sortImmediately) {
 		getResultTableModel().setSortKeys(readColumnOrderFromPreferences(), sortImmediately);
 	}
-
+	
 	/**
 	 * Reads the user-preferences for the sorting order.
 	 */
 	protected List<SortKey> readColumnOrderFromPreferences() {
+		return readColumnOrderFromPreferences(getResultTableModel());
+	}
+
+	/**
+	 * Reads the user-preferences for the sorting order.
+	 */
+	protected List<SortKey> readColumnOrderFromPreferences(final SortableCollectableTableModel<Clct> tblmdl) {
 		return WorkspaceUtils.getSortKeys(getEntityPreferences(),
 				new WorkspaceUtils.IColumnIndexRecolver() {
 					@Override
 					public int getColumnIndex(String columnIdentifier) {
 						try {
-							return getResultTableModel().findColumnByFieldName(columnIdentifier);
+							return tblmdl.findColumnByFieldName(columnIdentifier);
 						} catch (ClassCastException cce) {
 							LOG.error("ResultTableModel is not sortable", cce);
 							return -1;
@@ -3321,7 +3328,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		result.setColumns(getFields().getSelectedFields());
 
 		// setup sorted fields and sorting order from preferences
-		List<SortKey> sortKeys = readColumnOrderFromPreferences();
+		List<SortKey> sortKeys = readColumnOrderFromPreferences(result);
 		if (result.getColumnCount() > 0) {
 			try {
 				result.setSortKeys(sortKeys, false);

@@ -5027,7 +5027,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 				// store field widths before performing search:
 				/** @todo this should be done by the search itself! */
-				ctl.getResultController().writeSelectedFieldsAndWidthsToPreferences();
+//				ctl.getResultController().writeSelectedFieldsAndWidthsToPreferences();
 				// refresh search result in order to reflect changes made by state transitions:
 				ctl.getResultController().getSearchResultStrategy().refreshResult();
 				ctl.setCollectState(CollectState.OUTERSTATE_RESULT, CollectState.RESULTMODE_NOSELECTION);

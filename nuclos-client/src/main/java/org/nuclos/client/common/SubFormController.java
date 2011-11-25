@@ -36,8 +36,11 @@ import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -122,6 +125,8 @@ public abstract class SubFormController extends Controller
 	private final SubFormPreferences subFormPrefs;
 	private ListSelectionListener listselectionlistener;
 	private final CollectableFieldsProviderFactory clctfproviderfactory;
+	
+	protected boolean isIgnorePreferencesUpdate = true;
 
 	/**
 	 * @param parent
@@ -173,12 +178,56 @@ public abstract class SubFormController extends Controller
 			}
 		}
 		subform.addFocusActionListener(this);
+		
+		subform.addColumnModelListener(newSubFormTablePreferencesUpdateListener());
 	}
 
 	public void close() {
 		this.removeListSelectionListener(this.getJTable());
-		this.storeColumnOrderAndWidths(this.getJTable());
+//		this.storeColumnOrderAndWidths(this.getJTable());
 		getSubForm().removeSubFormToolListener(subformToolListener);
+	}
+	
+	public void setIgnorePreferencesUpdate(boolean ignore) {
+		this.isIgnorePreferencesUpdate = ignore;
+	}
+	
+	protected PreferencesUpdateListener newSubFormTablePreferencesUpdateListener() {
+		return new PreferencesUpdateListener();
+	}
+
+	protected class PreferencesUpdateListener implements TableColumnModelListener  {		
+		@Override
+		public void columnSelectionChanged(ListSelectionEvent ev) {
+//			System.out.println("columnSelectionChanged " + ev);
+			if (!isIgnorePreferencesUpdate) {
+//				storeColumnOrderAndWidths(getJTable());
+			}
+		}
+		
+		@Override
+		public void columnMoved(TableColumnModelEvent ev) {
+//			System.out.println("columnMoved " + ev);
+			if (!isIgnorePreferencesUpdate) {
+				storeColumnOrderAndWidths(getJTable());
+			}
+		}
+		
+		@Override
+		public void columnMarginChanged(ChangeEvent ev) {
+//			System.out.println("columnMarginChanged " + ev);
+			if (!isIgnorePreferencesUpdate) {
+				storeColumnOrderAndWidths(getJTable());
+			}
+		}
+		
+		@Override
+		public void columnAdded(TableColumnModelEvent ev) {
+		}
+		
+		@Override
+		public void columnRemoved(TableColumnModelEvent ev) {
+		}		
 	}
 
 	private final SubForm.SubFormToolListener subformToolListener = new SubForm.SubFormToolListener() {
@@ -252,7 +301,9 @@ public abstract class SubFormController extends Controller
 	 */
 	protected final void setColumnWidths() {
 		LOG.debug("setColumnWidths");
+		isIgnorePreferencesUpdate = true;
 		getSubForm().setColumnWidths(this.getTableColumnWidthsFromPreferences());
+		isIgnorePreferencesUpdate = false;
 	}
 
 	/**

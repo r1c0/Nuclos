@@ -353,6 +353,10 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 
 		assert this.getForeignKeyFieldToParent() == foreignKeyFieldToParent;
 	}
+	
+	public void addColumnModelListener(TableColumnModelListener tblcolumnlistener) {
+		subformtbl.getColumnModel().addColumnModelListener(tblcolumnlistener);
+	}
 
 	public void addSubFormToolListener(SubFormToolListener l) {
 		listeners.add(l);

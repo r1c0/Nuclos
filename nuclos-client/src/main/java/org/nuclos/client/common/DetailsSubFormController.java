@@ -195,6 +195,8 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 			}
 
 		});
+		
+		this.fixedcolumnheader.getHeaderTable().getColumnModel().addColumnModelListener(newSubFormTablePreferencesUpdateListener());
 	}
 
 	/**
