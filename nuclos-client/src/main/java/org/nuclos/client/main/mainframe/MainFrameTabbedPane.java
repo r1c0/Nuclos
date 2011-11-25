@@ -135,6 +135,13 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 	private final Timer resizeTimer = new Timer(MainFrameTabbedPane.class.getName() + " ResizeTimer");
 	private TimerTask resizeTimerTask;
 
+	@Override
+	protected void finalize() throws Throwable {
+		scheduleAdjustTabsTimer.cancel();
+		resizeTimer.cancel();
+		super.finalize();
+	}
+
 	/**
 	 *
 	 */

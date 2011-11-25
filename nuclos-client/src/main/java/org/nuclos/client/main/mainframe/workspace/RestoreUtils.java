@@ -531,6 +531,7 @@ public class RestoreUtils {
 				frame.dispose();
 			} else if (frame instanceof MainFrame) {
 				frame.setVisible(false);
+				((MainFrame) frame).clearFrame();
 				// setVisible to false, cause of problems during repaint in synthetica:
 				/* Exception in thread "AWT-EventQueue-0" java.lang.ArrayIndexOutOfBoundsException: 1
 						at javax.swing.plaf.basic.BasicTabbedPaneUI.getTabBounds(BasicTabbedPaneUI.java:1517)

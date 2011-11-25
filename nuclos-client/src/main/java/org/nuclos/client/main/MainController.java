@@ -1050,7 +1050,7 @@ public class MainController {
 		Map<String, JComponent> mainFrame = frm.getComponentMap();
 		res.put("MainFrame", mainFrame);
 
-		dev.put("memoryMonitor", new MemoryMonitor());
+//		dev.put("memoryMonitor", new MemoryMonitor());
 		res.put("Dev", dev);
 
 		return res;

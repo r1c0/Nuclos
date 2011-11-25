@@ -1668,6 +1668,13 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	public Component getFrameContent() {
 		return pnlDesktop.getComponent(0);
 	}
+	
+	/**
+	 * 
+	 */
+	public void clearFrame() {
+		pnlDesktop.removeAll();
+	}
 
 	/**
 	 *
