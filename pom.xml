@@ -11,6 +11,11 @@
 	<name>Nuclos</name>
 	<url>http://www.nuclos.de/</url>
 	<description>Nuclos ERP-Baukasten.</description>
+	<scm>
+		<connection>scm:svn:https://svn.novabit.de/nov_nucleus/trunk</connection>
+		<developerConnection>scm:svn:https://svn.novabit.de/nov_nucleus/trunk</developerConnection>
+		<url>https://svn.novabit.de/nov_nucleus/trunk</url>
+	</scm>
 
 	<issueManagement>
 		<system>Jira</system>
@@ -34,6 +39,22 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.2.1</version>
+				<configuration>
+					<tagBase>https://svn.novabit.de/nov_nucleus/branches/prod</tagBase>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-scm-plugin</artifactId>
+				<version>1.5</version>
+				<configuration>
+					<connectionType>developerConnection</connectionType>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
