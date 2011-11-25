@@ -110,6 +110,8 @@ public abstract class AbstractDBAccess extends DbAccess {
 
 	protected abstract List<String> getSqlForDropSimpleView(DbSimpleView view);
 
+	protected abstract List<String> getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView);
+	
 	protected abstract List<String> getSqlForDropSequence(DbSequence sequence);
 
 	protected abstract List<String> getSqlForDropCallable(DbCallable callable);	
@@ -133,6 +135,8 @@ public abstract class AbstractDBAccess extends DbAccess {
 					sqls = getSqlForAlterTableColumn((DbColumn) artifact1, (DbColumn) artifact2);
 				} else if (artifact1 instanceof DbColumn && artifact2 instanceof DbColumn) {
 					sqls = getSqlForAlterSequence((DbSequence) artifact1, (DbSequence) artifact2);
+				} else if (artifact1 instanceof DbSimpleView && artifact2 instanceof DbSimpleView) {
+					sqls = getSqlForAlterSimpleView((DbSimpleView) artifact1, (DbSimpleView) artifact2);
 				} else {
 					sqls = CollectionUtils.concat(
 						artifact1.accept(sqlForDropVisitor),

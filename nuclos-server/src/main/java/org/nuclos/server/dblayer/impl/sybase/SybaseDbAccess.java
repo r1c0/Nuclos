@@ -45,6 +45,7 @@ import org.nuclos.server.dblayer.structure.DbColumnType;
 import org.nuclos.server.dblayer.structure.DbColumnType.DbGenericType;
 import org.nuclos.server.dblayer.structure.DbNullable;
 import org.nuclos.server.dblayer.structure.DbSequence;
+import org.nuclos.server.dblayer.structure.DbSimpleView;
 import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.dblayer.structure.DbTableType;
 
@@ -117,6 +118,14 @@ public class SybaseDbAccess extends TransactSqlDbAccess {
 			column.getColumnName()));
 	}
 
+	@Override
+	protected List<String> getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView) {
+		if (!oldView.getViewName().equals(newView.getViewName())) {
+			throw new IllegalArgumentException();
+		}
+		return _getSqlForCreateSimpleView("ALTER VIEW", newView);
+	}
+	
 	@Override
 	protected List<String> getSqlForCreateSequence(DbSequence sequence) {
 		List<String> sql = new ArrayList<String>();

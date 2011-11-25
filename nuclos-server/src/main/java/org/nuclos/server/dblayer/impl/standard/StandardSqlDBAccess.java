@@ -1138,6 +1138,10 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
      */
     @Override
     protected List<String> getSqlForCreateSimpleView(DbSimpleView view) throws DbException {
+    	return _getSqlForCreateSimpleView("CREATE VIEW", view);
+    }
+    
+    protected List<String> _getSqlForCreateSimpleView(String prefix, DbSimpleView view) throws DbException {
         StringBuilder fromClause = new StringBuilder();
         fromClause.append(getName(view.getTableName()) + " " + SystemFields.BASE_ALIAS);
 
@@ -1153,7 +1157,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
                     @Override public String transform(Pair<String, String> p) { return String.format("t.%s=fk%d.%s", p.x, fkN, p.y); }
                 }))));
         }
-        return Collections.singletonList(String.format("CREATE VIEW %s(\n%s\n) AS SELECT\n%s\nFROM\n%s",
+        return Collections.singletonList(String.format(prefix + " %s(\n%s\n) AS SELECT\n%s\nFROM\n%s",
             getQualifiedName(view.getViewName()),
             join(",\n", view.getViewColumnNames()),
             join(",\n", transform(view.getViewColumns(), new Transformer<DbSimpleViewColumn, String>() {

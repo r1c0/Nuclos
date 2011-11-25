@@ -70,6 +70,7 @@ import org.nuclos.server.dblayer.structure.DbConstraint.DbUniqueConstraint;
 import org.nuclos.server.dblayer.structure.DbIndex;
 import org.nuclos.server.dblayer.structure.DbNullable;
 import org.nuclos.server.dblayer.structure.DbSequence;
+import org.nuclos.server.dblayer.structure.DbSimpleView;
 import org.nuclos.server.dblayer.structure.DbTable;
 
 public class OracleDBAccess extends StandardSqlDBAccess {
@@ -261,6 +262,14 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 		}
 	}
 
+	@Override
+	protected List<String> getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView) {
+		if (!oldView.getViewName().equals(newView.getViewName())) {
+			throw new IllegalArgumentException();
+		}
+		return _getSqlForCreateSimpleView("CREATE OR REPLACE VIEW", newView);
+	}
+	
 	@Override
 	protected List<String> getSqlForDropPrimaryKey(DbPrimaryKeyConstraint constraint) {
 		return Collections.singletonList(String.format("ALTER TABLE %s DROP CONSTRAINT %s CASCADE DROP INDEX",

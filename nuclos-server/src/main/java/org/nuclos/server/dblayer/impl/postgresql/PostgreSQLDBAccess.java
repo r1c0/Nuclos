@@ -55,6 +55,7 @@ import org.nuclos.server.dblayer.structure.DbArtifact;
 import org.nuclos.server.dblayer.structure.DbCallable;
 import org.nuclos.server.dblayer.structure.DbColumn;
 import org.nuclos.server.dblayer.structure.DbColumnType;
+import org.nuclos.server.dblayer.structure.DbSimpleView;
 import org.nuclos.server.dblayer.structure.DbColumnType.DbGenericType;
 import org.nuclos.server.dblayer.structure.DbConstraint;
 import org.nuclos.server.dblayer.structure.DbConstraint.DbPrimaryKeyConstraint;
@@ -227,6 +228,14 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 			column.getColumnName()));
 	}
 
+	@Override
+	protected List<String> getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView) {
+		if (!oldView.getViewName().equals(newView.getViewName())) {
+			throw new IllegalArgumentException();
+		}
+		return _getSqlForCreateSimpleView("CREATE OR REPLACE VIEW", newView);
+	}
+	
 	@Override
 	protected List<String> getSqlForDropCallable(DbCallable callable) throws DbException {
 		String code = callable.getCode();

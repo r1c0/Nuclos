@@ -34,6 +34,7 @@ import org.nuclos.server.dblayer.structure.DbConstraint.DbForeignKeyConstraint;
 import org.nuclos.server.dblayer.structure.DbConstraint.DbUniqueConstraint;
 import org.nuclos.server.dblayer.structure.DbIndex;
 import org.nuclos.server.dblayer.structure.DbSequence;
+import org.nuclos.server.dblayer.structure.DbSimpleView;
 import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.dblayer.structure.DbTableColumnGroup;
 
@@ -108,6 +109,9 @@ public class SchemaUtils {
 					continue;
 				} else if (a1 instanceof DbTable) {
 					changes.addAll(modify(((DbTable) a1).getTableArtifacts(), ((DbTable) a2).getTableArtifacts()));
+					continue;
+				} else if (a1 instanceof DbSimpleView) {
+					changes.add(new DbStructureChange(Type.MODIFY, a1, a2));
 					continue;
 				} else if (a1 instanceof DbSequence) {
 					changes.add(new DbStructureChange(Type.MODIFY, a1, a2));

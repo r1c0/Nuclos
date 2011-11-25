@@ -44,6 +44,7 @@ import org.nuclos.server.dblayer.structure.DbColumnType;
 import org.nuclos.server.dblayer.structure.DbNullable;
 import org.nuclos.server.dblayer.structure.DbColumnType.DbGenericType;
 import org.nuclos.server.dblayer.structure.DbSequence;
+import org.nuclos.server.dblayer.structure.DbSimpleView;
 
 public class MSSQLDBAccess extends TransactSqlDbAccess {
 
@@ -192,6 +193,14 @@ public class MSSQLDBAccess extends TransactSqlDbAccess {
 		sql.add("DROP PROCEDURE " + getQualifiedName(p.x));
 		sql.add("DROP TABLE " + getQualifiedName(p.y));
 		return sql;
+	}
+	
+	@Override
+	protected List<String> getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView) {
+		if (!oldView.getViewName().equals(newView.getViewName())) {
+			throw new IllegalArgumentException();
+		}
+		return _getSqlForCreateSimpleView("ALTER VIEW", newView);
 	}
 	
 	@Override
@@ -360,4 +369,5 @@ public class MSSQLDBAccess extends TransactSqlDbAccess {
 			return (semi >= 0) ? name.substring(0, semi) : name;
 		}
 	}
+
 }
