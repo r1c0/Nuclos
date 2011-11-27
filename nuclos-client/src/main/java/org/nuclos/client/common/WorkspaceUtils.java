@@ -1049,9 +1049,11 @@ public class WorkspaceUtils {
 	public static void addMissingPivotFields(EntityPreferences ep, List<CollectableEntityField> fields) {
 		for (ColumnPreferences cp : ep.getResultPreferences().getSelectedColumnPreferences()) {
 			try {
-				CollectableEOEntityField pivotField = getPivotField(cp);
-				if (!fields.contains(pivotField))
-					fields.add(pivotField);
+				if (cp.getPivotSubForm() != null) {
+					CollectableEOEntityField pivotField = getPivotField(cp);
+					if (!fields.contains(pivotField))
+						fields.add(pivotField);
+				}
 			} catch (Exception e) {
 				LOG.error("Column could not be restored " + cp, e); 
 			}

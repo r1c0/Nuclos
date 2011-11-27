@@ -36805,6 +36805,21 @@
     "text": "Alle Spalten auf Vorlage zurücksetzen"
   },
   {
+    "resourceID": "NuclosResultController.3",
+    "locale": "i-default",
+    "text": "Publish columns to template"
+  },
+  {
+    "resourceID": "NuclosResultController.3",
+    "locale": "en",
+    "text": "Publish columns to template"
+  },
+  {
+    "resourceID": "NuclosResultController.3",
+    "locale": "de",
+    "text": "Spalten in Vorlage publizieren"
+  },
+  {
     "resourceID": "SubFormController.1",
     "locale": "i-default",
     "text": "The entity of the parent component ({0}) must correspond with the entity of the subform ({1}) or with the entity of the superordinate form."
@@ -36878,6 +36893,21 @@
     "resourceID": "DetailsSubFormController.3",
     "locale": "de",
     "text": "Alle Spalten auf Vorlage zurücksetzen"
+  },
+  {
+    "resourceID": "DetailsSubFormController.4",
+    "locale": "i-default",
+    "text": "Publish columns to template"
+  },
+  {
+    "resourceID": "DetailsSubFormController.4",
+    "locale": "en",
+    "text": "Publish columns to template"
+  },
+  {
+    "resourceID": "DetailsSubFormController.4",
+    "locale": "de",
+    "text": "Spalten in Vorlage publizieren"
   },
   {
     "resourceID": "SelectUserController.1",

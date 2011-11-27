@@ -23,6 +23,8 @@ import javax.annotation.security.RolesAllowed;
 
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.WorkspaceVO;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
+import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -166,5 +168,22 @@ public interface PreferencesFacadeRemote {
 	 * @throws CommonBusinessException
 	 */
 	public boolean isWorkspaceStructureChanged(Long id1, Long id2) throws CommonBusinessException;
+	
+	/**
+	 * Only EntityPreferences (TablePrefs etc.), no SubFormPreferences!
+	 * @param customizedWovo
+	 * @param ep
+	 * @throws CommonBusinessException 
+	 */
+	public void publishEntityPreferences(WorkspaceVO customizedWovo, EntityPreferences ep) throws CommonBusinessException;
+	
+	/**
+	 * 
+	 * @param customizedWovo
+	 * @param entity
+	 * @param sfp
+	 * @throws CommonBusinessException
+	 */
+	public void publishSubFormPreferences(WorkspaceVO customizedWovo, String entity, SubFormPreferences sfp) throws CommonBusinessException;
 
 }

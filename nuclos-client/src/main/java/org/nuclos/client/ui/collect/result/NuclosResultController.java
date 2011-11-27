@@ -34,6 +34,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
+import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -75,7 +76,10 @@ import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 
 /**
  * A specialization of ResultController for use with an {@link NuclosCollectController}.
@@ -571,6 +575,10 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 				this.popupmenuColumn.addSeparator();
 			}
 			
+			if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN) &&
+					MainFrame.getWorkspace().isAssigned()) {
+				this.popupmenuColumn.add(createPublishColumnsItem());
+			}
 			this.popupmenuColumn.add(createRestoreColumnsItem());
 		}
 
@@ -628,7 +636,21 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 			
 			return miPopupRestoreColumns;
 		}
-
+		
+		private JMenuItem createPublishColumnsItem() {
+			final JMenuItem miPublishColumns = new JMenuItem(new AbstractAction(CommonLocaleDelegate.getMessage("NuclosResultController.3", "Spalten in Vorlage publizieren"), Icons.getInstance().getIconRedo16()) {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						ServiceLocator.getInstance().getFacade(PreferencesFacadeRemote.class).publishEntityPreferences(MainFrame.getWorkspace(), getCollectController().getEntityPreferences());
+					} catch (CommonBusinessException e1) {
+						Errors.getInstance().showExceptionDialog(getNuclosResultPanel(), e1);
+					}
+				}
+			});
+			return miPublishColumns;
+		}
+		
 		@Override
 		protected final JPopupMenu getJPopupMenu(MouseEvent ev) {
 			this.ptLastOpened = ev.getPoint();

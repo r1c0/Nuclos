@@ -57,10 +57,12 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess;
 import org.nuclos.client.genericobject.datatransfer.TransferableGenericObjects;
+import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
@@ -75,6 +77,7 @@ import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.table.TableUtils;
+import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.PointerException;
@@ -97,10 +100,12 @@ import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.exception.PreferencesException;
+import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 import org.nuclos.server.common.valueobject.DocumentFileBase;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 
@@ -367,6 +372,25 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		if (!result.isEmpty())
 			result.add(new JSeparator());
 		
+		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN) &&
+				MainFrame.getWorkspace().isAssigned()) {
+			final JMenuItem miPublishColumns = new JMenuItem(new AbstractAction(CommonLocaleDelegate.getMessage("DetailsSubFormController.4", "Spalten in Vorlage publizieren"), 
+					Icons.getInstance().getIconRedo16()) {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						ServiceLocator.getInstance().getFacade(PreferencesFacadeRemote.class).publishSubFormPreferences(
+								MainFrame.getWorkspace(), 
+								getCollectController().getEntity(), 
+								getSubFormPrefs());
+					} catch (CommonBusinessException e1) {
+						Errors.getInstance().showExceptionDialog(getParent(), e1);
+					}
+				}
+			});
+			result.add(miPublishColumns);
+		}
+		
 		JMenuItem miRestoreColumns = new JMenuItem(new AbstractAction(
 				CommonLocaleDelegate.getMessage("DetailsSubFormController.3", "Alle Spalten auf Vorlage zurücksetzen"), 
 				Icons.getInstance().getIconUndo16()) {
@@ -403,8 +427,6 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				} catch (CommonBusinessException e1) {
 					Errors.getInstance().showExceptionDialog(getParent(), e1);
 				}
-				
-				
 			}
 		});
 		result.add(miRestoreColumns);

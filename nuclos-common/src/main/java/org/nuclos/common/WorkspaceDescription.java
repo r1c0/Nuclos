@@ -483,8 +483,14 @@ public class WorkspaceDescription implements Serializable {
 		public void addSubFormPreferences(SubFormPreferences sfp) {
 			this._getSubFormPreferences().add(sfp);
 		}
+		public void addAllSubFormPreferences(List<SubFormPreferences> sfps) {
+			this._getSubFormPreferences().addAll(sfps);
+		}
 		public void removeSubFormPreferences(SubFormPreferences sfp) {
 			this._getSubFormPreferences().remove(sfp);
+		}
+		public void removeAllSubFormPreferences() {
+			this._getSubFormPreferences().clear();
 		}
 		public void clearResultPreferences() {
 			this._getResultPreferences().clear();
@@ -499,9 +505,12 @@ public class WorkspaceDescription implements Serializable {
 
 		@Override
 		public boolean equals(Object obj) {
+			if (this == obj)
+				return true; 
+			
 			if (obj instanceof EntityPreferences) {
 				EntityPreferences other = (EntityPreferences) obj;
-				LangUtils.equals(getEntity(), other.getEntity());
+				return LangUtils.equals(getEntity(), other.getEntity());
 			}
 			return super.equals(obj);
 		}
@@ -550,9 +559,12 @@ public class WorkspaceDescription implements Serializable {
 
 		@Override
 		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			
 			if (obj instanceof SubFormPreferences) {
 				SubFormPreferences other = (SubFormPreferences) obj;
-				LangUtils.equals(getEntity(), other.getEntity());
+				return LangUtils.equals(getEntity(), other.getEntity());
 			}
 			return super.equals(obj);
 		}

@@ -36,10 +36,12 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.WorkspaceDescription;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.WorkspaceDescription.Frame;
 import org.nuclos.common.WorkspaceDescription.MutableContent;
 import org.nuclos.common.WorkspaceDescription.NestedContent;
 import org.nuclos.common.WorkspaceDescription.Split;
+import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.WorkspaceDescription.Tab;
 import org.nuclos.common.WorkspaceDescription.Tabbed;
 import org.nuclos.common.WorkspaceVO;
@@ -492,6 +494,58 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		assignableWovo.setUser(null);
 		
 		return customizedWorkspace;
+	}
+	
+	/**
+	 * Only EntityPreferences (TablePrefs etc.), no SubFormPreferences!
+	 * @param customizedWovo
+	 * @param ep
+	 * @throws CommonBusinessException 
+	 */
+	@Override
+	public void publishEntityPreferences(WorkspaceVO customizedWovo, EntityPreferences ep) throws CommonBusinessException {
+		if (!isAssignWorkspaceAllowed()) {
+			throw new CommonFatalException("Edit of assignable workspaces is not allowed!");
+		}
+		
+		final Long assignedWorkspaceId = customizedWovo.getAssignedWorkspace();
+		if (assignedWorkspaceId != null) {
+			WorkspaceVO assignableWovo = getWorkspaceProcessor().getByPrimaryKey(assignedWorkspaceId);
+			// transfer SubFormPreferences
+			List<SubFormPreferences> transferSfp = assignableWovo.getWoDesc().getEntityPreferences(ep.getEntity()).getSubFormPreferences();
+			ep.removeAllSubFormPreferences();
+			ep.addAllSubFormPreferences(transferSfp);
+			assignableWovo.getWoDesc().removeEntityPreferences(ep);
+			assignableWovo.getWoDesc().addEntityPreferences(ep);
+			storeWorkspace(assignableWovo);
+		} else {
+			throw new IllegalArgumentException("Workspace is not assigned, publish not possible!");
+		}
+	}
+	
+	/**
+	 * 
+	 * @param customizedWovo
+	 * @param entity
+	 * @param sfp
+	 * @throws CommonBusinessException
+	 */
+	@Override
+	public void publishSubFormPreferences(WorkspaceVO customizedWovo, String entity, SubFormPreferences sfp) throws CommonBusinessException {
+		if (!isAssignWorkspaceAllowed()) {
+			throw new CommonFatalException("Edit of assignable workspaces is not allowed!");
+		}
+		
+		final Long assignedWorkspaceId = customizedWovo.getAssignedWorkspace();
+		if (assignedWorkspaceId != null) {
+			WorkspaceVO assignableWovo = getWorkspaceProcessor().getByPrimaryKey(assignedWorkspaceId);
+			EntityPreferences assignableEp = assignableWovo.getWoDesc().getEntityPreferences(entity);
+			assignableEp.removeSubFormPreferences(sfp);
+			assignableEp.addSubFormPreferences(sfp);
+			storeWorkspace(assignableWovo);
+		} else {
+			throw new IllegalArgumentException("Workspace is not assigned, publish not possible!");
+		}
 	}
 	
 	/**
