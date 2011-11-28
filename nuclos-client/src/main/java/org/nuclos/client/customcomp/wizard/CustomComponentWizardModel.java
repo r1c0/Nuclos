@@ -65,6 +65,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -111,6 +112,7 @@ import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.time.LocalTime;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.LocaleInfo;
@@ -678,6 +680,8 @@ public class CustomComponentWizardModel extends StaticModel {
 
 		JScrollPane scrollPane;
 		JTable translationTable;
+		JTextField tfDefaultViewFrom;
+		JTextField tfDefaultViewUntil;
 
 		Collection<LocaleInfo> locales;
 		ResPlanTranslationTableModel tablemodel;
@@ -705,8 +709,22 @@ public class CustomComponentWizardModel extends StaticModel {
 			translationTable.setRowHeight(50);
 
 			scrollPane = new JScrollPane(translationTable);
+			
+			tfDefaultViewFrom = new JTextField(10);
+			tfDefaultViewUntil = new JTextField(10);
 
-			new TableLayoutBuilder(this).columns(FILL).gaps(5, 5).newRow(FILL).add(scrollPane);
+			TableLayoutBuilder tlb = new TableLayoutBuilder(this).columns(PREFERRED, PREFERRED, PREFERRED, FILL).gaps(5, 5);
+			tlb.newRow(PREFERRED).
+				addLabel(CommonLocaleDelegate.getMessage("nuclos.resplan.wizard.step4.defaultViewFrom", "Standard Zeitraum von (HEUTE")).
+				add(tfDefaultViewFrom).
+				add(new JLabel(CommonLocaleDelegate.getMessage("nuclos.resplan.wizard.step4.defaultViewFrom2", ")"), 2));
+			tlb.newRow(PREFERRED).
+				addLabel(CommonLocaleDelegate.getMessage("nuclos.resplan.wizard.step4.defaultViewUntil", "Standard Zeitraum bis (HEUTE")).
+				add(tfDefaultViewUntil).
+				add(new JLabel(CommonLocaleDelegate.getMessage("nuclos.resplan.wizard.step4.defaultViewUntil2", ")"), 2));
+			tlb.newRow(PREFERRED).add(new JLabel("          " + CommonLocaleDelegate.getMessage("nuclos.resplan.wizard.step4.defaultView", "t=Tag,w=Woche,m=Monat,j=Jahr")), 4);
+			tlb.newRow(10).add(new JSeparator(), 4);
+			tlb.newRow(FILL).add(scrollPane, 4);
 		}
 
 		private void stopCellEditing() {
@@ -738,6 +756,9 @@ public class CustomComponentWizardModel extends StaticModel {
 				}
 			}
 			tablemodel.setRows(resources);
+			
+			tfDefaultViewFrom.setText(model.configVO.getDefaultViewFrom());
+			tfDefaultViewUntil.setText(model.configVO.getDefaultViewUntil());
 
 			updateState();
 		}
@@ -751,6 +772,8 @@ public class CustomComponentWizardModel extends StaticModel {
 		public void applyState() throws InvalidStateException {
 			stopCellEditing();
 			model.configVO.setResources(tablemodel.getRows());
+			model.configVO.setDefaultViewFrom(tfDefaultViewFrom.getText());
+			model.configVO.setDefaultViewUntil(tfDefaultViewUntil.getText());
 		}
 	}
 

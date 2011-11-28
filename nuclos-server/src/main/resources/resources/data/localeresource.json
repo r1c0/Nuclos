@@ -57919,6 +57919,81 @@
     "text": "Tooltip-Text"
   },
   {
+    "resourceID": "nuclos.resplan.wizard.step4.defaultView",
+    "locale": "i-default",
+    "text": "d=day,w=week,m=month,y=year   Functions:\"+\"=add,\"-\"=subtract,\".\"=set start/end with \"[\" respectively \"]\""
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.defaultView",
+    "locale": "en",
+    "text": "d=day,w=week,m=month,y=year   Functions:\"+\"=add,\"-\"=subtract,\".\"=set start/end with \"[\" respectively \"]\""
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.defaultView",
+    "locale": "de",
+    "text": "t=Tag,w=Woche,m=Monat,j=Jahr   Funktionen:\"+\"=addieren,\"-\"=subtrahieren,\".\"=Anfang/Ende setzen, mit \"[\" bzw. \"]\""
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.defaultViewFrom",
+    "locale": "i-default",
+    "text": "Default period from (TODAY"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.defaultViewFrom",
+    "locale": "en",
+    "text": "Default period from (TODAY"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.defaultViewFrom",
+    "locale": "de",
+    "text": "Standard Zeitraum von (HEUTE"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.defaultViewFrom2",
+    "locale": "i-default",
+    "text": ") e.g. \"-1m.m[+14d\" for 15. of previous month"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.defaultViewFrom2",
+    "locale": "en",
+    "text": ") e.g. \"-1m.m[+14d\" for 15. of previous month"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.defaultViewFrom2",
+    "locale": "de",
+    "text": ") z.B. \"-1m.m[+14t\" für den 15. des vorherigen Monats"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.defaultViewUntil",
+    "locale": "i-default",
+    "text": "Default period until (TODAY"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.defaultViewUntil",
+    "locale": "en",
+    "text": "Default period until (TODAY"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.defaultViewUntil",
+    "locale": "de",
+    "text": "Standard Zeitraum bis (HEUTE"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.defaultViewUntil2",
+    "locale": "i-default",
+    "text": ") e.g. \".y]\" for 31.12. of current year"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.defaultViewUntil2",
+    "locale": "en",
+    "text": ") e.g. \".y]\" for 31.12. of current year"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.defaultViewUntil2",
+    "locale": "de",
+    "text": ") z.B. \".j]\" für den 31.12. des aktuellen Jahres"
+  },
+  {
     "resourceID": "nuclos.resplan.wizard.step5.title",
     "locale": "i-default",
     "text": "Advanced options"
@@ -58401,17 +58476,17 @@
   {
     "resourceID": "nuclos.resplan.granularity.calendarWeek",
     "locale": "i-default",
-    "text": "Calendar week"
+    "text": "Week"
   },
   {
     "resourceID": "nuclos.resplan.granularity.calendarWeek",
     "locale": "en",
-    "text": "Calendar week"
+    "text": "Week"
   },
   {
     "resourceID": "nuclos.resplan.granularity.calendarWeek",
     "locale": "de",
-    "text": "Kalendarwoche"
+    "text": "Woche"
   },
   {
     "resourceID": "nuclos.resplan.granularity.day",

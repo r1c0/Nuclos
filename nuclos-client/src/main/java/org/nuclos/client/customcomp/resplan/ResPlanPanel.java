@@ -146,10 +146,8 @@ public class ResPlanPanel extends JPanel {
 			}
 		});
 		tb.addSeparator();
-
-		this.timeHorizon = new Interval<Date>(
-			DateUtils.getPureDate(DateUtils.addDays(new Date(), -5)),
-			DateUtils.getPureDate(DateUtils.addDays(new Date(), 25)));
+		
+		this.timeHorizon = new Interval<Date>(model.getDefaultViewFrom(), model.getDefaultViewUntil());
 
 		startDateChooser = new DateChooser(timeHorizon.getStart());
 		startDateChooser.setMinimumSize(startDateChooser.getPreferredSize());
@@ -235,6 +233,7 @@ public class ResPlanPanel extends JPanel {
 		add(tb, BorderLayout.NORTH);
 		add(scrollPane, BorderLayout.CENTER);
 
+		resPlan.setTimeHorizon(this.timeHorizon);
 		resPlan.invalidate();
 
 		setFocusable(true);

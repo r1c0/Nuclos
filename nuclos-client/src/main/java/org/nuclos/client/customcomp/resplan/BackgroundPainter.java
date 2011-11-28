@@ -70,6 +70,7 @@ public class BackgroundPainter implements Painter<Area<Collectable, Date>> {
 		Date pureDateEnd = DateUtils.getPureDate(area.getInterval().getEnd());
 		
 		boolean dayView = pureDateStart.equals(pureDateEnd) || DateUtils.addDays(pureDateStart, 1).equals(pureDateEnd);
+		boolean weekView = DateUtils.addDays(pureDateStart, 6).equals(pureDateEnd);
 		
 		if (dayView) {
 			if (pureDateStart.equals(today)) {
@@ -80,6 +81,11 @@ public class BackgroundPainter implements Painter<Area<Collectable, Date>> {
 				if (dayOfWeek == GregorianCalendar.SATURDAY || dayOfWeek == GregorianCalendar.SUNDAY) {
 					color = new Color(0xffcccc);
 				}
+			}
+		} if (weekView) {
+			if ((pureDateStart.equals(today) || pureDateStart.before(today)) &&
+					(pureDateEnd.equals(today) || pureDateEnd.after(today)) ) {
+				color = new Color(0xccffcc);
 			}
 		} else {
 			gcStart.setTime(pureDateStart);

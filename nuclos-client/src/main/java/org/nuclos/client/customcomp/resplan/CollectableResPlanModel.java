@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.ui.resplan.AbstractResPlanModel;
 import org.nuclos.client.ui.resplan.Interval;
@@ -115,6 +116,28 @@ public class CollectableResPlanModel extends AbstractResPlanModel<Collectable, D
 	public List<? extends Collectable> getEntries(Collectable resource) {
 		List<Collectable> list = entryMap.get(resource.getId());
 		return (list != null) ? list : Collections.<Collectable>emptyList();
+	}
+	
+	public Date getDefaultViewFrom() {
+		try {
+			if (configVO.getDefaultViewFrom() != null) {
+				return DateUtils.calc(configVO.getDefaultViewFrom());
+			}
+		} catch (Exception ex) {
+			Log.warn("Error parsing default view from " + configVO.getDefaultViewFrom(), ex);
+		}
+		return DateUtils.getPureDate(DateUtils.today());
+	}
+	
+	public Date getDefaultViewUntil() {
+		try {
+			if (configVO.getDefaultViewUntil() != null) {
+				return DateUtils.calc(configVO.getDefaultViewUntil());
+			}
+		} catch (Exception ex) {
+			Log.warn("Error parsing default view from " + configVO.getDefaultViewUntil(), ex);
+		}
+		return DateUtils.getPureDate(DateUtils.addMonths(DateUtils.today(), 1));
 	}
 
 	@Override

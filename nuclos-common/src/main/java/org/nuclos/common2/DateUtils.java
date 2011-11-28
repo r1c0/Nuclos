@@ -18,6 +18,11 @@ package org.nuclos.common2;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.nuclos.common.collection.Pair;
 
 /**
  * Utility methods for <code>Date</code>s.
@@ -236,6 +241,119 @@ public class DateUtils {
 		//DateFormat df = SimpleDateFormat.getDateTimeInstance();
 		//return df.format(date);
 		return CommonLocaleDelegate.formatDateTime(date);
+	}
+	
+	static final long ONE_HOUR = 60 * 60 * 1000L;
+	public static int daysBetween(Date d1, Date d2){
+		return new Long((getPureDate(d2).getTime() - getPureDate(d1).getTime() + ONE_HOUR) / (ONE_HOUR * 24)).intValue();
+	}
+	
+	private static Map<String, Integer> mapCalcStrings = new HashMap<String, Integer>();
+	static {
+		mapCalcStrings.put("D", Calendar.DAY_OF_YEAR);
+		mapCalcStrings.put("T", Calendar.DAY_OF_YEAR);
+		mapCalcStrings.put("W", Calendar.WEEK_OF_YEAR);
+		mapCalcStrings.put("M", Calendar.MONTH);
+		mapCalcStrings.put("Y", Calendar.YEAR);
+		mapCalcStrings.put("J", Calendar.YEAR);
+	}
+	
+	private static enum CalcFunction {
+		ADD, SUBTRACT, SET;
+	}
+	
+	private static class CalcPair extends Pair<Integer, Integer> {
+	};
+	
+	private static CalcPair getCalcPair(String input) {
+		CalcPair result = new CalcPair();
+		
+		String end = input.substring(input.length()-1, input.length());
+		if ("[".equals(end) || "]".equals(end)) {
+			// set start or end
+			String field = input.substring(input.length()-2, input.length()-1);
+			result.x = mapCalcStrings.get(field);
+			result.y = ("[".equals(end)) ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+		} else {
+			String value = input.substring(0, input.length()-1);
+			result.x = mapCalcStrings.get(end);
+			result.y = Integer.parseInt(value);
+		}
+		
+		return result;
+	}
+	
+	private static void calc(GregorianCalendar result, CalcFunction cf, CalcPair cp) {
+		switch (cf) {
+		case ADD:
+			result.add(cp.x, cp.y);
+			break;
+		case SUBTRACT:
+			result.add(cp.x, cp.y*(-1));
+			break;
+		case SET:
+			switch (cp.x) {
+			case Calendar.YEAR:
+				result.set(Calendar.DAY_OF_YEAR, cp.y==Integer.MIN_VALUE ? 
+						result.getActualMinimum(Calendar.DAY_OF_YEAR) : 
+						result.getActualMaximum(Calendar.DAY_OF_YEAR));
+				break;
+			case Calendar.MONTH:
+				result.set(Calendar.DAY_OF_MONTH, cp.y==Integer.MIN_VALUE ? 
+						result.getActualMinimum(Calendar.DAY_OF_MONTH) : 
+						result.getActualMaximum(Calendar.DAY_OF_MONTH));
+				break;
+			case Calendar.WEEK_OF_YEAR:
+				result.set(Calendar.DAY_OF_WEEK, cp.y==Integer.MIN_VALUE ? 
+						Calendar.MONDAY : 
+						Calendar.SUNDAY);
+				break;
+			}
+			break;
+		}
+	}
+	
+	public static Date calc(String calculation) {
+		calculation = calculation.toUpperCase();
+		GregorianCalendar result = new GregorianCalendar();
+		result.setTime(today());
+		
+		StringBuffer operand = new StringBuffer();
+		CalcFunction cf = null;
+		for (int i = 0; i < calculation.length(); i++) {
+			char c = calculation.charAt(i);
+			
+			switch (c) {
+			case '+':
+			case '-':
+			case '.':
+				if (cf != null) {
+					calc(result, cf, getCalcPair(operand.toString()));
+					operand = new StringBuffer();
+				}
+				break;
+			}
+				
+			switch (c) {
+			case '+':
+				cf = CalcFunction.ADD;
+				break;
+			case '-':
+				cf = CalcFunction.SUBTRACT;
+				break;
+			case '.':
+				cf = CalcFunction.SET;
+				break;
+			default:
+				operand.append(c);
+			}
+		}
+		
+		if (operand.length() > 0 && cf != null) {
+			calc(result, cf, getCalcPair(operand.toString()));
+		}
+		
+		return result.getTime();
 	}
 
 }	// class DateUtils

@@ -66,6 +66,8 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 			}
 		}
 		Component comp = super.getComponentAfter(aContainer, aComponent);	
+		if(comp == null)
+			return null;
 		if(comp.equals(aComponent))
 			return comp;
 		if(comp instanceof JInfoTabbedPane) {

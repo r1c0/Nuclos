@@ -68,6 +68,8 @@ public class ResPlanConfigVO implements Serializable {
 	private String scriptingEntryCellMethod;
 
 	private List<ResPlanResourceVO> resources;
+	private String defaultViewFrom;
+	private String defaultViewUntil;
 
 	public ResPlanConfigVO() {
 	}
@@ -258,6 +260,24 @@ public class ResPlanConfigVO implements Serializable {
 
 	public void setResources(List<ResPlanResourceVO> resources) {
 		this.resources = resources;
+	}
+	
+	@XmlElement(name="defaultViewFrom")
+	public String getDefaultViewFrom() {
+		return defaultViewFrom;
+	}
+
+	public void setDefaultViewFrom(String defaultViewFrom) {
+		this.defaultViewFrom = defaultViewFrom;
+	}
+
+	@XmlElement(name="defaultViewUntil")
+	public String getDefaultViewUntil() {
+		return defaultViewUntil;
+	}
+
+	public void setDefaultViewUntil(String defaultViewUntil) {
+		this.defaultViewUntil = defaultViewUntil;
 	}
 
 	public ResPlanResourceVO getResources(LocaleInfo li) {

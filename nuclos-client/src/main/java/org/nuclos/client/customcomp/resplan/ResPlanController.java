@@ -244,6 +244,7 @@ public class ResPlanController extends CustomComponentController {
 			options.add(new TimeGranularity(GranularityType.TIME, new DateTimeModel(timePeriods)));
 		}
 		options.add(new TimeGranularity(GranularityType.DAY, new DateTimeModel()));
+		options.add(new TimeGranularity(GranularityType.WEEK, new WeekModel()));
 		options.add(new TimeGranularity(GranularityType.MONTH, new MonthModel()));
 		return options;
 	}
@@ -287,13 +288,13 @@ public class ResPlanController extends CustomComponentController {
 		super.restoreSharedState();
 		Preferences defaultPrefs = getPreferences().node("default");
 
-		Date startDate = DateUtils.getPureDate(new Date());
-		Date endDate = DateUtils.addMonths(startDate, 1);
+//		Date startDate = DateUtils.getPureDate(new Date());
+//		Date endDate = DateUtils.addMonths(startDate, 1);
 		GranularityType granularity = KeyEnum.Utils.findEnum(GranularityType.class, defaultPrefs.get("granularity", null));
 		if (granularity != null) {
 			component.setTimeGranularity(granularity);
 		}
-		component.setTimeHorizon(new Interval<Date>(startDate, endDate, true));
+//		component.setTimeHorizon(new Interval<Date>(startDate, endDate, true));
 		component.restoreViewPreferences(defaultPrefs, null);
 	}
 
@@ -481,6 +482,7 @@ public class ResPlanController extends CustomComponentController {
 
 	public static enum GranularityType implements KeyEnum<String> {
 		MONTH("month", 0),
+		WEEK("week", 1),
 		TIME("time", 3),
 		DAY("day", 2);
 
