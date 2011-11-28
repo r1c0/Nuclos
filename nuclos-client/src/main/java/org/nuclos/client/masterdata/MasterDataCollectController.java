@@ -45,8 +45,6 @@ import javax.swing.JTable;
 import javax.swing.TransferHandler;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.application.assistant.ApplicationChangedEvent;
-import org.nuclos.client.application.assistant.ApplicationObserver;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.EntityCollectController;
@@ -1202,7 +1200,6 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 			}
 	  });
 
-      fireApplicationObserverEvent();
       return new CollectableMasterDataWithDependants(clctNew.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoInserted.get(), this.readDependants(mdvoInserted.get().getId())));
    }
 
@@ -1224,7 +1221,6 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	  });
 
       final MasterDataVO mdvoUpdated = this.mddelegate.get(this.getEntityName(), oId.get());
-      fireApplicationObserverEvent();
       return new CollectableMasterDataWithDependants(clct.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoUpdated, this.readDependants(mdvoUpdated.getId())));
    }
 
@@ -1241,7 +1237,6 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 			 mddelegate.remove(getEntityName(), clct.getMasterDataCVO());
 		 }
 	  });
-      fireApplicationObserverEvent();
    }
 
    @Override
@@ -1511,10 +1506,6 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 			final Object value = mdvo.getField(elems[0]);
 			return value != null ? value.toString() : resIfNull;
 		}
-	}
-
-	protected void fireApplicationObserverEvent() {
-		ApplicationObserver.getInstance().fireApplicationChangedEvent(new ApplicationChangedEvent(this.getEntity() + " changed"));
 	}
 
 	/**

@@ -63,8 +63,6 @@ import javax.swing.tree.TreePath;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.nuclos.client.application.assistant.ApplicationChangedEvent;
-import org.nuclos.client.application.assistant.ApplicationObserver;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.layout.wysiwyg.LayoutMLGenerator;
@@ -918,9 +916,6 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		MetaDataClientProvider.getInstance().revalidate();
 
 		ServiceLocator.getInstance().getFacade(ConsoleFacadeRemote.class).invalidateAllCaches();
-
-		ApplicationChangedEvent event = new ApplicationChangedEvent(ApplicationObserver.NEWENTITY, metaVO.getEntity());
-		ApplicationObserver.getInstance().fireApplicationChangedEvent(event);
 
 		return true;
 	}

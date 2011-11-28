@@ -54,9 +54,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.application.assistant.ApplicationAssistantListener;
-import org.nuclos.client.application.assistant.ApplicationChangedEvent;
-import org.nuclos.client.application.assistant.ApplicationObserver;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
@@ -93,9 +90,9 @@ import com.mxgraph.swing.view.mxCellEditor;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxEvent;
 import com.mxgraph.util.mxEventObject;
+import com.mxgraph.util.mxEventSource.mxIEventListener;
 import com.mxgraph.util.mxPoint;
 import com.mxgraph.util.mxUtils;
-import com.mxgraph.util.mxEventSource.mxIEventListener;
 import com.mxgraph.view.mxGraph;
 
 /**
@@ -107,7 +104,7 @@ import com.mxgraph.view.mxGraph;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class EntityRelationshipModelEditPanel extends JPanel implements ApplicationAssistantListener {
+public class EntityRelationshipModelEditPanel extends JPanel {
 	
 	private static final Logger LOG = Logger.getLogger(EntityRelationshipModelEditPanel.class);
 
@@ -1034,7 +1031,6 @@ public class EntityRelationshipModelEditPanel extends JPanel implements Applicat
 						graph.refresh();
 					}
 					wizard.showWizard(mf.getHomePane(), mf);
-					ApplicationObserver.getInstance().addApplicationAssistantListener(ApplicationObserver.NEWENTITY, EntityRelationshipModelEditPanel.this);
 				}
 			});			
 			pop.add(iNew);
@@ -1562,31 +1558,6 @@ public class EntityRelationshipModelEditPanel extends JPanel implements Applicat
         		getGraphModel().remove(cell);					
         }
     }	
-
-	@Override
-	public void applicationChanged(ApplicationChangedEvent event) {
-		if(!event.getChangeText().startsWith(ApplicationObserver.NEWENTITY))
-			return;
-			
-		EntityMetaDataVO vo = MetaDataClientProvider.getInstance().getEntity((String)event.getChangedObject());
-		mxGraph graph = graphComponent.getGraph();
-		mxCell root = (mxCell)graph.getModel().getRoot();
-		int rootChildCount = root.getChildCount();
-		if(rootChildCount == 1) {
-			mxCell cellContainer = (mxCell)root.getChildAt(0);
-			int childCount = cellContainer.getChildCount();
-			for(int i = 0; i < childCount; i++) {
-				mxCell cell = (mxCell)cellContainer.getChildAt(i);
-				if(cell.getValue() != null && cell.getValue() instanceof String 
-					&& "neue Entit\u00e4t".equals(cell.getValue()) && cell.getStyle().indexOf(ENTITYSTYLE) >= 0) {
-					cell.setValue(vo);
-					graph.refresh();
-				}
-			}
-		}
-		ApplicationObserver.getInstance().removeApplicationAssistantListener(ApplicationObserver.NEWENTITY);
-	
-	}
 	
 	class MyCellEditor extends mxCellEditor {
 

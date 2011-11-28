@@ -32,9 +32,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.application.assistant.ApplicationAssistantListener;
-import org.nuclos.client.application.assistant.ApplicationChangedEvent;
-import org.nuclos.client.application.assistant.ApplicationObserver;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
@@ -66,7 +63,7 @@ import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxUtils;
 import com.mxgraph.view.mxGraph;
 
-public class MyGraphModel extends mxGraphModel implements ApplicationAssistantListener {
+public class MyGraphModel extends mxGraphModel {
 	
 	private static final Logger LOG = Logger.getLogger(MyGraphModel.class);
 
@@ -500,7 +497,6 @@ public class MyGraphModel extends mxGraphModel implements ApplicationAssistantLi
 						graph.refresh();
 					}
 					wizard.showWizard(mf.getHomePane(), mf);
-					ApplicationObserver.getInstance().addApplicationAssistantListener(ApplicationObserver.NEWENTITY, MyGraphModel.this);
 				}
 			});			
 			pop.add(iNew);
@@ -508,30 +504,6 @@ public class MyGraphModel extends mxGraphModel implements ApplicationAssistantLi
 		
 	
 		return pop;	
-	}
-
-	@Override
-	public void applicationChanged(ApplicationChangedEvent event) {
-		if(!event.getChangeText().startsWith(ApplicationObserver.NEWENTITY))
-			return;
-			
-		EntityMetaDataVO vo = MetaDataClientProvider.getInstance().getEntity((String)event.getChangedObject());
-		mxGraph graph = graphComponent.getGraph();
-		mxCell root = (mxCell)graph.getModel().getRoot();
-		int rootChildCount = root.getChildCount();
-		if(rootChildCount == 1) {
-			mxCell cellContainer = (mxCell)root.getChildAt(0);
-			int childCount = cellContainer.getChildCount();
-			for(int i = 0; i < childCount; i++) {
-				mxCell cell = (mxCell)cellContainer.getChildAt(i);
-				if(cell.getValue() != null && cell.getValue() instanceof String 
-					&& "neue Entit\u00e4t".equals(cell.getValue()) && cell.getStyle().indexOf(ENTITYSTYLE) >= 0) {
-					cell.setValue(vo);
-					graph.refresh();
-				}
-			}
-		}
-		ApplicationObserver.getInstance().removeApplicationAssistantListener(ApplicationObserver.NEWENTITY);
 	}
 
 	public Map<EntityFieldMetaDataVO, List<TranslationVO>> getTranslation() {

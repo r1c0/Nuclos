@@ -275,7 +275,6 @@ public class SearchFilterCollectController extends MasterDataCollectController {
 		mddelegate.remove(getEntityName(), clct.getMasterDataCVO());
 		if(!StringUtils.isNullOrEmpty(name))
 			SearchFilterCache.getInstance().removeFilter(name, null);
-		fireApplicationObserverEvent();
 	}
 
 	public void enterEditMode() {

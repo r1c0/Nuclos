@@ -210,7 +210,6 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 
 		final MasterDataVO mdvoInserted = delegate.createFileImport(new MasterDataWithDependantsVO(clctNew.getMasterDataCVO(), mpmdvoDependants));
 
-		fireApplicationObserverEvent();
 		return new CollectableMasterDataWithDependants(clctNew.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoInserted, this.readDependants(mdvoInserted.getId())));
 	}
 
@@ -221,14 +220,12 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 		final Object oId = this.delegate.modifyFileImport(new MasterDataWithDependantsVO(clct.getMasterDataCVO(), mpclctDependants.toDependantMasterDataMap()));
 
 		final MasterDataVO mdvoUpdated = this.mddelegate.get(this.getEntityName(), oId);
-		fireApplicationObserverEvent();
 		return new CollectableMasterDataWithDependants(clct.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoUpdated, this.readDependants(mdvoUpdated.getId())));
 	}
 
 	@Override
 	protected void deleteCollectable(CollectableMasterDataWithDependants clct) throws CommonBusinessException {
 		this.delegate.removeFileImport(clct.getMasterDataCVO());
-	    fireApplicationObserverEvent();
 	}
 
 	private void resetProgressBars() {

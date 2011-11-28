@@ -275,7 +275,6 @@ public class UserCollectController extends MasterDataCollectController {
 
 		final MasterDataVO mdvoInserted = UserDelegate.getInstance().create(user, mpmdvoDependants).toMasterDataVO();
 
-		fireApplicationObserverEvent();
 		return new CollectableMasterDataWithDependants(clctNew.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoInserted, this.readDependants(mdvoInserted.getId())));
 	}
 
@@ -288,14 +287,12 @@ public class UserCollectController extends MasterDataCollectController {
 
 		final MasterDataVO mdvoUpdated = UserDelegate.getInstance().modify(user, mpclctDependants.toDependantMasterDataMap()).toMasterDataVO();
 
-		fireApplicationObserverEvent();
 		return new CollectableMasterDataWithDependants(clct.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoUpdated, this.readDependants(mdvoUpdated.getId())));
 	}
 
 	@Override
 	protected void deleteCollectable(CollectableMasterDataWithDependants clct) throws CommonBusinessException {
 		UserDelegate.getInstance().remove(new UserVO(clct.getMasterDataCVO()));
-		fireApplicationObserverEvent();
 	}
 
 	private void getAdditionalDataFromView(UserVO user) throws CommonBusinessException {

@@ -87,7 +87,6 @@ import javax.swing.text.JTextComponent;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.nuclos.client.LocalUserProperties;
-import org.nuclos.client.application.assistant.NuclosStartupPanel;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.LocaleDelegate;
@@ -410,15 +409,6 @@ public class MainController {
 			// Show the internal informations if they have changed since the last start of the client
 			showInternalInfoIfChanged();
 
-			// Show startup panel to configure an application
-			SwingUtilities.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					showStartupPanel(true);
-				}
-			});
-
 			// Debug purposes
 			final String sKeyWindowShow = "CtlShiftF11";
 			frm.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F11, (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK)), sKeyWindowShow);
@@ -616,25 +606,6 @@ public class MainController {
 					}
 				});
 			}};
-
-	private Action cmdOpenNucletWizard = new AbstractAction(
-		CommonLocaleDelegate.getMessage("miNucletWizard", "Nuclet Wizard"),
-		MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.73-radar.png"))) {
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			UIUtils.runCommand(frm, new Runnable() {
-				@Override
-				public void run() {
-					try {
-						showStartupPanel(false);
-					}
-					catch (Exception e) {
-						LOG.error("showStartupPanel failed: " + e, e);
-					}
-				}
-			});
-		}};
 
 	private Action cmdOpenSettings = new AbstractAction() {
 
@@ -921,7 +892,6 @@ public class MainController {
 		//mainController.put("cmdOpenEntityWizard", cmdOpenEntityWizard);
 		mainController.put("cmdOpenRelationEditor", cmdOpenRelationEditor);
 		mainController.put("cmdOpenCustomComponentWizard", cmdOpenCustomComponentWizard);
-		mainController.put("cmdOpenNucletWizard", cmdOpenNucletWizard);
 		//mainController.put("cmdRefreshClientCaches", cmdRefreshClientCaches);
 		mainController.put("cmdSelectAll", cmdSelectAll);
 		mainController.put("cmdHelpContents", cmdHelpContents);
@@ -1492,45 +1462,6 @@ public class MainController {
 	public static void cmdCycleThroughWindows(boolean forward) {
 		//frm.cmdCycleThroughWindows(forward);
 	}
-
-	protected void showStartupPanel(boolean respectPreferences) {
-
-
-		if(!SecurityCache.getInstance().isActionAllowed("NucletWizard")) {
-			return;
-		}
-
-
-		boolean open = true;
-
-		if(respectPreferences) {
-			String load = ClientPreferences.getUserPreferences().node("nuclet").get("loadonstart", "true");
-			if("false".equals(load)) {
-				open = false;
-			}
-		}
-
-		if(open) {
-			NuclosStartupPanel panel = new NuclosStartupPanel(this.getFrame(), getUserName());
-			JScrollPane scroll = new JScrollPane(panel);
-			scroll.getHorizontalScrollBar().setUnitIncrement(20);
-			scroll.getVerticalScrollBar().setUnitIncrement(20);
-			final MainFrameTab ifrm = MainController.newMainFrameTab(null, "Nuclet Wizard");
-			ifrm.setTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.73-radar.png"));
-			ifrm.setLayeredComponent(scroll);
-			panel.setParent(ifrm);
-
-			int x = this.getDesktopPane().getWidth()/2-panel.getPreferredSize().width/2;
-			int y = this.getDesktopPane().getHeight()/2-panel.getPreferredSize().height/2;
-			x = x<0?0:x;
-			y = y<0?0:y;
-			ifrm.setBounds(x, y, panel.getWidth(), panel.getHeight());
-
-			this.getDesktopPane().add(ifrm);
-			ifrm.setVisible(true);
-		}
-	}
-
 
 	public void invalidateAllClientCaches() {
 		Modules.getInstance().invalidate();

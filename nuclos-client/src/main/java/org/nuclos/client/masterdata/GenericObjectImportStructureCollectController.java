@@ -117,7 +117,6 @@ public class GenericObjectImportStructureCollectController extends MasterDataCol
 
 		final MasterDataVO mdvoInserted = delegate.createImportStructure(new MasterDataWithDependantsVO(clctNew.getMasterDataCVO(), mpmdvoDependants));
 
-		fireApplicationObserverEvent();
 		return new CollectableMasterDataWithDependants(clctNew.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoInserted, this.readDependants(mdvoInserted.getId())));
 	}
 
@@ -128,14 +127,12 @@ public class GenericObjectImportStructureCollectController extends MasterDataCol
 		final Object oId = this.delegate.modifyImportStructure(new MasterDataWithDependantsVO(clct.getMasterDataCVO(), mpclctDependants.toDependantMasterDataMap()));
 
 		final MasterDataVO mdvoUpdated = this.mddelegate.get(this.getEntityName(), oId);
-		fireApplicationObserverEvent();
 		return new CollectableMasterDataWithDependants(clct.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoUpdated, this.readDependants(mdvoUpdated.getId())));
 	}
 
 	@Override
 	protected void deleteCollectable(CollectableMasterDataWithDependants clct) throws CommonBusinessException {
 		this.delegate.removeImportStructure(clct.getMasterDataCVO());
-	    fireApplicationObserverEvent();
 	}
 
 	/**

@@ -123,7 +123,6 @@ public class LdapServerCollectController extends MasterDataCollectController {
 			throw new PointerException(ex.getMessage());
 		}
 
-		fireApplicationObserverEvent();
 		return new CollectableMasterDataWithDependants(clctNew.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoInserted, this.readDependants(mdvoInserted.getId())));
 	}
 
@@ -138,7 +137,6 @@ public class LdapServerCollectController extends MasterDataCollectController {
 		catch (CommonBusinessException ex) {
 			throw new PointerException(ex.getMessage());
 		}
-		fireApplicationObserverEvent();
 		return new CollectableMasterDataWithDependants(clct.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoUpdated, this.readDependants(mdvoUpdated.getId())));
 	}
 
