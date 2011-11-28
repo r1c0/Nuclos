@@ -79,21 +79,12 @@ command-attributes:
 	<menu name="file" text="^Datei" resId="miFile">
 		<menuitem text="Execute reporting" resId="nuclos.entity.reportExecution.label" commandreference="MainController.cmdExecuteRport">
 			<condition type="SecurityAction" value="ExecuteReports" />
+			<separator />
 		</menuitem>
-		<separator>
-			<condition type="SecurityAction" value="ExecuteReports" />
-		</separator>
 
 		<menuitem text="Meine Suchfilter anzeigen" resId="ExplorerPanel.3" accelerator="alt pressed F2" commandreference="MainController.cmdShowPersonalSearchFilters" />
 		<menuitem text="Meine Aufgaben anzeigen" resId="miShowPersonalTasks" commandreference="MainController.cmdShowPersonalTasks" />
 		<menuitem text="Fristen anzeigen" resId="miShowTimelimitTasks" commandreference="MainController.cmdShowTimelimitTasks" />
-
-		<separator>
-			<condition type="SecurityAction" value="NucletWizard" />
-		</separator>
-		<menuitem text="Nuclet Wizard" resId="miNucletWizard" commandreference="MainController.cmdOpenNucletWizard">
-			<condition type="SecurityAction" value="NucletWizard" />
-		</menuitem>
 
 		<separator />
 		<menuitem text="Eigenes ^Passwort &#x00e4;ndern..." resId="miChPass" accelerator="alt pressed F3" commandreference="MainController.cmdChangePassword" />

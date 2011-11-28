@@ -136,6 +136,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private static final String PREFS_NODE_DEFAULT_WORKSPACE = "defaultworkspace";
 	private static final String PREFS_NODE_LAST_WORKSPACE = "lastworkspace";
 	private static final String PREFS_NODE_LAST_WORKSPACE_ID = "lastworkspaceid";
+	private static final String PREFS_NODE_LAST_ALWAYS_OPEN_WORKSPACE = "lastalwaysopenworkspace";
+	private static final String PREFS_NODE_LAST_ALWAYS_OPEN_WORKSPACE_ID = "lastalwaysopenworkspaceid";
 	private static final String PREFS_NODE_WORKSPACE_ORDER = "workspaceorder";
 	private static final String PREFS_NODE_WORKSPACE_ORDER_IDS = "workspaceorderids";
 
@@ -186,6 +188,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private static String defaultWorkspace;
 	private static String lastWorkspace;
 	private static Long lastWorkspaceId;
+	private static String lastAlwaysOpenWorkspace;
+	private static Long lastAlwaysOpenWorkspaceId;
 
 	private static final AbstractAction actDeactivateSplitting = new AbstractAction() {
 
@@ -693,8 +697,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			MenuGenerator menuGen = new MenuGenerator(commandMap, componentMap, exportNotJMenuComponents);
 			menuGen.processMenuConfig(getClass().getClassLoader().getResourceAsStream("nuclos-menuconfig.xml"));
 			Enumeration<URL> resources = getClass().getClassLoader().getResources("menuconfig.xml");
-			while (resources.hasMoreElements())
+			while (resources.hasMoreElements()) {
 				menuGen.processMenuConfig(resources.nextElement());
+			}
 			JMenuBar mb = menuGen.getJMenuBar();
 			setJMenuBar(mb);
 			if (Main.isMacOSX() && !exportNotJMenuComponents.isEmpty()) {
@@ -716,8 +721,10 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			throw new NuclosFatalException(e);
 		}
 
-		addStaticsToMenu();
-		addEntitiesToMenu();
+		if (getWorkspace() != null && !getWorkspace().getWoDesc().isHideMenuBar()) {
+			addStaticsToMenu();
+			addEntitiesToMenu();
+		}
 		setupStartmenu();
 	}
 
@@ -1740,6 +1747,10 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		mainFramePrefs.put(PREFS_NODE_DEFAULT_WORKSPACE, defaultWorkspace);
 		mainFramePrefs.put(PREFS_NODE_LAST_WORKSPACE, getWorkspace()==null?defaultWorkspace:getWorkspace().getName());
 		mainFramePrefs.putLong(PREFS_NODE_LAST_WORKSPACE_ID, getWorkspace().getId());
+		if (lastAlwaysOpenWorkspace != null)
+			mainFramePrefs.put(PREFS_NODE_LAST_ALWAYS_OPEN_WORKSPACE, lastAlwaysOpenWorkspace);
+		if (lastAlwaysOpenWorkspaceId != null)
+			mainFramePrefs.putLong(PREFS_NODE_LAST_ALWAYS_OPEN_WORKSPACE_ID, lastAlwaysOpenWorkspaceId);
 		PreferencesUtils.putStringList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER, 
 				CollectionUtils.transform(WorkspaceChooserController.getWorkspaceHeaders(), 
 						new Transformer<WorkspaceVO, String>() {
@@ -1783,6 +1794,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		defaultWorkspace = mainFramePrefs.get(PREFS_NODE_DEFAULT_WORKSPACE, CommonLocaleDelegate.getMessage("Workspace.Default","Standard"));
 		lastWorkspace = mainFramePrefs.get(PREFS_NODE_LAST_WORKSPACE, CommonLocaleDelegate.getMessage("Workspace.Default","Standard"));
 		lastWorkspaceId = mainFramePrefs.getLong(PREFS_NODE_LAST_WORKSPACE_ID, 0l);
+		lastAlwaysOpenWorkspace = mainFramePrefs.get(PREFS_NODE_LAST_ALWAYS_OPEN_WORKSPACE, null);
+		lastAlwaysOpenWorkspaceId = mainFramePrefs.getLong(PREFS_NODE_LAST_ALWAYS_OPEN_WORKSPACE_ID, 0l);
 		WorkspaceChooserController.setupWorkspaces(
 				PreferencesUtils.getLongList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER_IDS), 
 				PreferencesUtils.getStringList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER));
@@ -2063,6 +2076,38 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 */
 	public static Long getLastWorkspaceIdFromPreferences() {
 		return lastWorkspaceId;
+	}
+	
+	/**
+	 *
+	 * @return
+	 */
+	public static String getLastAlwaysOpenWorkspaceFromPreferences() {
+		return lastAlwaysOpenWorkspace;
+	}
+	
+	/**
+	 * 
+	 * @param lastAlwaysOpenWorkspace
+	 */
+	public static void setLastAlwaysOpenWorkspace(String lastAlwaysOpenWorkspace) {
+		MainFrame.lastAlwaysOpenWorkspace = lastAlwaysOpenWorkspace;
+	}
+
+	/**
+	 * 
+	 * @param lastAlwaysOpenWorkspaceId
+	 */
+	public static void setLastAlwaysOpenWorkspaceId(Long lastAlwaysOpenWorkspaceId) {
+		MainFrame.lastAlwaysOpenWorkspaceId = lastAlwaysOpenWorkspaceId;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public static Long getLastAlwaysOpenWorkspaceIdFromPreferences() {
+		return lastAlwaysOpenWorkspaceId;
 	}
 
 	/**

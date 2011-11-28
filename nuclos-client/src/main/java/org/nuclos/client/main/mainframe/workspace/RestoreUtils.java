@@ -52,6 +52,7 @@ import org.nuclos.common.WorkspaceDescription.Tabbed;
 import org.nuclos.common.WorkspaceDescriptionDefaultsFactory;
 import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Predicate;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
@@ -153,22 +154,56 @@ public class RestoreUtils {
 	 * 
 	 * @param lastWorkspaceIdFromPreferences
 	 * @param lastWorkspaceFromPreferences
-	 * @throws CommonBusinessException 
+	 * @param lastAlwaysOpenWorkspaceIdFromPreferences
+	 * @param lastAlwaysOpenWorkspaceFromPreferences
+	 * @throws CommonBusinessException
 	 */
-	public static void restoreWorkspaceThreaded(Long lastWorkspaceIdFromPreferences, String lastWorkspaceFromPreferences) throws CommonBusinessException {
+	public static void restoreWorkspaceThreaded(Long lastWorkspaceIdFromPreferences, String lastWorkspaceFromPreferences, 
+			Long lastAlwaysOpenWorkspaceIdFromPreferences, String lastAlwaysOpenWorkspaceFromPreferences) throws CommonBusinessException {
 		cachedActions = Main.getMainController().getGenericActions();
 		
 		WorkspaceVO wovoToRestore = null;
-		for (WorkspaceVO wovo : MainFrame.getWorkspaceHeaders()) {
-			if (lastWorkspaceIdFromPreferences.equals(wovo.getId())) {
-				wovoToRestore = wovo;
-				break; // priority of id is higher
+		
+		List<WorkspaceVO> alwaysOpenWorkspaces = CollectionUtils.select(MainFrame.getWorkspaceHeaders(), new Predicate<WorkspaceVO>() {
+			@Override
+			public boolean evaluate(WorkspaceVO t) {
+				return t.getWoDesc().isAlwaysOpenAtLogin();
 			}
-			// if id not found try to search for name
-			if (lastWorkspaceFromPreferences.equals(wovo.getName())) {
-				wovoToRestore = wovo; 
+		});
+		
+		if (alwaysOpenWorkspaces.size() > 0) {
+			if (alwaysOpenWorkspaces.size() == 1) {
+				wovoToRestore = alwaysOpenWorkspaces.get(0);
+			} else {
+				if (lastAlwaysOpenWorkspaceIdFromPreferences != null && lastAlwaysOpenWorkspaceIdFromPreferences.longValue() != 0l &&
+						lastAlwaysOpenWorkspaceFromPreferences != null) {
+					for (WorkspaceVO wovo : alwaysOpenWorkspaces) {
+						if (lastAlwaysOpenWorkspaceIdFromPreferences.equals(wovo.getId())) {
+							wovoToRestore = wovo;
+							break; // priority of id is higher
+						}
+						// if id not found try to search for name
+						if (lastAlwaysOpenWorkspaceFromPreferences.equals(wovo.getName())) {
+							wovoToRestore = wovo; 
+						}
+					}
+				} else {
+					wovoToRestore = alwaysOpenWorkspaces.get(0); // select first always open workspace
+				}
+			}
+		} else {
+			for (WorkspaceVO wovo : MainFrame.getWorkspaceHeaders()) {
+				if (lastWorkspaceIdFromPreferences.equals(wovo.getId())) {
+					wovoToRestore = wovo;
+					break; // priority of id is higher
+				}
+				// if id not found try to search for name
+				if (lastWorkspaceFromPreferences.equals(wovo.getName())) {
+					wovoToRestore = wovo; 
+				}
 			}
 		}
+		
 		
 		if (wovoToRestore == null && !MainFrame.getWorkspaceHeaders().isEmpty()) {
 			wovoToRestore = MainFrame.getWorkspaceHeaders().get(0);
@@ -226,6 +261,10 @@ public class RestoreUtils {
 		}
 		
 		MainFrame.setWorkspace(wovo);
+		if (wd.isAlwaysOpenAtLogin()) {
+			MainFrame.setLastAlwaysOpenWorkspace(wovo.getName());
+			MainFrame.setLastAlwaysOpenWorkspaceId(wovo.getId());
+		}
 		PreferencesMigration.migrateEntityAndSubFormColumnPreferences();
 		
 		threadList.clear();

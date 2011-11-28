@@ -35,7 +35,10 @@ public class WorkspaceDescription implements Serializable {
 	private static final long serialVersionUID = 6637996725938917463L;
 
 	private String name;
+	private boolean hide;
 	private boolean hideName;
+	private boolean hideMenuBar;
+	private boolean alwaysOpenAtLogin;
 	private String nuclosResource;
 	private List<Frame> frames;
 	private List<EntityPreferences> entityPreferences;
@@ -51,12 +54,36 @@ public class WorkspaceDescription implements Serializable {
 		this.name = name;
 	}
 
+	public boolean isHide() {
+		return hide;
+	}
+
+	public void setHide(boolean hide) {
+		this.hide = hide;
+	}
+
 	public boolean isHideName() {
 		return this.hideName;
 	}
 
 	public void setHideName(boolean hideName) {
 		this.hideName = hideName;
+	}
+	
+	public boolean isHideMenuBar() {
+		return hideMenuBar;
+	}
+
+	public void setHideMenuBar(boolean hideMenuBar) {
+		this.hideMenuBar = hideMenuBar;
+	}
+
+	public boolean isAlwaysOpenAtLogin() {
+		return alwaysOpenAtLogin;
+	}
+
+	public void setAlwaysOpenAtLogin(boolean alwaysOpenAtLogin) {
+		this.alwaysOpenAtLogin = alwaysOpenAtLogin;
 	}
 
 	public String getNuclosResource() {
@@ -1253,7 +1280,10 @@ public class WorkspaceDescription implements Serializable {
 	 */
 	public void importHeader(WorkspaceDescription wd) {
 		setName(wd.getName());
+		setHide(wd.isHide());
 		setHideName(wd.isHideName());
+		setHideMenuBar(wd.isHideMenuBar());
+		setAlwaysOpenAtLogin(wd.isAlwaysOpenAtLogin());
 		setNuclosResource(wd.getNuclosResource());
 	}
 	

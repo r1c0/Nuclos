@@ -51,6 +51,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
@@ -199,6 +200,17 @@ public class MenuGenerator {
 			menu.setVisible(setItemVisible);
 		}
 		else if(menuElement.getTagName().equals("menuitem")) {
+			if (MainFrame.getWorkspace() == null || MainFrame.getWorkspace().getWoDesc().isHideMenuBar()) {
+				if ("MainController.cmdExecuteRport".equals(menuElement.getAttribute("commandreference"))) {
+					return insertIndex;
+				} else if ("MainController.cmdShowPersonalSearchFilters".equals(menuElement.getAttribute("commandreference"))) {
+					return insertIndex;
+				} else if ("MainController.cmdShowPersonalTasks".equals(menuElement.getAttribute("commandreference"))) {
+					return insertIndex;
+				} else if ("MainController.cmdShowTimelimitTasks".equals(menuElement.getAttribute("commandreference"))) {
+					return insertIndex;
+				}
+			}
 			Action a;
 			if(nullIfEmpty(menuElement.getAttribute("commandreference")) != null) {
 				String comref = menuElement.getAttribute("commandreference");

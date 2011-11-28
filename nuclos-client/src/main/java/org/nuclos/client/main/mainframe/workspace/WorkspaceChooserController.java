@@ -43,11 +43,13 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -58,7 +60,10 @@ import javax.swing.SwingWorker;
 import javax.swing.TransferHandler;
 
 import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.main.ActionWithMenuPath;
+import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.ui.Bubble;
@@ -190,38 +195,81 @@ public class WorkspaceChooserController {
 	private static void refreshWorkspaces() {
 		workspacePanel.removeAll();
 		
+		final List<WorkspaceVO> hidden = new ArrayList<WorkspaceVO>();
 		for (final WorkspaceVO wovo : workspaces) {
 			
-			final WorkspaceLabel wl = new WorkspaceLabel(wovo);
-			wl.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					if (enabled && SwingUtilities.isLeftMouseButton(e) &&
-							!wl.isSelected()) {
-						try {
-							RestoreUtils.storeWorkspace(getSelectedWorkspace());
-						} catch (CommonBusinessException e1) {
-							if ("Workspace.not.found".equals(e1.getMessage())) {
-								workspaces.remove(getSelectedWorkspace());
-								refreshWorkspaces();
-							} else {
-								Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e1);
-							}
-						}
-						try {
-							RestoreUtils.clearAndRestoreWorkspace(getPrefsFacade().getWorkspace(wl.getWorkspaceVO().getId()));
-						} catch (CommonBusinessException e1) {
-							if ("Workspace.not.found".equals(e1.getMessage())) {
-								workspaces.remove(wl.getWorkspaceVO());
-								refreshWorkspaces();
-							}
-							Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e1);
+			if (wovo.getWoDesc().isHide()) {
+				if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN)) {
+					hidden.add(wovo);
+				}
+			} else {
+				final WorkspaceLabel wl = new WorkspaceLabel(wovo);
+				wl.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						if (enabled && SwingUtilities.isLeftMouseButton(e) && !wl.isSelected()) {
+							restoreWorkspace(wl.getWorkspaceVO());
 						}
 					}
+				});
+				setupContextMenu(wl);
+				workspacePanel.add(wl);
+			}
+		}
+		
+		if (!hidden.isEmpty()) {
+			final Label lbHidden = new Label(" + ", 
+					null, //MainFrame.resizeAndCacheIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.174-imac.png"), ICON_SIZE)
+					SwingConstants.LEFT) {
+				@Override
+				boolean isSelected() {
+					return false;
+				}
+				@Override
+				boolean drawDogEar() {
+					return false;
+				}
+			};
+			lbHidden.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					UIUtils.runCommand(Main.getMainFrame(), new Runnable() {
+						
+						@Override
+						public void run() {
+							if (enabled) {
+								final JPopupMenu popup = new JPopupMenu();
+								for (WorkspaceVO hiddenWovo : CollectionUtils.sorted(hidden,
+										new Comparator<WorkspaceVO>() {
+											@Override
+											public int compare(WorkspaceVO o1, WorkspaceVO o2) {
+												return StringUtils.emptyIfNull(o1.getName()).compareToIgnoreCase(o2.getName());
+											}
+										})) {
+									final JMenu menuHiddenWorkspace = new JMenu(hiddenWovo.getName());
+									addMenuItems(new MenuItemContainer() {
+										@Override
+										public void addSeparator() {
+											menuHiddenWorkspace.addSeparator();
+										}
+										@Override
+										public void addLabel(String label) {
+											menuHiddenWorkspace.add(new JLabel(label));
+										}
+										@Override
+										public void add(JMenuItem mi) {
+											menuHiddenWorkspace.add(mi);
+										}
+									}, hiddenWovo, lbHidden);
+									popup.add(menuHiddenWorkspace);
+								}
+								popup.show(lbHidden, 10, 10);
+							}
+						}
+					});
 				}
 			});
-			setupContextMenu(wl);
-			workspacePanel.add(wl);
+			workspacePanel.add(lbHidden);
 		}
 		
 		contentPanel.invalidate();
@@ -245,6 +293,50 @@ public class WorkspaceChooserController {
 	
 	public static List<WorkspaceVO> getWorkspaceHeaders() {
 		return new ArrayList<WorkspaceVO>(workspaces);
+	}
+	
+	public static void addGenericActions(List<GenericAction> genericActions) {
+		if (genericActions != null) {
+			for (final WorkspaceVO wovo : workspaces) {
+				final Action action = new AbstractAction(wovo.getName(), getWorkspaceIcon(wovo, MainFrame.TAB_CONTENT_ICON_MAX)) {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						restoreWorkspace(wovo);
+					}
+				};
+				WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
+				wa.setAction(MainController.GENERIC_RESTORE_WORKSPACE_ACTION);
+				wa.putStringParameter("workspace", (String) action.getValue(Action.NAME));
+				wa.putBooleanParameter("assigned", wovo.isAssigned());
+				genericActions.add(new GenericAction(wa, new ActionWithMenuPath(
+						new String[]{CommonLocaleDelegate.getMessage("nuclos.entity.workspace.label", "Arbeitsumgebung")}, 
+						action)));
+			}
+		}
+	}
+	
+	private static void restoreWorkspace(final WorkspaceVO wovo) {
+		if (wovo != null && !wovo.equals(getSelectedWorkspace())) {
+			try {
+				RestoreUtils.storeWorkspace(getSelectedWorkspace());
+			} catch (CommonBusinessException e1) {
+				if ("Workspace.not.found".equals(e1.getMessage())) {
+					workspaces.remove(getSelectedWorkspace());
+					refreshWorkspaces();
+				} else {
+					Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e1);
+				}
+			}
+			try {
+				RestoreUtils.clearAndRestoreWorkspace(getPrefsFacade().getWorkspace(wovo.getId()));
+			} catch (CommonBusinessException e1) {
+				if ("Workspace.not.found".equals(e1.getMessage())) {
+					workspaces.remove(wovo);
+					refreshWorkspaces();
+				}
+				Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e1);
+			}
+		}
 	}
 	
 	public static WorkspaceVO getSelectedWorkspace() {
@@ -283,7 +375,7 @@ public class WorkspaceChooserController {
 		return enabled;
 	}
 	
-	private static void setupContextMenu(final WorkspaceLabel wl) {		
+	private static void setupContextMenu(final WorkspaceLabel wl) {
 		wl.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(final MouseEvent e) {
@@ -292,405 +384,464 @@ public class WorkspaceChooserController {
 					@Override
 					public void run() {
 						if (enabled && SwingUtilities.isRightMouseButton(e)) {
-							
-							/**
-							 * CHECK 
-							 */
-							try {
-								getPrefsFacade().getWorkspace(wl.getWorkspaceVO().getId());
-							} catch (Exception ex) {
-								if ("Workspace.not.found".equals(ex.getMessage())) {
-									workspaces.remove(wl.getWorkspaceVO());
-									refreshWorkspaces();
-								}
-								Errors.getInstance().showExceptionDialog(Main.getMainFrame(), ex);
-								return;
-							}
-							
 							final JPopupMenu popup = new JPopupMenu();
-							popup.add(new JLabel("<html><b>"+CommonLocaleDelegate.getMessage("WorkspaceChooserController.2","Arbeitsumgebung")+"</b></html>"));
-							
-							/**
-							 * REFRESH
-							 */
-							final JMenuItem miRefresh = new JMenuItem(new AbstractAction(
-								CommonLocaleDelegate.getMessage("WorkspaceChooserController.13","Leiste aktualisieren"), 
-								MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconRefresh16(), ICON_SIZE)) {
-
-									private static final long serialVersionUID = 1L;
-
-									@Override
-									public void actionPerformed(ActionEvent e) {
-										UIUtils.runCommand(Main.getMainFrame(), new Runnable() {
-											@Override
-											public void run() {
-												workspaceOrder.clear();
-												workspaceOrderIds.clear();
-												for (WorkspaceVO wovo : workspaces) {
-													workspaceOrderIds.add(wovo.getId());
-												}
-												workspaces.clear();
-												setupWorkspaces();
-											}
-										});
-									}
-							});
-							popup.add(miRefresh);
-							
-							if (wl.getWorkspaceVO().getAssignedWorkspace() == null ||
-									SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN) || 
-									SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CREATE_NEW))
-								popup.addSeparator();
-							
-							/**
-							 * NEW
-							 */
-							if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN) || 
-									SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CREATE_NEW)) {
-								final JMenuItem miNew = new JMenuItem(new AbstractAction(
-									CommonLocaleDelegate.getMessage("WorkspaceChooserController.1","Neu"), 
-									MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconNew16(), ICON_SIZE)) {
-			
-										private static final long serialVersionUID = 1L;
-			
-									@Override
-									public void actionPerformed(ActionEvent e) {
-										if (!RestoreUtils.closeTabs(true)) {
-											return;
-										}
-										
-										try {
-											WorkspaceVO wovo = new WorkspaceVO(); // only for header information
-											WorkspaceEditor we = new WorkspaceEditor(wovo);
-											if (we.isSaved()) {
-												try {
-													RestoreUtils.storeWorkspace(getSelectedWorkspace());
-												} catch (Exception e2) {
-													Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e2);
-												}
-												addWorkspace(RestoreUtils.clearAndRestoreToDefaultWorkspace(wovo.getWoDesc()), true);
-											}
-										} catch (Exception e1) {
-											Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e1);
-										} 
-									}
-								});
-								popup.add(miNew);
-							}
-							
-							/**
-							 * EDIT
-							 */
-							if (wl.getWorkspaceVO().getAssignedWorkspace() == null || SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN)) {
-								final JMenuItem miEdit = new JMenuItem(new AbstractAction(
-										CommonLocaleDelegate.getMessage("WorkspaceChooserController.3","Eigenschaften"), 
-										MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconEdit16(), ICON_SIZE)) {
-
-										private static final long serialVersionUID = 1L;
-			
-										@Override
-										public void actionPerformed(ActionEvent e) {
-											WorkspaceEditor we = new WorkspaceEditor(wl.getWorkspaceVO());
-											try {
-												if (we.isSaved()) {
-													getPrefsFacade().storeWorkspaceHeaderOnly(wl.getWorkspaceVO());
-													refreshWorkspaces();
-												}
-											} catch (Exception e1) {
-												we.revertChanges();
-												Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e1);
-											} 
-										}
-									});
-								popup.add(miEdit);
-							}
-							
-							/**
-							 * CLONE
-							 */
-							if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN) || 
-									SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CREATE_NEW)) {
-								final JMenuItem miSaveAs = new JMenuItem(new AbstractAction(
-									CommonLocaleDelegate.getMessage("WorkspaceChooserController.4","Klonen"), 
-									MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconClone16(), ICON_SIZE)) {
-			
-									private static final long serialVersionUID = 1L;
-			
-									@Override
-									public void actionPerformed(ActionEvent e) {
-										String newName = JOptionPane.showInputDialog(Main.getMainFrame(), 
-											CommonLocaleDelegate.getMessage("WorkspaceChooserController.6","Arbeitsumgebung \"{0}\" klonen",wl.getWorkspaceVO().getWoDesc().getName()) + ":", 
-											CommonLocaleDelegate.getMessage("WorkspaceChooserController.5","Neuer Name"), 
-											JOptionPane.INFORMATION_MESSAGE);
-										
-										if (!StringUtils.looksEmpty(newName)) {
-											if (getSelectedWorkspace().equals(wl.getWorkspaceVO())) {
-												WorkspaceVO wovo = new WorkspaceVO();
-												wovo.importHeader(wl.getWorkspaceVO().getWoDesc());
-												wovo.setName(newName);
-												wovo.getWoDesc().addAllEntityPreferences(wl.getWorkspaceVO().getWoDesc().getEntityPreferences());
-			
-												try {
-													addWorkspace(RestoreUtils.storeWorkspace(wovo), false);
-												} catch (CommonBusinessException e1) {
-													Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e1);									
-												}
-											} else {
-												try {
-													PreferencesFacadeRemote prefsFac = getPrefsFacade();
-													WorkspaceVO wovo = prefsFac.getWorkspace(wl.getWorkspaceVO().getId());
-													wovo.setId(null);
-													wovo.setName(newName);
-													wovo = prefsFac.storeWorkspace(wovo);
-													addWorkspace(wovo, false);
-												} catch (Exception e1) {
-													Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e1);
-												} 
-											}
-										}
-									}
-								});
-								popup.add(miSaveAs);
-							}
-							
-							/**
-							 * REMOVE
-							 */
-							if (wl.getWorkspaceVO().getAssignedWorkspace() == null || SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN)) {
-								popup.addSeparator();
-								final JMenuItem miRemove = new JMenuItem(new AbstractAction(
-									CommonLocaleDelegate.getMessage("WorkspaceChooserController.7","Löschen"), 
-									MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconRealDelete16(), ICON_SIZE)) {
-									
-									private static final long serialVersionUID = 1L;
-			
-									@Override
-									public void actionPerformed(ActionEvent e) {
-										if (wl.getWorkspaceVO().equals(getSelectedWorkspace()) && !RestoreUtils.closeTabs(true)) {
-											return;
-										}
-										
-										if (JOptionPane.YES_OPTION == 
-											JOptionPane.showConfirmDialog(Main.getMainFrame(), 
-												CommonLocaleDelegate.getMessage("WorkspaceChooserController.8","Möchten Sie wirklich die Arbeitsumgebung \"{0}\" löschen?",
-														wl.getWorkspaceVO().getWoDesc().getName()), 
-												CommonLocaleDelegate.getMessage("WorkspaceChooserController.9","Sind Sie sicher?"), 
-												JOptionPane.YES_NO_OPTION)) {
-											
-											if (wl.getWorkspaceVO().equals(getSelectedWorkspace()) && !RestoreUtils.clearWorkspace()) {
-												return;
-											}
-											
-											getPrefsFacade().removeWorkspace(wl.getWorkspaceVO().getAssignedWorkspace()==null?
-													wl.getWorkspaceVO().getId():
-														wl.getWorkspaceVO().getAssignedWorkspace());
-											workspaces.remove(wl.getWorkspaceVO());
-											
-											if (wl.getWorkspaceVO().equals(getSelectedWorkspace())) {
-												for (WorkspaceVO wovo : workspaces) {
-													try {
-														RestoreUtils.clearAndRestoreWorkspace(getPrefsFacade().getWorkspace(wovo.getId()));
-														setSelectedWorkspace(wovo);
-														refreshWorkspaces();
-														return;
-													} catch (Exception ex) {
-														// deleted workspaces
-													}
-												}
-												
-												if (workspaces.isEmpty()) {
-													try {
-														addWorkspace(RestoreUtils.clearAndRestoreToDefaultWorkspace(), true);
-													} catch (CommonBusinessException e1) {
-														Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e1);
-													}
-												} 
-											} else {
-												refreshWorkspaces();
-											}
-										}
-									}
-								});
-								popup.add(miRemove);
-							}
-							
-							if (wl.getWorkspaceVO().getAssignedWorkspace() != null || 
-									SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN))
-								popup.addSeparator();
-							
-							if(SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN)) {
-								/**
-								 * ASSIGN
-								 */
-								final JMenuItem miAssign = new JMenuItem(new AbstractAction(
-										CommonLocaleDelegate.getMessage("WorkspaceChooserController.10","Benutzergruppen zuweisen"), 
-										MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconRelate(), ICON_SIZE)) {
-										
-										private static final long serialVersionUID = 1L;
-
-										@Override
-										public void actionPerformed(ActionEvent e) {
-											
-											// assigned and assignable roles
-											final Collection<Long> assignedRoleIds = getPrefsFacade().getAssignedRoleIds(wl.getWorkspaceVO().getAssignedWorkspace());
-											final Collection<RoleAssignment> assignableRoles = CollectionUtils.transform(getPrefsFacade().getAssignableRoles(), new Transformer<EntityObjectVO, RoleAssignment>() {
-												@Override
-												public RoleAssignment transform(EntityObjectVO eovo) {
-													return new RoleAssignment(eovo.getField("name", String.class), eovo.getId());
-												}
-											});
-											
-											// select controller
-											ChoiceList<RoleAssignment> cl = new ChoiceList<RoleAssignment>();
-											Comparator<RoleAssignment> comp = new Comparator<RoleAssignment>(){
-												@Override
-												public int compare(RoleAssignment o1,
-														RoleAssignment o2) {
-													return o1.role.compareToIgnoreCase(o2.role);
-												}};
-											cl.set(assignableRoles, comp);
-											cl.setSelectedFields(CollectionUtils.sorted(CollectionUtils.select(assignableRoles, new Predicate<RoleAssignment>() {
-												@Override
-												public boolean evaluate(RoleAssignment ra) {
-													return assignedRoleIds.contains(ra.id);
-												}
-											}), comp));
-											final SelectObjectsController<RoleAssignment> selectCtrl = new SelectObjectsController<RoleAssignment>(
-													Main.getMainFrame(), 
-													new DefaultSelectObjectsPanel<RoleAssignment>());
-											selectCtrl.setModel(cl);
-											
-											// result ok=true
-											if (selectCtrl.run(CommonLocaleDelegate.getMessage("WorkspaceChooserController.11","Arbeitsumgebung Benutzergruppen zuweisen"))) {
-												final Icon icoBackup = wl.getIcon();
-												final String toolTipBackup = wl.getToolTipText();
-												
-												wl.setIcon(MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconSaveS16(), ICON_SIZE));
-												wl.setToolTipText(CommonLocaleDelegate.getResource("WorkspaceChooserController.12","Zuweisung wird gespeichert") + "...");
-												
-												WorkspaceChooserController.setEnabled(false);
-												
-												SwingWorker<WorkspaceVO, WorkspaceVO> worker = new SwingWorker<WorkspaceVO, WorkspaceVO>() {
-													@Override
-													protected WorkspaceVO doInBackground() throws Exception {
-														Thread.sleep(500); // otherwise eyesore flash of save icon
-														if (getSelectedWorkspace().equals(wl.getWorkspaceVO()))
-															RestoreUtils.storeWorkspace(wl.getWorkspaceVO());
-														return getPrefsFacade().assignWorkspace(wl.getWorkspaceVO(), CollectionUtils.transform(selectCtrl.getSelectedObjects(), new Transformer<RoleAssignment, Long>() {
-															@Override
-															public Long transform(RoleAssignment ra) {
-																return ra.id;
-															}
-														}));
-													}
-													@Override
-													protected void done() {
-														try {
-															final WorkspaceVO assignedWorkspace = get();
-															final int index = workspaces.indexOf(wl.getWorkspaceVO());
-															workspaces.remove(wl.getWorkspaceVO());
-															workspaces.add(index, assignedWorkspace);
-															if (wl.getWorkspaceVO().equals(getSelectedWorkspace())) {
-																setSelectedWorkspace(assignedWorkspace);
-															}
-															refreshWorkspaces();
-															
-														} catch (ExecutionException e) {
-															if (e.getCause() != null && e.getCause() instanceof CommonBusinessException) {
-																Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e.getCause());
-															} else {
-																Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e);
-															}
-														} catch (Exception e) {
-															Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e);
-														} finally {
-															wl.setIcon(icoBackup);
-															wl.setToolTipText(toolTipBackup);
-															WorkspaceChooserController.setEnabled(true);
-														} 
-													}
-												};
-												
-												worker.execute();
-											}
-											
-										}
-									});
-									popup.add(miAssign);
-									
-									if (wl.getWorkspaceVO().getAssignedWorkspace() != null) {
-										/**
-										 * PUBLISH
-										 */
-										final JMenuItem miUpdate = new JMenuItem(new AbstractAction(
-												CommonLocaleDelegate.getMessage("WorkspaceChooserController.14","Änderungen in Vorlage publizieren"), 
-												MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconRedo16(), ICON_SIZE)) {
-			
-													private static final long serialVersionUID = 1L;
-			
-													@Override
-													public void actionPerformed(ActionEvent e) {
-														try {
-															if (getSelectedWorkspace().equals(wl.getWorkspaceVO())) {
-																RestoreUtils.storeWorkspace(wl.getWorkspaceVO());
-															}
-															boolean structureChanged = getPrefsFacade().isWorkspaceStructureChanged(wl.getWorkspaceVO().getAssignedWorkspace(), wl.getWorkspaceVO().getId());
-															
-															WorkspacePublisher wp = new WorkspacePublisher(structureChanged);
-															if (wp.isSaved()) {
-																getPrefsFacade().publishWorkspaceChanges(wl.getWorkspaceVO(), 
-																		wp.isPublishStructureChange(),
-																		wp.isPublishStructureUpdate(),
-																		wp.isPublishStarttabConfiguration(),
-																		wp.isPublishTableColumnConfiguration(),
-																		wp.isPublishToolbarConfiguration());
-																
-																final String message = CommonLocaleDelegate.getMessage("WorkspaceChooserController.16","Änderungen erfolgreich publiziert.");
-																SwingUtilities.invokeLater(new Runnable() {
-																	@Override
-																	public void run() {
-																		try {
-																			(new Bubble(wl, message, 8, Bubble.Position.SE)).setVisible(true);
-																		} catch (IllegalComponentStateException e) {
-																			JOptionPane.showMessageDialog(Main.getMainFrame(), message);
-																		}
-																	}
-																});
-															}
-														} catch (Exception e1) {
-															Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e1);
-														}
-													}
-										});
-										popup.add(miUpdate);
-									}
-							}
-							
-							/**
-							 * RESTORE
-							 */
-							if(wl.getWorkspaceVO().getAssignedWorkspace() != null) {
-								final JMenuItem miUpdate = new JMenuItem(new AbstractAction(
-										CommonLocaleDelegate.getMessage("WorkspaceChooserController.15","Auf Vorlage zurücksetzen"), 
-										MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconUndo16(), ICON_SIZE)) {
-
-											private static final long serialVersionUID = 1L;
-
-											@Override
-											public void actionPerformed(ActionEvent e) {
-												restoreToAssigned(wl.getWorkspaceVO());
-											}
-								});
-								popup.add(miUpdate);
-							}
-							
+							addMenuItems(new MenuItemContainer() {
+								@Override
+								public void addSeparator() {
+									popup.addSeparator();
+								}
+								@Override
+								public void addLabel(String label) {
+									popup.add(new JLabel(label));
+								}
+								@Override
+								public void add(JMenuItem mi) {
+									popup.add(mi);
+								}
+							}, wl.getWorkspaceVO(), wl);
 							popup.show(wl, 10, 10);
 						}
 					}
 				});
-				
 			}
 		});
+	}
+	
+	private static interface MenuItemContainer {
+		void addLabel(String label);
+		void add(JMenuItem mi);
+		void addSeparator();
+	}
+	
+	private static void addMenuItems(final MenuItemContainer menu, final WorkspaceVO wovo, final Label lb) {		
+		/**
+		 * CHECK 
+		 */
+		try {
+			getPrefsFacade().getWorkspace(wovo.getId());
+		} catch (Exception ex) {
+			if ("Workspace.not.found".equals(ex.getMessage())) {
+				workspaces.remove(wovo);
+				refreshWorkspaces();
+			}
+			Errors.getInstance().showExceptionDialog(Main.getMainFrame(), ex);
+			return;
+		}
+		
+		menu.addLabel("<html><b>"+CommonLocaleDelegate.getMessage("WorkspaceChooserController.2","Arbeitsumgebung")+"</b></html>");
+		
+		/**
+		 * REFRESH
+		 */
+		final JMenuItem miRefresh = new JMenuItem(newRefreshAction());
+		menu.add(miRefresh);
+		
+		if (!wovo.isAssigned() ||
+				SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN) || 
+				SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CREATE_NEW))
+			menu.addSeparator();
+		
+		/**
+		 * NEW
+		 */
+		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN) || 
+				SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CREATE_NEW)) {
+			final JMenuItem miNew = new JMenuItem(newNewWorkspaceAction());
+			menu.add(miNew);
+		}
+		
+		/**
+		 * EDIT
+		 */
+		if (!wovo.isAssigned() || SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN)) {
+			final JMenuItem miEdit = new JMenuItem(newEditAction(wovo));
+			menu.add(miEdit);
+		}
+		
+		/**
+		 * CLONE
+		 */
+		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN) || 
+				SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CREATE_NEW)) {
+			final JMenuItem miSaveAs = new JMenuItem(newCloneAction(wovo));
+			menu.add(miSaveAs);
+		}
+		
+		/**
+		 * REMOVE
+		 */
+		if (!wovo.isAssigned() || SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN)) {
+			menu.addSeparator();
+			final JMenuItem miRemove = new JMenuItem(newRemoveAction(wovo));
+			menu.add(miRemove);
+		}
+		
+		if (wovo.getAssignedWorkspace() != null || 
+				SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN))
+			menu.addSeparator();
+		
+		if(SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN)) {
+			/**
+			 * ASSIGN
+			 */
+			final JMenuItem miAssign = new JMenuItem(newAssignAction(wovo, lb));
+				menu.add(miAssign);
+				
+				if (wovo.getAssignedWorkspace() != null) {
+					/**
+					 * PUBLISH
+					 */
+					final JMenuItem miUpdate = new JMenuItem(newPublishAction(wovo, lb));
+					menu.add(miUpdate);
+				}
+		}
+		
+		/**
+		 * RESTORE
+		 */
+		if(wovo.getAssignedWorkspace() != null) {
+			final JMenuItem miUpdate = new JMenuItem(newRestoreAction(wovo));
+			menu.add(miUpdate);
+		}				
+	}
+	
+	private static Action newRefreshAction() {
+		return new AbstractAction(
+				CommonLocaleDelegate.getMessage("WorkspaceChooserController.13","Leiste aktualisieren"), 
+				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconRefresh16(), ICON_SIZE)) {
+
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						UIUtils.runCommand(Main.getMainFrame(), new Runnable() {
+							@Override
+							public void run() {
+								workspaceOrder.clear();
+								workspaceOrderIds.clear();
+								for (WorkspaceVO wovo : workspaces) {
+									workspaceOrderIds.add(wovo.getId());
+								}
+								workspaces.clear();
+								setupWorkspaces();
+							}
+						});
+					}
+			};
+	}
+	
+	private static Action newNewWorkspaceAction() {
+		return new AbstractAction(
+				CommonLocaleDelegate.getMessage("WorkspaceChooserController.1","Neu"), 
+				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconNew16(), ICON_SIZE)) {
+
+					private static final long serialVersionUID = 1L;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (!RestoreUtils.closeTabs(true)) {
+						return;
+					}
+					
+					try {
+						WorkspaceVO wovo = new WorkspaceVO(); // only for header information
+						WorkspaceEditor we = new WorkspaceEditor(wovo);
+						if (we.isSaved()) {
+							try {
+								RestoreUtils.storeWorkspace(getSelectedWorkspace());
+							} catch (Exception e2) {
+								Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e2);
+							}
+							addWorkspace(RestoreUtils.clearAndRestoreToDefaultWorkspace(wovo.getWoDesc()), true);
+						}
+					} catch (Exception e1) {
+						Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e1);
+					} 
+				}
+			};
+	}
+	
+	private static Action newEditAction(final WorkspaceVO wovo) {
+		return new AbstractAction(
+				CommonLocaleDelegate.getMessage("WorkspaceChooserController.3","Eigenschaften"), 
+				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconEdit16(), ICON_SIZE)) {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					boolean hideMenuBar = wovo.getWoDesc().isHideMenuBar();
+					WorkspaceEditor we = new WorkspaceEditor(wovo);
+					try {
+						if (we.isSaved()) {
+							getPrefsFacade().storeWorkspaceHeaderOnly(wovo);
+							refreshWorkspaces();
+							if (wovo == MainFrame.getWorkspace()) {
+								if (hideMenuBar != wovo.getWoDesc().isHideMenuBar()) {
+									Main.getMainController().setupMenuBar();
+								}
+							}
+
+						}
+					} catch (Exception e1) {
+						we.revertChanges();
+						Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e1);
+					} 
+				}
+			};
+	}
+	
+	private static Action newCloneAction(final WorkspaceVO wovo) {
+		return new AbstractAction(
+				CommonLocaleDelegate.getMessage("WorkspaceChooserController.4","Klonen"), 
+				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconClone16(), ICON_SIZE)) {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					String newName = JOptionPane.showInputDialog(Main.getMainFrame(), 
+						CommonLocaleDelegate.getMessage("WorkspaceChooserController.6","Arbeitsumgebung \"{0}\" klonen",wovo.getWoDesc().getName()) + ":", 
+						CommonLocaleDelegate.getMessage("WorkspaceChooserController.5","Neuer Name"), 
+						JOptionPane.INFORMATION_MESSAGE);
+					
+					if (!StringUtils.looksEmpty(newName)) {
+						if (getSelectedWorkspace().equals(wovo)) {
+							WorkspaceVO wovo = new WorkspaceVO();
+							wovo.importHeader(wovo.getWoDesc());
+							wovo.setName(newName);
+							wovo.getWoDesc().addAllEntityPreferences(wovo.getWoDesc().getEntityPreferences());
+
+							try {
+								addWorkspace(RestoreUtils.storeWorkspace(wovo), false);
+							} catch (CommonBusinessException e1) {
+								Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e1);									
+							}
+						} else {
+							try {
+								PreferencesFacadeRemote prefsFac = getPrefsFacade();
+								WorkspaceVO wovo2 = prefsFac.getWorkspace(wovo.getId());
+								wovo2.setId(null);
+								wovo2.setName(newName);
+								wovo2 = prefsFac.storeWorkspace(wovo2);
+								addWorkspace(wovo2, false);
+							} catch (Exception e1) {
+								Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e1);
+							} 
+						}
+					}
+				}
+			};
+	}
+	
+	private static Action newRemoveAction(final WorkspaceVO wovo) {
+		return new AbstractAction(
+				CommonLocaleDelegate.getMessage("WorkspaceChooserController.7","Löschen"), 
+				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconRealDelete16(), ICON_SIZE)) {
+				
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (wovo.equals(getSelectedWorkspace()) && !RestoreUtils.closeTabs(true)) {
+						return;
+					}
+					
+					if (JOptionPane.YES_OPTION == 
+						JOptionPane.showConfirmDialog(Main.getMainFrame(), 
+							CommonLocaleDelegate.getMessage("WorkspaceChooserController.8","Möchten Sie wirklich die Arbeitsumgebung \"{0}\" löschen?",
+									wovo.getWoDesc().getName()), 
+							CommonLocaleDelegate.getMessage("WorkspaceChooserController.9","Sind Sie sicher?"), 
+							JOptionPane.YES_NO_OPTION)) {
+						
+						if (wovo.equals(getSelectedWorkspace()) && !RestoreUtils.clearWorkspace()) {
+							return;
+						}
+						
+						getPrefsFacade().removeWorkspace(wovo.getAssignedWorkspace()==null?
+								wovo.getId():
+									wovo.getAssignedWorkspace());
+						workspaces.remove(wovo);
+						
+						if (wovo.equals(getSelectedWorkspace())) {
+							for (WorkspaceVO wovo : workspaces) {
+								try {
+									RestoreUtils.clearAndRestoreWorkspace(getPrefsFacade().getWorkspace(wovo.getId()));
+									setSelectedWorkspace(wovo);
+									refreshWorkspaces();
+									return;
+								} catch (Exception ex) {
+									// deleted workspaces
+								}
+							}
+							
+							if (workspaces.isEmpty()) {
+								try {
+									addWorkspace(RestoreUtils.clearAndRestoreToDefaultWorkspace(), true);
+								} catch (CommonBusinessException e1) {
+									Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e1);
+								}
+							} 
+						} else {
+							refreshWorkspaces();
+						}
+					}
+				}
+			};
+	}
+	
+	private static Action newAssignAction(final WorkspaceVO wovo, final Label lb) {
+		return new AbstractAction(
+				CommonLocaleDelegate.getMessage("WorkspaceChooserController.10","Benutzergruppen zuweisen"), 
+				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconRelate(), ICON_SIZE)) {
+				
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					
+					// assigned and assignable roles
+					final Collection<Long> assignedRoleIds = getPrefsFacade().getAssignedRoleIds(wovo.getAssignedWorkspace());
+					final Collection<RoleAssignment> assignableRoles = CollectionUtils.transform(getPrefsFacade().getAssignableRoles(), new Transformer<EntityObjectVO, RoleAssignment>() {
+						@Override
+						public RoleAssignment transform(EntityObjectVO eovo) {
+							return new RoleAssignment(eovo.getField("name", String.class), eovo.getId());
+						}
+					});
+					
+					// select controller
+					ChoiceList<RoleAssignment> cl = new ChoiceList<RoleAssignment>();
+					Comparator<RoleAssignment> comp = new Comparator<RoleAssignment>(){
+						@Override
+						public int compare(RoleAssignment o1,
+								RoleAssignment o2) {
+							return o1.role.compareToIgnoreCase(o2.role);
+						}};
+					cl.set(assignableRoles, comp);
+					cl.setSelectedFields(CollectionUtils.sorted(CollectionUtils.select(assignableRoles, new Predicate<RoleAssignment>() {
+						@Override
+						public boolean evaluate(RoleAssignment ra) {
+							return assignedRoleIds.contains(ra.id);
+						}
+					}), comp));
+					final SelectObjectsController<RoleAssignment> selectCtrl = new SelectObjectsController<RoleAssignment>(
+							Main.getMainFrame(), 
+							new DefaultSelectObjectsPanel<RoleAssignment>());
+					selectCtrl.setModel(cl);
+					
+					// result ok=true
+					if (selectCtrl.run(CommonLocaleDelegate.getMessage("WorkspaceChooserController.11","Arbeitsumgebung Benutzergruppen zuweisen"))) {
+						final Icon icoBackup = lb.getIcon();
+						final String toolTipBackup = lb.getToolTipText();
+						
+						lb.setIcon(MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconSaveS16(), ICON_SIZE));
+						lb.setToolTipText(CommonLocaleDelegate.getResource("WorkspaceChooserController.12","Zuweisung wird gespeichert") + "...");
+						
+						WorkspaceChooserController.setEnabled(false);
+						
+						SwingWorker<WorkspaceVO, WorkspaceVO> worker = new SwingWorker<WorkspaceVO, WorkspaceVO>() {
+							@Override
+							protected WorkspaceVO doInBackground() throws Exception {
+								Thread.sleep(500); // otherwise eyesore flash of save icon
+								if (getSelectedWorkspace().equals(wovo))
+									RestoreUtils.storeWorkspace(wovo);
+								return getPrefsFacade().assignWorkspace(wovo, CollectionUtils.transform(selectCtrl.getSelectedObjects(), new Transformer<RoleAssignment, Long>() {
+									@Override
+									public Long transform(RoleAssignment ra) {
+										return ra.id;
+									}
+								}));
+							}
+							@Override
+							protected void done() {
+								try {
+									final WorkspaceVO assignedWorkspace = get();
+									final int index = workspaces.indexOf(wovo);
+									workspaces.remove(wovo);
+									workspaces.add(index, assignedWorkspace);
+									if (wovo.equals(getSelectedWorkspace())) {
+										setSelectedWorkspace(assignedWorkspace);
+									}
+									refreshWorkspaces();
+									
+								} catch (ExecutionException e) {
+									if (e.getCause() != null && e.getCause() instanceof CommonBusinessException) {
+										Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e.getCause());
+									} else {
+										Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e);
+									}
+								} catch (Exception e) {
+									Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e);
+								} finally {
+									lb.setIcon(icoBackup);
+									lb.setToolTipText(toolTipBackup);
+									WorkspaceChooserController.setEnabled(true);
+								} 
+							}
+						};
+						
+						worker.execute();
+					}
+					
+				}
+			};
+	}
+	
+	private static Action newPublishAction(final WorkspaceVO wovo, final Label lb) {
+		return new AbstractAction(
+				CommonLocaleDelegate.getMessage("WorkspaceChooserController.14","Änderungen in Vorlage publizieren"), 
+				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconRedo16(), ICON_SIZE)) {
+
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						try {
+							if (getSelectedWorkspace().equals(wovo)) {
+								RestoreUtils.storeWorkspace(wovo);
+							}
+							boolean structureChanged = getPrefsFacade().isWorkspaceStructureChanged(wovo.getAssignedWorkspace(), wovo.getId());
+							
+							WorkspacePublisher wp = new WorkspacePublisher(structureChanged);
+							if (wp.isSaved()) {
+								getPrefsFacade().publishWorkspaceChanges(wovo, 
+										wp.isPublishStructureChange(),
+										wp.isPublishStructureUpdate(),
+										wp.isPublishStarttabConfiguration(),
+										wp.isPublishTableColumnConfiguration(),
+										wp.isPublishToolbarConfiguration());
+								
+								final String message = CommonLocaleDelegate.getMessage("WorkspaceChooserController.16","Änderungen erfolgreich publiziert.");
+								SwingUtilities.invokeLater(new Runnable() {
+									@Override
+									public void run() {
+										try {
+											(new Bubble(lb, message, 8, Bubble.Position.SE)).setVisible(true);
+										} catch (IllegalComponentStateException e) {
+											JOptionPane.showMessageDialog(Main.getMainFrame(), message);
+										}
+									}
+								});
+							}
+						} catch (Exception e1) {
+							Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e1);
+						}
+					}
+		};
+	}
+	
+	public static Action newRestoreAction(final WorkspaceVO wovo) {
+		return new AbstractAction(
+				CommonLocaleDelegate.getMessage("WorkspaceChooserController.15","Auf Vorlage zurücksetzen"), 
+				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconUndo16(), ICON_SIZE)) {
+
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						restoreToAssigned(wovo);
+					}
+		};
 	}
 	
 	/**
@@ -795,35 +946,21 @@ public class WorkspaceChooserController {
 		}
 	}
 	
-	private static class WorkspaceLabel extends JLabel implements DragGestureListener {
+	private abstract static class Label extends JLabel {
 		
-		private final WorkspaceVO wovo;
-		
-		private final static ImageIcon imgBG = Icons.getInstance().getWorkspaceChooser_buttonBG();
-		private final static ImageIcon imgBG_left = Icons.getInstance().getWorkspaceChooser_buttonLeft();
-		private final static ImageIcon imgBG_right = Icons.getInstance().getWorkspaceChooser_buttonRight();
+		protected final static ImageIcon imgBG = Icons.getInstance().getWorkspaceChooser_buttonBG();
+		protected final static ImageIcon imgBG_left = Icons.getInstance().getWorkspaceChooser_buttonLeft();
+		protected final static ImageIcon imgBG_right = Icons.getInstance().getWorkspaceChooser_buttonRight();
 		
 		public  final static int imgBG_h = imgBG.getIconHeight();
-		private final static int imgBG_w = imgBG.getIconWidth();
-		private final static int imgBG_left_w = imgBG_left.getIconWidth();
-		private final static int imgBG_right_w = imgBG_right.getIconWidth();
+		protected final static int imgBG_w = imgBG.getIconWidth();
+		protected final static int imgBG_left_w = imgBG_left.getIconWidth();
+		protected final static int imgBG_right_w = imgBG_right.getIconWidth();
 		
-		private boolean mouseOver = false;
+		protected boolean mouseOver = false;
 		
-		public WorkspaceLabel(WorkspaceVO wovo) {
-			super(
-					wovo.getWoDesc().isHideName()?
-							null:
-							wovo.getName(), 
-					MainFrame.resizeAndCacheIcon(wovo.getWoDesc().getNuclosResource()==null?
-							Icons.getInstance().getIconTabGeneric():
-							NuclosResourceCache.getNuclosResourceIcon(wovo.getWoDesc().getNuclosResource()), ICON_SIZE), 
-					SwingConstants.LEFT);
-			this.wovo = wovo;
-			setBorder(BorderFactory.createEmptyBorder(imgBG_left_w, imgBG_left_w, imgBG_left_w, imgBG_left_w));
-			if (wovo.getWoDesc().isHideName()) {
-				setToolTipText(wovo.getName());
-			}
+		public Label(String text, Icon icon, int horizontalAlignment) {
+			super(text, icon, horizontalAlignment);
 			addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseEntered(MouseEvent e) {
@@ -844,6 +981,90 @@ public class WorkspaceChooserController {
 					}
 				}
 			});
+		}
+
+		@Override
+		protected void paintComponent(Graphics g) {
+			Graphics2D g2 = (Graphics2D) g;
+
+			RenderingHints oldRH = g2.getRenderingHints();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+			BufferedImage biBG = drawBuffImage(
+					new BufferedImage(imgBG_w, imgBG_h, BufferedImage.TYPE_INT_ARGB),
+					imgBG.getImage());
+			BufferedImage biBG_left = drawBuffImage(
+					new BufferedImage(imgBG_left_w, imgBG_h, BufferedImage.TYPE_INT_ARGB),
+					imgBG_left.getImage());
+			BufferedImage biBG_right = drawBuffImage(
+					new BufferedImage(imgBG_right_w, imgBG_h, BufferedImage.TYPE_INT_ARGB),
+					imgBG_right.getImage());
+
+			// 50% opaque
+			float[] scales = { 1f, 1f, 1f, ((mouseOver && enabled) || isSelected())?1f:0.5f };
+			float[] offsets = new float[4];
+			RescaleOp rop = new RescaleOp(scales, offsets, null);
+		   	
+			g2.drawImage(biBG_left, rop, -1, 0);
+		   	for (int i = 0; i < (getWidth()-imgBG_left_w-imgBG_right_w) + 2; i++) {
+		   		g2.drawImage(biBG, rop, imgBG_left_w -1 + (i * imgBG_w), 0);
+		   	}
+		   	g2.drawImage(biBG_right, rop, getWidth()-imgBG_right_w +1, 0);
+
+			g2.setRenderingHints(oldRH);
+			
+			super.paintComponent(g);
+			
+			if (drawDogEar()) {
+				ImageIcon assignedIcon = Icons.getInstance().getWorkspaceChooser_assigned();
+				g2.drawImage(assignedIcon.getImage(),
+					getWidth()-assignedIcon.getIconWidth(),
+					0, null);
+			}
+		}
+		
+		private BufferedImage drawBuffImage(BufferedImage bi, Image img) {
+			final Graphics gbi = bi.getGraphics();
+			gbi.drawImage(img, 0, 0, null);
+			gbi.dispose();
+			return bi;
+		}
+		
+		@Override
+		public Dimension getPreferredSize() {
+			return new Dimension (super.getPreferredSize().width, // + imgBG_left_w + imgBG_right_w,
+					imgBG_h);
+		}
+		
+		abstract boolean isSelected();
+		
+		abstract boolean drawDogEar();
+	}
+	
+	private static Icon getWorkspaceIcon(final WorkspaceVO wovo, int size) {
+		final Icon ico = wovo.getWoDesc().getNuclosResource()==null?
+				Icons.getInstance().getIconTabGeneric():
+				NuclosResourceCache.getNuclosResourceIcon(wovo.getWoDesc().getNuclosResource());
+		return MainFrame.resizeAndCacheIcon(ico, size);
+	}
+	
+	private static class WorkspaceLabel extends Label implements DragGestureListener {
+		
+		private final WorkspaceVO wovo;		
+		
+		public WorkspaceLabel(WorkspaceVO wovo) {
+			super(
+					wovo.getWoDesc().isHideName()?
+							null:
+							wovo.getName(), 
+					getWorkspaceIcon(wovo, ICON_SIZE), 
+					SwingConstants.LEFT);
+			this.wovo = wovo;
+			setBorder(BorderFactory.createEmptyBorder(imgBG_left_w, imgBG_left_w, imgBG_left_w, imgBG_left_w));
+			if (wovo.getWoDesc().isHideName()) {
+				setToolTipText(wovo.getName());
+			}
 			DragSource dragSource = DragSource.getDefaultDragSource();
 		    dragSource.createDefaultDragGestureRecognizer(WorkspaceLabel.this, DnDConstants.ACTION_COPY_OR_MOVE, WorkspaceLabel.this);
 		    setTransferHandler(new TransferHandler() {
@@ -891,60 +1112,6 @@ public class WorkspaceChooserController {
 			return wovo;
 		}
 
-		@Override
-		protected void paintComponent(Graphics g) {
-			Graphics2D g2 = (Graphics2D) g;
-
-			RenderingHints oldRH = g2.getRenderingHints();
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-
-			BufferedImage biBG = drawBuffImage(
-					new BufferedImage(imgBG_w, imgBG_h, BufferedImage.TYPE_INT_ARGB),
-					imgBG.getImage());
-			BufferedImage biBG_left = drawBuffImage(
-					new BufferedImage(imgBG_left_w, imgBG_h, BufferedImage.TYPE_INT_ARGB),
-					imgBG_left.getImage());
-			BufferedImage biBG_right = drawBuffImage(
-					new BufferedImage(imgBG_right_w, imgBG_h, BufferedImage.TYPE_INT_ARGB),
-					imgBG_right.getImage());
-
-			// 50% opaque
-			float[] scales = { 1f, 1f, 1f, ((mouseOver && enabled) || isSelected())?1f:0.5f };
-			float[] offsets = new float[4];
-			RescaleOp rop = new RescaleOp(scales, offsets, null);
-		   	
-			g2.drawImage(biBG_left, rop, -1, 0);
-		   	for (int i = 0; i < (getWidth()-imgBG_left_w-imgBG_right_w) + 2; i++) {
-		   		g2.drawImage(biBG, rop, imgBG_left_w -1 + (i * imgBG_w), 0);
-		   	}
-		   	g2.drawImage(biBG_right, rop, getWidth()-imgBG_right_w +1, 0);
-
-			g2.setRenderingHints(oldRH);
-			
-			super.paintComponent(g);
-			
-			if (wovo.getAssignedWorkspace() != null) {
-				ImageIcon assignedIcon = Icons.getInstance().getWorkspaceChooser_assigned();
-				g2.drawImage(assignedIcon.getImage(),
-					getWidth()-assignedIcon.getIconWidth(),
-					0, null);
-			}
-		}
-		
-		private BufferedImage drawBuffImage(BufferedImage bi, Image img) {
-			final Graphics gbi = bi.getGraphics();
-			gbi.drawImage(img, 0, 0, null);
-			gbi.dispose();
-			return bi;
-		}
-		
-		@Override
-		public Dimension getPreferredSize() {
-			return new Dimension (super.getPreferredSize().width, // + imgBG_left_w + imgBG_right_w,
-					imgBG_h);
-		}
-
 		public boolean isSelected() {
 			return wovo.equals(getSelectedWorkspace());
 		}
@@ -955,6 +1122,11 @@ public class WorkspaceChooserController {
 		    dge.startDrag(null, transferable, null);
 		    mouseOver = false;
 			repaint();
+		}
+
+		@Override
+		boolean drawDogEar() {
+			return wovo.getAssignedWorkspace() != null;
 		}
 	}
 	

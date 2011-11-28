@@ -119,6 +119,7 @@ import org.nuclos.client.login.LoginController;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.workspace.RestoreUtils;
+import org.nuclos.client.main.mainframe.workspace.WorkspaceChooserController;
 import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -349,7 +350,9 @@ public class MainController {
 			LOG.debug(">>> restore last workspace...");
 			try {
 				MainFrame.readMainFramePreferences(prefs);
-				RestoreUtils.restoreWorkspaceThreaded(MainFrame.getLastWorkspaceIdFromPreferences(), MainFrame.getLastWorkspaceFromPreferences());
+				RestoreUtils.restoreWorkspaceThreaded(
+						MainFrame.getLastWorkspaceIdFromPreferences(), MainFrame.getLastWorkspaceFromPreferences(),
+						MainFrame.getLastAlwaysOpenWorkspaceIdFromPreferences(), MainFrame.getLastAlwaysOpenWorkspaceFromPreferences());
 			}
 			catch (Exception ex) {
 				final String sMessage = CommonLocaleDelegate.getMessage("MainController.4","Die in der letzten Sitzung ge\u00f6ffneten Fenster konnten nicht wiederhergestellt werden.");
@@ -1177,6 +1180,7 @@ public class MainController {
 	public static final String GENERIC_COMMAND_ACTION = "nuclosGenericCommandAction";
 	public static final String GENERIC_CUSTOMCOMPONENT_ACTION = "nuclosGenericCustomComponentAction";
 	public static final String GENERIC_SEARCHFILTER_ACTION = "nuclosGenericSearchFilterAction";
+	public static final String GENERIC_RESTORE_WORKSPACE_ACTION = "nuclosGenericRestoreWorkspaceAction";
 	
 	public List<GenericAction> getGenericActions() {
 		List<GenericAction> result = new ArrayList<GenericAction>();
@@ -1202,6 +1206,7 @@ public class MainController {
 		result.addAll(sortedResult);
 		
 		addSearchFilterActions(result);
+		WorkspaceChooserController.addGenericActions(result);
 		
 		return result;
 	}
@@ -1440,7 +1445,7 @@ public class MainController {
 		return (menuPath != null && !menuPath.isEmpty()) ? menuPath.split("\\\\") : null;
 	}
 
-	private void setupMenuBar(){
+	public void setupMenuBar(){
 		frm.menuSetup(getCommandMap(), getComponentMap(), getNotificationDialog());
 	}
 

@@ -32,8 +32,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.resource.ResourceIconChooser;
+import org.nuclos.common.Actions;
 import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.StringUtils;
@@ -46,6 +48,9 @@ public class WorkspaceEditor  {
 	private final JTextField tfName; 
 	private final ResourceIconChooser nuclosIconChooser;
 	private final JCheckBox chckHideName;
+	private final JCheckBox chckHide;
+	private final JCheckBox chckHideMenuBar;
+	private final JCheckBox chckAlwaysOpenAtLogin;
 	private final JButton btSave;
 	private final JButton btCancel;
 	
@@ -60,8 +65,11 @@ public class WorkspaceEditor  {
 		
 		contentPanel = new JPanel();
 		initJPanel(contentPanel,
-				new double[] {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL},
+				new double[] {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL},
 				new double[] {20,
+							  20,
+							  20,
+							  10,
 							  20,
 							  TableLayout.FILL,
 							  TableLayout.PREFERRED});
@@ -74,21 +82,35 @@ public class WorkspaceEditor  {
         contentPanel.add(tfName, "1, 0");
         chckHideName = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.3","Name ausblenden"));
         contentPanel.add(chckHideName, "2, 0, 3, 0");
+        chckHide = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.8","Auswahl Button ausblenden"));
+        if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN)) {
+        	contentPanel.add(chckHide, "4, 0");
+        }
+        chckAlwaysOpenAtLogin = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.11","Immer bei Anmeldung öffnen"));
+        contentPanel.add(chckAlwaysOpenAtLogin, "1, 1");
+        
+        JLabel lbMainFrame = new JLabel(CommonLocaleDelegate.getMessage("WorkspaceEditor.9","Hauptfenster"), JLabel.TRAILING);
+        contentPanel.add(lbMainFrame, "0, 2");
+        chckHideMenuBar = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.10","Nur Standard Menuleiste"));
+        contentPanel.add(chckHideMenuBar, "1, 2");
         
         JLabel lbIcon = new JLabel(CommonLocaleDelegate.getMessage("WorkspaceEditor.4","Icon"), JLabel.TRAILING);
-        contentPanel.add(lbIcon, "0, 1");
+        contentPanel.add(lbIcon, "0, 4");
         nuclosIconChooser = new ResourceIconChooser(WorkspaceChooserController.ICON_SIZE);
-        contentPanel.add(nuclosIconChooser, "1, 1, 4, 2");
+        contentPanel.add(nuclosIconChooser, "1, 4, 5, 5");
 		
 		JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 2));
 		btSave = new JButton(CommonLocaleDelegate.getMessage("WorkspaceEditor.5","Speichern"));
 		btCancel = new JButton(CommonLocaleDelegate.getMessage("WorkspaceEditor.6","Abbrechen"));
 		actionsPanel.add(btSave);
 		actionsPanel.add(btCancel);
-		contentPanel.add(actionsPanel, "0, 3, 4, 3");
+		contentPanel.add(actionsPanel, "0, 6, 5, 6");
 		
 		tfName.setText(wovo.getWoDesc().getName());
+		chckHide.setSelected(wovo.getWoDesc().isHide());
 		chckHideName.setSelected(wovo.getWoDesc().isHideName());
+		chckHideMenuBar.setSelected(wovo.getWoDesc().isHideMenuBar());
+		chckAlwaysOpenAtLogin.setSelected(wovo.getWoDesc().isAlwaysOpenAtLogin());
 		nuclosIconChooser.setSelected(wovo.getWoDesc().getNuclosResource());
 		
 		dialog = new JDialog(Main.getMainFrame(), CommonLocaleDelegate.getMessage("WorkspaceEditor.1","Arbeitsumgebung Eigenschaften"), true);
@@ -108,14 +130,20 @@ public class WorkspaceEditor  {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				final String name = tfName.getText().trim();
+				final boolean hide = chckHide.isSelected();
 				final boolean hideName = chckHideName.isSelected();
+				final boolean hideMenuBar = chckHideMenuBar.isSelected();
+				final boolean alwaysOpenAtLogin = chckAlwaysOpenAtLogin.isSelected();
 				final String nuclosResource = nuclosIconChooser.getSelectedResourceIconName();
 				
 				if (StringUtils.looksEmpty(name)) {
 					JOptionPane.showMessageDialog(contentPanel, CommonLocaleDelegate.getMessage("WorkspaceEditor.7","Bitte geben Sie einen Namen an"));
 				} else {
 					wovo.setName(name);
+					wovo.getWoDesc().setHide(hide);
 					wovo.getWoDesc().setHideName(hideName);
+					wovo.getWoDesc().setHideMenuBar(hideMenuBar);
+					wovo.getWoDesc().setAlwaysOpenAtLogin(alwaysOpenAtLogin);
 					wovo.getWoDesc().setNuclosResource(nuclosResource);
 					
 					saved = true;

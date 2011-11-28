@@ -60624,6 +60624,81 @@
     "text": "Bitte geben Sie einen Namen ein"
   },
   {
+    "resourceID": "WorkspaceEditor.8",
+    "locale": "i-default",
+    "text": "Hide selection button"
+  },
+  {
+    "resourceID": "WorkspaceEditor.8",
+    "locale": "en",
+    "text": "Hide selection button"
+  },
+  {
+    "resourceID": "WorkspaceEditor.8",
+    "locale": "de",
+    "text": "Auswahl Button ausblenden"
+  },
+  {
+    "resourceID": "WorkspaceEditor.9",
+    "locale": "i-default",
+    "text": "Main frame"
+  },
+  {
+    "resourceID": "WorkspaceEditor.9",
+    "locale": "en",
+    "text": "Main frame"
+  },
+  {
+    "resourceID": "WorkspaceEditor.9",
+    "locale": "de",
+    "text": "Hauptfenster"
+  },
+  {
+    "resourceID": "WorkspaceEditor.10",
+    "locale": "i-default",
+    "text": "Only standard menu bar"
+  },
+  {
+    "resourceID": "WorkspaceEditor.10",
+    "locale": "en",
+    "text": "Only standard menu bar"
+  },
+  {
+    "resourceID": "WorkspaceEditor.10",
+    "locale": "de",
+    "text": "Nur Standard Menuleiste"
+  },
+  {
+    "resourceID": "WorkspaceEditor.11",
+    "locale": "i-default",
+    "text": "Always open at login"
+  },
+  {
+    "resourceID": "WorkspaceEditor.11",
+    "locale": "en",
+    "text": "Always open at login"
+  },
+  {
+    "resourceID": "WorkspaceEditor.11",
+    "locale": "de",
+    "text": "Immer bei Anmeldung öffnen"
+  },
+  {
+    "resourceID": "NuclosSetting.menuBarOSspecific",
+    "locale": "i-default",
+    "text": "Operating system specific menu bar (Mac OS X only, requires reboot)"
+  },
+  {
+    "resourceID": "NuclosSetting.menuBarOSspecific",
+    "locale": "en",
+    "text": "Operating system specific menu bar (Mac OS X only, requires reboot)"
+  },
+  {
+    "resourceID": "NuclosSetting.menuBarOSspecific",
+    "locale": "de",
+    "text": "Menuleiste Betriebssystem spezifisch (nur Mac OS X, erfordert Neustart)"
+  },
+  {
     "resourceID": "WorkspacePublisher.1",
     "locale": "i-default",
     "text": "Publish changes"
