@@ -11,6 +11,7 @@
 	<name>Nuclos</name>
 	<url>http://www.nuclos.de/</url>
 	<description>Nuclos ERP-Baukasten.</description>
+	
 	<scm>
 		<connection>scm:svn:https://svn.novabit.de/nov_nucleus/trunk</connection>
 		<developerConnection>scm:svn:https://svn.novabit.de/nov_nucleus/trunk</developerConnection>
@@ -123,6 +124,22 @@
 			<url>http://maven.nuclos.de/content/groups/public</url>
 			<snapshots>
 				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>public.maven.tmatesoft.com</id>
+			<name>SVNKit Repository</name>
+			<url>http://maven.tmatesoft.com/content/repositories/releases/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>snapshots.maven.tmatesoft.com</id>
+			<name>SVNKit Repository SNAPSHOTS</name>
+			<url>http://maven.tmatesoft.com/content/repositories/snapshots/</url>
+			<snapshots>
+				<enabled>true</enabled>
 			</snapshots>
 		</repository>
 	</repositories>
