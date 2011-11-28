@@ -235,7 +235,7 @@
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
 		</dependency>
-		<!--dependency>
+		<dependency>
 			<groupId>org.tmatesoft.svnkit</groupId>
 			<artifactId>svnkit-cli</artifactId>
 			<version>1.7.0-SNAPSHOT</version>
@@ -246,12 +246,12 @@
 					<groupId>com.trilead</groupId>
 					<artifactId>trilead-ssh2</artifactId>
 				</exclusion>
-				<!-exclusion>
+				<!-- exclusion>
 					<groupId>de.regnis.q.sequence</groupId>
 					<artifactId>sequence-library</artifactId>
-				</exclusion ->
+				</exclusion -->
 			</exclusions>
-		</dependenc -->
+		</dependency>
 		<dependency>
 			<groupId>org.nuclos</groupId>
 			<artifactId>nuclos-common-api</artifactId>
