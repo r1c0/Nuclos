@@ -23,8 +23,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<!-- version must be updated from time-to-time, use http://search.maven.org for finding the newest (tp) -->
-				<version>2.3.2</version>
 				<configuration>
 					<archive>
 						<manifest>
