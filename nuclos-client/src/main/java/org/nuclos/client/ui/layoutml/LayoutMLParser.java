@@ -735,7 +735,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		private final Map<String, Integer> mpLineLayoutOrientation = new HashMap<String, Integer>(2);
 		private final Map<String, Integer> mpSwingConstantsOrientation = new HashMap<String, Integer>(2);
 		private final Map<String, Integer> mpSeparatorOrientation;
-		private final Map<String, Integer> mpToolBarOrientation;
+		private final Map<String, Integer> mpToolBarOrientation = new HashMap<String, Integer>(3);
 
 		private EntityAndFieldName eafnInitialFocus;
 
@@ -843,7 +843,8 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			this.mpSwingConstantsOrientation.put("vertical", SwingConstants.VERTICAL);
 
 			this.mpSeparatorOrientation = this.mpSwingConstantsOrientation;
-			this.mpToolBarOrientation = this.mpSwingConstantsOrientation;
+			this.mpToolBarOrientation.putAll(mpSwingConstantsOrientation);
+			this.mpToolBarOrientation.put("hide", -1);
 		}
 
 		private void setupElementProcessors() {

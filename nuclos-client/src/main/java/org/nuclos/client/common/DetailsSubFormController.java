@@ -209,6 +209,9 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	 */
 	List<JComponent> getRowIndicatorActions() {
 		List<JComponent> result = new LinkedList<JComponent>();
+		
+		getSubForm().addToolbarMenuItems(result);
+		result.add(new JSeparator());
 
 		Collectable clct = this.getSelectedCollectable();
 		if (clct == null) {

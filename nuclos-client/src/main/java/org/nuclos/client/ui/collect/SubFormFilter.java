@@ -31,6 +31,7 @@ import java.util.prefs.Preferences;
 
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -89,6 +90,7 @@ public class SubFormFilter {
 	private static final Logger LOG = Logger.getLogger(SubFormFilter.class);
 
    private JToggleButton filterButton;
+   private JCheckBoxMenuItem miFilter;
 
    private Map<String, CollectableComponent> column2component = new HashMap<String, CollectableComponent>();
 
@@ -102,11 +104,13 @@ public class SubFormFilter {
 
    private boolean filteringActive = false;
 
-   public SubFormFilter(SubForm subform, JTable fixedTable, TableColumnModel fixedColumnModel, SubFormTable externalTable, TableColumnModel externalColumnModel, JToggleButton filterButton, CollectableFieldsProviderFactory collectableFieldsProviderFactory) {
+   public SubFormFilter(SubForm subform, JTable fixedTable, TableColumnModel fixedColumnModel, SubFormTable externalTable, TableColumnModel externalColumnModel, 
+		   JToggleButton filterButton, JCheckBoxMenuItem miFilter, CollectableFieldsProviderFactory collectableFieldsProviderFactory) {
       this.subform = subform;
       this.fixedTable = fixedTable;
       this.externalTable = externalTable;
       this.filterButton = filterButton;
+      this.miFilter = miFilter;
       this.collectableFieldsProviderFactory = collectableFieldsProviderFactory;
 
       setFixedSubFormFilter(fixedTable, fixedColumnModel);
@@ -120,21 +124,23 @@ public class SubFormFilter {
     * actionlistener to collapse or expand the searchfilter panels
     */
    private void addActionListener() {
-      this.filterButton.addActionListener(new ActionListener() {
-         @Override
-		public void actionPerformed(ActionEvent ae) {
-            // collapse removes the filter, expanding filters with the (maybe set) entered filters
-            if (!fixedSubFormFilter.isCollapsed() || !externalSubFormFilter.isCollapsed()) {
-               //NUCLEUSINT-789 f
-               clearFilter();
-            } else {
-               filter();
-            }
+	  subform.addSubFormToolListener(new SubForm.SubFormToolListener() {
+		@Override
+		public void toolbarAction(String actionCommand) {
+			if(SubForm.ToolbarFunction.fromCommandString(actionCommand) == SubForm.ToolbarFunction.FILTER) {
+				// collapse removes the filter, expanding filters with the (maybe set) entered filters
+	            if (!fixedSubFormFilter.isCollapsed() || !externalSubFormFilter.isCollapsed()) {
+	               //NUCLEUSINT-789 f
+	               clearFilter();
+	            } else {
+	               filter();
+	            }
 
-            fixedSubFormFilter.setCollapsed(!fixedSubFormFilter.isCollapsed());
-            externalSubFormFilter.setCollapsed(!externalSubFormFilter.isCollapsed());
-         }
-      });
+	            fixedSubFormFilter.setCollapsed(!fixedSubFormFilter.isCollapsed());
+	            externalSubFormFilter.setCollapsed(!externalSubFormFilter.isCollapsed());
+			}
+		}
+	});
    }
 
    /**
@@ -379,6 +385,7 @@ public class SubFormFilter {
 	private void clearFilter() {
       Icon icon = Icons.getInstance().getIconFilter16();
       this.filterButton.setIcon(icon);
+      this.miFilter.setIcon(icon);
 
       RowSorter<?> rowSorter = externalTable.getRowSorter();
       if (rowSorter instanceof TableRowSorter)
@@ -394,6 +401,7 @@ public class SubFormFilter {
 	   getFixedSubFormFilter().setCollapsed(true);
 	   getExternalSubFormFilter().setCollapsed(true);
 	   filterButton.setSelected(false);
+	   miFilter.setSelected(false);
    }
 
    class SubFormRowFilter extends RowFilter<TableModel, Integer> {

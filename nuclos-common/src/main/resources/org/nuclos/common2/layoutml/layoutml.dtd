@@ -87,7 +87,7 @@ continuous-layout (%boolean;) #IMPLIED
 name CDATA #IMPLIED
 entity CDATA #REQUIRED
 enabled (%boolean;) #IMPLIED
-toolbarorientation (horizontal|vertical) #IMPLIED
+toolbarorientation (horizontal|vertical|hide) #IMPLIED
 opaque (%boolean;) #IMPLIED
 controllertype CDATA #IMPLIED
 unique-mastercolumn CDATA #IMPLIED

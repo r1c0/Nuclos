@@ -171,7 +171,8 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 				JButton clone = new JButton(Icons.getInstance().getIconClone16());
 				clone.setSize(16,16);
 				clone.setToolTipText(CommonLocaleDelegate.getMessage("MasterDataSubFormController.1", "Datensatz klonen"));
-				getSubForm().addToolbarFunction(TB_CLONE, clone, 1);
+				JMenuItem miClone = new JMenuItem(CommonLocaleDelegate.getMessage("MasterDataSubFormController.1", "Datensatz klonen"), Icons.getInstance().getIconClone16());
+				getSubForm().addToolbarFunction(TB_CLONE, clone, miClone, 1);
 				getSubForm().setToolbarFunctionState(TB_CLONE, SubForm.ToolbarFunctionState.DISABLED);
 			}
 		});

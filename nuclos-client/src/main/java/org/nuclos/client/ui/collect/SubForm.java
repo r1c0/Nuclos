@@ -50,8 +50,11 @@ import java.util.prefs.Preferences;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -166,6 +169,12 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	        	res.setActionCommand(name());
 		        return res;
 	        }
+			@Override
+			public JMenuItem createMenuItem() {
+				JMenuItem res = new JMenuItem(CommonLocaleDelegate.getMessage("SubForm.7","Neuen Datensatz anlegen"), Icons.getInstance().getIconNew16());
+				res.setActionCommand(name());
+				return res;
+			}
         },
 		REMOVE {
 	        @Override
@@ -175,6 +184,12 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	        	res.setActionCommand(name());
 		        return res;
 	        }
+			@Override
+			public JMenuItem createMenuItem() {
+				JMenuItem res = new JMenuItem(CommonLocaleDelegate.getMessage("SubForm.1","Ausgew\u00e4hlten Datensatz l\u00f6schen"), Icons.getInstance().getIconDelete16());
+				res.setActionCommand(name());
+				return res;
+			}
         },
 		MULTIEDIT {
 	        @Override
@@ -184,6 +199,12 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	        	res.setActionCommand(name());
 		        return res;
 	        }
+			@Override
+			public JMenuItem createMenuItem() {
+				JMenuItem res = new JMenuItem(CommonLocaleDelegate.getMessage("SubForm.6","Mehrere Datens\u00e4tze hinzuf\u00fcgen/l\u00f6schen"), Icons.getInstance().getIconMultiEdit16());
+				res.setActionCommand(name());
+				return res;
+			}
         },
 		FILTER {
 	        @Override
@@ -194,9 +215,17 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	        	res.setActionCommand(name());
 		        return res;
 	        }
+			@Override
+			public JMenuItem createMenuItem() {
+				JCheckBoxMenuItem res = new JCheckBoxMenuItem(CommonLocaleDelegate.getMessage("SubForm.5","Datens\u00e4tze filtern"), Icons.getInstance().getIconFilter16());
+				res.setActionCommand(name());
+				return res;
+			}
         };
 
 		public abstract AbstractButton createButton();
+		
+		public abstract JMenuItem createMenuItem();
 
 		public static ToolbarFunction fromCommandString(String actionCommand) {
 			try {
@@ -226,6 +255,11 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 			a.setEnabled(isEnabled);
 			a.setVisible(isVisible);
 		}
+		
+		public void set(JMenuItem mi) {
+			mi.setEnabled(isEnabled);
+			mi.setVisible(isVisible);
+		}
 	}
 
 	/* the minimum row height for the table(s). */
@@ -238,6 +272,8 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	private AtomicInteger	     lockCount	= new AtomicInteger(0);
 
 	private HashMap<String, AbstractButton>   toolbarButtons;
+	private List<String>					  toolbarOrder;
+	private HashMap<String, JMenuItem>		  toolbarMenuItems;
 
 	private final JToolBar       toolbar;
 
@@ -330,7 +366,11 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 			throw new NullArgumentException("entityName");
 		}
 		this.entityName = entityName;
-		this.toolbar.setOrientation(toolBarOrientation);
+		if (toolBarOrientation == -1) {
+			this.toolbar.setVisible(false);
+		} else {
+			this.toolbar.setOrientation(toolBarOrientation);
+		}
 		this.foreignKeyFieldToParent = foreignKeyFieldToParent;
 		this.collectableComponentFactory = CollectableComponentFactory.getInstance();
 		layer = new JXLayer<JComponent>(contentPane, new TranslucentLockableUI());
@@ -338,11 +378,17 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		add(layer);
 
 		toolbarButtons = new HashMap<String, AbstractButton>();
+		toolbarMenuItems = new HashMap<String, JMenuItem>();
+		toolbarOrder = new ArrayList<String>();
 		for(ToolbarFunction func : ToolbarFunction.values()) {
 			AbstractButton button = func.createButton();
+			JMenuItem mi = func.createMenuItem();
 			toolbarButtons.put(func.name(), button);
+			toolbarMenuItems.put(func.name(), mi);
 			toolbar.add(button);
 			button.addActionListener(this);
+			mi.addActionListener(this);
+			toolbarOrder.add(func.name());
 		}
 
 		setToolbarFunctionState(ToolbarFunction.REMOVE, ToolbarFunctionState.DISABLED);
@@ -390,9 +436,12 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		AbstractButton button = toolbarButtons.get(toolbarActionCommand);
 		if(button != null)
 			state.set(button);
+		JMenuItem mi = toolbarMenuItems.get(toolbarActionCommand);
+		if (mi != null)
+			state.set(mi);
 	}
 
-	public void addToolbarFunction(String actionCommand, AbstractButton button, int pos) {
+	public void addToolbarFunction(String actionCommand, AbstractButton button, JMenuItem mi, int pos) {
 		if(toolbarButtons.containsKey(actionCommand))
 			toolbar.remove(toolbarButtons.get(actionCommand));
 		toolbarButtons.put(actionCommand, button);
@@ -400,6 +449,13 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		button.addActionListener(this);
 		toolbar.add(button, pos);
 		toolbar.validate();
+		
+		if (toolbarMenuItems.containsKey(actionCommand))
+			toolbarOrder.remove(actionCommand);
+		toolbarMenuItems.put(actionCommand, mi);
+		mi.setActionCommand(actionCommand);
+		mi.addActionListener(this);
+		toolbarOrder.add(pos, actionCommand);
 	}
 
 
@@ -490,10 +546,33 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 
 		rowHeader = createTableRowHeader(subformtbl, scrollPane);
 		subformtbl.setRowHeaderTable(rowHeader);
+		
+		subformtbl.addMouseListener(newToolbarContextMenuListener(subformtbl));
+		scrollPane.getViewport().addMouseListener(newToolbarContextMenuListener(scrollPane.getViewport()));
 
 		//toolbar.add(btnNew);
 		//toolbar.add(btnRemove);
 		//toolbar.add(btnMultiEdit);
+	}
+	
+	public MouseListener newToolbarContextMenuListener(final JComponent parent) {
+		MouseListener res = new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent mev) {
+				if (SwingUtilities.isRightMouseButton(mev)) {
+					List<JComponent> items = new ArrayList<JComponent>();
+					addToolbarMenuItems(items);
+					if (items.isEmpty())
+						return;
+					
+					JPopupMenu popup = new JPopupMenu();
+					for (JComponent c : items)
+						popup.add(c);
+					popup.show(parent, mev.getX(), mev.getY());
+				}
+			}
+		};
+		return res;
 	}
 
 	public final void setupTableFilter(CollectableFieldsProviderFactory collectableFieldsProviderFactory) {
@@ -506,7 +585,9 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		SubFormTable externalTable = getSubformRowHeader().getExternalTable();
 
 		// setup subform filter
-		subformfilter = new SubFormFilter(this, fixedTable, fixedColumnModel, externalTable, externalColumnModel, (JToggleButton) toolbarButtons.get(ToolbarFunction.FILTER.name()), collectableFieldsProviderFactory);
+		subformfilter = new SubFormFilter(this, fixedTable, fixedColumnModel, externalTable, externalColumnModel, 
+				(JToggleButton) toolbarButtons.get(ToolbarFunction.FILTER.name()), 
+				(JCheckBoxMenuItem) toolbarMenuItems.get(ToolbarFunction.FILTER.name()), collectableFieldsProviderFactory);
 
 		// add subformfilter for fixed columns
 		Component corner = scrollPane.getCorner(JScrollPane.UPPER_LEFT_CORNER );
@@ -523,6 +604,16 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		panel1.add(origColumnHeader, BorderLayout.CENTER);
 		panel1.add(subformfilter.getExternalSubFormFilter(), BorderLayout.NORTH);
 		scrollPane.setColumnHeaderView(panel1);
+	}
+	
+	/**
+	 * do not store items permanent!
+	 * @param result
+	 */
+	public void addToolbarMenuItems(List<JComponent> result) {
+		for (String actionCommand : toolbarOrder) {
+			result.add(toolbarMenuItems.get(actionCommand));
+		}
 	}
 
 	public SubFormFilter getSubFormFilter() {
@@ -542,7 +633,9 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	 * @param scrlpnTable @todo what is this?
 	 */
 	protected SubformRowHeader createTableRowHeader(final SubFormTable tbl, JScrollPane scrlpnTable) {
-		return new SubformRowHeader(tbl, scrlpnTable);
+		final SubformRowHeader res = new SubformRowHeader(tbl, scrlpnTable);
+		res.getHeaderTable().addMouseListener(newToolbarContextMenuListener(res.getHeaderTable()));
+		return res;
 	}
 
 	public void setTableRowHeader(SubformRowHeader newTableRowHeader) {
