@@ -1,3 +1,19 @@
+//Copyright (C) 2011  Novabit Informationssysteme GmbH
+//
+//This file is part of Nuclos.
+//
+//Nuclos is free software: you can redistribute it and/or modify
+//it under the terms of the GNU Affero General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+//Nuclos is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU Affero General Public License for more details.
+//
+//You should have received a copy of the GNU Affero General Public License
+//along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.build;
 
 import java.io.File;
@@ -7,6 +23,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 
+/**
+ * Retrieve SVN information (like revision number) from the build environment during build time.
+ * <p>
+ * The main of this class is executed at mvn <em>build</em> time on phase 'prepare-package'.
+ * It is <em>not</em> used during Nuclos runtime.
+ * </p>
+ * @author Thomas Pasch
+ * @since Nuclos 3.2.0
+ */
 public class ScmBuildInfo {
 	
 	private static final Class<?>[] STRING_ARRAY_ARGS = new Class<?>[] { String[].class };
@@ -15,16 +40,16 @@ public class ScmBuildInfo {
 		final NoExitSecurityManager sm = new NoExitSecurityManager();
 		System.setSecurityManager(sm);
 		try {
-			final File classRoot = getResourcesMainSrcRoot();
-			final File info = new File(classRoot, "info.xml");
+			final File resources = getResourcesMainSrcRoot();
+			final File info = new File(resources, "info.xml");
 			info.delete();
-			final File status = new File(classRoot, "status.xml");
+			final File status = new File(resources, "status.xml");
 			status.delete();
 			System.out.println("user.dir: " + System.getProperty("user.dir"));
-			System.out.println("class root: " + classRoot);
+			System.out.println("resources dir: " + resources);
 			try {
-				invokeMainOnThread("org.tmatesoft.svn.cli.SVN", new String[] {"info", "--xml"}, new File(classRoot, "info.xml"));
-				invokeMainOnThread("org.tmatesoft.svn.cli.SVN", new String[] {"status", "--xml"}, new File(classRoot, "status.xml"));
+				invokeMain("org.tmatesoft.svn.cli.SVN", new String[] {"info", "--xml"}, new File(resources, "info.xml"));
+				invokeMain("org.tmatesoft.svn.cli.SVN", new String[] {"status", "--xml"}, new File(resources, "status.xml"));
 			}
 			catch (IllegalArgumentException e) {
 				// no svn?
