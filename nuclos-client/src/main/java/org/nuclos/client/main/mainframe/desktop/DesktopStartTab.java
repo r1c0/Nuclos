@@ -114,7 +114,7 @@ public abstract class DesktopStartTab {
 	
 	private final Action actHideDesktop = new AbstractAction(
 			CommonLocaleDelegate.getMessage("DesktopStartTab.3", "Desktop ausblenden"), 
-			Icons.getInstance().getIconClearSearch16()) {
+			Icons.getInstance().getIconEmpty16()) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			hide();
@@ -122,7 +122,8 @@ public abstract class DesktopStartTab {
 	};
 	
 	private final Action actHideToolBar = new AbstractAction(
-			CommonLocaleDelegate.getMessage("DesktopStartTab.4", "Symbolleiste ausblenden")) {
+			CommonLocaleDelegate.getMessage("DesktopStartTab.4", "Symbolleiste ausblenden",
+			Icons.getInstance().getIconEmpty16())) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			showToolBar(!MainFrameUtils.isActionSelected(this));
@@ -172,7 +173,9 @@ public abstract class DesktopStartTab {
 		contextMenu.add(new JMenuItem(actAddMenubutton));
 		contextMenu.add(new JMenuItem(actEditDesktop));
 		contextMenu.addSeparator();
-		contextMenu.add(new JCheckBoxMenuItem(actHideToolBar));
+		JCheckBoxMenuItem chckHideToolBar = new JCheckBoxMenuItem(actHideToolBar);
+//		chckHideToolBar.setIcon(Icons.getInstance().getIconEmpty16());
+		contextMenu.add(chckHideToolBar);
 		contextMenu.add(new JMenuItem(actHideDesktop));
 		contextMenu.addSeparator();
 		contextMenu.add(new JMenuItem(actRestoreDesktop));
