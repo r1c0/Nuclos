@@ -696,9 +696,11 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			List<Component> exportNotJMenuComponents = Main.isMacOSX()? new ArrayList<Component>() : null;
 			MenuGenerator menuGen = new MenuGenerator(commandMap, componentMap, exportNotJMenuComponents);
 			menuGen.processMenuConfig(getClass().getClassLoader().getResourceAsStream("nuclos-menuconfig.xml"));
-			Enumeration<URL> resources = getClass().getClassLoader().getResources("menuconfig.xml");
-			while (resources.hasMoreElements()) {
-				menuGen.processMenuConfig(resources.nextElement());
+			if (getWorkspace() != null && !getWorkspace().getWoDesc().isHideMenuBar()) {
+				Enumeration<URL> resources = getClass().getClassLoader().getResources("menuconfig.xml");
+				while (resources.hasMoreElements()) {
+					menuGen.processMenuConfig(resources.nextElement());
+				}
 			}
 			JMenuBar mb = menuGen.getJMenuBar();
 			setJMenuBar(mb);
@@ -1675,9 +1677,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	public Component getFrameContent() {
 		return pnlDesktop.getComponent(0);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void clearFrame() {
 		pnlDesktop.removeAll();
@@ -1751,23 +1753,23 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			mainFramePrefs.put(PREFS_NODE_LAST_ALWAYS_OPEN_WORKSPACE, lastAlwaysOpenWorkspace);
 		if (lastAlwaysOpenWorkspaceId != null)
 			mainFramePrefs.putLong(PREFS_NODE_LAST_ALWAYS_OPEN_WORKSPACE_ID, lastAlwaysOpenWorkspaceId);
-		PreferencesUtils.putStringList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER, 
-				CollectionUtils.transform(WorkspaceChooserController.getWorkspaceHeaders(), 
+		PreferencesUtils.putStringList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER,
+				CollectionUtils.transform(WorkspaceChooserController.getWorkspaceHeaders(),
 						new Transformer<WorkspaceVO, String>() {
 							@Override
 							public String transform(WorkspaceVO i) {
 								return i.getWoDesc().getName();
 							}
 						}));
-		PreferencesUtils.putLongList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER_IDS, 
-				CollectionUtils.transform(WorkspaceChooserController.getWorkspaceHeaders(), 
+		PreferencesUtils.putLongList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER_IDS,
+				CollectionUtils.transform(WorkspaceChooserController.getWorkspaceHeaders(),
 						new Transformer<WorkspaceVO, Long>() {
 							@Override
 							public Long transform(WorkspaceVO i) {
 								return i.getId();
 							}
 						}));
-		
+
 		mainFramePrefs.node(PREFS_NODE_BOOKMARK).removeNode();
 		Preferences prefsBookmark = mainFramePrefs.node(PREFS_NODE_BOOKMARK);
 		for (String entity : bookmark.keySet()) {
@@ -1787,7 +1789,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 * @throws BackingStoreException
 	 * @throws PreferencesException
 	 */
-	public static void readMainFramePreferences(Preferences mainFramePrefs) 
+	public static void readMainFramePreferences(Preferences mainFramePrefs)
 			throws BackingStoreException, PreferencesException {
 		setSplittingDeactivated(mainFramePrefs.getBoolean(PREFS_NODE_SPLITTING_DEACTIVATED, false));
 		selectedHistorySize = mainFramePrefs.getInt(PREFS_NODE_HISTORY_SIZE_INDEX, 0);
@@ -1797,7 +1799,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		lastAlwaysOpenWorkspace = mainFramePrefs.get(PREFS_NODE_LAST_ALWAYS_OPEN_WORKSPACE, null);
 		lastAlwaysOpenWorkspaceId = mainFramePrefs.getLong(PREFS_NODE_LAST_ALWAYS_OPEN_WORKSPACE_ID, 0l);
 		WorkspaceChooserController.setupWorkspaces(
-				PreferencesUtils.getLongList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER_IDS), 
+				PreferencesUtils.getLongList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER_IDS),
 				PreferencesUtils.getStringList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER));
 
 		Preferences prefsBookmark = mainFramePrefs.node(PREFS_NODE_BOOKMARK);
@@ -1928,17 +1930,17 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		MainFrame.splittingDeactivated = splittingDeactivated;
 		MainFrame.miDeactivateSplitting.setSelected(splittingDeactivated);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return splittingEnabled
 	 */
 	public static boolean isSplittingEnabled() {
 		return MainFrame.splittingEnabled;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param enabled
 	 */
 	public static void setSplittingEnabled(boolean enabled) {
@@ -1946,9 +1948,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		setSplittingDeactivated(!enabled);
 		MainFrame.miDeactivateSplitting.setEnabled(enabled);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static boolean isStarttabEditable() {
@@ -1990,25 +1992,25 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	public static WorkspaceVO getWorkspace() {
 		return WorkspaceChooserController.getSelectedWorkspace();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static WorkspaceDescription getWorkspaceDescription() {
 		return getWorkspace().getWoDesc();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static List<WorkspaceVO> getWorkspaceHeaders() {
 		return WorkspaceChooserController.getWorkspaceHeaders();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public static void refreshWorkspacesHeaders() {
 		WorkspaceChooserController.setupWorkspaces();
@@ -2069,7 +2071,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	public static String getLastWorkspaceFromPreferences() {
 		return lastWorkspace;
 	}
-	
+
 	/**
 	 *
 	 * @return
@@ -2077,7 +2079,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	public static Long getLastWorkspaceIdFromPreferences() {
 		return lastWorkspaceId;
 	}
-	
+
 	/**
 	 *
 	 * @return
@@ -2085,9 +2087,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	public static String getLastAlwaysOpenWorkspaceFromPreferences() {
 		return lastAlwaysOpenWorkspace;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param lastAlwaysOpenWorkspace
 	 */
 	public static void setLastAlwaysOpenWorkspace(String lastAlwaysOpenWorkspace) {
@@ -2095,7 +2097,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	/**
-	 * 
+	 *
 	 * @param lastAlwaysOpenWorkspaceId
 	 */
 	public static void setLastAlwaysOpenWorkspaceId(Long lastAlwaysOpenWorkspaceId) {
