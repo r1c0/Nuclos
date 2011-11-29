@@ -59284,6 +59284,21 @@
     "text": "Neuer Tab im ausgeblendeten Bereich."
   },
   {
+    "resourceID": "MainFrame.4",
+    "locale": "i-default",
+    "text": "Switching workspace"
+  },
+  {
+    "resourceID": "MainFrame.4",
+    "locale": "en",
+    "text": "Switching workspace"
+  },
+  {
+    "resourceID": "MainFrame.4",
+    "locale": "de",
+    "text": "Arbeitsumgebung wird gewechselt"
+  },
+  {
     "resourceID": "MainFrameTabbedPane.1",
     "locale": "i-default",
     "text": "Open new tabs here"

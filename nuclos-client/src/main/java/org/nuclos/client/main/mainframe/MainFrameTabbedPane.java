@@ -134,6 +134,8 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 
 	private final Timer resizeTimer = new Timer(MainFrameTabbedPane.class.getName() + " ResizeTimer");
 	private TimerTask resizeTimerTask;
+	
+	public static boolean RESIZE_AND_ADJUST_IMMEDIATE = false;
 
 	@Override
 	protected void finalize() throws Throwable {
@@ -217,7 +219,11 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 					}
 				};
 				try {
-					resizeTimer.schedule(resizeTimerTask, 500);
+					if (RESIZE_AND_ADJUST_IMMEDIATE) {
+						resizeTimerTask.run();
+					} else {
+						resizeTimer.schedule(resizeTimerTask, 500);
+					}
 				} catch (IllegalStateException ex) {
 					// ignore Timer already cancelled.
 				}
@@ -1425,7 +1431,11 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 				}
 			}
 		};
-		scheduleAdjustTabsTimer.schedule(adjustTabsTimerTask, delay);
+		if (RESIZE_AND_ADJUST_IMMEDIATE) {
+			adjustTabsTimerTask.run();
+		} else {
+			scheduleAdjustTabsTimer.schedule(adjustTabsTimerTask, delay);
+		}
 	}
 
 	/**

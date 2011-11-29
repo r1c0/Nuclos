@@ -18,10 +18,15 @@ package org.nuclos.client.main.mainframe;
 
 import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 
+import info.clearthought.layout.TableLayout;
+
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.IllegalComponentStateException;
 import java.awt.Point;
@@ -61,6 +66,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -70,6 +76,8 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JWindow;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.NuclosIcons;
@@ -95,6 +103,7 @@ import org.nuclos.client.ui.CommonJFrame;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.ValidationLayerFactory;
+import org.nuclos.client.ui.util.TableLayoutBuilder;
 import org.nuclos.common.Actions;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosEntity;
@@ -155,7 +164,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private final static int PROGRESSBAR_WIDTH = 200;
 	private final static JProgressBar progressBar = new JProgressBar();
 	private final NuclosMessagePanel msgPanel = new NuclosMessagePanel();
-	private final JPanel componentMacPanel = new JPanel();
+	private final static JPanel componentMacPanel = new JPanel();
 	private static final JPanel pnlDesktop = new JPanel();
 
 	private static MainFrameTabbedPane homeTabbedPane;
@@ -190,6 +199,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private static Long lastWorkspaceId;
 	private static String lastAlwaysOpenWorkspace;
 	private static Long lastAlwaysOpenWorkspaceId;
+	
+	private static JWindow winSwitchingWorkspace;
 
 	private static final AbstractAction actDeactivateSplitting = new AbstractAction() {
 
@@ -280,13 +291,11 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	private void init(String sUserName, String sNucleusServerName) {
-
 		this.setTitle(sUserName, sNucleusServerName);
-
+		setBackground(NuclosSyntheticaConstants.BACKGROUND_DARKER);
 		JPanel contentpane = (JPanel) getContentPane();
 		contentpane.setLayout(new BorderLayout());
 		contentpane.add(pnlDesktop, BorderLayout.CENTER);
-
 		contentpane.setBackground(NuclosSyntheticaConstants.BACKGROUND_DARKER);
 		pnlDesktop.setOpaque(false);
 		pnlDesktop.setLayout(new BorderLayout());
@@ -2137,6 +2146,89 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		}
 
 		return result;
+	}
+	
+	private static void newSwitchingWorkspaceSplash() {
+		if (winSwitchingWorkspace != null) {
+			return;
+		}
+		
+		winSwitchingWorkspace = new JWindow(Main.getMainFrame());
+		winSwitchingWorkspace.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		
+		JLabel lab = new JLabel(CommonLocaleDelegate.getMessage("MainFrame.4", "Arbeitsumgebung wird gewechselt") + "...");
+		lab.setForeground(Color.WHITE);
+		lab.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+		lab.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+		
+		JPanel jpnSwitchingWorkspace = new JPanel();
+		jpnSwitchingWorkspace.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+		jpnSwitchingWorkspace.setOpaque(true);
+		jpnSwitchingWorkspace.setBackground(NuclosSyntheticaConstants.BACKGROUND_DARK);
+		
+		TableLayoutBuilder tlbSwitchingWorkspace = new TableLayoutBuilder(jpnSwitchingWorkspace);
+		tlbSwitchingWorkspace.columns(TableLayout.FILL)
+		.newRow(TableLayout.FILL).add(new JLabel(Icons.getInstance().getIconSwitchWorkspace()), 1, TableLayout.CENTER, TableLayout.CENTER)
+		.newRow().add(lab, 1, TableLayout.CENTER, TableLayout.CENTER);
+		
+		winSwitchingWorkspace.getContentPane().add(jpnSwitchingWorkspace, BorderLayout.CENTER);
+		winSwitchingWorkspace.setSize(250, 250);
+		winSwitchingWorkspace.setAlwaysOnTop(true);
+		
+		repositionSwitchingWorkspace();
+		winSwitchingWorkspace.setVisible(true);
+		
+		jpnSwitchingWorkspace.paintImmediately(0, 0, jpnSwitchingWorkspace.getSize().width, jpnSwitchingWorkspace.getSize().height);
+	}
+	
+	public static void repositionSwitchingWorkspace() {
+		if (winSwitchingWorkspace != null) {
+			winSwitchingWorkspace.setLocationRelativeTo(Main.getMainFrame());
+		}
+	}
+	
+	public static void showSwitchingWorkspace(boolean show) {
+		if (show) {
+			MainFrameTabbedPane.RESIZE_AND_ADJUST_IMMEDIATE = true;
+			Main.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			componentMacPanel.setVisible(false);
+			pnlDesktop.setVisible(false);
+			newSwitchingWorkspaceSplash();
+			JPanel contentpane = (JPanel) Main.getMainFrame().getContentPane();
+			contentpane.revalidate();
+			contentpane.paintImmediately(0,0,contentpane.getSize().width,contentpane.getSize().height);
+			
+		} else {			
+			final JPanel contentpane = (JPanel) Main.getMainFrame().getContentPane();
+			componentMacPanel.setVisible(true);
+			pnlDesktop.setVisible(true);
+			Main.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			
+			Thread t = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						LOG.error(e);
+					}
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							contentpane.revalidate();
+							contentpane.repaint();
+							
+							MainFrameTabbedPane.RESIZE_AND_ADJUST_IMMEDIATE = false;
+							if (winSwitchingWorkspace != null) {
+								winSwitchingWorkspace.dispose();
+								winSwitchingWorkspace = null;
+							}
+						}
+					});
+				}
+			});
+			t.start();
+		}
 	}
 
 }	// class MainFrame

@@ -761,6 +761,10 @@ public class Icons {
 		return this.getIconByName("iconTargetBorder64");
 	}
 	
+	public ImageIcon getIconSwitchWorkspace() {
+		return this.getIconByName("iconSwitchWorkspace");
+	}
+	
 	public Icon getStateViewStateNormal(String type) {
 		if (type.equals("first"))
 			return this.getIconByName("state-view-state-normal-first");

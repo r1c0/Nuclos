@@ -27,6 +27,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 import org.apache.log4j.Logger;
@@ -127,7 +128,7 @@ public class RestoreUtils {
 			for (int i=0; i < gc.length && !restoreAtStoredPosition; i++) {
 				Rectangle deviceBounds = gc[i].getBounds();
 				LOG.info("device bounds: " + deviceBounds);
-				if (!deviceBounds.contains(wdFrame.getNormalBounds())) {
+				if (deviceBounds.contains(wdFrame.getNormalBounds())) {
 					restoreAtStoredPosition = true;
 				}
 			}
@@ -140,14 +141,25 @@ public class RestoreUtils {
 		frame.setNormalBounds(wdFrame.getNormalBounds());
 		frame.setBounds(wdFrame.getNormalBounds());
 		frame.setExtendedState(wdFrame.getExtendedState());
-
+		if (wdFrame.isMainFrame()) {
+			MainFrame.repositionSwitchingWorkspace();
+			JPanel contentpane = (JPanel) Main.getMainFrame().getContentPane();
+			contentpane.revalidate();
+			contentpane.paintImmediately(0,0,contentpane.getSize().width,contentpane.getSize().height);
+		}
+		
 		ContentRestorer cr = createContentRestorer(wdFrame.getContent(), frame);
 		wsFrame.setFrameContent(cr.getEmptyContent());
+		
 		cr.restoreContent();
 
 		MainFrame.updateTabbedPaneActions(frame);
 
-		frame.setVisible(true);
+		if (wdFrame.isMainFrame()) {
+			MainFrame.showSwitchingWorkspace(false);
+		} else {
+			frame.setVisible(true);
+		}
 	}
 
 	/**
@@ -569,17 +581,8 @@ public class RestoreUtils {
 			if (frame instanceof ExternalFrame) {
 				frame.dispose();
 			} else if (frame instanceof MainFrame) {
-				frame.setVisible(false);
+				MainFrame.showSwitchingWorkspace(true);
 				((MainFrame) frame).clearFrame();
-				// setVisible to false, cause of problems during repaint in synthetica:
-				/* Exception in thread "AWT-EventQueue-0" java.lang.ArrayIndexOutOfBoundsException: 1
-						at javax.swing.plaf.basic.BasicTabbedPaneUI.getTabBounds(BasicTabbedPaneUI.java:1517)
-						at javax.swing.plaf.basic.BasicTabbedPaneUI.getTabBounds(BasicTabbedPaneUI.java:1452)
-						at javax.swing.JTabbedPane.getBoundsAt(JTabbedPane.java:1268)
-						at de.javasoft.plaf.synthetica.painter.TabbedPanePainter.getTabPosition(TabbedPanePainter.java:666)
-						at de.javasoft.plaf.synthetica.painter.TabbedPanePainter.drawContentBorderLine4SelectedTab(TabbedPanePainter.java:763)
-						at de.javasoft.plaf.synthetica.painter.TabbedPanePainter.paintTabbedPaneContentBorder(TabbedPanePainter.java:191)
-				 */
 			}
 		}
 
