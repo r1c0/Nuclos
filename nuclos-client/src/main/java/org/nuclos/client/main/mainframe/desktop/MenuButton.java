@@ -551,7 +551,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 			}
 		}
 		
-		resourceIcon = MainFrame.resizeAndCacheIcon(NuclosIcons.getInstance().getBigTransparentApplicationIcon512(), 128);
+		resourceIcon = Icons.getInstance().getIconTargetBorder64();
 		applyIconSize();
 	}
 	

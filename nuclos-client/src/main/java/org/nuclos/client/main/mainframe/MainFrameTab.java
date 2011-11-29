@@ -1198,19 +1198,19 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			//final BufferedImage biShadowDst = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_INT_ARGB);
 			final Graphics2D g2bi = bi.createGraphics();
 
-			if (mouseOverPosition != null) {
-				final BufferedImage biMouseOverBackground = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_INT_ARGB);
-				final Graphics2D g2bimob = biMouseOverBackground.createGraphics();
-				g2bimob.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2bimob.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-				g2bimob.setColor(new Color(255, 255, 255, 80));
-				g2bimob.fillRoundRect(0, 0, bounds.width, bounds.height, 8, 8);
-				g2bimob.fillRoundRect(1, 1, bounds.width-2, bounds.height-2, 8, 8);
-				g2bimob.fillRoundRect(2, 2, bounds.width-4, bounds.height-4, 8, 8);
-				g2bimob.fillRoundRect(3, 3, bounds.width-6, bounds.height-6, 8, 8);
-				g2bimob.dispose();
-				g2.drawRenderedImage(biMouseOverBackground, null);
-			}
+//			if (mouseOverPosition != null) {
+//				final BufferedImage biMouseOverBackground = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_INT_ARGB);
+//				final Graphics2D g2bimob = biMouseOverBackground.createGraphics();
+//				g2bimob.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//				g2bimob.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+//				g2bimob.setColor(new Color(255, 255, 255, 80));
+//				g2bimob.fillRoundRect(0, 0, bounds.width, bounds.height, 8, 8);
+//				g2bimob.fillRoundRect(1, 1, bounds.width-2, bounds.height-2, 8, 8);
+//				g2bimob.fillRoundRect(2, 2, bounds.width-4, bounds.height-4, 8, 8);
+//				g2bimob.fillRoundRect(3, 3, bounds.width-6, bounds.height-6, 8, 8);
+//				g2bimob.dispose();
+//				g2.drawRenderedImage(biMouseOverBackground, null);
+//			}
 
 			super.paint(g2bi);
 

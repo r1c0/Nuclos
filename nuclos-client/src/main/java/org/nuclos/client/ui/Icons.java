@@ -757,6 +757,10 @@ public class Icons {
 		return this.getIconByName("table-move-indicator");
 	}
 	
+	public ImageIcon getIconTargetBorder64() {
+		return this.getIconByName("iconTargetBorder64");
+	}
+	
 	public Icon getStateViewStateNormal(String type) {
 		if (type.equals("first"))
 			return this.getIconByName("state-view-state-normal-first");
