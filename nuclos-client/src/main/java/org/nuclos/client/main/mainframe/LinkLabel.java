@@ -19,6 +19,7 @@ package org.nuclos.client.main.mainframe;
 import static org.nuclos.client.main.mainframe.MainFrameUtils.isActionSelected;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -144,6 +145,17 @@ public abstract class LinkLabel extends JLabel {
 
 		super.paint(g);
 	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		Dimension res = super.getPreferredSize();
+		if (!isVisible()) {
+			res.height = 0;
+		}
+		return res;
+	}
+	
+	
 
 }
 
