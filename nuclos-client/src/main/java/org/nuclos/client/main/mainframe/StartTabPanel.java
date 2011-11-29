@@ -73,6 +73,7 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.WrapLayout;
+import org.nuclos.client.ui.util.TableLayoutBuilder;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.WorkspaceDescription.Desktop;
 import org.nuclos.common.collection.CollectionUtils;
@@ -111,6 +112,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	private final JPanel jpnStartmenu = new JPanel();
 	private final JPanel jpnHistory = new JPanel();
 	private final JPanel jpnBookmark = new JPanel();
+	private final TableLayoutBuilder tlbStartmenu = (new TableLayoutBuilder(jpnStartmenu)).columns(TableLayout.FILL);
+	private final TableLayoutBuilder tlbHistory = (new TableLayoutBuilder(jpnHistory)).columns(TableLayout.FILL);
+	private final TableLayoutBuilder tlbBookmark = (new TableLayoutBuilder(jpnBookmark)).columns(TableLayout.FILL);
 	private boolean isStartmenuShown = true;
 	private boolean isHistoryShown = true;
 	private boolean isBookmarkShown = true;
@@ -183,9 +187,6 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		setupActions();
 
 		jpnHiddenTabs.setBorder(BorderFactory.createTitledBorder(CommonLocaleDelegate.getMessage("StartTabPanel.1","Ausgeblendete Tabs")));
-		jpnStartmenu.setLayout(new BoxLayout(jpnStartmenu, BoxLayout.Y_AXIS));
-		jpnHistory.setLayout(new BoxLayout(jpnHistory, BoxLayout.Y_AXIS));
-		jpnBookmark.setLayout(new BoxLayout(jpnBookmark, BoxLayout.Y_AXIS));
 
 		jpnCenter.add(createTitledScrollPane(CommonLocaleDelegate.getMessage("StartTabPanel.11","Startmenu"), jpnStartmenu), "0,0");
 		jpnCenter.add(createTitledScrollPane(CommonLocaleDelegate.getMessage("StartTabPanel.12","Zuletzt angesehen"), jpnHistory), "1,0");
@@ -620,11 +621,11 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				}
 			};
 
-			jpnHistory.add(ll);
+			tlbHistory.newRow().add(ll);
 
 			for (EntityBookmark eb : sortEntityBookmark(MainFrame.getHistory().getValues(entity.getValue()))) {
 				LinkLabel historyEntry = createHistoryEntry(eb);
-				jpnHistory.add(historyEntry);
+				tlbHistory.newRow().add(historyEntry);
 				headlineAction.addLinkLabel(historyEntry);
 				setupDragDrop(historyEntry, eb);
 			}
@@ -669,13 +670,13 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				}
 			};
 
-			//jpnBookmark.add(createHeadline(entity.getKey(), MainFrame.resizeAndCacheLinkIcon(MainFrame.getEntityIcon(entity.getValue()))));
-			jpnBookmark.add(ll);
+			//tlbBookmark.newRow().add(createHeadline(entity.getKey(), MainFrame.resizeAndCacheLinkIcon(MainFrame.getEntityIcon(entity.getValue()))));
+			tlbBookmark.newRow().add(ll);
 
 			for (EntityBookmark eb : sortEntityBookmark(MainFrame.getBookmark().getValues(entity.getValue()))) {
 				LinkLabel bookmarkEntry = createBookmarkEntry(eb);
 				headlineAction.addLinkLabel(bookmarkEntry);
-				jpnBookmark.add(bookmarkEntry);
+				tlbBookmark.newRow().add(bookmarkEntry);
 				setupDragDrop(bookmarkEntry, eb);
 			}
 		}
@@ -820,12 +821,12 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 					startmenuExpandOrReduceActions.put(menu, actionExpOrRed);
 					// do not add disabled and reduced headlines (asigned workspace without rights to customize)
 					if (actionExpOrRed.isEnabled() || isActionSelected(actionExpOrRed))
-						jpnStartmenu.add(createHeadline(actionExpOrRed));
+						tlbStartmenu.newRow().add(createHeadline(actionExpOrRed));
 
 					// add static items unsorted
 					for (Action action : mapStartmenuActionsStatic.getValues(menu)) {
 						LinkLabel startmenuEntry = createStarmenuEntry(action);
-						jpnStartmenu.add(startmenuEntry);
+						tlbStartmenu.newRow().add(startmenuEntry);
 						actionExpOrRed.addLinkLabel(startmenuEntry);
 					}
 
@@ -838,7 +839,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 					});
 					for (Action action : listActionsSorted) {
 						LinkLabel startmenuEntry = createStarmenuEntry(action);
-						jpnStartmenu.add(startmenuEntry);
+						tlbStartmenu.newRow().add(startmenuEntry);
 						actionExpOrRed.addLinkLabel(startmenuEntry);
 					}
 				}
