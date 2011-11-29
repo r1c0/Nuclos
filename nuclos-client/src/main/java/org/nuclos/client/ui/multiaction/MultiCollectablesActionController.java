@@ -177,6 +177,13 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 //		if (getParent() instanceof CommonJInternalFrame) {
 //			Main.getMainController().getControllerForInternalFrame((CommonJInternalFrame)getParent()).lockFrame(true);
 //		}
+		
+		pnl.btnProtocol.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				pnl.showProtocol(pnl.btnProtocol.isSelected());
+			}
+		});
 
 		pnl.btnPause.addActionListener(new ActionListener() {
 			@Override
@@ -427,6 +434,7 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 					public void run() {
 						try {
 							if (MultiCollectablesActionController.this.error) {
+								pnl.showProtocol(true);
 								JOptionPane.showMessageDialog(MultiCollectablesActionController.this.getParent(), CommonLocaleDelegate.getMessageFromResource("MultiCollectablesActionController.erroroccurred"), Errors.getInstance().getAppName(), JOptionPane.ERROR_MESSAGE);
 							}
 							closable = true;

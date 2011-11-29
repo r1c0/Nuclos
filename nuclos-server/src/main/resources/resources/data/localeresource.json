@@ -58791,17 +58791,32 @@
   {
     "resourceID": "MultiActionProgressPanel.9",
     "locale": "i-default",
-    "text": "Save result"
+    "text": "Save protocol"
   },
   {
     "resourceID": "MultiActionProgressPanel.9",
     "locale": "en",
-    "text": "Save result"
+    "text": "Save protocol"
   },
   {
     "resourceID": "MultiActionProgressPanel.9",
     "locale": "de",
-    "text": "Ergebnis speichern"
+    "text": "Protokoll speichern"
+  },
+  {
+    "resourceID": "MultiActionProgressPanel.10",
+    "locale": "i-default",
+    "text": "Show protocol"
+  },
+  {
+    "resourceID": "MultiActionProgressPanel.10",
+    "locale": "en",
+    "text": "Show protocol"
+  },
+  {
+    "resourceID": "MultiActionProgressPanel.10",
+    "locale": "de",
+    "text": "Protokoll anzeigen"
   },
   {
     "resourceID": "MultiCollectablesActionController.csv",

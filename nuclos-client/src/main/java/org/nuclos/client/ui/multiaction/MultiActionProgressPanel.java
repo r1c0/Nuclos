@@ -51,7 +51,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 
+import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 import org.nuclos.client.ui.Icons;
+import org.nuclos.client.ui.StatusBarTextField;
 import org.nuclos.client.ui.popupmenu.JPopupMenuFactory;
 import org.nuclos.client.ui.popupmenu.JTableJPopupMenuListener;
 import org.nuclos.client.ui.table.CommonJTable;
@@ -70,10 +72,11 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 public class MultiActionProgressPanel extends JPanel {
 
+	public final JToggleButton btnProtocol = new JToggleButton(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.10","Protokoll anzeigen"), Icons.getInstance().getIconUp16());
 	public final JToggleButton btnPause = new JToggleButton(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.2","Pause"), Icons.getInstance().getIconPause16());
 	public final JButton btnStop = new JButton(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.3","Stop"), Icons.getInstance().getIconStop16());
 	public final JButton btnClose = new JButton(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.4","Schlie\u00dfen"));
-	public final JButton btnSaveResult = new JButton(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.9","Ergebnis speichern"));
+	public final JButton btnSaveResult = new JButton(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.9","Protokoll speichern"), Icons.getInstance().getIconReport());
 
 	private JProgressBar progressbar;
 	private MultiActionProgressTableModel tblmdl;
@@ -87,11 +90,13 @@ public class MultiActionProgressPanel extends JPanel {
 	private final JLabel labAction = new JLabel();
 	protected final JPanel pnlButtonsGrid = new JPanel(new GridLayout(1, 0, 10, 0));
 	private final JScrollPane scrlpn = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	private final JLabel labStatus = new JLabel(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.5","Bereit"));
+	private final StatusBarTextField labStatus = new StatusBarTextField(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.5","Bereit"));
 
 	private JTextArea txtAreaDetail;
 	private JScrollPane scrlpnDetail;
-
+	
+	private JSplitPane splitPanel;
+	
 	private IMultiActionProgressResultHandler resultHandler;
 
 	public MultiActionProgressPanel(int iCount) {
@@ -107,10 +112,12 @@ public class MultiActionProgressPanel extends JPanel {
 		initiallySetColumnWidths();
 		this.tblResult.getColumnModel().removeColumn(tblResult.getColumnModel().getColumn(MultiActionProgressTableModel.COLUMN_ID));
 		this.tblResult.setDefaultRenderer(java.lang.Object.class, new ColorRenderer());
+		showProtocol(false);
 	}
 
 	private void setPauseStopButtons() {
 		pnlButtonsGrid.removeAll();
+		pnlButtonsGrid.add(btnProtocol);
 		pnlButtonsGrid.add(btnPause);
 		pnlButtonsGrid.add(btnStop);
 	}
@@ -119,12 +126,21 @@ public class MultiActionProgressPanel extends JPanel {
 	 * removes the pause/stop buttons in favor of a close button.
 	 */
 	public void setCloseButton() {
+		progressbar.setValue(progressbar.getMaximum());
+		progressbar.setEnabled(false);
 		pnlButtonsGrid.removeAll();
-		pnlButtonsGrid.add(btnClose);
+		pnlButtonsGrid.add(btnProtocol);
 		pnlButtonsGrid.add(btnSaveResult);
+		pnlButtonsGrid.add(btnClose);
 	}
 
 	private void init(int iCount) {
+		btnProtocol.setFocusable(false);
+		btnPause.setFocusable(false);
+		btnStop.setFocusable(false);
+		btnSaveResult.setFocusable(false);
+		btnClose.setFocusable(false);
+		
 		final JPanel pnlNorth = new JPanel(new BorderLayout());
 		final JPanel pnlCenter = new JPanel(new BorderLayout());
 		final Box pnlStatus = Box.createHorizontalBox();
@@ -132,7 +148,7 @@ public class MultiActionProgressPanel extends JPanel {
 
 		final JPanel splitTopPanel = new JPanel(new BorderLayout());
 		final JPanel splitBottomPanel = new JPanel(new BorderLayout());
-		final JSplitPane splitPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, splitTopPanel, splitBottomPanel);
+		splitPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, splitTopPanel, splitBottomPanel);
 		this.add(splitTopPanel, BorderLayout.NORTH);
 		this.add(splitPanel, BorderLayout.CENTER);
 		this.add(splitBottomPanel, BorderLayout.SOUTH);
@@ -163,8 +179,6 @@ public class MultiActionProgressPanel extends JPanel {
 		pnlCenter.add(new JLabel(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.6","Protokoll")), BorderLayout.NORTH);
 		pnlCenter.add(scrlpn, BorderLayout.CENTER);
 
-		splitTopPanel.add(pnlCenter, BorderLayout.CENTER);
-
 		scrlpn.setViewportView(tblResult);
 		tblResult.setAutoscrolls(true);
 
@@ -178,11 +192,9 @@ public class MultiActionProgressPanel extends JPanel {
 
 		pnlDetails.add(scrlpnDetail, BorderLayout.CENTER);
 
-		splitBottomPanel.add(scrlpnDetail, BorderLayout.CENTER);
 		splitPanel.setDividerLocation(300);
-		splitPanel.setTopComponent(splitTopPanel);
-		splitPanel.setBottomComponent(splitBottomPanel);
-		splitPanel.setVisible(true);
+		splitPanel.setTopComponent(pnlCenter);
+		splitPanel.setBottomComponent(scrlpnDetail);
 
 		ListSelectionModel rowSM = tblResult.getSelectionModel();
         rowSM.addListSelectionListener(new ListSelectionListener() {
@@ -199,7 +211,8 @@ public class MultiActionProgressPanel extends JPanel {
             }
         });
 
-        pnlStatus.setBorder(BorderFactory.createEtchedBorder());
+        pnlStatus.setOpaque(true);
+        pnlStatus.setBackground(NuclosSyntheticaConstants.BACKGROUND_DARKER);
 		pnlStatus.add(labStatus);
 		splitBottomPanel.add(pnlStatus, BorderLayout.SOUTH);
 	}
@@ -236,6 +249,17 @@ public class MultiActionProgressPanel extends JPanel {
 			}
 		});
 		return result;
+	}
+	
+	public void showProtocol(boolean show) {
+		if (show) {
+			btnProtocol.setIcon(Icons.getInstance().getIconDown16());
+		} else {
+			btnProtocol.setIcon(Icons.getInstance().getIconUp16());
+		}
+		btnProtocol.setSelected(show);
+		splitPanel.setVisible(show);
+		revalidate();
 	}
 
 	public void setProgress(int iValue) {
