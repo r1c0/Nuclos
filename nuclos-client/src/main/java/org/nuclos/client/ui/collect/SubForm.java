@@ -419,13 +419,17 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	public JScrollPane getSubformScrollPane() {
 		return this.scrollPane;
 	}
+	
+	public void actionPerformed(String actionCommand) {
+		if(actionCommand != null)
+			for(SubFormToolListener l : new ArrayList<SubFormToolListener>(listeners))
+				l.toolbarAction(actionCommand);
+	}
 
 	@Override
     public void actionPerformed(ActionEvent e) {
 		String actionCommand = StringUtils.nullIfEmpty(e.getActionCommand());
-		if(actionCommand != null)
-			for(SubFormToolListener l : new ArrayList<SubFormToolListener>(listeners))
-				l.toolbarAction(actionCommand);
+		actionPerformed(actionCommand);
 	}
 
 	public void setToolbarFunctionState(ToolbarFunction func, ToolbarFunctionState state) {
@@ -570,7 +574,11 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 						popup.add(c);
 					popup.show(parent, mev.getX(), mev.getY());
 				}
+				if (SwingUtilities.isLeftMouseButton(mev) && mev.getClickCount() == 2) {
+					actionPerformed(ToolbarFunction.NEW.name());
+				}
 			}
+			
 		};
 		return res;
 	}
