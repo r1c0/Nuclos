@@ -19,7 +19,10 @@ package org.nuclos.client.common;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
@@ -28,21 +31,31 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.ui.DefaultSelectObjectsPanel;
+import org.nuclos.client.ui.SelectObjectsController;
+import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.SubForm.SubFormToolListener;
+import org.nuclos.client.ui.collect.component.CollectableComboBox;
+import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
+import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.CollectableComparator;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
+import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.PivotJoinCondition;
@@ -70,7 +83,7 @@ import org.nuclos.common2.exception.CommonFatalException;
 public class SearchConditionSubFormController extends SubFormController {
 
 	private static final Logger LOG = Logger.getLogger(SearchConditionSubFormController.class);
-	
+
 	private static final String[] sEditFields = {"createdBy", "createdAt", "changedBy", "changedAt" };
 
 	/**
@@ -452,12 +465,17 @@ public class SearchConditionSubFormController extends SubFormController {
 	public SearchConditionSubFormController(Component parent, JComponent parentMdi,
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, final SubForm subform,
 			Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderFactory clctfproviderfactory) {
-		super(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), parent, parentMdi, clctcompmodelproviderParent, 
+		super(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), parent, parentMdi, clctcompmodelproviderParent,
 				sParentEntityName, subform, true, prefsUserParent, entityPrefs, clctfproviderfactory);
 
-		// there is no multiedit for a SearchConditionSubFormController:
-		subform.setToolbarFunctionState(SubForm.ToolbarFunction.MULTIEDIT.name(), SubForm.ToolbarFunctionState.HIDDEN);
-		
+		subform.addSubFormToolListener(new SubFormToolListener() {
+			@Override
+			public void toolbarAction(String actionCommand) {
+				if(SubForm.ToolbarFunction.fromCommandString(actionCommand) == SubForm.ToolbarFunction.MULTIEDIT)
+					cmdMultiEdit();
+			}
+		});
+
 		subform.getJTable().getTableHeader().setReorderingAllowed(false);
 
 		// initialize table model:
@@ -660,6 +678,25 @@ public class SearchConditionSubFormController extends SubFormController {
 		return true;
 	}
 
+	/**
+	 * lets the user add/remove multiple rows at once. This requires the subform to define a unique master data column.
+	 */
+	public void cmdMultiEdit() {
+		UIUtils.runCommand(this.getParent(), new Runnable() {
+			@Override
+			public void run() {
+				final SubForm subform = getSubForm();
+				if (subform.getUniqueMasterColumnName() == null) {
+					throw new IllegalStateException("No unique master column defined for subform " + subform.getEntityName() + ".");
+				}
+
+				if (stopEditing()) {
+					new SearchConditionMultiEditController().run();
+				}
+			}
+		});
+	}
+
 	private static class CanSearchConditionBeDisplayed implements Predicate<CollectableSearchCondition> {
 		private final int iLevel;
 
@@ -726,4 +763,118 @@ public class SearchConditionSubFormController extends SubFormController {
         }
 	}	// inner class CanSearchConditionBeDisplayedVisitor
 
+	private class SearchConditionMultiEditController extends SelectObjectsController<CollectableField> {
+
+		SearchConditionMultiEditController() {
+			super(getSubForm(), new DefaultSelectObjectsPanel<CollectableField>());
+		}
+
+		public void run() {
+			final SearchConditionTableModel model = getSearchConditionTableModel();
+
+			/** @todo remove those optimistic assumptions below */
+			final String columnName = getSubForm().getUniqueMasterColumnName();
+			if (columnName == null) {
+				throw new CommonFatalException(CommonLocaleDelegate.getMessage("SubFormMultiEditController.1", "Im Unterformular {0} wurde keine eindeutige Spalte (unique master column) definiert.", getSubForm().getEntityName()));
+			}
+
+			final int colIndex = model.findColumnByFieldName(columnName);
+			if (colIndex < 0) {
+				throw new CommonFatalException(CommonLocaleDelegate.getMessage("SubFormMultiEditController.2", "Im Unterformular {0} ist keine eindeutige Spalte (unique master column) namens {1} vorhanden.", getSubForm().getEntityName(), columnName));
+			}
+
+			final int viewColumn = getSubForm().getJTable().convertColumnIndexToView(colIndex);
+			final CollectableComponentTableCellEditor celleditor = (CollectableComponentTableCellEditor)
+					getSubForm().getJTable().getCellEditor(0, viewColumn);
+
+			final CollectableComboBox comboBox = (CollectableComboBox) celleditor.getCollectableComponent();
+
+			final Comparator<CollectableField> comp = CollectableComparator.getFieldComparator(comboBox.getEntityField());
+			final SortedSet<CollectableField> oldAvailableObjects = getNonNullValues(comboBox, comp);
+			final List<CollectableField> oldSelectedObjects = new ArrayList<CollectableField>();
+
+			// iterate through the table and compute selected fields:
+			for (int row = 0; row < model.getRowCount(); ++row) {
+				final CollectableSearchCondition value = (CollectableSearchCondition) model.getValueAt(row, colIndex);
+
+				if (value instanceof CollectableComparison) {
+					CollectableComparison a = (CollectableComparison) value;
+
+					if (oldAvailableObjects.contains(a.getComparand())) {
+						oldSelectedObjects.add(a.getComparand());
+						oldAvailableObjects.remove(a.getComparand());
+						LOG.debug("Value " + value + " removed from available objects.");
+					}
+					else {
+						LOG.debug("Value " + value + " not found in available objects.");
+					}
+				}
+			}
+
+			// perform the dialog:
+			ChoiceList<CollectableField> ro = new ChoiceList<CollectableField>();
+			ro.set(oldAvailableObjects, oldSelectedObjects, comp);
+			setModel(ro);
+			final boolean bOK = run(
+					CommonLocaleDelegate.getMessage("SubFormMultiEditController.3", "Mehrere Datens\u00e4tze in Unterformular einf\u00fcgen/l\u00f6schen"));
+
+			if (bOK) {
+				final List<?> lstNewSelectedObjects = this.getSelectedObjects();
+
+				// 1. iterate through the table model and remove all rows that are not selected:
+				for (int iRow = model.getRowCount() - 1; iRow >= 0; --iRow) {
+					final CollectableSearchCondition oValue = (CollectableSearchCondition)tblmdl.getValueAt(iRow, colIndex);
+					if (oValue != null && oValue instanceof CollectableComparison) {
+						CollectableComparison c = (CollectableComparison) oValue;
+						if (!lstNewSelectedObjects.contains(c.getComparand())) {
+							model.remove(iRow);
+						}
+					}
+				}
+
+				// 2. iterate through the selected objects and add a row for each that is not contained in the table model already:
+				for (Object oSelected : lstNewSelectedObjects) {
+					if (!isContainedInTableModel(oSelected, model, colIndex)) {
+						// add row
+						try {
+							model.addSearchCondition(new CollectableComparison(comboBox.getEntityField(), ComparisonOperator.EQUAL, (CollectableField) oSelected));
+						}
+						catch (CommonBusinessException e) {
+							LOG.warn(e);
+						}
+					}
+				}
+			}
+		}
+
+		private SortedSet<CollectableField> getNonNullValues(CollectableComboBox clctcmbbx, Comparator<CollectableField> comp) {
+			final List<CollectableField> result = clctcmbbx.getValueList();
+
+			// remove the first entry, if it is null:
+			if (!result.isEmpty()) {
+				if (result.get(0).isNull()) {
+					result.remove(0);
+				}
+			}
+			final SortedSet<CollectableField> realResult = new TreeSet<CollectableField>(comp);
+			realResult.addAll(result);
+			return realResult;
+		}
+
+		private boolean isContainedInTableModel(Object oSelected, SearchConditionTableModel tblmdl, int iColumn) {
+			boolean result = false;
+			for (int iRow = 0; iRow < tblmdl.getRowCount(); ++iRow) {
+				final CollectableSearchCondition oValue = (CollectableSearchCondition)tblmdl.getValueAt(iRow, iColumn);
+				if (oValue != null && oValue instanceof CollectableComparison) {
+					CollectableComparison c = (CollectableComparison) oValue;
+					if (oSelected.equals(c.getComparand())) {
+						result = true;
+						break;
+					}
+				}
+			}
+			return result;
+		}
+
+	}
 }	// class SearchConditionSubFormController
