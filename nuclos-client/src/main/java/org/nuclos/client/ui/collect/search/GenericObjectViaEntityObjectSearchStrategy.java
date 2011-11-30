@@ -115,7 +115,7 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 		}
 
 		private final CollectableEntityObjectProxyListAdapter list;
-		
+
 		private MyProxyListAdapter(CollectableEntityObjectProxyListAdapter list) {
 			this.list = list;
 		}
@@ -207,7 +207,7 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 
 		@Override
 		public CollectableGenericObjectWithDependants remove(int index) {
-			throw new UnsupportedOperationException();
+			return eo2Go(list.remove(index));
 		}
 
 		@Override
@@ -428,7 +428,7 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 	public ProxyList<CollectableGenericObjectWithDependants> getCollectableProxyList() {
 		return proxylstclct;
 	}
-		
+
 	/*
 	 * The following methods have been defined only for a subset of strategies.
 	 */
