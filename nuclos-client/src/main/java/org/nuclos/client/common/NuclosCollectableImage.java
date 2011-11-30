@@ -89,6 +89,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 
    private NuclosImage nuclosImage;
    private boolean bScalable;
+   private boolean keepAspectRatio;
    private int inputWidth = -1;
    private int inputHeight = -1;
 
@@ -144,6 +145,13 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 						this.getMediaComponent().setVerticalAlignment(SwingConstants.CENTER);
 					}
 					else {
+						if (keepAspectRatio) {
+							double scalew = (double) w / ii.getIconWidth();
+							double scaleh = (double) h / ii.getIconHeight();
+							double scale = Math.min(scalew, scaleh);
+							w = (int) (ii.getIconWidth() * scale);
+							h = (int) (ii.getIconHeight() * scale);
+						}
 						Image imageScaled = ii.getImage().getScaledInstance(w, h, Image.SCALE_DEFAULT);
 						this.getMediaComponent().setIcon(new ImageIcon(imageScaled));
 					}
@@ -483,6 +491,10 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 
    }
 
+   @Override
+	public void setKeepAspectRatio(boolean keepAspectRatio) {
+		this.keepAspectRatio = keepAspectRatio;
+	}
 
    class ImageFileFilter extends javax.swing.filechooser.FileFilter  {
 

@@ -33,37 +33,44 @@ import org.nuclos.client.ui.labeled.LabeledImage;
 import org.nuclos.common.NuclosBusinessException;
 
 /**
- * 
- * 
- * 
+ *
+ *
+ *
  * <br>
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- * 
+ *
  * @author <a href="mailto:maik.stueker@novabit.de">maik.stueker</a>
  * @version 01.00.00
  */
 public class WYSIWYGCollectableImage extends WYSIWYGCollectableComponent {
 
 	public static String PROPERTY_SCALABLE = "Skalierbar";
-	
+
+	public static String PROPERTY_ASPECTRATIO = "Seiterverhältnis beibehalten";
+
 	private LabeledImage component = new LabeledImage();
-	
+
 	private Boolean bScalable;
+	private Boolean bAspectRatio;
 
 	public WYSIWYGCollectableImage() {
 		propertyNames.add(PROPERTY_FONT);
 		propertyNames.add(PROPERTY_SCALABLE);
-		
+		propertyNames.add(PROPERTY_ASPECTRATIO);
+
 		propertiesToAttributes.put(PROPERTY_SCALABLE, ATTRIBUTE_SCALABLE);
-		
+		propertiesToAttributes.put(PROPERTY_ASPECTRATIO, ATTRIBUTE_ASPECTRATIO);
+
 		propertyClasses.put(PROPERTY_SCALABLE, new PropertyClass(PROPERTY_SCALABLE, Boolean.class));
+		propertyClasses.put(PROPERTY_ASPECTRATIO, new PropertyClass(PROPERTY_ASPECTRATIO, Boolean.class));
 
 		propertySetMethods.put(PROPERTY_NAME, new PropertySetMethod(PROPERTY_NAME, "setName"));
 		propertySetMethods.put(PROPERTY_COLUMNS, new PropertySetMethod(PROPERTY_COLUMNS, "setColumns"));
 		propertySetMethods.put(PROPERTY_FILL_CONTROL_HORIZONTALLY, new PropertySetMethod(PROPERTY_FILL_CONTROL_HORIZONTALLY, "setFillControlHorizontally"));
 		propertySetMethods.put(PROPERTY_SCALABLE, new PropertySetMethod(PROPERTY_SCALABLE, "setScalable"));
-		
+		propertySetMethods.put(PROPERTY_ASPECTRATIO, new PropertySetMethod(PROPERTY_ASPECTRATIO, "setAspectRatio"));
+
 		propertyFilters.put(PROPERTY_SHOWONLY, new PropertyFilter(PROPERTY_SHOWONLY, DISABLED));
 		propertyFilters.put(PROPERTY_VALUELISTPROVIDER, new PropertyFilter(PROPERTY_VALUELISTPROVIDER, DISABLED));
 		propertyFilters.put(PROPERTY_CONTROLTYPECLASS, new PropertyFilter(PROPERTY_CONTROLTYPECLASS, DISABLED));
@@ -72,14 +79,19 @@ public class WYSIWYGCollectableImage extends WYSIWYGCollectableComponent {
 		propertyFilters.put(PROPERTY_INSERTABLE, new PropertyFilter(PROPERTY_INSERTABLE, DISABLED));
 		propertyFilters.put(PROPERTY_FILL_CONTROL_HORIZONTALLY, new PropertyFilter(PROPERTY_FILL_CONTROL_HORIZONTALLY, DISABLED));
 		propertyFilters.put(PROPERTY_SCALABLE, new PropertyFilter(PROPERTY_SCALABLE, STANDARD_AND_EXPERT_MODE));
+		propertyFilters.put(PROPERTY_ASPECTRATIO, new PropertyFilter(PROPERTY_ASPECTRATIO, STANDARD_AND_EXPERT_MODE));
 
 		this.setLayout(new BorderLayout());
 		this.add(component, BorderLayout.CENTER);
 		this.addMouseListener();
 	}
-	
+
 	public void setScalable(Boolean bln) {
 		this.bScalable = bln;
+	}
+
+	public void setAspectRatio(Boolean bln) {
+		this.bAspectRatio = bln;
 	}
 
 	/*

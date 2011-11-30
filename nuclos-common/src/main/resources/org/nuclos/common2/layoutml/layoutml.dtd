@@ -192,6 +192,7 @@ opaque (%boolean;) #IMPLIED
 fill-control-horizontally (%boolean;) #IMPLIED
 resourceId CDATA #IMPLIED
 nextfocuscomponent CDATA #IMPLIED
+aspectratio (%boolean;) #IMPLIED
 >
 
 <!ELEMENT options (option*)>

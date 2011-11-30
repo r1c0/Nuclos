@@ -682,6 +682,10 @@ public abstract class AbstractCollectableComponent
 		// only for special components
 	}
 
+	public void setKeepAspectRatio(boolean keepAspectRatio) {
+		// only for special components
+	}
+
 	/**
 	 * @param sNextFocusComponent
 	 */

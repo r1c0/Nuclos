@@ -181,6 +181,8 @@ public interface CollectableComponent {
 	 */
 	void setScalable(boolean bScalable);
 
+	void setKeepAspectRatio(boolean keepAspectRatio);
+
 	/**
 	 * sets the component for next tab key event
 	 * @param sNextFocusComponent

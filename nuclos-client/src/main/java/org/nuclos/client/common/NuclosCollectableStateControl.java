@@ -74,7 +74,7 @@ public class NuclosCollectableStateControl extends DelegatingCollectableComponen
 	public String getDynamicToolTipText() {
 		return this.getWrappedCollectableComponent().getDynamicToolTipText();
 	}
-	
+
 	/**
 	 * @param bScalable
 	 */
@@ -84,10 +84,15 @@ public class NuclosCollectableStateControl extends DelegatingCollectableComponen
 	}
 
 	@Override
-	public void setNextFocusComponent(String sNextFocusComponent) {
-		// don't set here		
+	public void setKeepAspectRatio(boolean keepAspectRatio) {
+		// only for special components
 	}
-	
-	
+
+	@Override
+	public void setNextFocusComponent(String sNextFocusComponent) {
+		// don't set here
+	}
+
+
 
 }	// class NuclosCollectableStateControl

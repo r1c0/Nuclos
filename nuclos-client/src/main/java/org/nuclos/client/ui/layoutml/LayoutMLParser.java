@@ -198,15 +198,15 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		}
 
 		private static class Event {
-			
+
 			Event() {
 			}
-			
+
 			/** @todo encapsulate fields */
 			String sType;
 			String sSourceComponentName;
 			SubForm subform;
-			
+
 			@Override
 			public String toString() {
 				final StringBuilder result = new StringBuilder();
@@ -277,14 +277,14 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		}
 
 		private class Rule {
-			
+
 			private Event event;
-			
+
 			private final Collection<Action> collActions = new LinkedList<Action>();
-			
+
 			Rule() {
 			}
-			
+
 			@Override
 			public String toString() {
 				final StringBuilder result = new StringBuilder();
@@ -582,7 +582,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 								}
 
 								clctcompmodelSource.addCollectableComponentModelListener(
-										new RefreshValueListCollectableComponentModelAdapter(event, clctcompmodelSource, 
+										new RefreshValueListCollectableComponentModelAdapter(event, clctcompmodelSource,
 												clctParameterisableTarget, rpvact.getParameterNameForSourceComponent()));
 							}	// for
 						}
@@ -593,7 +593,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		}	// inner class Rule
 
 		private static class RefreshValueListCollectableComponentModelAdapter extends CollectableComponentModelAdapter {
-			
+
 			private final Event event;
 			private final CollectableComponentModel clctcompmodelParent;
 			private final Parameterisable clctParameterisable;
@@ -617,7 +617,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					else {
 						oRelatedId = field.getValue();
 					}
-					clctParameterisable.setParameter(sParameterNameForSourceComponent, oRelatedId);					
+					clctParameterisable.setParameter(sParameterNameForSourceComponent, oRelatedId);
 				}
 				catch (UnsupportedOperationException ex) {
 					// If this happens, there is nothing we can do about it:
@@ -631,7 +631,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				}
 				catch (CommonBusinessException ex) {
 					// If this happens, there is nothing we can do about it:
-					throw new CommonFatalException("apply parameters [" + sParameterNameForSourceComponent + "] to " + clctParameterisable 
+					throw new CommonFatalException("apply parameters [" + sParameterNameForSourceComponent + "] to " + clctParameterisable
 							+ " failed on rule event " + event, ex);
 				}
 			}
@@ -1629,6 +1629,13 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				if(sScalable != null) {
 					if(sScalable.equals(ATTRIBUTEVALUE_YES)) {
 						clctcomp.setScalable(true);
+					}
+				}
+
+				final String sKeepAspectRatio = attributes.getValue(ATTRIBUTE_ASPECTRATIO);
+				if(sKeepAspectRatio != null) {
+					if(sKeepAspectRatio.equals(ATTRIBUTEVALUE_YES)) {
+						clctcomp.setKeepAspectRatio(true);
 					}
 				}
 

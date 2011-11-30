@@ -132,6 +132,7 @@ public interface LayoutMLConstants {
 	public static final String ATTRIBUTE_EDITABLE = "editable";
 	public static final String ATTRIBUTE_INSERTABLE = "insertable";
 	public static final String ATTRIBUTE_SCALABLE = "scalable";
+	public static final String ATTRIBUTE_ASPECTRATIO = "aspectratio";
 	public static final String ATTRIBUTE_TABLAYOUTPOLICY = "tablayoutpolicy";
 	public static final String ATTRIBUTE_TABPLACEMENT = "tabplacement";
 	public static final String ATTRIBUTE_GRIDX = "gridx";
