@@ -609,7 +609,14 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			@Override
 			public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
 				try {
-					final Object oRelatedId = clctcompmodelParent.getField().getValueId();
+					final CollectableField field = clctcompmodelParent.getField();
+					final Object oRelatedId;
+					if (field.isIdField()) {
+						oRelatedId = clctcompmodelParent.getField().getValueId();
+					}
+					else {
+						oRelatedId = field.getValue();
+					}
 					clctParameterisable.setParameter(sParameterNameForSourceComponent, oRelatedId);					
 				}
 				catch (UnsupportedOperationException ex) {
