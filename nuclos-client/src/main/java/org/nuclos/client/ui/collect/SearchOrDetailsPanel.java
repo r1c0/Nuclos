@@ -266,4 +266,7 @@ public abstract class SearchOrDetailsPanel extends JPanel {
 		this.tfStatusBar.setToolTipText(sStatusToolTip);
 	}
 
+	public JToolBar getToolBar() {
+		return toolBar;
+	}
 }	// class SearchOrDetailsPanel

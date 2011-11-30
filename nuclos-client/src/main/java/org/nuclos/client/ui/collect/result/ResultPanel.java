@@ -633,7 +633,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 						if (tblResult.getModel() instanceof CollectableEntityFieldBasedTableModel) {
 							CollectableEntityFieldBasedTableModel cefbtm = (CollectableEntityFieldBasedTableModel) tblResult.getModel();
 							final int width = Math.max(
-									TableUtils.getPreferredColumnWidth(tblResult, iColumn, 50, TableUtils.TABLE_INSETS), 
+									TableUtils.getPreferredColumnWidth(tblResult, iColumn, 50, TableUtils.TABLE_INSETS),
 									TableUtils.getMinimumColumnWidth(cefbtm.getCollectableEntityField(iColumn).getJavaClass()));
 							column.setPreferredWidth(width);
 							column.setWidth(width);
@@ -650,7 +650,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		else {
 			// If there are no stored field widths or the number of stored field widths differs from the column count
 			// (that is, the number of columns has changed since the last invocation of the client)
-			
+
 			if (tblResult.getModel() instanceof CollectableEntityFieldBasedTableModel) {
 				CollectableEntityFieldBasedTableModel cefbtm = (CollectableEntityFieldBasedTableModel) tblResult.getModel();
 
@@ -658,14 +658,14 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 					if (tblResult.getColumnModel().getColumnCount() > iColumn) {
 						final TableColumn column = tblResult.getColumnModel().getColumn(iColumn);
 						final int width = Math.max(
-								TableUtils.getPreferredColumnWidth(tblResult, iColumn, 50, TableUtils.TABLE_INSETS), 
+								TableUtils.getPreferredColumnWidth(tblResult, iColumn, 50, TableUtils.TABLE_INSETS),
 								TableUtils.getMinimumColumnWidth(cefbtm.getCollectableEntityField(iColumn).getJavaClass()));
 						column.setPreferredWidth(width);
 						column.setWidth(width);
 					}
 				}
 			}
-			
+
 			tblResult.revalidate();
 		}
 	}
@@ -739,12 +739,15 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public void columnMovedInHeader(ChoiceEntityFieldList fields) {
 		fields.setSelectedFields(CollectableTableHelper.getCollectableEntityFieldsFromColumns(this.tblResult));
 	}
-	
+
 	protected interface ITableHeaderColumnPopupListener {
-		
+
 	}
 
 	protected void setupCopyAction() {
 	}
 
+	public JToolBar getToolBar() {
+		return toolBar;
+	}
 }  // class ResultPanel

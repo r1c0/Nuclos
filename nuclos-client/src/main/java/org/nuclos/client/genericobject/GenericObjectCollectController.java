@@ -1305,7 +1305,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * Command: Delete selected <code>Collectable</code>s in the Result panel.
 	 * This is mainly a copy of cmdDeleteSelectedCollectables from the ResultController, but with different messages and different actions.
 	 */
-	private void cmdDeleteSelectedCollectablesPhysically() {
+	protected void cmdDeleteSelectedCollectablesPhysically() {
 		assert getCollectStateModel().getOuterState() == CollectState.OUTERSTATE_RESULT;
 		assert CollectState.isResultModeSelected(getCollectStateModel().getResultMode());
 
@@ -3059,7 +3059,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * Delete the selected object physically.
 	 * This is mostly a copy from CollectController.cmdDelete; just the message and the called delete method are different.
 	 */
-	private void cmdDeletePhysically() {
+	protected void cmdDeletePhysically() {
 		assert getCollectStateModel().getCollectState().equals(new CollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_VIEW));
 
 		if (stopEditingInDetails()) {
