@@ -90,7 +90,7 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 					dsvo = DatasourceDelegate.getInstance().getValuelistProviderByName(sValuelistProviderDatasourceName);
 					collParameters = DatasourceDelegate.getInstance().getParametersFromXML(dsvo.getSource());
 				}
-				catch (CommonBusinessException e) {
+				catch (Exception e) {
 					throw new CommonFatalException(CommonLocaleDelegate.getMessage("datasource.collectable.fieldsprovider", "Fehler beim Laden der Datenquelle ''{0}'':\n", oValue), e);
 					//"Fehler beim Laden der Datenquelle \"" + oValue + "\":\n", e);
 				}

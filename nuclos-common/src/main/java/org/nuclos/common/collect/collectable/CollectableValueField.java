@@ -64,7 +64,7 @@ public class CollectableValueField extends AbstractCollectableField implements S
 
 	@Override
 	public Object getValueId() throws UnsupportedOperationException {
-		throw new UnsupportedOperationException("getValueId");
+		throw new UnsupportedOperationException("Not a reference field: getValueId failed on " + this.toDescription());
 	}
 
 	@Override
@@ -85,52 +85,10 @@ public class CollectableValueField extends AbstractCollectableField implements S
 	@Override
 	public String toDescription() {
 		final ToStringBuilder b = new ToStringBuilder(this).append(oValue);
+		if (oValue != null) {
+			b.append(oValue.getClass().getName());
+		}
 		return b.toString();
 	}
-
-//	/**
-//	 * the natural order of <code>CollectableValueField</code>s is determined by <code>getValue()</code>.
-//	 * null is allowed for <code>getValue()</code> in order to represent the <code>NULL</code> value.
-//	 * Values that are null are smaller than all non-null values.
-//	 * @param o
-//	 * @return
-//	 */
-//	public int compareTo(Object o) {
-//		int result;
-//
-//		CollectableField that = (CollectableField) o;
-//		if (this.isNull()) {
-//			result = (that.isNull() ? 0 : -1);
-//		}
-//		else if (that.isNull()) {
-//			result = 1;
-//		}
-//		else {
-//			result = LangUtils.compare(this.getValue(), that.getValue());
-//		}
-//		return result;
-//	}
-
-//	public boolean equals(Object o) {
-//		if(!(o instanceof CollectableValueField)) {
-//			return false;
-//		}
-//		return this.compareTo(o) == 0;
-//	}
-
-//	public int hashCode() {
-//		if(this.getValue() == null) {
-//			return 0;
-//		}
-//		return this.getValue().hashCode();
-//	}
-
-//	public String toString() {
-//		Object oValue = this.getValue();
-//		if(oValue == null)
-//			return "";
-//
-//		return CollectableFieldFormat.getInstance(oValue.getClass()).format(null, oValue);
-//	}
 
 }  // class CollectableValueField
