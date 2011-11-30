@@ -360,6 +360,18 @@ public class Icons {
 	public Icon getIconInsertColumn16() {
 		return this.getIconByName("column-insert");
 	}
+	
+	public Icon getIconInsertRow16() {
+		return this.getIconByName("row-insert");
+	}
+	
+	public Icon getIconInsertTable16() {
+		return this.getIconByName("table-insert");
+	}
+	
+	public Icon getIconInsertCell16() {
+		return this.getIconByName("cell-insert");
+	}
 
 	public Icon getIconSelectVisibleColumns16() {
 		return this.getIconByName("select-visible-columns");
@@ -763,6 +775,26 @@ public class Icons {
 	
 	public ImageIcon getIconSwitchWorkspace() {
 		return this.getIconByName("iconSwitchWorkspace");
+	}
+	
+	public ImageIcon getIconTextBold() {
+		return this.getIconByName("text-bold");
+	}
+	
+	public ImageIcon getIconTextItalic() {
+		return this.getIconByName("text-italic");
+	}
+	
+	public ImageIcon getIconTextUnderline() {
+		return this.getIconByName("text-underline");
+	}
+	
+	public ImageIcon getIconListUnordered() {
+		return this.getIconByName("list-unordered");
+	}
+	
+	public ImageIcon getIconListOrdered() {
+		return this.getIconByName("list-ordered");
 	}
 	
 	public Icon getStateViewStateNormal(String type) {

@@ -1543,7 +1543,8 @@ public abstract class AbstractCollectableComponent
 		@Override
         public void changedUpdate(DocumentEvent ev) {
 			// this is never called.
-			assert false;
+//			assert false;
+			// called from JEditorPane!!!
 		}
 
 		@Override

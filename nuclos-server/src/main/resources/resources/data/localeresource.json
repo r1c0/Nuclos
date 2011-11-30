@@ -62389,6 +62389,141 @@
     "text": "nein"
   },
   {
+    "resourceID": "CollectableEditorPane.view",
+    "locale": "i-default",
+    "text": "View"
+  },
+  {
+    "resourceID": "CollectableEditorPane.view",
+    "locale": "en",
+    "text": "View"
+  },
+  {
+    "resourceID": "CollectableEditorPane.view",
+    "locale": "de",
+    "text": "Ansicht"
+  },
+  {
+    "resourceID": "CollectableEditorPane.textBold",
+    "locale": "i-default",
+    "text": "Bold"
+  },
+  {
+    "resourceID": "CollectableEditorPane.textBold",
+    "locale": "en",
+    "text": "Bold"
+  },
+  {
+    "resourceID": "CollectableEditorPane.textBold",
+    "locale": "de",
+    "text": "Fett"
+  },
+  {
+    "resourceID": "CollectableEditorPane.textItalic",
+    "locale": "i-default",
+    "text": "Italic"
+  },
+  {
+    "resourceID": "CollectableEditorPane.textItalic",
+    "locale": "en",
+    "text": "Italic"
+  },
+  {
+    "resourceID": "CollectableEditorPane.textItalic",
+    "locale": "de",
+    "text": "Kursiv"
+  },
+  {
+    "resourceID": "CollectableEditorPane.textUnderline",
+    "locale": "i-default",
+    "text": "Underline"
+  },
+  {
+    "resourceID": "CollectableEditorPane.textUnderline",
+    "locale": "en",
+    "text": "Underline"
+  },
+  {
+    "resourceID": "CollectableEditorPane.textUnderline",
+    "locale": "de",
+    "text": "Unterstrichen"
+  },
+  {
+    "resourceID": "CollectableEditorPane.listUnordered",
+    "locale": "i-default",
+    "text": "Unsorted list"
+  },
+  {
+    "resourceID": "CollectableEditorPane.listUnordered",
+    "locale": "en",
+    "text": "Unsorted list"
+  },
+  {
+    "resourceID": "CollectableEditorPane.listUnordered",
+    "locale": "de",
+    "text": "Unsortierte Liste"
+  },
+  {
+    "resourceID": "CollectableEditorPane.listOrdered",
+    "locale": "i-default",
+    "text": "Sorted list"
+  },
+  {
+    "resourceID": "CollectableEditorPane.listOrdered",
+    "locale": "en",
+    "text": "Sorted list"
+  },
+  {
+    "resourceID": "CollectableEditorPane.listOrdered",
+    "locale": "de",
+    "text": "Sortierte Liste"
+  },
+  {
+    "resourceID": "CollectableEditorPane.table",
+    "locale": "i-default",
+    "text": "Insert table"
+  },
+  {
+    "resourceID": "CollectableEditorPane.table",
+    "locale": "en",
+    "text": "Insert table"
+  },
+  {
+    "resourceID": "CollectableEditorPane.table",
+    "locale": "de",
+    "text": "Tabelle einfügen"
+  },
+  {
+    "resourceID": "CollectableEditorPane.tableRow",
+    "locale": "i-default",
+    "text": "Insert row"
+  },
+  {
+    "resourceID": "CollectableEditorPane.tableRow",
+    "locale": "en",
+    "text": "Insert row"
+  },
+  {
+    "resourceID": "CollectableEditorPane.tableRow",
+    "locale": "de",
+    "text": "Zeile einfügen"
+  },
+  {
+    "resourceID": "CollectableEditorPane.tableDataCell",
+    "locale": "i-default",
+    "text": "Insert cell"
+  },
+  {
+    "resourceID": "CollectableEditorPane.tableDataCell",
+    "locale": "en",
+    "text": "Insert cell"
+  },
+  {
+    "resourceID": "CollectableEditorPane.tableDataCell",
+    "locale": "de",
+    "text": "Zelle einfügen"
+  },
+  {
     "resourceID": "wizard.step.attributeproperties.validation.scale",
     "locale": "i-default",
     "text": "The entered field length \"{0}\" in invalid."
