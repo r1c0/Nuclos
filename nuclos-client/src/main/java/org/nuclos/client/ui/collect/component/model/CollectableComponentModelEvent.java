@@ -79,5 +79,13 @@ public class CollectableComponentModelEvent extends ChangeEvent {
 			return !clctfOldValue.equals(clctfNewValue, false);
 		}
 	}
+	
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append("CollectableComponentModelEvent[old=").append(clctfOldValue);
+		result.append(", new=").append(clctfNewValue);
+		result.append("]");
+		return result.toString();
+	}
 
 }  // class CollectableComponentModelEvent

@@ -198,10 +198,24 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		}
 
 		private static class Event {
+			
+			Event() {
+			}
+			
 			/** @todo encapsulate fields */
 			String sType;
 			String sSourceComponentName;
 			SubForm subform;
+			
+			@Override
+			public String toString() {
+				final StringBuilder result = new StringBuilder();
+				result.append("LayoutMLParser.Event[type=").append(sType);
+				result.append(", src=").append(sSourceComponentName);
+				result.append(", subform=").append(subform);
+				result.append("]");
+				return result.toString();
+			}
 		}
 
 		private interface Action {
@@ -263,8 +277,20 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		}
 
 		private class Rule {
-			Event event;
-			final Collection<Action> collActions = new LinkedList<Action>();
+			
+			private Event event;
+			
+			private final Collection<Action> collActions = new LinkedList<Action>();
+			
+			Rule() {
+			}
+			
+			@Override
+			public String toString() {
+				final StringBuilder result = new StringBuilder();
+				result.append("LayoutMLParser.Rule[event=").append(event).append("]");
+				return result.toString();
+			}
 
 			public void finish() throws SAXException {
 				/** @todo q&d - refactor: make this oo! */
@@ -550,11 +576,14 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 									LabeledCollectableComponentWithVLP clctWithVLP = (LabeledCollectableComponentWithVLP) clctParameterisableTarget;
 									// set a "dependant" value list provider if the combobox hasn't one yet:
 									if (clctWithVLP.getValueListProvider() == null) {
-										clctWithVLP.setValueListProvider(BuildFormHandler.this.valueListProviderFactory.newDependantCollectableFieldsProvider(null, clctWithVLP.getFieldName()));
+										clctWithVLP.setValueListProvider(BuildFormHandler.this.valueListProviderFactory.newDependantCollectableFieldsProvider(
+												null, clctWithVLP.getFieldName()));
 									}
 								}
 
-								clctcompmodelSource.addCollectableComponentModelListener(new RefreshValueListCollectableComponentModelAdapter(clctcompmodelSource, clctParameterisableTarget, rpvact.getParameterNameForSourceComponent()));
+								clctcompmodelSource.addCollectableComponentModelListener(
+										new RefreshValueListCollectableComponentModelAdapter(event, clctcompmodelSource, 
+												clctParameterisableTarget, rpvact.getParameterNameForSourceComponent()));
 							}	// for
 						}
 					}	// RefreshValueListAction
@@ -563,15 +592,15 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 
 		}	// inner class Rule
 
-		/**
-		 *
-		 */
 		private static class RefreshValueListCollectableComponentModelAdapter extends CollectableComponentModelAdapter {
+			
+			private final Event event;
 			private final CollectableComponentModel clctcompmodelParent;
 			private final Parameterisable clctParameterisable;
 			private final String sParameterNameForSourceComponent;
 
-			RefreshValueListCollectableComponentModelAdapter(CollectableComponentModel clctcompmodelParent, Parameterisable clctcmbbxTarget, String sParameterNameForSourceComponent) {
+			RefreshValueListCollectableComponentModelAdapter(Event event, CollectableComponentModel clctcompmodelParent, Parameterisable clctcmbbxTarget, String sParameterNameForSourceComponent) {
+				this.event = event;
 				this.clctcompmodelParent = clctcompmodelParent;
 				this.clctParameterisable = clctcmbbxTarget;
 				this.sParameterNameForSourceComponent = sParameterNameForSourceComponent;
@@ -579,21 +608,26 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 
 			@Override
 			public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
-				/** @todo check if this is correct! */
-//				if(ev.collectableFieldHasChanged()) {
-				final Object oRelatedId = clctcompmodelParent.getField().getValueId();
-				clctParameterisable.setParameter(sParameterNameForSourceComponent, oRelatedId);
-
+				try {
+					final Object oRelatedId = clctcompmodelParent.getField().getValueId();
+					clctParameterisable.setParameter(sParameterNameForSourceComponent, oRelatedId);					
+				}
+				catch (UnsupportedOperationException ex) {
+					// If this happens, there is nothing we can do about it:
+					throw new CommonFatalException("set parameters [" + sParameterNameForSourceComponent + "] to " + clctParameterisable + " failed:\n"
+							+ "parent model: " + clctcompmodelParent + " field: " + clctcompmodelParent.getFieldName()
+							+ " on rule event " + event, ex);
+				}
 				try {
 					log.debug("LayoutMLParser$BuildFormHandler$Rule.collectableFieldChangedInModel: refreshValueList()");
 					clctParameterisable.applyParameters();
 				}
 				catch (CommonBusinessException ex) {
 					// If this happens, there is nothing we can do about it:
-					throw new CommonFatalException(ex);
+					throw new CommonFatalException("apply parameters [" + sParameterNameForSourceComponent + "] to " + clctParameterisable 
+							+ " failed on rule event " + event, ex);
 				}
 			}
-//			}
 		}	// inner class RefreshValueListCollectableComponentModelAdapter
 
 		/**

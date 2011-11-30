@@ -19,6 +19,7 @@ package org.nuclos.client.ui.collect.component.model;
 import java.util.Date;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -258,6 +259,12 @@ public abstract class CollectableComponentModel {
 	
 	public boolean isInitializing() {
 		return isInitializing;
+	}
+	
+	@Override
+	public String toString() {
+		final ToStringBuilder result = new ToStringBuilder(this).append(clctef).append(clctfValue);
+		return result.toString();
 	}
 
 }  // class CollectableComponentModel
