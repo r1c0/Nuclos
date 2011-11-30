@@ -194,13 +194,19 @@ public class DbSimpleView extends DbTableArtifact {
 
 	public List<String> getViewColumnNames() {
 		return CollectionUtils.transform(viewColumns, new Transformer<DbSimpleViewColumn, String>() {
-			@Override public String transform(DbSimpleViewColumn c) { return c.getColumnName(); }
-		});		
+			@Override
+			public String transform(DbSimpleViewColumn c) {
+				return c.getColumnName();
+			}
+		});
 	}
 	
 	public List<DbSimpleViewColumn> getReferencingViewColumns() {
 		return CollectionUtils.applyFilter(viewColumns, new Predicate<DbSimpleViewColumn>() {
-			@Override public boolean evaluate(DbSimpleViewColumn c) { return c.getReference() != null; }
+			@Override
+			public boolean evaluate(DbSimpleViewColumn c) {
+				return c.getReference() != null;
+			}
 		});
 	}
 	

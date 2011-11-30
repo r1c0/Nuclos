@@ -23,6 +23,7 @@ import static org.nuclos.common2.StringUtils.join;
 import java.math.BigDecimal;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -57,6 +58,7 @@ import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.dal.processor.jdbc.TableAliasSingleton;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbIdent;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
@@ -291,6 +293,55 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     		LOG.error("executeCallable failed with " + e.toString() + ":\n\t" + call + "\n\t" + Arrays.asList(args));
     		throw wrapSQLException(null, "executeCallable failed", e);
 		}
+    }
+    
+    protected List<String> getColumns(final String tableOrView) {
+        try {
+ 			return executor.execute(new ConnectionRunner<List<String>>() {
+ 			    @Override
+ 			    public List<String> perform(Connection conn) throws SQLException {
+ 			        final DatabaseMetaData meta = conn.getMetaData();
+ 			        // we NEED  toLowerCase() here, at least for PostgreSQL (tp)
+ 			        final ResultSet columns = meta.getColumns(null, null, tableOrView.toLowerCase(), "%");
+ 			        final List<String> result = new ArrayList<String>();
+ 			        while (columns.next()) {
+ 			        	result.add(columns.getString("COLUMN_NAME"));
+ 			        }
+ 			        if (result.size() == 0) {
+ 			        	throw new IllegalArgumentException("Table " + tableOrView + " with no columns?");
+ 			        }
+ 			        return result;
+ 			    }
+ 			});
+ 		} catch (SQLException e) {
+     		LOG.error("getColumns failed with " + e.toString());
+     		throw wrapSQLException(null, "getColumns failed", e);
+ 		}
+    }
+    
+    protected List<DbSimpleViewColumn> ensureNaturalSequence(DbSimpleView view, List<DbSimpleViewColumn> columns) {
+    	final int size = columns.size();
+    	final List<DbSimpleViewColumn> result = new ArrayList<DbSimpleView.DbSimpleViewColumn>(size);
+    	final List<String> natural = getColumns(view.getViewName());
+    	
+    	COLUMNS:
+    	for (String n: natural) {
+    		final Iterator<DbSimpleViewColumn> it = columns.iterator();
+    		while (it.hasNext()) {
+    			final DbSimpleViewColumn c = it.next();
+    			if (c.getColumnName().equalsIgnoreCase(n)) {
+    				it.remove();
+    				result.add(c);
+    				continue COLUMNS;
+    			}
+    		}
+    		// We only get here if we can't find the column
+    		throw new IllegalStateException("Can't find column " + n + " of " + view + " in " + columns);
+    	}
+    	if (result.size() != size) {
+    		throw new IllegalStateException("This should never happend (must throw exception above).");
+    	}
+    	return result;
     }
 
     protected void logSql(String text, String sql, Object[] parameters) {
@@ -1138,30 +1189,34 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
      */
     @Override
     protected List<String> getSqlForCreateSimpleView(DbSimpleView view) throws DbException {
-    	return _getSqlForCreateSimpleView("CREATE VIEW", view);
+    	return _getSqlForCreateSimpleView("CREATE VIEW", view, "");
     }
     
-    protected List<String> _getSqlForCreateSimpleView(String prefix, DbSimpleView view) throws DbException {
-        StringBuilder fromClause = new StringBuilder();
+    protected List<String> _getSqlForCreateSimpleView(String prefix, DbSimpleView view, String suffix) throws DbException {
+    	final TableAliasForSimpleView aliasFactory = new TableAliasForSimpleView();
+        final StringBuilder fromClause = new StringBuilder();
         fromClause.append(getName(view.getTableName()) + " " + SystemFields.BASE_ALIAS);
 
         int fkIndex = 1;
         for (DbSimpleViewColumn vc : view.getReferencingViewColumns()) {
-            final int fkN = fkIndex++;
-            DbReference fk = vc.getReference();
+        	final String tableAlias = aliasFactory.getTableAlias(vc);
+            final DbReference fk = vc.getReference();
             fromClause.append(String.format("\nLEFT OUTER JOIN %s %s ON (%s)",
                 getName(fk.getReferencedTableName()),
-                "fk" + fkN,
-                join(" AND ", transform(fk.getReferences(),
-                    new Transformer<Pair<String, String>, String>() {
-                    @Override public String transform(Pair<String, String> p) { return String.format("t.%s=fk%d.%s", p.x, fkN, p.y); }
-                }))));
+                tableAlias,
+				join(" AND ", transform(fk.getReferences(), new Transformer<Pair<String, String>, String>() {
+					@Override
+					public String transform(Pair<String, String> p) {
+						return String.format("t.%s=%s.%s", p.x, tableAlias, p.y);
+					}
+				}))));
         }
-        return Collections.singletonList(String.format(prefix + " %s(\n%s\n) AS SELECT\n%s\nFROM\n%s",
+        return Collections.singletonList(String.format("%s %s(\n%s\n) AS SELECT\n%s\nFROM\n%s %s",
+        	prefix,
             getQualifiedName(view.getViewName()),
             join(",\n", view.getViewColumnNames()),
             join(",\n", transform(view.getViewColumns(), new Transformer<DbSimpleViewColumn, String>() {
-                int fkIndex = 1;
+                // int fkIndex = 1;
                 @Override
                 public String transform(DbSimpleViewColumn vc) {
                 	String sql;
@@ -1170,12 +1225,12 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
                         // ignore column type (must be the same as the original column)
                         return String.format("t.%s", vc.getColumnName());
                     case FOREIGN_REFERENCE:
-                        int fkN = fkIndex++;
+                        // int fkN = fkIndex++;
                         sql = null;
                         for (Object obj : vc.getViewPattern()) {
                             String sql2;
                             if (obj instanceof DbIdent) {
-                                sql2 = String.format("fk%d.%s", fkN, ((DbIdent) obj).getName());
+                                sql2 = String.format("%s.%s", aliasFactory.getTableAlias(vc), ((DbIdent) obj).getName());
                             } else {
                                 String s = (String) obj;
                                 if (s.isEmpty())
@@ -1199,7 +1254,8 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
                     }
                 }
             })),
-            fromClause));
+            fromClause,
+            suffix));
     }
 
     protected String getFunctionNameForUseInView(String name) {

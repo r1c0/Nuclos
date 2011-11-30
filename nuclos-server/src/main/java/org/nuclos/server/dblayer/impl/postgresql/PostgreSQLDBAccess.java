@@ -29,8 +29,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,6 +61,7 @@ import org.nuclos.server.dblayer.structure.DbSimpleView;
 import org.nuclos.server.dblayer.structure.DbColumnType.DbGenericType;
 import org.nuclos.server.dblayer.structure.DbConstraint;
 import org.nuclos.server.dblayer.structure.DbConstraint.DbPrimaryKeyConstraint;
+import org.nuclos.server.dblayer.structure.DbSimpleView.DbSimpleViewColumn;
 import org.nuclos.server.dblayer.structure.DbIndex;
 import org.nuclos.server.dblayer.structure.DbNullable;
 import org.nuclos.server.dblayer.structure.DbSequence;
@@ -228,12 +231,55 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 			column.getColumnName()));
 	}
 
+    /**
+     * @deprecated Views has always been problematic (especially with PostgreSQL).
+     * 	Avoid whenever possible.
+     */
+    @Override
+    protected List<String> getSqlForCreateSimpleView(DbSimpleView view) throws DbException {
+    	return _getSqlForCreateSimpleView("CREATE VIEW", view, "");
+    }
+    
 	@Override
 	protected List<String> getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView) {
 		if (!oldView.getViewName().equals(newView.getViewName())) {
 			throw new IllegalArgumentException();
 		}
-		return _getSqlForCreateSimpleView("CREATE OR REPLACE VIEW", newView);
+		// http://www.postgresql.org/docs/9.1/static/sql-createview.html
+		// Create or replace is very restricted...
+		
+		final List<DbSimpleViewColumn> oldColumns = oldView.getViewColumns();
+		final List<DbSimpleViewColumn> newColumns = newView.getViewColumns();
+		
+		if (oldColumns.size() > newColumns.size()) {
+			// deleting columns is not possible
+			return getSqlForAlterSimpleViewFallback(oldView, newView);
+		}
+		final Set<DbSimpleViewColumn> addSet = new HashSet<DbSimpleViewColumn>();
+		final Set<DbSimpleViewColumn> deleteSet = new HashSet<DbSimpleViewColumn>(oldColumns);
+		for (DbSimpleViewColumn nc: newColumns) {
+			if (!deleteSet.remove(nc)) {
+				addSet.add(nc);
+			}
+		}
+		
+		if (!deleteSet.isEmpty()) {
+			// deleting columns is not possible
+			return getSqlForAlterSimpleViewFallback(oldView, newView);
+		}
+		// Modify new column list in place.
+		newColumns.clear();
+		newColumns.addAll(ensureNaturalSequence(newView, oldColumns));
+		newColumns.addAll(addSet);
+		
+		return _getSqlForCreateSimpleView("CREATE OR REPLACE VIEW", newView, "");
+	}
+
+	private List<String> getSqlForAlterSimpleViewFallback(DbSimpleView oldView, DbSimpleView newView) {
+		final List<String> result = new ArrayList<String>();
+		result.addAll(getSqlForDropSimpleView(oldView));
+		result.addAll(getSqlForCreateSimpleView(newView));
+		return result;
 	}
 	
 	@Override

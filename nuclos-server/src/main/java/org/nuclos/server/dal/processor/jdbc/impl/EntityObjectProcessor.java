@@ -489,7 +489,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 				}
 			}
 			if (!fieldSet.isEmpty()) {
-				throw new IllegalStateException("Unable to map the following fields: " + fieldSet);
+				throw new IllegalStateException("Unable to map the following fields: " + fieldSet + " in entity " + eMeta);
 			}
 		}
 		final List<CollectableSearchCondition> joins = getJoinsForColumns(columns);
