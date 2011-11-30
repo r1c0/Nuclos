@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.resource;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.ImageIcon;
@@ -86,7 +87,7 @@ public class ResourceDelegate {
 	public Pair<ResourceVO, byte[]> getResource(Integer resourceId) {
 		return facade.getResource(resourceId);
 	}
-	
+
 	public MasterDataVO create(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants) throws CommonBusinessException {
 		try {
 			if (mdvo.getId() != null) {
@@ -137,7 +138,7 @@ public class ResourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	public boolean containsIconResources() {
 		for (String resName : getResourceNames()) {
 			try {
@@ -150,6 +151,21 @@ public class ResourceDelegate {
 			}
 		}
 		return false;
+	}
+
+	public Set<String> getIconResources() {
+		Set<String> result = new HashSet<String>();
+		for (String resName : getResourceNames()) {
+			try {
+				ImageIcon ico = ResourceCache.getIconResource(resName);
+				if (ico.getIconWidth() > 0 && ico.getIconHeight() > 0) {
+					result.add(resName);
+				}
+			} catch (Exception ex) {
+				// do nothing
+			}
+		}
+		return result;
 	}
 
 	public Set<String> getResourceNames() {

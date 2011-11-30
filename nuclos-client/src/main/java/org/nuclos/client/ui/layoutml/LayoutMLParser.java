@@ -43,6 +43,7 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -65,6 +66,7 @@ import org.nuclos.client.common.NuclosDropTargetListener;
 import org.nuclos.client.common.NuclosDropTargetVisitor;
 import org.nuclos.client.common.Utils.CollectableLookupProvider;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.STATIC_BUTTON;
+import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.CommonJScrollPane;
 import org.nuclos.client.ui.CommonJSeparator;
 import org.nuclos.client.ui.Errors;
@@ -2401,6 +2403,17 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				btn.setToolTipText(sToolTip);
 
 				btn.setActionCommand(sActionCommand);
+
+				final String sIcon = attributes.getValue(ATTRIBUTE_ICON);
+				if (!StringUtils.isNullOrEmpty(sIcon)) {
+					try {
+						ImageIcon ico = ResourceCache.getIconResource(sIcon);
+						btn.setIcon(ico);
+					}
+					catch (Exception ex) {
+						log.warn("Icon not found or invalid", ex);
+					}
+				}
 
 				if (BuildFormHandler.this.alButtons != null) {
 					btn.addActionListener(BuildFormHandler.this.alButtons);

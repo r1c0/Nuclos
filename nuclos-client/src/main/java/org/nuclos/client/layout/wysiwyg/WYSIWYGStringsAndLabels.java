@@ -25,11 +25,11 @@ import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 /**
  * This class contains all used Strings and Messages shown in the WYSIWYGEditor.
  * They are sorted by Class and Category for structuring all the Messages.
- * 
+ *
  * <br>
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- * 
+ *
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
@@ -38,7 +38,7 @@ public class WYSIWYGStringsAndLabels {
 
 	/** this marker is used by partedString(String message, String... additionalInfo) for concating Strings in Messages/ Dialogs. */
 	private static final String MARKER = "@EXTRATEXT@";
-	
+
 	/** the Modes the WYSIWYG Editor can be run in */
 	public static final String STANDARD_MODE = "Standardmodus";
 	public static final String EXPERT_MODE = "Expertenmodus";
@@ -52,11 +52,11 @@ public class WYSIWYGStringsAndLabels {
 		//NUCLEUSINT-398
 		public static final String INVALID_LAYOUTML = "Die LayoutML ist fehlerhaft und hat Strukturfehler!\n";
 		//NUCLEUSINT-398
-		public static final String XML_MISSING_CLOSETAG = INVALID_LAYOUTML + "\nEs fehlt ein schlie\u00dfender Tag im XML."; 
+		public static final String XML_MISSING_CLOSETAG = INVALID_LAYOUTML + "\nEs fehlt ein schlie\u00dfender Tag im XML.";
 		//NUCLEUSINT-261
 		public static final String MISSING_ASSIGNMENT_GO = "Es muss eine Verwendung angegeben werden damit die Metainformationen f\u00fcr die Komponenten passend geladen werden k\u00f6nnen.";
 		public static final String MISSING_ASSIGNMENT_MD = "Es muss eine Verwendung angegeben werden damit die zugeh\u00f6rigen Entit\u00e4ten geladen werden k\u00f6nnen.";
-		
+
 		public static final String ERROR_VALIDATING_LAYOUTMLRULES = "Die eingegebenen Regeln sind so nicht valide.\nBitte beheben sie die Fehler (siehe unten) und speichern sie erneut.\n";
 		public static final String TEXT_MISSING = "ist leer";
 		//NUCLEUSINT-1137
@@ -72,7 +72,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String PALETTE_ELEMENTNAME = "Universelle Komponente";
 		public static final String PALETTE_ELEMENTTOOLTIP = "Universelle Komponente (Art des Feldes wird unter anderem durch Metadaten bestimmt)";
 		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JComponentColor16.gif";
-		
+
 		// NUCLEUSINT-269
 		public static final String PROPERTY_VALIDATION_MESSAGE_CONTROLTYPECLASS_NOT_FOUND = MARKER + " konnte nicht gesetzt werden weil die Klasse nicht exisitiert.";
 		public static final String PROPERTY_VALIDATION_MESSAGE_CONTROLTYPE_NOT_VALID = MARKER + " ist kein valider Control Typ f\u00fcr diese Entit\u00e4t";
@@ -83,17 +83,17 @@ public class WYSIWYGStringsAndLabels {
 				return null;
 			return new ImageIcon(this.getClass().getClassLoader().getResource(PALETTE_ELEMENTICON));
 		}
-		
+
 		@Override
 		public String getLabel() {
 			return PALETTE_ELEMENTNAME;
 		}
-		
+
 		@Override
 		public String getToolTip() {
 			return PALETTE_ELEMENTTOOLTIP;
 		}
-		
+
 		@Override
 		public boolean displayLabelAndIcon() {
 			return true;
@@ -104,7 +104,7 @@ public class WYSIWYGStringsAndLabels {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
@@ -138,7 +138,7 @@ public class WYSIWYGStringsAndLabels {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
@@ -205,7 +205,7 @@ public class WYSIWYGStringsAndLabels {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
@@ -272,7 +272,7 @@ public class WYSIWYGStringsAndLabels {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
@@ -373,7 +373,7 @@ public class WYSIWYGStringsAndLabels {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
@@ -440,7 +440,7 @@ public class WYSIWYGStringsAndLabels {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
@@ -473,7 +473,7 @@ public class WYSIWYGStringsAndLabels {
 			return true;
 		}
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
@@ -507,7 +507,7 @@ public class WYSIWYGStringsAndLabels {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
@@ -574,7 +574,7 @@ public class WYSIWYGStringsAndLabels {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
@@ -609,7 +609,7 @@ public class WYSIWYGStringsAndLabels {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
@@ -642,7 +642,7 @@ public class WYSIWYGStringsAndLabels {
 			return true;
 		}
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
@@ -675,7 +675,7 @@ public class WYSIWYGStringsAndLabels {
 			return true;
 		}
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
@@ -820,8 +820,10 @@ public class WYSIWYGStringsAndLabels {
 		public static final String SEPERATOR_TITLE = "Titel";
 		/** collectable component */
 		public static final String FILL_HORIZONTALLY = "Horizontal strecken";
-		
+
 		public static final String COLUMNWIDTH = "Spaltenbreite";
+
+		public static final String ICON = "Icon";
 	}
 
 	/**
@@ -860,7 +862,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String LABEL_TRANSLATIONS_PROPERTY = "\u00dcbersetzungen";
 
 		public static final String COLORPICKER_LINECOLOR_TITLE = "Farbe ausw\u00e4hlen";
-		
+
 		public static final String BORDERS_DEFINED = MARKER + " Rahmen definiert";
 		public static final String NO_BORDERS_DEFINED = "Kein Rahmen definiert";
 	}
@@ -915,7 +917,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String BUTTON_ADD_OPTION = "Wert hinzuf\u00fcgen";
 
 		public static final String BUTTON_DELETE_ALL_OPTIONS = "Alle Optionen entfernen";
-		
+
 		public static final String LABEL_DIMENSION_WIDTH = "Breite:";
 		public static final String LABEL_DIMENSION_HEIGHT = "H\u00f6he:";
 
@@ -923,7 +925,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String LABEL_OPTION_VALUE = "Wert:";
 		public static final String LABEL_OPTION_LABEL = "Beschriftung:";
 		public static final String LABEL_OPTION_MNEMONIC = "Tastenk\u00fcrzel:";
-		
+
 		public static final String ERROR_INCOMPLETE_OPTION = "Bei Optionen muss der Name und der Wert angegeben werden.";
 		public static final String ERROR_DEFAULTVALUE_OPTIONS = "Bitte geben Sie einen Standardwert an.";
 	}
@@ -957,13 +959,13 @@ public class WYSIWYGStringsAndLabels {
 	public static class COLLECTABLE_COMPONENT_PROPERTY_EDITOR {
 		//NUCLEUSINT-283
 		public static final String TITLE_PROPERTY_EDITOR = "Eigenschaften bearbeiten";
-		
+
 		public static final String BUTTON_ADD_PROPERTY = "Eigenschaft hinzuf\u00fcgen";
 		public static final String BUTTON_DELETE_PROPERTY = "Eigenschaft entfernen";
 
 		public static final String LABEL_PROPERTY_NAME = "Eigenschaftsname:";
 		public static final String LABEL_PROPERTY_VALUE = "Eigenschaftswert:";
-		
+
 		public static final String PROPERTIES_DEFINED = MARKER + " Eigenschaften definiert";
 		public static final String NO_PROPERTIES_DEFINED = "Keine Eigenschaften definiert";
 	}
@@ -988,7 +990,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String ERRORMESSAGE_INTERNAL_PANEL_CELL_TOO_SMALL = "Die Zelle ist nicht gro\u00df genug";
 		public static final String ERRORMESSAGE_INTERNAL_PANEL_CELL_NOT_EMPTY = "Die Zelle ist nicht leer";
 		public static final String ERRORMESSAGE_PANEL_HAS_NO_LAYOUT = "Das Panel geh\u00f6rt zu keinem Layout";
-		
+
 		public static final String WAITING_FOR_METAINFORMATION = "Es sind noch keine Metainformationen zugewiesen worden!";
 
 	}
@@ -1162,7 +1164,7 @@ public class WYSIWYGStringsAndLabels {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
@@ -1238,7 +1240,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String PALETTE_ELEMENTNAME = "Button";
 		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JButtonColor16.gif";
 		public static final String PALETTE_ELEMENTTOOLTIP = "Button der eine Aktion ausf\u00fchrt";
-		
+
 		//FIX NUCLEUSINT-255
 		public static final String EXCEPTION_AC_ISNULL = "Der ActionCommand darf nicht leer sein.";
 		public static final String EXCEPTION_AC_NOTFOUND = "Die Klasse des ActionCommands kann nicht geladen werden.";
@@ -1275,7 +1277,7 @@ public class WYSIWYGStringsAndLabels {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
@@ -1284,7 +1286,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String PALETTE_ELEMENTNAME = "Layoutpanel";
 		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JPanelColor16.gif";
 		public static final String PALETTE_ELEMENTTOOLTIP = "Layoutpanel das Komponenten aufnehmen, und ein individuelles Layout haben kann";
-		
+
 		@Override
 		public boolean displayLabelAndIcon() {
 			return false;
@@ -1470,7 +1472,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String LABEL_OK = "OK";
 		public static final String LABEL_REMOVE_BACKGROUND = "Hintergrund entfernen";
 		public static final String COLOR_PICKER_TITLE = "Farbe ausw\u00e4hlen";
-		
+
 		public static final String NO_COLOR_DEFINED = "Keine Farbe definiert";
 
 	}
@@ -1728,11 +1730,11 @@ public class WYSIWYGStringsAndLabels {
 		public static final String COLUMN = "Spalte";
 		public static final String ROW = "Zeile";
 		public static final String TOOLTIPHEADER = "<html><b>" + MARKER + " " + MARKER + "</b><hr>" + MARKER + "</html>";
-		
+
 		public static final String RELATIVE_SIZE = "Relative Gr\u00f6\u00dfe";
 		public static final String ABSOLUTE_SIZE = "Absolute Gr\u00f6\u00dfe";
 		public static final String PIXEL = "Pixel";
-		
+
 		public static final String PREFERRED = RELATIVE_SIZE + "<br>" + "Bevorzugte Gr\u00f6\u00dfe";
 		public static final String MINIMUM = RELATIVE_SIZE + "<br>" + "Minimale Gr\u00f6\u00dfe";
 		public static final String FILL = RELATIVE_SIZE + "<br>" + "Restlichen Platz nutzen";
@@ -1740,7 +1742,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String MARGIN_BETWEEN = "Standardrand zwischen Komponenten";
 		public static final String MARGIN = "Standardrand";
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
@@ -1772,7 +1774,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String ERRORMESSAGE_NOT_SUPPORTED_CONTROLTYPE = "Nicht unterst\u00fctzter Controltype=" + MARKER + " f\u00fcr ein Collectable Component wurde verwendet.";
 		public static final String ERRORMESSAGE_UNSUPPORTED_ELEMENT = "Nicht unterst\u00fctzte Componente!";
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
@@ -1781,14 +1783,14 @@ public class WYSIWYGStringsAndLabels {
 		public static final String PREFERREDSIZE_HEIGHT = "Bevorzugte Gr\u00f6\u00dfe: H\u00f6he muss gr\u00f6\u00dfer als " + MARKER + " sein.";
 		public static final String CONTROLTYPEANDCONTROLYPECLASS = "Die Eigenschaften " + PROPERTY_LABELS.CONTROLTYPE + " und " + PROPERTY_LABELS.CONTROLTYPECLASS + " k\u00f6nnen nicht gleichzeitig angegeben werden.";
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
 	public static class DUMMYBUTTONACTION {
 		public static final String MESSAGE = "Der Button wurde angeklickt...";
 	}
-	
+
 	/**
 	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
 	 */
@@ -1799,7 +1801,7 @@ public class WYSIWYGStringsAndLabels {
 
 	/**
 	 * Small Helperclass as Structure for the Items shown in the Palette
-	 * 
+	 *
 	 * @author hartmut.beckschulze
 	 *
 	 */
@@ -1816,7 +1818,7 @@ public class WYSIWYGStringsAndLabels {
 	/**
 	 * Method that should be used for concated Strings in Errormessages.
 	 * The String contains the MARKER at the position where the passed Parameter should be inserted.
-	 * 
+	 *
 	 * @param message The Message containing MARKERs
 	 * @param additionalInfo variable List of Strings to insert instead of MARKER
 	 * @return String with the concated (Error) Message

@@ -171,6 +171,7 @@ label CDATA #IMPLIED
 tooltip CDATA #IMPLIED
 enabled (%boolean;) #IMPLIED
 resourceId CDATA #IMPLIED
+icon CDATA #IMPLIED
 >
 
 <!ELEMENT collectable-component ((%layoutconstraints;)?,property*,(%borders;),(%sizes;),background?,font?,description?,options?,translations?,valuelist-provider?)>

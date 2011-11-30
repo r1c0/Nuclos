@@ -49,6 +49,7 @@ import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueString
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGValuelistProvider;
 import org.nuclos.client.masterdata.MetaDataCache;
+import org.nuclos.client.resource.ResourceDelegate;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.ui.collect.component.CollectableComponentType;
 import org.nuclos.common.NuclosAttributeNotFoundException;
@@ -79,18 +80,18 @@ import org.nuclos.server.ruleengine.valueobject.RuleVO;
 /**
  * This class connects the WYSIWYG Editor with the Backbone.
  * It collects all Data for CollectableComponents, Subforms, Columns shown in Subforms and Attributes.
- * 
+ *
  * Every WYSIWYG Layout depends on set Metainformation. Otherwise collecting of fieldnames and Subformcolumns would not work.
  *
  * <br>
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- * 
+ *
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
 public class WYSIWYGMetaInformation implements LayoutMLConstants {
-	
+
 	private static final Logger LOG = Logger.getLogger(WYSIWYGMetaInformation.class);
 
 	public static final String META_FIELD_NAMES = "meta_field_names";
@@ -102,6 +103,7 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 	public static final String META_RULES = "meta_rules";
 	//NUCLEUSINT-390
 	public static final String META_POSSIBLE_PARENT_SUBFORMS = "meta_subforms";
+	public static final String META_ICONS = "meta_icons";
 
 	private final Map<String, Integer> mpEnumeratedControlTypes = new HashMap<String, Integer>(5);
 	{
@@ -118,12 +120,12 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 		this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_FILECHOOSER, CollectableComponentTypes.TYPE_FILECHOOSER);
 		this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_IMAGE, CollectableComponentTypes.TYPE_IMAGE);
 	}
-	
+
 	private CollectableEntity entity;
-	
+
 	/** used for collecting the informations */
 	private CollectableEntityProvider provider = NuclosCollectableEntityProvider.getInstance();
-	
+
 	/**
 	 * Setting the CollectableEntity for this Metainformation.
 	 * Without a set CollectableEntity the Metainformation is not correctly initialized.
@@ -132,10 +134,10 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 	public void setCollectableEntity(CollectableEntity entity) {
 		this.entity = entity;
 	}
-	
+
 	/**
 	 * Method returning the fitting Entity for an attribute
-	 * 
+	 *
 	 * @param attribute
 	 * @return
 	 * @throws NuclosAttributeNotFoundException
@@ -143,16 +145,16 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 	public String getLinkedEntityForAttribute(String entity, String attribute) throws NuclosAttributeNotFoundException{
 		//FIX NUCLEUSINT-342
 		provider.isEntityDisplayable(entity == null ? this.entity.getName() : entity);
-		
+
 		//FIX NUCLOSINT-864
 		//AttributeCVO attributeVo = AttributeCache.getInstance().getAttribute(entity == null ? this.entity.getName() : entity, attribute);
 		//return attributeVo.getExternalEntity();
 		EntityFieldMetaDataVO efMeta = MetaDataClientProvider.getInstance().getEntityField(entity == null ? this.entity.getName() : entity, attribute);
 		return efMeta.getForeignEntity();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param entity
 	 * @param subformColumn
 	 * @return
@@ -168,13 +170,13 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 			column = e.getEntityField(subformColumn);
 		if (column != null)
 		return column.getReferencedEntityName();
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Gets the {@link CollectableComponentType} for a Subform Column
-	 * 
+	 *
 	 * @param entity the Entity of the Subform
 	 * @param subformColumn the Subform Column which type should be found
 	 * @return {@link CollectableComponentTypes}
@@ -191,9 +193,9 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 
 		return -1;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param attribute
 	 * @return
 	 * @throws CommonFinderException
@@ -205,12 +207,12 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 		} catch (Exception e) {
 		}
 		List<String> fieldNames = null;
-		
+
 		if (temp != null)
 			fieldNames = sortValues(new ArrayList<String>(temp.getFieldNames()));
 		return fieldNames;
 	}
-	
+
 	/**
 	 * Simple getter Method returning the stored CollectableEntity
 	 * @return
@@ -218,7 +220,7 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 	public CollectableEntity getCollectableEntity() {
 		return this.entity;
 	}
-	
+
 	/**
 	 * Returns the Java Class for a Attribute
 	 * @param attributeName
@@ -228,11 +230,11 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 	public Class<?> getDatatypeForAttribute(String attributeName) {
 		return getCollectableEntity().getEntityField(attributeName).getJavaClass();
 	}
-	
+
 	/**
 	 * Method collecting different Kinds of Data.
-	 * 
-	 * 
+	 *
+	 *
 	 * @param c
 	 * @param meta
 	 * @param dialog
@@ -240,7 +242,7 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 	 */
 	public List<StringResourceIdPair> getListOfMetaValues(WYSIWYGComponent c, String meta, PropertiesPanel dialog) {
 		List<StringResourceIdPair> result = new ArrayList<StringResourceIdPair>();
-		
+
 		if (META_FIELD_NAMES.equals(meta)) {
 			result = getFittingFieldnamesForControlType(c);
 		} else if (META_ENTITY_NAMES.equals(meta)) {
@@ -294,7 +296,7 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 					result.add(new StringResourceIdPair(((WYSIWYGSubForm) subformFromPanel).getEntityName(), null));
 				else if (!ownEntity.equals(entity))
 					result.add(new StringResourceIdPair(((WYSIWYGSubForm) subformFromPanel).getEntityName(), null));
-			}			
+			}
 			// should be possible to deselect a parent subform
 			result.add(new StringResourceIdPair("", null));
 		} else if (META_RULES.equals(meta)) {
@@ -310,14 +312,21 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 			for (RuleVO rule: collRules) {
 				result.add(new StringResourceIdPair(rule.getName(), null));
 			}
+		} else if (META_ICONS.equals(meta)) {
+			result.addAll(CollectionUtils.transform(ResourceDelegate.getInstance().getIconResources(), new Transformer<String, StringResourceIdPair>() {
+				@Override
+				public StringResourceIdPair transform(String i) {
+					return new StringResourceIdPair(i, null);
+				}
+			}));
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Externalized Method called by public List<String> getListOfMetaValues(WYSIWYGComponent c, String meta, PropertiesDialog dialog)
-	 * 
+	 *
 	 * Gets values to display in the show-only combobox in the PropertiesDialog
 	 * @param dialog
 	 * @return
@@ -327,7 +336,7 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 		result.add(COMMON_LABELS.EMPTY);
 		result.add(ATTRIBUTEVALUE_LABEL);
 		result.add(ATTRIBUTEVALUE_CONTROL);
-		
+
 		String fieldname;
 		int modelIndex = getDialogTableModelPropertyRowIndex(dialog, WYSIWYGUniversalComponent.PROPERTY_NAME);
 		if (modelIndex != -1) {
@@ -336,7 +345,7 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 		else {
 			fieldname = ((PropertyValue<String>)c.getProperties().getProperty(WYSIWYGUniversalComponent.PROPERTY_NAME)).getValue();
 		}
-		
+
 		if (!StringUtils.isNullOrEmpty(fieldname)){
 			if (getEntityField(entity.getName(), fieldname).getDefaultCollectableComponentType() == CollectableComponentTypes.TYPE_LISTOFVALUES) {
 				result.add(ATTRIBUTEVALUE_BROWSEBUTTON);
@@ -344,7 +353,7 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Externalized Method called by public List<String> getListOfMetaValues(WYSIWYGComponent c, String meta, PropertiesDialog dialog)
 	 * Collects fitting ControlTypes for choosing in PropertiesDialog.
@@ -398,10 +407,10 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 					//NUCLEUSINT-1142
 					result.add(ATTRIBUTEVALUE_PASSWORDFIELD);
 					break;
-				
+
 			}
 		}
-		
+
 		//NUCLEUSINT-429 if valuelist provider defined for subform colum a checkbox is also valid
 		if (c instanceof WYSIWYGSubFormColumn){
 			WYSIWYGValuelistProvider wysiwygStaticValuelistProvider = (WYSIWYGValuelistProvider) c.getProperties().getProperty(WYSIWYGSubFormColumn.PROPERTY_VALUELISTPROVIDER).getValue();
@@ -410,15 +419,15 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 					if (!result.contains(ATTRIBUTEVALUE_COMBOBOX))
 						result.add(ATTRIBUTEVALUE_COMBOBOX);
 				}
-		
+
 		}
 		return sortValues(result);
 	}
-	
+
 	/**
 	 * Externalized Method called by public List<String> getListOfMetaValues(WYSIWYGComponent c, String meta, PropertiesDialog dialog)
 	 * Performs a lookup on fitting Fields for a ControlType
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -467,13 +476,13 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 
 		return result;
 	}
-	
+
 	private Set<String> getEntityFieldNames(String sEntity) {
 		return MetaDataCache.getInstance().getMetaData(sEntity).getFieldNames();
 	}
-	
+
 	/**
-	 * Small HelperMethod sorting the Metainfomation 
+	 * Small HelperMethod sorting the Metainfomation
 	 * NUCLEUSINT-384
 	 * @param incoming the {@link List} to sort
 	 * @return the sorted List (same as incoming)
@@ -489,7 +498,7 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 		});
 		return incoming;
 	}
-	
+
 	/**
 	 * Method for checking if the Metainformation is correctly initialized.
 	 * Without a set CollectableEntity it is not initialized.
@@ -522,14 +531,14 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 				for (AttributeCVO a : AttributeCache.getInstance().getAttributes()) {
 					if (a.getName().equals(name)) {
 						return CommonLocaleDelegate.getLabelFromAttributeCVO(a);
-					}						
+					}
 				}
 				return name;
 			}
 		}
 		return name;
 	}
-	
+
 	/**
 	 * returns the SubformColumns for a SubformEntity
 	 * @param entity
@@ -537,17 +546,17 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 	 */
 	public synchronized List<String> getSubFormColumns(String entity){
 		List<String> result = new ArrayList<String>();
-		
+
 		if (!StringUtils.isNullOrEmpty(entity)) {
 			CollectableEntity e = provider.getCollectableEntity(entity);
 			for (String s : e.getFieldNames()) {
 				result.add(s);
 			}
 		}
-		
+
 		return sortValues(result);
 	}
-	
+
 	public CollectableEntityField getEntityField(String entityname, String fieldname) {
 		if (StringUtils.isNullOrEmpty(entityname)) {
 			return null;
@@ -562,7 +571,7 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 			return provider.getCollectableEntity(entityname).getEntityField(fieldname);
 		}
 	}
-	
+
 	public List<String> getFieldNamesByControlType(String controlType) {
 		List<String> result = new ArrayList<String>();
 		Integer iModuleId;
@@ -642,13 +651,13 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 				}
 			}
 		}
-		
+
 		return sortValues(result);
 	}
-	
+
 	/**
 	 * Find the table model row index for a certain property
-	 * 
+	 *
 	 * @param dialog The current property dialog
 	 * @param property The name of the property
 	 * @return the index of a certain property, -1 if property was not found in table model
@@ -661,7 +670,7 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 		}
 		return -1;
 	}
-	
+
 	/**
 	 * Maps the displayed controltype to the int that is used internal
 	 * @param attributeValue

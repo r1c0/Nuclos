@@ -200,7 +200,8 @@ public interface LayoutMLConstants {
 	public static final String ATTRIBUTE_INTERNALNAME = "internalname";
 	public static final String ATTRIBUTE_COLUMNWIDTH = "width";
 	public static final String ATTRIBUTE_NEXTFOCUSCOMPONENT = "nextfocuscomponent";
-	
+	public static final String ATTRIBUTE_ICON = "icon";
+
 
 	// constants for XML attribute values used in the LayoutML:
 	public static final String ATTRIBUTEVALUE_LOWERED = "lowered";
@@ -242,7 +243,7 @@ public interface LayoutMLConstants {
 	public static final String ATTRIBUTEVALUE_ALWAYS = "always";
 	public static final String aTTRIBUTEVALUE_NEVER = "never";
 	public static final String ATTRIBUTEVALUE_HIDE = "hide";
-	
+
 	// controltypes
 	public static final String CONTROLTYPE_COMBOBOX = "combobox";
 	public static final String CONTROLTYPE_CHECKBOX = "checkbox";
@@ -255,7 +256,7 @@ public interface LayoutMLConstants {
 	public static final String CONTROLTYPE_TEXTAREA = "textarea";
 	public static final String CONTROLTYPE_OPTIONGROUP = "optiongroup";
 	public static final String CONTROLTYPE_LABEL = "label";
-		
+
 	// default element attribute values //NUCLEUSINT-485
 	public static final Dimension DEFAULTVALUE_BUTTON_MINIMUMSIZE = new Dimension(15, 22);
 	public static final Dimension DEFAULTVALUE_BUTTON_PREFERREDSIZE = new Dimension(50, 22);
@@ -275,7 +276,7 @@ public interface LayoutMLConstants {
 	public static final Dimension DEFAULTVALUE_LISTOFVALUES_PREFERREDSIZE = new Dimension(70, 22);
 	public static final Dimension DEFAULTVALUE_TEXTAREA_MINIMUMSIZE = new Dimension(35, 22);
 	public static final Dimension DEFAULTVALUE_TEXTAREA_PREFERREDSIZE = new Dimension(70, 22);
-	
+
 	public static final Dimension DEFAULTVALUE_TABBEDPANE_MINIMUMSIZE = new Dimension(180, 40);
 	public static final Dimension DEFAULTVALUE_TABBEDPANE_PREFERREDSIZE = new Dimension(300, 100);
 	public static final Dimension DEFAULTVALUE_SUBFORM_MINIMUMSIZE = new Dimension(180, 40);
@@ -284,13 +285,13 @@ public interface LayoutMLConstants {
 	public static final Dimension DEFAULTVALUE_SCROLLPANE_PREFERREDSIZE = new Dimension(300, 100);
 	public static final Dimension DEFAULTVALUE_SPLITPANE_MINIMUMSIZE = new Dimension(180, 40);
 	public static final Dimension DEFAULTVALUE_SPLITPANE_PREFERREDSIZE = new Dimension(300, 100);
-	
+
 	public static final int DEFAULTVALUE_TEXTAREA_COLUMNS = 30;
 	public static final int DEFAULTVALUE_TEXTAREA_ROWS = 3;
-	
+
 	public static final int DEFAULTVALUE_TEXTFIELD_COLUMNS = 30;
-	
+
 	public static final int DEFAULTVALUE_SPLITPANE_DIVIDERSIZE = 5;
-	
+
 	public static final String DEFAULTVALUE_SEPARATOR_ORIENTATION= ATTRIBUTEVALUE_HORIZONTAL;
 }	// interface LayoutMLConstants
