@@ -129,6 +129,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 					int h = this.getLabeledComponent().getHeight();
 					int w = this.getLabeledComponent().getWidth();
 
+					this.getMediaComponent().setText(null);
 					if (h == 0 || w == 0 || !bScalable) {
 						this.getMediaComponent().setIcon(ii);
 						this.getMediaComponent().setHorizontalAlignment(SwingConstants.CENTER);
@@ -330,7 +331,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 			if (inputWidth == -1 || inputHeight == -1) {
 				nuclosImage = new NuclosImage(filename, b, null, true);
 			} else {
-				nuclosImage = new NuclosImage(filename, getScaled(is, inputWidth, inputHeight), null, true);
+				nuclosImage = new NuclosImage(filename, getScaled(b, inputWidth, inputHeight), null, true);
 			}
 
 			JComponent comp = NuclosCollectableImage.this.getJComponent();
@@ -340,7 +341,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 				Image scaledImageForLabeled = ii.getImage().getScaledInstance(li.getWidth(), li.getHeight(), Image.SCALE_DEFAULT);
 				li.getJMediaComponent().setIcon(new ImageIcon(scaledImageForLabeled));
 				li.setNuclosImage(nuclosImage);
-				nuclosImage.setThmubnail(getScaled(is, 20, 20));
+				nuclosImage.setThmubnail(getScaled(b, 20, 20));
 			}
 			try {
 				viewToModel();
@@ -355,8 +356,8 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		}
 	}
 
-	private byte[] getScaled(InputStream is, int width, int height) throws FileNotFoundException, IOException {
-		BufferedImage buff = ImageIO.read(is);
+	private byte[] getScaled(byte[] in, int width, int height) throws FileNotFoundException, IOException {
+		BufferedImage buff = ImageIO.read(new ByteArrayInputStream(in));
 		BufferedImage bdest = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = bdest.createGraphics();
 		AffineTransform at = AffineTransform.getScaleInstance((double) width / buff.getWidth(), (double) height / buff.getHeight());
