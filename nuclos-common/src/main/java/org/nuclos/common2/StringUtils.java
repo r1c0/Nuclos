@@ -650,10 +650,16 @@ public class StringUtils {
 		return result.append("</body></html>").toString();
 	}
 	
-	public static String concat(String... parts) {
+	public static String concat(Object... parts) {
 		final StringBuffer result = new StringBuffer();
-		for (String part : parts) {
-			if (StringUtils.isNullOrEmpty(part)) {
+		for (Object part : parts) {
+			String s = null;
+			if (part instanceof String) {
+				s = (String) part;
+			} else if (part != null) {
+				s = part.toString();
+			}
+			if (StringUtils.isNullOrEmpty(s)) {
 				continue;
 			}
 			result.append(part);

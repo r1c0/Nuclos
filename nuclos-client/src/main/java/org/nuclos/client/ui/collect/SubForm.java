@@ -551,15 +551,15 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		rowHeader = createTableRowHeader(subformtbl, scrollPane);
 		subformtbl.setRowHeaderTable(rowHeader);
 		
-		subformtbl.addMouseListener(newToolbarContextMenuListener(subformtbl));
-		scrollPane.getViewport().addMouseListener(newToolbarContextMenuListener(scrollPane.getViewport()));
+		subformtbl.addMouseListener(newToolbarContextMenuListener(subformtbl, subformtbl));
+		scrollPane.getViewport().addMouseListener(newToolbarContextMenuListener(scrollPane.getViewport(), subformtbl));
 
 		//toolbar.add(btnNew);
 		//toolbar.add(btnRemove);
 		//toolbar.add(btnMultiEdit);
 	}
 	
-	public MouseListener newToolbarContextMenuListener(final JComponent parent) {
+	public MouseListener newToolbarContextMenuListener(final JComponent parent, final JTable table) {
 		MouseListener res = new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent mev) {
@@ -575,7 +575,12 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 					popup.show(parent, mev.getX(), mev.getY());
 				}
 				if (SwingUtilities.isLeftMouseButton(mev) && mev.getClickCount() == 2) {
-					actionPerformed(ToolbarFunction.NEW.name());
+					int row = table.rowAtPoint(mev.getPoint());
+					int column = table.columnAtPoint(mev.getPoint());
+					LOG.info(StringUtils.concat("Doubleclick on subform: column=",column,",row=",row));
+					if (row == -1 || column == -1) {
+						actionPerformed(ToolbarFunction.NEW.name());
+					}
 				}
 			}
 			
@@ -642,7 +647,6 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	 */
 	protected SubformRowHeader createTableRowHeader(final SubFormTable tbl, JScrollPane scrlpnTable) {
 		final SubformRowHeader res = new SubformRowHeader(tbl, scrlpnTable);
-		res.getHeaderTable().addMouseListener(newToolbarContextMenuListener(res.getHeaderTable()));
 		return res;
 	}
 
@@ -650,6 +654,9 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		this.rowHeader = newTableRowHeader;
 		this.subformtbl.setRowHeaderTable(rowHeader);
 		newTableRowHeader.setExternalTable(subformtbl, scrollPane);
+		
+		rowHeader.getHeaderTable().addMouseListener(newToolbarContextMenuListener(rowHeader.getHeaderTable(), rowHeader.getHeaderTable()));
+		scrollPane.getRowHeader().addMouseListener(newToolbarContextMenuListener(scrollPane.getRowHeader(), rowHeader.getHeaderTable()));
 	}
 
 	public SubformRowHeader getSubformRowHeader() {
