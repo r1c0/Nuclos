@@ -550,6 +550,8 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		final Collection<MasterDataVO> attributes = getMasterDataFacade().getDependantMasterData(NuclosEntity.GENERATIONATTRIBUTE.getEntityName(), "generation", generator.getId());
 
 		String sTable = MetaDataServerProvider.getInstance().getEntity(sourceEntity).getDbEntity();
+		// NUCLOSINT-1358
+		sTable = "V_" + sTable.substring(2);
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from(sTable).alias(SystemFields.BASE_ALIAS);
@@ -643,6 +645,8 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		final EntityMetaDataVO targetEntity = MetaDataServerProvider.getInstance().getEntity(subentity.getField("entityTargetId", Integer.class).longValue());
 
 		String sTable = sourceEntity.getDbEntity();
+		// NUCLOSINT-1358
+		sTable = "V_" + sTable.substring(2);
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from(sTable).alias(SystemFields.BASE_ALIAS);
