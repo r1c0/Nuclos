@@ -9399,7 +9399,7 @@
         "searchable": false,
         "logbook": false,
         "foreignentityfield": "name",
-        "ondeletecascade": true,
+        "ondeletecascade": false,
         "labelres": "nuclos.entityfield.workspace.assignedworkspace.label",
         "descriptionres": "nuclos.entityfield.workspace.assignedworkspace.description"
       },

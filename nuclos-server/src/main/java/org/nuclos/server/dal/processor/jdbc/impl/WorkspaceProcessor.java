@@ -34,6 +34,7 @@ import org.nuclos.server.dal.processor.jdbc.AbstractJdbcDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.IWorkspaceProcessor;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
+import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbJoin;
@@ -98,6 +99,9 @@ public class WorkspaceProcessor extends AbstractJdbcDalProcessor<WorkspaceVO> im
 	
 	@Override
 	public DalCallResult batchDelete(Collection<Long> colId, boolean failAfterBatch) throws DbException {
+		for (Long id : colId) {
+			deleteAllByAssigned(id);
+		}
 		return super.batchDelete(colId, failAfterBatch);
 	}
 	
@@ -162,6 +166,10 @@ public class WorkspaceProcessor extends AbstractJdbcDalProcessor<WorkspaceVO> im
 				this.delete(id);
 			}
 		}
+	}
+	
+	private void deleteAllByAssigned(Long assignedId) throws DbException {
+		DataBaseHelper.getDbAccess().execute(DbStatementUtils.deleteFrom(getDbSourceForDML(), assignedColumn.getColumn(), assignedId));
 	}
 
 	@Override
