@@ -330,7 +330,8 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     		while (it.hasNext()) {
     			final DbSimpleViewColumn c = it.next();
     			if (c.getColumnName().equalsIgnoreCase(n)) {
-    				it.remove();
+    				// http://support.novabit.de/browse/NUCLOSINT-1356
+    				// it.remove();
     				result.add(c);
     				continue COLUMNS;
     			}
