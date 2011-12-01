@@ -888,7 +888,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 	@Override
 	public JPopupMenu newJPopupMenu() {
 		final JPopupMenu result = super.newJPopupMenu();
-		if (!this.isSearchComponent()) {
+		if (!this.isSearchComponent() && getEntityField().isReferencing()) {
 			result.add(newRefreshEntry());
 		}
 		return result;
