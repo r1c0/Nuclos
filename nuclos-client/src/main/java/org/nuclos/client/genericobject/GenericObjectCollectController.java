@@ -1672,8 +1672,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	@Override
-	public void executeBusinessRules(List<RuleVO> lstRuleVO, boolean bSaveAfterRuleExecution) throws CommonBusinessException{
-		GenericObjectDelegate.getInstance().executeBusinessRules(lstRuleVO, getSelectedCollectable().getGenericObjectWithDependantsCVO(), bSaveAfterRuleExecution);
+	public void executeBusinessRules(final List<RuleVO> lstRuleVO, final boolean bSaveAfterRuleExecution) throws CommonBusinessException{
+		invoke(new CommonRunnable() {
+			@Override
+			public void run() throws CommonBusinessException {
+				GenericObjectDelegate.getInstance().executeBusinessRules(lstRuleVO, getSelectedCollectable().getGenericObjectWithDependantsCVO(), bSaveAfterRuleExecution);
+			}
+		});
 	}
 
 	public void setupAdditionalActions() {

@@ -557,8 +557,13 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	}
 
    @Override
-   public void executeBusinessRules(List<RuleVO> lstRuleVO, boolean bSaveAfterRuleExecution) throws CommonBusinessException {
-      mddelegate.executeBusinessRules(this.getEntityName(), lstRuleVO, this.getSelectedCollectable().getMasterDataWithDependantsCVO(), bSaveAfterRuleExecution);
+   public void executeBusinessRules(final List<RuleVO> lstRuleVO, final boolean bSaveAfterRuleExecution) throws CommonBusinessException {
+	invoke(new CommonRunnable() {	
+		@Override
+		public void run() throws CommonBusinessException {
+			mddelegate.executeBusinessRules(getEntityName(), lstRuleVO, getSelectedCollectable().getMasterDataWithDependantsCVO(), bSaveAfterRuleExecution);
+		}
+	});
    }
 
    @Override

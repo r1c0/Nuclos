@@ -28,6 +28,7 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectActionAdapter;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectState;
+import org.nuclos.client.ui.collect.UserCancelledException;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -84,6 +85,9 @@ public class ExecuteRuleButtonAction<Clct extends Collectable> implements Collec
 						}
 						controller.refreshCurrentCollectable();
 					}
+				}
+				catch (UserCancelledException e) {
+					return;
 				}
 				catch (CommonFinderException e) {
 					Errors.getInstance().showExceptionDialog(controller.getCollectPanel(), e);
