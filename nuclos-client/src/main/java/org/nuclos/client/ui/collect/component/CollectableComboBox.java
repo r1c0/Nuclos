@@ -180,11 +180,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 
 	@Override
 	protected void setupJPopupMenuListener(JPopupMenuListener popupmenulistener) {
-		final Component comp = getJComboBox().getEditor() != null ?
-				getJComboBox().getEditor().getEditorComponent() :
-				getControlComponent();
-
-		comp.addMouseListener(popupmenulistener);
+		getLabeledComboBox().setupJPopupMenuListener(popupmenulistener);
 	}
 
 	private void removeJPopupMenuListeners() {

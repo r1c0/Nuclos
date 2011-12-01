@@ -88,6 +88,11 @@ public abstract class LabeledComponent extends JPanel {
 		this.add(pnlControl, this.getGridBagConstraintsForControl(false));
 		this.getJLabel().setLabelFor(comp);
 	}
+	
+	protected final void replaceControl(JComponent oldComp, JComponent newComp) {
+		this.pnlControl.remove(oldComp);
+		this.pnlControl.add(newComp, BorderLayout.CENTER);
+	}
 
 	/**
 	 * sets the label's text

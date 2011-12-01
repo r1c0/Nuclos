@@ -17,16 +17,29 @@
 package org.nuclos.client.ui.labeled;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 
+import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 import org.nuclos.client.ui.ColorProvider;
+import org.nuclos.client.ui.Icons;
+import org.nuclos.client.ui.TextFieldWithButton;
 import org.nuclos.client.ui.ToolTipTextProvider;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
 
 /**
  * A labeled combobox.
@@ -40,8 +53,31 @@ import org.nuclos.client.ui.UIUtils;
 
 public class LabeledComboBox extends LabeledComponent {
 	
-	public final static Dimension DEFAULT_PREFFERED_SIZE = (new JTextField()).getPreferredSize();
-
+	public static final Dimension DEFAULT_PREFERRED_SIZE = (new JTextField()).getPreferredSize();
+	
+	private final TextFieldWithButton tfDisabled = new TextFieldWithButton(Icons.getInstance().getIconTextFieldButtonCombobox()) {
+		
+		@Override
+		public boolean isButtonEnabled() {
+			return false;
+		}
+		
+		@Override
+		public void buttonClicked() {
+		}
+		
+		@Override
+		public String getToolTipText(MouseEvent ev) {
+			return cmbbx.getToolTipText(ev);
+		}
+		
+		@Override
+		public Color getBackground() {
+			return NuclosSyntheticaConstants.BACKGROUND_INACTIVEFIELD;
+		}
+		
+	};
+	
 	private final JComboBox cmbbx = new JComboBox() {
 
 		/**
@@ -64,14 +100,80 @@ public class LabeledComboBox extends LabeledComponent {
 			final Color colorDefault = super.getBackground();
 			return (colorproviderBackground != null) ? colorproviderBackground.getColor(colorDefault) : colorDefault;
 		}
+
+		@Override
+		public void setFont(Font font) {
+			super.setFont(font);
+			tfDisabled.setFont(font);
+		}
+
+		@Override
+		public void setComponentPopupMenu(JPopupMenu popup) {
+			super.setComponentPopupMenu(popup);
+			tfDisabled.setComponentPopupMenu(popup);
+		}
+
+		@Override
+		public synchronized void addMouseListener(MouseListener l) {
+			super.addMouseListener(l);
+			if (l instanceof JPopupMenuListener) {
+				tfDisabled.addMouseListener(l);
+			}
+		}
+
+		@Override
+		public Point getLocation() {
+			if (blnControlsEnabled) {
+				return super.getLocation();
+			} else {
+				return tfDisabled.getLocation();
+			}
+		}
+
+		@Override
+		public Point getLocationOnScreen() {
+			if (blnControlsEnabled) {
+				return super.getLocationOnScreen();
+			} else {
+				return tfDisabled.getLocationOnScreen();
+			}
+		}
+		
+		
 	};
+	private final JTextField cmbbxTextField = (JTextField) cmbbx.getEditor().getEditorComponent();
 
 	public LabeledComboBox() {
 		super();
 
-		this.cmbbx.setMinimumSize(new Dimension(this.cmbbx.getMinimumSize().width, DEFAULT_PREFFERED_SIZE.height));
+		this.cmbbx.setMinimumSize(new Dimension(this.cmbbx.getMinimumSize().width, DEFAULT_PREFERRED_SIZE.height));
 		this.addControl(this.cmbbx);
 		this.getJLabel().setLabelFor(this.cmbbx);
+		
+		this.tfDisabled.setEditable(false);
+		this.tfDisabled.addFocusListener(new FocusListener() {
+			@Override
+			public void focusLost(FocusEvent e) {}
+			@Override
+			public void focusGained(FocusEvent e) {
+				tfDisabled.selectAll();
+			}
+		});
+		this.cmbbx.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				tfDisabled.setText(cmbbxTextField.getText());
+			}
+		});
+	}
+	
+	public synchronized void setupJPopupMenuListener(JPopupMenuListener popupmenulistener) {
+		final Component comp = getJComboBox().getEditor() != null ?
+				getJComboBox().getEditor().getEditorComponent() :
+				getControlComponent();
+
+		comp.addMouseListener(popupmenulistener);
+		tfDisabled.addMouseListener(popupmenulistener);
 	}
 
 	public JComboBox getJComboBox() {
@@ -82,42 +184,30 @@ public class LabeledComboBox extends LabeledComponent {
 	public JComponent getControlComponent() {
 		return this.cmbbx;
 	}
+	
+	private boolean blnControlsEnabled = true;
+
+	@Override
+	protected void setControlsEnabled(boolean blnEnabled) {
+		boolean blnUpdate = false;
+		if (blnControlsEnabled != blnEnabled) {
+			blnUpdate = true;
+		}
+		blnControlsEnabled = blnEnabled;
+		
+		if (blnUpdate) {
+			if (blnControlsEnabled) {
+				replaceControl(tfDisabled, cmbbx);
+			} else {
+				replaceControl(cmbbx, tfDisabled);
+			}
+		}
+	}
 
 	@Override
 	protected void setControlsEditable(boolean bEditable) {
 		this.getJComboBox().setEditable(bEditable);
 	}
-
-//	public void setToolTipTextProviderForControl(ToolTipTextProvider tooltiptextprovider) {
-//		super.setToolTipTextProviderForControl(tooltiptextprovider);
-//
-//		// workaround for stupid BasicComboBoxUI implementation:
-//		// the problem is that BasicComboBoxUI has child components (panel, button) that have their own tooltips.
-//		if (tooltiptextprovider != null) {
-//			this.setToolTipText(null);
-//		}
-//
-////		final JComponent comp = this.getControlComponent();
-////		for (int i = 0; i < comp.getComponents().length; i++) {
-////			final Component compChild = comp.getComponents()[i];
-////			if(compChild instanceof JComponent) {
-////				ToolTipManager.sharedInstance().unregisterComponent((JComponent) compChild);
-////			}
-////		}
-//	}
-//
-//	public void setToolTipText(String sToolTipText) {
-//		this.getJLabel().setToolTipText(sToolTipText);
-//
-//		if(this.getToolTipTextProviderForControl() == null && sToolTipText != null) {
-//			this.getControlComponent().setToolTipText(sToolTipText);
-//		}
-//	}
-
-//	private Component getEditorComponent() {
-//		final ComboBoxEditor editor = this.cmbbx.getEditor();
-//		return (editor != null) ? editor.getEditorComponent() : null;
-//	}
 
 	@Override
 	public void setName(String sName) {

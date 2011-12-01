@@ -544,6 +544,10 @@ public class Icons {
 	public ImageIcon getIconTextFieldButtonScript() {
 		return this.getIconByName("textFieldButton-script");
 	}
+	
+	public ImageIcon getIconTextFieldButtonCombobox() {
+		return this.getIconByName("textFieldButton-combobox");
+	}
 
 	public ImageIcon getIconTabNotRestored() {
 		return this.getIconByName("tabNotRestored");

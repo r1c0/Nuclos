@@ -63,8 +63,14 @@ import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.scripting.GroovySupport;
 import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 import org.nuclos.client.ui.ColorProvider;
+import org.nuclos.client.ui.DateChooser;
+import org.nuclos.client.ui.ListOfValues;
 import org.nuclos.client.ui.ResourceIdMapper;
 import org.nuclos.client.ui.ToolTipTextProvider;
+import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.SubForm.Column;
+import org.nuclos.client.ui.collect.SubForm.SubFormTable;
+import org.nuclos.client.ui.collect.component.custom.FileChooserComponent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
@@ -1376,6 +1382,19 @@ public abstract class AbstractCollectableComponent
 		else {
 			boolean hasValue = !getModel().getField().isNull();
 
+			// not editable
+			if (isDetailsComponent() && (getControlComponent() instanceof JTextComponent) && !((JTextComponent) getControlComponent()).isEditable()) {
+				result = NuclosSyntheticaConstants.BACKGROUND_INACTIVEFIELD;
+			} else if (isDetailsComponent() && (getControlComponent() instanceof DateChooser) && !((DateChooser) getControlComponent()).getJTextField().isEditable()) {
+				result = NuclosSyntheticaConstants.BACKGROUND_INACTIVEFIELD;
+			} else if (isDetailsComponent() && (getControlComponent() instanceof ListOfValues) && !((ListOfValues) getControlComponent()).isEnabled()) {
+				result = NuclosSyntheticaConstants.BACKGROUND_INACTIVEFIELD;
+			} else if (isDetailsComponent() && (getControlComponent() instanceof JComboBox) && !((JComboBox) getControlComponent()).isEditable()) {
+				result = NuclosSyntheticaConstants.BACKGROUND_INACTIVEFIELD;
+			} else if (isDetailsComponent() && (getControlComponent() instanceof FileChooserComponent) && !((FileChooserComponent) getControlComponent()).isEnabled()) {
+				result = NuclosSyntheticaConstants.BACKGROUND_INACTIVEFIELD;
+			} else 
+			
 			if (isDetailsComponent() && getDetailsModel().isMandatoryAdded()) {
 				result = hasValue || hasFocus() ? null : ClientParameterProvider.getInstance().getColorValue(ParameterProvider.KEY_MANDATORY_ADDED_ITEM_BACKGROUND_COLOR, new Color(255,255,200));
 			} else if (isDetailsComponent() && getDetailsModel().isMandatory()) {
@@ -1672,6 +1691,18 @@ public abstract class AbstractCollectableComponent
 					if (clctef == null) {
 						throw new NullPointerException("getTableCellRendererComponent failed to find field: " + clct + " tm index " + iTColumn);
 					}
+					
+					if (tbl instanceof SubForm.SubFormTable) {
+						SubFormTable subformtable = (SubForm.SubFormTable) tbl;
+						Column subformcolumn = subformtable.getSubForm().getColumn(clctef.getName());
+						if (subformcolumn != null && !subformcolumn.isEnabled()) {
+							if (bSelected) {
+								setBackground(NuclosSyntheticaConstants.BACKGROUND_INACTIVESELECTEDCOLUMN);
+							} else {
+								setBackground(NuclosSyntheticaConstants.BACKGROUND_INACTIVECOLUMN);
+							}
+						}
+					}
 
 					try {
 						EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(clctef.getEntityName());
@@ -1697,6 +1728,18 @@ public abstract class AbstractCollectableComponent
 					catch (CommonFatalException ex) {
 						LOG.warn(ex);
 					}
+					
+					if (tbl instanceof SubForm.SubFormTable) {
+						SubFormTable subformtable = (SubForm.SubFormTable) tbl;
+						Column subformcolumn = subformtable.getSubForm().getColumn(clctef.getName());
+						if (subformcolumn != null && !subformcolumn.isEnabled()) {
+							if (bSelected) {
+								setBackground(NuclosSyntheticaConstants.BACKGROUND_INACTIVESELECTEDCOLUMN);
+							} else {
+								setBackground(NuclosSyntheticaConstants.BACKGROUND_INACTIVECOLUMN);
+							}
+						}
+					}
 
 					final CefSecurityAgent sa = clctef.getSecurityAgent();
 					if (sa == null) {
@@ -1713,6 +1756,7 @@ public abstract class AbstractCollectableComponent
 					}
 
 				}
+				
 			}
 			return this;
 		}

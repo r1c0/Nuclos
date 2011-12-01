@@ -579,7 +579,9 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 					int column = table.columnAtPoint(mev.getPoint());
 					LOG.info(StringUtils.concat("Doubleclick on subform: column=",column,",row=",row));
 					if (row == -1 || column == -1) {
-						actionPerformed(ToolbarFunction.NEW.name());
+						if (toolbarMenuItems.get(ToolbarFunction.NEW.name()).isEnabled()) {
+							actionPerformed(ToolbarFunction.NEW.name());
+						}
 					}
 				}
 			}

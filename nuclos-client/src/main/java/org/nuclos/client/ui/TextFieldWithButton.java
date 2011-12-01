@@ -80,7 +80,7 @@ public abstract class TextFieldWithButton extends CommonJTextField {
 		}
 		this.iconButton = iconButton;
 		this.curDefault = getCursor();
-		this.setPreferredSize(new Dimension(this.getPreferredSize().width, LabeledComboBox.DEFAULT_PREFFERED_SIZE.height));
+		this.setPreferredSize(new Dimension(this.getPreferredSize().width, LabeledComboBox.DEFAULT_PREFERRED_SIZE.height));
 		this.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseMoved(MouseEvent me) {

@@ -35,6 +35,9 @@ public interface NuclosSyntheticaConstants {
 	public static final Color BACKGROUND_SELECTION = new Color(71, 80, 94);
 
 	public static final Color BACKGROUND_INACTIVEROW = new Color(232, 233, 236);
+	public static final Color BACKGROUND_INACTIVEFIELD = new Color(232, 233, 236);
+	public static final Color BACKGROUND_INACTIVECOLUMN = new Color(232, 233, 236);
+	public static final Color BACKGROUND_INACTIVESELECTEDCOLUMN = new Color(99, 105, 114);
 
 	public static final Color ICON_BLUE = new Color(97, 171, 215);
 
