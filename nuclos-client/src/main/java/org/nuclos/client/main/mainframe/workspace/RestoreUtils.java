@@ -172,7 +172,6 @@ public class RestoreUtils {
 	 */
 	public static void restoreWorkspaceThreaded(Long lastWorkspaceIdFromPreferences, String lastWorkspaceFromPreferences, 
 			Long lastAlwaysOpenWorkspaceIdFromPreferences, String lastAlwaysOpenWorkspaceFromPreferences) throws CommonBusinessException {
-		cachedActions = Main.getMainController().getGenericActions();
 		
 		WorkspaceVO wovoToRestore = null;
 		
@@ -236,9 +235,10 @@ public class RestoreUtils {
 	 */
 	private synchronized static void restoreWorkspaceThreaded(WorkspaceVO wovo) throws CommonBusinessException {
 		checkRestoreRunning();
-
+		
 		MainFrame.setWorkspaceManagementEnabled(false);
-
+		cachedActions = Main.getMainController().getGenericActions();
+		
 		//load from db. wovo contains header only
 		WorkspaceDescription wd;
 		if (wovo.getWoDesc().getFrames().isEmpty()) {
