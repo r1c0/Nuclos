@@ -31,7 +31,7 @@ import org.nuclos.server.dblayer.DbStatementUtils;
 public class WorkspaceNucletContent extends DefaultNucletContent {
 
 	public WorkspaceNucletContent(List<INucletContent> contentTypes) {
-		super(NuclosEntity.WORKSPACE, null, contentTypes, true);
+		super(NuclosEntity.WORKSPACE, null, contentTypes);
 	}
 
 	@Override
@@ -47,10 +47,8 @@ public class WorkspaceNucletContent extends DefaultNucletContent {
 
 	@Override
 	public void deleteNcObject(DalCallResult result, EntityObjectVO ncObject) {
-		
 		if (ncObject.getFieldId("user") == null) { // is assignable workspace
-			// Remove user assigned worksapces.
-			// Usually this makes the foreign key constraints with cascade on delete, but during nuclet import all constraints are disabled/deleted
+			// Remove user assigned workspaces.
 			DataBaseHelper.getDbAccess().execute(DbStatementUtils.deleteFrom("T_MD_WORKSPACE", "INTID_T_MD_WORKSPACE", ncObject.getId()));
 		}
 		super.deleteNcObject(result, ncObject);
