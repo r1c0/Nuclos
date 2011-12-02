@@ -185,6 +185,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				btnPointer.setEnabled(btnPointer.getAction().isEnabled());
 			}
 		});
+		btnPointer.setName("btnPointer");
 		btnPointer.addMouseListener(getPointerContextListener());
 	}
 
@@ -337,7 +338,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 			String sParentEntityName, CollectableComponentModelProvider clctcompmodelprovider,
 			MainFrameTab ifrmParent, JComponent parent, JComponent compDetails, Preferences prefs, EntityPreferences entityPrefs) {
 		//subform.setLockedLayer();
-		MasterDataSubFormController controller = NuclosCollectControllerFactory.getInstance().newDetailsSubFormController(subform, 
+		MasterDataSubFormController controller = NuclosCollectControllerFactory.getInstance().newDetailsSubFormController(subform,
 				sParentEntityName, clctcompmodelprovider, ifrmParent, parent, compDetails, prefs, entityPrefs, valueListProviderCache);
 		controller.setParentController((EntityCollectController<CollectableEntityObject>) this);
 		return controller;
