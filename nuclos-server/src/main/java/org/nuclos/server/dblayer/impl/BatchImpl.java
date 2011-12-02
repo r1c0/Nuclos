@@ -120,7 +120,12 @@ public class BatchImpl implements IBatch {
 		if (debug) LOG.debug("begin process of " + this);
 		final DalCallResult result = new DalCallResult();
 		for (IUnit unit: units) {
-			result.add(unit.process(ex, unitType));
+			if (!type.equals(EBatchType.FAIL_NEVER_IGNORE_EXCEPTION)) {
+				result.add(unit.process(ex, unitType));
+			}
+			else {
+				if (debug) LOG.debug("Potential ignoring execption on unit " + unit);
+			}
 		}
 		if (debug) LOG.debug("end batch process with result: " + result);
 		if (type.equals(EBatchType.FAIL_LATE)) {

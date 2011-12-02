@@ -16,18 +16,28 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dblayer;
 
+import java.util.List;
+
+import org.nuclos.server.dblayer.impl.util.PreparedString;
+
 /**
  * @author Thomas Pasch
  * @since Nuclos 3.2.0
  */
-public enum EBatchType {
+public interface IPart {
 	
-	FAIL_EARLY,
+	public static enum NextPartHandling {
+		
+		ONLY_IF_THIS_FAILS,
+		ONLY_IF_THIS_SUCCEEDS,
+		ALWAYS;
+		
+	}
 	
-	FAIL_LATE,
+	List<PreparedString> getStatements();
 	
-	FAIL_NEVER,
+	EBatchType getBatchType();
 	
-	FAIL_NEVER_IGNORE_EXCEPTION;
+	NextPartHandling getNextPartHandling();
 
 }

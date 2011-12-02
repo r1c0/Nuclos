@@ -56,13 +56,19 @@ public class SqlSequentialUnit implements IUnit {
 				final int changes = ex.executePreparedStatement(ps);
 				result.addToNumberOfDbChanges(changes);
 			} catch (SQLException e) {
-				result.addBusinessException(null, Collections.singletonList(ps.toString()), e);
+				if (!type.equals(EBatchType.FAIL_NEVER_IGNORE_EXCEPTION)) {
+					result.addBusinessException(null, Collections.singletonList(ps.toString()), e);
+				}
+				else {
+					if (debug) LOG.debug("Ignored exception: " + e + " while executing " + ps);
+				}
 				switch (type)  {
 					case FAIL_EARLY:
 						result.throwFirstException();
 						break;
 					case FAIL_LATE:
 					case FAIL_NEVER:
+					case FAIL_NEVER_IGNORE_EXCEPTION:
 						break;
 					default:
 						throw new IllegalArgumentException(type.toString());
