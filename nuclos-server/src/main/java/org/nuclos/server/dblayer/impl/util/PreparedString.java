@@ -30,6 +30,18 @@ public final class PreparedString implements CharSequence, Serializable {
 		return new PreparedString(cs);
 	}
 	
+	public static PreparedString format(String format, Object... args) {
+		return valueOf(String.format(format, args));
+	}
+	
+	public static PreparedString concat(CharSequence s, CharSequence... strings) {
+		final StringBuilder result = new StringBuilder(s);
+		for (CharSequence cs: strings) {
+			result.append(cs);
+		}
+		return new PreparedString(result.toString());
+	}
+	
 	private final String string;
 	private final Object[] parameters;
 

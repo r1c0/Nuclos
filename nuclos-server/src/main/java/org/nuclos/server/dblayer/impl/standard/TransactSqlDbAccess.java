@@ -18,21 +18,26 @@ package org.nuclos.server.dblayer.impl.standard;
 
 import static org.nuclos.common2.StringUtils.join;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.sql.DataSource;
+
+import org.apache.log4j.Logger;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbNotUniqueException;
 import org.nuclos.server.dblayer.DbReferentialIntegrityException;
+import org.nuclos.server.dblayer.DbType;
+import org.nuclos.server.dblayer.IBatch;
+import org.nuclos.server.dblayer.impl.BatchImpl;
+import org.nuclos.server.dblayer.impl.util.PreparedString;
 import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 import org.nuclos.server.dblayer.incubator.DbExecutor.ResultSetRunner;
 import org.nuclos.server.dblayer.query.DbExpression;
@@ -49,32 +54,30 @@ import org.nuclos.server.dblayer.structure.DbSequence;
  */
 public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 
+    private static final Logger LOG = Logger.getLogger(TransactSqlDbAccess.class);
+
+	private static String IDENT_REGEX = "(\\w+)";
+	private static Pattern EXCEPTION_IDENT = Pattern.compile("'" + IDENT_REGEX + "'");
+
 	/**
 	 * Hint used {@link DbSequence} object for associating the tablename.
 	 */
 	public static final String HINT_SEQUENCE_TABLE = "sequenceTable";
-
-	@Override
-	public Long getNextId(String sequenceName) throws SQLException {
-		return executor.executeQuery("EXECUTE " + sequenceName, new ResultSetRunner<Long>() {
-			@Override
-			public Long perform(ResultSet rs) throws SQLException { return rs.next() ? rs.getLong(1) : null; }
-		});
+	
+	//
+	
+	public TransactSqlDbAccess() {
 	}
-
+	
+	@Override
+	public void init(DbType type, DataSource dataSource, Map<String, String> config) {
+		this.executor = new TransactSqlExecutor(dataSource, config.get(USERNAME), config.get(PASSWORD)); 
+		super.init(type, dataSource, config);
+	}
+	
 	@Override
 	public String generateName(String base, String...affixes) {
 		return generateName(30, base, affixes);
-	}
-
-	@Override
-	protected void setStatementParameter(PreparedStatement stmt, int index, Object value, Class<?> javaType) throws SQLException {
-		if (javaType == Boolean.class) {
-			javaType = Integer.class;
-			if (value != null)
-				value = ((Boolean) value).booleanValue() ? 1 : 0;
-		}
-		super.setStatementParameter(stmt, index, value, javaType);
 	}
 
 	@Override
@@ -104,14 +107,11 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 			}
 		} catch (Exception ex2) {
 			// log this exception...
-			log.warn("Exception thrown during wrapSQLException", ex2);
+			LOG.warn("Exception thrown during wrapSQLException", ex2);
 			// ...but throw the original SQLException
 		}
 		return super.wrapSQLException(id, message, ex);
 	}	
-
-	private static String IDENT_REGEX = "(\\w+)";
-	private static Pattern EXCEPTION_IDENT = Pattern.compile("'" + IDENT_REGEX + "'");
 
 	@Override
 	public boolean validateObjects() throws SQLException {
@@ -144,33 +144,32 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	protected List<String> getSqlForCreateIndex(DbIndex index) {
-		return Collections.singletonList(String.format("CREATE INDEX %s ON %s (%s)",
+	protected IBatch getSqlForCreateIndex(DbIndex index) {
+		return BatchImpl.simpleBatch(PreparedString.format("CREATE INDEX %s ON %s (%s)",
 			getName(index.getIndexName()),
 			getQualifiedName(index.getTableName()),
 			join(",", index.getColumnNames())));
 	}
 
 	@Override
-	protected List<String> getSqlForDropIndex(DbIndex index) {
-		return Collections.singletonList(String.format("DROP INDEX %s.%s",
+	protected IBatch getSqlForDropIndex(DbIndex index) {
+		return BatchImpl.simpleBatch(PreparedString.format("DROP INDEX %s.%s",
 			getQualifiedName(index.getTableName()),
 			getName(index.getIndexName())));
 	}
 
 	@Override
-	protected abstract List<String> getSqlForCreateSequence(DbSequence sequence);
+	protected abstract IBatch getSqlForCreateSequence(DbSequence sequence);
 
 	@Override
-	protected abstract List<String> getSqlForDropSequence(DbSequence sequence);
+	protected abstract IBatch getSqlForDropSequence(DbSequence sequence);
 
 	@Override
-	protected List<String> getSqlForAlterSequence(DbSequence sequence1, DbSequence sequence2) {
+	protected IBatch getSqlForAlterSequence(DbSequence sequence1, DbSequence sequence2) {
 		// Alter sequence is a drop/create combination
 		long restartWith = Math.max(sequence1.getStartWith(), sequence2.getStartWith());
-		List<String> sql = new ArrayList<String>();
-		sql.addAll(getSqlForDropSequence(sequence1));
-		sql.addAll(getSqlForCreateSequence(new DbSequence(sequence2.getSequenceName(), restartWith)));
+		final IBatch sql = getSqlForDropSequence(sequence1);
+		sql.append(getSqlForCreateSequence(new DbSequence(sequence2.getSequenceName(), restartWith)));
 		return sql;
 	}
 

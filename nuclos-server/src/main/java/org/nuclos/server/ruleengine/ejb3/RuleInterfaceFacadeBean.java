@@ -67,7 +67,7 @@ import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
-import org.nuclos.server.dblayer.impl.DataSourceExecutor;
+import org.nuclos.server.dblayer.incubator.DbExecutor;
 import org.nuclos.server.dblayer.incubator.DbExecutor.ResultSetRunner;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -629,7 +629,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 			throw new NuclosBusinessRuleException(e);
 		}
 
-		DataSourceExecutor executor = new DataSourceExecutor(db);
+		final DbExecutor executor = DataBaseHelper.getDbAccess().getDbExecutor();
 		try {
 			return executor.executeQuery(selectStatement, new ResultSetRunner<Collection<MasterDataVO>>() {
 				@Override

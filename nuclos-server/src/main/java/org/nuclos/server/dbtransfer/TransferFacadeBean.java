@@ -90,6 +90,7 @@ import org.nuclos.server.dblayer.DbObjectHelper.DbObject;
 import org.nuclos.server.dblayer.DbObjectHelper.DbObjectType;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;
+import org.nuclos.server.dblayer.IBatch;
 import org.nuclos.server.dblayer.expression.DbCurrentDateTime;
 import org.nuclos.server.dblayer.impl.SchemaUtils;
 import org.nuclos.server.dblayer.impl.util.PreparedString;
@@ -633,9 +634,9 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			}
 
 			pp.setEntity(getEntityNameFromTable(pp.getTable(), provForEntityName));
-
-			for (PreparedString ps : dbAccess.getPreparedSqlFor(dbChangeStmt)) {
-				pp.addStatement(ps.toString());
+			final IBatch batch = dbAccess.getBatchFor(dbChangeStmt);
+			for (String s : dbAccess.getStatementsForLogging(batch)) {
+				pp.addStatement(s);
 			}
 		}
 
@@ -1028,12 +1029,15 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	private void updateDB(DbAccess dbAccess, Collection<DbTable> currentSchema, Collection<DbTable> transferredSchema,
 			boolean bExecuteDDL, List<String> script, StringBuffer sbResultMessage) throws SQLException {
 		for (DbStructureChange dbChangeStmt : SchemaUtils.modify(currentSchema, transferredSchema)) {
-			logScript(script, dbAccess.getPreparedSqlFor(dbChangeStmt));
+			final IBatch batch = dbAccess.getBatchFor(dbChangeStmt);
+			// logScript(script, batch);
+			final List<String> statements = dbAccess.getStatementsForLogging(batch);
+			script.addAll(statements);
 			if (bExecuteDDL)
 				try {
 					dbAccess.execute(dbChangeStmt);
 				} catch (Exception ex) {
-					logDDLError(sbResultMessage, ex.getMessage(), dbAccess.getPreparedSqlFor(dbChangeStmt));
+					logDDLError(sbResultMessage, ex.getMessage(), statements);
 				}
 		}
 	}

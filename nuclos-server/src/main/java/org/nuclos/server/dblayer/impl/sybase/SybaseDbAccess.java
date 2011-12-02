@@ -20,7 +20,6 @@ package org.nuclos.server.dblayer.impl.sybase;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,14 +30,13 @@ import org.nuclos.common.collection.Predicate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbStatementUtils;
+import org.nuclos.server.dblayer.IBatch;
+import org.nuclos.server.dblayer.impl.BatchImpl;
+import org.nuclos.server.dblayer.impl.SqlSequentialUnit;
 import org.nuclos.server.dblayer.impl.standard.MetaDataSchemaExtractor;
 import org.nuclos.server.dblayer.impl.standard.TransactSqlDbAccess;
-import org.nuclos.server.dblayer.statements.DbBatchStatement;
-import org.nuclos.server.dblayer.statements.DbDeleteStatement;
-import org.nuclos.server.dblayer.statements.DbInsertStatement;
-import org.nuclos.server.dblayer.statements.DbPlainStatement;
-import org.nuclos.server.dblayer.statements.DbStatementVisitor;
-import org.nuclos.server.dblayer.statements.DbStructureChange;
+import org.nuclos.server.dblayer.impl.util.PreparedString;
+import org.nuclos.server.dblayer.statements.AbstractDbStatementVisitor;
 import org.nuclos.server.dblayer.statements.DbUpdateStatement;
 import org.nuclos.server.dblayer.structure.DbColumn;
 import org.nuclos.server.dblayer.structure.DbColumnType;
@@ -86,40 +84,41 @@ public class SybaseDbAccess extends TransactSqlDbAccess {
 	}
 
 	@Override
-	protected List<String> getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) throws SQLException {
-		List<String> lstSQL = new ArrayList<String>();
-		lstSQL.add(String.format("ALTER TABLE %s ALTER %s",
+	protected IBatch getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) throws SQLException {
+		final PreparedString ps = PreparedString.format("ALTER TABLE %s ALTER %s",
 			getQualifiedName(column2.getTableName()),
-			getColumnSpecForAlterTableColumn(column2, column1)));
+			getColumnSpecForAlterTableColumn(column2, column1));
 		
+		final IBatch result;
 		if(column2.getDefaultValue() != null && column2.getNullable().equals(DbNullable.NOT_NULL)) {
-			String sPlainUpdate = getSqlForUpdateNotNullColumn(column2);
-
-			lstSQL.add(0, sPlainUpdate);
+			result = getSqlForUpdateNotNullColumn(column2);
+			result.append(new SqlSequentialUnit(ps));
 		}
-		
-		return lstSQL;
+		else {
+			result = BatchImpl.simpleBatch(ps);
+		}
+		return result;
 	}
 	
 	
 
 	@Override
-	protected List<String> getSqlForAlterTableNotNullColumn(DbColumn column) {
+	protected IBatch getSqlForAlterTableNotNullColumn(DbColumn column) {
 		String columnSpec = String.format("%s %s NOT NULL", column.getColumnName(), getDataType(column.getColumnType()));
 		
-		return Collections.singletonList(String.format("ALTER TABLE %s ALTER %s",
+		return BatchImpl.simpleBatch(PreparedString.format("ALTER TABLE %s ALTER %s",
 			getQualifiedName(column.getTableName()), columnSpec));
 	}
 
 	@Override
-	protected List<String> getSqlForDropColumn(DbColumn column) {
-		return Collections.singletonList(String.format("ALTER TABLE %s DROP %s",
+	protected IBatch getSqlForDropColumn(DbColumn column) {
+		return BatchImpl.simpleBatch(PreparedString.format("ALTER TABLE %s DROP %s",
 			getQualifiedName(column.getTableName()),
 			column.getColumnName()));
 	}
 
 	@Override
-	protected List<String> getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView) {
+	protected IBatch getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView) {
 		if (!oldView.getViewName().equals(newView.getViewName())) {
 			throw new IllegalArgumentException();
 		}
@@ -127,12 +126,12 @@ public class SybaseDbAccess extends TransactSqlDbAccess {
 	}
 	
 	@Override
-	protected List<String> getSqlForCreateSequence(DbSequence sequence) {
-		List<String> sql = new ArrayList<String>();
+	protected IBatch getSqlForCreateSequence(DbSequence sequence) {
+		List<PreparedString> sql = new ArrayList<PreparedString>();
 		// p.x = procedure name / p.y = table name
 		Pair<String, String> p = getObjectNamesForSequence(sequence);
 		// Create table
-		sql.add(String.format(StringUtils.join("\n",
+		sql.add(PreparedString.format(StringUtils.join("\n",
 			"CREATE TABLE %1$s ("+
 			"SEQID INT IDENTITY PRIMARY KEY," +
 			"SEQVAL VARCHAR(1)"+
@@ -143,7 +142,7 @@ public class SybaseDbAccess extends TransactSqlDbAccess {
 		sequence.getStartWith()));
 
 		// Create procedure
-		sql.add(String.format(StringUtils.join("\n",
+		sql.add(PreparedString.format(StringUtils.join("\n",
 			"CREATE PROCEDURE %1$s AS",
 			"BEGIN",
 			"  DECLARE @NewSeqValue INT",
@@ -163,81 +162,49 @@ public class SybaseDbAccess extends TransactSqlDbAccess {
 		// for sequence reification
 		String comment = String.format("%s (%s, %s)", SEQUENCE_COMMENT_PREFIX, p.x, p.y);
 
-		sql.add(String.format("COMMENT ON PROCEDURE %s IS \"%s\"",
+		sql.add(PreparedString.format("COMMENT ON PROCEDURE %s IS \"%s\"",
 			getQualifiedName(p.x),
 			comment));
 
-		sql.add(String.format("COMMENT ON TABLE %s IS \"%s\"",
+		sql.add(PreparedString.format("COMMENT ON TABLE %s IS \"%s\"",
 			getQualifiedName(p.y),
 			comment));
-		return sql;
+		return BatchImpl.simpleBatch(sql);
 	}   
 
 	@Override
-	protected List<String> getSqlForDropSequence(DbSequence sequence) {
-		List<String> sql = new ArrayList<String>();
+	protected IBatch getSqlForDropSequence(DbSequence sequence) {
+		List<PreparedString> sql = new ArrayList<PreparedString>();
 		// p.x = procedure name / p.y = table name
 		Pair<String, String> p = getObjectNamesForSequence(sequence);
-		sql.add("DROP PROCEDURE " + getQualifiedName(p.x));
-		sql.add("DROP TABLE " + getQualifiedName(p.y));
-		return sql;
+		sql.add(PreparedString.concat("DROP PROCEDURE ", getQualifiedName(p.x)));
+		sql.add(PreparedString.concat("DROP TABLE " + getQualifiedName(p.y)));
+		return BatchImpl.simpleBatch(sql);
 	}
 	
 	@Override
-	protected String getSqlForUpdateNotNullColumn(final DbColumn column) throws SQLException {
-		DbUpdateStatement stmt = DbStatementUtils.getDbUpdateStatementWhereFieldIsNull(getQualifiedName(column.getTableName()), column.getColumnName(), column.getDefaultValue());
-		final String sUpdate = this.getSqlForUpdate(stmt).get(0).toString();
+	protected IBatch getSqlForUpdateNotNullColumn(final DbColumn column) throws SQLException {
+		final DbUpdateStatement stmt = DbStatementUtils.getDbUpdateStatementWhereFieldIsNull(getQualifiedName(column.getTableName()), column.getColumnName(), column.getDefaultValue());
 
-		String sPlainUpdate = stmt.build().accept(new DbStatementVisitor<String>() {
-
-			@Override
-			public String visitBatch(DbBatchStatement batch) {
-				// only update in this context
-				return null;
-			}
+		final PreparedString sPlainUpdate = stmt.build().accept(new AbstractDbStatementVisitor<PreparedString>() {
 
 			@Override
-			public String visitDelete(DbDeleteStatement delete) {
-				// only update in this context
-				return null;
-			}
-
-			@Override
-			public String visitInsert(DbInsertStatement insert) {
-				// only update in this context
-				return null;
-			}
-
-			@Override
-			public String visitPlain(DbPlainStatement command) {
-				// only update in this context
-				return null;
-			}
-
-			@Override
-			public String visitStructureChange(DbStructureChange structureChange) {
-				// only update in this context
-				return null;
-			}
-
-			@Override
-			public String visitUpdate(DbUpdateStatement update) {				
-				String updateString = new String(sUpdate);
+			public PreparedString visitUpdate(DbUpdateStatement update) {				
+				String sUpdate = getPreparedStringForUpdate(stmt).toString();
 				for(Object obj : update.getColumnValues().values()) {
 					if(column.getColumnType().getGenericType().equals(DbGenericType.BOOLEAN)){						
 						Boolean bTrue = new Boolean((String)obj);
-						updateString = org.apache.commons.lang.StringUtils.replace(updateString, "?", bTrue ? "1" : "0");
+						sUpdate = org.apache.commons.lang.StringUtils.replace(sUpdate, "?", bTrue ? "1" : "0");
 					}
 					else {
-						updateString = org.apache.commons.lang.StringUtils.replace(updateString, "?", "'"+obj.toString()+"'");
+						sUpdate = org.apache.commons.lang.StringUtils.replace(sUpdate, "?", "'"+obj.toString()+"'");
 					}
 				}
-				return updateString;
+				return new PreparedString(sUpdate);
 			}
 			
-			
 		});
-		return sPlainUpdate;
+		return BatchImpl.simpleBatch(sPlainUpdate);
 	}
 
 
@@ -267,7 +234,7 @@ public class SybaseDbAccess extends TransactSqlDbAccess {
 		protected DbSequence getSequence(String sequenceName, String tableName) throws SQLException {
 			long startWith = 0L;
 			try {
-				startWith = SybaseDbAccess.this.getNextId(sequenceName);
+				startWith = executor.getNextId(sequenceName);
 			} catch (DbException e) {
 				log.warn("Could not determine next id for sequence " + sequenceName, e);
 			}

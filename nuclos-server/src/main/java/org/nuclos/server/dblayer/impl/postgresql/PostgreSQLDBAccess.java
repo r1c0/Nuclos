@@ -18,14 +18,11 @@ package org.nuclos.server.dblayer.impl.postgresql;
 
 import static org.nuclos.common2.StringUtils.join;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -38,51 +35,62 @@ import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbType;
-import org.nuclos.server.dblayer.impl.SQLUtils2;
+import org.nuclos.server.dblayer.IBatch;
+import org.nuclos.server.dblayer.IPreparedStringExecutor;
+import org.nuclos.server.dblayer.impl.BatchImpl;
+import org.nuclos.server.dblayer.impl.SqlSequentialUnit;
 import org.nuclos.server.dblayer.impl.standard.MetaDataSchemaExtractor;
 import org.nuclos.server.dblayer.impl.standard.StandardSqlDBAccess;
 import org.nuclos.server.dblayer.impl.util.PreparedString;
 import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
-import org.nuclos.server.dblayer.incubator.DbExecutor.ConnectionRunner;
 import org.nuclos.server.dblayer.incubator.DbExecutor.ResultSetRunner;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
-import org.nuclos.server.dblayer.statements.DbStatementVisitor;
 import org.nuclos.server.dblayer.structure.DbArtifact;
 import org.nuclos.server.dblayer.structure.DbCallable;
 import org.nuclos.server.dblayer.structure.DbColumn;
 import org.nuclos.server.dblayer.structure.DbColumnType;
-import org.nuclos.server.dblayer.structure.DbSimpleView;
 import org.nuclos.server.dblayer.structure.DbColumnType.DbGenericType;
 import org.nuclos.server.dblayer.structure.DbConstraint;
 import org.nuclos.server.dblayer.structure.DbConstraint.DbPrimaryKeyConstraint;
-import org.nuclos.server.dblayer.structure.DbSimpleView.DbSimpleViewColumn;
 import org.nuclos.server.dblayer.structure.DbIndex;
 import org.nuclos.server.dblayer.structure.DbNullable;
 import org.nuclos.server.dblayer.structure.DbSequence;
+import org.nuclos.server.dblayer.structure.DbSimpleView;
+import org.nuclos.server.dblayer.structure.DbSimpleView.DbSimpleViewColumn;
 import org.nuclos.server.dblayer.structure.DbTable;
-import org.postgresql.jdbc4.Jdbc4Connection;
 
+/**
+ * @author Thomas Pasch
+ * @since Nuclos 3.2.0
+ */
 public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 
 	public static final String AUTOSAVEPOINT = "autosavepoint";
 
+    private static final Logger LOG = Logger.getLogger(PostgreSQLDBAccess.class);
+
 	private boolean autoSavepoint = true;
+	
+	public PostgreSQLDBAccess() {
+	}
 	
 	@Override
 	public void init(DbType type, DataSource dataSource, Map<String, String> config) {
-		super.init(type, dataSource, config);
 		if (config.containsKey(AUTOSAVEPOINT)) {
 			autoSavepoint = Boolean.valueOf(config.get(AUTOSAVEPOINT));
 		}
 		if (autoSavepoint) {
-			log.info("Auto savepoint activated");
+			LOG.info("Auto savepoint activated");
 		}
+		this.executor = new PostgreSQLExecutor(dataSource, config.get(USERNAME), config.get(PASSWORD)); 
+		super.init(type, dataSource, config);
 	}
 	
 	@Override
@@ -92,14 +100,6 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 			return false;
 		}
 		return super.setStatementHint(stmt, hint, value);
-	}
-
-	@Override
-	public Long getNextId(String sequenceName) throws SQLException {
-		return executor.executeQuery("SELECT NEXTVAL('" + SQLUtils2.escape(sequenceName) + "')", new ResultSetRunner<Long>() {
-			@Override
-			public Long perform(ResultSet rs) throws SQLException { return rs.next() ? rs.getLong(1) : null; }
-		});
 	}
 
 	@Override
@@ -154,34 +154,38 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	protected List<String> getSqlForCreateIndex(DbIndex index) {
-		return Collections.singletonList(String.format("CREATE INDEX %s ON %s (%s)",
+	protected IBatch getSqlForCreateIndex(DbIndex index) {
+		return BatchImpl.simpleBatch(PreparedString.format("CREATE INDEX %s ON %s (%s)",
 			getName(index.getIndexName()),
 			getQualifiedName(index.getTableName()),
 			join(",", index.getColumnNames())));
 	}
 
 	@Override
-	protected List<String> getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) throws SQLException {
-		List<String> lstSQL = new ArrayList<String>();
-		String sColumnSpec = getColumnSpecForAlterTableColumn(column2, column1);
-		if(sColumnSpec == null)
-			return lstSQL;
-		lstSQL.add(String.format("ALTER TABLE %s %s",
-			getQualifiedName(column2.getTableName()),
-			sColumnSpec));
-		
-		if(column2.getDefaultValue() != null && column2.getNullable().equals(DbNullable.NOT_NULL)) {
-			String sPlainUpdate = getSqlForUpdateNotNullColumn(column2);
-
-			lstSQL.add(0, sPlainUpdate);
+	protected IBatch getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) throws SQLException {
+		final String sColumnSpec = getColumnSpecForAlterTableColumn(column2, column1);
+		final IBatch result;
+		if(sColumnSpec != null) {
+			final PreparedString ps = PreparedString.format("ALTER TABLE %s %s",
+				getQualifiedName(column2.getTableName()),
+				sColumnSpec);
+			
+			if(column2.getDefaultValue() != null && column2.getNullable().equals(DbNullable.NOT_NULL)) {
+				result = getSqlForUpdateNotNullColumn(column2);
+				result.append(new SqlSequentialUnit(ps));
+			}
+			else {
+				result = BatchImpl.simpleBatch(ps);
+			}
 		}
-		
-		return lstSQL;
+		else {
+			result = null;
+		}
+		return result;
 	}
 	
 	@Override
-	protected List<String> getSqlForAlterTableNotNullColumn(DbColumn column) {
+	protected IBatch getSqlForAlterTableNotNullColumn(DbColumn column) {
 		String columnSpec = String.format("ALTER %s TYPE %s",
 			column.getColumnName(),
 			getDataType(column.getColumnType()));
@@ -190,11 +194,11 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 			columnSpec += String.format(", ALTER %s %s NOT NULL",
 				column.getColumnName(), "SET");
 		
-		String str = String.format("ALTER TABLE %s %s",
+		PreparedString str = PreparedString.format("ALTER TABLE %s %s",
 			getQualifiedName(column.getTableName()),
 			columnSpec);
 		
-    	return Collections.singletonList(str);
+    	return BatchImpl.simpleBatch(str);
     }
 
 	@Override
@@ -225,8 +229,8 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	protected List<String> getSqlForDropColumn(DbColumn column) {
-		return Collections.singletonList(String.format("ALTER TABLE %s DROP COLUMN %s CASCADE",
+	protected IBatch getSqlForDropColumn(DbColumn column) {
+		return BatchImpl.simpleBatch(PreparedString.format("ALTER TABLE %s DROP COLUMN %s CASCADE",
 			getQualifiedName(column.getTableName()),
 			column.getColumnName()));
 	}
@@ -236,12 +240,12 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
      * 	Avoid whenever possible.
      */
     @Override
-    protected List<String> getSqlForCreateSimpleView(DbSimpleView view) throws DbException {
+    protected IBatch getSqlForCreateSimpleView(DbSimpleView view) throws DbException {
     	return _getSqlForCreateSimpleView("CREATE VIEW", view, "");
     }
     
 	@Override
-	protected List<String> getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView) {
+	protected IBatch getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView) {
 		if (!oldView.getViewName().equals(newView.getViewName())) {
 			throw new IllegalArgumentException();
 		}
@@ -275,15 +279,14 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 		return _getSqlForCreateSimpleView("CREATE OR REPLACE VIEW", newView, "");
 	}
 
-	private List<String> getSqlForAlterSimpleViewFallback(DbSimpleView oldView, DbSimpleView newView) {
-		final List<String> result = new ArrayList<String>();
-		result.addAll(getSqlForDropSimpleView(oldView));
-		result.addAll(getSqlForCreateSimpleView(newView));
+	private IBatch getSqlForAlterSimpleViewFallback(DbSimpleView oldView, DbSimpleView newView) {
+		final IBatch result = getSqlForDropSimpleView(oldView);
+		result.append(getSqlForCreateSimpleView(newView));
 		return result;
 	}
 	
 	@Override
-	protected List<String> getSqlForDropCallable(DbCallable callable) throws DbException {
+	protected IBatch getSqlForDropCallable(DbCallable callable) throws DbException {
 		String code = callable.getCode();
 		if (code == null)
 			throw new DbException("No code for callable " + callable.getCallableName());
@@ -295,7 +298,7 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 		boolean success = matcher.lookingAt();
 		if (!success)
 			throw new DbException("Cannot interpret header for callable " + callable.getCallableName());
-		return Collections.singletonList(String.format("DROP %s", matcher.group(1)));
+		return BatchImpl.simpleBatch(PreparedString.format("DROP %s", matcher.group(1)));
 	}
 
 	@Override
@@ -313,11 +316,11 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 	}
 	
 	@Override
-	protected DbStatementVisitor<Integer> createCommandVisitor() {
-		return new PostgreSQLStatementVisitor();
-	}
-
-	@Override
+    protected IPreparedStringExecutor getPreparedStringExecutor() {
+    	return new PostgreSQLPreparedStringExecutor(executor, autoSavepoint);
+    }
+    
+    @Override
 	protected MetaDataSchemaExtractor getMetaDataExtractor() {
 		return new PostgreSQLMetaData();
 	}
@@ -344,54 +347,6 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 		return StringUtils.nullIfEmpty(config.get(TABLESPACE));
 	}
 	
-	class PostgreSQLStatementVisitor extends StatementVisitor {
-
-		@Override
-		protected int executePreparedStatement(final PreparedString ps) throws SQLException {
-			return executor.execute(new ConnectionRunner<Integer>() {
-				@Override
-				public Integer perform(Connection conn) throws SQLException {
-					String sql = ps.toString();
-					Object[] params = ps.getParameters();
-
-					logSql("execute SQL statement", sql, params);
-
-					Jdbc4Connection pgsqlConn;
-					if (useSavepoint(conn) && (pgsqlConn = SQLUtils2.unwrap(conn, org.postgresql.jdbc4.Jdbc4Connection.class)) != null) {
-						log.trace("Create savepoint");
-						Savepoint savepoint = pgsqlConn.setSavepoint();
-						try {
-							return performImpl(conn, sql, params);
-						} catch (SQLException e) {
-							log.warn("Restore to savepoint because SQL failed with " + e.toString() + ":\n\t" + sql + "\n\t" + Arrays.asList(params));
-							pgsqlConn.rollback(savepoint);
-							throw e;
-						} finally {
-							log.trace("Release savepoint");
-							pgsqlConn.releaseSavepoint(savepoint);
-						}
-					} else {
-						return performImpl(conn, sql, params);
-					}
-				}
-				
-				private Integer performImpl(Connection conn, String sql, Object[] params) throws SQLException {
-					PreparedStatement stmt = conn.prepareStatement(sql);
-					try {
-						prepareStatementParameters(stmt, params);						
-						return stmt.executeUpdate();
-					} finally {
-						stmt.close();
-					}
-				}
-			});
-		}
-		
-		private boolean useSavepoint(Connection conn) throws SQLException {
-			return autoSavepoint && !conn.getAutoCommit() && (conn.getTransactionIsolation() != Connection.TRANSACTION_NONE);
-		}
-	}
-
 	static class PostgreSQLQueryBuilder extends StandardQueryBuilder {
 		
 		public PostgreSQLQueryBuilder(StandardSqlDBAccess dbAccess) {

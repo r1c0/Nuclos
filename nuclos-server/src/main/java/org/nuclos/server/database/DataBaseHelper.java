@@ -130,6 +130,9 @@ public class DataBaseHelper {
 		}
 	}
 
+	private DataBaseHelper() {
+	}
+
 	private static void executeSetupStatements(String type, List<DbStatement> stmts) throws Exception {
 		log.info("Starting " + type);
 		log.info(type + ": " + stmts.size() + " statement(s) to execute...");
@@ -203,12 +206,9 @@ public class DataBaseHelper {
 		}
 	}
 
-	private DataBaseHelper() {
-	}
-
 	public static Integer getNextIdAsInteger(String sSequenceName) {
 		try {
-			return getDbAccess().getNextId(sSequenceName).intValue();
+			return getDbAccess().getDbExecutor().getNextId(sSequenceName).intValue();
 		}
 		catch (SQLException e) {
 			// Wrap in non-check exception for convenience.

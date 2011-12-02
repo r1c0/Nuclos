@@ -89,10 +89,12 @@ import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;
+import org.nuclos.server.dblayer.IBatch;
 import org.nuclos.server.dblayer.expression.DbNull;
 import org.nuclos.server.dblayer.impl.SchemaUtils;
 import org.nuclos.server.dblayer.impl.util.PreparedString;
@@ -708,12 +710,14 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 		// Error handling
 		if(!dbchangeOkay) {
+			final DbAccess dbAccess = DataBaseHelper.getDbAccess();
 			if(updatedMDEntity.getId() != null) {
 				rollBackDBChanges(updatedTOEntity, toFields);
-				StringBuffer sb = new StringBuffer();
-				List<PreparedString> lstStrings = Collections.emptyList();
+				final StringBuffer sb = new StringBuffer();
+				List<String> lstStrings = Collections.emptyList();
 				try {
-					lstStrings = DataBaseHelper.getDbAccess().getPreparedSqlFor(lstDbChangesNotOkay.get(0));
+					final IBatch batch = dbAccess.getBatchFor(lstDbChangesNotOkay.get(0));
+					lstStrings = dbAccess.getStatementsForLogging(batch);
 				}
 				catch (SQLException e) {
 					sb.append("Failed on getPreparedSqlFor(" + lstDbChangesNotOkay.get(0) + "): " + e);
@@ -739,9 +743,10 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 					}
 				}
 				StringBuffer sb = new StringBuffer();
-				List<PreparedString> lstStrings = Collections.emptyList();
+				List<String> lstStrings = Collections.emptyList();
 				try {
-					lstStrings = DataBaseHelper.getDbAccess().getPreparedSqlFor(lstDbChangesNotOkay.get(0));
+					final IBatch batch = dbAccess.getBatchFor(lstDbChangesNotOkay.get(0));
+					lstStrings = dbAccess.getStatementsForLogging(batch);
 				}
 				catch (SQLException e) {
 					sb.append("Failed on getPreparedSqlFor(" + lstDbChangesNotOkay.get(0) + "): " + e);

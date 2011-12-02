@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,6 +37,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.sql.DataSource;
+
+import org.apache.log4j.Logger;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -46,20 +48,20 @@ import org.nuclos.server.dblayer.DbNotNullableException;
 import org.nuclos.server.dblayer.DbNotUniqueException;
 import org.nuclos.server.dblayer.DbReferentialIntegrityException;
 import org.nuclos.server.dblayer.DbStatementUtils;
+import org.nuclos.server.dblayer.DbType;
+import org.nuclos.server.dblayer.IBatch;
+import org.nuclos.server.dblayer.impl.BatchImpl;
 import org.nuclos.server.dblayer.impl.SQLUtils2;
+import org.nuclos.server.dblayer.impl.SqlSequentialUnit;
 import org.nuclos.server.dblayer.impl.standard.MetaDataSchemaExtractor;
 import org.nuclos.server.dblayer.impl.standard.StandardSqlDBAccess;
+import org.nuclos.server.dblayer.impl.util.PreparedString;
 import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 import org.nuclos.server.dblayer.incubator.DbExecutor.ResultSetRunner;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
-import org.nuclos.server.dblayer.statements.DbBatchStatement;
-import org.nuclos.server.dblayer.statements.DbDeleteStatement;
-import org.nuclos.server.dblayer.statements.DbInsertStatement;
-import org.nuclos.server.dblayer.statements.DbPlainStatement;
-import org.nuclos.server.dblayer.statements.DbStatementVisitor;
-import org.nuclos.server.dblayer.statements.DbStructureChange;
+import org.nuclos.server.dblayer.statements.AbstractDbStatementVisitor;
 import org.nuclos.server.dblayer.statements.DbUpdateStatement;
 import org.nuclos.server.dblayer.structure.DbArtifact;
 import org.nuclos.server.dblayer.structure.DbColumn;
@@ -75,18 +77,17 @@ import org.nuclos.server.dblayer.structure.DbTable;
 
 public class OracleDBAccess extends StandardSqlDBAccess {
 
+    private static final Logger LOG = Logger.getLogger(OracleDBAccess.class);
+
 	public OracleDBAccess() {
 	}
 
 	@Override
-	public Long getNextId(String sequenceName) throws SQLException {
-		return executor.executeQuery("SELECT " + sequenceName + ".NEXTVAL FROM DUAL",
-			new ResultSetRunner<Long>() {
-			@Override
-			public Long perform(ResultSet rs) throws SQLException { return rs.next() ? rs.getLong(1) : null; }
-		});
+	public void init(DbType type, DataSource dataSource, Map<String, String> config) {
+		this.executor = new OracleDBExecutor(dataSource, config.get(USERNAME), config.get(PASSWORD)); 
+		super.init(type, dataSource, config);
 	}
-
+	
 	@Override
 	public String generateName(String base, String...affixes) {
 		return generateName(30, base, affixes);
@@ -124,120 +125,72 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	protected void setStatementParameter(PreparedStatement stmt, int index, Object value, Class<?> javaType) throws SQLException {
-		if (javaType == Boolean.class) {
-			javaType = Integer.class;
-			if (value != null)
-				value = ((Boolean) value).booleanValue() ? 1 : 0;
-		}
-		super.setStatementParameter(stmt, index, value, javaType);
-	}
-
-	@Override
-	protected List<String> getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) throws SQLException {
-
-		List<String> lstSQL = new ArrayList<String>();
-		lstSQL.add(String.format("ALTER TABLE %s MODIFY (%s)",
+	protected IBatch getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) throws SQLException {
+		final PreparedString ps = PreparedString.format("ALTER TABLE %s MODIFY (%s)",
 			getQualifiedName(column2.getTableName()),
-			getColumnSpecForAlterTableColumn(column2, column1)));
-
+			getColumnSpecForAlterTableColumn(column2, column1));
+		final IBatch result;
 		if(column2.getDefaultValue() != null && column2.getNullable().equals(DbNullable.NOT_NULL)) {
-			String sPlainUpdate = getSqlForUpdateNotNullColumn(column2);
-
-			lstSQL.add(0, sPlainUpdate);
+			result = getSqlForUpdateNotNullColumn(column2);
+			result.append(new SqlSequentialUnit(ps));
 		}
-
-		return lstSQL;
+		else {
+			result = BatchImpl.simpleBatch(ps);
+		}
+		return result;
 	}
 
-
-
 	@Override
-	protected List<String> getSqlForAlterTableNotNullColumn(final DbColumn column) {
+	protected IBatch getSqlForAlterTableNotNullColumn(final DbColumn column) {
 		String columnSpec = String.format("%s %s NOT NULL", column.getColumnName(), getDataType(column.getColumnType()));
 
-		return Collections.singletonList(String.format("ALTER TABLE %s MODIFY (%s)",
+		return BatchImpl.simpleBatch(PreparedString.format("ALTER TABLE %s MODIFY (%s)",
 			getQualifiedName(column.getTableName()), columnSpec));
 	}
 
 	@Override
-	protected String getSqlForUpdateNotNullColumn(final DbColumn column) throws SQLException {
-		DbUpdateStatement stmt = DbStatementUtils.getDbUpdateStatementWhereFieldIsNull(getQualifiedName(column.getTableName()), column.getColumnName(), column.getDefaultValue());
-		final String sUpdate = this.getSqlForUpdate(stmt).get(0).toString();
+	protected IBatch getSqlForUpdateNotNullColumn(final DbColumn column) throws SQLException {
+		final DbUpdateStatement stmt = DbStatementUtils.getDbUpdateStatementWhereFieldIsNull(getQualifiedName(column.getTableName()), column.getColumnName(), column.getDefaultValue());
 
-		String sPlainUpdate = stmt.build().accept(new DbStatementVisitor<String>() {
-
+		final PreparedString sPlainUpdate = stmt.build().accept(new AbstractDbStatementVisitor<PreparedString>() {
 			@Override
-			public String visitBatch(DbBatchStatement batch) {
-				// only update in this context
-				return null;
-			}
-
-			@Override
-			public String visitDelete(DbDeleteStatement delete) {
-				// only update in this context
-				return null;
-			}
-
-			@Override
-			public String visitInsert(DbInsertStatement insert) {
-				// only update in this context
-				return null;
-			}
-
-			@Override
-			public String visitPlain(DbPlainStatement command) {
-				// only update in this context
-				return null;
-			}
-
-			@Override
-			public String visitStructureChange(DbStructureChange structureChange) {
-				// only update in this context
-				return null;
-			}
-
-			@Override
-			public String visitUpdate(DbUpdateStatement update) {
-				String updateString = new String(sUpdate);
+			public PreparedString visitUpdate(DbUpdateStatement update) {
+				String sUpdate = getPreparedStringForUpdate(stmt).toString();
 				for(Object obj : update.getColumnValues().values()) {
 					if(column.getColumnType().getGenericType().equals(DbGenericType.DATE) || column.getColumnType().getGenericType().equals(DbGenericType.DATETIME)){
 						String dateSql = new String("to_date('" + obj + "', 'yyyy.mm.dd')");
-						updateString = org.apache.commons.lang.StringUtils.replace(updateString, "?", dateSql);
+						sUpdate = org.apache.commons.lang.StringUtils.replace(sUpdate, "?", dateSql);
 					}
 					else if(column.getColumnType().getGenericType().equals(DbGenericType.BOOLEAN)){
 						Boolean bTrue = new Boolean((String)obj);
-						updateString = org.apache.commons.lang.StringUtils.replace(updateString, "?", bTrue ? "1" : "0");
+						sUpdate = org.apache.commons.lang.StringUtils.replace(sUpdate, "?", bTrue ? "1" : "0");
 					}
 					else if(column.getColumnType().getGenericType().equals(DbGenericType.NUMERIC)){
 						String numberSql = new String("to_number(" + obj + ")");
-						updateString = org.apache.commons.lang.StringUtils.replace(updateString, "?", numberSql);
+						sUpdate = org.apache.commons.lang.StringUtils.replace(sUpdate, "?", numberSql);
 					}
 					else {
-						updateString = org.apache.commons.lang.StringUtils.replace(updateString, "?", "'"+obj.toString()+"'");
+						sUpdate = org.apache.commons.lang.StringUtils.replace(sUpdate, "?", "'"+obj.toString()+"'");
 					}
 				}
-				return updateString;
+				return new PreparedString(sUpdate);
 			}
-
-
 		});
-		return sPlainUpdate;
+		return BatchImpl.simpleBatch(sPlainUpdate);
 	}
 
 	@Override
-	protected List<String> getSqlForAlterSequence(DbSequence sequence1, DbSequence sequence2) {
+	protected IBatch getSqlForAlterSequence(DbSequence sequence1, DbSequence sequence2) {
 		long restartWith = Math.max(sequence1.getStartWith(), sequence2.getStartWith());
 		// Oracle doesn't support sequence restarting, so drop and then (re-)create it
-		List<String> sql = new ArrayList<String>();
-		sql.addAll(getSqlForDropSequence(sequence1));
-		sql.addAll(getSqlForCreateSequence(new DbSequence(sequence2.getSequenceName(), restartWith)));
+		IBatch sql = getSqlForDropSequence(sequence1);
+		sql.append(getSqlForCreateSequence(new DbSequence(sequence2.getSequenceName(), restartWith)));
 		return sql;
 	};
 
 	@Override
-	protected List<String> getSqlForCreateIndex(DbIndex index) {
-		return Collections.singletonList(String.format("CREATE INDEX %s ON %s (%s) %s",
+	protected IBatch getSqlForCreateIndex(DbIndex index) {
+		return BatchImpl.simpleBatch(PreparedString.format("CREATE INDEX %s ON %s (%s) %s",
 			getQualifiedName(index.getIndexName()),
 			getQualifiedName(index.getTableName()),
 			join(",", index.getColumnNames()),
@@ -245,25 +198,25 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	protected List<String> getSqlForCreateSequence(DbSequence sequence) {
-		return Collections.singletonList(String.format(
+	protected IBatch getSqlForCreateSequence(DbSequence sequence) {
+		return BatchImpl.simpleBatch(PreparedString.format(
 			"CREATE SEQUENCE %s INCREMENT BY 1 MINVALUE 1 MAXVALUE 999999999 START WITH %d NOCYCLE NOORDER NOCACHE",
 			getQualifiedName(sequence.getSequenceName()), sequence.getStartWith()));
 	}
 
 	@Override
-	protected List<String> getSqlForDropTable(DbTable table) {
+	protected IBatch getSqlForDropTable(DbTable table) {
 		if (!table.isVirtual()) {
-			return Collections.singletonList(String.format("DROP TABLE %s PURGE",
+			return BatchImpl.simpleBatch(PreparedString.format("DROP TABLE %s PURGE",
 				getQualifiedName(table.getTableName())));
 		}
 		else {
-			return Collections.emptyList();
+			return null;
 		}
 	}
 
 	@Override
-	protected List<String> getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView) {
+	protected IBatch getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView) {
 		if (!oldView.getViewName().equals(newView.getViewName())) {
 			throw new IllegalArgumentException();
 		}
@@ -271,15 +224,15 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 	}
 	
 	@Override
-	protected List<String> getSqlForDropPrimaryKey(DbPrimaryKeyConstraint constraint) {
-		return Collections.singletonList(String.format("ALTER TABLE %s DROP CONSTRAINT %s CASCADE DROP INDEX",
+	protected IBatch getSqlForDropPrimaryKey(DbPrimaryKeyConstraint constraint) {
+		return BatchImpl.simpleBatch(PreparedString.format("ALTER TABLE %s DROP CONSTRAINT %s CASCADE DROP INDEX",
 			getQualifiedName(constraint.getTableName()),
 			constraint.getConstraintName()));
 	}
 
 	@Override
-	protected List<String> getSqlForDropUniqueConstraint(DbUniqueConstraint constraint) {
-		return Collections.singletonList(String.format("ALTER TABLE %s DROP CONSTRAINT %s CASCADE DROP INDEX",
+	protected IBatch getSqlForDropUniqueConstraint(DbUniqueConstraint constraint) {
+		return BatchImpl.simpleBatch(PreparedString.format("ALTER TABLE %s DROP CONSTRAINT %s CASCADE DROP INDEX",
 			getQualifiedName(constraint.getTableName()),
 			constraint.getConstraintName()));
 	}
@@ -488,7 +441,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 			}
 		} catch (Exception ex2) {
 			// log this exception...
-			log.warn("Exception thrown during wrapSQLException", ex2);
+			LOG.warn("Exception thrown during wrapSQLException", ex2);
 			// ...but throw the original SQLException
 		}
 		return super.wrapSQLException(id, message, ex);

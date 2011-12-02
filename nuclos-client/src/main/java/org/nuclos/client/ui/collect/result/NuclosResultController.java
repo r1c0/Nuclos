@@ -78,7 +78,6 @@ import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 
 /**

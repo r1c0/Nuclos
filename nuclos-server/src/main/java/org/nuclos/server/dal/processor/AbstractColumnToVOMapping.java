@@ -26,9 +26,9 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dblayer.expression.DbNull;
-import org.nuclos.server.dblayer.impl.standard.StandardSqlDBAccess;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
+import org.nuclos.server.dblayer.util.ServerCryptUtil;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.nuclos.server.report.ByteArrayCarrier;
 import org.nuclos.server.resource.valueobject.ResourceFile;
@@ -114,7 +114,7 @@ abstract class AbstractColumnToVOMapping<T> implements IColumnToVOMapping<T> {
 			if (value instanceof NuclosPassword)
 				return (S) value;
 			try {
-				return (S) new NuclosPassword(StandardSqlDBAccess.decrypt((String) value));
+				return (S) new NuclosPassword(ServerCryptUtil.decrypt((String) value));
 			} catch (SQLException e) {
 				throw new CommonFatalException(e);
 			}
@@ -144,7 +144,7 @@ abstract class AbstractColumnToVOMapping<T> implements IColumnToVOMapping<T> {
 			return new InternalTimestamp(((DateTime) value).getTime());
 		} else if (value instanceof NuclosPassword) {
 			try {
-				String encrypted = StandardSqlDBAccess.encrypt(((NuclosPassword) value).getValue());
+				String encrypted = ServerCryptUtil.encrypt(((NuclosPassword) value).getValue());
 				if (encrypted == null) {
 					return DbNull.forType(java.lang.String.class);
 				} else {

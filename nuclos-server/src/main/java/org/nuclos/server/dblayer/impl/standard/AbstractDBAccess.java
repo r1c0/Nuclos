@@ -18,12 +18,11 @@ package org.nuclos.server.dblayer.impl.standard;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
-import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
+import org.nuclos.server.dblayer.IBatch;
+import org.nuclos.server.dblayer.impl.BatchImpl;
 import org.nuclos.server.dblayer.impl.util.PreparedString;
 import org.nuclos.server.dblayer.statements.DbBatchStatement;
 import org.nuclos.server.dblayer.statements.DbDeleteStatement;
@@ -50,95 +49,97 @@ import org.nuclos.server.dblayer.structure.DbTable;
  * Abstract base class for {@link DbAccess} which should simplify an implementation.
  */
 public abstract class AbstractDBAccess extends DbAccess {
+	
+	protected static final IBatch[] EMPTY_IBATCH_ARRAY = new IBatch[0];
 
 	@Override
-	public List<PreparedString> getPreparedSqlFor(DbStatement stmt) throws SQLException {
+	public IBatch getBatchFor(DbStatement stmt) throws SQLException {
 		return stmt.build().accept(sqlForStatementVisitor);
 	}
 
-	protected final List<String> getSqlForCreate(DbArtifact artifact) {
+	protected final IBatch getSqlForCreate(DbArtifact artifact) {
 		return artifact.accept(sqlForCreateVisitor);
 	}
 
-	protected final List<String> getSqlForDrop(DbArtifact artifact) {
+	protected final IBatch getSqlForDrop(DbArtifact artifact) {
 		return artifact.accept(sqlForDropVisitor);
 	}
 
     public abstract String getSqlForConcat(String x, String y);
 
-	protected abstract List<PreparedString> getSqlForInsert(DbInsertStatement insertStmt);
+	protected abstract IBatch getSqlForInsert(DbInsertStatement insertStmt);
 
-	protected abstract List<PreparedString> getSqlForDelete(DbDeleteStatement deleteStmt);
+	protected abstract IBatch getSqlForDelete(DbDeleteStatement deleteStmt);
 
-	protected abstract List<PreparedString> getSqlForUpdate(DbUpdateStatement updateStmt);
+	protected abstract IBatch getSqlForUpdate(DbUpdateStatement updateStmt);
 
-	protected abstract List<String> getSqlForCreateTable(DbTable table);
+	protected abstract IBatch getSqlForCreateTable(DbTable table);
 
-	protected abstract List<String> getSqlForCreateColumn(DbColumn column) throws SQLException;
+	protected abstract IBatch getSqlForCreateColumn(DbColumn column) throws SQLException;
 
-	protected abstract List<String> getSqlForCreatePrimaryKey(DbPrimaryKeyConstraint constraint);
+	protected abstract IBatch getSqlForCreatePrimaryKey(DbPrimaryKeyConstraint constraint);
 
-	protected abstract List<String> getSqlForCreateForeignKey(DbForeignKeyConstraint constraint);
+	protected abstract IBatch getSqlForCreateForeignKey(DbForeignKeyConstraint constraint);
 
-	protected abstract List<String> getSqlForCreateUniqueConstraint(DbUniqueConstraint constraint);
+	protected abstract IBatch getSqlForCreateUniqueConstraint(DbUniqueConstraint constraint);
 
-	protected abstract List<String> getSqlForCreateIndex(DbIndex index);
+	protected abstract IBatch getSqlForCreateIndex(DbIndex index);
 
-	protected abstract List<String> getSqlForCreateSimpleView(DbSimpleView view);
+	protected abstract IBatch getSqlForCreateSimpleView(DbSimpleView view);
 
-	protected abstract List<String> getSqlForCreateSequence(DbSequence callable);
+	protected abstract IBatch getSqlForCreateSequence(DbSequence callable);
 
-	protected abstract List<String> getSqlForCreateCallable(DbCallable sequence);	
+	protected abstract IBatch getSqlForCreateCallable(DbCallable sequence);	
 
-	protected abstract List<String> getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) throws SQLException;
+	protected abstract IBatch getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) throws SQLException;
 	
-	protected abstract List<String> getSqlForAlterTableNotNullColumn(DbColumn column);
+	protected abstract IBatch getSqlForAlterTableNotNullColumn(DbColumn column);
 
-	protected abstract List<String> getSqlForAlterSequence(DbSequence sequence1, DbSequence sequence2);
+	protected abstract IBatch getSqlForAlterSequence(DbSequence sequence1, DbSequence sequence2);
 
-	protected abstract List<String> getSqlForDropTable(DbTable table);
+	protected abstract IBatch getSqlForDropTable(DbTable table);
 
-	protected abstract List<String> getSqlForDropColumn(DbColumn column);
+	protected abstract IBatch getSqlForDropColumn(DbColumn column);
 
-	protected abstract List<String> getSqlForDropPrimaryKey(DbPrimaryKeyConstraint constraint);
+	protected abstract IBatch getSqlForDropPrimaryKey(DbPrimaryKeyConstraint constraint);
 
-	protected abstract List<String> getSqlForDropForeignKey(DbForeignKeyConstraint constraint);
+	protected abstract IBatch getSqlForDropForeignKey(DbForeignKeyConstraint constraint);
 
-	protected abstract List<String> getSqlForDropUniqueConstraint(DbUniqueConstraint constraint);
+	protected abstract IBatch getSqlForDropUniqueConstraint(DbUniqueConstraint constraint);
 
-	protected abstract List<String> getSqlForDropIndex(DbIndex index);
+	protected abstract IBatch getSqlForDropIndex(DbIndex index);
 
-	protected abstract List<String> getSqlForDropSimpleView(DbSimpleView view);
+	protected abstract IBatch getSqlForDropSimpleView(DbSimpleView view);
 
-	protected abstract List<String> getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView);
+	protected abstract IBatch getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView);
 	
-	protected abstract List<String> getSqlForDropSequence(DbSequence sequence);
+	protected abstract IBatch getSqlForDropSequence(DbSequence sequence);
 
-	protected abstract List<String> getSqlForDropCallable(DbCallable callable);	
+	protected abstract IBatch getSqlForDropCallable(DbCallable callable);	
 
-	private final DbStatementVisitor<List<PreparedString>> sqlForStatementVisitor = new DbStatementVisitor<List<PreparedString>>() {
+	private final DbStatementVisitor<IBatch> sqlForStatementVisitor = new DbStatementVisitor<IBatch>() {
 
 		@Override
-		public List<PreparedString> visitStructureChange(DbStructureChange structureChange) throws SQLException {
+		public IBatch visitStructureChange(DbStructureChange structureChange) throws SQLException {
 			DbArtifact artifact1 = structureChange.getArtifact1();
 			DbArtifact artifact2 = structureChange.getArtifact2();
-			List<String> sqls;
+			final IBatch result;
 			switch (structureChange.getType()) {
 			case CREATE:
-				sqls = artifact2.accept(sqlForCreateVisitor);
+				result = artifact2.accept(sqlForCreateVisitor);
 				break;
 			case DROP:
-				sqls = artifact1.accept(sqlForDropVisitor);
+				result = artifact1.accept(sqlForDropVisitor);
 				break;
 			case MODIFY:
 				if (artifact1 instanceof DbColumn && artifact2 instanceof DbColumn) {
-					sqls = getSqlForAlterTableColumn((DbColumn) artifact1, (DbColumn) artifact2);
+					result = getSqlForAlterTableColumn((DbColumn) artifact1, (DbColumn) artifact2);
 				} else if (artifact1 instanceof DbColumn && artifact2 instanceof DbColumn) {
-					sqls = getSqlForAlterSequence((DbSequence) artifact1, (DbSequence) artifact2);
+					result = getSqlForAlterSequence((DbSequence) artifact1, (DbSequence) artifact2);
 				} else if (artifact1 instanceof DbSimpleView && artifact2 instanceof DbSimpleView) {
-					sqls = getSqlForAlterSimpleView((DbSimpleView) artifact1, (DbSimpleView) artifact2);
+					result = getSqlForAlterSimpleView((DbSimpleView) artifact1, (DbSimpleView) artifact2);
 				} else {
-					sqls = CollectionUtils.concat(
+					result = BatchImpl.concat(
 						artifact1.accept(sqlForDropVisitor),
 						artifact2.accept(sqlForCreateVisitor));
 				}
@@ -146,51 +147,47 @@ public abstract class AbstractDBAccess extends DbAccess {
 			default:
 				throw new IllegalArgumentException();
 			}
-			List<PreparedString> list = new ArrayList<PreparedString>();
-			for (String sql : sqls) {
-				list.add(new PreparedString(sql));
-			}
-			return list;				
+			return result;
 		}
 
 		@Override
-		public List<PreparedString> visitInsert(DbInsertStatement insert) {
+		public IBatch visitInsert(DbInsertStatement insert) {
 			return getSqlForInsert(insert);
 		}
 
 		@Override
-		public List<PreparedString> visitUpdate(DbUpdateStatement update) {
+		public IBatch visitUpdate(DbUpdateStatement update) {
 			return getSqlForUpdate(update);
 		}		
 
 		@Override
-		public List<PreparedString> visitDelete(DbDeleteStatement delete) {
+		public IBatch visitDelete(DbDeleteStatement delete) {
 			return getSqlForDelete(delete);
 		}
 
 		@Override
-		public List<PreparedString> visitPlain(DbPlainStatement command) {
-			return Collections.singletonList(new PreparedString(command.getSql()));
+		public IBatch visitPlain(DbPlainStatement command) {
+			return BatchImpl.simpleBatch(new PreparedString(command.getSql()));
 		}
 
 		@Override
-		public List<PreparedString> visitBatch(DbBatchStatement batch) throws SQLException {
-			List<PreparedString> list = new ArrayList<PreparedString>();
+		public IBatch visitBatch(DbBatchStatement batch) throws SQLException {
+			ArrayList<IBatch> list = new ArrayList<IBatch>();
 			for (DbStatement stmt : batch.getStatements()) {
-				list.addAll(stmt.accept(this));
+				list.add(stmt.accept(this));
 			}
-			return list;			
+			return BatchImpl.concat(list.toArray(EMPTY_IBATCH_ARRAY)); 			
 		}
 	};
 
-	private final DbArtifactVisitor<List<String>> sqlForCreateVisitor = new DbArtifactVisitor<List<String>>() {
+	private final DbArtifactVisitor<IBatch> sqlForCreateVisitor = new DbArtifactVisitor<IBatch>() {
 		@Override
-		public List<String> visitTable(DbTable table) throws DbException {
+		public IBatch visitTable(DbTable table) throws DbException {
 			return getSqlForCreateTable(table);
 		}
 
 		@Override
-		public List<String> visitColumn(DbColumn column) {
+		public IBatch visitColumn(DbColumn column) {
 			try {
 				return getSqlForCreateColumn(column);
 			} catch (SQLException e) {
@@ -199,84 +196,85 @@ public abstract class AbstractDBAccess extends DbAccess {
 		}
 
 		@Override
-		public List<String> visitPrimaryKeyConstraint(DbPrimaryKeyConstraint constraint) {
+		public IBatch visitPrimaryKeyConstraint(DbPrimaryKeyConstraint constraint) {
 			return getSqlForCreatePrimaryKey(constraint);
 		}
 
 		@Override
-		public List<String> visitForeignKeyConstraint(DbForeignKeyConstraint constraint) {
+		public IBatch visitForeignKeyConstraint(DbForeignKeyConstraint constraint) {
 			return getSqlForCreateForeignKey(constraint);
 		}
 
 		@Override
-		public List<String> visitUniqueConstraint(DbUniqueConstraint constraint) {
+		public IBatch visitUniqueConstraint(DbUniqueConstraint constraint) {
 			return getSqlForCreateUniqueConstraint(constraint);
 		}
 
 		@Override
-		public List<String> visitIndex(DbIndex index) throws DbException {
+		public IBatch visitIndex(DbIndex index) throws DbException {
 			return getSqlForCreateIndex(index);
 		}
 
 		@Override
-		public List<String> visitView(DbSimpleView view) throws DbException {
+		public IBatch visitView(DbSimpleView view) throws DbException {
 			return getSqlForCreateSimpleView(view);
 		}
 
 		@Override
-		public List<String> visitSequence(DbSequence sequence) throws DbException {
+		public IBatch visitSequence(DbSequence sequence) throws DbException {
 			return getSqlForCreateSequence(sequence);
 		}
 
 		@Override
-		public List<String> visitCallable(DbCallable callable) throws DbException {
+		public IBatch visitCallable(DbCallable callable) throws DbException {
 			return getSqlForCreateCallable(callable);
 		}
 	};
 
-	private final DbArtifactVisitor<List<String>> sqlForDropVisitor = new DbArtifactVisitor<List<String>>() {   		
+	private final DbArtifactVisitor<IBatch> sqlForDropVisitor = new DbArtifactVisitor<IBatch>() {  
+		
 		@Override
-		public List<String> visitTable(DbTable table) throws DbException {
+		public IBatch visitTable(DbTable table) throws DbException {
 			return getSqlForDropTable(table);
 		}
 
 		@Override
-		public List<String> visitColumn(DbColumn column) {
+		public IBatch visitColumn(DbColumn column) {
 			return getSqlForDropColumn(column);
 		}
 
 		@Override
-		public List<String> visitPrimaryKeyConstraint(DbPrimaryKeyConstraint constraint) {
+		public IBatch visitPrimaryKeyConstraint(DbPrimaryKeyConstraint constraint) {
 			return getSqlForDropPrimaryKey(constraint);
 		}
 
 		@Override
-		public List<String> visitForeignKeyConstraint(DbForeignKeyConstraint constraint) {
+		public IBatch visitForeignKeyConstraint(DbForeignKeyConstraint constraint) {
 			return getSqlForDropForeignKey(constraint);
 		}
 
 		@Override
-		public List<String> visitUniqueConstraint(DbUniqueConstraint constraint) {
+		public IBatch visitUniqueConstraint(DbUniqueConstraint constraint) {
 			return getSqlForDropUniqueConstraint(constraint);
 		}
 
 		@Override
-		public List<String> visitIndex(DbIndex index) throws DbException {
+		public IBatch visitIndex(DbIndex index) throws DbException {
 			return getSqlForDropIndex(index);
 		}
 
 		@Override
-		public List<String> visitView(DbSimpleView view) throws DbException {
+		public IBatch visitView(DbSimpleView view) throws DbException {
 			return getSqlForDropSimpleView(view);
 		}
 
 		@Override
-		public List<String> visitSequence(DbSequence sequence) throws DbException {
+		public IBatch visitSequence(DbSequence sequence) throws DbException {
 			return getSqlForDropSequence(sequence);
 		}
 
 		@Override
-		public List<String> visitCallable(DbCallable callable) throws DbException {
+		public IBatch visitCallable(DbCallable callable) throws DbException {
 			return getSqlForDropCallable(callable);
 		}
 	};	

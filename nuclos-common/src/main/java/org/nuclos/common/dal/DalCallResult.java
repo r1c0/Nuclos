@@ -39,7 +39,22 @@ public class DalCallResult implements Serializable {
 	
 	private List<DbException> lstException;
 	
+	private int numberOfDbChanges = -1;
+	
 	public DalCallResult() {
+	}
+	
+	public int getNumberOfDbChanges() {
+		return numberOfDbChanges;
+	}
+	
+	public void addToNumberOfDbChanges(int changes) {
+		if (numberOfDbChanges < 0) {
+			numberOfDbChanges = changes;
+		}
+		else {
+			numberOfDbChanges += changes;
+		}
 	}
 	
 	public void add(DalCallResult other) {
@@ -97,5 +112,18 @@ public class DalCallResult implements Serializable {
 	
 	public boolean hasException() {
 		return resultType == HAS_EXCEPTION;
+	}
+	
+	@Override 
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append("DalCallResult[ok=" + isOkay()).append(", changes=").append(numberOfDbChanges);
+		if (lstException != null && !lstException.isEmpty()) {
+			result.append(" " + lstException.size() + " db exceptions:\n");
+			for (DbException e: lstException) {
+				result.append("\n").append(e).append("\n");
+			}
+		}
+		return result.toString();
 	}
 }

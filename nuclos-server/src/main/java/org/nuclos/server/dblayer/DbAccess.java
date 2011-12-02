@@ -38,10 +38,12 @@ import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
+import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dblayer.impl.Base32;
 import org.nuclos.server.dblayer.impl.DataSourceExecutor;
+import org.nuclos.server.dblayer.impl.LogOnlyPreparedStringExecutor;
 import org.nuclos.server.dblayer.impl.util.PreparedString;
 import org.nuclos.server.dblayer.incubator.DbExecutor;
 import org.nuclos.server.dblayer.incubator.DbExecutor.ConnectionRunner;
@@ -67,7 +69,7 @@ public abstract class DbAccess {
 	public static final String TABLESPACE_INDEX = "tablespace.index";
 	public static final String STRUCTURE_CHANGELOG_DIR = "structure.changelog.dir";
 
-	protected final Logger log = Logger.getLogger(this.getClass());
+	private static final Logger LOG = Logger.getLogger(DbAccess.class);
 
 	protected DbType type;
 	protected String catalog = null;
@@ -96,19 +98,15 @@ public abstract class DbAccess {
 	public void init(DbType type, DataSource dataSource, Map<String, String> config) {
 		this.type = type;
 		this.config = new HashMap<String, String>(config);
-		this.executor = new DataSourceExecutor(dataSource, config.get(USERNAME), config.get(PASSWORD)); 
-		/*
-		{
-			@Override
-			protected DbException wrapSQLException(String message, SQLException ex) {
-				return DbAccess.this.wrapSQLException(message, ex);
-			}
-		};
-		 */
+		// this.executor = new DataSourceExecutor(dataSource, config.get(USERNAME), config.get(PASSWORD)); 
 		if (config.containsKey(STRUCTURE_CHANGELOG_DIR)) {
 			structureChangeLogDir = new File(config.get(STRUCTURE_CHANGELOG_DIR));
 		}
 		this.schema = resolveSchema(config);
+	}
+	
+	public final DbExecutor getDbExecutor() {
+		return executor;
 	}
 
 	protected String resolveSchema(Map<String, String> config) {
@@ -136,7 +134,7 @@ public abstract class DbAccess {
 						}
 						return resolvedSchemaName;
 	                } catch (SQLException e) {
-	            		log.error("resolveSchema failed with " + e.toString() + ":\n\t" + givenSchema);
+	            		LOG.error("resolveSchema failed with " + e.toString() + ":\n\t" + givenSchema);
 	                	throw e;
 					} finally {
 						rs.close();
@@ -144,14 +142,14 @@ public abstract class DbAccess {
 				}
 			});
 			if (resolvedSchema != null) {
-				log.info(String.format("Schema name resolved to '%s'", resolvedSchema));
+				LOG.info(String.format("Schema name resolved to '%s'", resolvedSchema));
 				return resolvedSchema;
 			} else {
-				log.error(String.format("Schema name '%s' not found", givenSchema));
+				LOG.error(String.format("Schema name '%s' not found", givenSchema));
 				return givenSchema;
 			}
 		} catch (SQLException e) {
-			log.warn("Exception during resolving schema names", e);
+			LOG.warn("Exception during resolving schema names", e);
 			return givenSchema;
 		}
 	}
@@ -182,6 +180,9 @@ public abstract class DbAccess {
 	// Statements
 	//
 
+	/**
+	 * @deprecated Use an IBatch for executing structural DB changes.
+	 */
 	public int execute(DbBuildableStatement statement) throws DbException {
 		return execute(Collections.singletonList(statement));
 	}
@@ -192,9 +193,14 @@ public abstract class DbAccess {
 	 * Note: This method may be overridden in order to support batch execution.
 	 * It is up to the implementation to find consecutive commands which
 	 * can be executed in as batch statements.
+	 * 
+	 * @deprecated Use an IBatch for executing structural DB changes.
 	 */
 	public abstract int execute(List<? extends DbBuildableStatement> statements) throws DbException;
 
+	/**
+	 * @deprecated Use an IBatch for executing structural DB changes.
+	 */
 	public final int execute(DbBuildableStatement statement1, DbBuildableStatement...statements) throws DbException {
 		return execute(CollectionUtils.asList(statement1, statements));
 	}
@@ -202,8 +208,6 @@ public abstract class DbAccess {
 	//
 	// Queries
 	//
-
-	public abstract Long getNextId(String sequenceName) throws SQLException;
 
 	public abstract DbQueryBuilder getQueryBuilder();
 
@@ -225,6 +229,18 @@ public abstract class DbAccess {
 
 	public abstract ResultVO executePlainQueryAsResultVO(String sql, int maxRows) throws DbException;
 
+	/**
+	 * @author Thomas Pasch
+	 * @since Nuclos 3.2.0
+	 */
+    public abstract DalCallResult executeBatch(final IBatch batch, EBatchType type);
+
+	/**
+	 * @author Thomas Pasch
+	 * @since Nuclos 3.2.0
+	 */
+    public abstract List<String> getStatementsForLogging(final IBatch batch);
+	
 	public abstract <T> T executeFunction(String functionName, Class<T> result, Object...args) throws DbException;
 
 	public abstract void executeProcedure(String procedureName, Object...args) throws DbException;
@@ -233,7 +249,7 @@ public abstract class DbAccess {
 	// Useful informational functions (e.g. for debugging) 
 	//
 
-	public abstract List<PreparedString> getPreparedSqlFor(DbStatement stmt) throws SQLException;
+	public abstract IBatch getBatchFor(DbStatement stmt) throws SQLException;
 
 	//
 	// Database schema metadata
@@ -330,40 +346,6 @@ public abstract class DbAccess {
 		return Base32.encode(b);
 	}
 
-	protected void logStructureChange(DbStructureChange command, String result) {
-		if (structureChangeLogDir == null)
-			return;
-		try {
-			Date date = new Date();
-			synchronized (DbAccess.class) {
-				if (!structureChangeLogDir.exists()) {
-					structureChangeLogDir.mkdirs();
-				}
-				PrintWriter w = new PrintWriter(
-					new FileWriter(new File(structureChangeLogDir, String.format("dbchanges-%tF.log", date)), true));
-				try {
-					w.println(String.format("---------- %1$tFT%1$tT ----------------------------", date));
-					w.println("-- " + command.accept(new StatementToStringVisitor()));
-					int i = 0;
-					for (PreparedString ps : getPreparedSqlFor(command)) {
-						w.println(ps.toString());
-						if (i++ > 0)
-							w.println();
-					}
-					if (result != null)
-						w.println("-- => " + result);
-					w.println();
-					w.flush();
-				} finally {
-					w.close();
-				}
-			}
-		} catch (Exception e) {
-			log.debug(e);
-			log.error("Exception during structure change logging: " + e);
-		}
-	}
-	
 	public abstract String getSelectSqlForColumn(String table, DbColumnType columnType, List<?> viewPattern);
 	
 	public String getWildcardLikeSearchChar() {

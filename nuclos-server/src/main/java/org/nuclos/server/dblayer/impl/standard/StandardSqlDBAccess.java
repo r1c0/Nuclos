@@ -20,6 +20,9 @@ import static org.nuclos.common.collection.CollectionUtils.getFirst;
 import static org.nuclos.common.collection.CollectionUtils.transform;
 import static org.nuclos.common2.StringUtils.join;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -29,7 +32,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,34 +47,33 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import org.nuclos.common.CryptUtil;
 import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.NuclosScript;
-import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.collection.TransformerUtils;
+import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.SystemFields;
-import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.StringUtils;
-import org.nuclos.server.common.ServerParameterProvider;
-import org.nuclos.server.dal.processor.jdbc.TableAliasSingleton;
+import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbIdent;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.DbTuple;
-import org.nuclos.server.dblayer.expression.DbCurrentDate;
-import org.nuclos.server.dblayer.expression.DbCurrentDateTime;
-import org.nuclos.server.dblayer.expression.DbId;
+import org.nuclos.server.dblayer.EBatchType;
+import org.nuclos.server.dblayer.IBatch;
+import org.nuclos.server.dblayer.IPreparedStringExecutor;
 import org.nuclos.server.dblayer.expression.DbIncrement;
 import org.nuclos.server.dblayer.expression.DbNull;
+import org.nuclos.server.dblayer.impl.BatchImpl;
+import org.nuclos.server.dblayer.impl.LogOnlyPreparedStringExecutor;
 import org.nuclos.server.dblayer.impl.SQLUtils2;
+import org.nuclos.server.dblayer.impl.StandardPreparedStringExecutor;
 import org.nuclos.server.dblayer.impl.util.DbTupleImpl;
 import org.nuclos.server.dblayer.impl.util.DbTupleImpl.DbTupleElementImpl;
-import org.nuclos.server.dblayer.impl.util.JDBCType;
 import org.nuclos.server.dblayer.impl.util.PreparedString;
 import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 import org.nuclos.server.dblayer.incubator.DbExecutor.ConnectionRunner;
@@ -84,6 +85,7 @@ import org.nuclos.server.dblayer.query.DbOrder;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.dblayer.query.DbSelection;
+import org.nuclos.server.dblayer.statements.AbstractDbStatementVisitor;
 import org.nuclos.server.dblayer.statements.DbBatchStatement;
 import org.nuclos.server.dblayer.statements.DbBuildableStatement;
 import org.nuclos.server.dblayer.statements.DbDeleteStatement;
@@ -111,6 +113,8 @@ import org.nuclos.server.dblayer.structure.DbSimpleView.DbSimpleViewColumn;
 import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.dblayer.structure.DbTableArtifact;
 import org.nuclos.server.dblayer.structure.DbTableType;
+import org.nuclos.server.dblayer.util.ServerCryptUtil;
+import org.nuclos.server.dblayer.util.StatementToStringVisitor;
 import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 
@@ -127,6 +131,9 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     protected StandardSqlDBAccess() {
     }
 
+	/**
+	 * @deprecated Use an IBatch for executing structural DB changes.
+	 */
 	@Override
 	public int execute(List<? extends DbBuildableStatement> statements) throws DbException {
 		int result = 0;
@@ -217,7 +224,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 			            setStatementHints(stmt, hints);
 			        }
 			        try {
-			            prepareStatementParameters(stmt, parameters);
+			            executor.prepareStatementParameters(stmt, parameters);
 			            ResultSet rs = stmt.executeQuery();
 			            try {
 			                return runner.perform(rs);
@@ -253,6 +260,18 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         }
         return false;
     }
+    
+    @Override
+    public DalCallResult executeBatch(final IBatch batch, EBatchType type) {
+    	return batch.process(getPreparedStringExecutor(), type);
+    }
+    
+    @Override
+    public List<String> getStatementsForLogging(final IBatch batch) {
+    	final LogOnlyPreparedStringExecutor ex = new LogOnlyPreparedStringExecutor();
+    	batch.process(ex, EBatchType.FAIL_NEVER);
+    	return ex.getStatements();
+    }
 
     @Override
     public <T> T executeFunction(String name, Class<T> resultType, Object...args) throws DbException {
@@ -275,9 +294,9 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 			    public T perform(Connection conn) throws SQLException {
 			        final CallableStatement stmt = conn.prepareCall(call);
 			        try {
-			            prepareStatementParameters(stmt, hasOut ? 2 : 1, Arrays.asList(args));
+			            executor.prepareStatementParameters(stmt, hasOut ? 2 : 1, Arrays.asList(args));
 			            if (hasOut)
-			                stmt.registerOutParameter(1, getPreferredSqlTypeFor(resultType));
+			                stmt.registerOutParameter(1, executor.getPreferredSqlTypeFor(resultType));
 			            stmt.execute();
 			            if (hasOut) {
 			                return getCallableResultValue(stmt, 1, resultType);
@@ -343,27 +362,6 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     		throw new IllegalStateException("This should never happend (must throw exception above).");
     	}
     	return result;
-    }
-
-    protected void logSql(String text, String sql, Object[] parameters) {
-    	StringBuilder sb = new StringBuilder(text);
-    	sb.append(" <[").append(sql.toString()).append("]>");
-    	if (parameters != null && parameters.length > 0) {
-    		sb.append(" with parameters [");
-    		for (int i = 0, n = parameters.length; i < n; i++) {
-    			if (i > 0) sb.append(", ");
-    			Object param = parameters[i];
-				sb.append(param);
-				if (param != null) {
-					Class<?> type = param.getClass();
-					if (type != DbNull.class) {
-						sb.append(" (").append(param.getClass().getName()).append(")");
-					}
-				}
-    		}
-    		sb.append("]");
-    	}
-        log.debug(sb.toString());
     }
 
     @Override
@@ -458,59 +456,12 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 		}
     }
 
-    protected void setStatementParameter(PreparedStatement stmt, int index, Object value, Class<?> javaType) throws SQLException {
-        if (value instanceof String) {
-            stmt.setString(index, (String) value);
-        } else if (value instanceof NuclosPassword) {
-            stmt.setString(index, encrypt(((NuclosPassword) value).getValue()));
-        } else if (value instanceof Integer) {
-            stmt.setInt(index, (Integer) value);
-        } else if (value instanceof Long) {
-            stmt.setLong(index, (Long) value);
-        } else if (value instanceof Boolean) {
-            stmt.setBoolean(index, (Boolean) value);
-        } else if (value instanceof Double) {
-            stmt.setDouble(index, (Double) value);
-        } else if (value instanceof BigDecimal) {
-            stmt.setBigDecimal(index, (BigDecimal) value);
-        } else if (value instanceof java.sql.Timestamp) {
-            stmt.setTimestamp(index, (java.sql.Timestamp) value);
-        } else if (value instanceof Date) {
-            if (javaType == InternalTimestamp.class) {
-                stmt.setTimestamp(index, new java.sql.Timestamp(((InternalTimestamp) value).getTime()));
-            } else {
-                stmt.setDate(index, new java.sql.Date(((Date) value).getTime()));
-            }
-        } else if (value instanceof byte[]) {
-            stmt.setBytes(index, (byte[]) value);
-        } else if (value == null) {
-            stmt.setNull(index, getPreferredSqlTypeFor(javaType));
-        } else if (value instanceof NuclosScript) {
-            stmt.setString(index, new XStream(new DomDriver("UTF-8")).toXML(value));
-        }else {
-            throw new SQLException("Java type " + javaType + " cannot be mapped to DB type");
-        }
-    }
-
-    protected int getPreferredSqlTypeFor(Class<?> javaType) throws DbException {
-        if (javaType == java.util.Date.class) {
-            javaType = java.sql.Date.class;
-        } else if (javaType == InternalTimestamp.class) {
-            javaType = java.sql.Timestamp.class;
-        } else if (javaType == NuclosPassword.class) {
-        	javaType = java.lang.String.class;
-        } else if (javaType == NuclosScript.class) {
-        	javaType = java.lang.String.class;
-        }
-        return JDBCType.getJDCBTypesForObjectType(javaType)[0].getSqlType();
-    }
-
     protected static <T> T getResultSetValue(ResultSet rs, int index, Class<T> javaType) throws SQLException {
         Object value;
         if (javaType == String.class) {
             value = rs.getString(index);
         } else if (javaType == NuclosPassword.class) {
-            value = new NuclosPassword(decrypt(rs.getString(index)));
+            value = new NuclosPassword(ServerCryptUtil.decrypt(rs.getString(index)));
         } else if (javaType == Double.class){
             value = rs.getDouble(index);
         } else if (javaType == Long.class){
@@ -548,7 +499,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         if(javaType == String.class) {
             value = stmt.getString(index);
         } else if (javaType == NuclosPassword.class) {
-            value = new NuclosPassword(decrypt(stmt.getString(index)));
+            value = new NuclosPassword(ServerCryptUtil.decrypt(stmt.getString(index)));
         } else if(javaType == Double.class){
             value = stmt.getDouble(index);
         } else if(javaType == Long.class){
@@ -618,8 +569,15 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         return new DbException(id, message, ex);
     }
 
+	/**
+	 * @deprecated Use an IBatch for executing structural DB changes.
+	 */
     protected DbStatementVisitor<Integer> createCommandVisitor() {
         return new StatementVisitor();
+    }
+    
+    protected IPreparedStringExecutor getPreparedStringExecutor() {
+    	return new StandardPreparedStringExecutor(executor);
     }
 
     protected abstract MetaDataSchemaExtractor getMetaDataExtractor();
@@ -800,29 +758,40 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         }
     }
 
+	/**
+	 * @deprecated Use an IBatch for executing structural DB changes.
+	 */
     public class StatementVisitor implements DbStatementVisitor<Integer> {
-
+    	
+    	private final EBatchType type;
+    	
+    	public StatementVisitor() {
+    		type = EBatchType.FAIL_LATE;
+    	}
+    	
         @Override
         public Integer visitInsert(final DbInsertStatement insertStmt) throws SQLException {
-            return executePreparedStatements(getPreparedSqlFor(insertStmt));
+            return executeBatch(getBatchFor(insertStmt), type).getNumberOfDbChanges();
         }
 
         @Override
         public Integer visitDelete(final DbDeleteStatement deleteStmt) throws SQLException {
-            return executePreparedStatements(getPreparedSqlFor(deleteStmt));
+            return executeBatch(getBatchFor(deleteStmt), type).getNumberOfDbChanges();
         }
 
         @Override
         public Integer visitUpdate(final DbUpdateStatement updateStmt) throws SQLException {
-            return executePreparedStatements(getPreparedSqlFor(updateStmt));
+            return executeBatch(getBatchFor(updateStmt), type).getNumberOfDbChanges();
         }
 
         @Override
         public Integer visitStructureChange(DbStructureChange command) throws SQLException {
             int result = -1;
             String message = "Unknown error";
+            final IBatch batch;
             try {
-                result = executePreparedStatements(getPreparedSqlFor(command));
+            	batch = getBatchFor(command);
+                result = executeBatch(batch, type).getNumberOfDbChanges();
                 message = "Success";
             } catch (SQLException e) {
                 message = "Error: " + e;
@@ -833,49 +802,51 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
             return result;
         }
 
+        /**
+         * @deprecated
+         */
+    	private void logStructureChange(DbStructureChange command, String result) {
+    		if (structureChangeLogDir == null)
+    			return;
+    		try {
+    			Date date = new Date();
+    			synchronized (DbAccess.class) {
+    				if (!structureChangeLogDir.exists()) {
+    					structureChangeLogDir.mkdirs();
+    				}
+    				PrintWriter w = new PrintWriter(
+    					new FileWriter(new File(structureChangeLogDir, String.format("dbchanges-%tF.log", date)), true));
+    				try {
+    					w.println(String.format("---------- %1$tFT%1$tT ----------------------------", date));
+    					w.println("-- " + command.accept(new StatementToStringVisitor()));
+    					int i = 0;
+    					final IBatch batch = getBatchFor(command);
+    					for (String ps : getStatementsForLogging(batch)) {
+    						w.println(ps);
+    						if (i++ > 0)
+    							w.println();
+    					}
+    					if (result != null)
+    						w.println("-- => " + result);
+    					w.println();
+    					w.flush();
+    				} finally {
+    					w.close();
+    				}
+    			}
+    		} catch (Exception e) {
+    			LOG.debug(e);
+    			LOG.error("Exception during structure change logging: " + e);
+    		}
+    	}
+    	
         @Override
         public Integer visitPlain(DbPlainStatement command) {
             try {
-				return executePreparedStatements(getPreparedSqlFor(command));
+				return executeBatch(getBatchFor(command), type).getNumberOfDbChanges();
 			} catch (SQLException e) {
 				throw wrapSQLException(null, "visitPlain fails on " + command, e);
 			}
-        }
-
-        protected Integer executePreparedStatements(List<PreparedString> pss) throws SQLException {
-            int result = 0;
-            for (PreparedString ps : pss)
-                result += executePreparedStatement(ps);
-            return result;
-        }
-
-        protected int executePreparedStatement(final PreparedString ps) throws SQLException {
-            if (!ps.hasParameters()) {
-                String sql = ps.toString();
-                logSql("execute SQL statement", sql, null);
-                return executor.executeUpdate(sql);
-            } else {
-                return executor.execute(new ConnectionRunner<Integer>() {
-                    @Override
-                    public Integer perform(Connection conn) throws SQLException {
-                        String sql = ps.toString();
-                        Object[] params = ps.getParameters();
-
-                        logSql("execute SQL statement", sql, params);
-
-                        PreparedStatement stmt = conn.prepareStatement(sql);
-                        try {
-                            prepareStatementParameters(stmt, params);
-                            return stmt.executeUpdate();
-                        } catch (SQLException e) {
-                    		LOG.error("executePreparedStatement failed with " + e.toString() + ":\n\t" + sql + "\n\t" + Arrays.asList(params));
-                        	throw e;
-                        } finally {
-                            stmt.close();
-                        }
-                    }
-                });
-            }
         }
 
         @Override
@@ -903,43 +874,6 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         }
     }
 
-    protected int prepareStatementParameters(PreparedStatement stmt, Object[] values) throws SQLException {
-        return prepareStatementParameters(stmt, 1, Arrays.asList(values));
-    }
-
-    protected int prepareStatementParameters(PreparedStatement stmt, int index, Iterable<Object> values) throws SQLException {
-        java.util.Date now = new java.util.Date();
-        for (Object param : values) {
-            if (param == null) {
-                // Note, db null values have to be wrapped as DbNull object
-                throw new IllegalArgumentException("Missing prepared statement parameter #" + index);
-            }
-            Class<?> javaType = param.getClass();
-            if (javaType == DbIncrement.class) {
-                // TODO: this behavior matches buildUpdateString but a better handling is required
-                continue;
-            } else if (javaType == DbId.class) {
-                DbId dbId = (DbId) param;
-                dbId.setIdValue(getNextId(((DbId) param).getSequenceName()));
-                param = dbId.getIdValue();
-                javaType = param.getClass();
-            } else if (javaType == DbCurrentDate.class) {
-                param = DateUtils.getPureDate(now);
-                javaType = param.getClass();
-            } else if (javaType == DbCurrentDateTime.class) {
-                param = new Timestamp(now.getTime());
-                javaType = param.getClass();
-            } else if (javaType == DbNull.class) {
-                javaType = ((DbNull<?>) param).getJavaType();
-                if (javaType == java.util.Date.class)
-                    javaType = java.sql.Date.class;
-                param = null;
-            }
-            setStatementParameter(stmt, index++, param, javaType);
-        }
-        return index;
-    }
-
     protected String getColumnSpecForAlterTableColumn(DbColumn column, DbColumn oldColumn) {
         return getColumnSpec(column, column.getNullable() != oldColumn.getNullable());
     }
@@ -965,37 +899,38 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     }
 
     @Override
-    protected List<PreparedString> getSqlForInsert(DbInsertStatement insertStmt) {
+    protected IBatch getSqlForInsert(DbInsertStatement insertStmt) {
         String sql = String.format("INSERT INTO %s (%s) VALUES (%s)",
             insertStmt.getTableName(),
             StringUtils.join(", ", insertStmt.getColumnValues().keySet()),
             StringUtils.join(", ", CollectionUtils.replicate("?", insertStmt.getColumnValues().size())));
         Object[] params = insertStmt.getColumnValues().values().toArray();
-        return Collections.singletonList(new PreparedString(sql, params));
+        return BatchImpl.simpleBatch(new PreparedString(sql, params));
     }
 
     @Override
-    public List<PreparedString> getSqlForDelete(DbDeleteStatement deleteStmt) {
+    public IBatch getSqlForDelete(DbDeleteStatement deleteStmt) {
         String sql = "DELETE FROM " + deleteStmt.getTableName();
         if (deleteStmt.getConditions() != null) {
             sql = sql + " WHERE " + buildWhereString(deleteStmt.getConditions().keySet());
         }
         Object[] params = deleteStmt.getConditions().values().toArray();
-        return Collections.singletonList(new PreparedString(sql, params));
+        return BatchImpl.simpleBatch(new PreparedString(sql, params));
     }
 
     @Override
-    public List<PreparedString> getSqlForUpdate(DbUpdateStatement updateStmt) {
-        String sql = String.format("UPDATE %s SET %s WHERE %s",
-            updateStmt.getTableName(),
-            buildUpdateString(updateStmt.getColumnValues()),
-            buildWhereString(updateStmt.getConditions()));
-
-        Object[] params = CollectionUtils.concat(
-            updateStmt.getColumnValues().values(),
-            updateStmt.getConditions().values()).toArray();
-        return Collections.singletonList(new PreparedString(sql, params));
+    public IBatch getSqlForUpdate(DbUpdateStatement updateStmt) {
+        return BatchImpl.simpleBatch(getPreparedStringForUpdate(updateStmt));
     }
+
+	protected PreparedString getPreparedStringForUpdate(DbUpdateStatement updateStmt) {
+		String sql = String.format("UPDATE %s SET %s WHERE %s", updateStmt.getTableName(),
+				buildUpdateString(updateStmt.getColumnValues()), buildWhereString(updateStmt.getConditions()));
+
+		Object[] params = CollectionUtils.concat(updateStmt.getColumnValues().values(),
+				updateStmt.getConditions().values()).toArray();
+		return new PreparedString(sql, params);
+	}
 
     private String buildWhereString(Collection<String> names) {
         if (names.isEmpty())
@@ -1037,103 +972,72 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     }
 
     @Override
-    protected List<String> getSqlForCreateTable(DbTable table) {
-        List<String> list = new ArrayList<String>();
+    protected IBatch getSqlForCreateTable(DbTable table) {
+        List<PreparedString> list = new ArrayList<PreparedString>();
         List<DbColumn> columns = table.getTableArtifacts(DbColumn.class);
-        if (!table.isVirtual()) {
-	        list.add(String.format("CREATE TABLE %s(\n%s\n) %s",
-	            getQualifiedName(table.getTableName()),
-	            join(",\n", transform(columns, new Transformer<DbColumn, String>() {
-	                @Override public String transform(DbColumn column) { return getColumnSpec(column, true); }
-	            })),
-	            getTablespaceSuffix(table)));
-        }
+		if (!table.isVirtual()) {
+			list.add(PreparedString.format("CREATE TABLE %s(\n%s\n) %s", getQualifiedName(table.getTableName()),
+					join(",\n", transform(columns, new Transformer<DbColumn, String>() {
+						@Override
+						public String transform(DbColumn column) {
+							return getColumnSpec(column, true);
+						}
+					})), 
+					getTablespaceSuffix(table)));
+		}
+		final IBatch result = BatchImpl.simpleBatch(list);
         for (DbTableArtifact tableArtifact : table.getTableArtifacts()) {
             if (!columns.contains(tableArtifact))
-                list.addAll(getSqlForCreate(tableArtifact));
+                result.append(getSqlForCreate(tableArtifact));
         }
-        return list;
+        return result;
     }
 
     @Override
-	protected abstract List<String> getSqlForAlterTableNotNullColumn(DbColumn column);
+	protected abstract IBatch getSqlForAlterTableNotNullColumn(DbColumn column);
 
     @Override
-    protected List<String> getSqlForCreateColumn(DbColumn column) throws SQLException {
-    	List<String> lstCreateColumn = new ArrayList<String>();
-    	lstCreateColumn.add(String.format("ALTER TABLE %s ADD %s",
+    protected IBatch getSqlForCreateColumn(DbColumn column) throws SQLException {
+    	final PreparedString ps = PreparedString.format("ALTER TABLE %s ADD %s",
             getQualifiedName(column.getTableName()),
-            getColumnSpec(column, true)));
+            getColumnSpec(column, true));
 
+    	final IBatch result;
     	if(column.getDefaultValue() != null && column.getNullable().equals(DbNullable.NOT_NULL)) {
-    		lstCreateColumn.clear();
-    		lstCreateColumn.add(String.format("ALTER TABLE %s ADD %s",
+    		PreparedString ps2 = PreparedString.format("ALTER TABLE %s ADD %s",
                 getQualifiedName(column.getTableName()),
-                getColumnSpecNullable(column)));
-
-    		String sPlainUpdate = getSqlForUpdateNotNullColumn(column);
-
-    		lstCreateColumn.add(sPlainUpdate);
-    		lstCreateColumn.addAll((getSqlForAlterTableNotNullColumn(column)));
+                getColumnSpecNullable(column));
+    		
+    		result = BatchImpl.simpleBatch(ps2);
+    		result.append(getSqlForUpdateNotNullColumn(column));
+    		result.append(getSqlForAlterTableNotNullColumn(column));
     	}
-
-    	return lstCreateColumn;
-
+    	else {
+    		result = BatchImpl.simpleBatch(ps);
+    	}
+    	return result;
     }
 
-	protected String getSqlForUpdateNotNullColumn(final DbColumn column) throws SQLException {
-		DbUpdateStatement stmt = DbStatementUtils.getDbUpdateStatementWhereFieldIsNull(getQualifiedName(column.getTableName()), column.getColumnName(), column.getDefaultValue());
-		final String sUpdate = this.getSqlForUpdate(stmt).get(0).toString();
+	protected IBatch getSqlForUpdateNotNullColumn(final DbColumn column) throws SQLException {
+		final DbUpdateStatement stmt = DbStatementUtils.getDbUpdateStatementWhereFieldIsNull(
+				getQualifiedName(column.getTableName()), column.getColumnName(), column.getDefaultValue());
 
-		String sPlainUpdate = stmt.build().accept(new DbStatementVisitor<String>() {
-
+		final PreparedString sPlainUpdate = stmt.build().accept(new AbstractDbStatementVisitor<PreparedString>() {
 			@Override
-			public String visitBatch(DbBatchStatement batch) {
-				// only update in this context
-				return null;
-			}
-
-			@Override
-			public String visitDelete(DbDeleteStatement delete) {
-				// only update in this context
-				return null;
-			}
-
-			@Override
-			public String visitInsert(DbInsertStatement insert) {
-				// only update in this context
-				return null;
-			}
-
-			@Override
-			public String visitPlain(DbPlainStatement command) {
-				// only update in this context
-				return null;
-			}
-
-			@Override
-			public String visitStructureChange(DbStructureChange structureChange) {
-				// only update in this context
-				return null;
-			}
-
-			@Override
-			public String visitUpdate(DbUpdateStatement update) {
-				String updateString = new String(sUpdate);
+			public PreparedString visitUpdate(DbUpdateStatement update) {
+				String sUpdate = getPreparedStringForUpdate(stmt).toString();
 				for(Object obj : update.getColumnValues().values()) {
-					updateString = org.apache.commons.lang.StringUtils.replace(updateString, "?", "'"+obj.toString()+"'");
+					sUpdate = org.apache.commons.lang.StringUtils.replace(sUpdate, "?", "'"+obj.toString()+"'");
 				}
-				return updateString;
+				return new PreparedString(sUpdate);
 			}
-
-
 		});
-		return sPlainUpdate;
+		return BatchImpl.simpleBatch(sPlainUpdate);
 	}
 
     @Override
-    protected List<String> getSqlForCreatePrimaryKey(DbPrimaryKeyConstraint constraint) {
-        return Collections.singletonList(String.format("ALTER TABLE %s ADD CONSTRAINT %s PRIMARY KEY (%s) %s",
+    protected IBatch getSqlForCreatePrimaryKey(DbPrimaryKeyConstraint constraint) {
+        return BatchImpl.simpleBatch(PreparedString.format("ALTER TABLE %s ADD CONSTRAINT %s PRIMARY KEY (%s) %s",
             getQualifiedName(constraint.getTableName()),
             constraint.getConstraintName(),
             join(",", constraint.getColumnNames()),
@@ -1141,8 +1045,8 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     }
 
     @Override
-    protected List<String> getSqlForCreateForeignKey(DbForeignKeyConstraint constraint) {
-        String sql = String.format("ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s)",
+    protected IBatch getSqlForCreateForeignKey(DbForeignKeyConstraint constraint) {
+    	String sql = String.format("ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s)",
             getQualifiedName(constraint.getTableName()),
             constraint.getConstraintName(),
             join(",", constraint.getColumnNames()),
@@ -1151,12 +1055,12 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         if (constraint.isOnDeleteCascade()) {
         	sql += " ON DELETE CASCADE";
         }
-        return Collections.singletonList(sql);
+        return BatchImpl.simpleBatch(new PreparedString(sql));
     }
 
     @Override
-    protected List<String> getSqlForCreateUniqueConstraint(DbUniqueConstraint constraint) {
-        return Collections.singletonList(String.format("ALTER TABLE %s ADD CONSTRAINT %s UNIQUE (%s) %s",
+    protected IBatch getSqlForCreateUniqueConstraint(DbUniqueConstraint constraint) {
+        return BatchImpl.simpleBatch(PreparedString.format("ALTER TABLE %s ADD CONSTRAINT %s UNIQUE (%s) %s",
             getQualifiedName(constraint.getTableName()),
             constraint.getConstraintName(),
             join(",", constraint.getColumnNames()),
@@ -1164,7 +1068,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     }
 
     @Override
-    protected abstract List<String> getSqlForCreateIndex(DbIndex index);
+    protected abstract IBatch getSqlForCreateIndex(DbIndex index);
 
     @Override
     public String getSelectSqlForColumn(String table, DbColumnType columnType, List<?> viewPattern) {
@@ -1189,11 +1093,11 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
      * 	Avoid whenever possible.
      */
     @Override
-    protected List<String> getSqlForCreateSimpleView(DbSimpleView view) throws DbException {
+    protected IBatch getSqlForCreateSimpleView(DbSimpleView view) throws DbException {
     	return _getSqlForCreateSimpleView("CREATE VIEW", view, "");
     }
     
-    protected List<String> _getSqlForCreateSimpleView(String prefix, DbSimpleView view, String suffix) throws DbException {
+    protected IBatch _getSqlForCreateSimpleView(String prefix, DbSimpleView view, String suffix) throws DbException {
     	final TableAliasForSimpleView aliasFactory = new TableAliasForSimpleView();
         final StringBuilder fromClause = new StringBuilder();
         fromClause.append(getName(view.getTableName()) + " " + SystemFields.BASE_ALIAS);
@@ -1212,7 +1116,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 					}
 				}))));
         }
-        return Collections.singletonList(String.format("%s %s(\n%s\n) AS SELECT\n%s\nFROM\n%s %s",
+        return BatchImpl.simpleBatch(PreparedString.format("%s %s(\n%s\n) AS SELECT\n%s\nFROM\n%s %s",
         	prefix,
             getQualifiedName(view.getViewName()),
             join(",\n", view.getViewColumnNames()),
@@ -1278,14 +1182,14 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     }
 
     @Override
-    protected List<String> getSqlForCreateSequence(DbSequence sequence) {
-        return Collections.singletonList(String.format(
+    protected IBatch getSqlForCreateSequence(DbSequence sequence) {
+        return BatchImpl.simpleBatch(PreparedString.format(
             "CREATE SEQUENCE %s INCREMENT BY 1 MINVALUE 1 MAXVALUE 999999999 START WITH %d NO CYCLE",
             getQualifiedName(sequence.getSequenceName()), sequence.getStartWith()));
     }
 
     @Override
-    protected List<String> getSqlForCreateCallable(DbCallable callable) throws DbException {
+    protected IBatch getSqlForCreateCallable(DbCallable callable) throws DbException {
         String code = callable.getCode();
         if (code == null)
             throw new DbException("No code for callable " + callable.getCallableName());
@@ -1297,83 +1201,83 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         boolean success = matcher.lookingAt();
         if (!success)
             throw new DbException("Cannot interpret header for callable " + callable.getCallableName());
-        return Collections.singletonList(String.format("CREATE %s %s %s",
+        return BatchImpl.simpleBatch(PreparedString.format("CREATE %s %s %s",
             callable.getType(),
             getQualifiedName(callable.getCallableName()),
             code.substring(matcher.group().length())));
     }
 
     @Override
-    protected abstract List<String> getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) throws SQLException;
+    protected abstract IBatch getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) throws SQLException;
 
     @Override
-    protected List<String> getSqlForAlterSequence(DbSequence sequence1, DbSequence sequence2) {
+    protected IBatch getSqlForAlterSequence(DbSequence sequence1, DbSequence sequence2) {
         long restartWith = Math.max(sequence1.getStartWith(), sequence2.getStartWith());
-        return Collections.singletonList(String.format("ALTER SEQUENCE %s RESTART WITH %s",
+        return BatchImpl.simpleBatch(PreparedString.format("ALTER SEQUENCE %s RESTART WITH %s",
             getQualifiedName(sequence2.getSequenceName()),
             restartWith));
     }
 
     @Override
-    protected List<String> getSqlForDropTable(DbTable table) {
+    protected IBatch getSqlForDropTable(DbTable table) {
     	if (!table.isVirtual()) {
-	        return Collections.singletonList(String.format("DROP TABLE %s",
+	        return BatchImpl.simpleBatch(PreparedString.format("DROP TABLE %s",
 	            getQualifiedName(table.getTableName())));
     	}
     	else {
-    		return Collections.emptyList();
+    		return null;
     	}
     }
 
     @Override
-    protected List<String> getSqlForDropColumn(DbColumn column) {
-        return Collections.singletonList(String.format("ALTER TABLE %s DROP COLUMN %s",
+    protected IBatch getSqlForDropColumn(DbColumn column) {
+        return BatchImpl.simpleBatch(PreparedString.format("ALTER TABLE %s DROP COLUMN %s",
             getQualifiedName(column.getTableName()),
             column.getColumnName()));
     }
 
     @Override
-    protected List<String> getSqlForDropPrimaryKey(DbPrimaryKeyConstraint constraint) {
-        return Collections.singletonList(String.format("ALTER TABLE %s DROP CONSTRAINT %s",
+    protected IBatch getSqlForDropPrimaryKey(DbPrimaryKeyConstraint constraint) {
+        return BatchImpl.simpleBatch(PreparedString.format("ALTER TABLE %s DROP CONSTRAINT %s",
             getQualifiedName(constraint.getTableName()),
             constraint.getConstraintName()));
     }
 
     @Override
-    protected List<String> getSqlForDropForeignKey(DbForeignKeyConstraint constraint) {
-        return Collections.singletonList(String.format("ALTER TABLE %s DROP CONSTRAINT %s",
+    protected IBatch getSqlForDropForeignKey(DbForeignKeyConstraint constraint) {
+        return BatchImpl.simpleBatch(PreparedString.format("ALTER TABLE %s DROP CONSTRAINT %s",
             getQualifiedName(constraint.getTableName()),
             constraint.getConstraintName()));
     }
 
     @Override
-    protected List<String> getSqlForDropUniqueConstraint(DbUniqueConstraint constraint) {
-        return Collections.singletonList(String.format("ALTER TABLE %s DROP CONSTRAINT %s",
+    protected IBatch getSqlForDropUniqueConstraint(DbUniqueConstraint constraint) {
+        return BatchImpl.simpleBatch(PreparedString.format("ALTER TABLE %s DROP CONSTRAINT %s",
             getQualifiedName(constraint.getTableName()),
             constraint.getConstraintName()));
     }
 
     @Override
-    protected List<String> getSqlForDropIndex(DbIndex index) {
-        return Collections.singletonList(String.format("DROP INDEX %s",
+    protected IBatch getSqlForDropIndex(DbIndex index) {
+        return BatchImpl.simpleBatch(PreparedString.format("DROP INDEX %s",
             getQualifiedName(index.getIndexName())));
     }
 
     @Override
-    protected List<String> getSqlForDropSimpleView(DbSimpleView view) {
-        return Collections.singletonList(String.format("DROP VIEW %s",
+    protected IBatch getSqlForDropSimpleView(DbSimpleView view) {
+        return BatchImpl.simpleBatch(PreparedString.format("DROP VIEW %s",
             getQualifiedName(view.getViewName())));
     }
 
     @Override
-    protected List<String> getSqlForDropSequence(DbSequence sequence) {
-        return Collections.singletonList(String.format("DROP SEQUENCE %s",
+    protected IBatch getSqlForDropSequence(DbSequence sequence) {
+        return BatchImpl.simpleBatch(PreparedString.format("DROP SEQUENCE %s",
             getQualifiedName(sequence.getSequenceName())));
     }
 
     @Override
-    protected List<String> getSqlForDropCallable(DbCallable callable) {
-        return Collections.singletonList(String.format("DROP %s %s",
+    protected IBatch getSqlForDropCallable(DbCallable callable) {
+        return BatchImpl.simpleBatch(PreparedString.format("DROP %s %s",
             callable.getType(),
             getQualifiedName(callable.getCallableName())));
     }
@@ -1411,34 +1315,4 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         }
     }
 
-    private static byte[] getCipher() throws SQLException {
-        String cipher = StringUtils.nullIfEmpty(ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_CIPHER));
-        if(cipher == null)
-            return null;
-
-        if(cipher.length() != 32)
-        	throw new SQLException("Server parameter " + ParameterProvider.KEY_CIPHER + " illegal, length != 32 - unable to en-/decrypt fields");
-
-        return CryptUtil.fromHex(cipher);
-    }
-
-    public static String encrypt(String s) throws SQLException {
-    	if(s == null)
-    		return null;
-
-    	byte[] b = getCipher();
-    	if(b != null)
-    		s = CryptUtil.encryptAESHex(s, b);
-        return s;
-    }
-
-    public static String decrypt(String s) throws SQLException {
-    	if(s == null)
-    		return null;
-
-    	byte[] b = getCipher();
-    	if(b != null)
-    		s = CryptUtil.decryptAESHex(s, b);
-        return s;
-    }
 }

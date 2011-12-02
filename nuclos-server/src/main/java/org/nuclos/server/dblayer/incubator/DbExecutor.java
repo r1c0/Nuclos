@@ -17,16 +17,19 @@
 package org.nuclos.server.dblayer.incubator;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.nuclos.server.dblayer.DbException;
 
 /**
  * Generic low-level interface for performing actions on the database.  
  */
 public interface DbExecutor {
-	
+
 	public static interface ConnectionRunner<T> {
-		
+
 		/**
 		 * Performs a generic action on the given connection. The connection should closed
 		 * by this method.
@@ -36,7 +39,7 @@ public interface DbExecutor {
 	}
 
 	public static interface ResultSetRunner<T> {
-		
+
 		/**
 		 * Performs a generic action on the given result set. The result should not closed by
 		 * this method. 
@@ -44,10 +47,28 @@ public interface DbExecutor {
 		 */
 		T perform(ResultSet rs) throws SQLException;
 	}
-		
+
 	int executeUpdate(String sql) throws SQLException;
-	
+
 	<T> T executeQuery(String sql, ResultSetRunner<T> runner) throws SQLException;
-	
+
 	<T> T execute(ConnectionRunner<T> runner) throws SQLException;
+	
+	// 
+
+	int prepareStatementParameters(PreparedStatement stmt, Object[] values) throws SQLException;
+
+    int prepareStatementParameters(PreparedStatement stmt, int index, Iterable<Object> values) throws SQLException;
+    
+    void setStatementParameter(PreparedStatement stmt, int index, Object value, Class<?> javaType) throws SQLException;
+
+    Long getNextId(String sequenceName) throws SQLException;
+    
+    int getPreferredSqlTypeFor(Class<?> javaType) throws DbException;
+    
+    /**
+     * @deprecated
+     */
+	void release();
+	
 }

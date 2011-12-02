@@ -60,4 +60,5 @@ public class DbBatchStatement extends DbStatement {
 	public <T> T accept(DbStatementVisitor<T> visitor) throws SQLException {
 		return visitor.visitBatch(this);
 	}
+
 }

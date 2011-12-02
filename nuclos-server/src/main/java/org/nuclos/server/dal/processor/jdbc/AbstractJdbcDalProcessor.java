@@ -42,7 +42,9 @@ import org.nuclos.server.dal.processor.AbstractDalProcessor;
 import org.nuclos.server.dal.processor.ColumnToRefFieldVOMapping;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
+import org.nuclos.server.dblayer.IBatch;
 import org.nuclos.server.dblayer.expression.DbNull;
 import org.nuclos.server.dblayer.impl.util.PreparedString;
 import org.nuclos.server.dblayer.query.DbCondition;
@@ -334,21 +336,23 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 	}
 
 	private List<String> getLogStatements(DbStatement stmt) {
-		List<PreparedString> statements = null;
+		List<String> statements = null;
 		try {
-			statements = DataBaseHelper.getDbAccess().getPreparedSqlFor(stmt);
+			final DbAccess dbAccess = DataBaseHelper.getDbAccess();
+			final IBatch batch = dbAccess.getBatchFor(stmt);
+			statements = dbAccess.getStatementsForLogging(batch);
 		} catch (SQLException e) {
 			LOG.warn("getLogStatements failed", e);
 		}
-		if (statements == null)
-			return null;
-
+		return statements;
+		/*
 		return CollectionUtils.transform(statements, new Transformer<PreparedString, String>() {
 			@Override
 			public String transform(PreparedString ps) {
 				return ps.toString() + " <[" + Arrays.toString(ps.getParameters()) + "]>";
 			}
 		});
+		*/
 	}
 
    // TODO:
