@@ -509,19 +509,20 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 		else {
 			assert iIndex == -1;
 
+			// Do not warn here! Values are lazy loaded and in some special cases a combobox for non referencing fields is used.
 			// issue warning:
-			final StringBuilder sbWarning = new StringBuilder("Wert in Dropdownliste nicht gefunden: " + clctfValue);
+//			final StringBuilder sbWarning = new StringBuilder("Wert in Dropdownliste nicht gefunden: " + clctfValue);
 			Object oValueId = null;
 			if (clctfValue.isIdField()) {
 				oValueId = clctfValue.getValueId();
 				// sbWarning.append(" (Id: ").append(oValueId).append(")");
-				sbWarning.append(" (Id: ");
-				sbWarning.append(oValueId);
-				sbWarning.append(", ");
-				sbWarning.append(clctfValue.toDescription());
-				sbWarning.append(")");
+//				sbWarning.append(" (Id: ");
+//				sbWarning.append(oValueId);
+//				sbWarning.append(", ");
+//				sbWarning.append(clctfValue.toDescription());
+//				sbWarning.append(")");
 			}
-			LOG.warn(sbWarning.toString());
+//			LOG.warn(sbWarning.toString());
 
 			if (isInsertable() && (oValueId == null) && (clctfValue.getValue() != null)) {
 				final String sText = clctfValue.toString();

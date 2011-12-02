@@ -33,6 +33,7 @@ import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.Icons;
@@ -52,6 +53,8 @@ import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
  */
 
 public class LabeledComboBox extends LabeledComponent {
+	
+	private static final Logger LOG = Logger.getLogger(LabeledComboBox.class);
 	
 	public static final Dimension DEFAULT_PREFERRED_SIZE = (new JTextField()).getPreferredSize();
 	
@@ -139,7 +142,10 @@ public class LabeledComboBox extends LabeledComponent {
 			}
 		}
 		
-		
+		@Override
+		public void setEnabled(boolean b) {
+			// ignore !!!
+		}
 	};
 	private final JTextField cmbbxTextField = (JTextField) cmbbx.getEditor().getEditorComponent();
 
@@ -162,7 +168,7 @@ public class LabeledComboBox extends LabeledComponent {
 		this.cmbbx.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				tfDisabled.setText(cmbbxTextField.getText());
+				transferToDisabled();
 			}
 		});
 	}
@@ -199,14 +205,38 @@ public class LabeledComboBox extends LabeledComponent {
 			if (blnControlsEnabled) {
 				replaceControl(tfDisabled, cmbbx);
 			} else {
+				transferToDisabled();
 				replaceControl(cmbbx, tfDisabled);
 			}
 		}
+	}
+	
+	private void transferToDisabled() {
+		final String text;
+		if (cmbbx.getSelectedItem() != null) {
+			text = cmbbx.getSelectedItem().toString();
+		} else {
+			text = cmbbxTextField.getText();
+		}
+		LOG.debug("Transfer Text id=" + cmbbx.getName() + ", text=" + text);
+		tfDisabled.setText(text);
 	}
 
 	@Override
 	protected void setControlsEditable(boolean bEditable) {
 		this.getJComboBox().setEditable(bEditable);
+	}
+
+	@Override
+	public void addMouseListenerToHiddenComponents(MouseListener l) {
+		tfDisabled.addMouseListener(l);
+		cmbbx.addMouseListener(l);
+	}
+
+	@Override
+	public void removeMouseListenerFromHiddenComponents(MouseListener l) {
+		tfDisabled.removeMouseListener(l);
+		cmbbx.removeMouseListener(l);
 	}
 
 	@Override

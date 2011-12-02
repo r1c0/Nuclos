@@ -47,6 +47,7 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPane
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGValuelistProvider;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIYWYGProperty;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRules;
+import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -392,8 +393,15 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 		MouseListener[] oldListeners = component.getMouseListeners();
 		for (MouseListener l : oldListeners) {
 			component.removeMouseListener(l);
+			if (component instanceof LabeledComponent) {
+				((LabeledComponent) component).removeMouseListenerFromHiddenComponents(l);
+			}
 		}
 		component.addMouseListener(this);
+		if (component instanceof LabeledComponent) {
+			((LabeledComponent) component).addMouseListenerToHiddenComponents(this);
+		}
+		
 		for (Component c : component.getComponents()) {
 			c.addMouseListener(this);
 			if (c instanceof Container) {

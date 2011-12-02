@@ -20,6 +20,7 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.MouseListener;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -81,6 +82,12 @@ public abstract class LabeledComponent extends JPanel {
 	@Override
 	public void requestFocus() {
 		this.getControlComponent().requestFocusInWindow();
+	}
+	
+	public void addMouseListenerToHiddenComponents(MouseListener l) {
+	}
+	
+	public void removeMouseListenerFromHiddenComponents(MouseListener l) {
 	}
 
 	protected final void addControl(JComponent comp) {
