@@ -890,7 +890,15 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 			});
 	   }
 	   for (final DetailsSubFormController<CollectableEntityObject> subformctl : this.getSubFormControllersInDetails()) {
-		   if (clct.getId() == null) {
+		   //by object generation
+		   DependantMasterDataMap dependants = clct.getDependantMasterDataMap();
+		   if(clct.getId() == null && dependants.getAllData().size() != 0){
+			   final MasterDataSubFormController mdsubformctl = (MasterDataSubFormController) subformctl;
+			   for (String entity: dependants.getEntityNames())
+					if (entity.equals(mdsubformctl.getCollectableEntity().getName()))
+						mdsubformctl.fillSubForm(dependants.getData(entity));
+			}
+			else if (clct.getId() == null) {
 			   final MasterDataSubFormController mdsubformctl = (MasterDataSubFormController) subformctl;
 			   mdsubformctl.clear();
 			   mdsubformctl.fillSubForm(new ArrayList<EntityObjectVO>());

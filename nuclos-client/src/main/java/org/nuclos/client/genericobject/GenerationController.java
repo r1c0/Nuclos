@@ -83,6 +83,7 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.genericobject.ejb3.GenerationResult;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 
@@ -502,7 +503,10 @@ public class GenerationController {
 		else {
 			final MasterDataCollectController mdclct = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(pane, metaVO.getEntity(), null);
 			CollectableEOEntity meta = new CollectableEOEntity(metaVO, mpFields);
-			mdclct.runNewWith(new CollectableMasterDataWithDependants(meta, DalSupportForMD.getMasterDataWithDependantsVO(result)));
+			CollectableMasterDataWithDependants clctmdwd = new CollectableMasterDataWithDependants(meta, DalSupportForMD.getMasterDataWithDependantsVO(result));
+			final DependantMasterDataMap deps = result.getDependants();
+			clctmdwd.setDependantMasterDataMap(deps);
+			mdclct.runNewWith(clctmdwd);
 			mdclct.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW_CHANGED);
 			MainFrame.setSelectedTab(mdclct.getFrame());
 			SwingUtilities.invokeLater(new Runnable() {
