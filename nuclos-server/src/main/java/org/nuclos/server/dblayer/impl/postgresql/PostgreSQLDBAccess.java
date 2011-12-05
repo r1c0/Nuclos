@@ -271,6 +271,12 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 		if (!oldView.getViewName().equals(newView.getViewName())) {
 			throw new IllegalArgumentException();
 		}
+		if (!existsTableOrView(newView.getViewName())) {
+			// view does not exist any more (PostgreSQL sometimes drops views when underlying
+			// tables have been modified.) (tp)
+			return getSqlForAlterSimpleViewFallback(oldView, newView);
+		}
+
 		// http://www.postgresql.org/docs/9.1/static/sql-createview.html
 		// Create or replace is very restricted...
 		

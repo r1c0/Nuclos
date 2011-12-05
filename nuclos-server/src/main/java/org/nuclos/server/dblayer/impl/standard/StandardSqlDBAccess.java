@@ -314,30 +314,30 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 		}
     }
     
-    protected List<String> getColumns(final String tableOrView) {
-        try {
- 			return executor.execute(new ConnectionRunner<List<String>>() {
- 			    @Override
- 			    public List<String> perform(Connection conn) throws SQLException {
- 			        final DatabaseMetaData meta = conn.getMetaData();
- 			        // we NEED  toLowerCase() here, at least for PostgreSQL (tp)
- 			        final ResultSet columns = meta.getColumns(null, null, tableOrView.toLowerCase(), "%");
- 			        final List<String> result = new ArrayList<String>();
- 			        while (columns.next()) {
- 			        	result.add(columns.getString("COLUMN_NAME"));
- 			        }
- 			        if (result.size() == 0) {
- 			        	throw new IllegalArgumentException("Table " + tableOrView + " with no columns?");
- 			        }
- 			        return result;
- 			    }
- 			});
- 		} catch (SQLException e) {
-     		LOG.error("getColumns failed with " + e.toString());
-     		throw wrapSQLException(null, "getColumns failed", e);
- 		}
-    }
-    
+	protected List<String> getColumns(final String tableOrView) {
+		try {
+			return executor.execute(new ConnectionRunner<List<String>>() {
+				@Override
+				public List<String> perform(Connection conn) throws SQLException {
+					final DatabaseMetaData meta = conn.getMetaData();
+					// we NEED  toLowerCase() here, at least for PostgreSQL (tp)
+					final ResultSet columns = meta.getColumns(catalog, schema, tableOrView.toLowerCase(), "%");
+					final List<String> result = new ArrayList<String>();
+					while (columns.next()) {
+						result.add(columns.getString("COLUMN_NAME"));
+					}
+					if (result.size() == 0) {
+						throw new IllegalArgumentException("Table " + tableOrView + " with no columns?");
+					}
+					return result;
+				}
+			});
+		} catch (SQLException e) {
+			LOG.error("getColumns failed with " + e.toString());
+			throw wrapSQLException(null, "getColumns failed", e);
+		}
+	}
+
     protected List<DbSimpleViewColumn> ensureNaturalSequence(DbSimpleView view, List<DbSimpleViewColumn> columns) {
     	final int size = columns.size();
     	final List<DbSimpleViewColumn> result = new ArrayList<DbSimpleView.DbSimpleViewColumn>(size);
@@ -360,6 +360,23 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     	}
     	return result;
     }
+
+	protected boolean existsTableOrView(final String tableOrView) {
+		try {
+			return executor.execute(new ConnectionRunner<Boolean>() {
+				@Override
+				public Boolean perform(Connection conn) throws SQLException {
+					final DatabaseMetaData meta = conn.getMetaData();
+					// we NEED  toLowerCase() here, at least for PostgreSQL (tp)
+					final ResultSet columns = meta.getTables(catalog, schema, tableOrView.toLowerCase(), null);
+					return Boolean.valueOf(columns.next());
+				}
+			});
+		} catch (SQLException e) {
+			LOG.error("existsTableOrView failed with " + e.toString());
+			throw wrapSQLException(null, "existsTableOrView failed", e);
+		}
+	}
 
     @Override
     public Set<String> getTableNames(final DbTableType tableType) throws DbException {
