@@ -41,14 +41,14 @@ public class BatchImpl implements IBatch {
 		if (sequence == null || sequence.isEmpty()) {
 			return null;
 		}
-		return new BatchImpl(Collections.<IUnit>singletonList(new SqlSequentialUnit(sequence)));
+		return new BatchImpl(CollectionUtils.<IUnit>newOneElementArrayList(new SqlSequentialUnit(sequence)));
 	}
 	
 	public static BatchImpl simpleBatch(PreparedString sequence) {
 		if (sequence == null) {
 			return null;
 		}
-		return new BatchImpl(Collections.<IUnit>singletonList(new SqlSequentialUnit(sequence)));
+		return new BatchImpl(CollectionUtils.<IUnit>newOneElementArrayList(new SqlSequentialUnit(sequence)));
 	}
 	
 	public static IBatch concat(IBatch... bs) {
