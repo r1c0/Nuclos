@@ -805,8 +805,11 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
             final IBatch batch;
             try {
             	batch = getBatchFor(command);
-                result = executeBatch(batch, type).getNumberOfDbChanges();
-                message = "Success";
+            	// sometimes (i.e. for creating virtual entities, there is no SQL to execute, hence...
+            	if (batch != null) {
+            		result = executeBatch(batch, type).getNumberOfDbChanges();
+            	}
+        		message = "Success";
             } catch (SQLException e) {
                 message = "Error: " + e;
                 throw e;
