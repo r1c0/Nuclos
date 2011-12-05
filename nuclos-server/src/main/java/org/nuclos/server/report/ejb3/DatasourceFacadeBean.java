@@ -233,7 +233,7 @@ public Collection<DatasourceVO> getDatasourcesForCurrentUser() {
     * @return new datasource
     */
    @Override
-public DatasourceVO create(DatasourceVO datasourcevo, List<String> lstUsedDatasources) 
+public DatasourceVO create(DatasourceVO datasourcevo, List<String> lstUsedDatasources)
 		throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException {
    	datasourcevo.validate();
    	updateValidFlag(datasourcevo);
@@ -1134,6 +1134,9 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
 				sValue = "123434";
 			}
 			result.put(paramvo.getParameter(), sValue);
+			if (paramvo.getValueListProvider() != null) {
+				result.put(paramvo.getParameter() + "Id", "123434");
+			}
 		}
 
 		return result;
