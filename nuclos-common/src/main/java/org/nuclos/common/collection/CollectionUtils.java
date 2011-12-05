@@ -55,6 +55,18 @@ public class CollectionUtils {
 
    private CollectionUtils() {
    }
+   
+   public static <T> List<T> newOneElementArrayList(T t) {
+	   final List<T> result = new ArrayList<T>(1);
+	   result.add(t);
+	   return result;
+   }
+
+   public static <T> List<T> newOneElementLinkedList(T t) {
+	   final List<T> result = new LinkedList<T>();
+	   result.add(t);
+	   return result;
+   }
 
    /**
     * @param coll

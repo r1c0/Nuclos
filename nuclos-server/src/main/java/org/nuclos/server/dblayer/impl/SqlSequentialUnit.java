@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.server.dblayer.EBatchType;
 import org.nuclos.server.dblayer.IPreparedStringExecutor;
@@ -43,7 +44,7 @@ public class SqlSequentialUnit implements IUnit {
 	}
 	
 	public SqlSequentialUnit(PreparedString sequence) {
-		this(Collections.singletonList(sequence));
+		this(CollectionUtils.newOneElementArrayList(sequence));
 	}	
 
 	@Override
@@ -60,7 +61,7 @@ public class SqlSequentialUnit implements IUnit {
 					result.addBusinessException(null, Collections.singletonList(ps.toString()), e);
 				}
 				else {
-					if (debug) LOG.debug("Ignored exception: " + e + " while executing " + ps);
+					if (debug) LOG.info("Ignored exception: " + e + " while executing " + ps);
 				}
 				switch (type)  {
 					case FAIL_EARLY:

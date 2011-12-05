@@ -93,7 +93,6 @@ import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;
 import org.nuclos.server.dblayer.IBatch;
 import org.nuclos.server.dblayer.expression.DbCurrentDateTime;
 import org.nuclos.server.dblayer.impl.SchemaUtils;
-import org.nuclos.server.dblayer.impl.util.PreparedString;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;

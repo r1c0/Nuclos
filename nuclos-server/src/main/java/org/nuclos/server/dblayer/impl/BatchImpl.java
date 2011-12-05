@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.server.dblayer.EBatchType;
 import org.nuclos.server.dblayer.IBatch;
@@ -84,6 +85,10 @@ public class BatchImpl implements IBatch {
 	public BatchImpl(List<IUnit> units) {
 		if (units == null) throw new NullPointerException();
 		this.units = units;
+	}
+	
+	public BatchImpl(IUnit unit) {
+		this(CollectionUtils.newOneElementArrayList(unit));
 	}
 	
 	@Override

@@ -17,8 +17,6 @@
 package org.nuclos.server.dblayer;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -27,7 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,21 +39,16 @@ import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dblayer.impl.Base32;
-import org.nuclos.server.dblayer.impl.DataSourceExecutor;
-import org.nuclos.server.dblayer.impl.LogOnlyPreparedStringExecutor;
-import org.nuclos.server.dblayer.impl.util.PreparedString;
 import org.nuclos.server.dblayer.incubator.DbExecutor;
 import org.nuclos.server.dblayer.incubator.DbExecutor.ConnectionRunner;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.dblayer.statements.DbBuildableStatement;
 import org.nuclos.server.dblayer.statements.DbStatement;
-import org.nuclos.server.dblayer.statements.DbStructureChange;
 import org.nuclos.server.dblayer.structure.DbArtifact;
 import org.nuclos.server.dblayer.structure.DbColumnType;
 import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.dblayer.structure.DbTableType;
-import org.nuclos.server.dblayer.util.StatementToStringVisitor;
 import org.nuclos.server.report.valueobject.ResultVO;
 
 

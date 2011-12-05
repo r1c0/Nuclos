@@ -31,6 +31,23 @@ import org.nuclos.server.dblayer.incubator.DbExecutor.ConnectionRunner;
 import org.postgresql.jdbc4.Jdbc4Connection;
 
 /**
+ * With PostgreSQL transaction are marked for roll-back if a structural change (i.e. DDL)
+ * statement fails. This is in contrast to most other SQL implementation.
+ * <p>
+ * Von: Oliver Horn <oliver.horn@hs500.hostedoffice.ag><br/>
+ * Betreff: Re: AW: FW: Nucletimport - kritischer Fehler<br/>
+ * Datum: 12. Oktober 2010 17:11:53 MESZ<br/>
+ * </p><p>
+ * Bzgl. NUCLOSINT-718: das die Transaktion unbrauchbar wird, wenn ein Fehler auftritt, ist
+ * das übliche Verhalten von PostgreSQL.  Will man, wie in Oracle etc. üblich, mit dem Stand
+ * vor dem fehlerhaften Statement weiterarbeiten, muss man dies in PostgreSQL selbst über
+ * Savepoints regeln.
+ * </p><p>
+ * Habe für DDL/DML, die über den DB-Adapter gehen, eine entsprechende Behandlung eingebaut.
+ * Diese muss momentan noch über die nuclos-server.properties aktiviert werden
+ * (DB.autosavepoint=true). Falls keine Nebeneffekte auftreten, mache ich das später zum
+ * Standardverhalten.
+ * </p>
  * @author Thomas Pasch
  * @since Nuclos 3.2.0
  */

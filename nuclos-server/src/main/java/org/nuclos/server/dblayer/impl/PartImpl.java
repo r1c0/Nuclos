@@ -18,6 +18,7 @@ package org.nuclos.server.dblayer.impl;
 
 import java.util.List;
 
+import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.server.dblayer.EBatchType;
 import org.nuclos.server.dblayer.IPart;
 import org.nuclos.server.dblayer.impl.util.PreparedString;
@@ -40,6 +41,10 @@ public class PartImpl implements IPart {
 		this.nextPartHandling = nextPartHandling;
 	}
 
+	public PartImpl(PreparedString statement, EBatchType batchType, NextPartHandling nextPartHandling) {
+		this(CollectionUtils.newOneElementArrayList(statement), batchType, nextPartHandling);
+	}
+	
 	@Override
 	public List<PreparedString> getStatements() {
 		return statements;

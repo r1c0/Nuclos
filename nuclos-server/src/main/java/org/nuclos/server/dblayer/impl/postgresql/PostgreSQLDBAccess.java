@@ -40,9 +40,13 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbType;
+import org.nuclos.server.dblayer.EBatchType;
 import org.nuclos.server.dblayer.IBatch;
+import org.nuclos.server.dblayer.IPart.NextPartHandling;
 import org.nuclos.server.dblayer.IPreparedStringExecutor;
 import org.nuclos.server.dblayer.impl.BatchImpl;
+import org.nuclos.server.dblayer.impl.PartImpl;
+import org.nuclos.server.dblayer.impl.SqlConditionalUnit;
 import org.nuclos.server.dblayer.impl.SqlSequentialUnit;
 import org.nuclos.server.dblayer.impl.standard.MetaDataSchemaExtractor;
 import org.nuclos.server.dblayer.impl.standard.StandardSqlDBAccess;
@@ -244,6 +248,24 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
     	return _getSqlForCreateSimpleView("CREATE VIEW", view, "");
     }
     
+    /**
+     * With PostgreSQL views sometimes get deleted when one of the underlying tables
+     * is alter. Because of this drop not always succeed. Hence we <em>ignore</em> any
+     * problem when dropping a view.
+     * 
+     * @author Thomas Pasch
+     * @since Nuclos 3.2.0
+     */
+    @Override
+    protected IBatch getSqlForDropSimpleView(DbSimpleView view) {
+    	final PartImpl part = new PartImpl(PreparedString.format("DROP VIEW %s",
+                getQualifiedName(view.getViewName())), 
+                EBatchType.FAIL_NEVER_IGNORE_EXCEPTION, NextPartHandling.ALWAYS);
+    	return new BatchImpl(new SqlConditionalUnit(part));
+        // return BatchImpl.simpleBatch(PreparedString.format("DROP VIEW %s",
+    	// getQualifiedName(view.getViewName())));
+    }
+
 	@Override
 	protected IBatch getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView) {
 		if (!oldView.getViewName().equals(newView.getViewName())) {
