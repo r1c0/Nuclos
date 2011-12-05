@@ -358,9 +358,6 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     		// We only get here if we can't find the column
     		throw new IllegalStateException("Can't find column " + n + " of " + view + " in " + columns);
     	}
-    	if (result.size() != size) {
-    		throw new IllegalStateException("This should never happend (must throw exception above).");
-    	}
     	return result;
     }
 
