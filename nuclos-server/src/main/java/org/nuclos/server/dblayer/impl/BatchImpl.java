@@ -106,7 +106,7 @@ public class BatchImpl implements IBatch {
 		if (batch != null) {
 			final List<IUnit> units = batch.getUnits();
 			if (units != null) {
-				units.addAll(units);
+				this.units.addAll(units);
 			}
 		}
 	}
