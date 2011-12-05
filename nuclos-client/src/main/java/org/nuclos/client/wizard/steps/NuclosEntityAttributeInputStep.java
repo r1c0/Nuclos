@@ -366,6 +366,8 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 	@Override
 	public void prepare() {
 		super.prepare();
+		this.entityModel = this.model.getAttributeModel();
+		
 		if(this.model.isEditMode() || (this.model.getAttributeModel() != null && this.model.getAttributeModel().getAttributes().size() > 0)) {
 			EntityAttributeTableModel tableModel = (EntityAttributeTableModel)tblAttributes.getModel();
 			List<Attribute> lstAttribute = this.model.getAttributeModel().getAttributes();
