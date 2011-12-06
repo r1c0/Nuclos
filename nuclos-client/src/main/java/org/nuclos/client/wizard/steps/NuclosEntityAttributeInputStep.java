@@ -315,7 +315,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 				showNuclosEntityAttributeWizard(attr, true, selected);
 			}
 		});
-		
+
 		panelAttributes = new JPanel();
 		double sizePanel [][] = {{TableLayout.FILL, 3, 20}, {20,20,3,20,3,TableLayout.FILL}};
 		panelAttributes.setLayout(new TableLayout(sizePanel));
@@ -328,7 +328,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 		panelAttributes.add(scrolPane, "0,0, 0,5");
 		panelAttributes.add(btUp, "2,1");
 		panelAttributes.add(btDown, "2,3");
-		
+
 		btUp.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -342,7 +342,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 				buttonDownAttributeAction();
 			}
 		});
-		
+
 		this.add(panelAttributes, new TableLayoutConstraints(0, 0, 4, 0));
 		this.add(btnNewAttribute, "0,1");
 		this.add(btnDropAttribute, "1,1");
@@ -367,7 +367,8 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 	public void prepare() {
 		super.prepare();
 		this.entityModel = this.model.getAttributeModel();
-		
+		this.tblAttributes.setModel(this.entityModel);
+
 		if(this.model.isEditMode() || (this.model.getAttributeModel() != null && this.model.getAttributeModel().getAttributes().size() > 0)) {
 			EntityAttributeTableModel tableModel = (EntityAttributeTableModel)tblAttributes.getModel();
 			List<Attribute> lstAttribute = this.model.getAttributeModel().getAttributes();
@@ -458,7 +459,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 		if(model.isStateModel())
 			sorter.setComparator(9, new StringComparator());
     }
-	
+
 	private void buttonDownAttributeAction() {
 		int iSelected = tblAttributes.getSelectedRow();
 		if(iSelected < 0 || iSelected >= entityModel.getRowCount()-1)
@@ -766,7 +767,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 	        return o1.getName().compareTo(o2.getName());
         }
 	}
-	
+
 	public class TableRowTransferHandler extends TransferHandler {
 		private JTable table = null;
 
@@ -840,11 +841,11 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 		}
 
 	}
-	
+
 	private static class IndexTransferable implements Transferable {
-		
+
 		final Integer index;
-		
+
 		public IndexTransferable(Integer index) {
 			this.index = index;
 		}
@@ -860,7 +861,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 				return true;
 			return false;
 		}
-		
+
 		@Override
 		public Object getTransferData(DataFlavor fl) {
 		    if (indexFlavor.equals(fl)) {
@@ -869,7 +870,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 		    return null;
 		}
 	}
-	
+
 	public static final DataFlavor indexFlavor = new DataFlavor(Integer.class, "index");
 	private static final DataFlavor[] flavors = new DataFlavor[] {indexFlavor};
 
