@@ -269,7 +269,9 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     @Override
     public List<String> getStatementsForLogging(final IBatch batch) {
     	final LogOnlyPreparedStringExecutor ex = new LogOnlyPreparedStringExecutor();
-    	batch.process(ex, EBatchType.FAIL_NEVER);
+    	// Sometimes (e.g. for creating a virtual entity), there is no SQL to execute. (tp)
+    	if (batch != null)
+    		batch.process(ex, EBatchType.FAIL_NEVER);
     	return ex.getStatements();
     }
 
