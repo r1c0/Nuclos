@@ -452,7 +452,7 @@ public class MainController {
 	private Action cmdShowTimelimitTasks = new AbstractAction(
 		CommonLocaleDelegate.getMessage("miShowTimelimitTasks","Fristen anzeigen"),
 		Icons.getInstance().getIconTabTimtlimit()) {
-		
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			MainController.this.getTaskController().getTimelimitTaskController().cmdShowTimelimitTasks();
@@ -1145,19 +1145,19 @@ public class MainController {
 	void setupMenus() {
 		setupMenuBar();
 	}
-	
+
 	public static final String GENERIC_ENTITY_ACTION = "nuclosGenericEntityAction";
 	public static final String GENERIC_COMMAND_ACTION = "nuclosGenericCommandAction";
 	public static final String GENERIC_CUSTOMCOMPONENT_ACTION = "nuclosGenericCustomComponentAction";
 	public static final String GENERIC_SEARCHFILTER_ACTION = "nuclosGenericSearchFilterAction";
 	public static final String GENERIC_RESTORE_WORKSPACE_ACTION = "nuclosGenericRestoreWorkspaceAction";
-	
+
 	public List<GenericAction> getGenericActions() {
 		List<GenericAction> result = new ArrayList<GenericAction>();
-		
+
 		getAdministrationMenuActions(result);
 		getConfigurationMenuActions(result);
-		
+
 		List<GenericAction> sortedResult = new ArrayList<GenericAction>();
 		getEntityMenuActions(sortedResult);
 		getCustomComponentMenuActions(sortedResult);
@@ -1174,13 +1174,13 @@ public class MainController {
 			}
 		});
 		result.addAll(sortedResult);
-		
+
 		addSearchFilterActions(result);
 		WorkspaceChooserController.addGenericActions(result);
-		
+
 		return result;
 	}
-	
+
 	private void addGenericCommandAction(List<GenericAction> genericActions, String command, Action act, String[] menuPath) {
 		if (genericActions != null && act != null) {
 			WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
@@ -1189,7 +1189,7 @@ public class MainController {
 			genericActions.add(new GenericAction(wa, new ActionWithMenuPath(menuPath, act)));
 		}
 	}
-	
+
 	public List<Pair<String[], Action>> getAdministrationMenuActions() {
 		return getAdministrationMenuActions(null);
 	}
@@ -1218,7 +1218,7 @@ public class MainController {
 	public List<Pair<String[], Action>> getConfigurationMenuActions() {
 		return getConfigurationMenuActions(null);
 	}
-	
+
 	private List<Pair<String[], Action>> getConfigurationMenuActions(List<GenericAction> genericActions) {
 		List<Pair<String[], Action>> menuActions = new ArrayList<Pair<String[],Action>>();
 
@@ -1261,7 +1261,7 @@ public class MainController {
 			}
 		}
 	}
-	
+
 	public List<Pair<String[], Action>> getEntityMenuActions() {
 		return getEntityMenuActions(null);
 	}
@@ -1310,7 +1310,7 @@ public class MainController {
 		}
 		return entityMenuActions;
 	}
-	
+
 	public List<Pair<String[], Action>> getCustomComponentMenuActions() {
 		return getCustomComponentMenuActions(null);
 	}
@@ -1333,7 +1333,7 @@ public class MainController {
 		};
 		return customComponentMenuAction;
 	}
-	
+
 	private void addSearchFilterActions(List<GenericAction> genericActions) {
 		for (final EntitySearchFilter searchfilter : SearchFilterCache.getInstance().getAllEntitySearchFilters()) {
 			Action action = new AbstractAction(searchfilter.getName(), MainFrame.resizeAndCacheIcon(
@@ -1570,6 +1570,11 @@ public class MainController {
 			new IsCollectControllerDisplaying(sEntityName, iId));
 	}
 
+	public CollectController<?> findCollectControllerDisplaying(String sEntityName) {
+		return (CollectController<?>) CollectionUtils.findFirst(this.getTopControllersForInternalFrames(),
+			new IsCollectControllerDisplayingEntity(sEntityName));
+	}
+
 	/**
 	 * Returns the first CustomComponentController for the given component name (configuration), or null.
 	 */
@@ -1635,6 +1640,9 @@ public class MainController {
 						// action was cancelled
 						return;
 					}
+				}
+				else {
+					ctl = this.findCollectControllerDisplaying(sEntityName);
 				}
 			}
 			else {
@@ -1975,6 +1983,27 @@ public class MainController {
 				CollectController<?> clctctl = (CollectController<?>) ctl;
 				return this.sEntityName.equals(clctctl.getEntityName()) &&
 					(clctctl.getCollectState().isDetailsModeViewOrEdit() || clctctl.getCollectState().isDetailsModeMultiViewOrEdit());
+			}
+			return false;
+		}
+	}
+
+	private static class IsCollectControllerDisplayingEntity implements Predicate<TopController> {
+		private final String sEntityName;
+
+		/**
+		 * @param sEntityName
+		 * @precondition sEntityName != null
+		 */
+		IsCollectControllerDisplayingEntity(String sEntityName) {
+			this.sEntityName = sEntityName;
+		}
+
+		@Override
+		public boolean evaluate(TopController ctl) {
+			if (ctl instanceof CollectController) {
+				CollectController<?> clctctl = (CollectController<?>) ctl;
+				return this.sEntityName.equals(clctctl.getEntityName());
 			}
 			return false;
 		}
