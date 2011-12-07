@@ -126,9 +126,9 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  * @version 01.00.00
  */
 public abstract class NuclosCollectController<Clct extends Collectable> extends CollectController<Clct> {
-	
+
 	private static final Logger LOG = Logger.getLogger(NuclosCollectController.class);
-		
+
 	protected String sEntity;
 	protected static final String PREFS_KEY_OUTERSTATE = "outerState";
 	protected static final String PREFS_KEY_ENTITY = "entity";
@@ -154,9 +154,9 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	/**
 	 * Don't make this public!
 	 *
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -181,9 +181,9 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	}
 
 	/**
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -812,7 +812,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 	/**
 	 * @todo refactor viewAll()!
-	 * 
+	 *
 	 * @deprecated Move to ResultController hierarchy.
 	 */
 	@Override
@@ -927,7 +927,9 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 		};
 		cpSearchFilter.setOpaque(false);
-		this.getSearchPanel().addToolBarComponent(new BlackLabel(cpSearchFilter, CommonLocaleDelegate.getMessage("CollectController.Search.Filter","Filter")));
+		BlackLabel bl = new BlackLabel(cpSearchFilter, CommonLocaleDelegate.getMessage("CollectController.Search.Filter","Filter"));
+		bl.setName("blChooseFilter");
+		this.getSearchPanel().addToolBarComponent(bl);
 
 		//result.add(cpSearchFilter);
 		//result.add(Box.createHorizontalStrut(2));
@@ -1009,7 +1011,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	/**
 	 * Command: save filter
 	 */
-	private void cmdSaveFilter() {
+	protected void cmdSaveFilter() {
 		UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
 			@Override
             public void run() throws CommonValidationException {
@@ -1053,7 +1055,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	/**
 	 * command: remove filter
 	 */
-	private void cmdRemoveFilter() {
+	protected void cmdRemoveFilter() {
 		final SearchFilter filter = getSelectedSearchFilter();
 		if (filter != null) {
 			if (JOptionPane.showConfirmDialog(this.getFrame(), CommonLocaleDelegate.getMessage("NuclosCollectController.16","Wollen Sie den Filter \"{0}\" wirklich l\u00f6schen?", filter.getName()), "Filter l\u00f6schen", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
@@ -1245,7 +1247,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	/**
 	 * is entity of this controller transferable, that means that collectables
 	 * of this entity can be exported and imported.
-	 * 
+	 *
 	 * TODO: Make this protected again.
 	 */
 	@Override
@@ -1286,7 +1288,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	 *  helper class for cmdExecuteRulesByUser
 	 */
 	private static class SelectController extends SelectObjectsController<RuleVO> {
-		
+
 		private boolean blnExceptionOnWork;
 
 		public SelectController(Component parent) {
@@ -1298,8 +1300,8 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			panel.btnDown.setVisible(true);
 			blnExceptionOnWork = false;
 		}
-		
-		
+
+
 
 		public boolean isBlnExceptionOnWork() {
 			return blnExceptionOnWork;
@@ -1369,7 +1371,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	@Override
 	protected void deleteCollectable(Clct clct) throws CommonBusinessException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
