@@ -1757,10 +1757,11 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				v = MetaDataClientProvider.getInstance().getEntityField(parentVO.getEntity(), attr.getInternalName());
 			}
 			if(attr.isDistinct() != v.isUnique()) {
-				boolean blnAllowed = MetaDataDelegate.getInstance().isChangeDatabaseColumnToUniqueAllowed(metaVOOld.getEntity(), attr.getInternalName());
+				final boolean blnAllowed = MetaDataDelegate.getInstance().isChangeDatabaseColumnToUniqueAllowed(metaVOOld.getEntity(), attr.getInternalName());
 				if(!blnAllowed) {
-					model.setResultText(getMessage("wizard.step.entitysqllayout.6", "Das Feld {0} kann nicht auf ein eindeutiges Feld umgestellt werden.", attr.getLabel())+ "\n");
-					throw new CommonFatalException();
+					final String msg = getMessage("wizard.step.entitysqllayout.6", "Das Feld {0} kann nicht auf ein eindeutiges Feld umgestellt werden.", attr.getLabel());
+					model.setResultText(msg + "\n");
+					throw new CommonFatalException(msg);
 				}
 			}
 		}

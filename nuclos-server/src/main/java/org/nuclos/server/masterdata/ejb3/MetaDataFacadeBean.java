@@ -1432,16 +1432,17 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	@Override
     @RolesAllowed("Login")
 	public boolean isChangeDatabaseColumnToUniqueAllowed(String sEntity, String field) {
-		String sTable = MasterDataMetaCache.getInstance().getMetaData(sEntity).getDBEntity();
-		MasterDataMetaFieldVO mdmfVO = MasterDataMetaCache.getInstance().getMetaData(sEntity).getField(field);
-		String sColumn = mdmfVO.getDBFieldName();
-
+		final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
+		final EntityMetaDataVO mdEntitiy = mdProv.getEntity(sEntity);
+		String sTable = mdEntitiy.getDbEntity();
+		final EntityFieldMetaDataVO mdField = mdProv.getEntityField(sEntity, field);
+		final String sColumn = EntityObjectMetaDbHelper.getDbRefColumn(mdField);
 		try {
 			// @TODO GOREF: maybe this should be delegated to the (JDBC)-EntityObjectProcessor ?
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<Long> query = builder.createQuery(Long.class);
 			DbFrom t = query.from(sTable).alias(SystemFields.BASE_ALIAS);
-			DbColumnExpression<?> c = t.baseColumn(sColumn, DalUtils.getDbType(mdmfVO.getJavaClass()));
+			DbColumnExpression<?> c = t.baseColumn(sColumn, DalUtils.getDbType(mdField.getDataType()));
 			query.select(builder.countRows());
 			query.groupBy(c);
 			query.having(builder.greaterThan(builder.countRows(), builder.literal(1L)));
@@ -1451,7 +1452,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			return result.isEmpty();
 		}
 		catch(Exception e) {
-			LOG.info("isChangeDatabaseColumnToUniqueAllowed: " + e);	
+			LOG.error("isChangeDatabaseColumnToUniqueAllowed: " + e, e);	
 			return false;
 		}
 	}

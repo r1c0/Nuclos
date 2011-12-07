@@ -258,6 +258,21 @@ public class EntityObjectMetaDbHelper {
 		DbTable dbTable = new DbTable(dbTableName, tableArtifacts, entityMeta.isVirtual());
 		return dbTable;
 	}
+	
+	public static String getDbRefColumn(EntityFieldMetaDataVO field) {
+		if (field.getForeignEntity() == null) {
+			throw new IllegalArgumentException();
+		}
+		final String dbColumn = field.getDbColumn().toUpperCase();
+		final String result;
+		if (dbColumn.startsWith("STRVALUE_")) {
+			result = "INTID_" + dbColumn.substring(9);
+		}
+		else {
+			throw new IllegalArgumentException();
+		}
+		return result;
+	}
 
 	public static List<?> getViewPatternForField(EntityFieldMetaDataVO fieldMeta, MetaDataProvider provider) {
 		List<Object> result = new ArrayList<Object>();
