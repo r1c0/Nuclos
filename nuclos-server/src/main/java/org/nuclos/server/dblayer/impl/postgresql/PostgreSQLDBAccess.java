@@ -268,6 +268,10 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 
 	@Override
 	protected IBatch getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView) {
+		if (true) {
+			return getSqlForAlterSimpleViewFallback(oldView, newView);
+		}
+		
 		if (!oldView.getViewName().equals(newView.getViewName())) {
 			throw new IllegalArgumentException();
 		}
