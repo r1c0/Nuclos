@@ -45,7 +45,7 @@ import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MenuActionChooser;
 import org.nuclos.client.resource.ResourceCache;
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -117,7 +117,7 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 		if (itemTextColor != null) {
 			setForeground(itemTextColor);
 		} else {
-			setForeground(NuclosSyntheticaConstants.BACKGROUND_DARKER);
+			setForeground(NuclosThemeSettings.BACKGROUND_ROOTPANE);
 		}
 		
 		initListener();
@@ -143,7 +143,7 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 						if (itemTextColor != null) {
 							setForeground(itemTextColor);
 						} else {
-							setForeground(NuclosSyntheticaConstants.BACKGROUND_DARKER);
+							setForeground(NuclosThemeSettings.BACKGROUND_ROOTPANE);
 						}
 						action.actionPerformed(new ActionEvent(this, 8279, (String) action.getValue(Action.ACTION_COMMAND_KEY)));
 					}
@@ -168,7 +168,7 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 				if (itemTextColor != null) {
 					setForeground(itemTextColor);
 				} else {
-					setForeground(NuclosSyntheticaConstants.BACKGROUND_DARKER);
+					setForeground(NuclosThemeSettings.BACKGROUND_ROOTPANE);
 				}
 				if (!isMouseOverMenu())
 					hideMenu();
@@ -252,7 +252,7 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 		if (this.hover != hover) {
 			repaint = true;
 			this.hover = hover;
-			setForeground(this.hover?Color.BLACK:NuclosSyntheticaConstants.BACKGROUND_DARKER);
+			setForeground(this.hover?Color.BLACK:NuclosThemeSettings.BACKGROUND_ROOTPANE);
 		}
 		if (repaint) {
 			repaint();
@@ -290,7 +290,7 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 					RenderingHints.VALUE_ANTIALIAS_ON);
 	
 			Rectangle bounds = getBounds();
-			g2.setColor(NuclosSyntheticaConstants.DEFAULT_BACKGROUND);
+			g2.setColor(NuclosThemeSettings.BACKGROUND_PANEL);
 			
 			int x = 1;
 			int width = bounds.width-2;
@@ -325,9 +325,9 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 
 			Rectangle bounds = getBounds();
 			final Color flashColor = new Color(
-					NuclosSyntheticaConstants.BACKGROUND_SPOT.getRed(), 
-					NuclosSyntheticaConstants.BACKGROUND_SPOT.getGreen(), 
-					NuclosSyntheticaConstants.BACKGROUND_SPOT.getBlue(), 
+					NuclosThemeSettings.BACKGROUND_COLOR4.getRed(), 
+					NuclosThemeSettings.BACKGROUND_COLOR4.getGreen(), 
+					NuclosThemeSettings.BACKGROUND_COLOR4.getBlue(), 
 					flashLight);
 			g2.setColor(flashColor);
 			g2.fillRoundRect(0, 0, bounds.width-1, bounds.height-1,

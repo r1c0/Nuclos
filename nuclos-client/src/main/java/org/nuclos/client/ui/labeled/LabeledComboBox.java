@@ -34,7 +34,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.TextFieldWithButton;
@@ -76,7 +76,7 @@ public class LabeledComboBox extends LabeledComponent {
 		
 		@Override
 		public Color getBackground() {
-			return NuclosSyntheticaConstants.BACKGROUND_INACTIVEFIELD;
+			return NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
 		}
 		
 	};

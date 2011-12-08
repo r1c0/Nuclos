@@ -23,7 +23,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JTextField;
 import javax.swing.plaf.basic.BasicTextFieldUI;
 
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 
 public class StatusBarTextField extends JTextField {
 	
@@ -36,7 +36,7 @@ public class StatusBarTextField extends JTextField {
 		setEditable(false);
 		setBorder(BorderFactory.createEmptyBorder(fade,3,0,0));
 		setForeground(Color.WHITE);
-		setSelectionColor(NuclosSyntheticaConstants.BACKGROUND_SELECTION);
+		setSelectionColor(NuclosThemeSettings.BACKGROUND_COLOR5);
 		setUI(new BasicTextFieldUI());
 		setMinimumSize(new Dimension(0, getPreferredSize().height));
 	}

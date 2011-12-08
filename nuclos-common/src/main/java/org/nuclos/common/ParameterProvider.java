@@ -122,6 +122,8 @@ public interface ParameterProvider {
 	public static final String KEY_SECURITY_PASSWORD_STRENGTH_REGEXP = "SECURITY_PASSWORD_STRENGTH_REGEXP";
 
 	public static final String KEY_SHOW_INTERNAL_TIMESTAMP_WITH_TIME = "SHOW_INTERNAL_TIMESTAMP_WITH_TIME";
+	
+	public static final String KEY_DEFAULT_NUCLOS_THEME = "DEFAULT_NUCLOS_THEME";
 
 	/**
 	 * @param sParameterName

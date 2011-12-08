@@ -56,7 +56,7 @@ import javax.swing.TransferHandler;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common2.CommonLocaleDelegate;
 
@@ -125,8 +125,8 @@ public class MenuItemMover extends JPanel {
 				
 				if (isSelected) {
 					jlbMenuItem.setOpaque(true);
-					jlbMenuItem.setBackground(NuclosSyntheticaConstants.BACKGROUND_SPOT);
-					btnPanel.setBorder(BorderFactory.createLineBorder(NuclosSyntheticaConstants.BACKGROUND_DARKER, 1));
+					jlbMenuItem.setBackground(NuclosThemeSettings.BACKGROUND_COLOR4);
+					btnPanel.setBorder(BorderFactory.createLineBorder(NuclosThemeSettings.BACKGROUND_ROOTPANE, 1));
 				} else {
 					jlbMenuItem.setOpaque(false);
 					btnPanel.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));

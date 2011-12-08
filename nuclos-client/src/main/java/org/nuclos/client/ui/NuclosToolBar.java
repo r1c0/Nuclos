@@ -24,10 +24,11 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
 import org.nuclos.common2.StringUtils;
 
-public class NuclosToolBar extends JToolBar implements NuclosSyntheticaConstants{
+import static org.nuclos.client.synthetica.NuclosThemeSettings.*;
+
+public class NuclosToolBar extends JToolBar {
 
 	public NuclosToolBar() {
 		super();

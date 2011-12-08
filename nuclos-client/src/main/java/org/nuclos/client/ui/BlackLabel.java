@@ -30,7 +30,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 
 public class BlackLabel extends JPanel {
 	
@@ -88,7 +88,7 @@ public class BlackLabel extends JPanel {
 			final float radius = (width-contentWidth)/2;
 		    final Point2D focus = new Point2D.Float((width-contentWidth)/2*3, (height/2));
 		    final float[] dist = {0.0f, 1.0f};
-		    final Color[] colors = {NuclosSyntheticaConstants.BACKGROUND_SPOT, NuclosSyntheticaConstants.BACKGROUND_DARK};
+		    final Color[] colors = {NuclosThemeSettings.BACKGROUND_COLOR4, NuclosThemeSettings.BACKGROUND_COLOR3};
 		    g2.setPaint(new RadialGradientPaint(center, radius, focus,
 		                                        dist, colors, CycleMethod.NO_CYCLE));
 		    g2.fillRoundRect(0, 0, width, height, 6, 6);

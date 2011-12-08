@@ -52,6 +52,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.common.collection.Pair;
 
 public class Bubble extends Window implements AncestorListener, WindowListener {
@@ -191,9 +192,6 @@ public class Bubble extends Window implements AncestorListener, WindowListener {
 
 	private static int maxArcSize = 20;
 
-	private static Color bubbleBorderColor = new Color(50, 50, 50);
-	private static Color bubbleFillColor = new Color(255, 255, 160);
-
 	private JComponent parent;
 	private Window windowAncestor;
 
@@ -288,7 +286,7 @@ public class Bubble extends Window implements AncestorListener, WindowListener {
 	@Override
 	public void paint(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
-		g2.setColor(bubbleFillColor);
+		g2.setColor(NuclosThemeSettings.BUBBLE_FILL_COLOR);
 		g2.fill(bubbleShape);
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		//g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
@@ -296,7 +294,7 @@ public class Bubble extends Window implements AncestorListener, WindowListener {
 		BasicStroke bs = new BasicStroke(2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
 		g2.setStroke(bs);
 
-		g2.setColor(bubbleBorderColor);
+		g2.setColor(NuclosThemeSettings.BUBBLE_BORDER_COLOR);
 		g2.draw(bubbleShape);
 
 		Graphics gtl = g2.create();

@@ -18,6 +18,7 @@ package org.nuclos.server.servermeta.ejb3;
 
 import java.util.TimeZone;
 
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.server.common.ServerParameterProvider;
 
 /**
@@ -36,5 +37,9 @@ public class ServerMetaFacadeBean implements ServerMetaFacadeRemote {
 	@Override
 	public TimeZone getServerDefaultTimeZone() {
 		return TimeZone.getDefault();
+	}
+	@Override
+	public String getDefaultNuclosTheme() {
+		return ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_DEFAULT_NUCLOS_THEME);
 	}
 }

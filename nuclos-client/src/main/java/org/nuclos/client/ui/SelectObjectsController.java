@@ -35,7 +35,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.client.ui.model.CommonDefaultListModel;
 import org.nuclos.client.ui.model.MutableListModel;
@@ -232,7 +232,7 @@ public class SelectObjectsController<T> extends Controller {
 				setBackground(null);
 				Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 				if (getModel().getFixed().contains(value) && !isSelected) {
-					setBackground(NuclosSyntheticaConstants.BACKGROUND_INACTIVEROW);
+					setBackground(NuclosThemeSettings.BACKGROUND_INACTIVEROW);
 				}
 				return c;
 			}

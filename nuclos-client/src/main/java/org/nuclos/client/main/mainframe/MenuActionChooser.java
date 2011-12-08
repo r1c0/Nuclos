@@ -54,7 +54,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.main.ActionWithMenuPath;
 import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -131,7 +131,7 @@ public class MenuActionChooser extends JPanel{
 				
 				JLabel jlbMenuPath = new JLabel(getMenuPath(genAction.y.x));
 				jlbMenuPath.setOpaque(false);
-				jlbMenuPath.setForeground(NuclosSyntheticaConstants.BACKGROUND_DARKER);
+				jlbMenuPath.setForeground(NuclosThemeSettings.BACKGROUND_ROOTPANE);
 				btnPanel.add(jlbMenuPath, BorderLayout.WEST);
 				
 				String name = (String) genAction.y.y.getValue(Action.NAME);
@@ -147,9 +147,9 @@ public class MenuActionChooser extends JPanel{
 				if (isSelected && index > 0) {
 					btn.setOpaque(true);
 					jlbMenuPath.setOpaque(true);
-					btn.setBackground(NuclosSyntheticaConstants.BACKGROUND_SPOT);
-					jlbMenuPath.setBackground(NuclosSyntheticaConstants.BACKGROUND_SPOT);
-					btnPanel.setBorder(BorderFactory.createLineBorder(NuclosSyntheticaConstants.BACKGROUND_DARKER, 1));
+					btn.setBackground(NuclosThemeSettings.BACKGROUND_COLOR4);
+					jlbMenuPath.setBackground(NuclosThemeSettings.BACKGROUND_COLOR4);
+					btnPanel.setBorder(BorderFactory.createLineBorder(NuclosThemeSettings.BACKGROUND_ROOTPANE, 1));
 				} else {
 					btn.setOpaque(false);
 					jlbMenuPath.setOpaque(false);

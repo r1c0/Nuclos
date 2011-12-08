@@ -79,7 +79,7 @@ import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame.SplitRange;
 import org.nuclos.client.main.mainframe.desktop.DesktopListener;
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.BlackLabel;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
@@ -1806,7 +1806,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 				RenderingHints oldRendHints = g2.getRenderingHints();
 				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-				g2.setPaint(new GradientPaint(new Point(0, yIndi+5), NuclosSyntheticaConstants.BACKGROUND_DARKER,
+				g2.setPaint(new GradientPaint(new Point(0, yIndi+5), NuclosThemeSettings.BACKGROUND_ROOTPANE,
 											  new Point(0, yIndi+10), new Color(Color.BLUE.getRed(), Color.BLUE.getGreen(),	Color.BLUE.getBlue(), 50)));
 				Polygon p = new Polygon();
 				p.addPoint(xIndi, 	yIndi);
@@ -1842,7 +1842,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 
 		public ShowHideJCheckBoxMenuItem(Action a) {
 			super(a);
-			setForeground(NuclosSyntheticaConstants.ICON_BLUE);
+			setForeground(NuclosThemeSettings.ICON_BLUE);
 		}
 
 	}

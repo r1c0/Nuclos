@@ -37,7 +37,7 @@ import javax.swing.ToolTipManager;
 
 import org.nuclos.client.explorer.ui.ExplorerNodeRenderer;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common2.CommonRunnable;
@@ -67,7 +67,7 @@ public class DefaultExplorerView extends JPanel implements ExplorerView {
 		@Override
 		public void paint(Graphics g) {
 			Graphics2D g2 = (Graphics2D) g;
-			g2.setPaint(new GradientPaint(0, 0, NuclosSyntheticaConstants.DEFAULT_BACKGROUND, 0, FADE, Color.WHITE));
+			g2.setPaint(new GradientPaint(0, 0, NuclosThemeSettings.BACKGROUND_PANEL, 0, FADE, Color.WHITE));
 			g2.fillRect(0, 0, getWidth(), getHeight());
 
 			super.paint(g);

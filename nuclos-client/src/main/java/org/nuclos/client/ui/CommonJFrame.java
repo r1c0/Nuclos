@@ -35,7 +35,7 @@ import javax.swing.JFrame;
 import javax.swing.event.MouseInputAdapter;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 
 /**
  * JFrame with some additional features, especially support for the MAXIMIZED state.
@@ -205,7 +205,7 @@ public class CommonJFrame extends JFrame {
 	@Override
 	public void paintComponents(Graphics g) {
 		if (isResizing) {
-			g.setColor(NuclosSyntheticaConstants.BACKGROUND_SPOT);
+			g.setColor(NuclosThemeSettings.BACKGROUND_COLOR4);
 			g.fillRect(0, 0, getWidth(), getHeight());
 		} else {
 			super.paintComponents(g);

@@ -61,7 +61,7 @@ import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.scripting.GroovySupport;
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.ListOfValues;
@@ -1384,15 +1384,15 @@ public abstract class AbstractCollectableComponent
 
 			// not editable
 			if (isDetailsComponent() && (getControlComponent() instanceof JTextComponent) && !((JTextComponent) getControlComponent()).isEditable()) {
-				result = NuclosSyntheticaConstants.BACKGROUND_INACTIVEFIELD;
+				result = NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
 			} else if (isDetailsComponent() && (getControlComponent() instanceof DateChooser) && !((DateChooser) getControlComponent()).getJTextField().isEditable()) {
-				result = NuclosSyntheticaConstants.BACKGROUND_INACTIVEFIELD;
+				result = NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
 			} else if (isDetailsComponent() && (getControlComponent() instanceof ListOfValues) && !((ListOfValues) getControlComponent()).isEnabled()) {
-				result = NuclosSyntheticaConstants.BACKGROUND_INACTIVEFIELD;
+				result = NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
 			} else if (isDetailsComponent() && (getControlComponent() instanceof JComboBox) && !((JComboBox) getControlComponent()).isEditable()) {
-				result = NuclosSyntheticaConstants.BACKGROUND_INACTIVEFIELD;
+				result = NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
 			} else if (isDetailsComponent() && (getControlComponent() instanceof FileChooserComponent) && !((FileChooserComponent) getControlComponent()).isEnabled()) {
-				result = NuclosSyntheticaConstants.BACKGROUND_INACTIVEFIELD;
+				result = NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
 			} else 
 			
 			if (isDetailsComponent() && getDetailsModel().isMandatoryAdded()) {
@@ -1400,7 +1400,7 @@ public abstract class AbstractCollectableComponent
 			} else if (isDetailsComponent() && getDetailsModel().isMandatory()) {
 				result = hasValue || hasFocus() ? null : ClientParameterProvider.getInstance().getColorValue(ParameterProvider.KEY_MANDATORY_ITEM_BACKGROUND_COLOR, new Color(255,255,200));
 			} else {
-				result = hasFocus() ? null : NuclosSyntheticaConstants.DEFAULT_BACKGROUND.equals(comp.getBackground()) ? Color.WHITE : comp.getBackground();
+				result = hasFocus() ? null : NuclosThemeSettings.BACKGROUND_PANEL.equals(comp.getBackground()) ? Color.WHITE : comp.getBackground();
 			}
 		}
 
@@ -1697,9 +1697,9 @@ public abstract class AbstractCollectableComponent
 						Column subformcolumn = subformtable.getSubForm().getColumn(clctef.getName());
 						if (subformcolumn != null && !subformcolumn.isEnabled()) {
 							if (bSelected) {
-								setBackground(NuclosSyntheticaConstants.BACKGROUND_INACTIVESELECTEDCOLUMN);
+								setBackground(NuclosThemeSettings.BACKGROUND_INACTIVESELECTEDCOLUMN);
 							} else {
-								setBackground(NuclosSyntheticaConstants.BACKGROUND_INACTIVECOLUMN);
+								setBackground(NuclosThemeSettings.BACKGROUND_INACTIVECOLUMN);
 							}
 						}
 					}
@@ -1734,9 +1734,9 @@ public abstract class AbstractCollectableComponent
 						Column subformcolumn = subformtable.getSubForm().getColumn(clctef.getName());
 						if (subformcolumn != null && !subformcolumn.isEnabled()) {
 							if (bSelected) {
-								setBackground(NuclosSyntheticaConstants.BACKGROUND_INACTIVESELECTEDCOLUMN);
+								setBackground(NuclosThemeSettings.BACKGROUND_INACTIVESELECTEDCOLUMN);
 							} else {
-								setBackground(NuclosSyntheticaConstants.BACKGROUND_INACTIVECOLUMN);
+								setBackground(NuclosThemeSettings.BACKGROUND_INACTIVECOLUMN);
 							}
 						}
 					}

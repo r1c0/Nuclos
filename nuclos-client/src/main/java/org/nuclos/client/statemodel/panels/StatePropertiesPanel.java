@@ -96,7 +96,7 @@ import org.nuclos.client.statemodel.panels.rights.RightTransfer;
 import org.nuclos.client.statemodel.panels.rights.RightTransfer.RoleRight;
 import org.nuclos.client.statemodel.panels.rights.RightTransfer.RoleRights;
 import org.nuclos.client.statemodel.panels.rights.SelectionListener;
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.Icons;
@@ -191,8 +191,8 @@ public class StatePropertiesPanel extends JPanel {
 					
 					if (isSelected && index > 0) {
 						btn.setOpaque(true);
-						btn.setBackground(NuclosSyntheticaConstants.BACKGROUND_SPOT);
-						btnPanel.setBorder(BorderFactory.createLineBorder(NuclosSyntheticaConstants.BACKGROUND_DARKER, 1));
+						btn.setBackground(NuclosThemeSettings.BACKGROUND_COLOR4);
+						btnPanel.setBorder(BorderFactory.createLineBorder(NuclosThemeSettings.BACKGROUND_ROOTPANE, 1));
 					} else {
 						btn.setOpaque(false);
 						btnPanel.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));

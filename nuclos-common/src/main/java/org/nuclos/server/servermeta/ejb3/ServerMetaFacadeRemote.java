@@ -24,4 +24,6 @@ public interface ServerMetaFacadeRemote {
 	String getServerProperty(String key);
 	
 	TimeZone getServerDefaultTimeZone();
+	
+	String getDefaultNuclosTheme();
 }

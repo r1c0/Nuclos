@@ -22,12 +22,14 @@ import java.awt.PopupMenu;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Locale;
+import java.util.Properties;
 
 import javax.jnlp.ServiceManager;
 import javax.jnlp.UnavailableServiceException;
@@ -53,10 +55,13 @@ import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
+import org.nuclos.server.servermeta.ejb3.ServerMetaFacadeRemote;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.Resource;
 import org.springframework.util.Log4jConfigurer;
 
 /**
@@ -99,7 +104,35 @@ public class StartUp  {
 		// setup client side logging:
 		setupClientLogging();
 
-		new ClassPathXmlApplicationContext("classpath*:META-INF/nuclos/**/*-beans.xml");
+		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath*:META-INF/nuclos/**/*-beans.xml");
+		
+		try {
+            Resource[] themes = ctx.getResources("classpath*:META-INF/nuclos/**/*-theme.properties");
+            for (Resource r : themes) {
+            	Properties p = new Properties();
+                p.load(r.getInputStream());
+                
+                for (Object key : p.keySet()) {
+                	if (key instanceof String && p.get(key) != null && p.get(key) instanceof String) {
+                		
+                		String sKey = (String)key;
+                		if (sKey.startsWith("name")) {
+                			String xmlKey = "xml";
+                			if (sKey.length() > 4) {
+                				String sNumber = sKey.substring(4);
+                				xmlKey = xmlKey + sNumber;
+                			} 
+                			Object xml = p.get(xmlKey);
+            				if (xml != null && xml instanceof String) {
+            					NuclosSyntheticaUtils.registerNuclosTheme((String) p.get(key), (String) xml);
+            				}
+                		}
+                	}
+                }
+            }
+      } catch (IOException e1) {
+            log.error(e1.getMessage(), e1);
+      }
 
 		// set the default locale:
 		// this makes sure the client is independent of the host's locale.
@@ -402,7 +435,9 @@ public class StartUp  {
 
 	private void setupLookAndFeel() {
 		try {
-			NuclosSyntheticaUtils.setLookAndFeel();
+			ServerMetaFacadeRemote sm = ServiceLocator.getInstance().getFacade(ServerMetaFacadeRemote.class);
+			String defaultNuclosTheme = sm.getDefaultNuclosTheme();
+			NuclosSyntheticaUtils.setLookAndFeel(defaultNuclosTheme);
 
 			UIManager.put("TabbedPane.contentOpaque", Boolean.FALSE);
 			UIManager.put("DesktopIconUI", "org.nuclos.client.ui.NuclosDesktopIconUI");

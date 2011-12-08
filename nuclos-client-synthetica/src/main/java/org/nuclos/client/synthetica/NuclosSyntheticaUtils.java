@@ -16,13 +16,16 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.synthetica;
 
+import java.awt.Color;
 import java.text.ParseException;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.ColorUIResource;
 
 import org.apache.log4j.Logger;
 
@@ -42,8 +45,18 @@ public class NuclosSyntheticaUtils {
 		(byte) 0x70, (byte) 0x04, (byte) 0xd7, (byte) 0xd2, (byte) 0x6a,
 		(byte) 0x9c
 	};
+	
+	public static void setLookAndFeel() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, ParseException {
+		setLookAndFeel(null);
+	}
+	
+	public static void registerNuclosTheme(String themeName, String pathToXml) {
+		if (NuclosSyntheticaThemeableLookAndFeel.registerNuclosTheme(themeName, pathToXml)) {
+			LOG.info("Nuclos theme \"" + themeName + "\" found (" + pathToXml + ")");
+		}
+	}
 
-    public static void setLookAndFeel() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, ParseException {
+    public static void setLookAndFeel(String nuclosTheme) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, ParseException {
 		UIManager.put(
 			dec("74412a97922b28b6368ca2aff3cdfa3dea7b143aaf0b5f0f39c20bc0573c2760"),
 			new String[] {
@@ -57,17 +70,11 @@ public class NuclosSyntheticaUtils {
 		UIManager.put(
 			dec("74412a97922b28b6368ca2aff3cdfa3d431a5f0a9f8a2f27dad966401d6ddc64"),
 			dec("ac0cf046be29e85f56f6499b1f22db2a9f529a04835833e3cd0b10ee6339c93725b53d1b61e197bb5bade15ed86c6928"));
-
-		SyntheticaBlackMoonLookAndFeel laf = new SyntheticaBlackMoonLookAndFeel();
-		laf.setWindowsDecorated(false);
-
-		// Change style of selected toggle buttons in toolbars to a more "pressed" look
-		Object toggleButtonBorderPressed = laf.getDefaults().get("Synthetica.button.border.pressed");
-		if (toggleButtonBorderPressed != null)
-			UIManager.put("Synthetica.toolBar.toggleButton.border.selected", toggleButtonBorderPressed);
-
-		UIManager.setLookAndFeel(laf);
-		laf.setLookAndFeel(SyntheticaBlackMoonLookAndFeel.class.getName(), true, true);
+		
+		NuclosSyntheticaThemeableLookAndFeel laf = new NuclosSyntheticaThemeableLookAndFeel();
+		laf.setNuclosTheme(nuclosTheme);
+		NuclosSyntheticaThemeableLookAndFeel.setWindowsDecorated(false);
+		NuclosSyntheticaThemeableLookAndFeel.setLookAndFeel(NuclosSyntheticaThemeableLookAndFeel.class.getName(), true, true);		
 	}
 
 	private static String dec(String d) {

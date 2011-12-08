@@ -66,7 +66,7 @@ import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
@@ -846,7 +846,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 					Component c = result.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 					if (!isRowEditable(row) && !isSelected) {
-						c.setBackground(NuclosSyntheticaConstants.BACKGROUND_INACTIVEROW);
+						c.setBackground(NuclosThemeSettings.BACKGROUND_INACTIVEROW);
 					}
 					return c;
 				}

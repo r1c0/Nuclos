@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
@@ -47,7 +48,9 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.log4j.Logger;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.server.common.ServerProperties;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
@@ -69,6 +72,9 @@ public class JnlpServlet extends HttpServlet {
 	private boolean hasExtensions = false;
 	private File extensionDir = null;
 	private String extensionlastmodified;
+	
+	private File themesDir = null;
+	private Map<String, String> themes;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -106,6 +112,34 @@ public class JnlpServlet extends HttpServlet {
 					extensionlastmodified = df.format(new Date(l));
 				}
 			}
+			
+			themesDir = new File(appDir, "extensions/themes");
+			if (themesDir.isDirectory()) {
+				String[] files = themesDir.list(new FilenameFilter() {
+					@Override
+					public boolean accept(File dir, String name) {
+						if (name.endsWith(".jar")) {
+							return true;
+						}
+						return false;
+					}
+				});
+				if (files.length > 0) {
+					themes = new HashMap<String, String>();
+					DateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+					Long l = 0L;
+					for (String filename : files) {
+						File f = new File(themesDir, filename);
+						if (f.isFile()) {
+							LOG.info("Found theme jar: " + filename + "; LastModified: " + df.format(new Date(f.lastModified())));
+							if (l < f.lastModified()) {
+								l = f.lastModified();
+							}
+						}
+						themes.put(filename.substring(0, filename.length() - 4), df.format(new Date(l)));
+					}
+				}
+			}
 		}
 		catch(Exception e) {
 			LOG.error("Failed to initialize JnlpServlet.", e);
@@ -115,11 +149,20 @@ public class JnlpServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		boolean isExtensionRequest = Pattern.matches(".*extension[^/]*\\.jnlp", request.getRequestURI());
+		boolean isThemeRequest = Pattern.matches(".*theme[^/]*\\.jnlp", request.getRequestURI());
 
 		String urlPrefix = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
 
 		Properties props = new Properties();
-		props.put("codebase", urlPrefix + "/app" + (isExtensionRequest ? "/extensions" : ""));
+		if (isExtensionRequest) {
+			props.put("codebase", urlPrefix + "/app/extensions");
+		}
+		else if (isThemeRequest) {
+			props.put("codebase", urlPrefix + "/app/extensions/themes");
+		}
+		else {
+			props.put("codebase", urlPrefix + "/app");
+		}
 		props.put("url.remoting", urlPrefix + "/remoting");
 		props.put("url.jms", urlPrefix + "/jmsbroker");
 		props.put("singleinstance", Boolean.toString(singleinstance));
@@ -132,17 +175,27 @@ public class JnlpServlet extends HttpServlet {
 			props.put("extension-lastmodified", "");
 		}
 
-		String attachment = "inline; filename=\"" + (isExtensionRequest ? request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/") + 1) : "nuclos.jnlp") + "\"";
+		String jnlpName;
+		if (isExtensionRequest || isThemeRequest) {
+			jnlpName = request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/") + 1);
+		}
+		else {
+			jnlpName = "nuclos.jnlp";
+		}
+		String attachment = "inline; filename=\"" + jnlpName + "\"";
 		response.setContentType("application/x-java-jnlp-file");
 		response.setHeader("Cache-Control", "max-age=30");
 		response.setHeader("Content-disposition", attachment);
 
 		InputStream is;
-		if (!isExtensionRequest) {
-			is = JnlpServlet.class.getClassLoader().getResourceAsStream("jnlp/jnlp.xsl");
+		if (isExtensionRequest) {
+			is = JnlpServlet.class.getClassLoader().getResourceAsStream("jnlp/extension.jnlp.xsl");
+		}
+		else if (isThemeRequest) {
+			is = JnlpServlet.class.getClassLoader().getResourceAsStream("jnlp/theme.jnlp.xsl");
 		}
 		else {
-			is = JnlpServlet.class.getClassLoader().getResourceAsStream("jnlp/extension.jnlp.xsl");
+			is = JnlpServlet.class.getClassLoader().getResourceAsStream("jnlp/jnlp.xsl");
 		}
 
 		try {
@@ -174,11 +227,15 @@ public class JnlpServlet extends HttpServlet {
 			});
 
 			Document source;
-			if (!isExtensionRequest) {
-				source = getTransformationSource(request.getParameterMap());
+			if (isExtensionRequest) {
+				source = getExtTransformationSource();
+			}
+			else if (isThemeRequest) {
+				String theme = jnlpName.substring(6, jnlpName.length() - 25);
+				source = getThemeTransformationSource(theme);
 			}
 			else {
-				source = getExtTransformationSource();
+				source = getTransformationSource(request.getParameterMap());
 			}
 			transformer.transform(new DOMSource(source), output);
 		}
@@ -224,7 +281,16 @@ public class JnlpServlet extends HttpServlet {
         	argument.setTextContent(e.getKey() + (e.getValue() != null ? "=" + ((String[]) e.getValue())[0] : ""));
         	arguments.appendChild(argument);
         }
-
+        
+        Node themes = jnlp.appendChild(document.createElement("themes"));
+        if (this.themes != null) {
+        	for (String theme : this.themes.keySet()) {
+        		Element themeNode = document.createElement("theme");
+    			themeNode.setAttribute("name", theme);
+    			themeNode.setAttribute("lastmodified", this.themes.get(theme));
+    			themes.appendChild(themeNode);
+        	}
+        }
         return document;
 	}
 
@@ -255,6 +321,17 @@ public class JnlpServlet extends HttpServlet {
     			jar.setTextContent(file);
         	}
     	}
+
+        return document;
+	}
+	
+	private Document getThemeTransformationSource(String theme) throws ParserConfigurationException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.newDocument();
+
+        Node jar = document.appendChild(document.createElement("jar"));
+        jar.setTextContent(theme + ".jar");
 
         return document;
 	}

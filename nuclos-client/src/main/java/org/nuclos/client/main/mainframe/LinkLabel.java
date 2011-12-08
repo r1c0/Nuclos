@@ -38,7 +38,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 
 public abstract class LinkLabel extends JLabel {
 	private LinkMarker marker = LinkMarker.NONE;
@@ -137,7 +137,7 @@ public abstract class LinkLabel extends JLabel {
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 			Rectangle bounds = getBounds();
-			g2.setColor(hover ? (headline&&!selected?NuclosSyntheticaConstants.BACKGROUND_DARK:NuclosSyntheticaConstants.BACKGROUND_SPOT) : marker.getColor());
+			g2.setColor(hover ? (headline&&!selected?NuclosThemeSettings.BACKGROUND_COLOR3:NuclosThemeSettings.BACKGROUND_COLOR4) : marker.getColor());
 			g2.fillRoundRect(0, 0, bounds.width, bounds.height, 4, 4);
 
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, renderingHint);

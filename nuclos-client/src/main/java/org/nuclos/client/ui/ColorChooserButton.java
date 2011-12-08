@@ -32,7 +32,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import org.nuclos.client.main.Main;
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.common2.CommonLocaleDelegate;
 
 public class ColorChooserButton extends JButton {
@@ -121,7 +121,7 @@ public class ColorChooserButton extends JButton {
 			g2.fillRoundRect(0, 0, x, y, width, height);
 		}
 
-		g2.setColor(NuclosSyntheticaConstants.BACKGROUND_DARK);
+		g2.setColor(NuclosThemeSettings.BACKGROUND_COLOR3);
 		g2.drawRoundRect(0, 0, x, y, width, height);
 		
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,

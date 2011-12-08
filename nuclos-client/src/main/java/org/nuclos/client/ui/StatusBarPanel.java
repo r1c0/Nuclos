@@ -30,7 +30,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 
 public class StatusBarPanel extends JPanel {
 
@@ -55,15 +55,15 @@ public class StatusBarPanel extends JPanel {
 			Object antialiasing = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 	        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-			g2.setPaint(new GradientPaint(new Point(0, 0), NuclosSyntheticaConstants.BACKGROUND_DARKER,
-										  new Point(0, fade), NuclosSyntheticaConstants.BACKGROUND_DARK));
+			g2.setPaint(new GradientPaint(new Point(0, 0), NuclosThemeSettings.BACKGROUND_ROOTPANE,
+										  new Point(0, fade), NuclosThemeSettings.BACKGROUND_COLOR3));
 			g2.fillRect(0, 0, width, height);
 
 			final Point2D center = new Point2D.Float(width/2, fade+(width/3));
 			final float radius = width/2;
 		    final Point2D focus = new Point2D.Float(width/2, fade+(width/4));
 		    final float[] dist = {0.0f, 1.0f};
-		    final Color[] colors = {NuclosSyntheticaConstants.BACKGROUND_SPOT, NuclosSyntheticaConstants.BACKGROUND_DARK};
+		    final Color[] colors = {NuclosThemeSettings.BACKGROUND_COLOR4, NuclosThemeSettings.BACKGROUND_COLOR3};
 		    g2.setPaint(new RadialGradientPaint(center, radius, focus,
 		                                        dist, colors, CycleMethod.NO_CYCLE));
 		    g2.fillRect(0, fade, width, height-fade);

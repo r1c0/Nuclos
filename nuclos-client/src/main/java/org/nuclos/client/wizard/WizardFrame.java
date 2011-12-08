@@ -32,7 +32,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.pietschy.wizard.Wizard;
 
 public class WizardFrame extends JPanel {
@@ -84,7 +84,7 @@ public class WizardFrame extends JPanel {
 		final int height = getHeight();
 		final Rectangle wizBounds = wiz.getBounds();
 		
-		g2.setColor(NuclosSyntheticaConstants.BACKGROUND_DARKER);
+		g2.setColor(NuclosThemeSettings.BACKGROUND_ROOTPANE);
 		g2.fillRect(0, 0, width, height);
 		
 		if (width > 0 && height > 0 && wizBounds.width > 0 && wizBounds.height > 0) {

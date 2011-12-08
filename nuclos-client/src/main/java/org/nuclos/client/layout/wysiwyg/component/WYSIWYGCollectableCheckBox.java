@@ -56,8 +56,6 @@ public class WYSIWYGCollectableCheckBox extends WYSIWYGCollectableComponent {
 		propertyFilters.put(PROPERTY_COLUMNS, new PropertyFilter(PROPERTY_COLUMNS, DISABLED));
 		propertyFilters.put(PROPERTY_INSERTABLE, new PropertyFilter(PROPERTY_INSERTABLE, DISABLED));
 		propertyFilters.put(PROPERTY_FILL_CONTROL_HORIZONTALLY, new PropertyFilter(PROPERTY_FILL_CONTROL_HORIZONTALLY, DISABLED));
-		//NUCLEUSINT-403
-		propertyFilters.put(PROPERTY_OPAQUE, new PropertyFilter(PROPERTY_OPAQUE, DISABLED));
 	
 		this.setLayout(new BorderLayout());
 		this.component.setSelected(false);

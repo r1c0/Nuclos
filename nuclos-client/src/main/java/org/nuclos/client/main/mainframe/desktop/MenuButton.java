@@ -61,7 +61,7 @@ import org.nuclos.client.main.mainframe.MenuActionChooser;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.resource.ResourceDelegate;
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.resource.ResourceIconChooser;
 import org.nuclos.common.WorkspaceDescription;
@@ -159,7 +159,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 						g2.fillRoundRect(0, 0, bounds.width-1, bounds.height-1,
 								getWidth() / 16, getHeight() / 16);
 	
-						g2.setColor(NuclosSyntheticaConstants.BACKGROUND_DARK);
+						g2.setColor(NuclosThemeSettings.BACKGROUND_COLOR3);
 						g2.drawRoundRect(0, 0, bounds.width-1, bounds.height-1,
 								getWidth() / 16, getHeight() / 16);
 						
@@ -177,9 +177,9 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 
 					Rectangle bounds = getBounds();
 					final Color flashColor = new Color(
-							NuclosSyntheticaConstants.BACKGROUND_SPOT.getRed(), 
-							NuclosSyntheticaConstants.BACKGROUND_SPOT.getGreen(), 
-							NuclosSyntheticaConstants.BACKGROUND_SPOT.getBlue(), 
+							NuclosThemeSettings.BACKGROUND_COLOR4.getRed(), 
+							NuclosThemeSettings.BACKGROUND_COLOR4.getGreen(), 
+							NuclosThemeSettings.BACKGROUND_COLOR4.getBlue(), 
 							flashLight);
 					g2.setColor(flashColor);
 					g2.fillRoundRect(0, 0, bounds.width-1, bounds.height-1,

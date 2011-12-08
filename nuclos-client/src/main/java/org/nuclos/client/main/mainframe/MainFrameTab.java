@@ -76,7 +76,7 @@ import org.nuclos.client.common.TopicNotificationReceiver;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.workspace.ITabStoreController;
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.IMainFrameTabClosableController;
 import org.nuclos.client.ui.IOverlayChangeListener;
@@ -129,9 +129,9 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 
 	private static final Color overlayLockColor = new Color(255, 255, 255, 180);
 	private static final Color overlayBorderColor = new Color(
-		NuclosSyntheticaConstants.BACKGROUND_DARKER.getRed(),
-		NuclosSyntheticaConstants.BACKGROUND_DARKER.getGreen(),
-		NuclosSyntheticaConstants.BACKGROUND_DARKER.getBlue(),
+		NuclosThemeSettings.BACKGROUND_ROOTPANE.getRed(),
+		NuclosThemeSettings.BACKGROUND_ROOTPANE.getGreen(),
+		NuclosThemeSettings.BACKGROUND_ROOTPANE.getBlue(),
 		200);
 
 	private final JLayeredPane layered = new JLayeredPane();

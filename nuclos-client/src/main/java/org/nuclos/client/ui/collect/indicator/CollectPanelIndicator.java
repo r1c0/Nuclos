@@ -32,14 +32,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.common2.CommonLocaleDelegate;
 
 public class CollectPanelIndicator {
 	
 	private final static Color colorMouseOver = new Color(212, 212, 212);
-	private final static Color colorDeactivated = NuclosSyntheticaConstants.BACKGROUND_DARKER;
+	private final static Color colorDeactivated = NuclosThemeSettings.BACKGROUND_ROOTPANE;
 	
 	private final static ImageIcon imgArrowActiveDeactivated = getImageIcon("org/nuclos/client/ui/collect/indicator/images/Arrow-active-deactivated.png");
 	private final static ImageIcon imgArrowActiveNormal = getImageIcon("org/nuclos/client/ui/collect/indicator/images/Arrow-active-normal.png");

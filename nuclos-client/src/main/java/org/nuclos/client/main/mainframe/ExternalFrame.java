@@ -27,7 +27,7 @@ import javax.swing.JPanel;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.workspace.WorkspaceFrame;
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.CommonJFrame;
 import org.nuclos.common2.CommonLocaleDelegate;
 
@@ -49,7 +49,7 @@ public class ExternalFrame extends CommonJFrame implements WorkspaceFrame{
 		
 		JPanel contentpane = (JPanel) getContentPane();
 		contentpane.setLayout(new BorderLayout());
-		contentpane.setBackground(NuclosSyntheticaConstants.BACKGROUND_DARKER);
+		contentpane.setBackground(NuclosThemeSettings.BACKGROUND_ROOTPANE);
 		
 		pnlDesktop.setOpaque(false);
 		contentpane.add(pnlDesktop, BorderLayout.CENTER);

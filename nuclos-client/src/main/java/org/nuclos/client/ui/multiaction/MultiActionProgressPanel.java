@@ -51,7 +51,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.StatusBarTextField;
 import org.nuclos.client.ui.popupmenu.JPopupMenuFactory;
@@ -212,7 +212,7 @@ public class MultiActionProgressPanel extends JPanel {
         });
 
         pnlStatus.setOpaque(true);
-        pnlStatus.setBackground(NuclosSyntheticaConstants.BACKGROUND_DARKER);
+        pnlStatus.setBackground(NuclosThemeSettings.BACKGROUND_ROOTPANE);
 		pnlStatus.add(labStatus);
 		splitBottomPanel.add(pnlStatus, BorderLayout.SOUTH);
 	}

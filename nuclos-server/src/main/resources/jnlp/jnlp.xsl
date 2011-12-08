@@ -39,6 +39,9 @@
 				<xsl:if test="$extensions='true'">
 					<extension name="extension" href="extensions/extension-{$extension-lastmodified}.jnlp" />
 				</xsl:if>
+				<xsl:for-each select="jnlp/themes/theme">
+					<extension name="{@name}" href="extensions/themes/theme-{@name}-{@lastmodified}.jnlp" />
+				</xsl:for-each>
 			</resources>
 			<application-desc main-class="org.nuclos.client.main.Main">
 				<xsl:for-each select="jnlp/arguments/argument">

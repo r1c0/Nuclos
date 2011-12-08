@@ -97,7 +97,7 @@ import org.nuclos.client.main.mainframe.workspace.WorkspaceFrame;
 import org.nuclos.client.report.reportrunner.BackgroundProcessStatusController;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
-import org.nuclos.client.synthetica.NuclosSyntheticaConstants;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.CommonJFrame;
 import org.nuclos.client.ui.Icons;
@@ -292,11 +292,11 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 	private void init(String sUserName, String sNucleusServerName) {
 		this.setTitle(sUserName, sNucleusServerName);
-		setBackground(NuclosSyntheticaConstants.BACKGROUND_DARKER);
+		setBackground(NuclosThemeSettings.BACKGROUND_ROOTPANE);
 		JPanel contentpane = (JPanel) getContentPane();
 		contentpane.setLayout(new BorderLayout());
 		contentpane.add(pnlDesktop, BorderLayout.CENTER);
-		contentpane.setBackground(NuclosSyntheticaConstants.BACKGROUND_DARKER);
+		contentpane.setBackground(NuclosThemeSettings.BACKGROUND_ROOTPANE);
 		pnlDesktop.setOpaque(false);
 		pnlDesktop.setLayout(new BorderLayout());
 	}
@@ -2164,7 +2164,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		JPanel jpnSwitchingWorkspace = new JPanel();
 		jpnSwitchingWorkspace.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		jpnSwitchingWorkspace.setOpaque(true);
-		jpnSwitchingWorkspace.setBackground(NuclosSyntheticaConstants.BACKGROUND_DARK);
+		jpnSwitchingWorkspace.setBackground(NuclosThemeSettings.BACKGROUND_COLOR3);
 		
 		TableLayoutBuilder tlbSwitchingWorkspace = new TableLayoutBuilder(jpnSwitchingWorkspace);
 		tlbSwitchingWorkspace.columns(TableLayout.FILL)
