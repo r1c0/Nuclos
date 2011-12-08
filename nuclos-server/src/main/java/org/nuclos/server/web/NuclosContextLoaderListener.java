@@ -29,6 +29,8 @@ import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
+import org.apache.activemq.broker.TransportConnector;
+import org.apache.activemq.thread.Scheduler;
 import org.apache.activemq.xbean.XBeanBrokerService;
 import org.apache.log4j.Logger;
 import org.nuclos.common.SpringApplicationContextHolder;
@@ -43,6 +45,11 @@ import org.springframework.web.util.WebUtils;
 public class NuclosContextLoaderListener extends ContextLoaderListener {
 
 	public static final String JNDI_LOG4J_PATH = "java:comp/env/nuclos-conf-log4j";
+	
+	/**
+	 * @deprecated Not save to use log4j FileWatchdog thread in a JEE environment.
+	 * 		Refer to https://jira.springsource.org/browse/SPR-488 for details. (tp)
+	 */
 	public static final String JNDI_LOG4J_INTERVAL = "java:comp/env/nuclos-conf-log4j-refresh";
 
 	protected Logger log;
@@ -58,29 +65,63 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 
 	@Override
 	public void contextDestroyed(ServletContextEvent event) {
+		_contextDestroyed(event);
+		
+		System.gc();
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// Ignore
+			// e.printStackTrace();
+		}
+		System.gc();
+	}
+	
+	private void _contextDestroyed(ServletContextEvent event) {
 		// We perform some additional clean-up actions to free
 		// all system classes from Nuclos references.
 		// Any such reference will lead to a memory leak after
 		// undeploying/stopping the server because it prevents
 		// Java from releasing and garbage-collecting the app.
 
-		ClassLoader webappClassLoader = getClass().getClassLoader(); // used for checking
+		final ClassLoader cl = Thread.currentThread().getContextClassLoader(); // used for checking
 
 		// Get some beans before we destroy the context
-		XBeanBrokerService activeMQBroker = (XBeanBrokerService) SpringApplicationContextHolder.getBean("broker");
-		org.apache.activemq.thread.Scheduler activeMQScheduler = org.apache.activemq.thread.Scheduler.getInstance();
+		final XBeanBrokerService activeMQBroker = (XBeanBrokerService) SpringApplicationContextHolder.getBean("broker");
+		final org.quartz.Scheduler quartz = (org.quartz.Scheduler) SpringApplicationContextHolder.getBean("nuclosScheduler");
+		final Scheduler activeMQScheduler = null; // Scheduler.getInstance();
 
 		// Let Spring perform its default clean-ups...
 		super.contextDestroyed(event);
 
 		// Shutdown ActiveMQ thread and broker
 		try {
-			if (activeMQScheduler != null && activeMQScheduler.getClass().getClassLoader() == webappClassLoader) {
+			if (checkClass(cl, activeMQScheduler)) {
 				activeMQScheduler.shutdown();
+				log.info("Shutdown MQ scheduler: done");
 			}
-			if (activeMQBroker != null && activeMQBroker.getClass().getClassLoader() == webappClassLoader) {
+		} catch (Exception ex) {
+			log.warn(ex);
+		}
+		try {
+			if (checkClass(cl, activeMQBroker)) {
+				List<TransportConnector> tcs = activeMQBroker.getTransportConnectors();
+				for (TransportConnector tc: tcs) {
+					tc.stop();
+				}
+				activeMQBroker.getTaskRunnerFactory().shutdown();
+				
 				activeMQBroker.stop();
 				activeMQBroker.destroy();
+				log.info("Shutdown MQ broker: done");
+			}
+		} catch (Exception ex) {
+			log.warn(ex);
+		}
+		try {
+			if (checkClass(cl, quartz)) {
+				quartz.shutdown(true);
+				log.info("Shutdown Quartz/SchedulerFactoryBean: done");
 			}
 		} catch (Exception ex) {
 			log.warn(ex);
@@ -92,7 +133,7 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 		List<Driver> webAppDrivers = new ArrayList<Driver>();
 		while (drivers.hasMoreElements()) {
 			Driver driver = drivers.nextElement();
-			if (driver.getClass().getClassLoader() == webappClassLoader)
+			if (driver.getClass().getClassLoader() == cl)
 				webAppDrivers.add(driver);
 		}
 		for (Driver driver : webAppDrivers) {
@@ -106,14 +147,26 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 		shutdownLogging(event.getServletContext());
 		// TODO: there are still some "open" references...
 	}
-
+	
+	private boolean checkClass(ClassLoader cl, Object o) {
+		if (o == null) return false;
+		final Class<?> clazz = o.getClass();
+		final String classname = clazz.getName();
+		Class<?> clclazz;
+		try {
+			clclazz = cl.loadClass(classname);
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
+		return clazz.equals(clclazz);
+	}
 
 	/**
 	 * Initialize log4j logging from JNDI configuration (or default paths).
 	 * @param servletContext the current ServletContext
 	 * @see Log4jWebConfigurer#initLogging
 	 */
-	public static void initLogging(ServletContext servletContext) {
+	private static void initLogging(ServletContext servletContext) {
 		String location = null;
 		try {
 			JndiTemplate template = new JndiTemplate();
@@ -173,13 +226,15 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 	 * @param servletContext the current ServletContext
 	 * @see Log4jWebConfigurer#shutdownLogging
 	 */
-	public static void shutdownLogging(ServletContext servletContext) {
+	private void shutdownLogging(ServletContext servletContext) {
 		servletContext.log("Shutting down log4j");
 		try {
 			Log4jConfigurer.shutdownLogging();
+			servletContext.log("Shut down log4j: done");
 		}
 		catch (Exception ex) {
 			servletContext.log("log4j shutdown exception", ex);
 		}
+		log = null;
 	}
 }

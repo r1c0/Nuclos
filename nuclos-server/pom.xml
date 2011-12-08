@@ -64,7 +64,13 @@
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
-			<version>1.7.3</version>
+			<version>1.8.5</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>slf4j-api</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
@@ -157,14 +163,38 @@
 			<version>3.7</version>
 		</dependency>
 		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty</artifactId>
-			<version>6.1.18</version>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>8.1.0.RC0</version>
+			<!--
+				At present this seems to be needed because of:
+				
+java.lang.ClassNotFoundException: org.eclipse.jetty.server.Connector
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1676)
+	at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1521)
+	at org.nuclos.server.web.NuclosJMSBrokerTunnelServlet.init(NuclosJMSBrokerTunnelServlet.java:63)
+	 			
+	 			This stems from:
+	 			transportConnector = new HttpTransportServer(new URI(url), myTransportFactory);
+	 			
+	 			Real MQ integration would be in the lines of:
+	 			
+	 			http://www.tomcatexpert.com/blog/2010/12/16/integrating-activemq-tomcat-using-local-jndi
+	 			http://activemq.apache.org/tomcat.html
+	 			
+	 			(tp)
+			 -->
+			<!-- exclusions>
+				<exclusion>
+					<artifactId>servlet-api</artifactId>
+					<groupId>javax.servlet</groupId>
+				</exclusion>
+			</exclusions -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-frontend-jaxws</artifactId>
-			<version>2.3.4</version>
+			<version>2.3.7</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>geronimo-javamail_1.4_spec</artifactId>
@@ -175,7 +205,7 @@
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-transports-http</artifactId>
-			<version>2.3.4</version>
+			<version>2.3.7</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>geronimo-javamail_1.4_spec</artifactId>

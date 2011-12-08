@@ -172,6 +172,10 @@
 			<artifactId>log4j</artifactId>
 		</dependency>
 		<dependency>
+				<groupId>com.googlecode.sli4j</groupId>
+				<artifactId>sli4j-slf4j-log4j</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
 		</dependency>

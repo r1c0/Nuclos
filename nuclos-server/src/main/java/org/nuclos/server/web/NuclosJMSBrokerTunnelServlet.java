@@ -27,7 +27,8 @@ import org.apache.activemq.broker.TransportConnection;
 import org.apache.activemq.broker.TransportConnector;
 import org.apache.activemq.transport.Transport;
 import org.apache.activemq.transport.TransportAcceptListener;
-import org.apache.activemq.transport.http.HttpEmbeddedTunnelServlet;
+import org.apache.activemq.transport.http.HttpSpringEmbeddedTunnelServlet;
+import org.apache.activemq.transport.http.HttpTransportFactory;
 import org.apache.activemq.transport.http.HttpTransportServer;
 import org.apache.activemq.util.ServiceSupport;
 import org.apache.activemq.xbean.XBeanBrokerService;
@@ -35,14 +36,29 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 
-public class NuclosJMSBrokerTunnelServlet extends HttpEmbeddedTunnelServlet {
+/**
+ * TODO: There must be a extremely more convenient way to do this... (tp)
+ */
+public class NuclosJMSBrokerTunnelServlet extends HttpSpringEmbeddedTunnelServlet {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosJMSBrokerTunnelServlet.class);
 	
+	/**
+	 * @deprecated There is a httpTransportFactory within HttpEmbeddedTunnelServlet, hence
+	 * 		there must be away to use it (and HttpTransportServer as well). (tp)
+	 */
+	private HttpTransportFactory myTransportFactory;
+	
+	private XBeanBrokerService brokerService;
+	
+	private HttpTransportServer htServer;
+	
 	@Override
 	protected BrokerService createBroker() throws Exception {
-		XBeanBrokerService obj = (XBeanBrokerService) SpringApplicationContextHolder.getBean("broker");
-		return obj;
+		if (brokerService == null) {
+			brokerService = (XBeanBrokerService) SpringApplicationContextHolder.getBean("broker");
+		}
+		return brokerService;
 	}
 
 	@Override
@@ -52,7 +68,9 @@ public class NuclosJMSBrokerTunnelServlet extends HttpEmbeddedTunnelServlet {
 				broker = createBroker();
 			
 			String url = getConnectorURL();
-			transportConnector = new HttpTransportServer(new URI(url));
+			myTransportFactory = new HttpTransportFactory();
+			htServer = new HttpTransportServer(new URI(url), myTransportFactory);
+			transportConnector = htServer;
 			
 			TransportAcceptListener acceptListener = new TransportAcceptListener() {
 				
@@ -89,14 +107,14 @@ public class NuclosJMSBrokerTunnelServlet extends HttpEmbeddedTunnelServlet {
 			
 			
 			TransportAcceptListener listener = transportConnector.getAcceptListener();			
+			getServletContext().setAttribute("transportFactory", myTransportFactory);
 			getServletContext().setAttribute("transportChannelListener", listener);
 			getServletContext().setAttribute("acceptListener", acceptListener);
 			
 			super.init();
-			
 		}
 		catch (Exception e) {
-			throw new ServletException  ("Failed to start embedded broker: " + e, e);
+			throw new ServletException("Failed to start embedded broker: " + e, e);
 		}
 		
 	}
@@ -106,6 +124,7 @@ public class NuclosJMSBrokerTunnelServlet extends HttpEmbeddedTunnelServlet {
 		try {
 			TransportConnector con = new TransportConnector();
 			con.setBrokerService(broker);
+			con.setServer(htServer);
 			
 			answer = new TransportConnection(con, transport, broker.getBroker(), null);
 			answer.getStatistics().setEnabled(true);
@@ -120,6 +139,5 @@ public class NuclosJMSBrokerTunnelServlet extends HttpEmbeddedTunnelServlet {
 	 protected String getConnectorURL() {
 	    return "http://localhost/" + "nuclos";
 	 }
-
 
 }
