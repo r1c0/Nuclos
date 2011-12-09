@@ -125,8 +125,7 @@ public class DatasourceUtils {
 		return result;
 	}
 	
-	@Deprecated
-	/** @deprecated Don't extract them by parsing the plain SQL (may be user-defined and using DB-specific extensions). */
+	/** @TODO find a better way: Don't extract them by parsing the plain SQL (may be user-defined and using DB-specific extensions). */
 	public static List<String> getColumns(final String sql) {
 		final List<String> result = new ArrayList<String>();
 		
