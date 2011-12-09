@@ -22,6 +22,14 @@
      					   http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
 	<!-- JMS start -->
+	
+	<!--
+		Configuration basics:
+		http://activemq.apache.org/spring-support.html
+	 
+	 	JmsTemplate Gotchas:
+	 	http://activemq.apache.org/jmstemplate-gotchas.html
+	 -->
 
 	<!--  Embedded ActiveMQ Broker -->
     <amq:broker id="broker" useJmx="false" persistent="false">
@@ -148,6 +156,5 @@
     	<property name="pubSubDomain" value="true"></property>
     	<property name="messageListener" ref="nuclosAuthenticationProvider"></property>
     </bean>
-
 
 </beans>

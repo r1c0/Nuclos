@@ -44,6 +44,14 @@ public class NuclosJMSBrokerTunnelServlet extends HttpSpringEmbeddedTunnelServle
 	private static final Logger LOG = Logger.getLogger(NuclosJMSBrokerTunnelServlet.class);
 	
 	/**
+	 * <p>
+	 * Here are some links for using Servlets with Spring:
+	 * <ul>
+	 *   <li>http://andykayley.blogspot.com/2007/11/how-to-inject-spring-beans-into.html</li>
+	 *   <li>http://javageek.org/2005/09/23/accessing_a_spring_bean_from_a_servlet.html</li>
+	 *   <li>http://static.springsource.org/spring/docs/2.5.x/reference/mvc.html</li>
+	 * </ul>
+	 * </p>
 	 * @deprecated There is a httpTransportFactory within HttpEmbeddedTunnelServlet, hence
 	 * 		there must be away to use it (and HttpTransportServer as well). (tp)
 	 */
@@ -59,6 +67,37 @@ public class NuclosJMSBrokerTunnelServlet extends HttpSpringEmbeddedTunnelServle
 			brokerService = (XBeanBrokerService) SpringApplicationContextHolder.getBean("broker");
 		}
 		return brokerService;
+	}
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+
+		myTransportFactory = null;
+		if (htServer != null) {
+			try {
+				htServer.stop();
+			}
+			catch (Exception e) {
+				// ignore
+			}
+		}
+		htServer = null;
+		transportConnector = null;
+		
+		
+		if (brokerService != null) {
+			try {
+				brokerService.stop();
+				brokerService.waitUntilStopped();
+				brokerService.destroy();
+			}
+			catch (Exception e) {
+				// ignore
+			}
+		}
+		brokerService = null;
+		broker = null;
 	}
 
 	@Override
@@ -116,7 +155,6 @@ public class NuclosJMSBrokerTunnelServlet extends HttpSpringEmbeddedTunnelServle
 		catch (Exception e) {
 			throw new ServletException("Failed to start embedded broker: " + e, e);
 		}
-		
 	}
 	
 	protected Connection createConnection(Transport transport) throws IOException {

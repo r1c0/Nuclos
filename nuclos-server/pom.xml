@@ -184,12 +184,12 @@ java.lang.ClassNotFoundException: org.eclipse.jetty.server.Connector
 	 			
 	 			(tp)
 			 -->
-			<!-- exclusions>
+			<exclusions>
 				<exclusion>
 					<artifactId>servlet-api</artifactId>
 					<groupId>javax.servlet</groupId>
 				</exclusion>
-			</exclusions -->
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>

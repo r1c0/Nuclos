@@ -42,6 +42,17 @@ import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.util.Log4jWebConfigurer;
 import org.springframework.web.util.WebUtils;
 
+/**
+ * <p>
+ * There are still issues with closing down ActiveMQ:
+ * <ul>
+ *   <li>https://issues.apache.org/jira/browse/AMQ-3451</li>
+ * </ul>
+ * </p>
+ * <p>
+ * There are still issues with ThreadLocal variables. Better avoid and/or clean them.
+ * </p>
+ */
 public class NuclosContextLoaderListener extends ContextLoaderListener {
 
 	public static final String JNDI_LOG4J_PATH = "java:comp/env/nuclos-conf-log4j";
@@ -112,6 +123,7 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 				activeMQBroker.getTaskRunnerFactory().shutdown();
 				
 				activeMQBroker.stop();
+				activeMQBroker.waitUntilStopped();
 				activeMQBroker.destroy();
 				log.info("Shutdown MQ broker: done");
 			}
