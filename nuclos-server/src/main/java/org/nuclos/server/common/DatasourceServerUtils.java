@@ -39,6 +39,7 @@ import org.nuclos.common.querybuilder.DatasourceXMLParser.XMLTable;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.exception.CommonPermissionException;
+import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.report.SchemaCache;
 import org.nuclos.server.report.WhereConditionParser;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
@@ -114,7 +115,13 @@ public class DatasourceServerUtils {
 	 * @throws NuclosDatasourceException
 	 */
 	public static String getSqlWithIdForInClause(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
-		return "(SELECT intid FROM (" + createSQL(sDatasourceXML, mpParams) + ") ds )";
+		switch (DataBaseHelper.getDbAccess().getDbType()) {
+		case POSTGRESQL: //NUCLOSINT-1015
+			return "(SELECT \"INTID\" FROM (" + createSQL(sDatasourceXML, mpParams) + ") ds )";
+		default:
+			return "(SELECT intid FROM (" + createSQL(sDatasourceXML, mpParams) + ") ds )";
+		}
+		
 	}
 
 	/**

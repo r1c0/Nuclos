@@ -43,6 +43,7 @@ import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.database.query.definition.QueryTable;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
@@ -180,6 +181,13 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 		/** @todo implement */
 		throw new NuclosFatalException(CommonLocaleDelegate.getMessage("DatasourceCollectController.17","Sammelbearbeitung ist hier noch nicht m\u00f6glich."));
 	}
+	
+	@Override
+	protected void readValuesFromEditPanel(CollectableDataSource clct, boolean bSearchTab) throws CollectableValidationException {
+		//NUCLOSINT-1015
+		pnlEdit.getQueryEditor().setParameter(QueryBuilderConstants.RECORDGRANT_SYSTEMPARAMETERS);
+		super.readValuesFromEditPanel(clct, bSearchTab);
+	}
 
 	/**
 	 * @param clctNew
@@ -192,7 +200,8 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 			throw new IllegalArgumentException("clctNew");
 		}
 		
-		pnlEdit.getQueryEditor().setParameter(QueryBuilderConstants.RECORDGRANT_SYSTEMPARAMETERS);
+		//NUCLOSINT-1015
+//		pnlEdit.getQueryEditor().setParameter(QueryBuilderConstants.RECORDGRANT_SYSTEMPARAMETERS);
 		final RecordGrantVO recordGrantVO = datasourcedelegate.createRecordGrant((RecordGrantVO) clctNew.getDatasourceVO(),
 				pnlEdit.getQueryEditor().getUsedDatasources());
 
