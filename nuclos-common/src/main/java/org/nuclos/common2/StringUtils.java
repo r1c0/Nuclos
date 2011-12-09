@@ -58,6 +58,8 @@ public class StringUtils {
 
 	private static final Pattern PARAM_PATTERN = Pattern.compile("\\$\\{([^}]*)\\}");
 
+	private static final Pattern IDENTIFIER_PATTERN = Pattern.compile("\\#\\{([^}]*)\\}");
+
 	private StringUtils() {
 	}
 
@@ -649,7 +651,7 @@ public class StringUtils {
 		}
 		return result.append("</body></html>").toString();
 	}
-	
+
 	public static String concat(Object... parts) {
 		final StringBuffer result = new StringBuffer();
 		for (Object part : parts) {
@@ -666,7 +668,7 @@ public class StringUtils {
 		}
 		return result.toString();
 	}
-	
+
 	public static String logFormat(String name, Object... pairs) {
 		final StringBuffer result = new StringBuffer();
 		result.append(name);
@@ -704,9 +706,9 @@ public class StringUtils {
 	public static boolean equalsIgnoreCase(String s1, String s2) {
 		return (s1 == null) ? (s2 == null) : s1.equalsIgnoreCase(s2);
 	}
-	
+
 	private static final int MAX_SQL_ID_LENGTH = 21;
-	
+
 	/**
 	 * Make a valid SQL identifier (e.g. for an SQL alias) from an arbitrary String.
 	 */
@@ -714,8 +716,8 @@ public class StringUtils {
 		if (strings == null || strings.length == 0 || strings.length >= MAX_SQL_ID_LENGTH) {
 			throw new IllegalArgumentException();
 		}
-		
-		final StringBuilder result = new StringBuilder();		
+
+		final StringBuilder result = new StringBuilder();
 		final int slen = strings.length;
 		int i = slen;
 		for (String s: strings) {
@@ -727,7 +729,7 @@ public class StringUtils {
 		if (result.length() > MAX_SQL_ID_LENGTH) result.setLength(MAX_SQL_ID_LENGTH);
 		return result.toString();
 	}
-	
+
 	private static void makeSQLIdentifierFrom(StringBuilder result, String s, int maxLen) {
 		if (maxLen < 1) throw new IllegalArgumentException();
 		final int len = s.length();
@@ -793,7 +795,17 @@ public class StringUtils {
 				result.append((char) c);
 			}
 		}
-		if (result.length() > max) result.setLength(max); 
+		if (result.length() > max) result.setLength(max);
 	}
 
+	public static String[] parseIdentifier(String identifier) {
+		Matcher m = IDENTIFIER_PATTERN.matcher(identifier);
+		if (m.matches()) {
+			String s = identifier.substring(2, identifier.length() - 1);
+			return s.split("\\.");
+		}
+		else {
+			return null;
+		}
+	}
 }	// class StringUtils

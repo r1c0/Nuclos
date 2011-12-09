@@ -38,6 +38,7 @@ import org.nuclos.common.dal.vo.IDalVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.processor.AbstractDalProcessor;
+import org.nuclos.server.dal.processor.ColumnToBeanVORefMapping;
 import org.nuclos.server.dal.processor.ColumnToRefFieldVOMapping;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.database.DataBaseHelper;
@@ -48,6 +49,7 @@ import org.nuclos.server.dblayer.expression.DbNull;
 import org.nuclos.server.dblayer.query.DbCondition;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
+import org.nuclos.server.dblayer.query.DbJoin;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.dblayer.statements.DbDeleteStatement;
@@ -57,7 +59,7 @@ import org.nuclos.server.dblayer.statements.DbTableStatement;
 import org.nuclos.server.dblayer.statements.DbUpdateStatement;
 
 public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends AbstractDalProcessor<DalVO> {
-	
+
 	private static final Logger LOG = Logger.getLogger(AbstractJdbcDalProcessor.class);
 
    // This must be clone and hence cannot be final.
@@ -70,7 +72,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
       this.allColumnsAsSet = new HashSet<IColumnToVOMapping<? extends Object>>(allColumns);
       checkColumns();
    }
-   
+
 	public Object clone() {
 		final AbstractJdbcDalProcessor<DalVO> clone;
 		try {
@@ -215,7 +217,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 	   final DalCallResult result = batchDelete(Collections.singletonList(id), false);
 	   result.throwFirstException();
    }
-   
+
    protected DbQuery<Object[]> createQuery(List<IColumnToVOMapping<? extends Object>> columns) {
 	   return createQuery(columns, false);
    }
@@ -225,7 +227,23 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
       DbFrom from = query.from(overrideDbSourceUseDML ? getDbSourceForDML() : getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
       List<DbExpression<?>> selections = new ArrayList<DbExpression<?>>();
       for (IColumnToVOMapping<?> column : columns) {
-         selections.add(column.getDbColumn(from));
+         if (column instanceof ColumnToBeanVORefMapping<?>) {
+        	 ColumnToBeanVORefMapping<?> refColumn = (ColumnToBeanVORefMapping<?>) column;
+        	 String tableAlias = refColumn.getTableAlias();
+        	 DbJoin join = null;
+        	 for (DbJoin j : from.getJoins()) {
+        		 if (j.getAlias() != null && j.getAlias().equals(tableAlias)) {
+        			 join = j;
+        		 }
+        	 }
+        	 if (join == null) {
+        		 join = from.join(refColumn.getTable(), refColumn.getType()).alias(refColumn.getTableAlias()).on(refColumn.getRefColumn(), "INTID", Long.class);
+        	 }
+        	 selections.add(refColumn.getDbColumn(join));
+         }
+         else {
+        	 selections.add(column.getDbColumn(from));
+         }
       }
       query.multiselect(selections);
       return query;
@@ -278,7 +296,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
    protected Transformer<Object[], DalVO> createResultTransformer(List<IColumnToVOMapping<? extends Object>> columns) {
       return getResultTransformer(columns.toArray(new IColumnToVOMapping[columns.size()]));
    }
-   
+
    protected <S> Transformer<Object[], DalVO> getResultTransformer(final IColumnToVOMapping<Object>... columns) {
 		return new Transformer<Object[], DalVO>() {
 			@Override
@@ -288,7 +306,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 					for (int i = 0, n = columns.length; i < n; i++) {
 						final IColumnToVOMapping<Object> column = columns[i];
 						final Object value = result[i];
-						column.convertFromDbValueToDalField(dalVO, value);						
+						column.convertFromDbValueToDalField(dalVO, value);
 					}
 					dalVO.processor(getProcessor());
 					return dalVO;
@@ -327,7 +345,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 		query.where(builder.and(conditions.toArray(new DbCondition[conditions.size()])));
 		Long count = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 		if (count > 1L) {
-			return new SQLIntegrityConstraintViolationException("Unique constraint violated in query '" 
+			return new SQLIntegrityConstraintViolationException("Unique constraint violated in query '"
 					+ query + "' with id=" + id + ", number of result is " + count);
 		}
 		return null;
@@ -364,15 +382,15 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 			allColumns.add(column);
 		}
 	}
-	
+
 	public void setAllColumns(List<IColumnToVOMapping<? extends Object>> columns) {
 		allColumns.clear();
 		allColumns.addAll(columns);
-		
+
 		allColumnsAsSet.clear();
 		allColumnsAsSet.addAll(columns);
-		
+
 		checkColumns();
 	}
-	
+
 }

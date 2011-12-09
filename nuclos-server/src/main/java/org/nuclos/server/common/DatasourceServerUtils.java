@@ -44,6 +44,7 @@ import org.nuclos.server.report.SchemaCache;
 import org.nuclos.server.report.WhereConditionParser;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class DatasourceServerUtils {
 	private static Logger	log	= Logger.getLogger(DatasourceServerUtils.class);
@@ -91,9 +92,8 @@ public class DatasourceServerUtils {
 	 * @param sDatasourceXML xml of datasource
 	 * @return string containing sql
 	 */
-	public static String createSQL(String sDatasourceXML)
-	    throws NuclosDatasourceException {
-		return createSQL(sDatasourceXML, Collections.<String, Object>emptyMap());
+	public static String createSQL(String sDatasourceXML) throws NuclosDatasourceException {
+		return SQLCACHE.getSQL(sDatasourceXML);
 	}
 
 	/**
@@ -127,6 +127,9 @@ public class DatasourceServerUtils {
 	public static String createSQL(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
 		String result = null;
 		result = SQLCACHE.getSQL(sDatasourceXML);
+		if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() != null) {
+			mpParams.put("username", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+		}
 		result = replaceParameters(result, mpParams==null?(new HashMap<String, Object>()):mpParams);
 		log.debug(result);
 

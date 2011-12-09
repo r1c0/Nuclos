@@ -17,6 +17,7 @@
 package org.nuclos.common;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
@@ -26,6 +27,10 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
  * Interface implemented by MetaDataProviders for accessing meta data information.
  */
 public interface MetaDataProvider extends CommonMetaDataProvider {
+
+	public static final String NAMESPACE_NUCLOS = "NUC";
+
+	public static final String NAMESPACE_DEFAULT = "DEF";
 
 	Collection<EntityMetaDataVO> getAllEntities();
 
@@ -50,4 +55,12 @@ public interface MetaDataProvider extends CommonMetaDataProvider {
 	 * @return Returns the base entity name. Returns the original entity name if there is no dynamic entity with the given name.
 	 */
 	String getBaseEntity(String dynamicentityname);
+
+	/**
+	 * Get entities by nuclet name
+	 *
+	 * @param nuclet The nuclet's acronym
+	 * @return List of entity names that belong to the nuclet
+	 */
+	List<String> getEntities(String nuclet);
 }

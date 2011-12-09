@@ -38,6 +38,7 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.transport.GzipMap;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
@@ -128,7 +129,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 	public Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info) {
 		// According to the interface spec, we have to ignore value and value type.
 		final PivotInfo cacheInfo = new PivotInfo(info.getSubform(), info.getKeyField(), null, null);
-		
+
 		final EntityMetaDataVO subform = getEntity(info.getSubform());
 		final String subformTable = EntityObjectMetaDbHelper.getViewName(subform);
 		final EntityFieldMetaDataVO keyField = getEntityField(info.getSubform(), info.getKeyField());
@@ -266,6 +267,8 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 
 		private long startRevalidating;
 
+		private Map<String, List<String>> mapEntitiesByNuclets = null;
+
 		private Map<String, EntityMetaDataVO> mapMetaDataByEntity = null;
 		private Map<Long, EntityMetaDataVO> mapMetaDataById = null;
 		private Map<String, Map<String, EntityFieldMetaDataVO>> mapFieldMetaData = null;
@@ -273,16 +276,24 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 
 		private Map<String, DynamicEntityVO> mapDynamicEntities;
 
+		public Map<String, List<String>> getMapEntitiesByNuclets() {
+			if (isRevalidating()) {
+				return getMapEntitiesByNuclets();
+			} else {
+				return mapEntitiesByNuclets;
+			}
+		}
+
 		/**
 		 * @deprecated Risk of spring circular references. Avoid this.
 		 */
 		public Map<String, EntityMetaDataVO> getMapMetaDataByEntity() {
 			if (isRevalidating()) {
 				return getMapMetaDataByEntity();
-			} 
+			}
 			else if (mapDynamicEntities == null) {
 				mapDynamicEntities = Collections.unmodifiableMap(CollectionUtils.generateLookupMap(
-						DatasourceCache.getInstance().getAllDynamicEntities(), DalTransformations.getDynamicEntityName()));				
+						DatasourceCache.getInstance().getAllDynamicEntities(), DalTransformations.getDynamicEntityName()));
 			}
 			return mapMetaDataByEntity;
 		}
@@ -393,11 +404,34 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 			return result;
 		}
 
+		private Map<String, List<String>> buildMapEntitiesByNuclets() {
+			HashMap<String, List<String>> entitiesByNuclets = new HashMap<String, List<String>>();
+			entitiesByNuclets.put(NAMESPACE_NUCLOS, new ArrayList<String>());
+			for (EntityMetaDataVO meta : NuclosDalProvider.getInstance().getEntityMetaDataProcessor().getAll()) {
+				entitiesByNuclets.get(NAMESPACE_NUCLOS).add(meta.getEntity());
+			}
 
+			for (EntityMetaDataVO meta : NucletDalProvider.getInstance().getEntityMetaDataProcessor().getAll()) {
+				String nuclet = LangUtils.defaultIfNull(meta.getNuclet(), NAMESPACE_DEFAULT);
+				if (!entitiesByNuclets.containsKey(nuclet)) {
+					entitiesByNuclets.put(nuclet, new ArrayList<String>());
+				}
+				if (entitiesByNuclets.containsKey(nuclet)) {
+					entitiesByNuclets.get(nuclet).add(meta.getEntity());
+				}
+			}
+
+			for (String nuclet : entitiesByNuclets.keySet()) {
+				entitiesByNuclets.put(nuclet, Collections.unmodifiableList(entitiesByNuclets.get(nuclet)));
+			}
+
+			return entitiesByNuclets;
+		}
 
 		public synchronized void buildMaps() {
 			startRevalidating = System.currentTimeMillis();
 			revalidating = true;
+			mapEntitiesByNuclets = Collections.unmodifiableMap(buildMapEntitiesByNuclets());
 			mapMetaDataByEntity = Collections.unmodifiableMap(buildMapMetaDataByEntity());
 			mapMetaDataById = Collections.unmodifiableMap(buildMapMetaDataById(mapMetaDataByEntity));
 			mapFieldMetaData = Collections.unmodifiableMap(buildMapFieldMetaData(mapMetaDataByEntity));
@@ -434,6 +468,11 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		else {
 			return dynamicentityname;
 		}
+	}
+
+	@Override
+	public List<String> getEntities(String nuclet) {
+		return dataCache.getMapEntitiesByNuclets().get(nuclet);
 	}
 
 }

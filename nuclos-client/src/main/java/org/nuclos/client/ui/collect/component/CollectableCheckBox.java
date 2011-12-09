@@ -29,14 +29,25 @@ import javax.swing.SwingConstants;
 import javax.swing.ToolTipManager;
 import javax.swing.table.TableCellRenderer;
 
+import org.apache.log4j.Logger;
 import org.jdesktop.jxlayer.JXLayer;
+import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.ToolTipTextProvider;
 import org.nuclos.client.ui.TriStateCheckBox;
+import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.SubForm.Column;
+import org.nuclos.client.ui.collect.SubForm.SubFormTable;
+import org.nuclos.client.ui.collect.model.CollectableTableModel;
+import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
+import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.exception.CommonFatalException;
 
 /**
  * A <code>CollectableComponent</code> that presents a value in a <code>JCheckBox</code>.
@@ -48,6 +59,9 @@ import org.nuclos.common2.CommonLocaleDelegate;
  * @version	01.00.00
  */
 public class CollectableCheckBox extends AbstractCollectableComponent {
+
+	private static final Logger LOG = Logger.getLogger(CollectableCheckBox.class);
+
 	/**
 	 * TriStateCheckBox with support for dynamic tooltips.
 	 */
@@ -160,7 +174,7 @@ public class CollectableCheckBox extends AbstractCollectableComponent {
 	public TableCellRenderer getTableCellRenderer() {
 		return new CheckBoxTableCellRenderer();
 	}
-	
+
 	protected class CheckBoxTableCellRenderer extends CollectableComponentDefaultTableCellRenderer {
 		@Override
         public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus,
@@ -172,13 +186,54 @@ public class CollectableCheckBox extends AbstractCollectableComponent {
 			}
 			else if (comp instanceof TriStateCheckBox) {
 				TriStateCheckBox check = (TriStateCheckBox) comp;
+				check.setOpaque(true);
 				check.setVerticalAlignment(SwingConstants.TOP);
 				check.setHorizontalAlignment(JCheckBox.CENTER);
 				check.setBackground(bSelected ? tbl.getSelectionBackground() : tbl.getBackground());
 				check.setForeground(bSelected ? tbl.getSelectionForeground() : tbl.getForeground());
 			}
+
+			// check whether the data of the component is readable for current user, by asking the security agent of the actual field
+			if (tbl.getModel() instanceof SortableCollectableTableModel<?>) {
+				final SortableCollectableTableModel<Collectable> tblModel = (SortableCollectableTableModel<Collectable>)tbl.getModel();
+				if (tblModel.getRowCount() >= iRow+1) {
+					final Collectable clct = tblModel.getCollectable(iRow);
+					final Integer iTColumn = tbl.getColumnModel().getColumn(iColumn).getModelIndex();
+					final CollectableEntityField clctef = tblModel.getCollectableEntityField(iTColumn);
+					if (clctef == null) {
+						throw new NullPointerException("getTableCellRendererComponent failed to find field: " + clct + " tm index " + iTColumn);
+					}
+
+					try {
+						EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(clctef.getEntityName());
+						if (meta.getRowColorScript() != null && !bSelected) {
+							CollectableTableModel<? extends Collectable> mdl = (CollectableTableModel<? extends Collectable>) tbl.getModel();
+							if (mdl.getRowCount() > iRow) {
+								Collectable c = mdl.getRow(iRow);
+								AbstractCollectableComponent.setBackground(comp, meta.getRowColorScript(), c);
+							}
+						}
+					}
+					catch (CommonFatalException ex) {
+						LOG.warn(ex);
+					}
+
+					if (tbl instanceof SubForm.SubFormTable) {
+						SubFormTable subformtable = (SubForm.SubFormTable) tbl;
+						Column subformcolumn = subformtable.getSubForm().getColumn(clctef.getName());
+						if (subformcolumn != null && !subformcolumn.isEnabled()) {
+							if (bSelected) {
+								comp.setBackground(NuclosThemeSettings.BACKGROUND_INACTIVESELECTEDCOLUMN);
+							} else {
+								comp.setBackground(NuclosThemeSettings.BACKGROUND_INACTIVECOLUMN);
+							}
+						}
+					}
+				}
+
+			}
 			return comp;
 		}
 	}
-	
+
 }  // class CollectableCheckBox

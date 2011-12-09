@@ -63662,5 +63662,35 @@
     "resourceID": "action.ExecuteReports",
     "locale": "de",
     "text": "Reporting ausführen"
+  },
+  {
+    "resourceID": "nuclos.entityfield.Nuclet.namespace.label",
+    "locale": "i-default",
+    "text": "Namespace"
+  },
+  {
+    "resourceID": "nuclos.entityfield.Nuclet.namespace.label",
+    "locale": "en",
+    "text": "Namespace"
+  },
+  {
+    "resourceID": "nuclos.entityfield.Nuclet.namespace.label",
+    "locale": "de",
+    "text": "Namensraum"
+  },
+  {
+    "resourceID": "nuclos.entityfield.Nuclet.namespace.description",
+    "locale": "i-default",
+    "text": "Unique namespace for the nuclet's elements."
+  },
+  {
+    "resourceID": "nuclos.entityfield.Nuclet.namespace.description",
+    "locale": "en",
+    "text": "Unique namespace for the nuclet's elements."
+  },
+  {
+    "resourceID": "nuclos.entityfield.Nuclet.namespace.description",
+    "locale": "de",
+    "text": "Eindeutiger Namensraum für Nucletelemente."
   }
 ]

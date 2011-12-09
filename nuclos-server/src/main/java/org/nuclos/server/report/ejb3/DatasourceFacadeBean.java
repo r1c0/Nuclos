@@ -1139,6 +1139,8 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
 			}
 		}
 
+		result.put("username", getCurrentUserName());
+
 		return result;
    }
 

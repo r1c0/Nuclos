@@ -16,13 +16,17 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 
 /**
@@ -36,6 +40,7 @@ public class StaticMetaDataProvider extends AbstractProvider implements MetaData
 	public StaticMetaDataProvider(){
 	}
 
+	private Map<String, List<String>> mapEntitiesByNuclets = new HashMap<String, List<String>>();
 	private Map<String, EntityMetaDataVO> mapMetaDataByEntity = new LinkedHashMap<String, EntityMetaDataVO>();
 	private Map<Long, EntityMetaDataVO> mapMetaDataById = new LinkedHashMap<Long, EntityMetaDataVO>();
 	private Map<String, Map<String, EntityFieldMetaDataVO>> mapFieldMetaData = new LinkedHashMap<String, Map<String, EntityFieldMetaDataVO>>();
@@ -104,6 +109,11 @@ public class StaticMetaDataProvider extends AbstractProvider implements MetaData
 
 
 	public void addEntity(EntityMetaDataVO entityMeta) {
+		String namespace = NuclosEntity.isNuclosEntity(entityMeta.getEntity()) ? NAMESPACE_NUCLOS : LangUtils.defaultIfNull(entityMeta.getNuclet(), NAMESPACE_DEFAULT);
+		if (!mapEntitiesByNuclets.containsKey(namespace)) {
+			mapEntitiesByNuclets.put(namespace, new ArrayList<String>());
+		}
+		mapEntitiesByNuclets.get(namespace).add(entityMeta.getEntity());
 		mapMetaDataByEntity.put(entityMeta.getEntity(), entityMeta);
 		mapMetaDataById.put(entityMeta.getId(), entityMeta);
 		mapFieldMetaData.put(entityMeta.getEntity(), new LinkedHashMap<String, EntityFieldMetaDataVO>());
@@ -137,5 +147,15 @@ public class StaticMetaDataProvider extends AbstractProvider implements MetaData
 	@Override
 	public String getBaseEntity(String dynamicentityname) {
 		throw new UnsupportedOperationException("getBaseEntity() is not applicable for StaticMetaDataProvider.");
+	}
+
+	@Override
+	public List<String> getEntities(String nuclet) {
+		if (mapEntitiesByNuclets.containsKey(nuclet)) {
+			return mapEntitiesByNuclets.get(nuclet);
+		}
+		else {
+			return Collections.emptyList();
+		}
 	}
 }

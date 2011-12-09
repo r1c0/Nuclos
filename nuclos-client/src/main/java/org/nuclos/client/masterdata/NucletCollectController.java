@@ -95,8 +95,7 @@ public class NucletCollectController extends MasterDataCollectController {
 	}
 
 	@Override
-	protected CollectableMasterDataWithDependants insertCollectable(
-		CollectableMasterDataWithDependants clctNew)	throws CommonBusinessException {
+	protected CollectableMasterDataWithDependants insertCollectable(CollectableMasterDataWithDependants clctNew) throws CommonBusinessException {
 		CollectableMasterDataWithDependants result = super.insertCollectable(clctNew);
 		updateExportButtonState();
 		return result;

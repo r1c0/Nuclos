@@ -84,6 +84,7 @@ import org.nuclos.client.ui.labeled.LabeledComboBox;
 import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
 import org.nuclos.client.ui.popupmenu.JPopupMenuFactory;
 import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -1393,8 +1394,8 @@ public abstract class AbstractCollectableComponent
 				result = NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
 			} else if (isDetailsComponent() && (getControlComponent() instanceof FileChooserComponent) && !((FileChooserComponent) getControlComponent()).isEnabled()) {
 				result = NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
-			} else 
-			
+			} else
+
 			if (isDetailsComponent() && getDetailsModel().isMandatoryAdded()) {
 				result = hasValue || hasFocus() ? null : ClientParameterProvider.getInstance().getColorValue(ParameterProvider.KEY_MANDATORY_ADDED_ITEM_BACKGROUND_COLOR, new Color(255,255,200));
 			} else if (isDetailsComponent() && getDetailsModel().isMandatory()) {
@@ -1522,6 +1523,21 @@ public abstract class AbstractCollectableComponent
 	@Override
     public void setPreferences(Preferences prefs) {
 		// do nothing here
+	}
+
+	protected final static void setBackground(Component c, NuclosScript ns, Collectable clct) {
+		try {
+			String rgb = Integer.toHexString(c.getBackground().getRGB());
+			rgb = rgb.substring(2, rgb.length());
+			Object o = GroovySupport.eval(ns, clct, "#" + rgb);
+			if (o instanceof String) {
+				Color color = Color.decode((String)o);
+				c.setBackground(color);
+			}
+		}
+		catch (Exception ex) {
+			LOG.warn(ex);
+		}
 	}
 
 	/**
@@ -1691,18 +1707,6 @@ public abstract class AbstractCollectableComponent
 					if (clctef == null) {
 						throw new NullPointerException("getTableCellRendererComponent failed to find field: " + clct + " tm index " + iTColumn);
 					}
-					
-					if (tbl instanceof SubForm.SubFormTable) {
-						SubFormTable subformtable = (SubForm.SubFormTable) tbl;
-						Column subformcolumn = subformtable.getSubForm().getColumn(clctef.getName());
-						if (subformcolumn != null && !subformcolumn.isEnabled()) {
-							if (bSelected) {
-								setBackground(NuclosThemeSettings.BACKGROUND_INACTIVESELECTEDCOLUMN);
-							} else {
-								setBackground(NuclosThemeSettings.BACKGROUND_INACTIVECOLUMN);
-							}
-						}
-					}
 
 					try {
 						EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(clctef.getEntityName());
@@ -1710,25 +1714,14 @@ public abstract class AbstractCollectableComponent
 							CollectableTableModel<? extends Collectable> mdl = (CollectableTableModel<? extends Collectable>) tbl.getModel();
 							if (mdl.getRowCount() > iRow) {
 								Collectable c = mdl.getRow(iRow);
-								try {
-									String rgb = Integer.toHexString(getBackground().getRGB());
-									rgb = rgb.substring(2, rgb.length());
-									Object o = GroovySupport.eval(meta.getRowColorScript(), c, "#" + rgb);
-									if (o instanceof String) {
-										Color color = Color.decode((String)o);
-										setBackground(color);
-									}
-								}
-								catch (Exception ex) {
-									LOG.warn(ex);
-								}
+								AbstractCollectableComponent.setBackground(this, meta.getRowColorScript(), c);
 							}
 						}
 					}
 					catch (CommonFatalException ex) {
 						LOG.warn(ex);
 					}
-					
+
 					if (tbl instanceof SubForm.SubFormTable) {
 						SubFormTable subformtable = (SubForm.SubFormTable) tbl;
 						Column subformcolumn = subformtable.getSubForm().getColumn(clctef.getName());
@@ -1756,7 +1749,7 @@ public abstract class AbstractCollectableComponent
 					}
 
 				}
-				
+
 			}
 			return this;
 		}

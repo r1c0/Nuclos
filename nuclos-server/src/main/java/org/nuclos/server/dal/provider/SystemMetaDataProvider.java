@@ -20,10 +20,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -124,6 +127,21 @@ public class SystemMetaDataProvider implements MetaDataProvider {
 	@Override
 	public String getBaseEntity(String dynamicentityname) {
 		throw new UnsupportedOperationException("getBaseEntity() is not applicable for system entites.");
+	}
+
+	@Override
+	public List<String> getEntities(String nuclet) {
+		if (!NAMESPACE_NUCLOS.equals(nuclet)) {
+			throw new UnsupportedOperationException(getClass().getName() + " does not support nuclets");
+		}
+		else {
+			return CollectionUtils.transform(entities.values(), new Transformer<SystemEntityMetaDataVO, String>() {
+				@Override
+				public String transform(SystemEntityMetaDataVO i) {
+					return i.getEntity();
+				}
+			});
+		}
 	}
 
 }

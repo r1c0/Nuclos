@@ -73,26 +73,26 @@ import org.nuclos.server.report.valueobject.RecordGrantVO;
 public abstract class AbstractDatasourceCollectController extends NuclosCollectController<CollectableDataSource>  {
 
 	private static final Logger LOG = Logger.getLogger(AbstractDatasourceCollectController.class);
-	
+
 	protected static final String PREFS_KEY_LASTIMPORTEXPORTPATH = "lastImportExportPath";
-	
+
 	protected final DatasourceDelegate datasourcedelegate = DatasourceDelegate.getInstance();
-	
+
 	protected MainFrameTab ifrm;
 	private boolean addTabToParent;
 	protected DatasourceEditPanel pnlEdit;
 	protected CollectPanel<CollectableDataSource> pnlCollect = new DatasourceCollectPanel(false);
-	
+
 	protected JButton btnImport;
 	protected JButton btnExport;
 	protected JButton btnValidate;
-	
+
 	/**
 	 * Don't make this public!
 	 *
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -104,14 +104,14 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 		ifrm = tabIfAny;
 		addTabToParent = tabIfAny==null;
 	}
-	
+
 	public final MainFrameTab getMainFrameTab() {
 		return ifrm;
 	}
-	
+
 	protected void initializeDatasourceCollectController(DatasourceEditPanel pnlEdit) {
 		this.pnlEdit = pnlEdit;
-		
+
 		this.initialize(this.pnlCollect);
 
 		if (ifrm == null)
@@ -133,13 +133,13 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 
 		this.getCollectStateModel().addCollectStateListener(new DatasourcesCollectStateListener());
 	}
-	
-	
+
+
 	@Override
 	protected String getEntityLabel() {
 		return CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataCache.getInstance().getMetaData(sEntity));
 	}
-	
+
 	/**
 	 * @param clct
 	 * @param bSearchTab
@@ -171,7 +171,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 		}
 		validateParameters();
 	}
-	
+
 	/** validate datasource parameters
 	 *
 	 */
@@ -219,9 +219,9 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 		});
 		//toolbarCustomDetails.add(btnValidate);
 		this.getDetailsPanel().addToolBarComponent(btnValidate);
-		
+
 		//toolbarCustomDetails.addSeparator();
-		
+
 		for(JButton jb : getAdditionalToolbarButtons()){
 			//toolbarCustomDetails.add(jb);
 			this.getDetailsPanel().addToolBarComponent(jb);
@@ -229,11 +229,11 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 
 		//this.getDetailsPanel().setCustomToolBarArea(toolbarCustomDetails);
 	}
-	
+
 	protected List<JButton> getAdditionalToolbarButtons() {
 		return Collections.<JButton>emptyList();
 	}
-	
+
 	/**
 	 * @deprecated Move to DetailsController hierarchy and make protected again.
 	 */
@@ -249,7 +249,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 	public void removeAdditionalChangeListenersForDetails() {
 		pnlEdit.getQueryEditor().removeChangeListener(this.changelistenerDetailsChanged);
 	}
-	
+
 	protected static String getUsagesAsString(List<DatasourceVO> lstUsages) {
 		/** @todo Use	CollectionUtils.getSeparatedList() */
 
@@ -262,13 +262,13 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 
 		return sb.toString();
 	}
-	
+
 	@Override
 	protected CollectableDataSource findCollectableByIdWithoutDependants(
 		String sEntity, Object oId) throws CommonBusinessException {
 		return findCollectableById(sEntity, oId);
 	}
-	
+
 	/**
 	 * import a datasource from XML
 	 */
@@ -311,9 +311,9 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 			}
 		}
 	}
-	
+
 	protected abstract void importXML(String sXML) throws NuclosBusinessException;
-	
+
 	/**
 	 * export datasource to XML
 	 */
@@ -364,9 +364,9 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 			}
 		}
 	}
-	
+
 	protected abstract void exportXML(File file) throws IOException, CommonBusinessException ;
-	
+
 	protected void cmdValidateSql() {
 		UIUtils.runCommand(this.getFrame(), new Runnable() {
 			@Override
@@ -375,14 +375,14 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 			}
 		});
 	}
-	
-	
+
+
 	protected abstract void validateSQL();
-	
+
 	protected List<ColumnEntry> getDefaultColumns() {
 		return Collections.emptyList();
 	}
-	
+
 	/**
 	 * @param clct
 	 * @throws NuclosBusinessException
@@ -418,15 +418,19 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 					}
 
 					if (pnlEdit.isModelUsed() && !(stColumnParameters.contains(sParameter) || stColumnParameters.contains(sParameter + "Id")) ) {
-						if (datasourceVO instanceof RecordGrantVO && 
+						if (datasourceVO instanceof RecordGrantVO &&
 							QueryBuilderConstants.RECORDGRANT_SYSTEMPARAMETER_NAMES.contains(sParameter)) {
 							continue;
 						}
-						
+
 						JOptionPane.showMessageDialog(parent, CommonLocaleDelegate.getMessage("DatasourceCollectController.5","Der Parameter \"{0}\" ist definiert, wird aber nicht verwendet.", sParameter));
 					}
 				}
 				for (String sParameter : stColumnParameters) {
+					// username should always be available
+					if (sParameter.equals("username")) {
+						continue;
+					}
 					if (pnlEdit.isModelUsed() && !stDefinedParameters.contains(sParameter)) {
 						JOptionPane.showMessageDialog(parent, CommonLocaleDelegate.getMessage("DatasourceCollectController.6","Der Parameter \"{0}\" ist nicht definiert.", sParameter));
 					}
@@ -440,7 +444,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 			}
 		});
 	}
-	
+
 
 	/** ask the user for parameter values
 	 * @param sDatasourceXML
@@ -467,7 +471,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 		}
 		return result;
 	}
-	
+
 	protected class DatasourcesCollectStateListener extends CollectStateAdapter {
 		@Override
 		public void detailsModeEntered(CollectStateEvent ev) throws NuclosBusinessException {
@@ -479,7 +483,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 			AbstractDatasourceCollectController dscc = AbstractDatasourceCollectController.this;
 			final boolean bWriteAllowed = SecurityCache.getInstance().isWriteAllowedForMasterData(sEntity);
 
-			final QueryBuilderEditor editor = dscc.pnlEdit.getQueryEditor(); 
+			final QueryBuilderEditor editor = dscc.pnlEdit.getQueryEditor();
 			if (iDetailsMode == CollectState.DETAILSMODE_EDIT || iDetailsMode == CollectState.DETAILSMODE_MULTIEDIT) {
 				editor.getTableSelectionPanel().getParameterPanel().getDeleteParameterAction().setEnabled(bWriteAllowed);
 			}
@@ -491,7 +495,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 			if (header.getEntityComboBox() != null) {
 				header.getEntityComboBox().setEnabled(bWriteAllowed);
 			}
-			
+
 			editor.getTableSelectionPanel().getParameterPanel().getNewParameterAction().setEnabled(bWriteAllowed);
 			editor.getTableSelectionPanel().getParameterPanel().getParameterTable().setEnabled(bWriteAllowed);
 			editor.getColumnSelectionPanel().getTable().setEnabled(bWriteAllowed);
@@ -527,7 +531,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 		public DetailsPanel newDetailsPanel() {
 			return new DetailsPanel(false);
 		}
-		
-		
+
+
 	}
 }

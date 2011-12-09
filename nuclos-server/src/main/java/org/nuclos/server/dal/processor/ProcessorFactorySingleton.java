@@ -41,6 +41,7 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.IDalVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.dal.vo.SystemFields;
+import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.dal.DalUtils;
@@ -110,6 +111,15 @@ public class ProcessorFactorySingleton {
 		try {
 			return new ColumnToBeanVOMapping<S>(alias, column, field, type.getMethod("set" + xetterSuffix, dataType),
 					type.getMethod((DT_BOOLEAN.equals(dataType) ? "is" : "get") + xetterSuffix), dataType, isReadonly);
+		} catch (Exception e) {
+			throw new CommonFatalException("On " + type + ": " + e);
+		}
+	}
+
+	private static <S> IColumnToVOMapping<S> createBeanRefMapping(String refColumn, String table, String tableAlias, JoinType jt, Class<? extends IDalVO> type, String column, String alias, String field, Class<S> dataType) {
+		final String xetterSuffix = field.substring(0, 1).toUpperCase() + field.substring(1);
+		try {
+			return new ColumnToBeanVORefMapping<S>(refColumn, table, tableAlias, jt, column, alias, type.getMethod("set" + xetterSuffix, dataType), dataType);
 		} catch (Exception e) {
 			throw new CommonFatalException("On " + type + ": " + e);
 		}
@@ -210,12 +220,12 @@ public class ProcessorFactorySingleton {
 				// normal case: key ref and 'stringified' ref to foreign table
 				else {
 					// add 'stringified' ref to column mapping
-					
-					// The 'if' is temporary HACK. We MUST get rid of it! (tp) 
+
+					// The 'if' is temporary HACK. We MUST get rid of it! (tp)
 					if (!eMeta.getEntity().equals(NuclosEntity.DATASOURCE) && !efMeta.getDbColumn().equalsIgnoreCase("STRVALUE_T_MD_NUCLET")) {
 						allColumns.add(createRefFieldMapping(efMeta));
 					}
-					
+
 					// Also add foreign key
 					final String dbIdFieldName = DalUtils.getDbIdFieldName(efMeta.getDbColumn());
 					if (!isIdColumnInList(allColumns, dbIdFieldName)) {
@@ -307,6 +317,8 @@ public class ProcessorFactorySingleton {
 
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRENTITY", "entity", DT_STRING));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRDBENTITY", "dbEntity", DT_STRING));
+
+		allColumns.add(createBeanRefMapping("INTID_T_MD_NUCLET", "T_AD_APPLICATION", "NUC", JoinType.LEFT, type, "STRNAMESPACE", "STRVALUE_T_MD_NUCLET", "nuclet", DT_STRING));
 
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRSYSTEMIDPREFIX", "systemIdPrefix", DT_STRING));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRMENUSHORTCUT", "menuShortcut", DT_STRING));

@@ -19,6 +19,7 @@ package org.nuclos.client.common;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
 import org.springframework.beans.factory.InitializingBean;
@@ -148,10 +150,10 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 		if (valueColumns == null || valueColumns.isEmpty()) {
 			throw new IllegalArgumentException();
 		}
-		
+
 		// According to the interface spec, we have to ignore value and value type.
 		info = new PivotInfo(info.getSubform(), info.getKeyField(), null, null);
-		
+
 		// We only cache server side data.
     	Map<String, EntityFieldMetaDataVO> serverResult = dataCache.getMapPivotMetaData().get(info);
     	if (serverResult == null) {
@@ -167,7 +169,7 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
     		}
     		dataCache.getMapPivotMetaData().put(info, serverResult);
     	}
-    	
+
     	// Convert the server side answer to the client view, i.e. respect valueColumns.
     	final Collection<EntityFieldMetaDataVO> result = new ArrayList<EntityFieldMetaDataVO>();
     	try {
@@ -176,7 +178,7 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 				final PivotInfo pinfo = new PivotInfo(info.getSubform(), info.getKeyField(), v, Class.forName(valueField.getDataType()));
 	    		for (EntityFieldMetaDataVO raw: serverResult.values()) {
 	    			final EntityFieldMetaDataVO keyField = getEntityField(info.getSubform(), info.getKeyField());
-	    			
+
 	    			final EntityFieldMetaDataVO field = (EntityFieldMetaDataVO) raw.clone();
 	    			field.setPivotInfo(pinfo);
 	    			field.setDataType(valueField.getDataType());
@@ -187,7 +189,7 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 							"<font color=\"green\">" + CommonLocaleDelegate.getLabelFromMetaFieldDataVO(keyField) + ":" + "</font>" +
 							"<font color=\"black\">" + field.getField() + ":" + v + "</font>" +
 							"</html>");
-	    			
+
 	    			result.add(field);
 	    		}
 	    	}
@@ -292,12 +294,22 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 
 		private long startRevalidating;
 
+		private Map<String, List<String>> mapEntitiesByNuclets = null;
+
 		private Map<String, EntityMetaDataVO> mapMetaDataByEntity = null;
 		private Map<Long, EntityMetaDataVO> mapMetaDataById = null;
 		private Map<String, Map<String, EntityFieldMetaDataVO>> mapFieldMetaData = null;
 		private Map<PivotInfo, Map<String, EntityFieldMetaDataVO>> mapPivotMetaData = new ConcurrentHashMap<PivotInfo, Map<String,EntityFieldMetaDataVO>>();
 
 		private Map<String, DynamicEntityVO> mapDynamicEntities;
+
+		public Map<String, List<String>> getMapEntitiesByNuclets() {
+			if (isRevalidating()) {
+				return getMapEntitiesByNuclets();
+			} else {
+				return mapEntitiesByNuclets;
+			}
+		}
 
 		public Map<String, EntityMetaDataVO> getMapMetaDataByEntity() {
 			if (isRevalidating()) {
@@ -348,6 +360,24 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 			startRevalidating = System.currentTimeMillis();
 			revalidating = true;
 			Collection<EntityMetaDataVO> allEntities = MetaDataDelegate.getInstance().getAllEntities();
+
+			HashMap<String, List<String>> entitiesByNuclets = new HashMap<String, List<String>>();
+			for (EntityMetaDataVO meta : allEntities) {
+				String nuclet = LangUtils.defaultIfNull(meta.getNuclet(), NAMESPACE_DEFAULT);
+				if (!entitiesByNuclets.containsKey(nuclet)) {
+					entitiesByNuclets.put(nuclet, new ArrayList<String>());
+				}
+				if (entitiesByNuclets.containsKey(nuclet)) {
+					entitiesByNuclets.get(nuclet).add(meta.getEntity());
+				}
+			}
+
+			for (String nuclet : entitiesByNuclets.keySet()) {
+				entitiesByNuclets.put(nuclet, Collections.unmodifiableList(entitiesByNuclets.get(nuclet)));
+			}
+
+			mapEntitiesByNuclets = Collections.unmodifiableMap(entitiesByNuclets);
+
 			mapMetaDataByEntity = Collections.unmodifiableMap(CollectionUtils.generateLookupMap(allEntities, DalTransformations.getEntity()));
 			mapMetaDataById = Collections.unmodifiableMap(CollectionUtils.generateLookupMap(allEntities, DalTransformations.<EntityMetaDataVO>getId()));
 			mapFieldMetaData = Collections.unmodifiableMap(buildMapFieldMetaData(allEntities));
@@ -391,5 +421,10 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 		else {
 			return dynamicentityname;
 		}
+	}
+
+	@Override
+	public List<String> getEntities(String nuclet) {
+		return dataCache.mapEntitiesByNuclets.get(nuclet);
 	}
 }

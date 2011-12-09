@@ -39,6 +39,8 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	private String entity;
 	private String dbEntity;
 
+	private String nuclet;
+
 	private String systemIdPrefix;
 	private String menuShortcut;
 
@@ -82,6 +84,8 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	    // super(eo);
 	    this.setId(eo.getId());
 
+	    this.setNuclet(eo.getField("nuclet", String.class));
+
 	    this.setSystemIdPrefix(eo.getField("systemidprefix", String.class));
 	    this.setMenuShortcut(eo.getField("menushortcut", String.class));
 
@@ -110,7 +114,7 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 
 	    this.setVirtualentity(eo.getField("virtualentity", String.class));
 	    this.setRowColorScript(eo.getField("rowcolorscript", NuclosScript.class));
-	    
+
 	    this.setEntity(eo.getField("entity", String.class));
 	    this.setDbEntity(eo.getField("dbentity", String.class));
     }
@@ -135,6 +139,14 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 			assert false : "Strange entity with db table name: " + dbEntity;
 			this.dbEntity = dbEntity;
 		}
+	}
+
+	public String getNuclet() {
+		return nuclet;
+	}
+
+	public void setNuclet(String nuclet) {
+		this.nuclet = nuclet;
 	}
 
 	public void setSystemIdPrefix(String systemIdPrefix) {

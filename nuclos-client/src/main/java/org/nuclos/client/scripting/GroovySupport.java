@@ -35,13 +35,12 @@ import javax.script.ScriptException;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.codehaus.groovy.runtime.MethodClosure;
+import org.nuclos.api.context.ScriptingContext;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.NuclosScript;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.StringUtils;
 
 public class GroovySupport {
@@ -136,27 +135,21 @@ public class GroovySupport {
 
 	public static Object eval(NuclosScript script, final Collectable c, Object defaultValue) {
 		final Bindings b = engine.createBindings();
-		b.put("$", new MethodClosure(new Object() {
-			public Object closure(Closure c) {
-				return c.call();
-			}
-		}, "closure"));
-
-        String source = StringUtils.replaceParameters(script.getSource(), new Transformer<String, String>() {
+		b.put("context", new ScriptingContext() {
 			@Override
-			public String transform(String i) {
-				try {
-					b.put(i, c.getValue(i));
+			public Object get(String identifier) {
+				String[] parts = StringUtils.parseIdentifier(identifier);
+				if (parts.length == 3) {
+					return c.getValue(parts[2]);
 				}
-				catch (Exception ex) {
-					LOG.debug("Unable to find possible binding " + i + ".");
+				else {
+					return null;
 				}
-				return "${" + i + "}";
 			}
 		});
 
         try {
-			return engine.eval(source, b);
+			return engine.eval(script.getSource(), b);
 		} catch (ScriptException e) {
 			LOG.warn(e);
 			return defaultValue;
