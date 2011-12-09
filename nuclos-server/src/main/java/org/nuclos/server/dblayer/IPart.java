@@ -16,9 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dblayer;
 
-import java.util.List;
+import org.nuclos.common.dal.DalCallResult;
 
-import org.nuclos.server.dblayer.impl.util.PreparedString;
 
 /**
  * @author Thomas Pasch
@@ -34,10 +33,13 @@ public interface IPart {
 		
 	}
 	
-	List<PreparedString> getStatements();
-	
 	EBatchType getBatchType();
 	
 	NextPartHandling getNextPartHandling();
 
+	/**
+	 * Returns if the execution of the last statement was successful.
+	 */
+	boolean process(DalCallResult result, IPreparedStringExecutor ex);
+	
 }

@@ -16,11 +16,16 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dblayer.impl;
 
+import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.server.dblayer.EBatchType;
 import org.nuclos.server.dblayer.IPart;
+import org.nuclos.server.dblayer.IPreparedStringExecutor;
 import org.nuclos.server.dblayer.impl.util.PreparedString;
 
 /**
@@ -29,6 +34,8 @@ import org.nuclos.server.dblayer.impl.util.PreparedString;
  */
 public class PartImpl implements IPart {
 	
+	private static final Logger LOG = Logger.getLogger(PartImpl.class);
+
 	private final NextPartHandling nextPartHandling;
 	
 	private final EBatchType batchType;
@@ -46,10 +53,37 @@ public class PartImpl implements IPart {
 	}
 	
 	@Override
-	public List<PreparedString> getStatements() {
-		return statements;
+	public boolean process(DalCallResult result, IPreparedStringExecutor ex) {
+		boolean succeeded = true;
+		for (PreparedString ps : statements) {
+			succeeded = false;
+			try {
+				final int changes = ex.executePreparedStatement(ps);
+				succeeded = true;
+				result.addToNumberOfDbChanges(changes);
+			} catch (SQLException e) {
+				succeeded = false;
+				if (!batchType.equals(EBatchType.FAIL_NEVER_IGNORE_EXCEPTION)) {
+					result.addBusinessException(null, Collections.singletonList(ps.toString()), e);
+				} else {
+					LOG.info("Ignored exception: " + e + " while executing " + ps);
+				}
+				switch (batchType) {
+				case FAIL_EARLY:
+					result.throwFirstException();
+					break;
+				case FAIL_LATE:
+				case FAIL_NEVER:
+				case FAIL_NEVER_IGNORE_EXCEPTION:
+					break;
+				default:
+					throw new IllegalArgumentException(batchType.toString());
+				}
+			}
+		}
+		return succeeded;
 	}
-
+	
 	@Override
 	public EBatchType getBatchType() {
 		return batchType;
@@ -68,7 +102,7 @@ public class PartImpl implements IPart {
 		for (PreparedString ps: statements) {
 			result.append(ps).append("\n");
 		}
-		result.append("]");
+		result.append("] // end of part ");
 		return result.toString();
 	}
 

@@ -124,6 +124,7 @@ public class DalCallResult implements Serializable {
 				result.append("\n").append(e).append("\n");
 			}
 		}
+		result.append("]");
 		return result.toString();
 	}
 }

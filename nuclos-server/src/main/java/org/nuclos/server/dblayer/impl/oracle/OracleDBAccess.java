@@ -220,7 +220,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 		if (!oldView.getViewName().equals(newView.getViewName())) {
 			throw new IllegalArgumentException();
 		}
-		return _getSqlForCreateSimpleView("CREATE OR REPLACE VIEW", newView, "");
+		return BatchImpl.simpleBatch(_getSqlForCreateSimpleView("CREATE OR REPLACE VIEW", newView, ""));
 	}
 	
 	@Override

@@ -16,20 +16,15 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.synthetica;
 
-import java.awt.Color;
 import java.text.ParseException;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.plaf.ColorUIResource;
 
 import org.apache.log4j.Logger;
-
-import de.javasoft.plaf.synthetica.SyntheticaBlackMoonLookAndFeel;
 
 public class NuclosSyntheticaUtils {
 

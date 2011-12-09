@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dblayer.impl;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -145,6 +144,7 @@ public class BatchImpl implements IBatch {
 		result.append(getClass().getName()).append(":[\n");
 		for (IUnit unit: units) {
 			unit.toString(result, "\t");
+			result.append("\n");
 		}
 		result.append("] // end of batch");
 		return result.toString();

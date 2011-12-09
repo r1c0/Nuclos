@@ -42,12 +42,14 @@ import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbType;
 import org.nuclos.server.dblayer.EBatchType;
 import org.nuclos.server.dblayer.IBatch;
+import org.nuclos.server.dblayer.IPart;
 import org.nuclos.server.dblayer.IPart.NextPartHandling;
 import org.nuclos.server.dblayer.IPreparedStringExecutor;
 import org.nuclos.server.dblayer.impl.BatchImpl;
 import org.nuclos.server.dblayer.impl.PartImpl;
 import org.nuclos.server.dblayer.impl.SqlConditionalUnit;
 import org.nuclos.server.dblayer.impl.SqlSequentialUnit;
+import org.nuclos.server.dblayer.impl.SubPartImpl;
 import org.nuclos.server.dblayer.impl.standard.MetaDataSchemaExtractor;
 import org.nuclos.server.dblayer.impl.standard.StandardSqlDBAccess;
 import org.nuclos.server.dblayer.impl.util.PreparedString;
@@ -245,7 +247,7 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
      */
     @Override
     protected IBatch getSqlForCreateSimpleView(DbSimpleView view) throws DbException {
-    	return _getSqlForCreateSimpleView("CREATE VIEW", view, "");
+    	return BatchImpl.simpleBatch(_getSqlForCreateSimpleView("CREATE VIEW", view, ""));
     }
     
     /**
@@ -258,20 +260,18 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
      */
     @Override
     protected IBatch getSqlForDropSimpleView(DbSimpleView view) {
+    	return new BatchImpl(new SqlConditionalUnit(_getSqlForDropSimpleView(view)));
+    }
+
+    protected PartImpl _getSqlForDropSimpleView(DbSimpleView view) {
     	final PartImpl part = new PartImpl(PreparedString.format("DROP VIEW %s",
                 getQualifiedName(view.getViewName())), 
                 EBatchType.FAIL_NEVER_IGNORE_EXCEPTION, NextPartHandling.ALWAYS);
-    	return new BatchImpl(new SqlConditionalUnit(part));
-        // return BatchImpl.simpleBatch(PreparedString.format("DROP VIEW %s",
-    	// getQualifiedName(view.getViewName())));
+    	return part;
     }
 
 	@Override
 	protected IBatch getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView) {
-		if (true) {
-			return getSqlForAlterSimpleViewFallback(oldView, newView);
-		}
-		
 		if (!oldView.getViewName().equals(newView.getViewName())) {
 			throw new IllegalArgumentException();
 		}
@@ -308,7 +308,22 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 		newColumns.addAll(ensureNaturalSequence(newView, oldColumns));
 		newColumns.addAll(addSet);
 		
-		return _getSqlForCreateSimpleView("CREATE OR REPLACE VIEW", newView, "");
+		// Sometimes 'CREATE OR REPLACE VIEW' fails (even) for unknown reason ...
+		final PreparedString ps = _getSqlForCreateSimpleView("CREATE OR REPLACE VIEW", newView, "");
+		final List<IPart> parts = new ArrayList<IPart>(2);
+		parts.add(new PartImpl(
+				ps, EBatchType.FAIL_NEVER_IGNORE_EXCEPTION, NextPartHandling.ONLY_IF_THIS_FAILS));
+		
+		// ... in this case we fall back to first DROP and then CREATE. (tp)
+		final List<IPart> subParts = new ArrayList<IPart>(2);
+		subParts.add(_getSqlForDropSimpleView(oldView));
+		subParts.add(new PartImpl(_getSqlForCreateSimpleView("CREATE VIEW", newView, ""), 
+				EBatchType.FAIL_LATE, NextPartHandling.ALWAYS));
+		parts.add(new SubPartImpl(subParts, EBatchType.FAIL_LATE, NextPartHandling.ALWAYS));
+		
+		final SqlConditionalUnit unit = new SqlConditionalUnit(parts);
+		final IBatch result = new BatchImpl(unit);
+		return result;
 	}
 
 	private IBatch getSqlForAlterSimpleViewFallback(DbSimpleView oldView, DbSimpleView newView) {

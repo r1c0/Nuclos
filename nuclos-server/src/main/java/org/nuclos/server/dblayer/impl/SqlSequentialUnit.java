@@ -45,8 +45,8 @@ public class SqlSequentialUnit implements IUnit {
 	
 	public SqlSequentialUnit(PreparedString sequence) {
 		this(CollectionUtils.newOneElementArrayList(sequence));
-	}	
-
+	}
+	
 	@Override
 	public DalCallResult process(IPreparedStringExecutor ex, EBatchType type) {
 		final boolean debug = LOG.isDebugEnabled();
@@ -89,7 +89,7 @@ public class SqlSequentialUnit implements IUnit {
 		for (PreparedString ps: sequence) {
 			result.append(lineIndentPrefix).append(ps).append("\n");
 		}
-		result.append("] // end of unit");
+		result.append("] // end of unit ");
 	}
 
 	@Override

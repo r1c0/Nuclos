@@ -48,7 +48,7 @@ public class Startup {
 			LOG.info("SVN status\n:" + status);
 		}
 		catch (Exception e) {
-			LOG.warn("Startup constructor failed: " + e, e);
+			LOG.info("Startup constructor failed: " + e);
 		}
 	}
 	

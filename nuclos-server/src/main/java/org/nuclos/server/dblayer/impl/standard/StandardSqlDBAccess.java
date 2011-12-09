@@ -1114,10 +1114,10 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
      */
     @Override
     protected IBatch getSqlForCreateSimpleView(DbSimpleView view) throws DbException {
-    	return _getSqlForCreateSimpleView("CREATE VIEW", view, "");
+    	return BatchImpl.simpleBatch(_getSqlForCreateSimpleView("CREATE VIEW", view, ""));
     }
     
-    protected IBatch _getSqlForCreateSimpleView(String prefix, DbSimpleView view, String suffix) throws DbException {
+    protected PreparedString _getSqlForCreateSimpleView(String prefix, DbSimpleView view, String suffix) throws DbException {
     	final TableAliasForSimpleView aliasFactory = new TableAliasForSimpleView();
         final StringBuilder fromClause = new StringBuilder();
         fromClause.append(getName(view.getTableName()) + " " + SystemFields.BASE_ALIAS);
@@ -1136,7 +1136,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 					}
 				}))));
         }
-        return BatchImpl.simpleBatch(PreparedString.format("%s %s(\n%s\n) AS SELECT\n%s\nFROM\n%s %s",
+        return PreparedString.format("%s %s(\n%s\n) AS SELECT\n%s\nFROM\n%s %s",
         	prefix,
             getQualifiedName(view.getViewName()),
             join(",\n", view.getViewColumnNames()),
@@ -1180,7 +1180,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
                 }
             })),
             fromClause,
-            suffix));
+            suffix);
     }
 
     protected String getFunctionNameForUseInView(String name) {

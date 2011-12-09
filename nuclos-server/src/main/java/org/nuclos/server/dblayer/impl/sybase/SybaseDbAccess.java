@@ -122,7 +122,7 @@ public class SybaseDbAccess extends TransactSqlDbAccess {
 		if (!oldView.getViewName().equals(newView.getViewName())) {
 			throw new IllegalArgumentException();
 		}
-		return _getSqlForCreateSimpleView("ALTER VIEW", newView, "");
+		return BatchImpl.simpleBatch(_getSqlForCreateSimpleView("ALTER VIEW", newView, ""));
 	}
 	
 	@Override

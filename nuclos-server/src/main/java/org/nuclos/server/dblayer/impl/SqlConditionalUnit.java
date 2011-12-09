@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dblayer.impl;
 
-import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -28,7 +26,6 @@ import org.nuclos.server.dblayer.IPart;
 import org.nuclos.server.dblayer.IPart.NextPartHandling;
 import org.nuclos.server.dblayer.IPreparedStringExecutor;
 import org.nuclos.server.dblayer.IUnit;
-import org.nuclos.server.dblayer.impl.util.PreparedString;
 
 /**
  * @author Thomas Pasch
@@ -60,6 +57,8 @@ public class SqlConditionalUnit implements IUnit {
 		NextPartHandling nextPartHandling = NextPartHandling.ALWAYS;
 		boolean succeeded = true;
 		for (IPart p : parts) {
+			if (debug) 
+				LOG.debug("last part succeeded: " + succeeded + " next part handling: " + nextPartHandling);
 			switch (nextPartHandling) {
 			case ONLY_IF_THIS_FAILS:
 				if (succeeded) continue;
@@ -72,35 +71,7 @@ public class SqlConditionalUnit implements IUnit {
 				throw new IllegalStateException(nextPartHandling.toString());
 			}
 			
-			succeeded = false;
-			final EBatchType partBatchType = p.getBatchType();
-			List<PreparedString> statements = p.getStatements();
-			for (PreparedString ps : statements) {
-				try {
-					final int changes = ex.executePreparedStatement(ps);
-					succeeded = true;
-					result.addToNumberOfDbChanges(changes);
-				} catch (SQLException e) {
-					succeeded = false;
-					if (!partBatchType.equals(EBatchType.FAIL_NEVER_IGNORE_EXCEPTION)) {
-						result.addBusinessException(null, Collections.singletonList(ps.toString()), e);
-					} else {
-						if (debug)
-							LOG.info("Ignored exception: " + e + " while executing " + ps);
-					}
-					switch (partBatchType) {
-					case FAIL_EARLY:
-						result.throwFirstException();
-						break;
-					case FAIL_LATE:
-					case FAIL_NEVER:
-					case FAIL_NEVER_IGNORE_EXCEPTION:
-						break;
-					default:
-						throw new IllegalArgumentException(type.toString());
-					}
-				}
-			}
+			succeeded = p.process(result, ex);
 			nextPartHandling = p.getNextPartHandling();
 		}
 		if (debug)
@@ -117,7 +88,7 @@ public class SqlConditionalUnit implements IUnit {
 		for (IPart p : parts) {
 			result.append(lineIndentPrefix).append(p).append("\n");
 		}
-		result.append("] // end of unit");
+		result.append("] // end of unit ");
 	}
 
 	@Override
