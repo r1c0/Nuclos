@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -964,7 +965,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         if (mpConditions.isEmpty())
             return "1=1";
 
-        return StringUtils.join(" AND ", CollectionUtils.transform(mpConditions.keySet(), new Transformer<String, String>() {
+        return StringUtils.join(" AND ", CollectionUtils.transform(new HashSet<String>(mpConditions.keySet()), new Transformer<String, String>() {
             @Override
             public String transform(String c) {
             	if(mpConditions.get(c) instanceof DbNull<?>) {
