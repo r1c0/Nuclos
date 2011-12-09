@@ -52,6 +52,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
@@ -85,6 +86,7 @@ public class MenuGenerator {
 
 	public JMenuBar getJMenuBar() {
 		JMenuBar mb = new JMenuBar();
+		mb.setBackground(NuclosThemeSettings.BACKGROUND_ROOTPANE);
 		// ID for GUI-Testing
 		mb.setName("menubar");
 		while(topMenu.getMenuComponentCount() > 0) {

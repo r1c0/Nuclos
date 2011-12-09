@@ -68,8 +68,6 @@ public class NuclosSyntheticaUtils {
 		
 		NuclosSyntheticaThemeableLookAndFeel laf = new NuclosSyntheticaThemeableLookAndFeel();
 		laf.setNuclosTheme(nuclosTheme);
-		NuclosSyntheticaThemeableLookAndFeel.setWindowsDecorated(false);
-		NuclosSyntheticaThemeableLookAndFeel.setLookAndFeel(NuclosSyntheticaThemeableLookAndFeel.class.getName(), true, true);		
 	}
 
 	private static String dec(String d) {

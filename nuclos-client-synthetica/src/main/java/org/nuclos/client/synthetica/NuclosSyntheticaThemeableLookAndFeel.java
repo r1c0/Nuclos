@@ -72,7 +72,7 @@ public class NuclosSyntheticaThemeableLookAndFeel extends SyntheticaBlackMoonLoo
 				NUCLOS_THEME = nuclosTheme;
 			}
 		} 
-		
+		setWindowsDecorated(false);
 		setLookAndFeel(getClass().getName(), true, true);
 		updateNuclosThemeSettings();
 	}
