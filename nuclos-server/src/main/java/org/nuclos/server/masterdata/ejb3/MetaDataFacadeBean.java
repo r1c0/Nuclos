@@ -1436,7 +1436,15 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		final EntityMetaDataVO mdEntitiy = mdProv.getEntity(sEntity);
 		String sTable = mdEntitiy.getDbEntity();
 		final EntityFieldMetaDataVO mdField = mdProv.getEntityField(sEntity, field);
-		final String sColumn = EntityObjectMetaDbHelper.getDbRefColumn(mdField);
+		final String sColumn;
+		// We don't need a join to the referenced field here, instead we simply need th
+		// (raw) field name in the database. (tp)
+		if (mdField.getForeignEntity() != null) {
+			sColumn = EntityObjectMetaDbHelper.getDbRefColumn(mdField);
+		}
+		else {
+			sColumn = mdField.getDbColumn();
+		}
 		try {
 			// @TODO GOREF: maybe this should be delegated to the (JDBC)-EntityObjectProcessor ?
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
