@@ -42714,6 +42714,21 @@
     "text": "Suchergebnisvorlage"
   },
   {
+    "resourceID": "ReportCollectController.31",
+    "locale": "i-default",
+    "text": "Output media via server is currently only allowed for output format PDF."
+  },
+  {
+    "resourceID": "ReportCollectController.31",
+    "locale": "en",
+    "text": "Output media via server is currently only allowed for output format PDF."
+  },
+  {
+    "resourceID": "ReportCollectController.31",
+    "locale": "de",
+    "text": "Ausgabemedium \u00fcber Server ist momentan nur f\u00fcr das Ausgabeformat PDF erlaubt."
+  },
+  {
     "resourceID": "AbstractReportExporter.1",
     "locale": "i-default",
     "text": "The directory {0} could not be created."

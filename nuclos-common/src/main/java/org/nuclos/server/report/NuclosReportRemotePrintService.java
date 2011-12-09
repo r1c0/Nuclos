@@ -30,6 +30,8 @@ import javax.print.attribute.PrintServiceAttribute;
 import javax.print.attribute.PrintServiceAttributeSet;
 import javax.print.event.PrintServiceAttributeListener;
 
+import org.nuclos.common2.LangUtils;
+
 /**
  *
  */
@@ -63,7 +65,18 @@ public class NuclosReportRemotePrintService implements PrintService, Serializabl
     public String getName() {
         return name;
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+    	if (!(obj instanceof NuclosReportRemotePrintService))
+    		return false;
+    	return LangUtils.equals(getName(), ((NuclosReportRemotePrintService)obj).getName());
+    }
 
+    @Override
+    public int hashCode() {
+    	return getName().hashCode();
+    }
     public DocPrintJob createPrintJob() {
         return printJob;
     }

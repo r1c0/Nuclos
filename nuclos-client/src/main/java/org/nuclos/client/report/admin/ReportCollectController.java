@@ -438,6 +438,8 @@ public class ReportCollectController extends MasterDataCollectController {
 							throw new CollectableFieldValidationException(CommonLocaleDelegate.getMessage("ReportCollectController.8", "Bitte geben Sie f\u00fcr das Ausgabeformat XLS eine MS Excel Vorlage (.xls) an."));
 						if ((!fileDestinationCollect.getName().equals("")) && (!fileDestinationCollect.isDirectory()) && (!fileDestinationCollect.getName().toLowerCase().endsWith(".xls")))
 							throw new CollectableFieldValidationException(CommonLocaleDelegate.getMessage("ReportCollectController.9", "Bitte geben Sie f\u00fcr das Ausgabeformat XLS eine MS Excel Zieldatei (.xls) an."));
+						if ((md.getField("destination").getValue().toString().endsWith("Server")))
+							throw new CollectableFieldValidationException(CommonLocaleDelegate.getMessage("ReportCollectController.31", "Ausgabemedium \u00fcber Server ist momentan nur f\u00fcr das Ausgabeformat PDF erlaubt."));
 						break;
 					}
 					default: {
@@ -446,12 +448,24 @@ public class ReportCollectController extends MasterDataCollectController {
 								throw new CollectableFieldValidationException(CommonLocaleDelegate.getMessage("ReportCollectController.6", "Bitte geben Sie f\u00fcr das Ausgabeformat DOC eine MS Word Vorlage (.doc) an."));
 							if ((!fileDestination.getName().equals("")) && (!fileDestination.isDirectory()) && (!fileDestination.getName().toLowerCase().endsWith(".doc")))
 								throw new CollectableFieldValidationException(CommonLocaleDelegate.getMessage("ReportCollectController.7", "Bitte geben Sie f\u00fcr das Ausgabeformat DOC eine MS Word Zieldatei (.doc) an."));
+							if ((md.getField("destination").getValue().toString().endsWith("Server")))
+								throw new CollectableFieldValidationException(CommonLocaleDelegate.getMessage("ReportCollectController.31", "Ausgabemedium \u00fcber Server ist momentan nur f\u00fcr das Ausgabeformat PDF erlaubt."));
 						}
 						else if (md.getField("format").getValue().equals("XLS")) {
 							if ((fileSource.getName().equals("")) || (!fileSource.getName().toLowerCase().endsWith(".xls")))
 								throw new CollectableFieldValidationException(CommonLocaleDelegate.getMessage("ReportCollectController.8", "Bitte geben Sie f\u00fcr das Ausgabeformat XLS eine MS Excel Vorlage (.xls) an."));
 							if ((!fileDestination.getName().equals("")) && (!fileDestination.isDirectory()) && (!fileDestination.getName().toLowerCase().endsWith(".xls")))
 								throw new CollectableFieldValidationException(CommonLocaleDelegate.getMessage("ReportCollectController.9", "Bitte geben Sie f\u00fcr das Ausgabeformat XLS eine MS Excel Zieldatei (.xls) an."));
+							if ((md.getField("destination").getValue().toString().endsWith("Server")))
+								throw new CollectableFieldValidationException(CommonLocaleDelegate.getMessage("ReportCollectController.31", "Ausgabemedium \u00fcber Server ist momentan nur f\u00fcr das Ausgabeformat PDF erlaubt."));
+						}
+						else if (md.getField("format").getValue().equals("CSV")) {
+							if ((md.getField("destination").getValue().toString().endsWith("Server")))
+								throw new CollectableFieldValidationException(CommonLocaleDelegate.getMessage("ReportCollectController.31", "Ausgabemedium \u00fcber Server ist momentan nur f\u00fcr das Ausgabeformat PDF erlaubt."));
+						}
+						else if (md.getField("format").getValue().equals("TSV")) {
+							if ((md.getField("destination").getValue().toString().endsWith("Server")))
+								throw new CollectableFieldValidationException(CommonLocaleDelegate.getMessage("ReportCollectController.31", "Ausgabemedium \u00fcber Server ist momentan nur f\u00fcr das Ausgabeformat PDF erlaubt."));
 						}
 						else if (md.getField("format").getValue().equals("PDF")) {
 							String fileName = fileSource.getName().toLowerCase();
