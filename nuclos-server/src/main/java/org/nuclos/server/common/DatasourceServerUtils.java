@@ -115,13 +115,7 @@ public class DatasourceServerUtils {
 	 * @throws NuclosDatasourceException
 	 */
 	public static String getSqlWithIdForInClause(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
-		switch (DataBaseHelper.getDbAccess().getDbType()) {
-		case POSTGRESQL: //NUCLOSINT-1015
-			return "(SELECT \"INTID\" FROM (" + createSQL(sDatasourceXML, mpParams) + ") ds )";
-		default:
-			return "(SELECT intid FROM (" + createSQL(sDatasourceXML, mpParams) + ") ds )";
-		}
-		
+		return "(SELECT \"INTID\" FROM (" + createSQL(sDatasourceXML, mpParams) + ") ds )";
 	}
 
 	/**

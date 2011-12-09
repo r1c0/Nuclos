@@ -94,7 +94,7 @@ public class DatasourceUtils {
 			boolean foundIntid = false;
 			boolean foundMoreIntid = false;
 			for (String column : getColumns(sql)) {
-				if (column.toUpperCase().equals("INTID") || column.toUpperCase().equals("\"INTID\"")) {
+				if (column.equals("\"INTID\"")) {
 					if (foundIntid)
 						foundMoreIntid = true;
 					foundIntid = true;
@@ -111,7 +111,7 @@ public class DatasourceUtils {
 	}
 	
 	@Deprecated
-	/** @deprecated Don't extract them by parsing the plain SQL (may be user-defined and using DB-specific extensions). */
+	/** @TODO Find a better way: Don't extract them by parsing the plain SQL (may be user-defined and using DB-specific extensions). */
 	public static List<String> getColumnsWithoutQuotes(final String sql) {
 		List<String> result = new ArrayList<String>();
 		
