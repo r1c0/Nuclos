@@ -58,6 +58,7 @@ public class DalCallResult implements Serializable {
 	}
 	
 	public void add(DalCallResult other) {
+		addToNumberOfDbChanges(other.getNumberOfDbChanges());
 		if (other.hasException()) {
 			_add();
 			lstException.addAll(other.lstException);
