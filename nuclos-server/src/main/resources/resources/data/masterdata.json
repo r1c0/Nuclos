@@ -3907,7 +3907,7 @@
     "nuclosresource": "org.nuclos.client.resource.icon.glyphish-blue.97-puzzle.png",
     "logicaluniquefields": [
       [
-        "acronym"
+        "namespace"
       ]
     ],
     "nuclos_entityfield": [
