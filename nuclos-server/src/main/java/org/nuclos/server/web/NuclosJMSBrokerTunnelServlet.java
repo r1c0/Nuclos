@@ -45,6 +45,11 @@ public class NuclosJMSBrokerTunnelServlet extends HttpSpringEmbeddedTunnelServle
 	
 	/**
 	 * <p>
+	 * ActiveMQ HTTP seems to always need an jetty. See http://activemq.apache.org/http-and-https-transports-reference.html
+	 * for details. Alternative transport are available as well, see http://activemq.apache.org/configuring-transports.html.
+	 * Websocket http://activemq.apache.org/websockets.html would be fine, but can we use that with tomcat?
+	 * </p>
+	 * <p>
 	 * Here are some links for using Servlets with Spring:
 	 * <ul>
 	 *   <li>http://andykayley.blogspot.com/2007/11/how-to-inject-spring-beans-into.html</li>

@@ -34,6 +34,7 @@ import org.apache.activemq.thread.Scheduler;
 import org.apache.activemq.xbean.XBeanBrokerService;
 import org.apache.log4j.Logger;
 import org.nuclos.common.SpringApplicationContextHolder;
+import org.springframework.jms.listener.SimpleMessageListenerContainer;
 import org.springframework.jndi.JndiTemplate;
 import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.ResourceUtils;
@@ -100,14 +101,26 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 		// Get some beans before we destroy the context
 		final XBeanBrokerService activeMQBroker = (XBeanBrokerService) SpringApplicationContextHolder.getBean("broker");
 		final org.quartz.Scheduler quartz = (org.quartz.Scheduler) SpringApplicationContextHolder.getBean("nuclosScheduler");
-		final Scheduler activeMQScheduler = null; // Scheduler.getInstance();
+		final Scheduler activeMQScheduler = activeMQBroker.getScheduler();
+		final SimpleMessageListenerContainer listenerContainer = (SimpleMessageListenerContainer) 
+				SpringApplicationContextHolder.getBean("listener.masterdataCache");
 
 		// Let Spring perform its default clean-ups...
 		super.contextDestroyed(event);
 
 		// Shutdown ActiveMQ thread and broker
 		try {
+			if (checkClass(cl, listenerContainer)) {
+				listenerContainer.stop();
+				listenerContainer.destroy();
+				log.info("Shutdown Jms listener container: done");
+			}
+		} catch (Exception ex) {
+			log.warn(ex);
+		}
+		try {
 			if (checkClass(cl, activeMQScheduler)) {
+				activeMQScheduler.stop();
 				activeMQScheduler.shutdown();
 				log.info("Shutdown MQ scheduler: done");
 			}
