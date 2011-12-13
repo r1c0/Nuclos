@@ -276,14 +276,14 @@ public abstract class AbstractNucletContent implements INucletContent {
 							EntityFieldMetaDataVO efMeta = MetaDataServerProvider.getInstance().getEntityField(entity.getEntityName(), field);
 							if (efMeta.getForeignEntity() == null) {
 								if (NuclosEOField.CREATEDBY.getName().equals(field)) {
-									if (LangUtils.equals(eo.getCreatedBy(), ncObject.getCreatedBy()))
+									if (LangUtils.equalsNullsFalse(eo.getCreatedBy(), ncObject.getCreatedBy()))
 										countUnique++;
 								} else {
-									if (LangUtils.equals(eo.getFields().get(field), ncObject.getFields().get(field)))
+									if (LangUtils.equalsNullsFalse(eo.getFields().get(field), ncObject.getFields().get(field)))
 										countUnique++;
 								}
 							} else {
-								if (LangUtils.equals(eo.getFieldIds().get(field), ncObject.getFieldIds().get(field)))
+								if (LangUtils.equalsNullsFalse(eo.getFieldIds().get(field), ncObject.getFieldIds().get(field)))
 									countUnique++;
 							}
 						}

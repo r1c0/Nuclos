@@ -212,6 +212,24 @@ public class LangUtils {
 	public static boolean equals(Object o1, Object o2) {
 		return (o1 == null) ? (o2 == null) : o1.equals(o2);
 	}
+	
+	/**
+	 * <code>null</code> for both arguments --> false
+	 * 
+	 * checks if o1 equals o2, allowing <code>null</code> for both arguments.
+	 * Note that this method doesn't work for arrays currently.
+	 * @param o1 may be <code>null</code>
+	 * @param o2 may be <code>null</code>
+	 * @return
+	 * @postcondition (o1 == null && o2 == null) --> false
+	 * @postcondition (o1 != null) --> (result <--> o1.equals(o2))
+	 */
+	public static boolean equalsNullsFalse(Object o1, Object o2) {
+		if (o1 == null && o2 == null)
+			return false;
+		else
+			return equals(o1, o2);
+	}
 
 	/**
 	 * Note that this method doesn't work for arrays currently.

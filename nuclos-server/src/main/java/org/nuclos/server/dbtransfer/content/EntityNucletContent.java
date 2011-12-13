@@ -64,6 +64,7 @@ public class EntityNucletContent extends DefaultNucletContent {
 						String foreignentity = org.nuclos.common2.LangUtils.defaultIfNull(fieldVO.getField("foreignentity", String.class), fieldVO.getField("unreferencedforeignentity", String.class));
 						if (foreignentity != null && !NuclosEntity.isNuclosEntity(foreignentity) && TransferUtils.getEntityObjectVO(importContentMap.getValues(getEntity()), "entity", foreignentity) == null) {
 							log.newCriticalLine("Entity " + ncObject.getField("entity", String.class) + " references to unknown entity " + foreignentity);
+							// TODO EntityInterface
 							result = false;
 						}
 					}

@@ -116,6 +116,7 @@ import org.nuclos.server.dbtransfer.content.EventNucletContent;
 import org.nuclos.server.dbtransfer.content.INucletContent;
 import org.nuclos.server.dbtransfer.content.ImportFileNucletContent;
 import org.nuclos.server.dbtransfer.content.JobControllerNucletContent;
+import org.nuclos.server.dbtransfer.content.NucletNucletContent;
 import org.nuclos.server.dbtransfer.content.RelationTypenucletContent;
 import org.nuclos.server.dbtransfer.content.ResourceNucletContent;
 import org.nuclos.server.dbtransfer.content.RuleNucletContent;
@@ -187,8 +188,8 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			importUsageNC.setEnabled(false);
 		}
 
-		contents.add(new DefaultNucletContent(NuclosEntity.NUCLET, null, contents, true));
-		contents.add(new DefaultNucletContent(NuclosEntity.NUCLETDEPENDENCE, NuclosEntity.NUCLET, contents, true));
+		contents.add(new NucletNucletContent(contents));
+		contents.add(new DefaultNucletContent(NuclosEntity.NUCLETDEPENDENCE, NuclosEntity.NUCLET, contents));
 
 		contents.add(new ResourceNucletContent(contents));
 		contents.add(new RelationTypenucletContent(contents));
@@ -555,11 +556,13 @@ public class TransferFacadeBean extends NuclosFacadeBean
 
 		List<EntityObjectVO> currentEntities = TransferUtils.getContentType(contentTypes, NuclosEntity.ENTITY).getNcObjects(existingNucletIds, transferOptions);
 		List<EntityObjectVO> currentFields = TransferUtils.getContentType(contentTypes, NuclosEntity.ENTITYFIELD).getNcObjects(existingNucletIds, transferOptions);
+		// TODO EntityInterface hier Schnittstellen-Entitäten hinzufügen.
 		MetaDataProvider currentProvider = getMetaDataProvider(currentEntities, currentFields);
 		Map<String, DbTable> currentSchema = (new EntityObjectMetaDbHelper(dbAccess, currentProvider)).getSchema();
 
 		List<EntityObjectVO> transferredEntities = mpImportData.get(NuclosEntity.ENTITY.getEntityName());
 		List<EntityObjectVO> transferredFields = mpImportData.get(NuclosEntity.ENTITYFIELD.getEntityName());
+		// TODO EntityInterface hier Schnittstellen-Entitäten hinzufügen.
 		MetaDataProvider transferredProvider = getMetaDataProvider(transferredEntities, transferredFields);
 		Map<String, DbTable> transferredSchema = (new EntityObjectMetaDbHelper(dbAccess, transferredProvider)).getSchema();
 
