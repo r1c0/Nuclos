@@ -2143,5 +2143,9 @@ public class MainController {
 	public String getMainMenuConfiguration() {
 		return CommonLocaleDelegate.getMessage("MainMenuConfiguration", "Konfiguration").replace("^", "");
 	}
+	
+	public Preferences getMainFramePreferences() {
+		return prefs;
+	}
 
 }	// class MainControlle

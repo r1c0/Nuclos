@@ -51,6 +51,7 @@ public class WorkspaceEditor  {
 	private final JCheckBox chckHide;
 	private final JCheckBox chckHideMenuBar;
 	private final JCheckBox chckAlwaysOpenAtLogin;
+	private final JCheckBox chckUseLastFrameSettings;
 	private final JButton btSave;
 	private final JButton btCancel;
 	
@@ -67,6 +68,7 @@ public class WorkspaceEditor  {
 		initJPanel(contentPanel,
 				new double[] {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL},
 				new double[] {20,
+							  20,
 							  20,
 							  20,
 							  10,
@@ -93,24 +95,27 @@ public class WorkspaceEditor  {
         contentPanel.add(lbMainFrame, "0, 2");
         chckHideMenuBar = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.10","Nur Standard Menuleiste"));
         contentPanel.add(chckHideMenuBar, "1, 2");
+        chckUseLastFrameSettings = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.12","Letzte Fenster Einstellungen übernehmen (Größe und Position)"));
+        contentPanel.add(chckUseLastFrameSettings, "1, 3, 5, 3");
         
         JLabel lbIcon = new JLabel(CommonLocaleDelegate.getMessage("WorkspaceEditor.4","Icon"), JLabel.TRAILING);
-        contentPanel.add(lbIcon, "0, 4");
+        contentPanel.add(lbIcon, "0, 5");
         nuclosIconChooser = new ResourceIconChooser(WorkspaceChooserController.ICON_SIZE);
-        contentPanel.add(nuclosIconChooser, "1, 4, 5, 5");
+        contentPanel.add(nuclosIconChooser, "1, 5, 5, 6");
 		
 		JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 2));
 		btSave = new JButton(CommonLocaleDelegate.getMessage("WorkspaceEditor.5","Speichern"));
 		btCancel = new JButton(CommonLocaleDelegate.getMessage("WorkspaceEditor.6","Abbrechen"));
 		actionsPanel.add(btSave);
 		actionsPanel.add(btCancel);
-		contentPanel.add(actionsPanel, "0, 6, 5, 6");
+		contentPanel.add(actionsPanel, "0, 7, 5, 7");
 		
 		tfName.setText(wovo.getWoDesc().getName());
 		chckHide.setSelected(wovo.getWoDesc().isHide());
 		chckHideName.setSelected(wovo.getWoDesc().isHideName());
 		chckHideMenuBar.setSelected(wovo.getWoDesc().isHideMenuBar());
 		chckAlwaysOpenAtLogin.setSelected(wovo.getWoDesc().isAlwaysOpenAtLogin());
+		chckUseLastFrameSettings.setSelected(wovo.getWoDesc().isUseLastFrameSettings());
 		nuclosIconChooser.setSelected(wovo.getWoDesc().getNuclosResource());
 		
 		dialog = new JDialog(Main.getMainFrame(), CommonLocaleDelegate.getMessage("WorkspaceEditor.1","Arbeitsumgebung Eigenschaften"), true);
@@ -134,6 +139,7 @@ public class WorkspaceEditor  {
 				final boolean hideName = chckHideName.isSelected();
 				final boolean hideMenuBar = chckHideMenuBar.isSelected();
 				final boolean alwaysOpenAtLogin = chckAlwaysOpenAtLogin.isSelected();
+				final boolean useLastFrameSettings = chckUseLastFrameSettings.isSelected();
 				final String nuclosResource = nuclosIconChooser.getSelectedResourceIconName();
 				
 				if (StringUtils.looksEmpty(name)) {
@@ -144,6 +150,7 @@ public class WorkspaceEditor  {
 					wovo.getWoDesc().setHideName(hideName);
 					wovo.getWoDesc().setHideMenuBar(hideMenuBar);
 					wovo.getWoDesc().setAlwaysOpenAtLogin(alwaysOpenAtLogin);
+					wovo.getWoDesc().setUseLastFrameSettings(useLastFrameSettings);
 					wovo.getWoDesc().setNuclosResource(nuclosResource);
 					
 					saved = true;

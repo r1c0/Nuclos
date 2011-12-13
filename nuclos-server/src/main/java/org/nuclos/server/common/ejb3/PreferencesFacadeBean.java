@@ -819,6 +819,7 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		final WorkspaceVO mergedWovo = customizedWovo;
 		final WorkspaceDescription wdm = mergedWovo.getWoDesc();
 		final WorkspaceDescription wda = assignableWovo.getWoDesc();
+		wdm.importHeader(wda);
 		
 		// list of frames is ordered by use (last on top)
 		// --> merge only mainframe

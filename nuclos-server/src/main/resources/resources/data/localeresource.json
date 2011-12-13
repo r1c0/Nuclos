@@ -60589,6 +60589,21 @@
     "text": "Immer bei Anmeldung öffnen"
   },
   {
+    "resourceID": "WorkspaceEditor.12",
+    "locale": "i-default",
+    "text": "Use last frame settings (Size and position)"
+  },
+  {
+    "resourceID": "WorkspaceEditor.12",
+    "locale": "en",
+    "text": "Use last frame settings (Size and position)"
+  },
+  {
+    "resourceID": "WorkspaceEditor.12",
+    "locale": "de",
+    "text": "Letzte Fenster Einstellungen übernehmen (Größe und Position)"
+  },
+  {
     "resourceID": "NuclosSetting.menuBarOSspecific",
     "locale": "i-default",
     "text": "Operating system specific menu bar (Mac OS X only, requires reboot)"

@@ -39,6 +39,7 @@ public class WorkspaceDescription implements Serializable {
 	private boolean hideName;
 	private boolean hideMenuBar;
 	private boolean alwaysOpenAtLogin;
+	private boolean useLastFrameSettings;
 	private String nuclosResource;
 	private List<Frame> frames;
 	private List<EntityPreferences> entityPreferences;
@@ -84,6 +85,14 @@ public class WorkspaceDescription implements Serializable {
 
 	public void setAlwaysOpenAtLogin(boolean alwaysOpenAtLogin) {
 		this.alwaysOpenAtLogin = alwaysOpenAtLogin;
+	}
+
+	public boolean isUseLastFrameSettings() {
+		return useLastFrameSettings;
+	}
+
+	public void setUseLastFrameSettings(boolean useLastFrameSettings) {
+		this.useLastFrameSettings = useLastFrameSettings;
 	}
 
 	public String getNuclosResource() {
@@ -1284,6 +1293,7 @@ public class WorkspaceDescription implements Serializable {
 		setHideName(wd.isHideName());
 		setHideMenuBar(wd.isHideMenuBar());
 		setAlwaysOpenAtLogin(wd.isAlwaysOpenAtLogin());
+		setUseLastFrameSettings(wd.isUseLastFrameSettings());
 		setNuclosResource(wd.getNuclosResource());
 	}
 	

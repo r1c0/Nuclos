@@ -56,6 +56,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
@@ -64,6 +65,10 @@ public class RestoreUtils {
 
 	private static final Logger LOG = Logger.getLogger(RestoreUtils.class);
 
+	private static final String PREFS_NODE_LAST_SETTINGS = "lastSettings";
+	private static final String NORMAL_BOUNDS = "normalBounds";
+	private static final String EXTENDED_STATE = "extendedState";
+	
 	private static final String THREAD_NAME = "Workspace restoring...";
 	private static final List<Thread> threadList = new ArrayList<Thread>();
 	
@@ -106,7 +111,7 @@ public class RestoreUtils {
 	 *
 	 * @param wdFrame
 	 */
-	private synchronized static void restoreFrame(WorkspaceDescription.Frame wdFrame) {
+	private synchronized static void restoreFrame(final WorkspaceDescription wd, final WorkspaceDescription.Frame wdFrame) {
 		WorkspaceFrame wsFrame;
 		if (wdFrame.isMainFrame()) {
 			wsFrame = Main.getMainFrame();
@@ -118,9 +123,19 @@ public class RestoreUtils {
 
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] devices = ge.getScreenDevices();
-
+		
+		final Rectangle recNormalBounds;
+		final int iExtendedState;
+		if (wdFrame.isMainFrame() && wd.isUseLastFrameSettings()) {
+			recNormalBounds = PreferencesUtils.getRectangle(Main.getMainController().getMainFramePreferences().node(PREFS_NODE_LAST_SETTINGS), NORMAL_BOUNDS, wdFrame.getNormalBounds().width, wdFrame.getNormalBounds().height);
+			iExtendedState = Main.getMainController().getMainFramePreferences().node(PREFS_NODE_LAST_SETTINGS).getInt(EXTENDED_STATE, wdFrame.getExtendedState());
+		} else {
+			recNormalBounds = wdFrame.getNormalBounds();
+			iExtendedState = wdFrame.getExtendedState();
+		}
+		
 		boolean restoreAtStoredPosition = false;
-		LOG.info("stored frame bounds: " + wdFrame.getNormalBounds());
+		LOG.info("stored frame bounds: " + recNormalBounds);
 		for (GraphicsDevice gd : devices) {
 			if (restoreAtStoredPosition) break;
 
@@ -128,19 +143,21 @@ public class RestoreUtils {
 			for (int i=0; i < gc.length && !restoreAtStoredPosition; i++) {
 				Rectangle deviceBounds = gc[i].getBounds();
 				LOG.info("device bounds: " + deviceBounds);
-				if (deviceBounds.contains(wdFrame.getNormalBounds())) {
+				if (deviceBounds.contains(recNormalBounds)) {
 					restoreAtStoredPosition = true;
 				}
 			}
 		}
 
 		if (!restoreAtStoredPosition) {
-			wdFrame.getNormalBounds().x = 40;
-			wdFrame.getNormalBounds().y = 40;
+			recNormalBounds.x = 40;
+			recNormalBounds.y = 40;
 		}
-		frame.setNormalBounds(wdFrame.getNormalBounds());
-		frame.setBounds(wdFrame.getNormalBounds());
-		frame.setExtendedState(wdFrame.getExtendedState());
+		
+		frame.setNormalBounds(recNormalBounds);
+		frame.setBounds(recNormalBounds);
+		frame.setExtendedState(iExtendedState);
+		
 		if (wdFrame.isMainFrame()) {
 			MainFrame.repositionSwitchingWorkspace();
 			JPanel contentpane = (JPanel) Main.getMainFrame().getContentPane();
@@ -288,7 +305,7 @@ public class RestoreUtils {
 				return LangUtils.compare(o1.getNumber(), o2.getNumber());
 			}
 		})) {
-			restoreFrame(wdFrame);
+			restoreFrame(wd, wdFrame);
 		}
 
 		// refresh menus for window list
@@ -459,6 +476,11 @@ public class RestoreUtils {
 			storeContent(wdFrame.getContent(), ((WorkspaceFrame) frame).getFrameContent());
 
 			wd.addFrame(wdFrame);
+			
+			if (Main.getMainFrame()==frame) {
+				Main.getMainController().getMainFramePreferences().node(PREFS_NODE_LAST_SETTINGS).putInt(EXTENDED_STATE, frame.getExtendedState());
+				PreferencesUtils.putRectangle(Main.getMainController().getMainFramePreferences().node(PREFS_NODE_LAST_SETTINGS), NORMAL_BOUNDS, frame.getNormalBounds());
+			}
 		}
 	}
 

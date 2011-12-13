@@ -350,6 +350,7 @@ public class WorkspaceChooserController {
 				
 				// preferences may be changed (e.g. restore to assigned)...
 				if (selectedWorkspace != wovo) {
+					selectedWorkspace.importHeader(wovo.getWoDesc());
 					selectedWorkspace.getWoDesc().removeAllEntityPreferences();
 					selectedWorkspace.getWoDesc().addAllEntityPreferences(wovo.getWoDesc().getEntityPreferences());
 				}
