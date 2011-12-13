@@ -334,7 +334,7 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 		List<ColumnEntry> result = new ArrayList<ColumnEntry>();
 		
 		final ColumnEntry INTID_T_UD_GENERICOBJECT = new ColumnEntry();
-		INTID_T_UD_GENERICOBJECT.setAlias("INTID");
+		INTID_T_UD_GENERICOBJECT.setAlias("intid");
 		INTID_T_UD_GENERICOBJECT.setVisible(true);
 		INTID_T_UD_GENERICOBJECT.setDefaultWidth(180);
 		result.add(INTID_T_UD_GENERICOBJECT);

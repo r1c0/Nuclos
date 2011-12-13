@@ -94,7 +94,7 @@ public class DatasourceUtils {
 			boolean foundIntid = false;
 			boolean foundMoreIntid = false;
 			for (String column : getColumns(sql)) {
-				if (column.equals("\"INTID\"")) {
+				if (column.equals("\"intid\"")) {
 					if (foundIntid)
 						foundMoreIntid = true;
 					foundIntid = true;

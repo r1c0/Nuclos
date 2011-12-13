@@ -54776,17 +54776,17 @@
   {
     "resourceID": "datasource.validation.recordgrant.sql.1",
     "locale": "i-default",
-    "text": "If record grant is assigned to an entity it must be provide an \"INTID\" column."
+    "text": "If record grant is assigned to an entity it must be provide an \"intid\" column."
   },
   {
     "resourceID": "datasource.validation.recordgrant.sql.1",
     "locale": "en",
-    "text": "If record grant is assigned to an entity it must be provide an \"INTID\" column."
+    "text": "If record grant is assigned to an entity it must be provide an \"intid\" column."
   },
   {
     "resourceID": "datasource.validation.recordgrant.sql.1",
     "locale": "de",
-    "text": "Eine Datensatzfreigabe muss eine \"INTID\" Spalte ausgeben, wenn sie einer Entität zugewiesen ist."
+    "text": "Eine Datensatzfreigabe muss eine \"intid\" Spalte ausgeben, wenn sie einer Entität zugewiesen ist."
   },
   {
     "resourceID": "datasource.validation.recordgrant.sql.2",

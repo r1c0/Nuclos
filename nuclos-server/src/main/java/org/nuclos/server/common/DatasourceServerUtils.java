@@ -115,7 +115,7 @@ public class DatasourceServerUtils {
 	 * @throws NuclosDatasourceException
 	 */
 	public static String getSqlWithIdForInClause(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
-		return "(SELECT \"INTID\" FROM (" + createSQL(sDatasourceXML, mpParams) + ") ds )";
+		return "(SELECT \"intid\" FROM (" + createSQL(sDatasourceXML, mpParams) + ") ds )";
 	}
 
 	/**
