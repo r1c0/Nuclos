@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
@@ -50,7 +51,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
 public abstract class AbstractImport {
-
+	
 	private final GenericObjectDocumentFile file;
 
 	private final ImportContext context;
@@ -306,7 +307,15 @@ public abstract class AbstractImport {
 	protected ImportObject getReferencedObject(ImportStructure importDefinition, String[] asLineValues, String referencingFieldname, int lineNumber) throws NuclosFileImportException {
 		final Collection<ImportStructure.ForeignEntityIdentifier> feIdentifiers = importDefinition.getItems().get(referencingFieldname).getForeignEntityIdentifiers();
 
-		final String entityname = feIdentifiers.iterator().next().getEntityName();
+		final String entityname;
+		try {
+			entityname = feIdentifiers.iterator().next().getEntityName();
+		}
+		catch (NoSuchElementException e) {
+			String msg = "No foreign entity(s) defined for " + referencingFieldname;
+			logger.error(msg);
+			throw new IllegalArgumentException(msg);
+		}
 		final Map<String, Object> keyMap = new HashMap<String, Object>();
 
 		for (ImportStructure.ForeignEntityIdentifier feIdentifier : feIdentifiers) {
