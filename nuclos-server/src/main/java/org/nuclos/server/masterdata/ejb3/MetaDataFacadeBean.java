@@ -614,9 +614,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		NucletDalProvider.getInstance().getEntityMetaDataProcessor().delete(voEntity.getId());
 
 		MetaDataServerProvider.getInstance().revalidate();
-
 	}
-
 
 	@Override
     @RolesAllowed("Login")
@@ -1538,6 +1536,12 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		}
 		return result;
 	}
+	
+	@Override
+	@RolesAllowed("Login")
+	public List<String> getPossibleIdFactories() {
+		return MetaDataServerProvider.getInstance().getPossibleIdFactories();
+	}	
 
 	@Override
 	@RolesAllowed("Login")

@@ -62731,7 +62731,7 @@
   {
     "resourceID": "wizard.step.entitycommonproperties.virtual.label",
     "locale": "de",
-    "text": "Virtuelle Entiät"
+    "text": "Virtuelle Entität"
   },
   {
     "resourceID": "wizard.step.entitycommonproperties.virtual.description",
@@ -62746,7 +62746,7 @@
   {
     "resourceID": "wizard.step.entitycommonproperties.virtual.description",
     "locale": "de",
-    "text": "Virtuelle Entiät (existierende Entität verwenden)"
+    "text": "Virtuelle Entität (existierende Entität verwenden)"
   },
   {
     "resourceID": "wizard.step.entitycommonproperties.error.virtual.fields",
@@ -62777,6 +62777,36 @@
     "resourceID": "MetaDataFacade.tryVirtualEntitySelect.error",
     "locale": "de",
     "text": "Die virtuelle Entität konnte nicht validiert werden: {0}."
+  },
+  {
+    "resourceID": "wizard.step.entitycommonproperties.idfactory.label",
+    "locale": "i-default",
+    "text": "Primary key factory for VE"
+  },
+  {
+    "resourceID": "wizard.step.entitycommonproperties.idfactory.label",
+    "locale": "en",
+    "text": "Primary key factory for VE"
+  },
+  {
+    "resourceID": "wizard.step.entitycommonproperties.idfactory.label",
+    "locale": "de",
+    "text": "Id Factory für VE"
+  },
+  {
+    "resourceID": "wizard.step.entitycommonproperties.idfactory.description",
+    "locale": "i-default",
+    "text": "DB object to use for Id generation (if you want to write to VE)"
+  },
+  {
+    "resourceID": "wizard.step.entitycommonproperties.idfactory.description",
+    "locale": "en",
+    "text": "DB object to use for Id generation (if you want to write to VE)"
+  },
+  {
+    "resourceID": "wizard.step.entitycommonproperties.idfactory.description",
+    "locale": "de",
+    "text": "DB Objekt zur Erzeugung des Primärschüssel (falls Schreibzugriff erlaubt)"
   },
   {
     "resourceID": "wizard.step.inputattribute.validation.reference",

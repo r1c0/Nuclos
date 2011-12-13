@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common;
 
+import java.util.List;
 import java.util.Map;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
@@ -39,5 +40,7 @@ public interface CommonMetaDataServerProvider extends CommonMetaDataProvider {
 	 * 		<em>unsuited</em> for client use.
 	 */
     Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info);
+    
+	List<String> getPossibleIdFactories();
 
 }

@@ -67,6 +67,7 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	private String localeResourceIdForTreeViewDescription;
 
 	private String virtualentity;
+	private String idFactory;
 
 	private Collection<Set<String>> uniqueFieldCombinations;
 	private Collection<Set<String>> logicalUniqueFieldCombinations;
@@ -113,6 +114,7 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	    this.setReportFilename(eo.getField("reportFilename", String.class));
 
 	    this.setVirtualentity(eo.getField("virtualentity", String.class));
+	    this.setIdFactory(eo.getField("idFactory", String.class));
 	    this.setRowColorScript(eo.getField("rowcolorscript", NuclosScript.class));
 
 	    this.setEntity(eo.getField("entity", String.class));
@@ -384,6 +386,14 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 
 	public boolean isVirtual() {
 		return !StringUtils.isNullOrEmpty(virtualentity);
+	}
+	
+	public String getIdFactory() {
+		return idFactory;
+	}
+	
+	public void setIdFactory(String idFactory) {
+		this.idFactory = idFactory;
 	}
 
 	public NuclosScript getRowColorScript() {

@@ -56,7 +56,10 @@ public class SearchConditionUtils extends org.nuclos.common.collect.collectable.
 		return new CollectableIsNullCondition(newEntityField(sEntityName, sFieldName));
 	}
 
-	/** Caution: Do NOT use this method to compare an id value, use {@link #newMDReferenceComparison(MasterDataMetaVO, String, Integer) instead. */
+	/** 
+	 * Caution: Do NOT use this method to compare an id value, 
+	 * use {@link #newMDReferenceComparison(MasterDataMetaVO, String, Integer) instead. 
+	 */
 	public static CollectableComparison newMDComparison(MasterDataMetaVO mdmetavo, String sFieldName, ComparisonOperator compop, Object oValue) {
 		final CollectableEntityField clctef = newMasterDataEntityField(mdmetavo, sFieldName);
 		return new CollectableComparison(clctef, compop, CollectableUtils.newCollectableFieldForValue(clctef, oValue));

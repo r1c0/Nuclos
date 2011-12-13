@@ -97,55 +97,58 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 
 	private static final String[] VIRTUAL_STATICFIELDS = new String[] {"INTID", "DATCREATED", "STRCREATED", "DATCHANGED", "STRCHANGED", "INTVERSION"};
 
-	JLabel lbLabelSingular;
-	JTextField tfLabelSingular;
-	JLabel lbMenupath;
-	JComboBox cbMenupath;
-	JButton btMenupath;
-	JLabel lbSystemIdPrefix;
-	JTextField tfSystemIdPrefix;
-	JLabel lbIconCustom;
-	JComboBox cbxIcon;
-	JButton btNewIcon;
+	private JLabel lbLabelSingular;
+	private JTextField tfLabelSingular;
+	private JLabel lbMenupath;
+	private JComboBox cbMenupath;
+	private JButton btMenupath;
+	private JLabel lbSystemIdPrefix;
+	private JTextField tfSystemIdPrefix;
+	private JLabel lbIconCustom;
+	private JComboBox cbxIcon;
+	private JButton btNewIcon;
 
-	JLabel lbAccelerator;
-	JComboBox cbxModifier;
-	JTextField tfMnemonic;
+	private JLabel lbAccelerator;
+	private JComboBox cbxModifier;
+	private JTextField tfMnemonic;
 
-	JLabel lbLogbook;
-	JCheckBox cbLogbook;
-	JLabel lbSearchable;
-	JCheckBox cbSearchable;
-	JLabel lbEditable;
-	JCheckBox cbEditable;
+	private JLabel lbLogbook;
+	private JCheckBox cbLogbook;
+	private JLabel lbSearchable;
+	private JCheckBox cbSearchable;
+	private JLabel lbEditable;
+	private JCheckBox cbEditable;
 
-	JLabel lbShowRelation;
-	JCheckBox cbShowRelation;
-	JLabel lbShowGroups;
-	JCheckBox cbShowGroups;
+	private JLabel lbShowRelation;
+	private JCheckBox cbShowRelation;
+	private JLabel lbShowGroups;
+	private JCheckBox cbShowGroups;
 
-	JLabel lbStateModel;
-	JCheckBox cbStateModel;
+	private JLabel lbStateModel;
+	private JCheckBox cbStateModel;
 
-	JLabel lbVirtual;
-	JComboBox cbxVirtual;
-	JLabel lbCache;
-	JCheckBox cbCache;
-	JLabel lbTableName;
-	JTextField tfTableName;
-	JLabel lbInternalEntityName;
-	JTextField tfInternalEntityName;
+	private JLabel lbVirtual;
+	private JComboBox cbxVirtual;
+	private JLabel lbIdFactory;
+	private JComboBox cbxIdFactory;
+	
+	private JLabel lbCache;
+	private JCheckBox cbCache;
+	private JLabel lbTableName;
+	private JTextField tfTableName;
+	private JLabel lbInternalEntityName;
+	private JTextField tfInternalEntityName;
 
-	JLabel lbIcon;
-	ResourceIconChooser nuclosIconChooser;
+	private JLabel lbIcon;
+	private ResourceIconChooser nuclosIconChooser;
 
-	JPanel pnlMoreOptions;
+	private JPanel pnlMoreOptions;
 
-	boolean blnSingular;
-	boolean blnSingularModified;
-	boolean blnMenuPathModified;
-	boolean blnIconModified;
-	boolean blnSystemId;
+	private boolean blnSingular;
+	private boolean blnSingularModified;
+	private boolean blnMenuPathModified;
+	private boolean blnIconModified;
+	private boolean blnSystemId;
 
 
 	public NuclosEntityCommonPropertiesStep() {
@@ -240,11 +243,15 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				cbStateModel.setEnabled(true);
 			}
 
-			if (model.isVirtual()) {
+			final boolean virtual = model.isVirtual();
+			if (virtual) {
 				cbxVirtual.setSelectedItem(model.getVirtualentity());
+				cbxIdFactory.setSelectedItem(model.getIdFactory());
 				cbStateModel.setEnabled(false);
-				cbEditable.setEnabled(false);
 				cbLogbook.setEnabled(false);
+				cbEditable.setEnabled(false);
+				final boolean emptyIdFactory = StringUtils.isNullOrEmpty(model.getIdFactory());
+				cbEditable.setSelected(!emptyIdFactory);
 			}
 			cbxVirtual.setEnabled(false);
 		}
@@ -264,13 +271,11 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 
 
 		SwingUtilities.invokeLater(new Runnable() {
-
 			@Override
 			public void run() {
 				setComplete(true);
 			}
 		});
-
 
 	}
 
@@ -362,13 +367,26 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		cbStateModel.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.17", "Statusmodell:"));
 
 		lbVirtual = new JLabel(getMessage("wizard.step.entitycommonproperties.virtual.label", "Virtual entity")+":");
-		cbxVirtual = new JComboBox();
-		List<String> ves = MetaDataDelegate.getInstance().getVirtualEntities();
+		final List<String> ves = MetaDataDelegate.getInstance().getVirtualEntities();
 		ves.add("");
 		Collections.sort(ves);
-		ListComboBoxModel<String> virtualentitymodel = new ListComboBoxModel<String>(ves);
-		cbxVirtual.setModel(virtualentitymodel);
+		final ListComboBoxModel<String> virtualentitymodel = new ListComboBoxModel<String>(ves);
+		cbxVirtual = new JComboBox(virtualentitymodel);
 		cbxVirtual.setToolTipText(getMessage("wizard.step.entitycommonproperties.virtual.description", "Virtual entity (use an existing view)"));
+		// enable virtual entity name for new entities
+		cbxVirtual.setEnabled(true);
+		
+		lbIdFactory = new JLabel(getMessage("wizard.step.entitycommonproperties.idfactory.label", 
+				"Primary key factory for VE") + ":");	
+		final List<String> pif = MetaDataDelegate.getInstance().getPossibleIdFactories();
+		pif.add("");
+		Collections.sort(pif);
+		final ListComboBoxModel<String> pifModel = new ListComboBoxModel<String>(pif);
+		cbxIdFactory = new JComboBox(pifModel);
+		cbxIdFactory.setToolTipText(getMessage("wizard.step.entitycommonproperties.idfactory.description", 
+				"DB object to use for Id generation (if you want to write to VE)"));
+		// disable id factories for new entities (will be enabled if a virtual entity is chosen)
+		cbxIdFactory.setEnabled(false);
 
 		lbCache = new JLabel(getMessage("wizard.step.entitycommonproperties.9", "Entit\u00e4t cachen")+":");
 		cbCache = new JCheckBox();
@@ -436,12 +454,14 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		pnlMoreOptions.setLayout(tlMoreOptions);
 		pnlMoreOptions.add(lbVirtual, "0,0");
 		pnlMoreOptions.add(cbxVirtual, "1,0");
-		pnlMoreOptions.add(lbCache, "0,1");
-		pnlMoreOptions.add(cbCache, "1,1");
-		pnlMoreOptions.add(lbTableName, "0,2");
-		pnlMoreOptions.add(tfTableName, "1,2");
-		pnlMoreOptions.add(lbInternalEntityName, "0,3");
-		pnlMoreOptions.add(tfInternalEntityName, "1,3");
+		pnlMoreOptions.add(lbIdFactory, "0,1");
+		pnlMoreOptions.add(cbxIdFactory, "1,1");
+		pnlMoreOptions.add(lbCache, "0,2");
+		pnlMoreOptions.add(cbCache, "1,2");
+		pnlMoreOptions.add(lbTableName, "0,3");
+		pnlMoreOptions.add(tfTableName, "1,3");
+		pnlMoreOptions.add(lbInternalEntityName, "0,4");
+		pnlMoreOptions.add(tfInternalEntityName, "1,4");
 
 		MoreOptionPanel optionPanel = new MoreOptionPanel(pnlMoreOptions);
 
@@ -482,8 +502,8 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cb = (JCheckBox)e.getItem();
 				NuclosEntityCommonPropertiesStep.this.model.setStateModel(cb.isSelected());
-
-				if(cb.isSelected()) {
+				final boolean selected = cb.isSelected();
+				if(selected) {
 					lbSystemIdPrefix.setText(getMessage("wizard.step.entitycommonproperties.13", "K\u00fcrzel f\u00fcr Identifizierer *:"));
 					if(tfSystemIdPrefix.getText().isEmpty()){
 						NuclosEntityCommonPropertiesStep.this.setComplete(false);
@@ -496,14 +516,18 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 					lbSystemIdPrefix.setText(getMessage("wizard.step.entitycommonproperties.12", "K\u00fcrzel f\u00fcr Identifizierer:"));
 					NuclosEntityCommonPropertiesStep.this.setComplete(true);
 				}
-				lbSystemIdPrefix.setEnabled(cb.isSelected());
-				tfSystemIdPrefix.setEnabled(cb.isSelected());
-				lbShowGroups.setEnabled(cb.isSelected());
-				cbShowGroups.setEnabled(cb.isSelected());
-				lbShowRelation.setEnabled(cb.isSelected());
-				cbShowRelation.setEnabled(cb.isSelected());
-				lbVirtual.setEnabled(!cb.isSelected());
-				cbxVirtual.setEnabled(!cb.isSelected());
+				lbSystemIdPrefix.setEnabled(selected);
+				tfSystemIdPrefix.setEnabled(selected);
+				lbShowGroups.setEnabled(selected);
+				cbShowGroups.setEnabled(selected);
+				lbShowRelation.setEnabled(selected);
+				cbShowRelation.setEnabled(selected);
+				
+				// in case of a state entity, no virtual entity is possible
+				lbVirtual.setEnabled(!selected);
+				cbxVirtual.setEnabled(!selected);
+				lbIdFactory.setEnabled(!selected);
+				cbxIdFactory.setEnabled(!selected);
 			}
 		});
 
@@ -851,20 +875,39 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		cbxVirtual.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				String item = (String) e.getItem();
-				cbEditable.setSelected(StringUtils.isNullOrEmpty(item));
-				cbEditable.setEnabled(StringUtils.isNullOrEmpty(item));
+				final String item = (String) e.getItem();
+				final boolean empty = StringUtils.isNullOrEmpty(item);
+				final boolean idEmpty = StringUtils.isNullOrEmpty((String) cbxIdFactory.getSelectedItem());
+				
+				cbEditable.setSelected(empty || !idEmpty);
+				cbEditable.setEnabled(empty);
+				
 				NuclosEntityCommonPropertiesStep.this.model.setEditable(cbEditable.isSelected());
-				cbLogbook.setSelected(StringUtils.isNullOrEmpty(item));
-				cbLogbook.setEnabled(StringUtils.isNullOrEmpty(item));
+				cbLogbook.setSelected(empty);
+				cbLogbook.setEnabled(empty);
 				NuclosEntityCommonPropertiesStep.this.model.setEditable(cbLogbook.isSelected());
-				cbCache.setSelected(StringUtils.isNullOrEmpty(item));
-				cbCache.setEnabled(StringUtils.isNullOrEmpty(item));
+				cbCache.setSelected(empty);
+				cbCache.setEnabled(empty);
 				NuclosEntityCommonPropertiesStep.this.model.setCachable(cbCache.isSelected());
-				cbStateModel.setEnabled(StringUtils.isNullOrEmpty(item));
+				cbStateModel.setEnabled(empty);
+				
+				// id factory is only possible for virtual entities
+				cbxIdFactory.setEnabled(!empty);
+				if (empty) {
+					cbxIdFactory.setSelectedIndex(0);
+				}
 			}
 		});
-
+		cbxIdFactory.addItemListener(new ItemListener() {	
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				final String item = (String) e.getItem();
+				final boolean empty = StringUtils.isNullOrEmpty(item);
+				final boolean veEmpty = StringUtils.isNullOrEmpty((String) cbxVirtual.getSelectedItem());
+				cbEditable.setSelected(!empty || veEmpty);
+				// model.setIdFactory(item);
+			}
+		});
 	}
 
 	protected void fillIconCombobox() {
@@ -893,6 +936,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 
 	    model.setMenuPath((String)cbMenupath.getSelectedItem());
 	    model.setVirtualentity((String)cbxVirtual.getSelectedItem());
+	    model.setIdFactory((String) cbxIdFactory.getSelectedItem());
 
 	    String sTable = tfTableName.getText();
 	    for(EntityMetaDataVO vo : MetaDataClientProvider.getInstance().getAllEntities()) {
@@ -994,6 +1038,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				try {
 					EntityMetaDataVO virtualentity = new EntityMetaDataVO();
 					virtualentity.setVirtualentity(model.getVirtualentity());
+					virtualentity.setIdFactory(model.getIdFactory());
 					virtualentity.setEntity(model.getEntityName());
 					virtualentity.setDbEntity(model.getVirtualentity());
 					MetaDataDelegate.getInstance().tryVirtualEntitySelect(virtualentity);

@@ -58,67 +58,69 @@ import org.pietschy.wizard.models.StaticModel;
 
 public class NuclosEntityWizardStaticModel extends StaticModel {
 
-	String entityName;
-	String modifiedEntityName;
-	String labelSingular;
-	String nodeLabel;
-	String nodeTooltip;
-	String menuPath;
-	String strTableName;
-	String strMultiEditEquation;
-	String systemIdPrefix;
-	EntityAttributeTableModel attributeModel;
-	List<MasterDataVO> lstUserRights;
-	List<TranslationVO> lstTranslation;
-	List<EntityTreeViewVO> lstTreeView;
-	boolean blnLogbook;
-	boolean blnSearchable;
-	boolean blnEditable;
-	boolean blnImExport;
-	boolean blnShowRelation;
-	boolean blnShowGroups;
-	boolean blnStateModel;
-	boolean blnCachable;
-	ResourceVO icon;
-	Integer iResourceId;
-	String sResourceName;
-	String sNuclosResourceName;
-	boolean blnCreateSql;
-	boolean blnExecuteSql;
-	boolean blnCreateLayout;
-	Integer iModifier;
-	String sAccelerator;
+	private String entityName;
+	private String modifiedEntityName;
+	private String labelSingular;
+	private String nodeLabel;
+	private String nodeTooltip;
+	private String menuPath;
+	private String strTableName;
+	private String strMultiEditEquation;
+	private String systemIdPrefix;
+	private EntityAttributeTableModel attributeModel;
+	private List<MasterDataVO> lstUserRights;
+	private List<TranslationVO> lstTranslation;
+	private List<EntityTreeViewVO> lstTreeView;
+	private boolean blnLogbook;
+	private boolean blnSearchable;
+	private boolean blnEditable;
+	private boolean blnImExport;
+	private boolean blnShowRelation;
+	private boolean blnShowGroups;
+	private boolean blnStateModel;
+	private boolean blnCachable;
+	private ResourceVO icon;
+	private Integer iResourceId;
+	private String sResourceName;
+	private String sNuclosResourceName;
+	private boolean blnCreateSql;
+	private boolean blnExecuteSql;
+	private boolean blnCreateLayout;
+	private Integer iModifier;
+	private String sAccelerator;
 
-	String labelSingularRes;
-	String menuPathRes;
-	String nodeLabelRes;
-	String nodeTooltipRes;
-	String documentPath;
-	String reportFilename;
-	String virtualentity;
+	private String labelSingularRes;
+	private String menuPathRes;
+	private String nodeLabelRes;
+	private String nodeTooltipRes;
+	private String documentPath;
+	private String reportFilename;
+	
+	private String virtualentity;
+	private String idFactory;
 
-	NuclosScript rowColorScript;
+	private NuclosScript rowColorScript;
 
-	Collection<EntityObjectVO> processes;
-	Collection<EntityObjectVO> entityMenus;
+	private Collection<EntityObjectVO> processes;
+	private Collection<EntityObjectVO> entityMenus;
 
-	boolean blnImportTable;
-	String jdbcUrl;
-	String externalUser;
-	String externalPassword;
-	String externalTable;
+	private boolean blnImportTable;
+	private String jdbcUrl;
+	private String externalUser;
+	private String externalPassword;
+	private String externalTable;
 
-	boolean blnEditMode;
-	boolean blnAdvancedMode;
+	private boolean blnEditMode;
+	private boolean blnAdvancedMode;
 
-	boolean blnHasRows;
+	private boolean blnHasRows;
 
 	//DatabaseStructureChangeResultVO resultVO;
-	String resultText;
+	private String resultText;
 
-	MainFrameTab ifrm;
+	private MainFrameTab ifrm;
 
-	NuclosEntityWizard wizard;
+	private NuclosEntityWizard wizard;
 
 	public NuclosEntityWizardStaticModel() {
 		lstUserRights = new ArrayList<MasterDataVO>();
@@ -741,6 +743,14 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 		if (overview != null) {
 			overview.setEnabled(NuclosEntityOptionStep.class, org.nuclos.common2.StringUtils.isNullOrEmpty(virtualentity));
 		}
+	}
+	
+	public String getIdFactory() {
+		return idFactory;
+	}
+	
+	public void setIdFactory(String idFactory) {
+		this.idFactory = idFactory;
 	}
 
 	public NuclosScript getRowColorScript() {

@@ -684,6 +684,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 		metaVO.setFieldsForEquality(wizardModel.getMultiEditEquation());
 		metaVO.setVirtualentity(wizardModel.getVirtualentity());
+		metaVO.setIdFactory(wizardModel.getIdFactory());
 		metaVO.setRowColorScript(wizardModel.getRowColorScript());
 
 		metaVO.setEntity(wizardModel.getEntityName());

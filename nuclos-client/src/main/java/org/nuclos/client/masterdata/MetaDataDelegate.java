@@ -275,6 +275,11 @@ public class MetaDataDelegate implements CommonMetaDataServerProvider {
 	public List<String> getVirtualEntities() {
 		return getMetaDataFacade().getVirtualEntities();
 	}
+	
+	@Override
+	public List<String> getPossibleIdFactories() {
+		return getMetaDataFacade().getPossibleIdFactories();
+	}
 
 	public List<EntityFieldMetaDataVO> getVirtualEntityFields(String virtualentity) {
 		return getMetaDataFacade().getVirtualEntityFields(virtualentity);

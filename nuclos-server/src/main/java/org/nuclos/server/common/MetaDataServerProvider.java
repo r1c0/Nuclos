@@ -200,6 +200,11 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		}
 		return result;
 	}
+	
+	@Override
+	public List<String> getPossibleIdFactories() {
+		return new ArrayList<String>(DataBaseHelper.getDbAccess().getCallableNames());
+	}
 
 	private static boolean isBlank(Object o) {
 		if (o == null) return true;
