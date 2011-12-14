@@ -38,6 +38,8 @@ import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.entityobject.CollectableEOEntityProvider;
 import org.nuclos.common.preferences.ReadOnlyPreferences;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
+import org.nuclos.common2.IdUtils;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.database.DataBaseHelper;
@@ -50,6 +52,7 @@ import org.nuclos.server.entityobject.CollectableEOEntityServerProvider;
 import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectSearchExpression;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.report.valueobject.RecordGrantVO;
+import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 
 public class RecordGrantUtils {
@@ -113,10 +116,25 @@ public class RecordGrantUtils {
 			if(rgVO.getValid()) {
 				ResultVO queryResult = DataBaseHelper.getDbAccess().executePlainQueryAsResultVO(DatasourceServerUtils.createSQL(rgVO.getSource(), getParameter()), 1);
 
-				if (queryResult.getRowCount() == 0)
-					return false;
-				else
-					return true;
+				int index = -1;
+				for (int i = 0; i < queryResult.getColumnCount(); i++) {
+					if (queryResult.getColumns().get(i).getColumnLabel().equalsIgnoreCase("INTID")) {
+						index = i;
+					}
+				}
+				
+				if (index > -1) {
+					for (Object[] row : queryResult.getRows()) {
+						Object o = row[index];
+						if (o instanceof Double) {
+							o = ((Double) o).longValue();
+						}
+						if (LangUtils.equals(IdUtils.toLongId(o), id)) {
+							return true;
+						}
+					}
+				}
+				return false;
 			} else {
 				return true;
 			}

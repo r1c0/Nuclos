@@ -65,6 +65,7 @@ import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IOUtils;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.ServiceLocator;
@@ -606,6 +607,8 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		throws CommonFinderException, CommonPermissionException {
 		// @todo This doesn't work for entities with composite primary keys
 		checkReadAllowed(sEntityName);
+		
+		RecordGrantUtils.checkInternal(sEntityName, IdUtils.toLongId(oId));
 
 		Long longId = null;
 		if (oId instanceof Integer) {
