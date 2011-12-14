@@ -629,8 +629,8 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	}
 
 	@Override
-    public String createOrModifyEntity(EntityMetaDataVO oldMDEntity, EntityMetaDataTO updatedTOEntity, 
-    		MasterDataVO voEntity, List<EntityFieldMetaDataTO> toFields, boolean blnExecute, 
+    public String createOrModifyEntity(EntityMetaDataVO oldMDEntity, EntityMetaDataTO updatedTOEntity,
+    		MasterDataVO voEntity, List<EntityFieldMetaDataTO> toFields, boolean blnExecute,
     		String user, String password) throws NuclosBusinessException {
 		String resultMessage = null;
 		EntityMetaDataVO updatedMDEntity = updatedTOEntity.getEntityMetaVO();
@@ -1419,7 +1419,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			return count == 0L;
 		}
 		catch(Exception e) {
-			LOG.info("isChangeDatabaseColumnToNotNullableAllowed: " + e);	
+			LOG.info("isChangeDatabaseColumnToNotNullableAllowed: " + e);
 			return false;
 		}
 	}
@@ -1458,7 +1458,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			return result.isEmpty();
 		}
 		catch(Exception e) {
-			LOG.error("isChangeDatabaseColumnToUniqueAllowed: " + e, e);	
+			LOG.error("isChangeDatabaseColumnToUniqueAllowed: " + e, e);
 			return false;
 		}
 	}
@@ -1536,12 +1536,12 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		}
 		return result;
 	}
-	
+
 	@Override
 	@RolesAllowed("Login")
 	public List<String> getPossibleIdFactories() {
 		return MetaDataServerProvider.getInstance().getPossibleIdFactories();
-	}	
+	}
 
 	@Override
 	@RolesAllowed("Login")
@@ -1551,6 +1551,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 		for (DbColumn column : tableMetaData.getTableColumns()) {
 			EntityFieldMetaDataVO field = DalUtils.getFieldMeta(column);
+			field.setDbColumn(column.getColumnName().toUpperCase());
 			field.setField(field.getField().toLowerCase());
 			field.setFallbacklabel(field.getField());
 			result.add(field);
