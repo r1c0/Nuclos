@@ -19,10 +19,9 @@ package org.nuclos.common.dal.vo;
 import java.util.Collection;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuclos.common.NuclosScript;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.StringUtils;
-
 
 
 /**
@@ -381,11 +380,11 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	}
 
 	public void setVirtualentity(String virtualentity) {
-		this.virtualentity = virtualentity;
+		this.virtualentity = StringUtils.stripToNull(virtualentity);
 	}
 
 	public boolean isVirtual() {
-		return !StringUtils.isNullOrEmpty(virtualentity);
+		return !StringUtils.isBlank(virtualentity);
 	}
 	
 	public String getIdFactory() {
@@ -393,7 +392,7 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	}
 	
 	public void setIdFactory(String idFactory) {
-		this.idFactory = idFactory;
+		this.idFactory = StringUtils.stripToNull(idFactory);
 	}
 
 	public NuclosScript getRowColorScript() {
