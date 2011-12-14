@@ -165,13 +165,15 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	private static final String UID = "nuclet_contentuid.xml";
 
 	private static final String TABLE_ENTRY_SUFFIX = ".eo.xml";
+	
+	private enum Process {CREATE, PREPARE, RUN};
 
 	/**
 	 *
 	 * @param transferOptions
 	 * @return
 	 */
-	private static List<INucletContent> getNucletContentInstances(TransferOption.Map transferOptions) {
+	private static List<INucletContent> getNucletContentInstances(TransferOption.Map transferOptions, Process p) {
 		List<INucletContent> contents = new ArrayList<INucletContent>();
 
 		INucletContent userNC = new UserNucletContent(contents);
@@ -191,6 +193,10 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			ldapMappingNC.setEnabled(false);
 			importFileNC.setEnabled(false);
 			importUsageNC.setEnabled(false);
+		}
+		
+		if (p == Process.CREATE) {
+			contents.add(new DefaultNucletContent(NuclosEntity.PARAMETER, null, contents));
 		}
 
 		contents.add(new NucletNucletContent(contents));
@@ -214,7 +220,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		contents.add(userNC);
 		contents.add(new DefaultNucletContent(NuclosEntity.ROLEUSER, NuclosEntity.USER, contents));
 
-		contents.add(new DefaultNucletContent(NuclosEntity.PARAMETER, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.DBOBJECT, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.DBSOURCE, NuclosEntity.DBOBJECT, contents));
 
@@ -325,7 +330,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		jmsNotifier.notify("read nuclet contents", 0);
 
 		info("get nuclet content instances");
-		List<INucletContent> 	contentTypes = getNucletContentInstances(exportOptions);
+		List<INucletContent> 	contentTypes = getNucletContentInstances(exportOptions, Process.CREATE);
 		Set<Long> 				existingNucletIds = getExistingNucletIds(nucletId);
 		List<EntityObjectVO> 	uidObjects = getUIDObjects(existingNucletIds, contentTypes, exportOptions);
 		ByteArrayOutputStream 	bout = new ByteArrayOutputStream(16348);
@@ -462,7 +467,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 
 		jmsNotifier.notify("load existing nuclets and UIDs", 10);
 		info("get nuclet content instances");
-		List<INucletContent> contentTypes = getNucletContentInstances(root.exportOptions);
+		List<INucletContent> contentTypes = getNucletContentInstances(root.exportOptions, Process.PREPARE);
 		Set<Long> existingNucletIds = isNuclon?new HashSet<Long>():getExistingNucletIds(root.nucletUID);
 		info("existing nuclet ids: " + existingNucletIds);
 		info("get UID map");
@@ -780,8 +785,12 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		}
 
 		if (!protectParameter){
-			if (parameter != null)
-				parameter.addAll(importData.get(NuclosEntity.PARAMETER.getEntityName()));
+			if (parameter != null){
+				List<EntityObjectVO> importParameter = importData.get(NuclosEntity.PARAMETER.getEntityName());
+				if (importParameter != null) {
+					parameter.addAll(importParameter);
+				}
+			}
 		}
 
 		return root;
@@ -865,7 +874,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		info("RUN Transfer (isNuclon=" + t.isNuclon() + ")");
 		LockedTabProgressNotifier jmsNotifier = new LockedTabProgressNotifier(Transfer.TOPIC_CORRELATIONID_RUN);
 		info("get nuclet content instances");
-		List<INucletContent> contentTypes = getNucletContentInstances(t.getTransferOptions());
+		List<INucletContent> contentTypes = getNucletContentInstances(t.getTransferOptions(), Process.RUN);
 		readBytes(t.getTransferFile(), t.getParameter(), true, null, new HashMap<String, List<EntityObjectVO>>(), null);
 
 		info("get all dynamic entities");
