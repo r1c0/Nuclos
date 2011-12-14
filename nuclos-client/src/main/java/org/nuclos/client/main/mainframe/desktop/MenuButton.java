@@ -156,12 +156,10 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 	
 						Rectangle bounds = getBounds();
 						g2.setColor(HOVER_COLOR);
-						g2.fillRoundRect(0, 0, bounds.width-1, bounds.height-1,
-								getWidth() / 16, getHeight() / 16);
+						g2.fillRoundRect(0, 0, bounds.width-1, bounds.height-1, 4, 4);
 	
 						g2.setColor(NuclosThemeSettings.BACKGROUND_COLOR3);
-						g2.drawRoundRect(0, 0, bounds.width-1, bounds.height-1,
-								getWidth() / 16, getHeight() / 16);
+						g2.drawRoundRect(0, 0, bounds.width-1, bounds.height-1, 4, 4);
 						
 						g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 								renderingHint);
