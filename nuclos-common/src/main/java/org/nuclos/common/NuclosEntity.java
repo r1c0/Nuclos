@@ -37,6 +37,7 @@ public enum NuclosEntity {
 	DBSOURCE("dbsource"),
 	DATASOURCE("datasource"),
 	DATASOURCEUSAGE("datasourceUsage"),
+	DUMMY("dummy"),
 	DYNAMICENTITY("dynamicEntity"),
 	DYNAMICENTITYUSAGE("dynamicEntityUsage"),
 	ENTITY("entity"),

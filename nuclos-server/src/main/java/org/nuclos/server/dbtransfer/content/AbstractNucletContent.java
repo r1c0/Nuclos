@@ -150,16 +150,8 @@ public abstract class AbstractNucletContent implements INucletContent {
 	public List<EntityObjectVO> getUIDObjects(Set<Long> nucletIds, TransferOption.Map transferOptions) {
 		List<EntityObjectVO> result = new ArrayList<EntityObjectVO>();
 		for (EntityObjectVO ncObject : getNcObjects(nucletIds, transferOptions)) {
-			for (EntityObjectVO uidObject : NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLETCONTENTUID).getBySearchExpression(
-				new CollectableSearchExpression(SearchConditionUtils.and(
-					SearchConditionUtils.newEOComparison(
-						NuclosEntity.NUCLETCONTENTUID.getEntityName(), "nuclosentity",
-						ComparisonOperator.EQUAL, entity.getEntityName(),
-						MetaDataServerProvider.getInstance()),
-					SearchConditionUtils.newEOComparison(
-						NuclosEntity.NUCLETCONTENTUID.getEntityName(), "objectid",
-						ComparisonOperator.EQUAL, ncObject.getId(),
-						MetaDataServerProvider.getInstance()))))) {
+			EntityObjectVO uidObject = TransferUtils.getUID(entity, ncObject.getId());
+			if (uidObject != null) {
 				result.add(uidObject);
 			}
 		}

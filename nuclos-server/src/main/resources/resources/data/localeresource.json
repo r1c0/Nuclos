@@ -63737,5 +63737,35 @@
     "resourceID": "nuclos.entityfield.Nuclet.namespace.description",
     "locale": "de",
     "text": "Eindeutiger Namensraum für Nucletelemente."
+  },
+  {
+    "resourceID": "nuclos.entity.dummy.label",
+    "locale": "i-default",
+    "text": "Dummy Nuclet Interface"
+  },
+  {
+    "resourceID": "nuclos.entity.dummy.label",
+    "locale": "en",
+    "text": "Dummy Nuclet Interface"
+  },
+  {
+    "resourceID": "nuclos.entity.dummy.label",
+    "locale": "de",
+    "text": "Dummy Nuclet Schnittstelle"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dummy.name.label",
+    "locale": "i-default",
+    "text": "Dummy name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dummy.name.label",
+    "locale": "en",
+    "text": "Dummy name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dummy.name.label",
+    "locale": "de",
+    "text": "Dummy Name"
   }
 ]

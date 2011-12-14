@@ -16,12 +16,16 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dbtransfer;
 import static org.nuclos.server.dbtransfer.TransferUtils.checkValidity;
+import static org.nuclos.server.dbtransfer.TransferUtils.createUIDRecord;
+import static org.nuclos.server.dbtransfer.TransferUtils.createUIDRecordForNcObject;
 import static org.nuclos.server.dbtransfer.TransferUtils.getDependencies;
 import static org.nuclos.server.dbtransfer.TransferUtils.getEntities;
 import static org.nuclos.server.dbtransfer.TransferUtils.getEntity;
 import static org.nuclos.server.dbtransfer.TransferUtils.getIdentifier;
 import static org.nuclos.server.dbtransfer.TransferUtils.getIds;
+import static org.nuclos.server.dbtransfer.TransferUtils.getNcObjectIdFromNucletContentUID;
 import static org.nuclos.server.dbtransfer.TransferUtils.getUserEntityFields;
+import static org.nuclos.server.dbtransfer.TransferUtils.updateUIDRecord;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -114,6 +118,7 @@ import org.nuclos.server.dbtransfer.content.EntityNucletContent;
 import org.nuclos.server.dbtransfer.content.EntitySubnodesNucletContent;
 import org.nuclos.server.dbtransfer.content.EventNucletContent;
 import org.nuclos.server.dbtransfer.content.INucletContent;
+import org.nuclos.server.dbtransfer.content.INucletInterface;
 import org.nuclos.server.dbtransfer.content.ImportFileNucletContent;
 import org.nuclos.server.dbtransfer.content.JobControllerNucletContent;
 import org.nuclos.server.dbtransfer.content.NucletNucletContent;
@@ -330,6 +335,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		final String writeContent = "write nuclet contents to file";
 		double progressPerContent = 80/contentTypes.size();
 		double progressCurrent = 10;
+		final Map<NuclosEntity, List<EntityObjectVO>> result = new HashMap<NuclosEntity, List<EntityObjectVO>>();
 		for (INucletContent nc : contentTypes) {
 			info("read content for nuclos entity: " + nc.getEntity());
 			jmsNotifier.notify(writeContent, Double.valueOf(progressCurrent).intValue());
@@ -339,10 +345,19 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			updateUIDObjectVersion(nc, ncObjects, uidObjects);
 			createMissingUIDs(ncObjects, uidObjects);
 			info("add content to zip");
-			zout.addEntry(nc.getEntity().getEntityName()+TABLE_ENTRY_SUFFIX, toXML(ncObjects));
+//			zout.addEntry(nc.getEntity().getEntityName()+TABLE_ENTRY_SUFFIX, toXML(ncObjects));
+			result.put(nc.getEntity(), ncObjects);
+		}
+		for (INucletContent nc : contentTypes) {
+			if (nc instanceof INucletInterface) {
+				((INucletInterface) nc).addNucletInterfaces(result, uidObjects);
+			}
+		}
+		for (NuclosEntity ne : result.keySet()) {
+			zout.addEntry(ne.getEntityName()+TABLE_ENTRY_SUFFIX, toXML(result.get(ne)));
 		}
 
-		jmsNotifier.notify("safe file", 90);
+		jmsNotifier.notify("save file", 90);
 
 		info("find nuclet UID");
 		for (EntityObjectVO uidObject : uidObjects) {
@@ -500,7 +515,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			info("preview changes");
 			final String notifyPreviewString = "creating preview of db changes";
 			jmsNotifier.notify(notifyPreviewString, 80);
-			previewParts.addAll(previewChanges(DataBaseHelper.getDbAccess(), existingNucletIds, contentTypes, importData, root.exportOptions,
+			previewParts.addAll(previewChanges(DataBaseHelper.getDbAccess(), existingNucletIds, contentTypes, importContentMap, importData, root.exportOptions,
 				new TransferNotifierHelper(jmsNotifier, notifyPreviewString, 80, 100)));
 		} catch (Exception ex) {
 			if (t.result.hasCriticals()) t.result.sbCritical.append("<br />");
@@ -548,21 +563,32 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		DbAccess dbAccess,
 		Set<Long> existingNucletIds,
 		List<INucletContent> contentTypes,
-		Map<String, List<EntityObjectVO>> mpImportData,
+		NucletContentMap importContentMap, Map<String, List<EntityObjectVO>> mpImportData,
 		TransferOption.Map transferOptions,
 		TransferNotifierHelper notifierHelper) throws SQLException {
 
 		Map<String, PreviewPart> preview = new HashMap<String, PreviewPart>();
 
-		List<EntityObjectVO> currentEntities = TransferUtils.getContentType(contentTypes, NuclosEntity.ENTITY).getNcObjects(existingNucletIds, transferOptions);
-		List<EntityObjectVO> currentFields = TransferUtils.getContentType(contentTypes, NuclosEntity.ENTITYFIELD).getNcObjects(existingNucletIds, transferOptions);
-		// TODO EntityInterface hier Schnittstellen-Entitäten hinzufügen.
+		List<EntityObjectVO> nucletInterfaceEntities = EntityNucletContent.getNucletInterfaceEntities(importContentMap);
+		List<EntityObjectVO> nucletInterfaceEntityFields = EntityNucletContent.getNucletInterfaceEntityFields(importContentMap);
+		
+		List<EntityObjectVO> currentEntities = CollectionUtils.concat(
+				TransferUtils.getContentType(contentTypes, NuclosEntity.ENTITY).getNcObjects(existingNucletIds, transferOptions),
+				nucletInterfaceEntities);
+		List<EntityObjectVO> currentFields = CollectionUtils.concat(
+				TransferUtils.getContentType(contentTypes, NuclosEntity.ENTITYFIELD).getNcObjects(existingNucletIds, transferOptions),
+				nucletInterfaceEntityFields);
+		
 		MetaDataProvider currentProvider = getMetaDataProvider(currentEntities, currentFields);
 		Map<String, DbTable> currentSchema = (new EntityObjectMetaDbHelper(dbAccess, currentProvider)).getSchema();
 
-		List<EntityObjectVO> transferredEntities = mpImportData.get(NuclosEntity.ENTITY.getEntityName());
-		List<EntityObjectVO> transferredFields = mpImportData.get(NuclosEntity.ENTITYFIELD.getEntityName());
-		// TODO EntityInterface hier Schnittstellen-Entitäten hinzufügen.
+		List<EntityObjectVO> transferredEntities = CollectionUtils.concat(
+				mpImportData.get(NuclosEntity.ENTITY.getEntityName()),
+				nucletInterfaceEntities);
+		List<EntityObjectVO> transferredFields = CollectionUtils.concat(
+				mpImportData.get(NuclosEntity.ENTITYFIELD.getEntityName()),
+				nucletInterfaceEntityFields);
+		
 		MetaDataProvider transferredProvider = getMetaDataProvider(transferredEntities, transferredFields);
 		Map<String, DbTable> transferredSchema = (new EntityObjectMetaDbHelper(dbAccess, transferredProvider)).getSchema();
 
@@ -835,6 +861,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	public synchronized Transfer.Result runTransfer(final Transfer t) throws NuclosBusinessException {
 		t.result = new Transfer.Result();
 
+		cleanupUIDs();
 		info("RUN Transfer (isNuclon=" + t.isNuclon() + ")");
 		LockedTabProgressNotifier jmsNotifier = new LockedTabProgressNotifier(Transfer.TOPIC_CORRELATIONID_RUN);
 		info("get nuclet content instances");
@@ -854,19 +881,12 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		info("create db access");
 		DbAccess dbAccess = DataBaseHelper.getDbAccess().getDbType().createDbAccess(NuclosDataSources.getDefaultDS(), config);
 
-		//** safe current configuration
 		jmsNotifier.notify("read current schema", 0);
 		info("read current schema");
-		List<EntityObjectVO> currentEntities = TransferUtils.getContentType(contentTypes, NuclosEntity.ENTITY).getNcObjects(t.getExistingNucletIds(), t.getTransferOptions());
-		List<EntityObjectVO> currentFields = TransferUtils.getContentType(contentTypes, NuclosEntity.ENTITYFIELD).getNcObjects(t.getExistingNucletIds(), t.getTransferOptions());
-		MetaDataProvider currentProvider = getMetaDataProvider(currentEntities, currentFields);
-		EntityObjectMetaDbHelper currentHelper = new EntityObjectMetaDbHelper(dbAccess, currentProvider);
-		Map<String, DbTable> currentSchema = currentHelper.getSchema();
 
 		//** safe current db objects
 		DbObjectHelper dboHelper = new DbObjectHelper(dbAccess);
 		Map<DbObject, Pair<DbStatement, DbStatement>> currentUserDefinedDbObjects = dboHelper.getAllDbObjects(null);
-
 
 		// TODO remove importData
 		NucletContentMap importContentMap = new NucletContentHashMap();
@@ -876,6 +896,21 @@ public class TransferFacadeBean extends NuclosFacadeBean
 				importContentMap.addAllValues(entity, t.getImportData().get(sEntity));
 			}
 		}
+		
+		List<EntityObjectVO> nucletInterfaceEntities = EntityNucletContent.getNucletInterfaceEntities(importContentMap);
+		List<EntityObjectVO> nucletInterfaceEntityFields = EntityNucletContent.getNucletInterfaceEntityFields(importContentMap);
+		
+		//** safe current configuration
+		List<EntityObjectVO> currentEntities = CollectionUtils.concat(
+				TransferUtils.getContentType(contentTypes, NuclosEntity.ENTITY).getNcObjects(t.getExistingNucletIds(), t.getTransferOptions()),
+				nucletInterfaceEntities);
+		List<EntityObjectVO> currentFields = CollectionUtils.concat(
+				TransferUtils.getContentType(contentTypes, NuclosEntity.ENTITYFIELD).getNcObjects(t.getExistingNucletIds(), t.getTransferOptions()),
+				nucletInterfaceEntityFields);
+		
+		MetaDataProvider currentProvider = getMetaDataProvider(currentEntities, currentFields);
+		EntityObjectMetaDbHelper currentHelper = new EntityObjectMetaDbHelper(dbAccess, currentProvider);
+		Map<String, DbTable> currentSchema = currentHelper.getSchema();
 
 		info("get all foreign key contraints and drop");
 		final List<DbForeignKeyConstraint> fkConstraints = getForeignKeyConstraints(getEntities(contentTypes), new EntityObjectMetaDbHelper(dbAccess, MetaDataServerProvider.getInstance()));
@@ -898,7 +933,15 @@ public class TransferFacadeBean extends NuclosFacadeBean
 
 			info("generate new schema");
 			jmsNotifier.notify("generate new schema", 50);
-			MetaDataProvider transferredProvider = getMetaDataProvider(importContentMap.getValues(NuclosEntity.ENTITY), importContentMap.getValues(NuclosEntity.ENTITYFIELD));
+			
+			List<EntityObjectVO> transferredEntities = CollectionUtils.concat(
+					importContentMap.getValues(NuclosEntity.ENTITY),
+					nucletInterfaceEntities);
+			List<EntityObjectVO> transferredFields = CollectionUtils.concat(
+					importContentMap.getValues(NuclosEntity.ENTITYFIELD),
+					nucletInterfaceEntityFields);
+			
+			MetaDataProvider transferredProvider = getMetaDataProvider(transferredEntities, transferredFields);
 			EntityObjectMetaDbHelper transferredHelper = new EntityObjectMetaDbHelper(dbAccess, transferredProvider);
 			Map<String, DbTable> transferredSchema = transferredHelper.getSchema();
 
@@ -1640,30 +1683,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 
 	/**
 	 *
-	 * @param NuclosEntity entity
-	 * @param String uid
-	 * @return
-	 */
-	private Long getNcObjectIdFromNucletContentUID(NuclosEntity entity, String uid) {
-		List<EntityObjectVO> result = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLETCONTENTUID).getBySearchExpression(new CollectableSearchExpression(SearchConditionUtils.and(
-			SearchConditionUtils.newEOComparison(
-				NuclosEntity.NUCLETCONTENTUID.getEntityName(), "nuclosentity",
-				ComparisonOperator.EQUAL, entity.getEntityName(),
-				MetaDataServerProvider.getInstance()),
-			SearchConditionUtils.newEOComparison(
-				NuclosEntity.NUCLETCONTENTUID.getEntityName(), "uid",
-				ComparisonOperator.EQUAL, uid,
-				MetaDataServerProvider.getInstance()))));
-
-		switch (result.size()) {
-		case 0: return null;
-		case 1: return result.get(0).getField("objectid", Long.class);
-		default: throw new NuclosFatalException("Nuclet content UID is not unique [" + entity.getEntityName() + ", " + uid + "]");
-		}
-	}
-
-	/**
-	 *
 	 * @param Set<Long> existingNucletIds
 	 * @param List<INucletContent> contentTypes
 	 * @return
@@ -1688,88 +1707,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			result.addAll(nc.getUIDObjects(existingNucletIds, transferOptions));
 		}
 		return result;
-	}
-
-	/**
-	 *
-	 * @param EntityObjectVO ncObject
-	 * @return
-	 */
-	private EntityObjectVO createUIDRecordForNcObject(EntityObjectVO ncObject) {
-		EntityObjectVO uidObject = createUIDObject(new NucletContentUID(ncObject), NuclosEntity.getByName(ncObject.getEntity()), ncObject.getId());
-		getProcessor(NuclosEntity.NUCLETCONTENTUID).insertOrUpdate(uidObject);
-		return uidObject;
-	}
-
-	/**
-	 *
-	 * @param NucletContentUID uid
-	 * @param NuclosEntity entity
-	 * @param Long objectId
-	 * @param Integer objectVersion
-	 * @return
-	 */
-	private void createUIDRecord(NucletContentUID uid, NuclosEntity entity, Long objectId) {
-		getProcessor(NuclosEntity.NUCLETCONTENTUID).insertOrUpdate(createUIDObject(uid, entity, objectId));
-	}
-
-	/**
-	 *
-	 * @param NucletContentUID uid
-	 * @param NuclosEntity entity
-	 * @param Long objectId
-	 * @return
-	 */
-	private EntityObjectVO createUIDObject(NucletContentUID uid, NuclosEntity entity, Long objectId) {
-		if (uid == null) {
-			throw new IllegalArgumentException("UID must not be null");
-		}
-		if (entity == null) {
-			throw new IllegalArgumentException("entity must not be null");
-		}
-		if (objectId == null) {
-			throw new IllegalArgumentException("objectId must not be null");
-		}
-		if (uid.uid == null) {
-			throw new IllegalArgumentException("UID.uid must not be null");
-		}
-		if (uid.version == null) {
-			throw new IllegalArgumentException("UID.version must not be null");
-		}
-		if (uid.id != null) {
-			throw new IllegalArgumentException("UID.id != null");
-		}
-		EntityObjectVO result = new EntityObjectVO();
-		result.setEntity(NuclosEntity.NUCLETCONTENTUID.getEntityName());
-		result.initFields(4, 0);
-		result.getFields().put("uid", uid.uid);
-		result.getFields().put("nuclosentity", entity.getEntityName());
-		result.getFields().put("objectid", objectId);
-		result.getFields().put("objectversion", uid.version);
-		result.flagNew();
-		result.setId(DalUtils.getNextId());
-		DalUtils.updateVersionInformation(result, getCurrentUserName());
-		return result;
-	}
-
-	/**
-	 *
-	 * @param Long id
-	 * @param Integer version
-	 * @return
-	 */
-	private void updateUIDRecord(Long id, Integer version) {
-		if (id == null) {
-			throw new IllegalArgumentException("id must not be null");
-		}
-		if (version == null) {
-			throw new IllegalArgumentException("version must not be null");
-		}
-		EntityObjectVO uidEO = getProcessor(NuclosEntity.NUCLETCONTENTUID).getByPrimaryKey(id);
-		uidEO.getFields().put("objectversion", version);
-		uidEO.flagUpdate();
-		DalUtils.updateVersionInformation(uidEO, getCurrentUserName());
-		getProcessor(NuclosEntity.NUCLETCONTENTUID).insertOrUpdate(uidEO);
 	}
 
 	/*

@@ -34,7 +34,7 @@
 	</ciManagement>
 	
 	<properties>
-		<nuclos.version.date>15.06.2011</nuclos.version.date>
+		<nuclos.version.date>14.12.2011</nuclos.version.date>
 		<nuclos.api.version>1.0.2</nuclos.api.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>

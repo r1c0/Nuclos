@@ -9622,5 +9622,29 @@
         "descriptionres": "nuclos.entityfield.roleworkspace.workspace.description"
       }
     ]
+  },
+  {
+    "entity": "nuclos_dummy",
+    "searchable": false,
+    "editable": false,
+    "cacheable": false,
+    "dbentity": "T_MD_DUMMY",
+    "importexport": false,
+    "systementity": false,
+    "labelres": "nuclos.entity.dummy.label",
+    "nuclos_entityfield": [
+      {
+        "name": "name",
+        "dbfield": "STRNAME",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.dummy.name.label",
+        "descriptionres": "nuclos.entityfield.dummy.name.label"
+      }
+    ]
   }
 ]

@@ -25,21 +25,27 @@ import java.util.Set;
 
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SearchConditionUtils;
+import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dbtransfer.NucletContentUID;
 import org.nuclos.common.dbtransfer.Transfer;
 import org.nuclos.common.dbtransfer.TransferOption;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.dal.DalUtils;
+import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.dbtransfer.content.AbstractNucletContent;
 import org.nuclos.server.dbtransfer.content.INucletContent;
 import org.nuclos.server.dbtransfer.content.ValidityLogEntry;
 import org.nuclos.server.dbtransfer.content.ValidityType;
+import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 
 public class TransferUtils {
 
@@ -424,6 +430,128 @@ public class TransferUtils {
 		@Override
 		public Long transform(EntityObjectVO i) {
 			return i.getFieldId("nucletDependence");
+		}
+	}
+	
+	public static EntityObjectVO getUID(NuclosEntity entity, Long objectId) {
+		for (EntityObjectVO uidObject : NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLETCONTENTUID).getBySearchExpression(
+				new CollectableSearchExpression(SearchConditionUtils.and(
+					SearchConditionUtils.newEOComparison(
+						NuclosEntity.NUCLETCONTENTUID.getEntityName(), "nuclosentity",
+						ComparisonOperator.EQUAL, entity.getEntityName(),
+						MetaDataServerProvider.getInstance()),
+					SearchConditionUtils.newEOComparison(
+						NuclosEntity.NUCLETCONTENTUID.getEntityName(), "objectid",
+						ComparisonOperator.EQUAL, objectId,
+						MetaDataServerProvider.getInstance()))))) {
+				return uidObject;
+			}
+		return null;
+	}
+	
+	/**
+	 *
+	 * @param NucletContentUID uid
+	 * @param NuclosEntity entity
+	 * @param Long objectId
+	 * @return
+	 */
+	public static EntityObjectVO createUIDObject(NucletContentUID uid, NuclosEntity entity, Long objectId) {
+		if (uid == null) {
+			throw new IllegalArgumentException("UID must not be null");
+		}
+		if (entity == null) {
+			throw new IllegalArgumentException("entity must not be null");
+		}
+		if (objectId == null) {
+			throw new IllegalArgumentException("objectId must not be null");
+		}
+		if (uid.uid == null) {
+			throw new IllegalArgumentException("UID.uid must not be null");
+		}
+		if (uid.version == null) {
+			throw new IllegalArgumentException("UID.version must not be null");
+		}
+		if (uid.id != null) {
+			throw new IllegalArgumentException("UID.id != null");
+		}
+		EntityObjectVO result = new EntityObjectVO();
+		result.setEntity(NuclosEntity.NUCLETCONTENTUID.getEntityName());
+		result.initFields(4, 0);
+		result.getFields().put("uid", uid.uid);
+		result.getFields().put("nuclosentity", entity.getEntityName());
+		result.getFields().put("objectid", objectId);
+		result.getFields().put("objectversion", uid.version);
+		result.flagNew();
+		result.setId(DalUtils.getNextId());
+		DalUtils.updateVersionInformation(result, "superuser");
+		return result;
+	}
+	
+	/**
+	 *
+	 * @param EntityObjectVO ncObject
+	 * @return
+	 */
+	public static EntityObjectVO createUIDRecordForNcObject(EntityObjectVO ncObject) {
+		EntityObjectVO uidObject = createUIDObject(new NucletContentUID(ncObject), NuclosEntity.getByName(ncObject.getEntity()), ncObject.getId());
+		NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLETCONTENTUID).insertOrUpdate(uidObject);
+		return uidObject;
+	}
+
+	/**
+	 *
+	 * @param NucletContentUID uid
+	 * @param NuclosEntity entity
+	 * @param Long objectId
+	 * @param Integer objectVersion
+	 * @return
+	 */
+	public static void createUIDRecord(NucletContentUID uid, NuclosEntity entity, Long objectId) {
+		NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLETCONTENTUID).insertOrUpdate(createUIDObject(uid, entity, objectId));
+	}
+	
+	/**
+	 *
+	 * @param Long id
+	 * @param Integer version
+	 * @return
+	 */
+	public static void updateUIDRecord(Long id, Integer version) {
+		if (id == null) {
+			throw new IllegalArgumentException("id must not be null");
+		}
+		if (version == null) {
+			throw new IllegalArgumentException("version must not be null");
+		}
+		EntityObjectVO uidEO = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLETCONTENTUID).getByPrimaryKey(id);
+		uidEO.getFields().put("objectversion", version);
+		uidEO.flagUpdate();
+		DalUtils.updateVersionInformation(uidEO, "superuser");
+		NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLETCONTENTUID).insertOrUpdate(uidEO);
+	}
+	
+	/**
+	 *
+	 * @param NuclosEntity entity
+	 * @param String uid
+	 * @return
+	 */
+	public static Long getNcObjectIdFromNucletContentUID(NuclosEntity entity, String uid) {
+		List<EntityObjectVO> result = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLETCONTENTUID).getBySearchExpression(new CollectableSearchExpression(SearchConditionUtils.and(
+			SearchConditionUtils.newEOComparison(
+				NuclosEntity.NUCLETCONTENTUID.getEntityName(), "nuclosentity",
+				ComparisonOperator.EQUAL, entity.getEntityName(),
+				MetaDataServerProvider.getInstance()),
+			SearchConditionUtils.newEOComparison(
+				NuclosEntity.NUCLETCONTENTUID.getEntityName(), "uid",
+				ComparisonOperator.EQUAL, uid,
+				MetaDataServerProvider.getInstance()))));
+
+		switch (result.size()) {
+		case 0: return null;
+		case 1: return result.get(0).getField("objectid", Long.class);
+		default: throw new NuclosFatalException("Nuclet content UID is not unique [" + entity.getEntityName() + ", " + uid + "]");
 		}
 	}
 
