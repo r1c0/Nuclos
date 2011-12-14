@@ -241,8 +241,8 @@ public abstract class AbstractNucletContent implements INucletContent {
 	}
 
 	@Override
-	public boolean checkValidity(EntityObjectVO ncObject, ValidityType validity, NucletContentMap importContentMap, Set<Long> existingNucletIds, ValidityLogEntry log, TransferOption.Map transferOptions) {
-		switch (validity) {
+	public boolean validate(EntityObjectVO ncObject, ValidationType type, NucletContentMap importContentMap, NucletContentUID.Map uidMap, Set<Long> existingNucletIds, ValidityLogEntry log, TransferOption.Map transferOptions) {
+		switch (type) {
 			case INSERT:
 			case UPDATE:
 				boolean result = true;
@@ -258,7 +258,7 @@ public abstract class AbstractNucletContent implements INucletContent {
 						otherObjects.add(eo);
 				}
 				for (EntityObjectVO eo : NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getAll()) {
-					if (validity == ValidityType.INSERT || (validity == ValidityType.UPDATE && !LangUtils.equals(ncObject.getId(), eo.getId())))
+					if (type == ValidationType.INSERT || (type == ValidationType.UPDATE && !LangUtils.equals(ncObject.getId(), eo.getId())))
 						otherObjects.add(eo);
 				}
 				for (Set<String> uniqueCombination : uniqueFieldCombinations) {

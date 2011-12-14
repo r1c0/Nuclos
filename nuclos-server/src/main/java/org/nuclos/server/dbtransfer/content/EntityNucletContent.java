@@ -28,6 +28,7 @@ import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dbtransfer.NucletContentUID;
 import org.nuclos.common.dbtransfer.TransferOption;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
@@ -53,40 +54,41 @@ public class EntityNucletContent extends DefaultNucletContent {
 	}
 
 	@Override
-	public boolean checkValidity(EntityObjectVO ncObject, ValidityType validity, NucletContentMap importContentMap, Set<Long> existingNucletIds, ValidityLogEntry log, TransferOption.Map transferOptions) {
-		boolean result = super.checkValidity(ncObject, validity, importContentMap, existingNucletIds, log, transferOptions); 
+	public boolean validate(EntityObjectVO ncObject, ValidationType type, NucletContentMap importContentMap, NucletContentUID.Map uidMap, Set<Long> existingNucletIds, ValidityLogEntry log, TransferOption.Map transferOptions) {
+		boolean result = super.validate(ncObject, type, importContentMap, uidMap, existingNucletIds, log, transferOptions); 
 		if (!result) log.newCriticalLine("Entity has critical validation errors: " + ncObject.getField("entity", String.class));
 		
-		switch (validity) {
+		switch (type) {
 			case INSERT:
 			case UPDATE:
 				// check if references are possible
-				for (EntityObjectVO fieldVO : importContentMap.getValues(NuclosEntity.ENTITYFIELD)) {
-					if (LangUtils.equals(fieldVO.getFieldId("entity"), ncObject.getId())) {
-						String foreignentity = org.nuclos.common2.LangUtils.defaultIfNull(fieldVO.getField("foreignentity", String.class), fieldVO.getField("unreferencedforeignentity", String.class));
-						if (foreignentity != null && !NuclosEntity.isNuclosEntity(foreignentity) && TransferUtils.getEntityObjectVO(importContentMap.getValues(getEntity()), "entity", foreignentity) == null) {
-							
-							// check if nuclet interfaces entity uid is present and foreignentity exists
-							String nucletInterfaceUID = fieldVO.getField(EntityFieldNucletContent.NUCLET_INTERFACE_FOREIGN_ENTITY_UID, String.class);
-							boolean dummy = true;
-							if (nucletInterfaceUID != null) {
-								info("Nuclet interface entity UID " + nucletInterfaceUID + " found. Searching for entity...");
-								if (TransferUtils.getNcObjectIdFromNucletContentUID(NuclosEntity.ENTITY, nucletInterfaceUID) != null){
-									info("Found!");
-									dummy = false;
-								} else {
-									info("NOT found!");
-								}
-							}
-							
-							if (dummy) {
-								log.newWarningLine("Entity " + ncObject.getField("entity", String.class) + " references to unknown entity " + foreignentity + ". Redirect to dummy entity!");
-								fieldVO.getFields().put("foreignentity", NuclosEntity.DUMMY.getEntityName());
-								fieldVO.getFields().put("foreignentityfield", "name");
-							}
-						}
-					}
-				}
+				// (moved to EntityFieldNucletContent)
+//				for (EntityObjectVO fieldVO : importContentMap.getValues(NuclosEntity.ENTITYFIELD)) {
+//					if (LangUtils.equals(fieldVO.getFieldId("entity"), ncObject.getId())) {
+//						String foreignentity = org.nuclos.common2.LangUtils.defaultIfNull(fieldVO.getField("foreignentity", String.class), fieldVO.getField("unreferencedforeignentity", String.class));
+//						if (foreignentity != null && !NuclosEntity.isNuclosEntity(foreignentity) && TransferUtils.getEntityObjectVO(importContentMap.getValues(getEntity()), "entity", foreignentity) == null) {
+//							
+//							// check if nuclet interfaces entity uid is present and foreignentity exists
+//							String nucletInterfaceUID = fieldVO.getField(EntityFieldNucletContent.NUCLET_INTERFACE_FOREIGN_ENTITY_UID, String.class);
+//							boolean dummy = true;
+//							if (nucletInterfaceUID != null) {
+//								info("Nuclet interface entity UID " + nucletInterfaceUID + " found. Searching for entity...");
+//								if (TransferUtils.getNcObjectIdFromNucletContentUID(NuclosEntity.ENTITY, nucletInterfaceUID) != null){
+//									info("Found!");
+//									dummy = false;
+//								} else {
+//									info("NOT found!");
+//								}
+//							}
+//							
+//							if (dummy) {
+//								log.newWarningLine("Entity " + ncObject.getField("entity", String.class) + " references to unknown entity " + foreignentity + ". Redirect to dummy entity!");
+//								fieldVO.getFields().put("foreignentity", NuclosEntity.DUMMY.getEntityName());
+//								fieldVO.getFields().put("foreignentityfield", "name");
+//							}
+//						}
+//					}
+//				}
 				
 				if (!transferOptions.containsKey(TransferOption.IS_NUCLOS_INSTANCE)) {
 					for (EntityObjectVO eo : NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.ENTITY).getAll()) {
@@ -113,15 +115,27 @@ public class EntityNucletContent extends DefaultNucletContent {
 	 * @param importContentMap
 	 * @return
 	 */
-	public static List<EntityObjectVO> getNucletInterfaceEntities(NucletContentMap importContentMap) {
+	public static List<EntityObjectVO> getNucletInterfaceEntities(NucletContentMap importContentMap, NucletContentUID.Map uidMap) {
 		List<EntityObjectVO> result = new ArrayList<EntityObjectVO>();
 		List<EntityObjectVO> interfaceFields = EntityFieldNucletContent.getNucletInterfaces(importContentMap); 
 		for (EntityObjectVO interfaceField : interfaceFields) {
+			
 			Long interfaceEntityId = TransferUtils.getNcObjectIdFromNucletContentUID(NuclosEntity.ENTITY, interfaceField.getField(EntityFieldNucletContent.NUCLET_INTERFACE_FOREIGN_ENTITY_UID, String.class));
 			if (interfaceEntityId != null) {
 				EntityObjectVO interfaceEntity = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.ENTITY).getByPrimaryKey(interfaceEntityId);
 				if (interfaceEntity != null) {
 					result.add(interfaceEntity);
+				}
+			} else {
+				
+				// field exists already?
+				// than get foreignentity from it.
+				NucletContentUID uid = uidMap.getUID(interfaceField);
+				Long existingFieldId = TransferUtils.getNcObjectIdFromNucletContentUID(NuclosEntity.ENTITYFIELD, uid.uid);
+				if (existingFieldId != null) {
+					EntityObjectVO existingFieldVO = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.ENTITYFIELD).getByPrimaryKey(existingFieldId);
+					result.add(NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.ENTITY).getByPrimaryKey(
+							MetaDataServerProvider.getInstance().getEntity(existingFieldVO.getField("foreignentity", String.class)).getId()));
 				}
 			}
 		}
@@ -133,9 +147,9 @@ public class EntityNucletContent extends DefaultNucletContent {
 	 * @param importContentMap
 	 * @return
 	 */
-	public static List<EntityObjectVO> getNucletInterfaceEntityFields(NucletContentMap importContentMap) {
+	public static List<EntityObjectVO> getNucletInterfaceEntityFields(NucletContentMap importContentMap, NucletContentUID.Map uidMap) {
 		List<EntityObjectVO> result = new ArrayList<EntityObjectVO>();
-		Set<Long> interfaceEntityIds = TransferUtils.getIds(getNucletInterfaceEntities(importContentMap));
+		Set<Long> interfaceEntityIds = TransferUtils.getIds(getNucletInterfaceEntities(importContentMap, uidMap));
 		for (EntityObjectVO entityField : NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.ENTITYFIELD).getAll()) {
 			if (interfaceEntityIds.contains(entityField.getFieldId("entity"))) {
 				result.add(entityField);

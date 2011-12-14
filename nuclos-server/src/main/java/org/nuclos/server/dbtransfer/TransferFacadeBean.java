@@ -15,7 +15,7 @@
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dbtransfer;
-import static org.nuclos.server.dbtransfer.TransferUtils.checkValidity;
+import static org.nuclos.server.dbtransfer.TransferUtils.validate;
 import static org.nuclos.server.dbtransfer.TransferUtils.createUIDRecord;
 import static org.nuclos.server.dbtransfer.TransferUtils.createUIDRecordForNcObject;
 import static org.nuclos.server.dbtransfer.TransferUtils.getDependencies;
@@ -128,7 +128,7 @@ import org.nuclos.server.dbtransfer.content.RuleNucletContent;
 import org.nuclos.server.dbtransfer.content.SearchFilterNucletContent;
 import org.nuclos.server.dbtransfer.content.StateNucletContent;
 import org.nuclos.server.dbtransfer.content.UserNucletContent;
-import org.nuclos.server.dbtransfer.content.ValidityType;
+import org.nuclos.server.dbtransfer.content.ValidationType;
 import org.nuclos.server.dbtransfer.content.WorkspaceNucletContent;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.jms.NuclosJMSUtils;
@@ -140,6 +140,7 @@ import org.nuclos.server.resource.ResourceCache;
 import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.nuclos.server.ruleengine.NuclosCompileException.ErrorMessage;
 import org.nuclos.server.statemodel.valueobject.StateModelUsagesCache;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
@@ -520,7 +521,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			info("preview changes");
 			final String notifyPreviewString = "creating preview of db changes";
 			jmsNotifier.notify(notifyPreviewString, 80);
-			previewParts.addAll(previewChanges(DataBaseHelper.getDbAccess(), existingNucletIds, contentTypes, importContentMap, importData, root.exportOptions,
+			previewParts.addAll(previewChanges(DataBaseHelper.getDbAccess(), existingNucletIds, contentTypes, importContentMap, importData, uidLocalizedMap, root.exportOptions,
 				new TransferNotifierHelper(jmsNotifier, notifyPreviewString, 80, 100)));
 		} catch (Exception ex) {
 			if (t.result.hasCriticals()) t.result.sbCritical.append("<br />");
@@ -569,13 +570,14 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		Set<Long> existingNucletIds,
 		List<INucletContent> contentTypes,
 		NucletContentMap importContentMap, Map<String, List<EntityObjectVO>> mpImportData,
+		NucletContentUID.Map uidMap,
 		TransferOption.Map transferOptions,
 		TransferNotifierHelper notifierHelper) throws SQLException {
 
 		Map<String, PreviewPart> preview = new HashMap<String, PreviewPart>();
 
-		List<EntityObjectVO> nucletInterfaceEntities = EntityNucletContent.getNucletInterfaceEntities(importContentMap);
-		List<EntityObjectVO> nucletInterfaceEntityFields = EntityNucletContent.getNucletInterfaceEntityFields(importContentMap);
+		List<EntityObjectVO> nucletInterfaceEntities = EntityNucletContent.getNucletInterfaceEntities(importContentMap, uidMap);
+		List<EntityObjectVO> nucletInterfaceEntityFields = EntityNucletContent.getNucletInterfaceEntityFields(importContentMap, uidMap);
 		
 		List<EntityObjectVO> currentEntities = CollectionUtils.concat(
 				TransferUtils.getContentType(contentTypes, NuclosEntity.ENTITY).getNcObjects(existingNucletIds, transferOptions),
@@ -906,8 +908,8 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			}
 		}
 		
-		List<EntityObjectVO> nucletInterfaceEntities = EntityNucletContent.getNucletInterfaceEntities(importContentMap);
-		List<EntityObjectVO> nucletInterfaceEntityFields = EntityNucletContent.getNucletInterfaceEntityFields(importContentMap);
+		List<EntityObjectVO> nucletInterfaceEntities = EntityNucletContent.getNucletInterfaceEntities(importContentMap, t.getUidLocalizedMap());
+		List<EntityObjectVO> nucletInterfaceEntityFields = EntityNucletContent.getNucletInterfaceEntityFields(importContentMap, t.getUidLocalizedMap());
 		
 		//** safe current configuration
 		List<EntityObjectVO> currentEntities = CollectionUtils.concat(
@@ -1307,7 +1309,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 						info("skipped content does not contain import eo");
 						if (importEO.isFlagNew()) {
 							info("import eo is flagged new");
-							if (!checkValidity(nc, importEO, ValidityType.INSERT, importContentMap, existingNucletIds, t.getTransferOptions(), t.result)) {
+							if (!validate(nc, importEO, ValidationType.INSERT, importContentMap, uidLocalizedMap, existingNucletIds, t.getTransferOptions(), t.result)) {
 								info("validation for INSERT is false --> adding to skipped content (dependencies also)");
 								contentSkipped.add(importEO);
 								contentSkipped.addAll(getDependencies(importContentMap, contentTypes, nc, importEO));
@@ -1325,7 +1327,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 								throw new IllegalArgumentException("update content for nuclon import");
 
 							if (nc.canUpdate()) {
-								if (!checkValidity(nc, importEO, ValidityType.UPDATE, importContentMap, existingNucletIds, t.getTransferOptions(), t.result)) {
+								if (!validate(nc, importEO, ValidationType.UPDATE, importContentMap, uidLocalizedMap, existingNucletIds, t.getTransferOptions(), t.result)) {
 									info("validation for UPDATE is false --> adding to skipped content (dependencies also)");
 									contentSkipped.add(importEO);
 									contentSkipped.addAll(getDependencies(importContentMap, contentTypes, nc, importEO));
@@ -1484,7 +1486,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 						}
 					}
 
-					if (isInUse || !checkValidity(nc, existingEO, ValidityType.DELETE, importContentMap, existingNucletIds, t.getTransferOptions(), t.result)) {
+					if (isInUse || !validate(nc, existingEO, ValidationType.DELETE, importContentMap, uidExistingMap, existingNucletIds, t.getTransferOptions(), t.result)) {
 						info("is in use or validation is false --> add to untouched content");
 						contentUntouched.add(existingEO);
 					} else {

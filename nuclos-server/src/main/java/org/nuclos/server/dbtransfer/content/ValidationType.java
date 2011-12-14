@@ -16,7 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dbtransfer.content;
 
-public enum ValidityType {
+public enum ValidationType {
 	INSERT,
 	UPDATE,
 	DELETE;

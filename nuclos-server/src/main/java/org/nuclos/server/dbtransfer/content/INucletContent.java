@@ -27,6 +27,7 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dbtransfer.NucletContentUID;
 import org.nuclos.common.dbtransfer.TransferOption;
+import org.nuclos.common.dbtransfer.TransferOption.Map;
 import org.nuclos.server.dbtransfer.NucletContentMap;
 
 public interface INucletContent {
@@ -45,7 +46,7 @@ public interface INucletContent {
 	
 	public String getIdentifierField();
 	
-	public boolean checkValidity(EntityObjectVO ncObject, ValidityType validity, NucletContentMap importContentMap, Set<Long> existingNucletIds, ValidityLogEntry log, TransferOption.Map transferOptions);
+	public boolean validate(EntityObjectVO ncObject, ValidationType type, NucletContentMap importContentMap, NucletContentUID.Map uidMap, Set<Long> existingNucletIds, ValidityLogEntry log, TransferOption.Map transferOptions);
 	
 	public NucletContentUID.Map getUIDMap(Set<Long> nucletIds, TransferOption.Map transferOptions);
 	

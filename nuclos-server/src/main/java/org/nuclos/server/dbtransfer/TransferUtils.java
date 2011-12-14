@@ -44,8 +44,10 @@ import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.dbtransfer.content.AbstractNucletContent;
 import org.nuclos.server.dbtransfer.content.INucletContent;
 import org.nuclos.server.dbtransfer.content.ValidityLogEntry;
-import org.nuclos.server.dbtransfer.content.ValidityType;
+import org.nuclos.server.dbtransfer.content.ValidationType;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 public class TransferUtils {
 
@@ -341,9 +343,9 @@ public class TransferUtils {
 	 * @param result
 	 * @return
 	 */
-	public static boolean checkValidity(INucletContent nc, EntityObjectVO ncObject, ValidityType validity, NucletContentMap importContentMap, Set<Long> existingNucletIds, TransferOption.Map transferOptions, Transfer.Result result) {
+	public static boolean validate(INucletContent nc, EntityObjectVO ncObject, ValidationType validity, NucletContentMap importContentMap, NucletContentUID.Map uidMap, Set<Long> existingNucletIds, TransferOption.Map transferOptions, Transfer.Result result) {
 		ValidityLogEntry log = new ValidityLogEntry();
-		boolean isValid = nc.checkValidity(ncObject, validity, importContentMap, existingNucletIds, log, transferOptions);
+		boolean isValid = nc.validate(ncObject, validity, importContentMap, uidMap, existingNucletIds, log, transferOptions);
 		if (log.sbWarning.length() > 0) {
 			result.addWarning(log.sbWarning);
 		}
