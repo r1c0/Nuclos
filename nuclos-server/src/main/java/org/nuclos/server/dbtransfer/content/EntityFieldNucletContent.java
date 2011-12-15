@@ -147,7 +147,8 @@ public class EntityFieldNucletContent extends DefaultNucletContent implements IN
 		Long entityId = MetaDataServerProvider.getInstance().getEntity(entity).getId();
 		EntityObjectVO uidObject = TransferUtils.getUID(NuclosEntity.ENTITY, entityId);
 		if (uidObject == null) {
-			uidObject = TransferUtils.createUIDRecordForNcObject(NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.ENTITY).getByPrimaryKey(entityId));
+			uidObject = TransferUtils.createUIDRecordForNcObject(
+					NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.ENTITY).getByPrimaryKey(entityId));
 		}
 		if (uidObject != null) {
 			String uid = uidObject.getField("uid");

@@ -36,9 +36,9 @@ public class NucletContentUID implements Serializable{
 	 */
 	public NucletContentUID(EntityObjectVO eo) {
 		if (eo.getId() == null)
-			throw new NuclosFatalException("ID must not be null");
+			throw new NuclosFatalException("ID of EntityObject must not be null: " + eo);
 		if (eo.getCreatedAt() == null)
-			throw new NuclosFatalException("CreatedAt must not be null");
+			throw new NuclosFatalException("CreatedAt of EntityObject must not be null: " + eo);
 		this.uid = toString(eo.getId()) + toString(eo.getCreatedAt().getTime()) + toString(System.currentTimeMillis());
 		this.version = eo.getVersion();
 		this.id = null;
