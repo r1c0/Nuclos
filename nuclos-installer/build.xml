@@ -54,7 +54,7 @@
 			<fileset dir="dist" />
 		</delete>
 
-		<artifact:mvn pom="../pom.xml">
+		<artifact:mvn pom="../pom.xml" mavenhome="${maven.home.dir}">
 			<arg value="clean" />
 		</artifact:mvn>
 	</target>
@@ -63,7 +63,7 @@
 		<mkdir dir="${dist.resources.dir}" />
 
 		<!-- build all modules including webstart -->
-		<artifact:mvn pom="../pom.xml">
+		<artifact:mvn pom="../pom.xml" mavenhome="${maven.home.dir}">
 			<arg value="install" />
 		</artifact:mvn>
 
