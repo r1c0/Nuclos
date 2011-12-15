@@ -19,16 +19,16 @@
                            http://activemq.apache.org/schema/core
                            http://activemq.apache.org/schema/core/activemq-core.xsd
                            http://www.springframework.org/schema/tx
-     					   http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+     					   http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
 						   http://www.springframework.org/schema/aop
      					   http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
      					   http://www.springframework.org/schema/security
      					   http://www.springframework.org/schema/security/spring-security-3.1.xsd
      					   http://www.springframework.org/schema/jee
        					   http://www.springframework.org/schema/jee/spring-jee-3.1.xsd">
-       					   
-	<!-- 
-		Enable @AspectJ Support 
+
+	<!--
+		Enable @AspectJ Support
 		http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/aop.html#aop-aspectj-support
 	 -->
 	<aop:aspectj-autoproxy/>
@@ -70,18 +70,18 @@
         instantiate your @Controller classes, as these should be instantiated
         by a web tier application context. Refer to web.xml for more details
         about the web tier application context setup services.
-        
-        Furthermore, this turns on @Autowired, @PostConstruct etc support. These 
-        annotations allow you to use common Spring and Java Enterprise Edition 
-        annotations in your classes without needing to do any special configuration. 
+
+        Furthermore, this turns on @Autowired, @PostConstruct etc support. These
+        annotations allow you to use common Spring and Java Enterprise Edition
+        annotations in your classes without needing to do any special configuration.
         The most commonly used annotation is @Autowired, which instructs Spring to
         dependency inject an object into your class.
     -->
     <context:component-scan base-package="org.nuclos">
     	<context:exclude-filter expression=".*_Roo_.*" type="regex"/>
     	<context:exclude-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
-    </context:component-scan>    
-    
+    </context:component-scan>
+
 	<!-- for transaction manager annotation based -->
 	<tx:annotation-driven mode="aspectj" transaction-manager="transactionManager"/>
 
@@ -319,8 +319,8 @@
   <bean id="datasourceCache" class="org.nuclos.server.common.DatasourceCache" factory-method="getInstance"
   	depends-on="nucletDalProvider">
   </bean>
-  
-  <bean id="nuclosDalProvider" class="org.nuclos.server.dal.provider.NuclosDalProvider" factory-method="getInstance" 
+
+  <bean id="nuclosDalProvider" class="org.nuclos.server.dal.provider.NuclosDalProvider" factory-method="getInstance"
   	init-method="buildEOProcessors" depends-on="appContext">
   	<property name="entityMetaDataProcessor"><ref bean="jsonEntityMetaDataProcessor"/></property>
   	<property name="entityFieldMetaDataProcessor"><ref bean="jsonEntityFieldMetaDataProcessor"/></property>
