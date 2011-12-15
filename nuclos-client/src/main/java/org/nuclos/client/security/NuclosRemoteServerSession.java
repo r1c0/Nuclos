@@ -38,7 +38,9 @@ public abstract class NuclosRemoteServerSession {
 		SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
 		try {
 			AuthenticationManager am = (AuthenticationManager)SpringApplicationContextHolder.getBean("authenticationManager");
-			SecurityContextHolder.getContext().setAuthentication(am.authenticate(new UsernamePasswordAuthenticationToken(username, new String(password))));
+			UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) am.authenticate(new UsernamePasswordAuthenticationToken(username, new String(password)));
+			auth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getPrincipal(), auth.getAuthorities());
+			SecurityContextHolder.getContext().setAuthentication(auth);
 			sessionId = ServiceLocator.getInstance().getFacade(SecurityFacadeRemote.class).login();
 			LOG.info("User " + username + " logged in, session=" + sessionId);
 		}
