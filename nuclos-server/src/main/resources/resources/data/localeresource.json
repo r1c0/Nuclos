@@ -63767,5 +63767,20 @@
     "resourceID": "nuclos.entityfield.dummy.name.label",
     "locale": "de",
     "text": "Dummy Name"
+  },
+  {
+    "resourceID": "WorkspaceEditor.alwaysreset",
+    "locale": "i-default",
+    "text": "Always reset"
+  },
+  {
+    "resourceID": "WorkspaceEditor.alwaysreset",
+    "locale": "en",
+    "text": "Always reset"
+  },
+  {
+    "resourceID": "WorkspaceEditor.alwaysreset",
+    "locale": "de",
+    "text": "Immer zurücksetzen"
   }
 ]

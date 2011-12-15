@@ -19,7 +19,6 @@ package org.nuclos.client.security;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.common.SpringApplicationContextHolder;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
 import org.springframework.remoting.RemoteAccessException;
@@ -40,7 +39,7 @@ public abstract class NuclosRemoteServerSession {
 		try {
 			AuthenticationManager am = (AuthenticationManager)SpringApplicationContextHolder.getBean("authenticationManager");
 			UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) am.authenticate(new UsernamePasswordAuthenticationToken(username, new String(password)));
-			auth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), auth.getAuthorities());
+			auth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), password, auth.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(auth);
 			sessionId = ServiceLocator.getInstance().getFacade(SecurityFacadeRemote.class).login();
 			LOG.info("User " + username + " logged in, session=" + sessionId);
@@ -55,7 +54,7 @@ public abstract class NuclosRemoteServerSession {
 		try {
 			AuthenticationManager am = (AuthenticationManager)SpringApplicationContextHolder.getBean("authenticationManager");
 			UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) am.authenticate(new UsernamePasswordAuthenticationToken(username, new String(password)));
-			auth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), auth.getAuthorities());
+			auth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), password, auth.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(auth);
 			LOG.info("Validated login.");
 			SecurityCache.getInstance().revalidate();
@@ -68,8 +67,9 @@ public abstract class NuclosRemoteServerSession {
 
 	public static Authentication authenticate() throws AuthenticationException, RemoteAccessException {
 		AuthenticationManager am = (AuthenticationManager)SpringApplicationContextHolder.getBean("authenticationManager");
+		Object c = SecurityContextHolder.getContext().getAuthentication().getCredentials();
 		Authentication auth = am.authenticate(SecurityContextHolder.getContext().getAuthentication());
-		auth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), auth.getAuthorities());
+		auth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), c, auth.getAuthorities());
 		return auth;
 	}
 

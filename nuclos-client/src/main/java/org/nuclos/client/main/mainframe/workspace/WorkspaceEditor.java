@@ -41,33 +41,35 @@ import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 
 public class WorkspaceEditor  {
-	
+
 	private final JDialog dialog;
 	private final JPanel contentPanel;
-	
-	private final JTextField tfName; 
+
+	private final JTextField tfName;
 	private final ResourceIconChooser nuclosIconChooser;
 	private final JCheckBox chckHideName;
 	private final JCheckBox chckHide;
 	private final JCheckBox chckHideMenuBar;
 	private final JCheckBox chckAlwaysOpenAtLogin;
 	private final JCheckBox chckUseLastFrameSettings;
+	private final JCheckBox chckAlwaysReset;
 	private final JButton btSave;
 	private final JButton btCancel;
-	
+
 	private boolean saved;
 	private final WorkspaceVO wovo;
 	private final WorkspaceVO backup;
-	
+
 	public WorkspaceEditor(WorkspaceVO wovo) {
 		this.wovo = wovo;
 		this.backup = new WorkspaceVO();
 		this.backup.importHeader(wovo.getWoDesc());
-		
+
 		contentPanel = new JPanel();
 		initJPanel(contentPanel,
 				new double[] {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL},
 				new double[] {20,
+							  20,
 							  20,
 							  20,
 							  20,
@@ -76,7 +78,7 @@ public class WorkspaceEditor  {
 							  TableLayout.FILL,
 							  TableLayout.PREFERRED});
 		contentPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		
+
 		JLabel lbName = new JLabel(CommonLocaleDelegate.getMessage("WorkspaceEditor.2","Name"), JLabel.TRAILING);
         contentPanel.add(lbName, "0, 0");
         tfName = new JTextField(15);
@@ -90,34 +92,37 @@ public class WorkspaceEditor  {
         }
         chckAlwaysOpenAtLogin = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.11","Immer bei Anmeldung öffnen"));
         contentPanel.add(chckAlwaysOpenAtLogin, "1, 1");
-        
+
         JLabel lbMainFrame = new JLabel(CommonLocaleDelegate.getMessage("WorkspaceEditor.9","Hauptfenster"), JLabel.TRAILING);
         contentPanel.add(lbMainFrame, "0, 2");
         chckHideMenuBar = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.10","Nur Standard Menuleiste"));
         contentPanel.add(chckHideMenuBar, "1, 2");
         chckUseLastFrameSettings = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.12","Letzte Fenster Einstellungen übernehmen (Größe und Position)"));
         contentPanel.add(chckUseLastFrameSettings, "1, 3, 5, 3");
-        
+        chckAlwaysReset = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.alwaysreset","Immer zurücksetzen"));
+        contentPanel.add(chckAlwaysReset, "1, 4, 5, 4");
+
         JLabel lbIcon = new JLabel(CommonLocaleDelegate.getMessage("WorkspaceEditor.4","Icon"), JLabel.TRAILING);
-        contentPanel.add(lbIcon, "0, 5");
+        contentPanel.add(lbIcon, "0, 6");
         nuclosIconChooser = new ResourceIconChooser(WorkspaceChooserController.ICON_SIZE);
-        contentPanel.add(nuclosIconChooser, "1, 5, 5, 6");
-		
+        contentPanel.add(nuclosIconChooser, "1, 6, 5, 7");
+
 		JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 2));
 		btSave = new JButton(CommonLocaleDelegate.getMessage("WorkspaceEditor.5","Speichern"));
 		btCancel = new JButton(CommonLocaleDelegate.getMessage("WorkspaceEditor.6","Abbrechen"));
 		actionsPanel.add(btSave);
 		actionsPanel.add(btCancel);
-		contentPanel.add(actionsPanel, "0, 7, 5, 7");
-		
+		contentPanel.add(actionsPanel, "0, 8, 5, 8");
+
 		tfName.setText(wovo.getWoDesc().getName());
 		chckHide.setSelected(wovo.getWoDesc().isHide());
 		chckHideName.setSelected(wovo.getWoDesc().isHideName());
 		chckHideMenuBar.setSelected(wovo.getWoDesc().isHideMenuBar());
 		chckAlwaysOpenAtLogin.setSelected(wovo.getWoDesc().isAlwaysOpenAtLogin());
 		chckUseLastFrameSettings.setSelected(wovo.getWoDesc().isUseLastFrameSettings());
+		chckAlwaysReset.setSelected(wovo.getWoDesc().isAlwaysReset());
 		nuclosIconChooser.setSelected(wovo.getWoDesc().getNuclosResource());
-		
+
 		dialog = new JDialog(Main.getMainFrame(), CommonLocaleDelegate.getMessage("WorkspaceEditor.1","Arbeitsumgebung Eigenschaften"), true);
 		dialog.setContentPane(contentPanel);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -125,11 +130,11 @@ public class WorkspaceEditor  {
 		Rectangle mfBounds = Main.getMainFrame().getBounds();
 		dialog.setBounds(mfBounds.x+(mfBounds.width/2)-300, mfBounds.y+(mfBounds.height/2)-200, 600, 400);
 		dialog.setResizable(false);
-		
+
 		initListener();
 		dialog.setVisible(true);
 	}
-	
+
 	private void initListener() {
 		btSave.addActionListener(new ActionListener() {
 			@Override
@@ -140,8 +145,9 @@ public class WorkspaceEditor  {
 				final boolean hideMenuBar = chckHideMenuBar.isSelected();
 				final boolean alwaysOpenAtLogin = chckAlwaysOpenAtLogin.isSelected();
 				final boolean useLastFrameSettings = chckUseLastFrameSettings.isSelected();
+				final boolean alwaysReset = chckAlwaysReset.isSelected();
 				final String nuclosResource = nuclosIconChooser.getSelectedResourceIconName();
-				
+
 				if (StringUtils.looksEmpty(name)) {
 					JOptionPane.showMessageDialog(contentPanel, CommonLocaleDelegate.getMessage("WorkspaceEditor.7","Bitte geben Sie einen Namen an"));
 				} else {
@@ -151,14 +157,15 @@ public class WorkspaceEditor  {
 					wovo.getWoDesc().setHideMenuBar(hideMenuBar);
 					wovo.getWoDesc().setAlwaysOpenAtLogin(alwaysOpenAtLogin);
 					wovo.getWoDesc().setUseLastFrameSettings(useLastFrameSettings);
+					wovo.getWoDesc().setAlwaysReset(alwaysReset);
 					wovo.getWoDesc().setNuclosResource(nuclosResource);
-					
+
 					saved = true;
 					dialog.dispose();
 				}
 			}
 		});
-		
+
 		btCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -166,22 +173,22 @@ public class WorkspaceEditor  {
 			}
 		});
 	}
-	
+
 	public boolean isSaved() {
 		return saved;
 	}
-	
+
 	public void revertChanges() {
 		this.wovo.importHeader(this.backup.getWoDesc());
 	}
 
-	protected void initJPanel(JPanel panel, double[] cols, double[] rows) {	
+	protected void initJPanel(JPanel panel, double[] cols, double[] rows) {
 		final double size [][] = {cols, rows};
 		final TableLayout layout = new TableLayout(size);
-		
+
 		layout.setVGap(3);
 		layout.setHGap(5);
-		
+
 		panel.setLayout(layout);
 	}
 }

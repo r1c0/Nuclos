@@ -68,10 +68,10 @@ public class RestoreUtils {
 	private static final String PREFS_NODE_LAST_SETTINGS = "lastSettings";
 	private static final String NORMAL_BOUNDS = "normalBounds";
 	private static final String EXTENDED_STATE = "extendedState";
-	
+
 	private static final String THREAD_NAME = "Workspace restoring...";
 	private static final List<Thread> threadList = new ArrayList<Thread>();
-	
+
 	private static List<GenericAction> cachedActions;
 
 	/**
@@ -123,7 +123,7 @@ public class RestoreUtils {
 
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] devices = ge.getScreenDevices();
-		
+
 		final Rectangle recNormalBounds;
 		final int iExtendedState;
 		if (wdFrame.isMainFrame() && wd.isUseLastFrameSettings()) {
@@ -133,7 +133,7 @@ public class RestoreUtils {
 			recNormalBounds = wdFrame.getNormalBounds();
 			iExtendedState = wdFrame.getExtendedState();
 		}
-		
+
 		boolean restoreAtStoredPosition = false;
 		LOG.info("stored frame bounds: " + recNormalBounds);
 		for (GraphicsDevice gd : devices) {
@@ -153,21 +153,21 @@ public class RestoreUtils {
 			recNormalBounds.x = 40;
 			recNormalBounds.y = 40;
 		}
-		
+
 		frame.setNormalBounds(recNormalBounds);
 		frame.setBounds(recNormalBounds);
 		frame.setExtendedState(iExtendedState);
-		
+
 		if (wdFrame.isMainFrame()) {
 			MainFrame.repositionSwitchingWorkspace();
 			JPanel contentpane = (JPanel) Main.getMainFrame().getContentPane();
 			contentpane.revalidate();
 			contentpane.paintImmediately(0,0,contentpane.getSize().width,contentpane.getSize().height);
 		}
-		
+
 		ContentRestorer cr = createContentRestorer(wdFrame.getContent(), frame);
 		wsFrame.setFrameContent(cr.getEmptyContent());
-		
+
 		cr.restoreContent();
 
 		MainFrame.updateTabbedPaneActions(frame);
@@ -180,25 +180,25 @@ public class RestoreUtils {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param lastWorkspaceIdFromPreferences
 	 * @param lastWorkspaceFromPreferences
 	 * @param lastAlwaysOpenWorkspaceIdFromPreferences
 	 * @param lastAlwaysOpenWorkspaceFromPreferences
 	 * @throws CommonBusinessException
 	 */
-	public static void restoreWorkspaceThreaded(Long lastWorkspaceIdFromPreferences, String lastWorkspaceFromPreferences, 
+	public static void restoreWorkspaceThreaded(Long lastWorkspaceIdFromPreferences, String lastWorkspaceFromPreferences,
 			Long lastAlwaysOpenWorkspaceIdFromPreferences, String lastAlwaysOpenWorkspaceFromPreferences) throws CommonBusinessException {
-		
+
 		WorkspaceVO wovoToRestore = null;
-		
+
 		List<WorkspaceVO> alwaysOpenWorkspaces = CollectionUtils.select(MainFrame.getWorkspaceHeaders(), new Predicate<WorkspaceVO>() {
 			@Override
 			public boolean evaluate(WorkspaceVO t) {
 				return t.getWoDesc().isAlwaysOpenAtLogin();
 			}
 		});
-		
+
 		if (alwaysOpenWorkspaces.size() > 0) {
 			if (alwaysOpenWorkspaces.size() == 1) {
 				wovoToRestore = alwaysOpenWorkspaces.get(0);
@@ -212,7 +212,7 @@ public class RestoreUtils {
 						}
 						// if id not found try to search for name
 						if (lastAlwaysOpenWorkspaceFromPreferences.equals(wovo.getName())) {
-							wovoToRestore = wovo; 
+							wovoToRestore = wovo;
 						}
 					}
 				} else {
@@ -227,16 +227,16 @@ public class RestoreUtils {
 				}
 				// if id not found try to search for name
 				if (lastWorkspaceFromPreferences.equals(wovo.getName())) {
-					wovoToRestore = wovo; 
+					wovoToRestore = wovo;
 				}
 			}
 		}
-		
-		
+
+
 		if (wovoToRestore == null && !MainFrame.getWorkspaceHeaders().isEmpty()) {
 			wovoToRestore = MainFrame.getWorkspaceHeaders().get(0);
 		}
-		
+
 		if (wovoToRestore == null) {
 			wovoToRestore = createDefaultWorkspace(createDefaultWorkspace());
 			MainFrame.refreshWorkspacesHeaders();
@@ -248,16 +248,20 @@ public class RestoreUtils {
 	 *
 	 * @param name
 	 * @param restoreToDefault
-	 * @throws CommonBusinessException 
+	 * @throws CommonBusinessException
 	 */
 	private synchronized static void restoreWorkspaceThreaded(WorkspaceVO wovo) throws CommonBusinessException {
 		checkRestoreRunning();
-		
+
 		MainFrame.setWorkspaceManagementEnabled(false);
 		cachedActions = Main.getMainController().getGenericActions();
-		
+
 		//load from db. wovo contains header only
 		WorkspaceDescription wd;
+		if (wovo.getWoDesc().isAlwaysReset()) {
+			wovo = getPrefsFacade().restoreWorkspace(wovo);
+		}
+
 		if (wovo.getWoDesc().getFrames().isEmpty()) {
 			try {
 				wd = getPrefsFacade().getWorkspace(wovo.getId()).getWoDesc();
@@ -275,7 +279,7 @@ public class RestoreUtils {
 		} else {
 			wd = wovo.getWoDesc();
 		}
-		
+
 		try {
 			wd.getHomeTabbed();
 			wd.getHomeTreeTabbed();
@@ -288,14 +292,14 @@ public class RestoreUtils {
 			wovo.getWoDesc().removeAllEntityPreferences();
 			wovo.getWoDesc().addAllEntityPreferences(wd.getEntityPreferences());
 		}
-		
+
 		MainFrame.setWorkspace(wovo);
 		if (wd.isAlwaysOpenAtLogin()) {
 			MainFrame.setLastAlwaysOpenWorkspace(wovo.getName());
 			MainFrame.setLastAlwaysOpenWorkspaceId(wovo.getId());
 		}
 		PreferencesMigration.migrateEntityAndSubFormColumnPreferences();
-		
+
 		threadList.clear();
 
 		MainFrame.resetExternalFrameNumber();
@@ -322,7 +326,7 @@ public class RestoreUtils {
 				}
 				catch (Exception e) {
 					LOG.error("restoreWorkspaceThreaded failed: " + e, e);
-				}																		
+				}
 			}
 		}, THREAD_NAME);
 		t.setDaemon(true);
@@ -333,11 +337,11 @@ public class RestoreUtils {
 			threadList.get(0).start();
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
-	 * @throws CommonBusinessException 
+	 * @throws CommonBusinessException
 	 */
 	public static WorkspaceDescription createDefaultWorkspace() throws CommonBusinessException {
 		WorkspaceDescription wd = new WorkspaceDescription();
@@ -346,14 +350,14 @@ public class RestoreUtils {
 		wd.setNuclosResource("org.nuclos.client.resource.icon.glyphish.174-imac.png");
 		return wd;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param name
 	 * @param hideName
 	 * @param nuclosResource (nullable)
 	 * @return
-	 * @throws CommonBusinessException 
+	 * @throws CommonBusinessException
 	 */
 	public static WorkspaceVO createDefaultWorkspace(WorkspaceDescription wdOrigin) throws CommonBusinessException {
 		WorkspaceVO wovo = new WorkspaceVO(WorkspaceDescriptionDefaultsFactory.createOldMdiStyle());
@@ -476,7 +480,7 @@ public class RestoreUtils {
 			storeContent(wdFrame.getContent(), ((WorkspaceFrame) frame).getFrameContent());
 
 			wd.addFrame(wdFrame);
-			
+
 			if (Main.getMainFrame()==frame) {
 				Main.getMainController().getMainFramePreferences().node(PREFS_NODE_LAST_SETTINGS).putInt(EXTENDED_STATE, frame.getExtendedState());
 				PreferencesUtils.putRectangle(Main.getMainController().getMainFramePreferences().node(PREFS_NODE_LAST_SETTINGS), NORMAL_BOUNDS, frame.getNormalBounds());
@@ -487,13 +491,13 @@ public class RestoreUtils {
 	/**
 	 *
 	 * @param name
-	 * @throws CommonBusinessException 
+	 * @throws CommonBusinessException
 	 */
 	public synchronized static WorkspaceVO storeWorkspace(WorkspaceVO wovo) throws CommonBusinessException {
 		if (wovo == null) {
 			return null;
 		}
-		
+
 		if (isRestoreRunning()) {
 			// do not store workspace if restore is running...
 			return null;
@@ -513,7 +517,7 @@ public class RestoreUtils {
 	/**
 	 *
 	 * @param name
-	 * @throws CommonBusinessException 
+	 * @throws CommonBusinessException
 	 */
 	public synchronized static boolean clearAndRestoreWorkspace(WorkspaceVO wovo) throws CommonBusinessException {
 		if (clearWorkspace()) {
@@ -522,11 +526,11 @@ public class RestoreUtils {
 		}
 		return false;
 	}
-	
+
 	/**
 	 *
 	 * @param name
-	 * @throws CommonBusinessException 
+	 * @throws CommonBusinessException
 	 */
 	public synchronized static WorkspaceVO clearAndRestoreToDefaultWorkspace() throws CommonBusinessException {
 		return clearAndRestoreToDefaultWorkspace(createDefaultWorkspace());
@@ -535,7 +539,7 @@ public class RestoreUtils {
 	/**
 	 *
 	 * @param wd
-	 * @throws CommonBusinessException 
+	 * @throws CommonBusinessException
 	 */
 	public synchronized static WorkspaceVO clearAndRestoreToDefaultWorkspace(WorkspaceDescription wd) throws CommonBusinessException {
 		WorkspaceVO wovo = createDefaultWorkspace(wd);
@@ -562,9 +566,9 @@ public class RestoreUtils {
 		}
 		return null;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public synchronized static boolean closeTabs(boolean notifyOnly) {
@@ -578,13 +582,13 @@ public class RestoreUtils {
 				} else {
 					return false;
 				}
-				
+
 			} catch(CommonBusinessException e) {
 				Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e);
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -717,7 +721,7 @@ public class RestoreUtils {
 					public void run() {
 						try {
 							threadList.remove(0);
-	
+
 							UIUtils.runCommand(tab, new Runnable() {
 								@Override
 								public void run() {
@@ -735,21 +739,21 @@ public class RestoreUtils {
 											}
 											catch (Exception e) {
 												LOG.error("restoreContent failed: " + e, e);
-											}																		
+											}
 										}
 									});
 								}
 							});
-	
+
 							MainFrame.continueProgress();
-	
+
 							if (threadList.size() > 0) {
 								threadList.get(0).start();
 							}
 						}
 						catch (Exception e) {
 							LOG.error("restoreContent failed: " + e, e);
-						}							
+						}
 					}
 				}, THREAD_NAME);
 				t.setDaemon(true);
