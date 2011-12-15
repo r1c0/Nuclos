@@ -40,10 +40,11 @@ public class WorkspaceDescription implements Serializable {
 	private boolean hideMenuBar;
 	private boolean alwaysOpenAtLogin;
 	private boolean useLastFrameSettings;
+	private boolean alwaysReset;
 	private String nuclosResource;
 	private List<Frame> frames;
 	private List<EntityPreferences> entityPreferences;
-	
+
 	public WorkspaceDescription() {
 	}
 
@@ -70,7 +71,7 @@ public class WorkspaceDescription implements Serializable {
 	public void setHideName(boolean hideName) {
 		this.hideName = hideName;
 	}
-	
+
 	public boolean isHideMenuBar() {
 		return hideMenuBar;
 	}
@@ -95,6 +96,14 @@ public class WorkspaceDescription implements Serializable {
 		this.useLastFrameSettings = useLastFrameSettings;
 	}
 
+	public boolean isAlwaysReset() {
+		return alwaysReset;
+	}
+
+	public void setAlwaysReset(boolean alwaysReset) {
+		this.alwaysReset = alwaysReset;
+	}
+
 	public String getNuclosResource() {
 		return this.nuclosResource;
 	}
@@ -102,7 +111,7 @@ public class WorkspaceDescription implements Serializable {
 	public void setNuclosResource(String nuclosResource) {
 		this.nuclosResource = nuclosResource;
 	}
-	
+
 	private List<Frame> _getFrames() {
 		if (this.frames == null)
 			this.frames = new ArrayList<Frame>();
@@ -116,19 +125,19 @@ public class WorkspaceDescription implements Serializable {
 	public void addFrame(Frame frame) {
 		this._getFrames().add(frame);
 	}
-	
+
 	private List<EntityPreferences> _getEntityPreferences() {
 		if (this.entityPreferences == null)
 			this.entityPreferences = new ArrayList<EntityPreferences>();
 		return this.entityPreferences;
 	}
-	
+
 	public List<EntityPreferences> getEntityPreferences() {
 		return new ArrayList<EntityPreferences>(this._getEntityPreferences());
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param entity
 	 * @return
 	 */
@@ -147,9 +156,9 @@ public class WorkspaceDescription implements Serializable {
 		}
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param entity
 	 * @return
 	 */
@@ -161,19 +170,19 @@ public class WorkspaceDescription implements Serializable {
 		}
 		return false;
 	}
-	
+
 	public void addEntityPreferences(EntityPreferences ep) {
 		this._getEntityPreferences().add(ep);
 	}
-	
+
 	public void addAllEntityPreferences(Collection<EntityPreferences> eps) {
 		this._getEntityPreferences().addAll(eps);
 	}
-	
+
 	public void removeEntityPreferences(EntityPreferences ep) {
 		this._getEntityPreferences().remove(ep);
 	}
-	
+
 	public void removeAllEntityPreferences() {
 		this._getEntityPreferences().clear();
 	}
@@ -248,7 +257,7 @@ public class WorkspaceDescription implements Serializable {
 		private final Set<String> reducedStartmenus = new HashSet<String>();
 		private final Set<String> reducedHistoryEntities = new HashSet<String>();
 		private final Set<String> reducedBookmarkEntities = new HashSet<String>();
-		
+
 		private Desktop desktop;
 
 		public boolean isHome() {
@@ -462,21 +471,21 @@ public class WorkspaceDescription implements Serializable {
 	}
 
 	public static interface NestedContent extends Serializable {}
-	
+
 	public static class EntityPreferences implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
-		
+
 		private String entity;
 		private TablePreferences resultPreferences;
 		private List<SubFormPreferences> subFormPreferences;
-		
+
 		public String getEntity() {
 			return entity;
 		}
 		public void setEntity(String entity) {
 			this.entity = entity;
 		}
-		
+
 		private TablePreferences _getResultPreferences() {
 			if (this.resultPreferences == null)
 				this.resultPreferences = new TablePreferences();
@@ -485,18 +494,18 @@ public class WorkspaceDescription implements Serializable {
 		public TablePreferences getResultPreferences() {
 			return this._getResultPreferences() ;
 		}
-		
+
 		private List<SubFormPreferences> _getSubFormPreferences() {
-			if (this.subFormPreferences == null) 
+			if (this.subFormPreferences == null)
 				this.subFormPreferences = new ArrayList<SubFormPreferences>();
 			return this.subFormPreferences;
 		}
 		public List<SubFormPreferences> getSubFormPreferences() {
 			return new ArrayList<SubFormPreferences>(this._getSubFormPreferences());
 		}
-		
+
 		/**
-		 * 
+		 *
 		 * @param subForm
 		 * @return
 		 */
@@ -515,7 +524,7 @@ public class WorkspaceDescription implements Serializable {
 			}
 			return result;
 		}
-		
+
 		public void addSubFormPreferences(SubFormPreferences sfp) {
 			this._getSubFormPreferences().add(sfp);
 		}
@@ -531,7 +540,7 @@ public class WorkspaceDescription implements Serializable {
 		public void clearResultPreferences() {
 			this._getResultPreferences().clear();
 		}
-		
+
 		@Override
 		public int hashCode() {
 			if (entity == null)
@@ -542,8 +551,8 @@ public class WorkspaceDescription implements Serializable {
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj)
-				return true; 
-			
+				return true;
+
 			if (obj instanceof EntityPreferences) {
 				EntityPreferences other = (EntityPreferences) obj;
 				return LangUtils.equals(getEntity(), other.getEntity());
@@ -558,13 +567,13 @@ public class WorkspaceDescription implements Serializable {
 			return entity.toString();
 		}
 	}
-	
+
 	public static class SubFormPreferences implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
-		
+
 		private String entity;
 		private TablePreferences tablePreferences;
-		
+
 		public String getEntity() {
 			return entity;
 		}
@@ -581,7 +590,7 @@ public class WorkspaceDescription implements Serializable {
 		public TablePreferences getTablePreferences() {
 			return this._getTablePreferences();
 		}
-		
+
 		public void clearTablePreferences() {
 			this._getTablePreferences().clear();
 		}
@@ -597,7 +606,7 @@ public class WorkspaceDescription implements Serializable {
 		public boolean equals(Object obj) {
 			if (this == obj)
 				return true;
-			
+
 			if (obj instanceof SubFormPreferences) {
 				SubFormPreferences other = (SubFormPreferences) obj;
 				return LangUtils.equals(getEntity(), other.getEntity());
@@ -612,14 +621,14 @@ public class WorkspaceDescription implements Serializable {
 			return entity.toString();
 		}
 	}
-	
+
 	public static class TablePreferences implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
-		
+
 		private List<ColumnPreferences> selectedColumnPreferences;
 		private Set<String> hiddenColumns;
 		private List<ColumnSorting> columnSorting;
-		
+
 		private List<ColumnPreferences> _getSelectedColumnPreferences() {
 			if (this.selectedColumnPreferences == null)
 				this.selectedColumnPreferences = new ArrayList<ColumnPreferences>();
@@ -646,7 +655,7 @@ public class WorkspaceDescription implements Serializable {
 		public void removeAllSelectedColumnPreferences() {
 			this._getSelectedColumnPreferences().clear();
 		}
-		
+
 		private List<ColumnSorting> _getColumnSortings() {
 			if (this.columnSorting == null)
 				this.columnSorting = new ArrayList<ColumnSorting>();
@@ -667,7 +676,7 @@ public class WorkspaceDescription implements Serializable {
 		public void removeAllColumnSortings() {
 			this._getColumnSortings().clear();
 		}
-		
+
 		private Set<String> _getHiddenColumns() {
 			if (this.hiddenColumns == null)
 				this.hiddenColumns = new HashSet<String>();
@@ -688,7 +697,7 @@ public class WorkspaceDescription implements Serializable {
 		public void removeAllHiddenColumns() {
 			this._getHiddenColumns().clear();
 		}
-		
+
 		public TablePreferences copy() {
 			TablePreferences result = new TablePreferences();
 			for (ColumnPreferences cp : this._getSelectedColumnPreferences())
@@ -699,13 +708,13 @@ public class WorkspaceDescription implements Serializable {
 				result.addColumnSorting(cs.copy());
 			return result;
 		}
-		
+
 		public void clear() {
 			this.removeAllSelectedColumnPreferences();
 			this.removeAllHiddenColumns();
 			this.removeAllColumnSortings();
 		}
-		
+
 		public void clearAndImport(TablePreferences tp) {
 			clear();
 			final TablePreferences toImportPrefs = tp.copy();
@@ -714,28 +723,28 @@ public class WorkspaceDescription implements Serializable {
 			this.addAllColumnSortings(toImportPrefs.getColumnSortings());
 		}
 	}
-	
+
 	public static class ColumnPreferences implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
-		
+
 		public static final int TYPE_DEFAULT = 0;
 		public static final int TYPE_EOEntityField = 1;
 		public static final int TYPE_GenericObjectEntityField = 2;
 		public static final int TYPE_MasterDataForeignKeyEntityField = 3;
 		public static final int TYPE_EntityFieldWithEntity = 4;
 		public static final int TYPE_EntityFieldWithEntityForExternal = 5;
-		
+
 		private String column;
 		private String entity;
 		private int width;
 		private boolean fixed;
-		
+
 		private int type;
 		private String pivotSubForm;
 		private String pivotKeyField;
 		private String pivotValueField;
 		private String pivotValueType;
-		
+
 		public String getColumn() {
 			return column;
 		}
@@ -747,7 +756,7 @@ public class WorkspaceDescription implements Serializable {
 		}
 		public void setWidth(int width) {
 			this.width = width;
-		}		
+		}
 		public String getEntity() {
 			return entity;
 		}
@@ -824,7 +833,7 @@ public class WorkspaceDescription implements Serializable {
 			sb.append("]");
 			return sb.toString();
 		}
-		
+
 		public ColumnPreferences copy() {
 			ColumnPreferences result = new ColumnPreferences();
 			result.setColumn(column);
@@ -839,13 +848,13 @@ public class WorkspaceDescription implements Serializable {
 			return result;
 		}
 	}
-	
+
 	public static class ColumnSorting implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
-		
+
 		private String column;
 		private boolean asc = true;
-		
+
 		public String getColumn() {
 			return column;
 		}
@@ -858,7 +867,7 @@ public class WorkspaceDescription implements Serializable {
 		public void setAsc(boolean asc) {
 			this.asc = asc;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			if (column == null)
@@ -881,7 +890,7 @@ public class WorkspaceDescription implements Serializable {
 				return "null";
 			return column.toString();
 		}
-		
+
 		public ColumnSorting copy() {
 			ColumnSorting result = new ColumnSorting();
 			result.setColumn(getColumn());
@@ -889,7 +898,7 @@ public class WorkspaceDescription implements Serializable {
 			return result;
 		}
 	}
-	
+
 	public static class Color implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
 		private final int red, green, blue;
@@ -924,9 +933,9 @@ public class WorkspaceDescription implements Serializable {
 			return new java.awt.Color(red, green, blue);
 		}
 	}
-	
+
 	public static interface DesktopItem extends Serializable{}
-	
+
 	public static class Action implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
 		private String action;
@@ -1013,9 +1022,9 @@ public class WorkspaceDescription implements Serializable {
 			result.append(",BooleanParams=").append(_getBooleanParams().toString());
 			return result.toString();
 		}
-		
+
 	}
-	
+
 	public static class MenuItem implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
 		private Action menuAction;
@@ -1035,9 +1044,9 @@ public class WorkspaceDescription implements Serializable {
 			}
 			return super.equals(obj);
 		}
-		
+
 	}
-	
+
 	public static class MenuButton implements DesktopItem {
 		private static final long serialVersionUID = 6637996725938917463L;
 		private Action menuAction;
@@ -1111,7 +1120,7 @@ public class WorkspaceDescription implements Serializable {
 			return super.equals(obj);
 		}
 	}
-	
+
 	public static class Desktop implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
 		public static final int LAYOUT_WRAP = 0;
@@ -1259,7 +1268,7 @@ public class WorkspaceDescription implements Serializable {
 			return super.equals(obj);
 		}
 	}
-	
+
 	@Override
 	public int hashCode() {
 		if (name == null)
@@ -1282,9 +1291,9 @@ public class WorkspaceDescription implements Serializable {
 			return "null";
 		return name.toString();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param wd
 	 */
 	public void importHeader(WorkspaceDescription wd) {
@@ -1295,10 +1304,11 @@ public class WorkspaceDescription implements Serializable {
 		setAlwaysOpenAtLogin(wd.isAlwaysOpenAtLogin());
 		setUseLastFrameSettings(wd.isUseLastFrameSettings());
 		setNuclosResource(wd.getNuclosResource());
+		setAlwaysReset(wd.isAlwaysReset());
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Frame getMainFrame() {
@@ -1308,9 +1318,9 @@ public class WorkspaceDescription implements Serializable {
 		}
 		throw new CommonFatalException("No main frame in workspace description");
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param wd
 	 * @return
 	 */
@@ -1321,9 +1331,9 @@ public class WorkspaceDescription implements Serializable {
 		}
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param nc
 	 * @return
 	 */
@@ -1339,12 +1349,12 @@ public class WorkspaceDescription implements Serializable {
 		}
 		return result;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param wd
 	 * @return
-	 * @throws CommonBusinessException 
+	 * @throws CommonBusinessException
 	 */
 	public Tabbed getHomeTabbed() throws CommonBusinessException {
 		for (Tabbed tbb : getTabbeds()) {
@@ -1354,12 +1364,12 @@ public class WorkspaceDescription implements Serializable {
 		}
 		throw new CommonBusinessException("Workspace.contains.no.home.tabbed");
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param wd
 	 * @return
-	 * @throws CommonBusinessException 
+	 * @throws CommonBusinessException
 	 */
 	public Tabbed getHomeTreeTabbed() throws CommonBusinessException {
 		for (Tabbed tbb : getTabbeds()) {
@@ -1369,5 +1379,5 @@ public class WorkspaceDescription implements Serializable {
 		}
 		throw new CommonBusinessException("Workspace.contains.no.home.tabbed");
 	}
-	
+
 }
