@@ -190,9 +190,6 @@ public class MasterDataFacadeHelper {
 		NuclosJMSUtils.sendMessage(sCachedEntityName, JMSConstants.TOPICNAME_MASTERDATACACHE);
 	}
 
-	/**
-	 * @deprecated Use {@link #getMasterDataCVOById(EntityMetaDataVO, Object)} instead.
-	 */
 	public static MasterDataVO getMasterDataCVOById(final MasterDataMetaVO mdmetavo, final Object oId) throws CommonFinderException {
 		MasterDataVO mdVO = XMLEntities.getSystemObjectById(mdmetavo.getEntityName(), oId);
 		if (mdVO != null) {
@@ -203,31 +200,6 @@ public class MasterDataFacadeHelper {
 		EntityObjectVO eoResult = eoProcessor.getByPrimaryKey(LangUtils.convertId((Integer)oId));
 		try {
 			RecordGrantUtils.checkInternal(mdmetavo.getEntityName(), LangUtils.convertId((Integer)oId));
-        }
-        catch(CommonPermissionException e) {
-        	throw new CommonFinderException(e);
-        }
-		if (eoResult != null) {
-			mdVO = DalSupportForMD.wrapEntityObjectVO(eoResult);
-		}
-
-		if (mdVO == null) {
-			throw new CommonFinderException();
-		}
-
-		return mdVO;
-	}
-
-	public static MasterDataVO getMasterDataCVOById(final EntityMetaDataVO mdmetavo, final Object oId) throws CommonFinderException {
-		MasterDataVO mdVO = XMLEntities.getSystemObjectById(mdmetavo.getEntity(), oId);
-		if (mdVO != null) {
-			return mdVO;
-		}
-
-		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(mdmetavo.getEntity());
-		EntityObjectVO eoResult = eoProcessor.getByPrimaryKey(LangUtils.convertId((Integer)oId));
-		try {
-			RecordGrantUtils.checkInternal(mdmetavo.getEntity(), LangUtils.convertId((Integer)oId));
         }
         catch(CommonPermissionException e) {
         	throw new CommonFinderException(e);
@@ -281,13 +253,13 @@ public class MasterDataFacadeHelper {
 		return colEntityObject;
 	}
 
-	private static Collection<MasterDataVO> getDependantMasterDataByBean(String sEntityName, String sForeignKeyFieldName, Object oRelatedId) {
+	static Collection<MasterDataVO> getDependantMasterDataByBean(String sEntityName, String sForeignKeyFieldName, Object oRelatedId) {
 		final CollectableEntityField clctef = SearchConditionUtils.newMasterDataEntityField(MasterDataMetaCache.getInstance().getMetaData(sEntityName), sForeignKeyFieldName);
 		final CollectableSearchCondition cond = new CollectableComparison(clctef, ComparisonOperator.EQUAL, new CollectableValueIdField(oRelatedId, null));
 		return MasterDataFacadeHelper.getGenericMasterData(sEntityName, cond, true);
 	}
 
-	private static Collection<MasterDataVO> getDependantMasterDataBySQL(Object oRelatedId, final MasterDataMetaVO mdmetavo) {
+	static Collection<MasterDataVO> getDependantMasterDataBySQL(Object oRelatedId, final MasterDataMetaVO mdmetavo) {
 		final List<MasterDataMetaFieldVO> collFields = mdmetavo.getFields();
 		final int fieldCount = collFields.size();
 
@@ -380,21 +352,22 @@ public class MasterDataFacadeHelper {
 	 * @param mdmetavo the entity that was changed.
 	 * @param mdvoChanged the object that was inserted, updated or deleted.
 	 */
-	private void entityChanged(EntityMetaDataVO mdmetavo, MasterDataVO mdvoChanged) {
-		NuclosEntity nuclosEntity = NuclosEntity.getByName(mdmetavo.getEntity());
+	private void entityChanged(MasterDataMetaVO mdmetavo, MasterDataVO mdvoChanged) {
+		NuclosEntity nuclosEntity = NuclosEntity.getByName(mdmetavo.getEntityName());
+
 
 		if (nuclosEntity == NuclosEntity.ROLEUSER) {
 			// Rights are reloaded the next time the user logs in - we don't need to do anything here
 			// @todo To make these changes visible immediately, however, we could notify the client and change the roles dynamically in the server.
 			// But can we do that in a J2EE conformant way?
-			// NucleusSecurityProxy.invalidateMethodRightsForUser(mdvoChanged.getField("user", String.class));
+//			NucleusSecurityProxy.invalidateMethodRightsForUser(mdvoChanged.getField("user", String.class));
 		}
 		else if (nuclosEntity == NuclosEntity.ROLEACTION) {
-			// NucleusSecurityProxy.invalidateMethodRightsForAllUsers();
+//			NucleusSecurityProxy.invalidateMethodRightsForAllUsers();
 		}
 
 		if (mdmetavo.isCacheable()) {
-			this.notifyClients(mdmetavo.getEntity());
+			this.notifyClients(mdmetavo.getEntityName());
 		}
 	}
 
@@ -403,8 +376,8 @@ public class MasterDataFacadeHelper {
 	 * @param mdmetavo
 	 * @return
 	 */
-	private static String getUserWritableDbEntityName(EntityMetaDataVO mdmetavo) {
-		String table = mdmetavo.getDbEntity();
+	public static String getUserWritableDbEntityName(MasterDataMetaVO mdmetavo) {
+		String table = mdmetavo.getDBEntity();
 		return table.startsWith("V_") ? "T_" + table.substring(2) : table;
 	}
 
@@ -433,7 +406,7 @@ public class MasterDataFacadeHelper {
 	 * @param mdvo
 	 * @throws CommonStaleVersionException
 	 */
-	private static MasterDataVO checkForStaleVersion(EntityMetaDataVO mdMetaVO, MasterDataVO mdvo) throws CommonStaleVersionException, CommonPermissionException, CommonFinderException {
+	static MasterDataVO checkForStaleVersion(MasterDataMetaVO mdMetaVO, MasterDataVO mdvo) throws CommonStaleVersionException, CommonPermissionException, CommonFinderException {
 		final MasterDataVO mdvoInDataBase = getMasterDataCVOById(mdMetaVO, mdvo.getIntId());
 		if (mdvo.getVersion() != mdvoInDataBase.getVersion()) {
 			throw new CommonStaleVersionException();
@@ -445,8 +418,7 @@ public class MasterDataFacadeHelper {
 		return mdvoInDataBase;
 	}
 
-	private static void checkInvariantFields(EntityMetaDataVO entityMeta, MasterDataVO mdvo, MasterDataVO mdvoInDataBase) throws CommonValidationException {
-		final MasterDataMetaVO mdMetaVO = MasterDataMetaCache.getInstance().getMetaData(entityMeta.getEntity());
+	static void checkInvariantFields(MasterDataMetaVO mdMetaVO, MasterDataVO mdvo, MasterDataVO mdvoInDataBase) throws CommonValidationException {
 		for (MasterDataMetaFieldVO mdMetaFieldVO : mdMetaVO.getInvariantFields()) {
 			String fieldName = mdMetaFieldVO.getFieldName();
 			if (!ObjectUtils.equals(mdvo.getField(fieldName), mdvoInDataBase.getField(fieldName))) {
@@ -472,8 +444,7 @@ public class MasterDataFacadeHelper {
 			throw new NullArgumentException("sEntityName");
 		}
 
-		// final MasterDataMetaVO mdmetavo = MasterDataMetaCache.getInstance().getMetaData(sEntityName);
-		final EntityMetaDataVO entityMeta = MetaDataServerProvider.getInstance().getEntity(sEntityName);
+		final MasterDataMetaVO mdmetavo = MasterDataMetaCache.getInstance().getMetaData(sEntityName);
 
 		// prevent removal if dependant dynamic attributes exist:
 		final Object oExternalId = mdvo.getId();
@@ -481,12 +452,12 @@ public class MasterDataFacadeHelper {
 			throw new NuclosFatalException("mdhelper.error.invalid.id");//"Der Datensatz hat eine leere Id.");
 		}
 
-		checkForStaleVersion(entityMeta, mdvo);
+		checkForStaleVersion(mdmetavo, mdvo);
 
 
 		// @todo refactor: make this easier to write:
 		try {
-			DataBaseHelper.execute(DbStatementUtils.deleteFrom(getUserWritableDbEntityName(entityMeta),
+			DataBaseHelper.execute(DbStatementUtils.deleteFrom(getUserWritableDbEntityName(mdmetavo),
 				"INTID", mdvo.getIntId()));
 		}
 		catch (CommonFatalException ex) {
@@ -527,7 +498,7 @@ public class MasterDataFacadeHelper {
 				break;
 			}
 
-		entityChanged(entityMeta, mdvo);
+		this.entityChanged(mdmetavo, mdvo);
 	}
 
 	/**
@@ -547,14 +518,13 @@ public class MasterDataFacadeHelper {
 			validateCVO(sEntityName, mdvo);
 		}
 
-		// final MasterDataMetaVO mdmetavo = MasterDataMetaCache.getInstance().getMetaData(sEntityName);
-		final EntityMetaDataVO entityMeta = MetaDataServerProvider.getInstance().getEntity(sEntityName);
+		final MasterDataMetaVO mdmetavo = MasterDataMetaCache.getInstance().getMetaData(sEntityName);
 
-		final MasterDataVO mdvoInDB = checkForStaleVersion(entityMeta, mdvo);
+		final MasterDataVO mdvoInDB = checkForStaleVersion(mdmetavo, mdvo);
 
-		checkInvariantFields(entityMeta, mdvo, mdvoInDB);
+		checkInvariantFields(mdmetavo, mdvo, mdvoInDB);
 
-		validateUniqueConstraintWithJson(entityMeta, mdvo);
+		validateUniqueConstraintWithJson(mdmetavo, mdvo);
 
 		if(NuclosEntity.USER.getEntityName().equals(sEntityName)
 			&& sUserName.equalsIgnoreCase(mdvoInDB.getField("name", String.class))
@@ -562,7 +532,7 @@ public class MasterDataFacadeHelper {
 			throw new CommonPermissionException("masterdata.error.change.own.user.name");
 		}
 
-		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(entityMeta.getEntity());
+		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(mdmetavo.getEntityName());
 		EntityObjectVO eoVO = DalSupportForMD.getEntityObjectVO(mdvo);
 		DalUtils.updateVersionInformation(eoVO, sUserName);
 		eoVO.flagUpdate();
@@ -588,7 +558,8 @@ public class MasterDataFacadeHelper {
 	            break;
 			}
 
-		entityChanged(entityMeta, mdvo);
+		this.entityChanged(mdmetavo, mdvo);
+
 		return mdvo.getId();
 	}
 
@@ -611,29 +582,16 @@ public class MasterDataFacadeHelper {
 			validateCVO(sEntityName, mdvoToCreate);
 		}
 
-		// final MasterDataMetaVO mdmetavo = MasterDataMetaCache.getInstance().getMetaData(sEntityName);
-		final EntityMetaDataVO entityMeta = MetaDataServerProvider.getInstance().getEntity(sEntityName);
+		final MasterDataMetaVO mdmetavo = MasterDataMetaCache.getInstance().getMetaData(sEntityName);
 
-		validateUniqueConstraintWithJson(entityMeta, mdvoToCreate);
+		validateUniqueConstraintWithJson(mdmetavo, mdvoToCreate);
 
 		// @todo optimize: use idfactory.nextval for insert
 
-		final Integer result;
-		if (intid != null) {
-			result = intid;
-		}
-		else {
-			final String idFactory = entityMeta.getIdFactory();
-			if (idFactory == null) {
-				result = DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
-			}
-			else {
-				result = DataBaseHelper.getDbAccess().executeFunction(idFactory, Integer.class);
-			}
-		}
+		final Integer result = (intid != null) ? intid : DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
 		mdvoToCreate.setId(result);
 
-		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(entityMeta.getEntity());
+		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(mdmetavo.getEntityName());
 		EntityObjectVO eoVO = DalSupportForMD.getEntityObjectVO(mdvoToCreate);
 		DalUtils.updateVersionInformation(eoVO, sUserName);
 		eoVO.flagNew();
@@ -659,27 +617,25 @@ public class MasterDataFacadeHelper {
 	            break;
 			}
 
-		entityChanged(entityMeta, mdvoToCreate);
+		this.entityChanged(mdmetavo, mdvoToCreate);
+
 		return result;
 	}
 
-	private void validateUniqueConstraintWithJson(EntityMetaDataVO entityMeta, MasterDataVO mdvoToCreate) throws CommonValidationException {
-		if (!XMLEntities.hasSystemData(entityMeta.getEntity())) {
+	private void validateUniqueConstraintWithJson(MasterDataMetaVO mdmetavo, MasterDataVO mdvoToCreate) throws CommonValidationException {
+		if (!XMLEntities.hasSystemData(mdmetavo.getEntityName())) {
 			return;
 		}
-		final MasterDataMetaVO mdmetavo = MasterDataMetaCache.getInstance().getMetaData(entityMeta.getEntity());
 		CompositeCollectableSearchCondition cond = new CompositeCollectableSearchCondition(LogicalOperator.AND);
 		for (MasterDataMetaFieldVO field : mdmetavo.getFields()) {
 			if (field.isUnique()) {
-				final String fieldname = field.getFieldName();
+				String fieldname = field.getFieldName();
 				if (mdvoToCreate.getField(fieldname) != null) {
 					if (field.getForeignEntity() != null) {
-						cond.addOperand(SearchConditionUtils.newMDReferenceComparison(mdmetavo, fieldname, 
-								mdvoToCreate.getField(fieldname + "Id", Integer.class)));
+						cond.addOperand(SearchConditionUtils.newMDReferenceComparison(mdmetavo, fieldname, mdvoToCreate.getField(fieldname + "Id", Integer.class)));
 					}
 					else {
-						cond.addOperand(SearchConditionUtils.newMDComparison(mdmetavo, fieldname, 
-								ComparisonOperator.EQUAL, mdvoToCreate.getField(fieldname)));
+						cond.addOperand(SearchConditionUtils.newMDComparison(mdmetavo, field.getFieldName(), ComparisonOperator.EQUAL, mdvoToCreate.getField(field.getFieldName())));
 					}
 				}
 				else {
@@ -689,13 +645,17 @@ public class MasterDataFacadeHelper {
 		}
 
 		if (cond.getOperandCount() > 0) {
-			final Collection<MasterDataVO> systemObjects = XMLEntities.getSystemObjects(entityMeta.getEntity(), cond);
+			final Collection<MasterDataVO> systemObjects = XMLEntities.getSystemObjects(mdmetavo.getEntityName(), cond);
 			if (!systemObjects.isEmpty()) {
 				throw new CommonValidationException("nuclos.validation.systementity.unique");
 			}
 		}
 	}
 
+	/**
+	 *
+	 * @param eoVO
+	 */
 	public static void storeFiles(String sEntity, EntityObjectVO eoVO) {
 		for (EntityFieldMetaDataVO efMeta : MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(sEntity).values()) {
 			final Object oValue = eoVO.getFields().get(efMeta.getField());
@@ -1124,6 +1084,34 @@ public class MasterDataFacadeHelper {
 		}
 		return attributeFacade;
 	}
+
+//	static MetaDataProvider getSingleDbMetaDataProviderFor(MasterDataMetaVO mdMeta) {
+//		String entityName = mdMeta.getEntityName();
+//		Long entityId = mdMeta.getId().longValue();
+//		StaticMetaDataProvider provider = new StaticMetaDataProvider();
+//		// Wrap entity metadata
+//		EntityMetaDataVO entityMeta = new EntityMetaDataVO();
+//		entityMeta.setId(entityId);
+//		entityMeta.setEntity(entityName);
+//		entityMeta.setDbEntity(mdMeta.getDBEntity());
+//		provider.addEntity(entityMeta);
+//		for (MasterDataMetaFieldVO mdFieldMeta : mdMeta.getFields()) {
+//			EntityFieldMetaDataVO fieldMeta = new EntityFieldMetaDataVO();
+//			fieldMeta.setId(mdFieldMeta.getId().longValue());
+//			fieldMeta.setField(mdFieldMeta.getFieldName());
+//			fieldMeta.setDbColumn(mdFieldMeta.getDBFieldName());
+//			fieldMeta.setDataType(mdFieldMeta.getJavaClass().getName());
+//			fieldMeta.setScale(mdFieldMeta.getDataScale());
+//			fieldMeta.setPrecision(mdFieldMeta.getDataPrecision());
+//			fieldMeta.setNullable(mdFieldMeta.isNullable());
+//			fieldMeta.setForeignEntity(mdFieldMeta.getForeignEntity());
+//			fieldMeta.setForeignEntityField(mdFieldMeta.getForeignEntityField());
+//			fieldMeta.setEntityId(entityId);
+//			fieldMeta.setIndexed(mdFieldMeta.isIndexed());
+//			provider.addEntityField(entityName, fieldMeta);
+//		}
+//		return provider;
+//	}
 
 	private void updateDbObject(EntityObjectVO oldSource, EntityObjectVO newSource, boolean isRollback) throws NuclosBusinessException {
 		if (oldSource == null && newSource == null) {
