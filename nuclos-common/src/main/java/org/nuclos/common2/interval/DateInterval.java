@@ -77,13 +77,13 @@ public interface DateInterval extends Serializable {
 	 * Two date intervals are considered equal iff they represent the same time period.
 	 * @param o
 	 */
-	@Override
+	// @Override
 	boolean equals(Object o);
 
-	@Override
+	// @Override
 	int hashCode();
 
-	@Override
+	// @Override
 	String toString();
 
 	/**

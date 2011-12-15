@@ -102,7 +102,7 @@ public interface CollectableField extends Comparable<CollectableField> {
 	 * </ul>
 	 * @param o
 	 */
-	@Override
+	// @Override
 	boolean equals(Object o);
 
 	/** 
@@ -120,13 +120,13 @@ public interface CollectableField extends Comparable<CollectableField> {
 	 * @param that
 	 * @return {@inheritDoc}
 	 */
-	@Override
+	// @Override
 	int compareTo(CollectableField that);
 
 	/**
 	 * @return the value of this (as defined by <code>getValue()</code>).
 	 */
-	@Override
+	// @Override
 	String toString();
 	
 	/**

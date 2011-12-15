@@ -58,13 +58,14 @@ public class RemoteAuthenticationManager implements org.nuclos.common.security.R
 	}
 
 	@Override
-	public Collection<GrantedAuthority> attemptAuthentication(String username, String password) throws RemoteAuthenticationException {
+	public Collection<? extends GrantedAuthority> attemptAuthentication(String username, String password) throws RemoteAuthenticationException {
 		UsernamePasswordAuthenticationToken request = new UsernamePasswordAuthenticationToken(username, password);
 
 		try {
 			Authentication auth = authenticationManager.authenticate(request);
 			userDetailsService.logAttempt(username, auth.isAuthenticated());
-			return auth.getAuthorities();
+			final Collection<? extends GrantedAuthority> result = auth.getAuthorities();
+			return result;
 		}
 		catch (UsernameNotFoundException ex) {
 			throw ex;

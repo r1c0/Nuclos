@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
 
 <!--
   - Dispatcher servlet for HTTP remoting via Hessian, Burlap, and Spring's
   - HTTP invoker (see remoting-servlet.xml for the controllers).
   -->
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jms="http://www.springframework.org/schema/jms"
+       xmlns:amq="http://activemq.apache.org/schema/core"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:sec="http://www.springframework.org/schema/security"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/jms
+                           http://www.springframework.org/schema/jms/spring-jms.xsd
+                           http://activemq.apache.org/schema/core
+                           http://activemq.apache.org/schema/core/activemq-core.xsd
+                           http://www.springframework.org/schema/tx
+     					   http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+						   http://www.springframework.org/schema/aop
+     					   http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+     					   http://www.springframework.org/schema/security
+     					   http://www.springframework.org/schema/security/spring-security-3.1.xsd
+     					   http://www.springframework.org/schema/jee
+       					   http://www.springframework.org/schema/jee/spring-jee-3.1.xsd">
 
 	<bean id="httpInvokerServiceExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" abstract="true">
 		<property name="remoteInvocationExecutor" ref="remoteInvocationExecutor"/>

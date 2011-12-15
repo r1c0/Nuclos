@@ -133,7 +133,7 @@ public interface CollectableEntityField {
 	 * Two <code>CollectableEntityField</code>s are considered equal iff their names are equal
 	 * @param o
 	 */
-	@Override
+	// @Override
     boolean equals(Object o);
 
 	/**
@@ -258,7 +258,7 @@ public interface CollectableEntityField {
 	 * @return Some implementation return {@link #getLabel()} <em>but</em> other return
 	 * HTML suited for coloring JLabels.
 	 */
-	@Override
+	// @Override
     String toString();
 
 	/**

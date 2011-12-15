@@ -331,13 +331,13 @@ public interface CollectableComponent {
 	 * @param o
 	 * @postcondition result == (this == o)
 	 */
-	@Override
+	// @Override
     public boolean equals(Object o);
 
 	/**
 	 * @see #equals(Object)
 	 */
-	@Override
+	// @Override
     public int hashCode();
 
 	/**

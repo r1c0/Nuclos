@@ -39,6 +39,6 @@ public interface ExtSourceSearchImporter {
 	 *
 	 * @return human readable name to show in dialog
 	 */
-	@Override
+	// @Override
 	public String toString();
 }

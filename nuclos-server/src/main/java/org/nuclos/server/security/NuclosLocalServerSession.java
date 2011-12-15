@@ -87,7 +87,7 @@ public abstract class NuclosLocalServerSession {
 		loginAs(STATIC_SUPERUSER, "", getSuperUserAuthorities());
 	}
 
-	private static void loginAs(String username, String password, Collection<GrantedAuthority> authorities) {
+	private static void loginAs(String username, String password, Collection<? extends GrantedAuthority> authorities) {
 		Authentication auth = new NuclosLocalServerAuthenticationToken(username, password, authorities);
 		SecurityContextHolder.getContext().setAuthentication(auth);
 		sessionId = ServiceLocator.getInstance().getFacade(SecurityFacadeLocal.class).login();

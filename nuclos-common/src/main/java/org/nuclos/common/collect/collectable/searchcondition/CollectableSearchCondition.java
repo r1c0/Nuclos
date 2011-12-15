@@ -122,10 +122,10 @@ public interface CollectableSearchCondition extends Transferable, Serializable {
 	 * @param o
 	 * @return Is <code>this</code> syntactically equal to <code>o</code>?
 	 */
-	@Override
+	// @Override
 	boolean equals(Object o);
 
-	@Override
+	// @Override
 	int hashCode();
 
 	/**

@@ -24,8 +24,10 @@ import org.apache.commons.httpclient.HttpMethodRetryHandler;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nuclos.common.ApplicationProperties;
+import org.nuclos.common2.LangUtils;
 import org.springframework.remoting.httpinvoker.CommonsHttpInvokerRequestExecutor;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientConfiguration;
 import org.springframework.security.core.Authentication;
@@ -51,8 +53,8 @@ public class SecuredBasicAuthHttpInvokerRequestExecutor extends CommonsHttpInvok
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-		if ((auth != null) && (auth.getName() != null) && (auth.getCredentials() != null)) {
-			String base64 = auth.getName() + ":" + auth.getCredentials().toString();
+		if ((auth != null) && (auth.getName() != null)) {
+			String base64 = auth.getName() + ":" + LangUtils.defaultIfNull(auth.getCredentials(), "");
 			postMethod.setRequestHeader("Authorization", "Basic " + new String(Base64.encodeBase64(base64.getBytes())));
 		}
 

@@ -119,14 +119,14 @@ public interface Collectable extends HasId<Object> {
 	 * @param o
 	 * @return {@inheritDoc}
 	 */
-	@Override
+	// @Override
 	boolean equals(Object o);
 
 	/**
 	 * Must be compatible with equals (just as a reminder).
 	 * @return {@inheritDoc}
 	 */
-	@Override
+	// @Override
 	int hashCode();
 
 	/**

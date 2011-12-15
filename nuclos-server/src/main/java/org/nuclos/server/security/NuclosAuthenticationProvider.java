@@ -131,6 +131,7 @@ public class NuclosAuthenticationProvider implements AuthenticationProvider, Mes
 
 		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, userDetails.getPassword(), userDetails.getAuthorities());
 		SecurityContextHolder.getContext().setAuthentication(auth);
+		LOG.info("User " + username + " gets authenticated: " + auth.isAuthenticated());
 		return auth;
 	}
 

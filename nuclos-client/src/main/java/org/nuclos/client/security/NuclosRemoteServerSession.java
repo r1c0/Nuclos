@@ -40,7 +40,7 @@ public abstract class NuclosRemoteServerSession {
 			AuthenticationManager am = (AuthenticationManager)SpringApplicationContextHolder.getBean("authenticationManager");
 			SecurityContextHolder.getContext().setAuthentication(am.authenticate(new UsernamePasswordAuthenticationToken(username, new String(password))));
 			sessionId = ServiceLocator.getInstance().getFacade(SecurityFacadeRemote.class).login();
-			LOG.info("Logged in.");
+			LOG.info("User " + username + " logged in, session=" + sessionId);
 		}
 		catch (AuthenticationException ex) {
 			SecurityContextHolder.getContext().setAuthentication(null);

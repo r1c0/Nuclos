@@ -34,7 +34,7 @@ package org.nuclos.common.database.query.statement;
 public interface JoinCondition {
 
     /** returns the complete join condition */
-	@Override
+	// @Override
 	public String toString() ;
 
 }	// class JoinCondition
