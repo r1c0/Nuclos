@@ -128,7 +128,9 @@ public class EntityFieldNucletContent extends DefaultNucletContent implements IN
 			final String foreignEntityName = ncEntityField.getField("foreignentity");
 			if (foreignEntityName != null) {
 				// is referencing field... check for interface
-				
+				if (NuclosEntity.isNuclosEntity(foreignEntityName)) {
+					continue;
+				}
 				boolean found = false;
 				for (EntityObjectVO ncEntity : result.get(NuclosEntity.ENTITY)) {
 					if (LangUtils.equals(foreignEntityName, ncEntity.getField("entity"))) {
