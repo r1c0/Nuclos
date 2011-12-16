@@ -3310,7 +3310,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				// Sort and finally enter the items into the combo box:
 				Collections.sort(lstComboEntries);
 				for (StateWrapper state : lstComboEntries)
-					cmbbxCurrentState.addItem(state);
+					if (state != null)
+						cmbbxCurrentState.addItem(state);
 				cmbbxCurrentState.setSelectedItem(stateCurrent);
 
 				final ActionListener al = new ActionListener() {
