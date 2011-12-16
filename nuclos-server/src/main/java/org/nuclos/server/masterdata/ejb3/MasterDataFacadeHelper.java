@@ -583,12 +583,23 @@ public class MasterDataFacadeHelper {
 		}
 
 		final MasterDataMetaVO mdmetavo = MasterDataMetaCache.getInstance().getMetaData(sEntityName);
+		final EntityMetaDataVO entityMeta = MetaDataServerProvider.getInstance().getEntity(sEntityName);
 
 		validateUniqueConstraintWithJson(mdmetavo, mdvoToCreate);
 
 		// @todo optimize: use idfactory.nextval for insert
 
-		final Integer result = (intid != null) ? intid : DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
+		final Integer result;
+		if (intid != null) {
+			result = intid;
+		} else {
+			final String idFactory = entityMeta.getIdFactory();
+			if (idFactory == null) {
+				result = DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
+			} else {
+				result = DataBaseHelper.getDbAccess().executeFunction(idFactory, Integer.class);
+			}
+		}
 		mdvoToCreate.setId(result);
 
 		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(mdmetavo.getEntityName());
