@@ -16,6 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.statemodel;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.nuclos.common.NuclosImage;
 import org.nuclos.common2.LangUtils;
 
@@ -25,13 +28,20 @@ public class StateWrapper implements Comparable<StateWrapper> {
 	private final String sName;
 	private final String sDescription;
 	private final NuclosImage icon;
-
+	private final boolean bFromAutomatic;
+	private final List<Integer> lstReachable;
+	
 	public StateWrapper(Integer iId, Integer iNumeral, String sName, NuclosImage icon, String sDescription) {
+		this(iId, iNumeral, sName, icon, sDescription, false, new LinkedList<Integer>());
+	}
+	public StateWrapper(Integer iId, Integer iNumeral, String sName, NuclosImage icon, String sDescription, boolean bFromAutomatic, List<Integer> lstReachable) {
 		this.iId = iId;
 		this.iNumeral = iNumeral;
 		this.sName = sName;
 		this.icon = icon;
 		this.sDescription = sDescription;
+		this.bFromAutomatic = bFromAutomatic;
+		this.lstReachable = lstReachable;
 	}
 
 	public Integer getId() {
@@ -85,6 +95,18 @@ public class StateWrapper implements Comparable<StateWrapper> {
 
 	private String getNumeralText() {
 		return iNumeral == null ? "N/A" : iNumeral.toString();
+	}
+	
+	public boolean isFromAutomatic() {
+		return bFromAutomatic;
+	}
+	
+	public boolean isReachable() {
+		return lstReachable.size() != 0;
+	}
+	
+	public List<Integer> getStatesBefore() {
+		return lstReachable;
 	}
 
 }	// class StateWrapper

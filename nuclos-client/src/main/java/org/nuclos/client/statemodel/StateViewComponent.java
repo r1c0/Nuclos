@@ -27,6 +27,9 @@ import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +48,7 @@ import javax.swing.border.EmptyBorder;
 
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.LangUtils;
 
 
 public class StateViewComponent extends JPanel {	
@@ -115,7 +119,7 @@ public class StateViewComponent extends JPanel {
 				thirdIcon = Icons.getInstance().getStateViewStateSelected("third");
 			}
 			
-			String statusText = state.getCombinedStatusText();
+			String statusText = state.getName();
 			
 			Icon statusIcon;
 			if (state.getIcon() == null || state.getIcon().getContent() == null)
@@ -130,7 +134,7 @@ public class StateViewComponent extends JPanel {
 			g.drawImage(((ImageIcon)thirdIcon).getImage(), firstIcon.getIconWidth() + width, 0, null);
 									
 			g2d.drawImage(((ImageIcon)statusIcon).getImage(), statusIcon.getIconWidth(),
-					(statusIcon.getIconHeight() / 2) + (int)(g2d.getFontMetrics().getHeight() / 3.5) + 1, null);
+					(statusIcon.getIconHeight() / 2) + (int)(g2d.getFontMetrics().getHeight() / 3.5) - 1, null);
 
 			g2d.drawString(statusText, (statusIcon.getIconWidth() * 2) + getIconTextGap(),
 					(firstIcon.getIconHeight() / 2) + (int)(g2d.getFontMetrics().getHeight() / 3.5) + 1);
@@ -216,7 +220,7 @@ public class StateViewComponent extends JPanel {
 			StateWrapper item = iterator.next();
 			StateWrapperLabel label = findComponent(item);
 			
-			label.setEnabled(afterSelected);
+			label.setEnabled((item.isReachable()) && !item.isFromAutomatic());
 			if (isSelected(item))
 			{
 				afterSelected = true;
@@ -296,10 +300,21 @@ public class StateViewComponent extends JPanel {
 			lbl.setFont(lbl.getFont().deriveFont(Font.BOLD));
 			popup.add(lbl);
 		}
+		List<StateWrapper> lstSubsequentStates = new ArrayList<StateWrapper>();
 		for (Iterator<StateWrapper> iterator = mpSubsequentStatesAction.keySet().iterator(); iterator.hasNext();) {
 			StateWrapper state = iterator.next();
+			lstSubsequentStates.add(state);
+		}
+		Collections.sort(lstSubsequentStates, new Comparator<StateWrapper>() {
+			@Override
+			public int compare(StateWrapper o1, StateWrapper o2) {
+				return LangUtils.compare(o1.getName(), o2.getName());
+			}
+		});
+		for (Iterator<StateWrapper> iterator = lstSubsequentStates.iterator(); iterator.hasNext();) {
+			StateWrapper state = iterator.next();
 			JMenuItem menuItem = new JMenuItem(mpSubsequentStatesAction.get(state));
-			menuItem.setLabel(state.getCombinedStatusText());
+			menuItem.setLabel(state.getName());
 			popup.add(menuItem);
 		}
 		label.addMouseListener(new MouseAdapter() {

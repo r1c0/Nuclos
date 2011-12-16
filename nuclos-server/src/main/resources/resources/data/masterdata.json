@@ -5626,7 +5626,7 @@
         "description": "Beschreibung",
         "datatype": "java.lang.String",
         "datascale": 4000,
-        "nullable": false,
+        "nullable": true,
         "searchable": true,
         "logbook": false,
         "unique": false,

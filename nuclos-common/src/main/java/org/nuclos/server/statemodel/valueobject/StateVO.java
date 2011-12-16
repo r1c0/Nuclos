@@ -42,6 +42,7 @@ public class StateVO extends NuclosValueObject {
 	private Integer iModelId;
 	private NuclosImage bIcon;
 	private String sTab;
+	private boolean bAuto;
 	private UserRights userrights = new UserRights();
 	private UserFieldRights userfieldrights = new UserFieldRights();
 	private UserSubformRights usersubformrights = new UserSubformRights();
@@ -240,6 +241,14 @@ public class StateVO extends NuclosValueObject {
 	
 	public String getTabbedPaneName() {
 		return sTab;
+	}
+	
+	public void setFromAutomatic(boolean bAuto) {
+		this.bAuto = bAuto;
+	}
+	
+	public boolean isFromAutomatic() {
+		return bAuto;
 	}
 	
 	/**

@@ -1525,7 +1525,7 @@ public class StatePropertiesPanel extends JPanel {
 		tfIconSet.setPreferredSize(new Dimension(100, 230));
 		tfIconSet.setEnabled(SecurityCache.getInstance().isWriteAllowedForMasterData(NuclosEntity.STATEMODEL));
 		
-		final JLabel labDescription = new JLabel(CommonLocaleDelegate.getMessage("StatePropertiesPanel.5","Beschreibung"));
+		final JLabel labDescription = new JLabel(CommonLocaleDelegate.getMessage("StatePropertiesPanel.5","Hinweistext"));
 		final JTextArea taDescription = new JTextArea();
 		labDescription.setAlignmentY((float) 0.0);
 		labDescription.setHorizontalAlignment(SwingConstants.LEADING);

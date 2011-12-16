@@ -126,9 +126,9 @@ public class StateGraphVO implements Serializable {
 				if (StringUtils.isNullOrEmpty(statevo.getStatename())) {
 					throw new CommonValidationException("statemachine.error.validation.graph.statename");
 				}
-				if (StringUtils.isNullOrEmpty(statevo.getDescription())) {
+				/*if (StringUtils.isNullOrEmpty(statevo.getDescription())) {
 					throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage("statemachine.error.validation.graph.statedescription",statevo.getStatename()));
-				}
+				}*/
 				if(statevo.getNumeral() == null) {
 					throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage("statemachine.error.validation.graph.statenumeral",statevo.getStatename()));
 				}
@@ -257,7 +257,8 @@ public class StateGraphVO implements Serializable {
 			Integer iSubsequentState = startTransition.getStateTarget();
 			while (iSubsequentState != null) {
 				if (checkedStateNumerals.contains(iSubsequentState)) {
-					throw new CommonValidationException("statemachine.error.validation.graph.defaulttransition");					
+					break;
+					//throw new CommonValidationException("statemachine.error.validation.graph.defaulttransition");					
 				}
 				
 				final Integer iSubsequentStateSource = iSubsequentState;

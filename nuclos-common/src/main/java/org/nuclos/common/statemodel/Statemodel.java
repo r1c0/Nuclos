@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -184,9 +185,15 @@ public class Statemodel implements Serializable {
 			result.add(getStateLookup().get(initialStateId));
             result.add(getStateLookup().get(startTransition.getStateTarget()));
             
+            List<Integer> checkedStateNumerals = new LinkedList<Integer>();
+			
 			// finde alle trans die als source den end der letzten haben.
 			Integer iSubsequentState = startTransition.getStateTarget();
 			while (iSubsequentState != null) {
+				if (checkedStateNumerals.contains(iSubsequentState)) {
+					break;
+					//throw new CommonValidationException("statemachine.error.validation.graph.defaulttransition");					
+				}
 				final Integer iSubsequentStateSource = iSubsequentState;
 				StateTransitionVO subsequentTransition = CollectionUtils.findFirst(transitionVOs, new Predicate<StateTransitionVO>() {
 					@Override public boolean evaluate(StateTransitionVO t) { return t.getStateSource().equals(iSubsequentStateSource) && t.isDefault() == true; }
@@ -197,10 +204,97 @@ public class Statemodel implements Serializable {
 				}
 				
 				// iterate next.
+				checkedStateNumerals.add(iSubsequentState);
 				iSubsequentState = subsequentTransition.getStateTarget();
-	            result.add(getStateLookup().get(subsequentTransition.getStateTarget()));
+				StateVO state = getStateLookup().get(subsequentTransition.getStateTarget());
+				state.setFromAutomatic(subsequentTransition.isAutomatic());
+	            result.add(state);
 			}
 		}
 		return result;
+    }
+    
+    public Integer getStateIdFromNumeral(Integer numeral) {
+    	for (Iterator iterator = allStates.iterator(); iterator.hasNext();) {
+			StateVO state = (StateVO) iterator.next();
+			if (state.getNumeral().equals(numeral))
+				return state.getId();
+		}
+    	return null;
+    }
+    
+    public List<Integer> isStateReachableInDefaultPath(final Integer stateCurrent, StateVO stateToReach) {
+    	List<Integer> result = new LinkedList<Integer>();
+    	
+    	// state to reach is not in a default path
+    	List<StateVO> statesDefaultPath = getDefaultStatePath();
+    	if (!statesDefaultPath.contains(stateToReach)) {
+    		return result;
+    	}
+    	
+    	List<StateTransitionVO> transitionVOs = new LinkedList<StateTransitionVO>();
+		for (Collection<StateTransitionVO> transitions : stateTransitions.values()) {
+			transitionVOs.addAll(transitions);
+		}
+
+    	// we are not at defaultpath, but we can reach default path within one step.
+		for (StateVO stateVO : getSubsequentStates(getStateIdFromNumeral(stateCurrent), false)) {
+			if (stateVO.getId().equals(stateToReach.getId())) {
+				result.add(stateToReach.getId());
+    			return result;
+			}
+		}
+		
+		// find start transition
+		StateTransitionVO startTransition = CollectionUtils.findFirst(transitionVOs, new Predicate<StateTransitionVO>() {
+			@Override public boolean evaluate(StateTransitionVO t) {
+				return t.isDefault() && !t.isAutomatic() && t.getStateSource().equals(getStateIdFromNumeral(stateCurrent));
+			}
+		});
+		
+		if (startTransition == null)
+			return result;
+
+		List<Integer> checkedStateNumerals = new LinkedList<Integer>();
+		Integer iSubsequentState = startTransition.getStateTarget();
+		if (!startTransition.isAutomatic() && !result.contains(iSubsequentState)) {
+			result.add(iSubsequentState);
+		}
+		while (iSubsequentState != null) {			
+			if (iSubsequentState.equals(stateToReach.getId())) {
+				return result;
+			}
+			
+			final Integer iSubsequentStateSource = iSubsequentState;
+			StateTransitionVO subsequentTransition = CollectionUtils.findFirst(transitionVOs, new Predicate<StateTransitionVO>() {
+				@Override public boolean evaluate(StateTransitionVO t) { return t.isDefault() && !t.isAutomatic() && t.getStateSource().equals(iSubsequentStateSource); }
+			});
+			
+			if (subsequentTransition == null) {
+				break;
+			}
+			
+			// add path.
+			if (!subsequentTransition.isAutomatic() && !result.contains(iSubsequentState)) {
+				result.add(iSubsequentState);
+			}
+			
+			if (checkedStateNumerals.contains(subsequentTransition.getId())) {
+				break;
+			}
+			
+			if (iSubsequentState.equals(stateToReach.getId())) {
+				return result;
+			}
+			
+			// iterate next.
+			checkedStateNumerals.add(subsequentTransition.getId());
+			iSubsequentState = subsequentTransition.getStateTarget();
+			if (iSubsequentState.equals(stateToReach.getId())) {
+				return result;
+			}
+		}
+		
+    	return new LinkedList<Integer>();
     }
 }

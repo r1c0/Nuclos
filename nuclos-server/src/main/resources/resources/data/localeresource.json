@@ -27332,17 +27332,17 @@
   {
     "resourceID": "StatePropertiesPanel.5",
     "locale": "i-default",
-    "text": "Description"
+    "text": "Advice text"
   },
   {
     "resourceID": "StatePropertiesPanel.5",
     "locale": "en",
-    "text": "Description"
+    "text": "Advice text"
   },
   {
     "resourceID": "StatePropertiesPanel.5",
     "locale": "de",
-    "text": "Beschreibung"
+    "text": "Hinweistext"
   },
   {
     "resourceID": "CollectController.22",

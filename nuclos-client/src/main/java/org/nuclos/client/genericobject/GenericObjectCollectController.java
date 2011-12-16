@@ -61,9 +61,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.RowSorter.SortKey;
@@ -3301,7 +3303,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							CommonLocaleDelegate.getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
 								StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()
 								),
-								statevo.getStatename()), statevo.getIcon(), statevo.getDescription()));
+								statevo.getStatename()), statevo.getIcon(), statevo.getDescription(), statevo.isFromAutomatic(),
+								StateDelegate.getInstance().getStatemodel(uc).isStateReachableInDefaultPath(stateCurrent.getNumeral(), statevo)));
 
 				// Sort and finally enter the items into the combo box:
 				Collections.sort(lstComboEntries);
@@ -3373,7 +3376,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							CommonLocaleDelegate.getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
 								StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()
 								),
-								statevo.getStatename()), statevo.getIcon(), statevo.getDescription()));
+								statevo.getStatename()), statevo.getIcon(), statevo.getDescription(), statevo.isFromAutomatic(),
+								StateDelegate.getInstance().getStatemodel(uc).isStateReachableInDefaultPath(stateCurrent.getNumeral(), statevo)));
 
 				cmpStateStandardView.setSelectedItem(stateCurrent);
 				cmpStateStandardView.addItems(lstDefaultPathEntries);
@@ -3387,7 +3391,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 								@Override
 								public void run() {
 									if (item != stateCurrent && item != null && item.getId() != null) {
-										final boolean bUserPressedOk = cmdChangeStates(item, cmpStateStandardView.getStatesBefore(item));
+										final boolean bUserPressedOk = cmdChangeStates(item, item.getStatesBefore());
 										if (!bUserPressedOk)
 											cmpStateStandardView.setSelectedItem(stateCurrent);
 									}
@@ -3567,7 +3571,21 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		? CommonLocaleDelegate.getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status {0} f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?\nDie vorgenommenen \u00c4nderungen an dem Objekt werden gespeichert.", stateNew.getCombinedStatusText())
 			: CommonLocaleDelegate.getMessage("GenericObjectCollectController.80","Soll der Wechsel in den Status {0} wirklich durchgef\u00fchrt werden?", stateNew.getCombinedStatusText());
 
-		final int btn = JOptionPane.showConfirmDialog(getFrame(), sQuestion, CommonLocaleDelegate.getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren"),
+		Object[] argsOptionPane = new Object[] {sQuestion};
+		if (stateNew.getDescription() != null && !stateNew.getDescription().isEmpty()) {
+			JTextArea ta = new JTextArea();
+			ta.setEnabled(true);
+			ta.setEditable(false);
+			ta.setText(stateNew.getDescription());
+			ta.setCaretPosition(0);
+			argsOptionPane = new Object[] {
+					sQuestion,
+					"\n",
+					ta
+			};
+		}
+					
+		final int btn = JOptionPane.showConfirmDialog(getFrame(), argsOptionPane, CommonLocaleDelegate.getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren"),
 			JOptionPane.OK_CANCEL_OPTION);
 
 		// repaint directly:
@@ -3592,7 +3610,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @precondition this.getCollectState().isDetailsMode()
 	 * NUCLEUSINT-1159 needed for accessing the statechange for status button
 	 */
-	private boolean cmdChangeStates(final StateWrapper stateFinal, final List<StateWrapper> statesNew) {
+	private boolean cmdChangeStates(final StateWrapper stateFinal, final List<Integer> statesNew) {
 		if (isHistoricalView())
 			throw new IllegalStateException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.90","Statuswechsel ist in historischer Ansicht nicht m\u00f6glich."));
 		if (!getCollectState().isDetailsMode())
@@ -3604,7 +3622,21 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		? CommonLocaleDelegate.getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status {0} f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?\nDie vorgenommenen \u00c4nderungen an dem Objekt werden gespeichert.", stateFinal.getCombinedStatusText())
 			: CommonLocaleDelegate.getMessage("GenericObjectCollectController.80","Soll der Wechsel in den Status {0} wirklich durchgef\u00fchrt werden?", stateFinal.getCombinedStatusText());
 
-		final int btn = JOptionPane.showConfirmDialog(getFrame(), sQuestion, CommonLocaleDelegate.getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren"),
+		Object[] argsOptionPane = new Object[] {sQuestion};
+		if (stateFinal.getDescription() != null && !stateFinal.getDescription().isEmpty()) {
+			JTextArea ta = new JTextArea();
+			ta.setEnabled(true);
+			ta.setEditable(false);
+			ta.setText(stateFinal.getDescription());
+			ta.setCaretPosition(0);
+			argsOptionPane = new Object[] {
+					sQuestion,
+					"\n",
+					ta
+			};
+		}
+		
+		final int btn = JOptionPane.showConfirmDialog(getFrame(), argsOptionPane, CommonLocaleDelegate.getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren"),
 			JOptionPane.OK_CANCEL_OPTION);
 
 		// repaint directly:
@@ -3678,7 +3710,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @precondition this.getCollectState().isDetailsMode()
 	 * NUCLEUSINT-1159 needed for accessing the statechange for status button
 	 */
-	private void changeStates(final StateWrapper stateFinal, final List<StateWrapper> statesNew) {
+	private void changeStates(final StateWrapper stateFinal, final List<Integer> statesNew) {
 		final boolean bMultiEdit = getCollectState().isDetailsModeMultiViewOrEdit();
 
 		stopEditingInDetails();
@@ -3804,7 +3836,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		});
 	}
 
-	private void changeStatesForSingleObjectAndSave(final List<StateWrapper> statesNew) {
+	private void changeStatesForSingleObjectAndSave(final List<Integer> statesNew) {
 		CommonMultiThreader.getInstance().execute(new CommonClientWorkerAdapter<CollectableGenericObjectWithDependants>(GenericObjectCollectController.this) {
 			Integer iGenericObjectId;
 			Integer iModuleId;
@@ -3828,15 +3860,15 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			public void work() throws CommonBusinessException {
 				try {
 					isProcessingStateChange.set(true);
-					for (StateWrapper stateNew : statesNew) {
+					for (Integer stateNew : statesNew) {
 						if (GenericObjectCollectController.this.changesArePending()) {
 							// NUCLOSINT-1114:
 							// Value must be 'true' to save the changed SubForm data to DB. (Thomas Pasch)
 							CollectableGenericObjectWithDependants updated = GenericObjectCollectController.this.updateCurrentCollectable();
 
-							StateDelegate.getInstance().changeStateAndModify(iModuleId, updated.getGenericObjectWithDependantsCVO(), stateNew.getId());
+							StateDelegate.getInstance().changeStateAndModify(iModuleId, updated.getGenericObjectWithDependantsCVO(), stateNew);
 						} else {
-							StateDelegate.getInstance().changeState(iModuleId, iGenericObjectId, stateNew.getId());
+							StateDelegate.getInstance().changeState(iModuleId, iGenericObjectId, stateNew);
 						}
 					}
 					broadcastCollectableEvent(clct, MessageType.STATECHANGE_DONE);
@@ -3879,10 +3911,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 
 	private void changeStateForMultipleObjects(final StateWrapper stateNew) throws CommonBusinessException {
-		new ChangeStateForSelectedCollectablesController(this, stateNew, new LinkedList<StateWrapper>(Collections.singleton(stateNew))).run(getMultiActionProgressPanel(getSelectedCollectables().size()));
+		new ChangeStateForSelectedCollectablesController(this, stateNew, new LinkedList<Integer>(Collections.singleton(stateNew.getId()))).run(getMultiActionProgressPanel(getSelectedCollectables().size()));
 	}
 
-	private void changeStatesForMultipleObjects(final StateWrapper stateFinal, final List<StateWrapper> statesNew) throws CommonBusinessException {
+	private void changeStatesForMultipleObjects(final StateWrapper stateFinal, final List<Integer> statesNew) throws CommonBusinessException {
 		new ChangeStateForSelectedCollectablesController(this, stateFinal, statesNew).run(getMultiActionProgressPanel(getSelectedCollectables().size()));
 	}
 
@@ -4974,9 +5006,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		private static class ChangeStateAction extends UpdateAction<CollectableGenericObjectWithDependants> {
 			private final GenericObjectCollectController ctl;
 			private final StateWrapper stateFinal;
-			private final List<StateWrapper> statesNew;
+			private final List<Integer> statesNew;
 
-			ChangeStateAction(GenericObjectCollectController ctl, StateWrapper stateFinal, List<StateWrapper> statesNew) throws CommonBusinessException {
+			ChangeStateAction(GenericObjectCollectController ctl, StateWrapper stateFinal, List<Integer> statesNew) throws CommonBusinessException {
 				super(ctl);
 				this.ctl = ctl;
 				this.stateFinal = stateFinal;
@@ -4988,11 +5020,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				super.perform(clctlo);
 
 				final GenericObjectVO govo = clctlo.getGenericObjectCVO();
-				for (final StateWrapper stateNew : statesNew) {
+				for (final Integer stateNew : statesNew) {
 					ctl.invoke(new CommonRunnable() {
 						@Override
 						public void run() throws CommonBusinessException {
-							StateDelegate.getInstance().changeState(govo.getModuleId(), govo.getId(), stateNew.getId());
+							StateDelegate.getInstance().changeState(govo.getModuleId(), govo.getId(), stateNew);
 						}
 					});
 				}
@@ -5039,7 +5071,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 		}
 
-		ChangeStateForSelectedCollectablesController(GenericObjectCollectController ctl, StateWrapper stateNew,  final List<StateWrapper> statesNew) throws CommonBusinessException {
+		ChangeStateForSelectedCollectablesController(GenericObjectCollectController ctl, StateWrapper stateNew,  final List<Integer> statesNew) throws CommonBusinessException {
 			super(ctl, CommonLocaleDelegate.getMessage("GenericObjectCollectController.88","Statuswechsel in Status {0}", stateNew.getCombinedStatusText()), new ChangeStateAction(ctl, stateNew, statesNew), ctl.getCompleteSelectedCollectables());
 		}
 
