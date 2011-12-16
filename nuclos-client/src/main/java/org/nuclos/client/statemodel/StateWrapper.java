@@ -76,7 +76,9 @@ public class StateWrapper implements Comparable<StateWrapper> {
 
 	@Override
 	public int compareTo(StateWrapper that) {
-		return iNumeral.compareTo(that.iNumeral);
+		if (that == null)
+			return -1;
+		return LangUtils.compare(iNumeral, that.iNumeral);
 	}
 
 	@Override
