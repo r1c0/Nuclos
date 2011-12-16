@@ -162,29 +162,26 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	}
 
 	public String getTableOrViewName() {
-		if(strTableName != null && !(strTableName.startsWith("T_") || strTableName.startsWith("V_"))) {
-			strTableName = "T_" + strTableName;
-		}
-		if(strTableName != null && strTableName.length() > 30){
-			strTableName.replaceAll(" " ,"").toUpperCase();
-			if(strTableName.length() > 30)
-				return strTableName.substring(0,30);
+		final boolean virtual = !StringUtils.isBlank(virtualentity);
+		if (strTableName != null) {
+			if (!virtual && !(strTableName.startsWith("T_") || strTableName.startsWith("V_"))) {
+				strTableName = "T_" + strTableName;
+			}
+			if (strTableName.length() > 30){
+				return StringUtils.abbreviate(StringUtils.deleteWhitespace(strTableName).toUpperCase(), 30);
+			}
+			else if (strTableName.length() < 1) {
+				final String sTable = (virtual ? "V_EO" : "T_EO_") 
+						+ StringUtils.deleteWhitespace(entityName).toUpperCase();
+				return sTable;
+			}
 			else {
 				return strTableName;
 			}
 		}
-		else if (strTableName != null && strTableName.length() < 1) {
-			String sTable = "T_EO_" + entityName.replaceAll(" " ,"").toUpperCase();
-			return sTable;
-		}
-		else if(strTableName != null) {
-			return strTableName;
-		}
 		else {
-			String sTable = "T_EO_" + entityName.replaceAll(" " ,"").toUpperCase();
-			if(sTable.length() > 30) {
-				sTable = sTable.substring(0,30);
-			}
+			final String sTable = StringUtils.abbreviate((virtual ? "V_EO" : "T_EO_") 
+					+ StringUtils.deleteWhitespace(entityName).toUpperCase(), 30);
 			return sTable;
 		}
 	}
