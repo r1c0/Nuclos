@@ -882,14 +882,23 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				cbEditable.setSelected(empty || !idEmpty);
 				cbEditable.setEnabled(empty);
 				
-				NuclosEntityCommonPropertiesStep.this.model.setEditable(cbEditable.isSelected());
+				model.setEditable(cbEditable.isSelected());
 				cbLogbook.setSelected(empty);
 				cbLogbook.setEnabled(empty);
-				NuclosEntityCommonPropertiesStep.this.model.setEditable(cbLogbook.isSelected());
+				model.setEditable(cbLogbook.isSelected());
 				cbCache.setSelected(empty);
 				cbCache.setEnabled(empty);
-				NuclosEntityCommonPropertiesStep.this.model.setCachable(cbCache.isSelected());
+				model.setCachable(cbCache.isSelected());
 				cbStateModel.setEnabled(empty);
+				
+				// Modify table name (tp)
+				if (empty) {
+					model.setVirtualentity(null);
+				}
+				else {
+					model.setVirtualentity(item);
+				}
+				tfTableName.setText(model.getTableOrViewName());
 				
 				// id factory is only possible for virtual entities
 				cbxIdFactory.setEnabled(!empty);

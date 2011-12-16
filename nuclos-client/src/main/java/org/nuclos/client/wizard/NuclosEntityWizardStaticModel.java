@@ -164,8 +164,11 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	public String getTableOrViewName() {
 		final boolean virtual = !StringUtils.isBlank(virtualentity);
 		if (strTableName != null) {
-			if (!virtual && !(strTableName.startsWith("T_") || strTableName.startsWith("V_"))) {
-				strTableName = "T_" + strTableName;
+			if (!virtual && strTableName.startsWith("V_")) {
+				strTableName = "T_" + strTableName.substring(2);
+			}
+			else if (virtual && strTableName.startsWith("T_")) {
+				strTableName = "V_" + strTableName.substring(2);
 			}
 			if (strTableName.length() > 30){
 				return StringUtils.abbreviate(StringUtils.deleteWhitespace(strTableName).toUpperCase(), 30);
