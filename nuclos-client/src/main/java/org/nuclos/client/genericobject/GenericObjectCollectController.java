@@ -61,7 +61,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
@@ -1678,7 +1677,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		invoke(new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
-				GenericObjectDelegate.getInstance().executeBusinessRules(lstRuleVO, getSelectedCollectable().getGenericObjectWithDependantsCVO(), bSaveAfterRuleExecution);
+				CollectableGenericObjectWithDependants clct = getSelectedCollectable();
+				GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(clct.getGenericObjectCVO(), getAllSubFormData(clct).toDependantMasterDataMap());
+				GenericObjectDelegate.getInstance().executeBusinessRules(lstRuleVO, go, bSaveAfterRuleExecution);
 			}
 		});
 	}
@@ -3584,7 +3585,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					ta
 			};
 		}
-					
+
 		final int btn = JOptionPane.showConfirmDialog(getFrame(), argsOptionPane, CommonLocaleDelegate.getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren"),
 			JOptionPane.OK_CANCEL_OPTION);
 
@@ -3635,7 +3636,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					ta
 			};
 		}
-		
+
 		final int btn = JOptionPane.showConfirmDialog(getFrame(), argsOptionPane, CommonLocaleDelegate.getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren"),
 			JOptionPane.OK_CANCEL_OPTION);
 
