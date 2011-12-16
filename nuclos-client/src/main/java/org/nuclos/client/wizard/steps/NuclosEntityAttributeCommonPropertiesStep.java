@@ -649,7 +649,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			if(getModel().getAttribute().getDbName() != null) {
 				String sModifiedDBName = new String(getModel().getAttribute().getDbName());
 
-				tfDBFieldName.setText(sModifiedDBName.replaceFirst("STRVALUE_", "").replaceFirst("INTID_", ""));
+				tfDBFieldName.setText(sModifiedDBName.replaceFirst("^STRVALUE_", "").replaceFirst("^INTID_", ""));
 				if(getModel().getAttribute().getMetaVO() != null && getModel().getAttribute().getField() != null){
 					tfDBFieldNameComplete.setText("STRVALUE_"+ getModel().getAttribute().getDbName());
 				}
@@ -679,7 +679,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			if(getModel().getAttribute().getDbName() != null) {
 				String sModifiedDBName = new String(getModel().getAttribute().getDbName());
 
-				tfDBFieldName.setText(sModifiedDBName.replaceFirst("STRVALUE_", "").replaceFirst("INTID_", ""));
+				tfDBFieldName.setText(sModifiedDBName.replaceFirst("^STRVALUE_", "").replaceFirst("^INTID_", ""));
 				if(getModel().getAttribute().getMetaVO() != null && getModel().getAttribute().getField() != null){
 					tfDBFieldNameComplete.setText("STRVALUE_"+ getModel().getAttribute().getDbName());
 				}

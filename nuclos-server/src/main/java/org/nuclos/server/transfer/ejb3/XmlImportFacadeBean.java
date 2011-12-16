@@ -1301,7 +1301,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 				final Integer iIntidOfForeignEntity = tuple.get(0, Integer.class);
 				final String sField = tuple.get(1, String.class);
 				String sDBField = tuple.get(2, String.class);
-				sDBField = sDBField.toUpperCase().replaceFirst("STRVALUE_", "INTID_");
+				sDBField = sDBField.toUpperCase().replaceFirst("^STRVALUE_", "INTID_");
 				final MasterDataMetaVO mdmvo = MasterDataMetaCache.getInstance().getMasterDataMetaById(iIntidOfForeignEntity);
 	
 				DbQuery<Integer> query2 = builder.createQuery(Integer.class);

@@ -580,7 +580,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 					selection.add(c);
 					groupby.add(c);
 					if (meta.getForeignEntity() != null && meta.getForeignEntityField() != null) {
-						column = column.replaceFirst("STRVALUE", "INTID");
+						column = column.replaceFirst("^STRVALUE", "INTID");
 						c = t.baseColumn(column, Long.class);
 						c.alias(meta.getField() + "Id");
 						selection.add(c);
@@ -672,7 +672,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 				selection.add(c);
 				groupby.add(c);
 				if (meta.getForeignEntity() != null && meta.getForeignEntityField() != null) {
-					column = column.replaceFirst("STRVALUE", "INTID");
+					column = column.replaceFirst("^STRVALUE", "INTID");
 					c = t.baseColumn(column, Long.class);
 					c.alias(meta.getField() + "Id");
 					selection.add(c);
@@ -698,7 +698,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		String mainSourceEntity = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(gavo.getSourceModuleId())).getEntity();
 		String foreignField = DependantMasterDataMap.getForeignKeyField(MasterDataMetaCache.getInstance().getMetaData(sourceEntity.getEntity()), mainSourceEntity, false);
 		String dbColumn = MetaDataServerProvider.getInstance().getEntityField(sourceEntity.getEntity(), foreignField).getDbColumn();
-		dbColumn = dbColumn.replaceFirst("STRVALUE", "INTID");
+		dbColumn = dbColumn.replaceFirst("^STRVALUE", "INTID");
 
 		ArrayList<DbCondition> conditions = new ArrayList<DbCondition>();
 		for (Long sourceId : sourceIds) {

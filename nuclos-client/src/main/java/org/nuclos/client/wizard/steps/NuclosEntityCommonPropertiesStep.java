@@ -982,8 +982,8 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		    			attributes.add(field);
 		    			fields.remove(name);
 		    		}
-		    		else if (name.startsWith("INTID_") && fields.containsKey(name.replaceFirst("INTID_", "STRVALUE_"))) {
-		    			name = name.replaceFirst("INTID_", "STRVALUE_");
+		    		else if (name.startsWith("INTID_") && fields.containsKey(name.replaceFirst("^INTID_", "STRVALUE_"))) {
+		    			name = name.replaceFirst("^INTID_", "STRVALUE_");
 		    			// was defined as reference field
 		    			EntityFieldMetaDataVO field = fields.get(name);
 		    			attributes.add(field);

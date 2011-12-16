@@ -269,7 +269,15 @@ public class EOSearchExpressionUnparser {
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("visitRefJoinCondition: apply " + joincond + " on " + table);
 			}
-			final DbJoin join = table.join(refEntity.getDbEntity(), JoinType.LEFT).alias(joincond.getTableAlias()).on(
+			// TODO: Why is sometimes the db name for a virtual entity set wrony??? (tp)
+			final String dbEntity;
+			if (refEntity.isVirtual()) {
+				dbEntity = refEntity.getDbEntity().replaceFirst("^T_", "V_");
+			}
+			else {
+				dbEntity = refEntity.getDbEntity();
+			}
+			final DbJoin join = table.join(dbEntity, JoinType.LEFT).alias(joincond.getTableAlias()).on(
 					DalUtils.getDbIdFieldName(field.getDbColumn()), "INTID", Long.class);
 
 			// ??? We have no real condition, all is said within the join...

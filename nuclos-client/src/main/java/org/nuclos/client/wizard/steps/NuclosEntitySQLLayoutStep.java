@@ -1836,14 +1836,14 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			metaFieldVO.setOnDeleteCascade(attr.isOnDeleteCascade());
 			metaFieldVO.setForeignEntityField(attr.getField());
 			if(!attr.getDbName().startsWith("STRVALUE_")) {
-				metaFieldVO.setDbColumn("STRVALUE_"+ attr.getDbName().replaceFirst("INTID_", ""));
+				metaFieldVO.setDbColumn("STRVALUE_"+ attr.getDbName().replaceFirst("^INTID_", ""));
 			}
 		}
 		else if (attr.getMetaVO() != null && attr.getField() == null) {
 			metaFieldVO.setForeignEntity(attr.getMetaVO().getEntity());
 			metaFieldVO.setOnDeleteCascade(attr.isOnDeleteCascade());
 			if(!attr.getDbName().startsWith("INTID_")) {
-				metaFieldVO.setDbColumn("INTID_"+ attr.getDbName().replaceFirst("STRVALUE_", ""));
+				metaFieldVO.setDbColumn("INTID_"+ attr.getDbName().replaceFirst("^STRVALUE_", ""));
 			}
 			metaFieldVO.setForeignEntityField(null);
 			metaFieldVO.setModifiable(false);

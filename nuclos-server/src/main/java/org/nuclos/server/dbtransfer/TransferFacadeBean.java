@@ -694,7 +694,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		if(pp.getWarning() > 0) {
 			for(EntityMetaDataVO vo : transferredProvider.getAllEntities()) {
 				String sTable = vo.getDbEntity();
-				sTable = sTable.replaceFirst("V_", "T_");
+				sTable = sTable.replaceFirst("^V_", "T_");
 				if(dbu.getTableName().equals(sTable)) {
 					Integer iId = vo.getId().intValue();
 					for(EntityObjectVO voField : transferredFields) {

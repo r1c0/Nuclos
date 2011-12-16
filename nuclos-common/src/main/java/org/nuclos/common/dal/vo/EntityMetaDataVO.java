@@ -130,7 +130,7 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 		}
 		// Always use V_ prefix for virtual entities
 		else if (isVirtual()) {
-			this.dbEntity = dbEntity.replaceFirst("T_", "V_");
+			this.dbEntity = dbEntity.replaceFirst("^T_", "V_");
 		}
 		// Don't use normal views in Nuclos any more... (tp)
 		else if (dbEntity.startsWith("V_")) {
