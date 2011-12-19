@@ -269,9 +269,11 @@ public class EOSearchExpressionUnparser {
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("visitRefJoinCondition: apply " + joincond + " on " + table);
 			}
-			// TODO: Why is sometimes the db name for a virtual entity set wrony??? (tp)
+			// If somehow the db name for a virtual entity is set to a table ("T_..."),
+			// then the initialization sequence of EntityMetaDataVO setters is wrong. (tp)
 			final String dbEntity;
 			if (refEntity.isVirtual()) {
+				assert refEntity.getDbEntity().startsWith("V_");
 				dbEntity = refEntity.getDbEntity().replaceFirst("^T_", "V_");
 			}
 			else {

@@ -308,15 +308,23 @@ public class ProcessorFactorySingleton {
 		final List<IColumnToVOMapping<? extends Object>> allColumns = new ArrayList<IColumnToVOMapping<? extends Object>>();
 		final IColumnToVOMapping<Long> idColumn = createBeanMapping(SystemFields.BASE_ALIAS, type, "INTID", "id", DT_LONG);
 
+		/*
+		 * Attention: The sequence of initialization is important. 
+		 * <p>
+		 * As a general rule the last 3 items to set are:
+		 * <ol>
+		 *   <li>virtualEntity</li>
+		 *   <li>entity</li>
+		 *   <li>dbEntity</li>
+		 * </ol>
+		 * </p>
+		 */
 		allColumns.add(idColumn);
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "DATCREATED", "createdAt", DT_INTERNALTIMESTAMP));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRCREATED", "createdBy", DT_STRING));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "DATCHANGED", "changedAt", DT_INTERNALTIMESTAMP));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRCHANGED", "changedBy", DT_STRING));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "INTVERSION", "version", DT_INTEGER));
-
-		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRENTITY", "entity", DT_STRING));
-		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRDBENTITY", "dbEntity", DT_STRING));
 
 		allColumns.add(createBeanRefMapping("INTID_T_MD_NUCLET", "T_AD_APPLICATION", "NUC", JoinType.LEFT, type, "STRNAMESPACE", "STRVALUE_T_MD_NUCLET", "nuclet", DT_STRING));
 
@@ -347,9 +355,12 @@ public class ProcessorFactorySingleton {
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STR_DOCUMENTPATH", "documentPath", DT_STRING));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STR_REPORTFILENAME", "reportFilename", DT_STRING));
 
-		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRVIRTUALENTITY", "virtualentity", DT_STRING));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STR_IDFACTORY", "idFactory", DT_STRING));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRROWCOLORSCRIPT", "rowColorScript", DT_NUCLOSSCRIPT));
+
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRVIRTUALENTITY", "virtualentity", DT_STRING));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRENTITY", "entity", DT_STRING));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRDBENTITY", "dbEntity", DT_STRING));
 
 		return new EntityMetaDataProcessor(allColumns, idColumn);
 	}

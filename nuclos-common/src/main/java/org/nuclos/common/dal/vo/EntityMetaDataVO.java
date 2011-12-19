@@ -76,6 +76,17 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 
 	private NuclosScript rowColorScript;
 
+	/**
+	 * Attention: The sequence of initialization is important. 
+	 * <p>
+	 * As a general rule the last 3 items to set are:
+	 * <ol>
+	 *   <li>virtualEntity</li>
+	 *   <li>entity</li>
+	 *   <li>dbEntity</li>
+	 * </ol>
+	 * </p>
+	 */
 	public EntityMetaDataVO() {
 	    super();
     }
