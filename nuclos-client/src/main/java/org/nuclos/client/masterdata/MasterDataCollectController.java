@@ -562,7 +562,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		@Override
 		public void run() throws CommonBusinessException {
 			CollectableMasterDataWithDependants clct = getSelectedCollectable();
-			MasterDataWithDependantsVO md = new MasterDataWithDependantsVO(clct.getMasterDataCVO(), getAllSubFormData(clct).toDependantMasterDataMap());
+			MasterDataWithDependantsVO md = new MasterDataWithDependantsVO(clct.getMasterDataCVO(), getAllSubFormData(clct.getId()).toDependantMasterDataMap());
 			mddelegate.executeBusinessRules(getEntityName(), lstRuleVO, md, bSaveAfterRuleExecution);
 		}
 	});
