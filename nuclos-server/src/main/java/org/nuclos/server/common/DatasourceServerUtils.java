@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -39,7 +40,6 @@ import org.nuclos.common.querybuilder.DatasourceXMLParser.XMLTable;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.exception.CommonPermissionException;
-import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.report.SchemaCache;
 import org.nuclos.server.report.WhereConditionParser;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
@@ -116,6 +116,17 @@ public class DatasourceServerUtils {
 	 */
 	public static String getSqlWithIdForInClause(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
 		return "(SELECT \"intid\" FROM (" + createSQL(sDatasourceXML, mpParams) + ") ds )";
+	}
+
+	/**
+	 *
+	 * @param sDatasourceXML
+	 * @param mpParams
+	 * @return
+	 * @throws NuclosDatasourceException
+	 */
+	public static String getSqlQueryForId(String sDatasourceXML, Map<String, Object> mpParams, Long id) throws NuclosDatasourceException {
+		return MessageFormat.format("SELECT ds.{0} FROM ({1}) ds WHERE ds.{0} = {2}", "\"intid\"", createSQL(sDatasourceXML, mpParams), String.valueOf(id));
 	}
 
 	/**

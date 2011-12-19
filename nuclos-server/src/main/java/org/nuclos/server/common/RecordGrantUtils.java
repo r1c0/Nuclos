@@ -38,8 +38,6 @@ import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.entityobject.CollectableEOEntityProvider;
 import org.nuclos.common.preferences.ReadOnlyPreferences;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
-import org.nuclos.common2.IdUtils;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.database.DataBaseHelper;
@@ -52,11 +50,10 @@ import org.nuclos.server.entityobject.CollectableEOEntityServerProvider;
 import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectSearchExpression;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.report.valueobject.RecordGrantVO;
-import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 
 public class RecordGrantUtils {
-	
+
 	private static final Logger	LOG	= Logger.getLogger(RecordGrantUtils.class);
 
 	public static void checkWriteInternal(String entity, Long id) throws CommonPermissionException {
@@ -114,25 +111,10 @@ public class RecordGrantUtils {
 
 		try {
 			if(rgVO.getValid()) {
-				ResultVO queryResult = DataBaseHelper.getDbAccess().executePlainQueryAsResultVO(DatasourceServerUtils.createSQL(rgVO.getSource(), getParameter()), 1);
+				ResultVO queryResult = DataBaseHelper.getDbAccess().executePlainQueryAsResultVO(DatasourceServerUtils.getSqlQueryForId(rgVO.getSource(), getParameter(), id), 1);
 
-				int index = -1;
-				for (int i = 0; i < queryResult.getColumnCount(); i++) {
-					if (queryResult.getColumns().get(i).getColumnLabel().equalsIgnoreCase("INTID")) {
-						index = i;
-					}
-				}
-				
-				if (index > -1) {
-					for (Object[] row : queryResult.getRows()) {
-						Object o = row[index];
-						if (o instanceof Double) {
-							o = ((Double) o).longValue();
-						}
-						if (LangUtils.equals(IdUtils.toLongId(o), id)) {
-							return true;
-						}
-					}
+				if (queryResult.getRowCount() > 0) {
+					return true;
 				}
 				return false;
 			} else {
@@ -155,7 +137,7 @@ public class RecordGrantUtils {
 	public static RecordGrantRight getRecordGrantRight(String entity, Long id) {
 		if (SecurityCache.getInstance().isSuperUser(SessionUtils.getCurrentUserName()))
 			return RecordGrantRight.ALL_RIGHTS;
-		
+
 		final Set<RecordGrantVO> recordGrant = getByEntity(entity);
 		if(recordGrant.isEmpty())
 			return RecordGrantRight.ALL_RIGHTS;
@@ -219,7 +201,7 @@ public class RecordGrantUtils {
 		CollectableSearchCondition cond, String entity) {
 		if(!SessionUtils.isCalledRemotely())
 			return cond;
-		
+
 		if (SecurityCache.getInstance().isSuperUser(SessionUtils.getCurrentUserName()))
 			return cond;
 
@@ -233,7 +215,7 @@ public class RecordGrantUtils {
 					Arrays.asList(cond, compulsoryFilterCondition));
 			}
 		}
-		
+
 		final Set<RecordGrantVO> recordGrant = getByEntity(entity);
 		if(recordGrant.isEmpty())
 			return cond;
@@ -318,12 +300,12 @@ public class RecordGrantUtils {
 	//
 	// Compulsory search filters
 	//
-	
+
 	private static CollectableSearchCondition getCompulsorySearchFilter(String entity) {
 		Set<Integer> filterIds = SecurityCache.getInstance().getCompulsorySearchFilterIds(SessionUtils.getCurrentUserName(), entity);
 		if (filterIds.isEmpty())
 			return null;
-		
+
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom table = query.from("T_UD_SEARCHFILTER").alias(SystemFields.BASE_ALIAS);
@@ -334,7 +316,7 @@ public class RecordGrantUtils {
 		query.multiselect(intId, strName, strEntity, xmlFilter);
 		query.where(intId.in(filterIds));
 		query.distinct(true);
-		
+
 		List<CollectableSearchCondition> cscs = new ArrayList<CollectableSearchCondition>();
 		for (DbTuple t : DataBaseHelper.getDbAccess().executeQuery(query)) {
 			String filterName = t.get(1, String.class);
@@ -351,14 +333,14 @@ public class RecordGrantUtils {
 				throw new NuclosFatalException("Invalid compulsory filter " + filterName, e);
 			}
 		}
-		
+
 		if (cscs.isEmpty())
 			return null;
 		CollectableSearchCondition result = new CompositeCollectableSearchCondition(LogicalOperator.AND, cscs);
 		result.setConditionName("Compulsory Filters");
 		return result;
 	}
-	
+
 	private static CollectableSearchCondition parseSearchFilter(String filterName, String entityName, String xml) throws IOException, PreferencesException, BackingStoreException {
 		Preferences topPrefs = new ReadOnlyPreferences(xml, "UTF-8");
 
