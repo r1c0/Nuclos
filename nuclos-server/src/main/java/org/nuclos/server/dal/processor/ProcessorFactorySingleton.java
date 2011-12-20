@@ -299,6 +299,7 @@ public class ProcessorFactorySingleton {
 
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "BLNONDELETECASCADE", "onDeleteCascade", DT_BOOLEAN));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "INTORDER", "order", DT_INTEGER));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRCALCULATIONSCRIPT", "calculationScript", DT_NUCLOSSCRIPT));
 
 		return new EntityFieldMetaDataProcessor(allColumns, entityIdColumn, idColumn);
 	}

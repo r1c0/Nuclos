@@ -36,6 +36,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -106,6 +107,7 @@ import org.nuclos.client.ui.collect.component.CollectableListOfValues;
 import org.nuclos.client.ui.collect.component.EntityListOfValues;
 import org.nuclos.client.ui.collect.component.ICollectableListOfValues;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
+import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModel;
 import org.nuclos.client.ui.collect.detail.DetailsController;
@@ -158,6 +160,7 @@ import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.LangUtils;
@@ -797,7 +800,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	public void restoreColumnOrderFromPreferences(boolean sortImmediately) {
 		getResultTableModel().setSortKeys(readColumnOrderFromPreferences(), sortImmediately);
 	}
-	
+
 	/**
 	 * Reads the user-preferences for the sorting order.
 	 */
@@ -4428,5 +4431,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	protected void invoke(CommonRunnable runnable) throws CommonBusinessException {
 		InvokeWithInputRequiredSupport.invoke(runnable, getContext(), getFrame());
+	}
+
+	protected DetailsController<Clct> getDetailsConroller() {
+		return ctlDetails;
 	}
 }	// class CollectController

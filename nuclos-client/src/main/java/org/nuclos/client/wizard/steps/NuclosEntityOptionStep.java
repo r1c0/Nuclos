@@ -437,6 +437,7 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 								attr.setOutputFormat(field.getFormatOutput());
 								attr.setInputValidation(field.getFormatInput());
 								attr.setIndexed(Boolean.TRUE.equals(field.isIndexed()));
+								attr.setCalculationScript(field.getCalculationScript());
 								String sForeignEntity = field.getForeignEntity();
 								if(sForeignEntity != null) {
 									attr.setMetaVO(MetaDataClientProvider.getInstance().getEntity(sForeignEntity));

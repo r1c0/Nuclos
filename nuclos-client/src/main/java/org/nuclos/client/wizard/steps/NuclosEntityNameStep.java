@@ -638,6 +638,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
         attr.setCalcFunction(fieldVO.getCalcFunction());
         attr.setOutputFormat(fieldVO.getFormatOutput());
         attr.setInputValidation(fieldVO.getFormatInput());
+        attr.setCalculationScript(fieldVO.getCalculationScript());
 
         String sForeignEntity = fieldVO.getForeignEntity();
         if(sForeignEntity != null) {

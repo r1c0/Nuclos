@@ -1851,7 +1851,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			iParentId = getSelectedGenericObjectId();
 		}
 
-		return CollectionUtils.transformMap(mpSubForms, new Transformer<SubForm, DetailsSubFormController<CollectableEntityObject>>() {
+		Map<String, DetailsSubFormController<CollectableEntityObject>> result = CollectionUtils.transformMap(mpSubForms, new Transformer<SubForm, DetailsSubFormController<CollectableEntityObject>>() {
 			@Override
 			public DetailsSubFormController<CollectableEntityObject> transform(SubForm subform) {
 				final DetailsSubFormController<CollectableEntityObject> result = newDetailsSubFormController(subform, sParentEntityName, editmodelDetails);
@@ -1859,6 +1859,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				return result;
 			}
 		});
+		getDetailsConroller().setSubFormControllers(result.values());
+		return result;
 	}
 
 	/**

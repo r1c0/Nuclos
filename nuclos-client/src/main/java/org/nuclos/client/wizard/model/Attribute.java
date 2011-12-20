@@ -23,6 +23,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuclos.client.wizard.util.DefaultValue;
 import org.nuclos.client.wizard.util.NuclosWizardUtils;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 
 public class Attribute {
@@ -55,6 +56,7 @@ public class Attribute {
 	boolean indexed;
 	Object mandatoryValue;
 	boolean onDeleteCascade;
+	NuclosScript calculationScript;
 
 	String labelRes;
 	String descriptionRes;
@@ -294,6 +296,7 @@ public class Attribute {
 		attr.setIndexed(this.isIndexed());
 		attr.setMandatoryValue(this.getMandatoryValue());
 		attr.setOnDeleteCascade(this.isOnDeleteCascade());
+		attr.setCalculationScript(this.getCalculationScript());
 
 		return attr;
 	}
@@ -442,6 +445,14 @@ public class Attribute {
 
 	public void setOnDeleteCascade(boolean onDeleteCascade) {
 		this.onDeleteCascade = onDeleteCascade;
+	}
+
+	public NuclosScript getCalculationScript() {
+		return calculationScript;
+	}
+
+	public void setCalculationScript(NuclosScript calculationScript) {
+		this.calculationScript = calculationScript;
 	}
 
 	@Override

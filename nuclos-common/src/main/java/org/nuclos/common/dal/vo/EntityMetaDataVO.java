@@ -162,7 +162,7 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	}
 
 	public void setNuclet(String nuclet) {
-		this.nuclet = nuclet;
+		this.nuclet = nuclet != null ? nuclet : "DEF";
 	}
 
 	public void setSystemIdPrefix(String systemIdPrefix) {

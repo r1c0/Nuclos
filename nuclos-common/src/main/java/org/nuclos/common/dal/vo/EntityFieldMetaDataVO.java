@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.dal.vo;
 
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common2.LangUtils;
 
 
@@ -86,6 +87,8 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements C
 	private boolean onDeleteCascade;
 	private Integer order;
 
+	private NuclosScript calculationScript;
+
 	public EntityFieldMetaDataVO() {
 		super();
 	}
@@ -128,6 +131,7 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements C
 		setLocaleResourceIdForDescription(eo.getField("localeresourced", String.class));
 		setDefaultMandatory(eo.getField("defaultmandatory", String.class));
 		setOnDeleteCascade(eo.getField("ondeletecascade", Boolean.class));
+		setCalculationScript(eo.getField("calculationscript", NuclosScript.class));
 	}
 
 	public Object clone() {
@@ -450,6 +454,14 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements C
 
 	public void setOrder(Integer order) {
 		this.order = order;
+	}
+
+	public NuclosScript getCalculationScript() {
+		return calculationScript;
+	}
+
+	public void setCalculationScript(NuclosScript calculationScript) {
+		this.calculationScript = calculationScript;
 	}
 
 	@Override

@@ -19,6 +19,8 @@ package org.nuclos.client.wizard.steps;
 import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import info.clearthought.layout.TableLayout;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -35,6 +37,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -53,6 +56,7 @@ import org.jdesktop.swingx.combobox.ListComboBoxModel;
 import org.nuclos.client.attribute.AttributeDelegate;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataDelegate;
+import org.nuclos.client.scripting.ScriptEditor;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.Bubble.Position;
 import org.nuclos.client.ui.DateChooser;
@@ -66,6 +70,7 @@ import org.nuclos.client.wizard.util.MoreOptionPanel;
 import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.client.wizard.util.NumericFormatDocument;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.RelativeDate;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -121,6 +126,9 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 	JLabel lbCalcFunction;
 	JComboBox cbxCalcFunction;
 
+	JLabel lbCalculationScript;
+	JButton btCalculationScript;
+
 	boolean blnLabelModified;
 	boolean blnDefaultSelected;
 
@@ -146,7 +154,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 	@Override
 	protected void initComponents() {
-		double size [][] = {{150,20, TableLayout.FILL}, {20,20,20,20,20,20,20,90, TableLayout.FILL}};
+		double size [][] = {{150,20, TableLayout.FILL}, {20,20,20,20,20,20,20,20,90, TableLayout.FILL}};
 
 		TableLayout layout = new TableLayout(size);
 		layout.setVGap(3);
@@ -217,6 +225,26 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		cbxCalcFunction = new JComboBox();
 		cbxCalcFunction.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.20", "Berechungsvorschrift"));
 
+		lbCalculationScript = new JLabel(getMessage("wizard.step.attributeproperties.calculationscript.label", "Berechnungsausdruck"));
+		lbCalculationScript.setToolTipText(getMessage("wizard.step.attributeproperties.calculationscript.description", "Berechnungsausdruck"));
+		btCalculationScript = new JButton("...");
+		btCalculationScript.setToolTipText(getMessage("wizard.step.attributeproperties.calculationscript.description", "Berechnungsausdruck"));
+		btCalculationScript.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ScriptEditor editor = new ScriptEditor();
+				if (getModel().getAttribute().getCalculationScript() != null) {
+					editor.setScript(getModel().getAttribute().getCalculationScript());
+				}
+				editor.run();
+				NuclosScript script = editor.getScript();
+				if (org.nuclos.common2.StringUtils.isNullOrEmpty(script.getSource())) {
+					script = null;
+				}
+				getModel().getAttribute().setCalculationScript(script);
+			}
+		});
+
 		lbIndexed = new JLabel(getMessage("wizard.step.attributeproperties.26", "Indiziert"));
 		cbIndexed = new JCheckBox();
 		cbIndexed.setToolTipText(getMessage("wizard.step.attributeproperties.tooltip.26", "Indiziert"));
@@ -261,8 +289,10 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		this.add(cbxAttributeGroup, "1,5 , 2,5");
 		this.add(lbCalcFunction, "0,6");
 		this.add(cbxCalcFunction, "1,6 , 2,6");
+		this.add(lbCalculationScript, "0,7");
+		this.add(btCalculationScript, "1,7");
 
-		this.add(optionPanel, "0,7, 2,7");
+		this.add(optionPanel, "0,8, 2,8");
 
 
 		tfLabel.addKeyListener(new KeyListener() {

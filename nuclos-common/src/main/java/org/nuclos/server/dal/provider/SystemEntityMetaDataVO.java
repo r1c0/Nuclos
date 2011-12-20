@@ -66,9 +66,11 @@ public class SystemEntityMetaDataVO extends EntityMetaDataVO {
 
 		this.setUniqueFieldCombinations(mdMeta.getUniqueFieldCombinations());
 		this.setLogicalUniqueFieldCombinations(mdMeta.getLogicalUniqueFieldCombinations());
-		
+
 		this.setEntity(mdMeta.getEntityName());
 		this.setDbEntity(mdMeta.getDBEntity());
+
+		this.setNuclet("NUC");
 	}
 
 	public Map<String, SystemEntityFieldMetaDataVO> getEntityFields() {

@@ -689,7 +689,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 		metaVO.setEntity(wizardModel.getEntityName());
 		metaVO.setDbEntity(NuclosWizardUtils.replace(wizardModel.getTableOrViewName()));
-		
+
 		List<EntityFieldMetaDataTO> lstEntityFields = new ArrayList<EntityFieldMetaDataTO>();
 
 		for(int i = 0; i < attributeModel.getAttributes().size(); i++) {
@@ -1853,6 +1853,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		}
 
 		setDefaultMandatoryValue(attr, metaFieldVO);
+		metaFieldVO.setCalculationScript(attr.getCalculationScript());
 
 		return metaFieldVO;
 	}

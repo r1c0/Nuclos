@@ -7258,6 +7258,12 @@
         "datatype": "java.lang.Integer",
         "datascale": 9,
         "nullable": true
+      },
+      {
+        "name": "calculationscript",
+        "dbfield": "STRCALCULATIONSCRIPT",
+        "datatype": "org.nuclos.common.NuclosScript",
+        "nullable": true
       }
     ]
   },

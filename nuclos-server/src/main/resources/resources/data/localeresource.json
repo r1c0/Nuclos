@@ -63769,6 +63769,36 @@
     "text": "Dummy Name"
   },
   {
+    "resourceID": "wizard.step.attributeproperties.calculationscript.label",
+    "locale": "i-default",
+    "text": "Calculation expression"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.calculationscript.label",
+    "locale": "en",
+    "text": "Calculation expression"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.calculationscript.label",
+    "locale": "de",
+    "text": "Berechnungsausdruck"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.calculationscript.description",
+    "locale": "i-default",
+    "text": "Calculation expression"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.calculationscript.description",
+    "locale": "en",
+    "text": "Calculation expression"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.calculationscript.description",
+    "locale": "de",
+    "text": "Berechnungsausdruck"
+  },
+  {
     "resourceID": "WorkspaceEditor.alwaysreset",
     "locale": "i-default",
     "text": "Always reset"

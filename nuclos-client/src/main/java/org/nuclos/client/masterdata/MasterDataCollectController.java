@@ -799,12 +799,14 @@ public class MasterDataCollectController extends EntityCollectController<Collect
     */
    protected Map<String, DetailsSubFormController<CollectableEntityObject>> newDetailsSubFormControllers(Map<String, SubForm> mpSubForms) {
       final DetailsEditModel editmodelDetails = this.getDetailsPanel().getEditModel();
-      return CollectionUtils.transformMap(mpSubForms, new Transformer<SubForm, DetailsSubFormController<CollectableEntityObject>>() {
+      Map<String, DetailsSubFormController<CollectableEntityObject>> result = CollectionUtils.transformMap(mpSubForms, new Transformer<SubForm, DetailsSubFormController<CollectableEntityObject>>() {
       	@Override
          public DetailsSubFormController<CollectableEntityObject> transform(SubForm subform) {
             return newDetailsSubFormController(subform, getEntityName(), editmodelDetails);
          }
       });
+      getDetailsConroller().setSubFormControllers(result.values());
+      return result;
    }
 
    /**

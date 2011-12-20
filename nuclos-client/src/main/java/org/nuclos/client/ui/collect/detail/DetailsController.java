@@ -17,22 +17,40 @@
 package org.nuclos.client.ui.collect.detail;
 
 import java.awt.event.ActionEvent;
+import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.swing.Action;
+import javax.swing.SwingUtilities;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
+import org.nuclos.client.common.DetailsSubFormController;
+import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.entityobject.CollectableEntityObject;
+import org.nuclos.client.scripting.ScriptEvaluator;
+import org.nuclos.client.scripting.context.CollectControllerScriptContext;
+import org.nuclos.client.scripting.context.SubformControllerScriptContext;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CommonController;
+import org.nuclos.client.ui.collect.component.CollectableComponent;
+import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelAdapter;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableValueField;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 
@@ -40,7 +58,7 @@ import org.nuclos.common2.StringUtils;
  * Controller for the Details panel.
  */
 public class DetailsController<Clct extends Collectable> extends CommonController<Clct> {
-	
+
 	private final CollectableComponentModelListener ccmlistener = new CollectableComponentModelAdapter() {
 		@Override
 		public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
@@ -67,18 +85,32 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 			getCollectController().cmdDeleteCurrentCollectableInDetails();
 		}
 	};
-	
+
+	private final List<DetailsSubFormController<?>> sfcs = new ArrayList<DetailsSubFormController<?>>();
+
+	private final CollectableComponentModelListener mdlListener = new CollectableComponentModelAdapter() {
+		@Override
+		public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
+			final EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(getCollectController().getEntityName());
+			CollectableComponentModel model = ev.getCollectableComponentModel();
+			if (!model.isInitializing()) {
+				final String key = MessageFormat.format("#'{'{0}.{1}.{2}\'}'", meta.getNuclet(), meta.getEntity(), model.getFieldName());
+				process(key, null, null);
+			}
+		}
+	};
+
 	public DetailsController(CollectController<Clct> cc) {
 		super(cc);
 	}
-	
+
 	public Action getDeleteCurrentCollectableAction() {
 		return actDeleteCurrentCollectable;
 	}
 
 	/**
 	 * display the number of the current record and the total number of records in the details panel's status bar
-	 * 
+	 *
 	 * TODO: Make this private again.
 	 */
 	public void displayCurrentRecordNumberInDetailsPanelStatusBar(){
@@ -92,7 +124,7 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 		return false;
 	}
 
-	/** 
+	/**
 	 * TODO: Make protected again.
 	 */
 	@Override
@@ -108,6 +140,9 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 	@Override
 	protected void addAdditionalChangeListeners() {
 		getCollectController().addAdditionalChangeListenersForDetails();
+		for (CollectableComponentModel m : getCollectableComponentModels()) {
+			m.addCollectableComponentModelListener(mdlListener);
+		}
 	}
 
 	@Override
@@ -198,4 +233,63 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 		this.getDetailsPanel().setStatusBarText(sStatus);
 	}
 
+	public void setSubFormControllers(Collection<DetailsSubFormController<CollectableEntityObject>> sfcs) {
+		this.sfcs.clear();
+		this.sfcs.addAll(sfcs);
+		for (final DetailsSubFormController<?> sfc : this.sfcs) {
+			sfc.getSubForm().getSubformTable().getModel().addTableModelListener(new TableModelListener() {
+				@Override
+				public void tableChanged(TableModelEvent e) {
+					switch (e.getType()) {
+						case TableModelEvent.INSERT:
+							break;
+						case TableModelEvent.UPDATE:
+							if (e.getColumn() >= 0) {
+								CollectableEntityField column = sfc.getCollectableTableModel().getCollectableEntityField(e.getColumn());
+								EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(column.getEntityName());
+								String key = MessageFormat.format("#'{'{0}.{1}.{2}\'}'", meta.getNuclet(), meta.getEntity(), column.getName());
+								process(key, sfc, e.getFirstRow());
+							}
+							break;
+						case TableModelEvent.DELETE:
+							break;
+					}
+				}
+			});
+		}
+	}
+
+	private void process(final String sourceExpression, final DetailsSubFormController<?> sf, final Integer row) {
+		if (getCollectController().isDetailsChangedIgnored()) {
+			return;
+		}
+
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				for (CollectableComponent c : getDetailsPanel().getEditView().getCollectableComponents()) {
+					EntityFieldMetaDataVO fieldmeta = MetaDataClientProvider.getInstance().getEntityField(getCollectController().getEntityName(), c.getEntityField().getName());
+					if (fieldmeta.getCalculationScript() != null) {
+						if (fieldmeta.getCalculationScript().getSource().contains(sourceExpression)) {
+							CollectableComponentModel m = getDetailsPanel().getEditModel().getCollectableComponentModelFor(fieldmeta.getField());
+							Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(), new CollectControllerScriptContext(getCollectController(), sfcs), m.getField().getValue());
+							m.setField(new CollectableValueField(o));
+						}
+					}
+				}
+				if (sf != null) {
+					for (int i = 0; i < sf.getCollectableTableModel().getColumnCount(); i++) {
+						CollectableEntityField cef = sf.getCollectableTableModel().getCollectableEntityField(i);
+						EntityFieldMetaDataVO fieldmeta = MetaDataClientProvider.getInstance().getEntityField(sf.getEntityAndForeignKeyFieldName().getEntityName(), cef.getName());
+						if (fieldmeta.getCalculationScript() != null) {
+							if (fieldmeta.getCalculationScript().getSource().contains(sourceExpression)) {
+								Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(), new SubformControllerScriptContext(sf, sf.getSelectedCollectable()), null);
+								sf.getCollectableTableModel().setValueAt(new CollectableValueField(o), row, i);
+							}
+						}
+					}
+				}
+			}
+		});
+	}
 }	// class DetailsController
