@@ -131,7 +131,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 	private JComboBox cbxVirtual;
 	private JLabel lbIdFactory;
 	private JComboBox cbxIdFactory;
-	
+
 	private JLabel lbCache;
 	private JCheckBox cbCache;
 	private JLabel lbTableName;
@@ -300,7 +300,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 	@Override
 	protected void initComponents() {
 
-		double size [][] = {{170,200,20, TableLayout.FILL, 20}, {20,20,20,20,20,20,20,20,20,20,20,20,120,20,20, TableLayout.FILL}};
+		double size [][] = {{170,200,20, TableLayout.FILL, 20}, {20,20,20,20,20,20,20,20,20,20,20,20,141,20,20, TableLayout.FILL}};
 
 		TableLayout layout = new TableLayout(size);
 		layout.setVGap(3);
@@ -375,15 +375,15 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		cbxVirtual.setToolTipText(getMessage("wizard.step.entitycommonproperties.virtual.description", "Virtual entity (use an existing view)"));
 		// enable virtual entity name for new entities
 		cbxVirtual.setEnabled(true);
-		
-		lbIdFactory = new JLabel(getMessage("wizard.step.entitycommonproperties.idfactory.label", 
-				"Primary key factory for VE") + ":");	
+
+		lbIdFactory = new JLabel(getMessage("wizard.step.entitycommonproperties.idfactory.label",
+				"Primary key factory for VE") + ":");
 		final List<String> pif = MetaDataDelegate.getInstance().getPossibleIdFactories();
 		pif.add("");
 		Collections.sort(pif);
 		final ListComboBoxModel<String> pifModel = new ListComboBoxModel<String>(pif);
 		cbxIdFactory = new JComboBox(pifModel);
-		cbxIdFactory.setToolTipText(getMessage("wizard.step.entitycommonproperties.idfactory.description", 
+		cbxIdFactory.setToolTipText(getMessage("wizard.step.entitycommonproperties.idfactory.description",
 				"DB object to use for Id generation (if you want to write to VE)"));
 		// disable id factories for new entities (will be enabled if a virtual entity is chosen)
 		cbxIdFactory.setEnabled(false);
@@ -444,7 +444,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		this.add(lbIcon, "3,1");
 		this.add(nuclosIconChooser, "3,2 , 3,15");
 
-		double sizeMoreOptions [][] = {{170, 200, 20}, {20,20,20,20, TableLayout.FILL}};
+		double sizeMoreOptions [][] = {{170, 200, 20}, {20,20,20,20,20, TableLayout.FILL}};
 
 		pnlMoreOptions = new JPanel();
 
@@ -522,7 +522,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				cbShowGroups.setEnabled(selected);
 				lbShowRelation.setEnabled(selected);
 				cbShowRelation.setEnabled(selected);
-				
+
 				// in case of a state entity, no virtual entity is possible
 				lbVirtual.setEnabled(!selected);
 				cbxVirtual.setEnabled(!selected);
@@ -878,10 +878,10 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				final String item = (String) e.getItem();
 				final boolean empty = StringUtils.isNullOrEmpty(item);
 				final boolean idEmpty = StringUtils.isNullOrEmpty((String) cbxIdFactory.getSelectedItem());
-				
+
 				cbEditable.setSelected(empty || !idEmpty);
 				cbEditable.setEnabled(empty);
-				
+
 				model.setEditable(cbEditable.isSelected());
 				cbLogbook.setSelected(empty);
 				cbLogbook.setEnabled(empty);
@@ -890,7 +890,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				cbCache.setEnabled(empty);
 				model.setCachable(cbCache.isSelected());
 				cbStateModel.setEnabled(empty);
-				
+
 				// Modify table name (tp)
 				if (empty) {
 					model.setVirtualentity(null);
@@ -899,7 +899,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 					model.setVirtualentity(item);
 				}
 				tfTableName.setText(model.getTableOrViewName());
-				
+
 				// id factory is only possible for virtual entities
 				cbxIdFactory.setEnabled(!empty);
 				if (empty) {
@@ -907,7 +907,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				}
 			}
 		});
-		cbxIdFactory.addItemListener(new ItemListener() {	
+		cbxIdFactory.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				final String item = (String) e.getItem();
