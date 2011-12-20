@@ -37,13 +37,13 @@ public abstract class ExpressionParser {
 			return eval.evaluate(new FieldValueExpression(parts[0], parts[1], parts[2]));
 		}
 		else if (parts.length == 4) {
-			if ("value".equals(parts[4])) {
+			if ("value".equals(parts[3])) {
 				return eval.evaluate(new FieldValueExpression(parts[0], parts[1], parts[2]));
 			}
-			else if ("id".equals(parts[4])) {
+			else if ("id".equals(parts[3])) {
 				return eval.evaluate(new FieldIdExpression(parts[0], parts[1], parts[2]));
 			}
-			else if ("object".equals(parts[4])) {
+			else if ("object".equals(parts[3])) {
 				return eval.evaluate(new FieldRefObjectExpression(parts[0], parts[1], parts[2]));
 			}
 		}
