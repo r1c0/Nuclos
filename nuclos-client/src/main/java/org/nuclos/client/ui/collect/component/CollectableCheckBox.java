@@ -210,7 +210,7 @@ public class CollectableCheckBox extends AbstractCollectableComponent {
 							CollectableTableModel<? extends Collectable> mdl = (CollectableTableModel<? extends Collectable>) tbl.getModel();
 							if (mdl.getRowCount() > iRow) {
 								Collectable c = mdl.getRow(iRow);
-								AbstractCollectableComponent.setBackground(comp, meta.getRowColorScript(), c);
+								AbstractCollectableComponent.setBackground(comp, meta.getRowColorScript(), c, meta);
 							}
 						}
 					}

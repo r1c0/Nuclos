@@ -27,21 +27,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.nuclos.api.context.ScriptingContext;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.Errors;
-import org.nuclos.common.NuclosScript;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common2.StringUtils;
 
 public class GroovySupport {
 
@@ -131,29 +126,6 @@ public class GroovySupport {
 
 	public static Object closure(Closure c) {
 		return c.call();
-	}
-
-	public static Object eval(NuclosScript script, final Collectable c, Object defaultValue) {
-		final Bindings b = engine.createBindings();
-		b.put("context", new ScriptingContext() {
-			@Override
-			public Object get(String identifier) {
-				String[] parts = StringUtils.parseIdentifier(identifier);
-				if (parts.length == 3) {
-					return c.getValue(parts[2]);
-				}
-				else {
-					return null;
-				}
-			}
-		});
-
-        try {
-			return engine.eval(script.getSource(), b);
-		} catch (ScriptException e) {
-			LOG.warn(e);
-			return defaultValue;
-		}
 	}
 
 	public static class InvocableMethod {

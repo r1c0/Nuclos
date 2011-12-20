@@ -60,7 +60,8 @@ import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.Modules;
-import org.nuclos.client.scripting.GroovySupport;
+import org.nuclos.client.scripting.ScriptEvaluator;
+import org.nuclos.client.scripting.context.CollectableScriptContext;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.DateChooser;
@@ -1525,11 +1526,12 @@ public abstract class AbstractCollectableComponent
 		// do nothing here
 	}
 
-	protected final static void setBackground(Component c, NuclosScript ns, Collectable clct) {
+	protected final static void setBackground(Component c, NuclosScript ns, final Collectable clct, EntityMetaDataVO meta) {
 		try {
 			String rgb = Integer.toHexString(c.getBackground().getRGB());
 			rgb = rgb.substring(2, rgb.length());
-			Object o = GroovySupport.eval(ns, clct, "#" + rgb);
+			Object o = ScriptEvaluator.getInstance().eval(ns, new CollectableScriptContext(clct), "#" + rgb);
+
 			if (o instanceof String) {
 				Color color = Color.decode((String)o);
 				c.setBackground(color);
@@ -1714,7 +1716,7 @@ public abstract class AbstractCollectableComponent
 							CollectableTableModel<? extends Collectable> mdl = (CollectableTableModel<? extends Collectable>) tbl.getModel();
 							if (mdl.getRowCount() > iRow) {
 								Collectable c = mdl.getRow(iRow);
-								AbstractCollectableComponent.setBackground(this, meta.getRowColorScript(), c);
+								AbstractCollectableComponent.setBackground(this, meta.getRowColorScript(), c, meta);
 							}
 						}
 					}
