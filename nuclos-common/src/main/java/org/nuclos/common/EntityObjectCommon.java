@@ -106,5 +106,8 @@ public interface EntityObjectCommon {
 
 	@RolesAllowed("Login")
 	void remove(EntityObjectVO entity) throws CommonPermissionException;
+	
+	@RolesAllowed("Login")
+	void createOrUpdatePlain(EntityObjectVO entity) throws CommonPermissionException;
 
 }

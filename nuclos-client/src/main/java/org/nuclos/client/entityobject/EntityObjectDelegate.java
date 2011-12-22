@@ -88,4 +88,9 @@ public class EntityObjectDelegate implements EntityObjectCommon {
 		return facade.getReferenced(referencingEntity, referencingEntityField, id);
 	}
 
+	@Override
+	public void createOrUpdatePlain(EntityObjectVO entity) throws CommonPermissionException {
+		facade.createOrUpdatePlain(entity);
+	}
+
 }

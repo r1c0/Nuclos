@@ -18,6 +18,7 @@ package org.nuclos.server.common.ejb3;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -328,6 +329,44 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 	@Override
 	public void remove(EntityObjectVO entity) throws CommonPermissionException {
 		removeEntity(entity.getEntity(), entity.getId());
+	}
+
+	@Override
+	public void createOrUpdatePlain(EntityObjectVO entity) throws CommonPermissionException {
+		final String name = entity.getEntity();
+		final String user = getCurrentUserName();
+		final Integer intid = IdUtils.unsafeToId(entity.getId());
+		final MetaDataServerProvider mdProv = MetaDataServerProvider.getInstance();
+		final EntityMetaDataVO mdEntity = mdProv.getEntity(name);
+		final SecurityCache sc = SecurityCache.getInstance();
+
+		if (mdEntity.isStateModel().booleanValue()) {
+			if (intid != null) {
+				if (!sc.isWriteAllowedForModule(user, name, intid)) {
+					throw new CommonPermissionException("User " + user + " has no permission to write module instance of " + name);
+				}
+			}
+			else {
+				if (!sc.isNewAllowedForModule(user, IdUtils.unsafeToId(mdEntity.getId()))) {
+					throw new CommonPermissionException("User " + user + " has no permission to create module instance of " + name);
+				}
+			}
+		}
+		else {
+			if (intid != null) {
+				if (!sc.isWriteAllowedForMasterData(user, name)) {
+					throw new CommonPermissionException("User " + user + " has no permission to write md instance of " + name);
+				}
+			}
+			else {
+				if (!sc.isNewAllowedForModule(user, IdUtils.unsafeToId(mdEntity.getId()))) {
+					throw new CommonPermissionException("User " + user + " has no permission to create md instance of " + name);
+				}
+			}
+		}
+		
+		final JdbcEntityObjectProcessor processor = NucletDalProvider.getInstance().getEntityObjectProcessor(name);
+		processor.batchInsertOrUpdate(Collections.singleton(entity), false);
 	}
 
 }
