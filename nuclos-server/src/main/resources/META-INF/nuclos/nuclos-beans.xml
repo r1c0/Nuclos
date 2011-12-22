@@ -28,10 +28,12 @@
        					   http://www.springframework.org/schema/jee/spring-jee-3.1.xsd">
 
 	<!--
-		Enable @AspectJ Support
+		Enable @AspectJ Support of Sprint AOP
 		http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/aop.html#aop-aspectj-support
+		
+		This is unneeded, as we use direct AspectJ support.
 	 -->
-	<aop:aspectj-autoproxy/>
+	<!-- aop:aspectj-autoproxy/ -->
 
 	<!-- The following config is borrowed from Roo-1.1 (tp) -->
 	<!--
@@ -125,7 +127,13 @@
 
 	<!-- Remoting start -->
 
-	<bean id="remoteInvocationExecutor" class="org.nuclos.server.common.NuclosRemoteInvocationExecutor"></bean>
+	<bean id="remoteInvocationExecutor" class="org.nuclos.server.common.NuclosRemoteInvocationExecutor"
+		depends-on="nucletDalProvider">
+		<property name="inputContext" ref="inputContext"/>
+	</bean>
+	
+	<bean id="inputContext" class="org.nuclos.api.context.InputContext" destroy-method="destroy">
+	</bean>
 
 	<bean id="attrSource" class="org.nuclos.server.common.NuclosAnnotationTransactionAttributeSource"/>
 

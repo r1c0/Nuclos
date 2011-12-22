@@ -49,10 +49,11 @@ import org.nuclos.server.common.NuclosUpdateException;
 import org.nuclos.server.common.ejb3.LocaleFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.i18n.LocaleContextHolder;
 
-public class LocaleDelegate implements CommonLocaleDelegate.LookupService, MessageListener, InitializingBean {
+public class LocaleDelegate implements CommonLocaleDelegate.LookupService, MessageListener, InitializingBean, DisposableBean {
 
 	private static final Logger LOG = Logger.getLogger(LocaleDelegate.class);
 	
@@ -70,6 +71,9 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 	private static ThreadLocal<DateFormat> dateTimeFormat;
 
 	private LocaleFacadeRemote remoteInterface;
+	
+	public LocaleDelegate() {
+	}
 
 	public void setService(LocaleFacadeRemote service) {
 		this.remoteInterface = service;
@@ -395,5 +399,14 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 	@Override
 	public String getResourceById(LocaleInfo li, String key) {
 		return remoteInterface.getResourceById(li, key);
+	}
+	
+	@Override
+	public void destroy() {
+		TopicNotificationReceiver.unsubscribe(this);
+		numberFormat.remove();
+		dateFormat.remove();
+		timeFormat.remove();
+		dateTimeFormat.remove();
 	}
 }

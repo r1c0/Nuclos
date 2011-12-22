@@ -34,8 +34,8 @@
 	</ciManagement>
 	
 	<properties>
-		<nuclos.version.date>14.12.2011</nuclos.version.date>
-		<nuclos.api.version>1.1.0</nuclos.api.version>
+		<nuclos.version.date>22.12.2011</nuclos.version.date>
+		<nuclos.api.version>1.1.1</nuclos.api.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -52,7 +52,7 @@
 		<dependencies>
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
-				<artifactId>activemq-all</artifactId>
+				<artifactId>activemq-optional</artifactId>
 				<version>5.5.1</version>
 				<exclusions>
 					<exclusion>
@@ -75,6 +75,11 @@
 						<groupId>commons-logging</groupId>
 					</exclusion>
 				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.xbean</groupId>
+				<artifactId>xbean-spring</artifactId>
+				<version>3.9</version>
 			</dependency>
 			<dependency>
 				<groupId>asm</groupId>

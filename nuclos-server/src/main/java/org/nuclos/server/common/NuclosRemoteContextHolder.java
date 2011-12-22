@@ -18,8 +18,11 @@ package org.nuclos.server.common;
 
 import java.util.Stack;
 
+import javax.annotation.PreDestroy;
 
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class NuclosRemoteContextHolder {
 	
 	private static final ThreadLocal<Stack<Boolean>> threadLocal = new ThreadLocal<Stack<Boolean>>();
@@ -50,6 +53,7 @@ public class NuclosRemoteContextHolder {
 		return threadLocal.get();
 	}
 	
+	@PreDestroy
 	public static void clear() {
 		threadLocal.remove();
 	}

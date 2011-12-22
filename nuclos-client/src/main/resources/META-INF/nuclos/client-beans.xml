@@ -27,11 +27,13 @@
      					   http://www.springframework.org/schema/jee
        					   http://www.springframework.org/schema/jee/spring-jee-3.1.xsd">
 
-	<!-- 
-		Enable @AspectJ Support 
+	<!--
+		Enable @AspectJ Support of Sprint AOP
 		http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/aop.html#aop-aspectj-support
+		
+		This is unneeded, as we use direct AspectJ support.
 	 -->
-	<aop:aspectj-autoproxy/>
+	<!-- aop:aspectj-autoproxy/ -->
 
 	<!-- The following config is borrowed from Roo-1.1 (tp) -->
 	<!--

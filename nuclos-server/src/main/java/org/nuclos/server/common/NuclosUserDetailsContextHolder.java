@@ -18,8 +18,11 @@ package org.nuclos.server.common;
 
 import java.util.TimeZone;
 
+import javax.annotation.PreDestroy;
 
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class NuclosUserDetailsContextHolder {
 	
 	private static final ThreadLocal<TimeZone> threadLocal = new ThreadLocal<TimeZone>();
@@ -32,6 +35,7 @@ public class NuclosUserDetailsContextHolder {
 		return threadLocal.get();
 	}
 	
+	@PreDestroy
 	public static void clear() {
 		threadLocal.remove();
 	}

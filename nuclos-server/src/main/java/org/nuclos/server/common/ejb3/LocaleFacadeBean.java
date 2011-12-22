@@ -26,7 +26,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.security.RolesAllowed;
 
 import org.apache.log4j.Logger;
@@ -69,6 +71,7 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -82,6 +85,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
+@Configurable
 @Transactional
 public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLocal, LocaleFacadeRemote {
 
@@ -97,7 +101,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	 * for simple caching implementation.
 	 * TODO replace with real caching solution, i.e. with caching in Spring 3.1
 	 */
-	private static final Map<LocaleInfo, HashResourceBundle> CACHE = Collections.synchronizedMap(new HashMap<LocaleInfo, HashResourceBundle>());
+	private static final Map<LocaleInfo, HashResourceBundle> CACHE = new ConcurrentHashMap<LocaleInfo, HashResourceBundle>();
 
 	private static final TransactionSynchronization ts = new TransactionSynchronizationAdapter() {
 		@Override
@@ -106,6 +110,9 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 			NuclosJMSUtils.sendMessage("flush", JMSConstants.TOPICNAME_LOCALE, JMSConstants.BROADCAST_MESSAGE);
 		}
 	};
+	
+	public LocaleFacadeBean() {
+	}
 
 	@Override
 	public void flushInternalCaches() {
@@ -611,4 +618,10 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		query.select(t.baseColumn("INTID", Long.class)).where(builder.equal(builder.upper(t.baseColumn("STRRESOURCEID", String.class)), s.toUpperCase()));
 		return DataBaseHelper.getDbAccess().executeQuery(query).size() > 0;
 	}
+	
+	@PreDestroy
+	public void destroy() {
+		isLoadingResources.remove();
+	}
+	
 }

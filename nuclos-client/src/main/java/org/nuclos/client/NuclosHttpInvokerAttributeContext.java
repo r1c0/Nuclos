@@ -20,6 +20,11 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PreDestroy;
+
+import org.springframework.beans.factory.annotation.Configurable;
+
+@Configurable
 public class NuclosHttpInvokerAttributeContext {
 
 	private static final ThreadLocal<Boolean> supported = new ThreadLocal<Boolean>() {
@@ -62,5 +67,11 @@ public class NuclosHttpInvokerAttributeContext {
 
 	public static boolean isSupported() {
 		return supported.get() != null ? (boolean) supported.get() : false;
+	}
+	
+	@PreDestroy
+	public void destroy() {
+		supported.remove();
+		threadLocal.remove();
 	}
 }

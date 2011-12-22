@@ -18,7 +18,6 @@ package org.nuclos.server.common;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -30,36 +29,50 @@ import org.springframework.remoting.support.RemoteInvocationExecutor;
 public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor {
 
 	private static final Logger LOG = Logger.getLogger(NuclosRemoteInvocationExecutor.class);
-
-	@SuppressWarnings("unchecked")
+	
+	private InputContext inputContext;
+	
+	public NuclosRemoteInvocationExecutor() {
+	}
+	
+	public void setInputContext(InputContext inputContext) {
+		this.inputContext = inputContext; 
+	}
+	
+	private InputContext getInputContext() {
+		return inputContext;
+	}
+	
 	@Override
 	public Object invoke(RemoteInvocation invoke, Object param) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		try {
 			NuclosUserDetailsContextHolder.setTimeZone((TimeZone) invoke.getAttribute("user.timezone"));
 			NuclosRemoteContextHolder.setRemotly(true);
+			final InputContext inputContext = getInputContext();
 
 			if (invoke.getAttribute("org.nuclos.api.context.InputContextSupported") != null) {
 				Object o = invoke.getAttribute("org.nuclos.api.context.InputContextSupported");
 				if (o instanceof Boolean) {
-					InputContext.setSupported(((Boolean) o).booleanValue());
+					inputContext.setSupported(((Boolean) o).booleanValue());
 				}
 			}
 			if (invoke.getAttribute("org.nuclos.api.context.InputContext") != null) {
-				HashMap<String, Serializable> context = (HashMap<String, Serializable>) invoke.getAttribute("org.nuclos.api.context.InputContext");
+				final Map<String, Serializable> context = (Map<String, Serializable>) 
+						invoke.getAttribute("org.nuclos.api.context.InputContext");
 				if (LOG.isDebugEnabled()) {
 					LOG.debug("Receiving call with dynamic context:");
 					for (Map.Entry<String, Serializable> entry : context.entrySet()) {
 						LOG.debug(entry.getKey() + ": " + String.valueOf(entry.getValue()));
 					}
 				}
-				InputContext.set(context);
+				inputContext.set(context);
 			}
 			return invoke.invoke(param);
 		}
 		finally {
 			NuclosUserDetailsContextHolder.clear();
 			NuclosRemoteContextHolder.clear();
-			InputContext.clear();
+			inputContext.clear();
 		}
 	}
 

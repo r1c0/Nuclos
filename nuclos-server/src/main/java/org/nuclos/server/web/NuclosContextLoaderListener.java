@@ -32,6 +32,7 @@ import javax.servlet.ServletContextEvent;
 import org.apache.activemq.broker.TransportConnector;
 import org.apache.activemq.thread.Scheduler;
 import org.apache.activemq.xbean.XBeanBrokerService;
+import org.apache.log4j.ClearThreadLocalMap;
 import org.apache.log4j.Logger;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
@@ -256,6 +257,7 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 		try {
 			Log4jConfigurer.shutdownLogging();
 			servletContext.log("Shut down log4j: done");
+			ClearThreadLocalMap.shutdown();
 		}
 		catch (Exception ex) {
 			servletContext.log("log4j shutdown exception", ex);
