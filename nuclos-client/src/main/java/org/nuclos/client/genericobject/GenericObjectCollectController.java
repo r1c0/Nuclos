@@ -3662,7 +3662,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @precondition this.getCollectState().isDetailsMode()
 	 * NUCLEUSINT-1159 needed for accessing the statechange for status button
 	 */
-	private void changeState(final StateWrapper stateNew) {
+	protected void changeState(final StateWrapper stateNew) {
 		final boolean bMultiEdit = getCollectState().isDetailsModeMultiViewOrEdit();
 
 		stopEditingInDetails();
