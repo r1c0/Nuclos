@@ -345,11 +345,13 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 				if (!sc.isWriteAllowedForModule(user, name, intid)) {
 					throw new CommonPermissionException("User " + user + " has no permission to write module instance of " + name);
 				}
+				entity.flagUpdate();
 			}
 			else {
 				if (!sc.isNewAllowedForModule(user, IdUtils.unsafeToId(mdEntity.getId()))) {
 					throw new CommonPermissionException("User " + user + " has no permission to create module instance of " + name);
 				}
+				entity.flagNew();
 			}
 		}
 		else {
@@ -357,16 +359,18 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 				if (!sc.isWriteAllowedForMasterData(user, name)) {
 					throw new CommonPermissionException("User " + user + " has no permission to write md instance of " + name);
 				}
+				entity.flagUpdate();
 			}
 			else {
 				if (!sc.isNewAllowedForModule(user, IdUtils.unsafeToId(mdEntity.getId()))) {
 					throw new CommonPermissionException("User " + user + " has no permission to create md instance of " + name);
 				}
+				entity.flagNew();
 			}
 		}
 		
 		final JdbcEntityObjectProcessor processor = NucletDalProvider.getInstance().getEntityObjectProcessor(name);
-		processor.batchInsertOrUpdate(Collections.singleton(entity), false);
+		processor.insertOrUpdate(entity);
 	}
 
 }
