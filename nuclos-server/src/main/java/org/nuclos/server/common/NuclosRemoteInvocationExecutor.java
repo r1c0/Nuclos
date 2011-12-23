@@ -75,5 +75,10 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 			inputContext.clear();
 		}
 	}
+	
+	public void destroy() {
+		inputContext.destroy();
+		inputContext = null;
+	}
 
 }

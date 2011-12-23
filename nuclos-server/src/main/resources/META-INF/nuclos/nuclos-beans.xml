@@ -100,6 +100,7 @@
 		</property>
 	</bean>
 
+	<!-- Server Startup: Logging version (and svn) information -->
 
 	<bean id="startup" class="org.nuclos.common.startup.Startup"/>
 
@@ -125,15 +126,17 @@
 	</bean>
 	<!-- Dynamic classloading end -->
 
-	<!-- Remoting start -->
+	<!-- Remoting start (Should this be in nuclos-remoting.xml?) -->
 
 	<bean id="remoteInvocationExecutor" class="org.nuclos.server.common.NuclosRemoteInvocationExecutor"
-		depends-on="nucletDalProvider">
+		depends-on="nucletDalProvider" destroy-method="destroy">
 		<property name="inputContext" ref="inputContext"/>
 	</bean>
 	
-	<bean id="inputContext" class="org.nuclos.api.context.InputContext" destroy-method="destroy">
+	<bean id="inputContext" class="org.nuclos.api.context.InputContext" destroy-method="destroy" factory-method="getInstance">
 	</bean>
+	
+	<!-- Transaction and Rollback -->
 
 	<bean id="attrSource" class="org.nuclos.server.common.NuclosAnnotationTransactionAttributeSource"/>
 
@@ -141,6 +144,8 @@
 		<property name="transactionManager" ref="transactionManager"></property>
 		<property name="transactionAttributeSource" ref="attrSource"></property>
 	</bean>
+	
+	<!-- Services/Beans -->
 
 	<bean id="masterDataService" class="org.nuclos.server.masterdata.ejb3.MasterDataFacadeBean"/>
 

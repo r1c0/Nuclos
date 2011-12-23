@@ -165,9 +165,11 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 		for (Driver driver : webAppDrivers) {
 			try {
 				DriverManager.deregisterDriver(driver);
+				log.info("Deregister db driver: " + driver);
 			} catch (Exception ex) {
 				log.warn(ex);
 			}
+			log.info("Deregister db driver: done");
 		}
 
 		shutdownLogging(event.getServletContext());
@@ -253,7 +255,8 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 	 * @see Log4jWebConfigurer#shutdownLogging
 	 */
 	private void shutdownLogging(ServletContext servletContext) {
-		servletContext.log("Shutting down log4j");
+		servletContext.log("Shutting down log4j (servletContext)");
+		log.info("Shutting down log4j");
 		try {
 			Log4jConfigurer.shutdownLogging();
 			servletContext.log("Shut down log4j: done");
@@ -263,5 +266,7 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 			servletContext.log("log4j shutdown exception", ex);
 		}
 		log = null;
+		servletContext.log("Shutdown logging: done");
 	}
+	
 }
