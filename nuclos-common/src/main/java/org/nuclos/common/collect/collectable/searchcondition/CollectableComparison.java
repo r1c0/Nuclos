@@ -19,6 +19,7 @@ package org.nuclos.common.collect.collectable.searchcondition;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Date;
 import java.util.Set;
 
 import org.apache.commons.lang.NullArgumentException;
@@ -26,10 +27,12 @@ import org.apache.commons.lang.NullArgumentException;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common2.CommonLocaleDelegate;
 
 /**
  * A comparison with a value as a <code>CollectableSearchCondition</code>.
@@ -111,8 +114,20 @@ public final class CollectableComparison extends AtomicCollectableSearchConditio
 	@Override
 	public String getComparandAsString() {
 		assert this.getComparisonOperator().getOperandCount() > 1;
-
-		return this.getComparand().toString();
+		final CollectableField comparand = getComparand();
+		final CollectableEntityField field = getEntityField();
+		String format = field.getFormatOutput();
+		if (format == null) {
+			if (Date.class.isAssignableFrom(field.getJavaClass())) {
+				return CommonLocaleDelegate.getDateFormat().format(comparand.getValue());
+			}
+		}
+		if (format == null) {
+			return comparand.toString();
+		}
+		else {
+			return CollectableFieldFormat.getInstance(comparand.getClass()).format(format, comparand.getValue());
+		}
 	}
 
 	@Override
