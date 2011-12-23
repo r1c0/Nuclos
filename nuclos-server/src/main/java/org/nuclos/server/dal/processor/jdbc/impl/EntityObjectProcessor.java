@@ -534,7 +534,11 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 			String alias = null;
 			final String f = m.getColumn();
 			if (m instanceof IColumnWithMdToVOMapping) {
-				final EntityFieldMetaDataVO meta = ((IColumnWithMdToVOMapping<?>) m).getMeta();
+				final IColumnWithMdToVOMapping<?> mapping = (IColumnWithMdToVOMapping<?>) m;
+				if (!mapping.constructJoinForStringifiedRefs()) {
+					continue;
+				}
+				final EntityFieldMetaDataVO meta = mapping.getMeta();
 				final String fentity = meta.getForeignEntity();
 				if (fentity != null) {
 					alias = tas.getAlias(meta);					

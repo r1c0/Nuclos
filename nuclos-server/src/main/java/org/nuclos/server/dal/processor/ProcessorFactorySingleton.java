@@ -163,11 +163,10 @@ public class ProcessorFactorySingleton {
 		}
 	}
 
-	protected static <S extends Object> IColumnToVOMapping<S> createPivotJoinMapping(String alias, String column,
-			String field, String dataType, Boolean isReadonly, String joinEntity) {
+	protected static <S extends Object> IColumnToVOMapping<S> createPivotJoinMapping(String alias,
+			EntityFieldMetaDataVO mdField, String joinEntity) {
 		try {
-			return new PivotJoinEntityFieldVOMapping<S>(alias, column,
-					(Class<S>) Class.forName(dataType), isReadonly, joinEntity, field);
+			return new PivotJoinEntityFieldVOMapping<S>(alias, mdField, joinEntity);
 		} catch (ClassNotFoundException e) {
 			throw new CommonFatalException(e);
 		}
@@ -440,13 +439,11 @@ public class ProcessorFactorySingleton {
 		}
 		else {
 			final EntityFieldMetaDataVO vField = mdProv.getEntityField(pinfo.getSubform(), pinfo.getValueField());
-			final IColumnToVOMapping<?> mapping2 = createPivotJoinMapping(alias,
-					vField.getDbColumn(), vField.getField(), vField.getDataType(), vField.isReadonly(), pinfo.getSubform());
+			final IColumnToVOMapping<?> mapping2 = createPivotJoinMapping(alias, vField, pinfo.getSubform());
 			processor.addToColumns(mapping2);
 			// Also add the key field so that the gui result table could find the pivot
 			final EntityFieldMetaDataVO kField = mdProv.getEntityField(pinfo.getSubform(), pinfo.getKeyField());
-			mapping = createPivotJoinMapping(alias,
-					kField.getDbColumn(), kField.getField(), kField.getDataType(), kField.isReadonly(), pinfo.getSubform());
+			mapping = createPivotJoinMapping(alias, kField, pinfo.getSubform());
 		}
 		processor.addToColumns(mapping);
 	}

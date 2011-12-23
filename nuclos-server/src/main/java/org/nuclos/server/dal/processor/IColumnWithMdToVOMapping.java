@@ -30,4 +30,6 @@ public interface IColumnWithMdToVOMapping<T> extends IColumnToVOMapping<T> {
 
 	EntityFieldMetaDataVO getMeta();
 	
+	boolean constructJoinForStringifiedRefs();
+	
 }

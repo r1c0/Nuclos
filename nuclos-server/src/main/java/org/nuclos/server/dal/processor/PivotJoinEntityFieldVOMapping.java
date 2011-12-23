@@ -17,6 +17,7 @@
 package org.nuclos.server.dal.processor;
 
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.IDalVO;
 import org.nuclos.common.dal.vo.IDalWithDependantsVO;
@@ -30,17 +31,20 @@ import org.nuclos.common2.exception.CommonFatalException;
  *
  * @param <T> Java type for the data in this column of the database.
  */
-public class PivotJoinEntityFieldVOMapping<T> extends AbstractColumnToVOMapping<T> {
+public class PivotJoinEntityFieldVOMapping<T> extends AbstractColumnToVOMapping<T> implements IColumnWithMdToVOMapping<T> {
 	
 	private final String joinEntity;
 	
-	private final String field;
+	private final EntityFieldMetaDataVO mdField;
+	
+	// private final String field;
 
-	PivotJoinEntityFieldVOMapping(String tableAlias, String column, Class<T> dataType, boolean isReadonly,
-			String joinEntity, String field) {
-		super(tableAlias, column, dataType, isReadonly, false);
+	PivotJoinEntityFieldVOMapping(String tableAlias, EntityFieldMetaDataVO mdField,
+			String joinEntity) throws ClassNotFoundException {
+		super(tableAlias, mdField.getDbColumn(), mdField.getDataType(), mdField.isReadonly(), false);
+		this.mdField = mdField;
 		this.joinEntity = joinEntity;
-		this.field = field;
+		// this.field = field;
 	}
 
 	@Override
@@ -50,7 +54,7 @@ public class PivotJoinEntityFieldVOMapping<T> extends AbstractColumnToVOMapping<
 		result.append("col=").append(getColumn());
 		result.append(", tableAlias=").append(getTableAlias());
 		result.append(", joinEntity=").append(joinEntity);
-		result.append(", field=").append(field);
+		result.append(", field=").append(mdField);
 		if (getDataType() != null)
 			result.append(", type=").append(getDataType().getName());
 		result.append("]");
@@ -65,7 +69,7 @@ public class PivotJoinEntityFieldVOMapping<T> extends AbstractColumnToVOMapping<
 			if (joinEntityVO == null) {
 				return convertToDbValue(getDataType(), null);
 			}
-			return convertToDbValue(getDataType(), joinEntityVO.getField(field));
+			return convertToDbValue(getDataType(), joinEntityVO.getField(mdField.getField()));
 		} catch (Exception e) {
 			throw new CommonFatalException(e);
 		}
@@ -100,7 +104,7 @@ public class PivotJoinEntityFieldVOMapping<T> extends AbstractColumnToVOMapping<
 		// As you could see, the pivot key and value column for each pivot join are grouped together.
 		// 
 		// (Thomas Pasch)
-		if (joinEntityVO == null || joinEntityVO.getFields().containsKey(field)) {
+		if (joinEntityVO == null || joinEntityVO.getFields().containsKey(mdField.getField())) {
 			joinEntityVO = new EntityObjectVO();
 			joinEntityVO.initFields(5, 5);
 			joinEntityVO.setEntity(joinEntity);
@@ -108,19 +112,24 @@ public class PivotJoinEntityFieldVOMapping<T> extends AbstractColumnToVOMapping<
 			realDal.getDependants().addData(joinEntity, joinEntityVO);
 		}
 		try {
-			joinEntityVO.getFields().put(field,
+			joinEntityVO.getFields().put(mdField.getField(),
 					convertFromDbValue(o, getColumn(), getDataType(), joinEntityVO.getId()));
 		} catch (Exception e) {
 			throw new CommonFatalException(e);
 		}
 	}
 
+	@Override
+	public EntityFieldMetaDataVO getMeta() {
+		return mdField;
+	}
+	
 	/**
 	 * @deprecated This is impossible in the general case, thus avoid it.
 	 */
 	@Override
 	public String getField() {
-		return joinEntity + "." + field;
+		return joinEntity + "." + mdField.getField();
 	}
 
 	@Override
@@ -137,5 +146,10 @@ public class PivotJoinEntityFieldVOMapping<T> extends AbstractColumnToVOMapping<
 		result += 3 * getColumn().hashCode() + 173;
 		return result;
 	}
-	
+
+	@Override
+	public boolean constructJoinForStringifiedRefs() {
+		return false;
+	}
+
 }

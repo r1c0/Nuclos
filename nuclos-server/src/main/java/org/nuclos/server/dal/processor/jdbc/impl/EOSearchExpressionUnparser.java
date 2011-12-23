@@ -279,8 +279,10 @@ public class EOSearchExpressionUnparser {
 			else {
 				dbEntity = refEntity.getDbEntity();
 			}
-			final DbJoin join = table.join(dbEntity, JoinType.LEFT).alias(joincond.getTableAlias()).on(
-					DalUtils.getDbIdFieldName(field.getDbColumn()), "INTID", Long.class);
+			if (!table.containsAlias(joincond.getTableAlias())) {
+				final DbJoin join = table.join(dbEntity, JoinType.LEFT).alias(joincond.getTableAlias()).on(
+						DalUtils.getDbIdFieldName(field.getDbColumn()), "INTID", Long.class);
+			}
 
 			// ??? We have no real condition, all is said within the join...
 			return queryBuilder.alwaysTrue();

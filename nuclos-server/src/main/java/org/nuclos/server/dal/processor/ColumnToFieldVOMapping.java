@@ -123,4 +123,9 @@ public final class ColumnToFieldVOMapping<T extends Object> extends AbstractColu
 		}
 	}
 
+	@Override
+	public boolean constructJoinForStringifiedRefs() {
+		return true;
+	}
+
 }
