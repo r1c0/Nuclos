@@ -64,6 +64,8 @@ public class WorkspaceEditor  {
 		this.wovo = wovo;
 		this.backup = new WorkspaceVO();
 		this.backup.importHeader(wovo.getWoDesc());
+		
+		boolean showAlwaysReset = wovo.isAssigned() && SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN);
 
 		contentPanel = new JPanel();
 		initJPanel(contentPanel,
@@ -72,7 +74,7 @@ public class WorkspaceEditor  {
 							  20,
 							  20,
 							  20,
-							  20,
+							  showAlwaysReset? 20 : 0,
 							  10,
 							  20,
 							  TableLayout.FILL,
@@ -100,7 +102,7 @@ public class WorkspaceEditor  {
         chckUseLastFrameSettings = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.12","Letzte Fenster Einstellungen übernehmen (Größe und Position)"));
         contentPanel.add(chckUseLastFrameSettings, "1, 3, 5, 3");
         chckAlwaysReset = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.alwaysreset","Zuletzt geöffnete Tabs immer zurücksetzen"));
-        if (wovo.isAssigned() && SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN)) {
+        if (showAlwaysReset) {
         	contentPanel.add(chckAlwaysReset, "1, 4, 5, 4");
         }
 
