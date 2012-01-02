@@ -258,10 +258,6 @@ public class RestoreUtils {
 
 		//load from db. wovo contains header only
 		WorkspaceDescription wd;
-		if (wovo.getWoDesc().isAlwaysReset()) {
-			wovo = getPrefsFacade().restoreWorkspace(wovo);
-		}
-
 		if (wovo.getWoDesc().getFrames().isEmpty()) {
 			try {
 				wd = getPrefsFacade().getWorkspace(wovo.getId()).getWoDesc();

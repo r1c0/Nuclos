@@ -269,11 +269,45 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 			throw new CommonBusinessException("Workspace.not.found");
 		}
 		if (wovo.getAssignedWorkspace() != null) {
+			WorkspaceVO assignedWovo = getWorkspaceProcessor().getByPrimaryKey(wovo.getAssignedWorkspace());
 			if (!SecurityCache.getInstance().getAllowedActions(getCurrentUserName()).contains(Actions.ACTION_WORKSPACE_ASSIGN)) {
-				return mergeWorkspaces(getWorkspaceProcessor().getByPrimaryKey(wovo.getAssignedWorkspace()), wovo);
+				if (assignedWovo.getWoDesc().isAlwaysReset()) {
+					removeAllTabs(wovo.getWoDesc().getMainFrame().getContent().getContent(), true);
+				}
+				return mergeWorkspaces(assignedWovo, wovo);
+			} else {
+				if (wovo.getWoDesc().isAlwaysReset()) {
+					removeAllTabs(wovo.getWoDesc().getMainFrame().getContent().getContent(), false);
+				}
 			}
 		}
 		return wovo;
+	}
+	
+	/**
+	 * 
+	 * @param nc
+	 * @param all (incl. never closable)
+	 */
+	private void removeAllTabs(NestedContent nc, boolean all) {
+		if (nc instanceof MutableContent) {
+			removeAllTabs(((MutableContent) nc).getContent(), all);
+		} else if (nc instanceof Split) {
+			removeAllTabs(((Split) nc).getContentA(), all);
+			removeAllTabs(((Split) nc).getContentB(), all);
+		} else if (nc instanceof Tabbed) {
+			if (all) {
+				((Tabbed) nc).clearTabs();
+			} else {
+				for (Tab t : ((Tabbed) nc).getTabs()) {
+					if (!t.isNeverClose()) {
+						((Tabbed) nc).removeTab(t);
+					}
+				}
+			}
+		} else {
+			throw new UnsupportedOperationException("Unknown NestedContent type: " + nc.getClass());
+		}
 	}
 
 	/**
@@ -676,10 +710,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		}
 
 		WorkspaceVO assignableWovo = getWorkspace(customizedWovo.getAssignedWorkspace());
-
-		if (customizedWovo.getWoDesc().isAlwaysReset()) {
-			customizedWovo.getWoDesc().getFrames().clear();
-		}
 
 		transferWorkspaceContent(assignableWovo, customizedWovo);
 		storeWorkspace(customizedWovo);

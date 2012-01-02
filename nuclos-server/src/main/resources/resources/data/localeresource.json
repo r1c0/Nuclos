@@ -60666,17 +60666,17 @@
   {
     "resourceID": "WorkspacePublisher.4",
     "locale": "i-default",
-    "text": "Name, icon, position of divider and window"
+    "text": "Properties, always opened tabs, position of divider and window"
   },
   {
     "resourceID": "WorkspacePublisher.4",
     "locale": "en",
-    "text": "Name, icon, position of divider and window"
+    "text": "Properties, always opened tabs, position of divider and window"
   },
   {
     "resourceID": "WorkspacePublisher.4",
     "locale": "de",
-    "text": "Name, Icon, Position der Trenner und des Fensters"
+    "text": "Eigenschaften, immer geöffnete Tabs, Position der Trenner und des Fensters"
   },
   {
     "resourceID": "WorkspacePublisher.5",
@@ -63801,16 +63801,16 @@
   {
     "resourceID": "WorkspaceEditor.alwaysreset",
     "locale": "i-default",
-    "text": "Always reset"
+    "text": "Always reset last opened tabs to template"
   },
   {
     "resourceID": "WorkspaceEditor.alwaysreset",
     "locale": "en",
-    "text": "Always reset"
+    "text": "Always reset last opened tabs to template"
   },
   {
     "resourceID": "WorkspaceEditor.alwaysreset",
     "locale": "de",
-    "text": "Immer zurücksetzen"
+    "text": "Zuletzt geöffnete Tabs immer auf Vorlage zurücksetzen"
   }
 ]

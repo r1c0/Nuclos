@@ -87,7 +87,7 @@ public class WorkspaceEditor  {
         chckHideName = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.3","Name ausblenden"));
         contentPanel.add(chckHideName, "2, 0, 3, 0");
         chckHide = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.8","Auswahl Button ausblenden"));
-        if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN)) {
+        if (wovo.isAssigned() && SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN)) {
         	contentPanel.add(chckHide, "4, 0");
         }
         chckAlwaysOpenAtLogin = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.11","Immer bei Anmeldung öffnen"));
@@ -99,8 +99,10 @@ public class WorkspaceEditor  {
         contentPanel.add(chckHideMenuBar, "1, 2");
         chckUseLastFrameSettings = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.12","Letzte Fenster Einstellungen übernehmen (Größe und Position)"));
         contentPanel.add(chckUseLastFrameSettings, "1, 3, 5, 3");
-        chckAlwaysReset = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.alwaysreset","Immer zurücksetzen"));
-        contentPanel.add(chckAlwaysReset, "1, 4, 5, 4");
+        chckAlwaysReset = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspaceEditor.alwaysreset","Zuletzt geöffnete Tabs immer zurücksetzen"));
+        if (wovo.isAssigned() && SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN)) {
+        	contentPanel.add(chckAlwaysReset, "1, 4, 5, 4");
+        }
 
         JLabel lbIcon = new JLabel(CommonLocaleDelegate.getMessage("WorkspaceEditor.4","Icon"), JLabel.TRAILING);
         contentPanel.add(lbIcon, "0, 6");

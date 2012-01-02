@@ -290,6 +290,9 @@ public class WorkspaceDescription implements Serializable {
 		public void removeTab(Tab tab) {
 			this.tabs.remove(tab);
 		}
+		public void clearTabs() {
+			this.tabs.clear();
+		}
 		public boolean isShowEntity() {
 			return showEntity;
 		}
