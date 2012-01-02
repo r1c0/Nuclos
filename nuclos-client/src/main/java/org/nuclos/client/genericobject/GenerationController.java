@@ -339,7 +339,7 @@ public class GenerationController {
 	 * Performed in an own thread.
 	 * @param generatoractionvo
 	 */
-	private void generate(final List<Long> parameterObjectIds) throws CommonBusinessException {
+	public void generate(final List<Long> parameterObjectIds) throws CommonBusinessException {
 		if (parentController != null) {
 			CommonMultiThreader.getInstance().execute(new GenerationClientWorker(parentController, parameterObjectIds));
 		}
