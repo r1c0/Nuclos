@@ -1677,9 +1677,15 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		invoke(new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
-				CollectableGenericObjectWithDependants clct = getSelectedCollectable();
-				GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(clct.getGenericObjectCVO(), getAllSubFormData(clct).toDependantMasterDataMap());
-				GenericObjectDelegate.getInstance().executeBusinessRules(lstRuleVO, go, bSaveAfterRuleExecution);
+				try {
+					setDetailsChangedIgnored(true);
+					CollectableGenericObjectWithDependants clct = getSelectedCollectable();
+					GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(clct.getGenericObjectCVO(), getAllSubFormData(clct).toDependantMasterDataMap());
+					GenericObjectDelegate.getInstance().executeBusinessRules(lstRuleVO, go, bSaveAfterRuleExecution);
+				}
+				finally {
+					setDetailsChangedIgnored(false);
+				}
 			}
 		});
 	}
