@@ -40,10 +40,9 @@ public class SearchFilterResultController<Clct extends CollectableMasterDataWith
 	}
 
 	@Override
-	public SortedSet<CollectableEntityField> getFieldsAvailableForResult(CollectableEntity clcte, Comparator<CollectableEntityField> comp) {
-		assert getEntity().equals(clcte);
+	public SortedSet<CollectableEntityField> getFieldsAvailableForResult(Comparator<CollectableEntityField> comp) {
 		final SortedSet<CollectableEntityField> result = new TreeSet<CollectableEntityField>(comp);
-		for (CollectableEntityField cef : super.getFieldsAvailableForResult(clcte, comp)) {
+		for (CollectableEntityField cef : super.getFieldsAvailableForResult(comp)) {
 			if (!SearchFilterCollectController.FIELD_SEARCHFILTER.equals(cef.getName())
 					&& !SearchFilterCollectController.FIELD_LABELRES.equals(cef.getName())
 					&& !SearchFilterCollectController.FIELD_DESCRIPTIONRES.equals(cef.getName())) {

@@ -614,9 +614,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 
 		this.setCollectPanel(pnlCollect);
-		getResultController().initializeFields(clcte, this);
+		getResultController().initializeFields();
 		SortableCollectableTableModel<Clct> model = newResultTableModel();
-		getResultController().setModel(model, clcte, this);
+		getResultController().setModel(model);
 		// setup sorted fields and sorting order from preferences
 		final List<SortKey> sortKeys = readColumnOrderFromPreferences();
 		if (model.getColumnCount() > 0) {
@@ -4118,52 +4118,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				case CollectState.DETAILSMODE_MULTIEDIT:
 					break;
 			}	// switch
-
-			// enable/disable toolbar buttons:
-
-			// "refresh/cancel" button:
-//			final boolean bDisguiseRefreshButton = CollectState.isDetailsModeNew(iDetailsMode) || CollectState.isDetailsModeMultiViewOrEdit(iDetailsMode);
-//			pnlDetails.disguiseRefreshButton(bDisguiseRefreshButton);
-//
-//			// "save" action:
-//			CollectController.this.getSaveAction().setEnabled(CollectController.this.changesArePending() && CollectController.this.isSaveAllowed());
-//
-//			// "refresh current collectable" action:
-//			final boolean bRefreshEnabled = ((iDetailsMode == CollectState.DETAILSMODE_VIEW) || CollectState.isDetailsModeChangesPending(iDetailsMode)) && CollectController.this.isRefreshSelectedCollectableAllowed();
-//			CollectController.this.getRefreshCurrentCollectableAction().setEnabled(bRefreshEnabled);
-//
-//			final boolean bViewingExistingRecord = (iDetailsMode == CollectState.DETAILSMODE_VIEW);
-//
-//			// "delete" action:
-//			CollectController.this.ctlDetails.actDeleteCurrentCollectable.setEnabled(bViewingExistingRecord && CollectController.this.isDeleteSelectedCollectableAllowed());
-//
-//			// "clone" action:
-//			CollectController.this.getCloneAction().setEnabled(bViewingExistingRecord && CollectController.this.isCloneAllowed());
-//
-//			// navigation actions:
-//			final boolean bNavigationEnabled = bViewingExistingRecord && CollectController.this.isNavigationAllowed();
-//
-//			final CollectNavigationModel collectNavigationModel = CollectController.this.getCollectNavigationModel();
-//			assert !bNavigationEnabled || collectNavigationModel != null;
-//
-//			CollectController.this.getFirstAction().setEnabled(bNavigationEnabled);
-//			CollectController.this.getLastAction().setEnabled(bNavigationEnabled);
-//			CollectController.this.getPreviousAction().setEnabled(bNavigationEnabled && !collectNavigationModel.isFirstElementSelected());
-//			CollectController.this.getNextAction().setEnabled(bNavigationEnabled && !collectNavigationModel.isLastElementSelected());
-
-//			CollectController.this.getDetailsPanel().setStatusBarText(" ");
-//			CollectController.this.ctlDetails.updateStatusBarIfNecessary();
-//
-//			CollectController.this.addChangeListenersForDetails();
-//
-//			if(CollectController.this.getCollectState().isDetailsModeMultiViewOrEdit()) {
-//				CollectController.this.bIsLastTabDetailsModeMultiViewOrEdit = true;
-//			}
-//			else {
-//				CollectController.this.bIsLastTabDetailsModeMultiViewOrEdit = false;
-//			}
-//
-//			CollectController.this.ctlDetails.displayCurrentRecordNumberInDetailsPanelStatusBar();
 
 			UIUtils.invokeOnDispatchThread(new Runnable() {
 				@Override

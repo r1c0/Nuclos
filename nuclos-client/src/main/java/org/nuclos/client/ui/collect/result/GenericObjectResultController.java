@@ -144,9 +144,8 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	 * @return the fields of the given entity, plus the fields of all subentities for that entity.
 	 */
 	@Override
-	public SortedSet<CollectableEntityField> getFieldsAvailableForResult(CollectableEntity clcte, Comparator<CollectableEntityField> comp) {
-		assert getEntity().equals(clcte);
-		final SortedSet<CollectableEntityField> result = super.getFieldsAvailableForResult(clcte, comp);
+	public SortedSet<CollectableEntityField> getFieldsAvailableForResult(Comparator<CollectableEntityField> comp) {
+		final SortedSet<CollectableEntityField> result = super.getFieldsAvailableForResult(comp);
 		final GenericObjectCollectController controller = getGenericObjectCollectController();
 
 		// add subentities' fields, if any:
@@ -195,8 +194,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	 * @return the list of previously selected fields
 	 */
 	@Override
-	protected List<? extends CollectableEntityField> readSelectedFieldsFromPreferences(CollectableEntity clcte) {
-		assert getEntity().equals(clcte);
+	protected List<? extends CollectableEntityField> readSelectedFieldsFromPreferences() {
 		final List<? extends CollectableEntityField> result = WorkspaceUtils.getCollectableEntityFieldsForGenericObject(
 				getGenericObjectCollectController().getEntityPreferences());
 		CollectionUtils.removeDublicates(result);

@@ -327,7 +327,7 @@ public class ResultController<Clct extends Collectable> {
 
 			@Override
             public void actionPerformed(ActionEvent ev) {
-				cmdSelectColumns(clctctl.getFields(), clctctl);
+				cmdSelectColumns(clctctl.getFields());
 			}
 		});
 
@@ -378,17 +378,15 @@ public class ResultController<Clct extends Collectable> {
 	 *
 	 * TODO: Make protected again.
 	 */
-	public void initializeFields(CollectableEntity clcte, CollectController<Clct> clctctl) {
-		assert clctctl == this.clctctl && clctctl.getFields() == fields && clctctl.getResultController() == this;
-		assert this.clcte.equals(clcte);
+	public void initializeFields() {
 		final Comparator<CollectableEntityField> comp = getCollectableEntityFieldComparator();
 		fields.set(
-				getFieldsAvailableForResult(clcte, comp),
+				getFieldsAvailableForResult(comp),
 				new ArrayList<CollectableEntityField>(),
 				comp);
 
 		// select the previously selected fields according to user preferences:
-		fields.moveToSelectedFields(getSelectedFieldsFromPreferences(clcte, clctctl));
+		fields.moveToSelectedFields(getSelectedFieldsFromPreferences());
 	}
 
 	/**
@@ -399,9 +397,8 @@ public class ResultController<Clct extends Collectable> {
 	 * @param lstFixedNew
 	 * @param lstColumnWiths
 	 */
-	public final void initializeFields(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl, final List<CollectableEntityField> lstSelectedNew)
+	public final void initializeFields(final ChoiceEntityFieldList fields, final List<CollectableEntityField> lstSelectedNew)
 	{
-		assert clctctl == this.clctctl && clctctl.getFields() == fields && clctctl.getResultController() == this;
 		fields.setSelectedFields(lstSelectedNew);
 	}
 
@@ -411,11 +408,8 @@ public class ResultController<Clct extends Collectable> {
 	 * @return List<CollectableEntityField> the selected fields from the user preferences.
 	 * @postcondition !result.isEmpty()
 	 */
-	private List<CollectableEntityField> getSelectedFieldsFromPreferences(CollectableEntity clcte, CollectController<Clct> clctctl) {
-		assert clctctl == this.clctctl && clctctl.getFields() == fields && clctctl.getResultController() == this;
-		assert this.clcte.equals(clcte);
-		final List<CollectableEntityField> result = (List<CollectableEntityField>) readSelectedFieldsFromPreferences(clcte);
-
+	private List<CollectableEntityField> getSelectedFieldsFromPreferences() {
+		final List<CollectableEntityField> result = (List<CollectableEntityField>) readSelectedFieldsFromPreferences();
 		clctctl.makeSureSelectedFieldsAreNonEmpty(clcte, result);
 
 		// Here we have at least one field as selected column:
@@ -651,8 +645,7 @@ public class ResultController<Clct extends Collectable> {
 	 * @see #writeSelectedFieldsToPreferences(List)
 	 * TODO: make private?
 	 */
-	protected List<? extends CollectableEntityField> readSelectedFieldsFromPreferences(CollectableEntity clcte) {
-		assert this.clcte.equals(clcte);
+	protected List<? extends CollectableEntityField> readSelectedFieldsFromPreferences() {
 		List<String> lstSelectedFieldNames = WorkspaceUtils.getSelectedColumns(clctctl.getEntityPreferences());
 		
 		final List<CollectableEntityField> result = Utils.createCollectableEntityFieldListFromFieldNames(this, clcte, lstSelectedFieldNames);
@@ -666,8 +659,7 @@ public class ResultController<Clct extends Collectable> {
 	 * Successors may want to do weird things like appending fields from subentities here...
 	 * TODO Make this private.
 	 */
-	public SortedSet<CollectableEntityField> getFieldsAvailableForResult(CollectableEntity clcte, Comparator<CollectableEntityField> comp) {
-		assert this.clcte.equals(clcte);
+	public SortedSet<CollectableEntityField> getFieldsAvailableForResult(Comparator<CollectableEntityField> comp) {
 		final SortedSet<CollectableEntityField> result = new TreeSet<CollectableEntityField>(comp);
 		for (String sFieldName : clcte.getFieldNames()) {
 			if (this.isFieldToBeDisplayedInTable(sFieldName)) {
@@ -694,8 +686,7 @@ public class ResultController<Clct extends Collectable> {
 	 * Some successors may want to do weird things here...
 	 * TODO: Make this private.
 	 */
-	public CollectableEntityField getCollectableEntityFieldForResult(CollectableEntity clcte, String sFieldName) {
-		assert this.clcte.equals(clcte);
+	public CollectableEntityField getCollectableEntityFieldForResult(CollectableEntity sClcte, String sFieldName) {
 		return clcte.getEntityField(sFieldName);
 	}
 
@@ -848,9 +839,7 @@ public class ResultController<Clct extends Collectable> {
 	 * command: select columns
 	 * Lets the user select the columns to show in the result list.
 	 */
-	public void cmdSelectColumns(final ChoiceEntityFieldList fields, final CollectController<Clct> clctctl) {
-		assert clctctl == this.clctctl && clctctl.getFields() == fields && clctctl.getResultController() == this;
-
+	public void cmdSelectColumns(final ChoiceEntityFieldList fields) {
 		final SelectColumnsController ctl = new SelectColumnsController(clctctl.getFrame());
 		// final List<CollectableEntityField> lstAvailable = (List<CollectableEntityField>) fields.getAvailableFields();
 		// final List<CollectableEntityField> lstSelected = (List<CollectableEntityField>) fields.getSelectedFields();
@@ -925,8 +914,7 @@ public class ResultController<Clct extends Collectable> {
 	 * removes the given column from the table
 	 * @param entityField the column of the column model (as opposed to the column of the table model)
 	 */
-	protected void cmdRemoveColumn(final ChoiceEntityFieldList fields, CollectableEntityField entityField, CollectController<Clct> ctl) {
-		assert ctl == this.clctctl && ctl.getFields() == fields && ctl.getResultController() == this;
+	protected void cmdRemoveColumn(final ChoiceEntityFieldList fields, CollectableEntityField entityField) {
 		fields.moveToAvailableFields(entityField);
 		WorkspaceUtils.addHiddenColumn(getCollectController().getEntityPreferences(), entityField.getName());
 
@@ -939,9 +927,7 @@ public class ResultController<Clct extends Collectable> {
 	/**
 	 * TODO: Make this protected again.
 	 */
-	public void setModel(CollectableTableModel<Clct> tblmodel, final CollectableEntity clcte, final CollectController<Clct> ctl) {
-		assert ctl == this.clctctl && ctl.getFields() == fields && ctl.getResultController() == this;
-		assert this.clcte.equals(clcte);
+	public void setModel(CollectableTableModel<Clct> tblmodel) {
 		final ResultPanel<Clct> panel = getResultPanel();
 		final JTable resultTable = panel.getResultTable();
 		resultTable.setModel(tblmodel);
@@ -955,23 +941,21 @@ public class ResultController<Clct extends Collectable> {
 		this.isIgnorePreferencesUpdate = ignore;
 	}
 
-	protected void toggleColumnVisibility(TableColumn columnBefore, final String sFieldName, final CollectController<Clct> ctl,  final CollectableEntity clcte)  {
-		assert ctl == this.clctctl && ctl.getFields() == fields && ctl.getResultController() == this;
-		assert this.clcte.equals(clcte);
+	protected void toggleColumnVisibility(TableColumn columnBefore, final String sFieldName)  {
 		final ResultPanel<Clct> panel = getResultPanel();
 		try {
-			final ChoiceEntityFieldList fields = ctl.getFields();
+			final ChoiceEntityFieldList fields = clctctl.getFields();
 			final Map<String, Integer> mpWidths = panel.getVisibleColumnWidth(fields.getSelectedFields());
 			final CollectableEntityField clctef = clcte.getEntityField(sFieldName);
 			final int iIndex = fields.getSelectedFields().indexOf(clctef);
 			if (iIndex == -1) {
 				cmdAddColumn(fields, columnBefore, sFieldName);
-				if (!ctl.getSearchStrategy().getCollectablesInResultAreAlwaysComplete()) {
-					ctl.getResultController().getSearchResultStrategy().refreshResult();
+				if (!clctctl.getSearchStrategy().getCollectablesInResultAreAlwaysComplete()) {
+					clctctl.getResultController().getSearchResultStrategy().refreshResult();
 				}
 			}
 			else {
-				cmdRemoveColumn(fields, clctef, ctl);
+				cmdRemoveColumn(fields, clctef);
 			}
 			isIgnorePreferencesUpdate = true;
 			panel.restoreColumnWidths(fields.getSelectedFields(), mpWidths);
@@ -1031,36 +1015,9 @@ public class ResultController<Clct extends Collectable> {
 	/**
 	 * Command: Define selected <code>Collectable</code>s as a new search result.
 	 *
-	 * @deprecated Does nothing.
+	 * @deprecated Does nothing (but will be overridden by extending classes).
 	 */
 	private void cmdDefineSelectedCollectablesAsNewSearchResult() {
-		assert clctctl.getCollectStateModel().getOuterState() == CollectState.OUTERSTATE_RESULT;
-		assert CollectState.isResultModeSelected(clctctl.getCollectStateModel().getResultMode());
-
-		/** @todo this doesn't work yet - we need to compare the Collectable's id, as in Collectable.getId() */
-//		UIUtils.runCommand(this.getFrame(), new Runnable() {
-//			public void run() {
-//				final Collection collclct = CollectController.this.getSelectedCollectables();
-//
-//				assert CollectionUtils.isNonEmpty(collclct);
-//				final CompositeCollectableSearchCondition cond = new CompositeCollectableSearchCondition(LogicalOperator.OR);
-//
-//				final String sIdentifier = SystemParameters.getValue(SystemParameters.KEY_SYSTEMATTRIBUTE_IDENTIFIER);
-//				final CollectableEntityField clctef = getCollectableEntity().getEntityField(sIdentifier);
-//				for (Iterator iter = collclct.iterator(); iter.hasNext();) {
-//					final Collectable clct = (Collectable) iter.next();
-//					final CollectableField clctfComparand = clct.getField(sIdentifier);
-//					cond.addOperand(new CollectableComparison(clctef, ComparisonOperator.EQUAL, clctfComparand));
-//				}
-//				try {
-//					CollectController.this.setCollectableSearchCondition(cond);
-//					CollectController.this.search();
-//				}
-//				catch (CommonBusinessException ex) {
-//					Errors.getInstance().showExceptionDialog(getFrame(), ex);
-//				}
-//			}
-//		});
 	}
-
+	
 }	// class ResultController

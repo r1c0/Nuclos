@@ -301,7 +301,7 @@ public class SearchResultTemplateController {
 							ctl.getCollectableEntity(), resultController.getCollectableEntityFieldComparator());
 					resultController.setSelectColumns(ctl.getFields(), ctl, available, lstSelectedNew, fixedColumns);
 					 */
-					resultController.initializeFields(ctl.getFields(), ctl, lstSelectedNew, fixedColumns, clefListColumnsWidths);
+					resultController.initializeFields(ctl.getFields(), lstSelectedNew, fixedColumns, clefListColumnsWidths);
 				}
 			}
 		});	

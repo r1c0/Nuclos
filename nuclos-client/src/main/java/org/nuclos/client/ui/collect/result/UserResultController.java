@@ -48,10 +48,9 @@ public class UserResultController<Clct extends CollectableMasterDataWithDependan
 	 * @deprecated Remove this.
 	 */
 	@Override
-	public SortedSet<CollectableEntityField> getFieldsAvailableForResult(CollectableEntity clcte, Comparator<CollectableEntityField> comp) {
-		assert getEntity().equals(clcte);
+	public SortedSet<CollectableEntityField> getFieldsAvailableForResult(Comparator<CollectableEntityField> comp) {
 		final SortedSet<CollectableEntityField> result = new TreeSet<CollectableEntityField>(comp);
-		for (CollectableEntityField cef : super.getFieldsAvailableForResult(clcte, comp)) {
+		for (CollectableEntityField cef : super.getFieldsAvailableForResult(comp)) {
 			if (!UserCollectController.FIELD_PREFERENCES.equals(cef.getName()) && !UserCollectController.FIELD_PASSWORD.equals(cef.getName())) {
 				result.add(cef);
 			}

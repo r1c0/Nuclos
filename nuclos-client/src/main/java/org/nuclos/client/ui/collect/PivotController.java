@@ -56,7 +56,7 @@ public class PivotController extends SelectFixedColumnsController {
 			final Comparator<CollectableEntityField> comp = (Comparator<CollectableEntityField>)
 				resultController.getFields().getComparatorForAvaible();
 			final SortedSet<CollectableEntityField> available =
-				resultController.getFieldsAvailableForResult(resultController.getEntity(), comp);
+				resultController.getFieldsAvailableForResult(comp);
 			// TODO: check if the unmodifiable List is necessary here
 			final List<CollectableEntityField> selected = new ArrayList<CollectableEntityField>(
 					resultController.getFields().getSelectedFields());
