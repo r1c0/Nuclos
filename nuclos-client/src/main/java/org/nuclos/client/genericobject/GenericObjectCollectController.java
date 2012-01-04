@@ -286,6 +286,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private static final String TABSELECTED = "tabselected";
 
 
+	/*
 	// TODO: Entity name null ok?
 	public static final CollectableEntityField clctefStatus = new DefaultCollectableEntityField(NuclosEOField.STATE.getMetaData().getField(), String.class,
 		CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue())),
@@ -302,6 +303,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, null);
 
 	private final CollectableComboBox clctSearchState = new NuclosCollectableStateComboBox(clctefSearchState, true);
+	 */
+	
+	private CollectableComboBox clctSearchState;
 
 	private final CollectableComponentModelListener ccmlistenerUsageCriteriaFieldsForDetails = new CollectableComponentModelAdapter() {
 		@Override
@@ -614,6 +618,16 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (bAutoInit)
 			init();
 	}
+	
+	private CollectableComboBox getSearchStateBox() {
+		if (clctSearchState == null) {
+			final CollectableEntityField clctefSearchState = new DefaultCollectableEntityField("[status_num_plus_name]", String.class,
+				CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue())),
+				null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, getCollectableEntity().getName());
+			clctSearchState = new NuclosCollectableStateComboBox(clctefSearchState, true);
+		}
+		return clctSearchState;
+	}
 
 	public final Integer getSearchDeleted() {
 		return iSearchDeleted;
@@ -733,7 +747,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		gbc.weighty = 1.0;
 		JToolBar toolSearchState = UIUtils.createNonFloatableToolBar();
 */
-		JComboBox jComboBox = clctSearchState.getJComboBox();
+		JComboBox jComboBox = getSearchStateBox().getJComboBox();
 		//UIUtils.setMaximumSizeToPreferredSize(jComboBox);
 		jComboBox.setToolTipText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.8","Aktueller Status"));
 		//jComboBox.setOpaque(false);
@@ -1931,7 +1945,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	@Override
 	public void addAdditionalChangeListenersForSearch() {
 		super.addAdditionalChangeListenersForSearch();
-		clctSearchState.getSearchModel().addCollectableComponentModelListener(ccmlistenerSearchChanged);
+		getSearchStateBox().getSearchModel().addCollectableComponentModelListener(ccmlistenerSearchChanged);
 	}
 
 	/**
@@ -1940,7 +1954,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	@Override
 	public void removeAdditionalChangeListenersForSearch() {
 		removeAdditionalChangeListeners(true);
-		clctSearchState.getSearchModel().removeCollectableComponentModelListener(ccmlistenerSearchChanged);
+		getSearchStateBox().getSearchModel().removeCollectableComponentModelListener(ccmlistenerSearchChanged);
 	}
 
 	/**
@@ -4142,13 +4156,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 	}
 
-	/**
-	 *
-	 * @param usagecriteria
-	 */
 	protected void setSearchStatesAccordingToUsageCriteria(UsageCriteria usagecriteria) {
-
-		clctSearchState.setProperty("usagecriteria", usagecriteria);
+		getSearchStateBox().setProperty("usagecriteria", usagecriteria);
 	}
 
 	/**
@@ -4207,7 +4216,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		for (SearchConditionSubFormController subformctl : getSubFormControllersInSearch())
 			subformctl.clear();
 
-		clctSearchState.getJComboBox().setSelectedIndex(-1);
+		getSearchStateBox().getJComboBox().setSelectedIndex(-1);
 	}
 
 	/**
@@ -5335,8 +5344,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		@Override
 		public SearchPanel newSearchPanel() {
-			Collection<CollectableComponent> additionalSearchComponents = new ArrayList<CollectableComponent>();
-			additionalSearchComponents.add(clctSearchState);
+			final Collection<CollectableComponent> additionalSearchComponents = new ArrayList<CollectableComponent>();
+			additionalSearchComponents.add(getSearchStateBox());
 			return new GenericObjectSearchPanel(additionalSearchComponents);
 		}
 
@@ -5604,7 +5613,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			if (NuclosEOField.STATE.getMetaData().getField().equals(sFieldName)
 					|| NuclosEOField.STATENUMBER.getMetaData().getField().equals(sFieldName)
 					|| NuclosEOField.STATEICON.getMetaData().getField().equals(sFieldName))
-				return clctSearchState.getSearchModel();
+				return getSearchStateBox().getSearchModel();
 			return super.getCollectableComponentModelFor(sFieldName);
 		}
 
@@ -5612,7 +5621,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		public Collection<SearchComponentModel> getCollectableComponentModels() {
 			Collection<SearchComponentModel> result = new HashSet<SearchComponentModel>();
 			result.addAll(super.getCollectableComponentModels());
-			result.add(clctSearchState.getSearchModel());
+			result.add(getSearchStateBox().getSearchModel());
 			return result;
 		}
 
@@ -5639,7 +5648,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		@Override
 		public Collection<CollectableComponent> getCollectableComponents() {
 			Collection<CollectableComponent> mainComponents = mainProvider.getCollectableComponents();
-			mainComponents.add(clctSearchState);
+			mainComponents.add(getSearchStateBox());
 			return mainComponents;
 		}
 
@@ -5651,7 +5660,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					 || NuclosEOField.STATEICON.getMetaData().getField().equals(sFieldName)) {
 				Collection<CollectableComponent> result = new ArrayList<CollectableComponent>();
 				result.addAll(mainProvider.getCollectableComponentsFor(sFieldName));
-				result.add(clctSearchState);
+				result.add(getSearchStateBox());
 				return result;
 			}
 			return mainProvider.getCollectableComponentsFor(sFieldName);

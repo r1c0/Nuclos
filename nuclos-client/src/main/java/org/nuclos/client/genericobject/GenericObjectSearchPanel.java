@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
+import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
@@ -148,9 +149,9 @@ public class GenericObjectSearchPanel extends SearchPanel {
 			boolean blnStatusFound = false;
 			
 			for (AtomicCollectableSearchCondition clctcond : lstatomiccond) {
-				if (GenericObjectCollectController.clctefStatusnumeral.getName().equals(clctcond.getFieldName())) {
+				if (NuclosEOField.STATENUMBER.getMetaData().getField().equals(clctcond.getFieldName())) {
 					blnStatusnumeralFound = true;
-				} else if (GenericObjectCollectController.clctefStatus.getName().equals(clctcond.getFieldName())) {
+				} else if (NuclosEOField.STATE.getMetaData().getField().equals(clctcond.getFieldName())) {
 					blnStatusFound = true;
 				}
 			}

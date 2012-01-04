@@ -123,9 +123,8 @@ public abstract class AtomicCollectableSearchCondition extends AbstractCollectab
 
 	private void writeObject(ObjectOutputStream oos) throws IOException {
 		oos.defaultWriteObject();
-		// TODO: Entity name null ok?
 		// CollectableEntityField generally is not serializable, but DefaultCollectableEntityField is:
-		oos.writeObject(new DefaultCollectableEntityField(clctef, null));
+		oos.writeObject(new DefaultCollectableEntityField(clctef, clctef.getEntityName()));
 		// ComparisonOperator is not serializable:
 		oos.writeInt(getComparisonOperator().getIntValue());
 	}

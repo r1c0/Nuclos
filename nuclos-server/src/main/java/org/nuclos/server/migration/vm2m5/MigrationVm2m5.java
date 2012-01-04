@@ -1192,7 +1192,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 							warn("Try to search for \"" + sValue + "\" in " + eForeign.getDbEntity().replace("V_", "T_") + "." + efForeign.getDbColumn());
 
 							DbQuery<DbTuple> queryForeign = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
-							DbFrom fromForeign = queryForeign.from(eForeign.getDbEntity().replace("V_", "T_"));
+							DbFrom fromForeign = queryForeign.from(eForeign.getDbEntity().replace("^V_", "T_"));
 							fromForeign.alias("f");
 							queryForeign.select((DbSelection<DbTuple>) getColumn(fromForeign, "INTID", DT_INTEGER));
 							queryForeign.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
@@ -1227,7 +1227,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 				}
 			}
 
-			if(armed) DataBaseHelper.getDbAccess().execute(new DbInsertStatement(MetaDataServerProvider.getInstance().getEntity(iModuleId.longValue()).getDbEntity().replace("V_", "T_"), values));
+			if(armed) DataBaseHelper.getDbAccess().execute(new DbInsertStatement(MetaDataServerProvider.getInstance().getEntity(iModuleId.longValue()).getDbEntity().replace("^V_", "T_"), values));
 		}
 
 

@@ -161,7 +161,7 @@ public class MasterDataMetaFieldVO extends NuclosValueObject {
 	 * isn't used in the metadata.
 	 */
 	public String getDBIdFieldName() {
-		return getDBFieldName().toUpperCase().replaceAll("STRVALUE_", "INTID_");
+		return getDBFieldName().toUpperCase().replaceFirst("^STRVALUE_", "INTID_");
 	}
 	
 	public Class<?> getDBIdFieldType() {

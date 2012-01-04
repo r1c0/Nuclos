@@ -147,6 +147,7 @@ public class DalUtils {
 
 	public static String getDbIdFieldName(String fieldName) {
 		final String uFieldName = fieldName.toUpperCase();
+		// return uFieldName.replaceFirst("^\\p{Upper}VALUE_", "INTID_");
 		final int index_ = uFieldName.indexOf("_");
 		if (index_ < 0) {
 			return "INTID_"+uFieldName;

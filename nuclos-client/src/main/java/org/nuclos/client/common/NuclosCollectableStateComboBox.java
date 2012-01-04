@@ -28,7 +28,7 @@ import javax.swing.JList;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
-import org.nuclos.client.genericobject.GenericObjectCollectController;
+import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.genericobject.valuelistprovider.StateCollectableFieldsProvider;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
@@ -38,12 +38,14 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
+import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableLikeCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 
 /**
@@ -72,6 +74,18 @@ public class NuclosCollectableStateComboBox extends CollectableComboBox {
 		getJComboBox().setRenderer(new MyComboBoxRenderer());
 		valueListProvider = new StateCollectableFieldsProvider();
 		AutoCompleteDecorator.decorate(getJComboBox()); 
+	}
+
+	private CollectableEntityField getStatus() {
+		return new DefaultCollectableEntityField(NuclosEOField.STATE.getMetaData().getField(), String.class,
+				CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue())),
+				null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, getEntityField().getEntityName());
+	}
+
+	private CollectableEntityField getStatusNumeral() {
+		return new DefaultCollectableEntityField(NuclosEOField.STATENUMBER.getMetaData().getField(), Integer.class,
+				CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATENUMBER.getMetaData().getId().intValue())),
+				null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, getEntityField().getEntityName());
 	}
 
 	@Override
@@ -270,7 +284,7 @@ public class NuclosCollectableStateComboBox extends CollectableComboBox {
 
 	private StateSearchConditionVO getStateSearchCondition(ComparisonOperator compop, String sComparand){
 		if (sComparand.matches("[0-9*%]+")) {
-			return new StateSearchConditionVO(GenericObjectCollectController.clctefStatusnumeral, null, sComparand);
+			return new StateSearchConditionVO(getStatusNumeral(), null, sComparand);
 		} else {
 			for (int i = 0; i < getJComboBox().getModel().getSize(); i++) {
 				try {
@@ -285,11 +299,11 @@ public class NuclosCollectableStateComboBox extends CollectableComboBox {
 							compop.equals(ComparisonOperator.NOT_LIKE)) {
 							// Suche \u00fcber Name
 							final String sStatusName = sComparand.substring(sComparand.indexOf(" ") + 1);
-							return new StateSearchConditionVO(GenericObjectCollectController.clctefStatus, null, sStatusName);
+							return new StateSearchConditionVO(getStatus(), null, sStatusName);
 						} else {
 							// Suche \u00fcber Numeral
 							final String sStatusNumeral = sComparand.substring(0, sComparand.indexOf(" "));
-							return new StateSearchConditionVO(GenericObjectCollectController.clctefStatusnumeral, null, sStatusNumeral);
+							return new StateSearchConditionVO(getStatusNumeral(), null, sStatusNumeral);
 						}
 
 					}
@@ -297,7 +311,7 @@ public class NuclosCollectableStateComboBox extends CollectableComboBox {
 					//first NULL Entry is by Default a ValueIdField... ignore
 				}
 			}
-			return new StateSearchConditionVO(GenericObjectCollectController.clctefStatus, null, sComparand);
+			return new StateSearchConditionVO(getStatus(), null, sComparand);
 		}
 	}
 

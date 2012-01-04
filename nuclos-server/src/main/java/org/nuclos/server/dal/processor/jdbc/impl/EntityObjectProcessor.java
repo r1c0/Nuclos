@@ -73,8 +73,6 @@ import org.nuclos.server.dblayer.util.ForeignEntityFieldParser;
 import org.nuclos.server.dblayer.util.IFieldRef;
 import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectSearchExpression;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<EntityObjectVO>
 	implements JdbcEntityObjectProcessor {

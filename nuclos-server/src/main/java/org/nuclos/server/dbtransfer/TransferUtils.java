@@ -43,11 +43,9 @@ import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.dbtransfer.content.AbstractNucletContent;
 import org.nuclos.server.dbtransfer.content.INucletContent;
-import org.nuclos.server.dbtransfer.content.ValidityLogEntry;
 import org.nuclos.server.dbtransfer.content.ValidationType;
+import org.nuclos.server.dbtransfer.content.ValidityLogEntry;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 public class TransferUtils {
 

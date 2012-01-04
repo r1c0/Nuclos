@@ -419,10 +419,24 @@ public class EOSearchExpressionUnparser {
 
 		@Override
 		public DbCondition visitIsNullCondition(CollectableIsNullCondition cond) {
+			final CollectableEntityField field = cond.getEntityField();
+			final DbCondition result;
 			if (cond.isPositive())
-				return queryBuilder.isNull(getDbColumn(cond.getEntityField()));
-			else
-				return queryBuilder.isNotNull(getDbColumn(cond.getEntityField()));
+				if (field.isReferencing()) {
+					result = queryBuilder.isNull(getRefIdDbColumn(field));
+				}
+				else {
+					result = queryBuilder.isNull(getDbColumn(field));
+				}
+			else {
+				if (field.isReferencing()) {
+					result = queryBuilder.isNotNull(getRefIdDbColumn(field));
+				}
+				else {
+					result = queryBuilder.isNotNull(getDbColumn(field));
+				}
+			}
+			return result;
 		}
 
 		private DbCondition compare(ComparisonOperator op, DbExpression<?> x, DbExpression<?> y) {
@@ -509,9 +523,17 @@ public class EOSearchExpressionUnparser {
 				return table.column(tableAlias, dbColumn, field.getJavaClass());
 			}
 		}
-
 	}
 
+	private DbExpression<?> getRefIdDbColumn(CollectableEntityField field) {
+		if (!field.isReferencing()) {
+			throw new IllegalArgumentException("Wrong field:" + field);
+		}
+		final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
+		final EntityFieldMetaDataVO mdField = mdProv.getEntityField(field.getEntityName(), field.getName());
+		return table.column(table.getAlias(), DalUtils.getDbIdFieldName(mdField.getDbColumn()), Long.class);
+	}
+	
 	/**
 	 * Some high-level data types are represented by more primitive values in the
 	 * database.  For example, on the database layer {@link org.nuclos.common2.File}

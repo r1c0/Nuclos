@@ -27,7 +27,6 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dbtransfer.NucletContentUID;
 import org.nuclos.common.dbtransfer.TransferOption;
-import org.nuclos.common.dbtransfer.TransferOption.Map;
 import org.nuclos.server.dbtransfer.NucletContentMap;
 
 public interface INucletContent {

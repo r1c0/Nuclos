@@ -31,7 +31,6 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.IColumnWithMdToVOMapping;
-import org.nuclos.server.dal.processor.PivotJoinEntityFieldVOMapping;
 
 /**
  * A singleton for defining the table join aliases for 'stringified' references.

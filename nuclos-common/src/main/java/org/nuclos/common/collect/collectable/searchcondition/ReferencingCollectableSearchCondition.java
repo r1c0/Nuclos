@@ -134,9 +134,8 @@ public final class ReferencingCollectableSearchCondition extends AbstractCollect
 
 	private void writeObject(ObjectOutputStream oos) throws IOException {
 		oos.defaultWriteObject();
-		// TODO: Entity name null ok?
 		// CollectableEntityField generally is not serializable, but DefaultCollectableEntityField is:
-		oos.writeObject(new DefaultCollectableEntityField(this.clctefReferencing, null));
+		oos.writeObject(new DefaultCollectableEntityField(clctefReferencing, clctefReferencing.getEntityName()));
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {

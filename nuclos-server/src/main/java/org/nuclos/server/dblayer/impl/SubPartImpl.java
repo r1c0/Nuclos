@@ -24,7 +24,6 @@ import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.server.dblayer.EBatchType;
 import org.nuclos.server.dblayer.IPart;
 import org.nuclos.server.dblayer.IPreparedStringExecutor;
-import org.nuclos.server.dblayer.impl.util.PreparedString;
 
 /**
  * @author Thomas Pasch

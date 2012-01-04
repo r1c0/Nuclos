@@ -75,6 +75,8 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 			String sFormatOutput, String entityName) {
 		this(sName, cls, sLabel, sDescription, iMaxLength, iPrecision, bNullable, iFieldType, null,
 				CollectableUtils.getNullField(iFieldType), sFormatInput, sFormatOutput, entityName);
+		assert sName != null;
+		assert entityName != null;
 	}
 
 	/**
@@ -123,6 +125,9 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 		catch (CollectableFieldValidationException ex) {
 			throw new IllegalArgumentException(CommonLocaleDelegate.getMessage("DefaultCollectableEntityField.1","Der angegebene Defaultwert passt nicht zum Datentyp."));
 		}
+		
+		assert sName != null;
+		assert entityName != null;
 	}
 
 	/**
@@ -133,6 +138,9 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 		this(clctef.getName(), clctef.getJavaClass(), clctef.getLabel(), clctef.getDescription(), clctef.getMaxLength(),
 				clctef.getPrecision(), clctef.isNullable(), clctef.getFieldType(), clctef.getReferencedEntityName(),
 				clctef.getDefault(), clctef.getFormatInput(), clctef.getFormatOutput(), entityName);
+		
+		assert sName != null;
+		assert entityName != null;
 	}
 
 	@Override

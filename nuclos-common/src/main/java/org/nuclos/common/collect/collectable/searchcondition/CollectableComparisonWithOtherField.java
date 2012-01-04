@@ -118,9 +118,8 @@ public final class CollectableComparisonWithOtherField extends AtomicCollectable
 
 	private void writeObject(ObjectOutputStream oos) throws IOException {
 		oos.defaultWriteObject();
-		// TODO: Entity name null ok?
 		// CollectableEntityField generally is not serializable, but DefaultCollectableEntityField is:
-		oos.writeObject(new DefaultCollectableEntityField(this.clctefOther, null));
+		oos.writeObject(new DefaultCollectableEntityField(clctefOther, clctefOther.getEntityName()));
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {

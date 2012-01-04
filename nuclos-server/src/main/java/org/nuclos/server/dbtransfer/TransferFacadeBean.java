@@ -15,7 +15,6 @@
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dbtransfer;
-import static org.nuclos.server.dbtransfer.TransferUtils.validate;
 import static org.nuclos.server.dbtransfer.TransferUtils.createUIDRecord;
 import static org.nuclos.server.dbtransfer.TransferUtils.createUIDRecordForNcObject;
 import static org.nuclos.server.dbtransfer.TransferUtils.getDependencies;
@@ -26,6 +25,7 @@ import static org.nuclos.server.dbtransfer.TransferUtils.getIds;
 import static org.nuclos.server.dbtransfer.TransferUtils.getNcObjectIdFromNucletContentUID;
 import static org.nuclos.server.dbtransfer.TransferUtils.getUserEntityFields;
 import static org.nuclos.server.dbtransfer.TransferUtils.updateUIDRecord;
+import static org.nuclos.server.dbtransfer.TransferUtils.validate;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -140,7 +140,6 @@ import org.nuclos.server.resource.ResourceCache;
 import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.nuclos.server.ruleengine.NuclosCompileException.ErrorMessage;
 import org.nuclos.server.statemodel.valueobject.StateModelUsagesCache;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
