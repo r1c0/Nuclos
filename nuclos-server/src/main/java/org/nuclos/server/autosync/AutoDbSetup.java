@@ -57,7 +57,11 @@ import org.nuclos.server.dblayer.structure.DbTableData;
 import org.nuclos.server.dblayer.structure.DbTableType;
 import org.nuclos.server.dblayer.util.DbArtifactXmlReader;
 import org.nuclos.server.dblayer.util.DbArtifactXmlWriter;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+@Configurable
 public class AutoDbSetup {
 
 	private static final String NUCLOS = "NUCLOS";
@@ -131,6 +135,7 @@ public class AutoDbSetup {
 		return CollectionUtils.getFirst(getInstalledVersions());
 	}
 
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public List<Pair<String, Date>> getInstalledVersions() {
 		DbQueryBuilder builder = dbAccess.getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
