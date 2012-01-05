@@ -90,7 +90,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements ProcessMonitorFacadeLocal, ProcessMonitorFacadeRemote{
 
-	private MasterDataFacadeLocal masterDataFacadeLocal  = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);;
+	private MasterDataFacadeLocal masterDataFacadeLocal  = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+	
+	public ProcessMonitorFacadeBean() {
+	}
 	
 	/**
 	 * unused the setStateGraph method makes the job
@@ -117,10 +120,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 	 */
 	@Override
 	public ProcessMonitorVO modify(ProcessMonitorVO vo) {		
-		
-		
-		return vo;
-		
+		return vo;		
 	}
 	
 	/**

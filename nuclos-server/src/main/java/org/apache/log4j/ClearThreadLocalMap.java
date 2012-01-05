@@ -10,12 +10,13 @@ import org.apache.log4j.helpers.ThreadLocalMap;
  */
 public class ClearThreadLocalMap {
 	
-	public static void shutdown() {
+	public static synchronized void shutdown() {
 		final MDC mdc = MDC.mdc;
 		if (mdc != null) {
 			final ThreadLocalMap tlm = (ThreadLocalMap) mdc.tlm;
 			if (tlm != null) {
 				tlm.remove();
+				mdc.tlm = null;
 			}
 		}
 	}

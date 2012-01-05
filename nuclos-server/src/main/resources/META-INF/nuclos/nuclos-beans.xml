@@ -28,6 +28,12 @@
        					   http://www.springframework.org/schema/jee/spring-jee-3.1.xsd">
 
 	<!--
+		Enable Annotation with @Configurable
+		http://forum.springsource.org/archive/index.php/t-39571.html 
+	 -->
+	<context:annotation-config/>
+
+	<!--
 		Enable @AspectJ Support of Sprint AOP
 		http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/aop.html#aop-aspectj-support
 		
@@ -131,6 +137,8 @@
 	<bean id="remoteInvocationExecutor" class="org.nuclos.server.common.NuclosRemoteInvocationExecutor"
 		depends-on="nucletDalProvider" destroy-method="destroy">
 		<property name="inputContext" ref="inputContext"/>
+		<property name="nuclosRemoteContextHolder" ref="nuclosRemoteContextHolder"/>
+		<property name="nuclosUserDetailsContextHolder" ref="nuclosUserDetailsContextHolder"/>
 	</bean>
 	
 	<bean id="inputContext" class="org.nuclos.api.context.InputContext" destroy-method="destroy" factory-method="getInstance">

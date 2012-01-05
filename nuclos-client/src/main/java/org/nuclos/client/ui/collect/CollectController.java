@@ -167,6 +167,8 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 
 /**
@@ -197,6 +199,7 @@ import org.nuclos.common2.exception.CommonStaleVersionException;
  * TODO try to split up some of the responsibilities in separate classes, but don't sacrifice flexibility, don't make
  * things even more complicated and don't mess up the views with controller code. That's not an easy task...
  */
+@Configurable
 public abstract class CollectController<Clct extends Collectable> extends TopController implements NuclosDropTargetVisitor {
 
 	private static final Logger LOG = Logger.getLogger(CollectController.class);
@@ -277,6 +280,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	private final DetailsController<Clct> ctlDetails = new DetailsController<Clct>(this);
 
 	private ISearchStrategy<Clct> ss;
+
+	private final Map<String, Serializable> context = new HashMap<String, Serializable>();
+	
+	private InvokeWithInputRequiredSupport invokeWithInputRequiredSupport;
 
 	/**
 	 * Messages for Collectable events
@@ -523,8 +530,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 	};
 
-	private final Map<String, Serializable> context = new HashMap<String, Serializable>();
-
 	/**
 	 * constructs a new CollectController.<br>
 	 * <em>Important: The constructor of the derived controller class must call
@@ -553,6 +558,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	protected CollectController(JComponent parent, CollectableEntity clcte) {
 		this(parent, clcte, new ResultController<Clct>(clcte, new SearchResultStrategy<Clct>()));
+	}
+	
+	@Autowired
+	void setInvokeWithInputRequiredSupport(InvokeWithInputRequiredSupport invokeWithInputRequiredSupport) {
+		this.invokeWithInputRequiredSupport = invokeWithInputRequiredSupport;
 	}
 
 	public final ISearchStrategy<Clct> getSearchStrategy() {
@@ -4381,7 +4391,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	protected void invoke(CommonRunnable runnable) throws CommonBusinessException {
-		InvokeWithInputRequiredSupport.invoke(runnable, getContext(), getFrame());
+		invokeWithInputRequiredSupport.invoke(runnable, getContext(), getFrame());
 	}
 
 	protected DetailsController<Clct> getDetailsConroller() {

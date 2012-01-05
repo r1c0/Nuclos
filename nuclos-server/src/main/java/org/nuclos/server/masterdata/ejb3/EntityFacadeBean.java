@@ -60,6 +60,7 @@ import org.nuclos.server.dblayer.structure.DbColumnType;
 import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.report.valueobject.DatasourceVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -76,13 +77,30 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 	private static final Logger log = Logger.getLogger(EntityFacadeBean.class);
 
 	private static final long serialVersionUID = -7055310957896198484L;
-	private final MasterDataFacadeHelper helper = new MasterDataFacadeHelper();
-
 	private static final String FIELDNAME_ACTIVE = "active";
 	private static final String FIELDNAME_VALIDFROM = "validFrom";
 	private static final String FIELDNAME_VALIDUNTIL = "validUntil";
 
+	/**
+	 * @deprecated
+	 */
+	private MasterDataFacadeHelper helper;
+	
+	private DatasourceServerUtils datasourceServerUtils;
 
+	public EntityFacadeBean() {
+	}
+	
+	@Autowired
+	void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
+		this.helper = masterDataFacadeHelper;
+	}
+	
+	@Autowired
+	void setDatasourceServerUtils(DatasourceServerUtils datasourceServerUtils) {
+		this.datasourceServerUtils = datasourceServerUtils;
+	}
+	
 	/**
 	 * @ejb.interface-method view-type="remote"
 	 * @ejb.permission role-name="Login"
@@ -200,10 +218,8 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 			DbCondition condLike = builder.like(builder.upper(presentation), (wildcard+StringUtils.toUpperCase(search))+wildcard);
 			DatasourceVO dsvo = DatasourceCache.getInstance().getValuelistProvider(vlpId);
 			if (dsvo != null && dsvo.getValid()) {
-				query.where(builder.and(condLike,
-										builder.in(id, DatasourceServerUtils.getSqlWithIdForInClause(
-																							dsvo.getSource(),
-																							vlpParameter))));
+				query.where(builder.and(condLike,builder.in(id, 
+						datasourceServerUtils.getSqlWithIdForInClause(dsvo.getSource(), vlpParameter))));
 			} else {
 				query.where(condLike);
 			}

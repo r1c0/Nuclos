@@ -35,18 +35,28 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.genericobject.ejb3.GenerationResult;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Action used by the controller for creating multiple generic objects
  */
+@Configurable
 class MultiGenerateAction implements Action<Pair<Collection<EntityObjectVO>, Long>, GenerationResult> {
 
 	private final JComponent parent;
 	private final GeneratorActionVO generatoractionvo;
 
+	private InvokeWithInputRequiredSupport invokeWithInputRequiredSupport;
+
 	MultiGenerateAction(JComponent parent, GeneratorActionVO generatoractionvo) {
 		this.parent = parent;
 		this.generatoractionvo = generatoractionvo;
+	}
+
+	@Autowired
+	void setInvokeWithInputRequiredSupport(InvokeWithInputRequiredSupport invokeWithInputRequiredSupport) {
+		this.invokeWithInputRequiredSupport = invokeWithInputRequiredSupport;
 	}
 
 	/**
@@ -59,7 +69,7 @@ class MultiGenerateAction implements Action<Pair<Collection<EntityObjectVO>, Lon
 	public GenerationResult perform(final Pair<Collection<EntityObjectVO>, Long> sources) throws CommonBusinessException {
 		final HashMap<String, Serializable> context = new HashMap<String, Serializable>();
 		final AtomicReference<GenerationResult> result = new AtomicReference<GenerationResult>();
-		InvokeWithInputRequiredSupport.invoke(new CommonRunnable() {
+		invokeWithInputRequiredSupport.invoke(new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 				if (generatoractionvo.isGroupAttributes()) {

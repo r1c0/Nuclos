@@ -73,6 +73,7 @@ import org.nuclos.server.dblayer.query.DbOrder;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.dblayer.query.DbSelection;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class EOSearchExpressionUnparser {
 
@@ -85,11 +86,18 @@ public class EOSearchExpressionUnparser {
 	private DbFrom table;
 	private final EntityMetaDataVO entity;
 
+	private SessionUtils utils;
+	
 	public EOSearchExpressionUnparser(DbQuery<?> query, EntityMetaDataVO entityMeta) {
 		this.entity = entityMeta;
 		this.query = query;
 		this.queryBuilder = query.getBuilder();
 		this.table = CollectionUtils.getFirst(query.getRoots());
+	}
+	
+	@Autowired
+	void setSessionUtils(SessionUtils utils) {
+		this.utils = utils;
 	}
 
 	public void unparseSearchCondition(CollectableSearchCondition clctcond) {
@@ -360,7 +368,7 @@ public class EOSearchExpressionUnparser {
 				comparand = new CollectableValueField(RelativeDate.today());
 				break;
 			case USER:
-				String userName = SessionUtils.getCurrentUserName();
+				String userName = utils.getCurrentUserName();
 				if (field.isIdField()) {
 					Integer userId = SecurityCache.getInstance().getUserId(userName);
 					comparand = new CollectableValueIdField(userId, userName);

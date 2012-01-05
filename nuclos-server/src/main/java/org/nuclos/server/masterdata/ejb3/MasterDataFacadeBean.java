@@ -121,6 +121,7 @@ import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO.Event;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -138,12 +139,24 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 
 	private static final Logger LOG = Logger.getLogger(MasterDataFacadeBean.class);
 
-	private final MasterDataFacadeHelper helper	= new MasterDataFacadeHelper();
+	private MasterDataFacadeHelper helper;
 
 	//warum auskommentiert?
 	//final ClientNotifier clientnotifier = new ClientNotifier(JMSConstants.TOPICNAME_METADATACACHE);
 
 	private boolean bServerValidatesMasterDataValues;
+	
+	public MasterDataFacadeBean() {
+	}
+	
+	@Autowired
+	void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
+		this.helper = masterDataFacadeHelper;
+	}
+	
+	protected final MasterDataFacadeHelper getMasterDataFacadeHelper() {
+		return helper;
+	}
 
 	@Override
 	@PostConstruct
@@ -315,7 +328,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			}
 			result = new TruncatableCollectionDecorator<MasterDataVO>(colResult, false, colResult.size());
 		} else {
-			TruncatableCollection<MasterDataVO> truncoll = MasterDataFacadeHelper.getGenericMasterData(sEntityName, cond, bAll);
+			TruncatableCollection<MasterDataVO> truncoll = helper.getGenericMasterData(sEntityName, cond, bAll);
 			// permissions on reports and forms are given explicitly on a record per
 			// record basis
 			if (nuclosEntity == NuclosEntity.REPORT || nuclosEntity == NuclosEntity.REPORTEXECUTION) {
@@ -494,13 +507,12 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 								if(dmdm == null) {
 									dmdm = new DependantMasterDataMap();
 								}
-								dmdm.addAllData(eafn.getEntityName(), CollectionUtils.transform(collmdvo, new MasterDataToEntityObjectTransformer()));
+								dmdm.addAllData(eafn.getEntityName(), CollectionUtils.transform(collmdvo, 
+										new MasterDataToEntityObjectTransformer()));
 							}
 						}
 
-						return new MasterDataWithDependantsVO(
-							MasterDataFacadeHelper.getMasterDataCVOById(mdmetavo, oId),
-							dmdm);
+						return new MasterDataWithDependantsVO(helper.getMasterDataCVOById(mdmetavo, oId), dmdm);
 					}
 					catch(CommonFinderException ex) {
 						// This may never occur inside of a "repeatable read"
@@ -525,7 +537,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
     @RolesAllowed("Login")
 	public TruncatableCollection<MasterDataVO> getAllReports() throws CommonFinderException, CommonPermissionException {
 		this.checkReadAllowed(NuclosEntity.ROLE);
-		return MasterDataFacadeHelper.getGenericMasterData(NuclosEntity.REPORT.getEntityName(), null, true);
+		return helper.getGenericMasterData(NuclosEntity.REPORT.getEntityName(), null, true);
 	}
 
 	/**
@@ -576,7 +588,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
     @RolesAllowed("Login")
 	public Collection<MasterDataVO> getDependantMasterData(String sEntityName,
 		String sForeignKeyField, Object oRelatedId) {
-		Collection<MasterDataVO> result = CollectionUtils.transform(MasterDataFacadeHelper.getDependantMasterData(sEntityName,
+		Collection<MasterDataVO> result = CollectionUtils.transform(helper.getDependantMasterData(sEntityName,
 			sForeignKeyField, oRelatedId, this.getCurrentUserName()), new EntityObjectToMasterDataTransformer());
 		return result;
 	}
@@ -586,7 +598,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	@RolesAllowed("Login")
 	public Collection<EntityTreeViewVO> getDependantSubnodes(
 		String sEntityName, String sForeignKeyField, Object oRelatedId) {
-		Collection<EntityTreeViewVO> result = CollectionUtils.transform(MasterDataFacadeHelper.getDependantMasterData(sEntityName,
+		Collection<EntityTreeViewVO> result = CollectionUtils.transform(helper.getDependantMasterData(sEntityName,
 			sForeignKeyField, oRelatedId, this.getCurrentUserName()), new EntityObjectToEntityTreeViewVO());
 		return result;
 	}
@@ -608,7 +620,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		// @todo This doesn't work for entities with composite primary keys
 		checkReadAllowed(sEntityName);
 		
-		RecordGrantUtils.checkInternal(sEntityName, IdUtils.toLongId(oId));
+		getRecordGrantUtils().checkInternal(sEntityName, IdUtils.toLongId(oId));
 
 		Long longId = null;
 		if (oId instanceof Integer) {
@@ -624,7 +636,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			EntityObjectVO eo = NucletDalProvider.getInstance().getEntityObjectProcessor(sEntityName).getByPrimaryKey(longId);
 			return DalSupportForMD.wrapEntityObjectVO(eo);
 		} else {
-			return MasterDataFacadeHelper.getMasterDataCVOById(MasterDataMetaCache.getInstance().getMetaData(sEntityName), oId);
+			return helper.getMasterDataCVOById(MasterDataMetaCache.getInstance().getMetaData(sEntityName), oId);
 		}
 	}
 
@@ -690,7 +702,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 				this.getServerValidatesMasterDataValues(), null);
 			MasterDataVO result;
 			try {
-				result = MasterDataFacadeHelper.getMasterDataCVOById(
+				result = helper.getMasterDataCVOById(
 					MasterDataMetaCache.getInstance().getMetaData(sEntityName), iId);
 			}
 			catch(CommonFinderException ex) {
@@ -734,7 +746,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 				try {
 					mpDependants = reloadDependants(sEntityName, result, true);
 					fireSaveEvent(Event.CREATE_AFTER, sEntityName, result, mpDependants, true);
-					result = MasterDataFacadeHelper.getMasterDataCVOById(MasterDataMetaCache.getInstance().getMetaData(sEntityName), iId);
+					result = helper.getMasterDataCVOById(MasterDataMetaCache.getInstance().getMetaData(sEntityName), iId);
 				}
 				catch (CommonFinderException ex) {
 					throw new CommonFatalException(ex);
@@ -773,7 +785,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		// todo: check and clean thrown exception types to necessary minimum
 
 		checkWriteAllowed(sEntityName);
-		RecordGrantUtils.checkWriteInternal(sEntityName, LangUtils.convertId((Integer) mdvo.getId()));
+		getRecordGrantUtils().checkWriteInternal(sEntityName, LangUtils.convertId((Integer) mdvo.getId()));
 
 		NuclosEntity nuclosEntity = NuclosEntity.getByName(sEntityName);
 
@@ -893,7 +905,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		CommonPermissionException, NuclosBusinessRuleException {
 
 		checkDeleteAllowed(sEntityName);
-		RecordGrantUtils.checkDeleteInternal(sEntityName, LangUtils.convertId((Integer) mdvo.getId()));
+		getRecordGrantUtils().checkDeleteInternal(sEntityName, LangUtils.convertId((Integer) mdvo.getId()));
 
 		NuclosEntity nuclosEntity = NuclosEntity.getByName(sEntityName);
 
@@ -1370,20 +1382,14 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		catch(FileNotFoundException ex) {
 			throw new NuclosFatalException(
 				StringUtils.getParameterizedExceptionMessage(
-					"masterdata.error.missing.file", sOutputFileName), ex);// "Kann Datei "
-																								// +
-																								// sOutputFileName
-																								// +
-																								// " nicht erzeugen.",
-																								// ex);
+					"masterdata.error.missing.file", sOutputFileName), ex);
 		}
 
 		ps.println("Entit\u00e4t; ID; Fehlermeldung");
 		for(MasterDataMetaVO mdmcvo : MasterDataMetaCache.getInstance().getAllMetaData()) {
 			final String sEntityName = mdmcvo.getEntityName();
 			try {
-				for(MasterDataVO mdvo : MasterDataFacadeHelper.getGenericMasterData(
-					sEntityName, null, true)) {
+				for(MasterDataVO mdvo : helper.getGenericMasterData(sEntityName, null, true)) {
 					try {
 						// validate each record
 						mdvo.validate(mdmcvo);

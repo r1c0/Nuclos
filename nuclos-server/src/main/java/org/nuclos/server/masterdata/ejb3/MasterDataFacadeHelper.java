@@ -113,6 +113,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.resource.ResourceCache;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Helper class for the MasterDataFacade.
@@ -123,8 +125,10 @@ import org.nuclos.server.resource.ResourceCache;
  * @author	<a href="mailto:christoph.radig@novabit.de">christoph.radig</a>
  * @version 01.00.00
  */
+@Component
 public class MasterDataFacadeHelper {
-	private static final Logger log = Logger.getLogger(MasterDataFacadeHelper.class);
+	
+	private static final Logger LOG = Logger.getLogger(MasterDataFacadeHelper.class);
 
 	private static final List<String> lstSystemDbFieldNames =
 			Arrays.asList("intid", "datcreated", "strcreated", "datchanged", "strchanged", "intversion");
@@ -132,8 +136,6 @@ public class MasterDataFacadeHelper {
 	//final ClientNotifier clientnotifier = new ClientNotifier(JMSConstants.TOPICNAME_MASTERDATACACHE);
 
 	static final int MAXROWS = 100;
-
-	private AttributeFacadeLocal attributeFacade;
 
 	public static enum RoleDependant {
 
@@ -178,9 +180,22 @@ public class MasterDataFacadeHelper {
 	      return null;
 	   }
 	}
+	
+	//
+	
+	private AttributeFacadeLocal attributeFacade;
+
+	private RecordGrantUtils grantUtils;
+	
+	public MasterDataFacadeHelper() {
+	}
+	
+	@Autowired
+	void setRecordGrantUtils(RecordGrantUtils grantUtils) {
+		this.grantUtils = grantUtils;
+	}
 
 	void close() {
-
 	}
 
 	void notifyClients(String sCachedEntityName) {
@@ -190,7 +205,7 @@ public class MasterDataFacadeHelper {
 		NuclosJMSUtils.sendMessage(sCachedEntityName, JMSConstants.TOPICNAME_MASTERDATACACHE);
 	}
 
-	public static MasterDataVO getMasterDataCVOById(final MasterDataMetaVO mdmetavo, final Object oId) throws CommonFinderException {
+	public MasterDataVO getMasterDataCVOById(final MasterDataMetaVO mdmetavo, final Object oId) throws CommonFinderException {
 		MasterDataVO mdVO = XMLEntities.getSystemObjectById(mdmetavo.getEntityName(), oId);
 		if (mdVO != null) {
 			return mdVO;
@@ -199,7 +214,7 @@ public class MasterDataFacadeHelper {
 		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(mdmetavo.getEntityName());
 		EntityObjectVO eoResult = eoProcessor.getByPrimaryKey(LangUtils.convertId((Integer)oId));
 		try {
-			RecordGrantUtils.checkInternal(mdmetavo.getEntityName(), LangUtils.convertId((Integer)oId));
+			grantUtils.checkInternal(mdmetavo.getEntityName(), LangUtils.convertId((Integer)oId));
         }
         catch(CommonPermissionException e) {
         	throw new CommonFinderException(e);
@@ -224,11 +239,11 @@ public class MasterDataFacadeHelper {
 	 * @precondition oRelatedId != null
 	 * @todo restrict permissions by entity name
 	 */
-	public static Collection<EntityObjectVO> getDependantMasterData(String sEntityName, String sForeignKeyField, Object oRelatedId, String username) {
+	public Collection<EntityObjectVO> getDependantMasterData(String sEntityName, String sForeignKeyField, Object oRelatedId, String username) {
 		if (oRelatedId == null) {
 			throw new NullArgumentException("oRelatedId");
 		}
-		log.debug("Getting dependant masterdata for entity " + sEntityName + " with foreign key field " + sForeignKeyField + " and related id " + oRelatedId);
+		LOG.debug("Getting dependant masterdata for entity " + sEntityName + " with foreign key field " + sForeignKeyField + " and related id " + oRelatedId);
 
 		final MasterDataMetaVO mdmetavo = MasterDataMetaCache.getInstance().getMetaData(sEntityName);
 		Date startDate = new Date();
@@ -253,10 +268,10 @@ public class MasterDataFacadeHelper {
 		return colEntityObject;
 	}
 
-	static Collection<MasterDataVO> getDependantMasterDataByBean(String sEntityName, String sForeignKeyFieldName, Object oRelatedId) {
+	Collection<MasterDataVO> getDependantMasterDataByBean(String sEntityName, String sForeignKeyFieldName, Object oRelatedId) {
 		final CollectableEntityField clctef = SearchConditionUtils.newMasterDataEntityField(MasterDataMetaCache.getInstance().getMetaData(sEntityName), sForeignKeyFieldName);
 		final CollectableSearchCondition cond = new CollectableComparison(clctef, ComparisonOperator.EQUAL, new CollectableValueIdField(oRelatedId, null));
-		return MasterDataFacadeHelper.getGenericMasterData(sEntityName, cond, true);
+		return getGenericMasterData(sEntityName, cond, true);
 	}
 
 	static Collection<MasterDataVO> getDependantMasterDataBySQL(Object oRelatedId, final MasterDataMetaVO mdmetavo) {
@@ -406,7 +421,7 @@ public class MasterDataFacadeHelper {
 	 * @param mdvo
 	 * @throws CommonStaleVersionException
 	 */
-	static MasterDataVO checkForStaleVersion(MasterDataMetaVO mdMetaVO, MasterDataVO mdvo) throws CommonStaleVersionException, CommonPermissionException, CommonFinderException {
+	MasterDataVO checkForStaleVersion(MasterDataMetaVO mdMetaVO, MasterDataVO mdvo) throws CommonStaleVersionException, CommonPermissionException, CommonFinderException {
 		final MasterDataVO mdvoInDataBase = getMasterDataCVOById(mdMetaVO, mdvo.getIntId());
 		if (mdvo.getVersion() != mdvoInDataBase.getVersion()) {
 			throw new CommonStaleVersionException();
@@ -814,7 +829,7 @@ public class MasterDataFacadeHelper {
 					this.modifySingleRow(sDependantEntityName, mdvoDependant, sUserName, bValidate);
 				}
 				else {
-					log.debug("Dependant row " + mdvoDependant.getId() + " has not changed. Will not be updated.");
+					LOG.debug("Dependant row " + mdvoDependant.getId() + " has not changed. Will not be updated.");
 				}
 			}
 
@@ -952,7 +967,7 @@ public class MasterDataFacadeHelper {
 	 * @return TruncatableCollection<MasterDataVO> collection of master data value objects
 	 * @postcondition result != null
 	 */
-	public static TruncatableCollection<MasterDataVO> getGenericMasterData(String sEntityName, final CollectableSearchCondition cond, final boolean bAll) {
+	public TruncatableCollection<MasterDataVO> getGenericMasterData(String sEntityName, final CollectableSearchCondition cond, final boolean bAll) {
 		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(sEntityName);
 
 		CollectableSearchExpression clctexpr = new CollectableSearchExpression(cond);
@@ -1047,7 +1062,7 @@ public class MasterDataFacadeHelper {
 
 
 			java.io.File file = new java.io.File(documentDir, documentFile.getDocumentFileId() + "." + documentFile.getFilename());
-			log.debug("Calculated path for document attachment: " + file.getCanonicalPath());
+			LOG.debug("Calculated path for document attachment: " + file.getCanonicalPath());
 			return file.getCanonicalPath();
 		}
 		catch (java.io.IOException e) {
@@ -1243,15 +1258,19 @@ public class MasterDataFacadeHelper {
 	 * @param expr
 	 * @param entity
 	 * @return new AND 'condition' if any record grant(s) found, otherwise expr is returned.
+	 * 
+	 * @deprecated Use Spring injection instead.
 	 */
-	protected static CollectableSearchExpression appendRecordGrants(CollectableSearchExpression expr, String entity) {
-		return RecordGrantUtils.append(expr, entity);
+	protected CollectableSearchExpression appendRecordGrants(CollectableSearchExpression expr, String entity) {
+		return grantUtils.append(expr, entity);
 	}
 
-	protected static CollectableSearchExpression getRecordGrantExpression(Long id, String entity) {
+	/**
+	 * @deprecated Use Spring injection instead.
+	 */
+	protected CollectableSearchExpression getRecordGrantExpression(Long id, String entity) {
 		return appendRecordGrants(new CollectableSearchExpression(new CollectableIdCondition(id)), entity);
 	}
-
 
 	public void removeDependantTaskObjects(Integer entityId) {
 		DbStatement stmt = DbStatementUtils.deleteFrom("T_UD_TODO_OBJECT",

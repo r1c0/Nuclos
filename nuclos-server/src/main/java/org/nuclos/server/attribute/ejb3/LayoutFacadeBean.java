@@ -153,7 +153,8 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 	@RolesAllowed("Login")
 	public String getMasterDataLayout(String sEntity, boolean bSearchMode) {
 	String sLayoutML = null;
-		final List<MasterDataVO> lstMDLayoutUsage = new ArrayList<MasterDataVO>(getMasterDataFacade().getMasterData(NuclosEntity.LAYOUTUSAGE.getEntityName(), null, true));
+		final List<MasterDataVO> lstMDLayoutUsage = new ArrayList<MasterDataVO>(getMasterDataFacade().getMasterData(
+				NuclosEntity.LAYOUTUSAGE.getEntityName(), null, true));
 		for (MasterDataVO mdvoUsage : lstMDLayoutUsage) {
 //			final String sEntityName = mdvoUsage.getField("entity", String.class);
 			final String sEntityName = mdvoUsage.getField("entity", String.class);
@@ -162,7 +163,8 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 
 			if (sEntityName.equals(sEntity) && bSearch == bSearchMode) {
 				try {
-					MasterDataVO mdvoLayout = MasterDataFacadeHelper.getMasterDataCVOById(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.LAYOUT), iLayoutId);
+					MasterDataVO mdvoLayout = getMasterDataFacadeHelper().getMasterDataCVOById(
+							MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.LAYOUT), iLayoutId);
 					sLayoutML = mdvoLayout.getField("layoutML", String.class);
 					break;
 				}
@@ -186,7 +188,8 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 		String sLayoutML = null;
 
 		try {
-			MasterDataVO mdvoLayout = MasterDataFacadeHelper.getMasterDataCVOById(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.LAYOUT), iLayoutId);
+			MasterDataVO mdvoLayout = getMasterDataFacadeHelper().getMasterDataCVOById(
+					MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.LAYOUT), iLayoutId);
 			sLayoutML = mdvoLayout.getField("layoutML", String.class);
 		}
 		catch (CommonFinderException e) {
@@ -346,9 +349,9 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 	@Override
 	public Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesById(Integer iLayoutId) {
 		String sLayoutML = null;
-
 		try {
-			MasterDataVO mdvoLayout = MasterDataFacadeHelper.getMasterDataCVOById(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.LAYOUT), iLayoutId);
+			MasterDataVO mdvoLayout = getMasterDataFacadeHelper().getMasterDataCVOById(
+					MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.LAYOUT), iLayoutId);
 			sLayoutML = mdvoLayout.getField("layoutML", String.class);
 		}
 		catch (CommonFinderException e) {

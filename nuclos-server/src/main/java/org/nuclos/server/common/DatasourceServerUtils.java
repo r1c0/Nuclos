@@ -44,12 +44,32 @@ import org.nuclos.server.report.SchemaCache;
 import org.nuclos.server.report.WhereConditionParser;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DatasourceServerUtils {
-	private static Logger	log	= Logger.getLogger(DatasourceServerUtils.class);
+	
+	private static final Logger LOG	= Logger.getLogger(DatasourceServerUtils.class);
+	
+	//
 
-	public static final SQLCache SQLCACHE = new SQLCache();
+	private final SQLCache sqlCache = new SQLCache();
+	
+	private SessionUtils utils;
+	
+	public DatasourceServerUtils() {
+	}
+	
+	@Autowired
+	void setSessionUtils(SessionUtils utils) {
+		this.utils = utils;
+	}
+	
+	public void invalidateCache() {
+		sqlCache.invalidate();
+	}
 
 	/**
 	 * get sql string for datasource definition
@@ -57,7 +77,7 @@ public class DatasourceServerUtils {
 	 * @param iDatasourceId id of datasource
 	 * @return string containing sql
 	 */
-	public static String createSQL(Integer iDatasourceId,
+	public String createSQL(Integer iDatasourceId,
 	    Map<String, Object> mpParams) throws NuclosDatasourceException {
 		try {
 			// final DatasourceLocal datasource =
@@ -66,7 +86,7 @@ public class DatasourceServerUtils {
 			// return createSQL(new String(datasource.getObjDatasourceXML()),
 			// mpParams);
 			DatasourceVO vo = DatasourceCache.getInstance().getDatasourcesById(
-			    iDatasourceId, SessionUtils.getCurrentUserName());
+			    iDatasourceId, utils.getCurrentUserName());
 			return createSQL(vo.getSource(), mpParams);
 		}
 		catch(CommonPermissionException e) {
@@ -81,7 +101,7 @@ public class DatasourceServerUtils {
 	 * @param iDatasourceId id of datasource
 	 * @return string containing sql
 	 */
-	public static String createSQLForReportExecution(String name, Map<String, Object> mpParams) throws NuclosDatasourceException {
+	public String createSQLForReportExecution(String name, Map<String, Object> mpParams) throws NuclosDatasourceException {
 		DatasourceVO vo = DatasourceCache.getInstance().getDatasourceByName(name);
 		return createSQL(vo.getSource(), mpParams);
 	}
@@ -92,8 +112,8 @@ public class DatasourceServerUtils {
 	 * @param sDatasourceXML xml of datasource
 	 * @return string containing sql
 	 */
-	public static String createSQL(String sDatasourceXML) throws NuclosDatasourceException {
-		return SQLCACHE.getSQL(sDatasourceXML);
+	public String createSQL(String sDatasourceXML) throws NuclosDatasourceException {
+		return sqlCache.getSQL(sDatasourceXML);
 	}
 
 	/**
@@ -103,7 +123,7 @@ public class DatasourceServerUtils {
 	 * @return new PlainSubCondition with '(SELECT intid FROM ( ... ) ds )' condition
 	 * @throws NuclosDatasourceException
 	 */
-	public static PlainSubCondition getConditionWithIdForInClause(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
+	public PlainSubCondition getConditionWithIdForInClause(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
 		return new PlainSubCondition(getSqlWithIdForInClause(sDatasourceXML, mpParams));
 	}
 
@@ -114,7 +134,7 @@ public class DatasourceServerUtils {
 	 * @return
 	 * @throws NuclosDatasourceException
 	 */
-	public static String getSqlWithIdForInClause(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
+	public String getSqlWithIdForInClause(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
 		return "(SELECT \"intid\" FROM (" + createSQL(sDatasourceXML, mpParams) + ") ds )";
 	}
 
@@ -125,7 +145,7 @@ public class DatasourceServerUtils {
 	 * @return
 	 * @throws NuclosDatasourceException
 	 */
-	public static String getSqlQueryForId(String sDatasourceXML, Map<String, Object> mpParams, Long id) throws NuclosDatasourceException {
+	public String getSqlQueryForId(String sDatasourceXML, Map<String, Object> mpParams, Long id) throws NuclosDatasourceException {
 		return MessageFormat.format("SELECT ds.{0} FROM ({1}) ds WHERE ds.{0} = {2}", "\"intid\"", createSQL(sDatasourceXML, mpParams), String.valueOf(id));
 	}
 
@@ -135,14 +155,14 @@ public class DatasourceServerUtils {
 	 * @param sDatasourceXML xml of datasource
 	 * @return string containing sql
 	 */
-	public static String createSQL(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
+	public String createSQL(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
 		String result = null;
-		result = SQLCACHE.getSQL(sDatasourceXML);
+		result = sqlCache.getSQL(sDatasourceXML);
 		if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() != null) {
 			mpParams.put("username", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 		}
 		result = replaceParameters(result, mpParams==null?(new HashMap<String, Object>()):mpParams);
-		log.debug(result);
+		LOG.debug(result);
 
 		return result;
 	}
@@ -153,8 +173,8 @@ public class DatasourceServerUtils {
 	 * @return sql with original parameter placeholders
 	 * @throws NuclosDatasourceException
 	 */
-	public static String createSQLOriginalParameter(String sDatasourceXML) throws NuclosDatasourceException {
-		return SQLCACHE.getSQL(sDatasourceXML);
+	public String createSQLOriginalParameter(String sDatasourceXML) throws NuclosDatasourceException {
+		return sqlCache.getSQL(sDatasourceXML);
 	}
 
 	/**
@@ -163,9 +183,9 @@ public class DatasourceServerUtils {
 	 * @param sDatasourceXML xml of datasource
 	 * @return string containing sql
 	 */
-	private static String createSQLForCaching(String sDatasourceXML) throws NuclosDatasourceException {
+	private String createSQLForCaching(String sDatasourceXML) throws NuclosDatasourceException {
 		String result = null;
-		final SelectQuery query = new SelectQuery(SessionUtils.getCurrentUserName());
+		final SelectQuery query = new SelectQuery(utils.getCurrentUserName());
 
 		final DatasourceXMLParser.Result parseresult = parseDatasourceXML(sDatasourceXML);
 
@@ -235,7 +255,7 @@ public class DatasourceServerUtils {
 			result = parseresult.getQueryStringFromXml();
 		}
 
-		log.debug(result);
+		LOG.debug(result);
 		return result;
 	}
 
@@ -246,7 +266,7 @@ public class DatasourceServerUtils {
 	 * @throws NuclosFatalException
 	 * @throws NuclosDatasourceException
 	 */
-	private static DatasourceXMLParser.Result parseDatasourceXML(
+	private DatasourceXMLParser.Result parseDatasourceXML(
 	    String sDatasourceXML) throws NuclosFatalException,
 	    NuclosDatasourceException {
 		return DatasourceXMLParser.parse(sDatasourceXML);
@@ -260,7 +280,7 @@ public class DatasourceServerUtils {
 	 * @param xmltable
 	 * @return a copy of the specified table from the schema.
 	 */
-	private static Table createTable(Schema schema,
+	private Table createTable(Schema schema,
 	    DatasourceXMLParser.XMLTable xmltable) {
 		final Table table = schema.getTable(xmltable.getEntity());
 		if(table != null) {
@@ -272,7 +292,7 @@ public class DatasourceServerUtils {
 		return new Table(schema, "");
 	}
 
-	private static Column createColumn(Map<String, Table> mpTables,
+	private Column createColumn(Map<String, Table> mpTables,
 	    DatasourceXMLParser.XMLColumn column) {
 		final Table table = mpTables.get(column.getTable());
 		final Column result = new Column(table.getColumn(column.getColumn()));
@@ -288,7 +308,7 @@ public class DatasourceServerUtils {
 	 *
 	 * @return nextNumber _<number> T2 T2_1
 	 */
-	private static String getNextNumberForTableAlias(String alias,
+	private String getNextNumberForTableAlias(String alias,
 	    int tableAliasNumber) {
 		String cut = alias;
 		if(cut.indexOf("_") != -1) {
@@ -300,7 +320,7 @@ public class DatasourceServerUtils {
 		return cut + tableAliasNumber;
 	}
 
-	private static boolean checkGroupBy(
+	private boolean checkGroupBy(
 	    List<DatasourceXMLParser.XMLColumn> lstColumns) {
 		for(DatasourceXMLParser.XMLColumn xmlcolumn : lstColumns) {
 			if(xmlcolumn.getGroup() != null
@@ -318,7 +338,7 @@ public class DatasourceServerUtils {
 	 * @param mpParams
 	 * @return sql string with parameters replaced.
 	 */
-	private static String replaceParameters(String sSql, Map<String, ?> mpParams) {
+	private String replaceParameters(String sSql, Map<String, ?> mpParams) {
 		String result = sSql;
 		for(String sParameter : DatasourceUtils.getParametersFromString(sSql)) {
 			result = replaceAll(result, "$" + sParameter,
@@ -336,7 +356,7 @@ public class DatasourceServerUtils {
 	 * @return the value for sParameter from the map, or sParameter if no value
 	 *         is not found in the map
 	 */
-	private static String replaceParam(String sParameter,
+	private String replaceParam(String sParameter,
 	    Map<String, ?> mapParams) {
 		String sKey = sParameter.replace('$', ' ').trim();
 		if(!mapParams.containsKey(sKey)) {
@@ -356,7 +376,7 @@ public class DatasourceServerUtils {
 		}
 	}
 
-	private static String replaceAll(String s, String sSearchExpr,
+	private String replaceAll(String s, String sSearchExpr,
 	    String sReplacement) {
 		final StringBuffer sb = new StringBuffer(s);
 		int iFromIndex = 0;
@@ -376,7 +396,7 @@ public class DatasourceServerUtils {
 	    * @throws NuclosFatalException
 	    * @throws NuclosDatasourceException
 	    */
-	   public static List<DatasourceParameterVO> getParameters(String sDatasourceXML) throws NuclosFatalException, NuclosDatasourceException {
+	   public List<DatasourceParameterVO> getParameters(String sDatasourceXML) throws NuclosFatalException, NuclosDatasourceException {
 			// @todo we need a getParameters(Integer iDatasourceId) method for the
 			// remote interface to prevent that every user needs the right to
 			// execute the get method
@@ -393,8 +413,7 @@ public class DatasourceServerUtils {
 	    * @throws NuclosFatalException
 	    * @throws NuclosDatasourceException
 	    */
-	   public static List<DatasourceParameterVO> getParameters(Integer iDatasourceId) throws NuclosFatalException, NuclosDatasourceException {
-
+	   public List<DatasourceParameterVO> getParameters(Integer iDatasourceId) throws NuclosFatalException, NuclosDatasourceException {
 	 		final List<DatasourceParameterVO> result = new ArrayList<DatasourceParameterVO>();
 	 		DatasourceVO dsvo = DatasourceCache.getInstance().get(iDatasourceId);
 	 		final DatasourceXMLParser.Result parseresult = parseDatasourceXML(dsvo.getSource());
@@ -404,10 +423,9 @@ public class DatasourceServerUtils {
 
 
 	   /**
-	    *
 	    * SQL Cache
 	    */
-	   public static class SQLCache {
+	   public class SQLCache {
 
 		   private Map<String, String> mpDatasourcesSQLByXML = null;
 

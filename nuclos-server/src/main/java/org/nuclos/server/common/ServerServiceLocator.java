@@ -22,8 +22,21 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import org.nuclos.common2.ServiceLocator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ServerServiceLocator extends ServiceLocator {
+	
+	private NuclosRemoteContextHolder ctx;
+	
+	public ServerServiceLocator() {
+	}
+	
+	@Autowired
+	void setNuclosRemoteContextHolder(NuclosRemoteContextHolder ctx) {
+		this.ctx = ctx;
+	}
 
 	@Override
 	public <T> T getFacade(Class<T> c) {
@@ -33,12 +46,12 @@ public class ServerServiceLocator extends ServiceLocator {
 				@Override
 				public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 					try {
-						NuclosRemoteContextHolder.setRemotly(false);
+						ctx.setRemotly(false);
 						return method.invoke(target, args);
 					} catch (InvocationTargetException ex) {
 						throw ex.getTargetException();
 					} finally {
-						NuclosRemoteContextHolder.pop();
+						ctx.pop();
 					}
 
 				}

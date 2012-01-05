@@ -51,56 +51,76 @@ import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectS
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.report.valueobject.RecordGrantVO;
 import org.nuclos.server.report.valueobject.ResultVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class RecordGrantUtils {
 
 	private static final Logger	LOG	= Logger.getLogger(RecordGrantUtils.class);
+	
+	private SessionUtils utils;
+	
+	private DatasourceServerUtils datasourceServerUtils;
+	
+	public RecordGrantUtils() {
+	}
+	
+	@Autowired
+	void setSessionUtils(SessionUtils utils) {
+		this.utils = utils;
+	}
+	
+	@Autowired
+	void setDatasourceServerUtils(DatasourceServerUtils datasourceServerUtils) {
+		this.datasourceServerUtils = datasourceServerUtils;
+	}
 
-	public static void checkWriteInternal(String entity, Long id) throws CommonPermissionException {
+	public void checkWriteInternal(String entity, Long id) throws CommonPermissionException {
 		if (!getRecordGrantRightInternal(entity, id).canWrite()) {
 			throw new CommonPermissionException("recordgrant.canwrite.not.allowed");
 		}
 	}
 
-	public static void checkWrite(String entity, Long id) throws CommonPermissionException {
+	public void checkWrite(String entity, Long id) throws CommonPermissionException {
 		if (!getRecordGrantRight(entity, id).canWrite()) {
 			throw new CommonPermissionException("recordgrant.canwrite.not.allowed");
 		}
 	}
 
-	public static void checkDeleteInternal(String entity, Long id) throws CommonPermissionException {
+	public void checkDeleteInternal(String entity, Long id) throws CommonPermissionException {
 		if (!getRecordGrantRightInternal(entity, id).canDelete()) {
 			throw new CommonPermissionException("recordgrant.candelete.not.allowed");
 		}
 	}
 
-	public static void checkDelete(String entity, Long id) throws CommonPermissionException {
+	public void checkDelete(String entity, Long id) throws CommonPermissionException {
 		if (!getRecordGrantRight(entity, id).canDelete()) {
 			throw new CommonPermissionException("recordgrant.candelete.not.allowed");
 		}
 	}
 
-	public static void checkInternal(String entity, Long id) throws CommonPermissionException {
+	public void checkInternal(String entity, Long id) throws CommonPermissionException {
 		if (!isGrantedInternal(entity, id)) {
 			throw new CommonPermissionException("recordgrant.read.not.allowed");
 		}
 	}
 
-	public static void check(String entity, Long id) throws CommonPermissionException {
+	public void check(String entity, Long id) throws CommonPermissionException {
 		if (!isGranted(entity, id)) {
 			throw new CommonPermissionException("recordgrant.read.not.allowed");
 		}
 	}
 
-	public static boolean isGrantedInternal(String entity, Long id) {
-		if(!SessionUtils.isCalledRemotely())
+	public boolean isGrantedInternal(String entity, Long id) {
+		if(!utils.isCalledRemotely())
 			return true;
 
 		return isGranted(entity, id);
 	}
 
-	public static boolean isGranted(String entity, Long id) {
-		if (SecurityCache.getInstance().isSuperUser(SessionUtils.getCurrentUserName()))
+	public boolean isGranted(String entity, Long id) {
+		if (SecurityCache.getInstance().isSuperUser(utils.getCurrentUserName()))
 			return true;
 
 		final Set<RecordGrantVO> recordGrant = getByEntity(entity);
@@ -111,7 +131,8 @@ public class RecordGrantUtils {
 
 		try {
 			if(rgVO.getValid()) {
-				ResultVO queryResult = DataBaseHelper.getDbAccess().executePlainQueryAsResultVO(DatasourceServerUtils.getSqlQueryForId(rgVO.getSource(), getParameter(), id), 1);
+				ResultVO queryResult = DataBaseHelper.getDbAccess().executePlainQueryAsResultVO(
+						datasourceServerUtils.getSqlQueryForId(rgVO.getSource(), getParameter(), id), 1);
 
 				if (queryResult.getRowCount() > 0) {
 					return true;
@@ -127,15 +148,15 @@ public class RecordGrantUtils {
 		}
 	}
 
-	public static RecordGrantRight getRecordGrantRightInternal(String entity, Long id) {
-		if(!SessionUtils.isCalledRemotely())
+	public RecordGrantRight getRecordGrantRightInternal(String entity, Long id) {
+		if(!utils.isCalledRemotely())
 			return RecordGrantRight.ALL_RIGHTS;
 
 		return getRecordGrantRight(entity, id);
 	}
 
-	public static RecordGrantRight getRecordGrantRight(String entity, Long id) {
-		if (SecurityCache.getInstance().isSuperUser(SessionUtils.getCurrentUserName()))
+	public RecordGrantRight getRecordGrantRight(String entity, Long id) {
+		if (SecurityCache.getInstance().isSuperUser(utils.getCurrentUserName()))
 			return RecordGrantRight.ALL_RIGHTS;
 
 		final Set<RecordGrantVO> recordGrant = getByEntity(entity);
@@ -146,7 +167,8 @@ public class RecordGrantUtils {
 
 		try {
 			if(rgVO.getValid()) {
-				ResultVO queryResult = DataBaseHelper.getDbAccess().executePlainQueryAsResultVO(DatasourceServerUtils.createSQL(rgVO.getSource(), getParameter()), 1);
+				ResultVO queryResult = DataBaseHelper.getDbAccess().executePlainQueryAsResultVO(
+						datasourceServerUtils.createSQL(rgVO.getSource(), getParameter()), 1);
 				boolean canWrite = true;
 				boolean canDelete = true;
 
@@ -174,7 +196,7 @@ public class RecordGrantUtils {
 		}
 	}
 
-	private static boolean isTrue(Object o) {
+	private boolean isTrue(Object o) {
 		if (o instanceof Boolean) {
 			return (Boolean)o;
 		} else if (o instanceof String) {
@@ -197,12 +219,12 @@ public class RecordGrantUtils {
 	 * @return new AND condition if any record grant(s) found, otherwise cond
 	 *         is returned.
 	 */
-	public static CollectableSearchCondition append(
+	public CollectableSearchCondition append(
 		CollectableSearchCondition cond, String entity) {
-		if(!SessionUtils.isCalledRemotely())
+		if(!utils.isCalledRemotely())
 			return cond;
 
-		if (SecurityCache.getInstance().isSuperUser(SessionUtils.getCurrentUserName()))
+		if (SecurityCache.getInstance().isSuperUser(utils.getCurrentUserName()))
 			return cond;
 
 		// Look-up and add compulsory search filters
@@ -229,7 +251,8 @@ public class RecordGrantUtils {
 
 		try {
 			if(rgVO.getValid())
-				result.addOperand(DatasourceServerUtils.getConditionWithIdForInClause(rgVO.getSource(), getParameter()));
+				result.addOperand(
+						datasourceServerUtils.getConditionWithIdForInClause(rgVO.getSource(), getParameter()));
 		}
 		catch(NuclosDatasourceException e) {
 			throw new NuclosFatalException(
@@ -247,9 +270,9 @@ public class RecordGrantUtils {
 	 * @return new AND 'condition' if any record grant(s) found, otherwise expr
 	 *         is returned.
 	 */
-	public static CollectableSearchExpression append(
+	public CollectableSearchExpression append(
 	    CollectableSearchExpression expr, String entity) {
-		if(!SessionUtils.isCalledRemotely())
+		if(!utils.isCalledRemotely())
 			return expr;
 
 
@@ -270,13 +293,13 @@ public class RecordGrantUtils {
 		return result;
 	}
 
-	private static Map<String, Object> getParameter() {
+	private Map<String, Object> getParameter() {
 		Map<String, Object> mpParams = new HashMap<String, Object>();
-		mpParams.put("username", SessionUtils.getCurrentUserName());
+		mpParams.put("username", utils.getCurrentUserName());
 		return mpParams;
 	}
 
-	public static Set<RecordGrantVO> getByEntity(final String entity) {
+	public Set<RecordGrantVO> getByEntity(final String entity) {
 		Set<RecordGrantVO> result = CollectionUtils.selectIntoSet(
 		    DatasourceCache.getInstance().getAllRecordGrant(),
 		    new Predicate<RecordGrantVO>() {
@@ -301,8 +324,8 @@ public class RecordGrantUtils {
 	// Compulsory search filters
 	//
 
-	private static CollectableSearchCondition getCompulsorySearchFilter(String entity) {
-		Set<Integer> filterIds = SecurityCache.getInstance().getCompulsorySearchFilterIds(SessionUtils.getCurrentUserName(), entity);
+	private CollectableSearchCondition getCompulsorySearchFilter(String entity) {
+		Set<Integer> filterIds = SecurityCache.getInstance().getCompulsorySearchFilterIds(utils.getCurrentUserName(), entity);
 		if (filterIds.isEmpty())
 			return null;
 
@@ -341,7 +364,7 @@ public class RecordGrantUtils {
 		return result;
 	}
 
-	private static CollectableSearchCondition parseSearchFilter(String filterName, String entityName, String xml) throws IOException, PreferencesException, BackingStoreException {
+	private CollectableSearchCondition parseSearchFilter(String filterName, String entityName, String xml) throws IOException, PreferencesException, BackingStoreException {
 		Preferences topPrefs = new ReadOnlyPreferences(xml, "UTF-8");
 
 		// See SearchFilterDelegate#makeSearchFilter for details about the path

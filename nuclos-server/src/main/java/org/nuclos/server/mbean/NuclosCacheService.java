@@ -20,7 +20,13 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.server.common.DatasourceCache;
 import org.nuclos.server.report.SchemaCache;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+/**
+ * @deprecated Is this still in use?
+ */
+@Component
 public class NuclosCacheService /*extends ServiceMBeanSupport implements NuclosCacheServiceMBean */{
 
 	protected static final Logger log = Logger.getLogger(NuclosCacheService.class);
@@ -37,6 +43,11 @@ public class NuclosCacheService /*extends ServiceMBeanSupport implements NuclosC
 		catch(Exception e) {
 			throw new NuclosFatalException(e);
 		}
+	}
+	
+	@Autowired
+	void setDatasourceCache(DatasourceCache datasourceCache) {
+		this.datasourceCache = datasourceCache;
 	}
 
 	
@@ -56,7 +67,7 @@ public class NuclosCacheService /*extends ServiceMBeanSupport implements NuclosC
 //      LoginContext lc = new LoginContext("client-login", handler);
 		try {
 //			lc.login();
-			this.datasourceCache = DatasourceCache.getInstance();
+			// this.datasourceCache = DatasourceCache.getInstance();
 			this.schemaCache = SchemaCache.getInstance();
 		} finally {
 //			lc.logout();

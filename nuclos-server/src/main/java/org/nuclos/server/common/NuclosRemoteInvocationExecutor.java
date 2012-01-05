@@ -30,24 +30,54 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 
 	private static final Logger LOG = Logger.getLogger(NuclosRemoteInvocationExecutor.class);
 	
+	/**
+	 * Spring injected.
+	 */
 	private InputContext inputContext;
+	
+	/**
+	 * Spring injected.
+	 */
+	private NuclosUserDetailsContextHolder userContext;
+	
+	/**
+	 * Spring injected.
+	 */
+	private NuclosRemoteContextHolder remoteContext;
 	
 	public NuclosRemoteInvocationExecutor() {
 	}
 	
+	/**
+	 * Spring injected.
+	 */
 	public void setInputContext(InputContext inputContext) {
 		this.inputContext = inputContext; 
 	}
 	
-	private InputContext getInputContext() {
+	final InputContext getInputContext() {
 		return inputContext;
+	}
+	
+	/**
+	 * Spring injected.
+	 */
+	public void setNuclosRemoteContextHolder(NuclosRemoteContextHolder remoteContext) {
+		this.remoteContext = remoteContext;
+	}
+	
+	/**
+	 * Spring injected.
+	 */
+	public void setNuclosUserDetailsContextHolder(NuclosUserDetailsContextHolder userContext) {
+		this.userContext = userContext;
 	}
 	
 	@Override
 	public Object invoke(RemoteInvocation invoke, Object param) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		try {
-			NuclosUserDetailsContextHolder.setTimeZone((TimeZone) invoke.getAttribute("user.timezone"));
-			NuclosRemoteContextHolder.setRemotly(true);
+			userContext.setTimeZone((TimeZone) invoke.getAttribute("user.timezone"));
+			remoteContext.setRemotly(true);
 			final InputContext inputContext = getInputContext();
 
 			if (invoke.getAttribute("org.nuclos.api.context.InputContextSupported") != null) {
@@ -70,13 +100,13 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 			return invoke.invoke(param);
 		}
 		finally {
-			NuclosUserDetailsContextHolder.clear();
-			NuclosRemoteContextHolder.clear();
+			userContext.clear();
+			remoteContext.clear();
 			inputContext.clear();
 		}
 	}
 	
-	public void destroy() {
+	public synchronized void destroy() {
 		inputContext.destroy();
 		inputContext = null;
 	}

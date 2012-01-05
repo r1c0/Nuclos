@@ -16,16 +16,28 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SessionUtils {
+	
+	private NuclosRemoteContextHolder ctx;
+	
+	public SessionUtils() {
+	}
 
+	@Autowired
+	void setNuclosRemoteContextHolder(NuclosRemoteContextHolder ctx) {
+		this.ctx = ctx;
+	}
 
-    public static boolean isCalledRemotely() {
-		return Boolean.TRUE.equals(NuclosRemoteContextHolder.peek());
+    public boolean isCalledRemotely() {
+		return Boolean.TRUE.equals(ctx.peek());
 	}
 	
-	public static String getCurrentUserName() {
+	public String getCurrentUserName() {
 		if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() != null) {
 			return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
 		}

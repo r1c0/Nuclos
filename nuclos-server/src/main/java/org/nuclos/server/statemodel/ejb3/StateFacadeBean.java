@@ -116,6 +116,7 @@ import org.nuclos.server.statemodel.valueobject.StateVO.UserRights;
 import org.nuclos.server.statemodel.valueobject.StateVO.UserSubformRights;
 import org.nuclos.server.statemodel.valueobject.SubformColumnPermissionVO;
 import org.nuclos.server.statemodel.valueobject.SubformPermissionVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -134,10 +135,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemote, StateFacadeLocal {
 	
 	private static final Logger LOG = Logger.getLogger(StateFacadeBean.class);
-		
-	private LocaleFacadeLocal locale;
+
 	private final static String STATE_TABLE = "t_md_state";
-	//private ClientNotifier clientnotifier = new ClientNotifier(JMSConstants.TOPICNAME_STATEMODEL);
+
+	//
+	
+	private LocaleFacadeLocal locale;
+	
+	private SessionUtils utils;
+	
+	public StateFacadeBean() {
+	}
+	
+	@Autowired
+	void setSessionUtils(SessionUtils utils) {
+		this.utils = utils;
+	}
 
 	/**
 	 * gets a complete state graph for a state model
@@ -801,7 +814,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 				findStateTransitionBySourceState(statevoCurrent.getId()) :
 					findStateTransitionBySourceStateNonAutomatic(statevoCurrent.getId());
 
-			Collection<Integer> collTransitionIds = SecurityCache.getInstance().getTransitionIds(SessionUtils.getCurrentUserName());
+			Collection<Integer> collTransitionIds = SecurityCache.getInstance().getTransitionIds(utils.getCurrentUserName());
 			for (StateTransitionVO stateTransition : collStates) {
 				if (bGetAutomaticStatesAlso || collTransitionIds.contains(stateTransition.getId()))
 				{ //may transition be retrieved by actual user?
@@ -1452,7 +1465,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			res.setTransitionsForState(stateId, findStateTransitionBySourceState(stateId));
 			res.setResourceSIDsForState(stateId, getResourceSIdForName(stateId), getResourceSIdForDescription(stateId));
 		}
-		res.setUserTransitionIDs(SecurityCache.getInstance().getTransitionIds(SessionUtils.getCurrentUserName()));
+		res.setUserTransitionIDs(SecurityCache.getInstance().getTransitionIds(utils.getCurrentUserName()));
 		assert(res.isComplete());
 		return res;
 	}

@@ -13,20 +13,33 @@ import org.nuclos.client.main.Main;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class InvokeWithInputRequiredSupport {
+	
+	private NuclosHttpInvokerAttributeContext ctx;
+	
+	public InvokeWithInputRequiredSupport() {
+	}
+	
+	@Autowired
+	void setNuclosHttpInvokerAttributeContext(NuclosHttpInvokerAttributeContext ctx) {
+		this.ctx = ctx; 
+	}
 
-	public static void invoke(CommonRunnable runnable, Map<String, Serializable> context, JComponent parent) throws CommonBusinessException {
+	public void invoke(CommonRunnable runnable, Map<String, Serializable> context, JComponent parent) throws CommonBusinessException {
 		try {
-			NuclosHttpInvokerAttributeContext.setSupported(true);
-			NuclosHttpInvokerAttributeContext.putAll(context);
+			ctx.setSupported(true);
+			ctx.putAll(context);
 			try {
 				runnable.run();
 				context.clear();
 			}
 			finally {
-				NuclosHttpInvokerAttributeContext.clear();
-				NuclosHttpInvokerAttributeContext.setSupported(false);
+				ctx.clear();
+				ctx.setSupported(false);
 			}
 		}
 		catch (CommonBusinessException cbex) {
@@ -51,7 +64,7 @@ public class InvokeWithInputRequiredSupport {
 		}
 	}
 
-	private static void handleInputRequiredException(InputRequiredException ex, CommonRunnable r, Map<String, Serializable> context, JComponent parent) throws CommonBusinessException {
+	private void handleInputRequiredException(InputRequiredException ex, CommonRunnable r, Map<String, Serializable> context, JComponent parent) throws CommonBusinessException {
 		String title = Main.getMainFrame().getTitle();
 		String message = ex.getInputSpecification().getMessage();
 		switch (ex.getInputSpecification().getType()) {
@@ -100,7 +113,7 @@ public class InvokeWithInputRequiredSupport {
 		}
 	}
 
-	private static InputRequiredException getInputRequiredException(Throwable ex) {
+	private InputRequiredException getInputRequiredException(Throwable ex) {
 		if (ex instanceof InputRequiredException) {
 			return (InputRequiredException) ex;
 		}

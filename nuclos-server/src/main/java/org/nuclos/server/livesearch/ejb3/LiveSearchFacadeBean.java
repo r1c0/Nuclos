@@ -44,6 +44,7 @@ import org.nuclos.server.common.ejb3.SecurityFacadeLocal;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -56,6 +57,16 @@ import org.springframework.transaction.annotation.Transactional;
 // @Remote(LiveSearchFacadeRemote.class)
 @Transactional
 public final class LiveSearchFacadeBean extends NuclosFacadeBean implements LiveSearchFacadeRemote {
+	
+	private SessionUtils utils;
+	
+	public LiveSearchFacadeBean() {
+	}
+	
+	@Autowired
+	void setSessionUtils(SessionUtils utils) {
+		this.utils = utils;
+	}
 
 	/**
 	 * Perform live-search for one entity and search string.
@@ -186,7 +197,6 @@ public final class LiveSearchFacadeBean extends NuclosFacadeBean implements Live
 			if(fieldMeta.getForeignEntityField() == null)
 				return false;
 		}
-
 		return true;
 	}
 	
@@ -200,7 +210,7 @@ public final class LiveSearchFacadeBean extends NuclosFacadeBean implements Live
 			try {
 	            Class<?> cl = Class.forName(filter.trim());
 	            LiveSearchAddFilter filterImpl = (LiveSearchAddFilter) cl.newInstance();
-	            in = filterImpl.applyFilter(SessionUtils.getCurrentUserName(), in);
+	            in = filterImpl.applyFilter(utils.getCurrentUserName(), in);
             }
             catch(ClassNotFoundException e) {
             	throw new CommonFatalException(e);

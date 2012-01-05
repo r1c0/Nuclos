@@ -20,14 +20,17 @@ import java.util.Stack;
 
 import javax.annotation.PreDestroy;
 
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Component;
 
-@Configurable
+@Component
 public class NuclosRemoteContextHolder {
 	
-	private static final ThreadLocal<Stack<Boolean>> threadLocal = new ThreadLocal<Stack<Boolean>>();
+	private ThreadLocal<Stack<Boolean>> threadLocal = new ThreadLocal<Stack<Boolean>>();
 	
-	public static void setRemotly(Boolean bln) {
+	public NuclosRemoteContextHolder() {
+	}
+	
+	public void setRemotly(Boolean bln) {
 		Stack<Boolean> stack = threadLocal.get();
 		if(stack == null) {
 			stack = new Stack<Boolean>();
@@ -36,26 +39,33 @@ public class NuclosRemoteContextHolder {
 		threadLocal.set(stack);
 	}
 	
-	public static Integer getSize() {
+	public Integer getSize() {
 		return threadLocal.get().size();
 	}
 	
-	public static Boolean pop() {
+	public Boolean pop() {
 		return threadLocal.get().pop();
 	}
 	
-	public static Boolean peek() {
+	public Boolean peek() {
 		Stack<Boolean> stack = threadLocal.get();
 		return stack.size() > 0 ? stack.peek() : null;
 	}
 	
-	public static Stack<Boolean> getRequestStack() {
+	public Stack<Boolean> getRequestStack() {
 		return threadLocal.get();
 	}
 	
-	@PreDestroy
-	public static void clear() {
+	public synchronized void clear() {
 		threadLocal.remove();
+	}
+
+	@PreDestroy
+	public synchronized void destroy() {
+		if (threadLocal == null) return;
+		
+		threadLocal.remove();
+		threadLocal = null;
 	}
 
 }

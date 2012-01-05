@@ -73,6 +73,7 @@ import org.nuclos.server.dblayer.util.ForeignEntityFieldParser;
 import org.nuclos.server.dblayer.util.IFieldRef;
 import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectSearchExpression;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<EntityObjectVO>
 	implements JdbcEntityObjectProcessor {
@@ -107,6 +108,8 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 
 	private final IColumnToVOMapping<Long> idColumn;
 	private final IColumnToVOMapping<Integer> versionColumn;
+	
+	private DatasourceServerUtils datasourceServerUtils;
 
 	public EntityObjectProcessor(ProcessorConfiguration config)
 	{
@@ -137,6 +140,11 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 				logicalUniqueConstraintCombinations.add(ctovMappings);
 			}
 		}
+	}
+	
+	@Autowired
+	void setDatasourceServerUtils(DatasourceServerUtils datasourceServerUtils) {
+		this.datasourceServerUtils = datasourceServerUtils;
 	}
 
 	@Override
@@ -416,7 +424,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		if (clctexpr.getValueListProviderDatasource() != null) {
 				try {
 					if(clctexpr.getValueListProviderDatasource().getValid())
-						result = DatasourceServerUtils.getConditionWithIdForInClause(
+						result = datasourceServerUtils.getConditionWithIdForInClause(
 							clctexpr.getValueListProviderDatasource().getSource(),
 							clctexpr.getValueListProviderDatasourceParameter());
 				}

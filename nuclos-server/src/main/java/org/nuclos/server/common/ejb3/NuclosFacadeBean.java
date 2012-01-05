@@ -46,11 +46,16 @@ import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
 import org.nuclos.server.genericobject.ejb3.GenericObjectGroupFacadeLocal;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 // @Stateless
 public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
+	
+	/**
+	 * TODO: Should be static final!
+	 */
 	private Logger log;
 
 	private GenericObjectFacadeLocal goFacade;
@@ -60,9 +65,16 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 	
 	private boolean local;
 	
+	private NuclosRemoteContextHolder remoteCtx;
+	
+	private RecordGrantUtils grantUtils;
+	
 	//@Resource
 	// private SessionContext sctx;
 	
+	public NuclosFacadeBean() {
+	}
+
 	@PostConstruct
 	@RolesAllowed("Login")
 	public void postConstruct() {
@@ -74,9 +86,20 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 		this.log = null;
 	}
 	
-	public NuclosFacadeBean() {
+	@Autowired
+	void setNuclosRemoteContextHolder(NuclosRemoteContextHolder remoteCtx) {
+		this.remoteCtx = remoteCtx;
 	}
-
+	
+	@Autowired
+	final void setRecordGrantUtils(RecordGrantUtils grantUtils) {
+		this.grantUtils = grantUtils;
+	}
+	
+	protected final RecordGrantUtils getRecordGrantUtils() {
+		return grantUtils;
+	}
+	
 	/**
 	 * @return the name of the current user. Shortcut for <code>this.getSessionContext().getCallerPrincipal().getName()</code>.
 	 */
@@ -86,54 +109,80 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 	}
 
 	public boolean isCalledRemotely() {
-		return NuclosRemoteContextHolder.peek();
+		return remoteCtx.peek();
 	}
 	
 	public void setLocal(boolean bln) {
 		this.local = bln;
 	}
 	
-	
-
+	/**
+	 * @deprecated
+	 */
 	protected void initLogger() {
 		this.log = Logger.getLogger(this.getClass());
 	}
 
 	/**
 	 * @return a logger for the class of this object.
+	 * @deprecated
 	 */
 	public Logger getLogger() {
 		return this.log;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	protected void debug(Object o) {
 		this.log(Level.DEBUG, o);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	protected void info(Object o) {
 		this.log(Level.INFO, o);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	protected void warn(Object o) {
 		this.log(Level.WARN, o);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	protected void error(Object o) {
 		this.log(Level.ERROR, o);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	protected void fatal(Object o) {
 		this.log(Level.FATAL, o);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	protected void log(Priority priority, Object oMessage, Throwable t) {
 		this.getLogger().log(priority, oMessage, t);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	protected void log(Priority priority, Object oMessage) {
 		this.getLogger().log(priority, oMessage);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	protected boolean isInfoEnabled() {
 		return log.isInfoEnabled();
 	}
@@ -164,8 +213,6 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 			if (!SecurityCache.getInstance().isReadAllowedForModule(this.getCurrentUserName(), sEntityName, iGenericObjectId)) {
 				throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.1", 
 					this.getCurrentUserName(), getSystemIdentifier(iGenericObjectId), Modules.getInstance().getEntityLabelByModuleName(sEntityName)));
-					//"Der Benutzer " + this.getCurrentUserName() + " darf das Object " + getSystemIdentifier(iGenericObjectId) + " des Moduls " +
-						//Modules.getInstance().getEntityLabelByModuleName(sEntityName) + " nicht lesen.");
 			}
 		}
 	}
@@ -197,8 +244,6 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 			if (!SecurityCache.getInstance().isWriteAllowedForModule(this.getCurrentUserName(), sEntityName, iGenericObjectId)) {
 				throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.2",
 					this.getCurrentUserName(), getSystemIdentifier(iGenericObjectId), Modules.getInstance().getEntityLabelByModuleName(sEntityName)));
-//					"Der Benutzer " + this.getCurrentUserName() + " darf das Object " + getSystemIdentifier(iGenericObjectId) + " des Moduls " +
-//						Modules.getInstance().getEntityLabelByModuleName(sEntityName) + " nicht schreiben.");
 			}
 		}
 	}
@@ -225,15 +270,11 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 				if (iObjectGroupId == null) {
 					throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.3",
 						this.getCurrentUserName(), Modules.getInstance().getEntityLabelByModuleName(sEntityName)));
-//						"Der Benutzer " + this.getCurrentUserName() + " darf das Object des Moduls " +
-//							Modules.getInstance().getEntityLabelByModuleName(sEntityName) + " nicht schreiben.");
 				}
 				else {
 					GenericObjectGroupFacadeLocal facade = ServiceLocator.getInstance().getFacade(GenericObjectGroupFacadeLocal.class);
 					throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.4",
 						this.getCurrentUserName(), facade.getObjectGroupName(iObjectGroupId)));
-//						"Der Benutzer " + this.getCurrentUserName() + " darf nicht in der Objektgruppe " +
-//						facade.getObjectGroupName(iObjectGroupId) + " schreiben.");
 				}
 			}
 		}
@@ -274,14 +315,6 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 					sMessage = StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.6",
 						this.getCurrentUserName(), getSystemIdentifier(iGenericObjectId), Modules.getInstance().getEntityLabelByModuleName(sEntityName));
 				}
-//				final StringBuilder sb = new StringBuilder();
-//				sb.append("Der Benutzer ").append(this.getCurrentUserName());
-//				sb.append(" darf das Object " + getSystemIdentifier(iGenericObjectId) + " des Moduls ");
-//				sb.append(Modules.getInstance().getEntityLabelByModuleName(sEntityName)).append(" nicht ");
-//				if (bDeletePhysically) {
-//					sb.append("physikalisch ");
-//				}
-//				sb.append("l\u00f6schen.");
 				throw new CommonPermissionException(sMessage);
 			}
 		}
@@ -317,8 +350,6 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 				}
 				if (!isReadAllowed) {
 					throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.7", this.getCurrentUserName(), sEntityLabel));
-//						"Der Benutzer " + this.getCurrentUserName() + " darf in der Entit\u00e4t \"" +
-//							sEntityLabel + "\" nicht lesen.");
 				}
 			}
 
@@ -356,8 +387,6 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 				}
 				if (!isWriteAllowed) {
 					throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.8", this.getCurrentUserName(), sEntityLabel));
-//						"Der Benutzer " + this.getCurrentUserName() + " darf in der Entit\u00e4t \"" +
-//							sEntityLabel + "\" nicht schreiben.");
 				}
 			}
 		}
@@ -394,8 +423,6 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 				}
 				if (!isDeleteAllowed) {
 					throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.9", this.getCurrentUserName(), sEntityLabel));
-//						"Der Benutzer " + this.getCurrentUserName() + " darf in der Entit\u00e4t \"" +
-//							sEntityLabel + "\" nicht l\u00f6schen.");
 				}
 			}
 		}
@@ -431,10 +458,6 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 
 	protected MasterDataFacadeLocal getMasterDataFacade() {
 		return this.getFacade(MasterDataFacadeLocal.class);
-//		if (mdFacade == null) {
-//			mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
-//		}
-//   	return mdFacade;
    }
 	
 	protected LocaleFacadeLocal getLocaleFacade() {
@@ -453,8 +476,6 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 	private void checkFrozenEntities(String... entityName) throws CommonPermissionException {
 		for (String s : entityName)
 			if (getTransferFacade().isFrozenEntity(s)) {
-//				String msg = String.format("Die Konfigurationsdaten sind zur Zeit gesperrt. "
-//					+ "Die Entit\u00e4t \"%s\" kann nicht modifiziert werden.", s);
 				throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.10", s));
 			}
 	}
@@ -464,9 +485,11 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 	 * @param expr
 	 * @param entity
 	 * @return new AND 'condition' if any record grant(s) found, otherwise expr is returned.
+	 * 
+	 * @deprecated Use Spring injection instead.
 	 */
 	protected CollectableSearchExpression appendRecordGrants(CollectableSearchExpression expr, String entity) {
-		return RecordGrantUtils.append(expr, entity);
+		return grantUtils.append(expr, entity);
 	}
 	
 	/**
@@ -474,11 +497,16 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 	 * @param expr
 	 * @param entity
 	 * @return new AND 'condition' if any record grant(s) found, otherwise expr is returned.
+	 * 
+	 * @deprecated Use Spring injection instead.
 	 */
 	protected CollectableSearchExpression appendRecordGrants(CollectableSearchExpression expr, EntityMetaDataVO entity) {
-		return RecordGrantUtils.append(expr, entity != null? entity.getEntity(): null);
+		return grantUtils.append(expr, entity != null? entity.getEntity(): null);
 	}
 	
+	/**
+	 * @deprecated Use Spring injection instead.
+	 */
 	protected CollectableSearchExpression getRecordGrantExpression(Long id, String entity) {
 		return appendRecordGrants(new CollectableSearchExpression(new CollectableIdCondition(id)), entity);
 	}
@@ -490,24 +518,22 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 	 * @param entity
 	 * @return new AND condition if any record grant(s) found, otherwise cond
 	 *         is returned.
+	 *         
+	 * @deprecated Use Spring injection instead.
 	 */
-	protected static CollectableSearchCondition appendRecordGrants(CollectableSearchCondition cond, String entity) {
-		return RecordGrantUtils.append(cond, entity);
+	protected CollectableSearchCondition appendRecordGrants(CollectableSearchCondition cond, String entity) {
+		return grantUtils.append(cond, entity);
 	}
 	
 	/**
-	 * 
-	 * @param entity
-	 * @return
+	 * @deprecated Use Spring injection instead.
 	 */
 	protected JdbcEntityObjectProcessor getProcessor(String entity) {
 		return NucletDalProvider.getInstance().getEntityObjectProcessor(entity);
 	}
 	
 	/**
-	 * 
-	 * @param entity
-	 * @return
+	 * @deprecated Use Spring injection instead.
 	 */
 	protected JdbcEntityObjectProcessor getProcessor(NuclosEntity entity) {
 		return NucletDalProvider.getInstance().getEntityObjectProcessor(entity);

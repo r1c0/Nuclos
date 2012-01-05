@@ -18,11 +18,24 @@ package org.nuclos.server.common;
 
 import java.lang.reflect.AnnotatedElement;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.AnnotationTransactionAttributeSource;
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 import org.springframework.transaction.interceptor.TransactionAttribute;
 
+@Component
 public class NuclosAnnotationTransactionAttributeSource extends AnnotationTransactionAttributeSource {
+	
+	private NuclosRemoteContextHolder ctx;
+	
+	public NuclosAnnotationTransactionAttributeSource() {
+	}
+
+	@Autowired
+	void setNuclosRemoteContextHolder(NuclosRemoteContextHolder ctx) {
+		this.ctx = ctx;
+	}
 
 	@Override
 	protected TransactionAttribute determineTransactionAttribute(AnnotatedElement ae) {
@@ -31,7 +44,7 @@ public class NuclosAnnotationTransactionAttributeSource extends AnnotationTransa
 
 			@Override
 			public boolean rollbackOn(Throwable ex) {
-				return Boolean.TRUE.equals(NuclosRemoteContextHolder.peek());
+				return Boolean.TRUE.equals(ctx.peek());
 			}
 			
 		};

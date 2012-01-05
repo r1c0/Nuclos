@@ -45,6 +45,7 @@ import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
 import org.nuclos.server.report.valueobject.RecordGrantVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Cache for all Datasources.
@@ -53,13 +54,14 @@ import org.nuclos.server.report.valueobject.ValuelistProviderVO;
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  *
  * @author	<a href="mailto:Lars.Rueckemann@novabit.de">Lars Rueckemann</a>
- * @version	01.00.00
+ * 
+ * TODO: Re-check if all methods must be synchronized! (tp)
  */
 public class DatasourceCache {
 	
 	private static final Logger LOG = Logger.getLogger(DatasourceCache.class);
 
-	private static DatasourceCache singleton;
+	private static final DatasourceCache INSTANCE = new DatasourceCache();
 
 	/** map which contains all datasources */
 	private Map<Integer, DatasourceVO> mpDatasourcesById = null;
@@ -75,17 +77,21 @@ public class DatasourceCache {
 
 	/** map which contains all datasources */
 	private Map<Integer, DynamicEntityVO> mpDynamicEntitiesById = null;
+	
+	private DatasourceServerUtils datasourceServerUtils;
 
 
 	private DatasourceCache() {
 		findDatasourcesById();
 	}
 
-	public static synchronized DatasourceCache getInstance() {
-		if (singleton == null) {
-			singleton = new DatasourceCache();
-		}
-		return singleton;
+	public static DatasourceCache getInstance() {
+		return INSTANCE;
+	}
+	
+	@Autowired
+	void setDatasourceServerUtils(DatasourceServerUtils datasourceServerUtils) {
+		this.datasourceServerUtils = datasourceServerUtils;
 	}
 
 	private synchronized void findDatasourcesById() {
@@ -164,7 +170,7 @@ public class DatasourceCache {
 		mpRecordGrantById = null;
 		mpDynamicEntitiesById = null;
 
-		DatasourceServerUtils.SQLCACHE.invalidate();
+		datasourceServerUtils.invalidateCache();
 		findDatasourcesById();
 	}
 

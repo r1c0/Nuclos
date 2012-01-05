@@ -88,7 +88,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 			checkReadAllowed(entity);
 		}
 
-		RecordGrantUtils.checkInternal(entity, id);
+		getRecordGrantUtils().checkInternal(entity, id);
 		JdbcEntityObjectProcessor eop = NucletDalProvider.getInstance().getEntityObjectProcessor(entity);
 		return eop.getByPrimaryKey(id);
 	}

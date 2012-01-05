@@ -115,6 +115,7 @@ import org.nuclos.server.statemodel.NuclosNoAdequateStatemodelException;
 import org.nuclos.server.statemodel.NuclosSubsequentStateNotLegalException;
 import org.nuclos.server.statemodel.ejb3.StateFacadeLocal;
 import org.nuclos.server.statemodel.valueobject.StateHistoryVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -130,9 +131,29 @@ import org.springframework.transaction.annotation.Transactional;
 public class GenericObjectFacadeBean extends NuclosFacadeBean implements GenericObjectFacadeLocal, GenericObjectFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(GenericObjectFacadeBean.class);
+	
+	//
 
-	private final GenericObjectFacadeHelper helper = new GenericObjectFacadeHelper();
-
+	private GenericObjectFacadeHelper helper;
+	
+	/**
+	 * @deprecated
+	 */
+	private MasterDataFacadeHelper masterDataFacadeHelper;
+	
+	public GenericObjectFacadeBean() {
+	}
+	
+	@Autowired
+	void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
+		this.masterDataFacadeHelper = masterDataFacadeHelper;
+	}
+	
+	@Autowired
+	void setGenericObjectFacadeHelper(GenericObjectFacadeHelper genericObjectFacadeHelper) {
+		this.helper = genericObjectFacadeHelper;
+	}
+	
 	@Override
 	@RolesAllowed("Login")
 	public GenericObjectMetaDataVO getMetaData() {
@@ -178,7 +199,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		if (bCheckPermission){
 			checkReadAllowedForModule(govo.getModuleId(), iGenericObjectId);
-			RecordGrantUtils.checkInternal(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(govo.getModuleId())).getEntity(), LangUtils.convertId(iGenericObjectId));
+			getRecordGrantUtils().checkInternal(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(govo.getModuleId())).getEntity(), LangUtils.convertId(iGenericObjectId));
 		}
 		assert govo != null;
 		return govo;
@@ -854,7 +875,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		if (bCheckPermission){
 			this.checkWriteAllowedForModule(govo.getModuleId(), govo.getId());
-			RecordGrantUtils.checkWriteInternal(dbEoVO.getEntity(), dbEoVO.getId());
+			getRecordGrantUtils().checkWriteInternal(dbEoVO.getEntity(), dbEoVO.getId());
 		}
 
 		this.checkForStaleVersion(dbGoVO, govo);
@@ -992,7 +1013,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			String entity = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId)).getEntity();
 
 			this.checkDeleteAllowedForModule(iModuleId, dbGoVO.getId(), bDeletePhysically);
-			RecordGrantUtils.checkDeleteInternal(entity, LangUtils.convertId(dbGoVO.getId()));
+			getRecordGrantUtils().checkDeleteInternal(entity, LangUtils.convertId(dbGoVO.getId()));
 
 //			 prevent removal if dependant dynamic attributes exist:
 			final Object oExternalId = gowdvo.getId();
@@ -1049,7 +1070,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 				}
 
 				// remove dependant data
-				new MasterDataFacadeHelper().removeDependants(gowdvo.getDependants());
+				masterDataFacadeHelper.removeDependants(gowdvo.getDependants());
 				removeDependants(dbGoVO);
 				helper.removeLogBookEntries(dbGoVO.getId());
 				helper.removeDependantTaskObjects(dbGoVO.getId());

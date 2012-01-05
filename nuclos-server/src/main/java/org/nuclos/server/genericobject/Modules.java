@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.nuclos.common.EntityTreeViewVO;
 import org.nuclos.common.ModuleProvider;
 import org.nuclos.common.NuclosEntity;
@@ -37,6 +39,7 @@ import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeHelper;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.security.NuclosLocalServerSession;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Provides information about the modules contained in a Nucleus application.
@@ -55,13 +58,26 @@ public class Modules extends ModuleProvider {
 	private Map<String, List<MasterDataVO>> mpModuleSubnodes;
 	
 	private Map<String, List<EntityTreeViewVO>> subNodes;
-
-	public static synchronized Modules getInstance() {
-		return (Modules) SpringApplicationContextHolder.getBean("moduleProvider");
-	}
+	
+	private MasterDataFacadeHelper masterDataFacadeHelper;
+	
+	//
 
 	public Modules() {
+	}
+	
+	@PostConstruct
+	void init() {
 		setModules(getModules());
+	}
+	
+	@Autowired
+	void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
+		this.masterDataFacadeHelper = masterDataFacadeHelper;
+	}
+
+	public static Modules getInstance() {
+		return (Modules) SpringApplicationContextHolder.getBean("moduleProvider");
 	}
 
 	@Override
@@ -80,7 +96,8 @@ public class Modules extends ModuleProvider {
 			mpModuleSubnodes = new HashMap<String, List<MasterDataVO>>();
 			subNodes = new HashMap<String, List<EntityTreeViewVO>>();
 			for (MasterDataVO mdcvo : colModules) {
-				Collection<EntityObjectVO> colVO = MasterDataFacadeHelper.getDependantMasterData(NuclosEntity.ENTITYSUBNODES.getEntityName(), EntityTreeViewVO.ENTITY_FIELD, mdcvo.getIntId(), "(Modules cache)");
+				Collection<EntityObjectVO> colVO = masterDataFacadeHelper.getDependantMasterData(
+						NuclosEntity.ENTITYSUBNODES.getEntityName(), EntityTreeViewVO.ENTITY_FIELD, mdcvo.getIntId(), "(Modules cache)");
 				mpModuleSubnodes.put((String)mdcvo.getField("entity"), CollectionUtils.transform(colVO,
 					new EntityObjectToMasterDataTransformer()));
 				subNodes.put((String)mdcvo.getField("entity"), CollectionUtils.transform(colVO,

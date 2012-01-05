@@ -71,6 +71,7 @@ import org.nuclos.server.report.valueobject.RecordGrantVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -129,6 +130,18 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 	   		return DataSourceType.DATASOURCE;
 	   	}
 	   }
+   }
+   
+   //
+   
+   private DatasourceServerUtils utils;
+   
+   public DatasourceFacadeBean() {
+   }
+   
+   @Autowired
+   void setDatasourceServerUtils(DatasourceServerUtils utils) {
+	   this.utils = utils;
    }
 
    /**
@@ -1002,7 +1015,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
    @Override
 @RolesAllowed("Login")
    public List<DatasourceParameterVO> getParameters(String sDatasourceXML) throws NuclosFatalException, NuclosDatasourceException {
-		return DatasourceServerUtils.getParameters(sDatasourceXML);
+		return utils.getParameters(sDatasourceXML);
    }
 
   /**
@@ -1015,7 +1028,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
    @Override
    @RolesAllowed("Login")
   public List<DatasourceParameterVO> getParameters(Integer iDatasourceId) throws NuclosFatalException, NuclosDatasourceException {
-		return DatasourceServerUtils.getParameters(iDatasourceId);
+		return utils.getParameters(iDatasourceId);
   }
 
    /**
@@ -1057,7 +1070,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
    */
   @Override
   public String createSQL(Integer iDatasourceId, Map<String, Object> mpParams) throws NuclosDatasourceException {
-     return DatasourceServerUtils.createSQL(iDatasourceId, mpParams);
+     return utils.createSQL(iDatasourceId, mpParams);
   }
 
    /**
@@ -1070,7 +1083,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
   	@Override
 	@RolesAllowed("Login")
    public String createSQL(String sDatasourceXML) throws NuclosDatasourceException {
-      return DatasourceServerUtils.createSQL(sDatasourceXML);
+      return utils.createSQL(sDatasourceXML);
    }
 
    /**
@@ -1083,7 +1096,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
   	@Override
 	@RolesAllowed("Login")
    public String createSQL(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
-  		return DatasourceServerUtils.createSQL(sDatasourceXML, mpParams);
+  		return utils.createSQL(sDatasourceXML, mpParams);
    }
 
   	/**
@@ -1100,7 +1113,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
 			throw new NuclosFatalException("Invalid remote call");
 		}
 
-		return DatasourceServerUtils.createSQLForReportExecution(name, mpParams);
+		return utils.createSQLForReportExecution(name, mpParams);
 	}
 
 /**
@@ -1300,7 +1313,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
 	@Override
     public String createSQLOriginalParameter(String sDatasourceXML)
         throws NuclosDatasourceException {
-	    return DatasourceServerUtils.createSQLOriginalParameter(sDatasourceXML);
+	    return utils.createSQLOriginalParameter(sDatasourceXML);
     }
 
 }

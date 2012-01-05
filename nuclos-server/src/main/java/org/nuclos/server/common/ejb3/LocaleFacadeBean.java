@@ -71,6 +71,7 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.transaction.annotation.Transactional;
@@ -111,7 +112,16 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		}
 	};
 	
+	//
+	
+	private MasterDataFacadeHelper masterDataFacadeHelper;
+	
 	public LocaleFacadeBean() {
+	}
+	
+	@Autowired
+	void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
+		this.masterDataFacadeHelper = masterDataFacadeHelper;
 	}
 
 	@Override
@@ -157,7 +167,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	/**
 	 * To avoid StackOverflow. If current thread is already loading resources, return an empty resourcebundle.
 	 */
-	private final ThreadLocal<Boolean> isLoadingResources = new ThreadLocal<Boolean>() {
+	private ThreadLocal<Boolean> isLoadingResources = new ThreadLocal<Boolean>() {
 		@Override
 		protected Boolean initialValue() {
 			return Boolean.FALSE;
@@ -435,7 +445,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 			public MasterDataVO transform(String resId) {
 				try {
 					Integer iId = getResourceIntId(resId, localeInfo);
-					return MasterDataFacadeHelper.getMasterDataCVOById(mdmetavo, iId);
+					return masterDataFacadeHelper.getMasterDataCVOById(mdmetavo, iId);
 				}
 				catch (CommonFinderException ex) {
 					// This may never occur inside of a "repeatable read" transaction:
@@ -620,8 +630,9 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	}
 	
 	@PreDestroy
-	public void destroy() {
+	public synchronized void destroy() {
 		isLoadingResources.remove();
+		isLoadingResources = null;
 	}
 	
 }

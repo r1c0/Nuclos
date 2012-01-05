@@ -17,10 +17,12 @@
 package org.nuclos.client;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.main.Main;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationResult;
@@ -28,20 +30,30 @@ import org.springframework.remoting.support.RemoteInvocationResult;
 public class NuclosHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBean {
 
 	private static final Logger LOG = Logger.getLogger(NuclosHttpInvokerProxyFactoryBean.class);
+	
+	private NuclosHttpInvokerAttributeContext ctx;
+	
+	public NuclosHttpInvokerProxyFactoryBean() {
+	}
+	
+	@Autowired
+	void setNuclosHttpInvokerAttributeContext(NuclosHttpInvokerAttributeContext ctx) {
+		this.ctx = ctx;
+	}
 
 	@Override
 	protected RemoteInvocationResult executeRequest(RemoteInvocation invocation) throws Exception {
 		invocation.addAttribute("user.timezone", Main.getInitialTimeZone());
-		invocation.addAttribute("org.nuclos.api.context.InputContextSupported", NuclosHttpInvokerAttributeContext.isSupported());
-		invocation.addAttribute("org.nuclos.api.context.InputContext", NuclosHttpInvokerAttributeContext.get());
-		if (LOG.isDebugEnabled() && NuclosHttpInvokerAttributeContext.get().size() > 0) {
+		invocation.addAttribute("org.nuclos.api.context.InputContextSupported", ctx.isSupported());
+		final HashMap<String, Serializable> map = ctx.get();
+		invocation.addAttribute("org.nuclos.api.context.InputContext", map);
+		if (LOG.isDebugEnabled() && map.size() > 0) {
 			LOG.debug("Sending call with dynamic context:");
-			for (Map.Entry<String, Serializable> entry : NuclosHttpInvokerAttributeContext.get().entrySet()) {
+			for (Map.Entry<String, Serializable> entry : map.entrySet()) {
 				LOG.debug(entry.getKey() + ": " + String.valueOf(entry.getValue()));
 			}
 		}
 		return super.executeRequest(invocation);
 	}
-
 
 }

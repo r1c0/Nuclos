@@ -68,6 +68,7 @@ import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeHelper;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -82,7 +83,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RolesAllowed("Login")
 public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote, TaskFacadeLocal {
-
+	
+	private MasterDataFacadeHelper masterDataFacadeHelper;
+	
+	public TaskFacadeBean() {
+	}
+	
+	@Autowired
+	void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
+		this.masterDataFacadeHelper = masterDataFacadeHelper;
+	}
 
    /**
     * get all tasks (or only unfinished tasks)
@@ -460,9 +470,10 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 	   return lstUserNames;
    }
 
-   @Override
-   	public MasterDataVO getUserAsVO(Object oId) throws CommonFinderException{
-	   return MasterDataFacadeHelper.getMasterDataCVOById(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.USER), oId);
+	@Override
+	public MasterDataVO getUserAsVO(Object oId) throws CommonFinderException {
+		return masterDataFacadeHelper.getMasterDataCVOById(
+				MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.USER), oId);
 	}
 
 	private Collection<TaskVO> getTaskVOsByCondition(CollectableSearchCondition cond) throws CommonFinderException, NuclosBusinessException, CommonPermissionException {

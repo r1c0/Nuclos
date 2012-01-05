@@ -121,6 +121,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
@@ -141,7 +142,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 	private static final Logger LOG = Logger.getLogger(MetaDataFacadeBean.class);
 
-	private final MasterDataFacadeHelper helper = new MasterDataFacadeHelper();
+	private MasterDataFacadeHelper helper;
 
 	private final static String ENTITYFIELD_TABLE = "t_ad_masterdata_field";
 
@@ -151,6 +152,11 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		return processorFactory;
 	}
 
+	@Autowired
+	void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
+		this.helper = masterDataFacadeHelper;
+	}
+	
 	public void setProcessorFactory(ProcessorFactorySingleton processorFactory) {
 		this.processorFactory = processorFactory;
 	}

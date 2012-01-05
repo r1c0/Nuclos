@@ -57,18 +57,20 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 
 	private static final Logger LOG = Logger.getLogger(LocaleDelegate.class);
 	
-	private static Object rbLock = new Object();
-	private static Locale locale;
-	private static LocaleInfo localeInfo;
-	private static List<LocaleInfo> parentchain;
-	private static ResourceBundle resourceBundle;
-	private static Date date;
+	private static Object RB_LOCk = new Object();
+	private static Locale LOCALE;
+	private static LocaleInfo LOCALE_INFO;
+	private static List<LocaleInfo> PARENTCHAIN;
+	private static ResourceBundle RESOURCE_BUNDLE;
+	private static Date DATE;
 
-	// SimpleDateFormat is not Thread-safe, therefore: one per thread
-	private static ThreadLocal<NumberFormat> numberFormat;
-	private static ThreadLocal<DateFormat> dateFormat;
-	private static ThreadLocal<DateFormat> timeFormat;
-	private static ThreadLocal<DateFormat> dateTimeFormat;
+	// SimpleDateFormat is not Thread-safe, therefore: clone the format!
+	private static NumberFormat NUMBER_FORMAT;
+	private static DateFormat DATE_FORMAT;
+	private static DateFormat TIME_FORMAT;
+	private static DateFormat DATETIME_FORMAT;
+	
+	// 
 
 	private LocaleFacadeRemote remoteInterface;
 	
@@ -89,55 +91,55 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 	}
 
 	private ResourceBundle getResourceBundle() {
-		if (resourceBundle == null) {
-			synchronized (rbLock) {
-				if (resourceBundle == null) {
+		if (RESOURCE_BUNDLE == null) {
+			synchronized (RB_LOCk) {
+				if (RESOURCE_BUNDLE == null) {
 					try {
-						resourceBundle = remoteInterface.getResourceBundle(localeInfo);
+						RESOURCE_BUNDLE = remoteInterface.getResourceBundle(LOCALE_INFO);
 						// TODO respect timezone client vs server
-						date = Calendar.getInstance().getTime();
+						DATE = Calendar.getInstance().getTime();
 					} catch (RuntimeException e) {
 						throw new CommonFatalException(e);
 					}
 				}
 			}
 		}
-		return resourceBundle;
+		return RESOURCE_BUNDLE;
 	}
 
 	public void flush() {
-		synchronized (rbLock) {
-			resourceBundle = null;
+		synchronized (RB_LOCk) {
+			RESOURCE_BUNDLE = null;
 		}
 	}
 
 	@Override
 	public NumberFormat getNumberFormat() {
-		if (numberFormat == null) {
+		if (NUMBER_FORMAT == null) {
 			return NumberFormat.getNumberInstance();
 		}
-		return numberFormat.get();
+		return (NumberFormat) NUMBER_FORMAT.clone();
 	}
 
 	@Override
 	public DateFormat getDateFormat() {
-		if(dateFormat == null)
+		if (DATE_FORMAT == null)
 			return SimpleDateFormat.getDateInstance();
-		return dateFormat.get();
+		return (DateFormat) DATE_FORMAT.clone();
 	}
 
 	@Override
 	public DateFormat getTimeFormat() {
-		if(timeFormat == null)
+		if (TIME_FORMAT == null)
 			return SimpleDateFormat.getTimeInstance();
-		return timeFormat.get();
+		return (DateFormat) TIME_FORMAT.clone();
 	}
 
 	@Override
 	public DateFormat getDateTimeFormat() {
-		if(dateTimeFormat == null)
+		if (DATETIME_FORMAT == null)
 			return SimpleDateFormat.getDateTimeInstance();
-		return dateTimeFormat.get();
+		return (DateFormat) DATETIME_FORMAT.clone();
 	}
 
 	public LocaleInfo getDefaultLocale() {
@@ -257,7 +259,7 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 
 	@Override
 	public List<LocaleInfo> getParentChain() {
-		return parentchain;
+		return PARENTCHAIN;
 	}
 
 	public MasterDataVO getLocaleVO(LocaleInfo localeInfo) {
@@ -271,57 +273,32 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 
 	public void selectLocale(Collection<LocaleInfo> allLocales, LocaleInfo sel) {
 		// find best existing match
-		this.localeInfo = getBestLocale(sel);
+		LOCALE_INFO = getBestLocale(sel);
 		// switch client locale
-		this.locale = localeInfo.toLocale();
+		LOCALE = LOCALE_INFO.toLocale();
 
-		SwingLocaleSwitcher.setLocale(this.locale);
-		LocaleContextHolder.setLocale(this.locale, true);
+		SwingLocaleSwitcher.setLocale(LOCALE);
+		LocaleContextHolder.setLocale(LOCALE, true);
 
 		// write to prefs
 		Preferences prefs = ClientPreferences.getUserPreferences();
 		Preferences localeNode = prefs.node("locale");
-		localeNode.put("locale", this.localeInfo.getTag());
+		localeNode.put("locale", LOCALE_INFO.getTag());
 		// Copy login-relevant texts to local settings
 		LocalUserProperties.getInstance().copyLoginResourcesFromResourceBundle(
-					allLocales,
-					this.localeInfo);
+					allLocales, LOCALE_INFO);
 		// Get additional info from the locale's master data entry, and also set
 		// it in the client
-		MasterDataVO lmd = getLocaleVO(this.localeInfo);
+		MasterDataVO lmd = getLocaleVO(LOCALE_INFO);
 		final String numberformat = lmd.getField("numberformat", String.class);
 		final String dateformat = lmd.getField("dateformat", String.class);
 		final String timeformat = lmd.getField("timeformat", String.class);
 
-		parentchain = remoteInterface.getParentChain(localeInfo);
-
-		numberFormat = new ThreadLocal<NumberFormat>() {
-			@Override
-			protected NumberFormat initialValue() {
-				return new DecimalFormat(numberformat, new DecimalFormatSymbols(locale));
-			}
-		};
-
-		dateFormat = new ThreadLocal<DateFormat>() {
-			@Override
-			protected DateFormat initialValue() {
-				return new SimpleDateFormat(dateformat, locale);
-			}
-		};
-
-		timeFormat = new ThreadLocal<DateFormat>() {
-			@Override
-			protected DateFormat initialValue() {
-				return new SimpleDateFormat(timeformat, locale);
-			}
-		};
-
-		dateTimeFormat = new ThreadLocal<DateFormat>() {
-			@Override
-			protected DateFormat initialValue() {
-				return new SimpleDateFormat(dateformat + " " + timeformat, locale);
-			}
-		};
+		PARENTCHAIN = remoteInterface.getParentChain(LOCALE_INFO);
+		NUMBER_FORMAT = new DecimalFormat(numberformat, new DecimalFormatSymbols(LOCALE));
+		DATE_FORMAT = new SimpleDateFormat(dateformat, LOCALE);
+		TIME_FORMAT = new SimpleDateFormat(timeformat, LOCALE);
+		DATETIME_FORMAT = new SimpleDateFormat(dateformat + " " + timeformat, LOCALE);
 	}
 
 	public void removeResource(String resourceId) {
@@ -344,12 +321,12 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 
 	@Override
 	public Locale getLocale() {
-		return locale;
+		return LOCALE;
 	}
 
 	@Override
 	public LocaleInfo getLocaleInfo() {
-		return localeInfo;
+		return LOCALE_INFO;
 	}
 
 	@Override
@@ -370,7 +347,7 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 	@Override
 	public String getResource(String key) {
 		if (!getResourceBundle().containsKey(key)) {
-			if (date != null && date.before(getLastChange())) {
+			if (DATE != null && DATE.before(getLastChange())) {
 				flush();
 			}
 		}
@@ -391,8 +368,8 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 
 	@Override
 	public void onMessage(Message arg0) {
-		synchronized(rbLock) {
-			resourceBundle = null;
+		synchronized(RB_LOCk) {
+			RESOURCE_BUNDLE = null;
 		}
 	}
 
@@ -402,11 +379,11 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 	}
 	
 	@Override
-	public void destroy() {
+	public synchronized void destroy() {
 		TopicNotificationReceiver.unsubscribe(this);
-		numberFormat.remove();
-		dateFormat.remove();
-		timeFormat.remove();
-		dateTimeFormat.remove();
+		NUMBER_FORMAT = null;
+		DATE_FORMAT = null;
+		TIME_FORMAT = null;
+		DATETIME_FORMAT = null;
 	}
 }

@@ -37,6 +37,7 @@ import org.nuclos.server.masterdata.ejb3.MasterDataFacadeHelper;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -52,6 +53,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RolesAllowed("Login")
 public class GenericObjectGroupFacadeBean extends NuclosFacadeBean implements GenericObjectGroupFacadeLocal, GenericObjectGroupFacadeRemote {
 
+	private MasterDataFacadeHelper masterDataFacadeHelper;
+	
+	public GenericObjectGroupFacadeBean() {
+	}
+	
+	@Autowired
+	void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
+		this.masterDataFacadeHelper = masterDataFacadeHelper;
+	}
+	
 	/**
 	 * @param iGenericObjectId
 	 * @return the ids of the object group, the genericobject is assigned to
@@ -128,7 +139,7 @@ public class GenericObjectGroupFacadeBean extends NuclosFacadeBean implements Ge
 	{
 		MasterDataMetaVO mdmetavo = getMasterDataFacade().getMetaData(NuclosEntity.GENERICOBJECTGROUP.getEntityName());
 		Integer intId = findIntId(iGenericObjectId, iGroupId);
-		MasterDataVO mdvo = MasterDataFacadeHelper.getMasterDataCVOById(mdmetavo, intId);
+		MasterDataVO mdvo = masterDataFacadeHelper.getMasterDataCVOById(mdmetavo, intId);
 		getMasterDataFacade().remove(NuclosEntity.GENERICOBJECTGROUP.getEntityName(), mdvo, false);
 	}
 

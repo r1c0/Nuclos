@@ -20,24 +20,34 @@ import java.util.TimeZone;
 
 import javax.annotation.PreDestroy;
 
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Component;
 
-@Configurable
+@Component
 public class NuclosUserDetailsContextHolder {
 	
-	private static final ThreadLocal<TimeZone> threadLocal = new ThreadLocal<TimeZone>();
+	private ThreadLocal<TimeZone> threadLocal = new ThreadLocal<TimeZone>();
 	
-	public static void setTimeZone(TimeZone tz) {
+	public NuclosUserDetailsContextHolder() {
+	}
+	
+	public void setTimeZone(TimeZone tz) {
 		threadLocal.set(tz);
 	}
 	
-	public static TimeZone getTimeZone() {
+	public TimeZone getTimeZone() {
 		return threadLocal.get();
 	}
 	
-	@PreDestroy
-	public static void clear() {
+	public synchronized void clear() {
 		threadLocal.remove();
 	}
+	
+	@PreDestroy
+	public synchronized void destroy() {
+		if (threadLocal == null) return;
+		
+		threadLocal.remove();
+		threadLocal = null;
+	}	
 
 }

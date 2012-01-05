@@ -54,25 +54,30 @@ public class ServiceLocator {
 	/**
 	 * @return the one (and only) instance of ServiceLocator
 	 */
-	public static synchronized ServiceLocator getInstance() throws CommonFatalException {
-		return SpringApplicationContextHolder.getBean(ServiceLocator.class);
+	public static ServiceLocator getInstance() throws CommonFatalException {
+		return (ServiceLocator) SpringApplicationContextHolder.getBean("serviceLocator");
 	}
 
 	private <T> T getFacade(Class<T> c, String bean, boolean server) {
 		try {
+			T result;
 			if(server) {
 	    		ApplicationContext context = SpringApplicationContextHolder.getApplicationContext();
-				return (T)context.getBean(bean);
+				result = (T) context.getBean(bean);
 			}
 			else {
 				try {
-					return SpringApplicationContextHolder.getBean(c);
+					result = SpringApplicationContextHolder.getBean(c);
 				}
 				catch(Exception e) {
 					LOG.info("getFacade: " + e);
-					return (T)SpringApplicationContextHolder.getBean(bean);
+					result = (T) SpringApplicationContextHolder.getBean(bean);
 				}
 			}
+			if (result == null) {
+				throw new NuclosFatalException("Bean for class=" + c + " name=" + bean + " server=" + server);
+			}
+			return result;
 		}
 		catch(Exception ex) {
 			throw new NuclosFatalException(ex);
@@ -80,7 +85,6 @@ public class ServiceLocator {
 	}
 
 	public <T> T getFacade(Class<T> c) {
-
 		boolean isLocal = false;
 		try {
 			if (c.getSimpleName().endsWith("Local")) {

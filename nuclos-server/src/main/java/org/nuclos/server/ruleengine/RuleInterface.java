@@ -137,6 +137,7 @@ import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO.Event;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.security.NuclosLocalServerSession;
 import org.nuclos.server.statemodel.ejb3.StateFacadeLocal;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Interface for rule developers. Delegates all calls to RuleInterfaceBean.
@@ -148,6 +149,13 @@ import org.nuclos.server.statemodel.ejb3.StateFacadeLocal;
  * @version 00.01.000#
  */
 public class RuleInterface extends CustomCodeInterface {
+
+	// message levels
+	public static final int ERROR_MESSAGES = -1;
+	public static final int WARNING_MESSAGES = 0;
+	public static final int INFO_MESSAGES = 1;
+	
+	//
 
 	private final List<RuleNotification> lstNotification = new ArrayList<RuleNotification>();
 
@@ -187,11 +195,8 @@ public class RuleInterface extends CustomCodeInterface {
 	private PropertiesMap mpProperties = new PropertiesMap();
 
 	private Integer iSessionId;
-
-	// message levels
-	public static final int ERROR_MESSAGES = -1;
-	public static final int WARNING_MESSAGES = 0;
-	public static final int INFO_MESSAGES = 1;
+	
+	private NuclosUserDetailsContextHolder userCtx;
 
 	/**
 	 * Create a <code>RuleInterface</code> with the <code>RuleObjectContainerCVO</code> for which the rule is fired
@@ -217,6 +222,11 @@ public class RuleInterface extends CustomCodeInterface {
 		this.roccvoParameter = roccvoParameterObject;
 		this.lstActions = lstActions;
 		this.rulevo = ruleVO;
+	}
+	
+	@Autowired
+	void setNuclosUserDetailsContextHolder(NuclosUserDetailsContextHolder userCtx) {
+		this.userCtx = userCtx;
 	}
 
 	public void setUserObject(Object obj) {
@@ -2427,8 +2437,11 @@ public class RuleInterface extends CustomCodeInterface {
 		return this.iSessionId;
 	}
 
+	/**
+	 * @deprecated User Spring injection instead.
+	 */
 	public TimeZone getCurrentUserTimeZone() {
-		return NuclosUserDetailsContextHolder.getTimeZone();
+		return userCtx.getTimeZone();
 	}
 
 	/**

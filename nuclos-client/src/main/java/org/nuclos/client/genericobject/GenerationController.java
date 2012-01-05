@@ -86,10 +86,15 @@ import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class GenerationController {
 
 	private static final Logger LOG = Logger.getLogger(GenerationController.class);
+	
+	//
 
 	private final Map<Long, UsageCriteria> sources;
 	private final GeneratorActionVO action;
@@ -104,6 +109,8 @@ public class GenerationController {
 
 	private boolean confirmationEnabled = true;
 	private boolean headless = false;
+	
+	private InvokeWithInputRequiredSupport invokeWithInputRequiredSupport;
 
 	private final MainFrameTabListener tabListener = new MainFrameTabAdapter() {
 		@Override
@@ -128,6 +135,11 @@ public class GenerationController {
 		this.parentController = parentController;
 		this.parent = parent;
 		this.pane = pane;
+	}
+	
+	@Autowired
+	void setInvokeWithInputRequiredSupport(InvokeWithInputRequiredSupport invokeWithInputRequiredSupport) {
+		this.invokeWithInputRequiredSupport = invokeWithInputRequiredSupport;
 	}
 
 	public boolean isConfirmationEnabled() {
@@ -384,7 +396,7 @@ public class GenerationController {
 						final HashMap<String, Serializable> context = new HashMap<String, Serializable>();
 						final AtomicReference<GenerationResult> result = new AtomicReference<GenerationResult>();
 						try {
-							InvokeWithInputRequiredSupport.invoke(new CommonRunnable() {
+							invokeWithInputRequiredSupport.invoke(new CommonRunnable() {
 								@Override
 								public void run() throws CommonBusinessException {
 									result.set(GeneratorDelegate.getInstance().generateGenericObject(pair.x, pair.y, action));

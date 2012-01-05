@@ -22,56 +22,65 @@ import java.util.Map;
 
 import javax.annotation.PreDestroy;
 
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Component;
 
-@Configurable
+@Component
 public class NuclosHttpInvokerAttributeContext {
 
-	private static final ThreadLocal<Boolean> supported = new ThreadLocal<Boolean>() {
+	private ThreadLocal<Boolean> supported = new ThreadLocal<Boolean>() {
 		@Override
 		protected Boolean initialValue() {
 			return Boolean.FALSE;
 		}
 	};
 
-	private static final ThreadLocal<HashMap<String, Serializable>> threadLocal = new ThreadLocal<HashMap<String, Serializable>>() {
+	private ThreadLocal<HashMap<String, Serializable>> threadLocal = new ThreadLocal<HashMap<String, Serializable>>() {
 		@Override
 		protected HashMap<String, Serializable> initialValue() {
 			return new HashMap<String, Serializable>();
 		}
 	};
+	
+	public NuclosHttpInvokerAttributeContext() {
+	}
 
-	public static void put(String key, Serializable object) {
+	public void put(String key, Serializable object) {
 		threadLocal.get().put(key, object);
 	}
 
-	public static void putAll(Map<String, Serializable> entries) {
+	public void putAll(Map<String, Serializable> entries) {
 		threadLocal.get().putAll(entries);
 	}
 
-	public static HashMap<String, Serializable> get() {
+	public HashMap<String, Serializable> get() {
 		return threadLocal.get();
 	}
 
-	public static Serializable get(String key) {
+	public Serializable get(String key) {
 		return threadLocal.get().get(key);
 	}
 
-	public static void clear() {
+	public void clear() {
 		threadLocal.get().clear();
 	}
 
-	public static void setSupported(boolean value) {
+	public void setSupported(boolean value) {
 		supported.set(Boolean.valueOf(value));
 	}
 
-	public static boolean isSupported() {
+	public boolean isSupported() {
 		return supported.get() != null ? (boolean) supported.get() : false;
 	}
 	
 	@PreDestroy
-	public void destroy() {
-		supported.remove();
-		threadLocal.remove();
+	public synchronized void destroy() {
+		if (supported != null) {
+			supported.remove();
+		}
+		if (threadLocal != null) {
+			threadLocal.remove();
+		}
+		supported = null;
+		threadLocal = null;
 	}
 }

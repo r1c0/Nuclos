@@ -80,6 +80,8 @@ import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Helper class for the GenericObjectFacade
@@ -90,20 +92,39 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
  * @author	<a href="mailto:christoph.radig@novabit.de">christoph.radig</a>
  * @version 01.00.00
  */
+@Component
 public class GenericObjectFacadeHelper {
 
 	private static final Logger LOG = Logger.getLogger(GenericObjectFacadeHelper.class);
 
 	/** @todo tune the DEFAULT_PAGESIZE (300 seems to be much better than 1000) */
 	public static final int DEFAULT_PAGESIZE = 300;
+	
+	//
 
 	private MasterDataFacadeLocal mdFacade;
 
 	private GenericObjectFacadeLocal goFacade;
 
 	private LayoutFacadeLocal layoutFacade;
+	
+	private RecordGrantUtils grantUtils;
+	
+	/**
+	 * @deprecated
+	 */
+	private MasterDataFacadeHelper masterDataFacadeHelper;
 
 	public GenericObjectFacadeHelper() {
+	}
+	
+	@Autowired
+	void setRecordGrantUtils(RecordGrantUtils grantUtils) {
+		this.grantUtils = grantUtils;
+	}
+	
+	void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
+		this.masterDataFacadeHelper = masterDataFacadeHelper;
 	}
 
 	private GenericObjectFacadeLocal getGenericObjectFacade() {
@@ -319,7 +340,8 @@ public class GenericObjectFacadeHelper {
 				if (sForeignKeyField == null) {
 					sForeignKeyField = ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME;
 				}
-				final Collection<EntityObjectVO> collmdvo = MasterDataFacadeHelper.getDependantMasterData(sSubEntityName, sForeignKeyField, lowdcvo.getId(), username);
+				final Collection<EntityObjectVO> collmdvo = masterDataFacadeHelper.getDependantMasterData(
+						sSubEntityName, sForeignKeyField, lowdcvo.getId(), username);
 				if (CollectionUtils.isNonEmpty(collmdvo)) {
 					lowdcvo.getDependants().addAllData(sSubEntityName, collmdvo);
 
@@ -708,9 +730,11 @@ public class GenericObjectFacadeHelper {
 	 * @param expr
 	 * @param entity
 	 * @return new AND 'condition' if any record grant(s) found, otherwise expr is returned.
+	 * 
+	 * @deprecated Use Spring injection instead.
 	 */
-	protected static CollectableSearchExpression appendRecordGrants(CollectableSearchExpression expr, String entity) {
-		return RecordGrantUtils.append(expr, entity);
+	protected CollectableSearchExpression appendRecordGrants(CollectableSearchExpression expr, String entity) {
+		return grantUtils.append(expr, entity);
 	}
 
 }	// class GenericObjectFacadeHelper
