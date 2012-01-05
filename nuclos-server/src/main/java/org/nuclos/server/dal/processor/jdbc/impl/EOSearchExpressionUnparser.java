@@ -521,8 +521,9 @@ public class EOSearchExpressionUnparser {
 			// db calc function case
 			else {
 				tableAlias = table.getAlias();
-				return queryBuilder.plainExpression(field.getJavaClass(), entityField.getCalcFunction() 
-						+ "(" + tableAlias + ".INTID)");
+				return queryBuilder.plainExpression(field.getJavaClass(), 
+						queryBuilder.getDBAccess().getSchemaName() + "."
+						+ entityField.getCalcFunction() + "(" + tableAlias + ".INTID)");
 			}
 			if(entity.isDynamic() && entityField.isDynamic()) {
 				return table.columnCaseSensitive(tableAlias, dbColumn, field.getJavaClass());

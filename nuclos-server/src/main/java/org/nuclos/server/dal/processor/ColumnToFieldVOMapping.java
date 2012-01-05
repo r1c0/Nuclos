@@ -23,6 +23,7 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
+import org.nuclos.server.dblayer.query.DbQueryBuilder;
 
 /**
  * Map a database column to a simple value reference entity field representation.
@@ -54,9 +55,11 @@ public final class ColumnToFieldVOMapping<T extends Object> extends AbstractColu
 		}
 		else {
 			final String tableAlias = from.getAlias();
-			result = (DbExpression<T>) from.getQuery().getBuilder().plainExpression(
+			final DbQueryBuilder builder = from.getQuery().getBuilder();
+			result = (DbExpression<T>) builder.plainExpression(
 					DalUtils.getDbType(field.getDataType()), 
-					field.getCalcFunction() + "(" + tableAlias + ".INTID) " + field.getDbColumn());
+					builder.getDBAccess().getSchemaName() + "." 
+					+ field.getCalcFunction() + "(" + tableAlias + ".INTID) " + field.getDbColumn());
 		}
 		return result;
 	}
