@@ -123,6 +123,7 @@ public class GenericObjectFacadeHelper {
 		this.grantUtils = grantUtils;
 	}
 	
+	@Autowired
 	void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
 		this.masterDataFacadeHelper = masterDataFacadeHelper;
 	}
