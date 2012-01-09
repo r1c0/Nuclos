@@ -33,7 +33,7 @@ import java.awt.*;
  */
 public class EnterNameDescriptionPanel extends JPanel {
 
-	private final JTextField tfName = new JTextField(10);
+	private final JTextField tfName = new JTextField(40);
 	private final JTextField tfDescription = new JTextField(40);
 
 	public EnterNameDescriptionPanel() {
