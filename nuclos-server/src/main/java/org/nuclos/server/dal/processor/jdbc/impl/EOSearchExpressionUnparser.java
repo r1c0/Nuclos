@@ -148,7 +148,7 @@ public class EOSearchExpressionUnparser {
 				result = table.column(null, entityField.getDbColumn(), type);
 			}
 			else if (entity.isDynamic()) {
-				result = table.baseColumnCaseSensitive(entityField.getDbColumn(), type);
+				result = table.baseColumnCaseSensitive(entityField.getDbColumn(), type, true);
 			}
 			else {
 				result = table.baseColumn(entityField.getDbColumn(), type);
@@ -218,7 +218,7 @@ public class EOSearchExpressionUnparser {
 			DbFrom subTable = subQuery.from(subEntityMeta.getDbEntity()).alias("sub");
 			subQuery.distinct(true);
 			if(subEntityMeta.isDynamic())
-				subQuery.select(subTable.baseColumnCaseSensitive(DalUtils.getDbIdFieldName(MetaDataServerProvider.getInstance().getEntityField(subEntityMeta.getEntity(), subcond.getForeignKeyFieldName()).getDbColumn()), Integer.class));
+				subQuery.select(subTable.baseColumnCaseSensitive(DalUtils.getDbIdFieldName(MetaDataServerProvider.getInstance().getEntityField(subEntityMeta.getEntity(), subcond.getForeignKeyFieldName()).getDbColumn()), Integer.class, true));
 			else
 				subQuery.select(subTable.baseColumn(DalUtils.getDbIdFieldName(MetaDataServerProvider.getInstance().getEntityField(subEntityMeta.getEntity(), subcond.getForeignKeyFieldName()).getDbColumn()), Integer.class));
 			EOSearchExpressionUnparser subUnparser = new EOSearchExpressionUnparser(subQuery, subEntityMeta);
@@ -577,7 +577,7 @@ public class EOSearchExpressionUnparser {
 	private DbColumnExpression<Integer> getDbIdColumn(CollectableEntityField field) {
 		EntityFieldMetaDataVO entityField = MetaDataServerProvider.getInstance().getEntityField(entity.getEntity(), field.getName());
 		if(entity.isDynamic() && entityField.isDynamic())
-			return table.baseColumnCaseSensitive(DalUtils.getDbIdFieldName(entityField.getDbColumn()), Integer.class);
+			return table.baseColumnCaseSensitive(DalUtils.getDbIdFieldName(entityField.getDbColumn()), Integer.class, true);
 		else
 			return table.baseColumn(DalUtils.getDbIdFieldName(entityField.getDbColumn()), Integer.class);
 	}

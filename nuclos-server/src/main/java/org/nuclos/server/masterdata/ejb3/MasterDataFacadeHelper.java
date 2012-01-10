@@ -289,7 +289,7 @@ public class MasterDataFacadeHelper {
 				selection.add(goColumn);
 			} else {
 				Class<?> javaType = DalUtils.getDbType(field.getJavaClass());
-				selection.add(t.baseColumnCaseSensitive(fieldName, javaType));
+				selection.add(t.baseColumnCaseSensitive(fieldName, javaType, false));
 			}
 		}
 		selection.add(t.baseColumn("INTID", Integer.class));

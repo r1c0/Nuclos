@@ -150,9 +150,11 @@ public class DbFrom implements Serializable {
 	
 	@Deprecated
 	/** @deprecated Only use case-sensitive columns if needed. */
-	public <T> DbColumnExpression<T> baseColumnCaseSensitive(String columnName, Class<T> javaClass) {
+	public <T> DbColumnExpression<T> baseColumnCaseSensitive(String columnName, Class<T> javaClass, boolean isDynmicView) {
 		if (!containsAlias(tableAlias)) throw new IllegalArgumentException(
 				"No such table alias in FROM clause " + this + ": " + tableAlias);
+		if(isDynmicView && "INTID_T_UD_GENERICOBJECT".equalsIgnoreCase(columnName))
+			return new DbColumnExpression<T>(tableAlias, this, columnName, javaClass, false);
 		return new DbColumnExpression<T>(tableAlias, this, columnName, javaClass, true);
 	}
 	
