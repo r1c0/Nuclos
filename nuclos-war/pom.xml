@@ -56,6 +56,7 @@
 					<verifyjar>false</verifyjar>
 				</configuration>
 			</plugin>
+			<!-- disable aspectj weaver for war build -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
