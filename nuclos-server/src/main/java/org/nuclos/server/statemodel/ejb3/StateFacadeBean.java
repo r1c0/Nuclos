@@ -385,7 +385,17 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 		// remove states:
 		for (StateVO statevo : stategraphcvo.getStates()) {
-			if (statevo.isRemoved() && statevo.getId() != null) {
+			final Integer stateId = statevo.getId();
+			
+			if (statevo.isRemoved() && stateId != null) {
+				/*
+				 * http://support.novabit.de/browse/NUCLOSINT-1274
+				 * 
+				 * The hole old code here is problematic: As all relational tables 
+				 * rights are retrieved without the id, the code here doesn't work.
+				 * Instead we now use the code from the update branch that will 
+				 * retrieve the relation table rights directly from the db. (tp) 
+				 * 
 				UserSubformRights rights = statevo.getUserSubformRights();
 				for(Integer iKey : rights.asMap().keySet()) {
 					for(SubformPermissionVO voPermission : rights.asMap().get(iKey)) {
@@ -413,12 +423,24 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 						getMasterDataFacade().remove(NuclosEntity.ROLEENTITYFIELD.getEntityName(), MasterDataWrapper.wrapEntityFieldPermissionVO((voPermission)), false);
 					}
 				}
+				*/
+				for (AttributegroupPermissionVO vo : findAttributegroupPermissionsByStateId(stateId))
+					getMasterDataFacade().remove(NuclosEntity.ROLEATTRIBUTEGROUP.getEntityName(), MasterDataWrapper.wrapAttributegroupPermissionVO(vo), false);
+
+				for (EntityFieldPermissionVO vo : findEntityFieldPermissionsByStateId(stateId))
+					getMasterDataFacade().remove(NuclosEntity.ROLEENTITYFIELD.getEntityName(), MasterDataWrapper.wrapEntityFieldPermissionVO(vo), false);
+
+				for (SubformPermissionVO vo : findSubformPermissionsByStateId(stateId)) {
+					for (SubformColumnPermissionVO colVO : findSubformColumnPermissionsBySubformPermission(vo.getId())) {
+						getMasterDataFacade().remove(NuclosEntity.ROLESUBFORMCOLUMN.getEntityName(), MasterDataWrapper.wrapSubformColumnPermissionVO(colVO), false);
+					}
+					getMasterDataFacade().remove(NuclosEntity.ROLESUBFORM.getEntityName(), MasterDataWrapper.wrapSubformPermissionVO(vo), false);
+				}
 
 				for(MandatoryFieldVO mandatoryVO : statevo.getMandatoryFields()) {
 					mandatoryVO.remove();
 					getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYFIELD.getEntityName(), MasterDataWrapper.wrapMandatoryFieldVO(mandatoryVO), false);
 				}
-
 				for(MandatoryColumnVO mandatoryVO : statevo.getMandatoryColumns()) {
 					mandatoryVO.remove();
 					getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYCOLUMN.getEntityName(), MasterDataWrapper.wrapMandatoryColumnVO(mandatoryVO), false);
@@ -437,7 +459,8 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		Map<Integer, Integer> mpStates = new HashMap<Integer, Integer>();
 		for (StateVO statevo : stategraphcvo.getStates()) {
 			if (!statevo.isRemoved()) {
-				if (statevo.getId() == null) {
+				final Integer stateId = statevo.getId();
+				if (stateId == null) {
 					// insert state:
 					statevo.setModelId(statemodelvo.getId());
 					MasterDataVO createdState = getMasterDataFacade().create(NuclosEntity.STATE.getEntityName(), MasterDataWrapper.wrapStateVO(statevo), null);
@@ -448,27 +471,27 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 				}
 				else {
 					// update state:
-					mpStates.put(statevo.getClientId(), statevo.getId());	//prepare mapping table for state transition inserts/updates
+					mpStates.put(statevo.getClientId(), stateId);	//prepare mapping table for state transition inserts/updates
 
 					updateState(statevo,statemodelvo);
 
 					StateCache.getInstance().invalidate();
 
-					for (MandatoryFieldVO vo : findMandatoryFieldsByStateId(statevo.getId())) {
+					for (MandatoryFieldVO vo : findMandatoryFieldsByStateId(stateId)) {
 						getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYFIELD.getEntityName(), MasterDataWrapper.wrapMandatoryFieldVO(vo), false);
 					}
 
-					for (MandatoryColumnVO vo : findMandatoryColumnsByStateId(statevo.getId())) {
+					for (MandatoryColumnVO vo : findMandatoryColumnsByStateId(stateId)) {
 						getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYCOLUMN.getEntityName(), MasterDataWrapper.wrapMandatoryColumnVO(vo), false);
 					}
 
-					for (AttributegroupPermissionVO vo : findAttributegroupPermissionsByStateId(statevo.getId()))
+					for (AttributegroupPermissionVO vo : findAttributegroupPermissionsByStateId(stateId))
 						getMasterDataFacade().remove(NuclosEntity.ROLEATTRIBUTEGROUP.getEntityName(), MasterDataWrapper.wrapAttributegroupPermissionVO(vo), false);
 
-					for (EntityFieldPermissionVO vo : findEntityFieldPermissionsByStateId(statevo.getId()))
+					for (EntityFieldPermissionVO vo : findEntityFieldPermissionsByStateId(stateId))
 						getMasterDataFacade().remove(NuclosEntity.ROLEENTITYFIELD.getEntityName(), MasterDataWrapper.wrapEntityFieldPermissionVO(vo), false);
 
-					for (SubformPermissionVO vo : findSubformPermissionsByStateId(statevo.getId())) {
+					for (SubformPermissionVO vo : findSubformPermissionsByStateId(stateId)) {
 						for (SubformColumnPermissionVO colVO : findSubformColumnPermissionsBySubformPermission(vo.getId())) {
 							getMasterDataFacade().remove(NuclosEntity.ROLESUBFORMCOLUMN.getEntityName(), MasterDataWrapper.wrapSubformColumnPermissionVO(colVO), false);
 						}
