@@ -1443,7 +1443,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		final String sColumn;
 		// We don't need a join to the referenced field here, instead we simply need th
 		// (raw) field name in the database. (tp)
-		if (mdField.getForeignEntity() != null) {
+		if (mdField.getForeignEntity() != null && mdField.getForeignEntityField() != null) {
 			sColumn = EntityObjectMetaDbHelper.getDbRefColumn(mdField);
 		}
 		else {
