@@ -424,6 +424,13 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 					}
 				}
 				*/
+				for (MandatoryFieldVO vo : findMandatoryFieldsByStateId(stateId)) {
+					getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYFIELD.getEntityName(), MasterDataWrapper.wrapMandatoryFieldVO(vo), false);
+				}
+				for (MandatoryColumnVO vo : findMandatoryColumnsByStateId(stateId)) {
+					getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYCOLUMN.getEntityName(), MasterDataWrapper.wrapMandatoryColumnVO(vo), false);
+				}
+
 				for (AttributegroupPermissionVO vo : findAttributegroupPermissionsByStateId(stateId))
 					getMasterDataFacade().remove(NuclosEntity.ROLEATTRIBUTEGROUP.getEntityName(), MasterDataWrapper.wrapAttributegroupPermissionVO(vo), false);
 
@@ -437,6 +444,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 					getMasterDataFacade().remove(NuclosEntity.ROLESUBFORM.getEntityName(), MasterDataWrapper.wrapSubformPermissionVO(vo), false);
 				}
 
+				/*
 				for(MandatoryFieldVO mandatoryVO : statevo.getMandatoryFields()) {
 					mandatoryVO.remove();
 					getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYFIELD.getEntityName(), MasterDataWrapper.wrapMandatoryFieldVO(mandatoryVO), false);
@@ -445,6 +453,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 					mandatoryVO.remove();
 					getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYCOLUMN.getEntityName(), MasterDataWrapper.wrapMandatoryColumnVO(mandatoryVO), false);
 				}
+				 */
 
 				getMasterDataFacade().remove(NuclosEntity.STATE.getEntityName(), MasterDataWrapper.wrapStateVO(statevo), false);
 
@@ -480,7 +489,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 					for (MandatoryFieldVO vo : findMandatoryFieldsByStateId(stateId)) {
 						getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYFIELD.getEntityName(), MasterDataWrapper.wrapMandatoryFieldVO(vo), false);
 					}
-
 					for (MandatoryColumnVO vo : findMandatoryColumnsByStateId(stateId)) {
 						getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYCOLUMN.getEntityName(), MasterDataWrapper.wrapMandatoryColumnVO(vo), false);
 					}
