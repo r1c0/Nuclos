@@ -95,7 +95,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 
 	@Override
 	public EntityObjectVO getReferenced(String referencingEntity, String referencingEntityField, Long id) throws CommonBusinessException {
-		checkWriteAllowed(referencingEntity);
+//		checkWriteAllowed(referencingEntity);
 
 		EntityFieldMetaDataVO fieldmeta = MetaDataServerProvider.getInstance().getEntityField(referencingEntity, referencingEntityField);
 		if (fieldmeta.getForeignEntity() == null) {
