@@ -28,6 +28,7 @@ import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dbtransfer.NucletContentUID;
 import org.nuclos.common.dbtransfer.TransferOption;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.MetaDataServerProvider;
@@ -208,7 +209,7 @@ public class EntityNucletContent extends DefaultNucletContent {
 		if (NuclosEntity.GENERALSEARCHDOCUMENT.equals(entity))
 			for (Long refId : refIds)
 				try {
-					MasterDataFacadeHelper.remove(LangUtils.convertId(refId), null, NuclosSystemParameters.getDirectory(NuclosSystemParameters.DOCUMENT_PATH));
+					MasterDataFacadeHelper.remove(IdUtils.unsafeToId(refId), null, NuclosSystemParameters.getDirectory(NuclosSystemParameters.DOCUMENT_PATH));
 				} catch (Exception ex) {
 					error(ex);
 				}

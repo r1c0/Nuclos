@@ -64,6 +64,7 @@ import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
 import org.nuclos.common.transport.vo.EntityMetaDataTO;
 import org.nuclos.common.valueobject.EntityRelationshipModelVO;
 import org.nuclos.common2.IOUtils;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.ServiceLocator;
@@ -294,7 +295,8 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			else {
 				DalUtils.updateVersionInformation(metaFieldVO, getCurrentUserName());
 				NucletDalProvider.getInstance().getEntityFieldMetaDataProcessor().insertOrUpdate(metaFieldVO);
-				createResourceIdForEntityField("T_MD_ENTITY_FIELD", metaFieldTO, LangUtils.convertId(metaFieldTO.getEntityFieldMeta().getId()));
+				createResourceIdForEntityField("T_MD_ENTITY_FIELD", metaFieldTO, 
+						IdUtils.unsafeToId(metaFieldTO.getEntityFieldMeta().getId()));
 			}
 		}
 		MetaDataServerProvider.getInstance().revalidate();
@@ -478,7 +480,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			if(hasEntityRows(voEntity)) {
 				if(voEntity.isStateModel()) {
 					GenericObjectFacadeLocal local = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
-					for(Integer iId : local.getGenericObjectIds(LangUtils.convertId(voEntity.getId()), new CollectableSearchExpression())) {
+					for(Integer iId : local.getGenericObjectIds(IdUtils.unsafeToId(voEntity.getId()), new CollectableSearchExpression())) {
 						Set<String> setNames = new HashSet<String>();
 						try {
 							GenericObjectWithDependantsVO vo = local.getWithDependants(iId, setNames);
@@ -770,12 +772,13 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				updatedMDEntity.flagUpdate();
 
 				insertOrUpdateEntityMetaData(updatedMDEntity);
-				createResourceIdForEntity("T_MD_ENTITY", updatedTOEntity, LangUtils.convertId(updatedMDEntity.getId()));
+				createResourceIdForEntity("T_MD_ENTITY", updatedTOEntity, IdUtils.unsafeToId(updatedMDEntity.getId()));
 				setSystemValuesAndParent(lstFields, updatedMDEntity);
 				insertOrUpdateEntityFieldMetaData(toFields);
 				for(EntityFieldMetaDataTO toField : toFields) {
 					if(!toField.getEntityFieldMeta().isFlagRemoved())
-						createResourceIdForEntityField("T_MD_ENTITY_FIELD", toField, LangUtils.convertId(toField.getEntityFieldMeta().getId()));
+						createResourceIdForEntityField("T_MD_ENTITY_FIELD", toField, 
+								IdUtils.unsafeToId(toField.getEntityFieldMeta().getId()));
 				}
 				MetaDataServerProvider.getInstance().revalidate();
 				updatedMDEntity = MetaDataServerProvider.getInstance().getEntity(updatedMDEntity.getEntity());
@@ -784,11 +787,11 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				updatedMDEntity.flagNew();
 				updatedMDEntity.setId(DalUtils.getNextId());
 				insertOrUpdateEntityMetaData(updatedMDEntity);
-				createResourceIdForEntity("T_MD_ENTITY", updatedTOEntity, LangUtils.convertId(updatedMDEntity.getId()));
+				createResourceIdForEntity("T_MD_ENTITY", updatedTOEntity, IdUtils.unsafeToId(updatedMDEntity.getId()));
 				setSystemValuesAndParent(lstFields, updatedMDEntity);
 				insertOrUpdateEntityFieldMetaData(toFields);
 				for(EntityFieldMetaDataTO toField : toFields) {
-					createResourceIdForEntityField("T_MD_ENTITY_FIELD", toField, LangUtils.convertId(toField.getEntityFieldMeta().getId()));
+					createResourceIdForEntityField("T_MD_ENTITY_FIELD", toField, IdUtils.unsafeToId(toField.getEntityFieldMeta().getId()));
 				}
 				MetaDataServerProvider.getInstance().revalidate();
 			}
@@ -903,7 +906,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			return;
 		}
 
-		Integer iModuleId = LangUtils.convertId(mdvo.getId());
+		Integer iModuleId = IdUtils.unsafeToId(mdvo.getId());
 		CollectableSearchExpression exp = new CollectableSearchExpression();
 
 		for(Integer iId : getGenericObjectFacade().getGenericObjectIds(iModuleId, exp)) {

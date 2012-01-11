@@ -28,6 +28,7 @@ import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 
@@ -60,7 +61,7 @@ public class ImportEntityCollectableFieldsProvider implements CollectableFieldsP
 		final List<CollectableField> result = CollectionUtils.transform(colemdvo, new Transformer<EntityMetaDataVO, CollectableField>() {
 			@Override
 			public CollectableField transform(EntityMetaDataVO emdVO) {
-				return new CollectableValueIdField(LangUtils.convertId(emdVO.getId()), emdVO.getEntity());
+				return new CollectableValueIdField(IdUtils.unsafeToId(emdVO.getId()), emdVO.getEntity());
 			}
 		});
 

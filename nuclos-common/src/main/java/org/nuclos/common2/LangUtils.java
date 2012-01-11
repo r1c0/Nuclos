@@ -458,21 +458,6 @@ public class LangUtils {
 		}
 	}
 
-	public static Integer convertId(Long id) {
-		if (id == null) {
-			return null;
-		}
-		return new Integer(id.intValue());
-	}
-
-	public static Long convertId(Integer id) {
-		if (id == null) {
-			return null;
-		}
-
-		return new Long(id.longValue());
-	}
-
 	public static String nullIfBlank(String s) {
 		if (StringUtils.isBlank(s)) {
 			return null;

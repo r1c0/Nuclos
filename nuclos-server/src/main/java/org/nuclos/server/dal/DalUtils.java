@@ -28,6 +28,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.DateTime;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -48,7 +49,7 @@ public class DalUtils {
 		}
 		List<Integer> result = new ArrayList<Integer>(listIds.size());
 		for (Long id : listIds) {
-			result.add(LangUtils.convertId(id));
+			result.add(IdUtils.unsafeToId(id));
 		}
 		return result;
 	}
@@ -59,7 +60,7 @@ public class DalUtils {
 		}
 		List<Long> result = new ArrayList<Long>(listIds.size());
 		for (Integer id : listIds) {
-			result.add(LangUtils.convertId(id));
+			result.add(IdUtils.toLongId(id));
 		}
 		return result;
 	}
@@ -91,7 +92,7 @@ public class DalUtils {
 	}
 
 	public static Long getNextId() {
-		return LangUtils.convertId(DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
+		return IdUtils.toLongId(DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
 	}
 
 	public static void handleVersionUpdate(IDalVersionSpecification processor,

@@ -30,6 +30,7 @@ import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.fileimport.ImportResult;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
@@ -357,7 +358,7 @@ public class NuclosImport extends AbstractImport {
 							if (getProcessCache().get(entityname).containsKey(prozess)) {
 								process = getProcessCache().get(entityname).get(prozess);
 								io.getValueObject().getFields().put(ATTRIBUTENAME_PROCESS, prozess);
-								io.getValueObject().getFieldIds().put(ATTRIBUTENAME_PROCESS, LangUtils.convertId(process));
+								io.getValueObject().getFieldIds().put(ATTRIBUTENAME_PROCESS, IdUtils.toLongId(process));
 							}
 							else {
 								io.getValueObject().getFields().put(ATTRIBUTENAME_PROCESS, null);
@@ -491,12 +492,12 @@ public class NuclosImport extends AbstractImport {
 
 	public void deleteObject(String entityname, Long id) throws Exception {
 		if (Modules.getInstance().existModule(entityname)) {
-			GenericObjectWithDependantsVO govo = getGenericObjectFacade().getWithDependants(LangUtils.convertId(id), null);
+			GenericObjectWithDependantsVO govo = getGenericObjectFacade().getWithDependants(IdUtils.unsafeToId(id), null);
 			govo.remove();
 			getGenericObjectFacade().remove(govo, true);
 		}
 		else {
-			MasterDataVO mdvo = getMasterDataFacade().get(entityname, LangUtils.convertId(id));
+			MasterDataVO mdvo = getMasterDataFacade().get(entityname, IdUtils.unsafeToId(id));
 			mdvo.remove();
 			getMasterDataFacade().remove(entityname, mdvo, false);
 		}

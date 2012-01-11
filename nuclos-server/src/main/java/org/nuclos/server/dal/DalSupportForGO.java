@@ -29,6 +29,7 @@ import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.security.Permission;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
@@ -72,7 +73,8 @@ public class DalSupportForGO {
 	 * @return
 	 */
 	public static JdbcEntityObjectProcessor getEntityObjectProcessor(Integer moduleId) {
-		return NucletDalProvider.getInstance().getEntityObjectProcessor(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(moduleId)).getEntity());
+		return NucletDalProvider.getInstance().getEntityObjectProcessor(MetaDataServerProvider.getInstance().getEntity(
+				IdUtils.toLongId(moduleId)).getEntity());
 	}
 
 	/**
@@ -91,7 +93,7 @@ public class DalSupportForGO {
 	 * @return
 	 */
 	public static EntityObjectVO getEntityObject(Integer genericObjectId, Integer moduleId) {
-		return getEntityObjectProcessor(moduleId).getByPrimaryKey(LangUtils.convertId(genericObjectId));
+		return getEntityObjectProcessor(moduleId).getByPrimaryKey(IdUtils.toLongId(genericObjectId));
 	}
 
 	/**
@@ -139,7 +141,7 @@ public class DalSupportForGO {
 	 */
 	public static DynamicAttributeVO getDynamicAttributeVO(EntityObjectVO eo, String field) {
 		Integer iAttributeId = MetaDataServerProvider.getInstance().getEntityField(eo.getEntity(), field).getId().intValue();
-		return new DynamicAttributeVO(iAttributeId, LangUtils.convertId(eo.getFieldIds().get(field)), eo.getFields().get(field));
+		return new DynamicAttributeVO(iAttributeId, IdUtils.unsafeToId(eo.getFieldIds().get(field)), eo.getFields().get(field));
 	}
 
 	/**
@@ -204,7 +206,7 @@ public class DalSupportForGO {
 
 		eo.setEntity(Modules.getInstance().getEntityNameByModuleId(go.getModuleId()));
 
-		eo.setId(LangUtils.convertId(go.getId()));
+		eo.setId(IdUtils.toLongId(go.getId()));
 		eo.setCreatedBy(go.getCreatedBy());
 		eo.setCreatedAt(InternalTimestamp.toInternalTimestamp(go.getCreatedAt()));
 		eo.setChangedBy(go.getChangedBy());
@@ -220,7 +222,7 @@ public class DalSupportForGO {
 			} else {
 				eo.getFields().put(field, attr.getValue());
 				if (attr.getValueId() != null) {
-					eo.getFieldIds().put(field, LangUtils.convertId(attr.getValueId()));
+					eo.getFieldIds().put(field, IdUtils.toLongId(attr.getValueId()));
 				}
 			}
 		}
@@ -242,7 +244,7 @@ public class DalSupportForGO {
 
 		final NuclosValueObject nvo;
 		if (eo.getId() != null) {
-			nvo = new NuclosValueObject(LangUtils.convertId(eo.getId()), eo.getCreatedAt(), eo.getCreatedBy(), eo.getChangedAt(), eo.getChangedBy(), eo.getVersion());
+			nvo = new NuclosValueObject(IdUtils.unsafeToId(eo.getId()), eo.getCreatedAt(), eo.getCreatedBy(), eo.getChangedAt(), eo.getChangedBy(), eo.getVersion());
 		}
 		else {
 			nvo = new NuclosValueObject();
@@ -259,8 +261,9 @@ public class DalSupportForGO {
 			Object fieldValue = eo.getFields().get(field);
 			Long idValue = eo.getFieldIds().get(field);
 			if(MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(eo.getEntity()).containsKey(field)) {
-				DynamicAttributeVO attr = new DynamicAttributeVO(LangUtils.convertId(MetaDataServerProvider.getInstance().getEntityField(eo.getEntity(), field).getId()),
-					LangUtils.convertId(idValue), fieldValue);
+				DynamicAttributeVO attr = new DynamicAttributeVO(
+					IdUtils.unsafeToId(MetaDataServerProvider.getInstance().getEntityField(eo.getEntity(), field).getId()),
+					IdUtils.unsafeToId(idValue), fieldValue);
 	
 				attrVOList.add(attr);
 			}
@@ -299,13 +302,13 @@ public class DalSupportForGO {
 
 		final AttributeCVO vo = new AttributeCVO(
 			new NuclosValueObject(
-				LangUtils.convertId(efMeta.getId()),
-				efMeta.getCreatedAt(),
-				efMeta.getCreatedBy(),
-				efMeta.getChangedAt(),
-				efMeta.getChangedBy(),
-				efMeta.getVersion()),
-			LangUtils.convertId(efMeta.getFieldGroupId()),
+					IdUtils.unsafeToId(efMeta.getId()),
+					efMeta.getCreatedAt(),
+					efMeta.getCreatedBy(),
+					efMeta.getChangedAt(),
+					efMeta.getChangedBy(),
+					efMeta.getVersion()),
+					IdUtils.unsafeToId(efMeta.getFieldGroupId()),
 			null /** TODO: FieldGroupName*/,
 			efMeta.getCalcFunction(),
 			efMeta.getField(),
@@ -323,7 +326,7 @@ public class DalSupportForGO {
 			efMeta.isLogBookTracking(),
 			NuclosEOField.getByField(efMeta.getField()) != null,
 			efMeta.isShowMnemonic(),
-			(efMeta.getForeignEntity() != null ? LangUtils.convertId(efMeta.getDefaultForeignId()) : null),
+			(efMeta.getForeignEntity() != null ? IdUtils.unsafeToId(efMeta.getDefaultForeignId()) : null),
 			defaultValue,
 			efMeta.getSortorderASC(),
 			efMeta.getSortorderDESC(),

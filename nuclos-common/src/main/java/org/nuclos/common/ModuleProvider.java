@@ -27,6 +27,7 @@ import java.util.NoSuchElementException;
 
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
@@ -212,7 +213,7 @@ public abstract class ModuleProvider {
 //		final Boolean bUsesStateModel = this.getModuleById(iModuleId).getField("usesStateModel", Boolean.class);
 //		return bUsesStateModel != null && bUsesStateModel.booleanValue();
 		MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
-		return metaprovider.getEntity(LangUtils.convertId(iModuleId)).isStateModel();
+		return metaprovider.getEntity(IdUtils.toLongId(iModuleId)).isStateModel();
 	}
 
 	/**

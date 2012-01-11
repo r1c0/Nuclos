@@ -50,6 +50,7 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common2.EntityAndFieldName;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
@@ -199,7 +200,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		if (bCheckPermission){
 			checkReadAllowedForModule(govo.getModuleId(), iGenericObjectId);
-			getRecordGrantUtils().checkInternal(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(govo.getModuleId())).getEntity(), LangUtils.convertId(iGenericObjectId));
+			getRecordGrantUtils().checkInternal(MetaDataServerProvider.getInstance().getEntity(
+					IdUtils.toLongId(govo.getModuleId())).getEntity(), IdUtils.toLongId(iGenericObjectId));
 		}
 		assert govo != null;
 		return govo;
@@ -505,7 +507,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			throw new IllegalArgumentException("iMaxRowCount == " + iMaxRowCount);
 		}
 
-		final EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId));
+		final EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(iModuleId));
 		final List<GenericObjectWithDependantsVO> lstResult = new ArrayList<GenericObjectWithDependantsVO>(Math.min(iMaxRowCount + 1, 1000));
 
 		for (EntityObjectVO eo : NucletDalProvider.getInstance().getEntityObjectProcessor(eMeta.getEntity()).getBySearchExpression(appendRecordGrants(clctexpr, eMeta), iMaxRowCount + 1, true)) {
@@ -544,9 +546,9 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 */
 	@Override
 	public List<Integer> getGenericObjectIds(Integer iModuleId, CollectableSearchExpression cse) {
-		EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId));
+		EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(iModuleId));
 		List<Long> ids = NucletDalProvider.getInstance().getEntityObjectProcessor(eMeta.getEntity()).getIdsBySearchExprUserGroups(
-			appendRecordGrants(cse, eMeta.getEntity()),	LangUtils.convertId(iModuleId), getCurrentUserName());
+			appendRecordGrants(cse, eMeta.getEntity()),	IdUtils.toLongId(iModuleId), getCurrentUserName());
 		return DalUtils.convertLongIdList(ids);
 	}
 
@@ -578,7 +580,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	public Collection<GenericObjectWithDependantsVO> getGenericObjectsMore(Integer iModuleId, List<Integer> lstIds,
 			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects) {
 
-		final EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId));
+		final EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(iModuleId));
 
 		final List<EntityObjectVO> eos = NucletDalProvider.getInstance().getEntityObjectProcessor(eMeta.getEntity()).getBySearchExpressionAndPrimaryKeys(appendRecordGrants(new CollectableSearchExpression(), eMeta), DalUtils.convertIntegerIdList(lstIds));
 		List<GenericObjectWithDependantsVO> result = new ArrayList<GenericObjectWithDependantsVO>(eos.size());
@@ -660,7 +662,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		DependantMasterDataMap mpDependants = gowdvo.getDependants();
 
-		final boolean useRuleEngineSave = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId)).getEntity(), RuleEventUsageVO.SAVE_EVENT);
+		final boolean useRuleEngineSave = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(
+				IdUtils.toLongId(iModuleId)).getEntity(), RuleEventUsageVO.SAVE_EVENT);
 		if(useRuleEngineSave){
 			/** @todo check if loccvoResult can safely be ignored */
 			final RuleObjectContainerCVO loccvoResult = fireSaveEvent(Event.CREATE_BEFORE, gowdvo, mpDependants, false);
@@ -692,7 +695,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			eogo.setVersion(1);
 			eogo.setChangedBy(getCurrentUserName());
 			eogo.setChangedAt(InternalTimestamp.toInternalTimestamp(sysdate));
-			eogo.setModuleId(LangUtils.convertId(iModuleId));
+			eogo.setModuleId(IdUtils.toLongId(iModuleId));
 			eogo.flagNew();
 			NucletDalProvider.getInstance().getEOGenericObjectProcessor().insertOrUpdate(eogo);
 
@@ -702,7 +705,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			throw new CommonCreateException(e1);
 		}
 
-		final Integer id = LangUtils.convertId(dalVO.getId());
+		final Integer id = IdUtils.unsafeToId(dalVO.getId());
 		final GenericObjectVO goVO = DalSupportForGO.getGenericObjectVO(dalVO);
 
 		// get default object group assigned to current user
@@ -776,7 +779,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			result = DalSupportForGO.getGenericObject(goVO.getId(), goVO.getModuleId());
 		}
 
-		final boolean useRuleEngineSaveAfter = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId)).getEntity(), RuleEventUsageVO.SAVE_AFTER_EVENT);
+		final boolean useRuleEngineSaveAfter = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(
+				IdUtils.toLongId(iModuleId)).getEntity(), RuleEventUsageVO.SAVE_AFTER_EVENT);
 		if(useRuleEngineSaveAfter){
 			try {
 				mpDependants = reloadDependants(result, mpDependants, true);
@@ -880,7 +884,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		this.checkForStaleVersion(dbGoVO, govo);
 
-		final boolean useRuleEngineSave = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(govo.getModuleId())).getEntity(), RuleEventUsageVO.SAVE_EVENT);
+		final boolean useRuleEngineSave = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(
+				IdUtils.toLongId(govo.getModuleId())).getEntity(), RuleEventUsageVO.SAVE_EVENT);
 		if (bFireSaveEvent && useRuleEngineSave) {
 			this.debug("Modifying (Start rules)");
 			final RuleObjectContainerCVO loccvoResult = this.fireSaveEvent(Event.MODIFY_BEFORE, govo, mpDependants, false);
@@ -924,7 +929,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 			for (String sEntityName : mpDependants.getEntityNames()) {
 				for (EntityObjectVO mdVO : mpDependants.getData(sEntityName)) {
-					getMasterDataFacade().readAllDependants(sEntityName, LangUtils.convertId(mdVO.getId()), mdVO.getDependants(), mdVO.isFlagRemoved(), sEntityName, collSubEntities);
+					getMasterDataFacade().readAllDependants(sEntityName, IdUtils.unsafeToId(mdVO.getId()), mdVO.getDependants(), mdVO.isFlagRemoved(), sEntityName, collSubEntities);
 				}
 			}
 
@@ -937,7 +942,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		this.debug("Modifying (Start read)");
 		GenericObjectVO result = get(dbGoVO.getId());
 
-		final boolean useRuleEngineSaveAfter = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(govo.getModuleId())).getEntity(), RuleEventUsageVO.SAVE_AFTER_EVENT);
+		final boolean useRuleEngineSaveAfter = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(
+				IdUtils.toLongId(govo.getModuleId())).getEntity(), RuleEventUsageVO.SAVE_AFTER_EVENT);
 		if (bFireSaveEvent && useRuleEngineSaveAfter) {
 			this.debug("Modifying (Start rules after save)");
 			mpDependants = reloadDependants(result, mpDependants, true);
@@ -1010,10 +1016,10 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			final GenericObjectVO dbGoVO = DalSupportForGO.getGenericObject(gowdvo.getId(), gowdvo.getModuleId());
 
 			iModuleId = dbGoVO.getModuleId();
-			String entity = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId)).getEntity();
+			String entity = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(iModuleId)).getEntity();
 
 			this.checkDeleteAllowedForModule(iModuleId, dbGoVO.getId(), bDeletePhysically);
-			getRecordGrantUtils().checkDeleteInternal(entity, LangUtils.convertId(dbGoVO.getId()));
+			getRecordGrantUtils().checkDeleteInternal(entity, IdUtils.toLongId(dbGoVO.getId()));
 
 //			 prevent removal if dependant dynamic attributes exist:
 			final Object oExternalId = gowdvo.getId();
@@ -1044,7 +1050,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			final Map<EntityAndFieldName, String> collSubEntities = layoutFacade.getSubFormEntityAndParentSubFormEntityNames(
 				Modules.getInstance().getEntityNameByModuleId(dbGoVO.getModuleId()),dbGoVO.getId(),false);
 
-			final boolean useRuleEngineDelete = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId)).getEntity(), RuleEventUsageVO.DELETE_EVENT);
+			final boolean useRuleEngineDelete = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(
+					IdUtils.toLongId(iModuleId)).getEntity(), RuleEventUsageVO.DELETE_EVENT);
 			if(useRuleEngineDelete) {
 				this.fireDeleteEvent(gowdvo, gowdvo.getDependants(), false);
 			}
@@ -1064,7 +1071,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 						// mark all dependant data as removed
 						for (EntityObjectVO mdVO : gowdvo.getDependants().getData(eafn.getEntityName())) {
 							mdVO.flagRemove();
-							getMasterDataFacade().readAllDependants(eafn.getEntityName(), LangUtils.convertId(mdVO.getId()), mdVO.getDependants(), mdVO.isFlagRemoved(), eafn.getEntityName(), collSubEntities);
+							getMasterDataFacade().readAllDependants(eafn.getEntityName(), 
+									IdUtils.unsafeToId(mdVO.getId()), mdVO.getDependants(), mdVO.isFlagRemoved(), eafn.getEntityName(), collSubEntities);
 						}
 					}
 				}
@@ -1077,8 +1085,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 				helper.removeGroupBelonging(dbGoVO.getId());
 //				getMasterDataFacade().remove(NuclosEntity.GENERICOBJECT.getEntityName(), MasterDataWrapper.wrapGenericObjectVO(dbGoVO), false);
 				try {
-					NucletDalProvider.getInstance().getEOGenericObjectProcessor().delete(LangUtils.convertId(dbGoVO.getId()));
-					DalSupportForGO.getEntityObjectProcessor(dbGoVO.getModuleId()).delete(LangUtils.convertId(dbGoVO.getId()));
+					NucletDalProvider.getInstance().getEOGenericObjectProcessor().delete(IdUtils.toLongId(dbGoVO.getId()));
+					DalSupportForGO.getEntityObjectProcessor(dbGoVO.getModuleId()).delete(IdUtils.toLongId(dbGoVO.getId()));
 				}
 				catch (DbException e) {
 					throw new NuclosBusinessException(e);
@@ -1090,7 +1098,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 				EntityObjectVO eoToUpdate = DalSupportForGO.wrapGenericObjectVO(dbGoVO);
 
-				helper.createLogBookEntryIfNecessary(eoToUpdate, null, new DynamicAttributeVO(LangUtils.convertId(NuclosEOField.LOGGICALDELETED.getMetaData().getId()), null, Boolean.TRUE));
+				helper.createLogBookEntryIfNecessary(eoToUpdate, null, new DynamicAttributeVO(
+						IdUtils.unsafeToId(NuclosEOField.LOGGICALDELETED.getMetaData().getId()), null, Boolean.TRUE));
 				eoToUpdate.getFields().put(NuclosEOField.LOGGICALDELETED.getMetaData().getField(), Boolean.TRUE);
 				DalUtils.updateVersionInformation(eoToUpdate, getCurrentUserName());
 				eoToUpdate.flagUpdate();
@@ -1111,7 +1120,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			info("The entry " + gowdvo.getSystemIdentifier() + " (Id: " + gowdvo.getId() + ") has been deleted.");
 		}
 
-		final boolean useRuleEngineDeleteAfter = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId)).getEntity(), RuleEventUsageVO.DELETE_AFTER_EVENT);
+		final boolean useRuleEngineDeleteAfter = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(
+				IdUtils.toLongId(iModuleId)).getEntity(), RuleEventUsageVO.DELETE_AFTER_EVENT);
 		if(useRuleEngineDeleteAfter) {
 			this.fireDeleteEvent(gowdvo, gowdvo.getDependants(), true);
 		}
@@ -1578,14 +1588,14 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	@RolesAllowed("Login")
 	public int getModuleContainingGenericObject(int iGenericObjectId) throws CommonFinderException {
 		final EOGenericObjectVO eogo = NucletDalProvider.getInstance().getEOGenericObjectProcessor()
-				.getByPrimaryKey(LangUtils.convertId(iGenericObjectId));
+				.getByPrimaryKey(IdUtils.toLongId(iGenericObjectId));
 		if (eogo == null) {
 			throw new CommonFinderException();
 		}
 		if (eogo.getModuleId() == null) {
 			throw new CommonFatalException("moduleId is null");
 		}
-		return LangUtils.convertId(eogo.getModuleId());
+		return IdUtils.unsafeToId(eogo.getModuleId());
 	}
 
 	/**
@@ -1775,7 +1785,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		final Collection<BadAttributeValueException> badAttributes = new ArrayList<BadAttributeValueException>();
 		final String field = DalSupportForGO.getEntityFieldFromAttribute(attributeId);
 		final EntityObjectVO eo = DalSupportForGO.getEntityObject(genericObjectId);
-		eo.getFieldIds().put(field, LangUtils.convertId(valueId));
+		eo.getFieldIds().put(field, IdUtils.toLongId(valueId));
 		eo.getFields().put(field, DalSupportForGO.convertFromCanonicalAttributeValue(attributeId, canonicalValue));
 		eo.flagUpdate();
 
@@ -1801,13 +1811,14 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 */
 	@Override
 	public void updateGenericObjectAttribute(DynamicAttributeVO vo, Integer genericObjectId, boolean logbookTracking) throws NuclosBusinessException {
-		final EntityObjectVO eo = DalSupportForGO.getEntityObjectProcesserForGenericObject(genericObjectId).getByPrimaryKey(LangUtils.convertId(genericObjectId));
+		final EntityObjectVO eo = DalSupportForGO.getEntityObjectProcesserForGenericObject(genericObjectId).getByPrimaryKey(
+				IdUtils.toLongId(genericObjectId));
 		final String field = DalSupportForGO.getEntityFieldFromAttribute(vo.getAttributeId());
 
 		if (logbookTracking) {
 			helper.createLogBookEntryIfNecessary(eo, null, vo);
 		}
-		eo.getFieldIds().put(field, LangUtils.convertId(vo.getValueId()));
+		eo.getFieldIds().put(field, IdUtils.toLongId(vo.getValueId()));
 		eo.getFields().put(field, vo.getValue());
 		eo.flagUpdate();
 

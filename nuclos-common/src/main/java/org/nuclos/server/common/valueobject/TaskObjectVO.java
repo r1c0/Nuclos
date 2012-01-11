@@ -18,6 +18,8 @@ package org.nuclos.server.common.valueobject;
 
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Value object representing a leased object related to a personal task.
  * <br>
@@ -28,14 +30,16 @@ import java.util.Date;
  */
 public class TaskObjectVO extends NuclosValueObject {
 
-	private Long iObjectId;
-	private Long iTaskId;
-	private String sIdentifier;
-	private String sEntityName;
+	private final Long iObjectId;
+	private final Long iTaskId;
+	private final String sIdentifier;
+	private final String sEntityName;
 
 	public TaskObjectVO(Integer iId, Long iObjectId, Long iTaskId, String sEntityName, String sIdentifier,
 			Date dateCreatedAt, String sCreatedBy, Date dateChangedAt, String sChangedBy, Integer iVersion) {
 		super(iId, dateCreatedAt, sCreatedBy, dateChangedAt, sChangedBy, iVersion);
+		assert !StringUtils.isBlank(sEntityName);
+		assert iObjectId != null;
 		this.iObjectId = iObjectId;
 		this.iTaskId = iTaskId;
 		this.sIdentifier = sIdentifier;
@@ -46,32 +50,16 @@ public class TaskObjectVO extends NuclosValueObject {
 		return this.sIdentifier;
 	}
 
-	public void setIdentifier(String sIdentifier) {
-		this.sIdentifier = sIdentifier;
-	}
-
 	public Long getObjectId() {
 		return this.iObjectId;
-	}
-
-	public void setObjectId(Long iObjectId) {
-		this.iObjectId = iObjectId;
 	}
 
 	public Long getTaskId() {
 		return this.iTaskId;
 	}
 
-	public void setTaskId(Long iTaskId) {
-		this.iTaskId = iTaskId;
-	}
-
 	public String getEntityName() {
 		return sEntityName;
-	}
-
-	public void setEntityName(String sEntityName) {
-		this.sEntityName = sEntityName;
 	}
 
 	@Override

@@ -42,6 +42,7 @@ import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common.security.PermissionKey;
 import org.nuclos.common2.DateUtils;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
@@ -870,7 +871,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	}
 
 	private Map<Integer, Permission> newAttributeGroup(String sUserName, Integer iAttributeGroupId) {
-		if (LangUtils.convertId(NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getFieldGroupId()).equals(iAttributeGroupId)) {
+		if (IdUtils.unsafeToId(NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getFieldGroupId()).equals(iAttributeGroupId)) {
 			Map<Integer, Permission> systemFieldPermissions = new HashMap<Integer, Permission>();
 
 			MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
@@ -879,7 +880,7 @@ public class SecurityCache implements SecurityCacheMBean {
 			}
 
 			return systemFieldPermissions;
-		} else if (LangUtils.convertId(NuclosEOField.PROCESS.getMetaData().getFieldGroupId()).equals(iAttributeGroupId)) {
+		} else if (IdUtils.unsafeToId(NuclosEOField.PROCESS.getMetaData().getFieldGroupId()).equals(iAttributeGroupId)) {
 			Map<Integer, Permission> systemFieldPermissions = new HashMap<Integer, Permission>();
 
 			MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);

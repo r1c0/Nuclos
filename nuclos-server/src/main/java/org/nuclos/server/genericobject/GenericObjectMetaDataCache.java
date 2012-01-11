@@ -41,6 +41,7 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.EntityAndFieldName;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
@@ -108,9 +109,9 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 
 		Map<Integer, Set<String>> mapModuleAtributes = new HashMap<Integer, Set<String>>();
 		for (EntityMetaDataVO eMeta : MetaDataServerProvider.getInstance().getAllEntities()) {
-			mapModuleAtributes.put(LangUtils.convertId(eMeta.getId()), new HashSet<String>());
+			mapModuleAtributes.put(IdUtils.unsafeToId(eMeta.getId()), new HashSet<String>());
 			for (EntityFieldMetaDataVO efMeta : MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(eMeta.getEntity()).values()) {
-				mapModuleAtributes.get(LangUtils.convertId(eMeta.getId())).add(efMeta.getField());
+				mapModuleAtributes.get(IdUtils.unsafeToId(eMeta.getId())).add(efMeta.getField());
 			}
 		}
 

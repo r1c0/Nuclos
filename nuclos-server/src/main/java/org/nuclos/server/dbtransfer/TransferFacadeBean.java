@@ -69,6 +69,7 @@ import org.nuclos.common.dbtransfer.PreviewPart;
 import org.nuclos.common.dbtransfer.Transfer;
 import org.nuclos.common.dbtransfer.TransferNuclet;
 import org.nuclos.common.dbtransfer.TransferOption;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
@@ -843,7 +844,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		Set<Integer> userIds = CollectionUtils.transformIntoSet(importUsers, new Transformer<EntityObjectVO, Integer>() {
 			@Override
             public Integer transform(EntityObjectVO i) {
-	            return LangUtils.convertId(i.getId());
+	            return IdUtils.unsafeToId(i.getId());
             }});
 
 		MasterDataFacadeRemote mdFacade =

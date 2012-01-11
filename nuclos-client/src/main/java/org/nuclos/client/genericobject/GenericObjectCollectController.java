@@ -5703,8 +5703,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	                	if (o instanceof GenericObjectIdModuleProcess) {
 	                		GenericObjectIdModuleProcess goimp = (GenericObjectIdModuleProcess) o;
 	                		Integer entityId = goimp.getModuleId();
-	                		String entity = MetaDataClientProvider.getInstance().getEntity(LangUtils.convertId(entityId)).getEntity();
-	                		entityLabel = CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(LangUtils.convertId(entityId)));
+	                		String entity = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(entityId)).getEntity();
+	                		entityLabel = CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(
+	                				IdUtils.toLongId(entityId)));
 
 	                        try {
 	                        	if (!subFormCtrl.insertNewRowWithReference(

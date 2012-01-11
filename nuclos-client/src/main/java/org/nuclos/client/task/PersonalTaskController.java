@@ -90,6 +90,7 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
 import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
@@ -98,6 +99,7 @@ import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.Actions;
+import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
@@ -109,9 +111,11 @@ import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectabl
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.DateUtils;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
@@ -864,18 +868,23 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	}
 
 	private void cmdPerformPersonalTask(final PersonalTaskView taskview) {
-		final Collection<TaskObjectVO> collGenericObjects = getRelatedGenericObjects(taskview);
-		if(!collGenericObjects.isEmpty() && collGenericObjects != null){
+		final Collection<TaskObjectVO> collGenericObjects = getRelatedObjects(taskview);
+		if(collGenericObjects != null && !collGenericObjects.isEmpty()) {
 			UIUtils.runCommand(this.getParent(), new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
-					final Map<String, List<Object>> eObjectIds = new HashMap<String, List<Object>>();
-					final Collection<Integer> collGenericObjectIds = new ArrayList<Integer>(collGenericObjects.size());
+					final MetaDataProvider mdProv = MetaDataClientProvider.getInstance();
+					
+					// (String) Entityname -> (List<Long>) ids
+					final Map<String, List<Long>> eObjectIds = new HashMap<String, List<Long>>();
+					final Collection<Long> collGenericObjectIds = new ArrayList<Long>(collGenericObjects.size());
 					Integer iCommonModuleId = new Integer(0);
 					for (TaskObjectVO tovo : collGenericObjects) {
 						String entityName = tovo.getEntityName();
 						if(entityName == null){
-							collGenericObjectIds.add(tovo.getObjectId().intValue());
+							// dead code
+							assert false;
+							collGenericObjectIds.add(tovo.getObjectId());
 							int moduleId = GenericObjectDelegate.getInstance().getModuleContainingGenericObject(tovo.getObjectId().intValue());
 							if (iCommonModuleId != null && !iCommonModuleId.equals(moduleId)) {
 								if (iCommonModuleId.equals(0)) {
@@ -886,13 +895,14 @@ public class PersonalTaskController extends RefreshableTaskController implements
 							}
 						} else {
 							if(!eObjectIds.containsKey(entityName)){
-								eObjectIds.put(entityName, new ArrayList<Object>());
+								eObjectIds.put(entityName, new ArrayList<Long>());
 							}
-							List<Object> ids = eObjectIds.get(entityName);
-							ids.add(tovo.getObjectId().intValue());
+							List<Long> ids = eObjectIds.get(entityName);
+							ids.add(tovo.getObjectId());
 							eObjectIds.put(entityName, ids);
 						}
 					}
+					/*
 					if (collGenericObjectIds.size() == 1) {
 						final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
 								newGenericObjectCollectController(MainFrame.getPredefinedEntityOpenLocation(MetaDataClientProvider.getInstance().getEntity(new Long(iCommonModuleId)).getEntity()), iCommonModuleId, null);
@@ -903,11 +913,20 @@ public class PersonalTaskController extends RefreshableTaskController implements
 								newGenericObjectCollectController(MainFrame.getPredefinedEntityOpenLocation(MetaDataClientProvider.getInstance().getEntity(new Long(iCommonModuleId)).getEntity()), iCommonModuleId, null);
 						ctlGenericObject.runViewResults(getSearchConditionForRelatedObjects(collGenericObjectIds));
 					}
+					 */
 
 					for(String entity : eObjectIds.keySet()){
-						MasterDataCollectController newCollectController =
-								NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(MainFrame.getPredefinedEntityOpenLocation(entity), entity, null);
-						List<Object> oIds = eObjectIds.get(entity);
+						final EntityMetaDataVO mdEntity = mdProv.getEntity(entity);
+						final CollectController<?> newCollectController;
+						if (mdEntity.isStateModel().booleanValue()) {
+							newCollectController = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(
+									MainFrame.getPredefinedEntityOpenLocation(entity), IdUtils.unsafeToId(mdEntity.getId()), null);
+						}
+						else {
+							newCollectController = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(
+									MainFrame.getPredefinedEntityOpenLocation(entity), entity, null);
+						}
+						final List<Long> oIds = eObjectIds.get(entity);
 						switch(oIds.size()){
 							case 0:
 								break;
@@ -931,7 +950,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		}
 	}
 
-	private Collection<TaskObjectVO> getRelatedGenericObjects(PersonalTaskView taskview){
+	private Collection<TaskObjectVO> getRelatedObjects(PersonalTaskView taskview){
 		Collection<TaskObjectVO> collGenericObjects = new ArrayList<TaskObjectVO>();
 		List<TaskVO> lsttaskvo = getSelectedPersonalTasks(taskview);
 		for(TaskVO taskvo :lsttaskvo) {
@@ -1032,7 +1051,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			this.popupPersonalTasks.miEditDefinition.setEnabled(iSelectedRowCount == 1 ? true : false);
 			this.popupPersonalTasks.miEditDefinitionInNewTab.setEnabled(iSelectedRowCount == 1 ? true : false);
 
-			final boolean bPerformEnabled = (PersonalTaskController.this.getRelatedGenericObjects(personaltaskview) != null && !PersonalTaskController.this.getRelatedGenericObjects(personaltaskview).isEmpty()) ? true : false;
+			final boolean bPerformEnabled = (PersonalTaskController.this.getRelatedObjects(personaltaskview) != null && !PersonalTaskController.this.getRelatedObjects(personaltaskview).isEmpty()) ? true : false;
 			this.popupPersonalTasks.miPerform.setEnabled(bPerformEnabled);
 
 			final boolean bFinished = PersonalTaskController.this.areTasksCompleted(getSelectedPersonalTasks(personaltaskview));

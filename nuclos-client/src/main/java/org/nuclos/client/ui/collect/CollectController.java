@@ -1616,8 +1616,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * alternative entry point: view all (in Results tab)
 	 * @precondition this.isSearchPanelAvailable()
+	 * 
+	 * TODO: Argument should be List<Long>.
 	 */
-	public final void runViewResults(List<Object> oIds) throws CommonBusinessException {
+	public final void runViewResults(List<? extends Object> oIds) throws CommonBusinessException {
 		getResultController().getSearchResultStrategy().viewList(oIds);
 		this.setCollectState(CollectState.OUTERSTATE_RESULT, CollectState.RESULTMODE_NOSELECTION);
 		this.showFrame();

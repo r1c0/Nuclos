@@ -624,7 +624,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 
 		Long longId = null;
 		if (oId instanceof Integer) {
-			longId = LangUtils.convertId((Integer)oId);
+			longId = IdUtils.toLongId(oId);
 		} else if (oId instanceof Long) {
 			longId = (Long) oId;
 		}
@@ -738,7 +738,8 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 					throw new CommonCreateException(e);
 				}
 			} else if (NuclosEntity.NUCLET.getEntityName().equals(sEntityName)) {
-				ServiceLocator.getInstance().getFacade(TransferFacadeLocal.class).checkCircularReference(LangUtils.convertId(mdvo.getIntId()));
+				ServiceLocator.getInstance().getFacade(TransferFacadeLocal.class).checkCircularReference(
+						IdUtils.toLongId(mdvo.getIntId()));
 			}
 
 			boolean useRuleEngineSaveAfter = this.getUsesRuleEngine(sEntityName, RuleEventUsageVO.SAVE_AFTER_EVENT);
@@ -785,7 +786,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		// todo: check and clean thrown exception types to necessary minimum
 
 		checkWriteAllowed(sEntityName);
-		getRecordGrantUtils().checkWriteInternal(sEntityName, LangUtils.convertId((Integer) mdvo.getId()));
+		getRecordGrantUtils().checkWriteInternal(sEntityName, IdUtils.toLongId(mdvo.getId()));
 
 		NuclosEntity nuclosEntity = NuclosEntity.getByName(sEntityName);
 
@@ -846,7 +847,8 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 				throw new CommonCreateException(e);
 			}
 		} else if (NuclosEntity.NUCLET.getEntityName().equals(sEntityName)) {
-			ServiceLocator.getInstance().getFacade(TransferFacadeLocal.class).checkCircularReference(LangUtils.convertId(mdvo.getIntId()));
+			ServiceLocator.getInstance().getFacade(TransferFacadeLocal.class).checkCircularReference(
+					IdUtils.toLongId(mdvo.getIntId()));
 		}
 
 		final boolean useRuleEngineSaveAfter = this.getUsesRuleEngine(sEntityName, RuleEventUsageVO.SAVE_AFTER_EVENT);
@@ -905,7 +907,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		CommonPermissionException, NuclosBusinessRuleException {
 
 		checkDeleteAllowed(sEntityName);
-		getRecordGrantUtils().checkDeleteInternal(sEntityName, LangUtils.convertId((Integer) mdvo.getId()));
+		getRecordGrantUtils().checkDeleteInternal(sEntityName, IdUtils.toLongId(mdvo.getId()));
 
 		NuclosEntity nuclosEntity = NuclosEntity.getByName(sEntityName);
 
@@ -1121,7 +1123,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 							dmdvo.flagRemove();
 						}
 						dmdvo.setDependants(readAllDependants(eafn.getEntityName(),
-							LangUtils.convertId(dmdvo.getId()), dmdvo.getDependants(),
+								IdUtils.unsafeToId(dmdvo.getId()), dmdvo.getDependants(),
 							dmdvo.isFlagRemoved(), eafn.getEntityName(),
 							mpEntityAndParentEntityName));
 					}
@@ -1291,7 +1293,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 
 			if(!lstmdmetafieldvo.isEmpty()) {
 				for(final EntityObjectVO mdvoDependant : mpDependants.getData(sDependantEntityName)) {
-					final Integer iRecordId = LangUtils.convertId(mdvoDependant.getId());
+					final Integer iRecordId = IdUtils.unsafeToId(mdvoDependant.getId());
 
 					// Change only what has been changed
 					if(iRecordId != null && !mdvoDependant.isFlagUpdated()

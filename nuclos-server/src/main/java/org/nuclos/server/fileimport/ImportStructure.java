@@ -27,6 +27,7 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.genericobject.GenericObjectImportUtils;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
@@ -93,7 +94,7 @@ public class ImportStructure {
 			this.items = new HashMap<String, Item>();
 			final Collection<MasterDataVO> collAttributes = mdfacade.getDependantMasterData(NuclosEntity.IMPORTATTRIBUTE.getEntityName(), "import", iImportStructureId);
 
-			final String entityname = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(this.iEntityId)).getEntity();
+			final String entityname = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(this.iEntityId)).getEntity();
 			this.entityname = entityname;
 			final boolean isModule = Modules.getInstance().existModule(entityname);
 

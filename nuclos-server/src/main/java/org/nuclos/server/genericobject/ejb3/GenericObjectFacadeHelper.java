@@ -40,6 +40,7 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.EntityAndFieldName;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
@@ -229,7 +230,7 @@ public class GenericObjectFacadeHelper {
 						// Find the masterdata cvo in the dependencies if possible
 						EntityObjectVO mdvo = null;
 						for (EntityObjectVO mdvo1 : collmdvo) {
-							if (iMasterDataRecordId.equals(LangUtils.convertId(mdvo1.getId()))) {
+							if (iMasterDataRecordId.equals(IdUtils.toLongId(mdvo1.getId()))) {
 								mdvo = mdvo1;
 								break;
 							}
@@ -239,7 +240,7 @@ public class GenericObjectFacadeHelper {
 							// Entry has been deleted and must be recreated before value can be set
 							if (mdvo == null) {
 								mdvo = new EntityObjectVO();
-								mdvo.setId(LangUtils.convertId(iMasterDataRecordId));
+								mdvo.setId(IdUtils.toLongId(iMasterDataRecordId));
 								mpDependantsResult.addData(sEntity, mdvo);
 							}
 							mdvo.getFields().put(sField, sValue);
@@ -369,7 +370,7 @@ public class GenericObjectFacadeHelper {
 	public List<GenericObjectWithDependantsVO> getGenericObjects(Integer iModuleId, CollectableSearchExpression clctexpr, 
 		Set<String> stRequiredSubEntityNames, String username) {
 
-		final EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iModuleId));
+		final EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(iModuleId));
 		final List<GenericObjectWithDependantsVO> result = new ArrayList<GenericObjectWithDependantsVO>();
 		
 		for (EntityObjectVO eo : NucletDalProvider.getInstance().getEntityObjectProcessor(eMeta.getEntity()).getBySearchExpression(appendRecordGrants(clctexpr, eMeta.getEntity()), clctexpr.getSortingOrder()!=null)) {
@@ -498,8 +499,8 @@ public class GenericObjectFacadeHelper {
 		final String newCanonicalValue = vo.getValue() != null ? DalSupportForGO.convertToCanonicalAttributeValue(vo.getAttributeId(), vo.getValue()) : "";
 		
 		if (eoOld != null) {
-			final Integer oldInternalValueId = LangUtils.convertId(DalSupportForGO.isEntityFieldForeign(vo.getAttributeId())?null:eoOld.getFieldIds().get(field));
-			final Integer oldExternalValueId = LangUtils.convertId(DalSupportForGO.isEntityFieldForeign(vo.getAttributeId())?eoOld.getFieldIds().get(field):null);
+			final Integer oldInternalValueId = IdUtils.unsafeToId(DalSupportForGO.isEntityFieldForeign(vo.getAttributeId())?null:eoOld.getFieldIds().get(field));
+			final Integer oldExternalValueId = IdUtils.unsafeToId(DalSupportForGO.isEntityFieldForeign(vo.getAttributeId())?eoOld.getFieldIds().get(field):null);
 			final String oldCanonicalValue;
 			if (NuclosEOField.CHANGEDBY.getMetaData().getField().equals(field)) {
 				oldCanonicalValue = eoOld.getChangedBy();
@@ -514,7 +515,7 @@ public class GenericObjectFacadeHelper {
 			}
 			
 			if (!oldCanonicalValue.equals(newCanonicalValue)) {
-				getGenericObjectFacade().createLogbookEntry(LangUtils.convertId(eoOld.getId()), vo.getAttributeId(), null, null, null, null, 
+				getGenericObjectFacade().createLogbookEntry(IdUtils.unsafeToId(eoOld.getId()), vo.getAttributeId(), null, null, null, null, 
 					oldInternalValueId,
 					oldExternalValueId, 
 					oldCanonicalValue, 
@@ -523,7 +524,7 @@ public class GenericObjectFacadeHelper {
 					newCanonicalValue);
 			}
 		} else if (eoNew != null) {
-			getGenericObjectFacade().createLogbookEntry(LangUtils.convertId(eoNew.getId()), vo.getAttributeId(), null, null, null, null, 
+			getGenericObjectFacade().createLogbookEntry(IdUtils.unsafeToId(eoNew.getId()), vo.getAttributeId(), null, null, null, null, 
 				null,
 				null, 
 				null, 
@@ -550,7 +551,8 @@ public class GenericObjectFacadeHelper {
 			// get set of attributes in the layout:
 //			final Set<String> stAttributesInLayout = lometacache.getBestMatchingLayoutAttributeNames(govo.getUsageCriteria(lometacache));
 
-			final boolean bLogbookTracking = Modules.getInstance().isLogbookTracking(LangUtils.convertId(MetaDataServerProvider.getInstance().getEntity(eoNew.getEntity()).getId()));
+			final boolean bLogbookTracking = Modules.getInstance().isLogbookTracking(
+					IdUtils.unsafeToId(MetaDataServerProvider.getInstance().getEntity(eoNew.getEntity()).getId()));
 
 			// @todo try to refactor - the following is nearly duplicated in ejbPostCreate
 			final Collection<BadAttributeValueException> collex = new ArrayList<BadAttributeValueException>();

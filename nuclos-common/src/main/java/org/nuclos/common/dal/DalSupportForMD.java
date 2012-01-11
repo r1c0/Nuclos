@@ -54,7 +54,7 @@ public class DalSupportForMD {
 	public static EntityObjectVO getEntityObjectVO(MasterDataVO md) {
 		final EntityObjectVO eo = new EntityObjectVO();
 
-		eo.setId(LangUtils.convertId((Integer)md.getId()));
+		eo.setId(IdUtils.toLongId(md.getId()));
 		eo.setCreatedBy(md.getCreatedBy());
 		eo.setCreatedAt(InternalTimestamp.toInternalTimestamp(md.getCreatedAt()));
 		eo.setChangedBy(md.getChangedBy());
@@ -76,7 +76,7 @@ public class DalSupportForMD {
 			if (field.getKey().endsWith("Id")) {
 				final String objectfieldname = field.getKey().substring(0, field.getKey().length()-2);
 				if (field.getValue() instanceof Integer) {
-					eo.getFieldIds().put(objectfieldname, LangUtils.convertId((Integer) field.getValue()));
+					eo.getFieldIds().put(objectfieldname, IdUtils.toLongId(field.getValue()));
 				} else if (field.getValue() instanceof Long) {
 					eo.getFieldIds().put(objectfieldname, (Long) field.getValue());
 				}
@@ -94,14 +94,14 @@ public class DalSupportForMD {
 			mpFields.put(field.getKey(), field.getValue());
 		}
 		for (Entry<String, Long> field : eo.getFieldIds().entrySet()) {
-			mpFields.put(field.getKey()+"Id", LangUtils.convertId(field.getValue()));
+			mpFields.put(field.getKey()+"Id", IdUtils.unsafeToId(field.getValue()));
 		}
 
 		mpFields.put(NuclosEOField.CREATEDAT.getMetaData().getField(), eo.getCreatedAt());
 		mpFields.put(NuclosEOField.CREATEDBY.getMetaData().getField(), eo.getCreatedBy());
 		mpFields.put(NuclosEOField.CHANGEDAT.getMetaData().getField(), eo.getChangedAt());
 		mpFields.put(NuclosEOField.CHANGEDBY.getMetaData().getField(), eo.getChangedBy());
-		MasterDataVO vo = new MasterDataVO(LangUtils.convertId(eo.getId()), eo.getCreatedAt(), eo.getCreatedBy(), eo.getChangedAt(), eo.getChangedBy(), eo.getVersion(), mpFields);
+		MasterDataVO vo = new MasterDataVO(IdUtils.unsafeToId(eo.getId()), eo.getCreatedAt(), eo.getCreatedBy(), eo.getChangedAt(), eo.getChangedBy(), eo.getVersion(), mpFields);
 		vo.setChanged(eo.isFlagNew() || eo.isFlagUpdated());
 		vo.setDependants(eo.getDependants());
 		if(eo.isFlagRemoved())
@@ -150,7 +150,7 @@ public class DalSupportForMD {
 		mpFields.put("reportFilename", eMeta.getReportFilename());
 
 		MasterDataVO md = new MasterDataVO(
-			/*Object oId,*/ LangUtils.convertId(eMeta.getId()),
+			/*Object oId,*/ IdUtils.unsafeToId(eMeta.getId()),
 			/*Date dateCreatedAt,*/ eMeta.getCreatedAt(),
 			/*String sCreatedBy,*/ eMeta.getCreatedBy(),
 			/*Date dateChangedAt,*/ eMeta.getChangedAt(),
@@ -176,7 +176,7 @@ public class DalSupportForMD {
 		MasterDataMetaVO result;
 		if (!eMeta.isDynamic()) {
 			result = new MasterDataMetaVO(
-				/*Integer iId,*/ LangUtils.convertId(eMeta.getId()),
+				/*Integer iId,*/ IdUtils.unsafeToId(eMeta.getId()),
 				/*String sEntityName,*/ eMeta.getEntity(),
 				/*String sDBEntityName,*/ eMeta.getDbEntity(),
 				/*String sMenuPath,*/ null,
@@ -208,7 +208,7 @@ public class DalSupportForMD {
 				);
 		}
 		else {
-			result = new MasterDataMetaVO(LangUtils.convertId(eMeta.getId()), eMeta.getDbEntity(), mpFields);
+			result = new MasterDataMetaVO(IdUtils.unsafeToId(eMeta.getId()), eMeta.getDbEntity(), mpFields);
 		}
 		return result;
 	}
@@ -223,7 +223,7 @@ public class DalSupportForMD {
 		}
 
 		MasterDataMetaFieldVO mdfmeta = new MasterDataMetaFieldVO(
-			/*Integer iId,*/ LangUtils.convertId(efMeta.getId()),
+			/*Integer iId,*/ IdUtils.unsafeToId(efMeta.getId()),
 			/*String sFieldName,*/ efMeta.getField(),
 			/*String sDbFieldName,*/ efMeta.getDbColumn(),
 			/*String sLabel,*/ efMeta.getFallbacklabel(),

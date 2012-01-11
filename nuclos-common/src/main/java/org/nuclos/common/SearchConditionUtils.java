@@ -26,6 +26,7 @@ import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 
@@ -118,7 +119,7 @@ public class SearchConditionUtils extends org.nuclos.common.collect.collectable.
 
 	public static CollectableComparison newEOidComparison(String entity, String field, ComparisonOperator compop, Long id, MetaDataProvider metaProvider) {
 		final CollectableEntityField clctef = newEOEntityField(entity, field, metaProvider);
-		return new CollectableComparison(clctef, compop, CollectableUtils.newCollectableValueIdFieldForValueId(clctef, LangUtils.convertId(id)));
+		return new CollectableComparison(clctef, compop, CollectableUtils.newCollectableValueIdFieldForValueId(clctef, IdUtils.unsafeToId(id)));
 	}
 
 	public static CollectableLikeCondition newEOLikeComparison(String entity, String field, String comparand, MetaDataProvider metaProvider) {

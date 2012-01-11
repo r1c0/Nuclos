@@ -22,6 +22,7 @@ import java.util.Collection;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.format.FormattingTransformer;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 
@@ -63,10 +64,10 @@ public class MakeCollectableValueIdField implements Transformer<EntityObjectVO, 
 					return entity;
 				}
 			});
-			return new CollectableValueIdField(LangUtils.convertId(eovo.getId()), value);
+			return new CollectableValueIdField(IdUtils.unsafeToId(eovo.getId()), value);
 		}
 		else {
-			return new CollectableValueIdField(LangUtils.convertId(eovo.getId()), eovo.getFields().get(this.sFieldNameForValue));
+			return new CollectableValueIdField(IdUtils.unsafeToId(eovo.getId()), eovo.getFields().get(this.sFieldNameForValue));
 		}
 	}
 

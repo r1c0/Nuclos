@@ -308,7 +308,7 @@ public class SearchResultStrategy<Clct extends Collectable> implements ISearchRe
 	}
 
 	@Override
-	public void viewList(List<Object> ids) {
+	public void viewList(List<? extends Object> ids) {
 		getCollectController().getSearchStrategy().setCollectableIdListCondition(new CollectableIdListCondition(ids));
 		cmdSearch(false);
 	}

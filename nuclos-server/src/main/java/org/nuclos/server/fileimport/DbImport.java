@@ -31,6 +31,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.fileimport.ImportResult;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
@@ -176,7 +177,7 @@ public class DbImport extends AbstractImport {
 							if (getProcessCache().get(entityname).containsKey(prozess)) {
 								process = getProcessCache().get(entityname).get(prozess);
 								io.getValueObject().getFields().put(ATTRIBUTENAME_PROCESS, prozess);
-								io.getValueObject().getFieldIds().put(ATTRIBUTENAME_PROCESS, LangUtils.convertId(process));
+								io.getValueObject().getFieldIds().put(ATTRIBUTENAME_PROCESS, IdUtils.toLongId(process));
 							}
 							else {
 								io.getValueObject().getFields().put(ATTRIBUTENAME_PROCESS, null);
@@ -186,7 +187,7 @@ public class DbImport extends AbstractImport {
 
 						// Set initial state if necessary
 						if (meta.isStateModel() && !io.getAttributes().containsKey(ATTRIBUTENAME_STATE)) {
-							StateVO statevo = getStateFacade().getInitialState(new UsageCriteria(LangUtils.convertId(meta.getId()), process));
+							StateVO statevo = getStateFacade().getInitialState(new UsageCriteria(IdUtils.unsafeToId(meta.getId()), process));
 							io.getAttributes().put(ATTRIBUTENAME_STATE, statevo.getStatename());
 						}
 
@@ -196,7 +197,7 @@ public class DbImport extends AbstractImport {
 
 							if (getStateCache().containsKey(entityname) && getStateCache().get(entityname).containsKey(process) &&  getStateCache().get(entityname).get(process).containsKey(status)) {
 								io.getValueObject().getFields().put(ATTRIBUTENAME_STATE, status);
-								io.getValueObject().getFieldIds().put(ATTRIBUTENAME_STATE, LangUtils.convertId(getStateCache().get(entityname).get(process).get(status)));
+								io.getValueObject().getFieldIds().put(ATTRIBUTENAME_STATE, IdUtils.toLongId(getStateCache().get(entityname).get(process).get(status)));
 							}
 							else {
 								io.getValueObject().getFields().put(ATTRIBUTENAME_STATE, null);

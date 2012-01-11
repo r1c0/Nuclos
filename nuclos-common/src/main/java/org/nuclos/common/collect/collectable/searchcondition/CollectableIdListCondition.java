@@ -34,13 +34,16 @@ import org.nuclos.common2.LangUtils;
  */
 public final class CollectableIdListCondition extends AbstractCollectableSearchCondition {
 
-	private final List<Object> oIds;
+	private final List<? extends Object> oIds;
 
-	public CollectableIdListCondition(List<Object> oIds) {
+	/**
+	 * TODO: Argument should be List<Long>.
+	 */
+	public CollectableIdListCondition(List<? extends Object> oIds) {
 		this.oIds = oIds;
 	}
 
-	public List<Object> getIds() {
+	public List<? extends Object> getIds() {
 		return this.oIds;
 	}
 	

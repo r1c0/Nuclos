@@ -23,9 +23,12 @@ import org.nuclos.common.collection.Predicate;
 
 public class CollectableIdPredicate implements Predicate<Collectable> {
 
-	private final List<Object> ids;
+	private final List<? extends Object> ids;
 
-	public CollectableIdPredicate(List<Object> ids) {
+	/**
+	 * TODO: Argument should be List<Long>.
+	 */
+	public CollectableIdPredicate(List<? extends Object> ids) {
 		super();
 		this.ids = ids;
 	}

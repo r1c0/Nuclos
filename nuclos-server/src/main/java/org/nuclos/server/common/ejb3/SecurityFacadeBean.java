@@ -32,6 +32,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common.transport.GzipMap;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -243,7 +244,7 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 			else
 				p = secCache.getAttributeGroup(
 						user,
-						LangUtils.convertId(e.getValue().getFieldGroupId()))
+						IdUtils.unsafeToId(e.getValue().getFieldGroupId()))
 					.get(stateId);
 			res.put(e.getKey(), p);
 		}

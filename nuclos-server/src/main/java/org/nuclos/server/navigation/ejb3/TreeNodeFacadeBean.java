@@ -327,7 +327,8 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		final Integer nodeId = (Integer)node.getId();
 		if(nodeId == null)
 			return Collections.emptyList();
-		CollectableComparison cond = SearchConditionUtils.newEOidComparison(sEntity, sField, ComparisonOperator.EQUAL, LangUtils.convertId(nodeId), MetaDataServerProvider.getInstance());
+		CollectableComparison cond = SearchConditionUtils.newEOidComparison(sEntity, sField, ComparisonOperator.EQUAL, 
+				IdUtils.toLongId(nodeId), MetaDataServerProvider.getInstance());
 
 		List<Integer> lstIds = getGenericObjectFacade().getGenericObjectIds(moduleId, cond);
 
@@ -571,7 +572,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 				NuclosEntity.NUCLETDEPENDENCE.getEntityName(),
 				"nuclet",
 				ComparisonOperator.EQUAL,
-				LangUtils.convertId(node.getId()),
+				IdUtils.toLongId(node.getId()),
 				MetaDataServerProvider.getInstance());
 
 			List<NucletTreeNode> nucletNodes = new ArrayList<NucletTreeNode>();
@@ -585,7 +586,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 					return LangUtils.compare(o1.getLabel(), o2.getLabel());
 				}}));
 		} else {
-			result.addAll(getNucletContentTypes(LangUtils.convertId(node.getId())));
+			result.addAll(getNucletContentTypes(IdUtils.toLongId(node.getId())));
 		}
 		return result;
 	}
@@ -670,7 +671,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	public List<AbstractNucletContentEntryTreeNode> getNucletContent(NucletTreeNode node) {
 		final List<AbstractNucletContentEntryTreeNode> result = new ArrayList<AbstractNucletContentEntryTreeNode>();
 
-		for (NucletContentTreeNode contentTypeNode : getNucletContentTypes(LangUtils.convertId(node.getId()))) {
+		for (NucletContentTreeNode contentTypeNode : getNucletContentTypes(IdUtils.toLongId(node.getId()))) {
 			result.addAll(getSubNodes(contentTypeNode));
 		}
 

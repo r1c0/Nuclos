@@ -50,6 +50,7 @@ import org.nuclos.common.entityobject.MakeEntityObjectValueIdField;
 import org.nuclos.common.fileimport.ImportMode;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
@@ -358,7 +359,7 @@ public class ImportUtils {
 			return CollectionUtils.transform(goFacade.getGenericObjectIds(Modules.getInstance().getModuleIdByEntityName(entity), (CollectableSearchCondition)null), new Transformer<Integer, Long>() {
 				@Override
 				public Long transform(Integer i) {
-					return LangUtils.convertId(i);
+					return IdUtils.toLongId(i);
 				}
 			});
 		}
@@ -367,7 +368,7 @@ public class ImportUtils {
 			return CollectionUtils.transform(mdFacade.getMasterDataIds(entity), new Transformer<Object, Long>() {
 				@Override
 				public Long transform(Object i) {
-					return LangUtils.convertId((Integer)i);
+					return IdUtils.toLongId(i);
 				}
 			});
 		}

@@ -59,7 +59,7 @@ public class DalSupportForGO {
 		Set<Integer> setLoadedAttributeIds = null;
 		final NuclosValueObject nvo;
 		if (eo.getId() != null) {
-			nvo = new NuclosValueObject(LangUtils.convertId(eo.getId()), eo.getCreatedAt(), eo.getCreatedBy(),
+			nvo = new NuclosValueObject(IdUtils.unsafeToId(eo.getId()), eo.getCreatedAt(), eo.getCreatedBy(),
 					eo.getChangedAt(), eo.getChangedBy(), eo.getVersion());
 		} else {
 			nvo = new NuclosValueObject();
@@ -79,8 +79,8 @@ public class DalSupportForGO {
 			Object fieldValue = eo.getFields().get(field);
 			Long idValue = eo.getFieldIds().get(field);
 			if (mdcp.getAllEntityFieldsByEntity(eo.getEntity()).containsKey(field)) {
-				DynamicAttributeVO attr = new DynamicAttributeVO(LangUtils.convertId(mdcp.getEntityField(
-						eo.getEntity(), field).getId()), LangUtils.convertId(idValue), fieldValue);
+				DynamicAttributeVO attr = new DynamicAttributeVO(IdUtils.unsafeToId(mdcp.getEntityField(
+						eo.getEntity(), field).getId()), IdUtils.unsafeToId(idValue), fieldValue);
 				attrVOList.add(attr);
 			}
 		}
@@ -100,7 +100,7 @@ public class DalSupportForGO {
 		final EntityMetaDataVO metaVo = meta.getMeta();
 		final EntityObjectVO eo = new EntityObjectVO();
 		eo.setEntity(metaVo.getEntity());
-		eo.setId(LangUtils.convertId(go.getId()));
+		eo.setId(IdUtils.toLongId(go.getId()));
 		eo.setCreatedBy(go.getCreatedBy());
 		eo.setCreatedAt(InternalTimestamp.toInternalTimestamp(go.getCreatedAt()));
 		eo.setChangedBy(go.getChangedBy());
@@ -122,7 +122,7 @@ public class DalSupportForGO {
 			} else {
 				eo.getFields().put(field, attr.getValue());
 				if (attr.getValueId() != null) {
-					eo.getFieldIds().put(field, LangUtils.convertId(attr.getValueId()));
+					eo.getFieldIds().put(field, IdUtils.toLongId(attr.getValueId()));
 				}
 			}
 		}

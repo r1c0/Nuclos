@@ -56,6 +56,7 @@ import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.transport.GzipList;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IOUtils;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
@@ -212,9 +213,9 @@ public class MasterDataFacadeHelper {
 		}
 
 		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(mdmetavo.getEntityName());
-		EntityObjectVO eoResult = eoProcessor.getByPrimaryKey(LangUtils.convertId((Integer)oId));
+		EntityObjectVO eoResult = eoProcessor.getByPrimaryKey(IdUtils.toLongId(oId));
 		try {
-			grantUtils.checkInternal(mdmetavo.getEntityName(), LangUtils.convertId((Integer)oId));
+			grantUtils.checkInternal(mdmetavo.getEntityName(), IdUtils.toLongId(oId));
         }
         catch(CommonPermissionException e) {
         	throw new CommonFinderException(e);
@@ -693,7 +694,7 @@ public class MasterDataFacadeHelper {
 					if(documentFile.getContents() != null) {
 					  storeFile(new GenericObjectDocumentFile(
 						   documentFile.getFilename(),
-						   LangUtils.convertId(eoVO.getId()),
+						   IdUtils.unsafeToId(eoVO.getId()),
 						   documentFile.getContents(),
 						   documentFile.getDirectoryPath()),
 					  		NuclosSystemParameters.getDirectory(NuclosSystemParameters.DOCUMENT_PATH));
@@ -791,7 +792,7 @@ public class MasterDataFacadeHelper {
 				else {
 					MasterDataVO voDependant = DalSupportForMD.wrapEntityObjectVO(mdvoDependant);
 					Integer id = createOrModify(sDependantEntityName, voDependant, sEntityName, sUserName, bValidate, intid, mpEntityAndParentEntityName);
-					mdvoDependant.setId(LangUtils.convertId(id));
+					mdvoDependant.setId(IdUtils.toLongId(id));
 				}
 			}
 		}
@@ -944,7 +945,8 @@ public class MasterDataFacadeHelper {
 					// set the id of the foreign key field to the id of the parent:
 					//mdvoDependant.setField(sForeignIdFieldName, iParentId);
 					mdvoDependant.getFields().put(sForeignIdFieldName, iParentId);
-					mdvoDependant.getFieldIds().put(sForeignIdFieldName.substring(0, sForeignIdFieldName.length()-2), LangUtils.convertId(iParentId));
+					mdvoDependant.getFieldIds().put(sForeignIdFieldName.substring(0, sForeignIdFieldName.length()-2), 
+							IdUtils.toLongId(iParentId));
 
 					// create dependant row:
 					Integer iId;

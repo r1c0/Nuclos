@@ -33,6 +33,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.security.Permission;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
@@ -121,7 +122,7 @@ public class AttributeCache implements AttributeProvider {
 		this.validate();
 
 		try {
-			final AttributeCVO result = getAttribute(LangUtils.convertId(MetaDataServerProvider.getInstance().getEntityField(sEntity, sAttributeName).getId()));
+			final AttributeCVO result = getAttribute(IdUtils.unsafeToId(MetaDataServerProvider.getInstance().getEntityField(sEntity, sAttributeName).getId()));
 			if (result == null) {
 				throw new NuclosAttributeNotFoundException(sAttributeName);
 			}
@@ -172,7 +173,7 @@ public class AttributeCache implements AttributeProvider {
 					for (EntityFieldMetaDataVO efMeta : MetaDataServerProvider.getInstance()
 							.getAllEntityFieldsByEntity(eMeta.getEntity()).values()) {
 						Map<Integer, Permission> permissions = SecurityCache.getInstance().getAttributeGroup("",
-								LangUtils.convertId(efMeta.getFieldGroupId()));
+								IdUtils.unsafeToId(efMeta.getFieldGroupId()));
 						AttributeCVO attrCVO = DalSupportForGO.getAttributeCVO(efMeta, permissions);
 
 						mpAttributesById.put(attrCVO.getId(), attrCVO);

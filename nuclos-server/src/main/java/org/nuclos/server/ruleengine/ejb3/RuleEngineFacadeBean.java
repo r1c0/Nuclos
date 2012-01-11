@@ -46,6 +46,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.collection.TransformerUtils;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
@@ -905,7 +906,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 			for (EntityObjectVO mdvo : mpDependants.getAllData()) {
 				mdvo.getFields().put("rule", rulevo.getName());
 				mdvo.getFields().put("ruleId", rulevo.getId());
-				mdvo.getFieldIds().put("ruleId", LangUtils.convertId(rulevo.getId()));
+				mdvo.getFieldIds().put("ruleId", IdUtils.toLongId(rulevo.getId()));
 			}
 
 			MasterDataVO mdVO = getMasterDataFacade().create(NuclosEntity.RULE.getEntityName(), MasterDataWrapper.wrapRuleVO(rulevo), mpDependants);

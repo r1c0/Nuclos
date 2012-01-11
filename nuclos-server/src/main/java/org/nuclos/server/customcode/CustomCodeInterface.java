@@ -38,6 +38,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableLikeCond
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
@@ -210,7 +211,8 @@ public abstract class CustomCodeInterface {
 		if (sAttributeName == null) {
 			throw new NullArgumentException("sAttributeName");
 		}
-		final Integer iAttributeId = MetaDataServerProvider.getInstance().getEntityField(MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(getGenericObject().getModuleId())).getEntity(), sAttributeName).getId().intValue();
+		final Integer iAttributeId = MetaDataServerProvider.getInstance().getEntityField(MetaDataServerProvider.getInstance().getEntity(
+				IdUtils.toLongId(getGenericObject().getModuleId())).getEntity(), sAttributeName).getId().intValue();
 
 		final DynamicAttributeVO dynamicAttribute = this.getGenericObject().getAttribute(iAttributeId);
 		final DynamicAttributeVO result = (dynamicAttribute == null || dynamicAttribute.isRemoved()) ? new DynamicAttributeVO(iAttributeId, null, null) : dynamicAttribute;
@@ -224,7 +226,7 @@ public abstract class CustomCodeInterface {
 		if (sAttributeName == null) {
 			throw new NullArgumentException("sAttributeName");
 		}
-		final Integer iAttributeId = LangUtils.convertId(MetaDataServerProvider.getInstance().getEntityField(sEntityName, sAttributeName).getId());
+		final Integer iAttributeId = IdUtils.unsafeToId(MetaDataServerProvider.getInstance().getEntityField(sEntityName, sAttributeName).getId());
 			//getAttributeId(sAttributeName);
 
 		final DynamicAttributeVO dynamicAttribute = this.getGenericObject().getAttribute(iAttributeId);

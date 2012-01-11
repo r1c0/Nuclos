@@ -1062,7 +1062,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	            	if (o instanceof GenericObjectIdModuleProcess) {
 	            		GenericObjectIdModuleProcess goimp = (GenericObjectIdModuleProcess) o;
 	            		Integer entityId = goimp.getModuleId();
-	            		entityname = MetaDataClientProvider.getInstance().getEntity(LangUtils.convertId(entityId)).getEntity();
+	            		entityname = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(entityId)).getEntity();
 
 	            		try {
 	            			clct = new CollectableGenericObjectWithDependants(GenericObjectDelegate.getInstance().getWithDependants(goimp.getGenericObjectId()));

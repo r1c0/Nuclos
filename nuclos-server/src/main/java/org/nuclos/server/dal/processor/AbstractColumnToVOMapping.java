@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import org.nuclos.common.NuclosImage;
 import org.nuclos.common.NuclosPassword;
 import org.nuclos.common2.DateTime;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -102,12 +103,12 @@ abstract class AbstractColumnToVOMapping<T> implements IColumnToVOMapping<T> {
 			NuclosImage ni = new NuclosImage("", (byte[]) value, null, false);
 			return (S) ni;
 		} else if (dataType == ResourceFile.class) {
-			return (S) new ResourceFile((String) value, LangUtils.convertId(recordId));
+			return (S) new ResourceFile((String) value, IdUtils.unsafeToId(recordId));
 		} else if (dataType == GenericObjectDocumentFile.class) {
 			if (value == null) {
 				return null;
 			}
-			return (S) new GenericObjectDocumentFile((String) value, LangUtils.convertId(recordId));
+			return (S) new GenericObjectDocumentFile((String) value, IdUtils.unsafeToId(recordId));
 		} else if (dataType == DateTime.class) {
 			return (S) new DateTime((java.util.Date) value);
 		} else if (dataType == NuclosPassword.class) {

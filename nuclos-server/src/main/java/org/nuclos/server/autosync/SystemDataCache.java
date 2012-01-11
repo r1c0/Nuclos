@@ -234,9 +234,12 @@ public class SystemDataCache {
 
 	private static class FieldIdListPredicate implements Predicate<MasterDataVO> {
 
-		private final List<Object> ids;
+		private final List<? extends Object> ids;
 
-		public FieldIdListPredicate(List<Object> ids) {
+		/**
+		 * TODO: Argument should be List<Long>.
+		 */
+		public FieldIdListPredicate(List<? extends Object> ids) {
 			this.ids = ids;
 		}
 

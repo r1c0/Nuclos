@@ -37,7 +37,10 @@ public interface ISearchResultStrategy<Clct extends Collectable> {
 	void cmdSearch();
 
 	void refreshResult() throws CommonBusinessException;
-
-	void viewList(List<Object> ids);
+	
+	/**
+	 * TODO: Argument should be List<Long>.
+	 */
+	void viewList(List<? extends Object> ids);
 
 }

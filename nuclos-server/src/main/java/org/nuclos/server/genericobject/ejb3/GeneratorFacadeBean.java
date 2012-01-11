@@ -301,7 +301,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 				}
 			}
 
-			parameterEntityName = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(generatoractionvo.getParameterEntityId())).getEntity();
+			parameterEntityName = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generatoractionvo.getParameterEntityId())).getEntity();
 			parameterObject = NucletDalProvider.getInstance().getEntityObjectProcessor(parameterEntityName).getByPrimaryKey(IdUtils.toLongId(parameterObjectId));
 			try {
 				parameterCVO = getRuleObjectContainerCVO(Event.GENERATION_BEFORE, parameterEntityName, parameterObjectId);
@@ -429,9 +429,9 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 
 	private String getTargetFieldIdIfAny(GeneratorActionVO generatoractionvo, Integer sourceEntityId) {
 		String result = null;
-		String sSourceEntity = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(sourceEntityId)).getEntity();
+		String sSourceEntity = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(sourceEntityId)).getEntity();
 		Integer iTargetModuleId = generatoractionvo.getTargetModuleId();
-		String sTargetEntity = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(iTargetModuleId)).getEntity();
+		String sTargetEntity = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(iTargetModuleId)).getEntity();
 		Map<String, EntityFieldMetaDataVO> mp = MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(sTargetEntity);
 		for (String sFieldName : mp.keySet()) {
 			EntityFieldMetaDataVO voField = mp.get(sFieldName);
@@ -695,7 +695,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 			query.groupBy(groupby);
 		}
 
-		String mainSourceEntity = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId(gavo.getSourceModuleId())).getEntity();
+		String mainSourceEntity = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(gavo.getSourceModuleId())).getEntity();
 		String foreignField = DependantMasterDataMap.getForeignKeyField(MasterDataMetaCache.getInstance().getMetaData(sourceEntity.getEntity()), mainSourceEntity, false);
 		String dbColumn = MetaDataServerProvider.getInstance().getEntityField(sourceEntity.getEntity(), foreignField).getDbColumn();
 		dbColumn = dbColumn.replaceFirst("^STRVALUE", "INTID");
@@ -756,8 +756,8 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		final int iLayoutIdTarget = lometacache.getBestMatchingLayoutId(criteria, false);
 		final Set<String> setEntityNamesTarget = lometacache.getSubFormEntityNamesByLayoutId(iLayoutIdTarget);
 
-		final EntityMetaDataVO sourceMeta = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId((Integer) subentity.getField("entitySourceId")));
-		final EntityMetaDataVO targetMeta = MetaDataServerProvider.getInstance().getEntity(LangUtils.convertId((Integer) subentity.getField("entityTargetId")));
+		final EntityMetaDataVO sourceMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(subentity.getField("entitySourceId")));
+		final EntityMetaDataVO targetMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(subentity.getField("entityTargetId")));
 
 		String sSource = sourceMeta.getEntity();
 		String sTarget = targetMeta.getEntity();
