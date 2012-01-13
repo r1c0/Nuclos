@@ -484,6 +484,8 @@
 					</aspectLibraries>
 					<source>1.6</source>
 					<target>1.6</target>
+					<meminitial>128m</meminitial>
+					<maxmem>512m</maxmem>
 				</configuration>
 			</plugin>
 		</plugins>
