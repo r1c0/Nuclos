@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.nuclos.common.NuclosDateTime;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosImage;
 import org.nuclos.common.NuclosPassword;
@@ -29,7 +30,6 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.security.Permission;
-import org.nuclos.common2.DateTime;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
@@ -262,7 +262,7 @@ public class AttributeCVO extends NuclosValueObject implements Cloneable {
 	public static enum DataType {
 		STRING(String.class, "Text"),
 		DATE(Date.class, "Datum"),
-		DATETIME(DateTime.class, "Datum mit Zeit"),
+		DATETIME(NuclosDateTime.class, "Datum mit Zeit"),
 		INTEGER(Integer.class, "Ganze Zahl"),
 		DOUBLE(Double.class, "Dezimalzahl"),
 		BOOLEAN(Boolean.class, "Ja/Nein"),

@@ -25,6 +25,7 @@ import java.util.NoSuchElementException;
 import java.util.prefs.Preferences;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.NuclosDateTime;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosImage;
 import org.nuclos.common.NuclosPassword;
@@ -401,7 +402,7 @@ public class CollectableUtils {
 	public static int getCollectableComponentTypeForClass(Class<?> clazz) {
 		if (clazz.equals(Boolean.class)) {
 			return CollectableComponentTypes.TYPE_CHECKBOX;
-		} else if (clazz.equals(Date.class) || clazz.equals(InternalTimestamp.class)) {
+		} else if (clazz.equals(Date.class) || clazz.equals(InternalTimestamp.class) || clazz.equals(NuclosDateTime.class)) {
 			return CollectableComponentTypes.TYPE_DATECHOOSER;
 		} else if (org.nuclos.common2.File.class.isAssignableFrom(clazz)) {
 			return CollectableComponentTypes.TYPE_FILECHOOSER;

@@ -48,6 +48,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.NuclosDateTime;
 import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.NuclosScript;
 import org.nuclos.common.collection.CollectionUtils;
@@ -493,6 +494,8 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
             value = rs.getDate(index);
         } else if (javaType == InternalTimestamp.class) {
             value = InternalTimestamp.toInternalTimestamp(rs.getTimestamp(index));
+        } else if (javaType == NuclosDateTime.class) {
+            value = NuclosDateTime.toNuclosDateTime(rs.getTimestamp(index));
         } else if (javaType == byte[].class) {
             value = rs.getBytes(index);
         } else if (javaType == Object.class) {

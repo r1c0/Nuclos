@@ -53,6 +53,7 @@ import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -124,6 +125,8 @@ import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.masterdata.MetaDataDelegate;
+import org.nuclos.client.nuclet.INucletComponent;
+import org.nuclos.client.nuclet.NucletComponentRepository;
 import org.nuclos.client.relation.EntityRelationShipCollectController;
 import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.client.resource.NuclosResourceCache;
@@ -187,6 +190,8 @@ import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.common.ejb3.TestFacadeRemote;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 
 /**
@@ -198,6 +203,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Configurable
 public class MainController {
 
 	private static final Logger LOG = Logger.getLogger(MainController.class);
@@ -211,6 +217,7 @@ public class MainController {
 
 	private final String sUserName;
 	private final String sNuclosServerName;
+	private final LoginController loginController;
 
 	private final Preferences prefs = ClientPreferences.getUserPreferences().node(PREFS_NODE_MAINFRAME);
 
@@ -228,7 +235,7 @@ public class MainController {
 	 */
 	protected TaskController ctlTasks;
 
-	private final NuclosNotificationDialog notificationdlg;
+	private NuclosNotificationDialog notificationdlg;
 
 	/**
 	 * maps opened internal frames to their controllers.
@@ -253,16 +260,28 @@ public class MainController {
 	};
 
 	private DirectHelpActionListener dha = new DirectHelpActionListener();
+	
+	private NucletComponentRepository nucletComponentRepository;
+	
+	@Autowired
+	public void setNucletComponentRepository(NucletComponentRepository ncr) {
+		this.nucletComponentRepository = ncr;
+	}
 
 	/**
 	 * @param sUserName name of the logged in user
 	 * @param sNuclosServerName name of the Nucleus server connected to.
 	 * @throws BackingStoreException
 	 */
-	public MainController(String sUserName, String sNuclosServerName, final LoginController loginController) throws CommonPermissionException, BackingStoreException {
+	public MainController(String sUserName, String sNuclosServerName, final LoginController loginController) {
+		this.sUserName = sUserName;
+		this.sNuclosServerName = sNuclosServerName;
+		this.loginController = loginController;
+	}
+	
+	@PostConstruct
+	void init() throws CommonPermissionException, BackingStoreException {
 		try {
-			this.sUserName = sUserName;
-			this.sNuclosServerName = sNuclosServerName;
 			/** @todo this is a workaround - because Main.getMainController() is called to get the user name */
 			Main.setMainController(this);
 
@@ -1148,6 +1167,7 @@ public class MainController {
 
 	public static final String GENERIC_ENTITY_ACTION = "nuclosGenericEntityAction";
 	public static final String GENERIC_COMMAND_ACTION = "nuclosGenericCommandAction";
+	public static final String GENERIC_NUCLETCOMPONENT_ACTION = "nuclosGenericNucletComponentAction";
 	public static final String GENERIC_CUSTOMCOMPONENT_ACTION = "nuclosGenericCustomComponentAction";
 	public static final String GENERIC_SEARCHFILTER_ACTION = "nuclosGenericSearchFilterAction";
 	public static final String GENERIC_RESTORE_WORKSPACE_ACTION = "nuclosGenericRestoreWorkspaceAction";
@@ -1160,6 +1180,7 @@ public class MainController {
 
 		List<GenericAction> sortedResult = new ArrayList<GenericAction>();
 		getEntityMenuActions(sortedResult);
+		getNucletComponentMenuActions(sortedResult);
 		getCustomComponentMenuActions(sortedResult);
 
 		final Collator collator = Collator.getInstance(Locale.getDefault());
@@ -1309,6 +1330,33 @@ public class MainController {
 			}
 		}
 		return entityMenuActions;
+	}
+	
+	public List<Pair<String[], Action>> getNucletComponentMenuActions() {
+		return getNucletComponentMenuActions(null);
+	}
+	
+	private List<Pair<String[], Action>> getNucletComponentMenuActions(List<GenericAction> genericActions) {
+		List<Pair<String[], Action>> nucletComponentMenuAction = new ArrayList<Pair<String[],Action>>();
+		
+		if (nucletComponentRepository != null) {
+		for (INucletComponent nc : nucletComponentRepository.getNucletComponents()) {
+			String[] menuPath = nc.getMenuPath();
+			Action action = nc.getAction();
+			// If the component is not allowed to run (due to missing permissions), the action is disabled and skipped
+			if (menuPath != null && menuPath.length > 0 && action != null && action.isEnabled()) {
+				nucletComponentMenuAction.add(Pair.makePair(menuPath, action));
+				if (genericActions != null) {
+					WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
+					wa.setAction(GENERIC_NUCLETCOMPONENT_ACTION);
+					wa.putStringParameter("nucletcomponent", nc.getClass().getName());
+					genericActions.add(new GenericAction(wa, new ActionWithMenuPath(menuPath, action)));
+				}
+			}
+		}
+		}
+		
+		return nucletComponentMenuAction;
 	}
 
 	public List<Pair<String[], Action>> getCustomComponentMenuActions() {

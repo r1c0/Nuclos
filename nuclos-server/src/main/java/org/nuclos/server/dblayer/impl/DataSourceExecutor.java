@@ -29,6 +29,7 @@ import java.util.Date;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.NuclosDateTime;
 import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.NuclosScript;
 import org.nuclos.common2.DateUtils;
@@ -220,7 +221,7 @@ public abstract class DataSourceExecutor implements DbExecutor {
     public final int getPreferredSqlTypeFor(Class<?> javaType) throws DbException {
         if (javaType == java.util.Date.class) {
             javaType = java.sql.Date.class;
-        } else if (javaType == InternalTimestamp.class) {
+        } else if (javaType == InternalTimestamp.class || javaType == NuclosDateTime.class) {
             javaType = java.sql.Timestamp.class;
         } else if (javaType == NuclosPassword.class) {
         	javaType = java.lang.String.class;

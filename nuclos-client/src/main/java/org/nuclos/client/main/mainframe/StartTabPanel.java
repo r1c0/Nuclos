@@ -733,6 +733,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 
 				startmenuActionsGeneric.addAll(Main.getMainController().getEntityMenuActions());
 				startmenuActionsGeneric.addAll(Main.getMainController().getCustomComponentMenuActions());
+				startmenuActionsGeneric.addAll(Main.getMainController().getNucletComponentMenuActions());
 
 				startmenuActionsAll.addAll(startmenuActionsStatic);
 				startmenuActionsAll.addAll(startmenuActionsGeneric);

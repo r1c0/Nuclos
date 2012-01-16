@@ -944,6 +944,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		List<Pair<String[], Action>> menuAdditions = new ArrayList<Pair<String[], Action>>();
 		menuAdditions.addAll(Main.getMainController().getEntityMenuActions());
 		menuAdditions.addAll(Main.getMainController().getCustomComponentMenuActions());
+		menuAdditions.addAll(Main.getMainController().getNucletComponentMenuActions());
 
 		final Collator collator = Collator.getInstance(Locale.getDefault());
 		final Comparator<String[]> arrayCollator = ComparatorUtils.arrayComparator(collator);

@@ -58,6 +58,7 @@ import org.nuclos.client.wizard.model.DataTyp;
 import org.nuclos.client.wizard.util.DoubleFormatDocument;
 import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.client.wizard.util.NumericFormatDocument;
+import org.nuclos.common.NuclosDateTime;
 import org.nuclos.common.NuclosImage;
 import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.collect.collectable.CollectableFieldFormat;
@@ -87,6 +88,7 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 		Integer.class.getName(),
 		Double.class.getName(),
 		Date.class.getName(),
+		NuclosDateTime.class.getName(),
 		Boolean.class.getName(),
 		GenericObjectDocumentFile.class.getName(),
 		byte[].class.getName(),
@@ -523,6 +525,13 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 						tfOutputFormat.setEnabled(true);
 					}
 					else if (Date.class.getName().equals(clazz)) {
+						tfFieldWidth.setEnabled(false);
+						tfFieldWidth.setText(null);
+						tfFieldPrecision.setEnabled(false);
+						tfFieldPrecision.setText(null);
+						tfOutputFormat.setEnabled(true);
+					}
+					else if (NuclosDateTime.class.getName().equals(clazz)) {
 						tfFieldWidth.setEnabled(false);
 						tfFieldWidth.setText(null);
 						tfFieldPrecision.setEnabled(false);

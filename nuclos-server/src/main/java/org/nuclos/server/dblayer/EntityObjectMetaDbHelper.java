@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 
 import org.nuclos.common.CryptUtil;
 import org.nuclos.common.MetaDataProvider;
+import org.nuclos.common.NuclosDateTime;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.NuclosScript;
@@ -403,7 +404,7 @@ public class EntityObjectMetaDbHelper {
 			genericType = DbGenericType.BOOLEAN;
 		} else if (javaClass == Date.class) {
 			genericType = DbGenericType.DATE;
-		} else if (javaClass == InternalTimestamp.class) {
+		} else if (javaClass == InternalTimestamp.class || javaClass == NuclosDateTime.class) {
 			genericType = DbGenericType.DATETIME;
 		} else if (javaClass == byte[].class) {
 			genericType = DbGenericType.BLOB;
