@@ -183,33 +183,37 @@ public class Statemodel implements Serializable {
 				}
 			});
 			result.add(getStateLookup().get(initialStateId));
-            result.add(getStateLookup().get(startTransition.getStateTarget()));
+			if (startTransition != null) {
+				result.add(getStateLookup().get(startTransition.getStateTarget()));
+			}
             
             List<Integer> checkedStateNumerals = new LinkedList<Integer>();
 			
 			// finde alle trans die als source den end der letzten haben.
-			Integer iSubsequentState = startTransition.getStateTarget();
-			while (iSubsequentState != null) {
-				if (checkedStateNumerals.contains(iSubsequentState)) {
-					break;
-					//throw new CommonValidationException("statemachine.error.validation.graph.defaulttransition");					
+            if (startTransition != null) {
+            	Integer iSubsequentState = startTransition.getStateTarget();
+				while (iSubsequentState != null) {
+					if (checkedStateNumerals.contains(iSubsequentState)) {
+						break;
+						//throw new CommonValidationException("statemachine.error.validation.graph.defaulttransition");					
+					}
+					final Integer iSubsequentStateSource = iSubsequentState;
+					StateTransitionVO subsequentTransition = CollectionUtils.findFirst(transitionVOs, new Predicate<StateTransitionVO>() {
+						@Override public boolean evaluate(StateTransitionVO t) { return t.getStateSource().equals(iSubsequentStateSource) && t.isDefault() == true; }
+					});
+					
+					if (subsequentTransition == null) {
+						break;
+					}
+					
+					// iterate next.
+					checkedStateNumerals.add(iSubsequentState);
+					iSubsequentState = subsequentTransition.getStateTarget();
+					StateVO state = getStateLookup().get(subsequentTransition.getStateTarget());
+					state.setFromAutomatic(subsequentTransition.isAutomatic());
+		            result.add(state);
 				}
-				final Integer iSubsequentStateSource = iSubsequentState;
-				StateTransitionVO subsequentTransition = CollectionUtils.findFirst(transitionVOs, new Predicate<StateTransitionVO>() {
-					@Override public boolean evaluate(StateTransitionVO t) { return t.getStateSource().equals(iSubsequentStateSource) && t.isDefault() == true; }
-				});
-				
-				if (subsequentTransition == null) {
-					break;
-				}
-				
-				// iterate next.
-				checkedStateNumerals.add(iSubsequentState);
-				iSubsequentState = subsequentTransition.getStateTarget();
-				StateVO state = getStateLookup().get(subsequentTransition.getStateTarget());
-				state.setFromAutomatic(subsequentTransition.isAutomatic());
-	            result.add(state);
-			}
+            }
 		}
 		return result;
     }
