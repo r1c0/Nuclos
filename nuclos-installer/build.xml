@@ -63,7 +63,9 @@
 		<mkdir dir="${dist.resources.dir}" />
 
 		<!-- build all modules including webstart -->
-		<artifact:mvn pom="../pom.xml" mavenhome="${maven.home.dir}">
+		<artifact:mvn pom="../pom.xml" mavenhome="${maven.home.dir}" fork="true" failonerror="true">
+			<jvmarg value="-Xms256m" />
+			<jvmarg value="-Xmx1024m" />
 			<arg value="install" />
 		</artifact:mvn>
 

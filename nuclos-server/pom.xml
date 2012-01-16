@@ -163,10 +163,6 @@
 			<version>9.0-801.jdbc4</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.xbean</groupId>
-			<artifactId>xbean-spring</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
 			<version>8.1.0.RC0</version>
